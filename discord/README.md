@@ -222,7 +222,7 @@ await postReport(
 // 2. A clue card. postClue accepts a ready PNG buffer, a forged clue, a
 //    { png, name } result, or an explicit { card } spec — it renders as needed.
 const clue = forgeClue({ cipher: 'caesar', text: 'BOW AT THE MARKER', shift: 7 });
-await postClue(client, config.channels.cipherwork, clue);
+await postClue(client, config.channels.theRecord, clue);
 ```
 
 `postReport(client, channelId, text)` posts one line — `text` MUST already be a

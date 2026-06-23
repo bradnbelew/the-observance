@@ -10,9 +10,6 @@ import 'dotenv/config';
 /** Channel-ID keys the bot posts to. */
 export interface ChannelConfig {
   readonly theRecord: string;
-  readonly cipherwork: string;
-  readonly whispers: string;
-  readonly theWays: string;
 }
 
 /** Fully-validated, immutable runtime configuration. */
@@ -35,9 +32,6 @@ const REQUIRED = [
   'DISCORD_APP_ID',
   'DISCORD_GUILD_ID',
   'CHANNEL_THE_RECORD',
-  'CHANNEL_CIPHERWORK',
-  'CHANNEL_WHISPERS',
-  'CHANNEL_THE_WAYS',
   'SUPABASE_URL',
   'SUPABASE_SERVICE_ROLE_KEY',
 ] as const;
@@ -73,9 +67,6 @@ function loadConfig(): Config {
     }),
     channels: Object.freeze({
       theRecord: env.CHANNEL_THE_RECORD,
-      cipherwork: env.CHANNEL_CIPHERWORK,
-      whispers: env.CHANNEL_WHISPERS,
-      theWays: env.CHANNEL_THE_WAYS,
     }),
     supabase: Object.freeze({
       url: env.SUPABASE_URL,

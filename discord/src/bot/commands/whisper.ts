@@ -19,7 +19,6 @@
  * Every player-facing string comes from voice.ts; this file writes no English.
  */
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
-import { config } from '../../config.js';
 import {
   getPlayerByDiscordId,
   getArcAct,
@@ -96,28 +95,13 @@ export async function handleWhisper(
 }
 
 /**
- * Speak in #whispers when the rite was run elsewhere; otherwise speak where it
- * was asked. The watcher's words are public — the toll is announced, not hidden.
+ * The watcher answers in the channel where it was asked — its words are public,
+ * the toll is announced, not hidden. Run /whisper anywhere (e.g. #general); there
+ * is no dedicated whispers channel.
  */
 async function speak(
   interaction: ChatInputCommandInteraction,
   content: string,
 ): Promise<void> {
-  const inWhispers = interaction.channelId === config.channels.whispers;
-
-  if (inWhispers || !interaction.guild) {
-    await interaction.reply({ content });
-    return;
-  }
-
-  // run from another channel: answer there briefly, and lay the words in #whispers.
   await interaction.reply({ content });
-  try {
-    const channel = await interaction.client.channels.fetch(config.channels.whispers);
-    if (channel && channel.isTextBased() && 'send' in channel) {
-      await channel.send({ content });
-    }
-  } catch {
-    // the whispers channel may be unreachable; the reply already carried the words.
-  }
 }
