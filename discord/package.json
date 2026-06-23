@@ -1,0 +1,28 @@
+{
+  "name": "the-observance-discord",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The Observance — Discord service: slash commands, whisper hints, and satori-rendered clue cards.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "register": "tsx src/bot/register.ts",
+    "dev": "tsx src/bot/index.ts",
+    "sample": "tsx src/render/sample.ts",
+    "assets": "tsx src/render/assets.ts"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@supabase/supabase-js": "^2.45.4",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "satori": "^0.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.2"
+  }
+}
