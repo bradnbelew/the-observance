@@ -5,10 +5,10 @@ export type BondLedgerEntry = BondLedgerRow & {
 };
 
 /**
- * Bond ledger — the secret driver of the Act-3 casting. Rows arrive sorted by
- * bond_points desc (highest bond = current "front-runner" for who is kept). The
- * leader is highlighted; this is a spoiler-only surface, so it lives in Author
- * mode and is never exposed to the status view.
+ * Bond ledger — a NEUTRAL tally of how much each player has leaned on the
+ * Watcher (whisper tolls). There is no "chosen" player; the Accepting judges
+ * the group collectively. Rows arrive sorted by bond_points desc; the top of
+ * the tally is highlighted. Spoiler-rich, so it lives in Author mode only.
  */
 export function BondLedger({ rows }: { rows: BondLedgerEntry[] }) {
   const leaderPoints = rows.length > 0 ? rows[0].bond_points : null;
@@ -17,10 +17,11 @@ export function BondLedger({ rows }: { rows: BondLedgerEntry[] }) {
     <section className="rounded-lg border border-neutral-800 bg-slate-850 p-5">
       <div className="flex items-center justify-between">
         <h2 className="font-mono text-lg text-neutral-100">Bond ledger</h2>
-        <span className="font-mono text-xs text-neutral-500">casting</span>
+        <span className="font-mono text-xs text-neutral-500">tally</span>
       </div>
       <p className="mt-1 text-sm text-neutral-400">
-        Highest bond is the current front-runner for the Accepting.
+        How much each player has leaned on the Watcher. A neutral tally — no one
+        is &ldquo;chosen.&rdquo;
       </p>
 
       {rows.length === 0 ? (
@@ -55,7 +56,7 @@ export function BondLedger({ rows }: { rows: BondLedgerEntry[] }) {
                 </span>
                 {isLeader ? (
                   <span className="rounded-full border border-amber-500/50 bg-amber-500/10 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-amber-300">
-                    front-runner
+                    most
                   </span>
                 ) : null}
                 <span

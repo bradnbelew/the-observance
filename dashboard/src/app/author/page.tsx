@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
-import { isAdmin } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ArcControl } from "@/components/author/ArcControl";
 import { BeatQueue } from "@/components/author/BeatQueue";
 import { WhisperBudgets } from "@/components/author/WhisperBudgets";
@@ -34,15 +32,12 @@ const BEAT_ORDER: Record<Beat["status"], number> = {
 };
 
 export default async function AuthorPage() {
-  // Author mode is admin-only. Re-checked again inside every server action.
-  if (!(await isAdmin())) {
-    redirect("/auth/login");
-  }
+  // Open control surface — no login gate. Reads use the service-role client,
+  // which bypasses RLS. To lock it back down, restore the isAdmin() gate here
+  // and use the cookie-bound server client instead.
+  const supabase = createAdminClient();
 
-  const supabase = await createClient();
-
-  // Read the full control surface in parallel. RLS grants `authenticated`
-  // full read access; the ADMIN_EMAILS gate above decides who gets here.
+  // Read the full control surface in parallel (service-role bypasses RLS).
   const [
     arcRes,
     beatsRes,
@@ -125,8 +120,7 @@ export default async function AuthorPage() {
         <h1 className="font-mono text-2xl text-neutral-100">Author</h1>
         <p className="max-w-prose text-sm text-neutral-400">
           Full control surface. Everything here is spoiler-rich — the arc, the
-          beat queue, named dossiers, the bond ledger. Writes go through
-          admin-gated server actions.
+          beat queue, named dossiers, the bond ledger. Open — no login required.
         </p>
       </header>
 

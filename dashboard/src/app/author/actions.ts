@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isAdmin } from "@/lib/auth";
 import type { BeatStatus, Json } from "@/lib/database.types";
 
 /**
@@ -24,8 +23,10 @@ const FORBIDDEN: ActionResult = {
   error: "Not authorized.",
 };
 
+// Author mode is intentionally open (no login). Restore `return isAdmin()`
+// (and re-add the import) to re-gate writes behind the ADMIN_EMAILS allowlist.
 async function guard(): Promise<boolean> {
-  return isAdmin();
+  return true;
 }
 
 function refresh() {
