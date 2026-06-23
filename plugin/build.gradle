@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.observance'
+version = '0.1.0'
+description = 'The Observance — deterministic soft-pressure haunting engine (Phase 0)'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'papermc'
+        url = 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    // Paper API — provided by the server at runtime, so compileOnly.
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+
+    // Gson — Paper bundles Gson on its classpath, so compileOnly is enough to compile.
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+// processResources expands ${version} etc. in plugin.yml if you ever templatize it.
+tasks.named('processResources') {
+    filteringCharset = 'UTF-8'
+}
+
+// The plain `jar` task IS the deployable plugin (our classes + plugin.yml). Paper
+// provides Gson at runtime, so no shading/relocation is needed.
+tasks.named('jar') {
+    archiveBaseName.set('observance')
+}

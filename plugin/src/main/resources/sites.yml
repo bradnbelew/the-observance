@@ -1,0 +1,92 @@
+# ============================================================================
+#  The Observance — sites.yml  (config-driven world placements)
+# ----------------------------------------------------------------------------
+#  Named marker/site entries with PLACEHOLDER coordinates. Fill these in AFTER
+#  the world seed is chosen. The plugin treats any site with `enabled: false`
+#  OR placeholder coords (the literal sentinel below) as "not yet sited" and
+#  silently skips it — it never errors at players over an unplaced site.
+#
+#  A "site" is a named location the engine can:
+#    - protect (markers resist being broken / are restored)
+#    - target beats at (sounds/particles/reveals near it)
+#    - detect proximity / custom-compliance against (e.g. The Bow marker, a cairn)
+#
+#  Coordinate sentinel: x/y/z = null  → treated as UNPLACED.
+# ============================================================================
+
+# Default world that bare site entries belong to (override per-site with `world:`).
+default-world: "world"
+
+# Global marker behavior defaults (each site may override).
+defaults:
+  radius: 6              # blocks; proximity / compliance radius around the site
+  protect: true          # marker blocks at this site resist being broken / restored
+  vertical-radius: 4     # +/- Y tolerance for proximity checks (caves/cliffs)
+
+sites:
+  # --- Custom-compliance anchors (DESIGN §2.4 / arc custom table) ------------
+
+  bow_marker_01:
+    type: "bow_marker"           # The Bow — crouch near marker (PlayerToggleSneakEvent)
+    world: "world"
+    x: null                      # PLACEHOLDER — set after world seed
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
+  offering_cairn_01:
+    type: "offering_cairn"       # The Offering — first-ore drop at the cairn
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    protect: true
+    enabled: true
+
+  kept_light_home_01:
+    type: "kept_light"           # The Kept Light — one fire must burn at home
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 12                   # base-scale radius
+    protect: false               # this is a scan zone, not a protected marker
+    enabled: true
+
+  # --- Report / lore anchors (Archivist lecterns) ---------------------------
+
+  first_report_lectern_01:
+    type: "report_lectern"       # where the first report appears (Movement I)
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    protect: true
+    enabled: true
+
+  # --- Reserved expedition slots (Movement II keeper-stones — Phase 1+) ------
+  #  Left here, disabled, so the schema is stable for later agents to fill.
+
+  keeper_stone_01:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: false
+
+  keeper_stone_02:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: false

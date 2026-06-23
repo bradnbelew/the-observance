@@ -1,0 +1,135 @@
+# ============================================================================
+#  The Observance — config.yml  (Phase 0, deterministic, NO AI)
+# ----------------------------------------------------------------------------
+#  Lore-AGNOSTIC: this plugin reads ALL story text (documents, clues, beats)
+#  from Supabase + config. Never hardcode narrative here.
+# ============================================================================
+
+supabase:
+  # PostgREST base url for Braden's project. Tables are reached at <url>/<table>.
+  url: "https://fdnmhbpxnodrnbrzrlqq.supabase.co/rest/v1"
+
+  # SERVICE-ROLE KEY — NEVER hardcode here, NEVER commit.
+  # Resolution order at runtime (first non-empty wins):
+  #   1. environment variable named by `service-key-env` below
+  #   2. this `service-key` value (leave EMPTY in committed config; only fill on a
+  #      locked-down server file that is gitignored)
+  # The key is sent as BOTH the `apikey` header and `Authorization: Bearer <key>`.
+  service-key-env: "OBSERVANCE_SUPABASE_KEY"
+  service-key: ""
+
+  # Network behavior. All calls are async; these bound a single attempt + retries.
+  connect-timeout-ms: 5000
+  read-timeout-ms: 8000
+  max-retries: 2            # additional attempts after the first (so up to 3 total)
+  retry-backoff-ms: 750     # base backoff; doubles each retry (jittered)
+
+  # When Supabase is unreachable the plugin degrades SILENTLY. Writes that matter
+  # (event_log, players, dossiers, etc.) are queued and flushed on reconnect.
+  offline-queue-max: 500    # cap on queued writes (drop-oldest beyond this)
+
+# How often the beat-queue poller wakes (async) to pull approved beats.
+beat-queue:
+  poll-interval-seconds: 30
+  # Defense-in-depth: never enact more than this many queued beats per poll tick.
+  max-per-poll: 3
+
+# Scheduled samplers (all run their bodies inside Safety + on the correct thread).
+samplers:
+  # Heatmap / location sampling. NOT PlayerMoveEvent — scheduled sampling only.
+  location-sample-seconds: 20
+  heatmap-cell-size: 16          # blocks per coarse grid cell (chunk-sized)
+  # Base-detection clustering pass cadence.
+  base-detect-seconds: 120
+  # Inventory / hoarding scan cadence.
+  inventory-scan-seconds: 90
+  # players-table upsert heartbeat (last_seen), in addition to join/quit.
+  presence-heartbeat-seconds: 60
+
+# ----------------------------------------------------------------------------
+#  DRAMA BUDGET + COOLDOWNS  (the L4D-style director — pure deterministic gates)
+#  Restraint IS the horror. Defaults are deliberately sparse.
+# ----------------------------------------------------------------------------
+drama:
+  # Master kill switch (local). The remote `settings.watcher_sleep` ALSO suppresses
+  # everything; either being true means NO beats fire.
+  enabled: true
+
+  # Per-PLAYER big/personalized beat: at most one per session, hard cooldown floor.
+  personalized-cooldown-minutes: 20     # hard floor >= 20 (anti-spam contract)
+  personalized-max-per-session: 1       # <= ~1 personalized beat / session / player
+
+  # Ambient (cheap) beats: occasional, never a phenomenon every 2 minutes.
+  ambient-cooldown-minutes: 60          # ~<=1 ambient beat per hour of play
+  ambient-global-cooldown-minutes: 12   # min spacing between ANY two ambient beats server-wide
+
+  # Rolling window cap so it physically cannot spam even if many gates open.
+  window-minutes: 60
+  window-max-beats: 4                   # total beats (ambient + personalized) per window
+
+  # Confidence floor for personalized callouts (precision over recall).
+  personalized-confidence-min: 0.85
+
+# Rate-limiting for ANY player-triggerable beat (answer-oracle, sign-answers, gestures).
+rate-limit:
+  # Per-player cooldown for the answer oracle / sign-answer checks (anti-spam).
+  oracle-cooldown-seconds: 5
+  oracle-burst: 3                       # token bucket: allow N quick tries then throttle
+  oracle-refill-seconds: 30             # refill one token every N seconds
+
+# Anti-grief: placed markers/structures resist being broken (or are restored).
+protection:
+  restore-broken-markers: true
+  restore-delay-ticks: 1                # restore on the next tick (out of LoS where possible)
+  # Cancel block-break on protected coords entirely (vs. restore-after). Default cancel.
+  cancel-protected-breaks: true
+
+# Reveal discipline: only mutate blocks when no watcher hasLineOfSight to the target.
+reveal:
+  # Max distance (blocks) a player can be and still count as a potential "witness".
+  witness-radius: 64
+  # If a reveal is blocked by line-of-sight, retry after this delay (ticks) up to N times.
+  retry-delay-ticks: 40
+  retry-max-attempts: 10
+
+# ----------------------------------------------------------------------------
+#  SIGNAL TRACKER (the dossier) — DESIGN §2.1 + §2.2. PURE measurement, no AI.
+#  LORE-AGNOSTIC: only opaque tuning inputs live here (which words are forbidden,
+#  which blocks are ore, hoard weights, the depth line). The human-readable name
+#  of any custom lives in Supabase content, NEVER in this file or in code.
+# ----------------------------------------------------------------------------
+tracker:
+  enabled: true
+
+  # The Unspoken — forbidden words. Chat containing any of these is a tracked
+  # violation + a hit counter. Matched case-insensitively on word boundaries.
+  # Authored per-arc; left EMPTY here so the committed config ships no story text.
+  forbidden-words: []
+
+  # Which broken blocks count as "ore" (first-ore-of-session + ore tallies).
+  # Empty/omitted ⇒ a sensible vanilla default set is used.
+  ore-materials: []
+
+  # Hoard scoring: material -> per-item weight. Score = sum(count * weight), capped.
+  # Lets the engine recognize "the solo-miner who hoards". Empty ⇒ default weights.
+  hoard-weights: {}
+  hoard-score-cap: 1000.0
+
+  # The Deep Line — breaking below this Y is a tracked violation (depth taboo).
+  deep-line:
+    enabled: true
+    y-threshold: -48
+
+  # The Sacred Beast — the PDC tag key a "pale one" mob is marked with (set by the
+  # beast-tagging subsystem in a later phase). Killing a tagged mob = a violation.
+  sacred-beast-pdc-key: "observance_sacred_beast"
+
+  # Base detection (clustering of block-places + bed anchors → the bases table).
+  base-detection:
+    cluster-radius: 24       # blocks; placements within this fold into one base centroid
+    min-placements: 12       # min block-places before a cluster (without a bed) is a base
+    confidence-floor: 0.4    # below this confidence we don't publish a base row
+
+# Logging verbosity for the in-game console (Supabase event_log is separate + always on).
+logging:
+  debug: false

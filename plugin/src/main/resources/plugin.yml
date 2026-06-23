@@ -1,0 +1,25 @@
+name: Observance
+version: '0.1.0'
+main: com.observance.watcher.ObservancePlugin
+api-version: '1.21'
+author: Voxaris
+description: The Observance — deterministic soft-pressure haunting engine (Phase 0).
+website: https://the-observance.local
+# Phase 0 is fully self-contained: no hard or soft dependencies. Later phases may add
+# Citizens2 / FastAsyncWorldEdit / PacketEvents as softdepend.
+load: POSTWORLD
+
+commands:
+  observance:
+    description: Admin/status command for The Observance plugin.
+    usage: |
+      /observance status        - show plugin health (db, queue, last beat)
+      /observance reload        - reload config.yml + sites.yml
+      /observance sleep <on|off>- toggle the local watcher-sleep override
+    aliases: [obs]
+    permission: observance.admin
+
+permissions:
+  observance.admin:
+    description: Allows use of the /observance admin command.
+    default: op
