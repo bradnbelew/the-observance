@@ -48,7 +48,7 @@ the world waits if the group is slow.
 ### Act 3 — The Accepting (≈ Days 12–14)
 - Clues converge. Gather named components + wake the Keeper (NPC) + altar deposit.
 - The ritual fires on a chosen night (~Day 14): proximity + time + group crouch.
-- Discord: the Keeper's final summons. Outcome bends to the record (the casting).
+- Discord: the Keeper's final summons. Outcome bends to the group's record — the WHOLE group is received (kept or cast out); no single "chosen" player.
 
 ### Event rhythm (so it's consistent, never spammy)
 - **In-game:** ≤1 ambient beat per ~hour of play; ≤1 big personalized beat per session
@@ -66,7 +66,7 @@ Discord /whisper <puzzle>
                               + auto-gift backstop if truly stalled
    → return next PRE-AUTHORED hint tier (vague → specific)   [no hallucination]
    → fire in-game TOLL (atmospheric, reversible — takes warmth, not progress)
-   → tick asker's BOND on the ledger   → drives Act-3 casting (who is "kept")
+   (a bond tally is recorded as a NEUTRAL tracker only — no "chosen" player; the Accepting judges the whole group)
 ```
 
 - Hard puzzles are safe because the backstop is player-controlled, rationed, diegetic.
@@ -79,7 +79,7 @@ Discord /whisper <puzzle>
 **Author mode** (full spoilers — for you while tuning, or a read-in guardian):
 - View / advance / rewind the **arc act**; see act gates and progress.
 - **Beat queue:** preview, approve, force, or skip queued beats (the anti-jank gate).
-- Edit **Whisper budgets**; see the **bond ledger** (current casting front-runner).
+- Edit **Whisper budgets**; see the **bond/compliance tally** (a neutral tracker — no individual "chosen").
 - See **dossiers**, **heatmap**, custom-compliance per player.
 - **"Watcher sleeps"** toggle (mute everything for a sensitive session).
 - Manually **trigger the Accepting** (for testing) or place a specific clue.

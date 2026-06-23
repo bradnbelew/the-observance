@@ -61,14 +61,21 @@ a tiered nudge.
 
 A resource-pack rune font is the prior keepers' alphabet — a substitution cipher that is
 *also* world-building. Early clues teach a few glyphs; by Act 2 the group half-reads the
-world. **Whispers** (Discord, rationed) buy tiered hints; each spend tolls the asker in-game
-and ticks their **bond**.
+world. **Whispers** (Discord, rationed) buy tiered hints; each spend tolls the asker in-game.
+(The toll IS the cost — it does not secretly elect anyone; see the collective reckoning below.)
 
-## The casting (record → who is marked)
+## The record → a COLLECTIVE reckoning (NO "chosen one")
 
-The bond ledger + custom-compliance record decide the endgame. The player who leans most on
-the Whispers / is most bound is marked as the land's **go-between** (warm, earned — not the
-old "courting"). The faithful-most are received well; the transgressors are received… differently.
+There is no single chosen player — that was the rejected "Ones Who Stayed" idea and it is
+**cut**. The Observance judges the **group**. The custom-compliance record across *everyone*
+decides how the Keeper receives the group at the Accepting: a faithful group is **kept** as
+neighbors; a careless one is **cast out**.
+
+Per-player conduct may give per-player *consequence* (the faithful pass; a serial transgressor
+can be left at the threshold while the others are kept) — but that is **judgment by your own
+conduct**, never the land singling out a favorite. The bond/Whisper tally is just a neutral
+tracker of how much the group leaned on the land; it colors the ending's flavor collectively,
+it does not elect anyone.
 
 ## The ending ritual — "The Accepting"
 
@@ -84,9 +91,9 @@ To become *kept*, the group must, together:
    `PlayerToggleSneakEvent` from everyone → the rite fires.
 
 On success: the world flips to **kept** (persistent world state), the presence manifests and
-**changes**, an advancement seals it — and the outcome bends to the **record** (how the
-Keeper receives the group, who it marks). On refusal/failure at the threshold: the land stops
-tolerating them.
+**changes**, an advancement seals it — and the outcome bends to the group's **record** (how the
+Keeper receives the *group* — faithful kept, careless cast out; see the collective reckoning
+above, NO single chosen one). On refusal/failure at the threshold: the land stops tolerating them.
 
 The recontextualization: every early haunting was the land *testing and cataloguing* them;
 the laws they suffered to learn were the entrance exam. And — the sealed turn above — being
