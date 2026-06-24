@@ -28,7 +28,9 @@ import {
   siteCoverageSelfTest,
   riteTokenSelfTest,
   threadTagSelfTest,
+  threadCardVoiceCoverageSelfTest,
 } from './canon.js';
+import { archive, npcLines } from '../voice.archive.js';
 
 // Resolve canon files relative to THIS file (src/forge/), so the checks run from any cwd.
 // The seed/plugin/voice are the sources of truth; we only READ them to prove coherence.
@@ -43,6 +45,7 @@ const MIGRATION_0005_PATH = resolve(here, '../../supabase/migrations/0005_thread
 const SITES_PATH = resolve(here, '../../../plugin/src/main/resources/sites.yml');
 const CONFIG_PATH = resolve(here, '../../../plugin/src/main/resources/config.yml');
 const THREAD_TAGS_PATH = resolve(here, '../../supabase/seeds/thread_tags.sql');
+const THREAD_CARDS_PATH = resolve(here, '../../supabase/seeds/thread_cards.sql');
 
 try {
   const { cases } = specsSelfTest();
@@ -60,9 +63,11 @@ try {
   const sites = siteCoverageSelfTest(seedSql, readFileSync(SITES_PATH, 'utf8'));
   const rite = riteTokenSelfTest(readFileSync(CONFIG_PATH, 'utf8'), seedSql);
   const tags = threadTagSelfTest(readFileSync(THREAD_TAGS_PATH, 'utf8'));
+  const definedVoiceKeys = new Set<string>([...Object.keys(archive), ...Object.keys(npcLines)]);
+  const cards = threadCardVoiceCoverageSelfTest(readFileSync(THREAD_CARDS_PATH, 'utf8'), definedVoiceKeys);
   const all = [
     ...cases, ...cov.cases, ...reach.cases, ...sentinel.cases, ...namespace.cases,
-    ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases,
+    ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases, ...cards.cases,
   ];
   console.log(`clue-specs + canon self-tests passed (${all.length}):`);
   for (const c of all) console.log(`  ok   ${c}`);

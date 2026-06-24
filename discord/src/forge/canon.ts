@@ -267,6 +267,37 @@ export function threadTagSelfTest(tagsSql: string): { passed: number; cases: str
   };
 }
 
+/**
+ * GUARD 9 — thread-card voice coverage (content integration). Every thread_cards row names a
+ * body_voice_key (a camelCase cardXxx key); the Recovery Archive renders that key's text. A key with
+ * no entry in voice.archive.ts (archive | npcLines) = a BLANK card on camera. This asserts every
+ * body_voice_key the seed references is defined. `definedKeys` is Object.keys of both archive maps
+ * (passed by the runner — exact, no regex on the TS).
+ */
+export function threadCardVoiceCoverageSelfTest(
+  threadCardsSql: string,
+  definedKeys: Set<string>,
+): { passed: number; cases: string[] } {
+  const sql = threadCardsSql.replace(/--[^\n]*/g, '');
+  // body_voice_keys are camelCase 'cardXxx' literals; card_keys are hyphenated ('who-deep-market'),
+  // titles are prose — neither matches, so this isolates the body keys cleanly.
+  const referenced = [...new Set([...sql.matchAll(/'(card[A-Z][A-Za-z0-9]*)'/g)].map((m) => m[1]!))];
+  if (referenced.length === 0) {
+    throw new Error('threadCardVoiceCoverageSelfTest: parsed 0 body_voice_keys — parser or seed broke.');
+  }
+  const missing = referenced.filter((k) => !definedKeys.has(k));
+  if (missing.length > 0) {
+    throw new Error(
+      `threadCardVoiceCoverageSelfTest: ${missing.length} thread_cards body_voice_key(s) have NO entry ` +
+        `in voice.archive.ts (blank card on camera): ${missing.join(', ')}. Add them to archive/npcLines.`,
+    );
+  }
+  return {
+    passed: 1,
+    cases: [`thread-card voice coverage: all ${referenced.length} body_voice_keys defined in voice.archive.ts`],
+  };
+}
+
 export function customKeyNamespaceSelfTest(
   trackerConfigJava: string,
   voiceTs: string,
