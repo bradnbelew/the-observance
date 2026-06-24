@@ -31,6 +31,7 @@ public final class BeatEngine {
     private BeatContext ctx;
     private BeatLibrary library;
     private DramaBudget budget;
+    private Attention attention;
     private ProtectedRegistry protectedRegistry;
     private AmbientBeatGenerator ambient;
     private final List<BukkitTask> tasks = new ArrayList<>();
@@ -76,8 +77,11 @@ public final class BeatEngine {
                     new BeatSessionListener(ctx, budget, plugin.safety()), plugin);
 
             // 4) Ambient generator on a coarse cadence (restraint-first; budget still gates each fire).
+            //    The Attention accumulator makes selection responsive (the watcher is drawn to the
+            //    lonely/deep/uneasy) and adds the upstream restraint gate (calm scenes mostly stay quiet).
+            this.attention = new Attention(0.82);
             this.ambient = new AmbientBeatGenerator(
-                    ctx, library, budget,
+                    ctx, library, budget, attention,
                     plugin::isLocallyAsleep,
                     config::dramaEnabled);
 

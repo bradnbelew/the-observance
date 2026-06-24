@@ -40,14 +40,17 @@ public final class AmbientBeatGenerator {
     private final BeatContext ctx;
     private final BeatLibrary library;
     private final DramaBudget budget;
+    private final Attention attention;
     private final BooleanSupplier localSleep;
     private final BooleanSupplier dramaEnabled;
 
     public AmbientBeatGenerator(BeatContext ctx, BeatLibrary library, DramaBudget budget,
+                                Attention attention,
                                 BooleanSupplier localSleep, BooleanSupplier dramaEnabled) {
         this.ctx = ctx;
         this.library = library;
         this.budget = budget;
+        this.attention = attention == null ? new Attention(0.82) : attention;
         this.localSleep = localSleep == null ? () -> false : localSleep;
         this.dramaEnabled = dramaEnabled == null ? () -> true : dramaEnabled;
     }
@@ -60,9 +63,25 @@ public final class AmbientBeatGenerator {
         List<? extends Player> online = new ArrayList<>(Bukkit.getOnlinePlayers());
         if (online.isEmpty()) return;
 
-        // Pick a random online player as the focus (per-player cooldown keeps it fair over time).
-        Player focus = online.get(ThreadLocalRandom.current().nextInt(online.size()));
+        // Update each player's ATTENTION from their situation (alone/deep/dark/night), decaying first so
+        // a scared moment fades instead of snowballing into a haywire cascade.
+        attention.decayAll();
+        for (Player p : online) {
+            if (p == null || !p.isOnline()) continue;
+            double delta = situationDelta(p, online);
+            if (delta != 0.0) attention.add(p.getUniqueId(), delta);
+        }
+
+        // Focus = a player chosen WEIGHTED by attention (with a calm floor for fairness), so the lonely
+        // deep miner draws the Watcher far more than the group at base — the haunting feels like
+        // "it knows me", not a dice roll.
+        Player focus = pickWeightedFocus(online);
         if (focus == null || !focus.isOnline()) return;
+
+        // RESTRAINT (the upstream "should anything happen at all" gate): at low attention, usually stay
+        // quiet — the world must feel almost-normal. The DramaBudget still gates every fire below.
+        Attention.Tier tier = attention.tier(focus.getUniqueId());
+        if (ThreadLocalRandom.current().nextDouble() < Attention.skipProbability(tier)) return;
 
         // Optionally anchor to a placed site the player is currently inside (beats land where seen).
         Site site = siteContaining(focus);
@@ -101,6 +120,61 @@ public final class AmbientBeatGenerator {
             ctx.scheduler().runAsyncSafe("beat.ambient.audit", () ->
                     ctx.safety().info("beat.ambient", "fired=" + n + " focus=" + focusName));
         }
+    }
+
+    /**
+     * How much this player's current SITUATION raises their attention this tick — the watch-worthy
+     * signals, read cheaply from Bukkit on main: alone, deep, in the dark, at night. Capped so it ramps
+     * over several considerations rather than spiking instantly.
+     */
+    private double situationDelta(Player p, List<? extends Player> online) {
+        var loc = p.getLocation();
+        if (loc == null || loc.getWorld() == null) return 0.0;
+        double d = 0.0;
+
+        // Alone — no other player within 32 blocks in the same world.
+        boolean alone = true;
+        double r2 = 32.0 * 32.0;
+        for (Player o : online) {
+            if (o == null || o == p || !o.isOnline()) continue;
+            var ol = o.getLocation();
+            if (ol == null || ol.getWorld() == null || !ol.getWorld().equals(loc.getWorld())) continue;
+            if (ol.distanceSquared(loc) <= r2) { alone = false; break; }
+        }
+        if (alone) d += 0.15;
+
+        if (loc.getY() < 8) d += 0.12;                                  // deep — toward the dark
+
+        try {                                                          // in the dark
+            if (loc.getBlock().getLightLevel() <= 4) d += 0.10;
+        } catch (Throwable ignored) { }
+
+        long time = loc.getWorld().getTime();                          // night
+        if (time >= 13000L && time <= 23000L) d += 0.06;
+
+        return Math.min(d, 0.40);
+    }
+
+    /**
+     * Pick an online player weighted by attention, with a small floor so calm players still get rare
+     * visits (fairness). Falls back to uniform when everyone is calm.
+     */
+    private Player pickWeightedFocus(List<? extends Player> online) {
+        double total = 0.0;
+        for (Player p : online) {
+            if (p == null || !p.isOnline()) continue;
+            total += 0.05 + attention.score(p.getUniqueId());          // 0.05 floor = fairness
+        }
+        if (total <= 0.0) {
+            return online.get(ThreadLocalRandom.current().nextInt(online.size()));
+        }
+        double r = ThreadLocalRandom.current().nextDouble() * total;
+        for (Player p : online) {
+            if (p == null || !p.isOnline()) continue;
+            r -= (0.05 + attention.score(p.getUniqueId()));
+            if (r <= 0.0) return p;
+        }
+        return online.get(online.size() - 1);
     }
 
     /** First placed site the player currently stands inside, or null. MAIN thread. */
