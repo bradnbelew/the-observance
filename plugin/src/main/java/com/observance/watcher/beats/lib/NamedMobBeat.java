@@ -38,8 +38,8 @@ public final class NamedMobBeat extends AbstractBeat {
     @Override
     public boolean canEnact(BeatContext ctx, BeatRequest req) {
         if (!req.hasTarget()) return false;
-        EntityType type = entityType(req.payload().string("entity", "ZOMBIE"));
-        if (type == null || !type.isSpawnable() || !type.isAlive()) return false;
+        EntityType type = resolveEntity(req.payload());
+        if (!type.isSpawnable() || !type.isAlive()) return false;
         return findSpawn(ctx, req) != null;
     }
 
@@ -47,8 +47,8 @@ public final class NamedMobBeat extends AbstractBeat {
     protected BeatResult doEnact(BeatContext ctx, BeatRequest req) {
         if (!req.hasTarget()) return BeatResult.skipped("no-target");
         BeatPayload p = req.payload();
-        EntityType type = entityType(p.string("entity", "ZOMBIE"));
-        if (type == null || !type.isSpawnable() || !type.isAlive()) return BeatResult.skipped("bad-entity");
+        EntityType type = resolveEntity(p);
+        if (!type.isSpawnable() || !type.isAlive()) return BeatResult.skipped("bad-entity");
 
         Location spawn = findSpawn(ctx, req);
         if (spawn == null) return BeatResult.skipped("no-spawn-spot");
@@ -153,12 +153,29 @@ public final class NamedMobBeat extends AbstractBeat {
         return null;
     }
 
+    /** Parse a vanilla EntityType by name, or NULL if unparseable (a "mythicmob:…" id, a typo) —
+     *  so the caller can FALL BACK instead of silently spawning the wrong creature. */
     private static EntityType entityType(String name) {
-        if (name == null || name.isBlank()) return EntityType.ZOMBIE;
+        if (name == null || name.isBlank()) return null;
         try {
             return EntityType.valueOf(name.trim().toUpperCase(java.util.Locale.ROOT));
         } catch (Throwable t) {
-            return EntityType.ZOMBIE;
+            return null;
         }
+    }
+
+    /**
+     * Resolve the apparition's entity (red-team MF-10). Tries the authored {@code entity}, then the
+     * {@code fallback_entity} (default WARDEN — the tall, silent, dark silhouette the stand-and-stare
+     * read depends on), then STRAY. NEVER a silent fall to ZOMBIE: a short green zombie standing in
+     * for the Watcher is the exact on-camera break this prevents. So a {@code mythicmob:watcher} id
+     * (unspawnable by vanilla here) renders as a WARDEN until the ModelEngine layer lands — never a
+     * zombie. Always returns a spawnable, living type.
+     */
+    private static EntityType resolveEntity(BeatPayload p) {
+        EntityType t = entityType(p.string("entity", null));
+        if (t == null) t = entityType(p.string("fallback_entity", "WARDEN"));
+        if (t == null || !t.isSpawnable() || !t.isAlive()) t = EntityType.STRAY;
+        return t;
     }
 }
