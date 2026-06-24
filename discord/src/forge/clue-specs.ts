@@ -214,7 +214,6 @@ export const CLUE_SPECS: readonly ClueSpecEntry[] = [
     acceptedAnswers: [
       'the one who turned away',
       'iss',
-      'the ways are a wall against the watching',
     ],
     toSpec() {
       return {
@@ -259,6 +258,7 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'm2-rhyme': 'cross-reference observation — notice two stones rhyme; dead-end, no cipher',
   'seventh-shrine': 'count-the-markers observation + travel; side_quest payoff, no cipher carving',
   'iss-doubt': 're-read / key cross-check of OTHER stones; no own carved artifact',
+  'iss-warm': 'the warm MISREADING of Iss’s stone (trusting his comfort) — routes to the dead-shrine grave; the interpretation of stone-iss-wall’s carving, not a separate carving',
   // travel / coordinate dead-end (a place, not a carved Discord card):
   'iss-dead-shrine': 'coordinate travel to a grave (dead_end); literal coords unsited (A7/G5)',
   // the literacy ROSETTA itself (it TEACHES the script; it is not carved IN it):

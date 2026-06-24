@@ -193,9 +193,9 @@ way's **teaching surface** (the authoring contract: never land a listener withou
 
 | The way (custom) | MINECRAFT (detect + toll) | DISCORD (report) | Teaching surface |
 |---|---|---|---|
-| **Keep the Lamp** (`kept_light`) | `LocationSampler`; base goes dark → `TorchGutter` | `reportObserved` "kept the light" | Mara's stone / rune-ring |
-| **The Deep Line** (`deep_line`) | `BlockBreakListener` past the marked Y | report; the gravest small act | the painted depth marker (P19) |
-| **The Dark Hours** (`dark_hours`) | `DarkHoursListener` on the taboo phase → `PrivateDarkness` | report "kept the watch" | Brann's night-gated page (P13) — **seed it** |
+| **Keep the Lamp** (`the_kept_light`) | `LocationSampler`; base goes dark → `TorchGutter` | `reportObserved` "kept the light" | Mara's stone / rune-ring |
+| **The Deep Line** (`the_deep_line`) | `BlockBreakListener` past the marked Y | report; the gravest small act | the painted depth marker (P19) |
+| **The Dark Hours** (`the_dark_hours`) | `DarkHoursListener` on the taboo phase → `PrivateDarkness` | report "kept the watch" | Brann's night-gated page (P13) — **seed it** |
 | **Give Back** (`the_offering`) | `BlockBreakListener` / "last of" scan | report; rhymes with Vaun the hoarder | the offering cairn |
 | **Bow at Markers** (`the_bow`) | `CustomComplianceListener` (crouch at marker) | report "made the bow" | Orin's low lintel (P4) |
 | **The Unspoken** (`the_unspoken`) | `ChatListener` — **author `forbidden-words`** (ships `[]`, can't fire) | report "kept the word unspoken" | `unspoken-refrain` (P21) — **seed it** |

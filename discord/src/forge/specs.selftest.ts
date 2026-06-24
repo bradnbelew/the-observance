@@ -20,21 +20,40 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import { specsSelfTest, specsCoverageSelfTest } from './clue-specs.js';
+import {
+  reachabilitySelfTest,
+  noLeakedSentinelSelfTest,
+  customKeyNamespaceSelfTest,
+} from './canon.js';
 
-// Resolve the canonical seed relative to THIS file (src/forge/ → ../../supabase/seeds),
-// so the coverage check runs from any cwd. The seed is the source of truth; we only read
-// it to prove every active row is classified (no DB, no network).
-const SEED_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '../../supabase/seeds/puzzles_seed.sql');
+// Resolve canon files relative to THIS file (src/forge/), so the checks run from any cwd.
+// The seed/plugin/voice are the sources of truth; we only READ them to prove coherence.
+const here = dirname(fileURLToPath(import.meta.url));
+const SEED_PATH = resolve(here, '../../supabase/seeds/puzzles_seed.sql');
+const VOICE_PATH = resolve(here, '../voice.ts');
+const TRACKER_PATH = resolve(
+  here,
+  '../../../plugin/src/main/java/com/observance/watcher/signal/TrackerConfig.java',
+);
 
 try {
-  const { passed, cases } = specsSelfTest();
+  const { cases } = specsSelfTest();
   const seedSql = readFileSync(SEED_PATH, 'utf8');
   const cov = specsCoverageSelfTest(seedSql);
-  console.log(`clue-specs self-tests passed (${passed + cov.passed}):`);
-  for (const c of [...cases, ...cov.cases]) console.log(`  ok   ${c}`);
+  // Canon coherence guards (red-team §5): reachability (B-6), no-leaked-sentinel (B-5),
+  // custom-key namespace (B-3). Each throws on drift → the build fails, not the camera.
+  const reach = reachabilitySelfTest(seedSql);
+  const sentinel = noLeakedSentinelSelfTest(seedSql);
+  const namespace = customKeyNamespaceSelfTest(
+    readFileSync(TRACKER_PATH, 'utf8'),
+    readFileSync(VOICE_PATH, 'utf8'),
+  );
+  const all = [...cases, ...cov.cases, ...reach.cases, ...sentinel.cases, ...namespace.cases];
+  console.log(`clue-specs + canon self-tests passed (${all.length}):`);
+  for (const c of all) console.log(`  ok   ${c}`);
   process.exit(0);
 } catch (err) {
-  console.error('clue-specs self-tests FAILED:');
+  console.error('clue-specs + canon self-tests FAILED:');
   console.error(`  ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);
 }

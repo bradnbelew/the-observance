@@ -97,9 +97,9 @@ healed, and *wrong* that there was a way back up; his hope killed them all. (Thi
 ## 5. The seven ways (customs — re-skinned as the literal survival rites; maps 1:1 to the code)
 | Custom (code) | In-fiction way | What breaking it means |
 |---|---|---|
-| **kept_light** | **Keep the Lamp** — your light never goes out | the Dark takes the unlit |
-| **deep_line** | **The Deep Line** — never pass the marked depth | you enter the Dark's reach (Iss's sin) |
-| **dark_hours** | **The Dark Hours** — don't sleep on the black moon | the Dark reaches the sleeping (Brann's way) |
+| **the_kept_light** | **Keep the Lamp** — your light never goes out | the Dark takes the unlit |
+| **the_deep_line** | **The Deep Line** — never pass the marked depth | you enter the Dark's reach (Iss's sin) |
+| **the_dark_hours** | **The Dark Hours** — don't sleep on the black moon | the Dark reaches the sleeping (Brann's way) |
 | **the_offering** | **Give Back to the Deep** — leave an offering | the Dark grows hungry, takes instead |
 | **the_bow** | **Bow at the Markers** — honor the taken/dead | the watching is not acknowledged; you are not "kept" |
 | **the_unspoken** | **The Unspoken** — never speak the Dark's name | speaking it calls its attention to you |

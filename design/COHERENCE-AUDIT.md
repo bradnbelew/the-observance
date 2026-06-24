@@ -629,7 +629,7 @@ Legend: present (Y) / absent (N) / partial (~).
 |---|---|---|---|---|
 | The Bow | Y `CustomComplianceListener` | Y Orin (D07/D04) | Y rosetta-ring; `accepting-crouch` | ~ no report caller (C-1) |
 | The Offering | Y `CustomComplianceListener`+`BlockBreakListener` | Y Vaun (D02) | Y rosetta-ring; cairn sites | ~ no report caller (C-1) |
-| The Kept Light | Y `LocationSampler.scanKeptLight` | Y Mara/Brann (D05/D08) | Y rosetta-ring; `kept_light` site | ~ no report caller (C-1) |
+| The Kept Light | Y `LocationSampler.scanKeptLight` | Y Mara/Brann (D05/D08) | Y rosetta-ring; `the_kept_light` site | ~ no report caller (C-1) |
 | The Deep Line | Y `BlockBreakListener` | ~ taught key only; no keeper (C-4) | Y rosetta-ring | ~ no report caller (C-1) |
 | The Unspoken | Y `ChatListener` — `forbidden-words: []`, never fires (C-2) | Y Iss (canon §4) | N not taught; `unspoken-refrain` unseeded (C-3) | ~ no report caller (C-1) |
 | The Sacred Beast | Y `DeathListener` (tagged mob) | ~ design only; no keeper (C-4) | N not taught; `haunted-herd` unseeded (C-3) | ~ no report caller (C-1) |

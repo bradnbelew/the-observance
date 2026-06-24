@@ -190,8 +190,7 @@ values
   'the ways are a wall',
   array[
     'the one who turned away',
-    'iss',
-    'the ways are a wall against the watching'
+    'iss'
   ],
   'next_clue',
   jsonb_build_object(
@@ -200,6 +199,23 @@ values
     'set_flags', jsonb_build_object('iss_key_turned', true)
   ),
   2, true, 6 ),
+
+-- iss-warm — the WARM MISREADING of Iss's stone: read trustingly it COMFORTS ("the ways
+-- are a wall against the watching"). Trusting the liar routes you to HIS coordinate — the
+-- dead shrine, a grave (red-team B-6: this is the inbound edge iss-dead-shrine lacked).
+-- The skeptical name-as-key reading on stone-iss-wall instead goes to iss-doubt → the catch.
+( 'iss-warm',
+  'the warm reading',
+  array[
+    'the ways are a wall against the watching'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'iss-dead-shrine',
+    'set_flags', jsonb_build_object('iss_trusted', true)
+  ),
+  2, true, null ),
 
 -- m2-rhyme — read any two keeper stones side by side; the fates rhyme. TRUE,
 -- emotionally load-bearing, opens NO door (recolors what you have). Collective.
@@ -464,13 +480,15 @@ values
 
 -- accepting-crouch — everyone present bows as one (synchronized crouch), at the hour,
 -- in the kept light. main_beat: collective, no chosen one. → record-receives.
--- An opaque plugin-posted sentinel is the safe in-world trigger (never guessable).
+-- TERMINAL RITE — DETECTED in-world ONLY (a synchronized group bow); NEVER typeable.
+-- accepted_answers is a single OPAQUE, wordless, high-entropy token the plugin posts on
+-- real detection — no human-readable phrase opens the climax (red-team B-5). The token
+-- must live here so the resolver matches it; it is deliberately un-guessable + carries no
+-- descriptive words (enforced by the no-leaked-sentinel self-test).
 ( 'accepting-crouch',
   'bow as one',
   array[
-    'bow as one',
-    'when all of you bow as one',
-    'a7f3 accepting bow sentinel posted only by plugin'
+    'k7q2m9 x4r8p3 w1n6z5 t0j4h2 b8f1v7 c3d6s9'
   ],
   'main_beat',
   jsonb_build_object(
@@ -496,9 +514,7 @@ values
 ( 'record-receives',
   'the record receives you',
   array[
-    'the record receives you',
-    'it receives it would keep you',
-    'e0c4 record receives sentinel posted only by plugin'
+    'p2w8k4 m9x1r6 z5t3j7 h2b4f8 v1c6d3 s9q7n0'
   ],
   'main_beat',
   jsonb_build_object(
