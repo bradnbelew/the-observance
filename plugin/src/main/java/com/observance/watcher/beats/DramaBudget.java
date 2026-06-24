@@ -72,18 +72,18 @@ public final class DramaBudget {
         if (category == null) return false;
         if (!config.dramaEnabled()) return false;
 
-        // Rolling window cap applies to EVERYTHING (the hard ceiling).
-        if (!windowHasRoom()) {
-            return false;
-        }
-
         switch (category) {
             case DIRECTED:
-                // Showrunner-paced: only the window cap applies. Record + go.
-                recordWindowFire();
+                // Player-EARNED rewards (oracle unlocks, whisper tolls, custom tolls). They are already
+                // paced by the player's own action + the oracle token-bucket / whisper budget / the
+                // customs per-tick cap, so they must NOT be swallowed by the small ambient rolling
+                // window — a paid unlock silently vanishing (SKIPPED→markBeatDecided terminal) is far
+                // worse than the flood the window guards against (audit, HIGH). Exempt from the window;
+                // the upstream rate limits ARE the flood protection. Reserves no window slot.
                 return true;
 
             case AMBIENT: {
+                if (!windowHasRoom()) return false;   // the rolling-window ceiling guards ambient flood
                 // PEEK both cooldowns first (read-only), then arm only if both are ready — so a
                 // player on cooldown can't burn the global slot and starve others.
                 long perPlayerMs = minutesToMs(config.ambientCooldownMinutes());
@@ -103,6 +103,7 @@ public final class DramaBudget {
             }
 
             case PERSONALIZED: {
+                if (!windowHasRoom()) return false;   // the rolling-window ceiling guards personalized flood too
                 int maxPerSession = config.personalizedMaxPerSession();
                 if (maxPerSession <= 0) return false;
                 if (target != null) {
@@ -129,6 +130,9 @@ public final class DramaBudget {
      * skipped personalized beat doesn't permanently burn the player's one-per-session allowance.
      */
     public synchronized void refund(BeatCategory category, UUID target) {
+        // DIRECTED reserves no window slot (it is exempt above), so a DIRECTED refund must NOT pop a
+        // slot that belongs to an ambient/personalized fire.
+        if (category == BeatCategory.DIRECTED) return;
         try {
             // Return the window slot (pop the most recent fire).
             windowFires.pollLast();

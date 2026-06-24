@@ -75,9 +75,13 @@ values
 -- main_beat: unlocks the master script. FACT 3 + FACT 4 seed; front-margin seeds F15.
 ( 'rosetta-ring',
   'learn them as we learned them',
+  -- The ring names the REAL ways (audit, HIGH): 'ward'/'covering' were orphans (no detection,
+  -- keeper, or thread-tag). Replaced with the_unspoken + the_sacred_beast — the two ways otherwise
+  -- taught by no node — so the literacy gate is where they're learned. (GO-LIVE: the rune ring
+  -- structure must carve these, not ward/covering — see design/structures.md.)
   array[
-    'bow offering kept light deep line ward covering',
-    'bow offering keptlight deepline ward covering'
+    'bow offering kept light deep line unspoken sacred beast',
+    'bow offering keptlight deepline unspoken sacred beast'
   ],
   'main_beat',
   jsonb_build_object(
