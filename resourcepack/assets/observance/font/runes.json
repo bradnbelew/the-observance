@@ -1,0 +1,15 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "observance:font/runes.png",
+      "ascent": 13,
+      "height": 16,
+      "chars": [
+        "ABCDEFGHIJKL",
+        "MNOPQRSTUVWX",
+        "YZ0123456789"
+      ]
+    }
+  ]
+}

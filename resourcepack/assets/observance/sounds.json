@@ -1,0 +1,34 @@
+{
+  "whisper": {
+    "sounds": [
+      {
+        "name": "observance:whisper",
+        "stream": false,
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "drone_low": {
+    "sounds": [
+      {
+        "name": "observance:drone_low",
+        "stream": true
+      }
+    ]
+  },
+  "stone_breath": {
+    "sounds": [
+      {
+        "name": "observance:stone_breath"
+      }
+    ]
+  },
+  "cold_toll": {
+    "sounds": [
+      {
+        "name": "observance:cold_toll",
+        "attenuation_distance": 24
+      }
+    ]
+  }
+}
