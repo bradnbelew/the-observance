@@ -235,6 +235,38 @@ export function riteTokenSelfTest(configYml: string, seedSql: string): { passed:
   return { passed: 1, cases: [`rite token: config.yml Accepting token matches the seed (the climax will resolve)`] };
 }
 
+/**
+ * GUARD 7 — the thread tags (content integration). thread_tags.sql sets puzzles.thread_key +
+ * teaches_custom. thread_key has a DB FK to threads, but teaches_custom is a plain text column with
+ * NO FK — so a typo'd custom key would silently link a node to a non-existent way. This asserts every
+ * tag's thread_key ∈ THREADS and every NON-NULL teaches_custom ∈ CUSTOM_KEYS, at build time.
+ */
+export function threadTagSelfTest(tagsSql: string): { passed: number; cases: string[] } {
+  const sql = tagsSql.replace(/--[^\n]*/g, '');
+  const threadVals = [...sql.matchAll(/thread_key\s*=\s*'([a-z_]+)'/g)].map((m) => m[1]!);
+  const customVals = [...sql.matchAll(/teaches_custom\s*=\s*'([a-z_]+)'/g)].map((m) => m[1]!); // quoted ⇒ skips null
+  if (threadVals.length === 0) {
+    throw new Error('threadTagSelfTest: parsed 0 thread_key tags — parser or thread_tags.sql broke.');
+  }
+  const threadSet = new Set<string>(THREADS);
+  const customSet = new Set<string>(CUSTOM_KEYS);
+  const badThreads = [...new Set(threadVals.filter((t) => !threadSet.has(t)))];
+  if (badThreads.length > 0) {
+    throw new Error(`threadTagSelfTest: thread_key value(s) not in THREADS: ${badThreads.join(', ')}.`);
+  }
+  const badCustoms = [...new Set(customVals.filter((c) => !customSet.has(c)))];
+  if (badCustoms.length > 0) {
+    throw new Error(
+      `threadTagSelfTest: teaches_custom value(s) not in CUSTOM_KEYS (no FK guards this): ` +
+        `${badCustoms.join(', ')}. Use a canonical the_-prefixed key.`,
+    );
+  }
+  return {
+    passed: 1,
+    cases: [`thread tags: ${threadVals.length} thread_key + ${customVals.length} teaches_custom values all canonical`],
+  };
+}
+
 export function customKeyNamespaceSelfTest(
   trackerConfigJava: string,
   voiceTs: string,

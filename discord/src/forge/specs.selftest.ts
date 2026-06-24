@@ -27,6 +27,7 @@ import {
   threadRegistrySelfTest,
   siteCoverageSelfTest,
   riteTokenSelfTest,
+  threadTagSelfTest,
 } from './canon.js';
 
 // Resolve canon files relative to THIS file (src/forge/), so the checks run from any cwd.
@@ -41,6 +42,7 @@ const TRACKER_PATH = resolve(
 const MIGRATION_0005_PATH = resolve(here, '../../supabase/migrations/0005_threads.sql');
 const SITES_PATH = resolve(here, '../../../plugin/src/main/resources/sites.yml');
 const CONFIG_PATH = resolve(here, '../../../plugin/src/main/resources/config.yml');
+const THREAD_TAGS_PATH = resolve(here, '../../supabase/seeds/thread_tags.sql');
 
 try {
   const { cases } = specsSelfTest();
@@ -57,9 +59,10 @@ try {
   const threads = threadRegistrySelfTest(readFileSync(MIGRATION_0005_PATH, 'utf8'));
   const sites = siteCoverageSelfTest(seedSql, readFileSync(SITES_PATH, 'utf8'));
   const rite = riteTokenSelfTest(readFileSync(CONFIG_PATH, 'utf8'), seedSql);
+  const tags = threadTagSelfTest(readFileSync(THREAD_TAGS_PATH, 'utf8'));
   const all = [
     ...cases, ...cov.cases, ...reach.cases, ...sentinel.cases, ...namespace.cases,
-    ...threads.cases, ...sites.cases, ...rite.cases,
+    ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases,
   ];
   console.log(`clue-specs + canon self-tests passed (${all.length}):`);
   for (const c of all) console.log(`  ok   ${c}`);
