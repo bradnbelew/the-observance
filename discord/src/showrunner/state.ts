@@ -23,6 +23,14 @@ export interface ShowrunnerState {
   dripped_keys?: string[];
   /** CONFIRM-mode drips awaiting the dashboard's manual "post" button. */
   pending_drips?: PendingDrip[];
+  /**
+   * Customs-bridge idempotency high-water marks (COHERENCE-AUDIT P0-4 / D1).
+   * Key = `${groupKey}|${custom_key}`, value = the highest violated_count already
+   * reported for that (player, custom). A rung is only re-fired when the measured
+   * count rises past this mark, so the bridge never re-reports the same violation
+   * every cadence. Absent/empty on a fresh deploy.
+   */
+  reported_customs?: Record<string, number>;
 }
 
 /** Read a single settings value (jsonb) by key, or `fallback` if absent. */

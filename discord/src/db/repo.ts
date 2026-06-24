@@ -236,6 +236,91 @@ export async function enqueueBeat(
   return data;
 }
 
+// ---------------------------------------------------------------------------
+// custom_compliance — per-player, per-custom honored/violated tally written by
+// the plugin. The customs→report bridge (showrunner/customs.ts, COHERENCE-AUDIT
+// P0-4 / D1) READS this; nothing else does. Grounding discipline: a report names
+// a player ONLY for a genuinely-measured violation, so this returns the raw
+// measured counts and lets the pure ladder policy decide.
+// ---------------------------------------------------------------------------
+
+/**
+ * One player's measured tally for ONE custom, normalized across the two column
+ * conventions in the repo: the plugin (the live writer, CustomComplianceRow)
+ * keys on `mc_uuid` and writes `honored_count` / `violated_count` / `name`; the
+ * dashboard schema (0001_init) declares `player_id` / `violation_count`. We read
+ * `*` and tolerate either so the bridge measures the same truth regardless.
+ */
+export interface CustomViolation {
+  /** Stable per-player grouping key (mc_uuid when present, else player_id). Never empty. */
+  groupKey: string;
+  /** The opaque custom_key, e.g. "the_bow" (TrackerConfig constants). */
+  customKey: string;
+  /** Display name for the report, or null if neither a name nor a resolvable player exists. */
+  name: string | null;
+  /** Times this custom was honored (measured). Used as the grounded "days kept" count. */
+  honoredCount: number;
+  /** Times this custom was violated (measured). The rung driver — only a >0 count is reportable. */
+  violatedCount: number;
+}
+
+/**
+ * Read every custom_compliance row and project it to {@link CustomViolation}.
+ * Fault-isolated + graceful: on ANY error (Supabase down, schema drift) returns
+ * `[]` so the bridge simply stays silent rather than throwing into the tick —
+ * silence-is-canon (INV-7), and a missing report is always safer than a misfire.
+ * Resolves a display name from the embedded `name` (plugin) first; if absent but
+ * a `player_id` exists, joins players in one batched lookup.
+ */
+export async function readCustomViolations(): Promise<CustomViolation[]> {
+  try {
+    const { data, error } = await supabase
+      .from('custom_compliance')
+      .select('*')
+      .returns<Record<string, unknown>[]>();
+    if (error || !data) return [];
+
+    const rows = data.map((r) => {
+      const mcUuid = typeof r.mc_uuid === 'string' ? r.mc_uuid : null;
+      const playerId = typeof r.player_id === 'string' ? r.player_id : null;
+      const groupKey = mcUuid ?? playerId ?? '';
+      const customKey = typeof r.custom_key === 'string' ? r.custom_key : '';
+      const name = typeof r.name === 'string' && r.name.trim() !== '' ? r.name : null;
+      const violatedCount = num(r.violated_count) ?? num(r.violation_count) ?? 0;
+      const honoredCount = num(r.honored_count) ?? 0;
+      return { groupKey, customKey, name, honoredCount, violatedCount, playerId };
+    }).filter((r) => r.groupKey !== '' && r.customKey !== '');
+
+    // Backfill missing names from players (only for rows that carry a player_id
+    // but no embedded name — the dashboard-schema case). One batched query.
+    const needName = [...new Set(rows.filter((r) => r.name == null && r.playerId).map((r) => r.playerId as string))];
+    if (needName.length > 0) {
+      const { data: people } = await supabase
+        .from('players')
+        .select('id, name')
+        .in('id', needName)
+        .returns<{ id: string; name: string | null }[]>();
+      const byId = new Map((people ?? []).map((p) => [p.id, p.name]));
+      for (const r of rows) {
+        if (r.name == null && r.playerId) r.name = byId.get(r.playerId) ?? null;
+      }
+    }
+
+    return rows.map(({ groupKey, customKey, name, honoredCount, violatedCount }) => ({
+      groupKey, customKey, name, honoredCount, violatedCount,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+/** Coerce a possibly-undefined jsonb/number cell to a finite number, else undefined. */
+function num(v: unknown): number | undefined {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v))) return Number(v);
+  return undefined;
+}
+
 /** Write a row to event_log. Best-effort: swallows its own failure so logging
  *  never throws into a command handler. */
 export async function logEvent(

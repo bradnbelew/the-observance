@@ -12,10 +12,33 @@
 /** CONFIRM = curatorial drips wait for a human to approve in the dashboard; AUTO = they fire live. */
 export type ShowrunnerMode = 'auto' | 'confirm';
 
+/**
+ * A puzzle's outcome semantics, mirrored from `puzzles.outcome_type` (ORACLE.md §3). The
+ * showrunner drip ordering reads this so it never OPENS the arc on a `dead_end`/`lore`
+ * found-document row (COHERENCE-AUDIT C2 / P0-7): it prefers a node that moves the web
+ * (`next_clue`/`main_beat`/`side_quest`) over one that is true-but-terminal. `'unknown'`
+ * is the safe default for a row whose type didn't parse — treated as low-priority, never
+ * preferred, but never crashing the pure policy.
+ */
+export type OutcomeType = 'next_clue' | 'main_beat' | 'side_quest' | 'lore' | 'dead_end' | 'unknown';
+
 /** One open puzzle as the showrunner sees it (a projection of the puzzles row + live signals). */
 export interface SnapshotPuzzle {
   puzzleKey: string;
   movement: number;
+  /**
+   * the row's outcome semantics (ORACLE.md §3). Carried so the pure `decide` can order the
+   * drip by story-shape, not just (movement, key) — see {@link OutcomeType}.
+   */
+  outcomeType: OutcomeType;
+  /**
+   * whether this node carries a Discord-decodable forged clue card (it is in the P0-1
+   * forge-spec registry, `forgeablePuzzleKeys()`). snapshot.ts only places forgeable rows
+   * into the drip pool (COHERENCE-AUDIT C3 / P0-7), so this is `true` for every pooled
+   * puzzle today; it is carried explicitly so the invariant is visible to `decide` + tests
+   * and so a future in-world-report routing can branch on it without re-deriving it.
+   */
+  forgeable: boolean;
   /** failed answer_attempts on this puzzle within the stall window (group-wide). */
   failedAttemptsInWindow: number;
   /** solved by anyone within the stall window? if so it is not "stuck". */
@@ -69,6 +92,14 @@ export interface GiftDecision {
 export interface DripDecision {
   puzzleKey: string;
   movement: number;
+  /**
+   * whether this dripped node carries a forgeable Discord clue card (P0-1 registry). AUTO
+   * apply.ts forges + posts its card when true (COHERENCE-AUDIT C1 / P0-6); when false it
+   * posts the in-world-pointing report line (`voice.drip()`) instead of a forged card.
+   * Today the pool is forgeable-only (P0-7), so this is true for live drips; carried so the
+   * apply step never has to re-derive it and so the routing rule is explicit.
+   */
+  forgeable: boolean;
   staged: boolean;
   reason: string;
 }

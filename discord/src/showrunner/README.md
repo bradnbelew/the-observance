@@ -17,6 +17,22 @@ underneath it.
    - **Clue drip:** when the cadence (20h) is due, announce the next un-dripped open puzzle (movement
      asc, then key). CONFIRM mode → staged for dashboard approval; AUTO → posted live.
 3. **Apply** (`apply.ts`) writes it: bump `whisper_budgets.earned`, post/stage the drip, persist state.
+4. **Customs bridge** (`customs.ts` pure policy + `customs.run.ts` I/O — COHERENCE-AUDIT P0-4 / D1):
+   reads measured `custom_compliance` violation counts and, on the Orin **observe → warn → left**
+   ladder (`observed-warned-left-at-threshold.md` / D04), posts `voice.reportObserved` /
+   `voice.reportEscalated` to `#the-record` and — at the *warn* rung — enqueues a **soft, reversible**
+   toll beat (`custom_toll`, AUTO `approved` / CONFIRM `pending`; tolls take warmth not progress, INV-8).
+   This is the missing consumer that un-strands all seven detected customs at once: until now nothing
+   read `custom_compliance`, so a player who broke a custom never learned it.
+   - **Precision over recall:** fires ONLY a measured violation (`violated_count > 0`) for a *namable*
+     player — never an invented transgression (grounding contract).
+   - **Idempotent:** a per-`(player, custom)` high-water mark of the highest `violated_count` already
+     reported lives in `showrunner_state.reported_customs`; a rung re-fires only when the measured count
+     rises past it, so the same violation is never re-reported every cadence.
+   - **Fault-isolated + graceful:** Supabase down → read returns `[]` → the pass does nothing (no throw);
+     a failed post does NOT advance the mark (re-tried next cadence); kill-switch `asleep` → silent.
+   - The pure `decideCustomReports` is unit-tested in `customs.selftest.ts` (no DB/Discord/config),
+     mirroring `decide.selftest.ts`.
 
 ## No new schema
 State lives in one `settings` row (`key='showrunner_state'`: last_run, last_drip_at, dripped_keys,
@@ -25,9 +41,10 @@ to migrate.
 
 ## Run
 ```
-npm run showrunner:test   # pure decision unit tests (no DB/network)
-npm run showrunner:dry    # read-only: print what the next tick WOULD do (safe on live DB)
-npm run showrunner        # one live tick
+npm run showrunner:test          # pure drip/gift decision unit tests (no DB/network)
+npm run showrunner:test:customs  # pure customs-ladder unit tests (no DB/network)
+npm run showrunner:dry           # read-only: print what the next tick WOULD do (now incl. a customs preview)
+npm run showrunner               # one live tick (drip/gift + customs bridge)
 ```
 
 ## Deploy (Render Cron Job)

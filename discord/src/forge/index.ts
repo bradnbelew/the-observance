@@ -43,6 +43,10 @@ import {
   GLYPH_GAP,
 } from './runes.js';
 import type { RenderRunesOptions } from './runes.js';
+// The authored-key → forge-spec bind invariant (X1 / P0-1). Static import; the
+// resulting ESM cycle (clue-specs.ts imports forgeClue from here) is safe because the
+// binding is only invoked inside forgeSelfTest(), never at module top-level.
+import { specsSelfTest } from './clue-specs.js';
 
 // ---------------------------------------------------------------------------
 // Clue specifications — a discriminated union, one variant per cipher.
@@ -507,6 +511,15 @@ export function forgeSelfTest(): { passed: number; cases: string[] } {
     }
   }
   cases.push('forgeClue: railfence/columnar/polybius/a1z26/morse forge + decode to solution + carve');
+
+  // The authored-key → forge-spec bind (X1 / P0-1): every registered cipher node's
+  // carving decodes back to its plaintext AND that plaintext normalizes into the seed
+  // row's accepted_answers, so the in-world stone and the Discord card can't drift.
+  // `specsSelfTest` is imported statically below; clue-specs.ts imports `forgeClue`
+  // from here, but the resulting ESM cycle is safe because each module only USES the
+  // other's binding at call time (inside a function), never at top-level evaluation.
+  const specResults = specsSelfTest();
+  cases.push(...specResults.cases);
 
   return { passed: cases.length, cases };
 }

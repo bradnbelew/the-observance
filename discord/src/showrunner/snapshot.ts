@@ -5,8 +5,17 @@
  */
 import { supabase } from '../db/client.js';
 import { getArcAct, getBudget, countWhispersForPuzzle, getHint } from '../db/repo.js';
+import { hasClueSpec } from '../forge/clue-specs.js';
 import { readSetting, readState } from './state.js';
-import type { AttempterState, ShowrunnerMode, Snapshot, SnapshotPuzzle } from './types.js';
+import type { AttempterState, OutcomeType, ShowrunnerMode, Snapshot, SnapshotPuzzle } from './types.js';
+
+/** The outcome_type values the resolver knows (ORACLE.md §3); anything else → 'unknown'. */
+const OUTCOME_TYPES: ReadonlySet<OutcomeType> = new Set<OutcomeType>([
+  'next_clue', 'main_beat', 'side_quest', 'lore', 'dead_end',
+]);
+function asOutcomeType(raw: string | null): OutcomeType {
+  return raw != null && OUTCOME_TYPES.has(raw as OutcomeType) ? (raw as OutcomeType) : 'unknown';
+}
 
 const HOUR = 3_600_000;
 /** "Stuck" is measured over a long session window, not days — the within-session backstop the critics asked for. */
@@ -28,9 +37,9 @@ export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
 
   const { data: puzzleRows, error: pErr } = await supabase
     .from('puzzles')
-    .select('puzzle_key, movement')
+    .select('puzzle_key, movement, outcome_type')
     .eq('active', true)
-    .returns<{ puzzle_key: string; movement: number | null }[]>();
+    .returns<{ puzzle_key: string; movement: number | null; outcome_type: string | null }[]>();
   if (pErr) throw pErr;
 
   const openPuzzles: SnapshotPuzzle[] = [];
@@ -61,6 +70,16 @@ export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
     openPuzzles.push({
       puzzleKey: key,
       movement: row.movement ?? 0,
+      outcomeType: asOutcomeType(row.outcome_type),
+      // DRIP-POOL ELIGIBILITY (COHERENCE-AUDIT C3 / P0-7): a node is drippable to Discord ONLY
+      // if it carries a Discord-decodable forged clue card (the P0-1 forge-spec registry). The
+      // full active set still flows through openPuzzles so the STALL auto-gift backstop covers
+      // every puzzle (a player stuck on a found-document row still earns whispers); decide()'s
+      // DRIP step filters to forgeable rows so it never "announce, read it here" about a node
+      // with no card — found-document / sentinel / in-world-only / observation / ritual rows are
+      // excluded from the drip while remaining solvable on their own in-world surface. The
+      // registry is the single source of truth, so the filter can't drift from the forge.
+      forgeable: hasClueSpec(key),
       failedAttemptsInWindow: failedCount ?? 0,
       solvedInWindow: (solvedCount ?? 0) > 0,
       attempters,

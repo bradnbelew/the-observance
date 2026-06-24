@@ -198,6 +198,37 @@ export const voice = {
 
 export type Voice = typeof voice;
 
+// ---------------------------------------------------------------------------
+// the customs — the in-register phrase for each opaque custom_key. The plugin
+// writes lore-AGNOSTIC keys ("the_bow", "the_offering", …, TrackerConfig); the
+// HUMAN text lives HERE, never inlined at a call site (INV-1, the voice rule).
+// reportObserved fills "{name} has not {custom}" — so each phrase completes that
+// clause and reads in the watcher's register (lowercase, certain, no naming the
+// game). An unknown key falls back to a generic, still-in-register clause rather
+// than leaking a raw key to a player.
+// ---------------------------------------------------------------------------
+
+/** custom_key → the clause that completes `has not {custom}` in reportObserved. */
+const CUSTOM_PHRASES: Readonly<Record<string, string>> = {
+  the_bow: 'bowed at the markers',
+  the_offering: 'given back to the deep',
+  the_kept_light: 'kept the light',
+  the_deep_line: 'held to the deep line',
+  the_unspoken: 'kept the word unspoken',
+  the_sacred_beast: 'spared what is not to be taken',
+  the_dark_hours: 'kept from the dark hours',
+} as const;
+
+/**
+ * Resolve a custom_key to its in-register clause for {@link voice.reportObserved}.
+ * Lives in voice.ts so the bridge passes a key + the measured numbers and never
+ * composes English itself. Unknown keys degrade to "kept the ways" — true, in
+ * register, and never a leaked identifier.
+ */
+export function customPhrase(customKey: string): string {
+  return CUSTOM_PHRASES[customKey] ?? 'kept the ways';
+}
+
 /**
  * The voice keys an outcome_payload may name. Keep in sync with the oracle*
  * lines above. The resolver looks a key up here; an unknown key falls back to a

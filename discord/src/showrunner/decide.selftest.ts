@@ -23,7 +23,8 @@ function attempter(over: Partial<AttempterState> = {}): AttempterState {
 }
 function puzzle(over: Partial<SnapshotPuzzle> = {}): SnapshotPuzzle {
   return {
-    puzzleKey: 'stone-vaun', movement: 2, failedAttemptsInWindow: 0,
+    puzzleKey: 'stone-vaun', movement: 2, outcomeType: 'next_clue', forgeable: true,
+    failedAttemptsInWindow: 0,
     solvedInWindow: false, attempters: [], dripped: false, ...over,
   };
 }
@@ -88,18 +89,66 @@ function snap(over: Partial<Snapshot> = {}): Snapshot {
   check('solved in window → no gift', d.gifts.length === 0);
 }
 
-// 7. First-ever drip (lastDripAtMs null) → drips the lowest movement, then key.
+// 7. First-ever drip (lastDripAtMs null) → among forgeable nodes, story-shape first, then
+//    (movement asc, key asc). All three here are forgeable cipher nodes; the next_clue node
+//    outranks the lore node even though the lore key sorts earlier alphabetically.
 {
   const d = decide(snap({
     openPuzzles: [
-      puzzle({ puzzleKey: 'stone-orin', movement: 2 }),
-      puzzle({ puzzleKey: 'm1-record-opens', movement: 1 }),
-      puzzle({ puzzleKey: 'stone-brann', movement: 2 }),
+      puzzle({ puzzleKey: 'stone-vaun', movement: 2, outcomeType: 'lore' }),       // key sorts first, but lore
+      puzzle({ puzzleKey: 'stone-orin', movement: 2, outcomeType: 'next_clue' }),   // a MOVER → wins
+      puzzle({ puzzleKey: 'stone-sella', movement: 2, outcomeType: 'side_quest' }),
     ],
   }));
   check('first drip → exactly one', d.drips.length === 1);
-  check('drip picks lowest movement', d.drips[0]?.puzzleKey === 'm1-record-opens');
+  check('drip prefers a story-advancing node over lore', d.drips[0]?.puzzleKey === 'stone-orin');
+  check('drip carries forgeable flag', d.drips[0]?.forgeable === true);
   check('confirm mode → staged', d.drips[0]?.staged === true);
+}
+
+// 7b. P0-7 (C2): the dead_end that currently sorts FIRST by key must NEVER open the arc.
+//    m1-named-habit is the live seed's alphabetically-first Movement-I row (a dead_end). Even
+//    when present and forgeable, a real story-advancing node must be chosen as the opener.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      // m1-named-habit sorts before stone-* by key, and is the lowest movement — the OLD
+      // (movement, key) order would open on it. It is a dead_end, so the new rule rejects it
+      // as the opener. (Forced forgeable=true here to isolate the ORDERING rule from the
+      // pool filter tested in 7c.)
+      puzzle({ puzzleKey: 'm1-named-habit', movement: 1, outcomeType: 'dead_end', forgeable: true }),
+      puzzle({ puzzleKey: 'stone-mara', movement: 2, outcomeType: 'next_clue' }),
+    ],
+  }));
+  check('drip never opens on a dead_end', d.drips[0]?.puzzleKey !== 'm1-named-habit');
+  check('drip opens on the story-advancing node', d.drips[0]?.puzzleKey === 'stone-mara');
+}
+
+// 7c. P0-7 (C3): found-document / non-forgeable rows are EXCLUDED from the drip pool. With
+//    only non-forgeable rows open, nothing drips (and a note is left), even though the cadence
+//    is due — the showrunner never "announce, read it here" about a node with no clue card.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      puzzle({ puzzleKey: 'm1-record-opens', movement: 1, outcomeType: 'lore', forgeable: false }),
+      puzzle({ puzzleKey: 'm1-named-habit', movement: 1, outcomeType: 'dead_end', forgeable: false }),
+    ],
+  }));
+  check('found-document rows excluded → no drip', d.drips.length === 0);
+  check('excluded-only pool → "no forgeable puzzle" note',
+    d.notes.some((n) => n.includes('no forgeable')));
+}
+
+// 7d. P0-7: a mixed pool drips the forgeable node and ignores the (earlier-sorting) non-forgeable one.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      puzzle({ puzzleKey: 'm1-named-habit', movement: 1, outcomeType: 'dead_end', forgeable: false }),
+      puzzle({ puzzleKey: 'stone-vaun', movement: 2, outcomeType: 'lore', forgeable: true }),
+    ],
+  }));
+  check('mixed pool → drips the forgeable node', d.drips[0]?.puzzleKey === 'stone-vaun');
+  check('mixed pool → exactly one drip', d.drips.length === 1);
 }
 
 // 8. AUTO mode → drip not staged.
