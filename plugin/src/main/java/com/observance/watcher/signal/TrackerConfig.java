@@ -32,6 +32,7 @@ public final class TrackerConfig {
     public static final String CUSTOM_KEPT_LIGHT = "the_kept_light";
     public static final String CUSTOM_DEEP_LINE = "the_deep_line";
     public static final String CUSTOM_SACRED_BEAST = "the_sacred_beast";
+    public static final String CUSTOM_DARK_HOURS = "the_dark_hours";
 
     private final boolean enabled;
 
@@ -45,9 +46,20 @@ public final class TrackerConfig {
     private final List<HoardWeight> hoardWeights;
     private final double hoardScoreCap;
 
-    // The Deep Line — breaking below this Y bare is a violation (depth taboo)
+    // The Deep Line — breaking below this Y bare is a violation (depth taboo). A per-player
+    // cooldown (ms) collapses one deep session into a single flag (anti-farm; precision).
     private final int deepLineY;
     private final boolean deepLineEnabled;
+    private final long deepLineCooldownMs;
+
+    // The Kept Light — per-base+player cooldown (ms) so a long night at a dark base produces one
+    // measured tally per window, not one per sampler tick.
+    private final long keptLightCooldownMs;
+
+    // The Dark Hours — sleeping (PlayerBedEnterEvent) during a taboo moon phase is a violation.
+    private final boolean darkHoursEnabled;
+    private final Set<Integer> darkHoursMoonPhases;   // taboo phases in [0..7]; 0 = full moon
+    private final long darkHoursCooldownMs;            // per-player anti-spam window
 
     // The Sacred Beast — entity types whose death (when tagged) is a violation; the tag itself
     // is a PDC key checked by the listener. Here we only carry the tag key name.
@@ -61,7 +73,11 @@ public final class TrackerConfig {
     private TrackerConfig(boolean enabled,
                           Set<String> forbiddenWords, Set<String> oreMaterials,
                           List<HoardWeight> hoardWeights, double hoardScoreCap,
-                          int deepLineY, boolean deepLineEnabled, String sacredBeastPdcKey,
+                          int deepLineY, boolean deepLineEnabled, long deepLineCooldownMs,
+                          long keptLightCooldownMs,
+                          boolean darkHoursEnabled, Set<Integer> darkHoursMoonPhases,
+                          long darkHoursCooldownMs,
+                          String sacredBeastPdcKey,
                           int baseClusterRadius, int baseMinPlacements, double baseConfidenceFloor) {
         this.enabled = enabled;
         this.forbiddenWords = forbiddenWords;
@@ -70,6 +86,11 @@ public final class TrackerConfig {
         this.hoardScoreCap = hoardScoreCap;
         this.deepLineY = deepLineY;
         this.deepLineEnabled = deepLineEnabled;
+        this.deepLineCooldownMs = deepLineCooldownMs;
+        this.keptLightCooldownMs = keptLightCooldownMs;
+        this.darkHoursEnabled = darkHoursEnabled;
+        this.darkHoursMoonPhases = darkHoursMoonPhases;
+        this.darkHoursCooldownMs = darkHoursCooldownMs;
         this.sacredBeastPdcKey = sacredBeastPdcKey;
         this.baseClusterRadius = baseClusterRadius;
         this.baseMinPlacements = baseMinPlacements;
@@ -117,6 +138,25 @@ public final class TrackerConfig {
         ConfigurationSection deep = t.getConfigurationSection("deep-line");
         boolean deepEnabled = deep == null || deep.getBoolean("enabled", true);
         int deepY = deep == null ? -48 : clampI(deep.getInt("y-threshold", -48), -64, 320);
+        // Per-player anti-farm window: one deep-line flag per N seconds (default 300s = 5 min).
+        long deepCdMs = (deep == null ? 300 : clampI(deep.getInt("cooldown-seconds", 300), 0, 86400)) * 1000L;
+
+        // The Kept Light — per-base+player anti-spam window (default 600s = 10 min).
+        ConfigurationSection kl = t.getConfigurationSection("kept-light");
+        long keptCdMs = (kl == null ? 600 : clampI(kl.getInt("cooldown-seconds", 600), 0, 86400)) * 1000L;
+
+        // The Dark Hours — sleeping during a taboo moon phase. Default taboo phase = 0 (full moon),
+        // mapped to the arc's "black moon". Phases are vanilla 0..7 from world.getFullTime()/24000 % 8.
+        ConfigurationSection dh = t.getConfigurationSection("dark-hours");
+        boolean dhEnabled = dh == null || dh.getBoolean("enabled", true);
+        Set<Integer> dhPhases = new HashSet<>();
+        if (dh != null) {
+            for (int phase : dh.getIntegerList("taboo-moon-phases")) {
+                if (phase >= 0 && phase <= 7) dhPhases.add(phase);
+            }
+        }
+        if (dhPhases.isEmpty()) dhPhases.add(0);   // full moon by default
+        long dhCdMs = (dh == null ? 60 : clampI(dh.getInt("cooldown-seconds", 60), 0, 86400)) * 1000L;
 
         String beastKey = t.getString("sacred-beast-pdc-key", "observance_sacred_beast");
 
@@ -127,16 +167,22 @@ public final class TrackerConfig {
 
         return new TrackerConfig(enabled, Collections.unmodifiableSet(forbidden),
                 Collections.unmodifiableSet(ores), Collections.unmodifiableList(weights), cap,
-                deepY, deepEnabled, beastKey, clusterR, minPlace, confFloor);
+                deepY, deepEnabled, deepCdMs, keptCdMs,
+                dhEnabled, Collections.unmodifiableSet(dhPhases), dhCdMs,
+                beastKey, clusterR, minPlace, confFloor);
     }
 
     /** All-defaults instance for when the section is entirely absent. */
     public static TrackerConfig defaults() {
+        Set<Integer> dhPhases = new HashSet<>();
+        dhPhases.add(0);   // full moon
         return new TrackerConfig(true,
                 Collections.emptySet(),
                 Collections.unmodifiableSet(new HashSet<>(defaultOres())),
                 Collections.unmodifiableList(defaultHoardWeights()), 1000.0,
-                -48, true, "observance_sacred_beast", 24, 12, 0.4);
+                -48, true, 300_000L, 600_000L,
+                true, Collections.unmodifiableSet(dhPhases), 60_000L,
+                "observance_sacred_beast", 24, 12, 0.4);
     }
 
     /* ----------------------------- getters ---------------------------- */
@@ -154,6 +200,17 @@ public final class TrackerConfig {
 
     public int deepLineY() { return deepLineY; }
     public boolean deepLineEnabled() { return deepLineEnabled; }
+    public long deepLineCooldownMs() { return deepLineCooldownMs; }
+
+    public long keptLightCooldownMs() { return keptLightCooldownMs; }
+
+    public boolean darkHoursEnabled() { return darkHoursEnabled; }
+    public long darkHoursCooldownMs() { return darkHoursCooldownMs; }
+
+    /** Is the given vanilla moon phase (0..7) one of the taboo "dark hours" phases? */
+    public boolean isTabooMoonPhase(int phase) {
+        return darkHoursMoonPhases.contains(phase);
+    }
 
     public String sacredBeastPdcKey() { return sacredBeastPdcKey; }
 

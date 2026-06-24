@@ -3,6 +3,7 @@ package com.observance.watcher.signal.listener;
 import com.observance.watcher.signal.PlayerSignals;
 import com.observance.watcher.signal.SignalTracker;
 import com.observance.watcher.signal.TrackerConfig;
+import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -29,10 +30,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 public final class BlockBreakListener implements Listener {
 
     private final SignalTracker tracker;
+    private final RateLimiter rateLimiter;
     private final Safety safety;
 
-    public BlockBreakListener(SignalTracker tracker, Safety safety) {
+    public BlockBreakListener(SignalTracker tracker, RateLimiter rateLimiter, Safety safety) {
         this.tracker = tracker;
+        this.rateLimiter = rateLimiter;
         this.safety = safety;
     }
 
@@ -68,7 +71,12 @@ public final class BlockBreakListener implements Listener {
             // The Deep Line: breaking below the threshold "bare" is a violation. Phase 0 treats
             // any break below the line as the violation signal (the "bare" nuance — no offering /
             // ward — is a Phase-1 refinement). Honoring is the absence of deep breaks.
-            if (cfg.deepLineEnabled() && y < cfg.deepLineY()) {
+            //
+            // Anti-farm: rate-limit per player so a single deep mining session collapses to ONE
+            // measured flag instead of one per block broken below the line (precision over recall —
+            // we want "this player crossed the line", not a tally inflated by a long tunnel).
+            if (cfg.deepLineEnabled() && y < cfg.deepLineY()
+                    && rateLimiter.tryCooldown("deep_line:" + p.getUniqueId(), cfg.deepLineCooldownMs())) {
                 ps.violate(TrackerConfig.CUSTOM_DEEP_LINE, now);
             }
         });

@@ -2,6 +2,7 @@ package com.observance.watcher.signal;
 
 import com.observance.watcher.config.Site;
 import com.observance.watcher.config.SitesConfig;
+import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -35,6 +36,7 @@ public final class LocationSampler {
 
     private final SignalTracker tracker;
     private final Supplier<SitesConfig> sitesSupplier;
+    private final RateLimiter rateLimiter;
     private final Safety safety;
     private final int sampleIntervalSeconds;
 
@@ -43,9 +45,10 @@ public final class LocationSampler {
     private static final double SOLO_RADIUS_2 = SOLO_RADIUS * SOLO_RADIUS;
 
     public LocationSampler(SignalTracker tracker, Supplier<SitesConfig> sitesSupplier,
-                           Safety safety, int sampleIntervalSeconds) {
+                           RateLimiter rateLimiter, Safety safety, int sampleIntervalSeconds) {
         this.tracker = tracker;
         this.sitesSupplier = sitesSupplier;
+        this.rateLimiter = rateLimiter;
         this.safety = safety;
         this.sampleIntervalSeconds = Math.max(1, sampleIntervalSeconds);
     }
@@ -140,9 +143,14 @@ public final class LocationSampler {
                 Location pl = p.getLocation();
                 if (pl == null || pl.getWorld() == null) continue;
                 if (!zone.contains(world.getName(), pl.getX(), pl.getY(), pl.getZ())) continue;
+
+                // Anti-spam: one Kept-Light tally per base+player per cooldown window (default
+                // 10 min) so a long dark night yields a single measured flag, not one per tick.
+                String key = "kept_light:" + zone.id() + ":" + p.getUniqueId();
+                if (!rateLimiter.tryCooldown(key, tracker.config().keptLightCooldownMs())) continue;
+
                 PlayerSignals ps = tracker.signals(p.getUniqueId(), p.getName());
-                // Rate-naturally: this only fires once per sampler tick per present player; the
-                // tally grows slowly. Honored when lit, violated when dark.
+                // Honored when a light burns at home; violated when the home zone is dark.
                 if (lit) ps.honor(TrackerConfig.CUSTOM_KEPT_LIGHT, now);
                 else ps.violate(TrackerConfig.CUSTOM_KEPT_LIGHT, now);
             }

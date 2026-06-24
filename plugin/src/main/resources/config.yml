@@ -116,9 +116,28 @@ tracker:
   hoard-score-cap: 1000.0
 
   # The Deep Line — breaking below this Y is a tracked violation (depth taboo).
+  # cooldown-seconds collapses one deep mining SESSION into a single flag (per player),
+  # so a long tunnel below the line can't farm 100 violations (precision over recall).
   deep-line:
     enabled: true
     y-threshold: -48
+    cooldown-seconds: 300        # one deep-line flag per player per 5 min
+
+  # The Kept Light — a base scan (over placed `kept_light` sites) at dusk/night checks
+  # whether a light burns at home. cooldown-seconds rate-limits the tally per base+player
+  # so a long dark night yields one measured flag, not one per sampler tick.
+  kept-light:
+    cooldown-seconds: 600        # one kept-light tally per base+player per 10 min
+
+  # The Dark Hours — sleeping (PlayerBedEnterEvent) on a taboo moon phase is a violation
+  # ("do not sleep on the black moon"). Moon phase is vanilla 0..7 (0 = full moon),
+  # derived from (world.getFullTime() / 24000) % 8. taboo-moon-phases lists the forbidden
+  # phases; default [0] = full moon (the arc's "black moon"). cooldown-seconds collapses
+  # bed-spam on a taboo night into a single per-player flag.
+  dark-hours:
+    enabled: true
+    taboo-moon-phases: [0]
+    cooldown-seconds: 60
 
   # The Sacred Beast — the PDC tag key a "pale one" mob is marked with (set by the
   # beast-tagging subsystem in a later phase). Killing a tagged mob = a violation.

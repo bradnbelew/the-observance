@@ -18,6 +18,7 @@ import com.observance.watcher.signal.listener.BlockBreakListener;
 import com.observance.watcher.signal.listener.ChatListener;
 import com.observance.watcher.signal.listener.AnswerSignListener;
 import com.observance.watcher.signal.listener.CustomComplianceListener;
+import com.observance.watcher.signal.listener.DarkHoursListener;
 import com.observance.watcher.signal.listener.DeathListener;
 import com.observance.watcher.signal.listener.TerritoryListener;
 import com.observance.watcher.util.RateLimiter;
@@ -112,7 +113,7 @@ public final class ObservancePlugin extends JavaPlugin {
         this.trackerConfig = TrackerConfig.from(getConfig());
         this.signalTracker = new SignalTracker(supabase, scheduler, safety,
                 trackerConfig, config.heatmapCellSize());
-        this.locationSampler = new LocationSampler(signalTracker, this::sites, safety,
+        this.locationSampler = new LocationSampler(signalTracker, this::sites, rateLimiter, safety,
                 config.locationSampleSeconds());
         this.inventoryScanner = new InventoryScanner(signalTracker, safety);
 
@@ -237,7 +238,7 @@ public final class ObservancePlugin extends JavaPlugin {
             this.trackerConfig = TrackerConfig.from(getConfig());
             this.signalTracker = new SignalTracker(supabase, scheduler, safety,
                     trackerConfig, config.heatmapCellSize());
-            this.locationSampler = new LocationSampler(signalTracker, this::sites, safety,
+            this.locationSampler = new LocationSampler(signalTracker, this::sites, rateLimiter, safety,
                     config.locationSampleSeconds());
             this.inventoryScanner = new InventoryScanner(signalTracker, safety);
             // Re-register listeners so they point at the new tracker instance.
@@ -288,12 +289,15 @@ public final class ObservancePlugin extends JavaPlugin {
         pm.registerEvents(new PresenceListener(supabase, scheduler, safety, signalTracker), this);
 
         // Signal Tracker listeners (DESIGN §2.1 + §2.2) — pure tracking, no world effects.
-        pm.registerEvents(new BlockBreakListener(signalTracker, safety), this);
+        pm.registerEvents(new BlockBreakListener(signalTracker, rateLimiter, safety), this);
         pm.registerEvents(new DeathListener(this, signalTracker, safety), this);
         pm.registerEvents(new ChatListener(signalTracker, safety), this);
         pm.registerEvents(new TerritoryListener(signalTracker, safety), this);
         pm.registerEvents(new CustomComplianceListener(
                 signalTracker, this::sites, rateLimiter, safety), this);
+        // The Dark Hours custom — sleeping on a taboo moon phase is a tracked violation
+        // (rate-limited per player). Pure tracking; escalation is a downstream beat's job.
+        pm.registerEvents(new DarkHoursListener(signalTracker, rateLimiter, safety), this);
 
         // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.
