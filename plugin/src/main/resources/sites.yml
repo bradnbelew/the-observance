@@ -117,3 +117,140 @@ sites:
     radius: 8
     protect: true
     enabled: false
+
+  # ==========================================================================
+  #  THE SPINE — the Deep Hold (red-team B-4). Named, ENABLED placeholders for the
+  #  descent's load-bearing sites so every seed `site_id` resolves (the site-coverage
+  #  self-test gates this). Coords are null = UNPLACED until the world is built in-game
+  #  (a go-live step); the plugin skips an unplaced site SILENTLY — never errors at a player.
+  # ==========================================================================
+
+  # The Undercroft / Accepting floor — the back-half spine. The seed's terminal beats
+  # (undercroft-descent, rite-tokens, accepting-crouch) all target THIS site_id.
+  unbroken_light:
+    type: "structure"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 10
+    protect: true
+    enabled: true
+
+  # The six keeper-stones (one per Kept). Each carries that keeper's carved cipher and is a
+  # valid answer-submission site. puzzle-key omitted = the non-linear web (any open clue
+  # answerable at any stone).
+  stone_vaun:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: true
+
+  stone_mara:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: true
+
+  stone_sella:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: true
+
+  stone_orin:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: true
+
+  stone_brann:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: true
+
+  stone_iss:
+    type: "keeper_stone"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: true
+    enabled: true
+
+  # The two Rosettas — the literacy gates. rune_rosetta teaches glyph→letter (the rune
+  # alphabet); stone_of_reckoning teaches the digit-glyphs + sign marks every coordinate
+  # clue depends on (keep coord rows inactive until it is placed).
+  rune_rosetta:
+    type: "structure"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
+  stone_of_reckoning:
+    type: "structure"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
+  # Named anchors the lore points at: Sella's far water, Orin's threshold lintel, and the
+  # cold hearth (= Iss's dead-shrine grave, the false-way-up's end).
+  the_far_water:
+    type: "marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    protect: false
+    enabled: true
+
+  the_threshold:
+    type: "marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
+  the_cold_hearth:
+    type: "marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true

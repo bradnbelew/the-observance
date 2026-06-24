@@ -122,6 +122,56 @@ export function noLeakedSentinelSelfTest(seedSql: string): { passed: number; cas
 // ---------------------------------------------------------------------------
 
 /**
+ * GUARD 5 — site coverage (red-team B-4). Every `site_id` a seed beat targets must exist AND
+ * be `enabled: true` in sites.yml, or the beat pastes to a null site and silently no-ops on
+ * camera. (Coords may still be placeholder/null — that's a go-live in-game step the plugin
+ * skips safely; this guards EXISTENCE + enabled, the part authorable now.)
+ */
+export function siteCoverageSelfTest(seedSql: string, sitesYml: string): { passed: number; cases: string[] } {
+  // Site ids the seed's beats target.
+  const noComments = seedSql.replace(/--[^\n]*/g, '');
+  const referenced = [
+    ...new Set([...noComments.matchAll(/'site_id'\s*,\s*'([a-z0-9_]+)'/g)].map((m) => m[1]!)),
+  ];
+
+  // Enabled site keys: scan from `sites:` onward; a site key is a 2-space `key:`; its block's
+  // `enabled: true/false` (4-space) records the flag.
+  const fromSites = sitesYml.slice(Math.max(0, sitesYml.search(/^sites:/m)));
+  const enabled = new Set<string>();
+  const defined = new Set<string>();
+  let current: string | null = null;
+  for (const line of fromSites.split(/\r?\n/)) {
+    const siteKey = line.match(/^ {2}([a-z0-9_]+):\s*$/);
+    if (siteKey) {
+      current = siteKey[1]!;
+      defined.add(current);
+      continue;
+    }
+    const en = line.match(/^ {4}enabled:\s*(true|false)/);
+    if (en && current && en[1] === 'true') enabled.add(current);
+  }
+
+  const missing = referenced.filter((s) => !defined.has(s));
+  if (missing.length > 0) {
+    throw new Error(
+      `siteCoverageSelfTest: ${missing.length} seed site_id(s) have NO entry in sites.yml: ` +
+        `${missing.join(', ')}. Add each (placeholder coords ok) or the beat no-ops. (B-4)`,
+    );
+  }
+  const disabled = referenced.filter((s) => defined.has(s) && !enabled.has(s));
+  if (disabled.length > 0) {
+    throw new Error(
+      `siteCoverageSelfTest: ${disabled.length} seed site_id(s) exist but are enabled:false: ` +
+        `${disabled.join(', ')}. Enable them. (B-4)`,
+    );
+  }
+  return {
+    passed: 1,
+    cases: [`site coverage: all ${referenced.length} seed site_id(s) exist + enabled in sites.yml (${referenced.join(', ')})`],
+  };
+}
+
+/**
  * GUARD 4 — the thread layer (red-team B-7). The code's THREADS registry must equal the
  * five threads SEEDED in migration 0005, so the Recovery Archive's columns can't drift from
  * the canon. (The DB FK on puzzles.thread_key / thread_cards.thread_key enforces canonicality
