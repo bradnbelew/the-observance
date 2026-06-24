@@ -128,7 +128,7 @@ sites:
   # The Undercroft / Accepting floor — the back-half spine. The seed's terminal beats
   # (undercroft-descent, rite-tokens, accepting-crouch) all target THIS site_id.
   unbroken_light:
-    type: "structure"
+    type: "accepting_floor"      # the AcceptingRiteListener watches this type for the synchronized group bow
     world: "world"
     x: null
     y: null

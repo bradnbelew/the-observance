@@ -201,6 +201,40 @@ export function threadRegistrySelfTest(migration0005Sql: string): { passed: numb
   return { passed: 1, cases: [`thread registry: all ${THREADS.length} threads match the 0005 seed (who/place/happened/surface/human)`] };
 }
 
+/**
+ * GUARD 6 — the rite token (red-team MF-8 / B-5). The plugin posts a fixed OPAQUE token when it
+ * detects the Accepting (a synchronized group bow); that token must byte-match the `accepting-crouch`
+ * row's accepted_answers in the seed, or the detected climax resolves to NOTHING — the worst possible
+ * silent failure (the finale just doesn't happen, on camera). This asserts config.yml's
+ * rites.accepting.token === the seed token. (Both are already normalized; normalize is idempotent, so
+ * equality is sufficient for the match.)
+ */
+export function riteTokenSelfTest(configYml: string, seedSql: string): { passed: number; cases: string[] } {
+  const cfg = configYml.match(/accepting:\s*[\s\S]*?token:\s*"([^"]*)"/i);
+  if (!cfg) {
+    throw new Error('riteTokenSelfTest: could not find rites.accepting.token in config.yml. (MF-8)');
+  }
+  const configToken = cfg[1]!.trim();
+
+  const sql = seedSql.replace(/--[^\n]*/g, '');
+  // Anchor on the ROW DEFINITION `( 'accepting-crouch',` — NOT a `next_puzzle_key, 'accepting-crouch'`
+  // reference (which would grab the referencing row's answer array instead).
+  const seed = sql.match(/\(\s*'accepting-crouch'\s*,[\s\S]*?array\s*\[\s*'([^']*)'/i);
+  if (!seed) {
+    throw new Error("riteTokenSelfTest: could not find the accepting-crouch row's token in the seed. (MF-8)");
+  }
+  const seedToken = seed[1]!.trim();
+
+  if (configToken !== seedToken) {
+    throw new Error(
+      `riteTokenSelfTest: the plugin's Accepting token disagrees with the seed — the climax would ` +
+        `resolve to nothing.\n  config.yml: "${configToken}"\n  seed:       "${seedToken}"\n` +
+        `Keep rites.accepting.token === the accepting-crouch accepted_answer. (MF-8)`,
+    );
+  }
+  return { passed: 1, cases: [`rite token: config.yml Accepting token matches the seed (the climax will resolve)`] };
+}
+
 export function customKeyNamespaceSelfTest(
   trackerConfigJava: string,
   voiceTs: string,

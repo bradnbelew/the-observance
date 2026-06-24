@@ -149,6 +149,21 @@ tracker:
     min-placements: 12       # min block-places before a cluster (without a bed) is a base
     confidence-floor: 0.4    # below this confidence we don't publish a base row
 
+# The rites the plugin DETECTS in-world and posts to the shared oracle (never typeable). A detected
+# rite is the ONLY way its opaque token enters the system — it cannot be guessed, read off a wiki,
+# or typed at a sign / in Discord. It must be PERFORMED.
+rites:
+  # The Accepting — the terminal climax. When every player present on the `accepting_floor` site
+  # crouches at once ("bow as one"), the plugin posts the opaque token below as a solve of the
+  # `accepting-crouch` puzzle. The token MUST byte-match that row's accepted_answers in the seed —
+  # a build-time self-test (riteTokenSelfTest) enforces it, so the climax can never silently fail.
+  accepting:
+    enabled: true
+    token: "k7q2m9 x4r8p3 w1n6z5 t0j4h2 b8f1v7 c3d6s9"
+    puzzle-key: "accepting-crouch"
+    quorum: 2                # min players present + ALL bowing for the rite to count (raise for the real climax)
+    cooldown-seconds: 30     # one detection attempt per site per window (anti-spam)
+
 # Logging verbosity for the in-game console (Supabase event_log is separate + always on).
 logging:
   debug: false

@@ -319,6 +319,20 @@ public final class ObservancePlugin extends JavaPlugin {
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.
         pm.registerEvents(new AnswerSignListener(
                 oracleResolver, this::sites, rateLimiter, scheduler, safety), this);
+
+        // The Accepting — the TERMINAL group rite (MF-8). A synchronized group bow on the
+        // accepting_floor site posts the opaque token to the same oracle (never typeable). Config-driven;
+        // degrades to a no-op when disabled or the token is blank. Read live so a reload re-arms it.
+        var rites = getConfig();
+        if (rites.getBoolean("rites.accepting.enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.AcceptingRiteListener(
+                    this::sites, oracleResolver, rateLimiter, scheduler, safety,
+                    true,
+                    rites.getString("rites.accepting.token", ""),
+                    rites.getString("rites.accepting.puzzle-key", "accepting-crouch"),
+                    rites.getInt("rites.accepting.quorum", 2),
+                    rites.getLong("rites.accepting.cooldown-seconds", 30L) * 1000L), this);
+        }
     }
 
     private void registerCommands() {
