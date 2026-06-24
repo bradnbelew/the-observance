@@ -340,12 +340,14 @@ hidden advancement toast **"⟡ the record receives you"**; the world flips to
 D01's buried seed + the persistent world flip. Pays FACT 14 (the record does not
 stop; it *receives*/keeps you — never "reward"). **The door to FACT 15.**
 
-**FACT 15 (the sealed reveal — felt, never stated)** is delivered by *what
-happens* here: the group becomes, in the persistent world, markers / Keeper-
-adjacent for whoever comes next; every haunting recontextualizes as the entrance
-exam. **No node states it.** Carried by the accumulated weight of rosetta-ring,
-seventh-shrine, orin-threshold, undercroft-fog, rite-tokens, record-receives
-(spine §3 / §6 rule 2).
+**FACT 15 (the sealed reveal — felt, never stated)** lands here, delivered by
+*what happens* — the persistent world flip and the accumulated weight of
+rosetta-ring, seventh-shrine, orin-threshold, undercroft-fog, rite-tokens,
+record-receives — and **stated by no node**. The content of the reveal is sealed:
+it lives only in `arc/lore/canon-spine.md` (the "SEALED SPINE" box) and
+`arc/_SEALED_ARC_BIBLE.md`. This map deliberately does **not** spell it (foreshadow,
+never blurt — spine §3 / §6 rule 2); name it here only by its mechanical effect
+(the world becomes `kept`), never by its meaning.
 
 ### SIDE / OPTIONAL THREADS (soft-pressure, never gate)
 

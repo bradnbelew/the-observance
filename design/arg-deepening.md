@@ -231,9 +231,9 @@ dread gain, but a client install (see §4).
 
 ## 3. Broadened story — wider, richer, one genuine surprise per Movement
 
-**Constraint:** the single deepest sealed twist is untouched and unspoiled past — the presence is the
-**accumulated keepers**; to be *accepted* is **induction** into the watching, for whoever comes next
-(`arc`). Everything below sits *before* that line and feeds it.
+**Constraint:** the single deepest sealed twist is named only in `arc/` (the sealed bible + canon-spine)
+and is **never stated here** — Ethan reads this doc and stays unspoiled. Everything below sits *before*
+that line and quietly feeds it.
 
 ### The five Movements, broadened
 
@@ -264,8 +264,8 @@ exposed) reveals that a "haunting" the group suffered in Movement I was **a spec
 re-enacted at them** — the dread had a biography. *Verbs: gesture, offer, time, refrain (The Unspoken).*
 
 **Movement V — The Accepting.** *Set-piece:* the altar combination lock + simultaneous group-crouch at
-the right hour (§1.6). *Surprise (the sealed turn — do not spoil past):* the advancement seals it and the
-world flips to **kept**; the recontextualization lands (every early haunting was the entrance exam). *Verb:
+the right hour (§1.6). *Surprise (the sealed turn — named only in `arc/`, do not spoil past):* the
+advancement seals it and the recontextualization lands — what every earlier beat was quietly for. *Verb:
 collective deposit + synchronized gesture.*
 
 ### The six prior keepers as a rhyming chorus
