@@ -68,8 +68,34 @@ sites:
     protect: true
     enabled: true
 
+  # --- Answer-sign sites (THE IN-WORLD ANSWER VERB / the closed clue loop) ---
+  #  A player submits a clue answer by EDITING a sign within one of these sites'
+  #  radius. The AnswerSignListener reads the typed lines, normalizes them (the
+  #  exact ORACLE.md §2 algorithm — identical to the Discord surface), and matches
+  #  against the OPEN `puzzles` rows. On a genuinely-new solve it records the solve
+  #  and enqueues the authored reward beat (status 'approved' → fires next poll);
+  #  on a miss the sign simply blanks, no error, no hint.
+  #
+  #  Site types treated as answer slots: `answer_sign` (preferred) and `keeper_stone`.
+  #  Optional `puzzle-key:` BINDS a site to ONE puzzle (a focused gate). OMIT it (the
+  #  default) for the non-linear web — the sign then resolves against ALL open puzzles,
+  #  so any clue a group has solved can be answered at any keeper-stone.
+
+  answer_sign_01:
+    type: "answer_sign"
+    world: "world"
+    x: null                      # PLACEHOLDER — set after world seed
+    y: null
+    z: null
+    radius: 3                    # tight: the sign must be AT the stone
+    vertical-radius: 3
+    protect: true                # the answer-sign block itself is restored if broken
+    enabled: true
+    # puzzle-key: "clue_caesar_1a2b3c4d"   # OPTIONAL — bind to one puzzle; omit = match all open
+
   # --- Reserved expedition slots (Movement II keeper-stones — Phase 1+) ------
-  #  Left here, disabled, so the schema is stable for later agents to fill.
+  #  Left here, disabled, so the schema is stable for later agents to fill. These
+  #  are ALSO valid answer-submission sites (type keeper_stone) once placed/enabled.
 
   keeper_stone_01:
     type: "keeper_stone"
@@ -80,6 +106,7 @@ sites:
     radius: 8
     protect: true
     enabled: false
+    # puzzle-key: null           # OPTIONAL binding; omit for the non-linear web
 
   keeper_stone_02:
     type: "keeper_stone"

@@ -3,9 +3,10 @@
  * the guild. Also exported as registerGuildCommands() so the bot ensures the
  * commands on every boot (guild-scoped registration is instant; global is slow).
  *
- * Two rites only:
- *   /whisper <puzzle>  — ask the watcher for a hint, and pay the toll.
- *   /link    <name>    — bind your discord voice to a name worn in the world.
+ * Three rites:
+ *   /whisper <puzzle>        — ask the watcher for a hint, and pay the toll.
+ *   /link    <name>          — bind your discord voice to a name worn in the world.
+ *   /answer  <text> [puzzle] — submit a solved clue; the world answers, or stays silent.
  *
  * Command names + option names are machine identifiers (discord requires
  * lowercase a-z); the descriptions are the only player-visible text here and are
@@ -37,8 +38,29 @@ export const linkCommand = new SlashCommandBuilder()
       .setRequired(true),
   );
 
+/**
+ * /answer <text> [puzzle] — submit a solved clue to the oracle. <text> is the
+ * plaintext you reached; [puzzle] is an optional author/debug label (the resolver
+ * matches the whole open web regardless of it).
+ */
+export const answerCommand = new SlashCommandBuilder()
+  .setName('answer')
+  .setDescription('give the watcher a name you have reached. it will answer, or it will not.')
+  .addStringOption((opt) =>
+    opt
+      .setName('text')
+      .setDescription('the plaintext you reached — the answer you would give.')
+      .setRequired(true),
+  )
+  .addStringOption((opt) =>
+    opt
+      .setName('puzzle')
+      .setDescription('the mark you worked, if you would name it. (optional)')
+      .setRequired(false),
+  );
+
 /** Every rite, in registration order. */
-export const commands = [whisperCommand, linkCommand] as const;
+export const commands = [whisperCommand, linkCommand, answerCommand] as const;
 
 /** JSON payloads for the REST registration call. */
 export const commandsJSON = commands.map((c) => c.toJSON());

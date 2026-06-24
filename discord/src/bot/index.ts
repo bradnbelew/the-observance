@@ -17,13 +17,16 @@ import {
   MessageFlags,
   type Interaction,
   type ChatInputCommandInteraction,
+  type Message,
 } from 'discord.js';
 import { config } from '../config.js';
-import { logEvent } from '../db/repo.js';
+import { getPlayerByDiscordId, logEvent } from '../db/repo.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
 import { handleWhisper } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
+import { handleAnswer } from './commands/answer.js';
+import { resolveAnswer } from '../oracle/resolve.js';
 
 /** Source tag for every row this process writes to event_log. */
 const SOURCE = 'the-watcher';
@@ -62,6 +65,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       case 'link':
         await handleLink(interaction);
         break;
+      case 'answer':
+        await handleAnswer(interaction);
+        break;
       default:
         // an unknown rite — the watcher simply goes quiet.
         await replyQuiet(interaction);
@@ -71,6 +77,63 @@ client.on('interactionCreate', async (interaction: Interaction) => {
     console.error(`[the-watcher] ${interaction.commandName} stumbled:`, err);
     void logEvent('error', SOURCE, `${interaction.commandName} failed: ${message}`);
     await replyQuiet(interaction);
+  }
+});
+
+/**
+ * THE #the-record SCAN — the passive answer surface.
+ *
+ * Every message in the watched channel is treated as a POSSIBLE answer and run
+ * through the SAME resolver the /answer command uses (no logic duplication). The
+ * watcher replies ONLY when the message resolves to something to say — a solve,
+ * or a withholding. On ordinary chat (a true miss / empty / replay) it stays
+ * SILENT: it never spam-replies, never errors, never tells a player they were
+ * close. Discipline (ORACLE.md §6):
+ *   - ignore the bot's own messages and any other bot.
+ *   - only react in config.channels.theRecord.
+ *   - only speak when the resolver says 'solved' or 'withheld'.
+ *
+ * Fault-isolated: the whole body is in try/catch and logs to the record on a
+ * stumble — a scan failure never crashes the process and never speaks an error.
+ */
+client.on('messageCreate', async (message: Message) => {
+  // ignore self, other bots, webhooks, and anything outside #the-record.
+  if (message.author.bot) return;
+  if (message.channelId !== config.channels.theRecord) return;
+
+  const raw = message.content;
+  if (!raw || raw.trim() === '') return;
+
+  try {
+    // resolve the speaker -> a bound keeper (may be null; the resolver still
+    // rate-limits an unlinked author by discord_id and stays silent on a hit).
+    const player = await getPlayerByDiscordId(message.author.id);
+
+    const result = await resolveAnswer(
+      { player, discordId: message.author.id },
+      raw,
+      'discord',
+    );
+
+    switch (result.kind) {
+      case 'solved':
+        // a real solve, in the open — the watcher answers in the channel.
+        await message.reply({ content: result.reply });
+        return;
+      case 'withheld':
+        // rate-limited / capped — withhold in voice (still a real answerer who
+        // hit a real puzzle; staying mute here would feel like a bug to them).
+        await message.reply({ content: result.reply });
+        return;
+      case 'silent':
+        // ordinary chat, a true miss, an empty line, or a replay → say NOTHING.
+        return;
+    }
+  } catch (err) {
+    const messageText = err instanceof Error ? err.message : String(err);
+    console.error('[the-watcher] #the-record scan stumbled:', err);
+    void logEvent('error', SOURCE, `the-record scan failed: ${messageText}`);
+    // a stumble is silence too — never speak an error into the channel.
   }
 });
 

@@ -9,12 +9,14 @@ import com.observance.watcher.config.SitesConfig;
 import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.listener.PresenceListener;
+import com.observance.watcher.oracle.OracleResolver;
 import com.observance.watcher.signal.InventoryScanner;
 import com.observance.watcher.signal.LocationSampler;
 import com.observance.watcher.signal.SignalTracker;
 import com.observance.watcher.signal.TrackerConfig;
 import com.observance.watcher.signal.listener.BlockBreakListener;
 import com.observance.watcher.signal.listener.ChatListener;
+import com.observance.watcher.signal.listener.AnswerSignListener;
 import com.observance.watcher.signal.listener.CustomComplianceListener;
 import com.observance.watcher.signal.listener.DeathListener;
 import com.observance.watcher.signal.listener.TerritoryListener;
@@ -55,6 +57,9 @@ public final class ObservancePlugin extends JavaPlugin {
     // --- shared utilities exposed to subsystem agents ---
     private Reveal reveal;
     private RateLimiter rateLimiter;
+
+    // --- oracle (the closed clue loop; in-world answer-sign verb) ---
+    private OracleResolver oracleResolver;
 
     // --- signal tracker (the dossier) ---
     private TrackerConfig trackerConfig;
@@ -99,6 +104,9 @@ public final class ObservancePlugin extends JavaPlugin {
         // 5. Shared utilities.
         this.reveal = new Reveal(config.witnessRadius());
         this.rateLimiter = new RateLimiter();
+
+        // 5a. Oracle resolver — the shared world-surface answer path (built before listeners).
+        this.oracleResolver = new OracleResolver(config, supabase, rateLimiter, safety);
 
         // 5b. Signal tracker (the dossier) — pure tracking, no world effects.
         this.trackerConfig = TrackerConfig.from(getConfig());
@@ -220,6 +228,8 @@ public final class ObservancePlugin extends JavaPlugin {
             this.supabase = new SupabaseClient(config, getLogger());
             wireEventSink();
             this.reveal = new Reveal(config.witnessRadius());
+            // Rebuild the oracle resolver against the new client/config (before re-registering listeners).
+            this.oracleResolver = new OracleResolver(config, supabase, rateLimiter, safety);
 
             // Rebuild the signal tracker against the new client/config. Note: in-memory dossier
             // state for the current session is intentionally reset on a hard reload; persisted
@@ -284,6 +294,11 @@ public final class ObservancePlugin extends JavaPlugin {
         pm.registerEvents(new TerritoryListener(signalTracker, safety), this);
         pm.registerEvents(new CustomComplianceListener(
                 signalTracker, this::sites, rateLimiter, safety), this);
+
+        // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
+        // reload is picked up; resolver shares the same puzzles table as the Discord surface.
+        pm.registerEvents(new AnswerSignListener(
+                oracleResolver, this::sites, rateLimiter, scheduler, safety), this);
     }
 
     private void registerCommands() {

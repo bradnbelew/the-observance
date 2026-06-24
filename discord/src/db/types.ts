@@ -82,3 +82,80 @@ export interface Hint {
   tier: number;
   body: string;
 }
+
+// ---------------------------------------------------------------------------
+// Oracle — the non-linear clue web (0004_oracle.sql).
+// ---------------------------------------------------------------------------
+
+/** What a correct answer DOES. The web's branching dimension. */
+export type OutcomeType =
+  | 'next_clue'
+  | 'lore'
+  | 'dead_end'
+  | 'side_quest'
+  | 'main_beat';
+
+/**
+ * The in-world reward an outcome may enqueue. Mirrors the beat_queue row shape
+ * the plugin reads (mc_uuid / site_id / priority / payload). `mc_uuid` may carry
+ * the literal "{solver}" placeholder, resolved to the solving player's uuid at
+ * enqueue time. All fields optional except those the plugin needs to route.
+ */
+export interface OutcomeBeat {
+  /** beat_queue.type — e.g. 'unlock' (→ UnlockBeat dispatcher). */
+  type: string;
+  /** target player uuid, or the literal "{solver}" placeholder. */
+  mc_uuid?: string | null;
+  /** optional sites.yml id (world/ambient beats omit mc_uuid). */
+  site_id?: string | null;
+  /** optional ordering hint. */
+  priority?: number | null;
+  /** jsonb payload handed to the beat (e.g. UnlockBeat's { step, step_payload }). */
+  payload?: Record<string, unknown>;
+}
+
+/**
+ * public.puzzles.outcome_payload — the resolution recipe. `voice_key` names the
+ * voice.ts line that speaks the reply; everything else is optional wiring. Authors
+ * never write English here, only a voice_key + structured args.
+ */
+export interface OutcomePayload {
+  /** which voice.ts oracle line speaks the reply (REQUIRED in practice). */
+  voice_key?: string;
+  /** args spread into the voice fn. */
+  voice_args?: Record<string, unknown>;
+  /** for next_clue / side_quest: the puzzle this opens (its clue is surfaced). */
+  next_puzzle_key?: string;
+  /** optional arc_state.flags to set on solve. */
+  set_flags?: Record<string, unknown>;
+  /** optional in-world reward to enqueue (status 'approved' — fires immediately). */
+  beat?: OutcomeBeat;
+}
+
+/** public.puzzles — one authored row per forged clue in the web. */
+export interface Puzzle {
+  puzzle_key: string;
+  title: string;
+  /** accepted solutions, EACH already stored in normalized form. */
+  accepted_answers: string[];
+  outcome_type: OutcomeType;
+  outcome_payload: OutcomePayload;
+  movement: number;
+  active: boolean;
+  /** per-puzzle attempt cap, or null for no per-puzzle cap. */
+  max_attempts: number | null;
+}
+
+/** public.solves — the replay guard: one row per (puzzle, player) resolved. */
+export interface Solve {
+  id: number;
+  puzzle_key: string;
+  player_id: string; // uuid
+  mc_uuid: string | null;
+  discord_id: string | null;
+  attempt_count: number;
+  solved_at: string; // timestamptz (ISO)
+}
+
+/** Which entry-point an answer arrived on. */
+export type AnswerSurface = 'discord' | 'world';

@@ -55,8 +55,12 @@ public final class SitesConfig {
                     int vertical = s.getInt("vertical-radius", defVertical);
                     boolean protect = s.getBoolean("protect", defProtect);
                     boolean enabled = s.getBoolean("enabled", true);
+                    // Optional: bind an answer-sign site to a single puzzle_key. Null = match all
+                    // open puzzles (the non-linear web default).
+                    String puzzleKey = s.getString("puzzle-key", s.getString("puzzle_key", null));
 
-                    Site site = new Site(id, type, world, x, y, z, radius, vertical, protect, enabled);
+                    Site site = new Site(id, type, world, x, y, z, radius, vertical, protect, enabled,
+                            puzzleKey);
                     map.put(id, site);
                 } catch (Exception ex) {
                     warnings.add("site '" + id + "' failed to parse (" + ex.getClass().getSimpleName()

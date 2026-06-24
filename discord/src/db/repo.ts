@@ -7,12 +7,16 @@
  */
 import { supabase } from './client.js';
 import type {
+  AnswerSurface,
   ArcState,
   BeatQueueRow,
   BeatStatus,
   Hint,
   LogLevel,
+  OutcomeBeat,
   Player,
+  Puzzle,
+  Solve,
   WhisperBudget,
 } from './types.js';
 
@@ -236,4 +240,224 @@ export async function logEvent(
     // Never let logging crash a handler — surface to stderr instead.
     console.error('[repo.logEvent] failed to write event_log:', error.message);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Oracle — the non-linear clue web (0004_oracle.sql).
+//
+// The resolver path: getOpenPuzzles → matchPuzzle (set-membership of the
+// normalized answer) → hasSolved (replay guard) → recordSolve (idempotent) →
+// enqueueOracleBeat (status 'approved' — a player reward fires immediately).
+// Every attempt is logged via logAttempt for the rate-limiter substrate.
+// ---------------------------------------------------------------------------
+
+/**
+ * The OPEN puzzles to match an answer against — every row with active = true.
+ * The web is non-linear: many are open at once. Selects only what the resolver
+ * needs (spoiler columns stay server-side). Returns [] if none.
+ */
+export async function getOpenPuzzles(): Promise<Puzzle[]> {
+  const { data, error } = await supabase
+    .from('puzzles')
+    .select(
+      'puzzle_key, title, accepted_answers, outcome_type, outcome_payload, movement, active, max_attempts',
+    )
+    .eq('active', true)
+    .returns<Puzzle[]>();
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/**
+ * The first OPEN puzzle whose accepted_answers contains the already-normalized
+ * string, or null if none. Whole-string exact set-membership only — never
+ * substring or fuzzy. An empty normalized string never matches (guarded by the
+ * caller, which does not even call this on empty input).
+ */
+export function matchPuzzle(
+  openPuzzles: readonly Puzzle[],
+  normalized: string,
+): Puzzle | null {
+  if (normalized === '') return null;
+  for (const puzzle of openPuzzles) {
+    if (puzzle.accepted_answers.includes(normalized)) return puzzle;
+  }
+  return null;
+}
+
+/** True if this player has already solved this puzzle (the replay guard read). */
+export async function hasSolved(
+  puzzleKey: string,
+  playerId: string,
+): Promise<boolean> {
+  const { count, error } = await supabase
+    .from('solves')
+    .select('id', { count: 'exact', head: true })
+    .eq('puzzle_key', puzzleKey)
+    .eq('player_id', playerId);
+
+  if (error) throw error;
+  return (count ?? 0) > 0;
+}
+
+/**
+ * Idempotently record a solve. INSERT … ON CONFLICT (puzzle_key, player_id) DO
+ * NOTHING is expressed via upsert + ignoreDuplicates: only a genuinely-new row
+ * comes back, so the caller proceeds to the reward ONLY when `true`. A replay
+ * (already solved) returns false and fires nothing.
+ */
+export async function recordSolve(
+  puzzleKey: string,
+  player: Player,
+  attemptCount: number,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('solves')
+    .upsert(
+      {
+        puzzle_key: puzzleKey,
+        player_id: player.id,
+        mc_uuid: player.mc_uuid,
+        discord_id: player.discord_id,
+        attempt_count: attemptCount,
+      },
+      { onConflict: 'puzzle_key,player_id', ignoreDuplicates: true },
+    )
+    .select('id')
+    .maybeSingle<Pick<Solve, 'id'>>();
+
+  if (error) throw error;
+  // ignoreDuplicates: a conflict returns no row → already solved (not new).
+  return data !== null;
+}
+
+/**
+ * Append an answer_attempts row (audit + rate-limit substrate). Records the
+ * whole normalized string and a single `matched` bool — NEVER which part was
+ * right. Best-effort: swallows its own failure so logging never throws into a
+ * handler (a logging hiccup must not break the loop or leak an error to players).
+ */
+export async function logAttempt(attempt: {
+  puzzleKey: string | null;
+  playerId: string | null;
+  mcUuid: string | null;
+  discordId: string | null;
+  surface: AnswerSurface;
+  raw: string;
+  normalized: string;
+  matched: boolean;
+}): Promise<void> {
+  const { error } = await supabase.from('answer_attempts').insert({
+    puzzle_key: attempt.puzzleKey,
+    player_id: attempt.playerId,
+    mc_uuid: attempt.mcUuid,
+    discord_id: attempt.discordId,
+    surface: attempt.surface,
+    raw: attempt.raw,
+    normalized: attempt.normalized,
+    matched: attempt.matched,
+  });
+
+  if (error) {
+    console.error('[repo.logAttempt] failed to write answer_attempts:', error.message);
+  }
+}
+
+/**
+ * How many attempts a player has made within the last `windowMs`, for the
+ * rate-limiter's token bucket. Counts by player_id when linked, else by
+ * discord_id (unlinked #the-record scanners are still throttled). Per-puzzle
+ * scoping is optional (pass puzzleKey to count tries on ONE puzzle for its
+ * max_attempts cap). Fails OPEN to 0 on a DB hiccup so an outage never silently
+ * locks a player out — the world simply stays quiet on a true miss anyway.
+ */
+export async function countRecentAttempts(opts: {
+  playerId: string | null;
+  discordId: string | null;
+  windowMs: number;
+  puzzleKey?: string;
+}): Promise<number> {
+  const since = new Date(Date.now() - opts.windowMs).toISOString();
+  let query = supabase
+    .from('answer_attempts')
+    .select('id', { count: 'exact', head: true })
+    .gte('at', since);
+
+  if (opts.playerId) {
+    query = query.eq('player_id', opts.playerId);
+  } else if (opts.discordId) {
+    query = query.eq('discord_id', opts.discordId);
+  } else {
+    return 0;
+  }
+
+  if (opts.puzzleKey) query = query.eq('puzzle_key', opts.puzzleKey);
+
+  const { count, error } = await query;
+  if (error) {
+    console.error('[repo.countRecentAttempts] failed:', error.message);
+    return 0; // fail-open: never lock a player out on a DB stumble.
+  }
+  return count ?? 0;
+}
+
+/**
+ * Enqueue a player-earned in-world beat at status 'approved' so it fires on the
+ * plugin's NEXT poll with no human gate (player rewards never wait on a
+ * showrunner — the CONFIRM/'pending' path is reserved for authored/AI beats).
+ *
+ * The "{solver}" placeholder in `beat.mc_uuid` is resolved to the solving
+ * player's real mc_uuid here, so one authored row rewards whoever solves it.
+ * Writes the new beat_queue columns (mc_uuid / site_id / priority) the plugin
+ * reads; leaves the legacy `target` null. Returns the inserted row.
+ */
+export async function enqueueOracleBeat(
+  beat: OutcomeBeat,
+  solverMcUuid: string,
+): Promise<BeatQueueRow> {
+  const mcUuid =
+    beat.mc_uuid === '{solver}' ? solverMcUuid : (beat.mc_uuid ?? null);
+
+  const { data, error } = await supabase
+    .from('beat_queue')
+    .insert({
+      type: beat.type,
+      target: null,
+      mc_uuid: mcUuid,
+      site_id: beat.site_id ?? null,
+      priority: beat.priority ?? null,
+      payload: beat.payload ?? {},
+      status: 'approved' satisfies BeatStatus,
+    })
+    .select('id, type, target, payload, status, created_at, decided_at')
+    .single<BeatQueueRow>();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Merge keys into arc_state.flags (single-row, id = 1). Read-modify-write of the
+ * jsonb flags blob — used by outcomes that carry `set_flags`. Best-effort within
+ * the resolver's try/catch.
+ */
+export async function setArcFlags(
+  flags: Record<string, unknown>,
+): Promise<void> {
+  const { data, error: readErr } = await supabase
+    .from('arc_state')
+    .select('flags')
+    .eq('id', 1)
+    .maybeSingle<Pick<ArcState, 'flags'>>();
+
+  if (readErr) throw readErr;
+
+  const merged = { ...(data?.flags ?? {}), ...flags };
+  const { error } = await supabase
+    .from('arc_state')
+    .update({ flags: merged })
+    .eq('id', 1);
+
+  if (error) throw error;
 }

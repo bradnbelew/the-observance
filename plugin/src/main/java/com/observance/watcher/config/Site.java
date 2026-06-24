@@ -24,10 +24,18 @@ public final class Site {
     private final int verticalRadius;
     private final boolean protect;
     private final boolean enabled;
+    private final String puzzleKey;   // nullable; only meaningful for answer-sign sites
 
     public Site(String id, String type, String worldName,
                 Double x, Double y, Double z,
                 int radius, int verticalRadius, boolean protect, boolean enabled) {
+        this(id, type, worldName, x, y, z, radius, verticalRadius, protect, enabled, null);
+    }
+
+    public Site(String id, String type, String worldName,
+                Double x, Double y, Double z,
+                int radius, int verticalRadius, boolean protect, boolean enabled,
+                String puzzleKey) {
         this.id = id;
         this.type = type == null ? "unknown" : type;
         this.worldName = worldName;
@@ -38,6 +46,7 @@ public final class Site {
         this.verticalRadius = Math.max(0, verticalRadius);
         this.protect = protect;
         this.enabled = enabled;
+        this.puzzleKey = (puzzleKey == null || puzzleKey.isBlank()) ? null : puzzleKey.trim();
     }
 
     public String id() { return id; }
@@ -47,6 +56,13 @@ public final class Site {
     public int verticalRadius() { return verticalRadius; }
     public boolean protect() { return protect; }
     public boolean enabled() { return enabled; }
+
+    /**
+     * Optional puzzle binding for an answer-sign site: when set, the answer-sign at this site ONLY
+     * resolves against that one {@code puzzle_key} (a focused gate). When null (the default for the
+     * non-linear web), the sign resolves against ALL open puzzles. Nullable.
+     */
+    public String puzzleKey() { return puzzleKey; }
 
     /** True if this site has real coords and is enabled — i.e. it can participate in beats. */
     public boolean isPlaced() {

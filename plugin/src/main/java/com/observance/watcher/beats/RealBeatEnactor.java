@@ -97,7 +97,9 @@ public final class RealBeatEnactor implements BeatEnactor {
         if (row.siteId != null && !row.siteId.isBlank() && ctx.sites() != null) {
             site = ctx.sites().get(row.siteId.trim());
         }
-        BeatPayload payload = BeatPayload.parse(row.payload);
+        // payload is a jsonb column → JsonElement on the wire. Prefer the object path (no
+        // string round-trip); BeatPayload.of(null) degrades to an empty payload.
+        BeatPayload payload = BeatPayload.of(row.payloadObject());
         // The category is the beat's own declared category (DIRECTED for queued specials).
         return new BeatRequest(row.id, beat.name(), beat.category(), target, site, payload);
     }

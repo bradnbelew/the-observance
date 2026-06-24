@@ -136,6 +136,69 @@ export const voice = {
   quiet(): string {
     return 'the record is shut a moment. ask again, and i will be watching.';
   },
+
+  // -------------------------------------------------------------------------
+  // the oracle — the answers to solved clues. one line per outcome type, all
+  // in register. a wrong answer is NOT here: a miss is met with silence, never
+  // a line. these speak only on a genuinely-new, correct solve.
+  //
+  // outcome_payload.voice_key names which of these speaks; voice_args is spread
+  // in. the resolver maps a key -> fn here so authors never write english into
+  // a payload — only a key and structured args.
+  // -------------------------------------------------------------------------
+
+  /** next_clue — a true answer that advances the web. the way goes on. */
+  oracleNextClue(): string {
+    return 'kept. the way goes on — look where the marks were not, before.';
+  },
+
+  /**
+   * lore — a true answer that reveals story, opens nothing. the watcher tells
+   * a fragment; {fragment} is the seeded telling. nothing unlocks.
+   */
+  oracleLore(fragment: string): string {
+    return fragment;
+  },
+
+  /**
+   * dead_end — a TRUE answer that is deliberately not a door. the watcher does
+   * NOT call it wrong; it acknowledges, and it leads nowhere. heard, not opened.
+   */
+  oracleDeadEnd(): string {
+    return 'yes. that is the true name of it. and it opens nothing. some things are only true.';
+  },
+
+  /** side_quest — true, off the spine. not the way, but a way. */
+  oracleSideQuest(): string {
+    return 'this is not the way. but it is a way. follow it, if you would.';
+  },
+
+  /** main_beat — a true answer that turns the arc. a turn, stated, not cheered. */
+  oracleMainBeat(): string {
+    return 'so. it turns. what was shut is shut no longer. remember who opened it.';
+  },
+
+  /**
+   * the player is rate-limited or has reached a puzzle's attempt cap. it
+   * withholds — it does not refuse, and it never says "wrong" or "too many".
+   * same shape as noBudget: a patient, certain "not now".
+   */
+  oracleWithheld(): string {
+    return 'you have asked enough of this one, for now. rest. the marks will keep.';
+  },
 } as const;
 
 export type Voice = typeof voice;
+
+/**
+ * The voice keys an outcome_payload may name. Keep in sync with the oracle*
+ * lines above. The resolver looks a key up here; an unknown key falls back to a
+ * sensible default for the outcome type, so a payload typo never errors at a
+ * player — the watcher still speaks in register.
+ */
+export type OracleVoiceKey =
+  | 'oracleNextClue'
+  | 'oracleLore'
+  | 'oracleDeadEnd'
+  | 'oracleSideQuest'
+  | 'oracleMainBeat';

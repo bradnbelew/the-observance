@@ -12,7 +12,9 @@ import com.observance.watcher.data.rows.CustomComplianceRow;
 import com.observance.watcher.data.rows.DossierRow;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.data.rows.HeatmapCellRow;
+import com.observance.watcher.data.rows.PlayerLookupRow;
 import com.observance.watcher.data.rows.PlayerRow;
+import com.observance.watcher.data.rows.PuzzleRow;
 import com.observance.watcher.data.rows.SettingsRow;
 
 import java.net.URI;
@@ -72,6 +74,10 @@ public final class SupabaseClient {
             new TypeToken<List<SettingsRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_ARC =
             new TypeToken<List<ArcStateRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_PUZZLE =
+            new TypeToken<List<PuzzleRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_PLAYER_LOOKUP =
+            new TypeToken<List<PlayerLookupRow>>() {}.getType();
 
     private record QueuedWrite(String description, Supplier<SupabaseResult<Void>> attempt) { }
 
@@ -226,6 +232,158 @@ public final class SupabaseClient {
         List<ArcStateRow> list = r.value();
         ArcStateRow first = (list == null || list.isEmpty()) ? null : list.get(0);
         return SupabaseResult.ok(r.httpStatus(), first);
+    }
+
+    /* ==================================================================== */
+    /*  Oracle (in-world answer-sign verb)                                  */
+    /* ==================================================================== */
+
+    /**
+     * Read the OPEN puzzles to match an answer against — the world surface's half of the shared
+     * resolver (ORACLE.md §5). Mirrors {@link #fetchActionableBeats}: same async/graceful contract,
+     * returns an empty list on ANY failure (never null, never throws). Selects only the columns the
+     * resolver needs; {@code accepted_answers} are spoilers held in service-role memory only.
+     */
+    public SupabaseResult<List<PuzzleRow>> fetchOpenPuzzles(int limit) {
+        if (!config.isConfigured()) {
+            return SupabaseResult.ok(0, Collections.emptyList());
+        }
+        String q = "select=puzzle_key,title,accepted_answers,outcome_type,outcome_payload,movement,active,max_attempts"
+                + "&active=is.true"
+                + "&order=movement.asc,created_at.asc"
+                + "&limit=" + Math.max(1, limit);
+        SupabaseResult<List<PuzzleRow>> r = doRead("puzzles", q, LIST_PUZZLE, "fetchOpenPuzzles");
+        if (!r.ok() || r.value() == null) {
+            return SupabaseResult.ok(r.httpStatus(), Collections.emptyList());
+        }
+        return r;
+    }
+
+    /**
+     * Resolve a Minecraft {@code mc_uuid} to a {@link PlayerLookupRow} (players.id + discord_id), or
+     * ok(null) if no such player / not configured. A solve keys on players.id, so the world surface
+     * must do this lookup before writing {@code solves}. Never throws.
+     */
+    public SupabaseResult<PlayerLookupRow> fetchPlayerByUuid(String mcUuid) {
+        if (!config.isConfigured() || mcUuid == null || mcUuid.isBlank()) {
+            return SupabaseResult.ok(0, null);
+        }
+        String q = "select=id,mc_uuid,discord_id&mc_uuid=eq." + enc(mcUuid.trim()) + "&limit=1";
+        SupabaseResult<List<PlayerLookupRow>> r =
+                doRead("players", q, LIST_PLAYER_LOOKUP, "fetchPlayerByUuid");
+        if (!r.ok()) return SupabaseResult.fail(r.httpStatus(), r.error());
+        List<PlayerLookupRow> list = r.value();
+        PlayerLookupRow first = (list == null || list.isEmpty()) ? null : list.get(0);
+        return SupabaseResult.ok(r.httpStatus(), first);
+    }
+
+    /**
+     * How many answer_attempts a given {@code mc_uuid} has made since {@code sinceIso} — the durable
+     * (cross-restart) half of the rate-limit (the in-memory {@link com.observance.watcher.util.RateLimiter}
+     * is the cheap first gate). Returns -1 on any failure so the caller can choose to fail-OPEN to the
+     * in-memory limiter rather than wrongly block a legitimate keeper on a DB hiccup.
+     */
+    public int countWorldAttemptsSince(String mcUuid, String sinceIso) {
+        if (!config.isConfigured() || mcUuid == null || mcUuid.isBlank() || sinceIso == null) {
+            return -1;
+        }
+        String q = "select=id&surface=eq.world&mc_uuid=eq." + enc(mcUuid.trim())
+                + "&at=gte." + enc(sinceIso);
+        // HEAD with Prefer: count=exact returns the count in Content-Range; simpler here to read ids.
+        SupabaseResult<List<PlayerLookupRow>> r =
+                doRead("answer_attempts", q, LIST_PLAYER_LOOKUP, "countWorldAttemptsSince");
+        if (!r.ok() || r.value() == null) return -1;
+        return r.value().size();
+    }
+
+    /**
+     * Append an answer_attempts audit row (matched or not). Fire-and-forget durability: on failure it
+     * is queued (bounded) like other writes. Never throws.
+     */
+    public SupabaseResult<Void> insertAnswerAttempt(
+            com.observance.watcher.data.rows.AnswerAttemptRow row) {
+        if (row == null) return SupabaseResult.fail(0, "null-row");
+        String body = gson.toJson(row);
+        if (!config.isConfigured()) {
+            enqueue("insertAnswerAttempt", () ->
+                    doWrite("POST", "answer_attempts", "", body, false, "insertAnswerAttempt"));
+            return SupabaseResult.queued();
+        }
+        SupabaseResult<Void> r =
+                doWrite("POST", "answer_attempts", "", body, false, "insertAnswerAttempt");
+        if (!r.ok()) {
+            enqueue("insertAnswerAttempt", () ->
+                    doWrite("POST", "answer_attempts", "", body, false, "insertAnswerAttempt"));
+        }
+        return r;
+    }
+
+    /**
+     * The IDEMPOTENT solve guard. INSERT into {@code solves} with {@code ignore-duplicates} against
+     * {@code unique(puzzle_key, player_id)} and {@code return=representation}, so:
+     * <ul>
+     *   <li>a genuinely-new solve → 201 with a one-row body → returns {@link SolveOutcome#NEW};</li>
+     *   <li>an already-solved conflict → 200/201 with an EMPTY body → {@link SolveOutcome#DUPLICATE};</li>
+     *   <li>any network/HTTP/parse failure → {@link SolveOutcome#FAILED} (caller withholds, enqueues
+     *       NOTHING — never grant a reward we couldn't durably guard).</li>
+     * </ul>
+     * Only a {@code NEW} result may proceed to enqueue the beat — this is what stops a double-fire.
+     * MUST be called from an async thread (it blocks on I/O).
+     */
+    public SolveOutcome insertSolveIfNew(com.observance.watcher.data.rows.SolveRow row) {
+        if (!config.isConfigured() || row == null
+                || row.puzzleKey == null || row.playerId == null) {
+            return SolveOutcome.FAILED;
+        }
+        String body = gson.toJson(row);
+        return withRetries("insertSolveIfNew", () -> {
+            HttpRequest req = baseRequest("solves", "")
+                    .header("Content-Type", "application/json")
+                    // ignore-duplicates → conflict is NOT an error; representation → see if a row came back.
+                    .header("Prefer", "resolution=ignore-duplicates,return=representation")
+                    .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                    .build();
+            HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+            int code = resp.statusCode();
+            if (code >= 200 && code < 300) {
+                markSuccess();
+                String b = resp.body();
+                boolean inserted = b != null && b.trim().length() > 2; // "[]" → conflict, "[{…}]" → new
+                return inserted ? SolveOutcome.NEW : SolveOutcome.DUPLICATE;
+            }
+            markFailure();
+            return SolveOutcome.FAILED;
+        }, SolveOutcome.FAILED);
+    }
+
+    /** Outcome of an idempotent solve insert. */
+    public enum SolveOutcome { NEW, DUPLICATE, FAILED }
+
+    /**
+     * Enqueue a new {@code beat_queue} beat (the oracle is the producer). Defaults status to
+     * 'approved' when unset so player-earned unlocks fire on the next poll without a human gate.
+     * On failure the insert is queued (bounded). Never throws.
+     */
+    public SupabaseResult<Void> insertBeat(
+            com.observance.watcher.data.rows.BeatQueueInsertRow row) {
+        if (row == null || row.type == null || row.type.isBlank()) {
+            return SupabaseResult.fail(0, "null-or-typeless-beat");
+        }
+        if (row.status == null || row.status.isBlank()) {
+            row.status = "approved"; // player-earned reward: no human gate
+        }
+        String body = gson.toJson(row);
+        if (!config.isConfigured()) {
+            enqueue("insertBeat", () ->
+                    doWrite("POST", "beat_queue", "", body, false, "insertBeat"));
+            return SupabaseResult.queued();
+        }
+        SupabaseResult<Void> r = doWrite("POST", "beat_queue", "", body, false, "insertBeat");
+        if (!r.ok()) {
+            enqueue("insertBeat", () ->
+                    doWrite("POST", "beat_queue", "", body, false, "insertBeat"));
+        }
+        return r;
     }
 
     /* ==================================================================== */
