@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAdmin } from "@/lib/auth";
 import { ArcControl } from "@/components/author/ArcControl";
 import { BeatQueue } from "@/components/author/BeatQueue";
 import { WhisperBudgets } from "@/components/author/WhisperBudgets";
@@ -32,9 +34,10 @@ const BEAT_ORDER: Record<Beat["status"], number> = {
 };
 
 export default async function AuthorPage() {
-  // Open control surface — no login gate. Reads use the service-role client,
-  // which bypasses RLS. To lock it back down, restore the isAdmin() gate here
-  // and use the cookie-bound server client instead.
+  // SECURITY (audit, CRITICAL): this page reads the full spoiler-rich state via the
+  // RLS-bypassing service-role client, so it MUST be gated. Non-admins are bounced to
+  // login before any read. (GO-LIVE: set ADMIN_EMAILS — see author/actions.ts.)
+  if (!(await isAdmin())) redirect("/auth/login");
   const supabase = createAdminClient();
 
   // Read the full control surface in parallel (service-role bypasses RLS).

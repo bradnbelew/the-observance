@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAdmin } from "@/lib/auth";
 import type { BeatStatus, Json } from "@/lib/database.types";
 
 /**
@@ -23,10 +24,15 @@ const FORBIDDEN: ActionResult = {
   error: "Not authorized.",
 };
 
-// Author mode is intentionally open (no login). Restore `return isAdmin()`
-// (and re-add the import) to re-gate writes behind the ADMIN_EMAILS allowlist.
+// SECURITY (audit, CRITICAL): every privileged write (advance arc, approve/force/skip
+// beats, trigger the Accepting climax, watcher-sleep, whisper budgets) runs on the
+// RLS-bypassing service-role client, so this guard is the ONLY thing between an
+// unauthenticated visitor and driving the Watcher. It is gated behind the ADMIN_EMAILS
+// allowlist. GO-LIVE: set ADMIN_EMAILS to the director's email(s) or the console is
+// (correctly) locked. For local-only dev you may temporarily `return true`, but the
+// committed default MUST stay closed.
 async function guard(): Promise<boolean> {
-  return true;
+  return await isAdmin();
 }
 
 function refresh() {
