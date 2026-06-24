@@ -17,7 +17,8 @@
     "showrunner": "tsx src/showrunner/run.ts",
     "showrunner:dry": "tsx src/showrunner/run.ts --dry-run",
     "showrunner:test": "tsx src/showrunner/decide.selftest.ts",
-    "showrunner:test:customs": "tsx src/showrunner/customs.selftest.ts"
+    "showrunner:test:customs": "tsx src/showrunner/customs.selftest.ts",
+    "showrunner:test:scenario": "tsx src/showrunner/scenario.selftest.ts"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
