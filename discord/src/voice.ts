@@ -62,6 +62,14 @@ export const voice = {
   },
 
   /**
+   * a clue has surfaced (the showrunner's drip). cryptic — never names the puzzle
+   * or the answer, only that there is something new set out to be read.
+   */
+  drip(): string {
+    return '▒  something is set out where the marks are kept. read it, if you can.';
+  },
+
+  /**
    * a report of conduct observed but not yet escalated.
    * {days} kept, {name} has not {custom}. noted, not punished.
    */

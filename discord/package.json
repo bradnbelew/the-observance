@@ -12,7 +12,10 @@
     "dev": "tsx src/bot/index.ts",
     "sample": "tsx src/render/sample.ts",
     "assets": "tsx src/render/assets.ts",
-    "seedcheck": "tsx src/oracle/seedcheck.ts"
+    "seedcheck": "tsx src/oracle/seedcheck.ts",
+    "showrunner": "tsx src/showrunner/run.ts",
+    "showrunner:dry": "tsx src/showrunner/run.ts --dry-run",
+    "showrunner:test": "tsx src/showrunner/decide.selftest.ts"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
