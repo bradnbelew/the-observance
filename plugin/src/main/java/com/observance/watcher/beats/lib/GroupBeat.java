@@ -69,8 +69,12 @@ public final class GroupBeat extends AbstractBeat {
         BeatPayload sub = subPayload(req);
         int fired = 0;
         for (Player p : scene) {
+            // CRITICAL (audit): each fan-out gets a UNIQUE id. The delegate (an AbstractBeat) keys its
+            // idempotency guard on beatId — reusing req.beatId() for all players would mark it applied on
+            // the FIRST and skip the other 6 as "already-applied", so a gather-event would hit one person.
+            // Per-player id keeps it idempotent per (group beat, player) — correct on a re-fire.
             final BeatRequest pr = new BeatRequest(
-                    req.beatId(), delegate.name(), delegate.category(), p, req.site(), sub);
+                    req.beatId() + ":" + p.getUniqueId(), delegate.name(), delegate.category(), p, req.site(), sub);
             boolean can = ctx.safety().call("beat.group.canEnact",
                     () -> delegate.canEnact(ctx, pr), Boolean.FALSE);
             if (!can) continue;

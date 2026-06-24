@@ -161,8 +161,11 @@ rites:
     enabled: true
     token: "k7q2m9 x4r8p3 w1n6z5 t0j4h2 b8f1v7 c3d6s9"
     puzzle-key: "accepting-crouch"
-    quorum: 2                # min players present + ALL bowing for the rite to count (raise for the real climax)
-    cooldown-seconds: 30     # one detection attempt per site per window (anti-spam)
+    # The TERMINAL climax must be the WHOLE cast bowing as one — set to the cast size (or cast-1 for
+    # safety), NOT a sub-group. Default 6 so two stragglers on the floor can't fire the finale. A re-fire
+    # is already harmless (the solve is idempotent), but the quorum is the gate that makes it the climax.
+    quorum: 6
+    cooldown-seconds: 300    # one detection attempt per site per 5 min (well past a filmed take)
 
 # Logging verbosity for the in-game console (Supabase event_log is separate + always on).
 logging:

@@ -330,8 +330,8 @@ public final class ObservancePlugin extends JavaPlugin {
                     true,
                     rites.getString("rites.accepting.token", ""),
                     rites.getString("rites.accepting.puzzle-key", "accepting-crouch"),
-                    rites.getInt("rites.accepting.quorum", 2),
-                    rites.getLong("rites.accepting.cooldown-seconds", 30L) * 1000L), this);
+                    rites.getInt("rites.accepting.quorum", 6),
+                    rites.getLong("rites.accepting.cooldown-seconds", 300L) * 1000L), this);
         }
     }
 
