@@ -68,6 +68,9 @@ public final class ObservancePlugin extends JavaPlugin {
     private LocationSampler locationSampler;
     private InventoryScanner inventoryScanner;
 
+    // --- resource-pack load gate (MF-11): rune rendering is unsafe until the client applies the pack ---
+    private com.observance.watcher.signal.ResourcePackTracker resourcePack;
+
     // --- beat pipeline ---
     private BeatQueuePoller poller;
     private final AtomicReference<BeatEnactor> beatEnactor = new AtomicReference<>();
@@ -116,6 +119,15 @@ public final class ObservancePlugin extends JavaPlugin {
         this.locationSampler = new LocationSampler(signalTracker, this::sites, rateLimiter, safety,
                 config.locationSampleSeconds());
         this.inventoryScanner = new InventoryScanner(signalTracker, safety);
+
+        // 5c. Resource-pack load gate (MF-11). Created ONCE — survives a config reload so applied-pack
+        //     status isn't lost (the client won't re-report without a re-push). The sink forwards each
+        //     status to event_log so the director's dashboard sees who is pack-ready before rune beats.
+        if (this.resourcePack == null) {
+            this.resourcePack = new com.observance.watcher.signal.ResourcePackTracker(
+                    safety,
+                    (uuid, name, st) -> logEvent("info", "pack", name + " resource-pack " + st, uuid.toString()));
+        }
 
         // 6. Default (noop) beat enactor — subsystem agents replace via setBeatEnactor().
         this.beatEnactor.set(new NoopBeatEnactor(safety));
@@ -288,6 +300,10 @@ public final class ObservancePlugin extends JavaPlugin {
         var pm = getServer().getPluginManager();
         pm.registerEvents(new PresenceListener(supabase, scheduler, safety, signalTracker), this);
 
+        // Resource-pack load gate (MF-11) — the SAME instance across reloads (its map is the truth of
+        // who has the pack applied); re-registered here because reloadAll() unregisters all handlers.
+        if (resourcePack != null) pm.registerEvents(resourcePack, this);
+
         // Signal Tracker listeners (DESIGN §2.1 + §2.2) — pure tracking, no world effects.
         pm.registerEvents(new BlockBreakListener(signalTracker, rateLimiter, safety), this);
         pm.registerEvents(new DeathListener(this, signalTracker, safety), this);
@@ -398,6 +414,10 @@ public final class ObservancePlugin extends JavaPlugin {
     /** The Signal Tracker (dossier). Downstream engines read {@code SignalSnapshot}s from it. */
     public SignalTracker signalTracker() { return signalTracker; }
     public TrackerConfig trackerConfig() { return trackerConfig; }
+
+    /** The resource-pack load gate (MF-11). Rune-bearing beats query {@code isLoaded(player)} before
+     *  rendering custom glyphs, falling back to ASCII (or skipping) when the client hasn't applied it. */
+    public com.observance.watcher.signal.ResourcePackTracker resourcePack() { return resourcePack; }
 
     /** Subsystem agents (Haunting Engine) register their real enactor here. Null-safe. */
     public void setBeatEnactor(BeatEnactor enactor) {
