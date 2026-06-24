@@ -81,7 +81,9 @@ export async function handleWhisper(
   await recordWhisperEvent(player.id, puzzleKey, tier);
 
   // enqueue the in-world toll for the plugin to enact (the keeper's light).
-  await enqueueBeat('whisper_toll', player.mc_uuid, { puzzle: puzzleKey, tier });
+  // PLAYER-EARNED → 'approved': the keeper paid the toll, the world answers now,
+  // never gated behind a dashboard approval.
+  await enqueueBeat('whisper_toll', player.mc_uuid, { puzzle: puzzleKey, tier }, 'approved');
 
   await logEvent(
     'info',

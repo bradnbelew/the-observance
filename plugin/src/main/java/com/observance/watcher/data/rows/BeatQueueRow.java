@@ -4,8 +4,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Row for the {@code beat_queue} table — pending/approved beats authored by the bot/dashboard.
- * READ: poll for status in (pending, approved). After enacting, PATCH status='fired' + decided_at.
+ * Row for the {@code beat_queue} table — story beats authored by the bot/dashboard/showrunner.
+ * READ: the poller fetches {@code status='approved'} ONLY (the approval gate); {@code 'pending'}
+ * beats wait for a human to approve them in the dashboard. After enacting, PATCH status='fired' +
+ * decided_at. Player-earned beats (oracle unlocks, whisper tolls) are inserted already-approved.
  *
  * <p>Lore-AGNOSTIC: the plugin reads {@code type} + a {@code payload} JSON value and enacts it;
  * any story text lives inside {@code payload}/Supabase content, never in code. Known Phase-0 types

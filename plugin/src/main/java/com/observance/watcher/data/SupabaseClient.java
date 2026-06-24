@@ -151,14 +151,21 @@ public final class SupabaseClient {
     /* ==================================================================== */
 
     /**
-     * Read pending+approved beats, optionally limited, ordered by priority desc then created_at.
+     * Read <b>approved</b> beats only, optionally limited, ordered by priority desc then created_at.
      * Returns an empty list on any failure (never null, never throws).
+     *
+     * <p><b>Approval gate (load-bearing).</b> The poller fires {@code status='approved'} ONLY.
+     * {@code 'pending'} beats — everything the showrunner/dashboard queues in CONFIRM mode, plus the
+     * Accepting trigger — sit untouched until a human flips them to {@code 'approved'} in the
+     * dashboard. This is what makes the dashboard's approve/skip buttons real rather than cosmetic.
+     * Player-EARNED beats (oracle unlocks, whisper tolls) are inserted as {@code 'approved'} by their
+     * producers ({@link #insertBeat} / the bot) so they fire immediately and never wait on a human.
      */
     public SupabaseResult<List<BeatQueueRow>> fetchActionableBeats(int limit) {
         if (!config.isConfigured()) {
             return SupabaseResult.ok(0, Collections.emptyList());
         }
-        String q = "status=in.(pending,approved)"
+        String q = "status=eq.approved"
                 + "&order=priority.desc.nullslast,created_at.asc"
                 + "&limit=" + Math.max(1, limit);
         SupabaseResult<List<BeatQueueRow>> r = doRead("beat_queue", q, LIST_BEAT, "fetchActionableBeats");

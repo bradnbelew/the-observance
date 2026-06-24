@@ -60,8 +60,12 @@ alter table public.beat_queue
   add constraint beat_queue_status_check
   check (status in ('pending','approved','skipped','fired','failed'));
 
--- The plugin polls `status=in.(pending,approved)` ordered by priority desc,
--- created_at asc. Back that ordering.
+-- APPROVAL GATE: the plugin poller fires `status=eq.approved` ONLY, ordered by
+-- priority desc, created_at asc — so `pending` beats wait for a human to approve
+-- them in the dashboard (the showrunner CONFIRM mode + the Accepting trigger).
+-- The dashboard, in turn, lists the `pending` beats as its approval queue. This
+-- partial index covers BOTH access paths (the poller's approved read and the
+-- dashboard's pending read), so both stay index-served.
 create index if not exists idx_beat_queue_actionable
   on public.beat_queue (priority desc nulls last, created_at asc)
   where status in ('pending','approved');

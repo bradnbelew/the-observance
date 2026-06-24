@@ -209,15 +209,26 @@ export async function getHint(
   return data ?? null;
 }
 
-/** Enqueue a new story beat (status defaults to 'pending'). Returns the row. */
+/**
+ * Enqueue a new story beat. The `status` decides whether it fires immediately or
+ * waits on the dashboard approval gate:
+ *   - 'approved' — PLAYER-EARNED (whisper toll, oracle unlock): fires on the next
+ *     plugin poll, never waits on a human. The player did the work; the world owes
+ *     them the answer now.
+ *   - 'pending'  — CURATORIAL (showrunner CONFIRM mode, dashboard-staged, the
+ *     Accepting trigger): the plugin poller ignores it until a human approves it in
+ *     the dashboard. This is the gate the plugin's fetchActionableBeats enforces.
+ * Defaults to 'pending' (the safe, gated default). Returns the row.
+ */
 export async function enqueueBeat(
   type: string,
   target: string | null,
   payload: Record<string, unknown> = {},
+  status: BeatStatus = 'pending',
 ): Promise<BeatQueueRow> {
   const { data, error } = await supabase
     .from('beat_queue')
-    .insert({ type, target, payload, status: 'pending' satisfies BeatStatus })
+    .insert({ type, target, payload, status })
     .select('id, type, target, payload, status, created_at, decided_at')
     .single<BeatQueueRow>();
 
