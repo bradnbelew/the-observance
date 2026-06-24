@@ -133,7 +133,7 @@ export const archive: Record<string, string> = {
   cardSurfaceIssWasRight:
     'he was right that the surface had healed. he was wrong about which way it lay. he opened the line looking for home and let home in from the other side. do not strike his name to spite him. strike it because the record could not bear to keep writing it.',
   cardSurfaceWatcherCounts:
-    'the record was open before you found it. it counts the living by name, and grades them by laws no one was told. it does not close at the rite. it named a habit of yours before you knew it was a custom. you were measured before you were told. that was the kindness, and the whole of the kindness.',
+    'the record was open before you found it. it counts the living by name, and grades them by laws no one was told. it does not close at the rite. it named a habit of yours before you knew it was a custom. you were measured before you were told.',
   cardSurfaceSixthBlank:
     'the line against the sixth way is left blank. speak not the name — and then nothing, where the to-whom would go. the first keepers were asked, and did not answer, and the blank is theirs. it costs you nothing to be silent.',
   cardSurfaceSeventhMarker:
@@ -445,7 +445,7 @@ export const npcLines: Record<string, string> = {
   'dob.truth.lamp':
     'I keep my lamp on me. Not letting go of it. You can have my rope, you can have my rations, you cannot have my lamp, I will not be the one whose light goes out, I’ve *heard* what they say about the ones whose light goes out.',
   'dob.react.good':
-    'I feel — okay, weirdly, I feel better next to you lot? Like the dark’s paying attention but it’s not — it’s not paying attention to *us*. Is that mad. That’s mad. Stay close though.',
+    'I feel — okay, this is going to sound stupid — I feel better next to you lot. Like the dark’s paying attention, but not to *us*. Not while we’re together. Stay close though, yeah?',
   'dob.react.good.up':
     'We did it the right way, yeah? Bowed and gave the bird its seed and kept the lamps. My gran’d be made up. Let’s go up. Let’s go up while we’re still the kind of people my gran’d be made up about.',
   'dob.react.bad':
