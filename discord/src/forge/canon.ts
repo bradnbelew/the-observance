@@ -121,6 +121,36 @@ export function noLeakedSentinelSelfTest(seedSql: string): { passed: number; cas
 // GUARD 3 — custom-key namespace (red-team B-3). The code's seven keys are the canonical set.
 // ---------------------------------------------------------------------------
 
+/**
+ * GUARD 4 — the thread layer (red-team B-7). The code's THREADS registry must equal the
+ * five threads SEEDED in migration 0005, so the Recovery Archive's columns can't drift from
+ * the canon. (The DB FK on puzzles.thread_key / thread_cards.thread_key enforces canonicality
+ * at runtime; this enforces the code↔migration agreement at build time, BEFORE any thread
+ * content is authored.) Pass the 0005 migration SQL.
+ */
+export function threadRegistrySelfTest(migration0005Sql: string): { passed: number; cases: string[] } {
+  const sql = migration0005Sql.replace(/--[^\n]*/g, '');
+  // The seed block: insert into public.threads (...) values ('who', …), ('place', …) …
+  const m = sql.match(/insert\s+into\s+public\.threads[\s\S]*?values([\s\S]*?)on\s+conflict/i);
+  if (!m) {
+    throw new Error('threadRegistrySelfTest: could not find the threads seed in 0005 (migration changed?).');
+  }
+  // First quoted string of each `( '<key>', …)` tuple is the thread_key.
+  const seeded = [...m[1]!.matchAll(/\(\s*'([a-z_]+)'\s*,/g)].map((x) => x[1]!);
+  const seededSet = new Set(seeded);
+  const canon = new Set<string>(THREADS);
+  const missing = [...canon].filter((t) => !seededSet.has(t));
+  const extra = [...seededSet].filter((t) => !canon.has(t));
+  if (missing.length || extra.length) {
+    throw new Error(
+      `threadRegistrySelfTest: THREADS registry vs 0005 seed mismatch — ` +
+        `missing in migration: [${missing.join(', ')}]; extra in migration: [${extra.join(', ')}]. ` +
+        `Keep forge/canon.ts THREADS and the 0005 threads seed identical. (B-7)`,
+    );
+  }
+  return { passed: 1, cases: [`thread registry: all ${THREADS.length} threads match the 0005 seed (who/place/happened/surface/human)`] };
+}
+
 export function customKeyNamespaceSelfTest(
   trackerConfigJava: string,
   voiceTs: string,
