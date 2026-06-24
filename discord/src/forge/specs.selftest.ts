@@ -29,6 +29,7 @@ import {
   riteTokenSelfTest,
   threadTagSelfTest,
   threadCardVoiceCoverageSelfTest,
+  registerDisciplineSelfTest,
 } from './canon.js';
 import { archive, npcLines } from '../voice.archive.js';
 
@@ -65,9 +66,10 @@ try {
   const tags = threadTagSelfTest(readFileSync(THREAD_TAGS_PATH, 'utf8'));
   const definedVoiceKeys = new Set<string>([...Object.keys(archive), ...Object.keys(npcLines)]);
   const cards = threadCardVoiceCoverageSelfTest(readFileSync(THREAD_CARDS_PATH, 'utf8'), definedVoiceKeys);
+  const register = registerDisciplineSelfTest(archive);
   const all = [
     ...cases, ...cov.cases, ...reach.cases, ...sentinel.cases, ...namespace.cases,
-    ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases, ...cards.cases,
+    ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases, ...cards.cases, ...register.cases,
   ];
   console.log(`clue-specs + canon self-tests passed (${all.length}):`);
   for (const c of all) console.log(`  ok   ${c}`);

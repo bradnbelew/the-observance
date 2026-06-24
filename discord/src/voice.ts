@@ -88,7 +88,9 @@ export const voice = {
    */
   whisperReply(tier: number, hintBody: string): string {
     if (tier <= 1) {
-      return 'you are tired. look again at what repeats — those are not stone. they are sounds.';
+      // (audit de-slop) the watcher STATES; it does not assert the player's inner state
+      // ("you are tired") or tie a didactic bow. a flat nudge at what repeats.
+      return 'look again at what repeats. it is not stone. it is sound.';
     }
     return hintBody;
   },
@@ -183,7 +185,8 @@ export const voice = {
 
   /** main_beat — a true answer that turns the arc. a turn, stated, not cheered. */
   oracleMainBeat(): string {
-    return 'so. it turns. what was shut is shut no longer. remember who opened it.';
+    // (audit de-slop) drop the stagey "so. it turns." opener and the didactic command.
+    return 'what was shut is shut no longer. the record keeps the hand that opened it.';
   },
 
   /**

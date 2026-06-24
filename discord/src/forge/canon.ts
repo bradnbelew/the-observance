@@ -298,6 +298,39 @@ export function threadCardVoiceCoverageSelfTest(
   };
 }
 
+/**
+ * GUARD 10 — Watcher register discipline (audit, immersion). The register law (voice.ts) was
+ * doc-only; this MECHANIZES it for the archive corpus: every Watcher-voice `archive` line must be
+ * lowercase (no A-Z), carry no exclamation mark, and never break character with a meta-word
+ * (ai/bot/game/server/minecraft/discord). Pass the `archive` map (NOT npcLines — those are SET-A
+ * human voice and intentionally use capitals/contractions). Catches a register slip before camera.
+ */
+export function registerDisciplineSelfTest(archive: Record<string, string>): { passed: number; cases: string[] } {
+  const META = ['ai', 'bot', 'game', 'server', 'minecraft', 'discord'] as const;
+  const violations: string[] = [];
+  const entries = Object.entries(archive);
+  if (entries.length === 0) {
+    throw new Error('registerDisciplineSelfTest: archive is empty — wrong import?');
+  }
+  for (const [key, line] of entries) {
+    if (/[A-Z]/.test(line)) violations.push(`${key}: uppercase letter (register is lowercase)`);
+    if (line.includes('!')) violations.push(`${key}: exclamation mark (register has none)`);
+    for (const w of META) {
+      if (new RegExp(`\\b${w}\\b`, 'i').test(line)) violations.push(`${key}: meta-word "${w}" breaks character`);
+    }
+  }
+  if (violations.length > 0) {
+    throw new Error(
+      `registerDisciplineSelfTest: ${violations.length} Watcher register violation(s):\n  ` +
+        violations.slice(0, 12).join('\n  '),
+    );
+  }
+  return {
+    passed: 1,
+    cases: [`register discipline: all ${entries.length} Watcher archive lines lowercase, no exclaim, in character`],
+  };
+}
+
 export function customKeyNamespaceSelfTest(
   trackerConfigJava: string,
   voiceTs: string,

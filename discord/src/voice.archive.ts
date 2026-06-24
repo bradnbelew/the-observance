@@ -75,7 +75,7 @@ export const archive: Record<string, string> = {
   cardGatherUnlightSurface:
     'the lamps went down the line, as they went down the line in the last winter, when the keepers put them out themselves and kept the ways alone. a light goes out. it is not a punishment. it is the dark, given its company.',
   cardGatherDobHuman:
-    'one you brought down stood in the dark and did not come closer. ask whether he was made a monster. he was not. he was made a witness. that is the only thing the dark makes. it is the thing it is making of you.',
+    'one you brought down stood in the dark and did not come closer. he was not made a monster. he was made a witness. the dark makes nothing else. it is making the same of you.',
   cardGatherRehearsalHuman:
     'all of you, bent at once, in the one light. you bend, and the deep answers a little, and stops. it is not one of you that bends. it is the gathering, or it is no one. the record keeps no chosen. it keeps the kept.',
 
@@ -204,7 +204,7 @@ export const archive: Record<string, string> = {
   'gather.dob.same_door':
     'he kept his light to the end and asked only to wait by it. he is waiting still. you walked past the same door he waited at.',
   'gather.dob.human':
-    'ask whether he was made a monster. he was not. he was made a witness. that is the only thing the dark makes. it is the thing it is making of you.',
+    'he was not made a monster. he was made a witness. the dark makes nothing else. it is making the same of you.',
   // in-world beat text (3.3 action-bar)
   'gather.dob.actionbar': 'you knew that one. you knew his name.',
 
@@ -249,7 +249,7 @@ export const archive: Record<string, string> = {
   tollDeepLine:
     'someone stood past the line and looked into the reach of the dark. this is the old crossing. it was the first.',
   keptDeepLine:
-    'the line is held again. there is a kept side, and you are on it. that is not nothing.',
+    'the line is held again. there is a kept side, and you are standing on it.',
   // 3. the_dark_hours
   tollDarkHours:
     'the black moon was up, and someone closed their eyes beneath it. the dark reaches the sleeping. it reached.',
