@@ -8,6 +8,7 @@ import com.observance.watcher.beats.lib.ChestArrangeBeat;
 import com.observance.watcher.beats.lib.DecayCreepBeat;
 import com.observance.watcher.beats.lib.DoorOpenBeat;
 import com.observance.watcher.beats.lib.FakeBlockBeat;
+import com.observance.watcher.beats.lib.GroupBeat;
 import com.observance.watcher.beats.lib.ItemRelabelBeat;
 import com.observance.watcher.beats.lib.ItemSwapBeat;
 import com.observance.watcher.beats.lib.LecternFillBeat;
@@ -85,6 +86,7 @@ public final class BeatLibrary {
         // DIRECTED specials (bot/dashboard enqueued)
         register(new WhisperTollBeat());
         register(new UnlockBeat(this));     // dispatcher — delegates to another beat type
+        register(new GroupBeat(this));      // dispatcher — fans a delegate to every player in a scene (gather-events)
     }
 
     /** Register (or override) a beat by its {@link Beat#name()}. Null-safe. */
