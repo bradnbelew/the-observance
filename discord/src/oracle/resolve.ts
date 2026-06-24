@@ -39,6 +39,11 @@ import type {
   Player,
   Puzzle,
 } from '../db/types.js';
+// The pure normalization algorithm lives in its own dependency-free module so tools/tests
+// (seedcheck.ts) can import it without the DB/config chain. Re-exported here so the resolver's
+// public surface is unchanged.
+import { normalizeAnswer, MAX_RAW_LEN } from './normalize.js';
+export { normalizeAnswer, MAX_RAW_LEN };
 
 const SOURCE = 'the-watcher/oracle';
 
@@ -58,35 +63,8 @@ const SOURCE = 'the-watcher/oracle';
 export const RATE_WINDOW_MS = 60_000;
 export const RATE_MAX_IN_WINDOW = 8;
 
-/**
- * Hard ceiling on how much raw input we read/store. A real answer is a handful of
- * words; anything past this is paste-spam/abuse and is truncated BEFORE normalize +
- * before it ever reaches answer_attempts.raw (so a giant message can't bloat the
- * table or the normalize regex). The match itself is unaffected — no real answer is
- * anywhere near this long. Discord already caps message length, but #the-record runs
- * on every message and /answer takes free text, so we cap defensively regardless.
- */
-export const MAX_RAW_LEN = 512;
-
-// ---------------------------------------------------------------------------
-// Normalization — the EXACT algorithm (ORACLE.md §2), byte-for-byte identical to
-// the plugin's Java normalizeAnswer. Drift here breaks the loop silently.
-// ---------------------------------------------------------------------------
-
-/**
- * Normalize raw player input to the matchable form. NFKC → lower → strip every
- * char that is not [a-z0-9 ] (mapping each run to a SPACE, so "bow,at" → "bow
- * at") → collapse whitespace → trim. An empty result never matches and is never
- * logged (it is not "plausibly an answer").
- */
-export function normalizeAnswer(s: string): string {
-  return s
-    .normalize('NFKC')
-    .toLowerCase()
-    .replace(/[^a-z0-9 ]+/g, ' ') // non-alnum → space (so "BOW,AT" → "bow at")
-    .replace(/\s+/g, ' ')
-    .trim();
-}
+// (normalizeAnswer + MAX_RAW_LEN are imported from ./normalize.js above — the pure,
+//  byte-for-byte twin of the plugin's Java normalizer. Drift breaks the loop silently.)
 
 // ---------------------------------------------------------------------------
 // Result type — what the resolver hands back to a surface.

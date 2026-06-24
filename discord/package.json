@@ -11,7 +11,8 @@
     "register": "tsx src/bot/register.ts",
     "dev": "tsx src/bot/index.ts",
     "sample": "tsx src/render/sample.ts",
-    "assets": "tsx src/render/assets.ts"
+    "assets": "tsx src/render/assets.ts",
+    "seedcheck": "tsx src/oracle/seedcheck.ts"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
