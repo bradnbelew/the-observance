@@ -19,7 +19,9 @@ import org.bukkit.persistence.PersistentDataType;
  * canonical "the watcher". Spawned a short distance away, out of line of sight (discovered, not
  * witnessed appearing), on valid ground (no floaters/suffocation). Tagged in PDC so it's recognized
  * as a beat entity (for cleanup + anti-grief), set persistent + silent + invulnerable-by-default so
- * players can't trivially kill/weaponize it. It targets the player but is configured not to attack.
+ * players can't trivially kill/weaponize it. When {@code no_ai_drift} (the default), its AI is fully
+ * DISABLED so it cannot path, wander, or attack — it simply stands and stares (bestiary rule #1:
+ * never lunge, never approach). It keeps the facing it spawned with (turned toward the player).
  *
  * <p>Payload:
  * <pre>{@code
@@ -89,12 +91,14 @@ public final class NamedMobBeat extends AbstractBeat {
         } catch (Throwable ignored) { }
 
         if (noDrift && living instanceof Mob mob) {
-            // Stare without wandering: face the player, set as target but the invuln+silent + later
-            // cleanup keep it non-threatening. A watcher, not an attacker.
-            try {
-                mob.setTarget(req.targetPlayer());
-            } catch (Throwable ignored) { }
-            try { mob.setAware(true); } catch (Throwable ignored) { }
+            // Stand and stare — never path, never lunge, never attack (bestiary rule #1). Disabling AI
+            // freezes the mob entirely: it cannot pathfind toward, drift into, or strike the player. It
+            // keeps the yaw it spawned with (findSpawn already turned it to face the player), so it reads
+            // as a silent watcher, not a hostile drifting in to swing. We deliberately do NOT setTarget:
+            // a live target on a hostile type (WARDEN/DROWNED/ZOMBIE) makes it path to and ATTACK the
+            // player — the exact opposite of no-drift, and the bug this replaces.
+            try { mob.setAware(false); } catch (Throwable ignored) { }
+            try { mob.setAI(false); } catch (Throwable ignored) { }
         }
 
         if (despawnTicks > 0) {
