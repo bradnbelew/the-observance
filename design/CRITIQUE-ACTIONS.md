@@ -1,0 +1,54 @@
+# The Observance — Critique Action Ledger
+
+> Source: the `observance-design-deepening` workflow's three adversarial critics
+> (ARG/mystery-experience · nothing-breaks engineer · veteran friend-group).
+> **All three returned `revise`, none `block`** — the engine and the design are
+> fundamentally sound; these are sharpenings, not a teardown. This file is the
+> single tracked disposition of every must-fix. Spoiler-free.
+
+## Verdict summary
+| Lens | Verdict | Headline |
+|---|---|---|
+| ARG / mystery-experience | revise | Strong rare spine ("it reacted to ME"); the Liar mechanic is hollow; personalization may fire too rarely; macro-structure is countable. |
+| Nothing-breaks engineer | revise | Engine honors the anti-jank contract end-to-end & compiles dep-free today; FAWE/coordEncode/NamedMobBeat/Undercroft are the risk surfaces. |
+| Veteran friend-group | revise | Genuinely non-linear & fair; the unbuilt showrunner is the pacing single-point-of-failure; the Whisper stall-backstop is under-specified. |
+
+---
+
+## ✅ Done this session
+- **Watcher can't move or attack** (nothing-breaks #4) — `NamedMobBeat` no-drift now disables AI. `26519d1`.
+
+## 🔧 Code fixes — concrete, verifiable (next build steps)
+- [ ] **coordEncode doc↔code reconcile + parity test** (nothing-breaks #2, HIGH). The carving (encode output) is never the typed answer — `puzzles_seed.sql` already stores decoded/normalized/unsigned coords correctly — but MASTER-PLAN R1/R4's "done" claim overstates the code. Action: (a) reconcile the doc claim to what the code actually does; (b) add an **executable test** that runs every seeded `accepted_answers` + each coord puzzle's canonical decoded form through BOTH normalizers (TS `normalizeAnswer` + Java `AnswerNormalizer`) and asserts set-membership — gate any row to `active=true` only if it passes. Makes the authoring checklist executable, not mental.
+- [ ] **FAWE schematic branch = reflective isolation** (nothing-breaks #1, HIGH). Before `SmallStructureBeat.createPaste`: FAWE 2.15.x `compileOnly` + EngineHub repo + `plugin.yml` softdepend; isolate ALL `com.sk89q` refs behind a lazily/reflectively-loaded class gated on `isPluginEnabled("FastAsyncWorldEdit")` + a one-time capability probe; **skip (BeatResult.skipped), never throw** if absent; wrap in `ctx.safety()`; `Placement.isReplaceable` sweep before paste; idempotency tag in Supabase BEFORE `Operations.complete`. Pin Java-21 as a gradle comment so a dep bump can't reintroduce the BetterModel-3.x/Java-25 trap.
+- [ ] **DramaBudget session-length-aware** (friend-group #6). Scale beat caps to playtime, not a flat per-session number, so a 4-hour marathon doesn't hit the cap early and go quiet at peak engagement. Always ≥1 fully-legible open puzzle independent of the daily drip.
+- [ ] **Bounded retry/backoff for FAILED beats** (nothing-breaks nice-to-have) so one transient main-thread/FAWE hiccup doesn't permanently drop an earned unlock. (UNHANDLED correctly stays queued.)
+- [ ] **Reflective isolation for ModeledMobBeat + SpatialVoiceBeat** (nothing-breaks nice-to-have) — same `isPluginEnabled`+reflection pattern as FAWE so a missing/throwing ModelEngine/SimpleVoiceChat degrades to `NamedMobBeat`/`PrivateSoundBeat` without a ClassNotFoundError.
+
+## ✍️ Design revisions (docs + seed)
+- [ ] **Rebuild the Liar Engine as intrinsic, player-discovered deception** (ARG #1, HIGH — the centerpiece). A Vigenère key can't yield two coherent readings from one ciphertext, so today the "lie" is a scripted showrunner flag-flip wearing a cipher costume — a community would debunk it in an afternoon. Fix: make the contradiction **findable by holding two artifacts together** (use the cross-document-correlation modality we already have): Iss's "warm" plaintext asserts a verifiable falsehood about a place/count the group can independently check; a second document (D10) contradicts it line-for-line. The re-walk triggers when the GROUP submits the contradiction as an answer — not `flags.iss_caught` set offstage. (Friend-group critic *praised* the Liar's payoff — preserve the payoff, fix the mechanism.)
+- [ ] **Break the countable macro-structure** (ARG #3). "6 stones → descend → 6 tokens → bow" is a checklist at the structure level. Fix: make the keeper count itself ambiguous (lean into the Seventh — maybe 5, maybe 8); interleave acts so phases bleed (an Accepting-token earnable in M-II, a stone locked until after the Undercroft); **hide the win condition** until late so the ending's shape isn't visible from M-II.
+- [ ] **Undercroft / M-III reversal: never swap a room the group stands in** (ARG #4 + nothing-breaks #5). Reveal-discipline is solved for solo predictive placement, not for a group (someone's always looking; a witnessed swap = "a plugin glitched the build"). Fix: stage the change across a threshold they must leave and return through; or route them into a separate instance; or **reveal-by-uncover** (lighting/collapse/door removing a covering over pre-placed hidden geometry) instead of a live paste. CONFIRM-mode "all POVs facing away" check; never fire in AUTO while players are in the room.
+- [ ] **Make `dead_end` unmistakably terminal in-fiction** (friend-group #3). A correct-but-dead-end answer the Watcher "acknowledges" reads as "we're warm, keep pushing" → wasted evening (esp. the dead-shrine). Fix: a distinct terminal voice register ("it is written. it opens nothing. let it be.") vs `next_clue`'s forward push; teach the grammar with one cheap, early `dead_end` before it costs a real evening.
+- [ ] **Coordinate mis-decode legibility backstop** (friend-group #5). A mis-decoded coord walks the group to empty wilderness, indistinguishable from "not there yet." Fix: proximity BossBar ("the land's attention") **always-on for active coord puzzles** so "no attention anywhere near here" signals a mis-decode; author each coord answer in signed/unsigned/direction-word forms; verify the digit-glyph Stone of Reckoning is reachable BEFORE the first coord clue goes active.
+- [ ] **Contribution-orphaning: don't punish the group for an absentee (subtle case)** (friend-group #4). "Active players only" stops an absent member *blocking* the gate, but if a token/atonement was earned by a now-offline member, it must still count. Fix: fragments/tokens/atonements are **persistent + group-owned once earned**; the Accepting validates the SET of tokens present (deposited by anyone), not per-living-player presence; generous bow sync window (all-present-within-N-seconds, not a tight tick QTE).
+- [ ] **Nice-to-have depth:** promote the **Seventh** thread from buried side-content to a louder (still optional) presence; give the Watcher **range** (one strange/almost-warm/darkly-funny line so it's alive, not a gothic mood generator); make the **self-rewriting journal** a slow-burn second mystery with its own tiny arc.
+
+## 🤖 Showrunner build-time spec (the keystone — all 3 critics flagged it)
+- [ ] **Deterministic spine FIRST, zero-LLM** (friend-group #1 + ARG/eng, HIGH). Build + soak-test drip scheduler + auto-gift backstop + Liar duplicate-row fallback as a standalone cron that works with NO LLM calls. Dashboard **health alert + manual "fire next drip" button** so Ethan hand-fires if the cron misses a cycle. Treat "showrunner down 48h" as a tested scenario.
+- [ ] **Guarantee the "it knows me" hook** (ARG #2 — the differentiator & the video's whole pitch). Don't hope signals accumulate for a small burst-playing group. Seed 2-3 **can't-miss** personalization hooks (deaths in a named place, first ore offered-or-not, the base wall with the most chests, exact logoff time). Hard floor: **every active player gets ≥1 true, specific, measured callout before Movement III**, or the showrunner escalates measurement. Front-load a devastatingly-specific M-I "it wrote my name" beat by day 3-4.
+- [ ] **Whisper within-session stall detector** (friend-group #2, HIGH). The flat ~3 hints/Act, day-paced auto-gift can leave a group grinding one stone all evening with no relief. Fix: concrete within-session trigger (N failed attempts on the same `puzzle_key` in a window, OR X minutes co-located at a stone with zero solves) → auto-gift the next tier **immediately**; budget whispers **per-puzzle-tier**, not a flat pool one hard stone swallows.
+- [ ] **Stuck vs. disengaged, answered differently** (ARG #5). Stuck-but-active → a diegetic sharper overnight clue. Disengaged → a NEW thread/report (a pull, not a nag). A slow-cadence world **heartbeat** (journal rewrites, a new apparition) so logging in is rewarded even with zero solves — decouple "something happened" from "we made progress." Optional once-then-quiet "the ways are still here" re-surface after a multi-day gap.
+- [ ] **Showrunner write-safety** (nothing-breaks #3). Every showrunner write goes through the SAME structured-output/byte-validation/banned-word checks as the scalpel; curated beats written `status='pending'` ONLY (behind CONFIRM + kill-switch); idempotency key on any "edit outcome_payload / flip active" op so a crashed re-run can't corrupt the web; ship the authored Liar duplicate-row fallback for AUTO/asleep.
+- [ ] **Bestiary spawn-bias = probabilistic + capped + jittered** (bestiary risk) so the rhyming-player targeting never reads as a deterministic callout that breaks collective-judgment discipline.
+
+## 🚦 Acceptance gates (the unanimous meta-directive)
+**Build + PLAYTEST the vertical slice with 2-3 real friends BEFORE authoring more of the arc.** Several load-bearing claims ("a vanilla husk discovered already reads supernatural", "rune literacy feels good", "the cross-surface click lands") are only knowable from real play. Slice acceptance:
+1. **≥1 player gets a TRUE, specific, recognized callout about their own behavior** ("wait… how does it know that?") — proves the premise, not just the atmosphere.
+2. **≥1 genuine "did you SEE that?"** from a private per-player beat.
+3. **Nobody says the husk-watcher felt fake / "like a plugin."** (Proves or kills the no-model-engine bet.)
+If the slice doesn't produce #1 and #2 from real players, fix the *feeling* before scaling — do not build the six-stone web on an unproven core.
+
+## 🎬 Capture/PR notes (for the YouTube cut)
+- Lean the edit on **reaction-asymmetry** footage ("he swears the torch went out — no one else saw it"). The single most shareable clip type.
+- **Disclose the autonomy honestly** ("I controlled timing, not content") — pre-empts the inevitable "this is just scripted" debunk and earns ARG-community respect.

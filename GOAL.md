@@ -41,6 +41,10 @@
 - **Rotate secrets** pasted in old chat (Anthropic key, Supabase PAT, bot token).
 
 ## Status log
-- **2026-06-23** — Session resumed. Oracle hardening + approval-gate fixed & committed. Launched
-  `observance-design-deepening` workflow (atmosphere + cipher-web + bestiary + immersion → synthesis →
-  adversarial critique). Building from the resulting `design/MASTER-PLAN.md` next.
+- **2026-06-23** — Session resumed. Oracle hardening + approval-gate fixed & committed (`c23792a`, `44eed92`).
+- **2026-06-23 PM** — `observance-design-deepening` workflow landed (8 agents): `design/` corpus committed
+  (`080fd31`) — atmosphere-stack, cipher-web/clue-web + `puzzles_seed.sql`, bestiary (+sealed), immersion,
+  MASTER-PLAN. All 3 critics = **revise, not block**. Fixed the confirmed `NamedMobBeat` no-drift bug
+  (`26519d1`). Full disposition in [CRITIQUE-ACTIONS.md](design/CRITIQUE-ACTIONS.md). **Next:** build from
+  the action ledger — showrunner deterministic spine + resource pack + FAWE branch → prove the vertical
+  slice before authoring more arc (the critics' unanimous gate).
