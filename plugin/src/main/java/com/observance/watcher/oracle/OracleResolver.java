@@ -137,11 +137,20 @@ public final class OracleResolver {
         }
 
         // Per-puzzle attempt cap (on top of the global limiter): reaching it = withheld, never a hint.
-        if (matched.maxAttempts != null && matched.maxAttempts > 0 && playerId != null) {
-            int tries = supabase.countWorldAttemptsSince(mcUuid,
-                    Instant.EPOCH.toString()); // all-time attempts by this uuid (coarse, world-surface)
-            if (tries >= 0 && tries > matched.maxAttempts) {
-                return Result.WITHHELD;
+        // Scope to THIS puzzle and the SAME window the bot uses (countRecentAttempts is windowed, not
+        // all-time) so the two surfaces behave identically. SEMANTICS: exactly max_attempts tries are
+        // allowed, the next is withheld — the bot counts PRIOR attempts then compares `prior >= max`.
+        // Here we already logged the current attempt at step 5, so subtract 1 to get the prior count,
+        // making the boundary identical to the bot (allow 1..max, withhold max+1 onward).
+        if (matched.maxAttempts != null && matched.maxAttempts > 0) {
+            int windowSecs = Math.max(config.oracleRefillSeconds(), config.oracleCooldownSeconds());
+            String capSinceIso = Instant.now().minus(Math.max(1, windowSecs), ChronoUnit.SECONDS).toString();
+            int counted = supabase.countWorldAttemptsSince(mcUuid, capSinceIso, matched.puzzleKey);
+            if (counted >= 0) {
+                int prior = Math.max(0, counted - 1); // exclude the attempt we just logged at step 5
+                if (prior >= matched.maxAttempts) {
+                    return Result.WITHHELD;
+                }
             }
         }
 
@@ -238,10 +247,16 @@ public final class OracleResolver {
         return (r.ok() && r.value() != null) ? r.value() : null;
     }
 
+    /** Defensive bound on stored raw input (parity with the bot's MAX_RAW_LEN). Signs are already
+     *  short, but never store an unbounded string in answer_attempts.raw. */
+    private static final int MAX_RAW_LEN = 512;
+
     private void logAttempt(String puzzleKey, String playerId, String mcUuid, String discordId,
                             String raw, String norm, boolean matched) {
+        String rawCapped = (raw != null && raw.length() > MAX_RAW_LEN)
+                ? raw.substring(0, MAX_RAW_LEN) : raw;
         AnswerAttemptRow row = new AnswerAttemptRow(
-                puzzleKey, playerId, mcUuid, discordId, "world", raw, norm, matched);
+                puzzleKey, playerId, mcUuid, discordId, "world", rawCapped, norm, matched);
         supabase.insertAnswerAttempt(row);
     }
 

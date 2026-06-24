@@ -57,15 +57,28 @@ Drift here breaks the loop silently.
 
 ```
 normalize(s):
-  1. Unicode NFKC normalize.                         (TS: s.normalize('NFKC'); Java: Normalizer.normalize(s, NFKC))
+  1. Unicode NFKC normalize.                          (TS: s.normalize('NFKC'); Java: Normalizer.normalize(s, NFKC))
   2. case-fold to lower.                              (TS: .toLowerCase();      Java: .toLowerCase(Locale.ROOT))
-  3. strip ALL characters that are not [a-z0-9 ].     (regex replace /[^a-z0-9 ]+/g  → "")
-       - this removes punctuation, accents-left-over, runes, emoji, symbols.
+  3. replace every run of chars NOT in [a-z0-9 ] with a SINGLE SPACE.  (regex replace /[^a-z0-9 ]+/g → " ")
+       - non-alnum → space (NOT empty): so "bow,at" and "bow at" both → "bow at".
+       - this removes punctuation, accents-left-over, runes, emoji, symbols — but as word breaks.
        - it KEEPS letters, digits, and spaces only.
   4. collapse internal whitespace runs to ONE space.  (replace /\s+/g → " ")
   5. trim leading/trailing space.
   result: the normalized form.
 ```
+
+> **CANONICAL — do not drift.** Step 3 maps non-alphanumerics to a **space**, never
+> to empty. (An earlier draft of this line said "→ \"\"" — that was wrong; the space
+> form is canon and is what both implementations ship.) This is verified byte-for-byte
+> identical across the TS `normalizeAnswer` (`oracle/resolve.ts`) and the Java
+> `AnswerNormalizer.normalize` (`oracle/AnswerNormalizer.java`) on a battery of tricky
+> inputs — Greek (`ΣΊΣΥΦΟΣ → ""`), Turkish dotted-İ (`İstanbul → "i stanbul"`),
+> ligatures (`ﬁre → "fire"`), fullwidth (`ＡＢＣ１２３ → "abc123"`), fractions
+> (`½ → "1 2"`), Roman numerals (`Ⅻ → "xii"`), zero-width space, tabs, and emoji.
+> Both surfaces also CAP raw input length before normalizing (Discord `MAX_RAW_LEN`,
+> world sign ≤ 4 short lines) so a giant paste cannot bloat `answer_attempts.raw` or
+> the regex.
 
 Reference (TypeScript):
 ```ts
@@ -183,12 +196,16 @@ The plugin reads `beat_queue` via `mc_uuid` / `site_id` / `priority` / `payload`
 - For a `main_beat`, `type` may instead be a named main beat the plugin knows; the
   same row shape and `status:'approved'` apply.
 
-### Plugin payload caveat (flag for the plugin agent)
-`beat_queue.payload` is `jsonb`; `BeatQueueRow.payload` is typed `String` and
-`BeatPayload.parse(String)` expects a JSON string. Confirm the PostgREST/Gson read
-yields a parseable payload string (this already affects existing `whisper_toll`
-beats — it is not introduced here). If it does not, have the plugin read `payload`
-as a `JsonObject` and feed `BeatPayload.of(obj)`.
+### Plugin payload typing — RESOLVED (was load-bearing)
+`beat_queue.payload` is `jsonb`, so PostgREST returns it as a JSON **object**, not a
+string. The plugin's `BeatQueueRow.payload` is now typed `com.google.gson.JsonElement`
+(NOT `String`) and `RealBeatEnactor.buildRequest` feeds it through
+`BeatPayload.of(row.payloadObject())`. Before this fix the `String` field made Gson
+throw "Expected a string but was BEGIN_OBJECT" on every non-empty payload, which the
+read path turned into a parse error that dropped the **entire** beat batch — silently
+breaking even the existing `whisper_toll` beats. The write side mirrors it:
+`BeatQueueInsertRow.payload` is also `JsonElement`, so the oracle writes a real jsonb
+object, not a quoted string. No further action — this is closed, not a pending flag.
 
 ---
 
@@ -257,3 +274,92 @@ New lines, same register (lowercase, sparse, certain — never "error"/"wrong"/"
 
 `outcome_payload.voice_key` names which of these speaks; `voice_args` are spread in.
 Authors never write English into payloads — only a `voice_key` + structured args.
+
+---
+
+## 8. Adversarial hardening (the reliability pass) — single source of truth
+
+This section is the verified, post-hardening state. If any of these claims stops being
+true, the loop is broken — re-audit before shipping.
+
+### Rate limits (per surface — both REAL, intentionally not identical)
+| surface | first gate (in-memory) | durable gate (`answer_attempts`) | per-puzzle |
+|---|---|---|---|
+| Discord (`resolve.ts`) | — | token bucket **8 / 60 s**, keyed `player_id` else `discord_id` | `puzzles.max_attempts`, same 60 s window, `>=` cap |
+| World (`OracleResolver`) | cooldown **5 s** + token bucket **3 / 30 s** per `mc_uuid` | durable ceiling `burst*4` over the bucket window (fail-open on DB error) | `puzzles.max_attempts`, scoped to the puzzle + window, `>=` cap |
+
+Both fail **open** (a DB hiccup never locks a real keeper out) and both withhold with
+the SAME neutral line (`oracleWithheld`) / silence — never "wrong", never "too many",
+never a closeness tell. The shortest sane answer space (a 4-letter word / 2-number
+coord) has thousands of candidates, so these caps make brute force take days while a
+real solver (1–2 tries) never feels them.
+
+### Exploits checked and closed
+- **Brute-force a 1–3 char answer** → blocked by the token bucket on both surfaces;
+  the durable `answer_attempts` window backs it across restarts.
+- **Spam `#the-record`** → ordinary chat normalizes to a non-match → logged
+  `matched=false`, **silent**. The scan never spam-replies and (being a real answer
+  every message) is still rate-limited by the SAME bucket, so a flood self-throttles.
+- **Submit the same correct answer 10×** → first solve inserts `solves`
+  `unique(puzzle_key, player_id)`; every replay is `silent('already-solved')`, fires
+  NOTHING. True across BOTH surfaces (one table, one key) — a Discord solve cannot be
+  re-claimed in-world and vice-versa.
+- **Answer-sign spam** → 3 s per-player+site cooldown + the resolver's own limiter;
+  the sign is **blanked** on edit so a guess never persists; a solved puzzle can't
+  re-enqueue a beat (solve guard).
+- **Unicode / emoji / huge input** → NFKC + `[^a-z0-9 ]→space` makes emoji/runes
+  word-breaks; raw is length-capped before normalize/log so a giant paste can't bloat
+  `answer_attempts.raw`.
+- **Answers to inactive / nonexistent puzzles** → only `active = true` rows are ever
+  matched; an inactive puzzle is indistinguishable from a miss (silence).
+- **A player answering a puzzle they "haven't reached"** → **ALLOWED, by design.** The
+  web is non-linear and the resolver does NOT gate on `movement`; if you can produce a
+  correct plaintext you earn the outcome. There is no "reached" state to exploit, so
+  there is no out-of-order exploit. (Spoiler answers leaking is a content/`active`
+  concern, handled by authors flipping `active`, not by the resolver.)
+- **The bot replying to its own messages (loop)** → the scan ignores `author.bot`
+  (the bot is a bot), plus `webhookId` and `system` — no self-trigger is possible.
+
+### dead_end UX (the load-bearing subtlety)
+A `dead_end` is a TRUE answer that opens nothing. It speaks `oracleDeadEnd()` —
+*"yes. that is the true name of it. and it opens nothing. some things are only true."*
+— which **acknowledges the answer is right** and advances nothing. It records a
+`solves` row (so it fires its line exactly once, can't be farmed) but enqueues no beat
+and surfaces no `next_puzzle_key`. It is NEVER an error and NEVER reads as "wrong":
+a wrong answer is pure **silence**; a dead_end is **heard**. The `/answer` solved
+branch speaks the single resolved line verbatim (no appended next-clue nudge that
+could contradict a dead_end / side_quest / main_beat).
+
+### Idempotency & no-double-fire (verified end-to-end)
+`recordSolve` (Discord) / `insertSolveIfNew` (world) insert with ON-CONFLICT /
+`resolution=ignore-duplicates` **before** any reward; only a genuinely-new row
+proceeds. A lost race returns `silent` / `ALREADY_SOLVED`. On the firing side,
+`BeatQueuePoller` guards double-enact with an in-process `inFlight` set keyed on beat
+id, and the durable `status='fired'` PATCH is the cross-restart guard (re-queued on
+failure). Player-earned unlocks are enqueued `status='approved'` so they fire on the
+next poll with **no human gate**; the showrunner's CONFIRM path keeps `'pending'` for
+its OWN authored/AI beats — the two never collide.
+
+### Manual test script (run on the live stack after applying 0004 + seeding puzzles)
+Seed at least: one `next_clue` puzzle P1 (accepted `"bow at"`, `max_attempts: 5`), one
+`dead_end` puzzle P2 (accepted `"the old name"`), both `active = true`, with a linked
+keeper K.
+
+1. **Right answer** — K runs `/answer bow at` (or types `bow,at` in `#the-record`).
+   Expect: the watcher speaks `oracleNextClue` publicly; a `solves` row for (P1, K);
+   if P1 carried a `beat`, the unlock fires in-world on the next poll.
+2. **Wrong answer** — K runs `/answer not even close`. Expect: **silence** in the open
+   (ephemeral `oracleWithheld` on the slash so the interaction is acknowledged); an
+   `answer_attempts` row `matched=false`; no `solves` row; no closeness tell.
+3. **Dead-end answer** — K runs `/answer the old name`. Expect: `oracleDeadEnd`
+   ("…it opens nothing…"); a `solves` row for (P2, K); NO beat, NO next clue.
+4. **Replay** — K runs `/answer bow at` again. Expect: **silence** (ephemeral
+   withhold); NO second `solves` row; NO second unlock. Repeat in `#the-record` — still
+   silent. Repeat in-world on the sign — still nothing fires.
+5. **Spam** — K submits 10 wrong answers in under a minute. Expect: after the bucket
+   empties (8/60 s Discord; 3/30 s world) the reply is `oracleWithheld` / silence,
+   never a hint or a count; ordinary `#the-record` chatter in between draws no reply.
+6. **Sign answer** — K edits an `answer_sign` at a configured site with `bow at` for a
+   still-unsolved puzzle. Expect: the sign blanks; on a genuinely-new solve the beat
+   fires in-world; a `solves` row appears; submitting again does nothing (cross-surface
+   replay guard). Editing it as a random non-answer → blanks, stays silent.

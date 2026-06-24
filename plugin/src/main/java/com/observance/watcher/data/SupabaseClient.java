@@ -284,11 +284,26 @@ public final class SupabaseClient {
      * in-memory limiter rather than wrongly block a legitimate keeper on a DB hiccup.
      */
     public int countWorldAttemptsSince(String mcUuid, String sinceIso) {
+        return countWorldAttemptsSince(mcUuid, sinceIso, null);
+    }
+
+    /**
+     * As {@link #countWorldAttemptsSince(String, String)} but optionally scoped to a single
+     * {@code puzzleKey} — used for the per-puzzle {@code max_attempts} cap so one puzzle's cap counts
+     * ONLY tries on that puzzle (mirrors the bot's {@code countRecentAttempts({puzzleKey})}). A high
+     * explicit {@code limit} is sent so a busy window isn't silently truncated by PostgREST's default
+     * page size (which would under-count the gate). Returns -1 on any failure (caller fails OPEN).
+     */
+    public int countWorldAttemptsSince(String mcUuid, String sinceIso, String puzzleKey) {
         if (!config.isConfigured() || mcUuid == null || mcUuid.isBlank() || sinceIso == null) {
             return -1;
         }
         String q = "select=id&surface=eq.world&mc_uuid=eq." + enc(mcUuid.trim())
-                + "&at=gte." + enc(sinceIso);
+                + "&at=gte." + enc(sinceIso)
+                + "&limit=10000";
+        if (puzzleKey != null && !puzzleKey.isBlank()) {
+            q += "&puzzle_key=eq." + enc(puzzleKey.trim());
+        }
         // HEAD with Prefer: count=exact returns the count in Content-Range; simpler here to read ids.
         SupabaseResult<List<PlayerLookupRow>> r =
                 doRead("answer_attempts", q, LIST_PLAYER_LOOKUP, "countWorldAttemptsSince");

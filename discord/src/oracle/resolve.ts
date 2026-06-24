@@ -58,6 +58,16 @@ const SOURCE = 'the-watcher/oracle';
 export const RATE_WINDOW_MS = 60_000;
 export const RATE_MAX_IN_WINDOW = 8;
 
+/**
+ * Hard ceiling on how much raw input we read/store. A real answer is a handful of
+ * words; anything past this is paste-spam/abuse and is truncated BEFORE normalize +
+ * before it ever reaches answer_attempts.raw (so a giant message can't bloat the
+ * table or the normalize regex). The match itself is unaffected — no real answer is
+ * anywhere near this long. Discord already caps message length, but #the-record runs
+ * on every message and /answer takes free text, so we cap defensively regardless.
+ */
+export const MAX_RAW_LEN = 512;
+
 // ---------------------------------------------------------------------------
 // Normalization — the EXACT algorithm (ORACLE.md §2), byte-for-byte identical to
 // the plugin's Java normalizeAnswer. Drift here breaks the loop silently.
@@ -151,7 +161,16 @@ export async function resolveAnswer(
   raw: string,
   surface: AnswerSurface,
 ): Promise<ResolveResult> {
-  const normalized = normalizeAnswer(raw);
+  // 0. defensively bound the input length BEFORE any work. A real answer is short;
+  //    a giant paste is abuse — cap it so it can't bloat answer_attempts.raw or feed
+  //    a pathological string into the normalize regex. The capped text is what we
+  //    normalize AND what we log as `raw` (so the stored row is bounded too).
+  const rawCapped =
+    typeof raw === 'string' && raw.length > MAX_RAW_LEN
+      ? raw.slice(0, MAX_RAW_LEN)
+      : (raw ?? '');
+
+  const normalized = normalizeAnswer(rawCapped);
 
   // 1. empty → not plausibly an answer. Silent, and NOT logged (ORACLE.md §2).
   if (normalized === '') return { kind: 'silent', reason: 'empty' };
@@ -175,7 +194,7 @@ export async function resolveAnswer(
       mcUuid,
       discordId,
       surface,
-      raw,
+      raw: rawCapped,
       normalized,
       matched: false,
     });
@@ -194,7 +213,7 @@ export async function resolveAnswer(
       mcUuid,
       discordId,
       surface,
-      raw,
+      raw: rawCapped,
       normalized,
       matched: false,
     });
@@ -211,7 +230,7 @@ export async function resolveAnswer(
       mcUuid: null,
       discordId,
       surface,
-      raw,
+      raw: rawCapped,
       normalized,
       matched: true,
     });
@@ -234,7 +253,7 @@ export async function resolveAnswer(
         mcUuid: player.mc_uuid,
         discordId,
         surface,
-        raw,
+        raw: rawCapped,
         normalized,
         matched: true,
       });
@@ -252,7 +271,7 @@ export async function resolveAnswer(
       mcUuid: player.mc_uuid,
       discordId,
       surface,
-      raw,
+      raw: rawCapped,
       normalized,
       matched: true,
     });
@@ -271,7 +290,7 @@ export async function resolveAnswer(
       mcUuid: player.mc_uuid,
       discordId,
       surface,
-      raw,
+      raw: rawCapped,
       normalized,
       matched: true,
     });
@@ -288,7 +307,7 @@ export async function resolveAnswer(
     mcUuid: player.mc_uuid,
     discordId,
     surface,
-    raw,
+    raw: rawCapped,
     normalized,
     matched: true,
   });

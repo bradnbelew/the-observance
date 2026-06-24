@@ -33,6 +33,25 @@ secrets, or a human decision. The plugin is built to run safely even before all 
 - [ ] Author all narrative payloads (book/sign/lectern pages, sounds, etc.) into `beat_queue.payload`.
       The plugin never invents story text; empty/garbled payloads just no-op.
 
+### 4a. The Oracle (closed clue loop) — apply 0004 + seed puzzles
+- [ ] **Apply `discord/supabase/migrations/0004_oracle.sql`** to the live Supabase (out-of-band:
+      Supabase SQL editor or `supabase db push`). It is additive/non-breaking: it creates `puzzles`,
+      `solves`, `answer_attempts`, and reconciles `beat_queue` (adds `mc_uuid` / `site_id` / `priority`,
+      widens the status check to include `'failed'`, adds the actionable partial index). **Until this
+      runs, the in-world answer-sign and the Discord `/answer` + `#the-record` scan can match NOTHING
+      and the plugin cannot target a player** (the columns it reads/writes don't exist yet).
+- [ ] **Seed `puzzles` rows** — each `puzzle_key` is the `forgeClue()` FNV-1a key; `accepted_answers`
+      MUST be stored **already-normalized** (NFKC → lower → `[^a-z0-9 ]→space` → collapse → trim — see
+      ORACLE.md §2). Coordinate answers lose the `-` sign, so store unsigned or include both forms.
+      Set `outcome_type` + `outcome_payload` (a `voice_key` + optional `beat`/`next_puzzle_key`/`set_flags`);
+      flip `active = true` only for puzzles currently open. Optionally set `max_attempts` per puzzle.
+- [ ] Mark answer-sign sites in `sites.yml` with type `answer_sign` (or `keeper_stone`); optionally bind
+      one puzzle to a site via `puzzle-key:` (omit to match the whole open web). Run `/observance reload`.
+- [ ] Smoke test with ORACLE.md §8's 6-step script (right / wrong / dead-end / replay / spam / sign).
+- [ ] Confirm `beat_queue.payload` is written as a jsonb **object** (the plugin reads it as a
+      `JsonElement` via `BeatPayload.of` now — a quoted string would break it; this was the load-bearing
+      fix that also rescued existing `whisper_toll` beats).
+
 ## 5. Resource pack (the rune font)
 - [ ] Build/host the resource-pack that supplies the custom rune font + any `namedSound` resource-pack
       sounds the showrunner authors. Set `resource-pack` / `resource-pack-sha1` in the server's

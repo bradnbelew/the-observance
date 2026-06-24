@@ -56,14 +56,13 @@ export async function handleAnswer(
   switch (result.kind) {
     case 'solved': {
       // the watcher answers in the open — its words are public, the world heard.
-      const next = result.nextPuzzleKey
-        ? `\n\n${voice.oracleNextClue()}`
-        : '';
-      // the resolved outcome line already carries the right register; only
-      // append the "way goes on" nudge if a next clue opened AND the line wasn't
-      // itself the next-clue line (avoid doubling).
-      const tail = result.nextPuzzleKey && result.outcomeType !== 'next_clue' ? next : '';
-      await interaction.reply({ content: `${result.reply}${tail}` });
+      // The resolver already picked the ONE in-register line for this outcome
+      // (next_clue says "the way goes on"; side_quest says "this is not the way";
+      // main_beat says "it turns"). We do NOT append a second line: appending the
+      // next_clue nudge to a side_quest/main_beat would contradict its own voice,
+      // and the next clue itself is surfaced in-world (the forged carving / beat),
+      // never by doubling a line here. Speak the single resolved line, verbatim.
+      await interaction.reply({ content: result.reply });
       return;
     }
 

@@ -97,12 +97,19 @@ client.on('interactionCreate', async (interaction: Interaction) => {
  * stumble — a scan failure never crashes the process and never speaks an error.
  */
 client.on('messageCreate', async (message: Message) => {
-  // ignore self, other bots, webhooks, and anything outside #the-record.
+  // ignore self, other bots, webhooks, system messages, and anything outside
+  // #the-record. The bot is itself a bot, so author.bot also breaks any reply
+  // loop (the watcher's own answer can never re-trigger the scan).
   if (message.author.bot) return;
+  if (message.webhookId) return; // webhook posts aren't keepers answering
+  if (message.system) return; // join/pin/system notices are never answers
   if (message.channelId !== config.channels.theRecord) return;
 
   const raw = message.content;
   if (!raw || raw.trim() === '') return;
+  // defensive length bound before any work (the resolver caps too, but don't even
+  // hand a multi-kB paste to the resolver from the always-on scan).
+  if (raw.length > 4000) return;
 
   try {
     // resolve the speaker -> a bound keeper (may be null; the resolver still
