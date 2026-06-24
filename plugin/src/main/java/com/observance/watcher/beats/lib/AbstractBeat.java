@@ -183,6 +183,39 @@ public abstract class AbstractBeat implements Beat {
                 () -> attemptHidden(ctx, block, mutation, attempt + 1));
     }
 
+    /**
+     * The PER-PLAYER half of the two-path reveal (MF-9). Runs a private mutation — typically a
+     * client-side illusion via {@code player.sendBlockChange} — only when the target is hidden from
+     * THAT player, so each member of a convened group discovers the change without seeing it appear,
+     * even when a globally-unwitnessed instant ({@link #mutateWhenUnwitnessed}) never comes because the
+     * group is standing together. Retries on the same cadence and abandons quietly. Use this for group
+     * scenes; the real-world {@code mutateWhenUnwitnessed} stays the path for solo / unattended changes.
+     *
+     * @return true if delivery was scheduled, false if no player/block.
+     */
+    protected boolean privateRevealWhenUnwitnessed(BeatContext ctx, Player player, Block block, Runnable mutation) {
+        if (player == null || block == null || mutation == null) return false;
+        attemptHiddenFrom(ctx, player, block, mutation, 0);
+        return true;
+    }
+
+    private void attemptHiddenFrom(BeatContext ctx, Player player, Block block, Runnable mutation, int attempt) {
+        if (player == null || !player.isOnline()) return;     // left the scene — abandon
+        boolean hidden = ctx.safety().call("beat.reveal.checkFrom",
+                () -> ctx.reveal().isHiddenFrom(player, block), Boolean.TRUE);
+        if (Boolean.TRUE.equals(hidden)) {
+            ctx.safety().run("beat.reveal.mutateFrom", mutation);
+            return;
+        }
+        int max = ctx.config().revealRetryMaxAttempts();
+        if (attempt >= max) {
+            return; // they kept looking — abandon silently (no pop-in)
+        }
+        long delay = ctx.config().revealRetryDelayTicks();
+        ctx.scheduler().runLaterSafe("beat.reveal.retryFrom", delay,
+                () -> attemptHiddenFrom(ctx, player, block, mutation, attempt + 1));
+    }
+
     /** Forget idempotency state (e.g. on reload), so the same row can re-fire after a wipe. */
     public void clearAppliedState() {
         applied.clear();

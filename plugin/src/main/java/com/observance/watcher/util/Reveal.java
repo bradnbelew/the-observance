@@ -57,6 +57,27 @@ public final class Reveal {
     }
 
     /**
+     * True if THIS specific player cannot currently witness the target — the PER-PLAYER half of the
+     * two-path reveal (MF-9). When 4-6 friends are convened, a globally-hidden instant (isHidden) may
+     * never come, so a world beat near them would retry and die silently. The per-player path instead
+     * delivers a CLIENT-SIDE illusion (via {@code player.sendBlockChange}) to each member at the moment
+     * THEY aren't looking, so each "discovers" it without seeing it appear. A player in another world,
+     * out of witness range, or without line of sight counts as not-witnessing (hidden = true).
+     */
+    public boolean isHiddenFrom(Player player, Location target) {
+        if (player == null || !player.isOnline() || target == null || target.getWorld() == null) return false;
+        if (!target.getWorld().equals(player.getWorld())) return true;     // different world → can't see it
+        Location eye = player.getEyeLocation();
+        double r2 = (double) witnessRadius * witnessRadius;
+        if (eye.distanceSquared(target) > r2) return true;                 // too far to witness
+        return !hasLineOfSight(player, target);                            // in range → hidden iff no LoS
+    }
+
+    public boolean isHiddenFrom(Player player, Block block) {
+        return block != null && isHiddenFrom(player, centerOf(block));
+    }
+
+    /**
      * Line-of-sight from a player's eyes to a target location, via Bukkit's ray-trace.
      * Conservative: if the ray hits a solid block before reaching the target, it's blocked.
      */
