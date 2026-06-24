@@ -5,8 +5,10 @@ api-version: '1.21'
 author: Voxaris
 description: The Observance — deterministic soft-pressure haunting engine (Phase 0).
 website: https://the-observance.local
-# Phase 0 is fully self-contained: no hard or soft dependencies. Later phases may add
-# Citizens2 / FastAsyncWorldEdit / PacketEvents as softdepend.
+# Phase 0 is self-contained. FastAsyncWorldEdit is an OPTIONAL softdepend: when present it
+# enables SmallStructureBeat's curated-schematic paste branch; when absent every other beat
+# (and the inline cairn path) runs unchanged. Later phases may add Citizens2 / PacketEvents.
+softdepend: [FastAsyncWorldEdit]
 load: POSTWORLD
 
 commands:

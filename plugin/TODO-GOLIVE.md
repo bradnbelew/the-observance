@@ -23,6 +23,23 @@ secrets, or a human decision. The plugin is built to run safely even before all 
 - [ ] Sanity check: crouch on the bow marker, drop an item on the cairn, confirm `custom_compliance`
       rows appear in Supabase.
 
+## 3a. Set-piece schematics — FastAsyncWorldEdit (OPTIONAL)
+The `small_structure` beat has two paths: an inline block-list (always works, no deps) and a curated
+`.schem` paste for larger set-pieces (keeper-stones, alcoves, Undercroft rooms). The schematic path is
+OPTIONAL and fully isolated — if FAWE is absent the plugin runs every other beat (and the inline cairn
+path) unchanged; schematic beats just skip (logged `fawe-unavailable`). Nothing else depends on it.
+- [ ] Install **FastAsyncWorldEdit 2.15.x** — the **Java 21** build, NOT a Java-25 one (atmosphere-stack
+      §1) — into PebbleHost `plugins/`. The plugin softdepends on it; no config needed.
+- [ ] Create `plugins/Observance/schematics/` and drop curated `.schem` files there (authored in a
+      scratch creative world: stand at the intended origin → `//copy` → `//schem save <name>`).
+- [ ] Reference one from a beat payload: `{ "schematic": "stone_01_caesar", "require_floor": true }` —
+      the name maps to `schematics/stone_01_caesar.schem` (sanitized to `[a-z0-9_-]`, no path traversal).
+      The region's MIN corner lands at the resolved site/base; the footprint box is swept for
+      replaceability + floor support exactly like the inline path (never carves rock / floats).
+- [ ] Author schematics with a solid base layer, for OPEN terrain (the footprint box must be
+      replaceable). For void-dimension rooms set `require_floor: false`. Bounding-box volume is capped at
+      32,768 cells (else skipped `schematic-too-large`); larger set-pieces are pre-generated at deploy.
+
 ## 4. Supabase schema + content (the dashboard/bot side)
 - [ ] Ensure the tables the plugin reads/writes exist with the expected columns:
       `players, dossiers, custom_compliance, heatmap_cells, bases, event_log` (writes);

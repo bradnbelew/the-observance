@@ -18,6 +18,13 @@ repositories {
         name = 'papermc'
         url = 'https://repo.papermc.io/repository/maven-public/'
     }
+    // WorldEdit API — for the OPTIONAL FAWE schematic-paste path. FAWE implements this API at
+    // runtime; we only compile against it. Java-21 pin (build.gradle:11) is what keeps us on the
+    // FAWE 2.15.x line — do NOT bump to a WorldEdit that requires Java 25 (atmosphere-stack.md §1).
+    maven {
+        name = 'enginehub'
+        url = 'https://maven.enginehub.org/repo/'
+    }
 }
 
 dependencies {
@@ -26,6 +33,13 @@ dependencies {
 
     // Gson — Paper bundles Gson on its classpath, so compileOnly is enough to compile.
     compileOnly 'com.google.code.gson:gson:2.11.0'
+
+    // WorldEdit API — compileOnly + softdepend (plugin.yml). The schematic-paste branch of
+    // SmallStructureBeat is isolated behind FaweSchematicPaster and only loaded when FAWE/WorldEdit
+    // is present (capability-probed). The plugin runs every other beat with this absent. FAWE 2.15.2
+    // provides the impl at runtime; a method-signature mismatch is caught (Throwable) and the paste
+    // degrades to a skip, never a crash.
+    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.3.10'
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -14,19 +14,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * WORLD — a small structure is just *there* (a cairn, a marker stone), pasted out of sight from an
- * authored, footprint-checked block list. Phase-0 / no-FAWE: the schematic is a list of relative
- * offsets→materials in the payload. The whole footprint is validated (every cell replaceable, a
- * solid floor under the base) BEFORE any block is set — so it never carves rock or floats in air
- * (anti-jank #2, #4). Placed blocks are registered protected. Either fully placed or not at all.
+ * WORLD — a small structure is just *there* (a cairn, a marker stone, a keeper-stone shrine), pasted
+ * out of sight. Two paths, same anti-jank guarantees (footprint validated before ANY block is set,
+ * reveal-disciplined, all-or-nothing, placed blocks protected):
  *
- * <p>Payload:
+ * <ul>
+ *   <li><b>inline</b> — an authored list of relative offsets→materials (≤256 cells) in the payload.
+ *       Always available, no dependencies. Good for cairns/markers.</li>
+ *   <li><b>schematic</b> — a curated {@code .schem} from {@code plugins/Observance/schematics/}, pasted
+ *       via FastAsyncWorldEdit for the larger set-pieces the inline list can't hold (keeper-stones,
+ *       alcoves, the Undercroft rooms). OPTIONAL: isolated behind {@link Schematics}/{@link
+ *       FaweSchematicPaster}; if FAWE is absent the beat skips this path (never errors), and every
+ *       other beat is unaffected.</li>
+ * </ul>
+ *
+ * <p>Payload (one of):
  * <pre>{@code
- * { "blocks":[ {"dx":0,"dy":0,"dz":0,"material":"COBBLESTONE"},
- *              {"dx":0,"dy":1,"dz":0,"material":"MOSSY_COBBLESTONE"} ],
- *   "require_floor": true }
+ * { "blocks":[ {"dx":0,"dy":0,"dz":0,"material":"COBBLESTONE"} ], "require_floor": true }
+ * { "schematic":"stone_01_caesar", "require_floor": true }
  * }</pre>
- * Offsets are relative to the chosen base block (the anchor's surface spot).
+ * The schematic's region MIN corner lands at the resolved base; the footprint box [base..base+dims)
+ * is swept for replaceability + floor support exactly like the inline path. Idempotency: once placed,
+ * the footprint is occupied, so a re-fire fails the replaceable sweep and skips (plus the in-process
+ * applied-set + the poller's durable status='fired').
  */
 public final class SmallStructureBeat extends AbstractBeat {
 
@@ -38,14 +48,23 @@ public final class SmallStructureBeat extends AbstractBeat {
 
     @Override
     public boolean canEnact(BeatContext ctx, BeatRequest req) {
-        if (req.payload().objectList("blocks").isEmpty()) return false;
-        Location base = resolveBase(ctx, req);
-        return base != null;
+        BeatPayload p = req.payload();
+        boolean hasSchematic = sanitizeSchemName(p.string("schematic", null)) != null;
+        boolean hasBlocks = !p.objectList("blocks").isEmpty();
+        if (!hasSchematic && !hasBlocks) return false;
+        return resolveBase(ctx, req) != null;
     }
 
     @Override
     protected BeatResult doEnact(BeatContext ctx, BeatRequest req) {
         BeatPayload p = req.payload();
+
+        // Schematic branch first (FAWE) — falls through to the inline path if no `schematic` field.
+        String schem = sanitizeSchemName(p.string("schematic", null));
+        if (schem != null) {
+            return enactSchematic(ctx, req, p, schem);
+        }
+
         List<Cell> cells = parseCells(p);
         if (cells.isEmpty()) return BeatResult.skipped("no-blocks");
 
@@ -119,4 +138,92 @@ public final class SmallStructureBeat extends AbstractBeat {
     }
 
     private static int clamp(int v) { return Math.max(-32, Math.min(32, v)); }
+
+    /* ------------------------------------------------------------------ */
+    /* Schematic (FAWE) path                                              */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Bound the schematic bounding-box volume. Caps the main-thread cost of the footprint sweep + the
+     * protect pass + the paste itself, and keeps a runaway/oversized schematic from lagging a tick.
+     * Curated keeper-stones/alcoves/rooms fit comfortably; truly large set-pieces (whole dimensions)
+     * are pre-generated at deploy, not runtime-pasted.
+     */
+    private static final int MAX_SCHEM_VOLUME = 32_768;
+
+    private BeatResult enactSchematic(BeatContext ctx, BeatRequest req, BeatPayload p, String schem) {
+        SchematicPaster paster = Schematics.paster();
+        if (paster == null) return BeatResult.skipped("fawe-unavailable");
+
+        java.io.File file = new java.io.File(
+                new java.io.File(ctx.plugin().getDataFolder(), "schematics"), schem + ".schem");
+        if (!file.isFile()) return BeatResult.skipped("schematic-missing");
+
+        int[] dims = paster.dimensions(file);
+        if (dims == null || dims.length != 3) return BeatResult.skipped("schematic-unreadable");
+        final int w = dims[0], h = dims[1], l = dims[2];
+        if (w <= 0 || h <= 0 || l <= 0) return BeatResult.skipped("schematic-empty");
+        if ((long) w * h * l > MAX_SCHEM_VOLUME) return BeatResult.skipped("schematic-too-large");
+
+        Location base = resolveBase(ctx, req);
+        if (base == null || base.getWorld() == null) return BeatResult.skipped("no-base");
+        final boolean requireFloor = p.bool("require_floor", true);
+        final Block baseBlock = base.getBlock();
+
+        // Footprint pre-check over the schematic's [base .. base+dims) box — never carve/float.
+        if (!footprintClear(baseBlock, w, h, l, requireFloor)) {
+            return BeatResult.skipped("footprint-occupied");
+        }
+
+        // Reveal-disciplined: paste only when the base is hidden, re-checking the footprint first.
+        mutateWhenUnwitnessed(ctx, baseBlock, () -> {
+            if (!footprintClear(baseBlock, w, h, l, requireFloor)) return; // world changed — abort silently
+            Boolean ok = ctx.safety().call("beat.structure.paste",
+                    () -> paster.pasteAtMinCorner(file, base, true), Boolean.FALSE);
+            if (Boolean.TRUE.equals(ok)) {
+                protectBox(ctx, baseBlock, w, h, l);
+            }
+        });
+        return BeatResult.fired("schematic=" + schem + " " + w + "x" + h + "x" + l);
+    }
+
+    /** Every cell of the [base..base+dims) box must be in-range + replaceable; floor optional. MAIN thread. */
+    private static boolean footprintClear(Block baseBlock, int w, int h, int l, boolean requireFloor) {
+        for (int dx = 0; dx < w; dx++) {
+            for (int dy = 0; dy < h; dy++) {
+                for (int dz = 0; dz < l; dz++) {
+                    Block b = baseBlock.getRelative(dx, dy, dz);
+                    if (!Placement.isWithinBuildRange(b.getWorld(), b.getY())) return false;
+                    if (!Placement.isReplaceable(b)) return false;
+                }
+            }
+        }
+        if (requireFloor) {
+            for (int dx = 0; dx < w; dx++) {
+                for (int dz = 0; dz < l; dz++) {
+                    if (!Placement.isSolidSupport(baseBlock.getRelative(dx, -1, dz))) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** Protect the solid blocks the paste left in the box (the structure), for the anti-grief listener. */
+    private static void protectBox(BeatContext ctx, Block baseBlock, int w, int h, int l) {
+        for (int dx = 0; dx < w; dx++) {
+            for (int dy = 0; dy < h; dy++) {
+                for (int dz = 0; dz < l; dz++) {
+                    Block b = baseBlock.getRelative(dx, dy, dz);
+                    if (!b.getType().isAir() && !b.isPassable()) ctx.protectedRegistry().protect(b);
+                }
+            }
+        }
+    }
+
+    /** Lowercase + strip to [a-z0-9_-] so a payload `schematic` can never path-traverse. Null if empty. */
+    private static String sanitizeSchemName(String name) {
+        if (name == null) return null;
+        String s = name.trim().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9_-]", "");
+        return s.isEmpty() ? null : s;
+    }
 }
