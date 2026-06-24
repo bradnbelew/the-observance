@@ -26,6 +26,11 @@ import {
   coordEncode,
   substitution,
   vigenere,
+  railFence,
+  columnar,
+  polybius,
+  a1z26,
+  morse,
   runSelfTests,
 } from './ciphers.js';
 import type { BookRef, Coord } from './ciphers.js';
@@ -49,7 +54,12 @@ export type CipherKind =
   | 'vigenere'
   | 'atbash'
   | 'book'
-  | 'coord';
+  | 'coord'
+  | 'railfence'
+  | 'columnar'
+  | 'polybius'
+  | 'a1z26'
+  | 'morse';
 
 interface BaseSpec {
   /**
@@ -98,13 +108,50 @@ export interface CoordSpec extends BaseSpec {
   readonly coord: Coord;
 }
 
+export interface RailFenceSpec extends BaseSpec {
+  readonly cipher: 'railfence';
+  readonly text: string;
+  /** number of rails the zig-zag bounces across (>= 1). */
+  readonly rails: number;
+}
+
+export interface ColumnarSpec extends BaseSpec {
+  readonly cipher: 'columnar';
+  readonly text: string;
+  /** the key word whose alphabetical order sets the column read order. */
+  readonly key: string;
+}
+
+export interface PolybiusSpec extends BaseSpec {
+  readonly cipher: 'polybius';
+  /** plaintext clue; encoded as 5x5 grid pairs (I/J merged). */
+  readonly text: string;
+}
+
+export interface A1Z26Spec extends BaseSpec {
+  readonly cipher: 'a1z26';
+  /** plaintext clue; letters become 1..26 ordinals. */
+  readonly text: string;
+}
+
+export interface MorseSpec extends BaseSpec {
+  readonly cipher: 'morse';
+  /** plaintext clue; encoded as dot/dash marks (A-Z, 0-9 only). */
+  readonly text: string;
+}
+
 export type ClueSpec =
   | SubstitutionSpec
   | CaesarSpec
   | VigenereSpec
   | AtbashSpec
   | BookSpec
-  | CoordSpec;
+  | CoordSpec
+  | RailFenceSpec
+  | ColumnarSpec
+  | PolybiusSpec
+  | A1Z26Spec
+  | MorseSpec;
 
 // ---------------------------------------------------------------------------
 // Output types.
@@ -235,6 +282,81 @@ export function forgeClue(spec: ClueSpec): ForgedClue {
       };
     }
 
+    case 'railfence': {
+      const solution = spec.text.toUpperCase();
+      const ct = railFence.encode(solution, spec.rails);
+      return forgeRuneText(
+        spec,
+        ct,
+        solution,
+        `Draw ${spec.rails} rails and bounce the marks along them.`,
+        { rails: spec.rails },
+      );
+    }
+
+    case 'columnar': {
+      const solution = spec.text.toUpperCase();
+      const ct = columnar.encode(solution, spec.key);
+      return forgeRuneText(
+        spec,
+        ct,
+        solution,
+        'Set the key word over columns; read them in its order.',
+        { key: spec.key.toUpperCase().replace(/[^A-Z]/g, '') },
+      );
+    }
+
+    case 'polybius': {
+      const solution = spec.text.toUpperCase();
+      const ct = polybius.encode(solution);
+      // Carve the digit-pair string (digits + space exist in the keepers' script).
+      return forgeRuneText(
+        spec,
+        ct,
+        solution,
+        'Two counts per mark — row then column on the five-by-five board.',
+        {},
+      );
+    }
+
+    case 'a1z26': {
+      const solution = spec.text.toUpperCase();
+      const ct = a1z26.encode(solution);
+      // Carve the ordinal string (digits + space exist in the keepers' script).
+      return forgeRuneText(
+        spec,
+        ct,
+        solution,
+        'Count the alphabet: each number is a letter, one to twenty-six.',
+        {},
+      );
+    }
+
+    case 'morse': {
+      const solution = spec.text.toUpperCase();
+      const ct = morse.encode(solution);
+      // The canonical morse uses ' / ' between words, but '/' has no carved glyph.
+      // Carve a rune-safe rendering where the word break becomes the ',' mark (a
+      // supported separator). `cipherText` in meta stays the canonical morse so
+      // it decodes straight back via morse.decode.
+      const carved = ct.replace(/ \/ /g, ' , ');
+      const svg = renderRunes(carved, spec.render);
+      const meta = makeMeta(
+        'morse',
+        ct,
+        'Dots and dashes — tap it out letter by letter.',
+        { marks: 'dot/dash' },
+        carved,
+        spec.render,
+      );
+      return {
+        svg,
+        solution,
+        puzzleKey: makePuzzleKey('morse', spec.namespace, ct),
+        meta,
+      };
+    }
+
     default: {
       // exhaustiveness guard — `spec` is `never` here if the union is covered.
       return assertNever(spec);
@@ -357,6 +479,35 @@ export function forgeSelfTest(): { passed: number; cases: string[] } {
   }
   cases.push('forgeClue: coord cross-surface handoff round-trips');
 
+  // new families: forge -> decode meta.cipherText -> back to the solution.
+  const railClue = forgeClue({ cipher: 'railfence', text: 'BOW AT THE MARKER', rails: 3 });
+  if (railFence.decode(railClue.meta.cipherText, 3) !== railClue.solution) {
+    throw new Error('forgeSelfTest: railfence clue does not decode to its solution');
+  }
+  const colClue = forgeClue({ cipher: 'columnar', text: 'BOW AT THE MARKER', key: 'ZEBRA' });
+  if (columnar.decode(colClue.meta.cipherText, 'ZEBRA') !== colClue.solution) {
+    throw new Error('forgeSelfTest: columnar clue does not decode to its solution');
+  }
+  const polyClue = forgeClue({ cipher: 'polybius', text: 'BOW AT THE MARKER' });
+  if (polybius.decode(polyClue.meta.cipherText) !== polyClue.solution) {
+    throw new Error('forgeSelfTest: polybius clue does not decode to its solution');
+  }
+  const ordClue = forgeClue({ cipher: 'a1z26', text: 'BOW AT THE MARKER' });
+  if (a1z26.decode(ordClue.meta.cipherText) !== ordClue.solution) {
+    throw new Error('forgeSelfTest: a1z26 clue does not decode to its solution');
+  }
+  const morseClue = forgeClue({ cipher: 'morse', text: 'BOW AT THE MARKER' });
+  if (morse.decode(morseClue.meta.cipherText) !== morseClue.solution) {
+    throw new Error('forgeSelfTest: morse clue does not decode to its solution');
+  }
+  // every new clue must also render to a carveable <g> (no uncarvable glyphs).
+  for (const c of [railClue, colClue, polyClue, ordClue, morseClue]) {
+    if (!c.svg.startsWith('<g')) {
+      throw new Error('forgeSelfTest: new-family clue did not render a <g> fragment');
+    }
+  }
+  cases.push('forgeClue: railfence/columnar/polybius/a1z26/morse forge + decode to solution + carve');
+
   return { passed: cases.length, cases };
 }
 
@@ -369,6 +520,11 @@ export {
   substitution,
   bookCipher,
   coordEncode,
+  railFence,
+  columnar,
+  polybius,
+  a1z26,
+  morse,
   runSelfTests,
 } from './ciphers.js';
 export type { BookRef, Coord } from './ciphers.js';
