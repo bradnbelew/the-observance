@@ -51,8 +51,23 @@ export async function runCustomsPass(mode: 'auto' | 'confirm', nowIso: string): 
   }
   if (decision.reports.length === 0) return { reported, tolled };
 
+  // ANTI-SPAM (audit, CRITICAL): the customs bridge has no cadence/window gate of its own, so a cron
+  // tick with 7 players each crossing a rung would burst #the-record. Post WORST-FIRST and cap per
+  // tick; deferred reports keep their high-water mark (advanced only on a successful post, below), so
+  // they surface next cadence — nothing is lost, the burst is just spaced.
+  const RUNG_RANK: Record<string, number> = { left: 0, warned: 1, observed: 2 };
+  const MAX_REPORTS_PER_TICK = 3;
+  const ordered = [...decision.reports].sort(
+    (a, b) => (RUNG_RANK[a.rung] ?? 9) - (RUNG_RANK[b.rung] ?? 9),
+  );
+  const toPost = ordered.slice(0, MAX_REPORTS_PER_TICK);
+  if (ordered.length > toPost.length) {
+    await logEvent('info', 'showrunner.customs',
+      `deferring ${ordered.length - toPost.length} report(s) past the per-tick cap of ${MAX_REPORTS_PER_TICK}; they surface next cadence`);
+  }
+
   let dirty = false;
-  for (const r of decision.reports) {
+  for (const r of toPost) {
     const id = `${r.groupKey}|${r.customKey}`;
     const ok = await postToTheRecord(r.line);
     if (!ok) {

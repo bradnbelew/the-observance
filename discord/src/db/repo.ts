@@ -55,14 +55,20 @@ export async function linkDiscord(
   discordId: string,
   mcName: string,
 ): Promise<Player | null> {
+  // SECURITY (audit): mcName is player-supplied. A raw `.ilike` treats % and _ as wildcards, so
+  // `/link %` would match the FIRST player row and hijack their identity. Escape the LIKE
+  // metacharacters for the (case-insensitive) lookup, then ASSERT the matched name equals the
+  // input case-insensitively — belt-and-suspenders against any wildcard slipping through.
+  const escaped = mcName.replace(/([\\%_])/g, '\\$1');
   const { data: found, error: findErr } = await supabase
     .from('players')
     .select('id, mc_uuid, name, discord_id')
-    .ilike('name', mcName)
+    .ilike('name', escaped)
     .maybeSingle<Player>();
 
   if (findErr) throw findErr;
   if (!found) return null;
+  if (found.name?.toLowerCase() !== mcName.trim().toLowerCase()) return null;
 
   const { data, error } = await supabase
     .from('players')

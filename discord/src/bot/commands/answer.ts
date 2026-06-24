@@ -26,6 +26,7 @@ import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { getPlayerByDiscordId, logEvent } from '../../db/repo.js';
 import { resolveAnswer } from '../../oracle/resolve.js';
 import { voice } from '../../voice.js';
+import { postToTheRecord } from '../../showrunner/discord.js';
 
 const SOURCE = 'the-watcher/answer';
 
@@ -34,13 +35,16 @@ export async function handleAnswer(
 ): Promise<void> {
   const raw = interaction.options.getString('text', true);
 
+  // CRITICAL (audit): defer IMMEDIATELY. resolveAnswer does ~8-10 serial Supabase round-trips that
+  // can exceed Discord's 3s ack window and fire a red "application did not respond" on camera. We
+  // defer EPHEMERAL — a miss/withhold must never surface publicly — then editReply. A genuine SOLVE
+  // is additionally posted to #the-record (below) so "the world heard it" without the timeout risk.
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
   // 1. who are you, in the world? a solve must be a known keeper.
   const player = await getPlayerByDiscordId(interaction.user.id);
   if (!player) {
-    await interaction.reply({
-      content: voice.notLinked(),
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.editReply({ content: voice.notLinked() });
     return;
   }
 
@@ -62,16 +66,16 @@ export async function handleAnswer(
       // next_clue nudge to a side_quest/main_beat would contradict its own voice,
       // and the next clue itself is surfaced in-world (the forged carving / beat),
       // never by doubling a line here. Speak the single resolved line, verbatim.
-      await interaction.reply({ content: result.reply });
+      // The ephemeral editReply is the solver's ack; the PUBLIC record of the solve goes to
+      // #the-record (the shared record channel) — "the world heard it" — fire-and-forget.
+      await interaction.editReply({ content: result.reply });
+      void postToTheRecord(result.reply);
       return;
     }
 
     case 'withheld': {
-      // rate-limited or capped — withhold, in voice, quietly.
-      await interaction.reply({
-        content: result.reply,
-        flags: MessageFlags.Ephemeral,
-      });
+      // rate-limited or capped — withhold, in voice, quietly (ephemeral via the defer).
+      await interaction.editReply({ content: result.reply });
       return;
     }
 
@@ -81,10 +85,7 @@ export async function handleAnswer(
       // the same neutral withholding line, ephemerally — indistinguishable from a
       // cap. It reveals nothing about correctness or closeness.
       void logEvent('info', SOURCE, `${player.name} answered: ${result.reason}`);
-      await interaction.reply({
-        content: voice.oracleWithheld(),
-        flags: MessageFlags.Ephemeral,
-      });
+      await interaction.editReply({ content: voice.oracleWithheld() });
       return;
     }
   }

@@ -39,13 +39,14 @@ export async function handleWhisper(
 ): Promise<void> {
   const puzzleKey = interaction.options.getString('puzzle', true).trim();
 
+  // CRITICAL (audit): defer ephemeral immediately — the budget/hint lookups are several Supabase
+  // round-trips that can blow Discord's 3s window. All whisper replies are ephemeral, so editReply.
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
   // 1. who are you, in the world?
   const player = await getPlayerByDiscordId(interaction.user.id);
   if (!player) {
-    await interaction.reply({
-      content: voice.notLinked(),
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.editReply({ content: voice.notLinked() });
     return;
   }
 
@@ -105,5 +106,6 @@ async function speak(
   interaction: ChatInputCommandInteraction,
   content: string,
 ): Promise<void> {
-  await interaction.reply({ content });
+  // handleWhisper defers ephemeral up front, so every result path edits that deferred reply.
+  await interaction.editReply({ content });
 }

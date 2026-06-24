@@ -21,13 +21,14 @@ export async function handleLink(
 ): Promise<void> {
   const name = interaction.options.getString('name', true).trim();
 
+  // CRITICAL (audit): defer ephemeral before the linkDiscord DB lookup so a slow round-trip can't
+  // trip Discord's 3s "did not respond". Linking is always a private interaction → ephemeral.
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
   const player = await linkDiscord(interaction.user.id, name);
 
   if (!player) {
-    await interaction.reply({
-      content: voice.linkUnknown(name),
-      flags: MessageFlags.Ephemeral,
-    });
+    await interaction.editReply({ content: voice.linkUnknown(name) });
     return;
   }
 
@@ -37,8 +38,5 @@ export async function handleLink(
     `bound discord ${interaction.user.id} -> ${player.name} (${player.id})`,
   );
 
-  await interaction.reply({
-    content: voice.linked(player.name),
-    flags: MessageFlags.Ephemeral,
-  });
+  await interaction.editReply({ content: voice.linked(player.name) });
 }
