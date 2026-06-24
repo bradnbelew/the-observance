@@ -84,7 +84,8 @@ writes are queued (bounded) and flushed when connectivity returns. No errors eve
 The plugin is a **consumer** of `beat_queue`. Anything that inserts a row there (the dashboard, the
 Discord bot, a SQL function) can drive the world. Each tick the async poller:
 
-1. checks local + remote sleep, then fetches rows with `status in (pending, approved)` ordered by
+1. checks local + remote sleep, then fetches rows with `status = approved` ONLY — the approval gate;
+   `pending` rows wait for a human to approve them in the dashboard — ordered by
    `priority desc, created_at asc` (capped by `max-per-poll`),
 2. hops to the **main thread**, validates the row into a `BeatRequest` (resolves the target player by
    `mc_uuid`, the site by `site_id`, parses `payload` JSON), gates it through the drama budget, and
@@ -98,7 +99,7 @@ A row looks like:
 |---|---|
 | `id` | row id; the in-process + DB idempotency key |
 | `type` | beat-library key, e.g. `whisper_toll`, `lectern_fill`, `door_open` |
-| `status` | `pending` / `approved` → actionable |
+| `status` | `approved` → actionable; `pending` waits for dashboard approval; player-earned beats are inserted `approved` |
 | `mc_uuid` | target player (per-player beats); null for world/ambient |
 | `site_id` | a `sites.yml` site id (world-located beats) |
 | `payload` | per-beat JSON — **all story text lives here, never in code** |

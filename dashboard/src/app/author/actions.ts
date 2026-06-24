@@ -87,11 +87,13 @@ export async function rewindArc(formData: FormData): Promise<ActionResult> {
 // ---------------------------------------------------------------------------
 
 /**
- * Decide a queued beat. Sets status + decided_at (the timestamp the anti-jank
- * gate cares about). "approved" and "fired" are both real decisions:
- *   - approve: let the engine fire it on its own cadence
- *   - force:   mark it fired now (used to push a beat immediately / for testing)
- *   - skip:    drop it without firing
+ * Decide a queued beat. Sets status + decided_at. The plugin's poller fires
+ * `status = 'approved'` ONLY, so a `pending` beat sits untouched until approved
+ * here — that IS the gate:
+ *   - approve: open the gate; the beat fires on the plugin's next poll (seconds).
+ *   - force:   same end state (status 'approved') — surfaced as a one-click
+ *              "push it now" for staging/testing a beat immediately.
+ *   - skip:    drop it without firing (status 'skipped').
  */
 async function decideBeat(
   id: number,
@@ -123,7 +125,9 @@ export async function approveBeat(formData: FormData): Promise<ActionResult> {
 }
 
 export async function forceBeat(formData: FormData): Promise<ActionResult> {
-  return decideBeat(Number(formData.get("id")), "fired");
+  // Gated model: the plugin fires 'approved' only, so "push it now" = approve it
+  // (it fires on the very next poll). Setting 'fired' would just drop the beat.
+  return decideBeat(Number(formData.get("id")), "approved");
 }
 
 export async function skipBeat(formData: FormData): Promise<ActionResult> {
