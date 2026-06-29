@@ -39,9 +39,7 @@ commands:
       /observance status        - show plugin health (db, queue, last beat, reckoning state)
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
-      /observance falselaw <on|off>   - toggle the forged-eighth false-law fiction (lore-only; enforces nothing)
-      /observance restraint <on|off>  - master toggle for the collective-restraint (Unlit Deep) latch
-      /observance window <on|off>     - force-open/close the real-clock event window (override the schedule)
+      /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)
     aliases: [obs]
     permission: observance.admin
 

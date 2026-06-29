@@ -5,6 +5,7 @@ import com.observance.watcher.config.ObservanceConfig;
 import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.data.SupabaseResult;
 import com.observance.watcher.data.rows.AnswerAttemptRow;
+import com.observance.watcher.data.rows.ArcStateRow;
 import com.observance.watcher.data.rows.BeatQueueInsertRow;
 import com.observance.watcher.data.rows.PlayerLookupRow;
 import com.observance.watcher.data.rows.PuzzleRow;
@@ -14,7 +15,9 @@ import com.observance.watcher.util.Safety;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The WORLD-surface half of the shared oracle resolver (ORACLE.md §1, §5). Given a normalized answer
@@ -121,7 +124,11 @@ public final class OracleResolver {
             // Can't read the web → degrade silently (don't even log an attempt we couldn't evaluate).
             return Result.UNAVAILABLE;
         }
-        PuzzleRow matched = firstMatch(pr.value(), norm, boundPuzzleKey);
+        // The storylet gate: load arc_state.flags once and AND-test each row's requires_flags, so a
+        // gated row (the M4 Iss chain, the Seventh deep) is invisible in-world until its upstream door
+        // set the flag — identical to the Discord getOpenPuzzles gate (FlagGate is its proven twin).
+        Map<String, Object> arcFlags = fetchArcFlags();
+        PuzzleRow matched = firstMatch(pr.value(), norm, boundPuzzleKey, arcFlags);
 
         // 4. Resolve the keeper id (needed for both the attempt log and the solve guard).
         PlayerLookupRow keeper = lookupKeeper(mcUuid);
@@ -180,13 +187,21 @@ public final class OracleResolver {
     /* ------------------------------------------------------------------ */
 
     /**
-     * First OPEN puzzle whose accepted_answers contains the normalized string (ORACLE.md §2). When
-     * {@code boundPuzzleKey} is non-null, only that puzzle is considered (a focused answer-sign site).
+     * First OPEN puzzle whose accepted_answers contains the normalized string (ORACLE.md §2), among
+     * the rows the storylet gate leaves open. When {@code boundPuzzleKey} is non-null, only that puzzle
+     * is considered (a focused answer-sign site) — which is how the world surface handles a plaintext
+     * shared by a sequenced pair (the M4 gate sign is bound to its own row), so it does not need the
+     * Discord side's unsolved-preference here. A row is skipped unless every key in its
+     * {@code requires_flags} is truthy in {@code arcFlags} (the SAME predicate as the bot, via
+     * {@link FlagGate}).
      */
-    private PuzzleRow firstMatch(List<PuzzleRow> puzzles, String norm, String boundPuzzleKey) {
+    private PuzzleRow firstMatch(List<PuzzleRow> puzzles, String norm, String boundPuzzleKey,
+                                 Map<String, Object> arcFlags) {
         for (PuzzleRow p : puzzles) {
             if (p == null || p.acceptedAnswers == null) continue;
             if (!Boolean.TRUE.equals(p.active)) continue; // defensive: the query already filters
+            // storylet gate — skip a row whose requires_flags are not all satisfied by arc_state.flags.
+            if (!FlagGate.satisfied(p.requiresFlagsMap(), arcFlags)) continue;
             if (boundPuzzleKey != null && !boundPuzzleKey.equals(p.puzzleKey)) continue;
             for (String a : p.acceptedAnswers) {
                 // accepted_answers are stored already-normalized; compare verbatim.
@@ -196,6 +211,23 @@ public final class OracleResolver {
             }
         }
         return null;
+    }
+
+    /**
+     * Load {@code arc_state.flags} as a flat {@code Map<String,Object>} for the gate. Graceful: any
+     * miss/outage returns empty, which keeps every gated row CLOSED (the safe failure — never leak a
+     * gated row because the flags read stumbled). Never throws.
+     */
+    private Map<String, Object> fetchArcFlags() {
+        try {
+            SupabaseResult<ArcStateRow> r = supabase.fetchArcState();
+            if (r.ok() && r.value() != null) {
+                return r.value().flagsMap();
+            }
+        } catch (Throwable ignored) {
+            // fall through to empty — gated rows stay closed
+        }
+        return Collections.emptyMap();
     }
 
     /* ------------------------------------------------------------------ */
@@ -211,6 +243,17 @@ public final class OracleResolver {
         JsonObject outcome = matched.outcomeObject();
         if (outcome == null) return;
 
+        // (a) set_flags — apply the atomic merge FIRST, BEFORE the beat-less early return, so a
+        //     flag-setting lore/dead_end/next_clue row advances the arc even with no beat. This is the
+        //     world surface's twin of the bot resolver's applyOutcome step (a); without it an in-world
+        //     solve of a flag-setting puzzle (the Iss catch → iss_caught) would NOT open the back half
+        //     and the two surfaces would diverge (closes will-it-run #12).
+        com.google.gson.JsonElement setFlagsEl = outcome.get("set_flags");
+        if (setFlagsEl != null && setFlagsEl.isJsonObject() && setFlagsEl.getAsJsonObject().size() > 0) {
+            supabase.mergeArcFlags(setFlagsEl.getAsJsonObject());
+        }
+
+        // (b) the optional in-world reward beat.
         com.google.gson.JsonElement beatEl = outcome.get("beat");
         if (beatEl == null || !beatEl.isJsonObject()) {
             return; // no in-world reward (dead_end / lore / a beat-less next_clue) — nothing to enqueue

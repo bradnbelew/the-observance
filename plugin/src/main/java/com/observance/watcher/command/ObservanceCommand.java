@@ -1,15 +1,19 @@
 package com.observance.watcher.command;
 
+import com.google.gson.JsonObject;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.util.Safety;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * {@code /observance} admin command. Read-only status + safe controls (reload, local sleep
@@ -55,7 +59,58 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 plugin.setLocallyAsleep(on);
                 sender.sendMessage("Observance: local watcher-sleep " + (on ? "ENABLED (muted)" : "disabled"));
             }
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off>");
+            case "flag" -> handleFlag(sender, args);
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list>");
+        }
+    }
+
+    /**
+     * {@code /observance flag <set|clear|list> [key] [true|false]} — the storylet-gate admin control
+     * (OVERHAUL.md §6 Phase 1). Sets/clears a key in {@code arc_state.flags} via the atomic merge RPC
+     * so a tester can OPEN a gated branch (e.g. {@code iss_caught}) to prove gating in-world before the
+     * flag producers are all built, or read the current flags. The blocking Supabase I/O runs async;
+     * the reply is scheduled back on the main thread.
+     */
+    private void handleFlag(CommandSender sender, String[] args) {
+        var sb = plugin.supabase();
+        if (sb == null) {
+            sender.sendMessage("Observance: supabase unavailable.");
+            return;
+        }
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "list";
+        switch (op) {
+            case "set", "clear" -> {
+                if (args.length < 3) {
+                    sender.sendMessage("Usage: /observance flag " + op + " <key>"
+                            + (op.equals("set") ? " [true|false]" : ""));
+                    return;
+                }
+                String key = args[2];
+                // clear → false; set → true unless an explicit false/0 is given.
+                boolean val = op.equals("set")
+                        && !(args.length >= 4 && (args[3].equalsIgnoreCase("false") || args[3].equals("0")));
+                JsonObject flags = new JsonObject();
+                flags.addProperty(key, val);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    sb.mergeArcFlags(flags);
+                    Bukkit.getScheduler().runTask(plugin, () ->
+                            sender.sendMessage("Observance: flag '" + key + "' = " + val + " (merged into arc_state.flags)."));
+                });
+            }
+            case "list" -> Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                var r = sb.fetchArcState();
+                Map<String, Object> map = (r.ok() && r.value() != null)
+                        ? r.value().flagsMap() : Collections.emptyMap();
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    sender.sendMessage("== arc_state.flags ==");
+                    if (map.isEmpty()) {
+                        sender.sendMessage(" (none set)");
+                    } else {
+                        map.forEach((k, v) -> sender.sendMessage(" " + k + " = " + v));
+                    }
+                });
+            });
+            default -> sender.sendMessage("Usage: /observance flag <set|clear|list> [key] [true|false]");
         }
     }
 
@@ -77,12 +132,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sleep")) {
             out.add("on");
             out.add("off");
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("flag")) {
+            for (String s : new String[]{"set", "clear", "list"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
         }
         return out;
     }

@@ -55,7 +55,28 @@ public final class PuzzleRow {
     @SerializedName("max_attempts")
     public Integer maxAttempts;
 
+    /**
+     * The storylet gate (0006_requires_flags.sql; OVERHAUL.md §3): a flat {@code {flag:true}} object;
+     * the row is OPEN iff {@code active = true} AND every key here is truthy in {@code arc_state.flags}.
+     * Empty {@code {}} (the default) = ungated. AND-tested by {@code OracleResolver.firstMatch} via
+     * {@link com.observance.watcher.oracle.FlagGate}, the byte-for-byte twin of the Discord gate.
+     */
+    @SerializedName("requires_flags")
+    public JsonElement requiresFlags;
+
     public PuzzleRow() { }
+
+    /** The {@code requires_flags} as a flat {@code Map<String,Object>} (empty if absent). Never throws. */
+    public java.util.Map<String, Object> requiresFlagsMap() {
+        try {
+            if (requiresFlags != null && requiresFlags.isJsonObject()) {
+                return com.observance.watcher.oracle.JsonFlags.toMap(requiresFlags.getAsJsonObject());
+            }
+        } catch (Throwable ignored) {
+            // never throw out of a row accessor
+        }
+        return java.util.Collections.emptyMap();
+    }
 
     /**
      * The {@code outcome_payload} as a {@link com.google.gson.JsonObject}, or null if absent / not

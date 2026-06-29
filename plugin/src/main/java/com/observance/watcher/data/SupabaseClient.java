@@ -255,7 +255,7 @@ public final class SupabaseClient {
         if (!config.isConfigured()) {
             return SupabaseResult.ok(0, Collections.emptyList());
         }
-        String q = "select=puzzle_key,title,accepted_answers,outcome_type,outcome_payload,movement,active,max_attempts"
+        String q = "select=puzzle_key,title,accepted_answers,outcome_type,outcome_payload,movement,active,max_attempts,requires_flags"
                 + "&active=is.true"
                 + "&order=movement.asc,created_at.asc"
                 + "&limit=" + Math.max(1, limit);
@@ -404,6 +404,36 @@ public final class SupabaseClient {
         if (!r.ok()) {
             enqueue("insertBeat", () ->
                     doWrite("POST", "beat_queue", "", body, false, "insertBeat"));
+        }
+        return r;
+    }
+
+    /**
+     * ATOMICALLY merge keys into {@code arc_state.flags} via the {@code observance_merge_arc_flags}
+     * RPC (0006_requires_flags.sql) — {@code flags = flags || p_flags} in ONE server-side statement,
+     * never read-modify-write. This is the world surface's twin of the bot's {@code setArcFlags}; an
+     * in-world solve of a flag-setting puzzle (e.g. the Iss catch setting {@code iss_caught}) advances
+     * the arc identically on both surfaces (OVERHAUL.md §3; closes will-it-run #12). Keep the flags
+     * object FLAT (the merge is shallow). On failure the call is queued (bounded). Never throws.
+     */
+    public SupabaseResult<Void> mergeArcFlags(com.google.gson.JsonObject flags) {
+        if (flags == null || flags.size() == 0) {
+            return SupabaseResult.ok(0, null);
+        }
+        com.google.gson.JsonObject args = new com.google.gson.JsonObject();
+        args.add("p_flags", flags);
+        String body = gson.toJson(args);
+        // PostgREST exposes a function at /rpc/<name>; baseRequest prefixes the REST base URL.
+        if (!config.isConfigured()) {
+            enqueue("mergeArcFlags", () ->
+                    doWrite("POST", "rpc/observance_merge_arc_flags", "", body, false, "mergeArcFlags"));
+            return SupabaseResult.queued();
+        }
+        SupabaseResult<Void> r =
+                doWrite("POST", "rpc/observance_merge_arc_flags", "", body, false, "mergeArcFlags");
+        if (!r.ok()) {
+            enqueue("mergeArcFlags", () ->
+                    doWrite("POST", "rpc/observance_merge_arc_flags", "", body, false, "mergeArcFlags"));
         }
         return r;
     }
