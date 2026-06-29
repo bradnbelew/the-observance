@@ -20,7 +20,7 @@ import {
   type Message,
 } from 'discord.js';
 import { config } from '../config.js';
-import { getPlayerByDiscordId, logEvent } from '../db/repo.js';
+import { ensurePrologueIgnited, getPlayerByDiscordId, logEvent } from '../db/repo.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
 import { handleWhisper } from './commands/whisper.js';
@@ -30,6 +30,14 @@ import { resolveAnswer } from '../oracle/resolve.js';
 
 /** Source tag for every row this process writes to event_log. */
 const SOURCE = 'the-watcher';
+
+/**
+ * In-process latch for the cold-start ignition (B4 / OVERHAUL §3). Once a keeper has
+ * been seen in #the-record, `prologue_ignited` is set in arc_state and this flips true
+ * so we never re-read the flag on every subsequent message. Re-derives from the DB on a
+ * cold boot (the first keeper post simply re-confirms the already-set flag, a no-op).
+ */
+let prologueIgnited = false;
 
 const client = new Client({
   intents: [
@@ -115,6 +123,24 @@ client.on('messageCreate', async (message: Message) => {
     // resolve the speaker -> a bound keeper (may be null; the resolver still
     // rate-limits an unlinked author by discord_id and stays silent on a hit).
     const player = await getPlayerByDiscordId(message.author.id);
+
+    // IGNITION (B4 / OVERHAUL §3): the first time a KEEPER is seen acting in #the-record,
+    // fire the cold-start so the next autonomy tick speaks the frame-break ack. Latched
+    // in-process after it fires (and gated on a bound keeper) so it costs nothing on the
+    // steady-state scan. Fault-isolated: an ignition stumble never blocks the answer path.
+    if (player && !prologueIgnited) {
+      try {
+        const fired = await ensurePrologueIgnited(Date.now());
+        prologueIgnited = true; // either we set it, or it was already set — stop checking.
+        if (fired) {
+          void logEvent('info', SOURCE, `prologue ignited by ${player.name} in #the-record`);
+        }
+      } catch (err) {
+        // leave the latch unset so a later message retries; never speak an error.
+        const m = err instanceof Error ? err.message : String(err);
+        void logEvent('warn', SOURCE, `prologue ignition stumbled: ${m}`);
+      }
+    }
 
     const result = await resolveAnswer(
       { player, discordId: message.author.id },

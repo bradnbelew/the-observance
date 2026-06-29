@@ -657,8 +657,11 @@ values
 -- max_attempts:6 (a short columnar answer, capped against brute force).
 ( 'prophet-wall-name',
   'read who carved it after',
+  -- DISAMBIGUATED (OVERHAUL §5): the bare `the one who turned away` is owned solely by
+  -- stone-iss-wall (the catch). This row keeps its own distinct readings so the prophet
+  -- wall still resolves ("iss carved the wall" / the full first-marks-down phrase) without
+  -- a simultaneous M2 collision that would let this dead_end shadow the catch.
   array[
-    'the one who turned away',
     'iss carved the wall',
     'read the first marks down the one who turned away'
   ],

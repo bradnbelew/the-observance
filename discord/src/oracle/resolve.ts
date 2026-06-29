@@ -21,7 +21,7 @@
  */
 import {
   getOpenPuzzles,
-  matchPuzzle,
+  matchPuzzles,
   hasSolved,
   recordSolve,
   enqueueOracleBeat,
@@ -179,12 +179,16 @@ export async function resolveAnswer(
     return { kind: 'withheld', reply: voice.oracleWithheld() };
   }
 
-  // 3. the OPEN web, and the first puzzle whose answers contain this string.
+  // 3. the OPEN web (gated to the storylet-legal set for the current flags), and EVERY
+  //    open puzzle whose answers contain this string. Usually 0 or 1; >1 only for a
+  //    plaintext legitimately shared by a SEQUENCED pair (an already-solved upstream owner
+  //    that stays open + its freshly-open downstream consumer — e.g. the bound word on
+  //    `stone-iss-wall` then `bound-word`). We pick the player's first UNSOLVED candidate.
   const open = await getOpenPuzzles();
-  const puzzle = matchPuzzle(open, normalized);
+  const candidates = matchPuzzles(open, normalized);
 
   // 4. true miss → log, stay silent. NEVER reveal it matched nothing-close.
-  if (!puzzle) {
+  if (candidates.length === 0) {
     await logAttempt({
       puzzleKey: null,
       playerId,
@@ -201,9 +205,10 @@ export async function resolveAnswer(
   // 5. matched, but no bound keeper to reward. We DO log (matched=true, for the
   //    audit) but stay silent to players: a reward requires a known keeper, and
   //    we must not betray to an unlinked scanner that they hit a real answer.
+  //    (Unlinked answerers don't progress, so we attribute the log to the first match.)
   if (!answerer.player) {
     await logAttempt({
-      puzzleKey: puzzle.puzzle_key,
+      puzzleKey: candidates[0]!.puzzle_key,
       playerId: null,
       mcUuid: null,
       discordId,
@@ -215,6 +220,11 @@ export async function resolveAnswer(
     return { kind: 'silent', reason: 'miss' };
   }
   const player = answerer.player;
+
+  // 5b. among the candidates, choose the first this player has NOT already solved (so an
+  //     already-done upstream owner never shadows its downstream re-submission). If they
+  //     have solved them all, `alreadySolved` flags the standard already-solved path below.
+  const { puzzle, alreadySolved } = await pickCandidate(candidates, player.id);
 
   // 6. per-puzzle cap (on top of the global bucket). Reached → withhold.
   if (puzzle.max_attempts !== null) {
@@ -240,9 +250,9 @@ export async function resolveAnswer(
   }
 
   // 7. already solved → silent (the watcher does not acknowledge twice; even a
-  //    dead_end fires its line only once). Log the matched attempt for audit.
-  const already = await hasSolved(puzzle.puzzle_key, player.id);
-  if (already) {
+  //    dead_end fires its line only once). `alreadySolved` was already determined by
+  //    pickCandidate (true only when EVERY candidate is solved), so no re-query here.
+  if (alreadySolved) {
     await logAttempt({
       puzzleKey: puzzle.puzzle_key,
       playerId: player.id,
@@ -298,6 +308,31 @@ export async function resolveAnswer(
   );
 
   return result;
+}
+
+// ---------------------------------------------------------------------------
+// pickCandidate — when a normalized answer is shared by more than one OPEN row,
+// choose the one this player has NOT solved yet. Single-candidate is the common
+// case (one hasSolved read, identical to the old single-match path). The >1 case
+// is a legitimately-sequenced re-submission: an upstream owner stays open after
+// being solved (it is ungated active=true) and would otherwise shadow its freshly-
+// opened downstream consumer forever. Returns `alreadySolved` only when EVERY
+// candidate is solved, so the caller takes the standard already-solved silent path.
+// (Simultaneous same-movement collisions are an authoring error, disambiguated in
+// the seed — not papered over here.)
+// ---------------------------------------------------------------------------
+async function pickCandidate(
+  candidates: readonly Puzzle[],
+  playerId: string,
+): Promise<{ puzzle: Puzzle; alreadySolved: boolean }> {
+  for (const candidate of candidates) {
+    if (!(await hasSolved(candidate.puzzle_key, playerId))) {
+      return { puzzle: candidate, alreadySolved: false };
+    }
+  }
+  // every candidate already solved → the first is the canonical owner; the caller
+  // emits the already-solved silence. (candidates is non-empty by the caller's guard.)
+  return { puzzle: candidates[0]!, alreadySolved: true };
 }
 
 // ---------------------------------------------------------------------------

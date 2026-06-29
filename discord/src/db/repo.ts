@@ -6,6 +6,10 @@
  * them to Discord). Reads that find nothing return `null` rather than throwing.
  */
 import { supabase } from './client.js';
+// The pure gate logic (precondition test + answer matching) lives in oracle/gate.ts so the
+// build self-tests can exercise it without the DB/config chain. Imported for local use here
+// (getOpenPuzzles) and re-exported below so repo.ts's public surface is unchanged.
+import { flagsSatisfied, matchPuzzle, matchPuzzles } from '../oracle/gate.js';
 import type {
   AnswerSurface,
   ArcState,
@@ -354,39 +358,56 @@ export async function logEvent(
 // ---------------------------------------------------------------------------
 
 /**
- * The OPEN puzzles to match an answer against — every row with active = true.
- * The web is non-linear: many are open at once. Selects only what the resolver
- * needs (spoiler columns stay server-side). Returns [] if none.
+ * Read the single-row arc_state.flags blob (id = 1). The storylet world-state the
+ * progression gate reads. Graceful: a missing row or read error returns `{}` (no
+ * flags set) rather than throwing — an outage degrades to "nothing has unlocked yet,"
+ * which keeps gated rows safely CLOSED instead of leaking them. Flat object by contract.
  */
-export async function getOpenPuzzles(): Promise<Puzzle[]> {
+export async function getArcFlags(): Promise<Record<string, unknown>> {
+  const { data, error } = await supabase
+    .from('arc_state')
+    .select('flags')
+    .eq('id', 1)
+    .maybeSingle<Pick<ArcState, 'flags'>>();
+
+  if (error) throw error;
+  return data?.flags ?? {};
+}
+
+/**
+ * The OPEN puzzles to match an answer against — the storylet-legal set for the
+ * current world-state. A row is open iff `active = true` AND every key in its
+ * `requires_flags` is truthy in `arc_state.flags` (OVERHAUL.md §3). The web is
+ * non-linear: many are open at once, and a gated branch becomes visible the instant
+ * its upstream door sets the flag — never before. Selects only what the resolver
+ * needs (spoiler columns stay server-side). Returns [] if none.
+ *
+ * Reads the flags once per call. Pass `flags` to reuse an already-fetched blob (the
+ * resolver does, to avoid a second round-trip); omit it and this fetches them.
+ */
+export async function getOpenPuzzles(
+  flags?: Record<string, unknown>,
+): Promise<Puzzle[]> {
+  const liveFlags = flags ?? (await getArcFlags());
+
   const { data, error } = await supabase
     .from('puzzles')
     .select(
-      'puzzle_key, title, accepted_answers, outcome_type, outcome_payload, movement, active, max_attempts',
+      'puzzle_key, title, accepted_answers, outcome_type, outcome_payload, movement, active, max_attempts, requires_flags',
     )
     .eq('active', true)
     .returns<Puzzle[]>();
 
   if (error) throw error;
-  return data ?? [];
+  // AND-test the gate in app code (not SQL): the flags live on a single arc_state row,
+  // so one read + an in-memory filter is cheaper and clearer than a per-row jsonb query,
+  // and it keeps the predicate byte-identical to the Java twin.
+  return (data ?? []).filter((p) => flagsSatisfied(p.requires_flags, liveFlags));
 }
 
-/**
- * The first OPEN puzzle whose accepted_answers contains the already-normalized
- * string, or null if none. Whole-string exact set-membership only — never
- * substring or fuzzy. An empty normalized string never matches (guarded by the
- * caller, which does not even call this on empty input).
- */
-export function matchPuzzle(
-  openPuzzles: readonly Puzzle[],
-  normalized: string,
-): Puzzle | null {
-  if (normalized === '') return null;
-  for (const puzzle of openPuzzles) {
-    if (puzzle.accepted_answers.includes(normalized)) return puzzle;
-  }
-  return null;
-}
+// matchPuzzle / matchPuzzles / flagsSatisfied are the PURE gate logic (oracle/gate.ts),
+// imported above for local use and re-exported here so repo.ts's public surface is unchanged.
+export { flagsSatisfied, matchPuzzle, matchPuzzles };
 
 /** True if this player has already solved this puzzle (the replay guard read). */
 export async function hasSolved(
@@ -540,26 +561,35 @@ export async function enqueueOracleBeat(
 }
 
 /**
- * Merge keys into arc_state.flags (single-row, id = 1). Read-modify-write of the
- * jsonb flags blob — used by outcomes that carry `set_flags`. Best-effort within
+ * Atomically merge keys into arc_state.flags (single-row, id = 1) via the
+ * `observance_merge_arc_flags` RPC — `flags = flags || :new` in ONE server-side
+ * statement, never SELECT-then-UPDATE. This is the clobber-safe writer: two
+ * concurrent solves (Discord + in-world, or two Discord) can no longer drop each
+ * other's keys (0006; DOSSIER #A2). Used by outcomes carrying `set_flags` and by
+ * ignition. Keep the flags object FLAT — the merge is shallow. Best-effort within
  * the resolver's try/catch.
  */
 export async function setArcFlags(
   flags: Record<string, unknown>,
 ): Promise<void> {
-  const { data, error: readErr } = await supabase
-    .from('arc_state')
-    .select('flags')
-    .eq('id', 1)
-    .maybeSingle<Pick<ArcState, 'flags'>>();
-
-  if (readErr) throw readErr;
-
-  const merged = { ...(data?.flags ?? {}), ...flags };
-  const { error } = await supabase
-    .from('arc_state')
-    .update({ flags: merged })
-    .eq('id', 1);
-
+  const { error } = await supabase.rpc('observance_merge_arc_flags', {
+    p_flags: flags,
+  });
   if (error) throw error;
+}
+
+/**
+ * Idempotently fire the cold-start ignition (B4 / OVERHAUL §3): set
+ * `prologue_ignited` the first time a keeper is seen acting on a watched surface,
+ * so the next autonomy tick speaks the frame-break ack ("it has been keeping a
+ * count of you"). Returns true iff THIS call flipped it from unset → set (so the
+ * caller can log the one-time event); a no-op when already ignited. The atomic
+ * merge makes a double-call harmless (setting true again changes nothing), and the
+ * caller may additionally cache "already ignited" in-process to skip the read.
+ */
+export async function ensurePrologueIgnited(nowMs: number): Promise<boolean> {
+  const flags = await getArcFlags();
+  if (flags.prologue_ignited === true) return false;
+  await setArcFlags({ prologue_ignited: true, prologue_ignited_at_ms: nowMs });
+  return true;
 }

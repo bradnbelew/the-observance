@@ -13,6 +13,7 @@
     "sample": "tsx src/render/sample.ts",
     "assets": "tsx src/render/assets.ts",
     "seedcheck": "tsx src/oracle/seedcheck.ts",
+    "gatecheck": "tsx src/oracle/gate.selftest.ts",
     "specscheck": "tsx src/forge/specs.selftest.ts",
     "showrunner": "tsx src/showrunner/run.ts",
     "showrunner:dry": "tsx src/showrunner/run.ts --dry-run",

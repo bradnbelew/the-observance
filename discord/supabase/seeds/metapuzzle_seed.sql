@@ -114,8 +114,12 @@ begin
     -- M4 the single Iss chain — each link gated on the link before it (sequenced, §0.4):
     -- bound-word opens at the catch; the gate at the bound word; the coordinate at the gate;
     -- the walk at the coordinate. This is the chain that was authored-but-dark.
+    -- OVERHAUL §5: the docket twin is collapsed. With requires_flags now real (0006), the
+    -- DETERMINISTIC base-docket-reread-auto fully covers the M4 re-read; the showrunner-flipped
+    -- base-docket-reread is retired (left active=false in puzzles_seed) to give the four docket
+    -- answers a single owner. So base-docket-reread is NOT activated here.
     update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
-      where puzzle_key in ('bound-word', 'base-docket-reread', 'base-docket-reread-auto', 'meta-unkept');
+      where puzzle_key in ('bound-word', 'base-docket-reread-auto', 'meta-unkept');
     update public.puzzles set requires_flags = jsonb_build_object('bound_word_known', true)
       where puzzle_key = 'm4-three-hands';
     update public.puzzles set requires_flags = jsonb_build_object('threshold_open', true)
@@ -136,7 +140,7 @@ begin
     update public.puzzles set active = true
       where puzzle_key in (
         'bound-word', 'm4-three-hands', 'threshold-coordinate', 'true-walk-arrive',
-        'seventh-unwriting', 'seventh-cause', 'seventh-choice', 'base-docket-reread', 'meta-unkept'
+        'seventh-unwriting', 'seventh-cause', 'seventh-choice', 'meta-unkept'
       );
 
   else
@@ -153,8 +157,7 @@ end $$;
 --    UPDATE per gate). The full map, row → the single flag-rule that lights it:
 --
 --      bound-word                → iss_caught                          (no-wall-catch)
---      base-docket-reread        → iss_caught                          (no-wall-catch)   [showrunner OR auto]
---      base-docket-reread-auto   → iss_caught                          (no-wall-catch)   [offline twin]
+--      base-docket-reread-auto   → iss_caught                          (no-wall-catch)   [deterministic; twin retired]
 --      meta-unkept               → iss_caught                          (no-wall-catch)
 --      m4-three-hands            → bound_word_known                    (bound-word)
 --      threshold-coordinate      → threshold_open                      (m4-three-hands)

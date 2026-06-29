@@ -275,6 +275,27 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'pressure-glyph-walk': 'walk the rune with footsteps (physical verb); no carved Discord card',
   'accepting-crouch': 'synchronized group bow; opaque plugin-posted sentinel, never a forged clue',
   'record-receives': 'the world’s response; opaque plugin sentinel, staged active=false until M5',
+  // --- OVERHAUL classification pass (2026-06-29): the 11 active rows specsCoverageSelfTest
+  //     flagged UNCLASSIFIED. None carry a Discord-decodable cipher carving, so each is a
+  //     non-cipher node (found document / in-world numeral-literacy / observation / in-world
+  //     choice), classified here with its honest reason. See design/OVERHAUL.md §5.
+  // in-world numeral-literacy teachers (twins of rosetta-ring; they TEACH a counting script,
+  // they are not ciphered IN it) — the rune-numeral on-ramps:
+  'a1z26-tick-stave': 'in-world numeral-literacy teacher (the tick-stave counting script); the runes-free twin of rosetta-ring, not a ciphered node',
+  'reckoning-rosetta': 'in-world numeral rosetta (the reckoning-mark counting script); a literacy KEY, not a ciphered node',
+  // found documents / carvings read in-world (true-but-inert, no Discord cipher to forge):
+  'forged-eighth': 'the forged eighth ordinance — a found false document (dead_end); read in-world among the true seven, no cipher carving',
+  'prophet-wall-comfort': 'the prophet wall’s warm promises — a found carving (dead_end); true-but-empty, no Discord cipher',
+  'prophet-wall-name': 'the prophet wall’s name-reading — a found carving (dead_end); disambiguated to its own answers (the shared `the one who turned away` is owned by stone-iss-wall), no cipher',
+  'name-where': 'place-filing cross-reference observation (FACT 16) — notice the record files by ground; dead_end, the world is the puzzle',
+  'record-url': 'the founder line pointing off-world to the record website (A13) — found lore, the page is the payoff, no carving',
+  'difficulty-mara': 'Mara’s “closer count of the quick” fragment — demoted to texture/lore (OVERHAUL §5: the difficulty REVEAL is cut; the line stays), not a deterministic cipher',
+  'base-docket-reread-auto': 'the Hold-Book down-count re-read (A3), found-document lore gated on iss_caught via requires_flags; the showrunner-flipped twin base-docket-reread is retired (OVERHAUL §5)',
+  // in-world permanence-fork CHOICES (A11) — a stated intent the world detects, not a typed cipher.
+  // They set the M5 composer colorant flags (light_kept / name_unspoken); the detection mechanism
+  // is a Phase-3 integration concern, not a forgeable carving:
+  'fork-light': 'in-world permanence-fork choice (carry vs bank the kept light); side_quest setting an M5 colorant flag, no cipher',
+  'fork-name': 'in-world permanence-fork choice (speak vs withhold the unspoken name); side_quest setting an M5 colorant flag, no cipher',
 };
 
 // ---------------------------------------------------------------------------

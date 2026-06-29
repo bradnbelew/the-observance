@@ -144,6 +144,14 @@ export interface Puzzle {
   active: boolean;
   /** per-puzzle attempt cap, or null for no per-puzzle cap. */
   max_attempts: number | null;
+  /**
+   * The storylet gate (0006_requires_flags.sql; OVERHAUL.md §3). A flat
+   * `{ flag_key: true }` object; the row is OPEN iff `active` AND every key here is
+   * truthy in `arc_state.flags`. Empty `{}` (the default) = ungated. `getOpenPuzzles`
+   * AND-tests it against the live flags before the resolver ever sees the row, so a
+   * gated row is invisible until its upstream door has been solved.
+   */
+  requires_flags: Record<string, unknown>;
 }
 
 /** public.solves — the replay guard: one row per (puzzle, player) resolved. */
