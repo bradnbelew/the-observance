@@ -8,6 +8,8 @@ import { BondLedger } from "@/components/author/BondLedger";
 import { Dossiers } from "@/components/author/Dossiers";
 import { WatcherSleepToggle } from "@/components/author/WatcherSleepToggle";
 import { AcceptingTrigger } from "@/components/author/AcceptingTrigger";
+import { EndingSelector } from "@/components/author/EndingSelector";
+import type { FateInput, EndingFate } from "@/app/author/fate-preview";
 import type { DossierEntry } from "@/components/author/Dossiers";
 import type { WhisperBudgetRow } from "@/components/author/WhisperBudgets";
 import type { BondLedgerEntry } from "@/components/author/BondLedger";
@@ -117,6 +119,88 @@ export default async function AuthorPage() {
   const watcherAsleep =
     settings.find((s) => s.key === "watcher_sleep")?.value === true;
 
+  // ---------------------------------------------------------------------------
+  // Ending-selector inputs (A2 `divergent-fates`, INV-11). A spoiler-rich, live,
+  // ACTIVE-ONLY estimate of where the arc would resolve, computed by the SAME pure
+  // policy the engine's fate sentinel runs (fate-preview mirrors decideFate).
+  //
+  // The authoritative set-once write happens in the engine's resolve.ts at the
+  // rite solve; this is the director's preview. We read it defensively off the
+  // single arc_state.flags bag + last-seen activity, so it compiles before the
+  // migration-0006 typed columns land and degrades to a clean DIVIDED baseline.
+  //
+  // INV-11 / "never elect a chosen one": every count below is a GROUP TALLY. We
+  // never carry a player identity into the fate — the bond ledger is excluded by
+  // construction (it is not a field on FateInput), and DIVIDED is a group state.
+  // "Never punish an absent member": the spread is over ACTIVE players only.
+  // ---------------------------------------------------------------------------
+  const flags = (arc?.flags ?? {}) as Record<string, unknown>;
+  const flag = (k: string): boolean => flags[k] === true;
+
+  // ACTIVE = seen within the roster window (mirrors the engine's readActiveRoster
+  // definition; the engine owns the exact ms — this preview uses a generous 7-day
+  // window so the director sees the live active set, never an absent friend).
+  const ACTIVE_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  const activePlayerIds = new Set(
+    players
+      .filter((p) => {
+        const seen = new Date(p.last_seen).getTime();
+        return Number.isFinite(seen) && now - seen <= ACTIVE_WINDOW_MS;
+      })
+      .map((p) => p.id),
+  );
+  const activeRosterSize = activePlayerIds.size;
+
+  // Per active player, the dominant pole of their tracked customs (a group tally,
+  // never surfaced per-player). We mirror the engine's rung semantics exactly
+  // (discord/src/showrunner/customs.ts): a custom has reached the cold turn at
+  // LEFT_AT = 5 standing violations; "violated-dominant" = any standing violation.
+  // Keep this constant in lockstep with customs.ts::LEFT_AT (it is the same rung
+  // fate.ts counts for CAST_OUT). A flat player (no measured customs) is neither.
+  const LEFT_AT = 5;
+  let honoredActive = 0;
+  let violatedActive = 0;
+  let leftAtActive = 0;
+  for (const id of activePlayerIds) {
+    const rows = complianceByPlayer.get(id) ?? [];
+    if (rows.length === 0) continue; // no measured customs → contributes to neither pole
+    const violated = rows.some((c) => c.violation_count > 0);
+    const leftAt = rows.some((c) => c.violation_count >= LEFT_AT);
+    if (leftAt) leftAtActive += 1;
+    if (violated) violatedActive += 1;
+    else honoredActive += 1;
+  }
+
+  const fateInput: FateInput = {
+    honoredActive,
+    violatedActive,
+    leftAtActive,
+    seventhFound: flag("seventh_named"),
+    issCaught: flag("iss_caught"),
+    // quorum is met when the rite's active cast is present; the plugin sets this
+    // flag (threshold_open is the closest standing proxy until the rite arms).
+    quorumMet: flag("quorum_met") || flag("threshold_open"),
+    // REFUSERS requires a POSITIVE plugin-detected defiance signal, never absence.
+    refusalSignal: flag("refusal_signal"),
+  };
+
+  const resolvedFateRaw = flags["ending_fate"];
+  const resolvedFate: EndingFate | null =
+    resolvedFateRaw === "kept" ||
+    resolvedFateRaw === "cast_out" ||
+    resolvedFateRaw === "divided" ||
+    resolvedFateRaw === "refusers"
+      ? resolvedFateRaw
+      : null;
+
+  const codicil = flag("ending_codicil");
+  const seventhChoiceRaw = flags["seventh_choice"];
+  const seventhChoice: "restore" | "erase" | null =
+    seventhChoiceRaw === "restore" || seventhChoiceRaw === "erase"
+      ? seventhChoiceRaw
+      : null;
+
   return (
     <div className="space-y-8">
       <header className="space-y-1">
@@ -138,6 +222,14 @@ export default async function AuthorPage() {
       <BondLedger rows={bondRows} />
 
       <Dossiers entries={dossierEntries} />
+
+      <EndingSelector
+        input={fateInput}
+        activeRosterSize={activeRosterSize}
+        codicil={codicil}
+        resolved={resolvedFate}
+        seventhChoice={seventhChoice}
+      />
 
       <AcceptingTrigger />
     </div>

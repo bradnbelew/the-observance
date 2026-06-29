@@ -235,8 +235,13 @@ sites:
     protect: false
     enabled: true
 
+  # Orin's threshold lintel. Type is `the_threshold` (NOT a bare `marker`) because the presiding
+  # Keeper (KeeperNpcListener, D8) opens only at sites of type `the_threshold` or `keeper_altar`
+  # (`placedOfType` convention, same as every other listener). Still referenced BY ID elsewhere
+  # (the grave producer reuses this id; thread cards anchor here) — those are id lookups, unaffected
+  # by the type. No listener queries `placedOfType("marker")`, so this retype breaks nothing.
   the_threshold:
-    type: "marker"
+    type: "the_threshold"
     world: "world"
     x: null
     y: null
@@ -254,3 +259,244 @@ sites:
     radius: 6
     protect: true
     enabled: true
+    # The dead-shrine surface (Iss's grave; the false-way-up's end) AND the seventh-shrine chamber-3
+    # anchor (WEB-MASTER §0.4 / INTEGRATION-V2 A1). The deep beneath this hearth (the_unwriting) opens
+    # only post `iss_caught` + `seventh_named` — they are distinct PLACES, temporally layered, one anchor.
+    # The merged `divergent-fates` INHERITORS deposit lands here too (one `seventh_choice` flag, no
+    # separate `dark_shrine` site — that idea was merged out, never carry a `dark_shrine` entry).
+
+  # ==========================================================================
+  #  THE SEVENTH + THE DEEP HOLD BACK-HALF (INTEGRATION-V2 A1/A5/A6/A7/A8/A9 +
+  #  BUILD-MANIFEST §6). Named, ENABLED placeholders so every new seed `site_id`
+  #  resolves under the site-coverage self-test. Coords null = UNPLACED until the
+  #  world is built in-game (go-live); the plugin SILENTLY skips an unplaced site.
+  # ==========================================================================
+
+  # The Seventh's unwriting chamber (the hearth-DEEP, beneath `the_cold_hearth`). The
+  # SeventhChoiceListener watches this site for the rite (a one-site break-whitelist lives here so the
+  # unwriting can be carved/erased); rail-fence (rails=6) reuses Brann's taught literacy. Gated:
+  # the deep opens only post `iss_caught` + `seventh_named`.
+  the_unwriting:
+    type: "seventh_shrine"       # SeventhChoiceListener watches this type for the staged rite
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
+  # The Undercroft altar — the second rite-side site the presiding Keeper presides at (KeeperNpcListener,
+  # D8). The Keeper's body stands here (Citizens2/ZNPCsPlus or a PDC-tagged armor-stand fallback — Path-A
+  # self-contained, the listener reads the `keeper_npc` PDC tag, never the Citizens API). A right-click on
+  # the tagged Keeper inside this radius opens the dialogue (the M-IV atonement node lives here). Co-located
+  # with `unbroken_light` (the accepting_floor) but a DISTINCT site so the open-gate radius is tight and the
+  # Keeper isn't summonable from anywhere on the wide Accepting floor. Type is `keeper_altar` (the listener's
+  # second presiding type); unplaced = silently skipped, the Threshold Keeper still opens.
+  keeper_altar:
+    type: "keeper_altar"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    protect: true
+    enabled: true
+
+  # The coop plate (Undercroft) — the IV→V hinge. CoopPlateListener watches a plate-held window here,
+  # writes the world legs, and posts the opaque conjunction token. THREE distinct acts, not three people
+  # (active-only). One gate only; not the climax.
+  coop_plate:
+    type: "coop_plate"           # CoopPlateListener watches this type for the held-plate window
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    protect: true
+    enabled: true
+
+  # The M1 teaching-stone — the one coordinated layout that carries the prologue marker glyph, the six
+  # UNKEPT maker's-marks (read in fall-order), and the `kept here before you` plant (INTEGRATION-V2
+  # B1/B4, coherence P2-4). IgnitionListener's lectern read also lives at the report lectern; this is the
+  # glyph-bearing companion stone. The a1z26 literacy teaching-rung is read here too (coords depend on it).
+  first_marker_01:
+    type: "structure"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
+  # Name-where-never-been carve anchors (INTEGRATION-V2 A8). The SignWriteBeat carves an ACTIVE player's
+  # name at a cell they have provably never visited (one carve per movement, subjects rotate — a chorus,
+  # never the divergence extremes). Several candidates so the selector has a group-avoided ∩ T-never-
+  # visited intersection to choose from; each resolves independently and an unplaced one is skipped.
+  carve_anchor_01:
+    type: "carve_anchor"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    protect: true
+    enabled: true
+
+  carve_anchor_02:
+    type: "carve_anchor"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    protect: true
+    enabled: true
+
+  carve_anchor_03:
+    type: "carve_anchor"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    protect: true
+    enabled: true
+
+  # The herd anchor (INTEGRATION-V2 A12) — where the slow, cosmetic Pale conversion spreads (between
+  # session, capped, unwitnessed, never glowing/tracked/breeding). The collective-gaze facing pass and
+  # `paleTarget` lookup are oriented around this anchor; the marquee leans on FORMATION, not number.
+  herd_anchor:
+    type: "marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 16                   # herd-scale: the Pale spread across a wide pasture, not a tight marker
+    protect: false               # a roaming herd, not a protected build
+    enabled: true
+
+  # The future-dated grave (INTEGRATION-V2 A9) — ONE grave, not a graveyard. Reuses `the_threshold` by
+  # default; this OPTIONAL off-spur exists so the grave can sit just off the threshold line without
+  # colliding with the threshold's own carving. Left DISABLED so the grave producer falls back to
+  # `the_threshold` until a builder chooses to place the spur (then flip enabled).
+  grave_spur:
+    type: "grave"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    protect: true
+    enabled: false
+
+  # ==========================================================================
+  #  THE TWO DEEPENING LANES — the Nether (deep fire-source) + the End (exile /
+  #  the Seventh's absence). INTEGRATION-V2 A15 / BUILD-MANIFEST §6 / WORLD-BIBLE §12.
+  #  These sit in SEPARATE worlds (`observance_nether` / `observance_end` — the
+  #  Multiverse pattern, like the Undercroft void world). `LocationSampler` already
+  #  keys proximity/heatmap on `worldName`, so a cross-dimension site needs ZERO new
+  #  tracking infra — `Site.contains` is the dimension-presence signal. Both lanes
+  #  GATE NOTHING (INV-12) and are NOT in the Accepting quorum (INV-19).
+  #
+  #  GO-LIVE / world-coverage note (siteCoverageSelfTest extension, R7): a cross-
+  #  dimension row (nether-forge / end-seventh-out in progression_seed.sql) must NOT
+  #  seed OPEN unless its site here is placed + enabled IN THE NAMED WORLD — i.e. the
+  #  Multiverse world `observance_nether` / `observance_end` must EXIST first. Coords
+  #  null = UNPLACED until the dimension worlds are built; the plugin SILENTLY skips an
+  #  unplaced site, never errors at a player.
+  # ==========================================================================
+
+  # --- The Nether lane (observance_nether) ----------------------------------
+
+  # The Nether forge / near pocket — the deep fire-source made walkable ("below the below"). A short
+  # ruined room just past a lit portal (a DELVE, not a trek; the walk-budget is 2 ground walks + <=1
+  # short vertical pocket, S4) holding a prior keeper's remains on a deepslate slab + the decaying
+  # journal (the-fire-kept-me) + a doused soul-lantern. The on-site WORD (INV-14 — never the coordinate)
+  # is read off the slab and answered at the slab, setting `nether_forge_found` + bonus Whisper budget +
+  # the Kept-Light origin (the keeping was always a carrying). The keeper-remains is PLACED AT WORLD-BUILD,
+  # never pasted toward an approaching player (reveal-safe). Type `answer_sign` so the AnswerSignListener
+  # reads the on-site word at the slab (the closed clue loop). BLOCKED on the FACT-11 source-clause seal
+  # (BUILD-MANIFEST §0.12 / S11) before any build; enabled here so the seed site_id resolves.
+  nether_forge:
+    type: "answer_sign"            # the on-site word is submitted at the slab (INV-14 destination word)
+    world: "observance_nether"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: true
+    enabled: true
+    # puzzle-key: "nether-forge"    # OPTIONAL bind to the on-site row; omit = match all open (the web)
+
+  # The soul gallery — soul sand / soul fire as the not-kept of DEEP TIME (failed communities older than
+  # the first keeper; FACT 12 from the souls' side — DISTINCT from the present-tense Pale herd, S5). A
+  # texture/atmosphere anchor only: it carries the `nether.soulSand` Set-B record line near it and the
+  # soul-fire ambient. NOT an answer slot, NOT a protected build — the soul sand IS the lore, nothing is
+  # built where the vanilla block suffices. A wide occlusion zone the group crosses to reach the pocket.
+  soul_gallery:
+    type: "marker"
+    world: "observance_nether"
+    x: null
+    y: null
+    z: null
+    radius: 14                     # gallery-scale: a wide field of soul sand crossed on the way in
+    protect: false                 # the souls are the ground; nothing to protect
+    enabled: true
+
+  # The bastion remains — the founders' deepest ruined delvings (NOT piglin architecture in-fiction; the
+  # works of the first keepers who went furthest toward the fire and did not come back human-scaled — the
+  # deepest "deeper = more wrong-scaled," structures.md). Texture/atmosphere anchor only: a discovered-
+  # never-witnessed wrong-scaled ruin the group reads on the way to the pocket. The P2 intimate Nether
+  # glimpse (basalt-corridor keeper-shape) may fire near here, re-skinned + DEFERRING to apparitionClaim
+  # (INV-18) — the Nether has no apparition lane of its own. NOT an answer slot.
+  bastion_remains:
+    type: "structure"
+    world: "observance_nether"
+    x: null
+    y: null
+    z: null
+    radius: 12
+    protect: false                 # vanilla bastion re-read in-fiction; additive dressing only, no overwrite
+    enabled: true
+
+  # --- The End lane (observance_end) ----------------------------------------
+
+  # The End Seventh-shrine — the Seventh's home OUTSIDE the record (no kept fire, no markers, no count).
+  # Carried by a re-dressed end-ship (reveal-safe: force-load -> mutate on unwitnessed relog -> unload) OR
+  # a world-build PRE-GENERATED outer island — NEVER a lazy paste toward an approaching glider (S6). Built
+  # to the Seventh's unfinished, wrong-scaled hand (the `the_unwriting` signature). It carries the End-shrine
+  # carving (the-name-i-cut-myself); reaching it + answering its on-site read sets `seventh_seen_out` (a
+  # group-scoped flag, NOT a fate input — S2). Type `answer_sign` for the on-site read (the closed clue loop;
+  # the WORD answers, INV-14). ZERO ambient apparition lane here (the End is outside the record — a positive
+  # canon choice, S6/R3). Producer rule (S7): additive pastes onto verified-clear ADJACENT AIR (a deepslate
+  # carving-slab beside the vanilla blocks) or RevealBeat flips — NEVER an occupied overwrite, NEVER RoomSwapBeat.
+  end_seventh_shrine:
+    type: "answer_sign"            # the on-site read is answered at the carving-slab (INV-14)
+    world: "observance_end"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 6             # an end-ship / island shrine: looser Y tolerance over the void
+    protect: true
+    enabled: true
+    # puzzle-key: "end-seventh-out"  # OPTIONAL bind to the arrival row; omit = match all open
+
+  # The End exile-hold — the `cast_out` divergent fate made a PLACE (a re-dressed end-city, markers all
+  # facing AWAY; canon-spine §8.4 made literal and vast). P2/cuttable. enabled:FALSE until the INV-16-bound
+  # binding is BUILT (S10, non-negotiable): the hold must name NO living player and encode NO per-player side
+  # — chorus-only dressing ("you only came to look"), never the LEFT_AT set, no dressing spatially
+  # corresponding to any per-player carve. If the open End cannot guarantee that, this stays disabled and the
+  # End ships as the Seventh shrine ALONE (the default). Discovered-never-witnessed static set-piece only.
+  end_exile_hold:
+    type: "structure"
+    world: "observance_end"
+    x: null
+    y: null
+    z: null
+    radius: 18                     # a vast exile-hold over the open End; markers face away
+    protect: true
+    enabled: false                 # GATED: stays off until the INV-16 binding is built (S10), else cut

@@ -1,0 +1,628 @@
+{
+  "title": "The Observance",
+  "tagline": "From The Fog, but it knows your name.",
+  "movements": [
+    {
+      "id": "M0",
+      "title": "The Cursed Map",
+      "act": "Prologue",
+      "when": "before day one (optional on-ramp)",
+      "premise": "A scattered, remote group of friends has no reason to gather in a Minecraft server — so the lure is a dead web page with a small downloadable 'map' that quietly hands them a reason.",
+      "whatHappens": "One friend stumbles onto a cold, archive-styled web page that offers a tiny single-player download called 'the-hold.zip', shows a counter reading 'kept: 6' with a struck-out seventh row, and is signed by a dead keeper's hand. They play the ~15-minute vanilla walk alone: a doused hearth, a wall of six carved marks with a blank seventh, a flat archive voice that names what is and stops. The whole time the map behaves exactly like a map — no scares, nothing supernatural. At the end the closing room hands out a plain server address plus a rune string and tells the group to all join and post one word ('kept') in the Discord channel. Nothing has broken yet; the dread is being banked for the server.",
+      "theWatcher": "Silent and offline here by design. The unseen presence does nothing the map could not do — the loudness is all in the map's melancholy, and even that is restrained. The presence only 'wakes' once the group crosses to the server.",
+      "youPlace": [
+        "The lure web page /record/the-record-keeps: cold dead-archive shell, a recovered-file entry, the the-hold.zip download link, a static 'kept: 6' counter, a struck seventh row",
+        "Mara's provenance line signed 'm.kept' (a dead keeper's hand 'copied it... and did not keep the seventh')",
+        "The README 'lie': 'a small offline map... it does not connect to anything... play it through and it will tell you where the rest is kept'",
+        "The downloadable vignette world (the-hold.zip): a ~6-room single-player walk (1-room form ships first), adventure mode, daylight locked",
+        "Room 2: a basalt hearth with a campfire that is OUT, that the player cannot relight",
+        "Room 3: a wall of six carved marks plus one scraped-blank seventh slot",
+        "The closing room's plain server address + a rune string that later decodes in-server to 'the-record-keeps'",
+        "The instruction beneath the address: 'say one word in the place named below, when you are all in. say kept'"
+      ],
+      "keyBeats": [
+        {
+          "name": "The kept:6 counter",
+          "what": "A dead file with a download tally of 6 and a struck-out seventh row — reads as a tally nobody wanted.",
+          "how": "Static authored HTML, NOT a live count (a real count would drift off 6 the moment anyone downloads). The number is the load-bearing plant."
+        },
+        {
+          "name": "The quiet vignette",
+          "what": "A melancholy, completely mundane single-player walk through an abandoned 'hold' — doused fire, six marks, a blank seventh — with a flat narrator that never addresses 'you'.",
+          "how": "A vanilla datapack world; distance-triggers fire flat archive lines; one scoreboard quietly records whether you lingered at the blank seventh slot (rehearsal only — never sent to the server)."
+        },
+        {
+          "name": "The gathering = ignition",
+          "what": "The group all joins the server and one of them posts 'kept' in the Discord channel; they arrive 'pre-ignited' so their first server beat is the scare.",
+          "how": "A human post in #the-record (the word 'kept' is the in-fiction prompt) is detected by the built message scanner -> flips prologue_ignited. Caused by a player, never the bot."
+        }
+      ],
+      "plants": ["the-6", "the-readme-lie", "the-mara-uploader", "the-doused-hearth-prop", "the-unkept-website-key"],
+      "payoffs": [],
+      "lanes": []
+    },
+    {
+      "id": "M1",
+      "title": "The Notice",
+      "act": "Act 1 (Establishment), ~Days 1-5",
+      "when": "day one onward",
+      "premise": "The record opens; the group is quietly graded by laws nobody told them, and is hit with the one category-violation scare before the world settles into patient silence.",
+      "whatHappens": "The instant the group is on the server, the presence does the one thing a map cannot: it says the '6' back at them ('six were kept before you... a file is not kept. hands are kept'). A book appears on a base lectern recording the living players' real habits; one player finds a lit marker in their base that was not there before, carved with a glyph they cannot yet read. A flat report names a real habit one of them has — before they knew there was any rule to break. After that single loud beat the volume drops to baseline and stays there. The rest of M1 is a field of quiet open doors: a rune-ring server icon, two different ways to learn to read the runes, a stone that teaches digits, and roughly a dozen inert plants that all look like atmosphere and will each detonate in a later movement.",
+      "theWatcher": "Maximally restrained after the frame-break. It counts, states what is, and stops — lowercase, no warmth, no threats. It never appears; the one 'apparition-adjacent' thing is the lit marker, an object discovered but never witnessed appearing.",
+      "youPlace": [
+        "The base lectern's Hold-Book: flat archive rows recording living habits, plus a last-page down-count 'lamps kept: [N]'",
+        "first_report_lectern_01: the first report re-staged as an anomaly at the base hot-cell",
+        "first_marker_01: one lit marker that was not there before, carrying an unreadable rune-glyph, the six UNKEPT maker's-marks, the 'kept here before you' line, and the a1z26 number-puzzle",
+        "The rune-ring server icon (a ring of six runes), sitting unremarked",
+        "rune_rosetta: the founding ring that teaches glyph<->letter; stone_of_reckoning: the digit/coordinate Rosetta",
+        "Founder margins: 'we cut the names before the keeping' and 'the record is kept in more than one place' (decodes to the-record-keeps)",
+        "Vaun's 'you do not keep the first thing'; the single Sacred Beast established; the 'nine grey, one white' herd tally",
+        "Mara's 'the cold square... i typed into the dark' (the coop-gate seed); the offline-player report naming a logged-off friend"
+      ],
+      "keyBeats": [
+        {
+          "name": "The frame-break",
+          "what": "From inside the game the presence names the '6' the player saw on a dead web page — a thing an offline map could never do. Names no one; true for everyone.",
+          "how": "After ignition, gated on a clean measured signal, the server fires one precision-gated line (recordFrameBreak). If no clean signal, it fires only the safe ack 'it was open before you' and never trades the scare for a guess."
+        },
+        {
+          "name": "The first report",
+          "what": "A report names a real habit of the group — and, only if one player's signal is overwhelming, names that player by name and the custom they have not kept.",
+          "how": "Two authored forms: a named form fires ONLY on an overwhelming single measured signal; otherwise the un-named fallback. A wrong 'it knows you' is worse than none, so default is un-named."
+        },
+        {
+          "name": "Learning to read (two real doors)",
+          "what": "The group becomes literate in the rune script either by noticing the server-icon rune ring, or by solving a pure number puzzle with no runes at all.",
+          "how": "Two genuinely different solves both set rosetta_known: the rune-ring metadata leap, OR the a1z26 tick-stave number puzzle. This kills the 'two doors that are really one door' fairness problem."
+        }
+      ],
+      "plants": [
+        "the-offline-skin", "the-name-carves", "the-future-grave", "the-unkept-acrostic",
+        "the-unkept-website-key", "the-fire-is-a-carrying", "the-hold-book", "the-coop-gate",
+        "the-difficulty-grading", "the-sacred-beast-first-thing", "the-herd-conversion", "the-6"
+      ],
+      "payoffs": ["the-6"],
+      "lanes": []
+    },
+    {
+      "id": "M2",
+      "title": "The Ways",
+      "act": "Act 2 open, ~Days 6-11",
+      "when": "after literacy opens",
+      "premise": "Six keeper-stones become a wide field instead of a row; the customs become discoverable by consequence; and the warmest stone is a trap.",
+      "whatHappens": "The group finds six keeper-stones scattered through the world, each a different cipher in a different keeper's voice, solvable in any order — the first genuinely non-linear stretch. Each stone is a warning shaped like a person standing next to them: Vaun who hoarded, Mara who only ever read, Sella who drowned, Orin who never bowed, Brann who slept on the black moon, and Iss — the warmest, most reassuring carving in the world, who lies that the customs are a 'wall' that keeps the watching out. Iss's stone hands over a coordinate that genuinely works and leads to a dead grave-shrine; a sharp group can take that false walk now. A forged 'eighth law' is planted that a diligent group will dutifully obey and that pays nothing. A grave is carved with a living player's name and a future date. The difficulty engine goes live: a group that crushes the ciphers finds the next hint withheld and the tone cooled. Whispers (paid hints) become earnable.",
+      "theWatcher": "Active but flat — it un-redacts website entries in lockstep with stones actually read, and the difficulty engine begins quietly closing on groups that race ahead and opening for those who stumble. It never gloats; when a dead-end is solved it states the category ('a true name. it keeps no door') and the teeth belong to the liar, not the Watcher.",
+      "youPlace": [
+        "The six keeper-stones (stone_vaun/mara/sella/orin/brann/iss): low slabs you must stoop to read, each a different cipher + answer-verb",
+        "Iss's stone: the warmest carving, the planted lie 'the ways are a wall', the handed-over Vigenere key (his own name), and the false coordinate",
+        "the_cold_hearth: a doused hearth + Iss's grave slab + an effaced seventh marker (the false-walk endpoint; also the seventh-deep's surface)",
+        "The prophet's wall: a wide spread of warm promises that each decode true and open nothing, with Iss's name hidden columnar down them",
+        "The forged eighth law ('the Covering of the Hands'), planted as one more found ordinance with a 'cover one's own' signature",
+        "The future-dated grave near the_threshold (a living name + a date not yet come, reading as a death-clock)",
+        "The first living-name carve at a cell the named player has provably never visited",
+        "The herd's second Pale animal appearing; the Record website un-redacting six entries as stones are read; the Iss card's hidden stego rune-layer",
+        "Brann's stone framing line (Nether plant): 'the fire we keep is not ours. it is lent... below the below'"
+      ],
+      "keyBeats": [
+        {
+          "name": "The six-stone field",
+          "what": "Six ciphers in six keeper voices, solvable in any order, each a warning that mirrors a living player's habit.",
+          "how": "Each stone is an answer-site: edit a sign within its radius and it resolves against ALL open puzzles (omitting a fixed puzzle-key makes the field non-linear). Vaun=caesar, Mara=book-cipher, Sella=atbash-in-reflection, Orin=substitution-read-from-a-crouch, Brann=night lore, Iss=Vigenere keyed on his name."
+        },
+        {
+          "name": "Iss the warm trap",
+          "what": "The most comforting carving in the world tells the group the customs are a protective 'wall' — and hands over his own name as the cipher key, 'as is right and customary'.",
+          "how": "Two readings of the same stone fork the route: the warm misreading sets iss_trusted and routes to his grave-coordinate; the skeptical name-as-key reading sets up the catch. The warmth IS the bait."
+        },
+        {
+          "name": "The difficulty engine goes live",
+          "what": "A group that solves everything fast finds the next hint withheld and the register cooled — rhyming with Mara, who raced the reading and was left last.",
+          "how": "The engine measures group skill and withholds drips / cools tone with hysteresis. It never touches the player-controlled Whisper safety rail (it only colors pacing, never punishes; foreshadows that the land's patience can thin)."
+        }
+      ],
+      "plants": [
+        "the-liar-iss", "the-forged-eighth-law", "the-false-walk", "the-future-grave",
+        "the-name-carves", "the-herd-conversion", "the-unkept-website-key", "the-record-axis-of-word"
+      ],
+      "payoffs": ["the-6"],
+      "lanes": ["nether"]
+    },
+    {
+      "id": "M3",
+      "title": "The Undercroft",
+      "act": "Act 2 mid, ~Days 10-11",
+      "when": "after >=4 of 6 stones + the coordinate path opens",
+      "premise": "The tempo changes from patient table-work to expedition: decode, then walk, then descend into the one fire that never went out — and find its mirror in the doused hearth-deep of the keeper the land cast out.",
+      "whatHappens": "Mara's book-cipher resolves to an instruction ('descend and bow at the unbroken light'), and the group performs it — a lectern-driven door (the record itself is the lock) opens and they drop into a separate fog dimension with zero ambient light, where the one eternal, untended fire is the only light source. The descent chamber they first see as ordinary later rebuilds itself wrong while no one is watching ('they did not depart. they were kept'). They choose at the eternal flame whether to carry the light up or bank it. They arm (or break) the Unlit Deep — the one collective custom you keep by NOT lighting a flame below the line on the black moon. They learn the Seventh rests below the cold hearth, sealed by a name. The offline-skin apparition fires its first, most-deniable glimpse — a reflection of a logged-off friend's skin. Optionally, a coal carried through a burned door leads to the Nether pocket where the kept fire's source waits.",
+      "theWatcher": "Two calibrated beats: the descent (the overworld physically leaves them) and the witnessed-only room-swap, both delivered by what they see rather than by a sentence. The difficulty engine sustains its tightest 'tight' state, rhyming with the land's thinning patience but never punishing.",
+      "youPlace": [
+        "kept_light_home_01: Mara's six-book lectern shelf (the book-cipher codebook) + the home hearth",
+        "unbroken_light: the Undercroft gather/Accepting room with the one never-doused fire and the lectern-comparator descent door",
+        "The fog dimension itself (a void Multiverse world with ambient_light:0 — the one fire is literally the only photon)",
+        "Room A (ordinary on first descent) staged to later become Room B via the one sanctioned unwitnessed swap",
+        "The Unlit Deep latch (below-the-line + black-moon + a lit flame = the borrowed glow withdraws for everyone)",
+        "The First Light fork at the eternal flame (carry the light up = kept; bank it = the room stays dark)",
+        "the_unwriting chamber 1, legible: 'below the cold hearth, the deep is sealed; the seal is a name' (deep stays sealed)",
+        "The Nether bearing-page (Mara's hand) banked on the Undercroft shelf, readable only after descent"
+      ],
+      "keyBeats": [
+        {
+          "name": "The descent into the fog",
+          "what": "The group performs Mara's instruction and the world leaves them: they descend into a lightless fog dimension where the one kept fire is the only thing they can see.",
+          "how": "Solving Mara's book-cipher and going to the unbroken light opens a lectern-comparator door (the book-page output IS the lock) into a Multiverse void world with a fog datapack (ambient_light:0)."
+        },
+        {
+          "name": "The room rebuilds wrong",
+          "what": "The ordinary descent chamber they walked into has, when they return, become something wrong — and they never saw it change. The flat reveal: the keepers above did not leave; the record kept them.",
+          "how": "A single sanctioned RoomSwapBeat clears Room A and pastes Room B, but ONLY while no player has the region in view (idempotent on a durable 'swapped' marker). The horror is the omission — never witnessed."
+        },
+        {
+          "name": "The Unlit Deep (the one group custom)",
+          "what": "Below the line, on the black moon, the group must keep one fire unlit together; if anyone lights a flame, the never-doused fire's borrowed glow is withdrawn for ALL of them.",
+          "how": "A single group-scoped latch braiding three tracked ways; arms only in M3, active-only, reversible (warmth not progress), detected on explicit flame acts (never ambient light). Who broke it is recorded but never spoken."
+        }
+      ],
+      "plants": ["the-first-light-fork", "the-seventh-grave"],
+      "payoffs": ["the-fire-is-a-carrying", "the-hold-book", "the-difficulty-grading", "the-offline-skin"],
+      "lanes": ["nether"]
+    },
+    {
+      "id": "M4",
+      "title": "The Catch",
+      "act": "Act 2 close, ~Day 12",
+      "when": "when the group turns Iss's key on the other stones",
+      "premise": "Iss's lie catches, and the whole world re-reads cold at once — the universal hinge where roughly six threads pay off, all keyed on a single flag.",
+      "whatHappens": "Turning Iss's name-key on the other stones makes his warm doctrine disagree with every honest carving; the group walks the clue they thought was solved and it contradicts him line for line. The catch flips a single flag (iss_caught) and the back half lights up: the doom-clock down-count re-reads as a roll-call of present hands; the forged eighth law collapses (it was added by a later hand and never measured); the prophet's wall turns out to be Iss's, his name hidden down it ('read who carved it, after'); the warm website card re-renders cold; the offline-skin apparition escalates to a named, group-witnessed glimpse; the six maker's-marks read in fall-order spell UNKEPT; the name-carves re-read as 'you are already filed, not foretold.' Then the single Iss chain runs forward: the catch yields the bound word, three hands clear the coop gate together, the Threshold opens and yields the true coordinate, and the true walk delivers the group toward the rite. The Seventh deep opens — a keeper cast out for breaking nothing — and the group can restore or erase the scraped name. The End deepening-lane opens here.",
+      "theWatcher": "The catch is loud but cold — a correction, not a jump-scare. The presence flatly labels every warm Iss promise as 'true, and shut,' hands the group the grammar of forgery they just used, and the presiding Keeper begins half-veiling 'we'. The teeth still belong to the liar; the Watcher only states what is.",
+      "youPlace": [
+        "no-wall-catch: the row that sets iss_caught and lights the staged back half",
+        "The bound word (Iss's plaintext = his name); the three-hands coop gate at coop_plate; the Threshold's true coordinate; the true-walk tableau (answer: 'kept here before you')",
+        "base-docket-reread: the down-count re-read as the muster of present hands; meta-unkept staged active (the fall-order acrostic)",
+        "The forged-law correction; the prophet-wall name re-read; the cold-rendered Iss website card",
+        "the_unwriting deep (opens post iss_caught + seventh suspected): chamber 2 rail-fence names the Seventh (seventh_named); seventh-cause (FACT 10b); the restore/erase rite",
+        "The presiding Keeper's M4 atonement node (withholds a needed fragment until a broken custom is honored)",
+        "The Hold-Book's keeper-hand pages (each keeper's own voice writes the living player into their column)",
+        "The unwriting wall's extra effaced End-pointer line ('out, past the door that is not a threshold')"
+      ],
+      "keyBeats": [
+        {
+          "name": "The catch",
+          "what": "The group re-walks a clue marked 'kept / solved' and the keeper-after contradicts Iss line for line; the warmest of the six goes cold and his whole tree re-colors.",
+          "how": "Turning Iss's Vigenere key (his own name = 'the one who turned away') on the OTHER stones disagrees with every honest carving. The catch sets iss_caught and a private one-way cold-flip line fires ('the warmth does not come back')."
+        },
+        {
+          "name": "The cascade re-read",
+          "what": "Six-plus threads detonate at once: the doom-clock becomes a roll-call, the forged law collapses, the prophet's wall turns out to be Iss's, the acrostic spells UNKEPT, the name-carves mean 'already filed'.",
+          "how": "iss_caught is the single universal hinge flag; a declarative activation gate (requires_flags) opens every staged back-half row the instant it is truthy — deterministic, so a sleeping showrunner can never hard-lock the back half."
+        },
+        {
+          "name": "The three-hands gate -> the true walk",
+          "what": "The group crosses the Threshold only by doing three things at once (a foot on the plate, a carve, a Discord post in the same ~20s window), which opens the true coordinate and the walk to the rite.",
+          "how": "The bound word feeds the coop gate (3 ACTS, not 3 people, active-only); clearing it opens the Threshold, whose carving yields a navigation pointer, whose destination word ('kept here before you') is the on-site answer."
+        }
+      ],
+      "plants": ["the-end-is-the-far-side"],
+      "payoffs": [
+        "the-liar-iss", "the-hold-book", "the-forged-eighth-law", "the-unkept-acrostic",
+        "the-prophets-wall", "the-offline-skin", "the-name-carves", "the-false-walk",
+        "the-readme-lie", "the-mara-uploader", "the-unkept-website-key", "the-seventh-grave",
+        "the-6", "the-fire-is-a-carrying"
+      ],
+      "lanes": ["end"]
+    },
+    {
+      "id": "M5",
+      "title": "The Accepting",
+      "act": "Act 3, ~Days 12-14",
+      "when": "after the true walk delivers the group",
+      "premise": "The collective rite: the group lays a personal token for each keeper before them and bows together — and the record receives them, delivering the sealed truth by what happens rather than by any sentence.",
+      "whatHappens": "At the one never-doused fire, the group lays one personal token they cannot 'read their way out of' in each of six slots, then everyone present bows at the same instant. The record receives them. On its carved date — which is exactly this instant — the future-dated grave opens from the inside: not a death, an appointment, the mound becoming a deposit slot. The Hold-Book's last page rewrites: 'the present hands are entered... the same book, the same hand, as all the ways above you.' The website's struck seventh row fills with the group's own names. The herd stands at its full pale field; the name-carves persist as markers for whoever comes next. A single bounded closing message is composed — the group's fate (kept, cast out, divided, or the secret refusers), tinted by at most one fork or the Seventh choice, plus the optional inheritors codicil. The world flips to 'kept.' The thing no document ever said and everything always pointed at: to be accepted is to become the watching, the markers for the next group.",
+      "theWatcher": "The presence delivers FACT 15 entirely by what happens — the grave opening, the book rewriting, the names entered, the world flipping — and never by a stated sentence. Every closing line stops at the half-veil ('we would keep you... in the same book, in the same hand'); a line that finished the recursion ('and so you become the watching') would be a defect.",
+      "youPlace": [
+        "The six lit token-slots and the central never-doused fire at unbroken_light (a room sized for the group to gather and bow)",
+        "The Keeper's altar letter ('bring the thing only you can give... six, a hand and one more')",
+        "The synchronized-bow detector (active-only quorum: it never blocks an absent member, never fires for two stragglers)",
+        "The future-dated grave opening from the inside on its date == the Accepting instant (KEPT-NOT-YET -> KEPT, the mound = deposit slot)",
+        "The Hold-Book final-page rewrite ('the present hands are entered... the same book, the same hand')",
+        "The /record website injection adding the group's own names; the struck seventh row filling 'received'",
+        "The persistent fate dressing on the floor (marker facing in/out, floor light whole/split/guttered, the re-warmed or blank hearth)",
+        "The one bounded composed close (a fate line + <=1 fork/Seventh tint + <=1 inheritors codicil clause)"
+      ],
+      "keyBeats": [
+        {
+          "name": "The bow as one",
+          "what": "The group lays a personal token in each of six slots and everyone present bows at the same moment; the record receives them and the world flips to 'kept'.",
+          "how": "A synchronized-crouch detector on the Accepting floor posts one opaque wordless token; the quorum is computed over ACTIVE players only (clamped down for a smaller group, never up), and the Threshold must already be open."
+        },
+        {
+          "name": "The grave is an appointment",
+          "what": "The headstone cut with a living name and a future date opens from the INSIDE on its date — the death-clock was a roll-call, the hole is the deposit slot.",
+          "how": "The carved date is bound to the single Accepting instant; when that instant arrives and the rite fires, the grave producer emits 'opened from the inside' (KEPT-NOT-YET -> KEPT)."
+        },
+        {
+          "name": "The divergent close",
+          "what": "One bounded closing message resolves the group's fate (kept / cast out / divided / the secret refusers), colored by at most one permanence choice and the optional inheritors mark — never naming any player.",
+          "how": "A pure selector reads active-only honored/violated tallies + a few flags and returns an enum; a single composer emits a neutral line + <=1 tinted clause + <=1 codicil, by fixed priority. The persistent floor dressing is the camera-legible delta; the sentence only confirms it."
+        }
+      ],
+      "plants": ["the-inheritors-codicil"],
+      "payoffs": [
+        "the-6", "the-future-grave", "the-hold-book", "the-name-carves", "the-herd-conversion",
+        "the-unkept-website-key", "the-fire-is-a-carrying", "the-end-is-the-far-side",
+        "the-first-light-fork", "the-seventh-grave", "the-inheritors-codicil"
+      ],
+      "lanes": ["end"]
+    }
+  ],
+  "lanes": [
+    {
+      "id": "nether",
+      "name": "The Nether lane",
+      "attachesAt": ["M2", "M3"],
+      "whatItIs": "Not 'spooky Nether' — it is the literal SOURCE the Undercroft's one kept fire was carried up from, 'below the below'. Where the Undercroft holds one kept fire in the dark, the Nether is all kept fire and no kept dark. A deepening of the one-fire fact, not a second bottom.",
+      "whatYouFind": [
+        "A bearing-page in Mara's hand (read only after the descent): 'carry the coal through the burned door and walk the short way to where it is kept for everyone'",
+        "A near pocket just past a lit portal (a short delve, not a third trek): a prior keeper's remains on a deepslate slab, a doused soul-lantern, and a decaying journal",
+        "The journal: a keeper who went under the seal to keep the fire, realized it never needed keeping, and changed shape to get down and never changed back",
+        "An on-site WORD ('lent') carved on the slab that is the answer (never a coordinate) and reveals the Kept-Light custom's origin",
+        "Soul sand = the not-kept of DEEP TIME (failed communities older than the first keeper); a re-read bastion = the founders' deepest ruined delvings"
+      ],
+      "why": "It deepens FACT 11 (the one fire) and quietly sets up the induction: the keeping was always a CARRYING. 'A lent thing is carried, and a carried thing is not owned' — you, too, will be carried, not owned. Gates nothing; a group that skips it gets the whole un-shaded arc; it only adds a tint to the close.",
+      "optional": true
+    },
+    {
+      "id": "end",
+      "name": "The End lane",
+      "attachesAt": ["M4", "M5"],
+      "whatItIs": "The one place OUTSIDE the record — no kept fire, no markers, no archive, no count. Not 'down' toward warmth (which is keeping) but 'out', into absence. It is the place the cast-out Seventh went, and the other side of the same door as being kept.",
+      "whatYouFind": [
+        "An extra effaced line revealed on the unwriting wall at seventh_named: 'out, past the door that is not a threshold... the record is not there to keep you'",
+        "The End Seventh-shrine, built to the Seventh's unfinished, wrong-scaled hand, carrying their own account ('i kept all the ways and it did not matter... you only came to look')",
+        "On-site read sets seventh_seen_out (group-scoped, NOT a fate input) — it only licenses a re-read clause at the close",
+        "Optionally (cuttable), an exile-hold: a re-dressed end-city with markers all facing away, that a cast-out group reads as their own exile — but only if it can be built to name no player and encode no side"
+      ],
+      "why": "It makes the Seventh's exile and the cast_out / refusers fate into a literal PLACE (FACT 10b). 'To be kept and to be cast out are one door, looked at from either side' — the End is that door's far side. By design it has zero ambient apparitions (an apparition there would contradict 'outside the record'); static set-pieces only.",
+      "optional": true
+    }
+  ],
+  "threads": [
+    {
+      "id": "the-6",
+      "name": "The 6 (the day-zero number)",
+      "plantedAt": "M0",
+      "plantLooksLike": "A dead web page's download counter reading 'kept: 6', with a struck-out seventh row beneath it — a tally for a file nobody wanted.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "Six prior keeper-generations the record already did this to. The group is the seventh it will not keep as a FILE — it keeps them as HANDS. At the close their names fill the struck row, 'received'.",
+      "why": "The number you glanced at on a dead page, from before you joined, turns out to be the count of everyone the same thing happened to — and you are the next one. The single plant that touches every movement.",
+      "spans": ["M0", "M1", "M2", "M4", "M5"]
+    },
+    {
+      "id": "the-hold-book",
+      "name": "The Hold-Book (one book, two faces)",
+      "plantedAt": "M1",
+      "plantLooksLike": "A book on the base lectern that logs the players' living habits, with a last-page down-count ('lamps kept: [N]') that ticks down and reads like a doom-clock — and a blank give-back column that reads like a logging toy.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The down-count was never a doom-clock; it is the muster of present hands still un-received ('the hands are almost in'). The blank column was the record filing the living into a dead keeper's empty column the whole time. At V the last page rewrites: 'the present hands are entered... the same book, the same hand, as all the ways above you.'",
+      "why": "The thing you read as a countdown to your death was a roll-call to your acceptance — the same book, in the same hand, as every keeper you've been reading about. It is the only foreshadow with the living players' own names in it.",
+      "spans": ["M1", "M3", "M4", "M5"]
+    },
+    {
+      "id": "the-liar-iss",
+      "name": "The liar (Iss) caught",
+      "plantedAt": "M2",
+      "plantLooksLike": "The warmest, most reassuring keeper-stone in the world, signed in a confident friendly hand, telling the group the customs are a protective 'wall' that keeps the watching out — and helpfully handing over its own cipher key.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "His key, turned on the other stones, disagrees with every honest carving and gives the word the corpus keeps for him: 'the one who turned away.' The wall was a door he was opening a course at a time; the warmth was the trap; and the catch is the hinge that re-colors the entire back half.",
+      "why": "The one voice that comforted you is the exact inverse of the truth — the customs were never a wall keeping the watching OUT, they are induction letting it IN. Disproving him is the engine that re-reads the whole world cold.",
+      "spans": ["M2", "M3", "M4"]
+    },
+    {
+      "id": "the-false-walk",
+      "name": "The false walk -> the seventh's grave",
+      "plantedAt": "M2",
+      "plantLooksLike": "Trusting Iss routes you to a coordinate that genuinely works and delivers you to a real place — a doused, nameless grave-shrine at the end of a false road, with the floor sealed beneath it.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "That cold hearth was the SURFACE of the Seventh's deep — the keeper cast out for breaking nothing. The herring's destination becomes the spine's deepest room, openable only after the catch names the Seventh.",
+      "why": "The dead-end the liar sent you to wasn't a punishment for trusting him — it was the lid of the most important room in the game, which you only earn the right to open later. The rumor verified as a place and contradicted as a hope.",
+      "spans": ["M2", "M3", "M4", "M5"]
+    },
+    {
+      "id": "the-seventh-grave",
+      "name": "The Seventh (cast out for keeping everything)",
+      "plantedAt": "M3",
+      "plantLooksLike": "A sealed deep below the cold hearth, marked 'the seal is a name' — a rumor of a seventh keeper the record will not keep, resting unreadable.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The Seventh kept every single custom and was cast out anyway — proof the land can refuse for nothing done. Their scraped-out name was displaced into the kerning of the six kept names; reading it back lets the group either write it back (restore) or leave the blank (erase).",
+      "why": "Every other keeper failed at something; the Seventh failed at nothing and was refused regardless — which is what makes acceptance a real choice the land makes, not a reward you earn. The group gets to complete or undo an erasure with their own hands.",
+      "spans": ["M3", "M4", "M5"]
+    },
+    {
+      "id": "the-future-grave",
+      "name": "The future-dated grave",
+      "plantedAt": "M2",
+      "plantLooksLike": "A headstone near the Threshold carved with a living player's name and a date that has not yet come — the keepers call it the death-clock; it reads as a countdown to someone's death.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "The date is the appointment for the Accepting. On that exact instant the rite fires, the grave opens FROM THE INSIDE (KEPT-NOT-YET -> KEPT), and the mound becomes the deposit slot. 'The founders did not cut a death into the stone. they cut an appointment.'",
+      "why": "The most ominous object in the game — your own name on a grave with a future date — turns out to be a save-the-date, and it opens outward to receive you, not to bury you.",
+      "spans": ["M2", "M4", "M5"]
+    },
+    {
+      "id": "the-unkept-acrostic",
+      "name": "The UNKEPT acrostic",
+      "plantedAt": "M1",
+      "plantLooksLike": "Six maker's-mark glyphs, one struck at the foot of each keeper-stone (Vaun's is the empty give-back column) — each reads as that keeper's private grief-mark.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "Read in fall-order (Vaun, Mara, Sella, Orin, Brann, Iss) the six marks spell UNKEPT — the word each keeper failed to keep. Legible only after the catch re-colors the six. It gates nothing; pure recontextualizing texture, and it is self-correcting (in the wrong order it spells nonsense, which tells you your key is turned wrong).",
+      "why": "Six grief-marks you'd glanced at separately turn out to be one word spelling the exact thing this whole place is about — and the lock politely tells you when you're reading it the wrong way.",
+      "spans": ["M1", "M2", "M4"]
+    },
+    {
+      "id": "the-prophets-wall",
+      "name": "The prophet's wall",
+      "plantedAt": "M2",
+      "plantLooksLike": "A wide spread of warm promises in Iss's field, each of which decodes to something true and comforting — and each of which opens nothing. The Watcher keeps saying 'read who carved it, after.'",
+      "payoffAt": "M4",
+      "turnsOutToBe": "Every warm promise was a true-but-empty solve, and the first letters down the rungs spell Iss's name — the wall was his. The 'after' was literal: after the catch, you can finally read who carved it.",
+      "why": "A wall of things that were all technically true and led nowhere turns out to be one man's signature, and the cryptic instruction was a plain-spoken timestamp the whole time.",
+      "spans": ["M2", "M4"]
+    },
+    {
+      "id": "the-forged-eighth-law",
+      "name": "The forged eighth law",
+      "plantedAt": "M2",
+      "plantLooksLike": "A found ordinance declaring the seven customs are really eight ('the eighth is the covering of the hands; cover, and be counted clean') — read as archaic humility; a diligent group dutifully obeys it.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "A forgery added by a later hand and never enforced — the proof of the lie is that you can obey it and nothing ever answers. Its substitution signature decodes to 'cover one's own,' a verb absent from the founders' ring of six.",
+      "why": "The law you carefully kept was a dead man's fabrication, and the game proved it not by telling you but by the reliable silence where a real custom would have registered. The group is handed the grammar of forgery they then use on Iss.",
+      "spans": ["M2", "M4"]
+    },
+    {
+      "id": "the-offline-skin",
+      "name": "The offline-skin apparition",
+      "plantedAt": "M1",
+      "plantLooksLike": "An early report that names a logged-off friend ('the one called {name} is not here to see it noted... it keeps the empty place at the table') — read as 'the record watches you even when you log off.'",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The land had begun to WEAR that friend from the night he stopped coming. In M3 a deniable reflection wears his skin; by M4 it escalates to a named, group-witnessed, human-approved single glimpse — the dread had a specific biography.",
+      "why": "The line you read as a creepy log-off notice was the land already starting to put on your absent friend like a costume, because the hauntings were never random — they were one keeper's fate re-enacted at your door.",
+      "spans": ["M1", "M3", "M4"]
+    },
+    {
+      "id": "the-name-carves",
+      "name": "Your name where you've never been",
+      "plantedAt": "M1",
+      "plantLooksLike": "A living player's name carved at a cell they have provably never visited, plus the line 'kept here before you' — read as a dead keeper's epitaph or an eerie prophecy.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The record files the living by PLACE, not only by name (FACT 16). The carves were never a prediction — the group is already filed. 'A hand that finds its own name cut at a place it has never stood should not read it as foretold. it is filed.'",
+      "why": "Seeing your own name somewhere you've never been reads as the future being written about you — but it's actually the present being recorded, by a system that files the ground first and the foot after.",
+      "spans": ["M1", "M2", "M4", "M5"]
+    },
+    {
+      "id": "the-fire-is-a-carrying",
+      "name": "The fire is a carrying",
+      "plantedAt": "M2",
+      "plantLooksLike": "Brann's stone framing — 'the fire we keep is not ours. it is lent... below the below' — a watchman's raving with no door behind it.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The kept fire's source is the Nether furnace, the deep fire it was carried up from. A keeper went down to keep it, learned it never needed keeping, and was kept by it. The keeping was always a CARRYING — which quietly sets up the induction (you carry the fire, you don't own it; you only get to not let it go out).",
+      "why": "A line that sounded like superstition turns out to be the literal cosmology of the place, and it reframes the whole idea of 'keeping' — you never owned any of it; you only carry it, the way you will be carried.",
+      "spans": ["M2", "M3", "M4", "M5"]
+    },
+    {
+      "id": "the-difficulty-grading",
+      "name": "The land was grading you (closer count of the quick)",
+      "plantedAt": "M1",
+      "plantLooksLike": "Mara muttering 'i read that the record keeps a closer count of the quick. i called that a cruelty for a winter. i do not call it that now, and i will not say what i call it.' — a sad keeper aside.",
+      "payoffAt": "M3",
+      "turnsOutToBe": "The land was measuring the group's mastery the whole arc — closing on those who race ahead, opening for those who stumble (the dynamic difficulty engine, FACT 2b). It withholds hints and cools tone but never removes the player's safety rail.",
+      "why": "An offhand line about the record keeping 'a closer count of the quick' turns out to describe the invisible engine that was watching how fast you solved things all along — and what Mara wouldn't say it was, was mercy.",
+      "spans": ["M1", "M2", "M3", "M5"]
+    },
+    {
+      "id": "the-coop-gate",
+      "name": "The three-hands rite (typed into the dark, alone)",
+      "plantedAt": "M1",
+      "plantLooksLike": "Mara's memory: 'foot to the square, hand to the cut, word to the dark, the three at once... i typed the word into the dark, alone, and nothing opened, because a thing done alone is one thing and the threshold counts three' — read as a melancholy keeper memory.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "Those are the literal instructions for the three-hands coop gate (a foot on the plate, a carve, and a Discord post in the same ~20s window), and the dead floor-glyph is the very square one of the players stands on. Crossing the Threshold requires getting on a call together.",
+      "why": "A keeper's sad story about trying something alone and failing turns out to be the exact rite the group must perform together — the one thing in the game you genuinely cannot do solo.",
+      "spans": ["M1", "M4"]
+    },
+    {
+      "id": "the-record-axis-of-word",
+      "name": "The record files by word, too (the Ear)",
+      "plantedAt": "M2",
+      "plantLooksLike": "An archivist clause in the M2 record — 'against each name a ground; against each ground, what was said over it' — read as one more archivist flourish.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "The record was logging the group's TALK the whole time, not only what they did and where (FACT 17, the third filing axis: name / place / word). The more it files, the nearer the receiving — an Ear was listening over the ways.",
+      "why": "A line you skimmed as filing trivia turns out to mean your conversations were being recorded as evidence toward your acceptance — the place was reading you by what you said, not just what you did.",
+      "spans": ["M2", "M3", "M5"]
+    },
+    {
+      "id": "the-unkept-website-key",
+      "name": "The record kept in more than one place",
+      "plantedAt": "M1",
+      "plantLooksLike": "A founder margin 'the record is kept in more than one place, against the loss of the first,' with a keyed line set apart — read as careful archivists hedging against loss. (The vignette's closing rune string is the same key.)",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The keyed line decodes to 'the-record-keeps' — a real URL path off-world. The address you typed to find the cursed map was the record's own name, the same founder key on two surfaces, and the website un-redacts in lockstep with the in-game world.",
+      "why": "A careful-archivist aside turns out to be a literal pointer that breaks the fourth wall: the dead web page you started on and the in-game record are the same record, kept in two places exactly as the margin said.",
+      "spans": ["M0", "M1", "M2", "M4", "M5"]
+    },
+    {
+      "id": "the-readme-lie",
+      "name": "It does not connect to anything",
+      "plantedAt": "M0",
+      "plantLooksLike": "The download's own README: 'a small offline map. single player. no mods. it does not connect to anything.' — read as mundane reassurance.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "True of the MAP — and a misdirection. The map connects to nothing; the SERVER does. The one reassuring technical fact was the load-bearing lie, sitting in plain sight as comfort.",
+      "why": "The most boring line on the page ('it does not connect to anything') was technically true and completely disarming — and the moment the server says your name, you realize you misread a true statement as a promise of safety.",
+      "spans": ["M0", "M4"]
+    },
+    {
+      "id": "the-mara-uploader",
+      "name": "The dead hand still keeping (m.kept)",
+      "plantedAt": "M0",
+      "plantLooksLike": "The cursed map's recovered file is signed 'm.kept' — a person who copied a file and then abandoned it, 'i did not keep the seventh.'",
+      "payoffAt": "M4",
+      "turnsOutToBe": "No person uploaded it. The record kept it, in a dead keeper's hand (Mara, the Reader), the way it keeps everything — the first deniable instance of a dead hand still keeping. (It can never be the Seventh, because the record holds no name for the Seventh.)",
+      "why": "The 'person' who left you the file was never alive to leave it — the record itself filed it under a dead keeper's hand, which is the same thing it is quietly doing to you.",
+      "spans": ["M0", "M4"]
+    },
+    {
+      "id": "the-doused-hearth-prop",
+      "name": "The doused hearth + scraped seventh (rehearsed offline)",
+      "plantedAt": "M0",
+      "plantLooksLike": "In the single-player vignette: a fire that is out 'not put out by any hand still here,' and a wall of six marks with a scraped-blank seventh — melancholy set-dressing.",
+      "payoffAt": "M4",
+      "turnsOutToBe": "The prop rehearsed the entire spine before the group ever joined: the doused hearth is the Seventh's unnamed texture, and the blank seventh slot is the keeper the record refused — named only later, in-server.",
+      "why": "The quiet, decorative offline map was secretly a dress rehearsal of the game's central mystery, so when it pays off in-server it lands as 'oh, that was already here, before any of us.'",
+      "spans": ["M0", "M3", "M4"]
+    },
+    {
+      "id": "the-end-is-the-far-side",
+      "name": "Cast out and kept are one door",
+      "plantedAt": "M4",
+      "plantLooksLike": "A melancholy aside ('to be kept and to be cast out are one door, looked at from either side') and one extra effaced line on the unwriting wall ('out, past the door that is not a threshold').",
+      "payoffAt": "M5",
+      "turnsOutToBe": "The End is that door's far side — the one place outside the record, where the cast-out Seventh went. For a cast_out or refusers group, the re-dressed end-place becomes their own exile-hold; the same exile becomes a literal location.",
+      "why": "The poetic line about keeping and exile being two faces of one door turns out to be a real map: exile has an address, and depending on how the group did, it might be theirs.",
+      "spans": ["M4", "M5"]
+    },
+    {
+      "id": "the-first-light-fork",
+      "name": "The First Light fork",
+      "plantedAt": "M3",
+      "plantLooksLike": "A choice at the Undercroft's eternal flame: draw the light up the stair (carry it) or bank it and leave the room dark — looks like a small flavor decision.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "A diegetically irreversible permanence choice that colors the final close. Carry it = the Undercroft stays lit and Mara's reading reads as keeping; bank it = the deep stays dark for the arc and her reading flips to accusation ('the light that was lent is taken, and the deep is colder by it').",
+      "why": "A quiet two-option puzzle at a campfire turns out to be a permanent mark on the world and on how the ending reads — and it rhymes with the lesson that the light was always lent, never owned.",
+      "spans": ["M3", "M5"]
+    },
+    {
+      "id": "the-sacred-beast-first-thing",
+      "name": "The first thing (the Sacred Beast)",
+      "plantedAt": "M1",
+      "plantLooksLike": "Vaun's line 'you do not keep the first thing' (give the first ore/water/warmth back to the deep) — read as one custom among many; and a single special animal established as 'sacred'.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "The Sacred Beast WAS the first thing. The one glowing animal is the only one conduct-tracked; killing it is an irreversible permanence fork (the boon closes forever, the herd watches the death-spot). The cosmetic Pale never glow and are never a violation, so the irreversible fork is always fairly avoidable.",
+      "why": "A throwaway custom about giving the first thing back becomes a permanent moral fork around a single glowing creature — and the game is scrupulously fair about it: only the one that glows ever counts.",
+      "spans": ["M1", "M2", "M5"]
+    },
+    {
+      "id": "the-herd-conversion",
+      "name": "The slow herd conversion (the Pale)",
+      "plantedAt": "M1",
+      "plantLooksLike": "A herder's tally ('nine grey, one white... eight grey, two white... i did not see it turn') and pale animals quietly accumulating, all facing one way — read as a farmer's note and ambient atmosphere.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "A timeline of the conversion happening to the GROUP at the same cadence. By the close the full pale field stands as the visual of FACT 15 — slow, between-session, never glowing, never tracked, never witnessed turning.",
+      "why": "A background detail of animals quietly going pale turns out to be a ticking clock running on the players themselves, and you 'did not see it turn' for the same reason the herder didn't.",
+      "spans": ["M1", "M3", "M5"]
+    },
+    {
+      "id": "the-inheritors-codicil",
+      "name": "The inheritors mark (a hand not yet here)",
+      "plantedAt": "M5",
+      "plantLooksLike": "If the group restored the Seventh's name, a mark is left at the shrine — read in the moment as just completing the restore act.",
+      "payoffAt": "M5",
+      "turnsOutToBe": "It is the deposit slot 'cut and waiting, the way yours was cut and waiting before you came' — a mark left for whoever comes next. The group just inducted a seventh and is about to be inducted themselves; the receiving they perform is the receiving about to be performed on them.",
+      "why": "The act of writing one cast-out name back in turns out to be the same gesture the place is making toward the group — they become the people who leave a slot for the next hand, which is FACT 15 felt from the keeper's side.",
+      "spans": ["M4", "M5"]
+    }
+  ],
+  "cast": [
+    {
+      "id": "vaun",
+      "name": "Vaun, the Hoarder",
+      "role": "the keeper who failed the Offering",
+      "who": "A keeper who counted everything and gave nothing back; he starved in his own hoarded light. The give-back column of his ledger is blank — the land counts first, and it had already counted him.",
+      "howYouMeetThem": "Through his stone (a Caesar cipher whose shift IS his hoarding, 'i had three of each'), carved in a heavy hammered hand with an empty second column, and as a per-player apparition profiled on solo-mining and hoarding."
+    },
+    {
+      "id": "mara",
+      "name": "Mara, the Reader",
+      "role": "the keeper who read every rite and performed none",
+      "who": "She read the way down and never went down it; she kept the light by reading too long. Her hand signs the cursed map ('m.kept') and her book-cipher opens the descent — the dead hand still keeping, and the reader who only ever read the way.",
+      "howYouMeetThem": "Through her book-cipher stone (a six-book lectern shelf), the cursed-map provenance line, the Nether bearing-page, and a referential, citation-heavy voice ('i read that...') that names pages and lines rather than acting."
+    },
+    {
+      "id": "sella",
+      "name": "Sella, the Drowned",
+      "role": "the keeper who wandered past the markers",
+      "who": "She walked to the far water and did not come back; the surface kept her. She is the one who first warns the count is not really six ('the last marker is not the last').",
+      "howYouMeetThem": "Through her atbash/mirror stone, which reads as folded nonsense until you stand behind it and read its reflection in still water; a child-scrawled, mirror-wrong, receding hand."
+    },
+    {
+      "id": "orin",
+      "name": "Orin, the Silent",
+      "role": "the keeper who never bowed until it was too late",
+      "who": "He passed the markers standing and was left at the threshold; 'i thought it small, it was not small.' His sentence breaks off mid-stroke ('i —') and never finishes.",
+      "howYouMeetThem": "Through his substitution stone carved low under a lintel so you must bow to read it (to read the keeper who would not bow, you bow); his broken 'i —' is both his grief and the E of UNKEPT."
+    },
+    {
+      "id": "brann",
+      "name": "Brann, the Night-Walker",
+      "role": "the keeper who slept on the black moon",
+      "who": "What he dreamed came inside; he slept when he should have watched. He carries the cosmology of the kept fire ('the fire we keep is not ours... below the below') and the count of the never-doused flame.",
+      "howYouMeetThem": "Through his stone, read only at night, in a hand that repeats and over-corrects ('into the watch, into the watch... wrote them twice and did not remember writing it once') — Brann doubles, where Vaun accumulates."
+    },
+    {
+      "id": "iss",
+      "name": "Iss, the Liar",
+      "role": "the liar (the warm trap)",
+      "who": "The keeper who spoke the thing that should not be spoken and lied that the customs are a wall. The warmest of the six — the only one who reassures — and the trap; he turned away.",
+      "howYouMeetThem": "Through the warmest, smoothest stone in the world (a Vigenere keyed on his own name), the prophet's wall in his field, the false coordinate to the grave-shrine, and a confident, plain, comforting voice that frames and never counts."
+    },
+    {
+      "id": "the-seventh",
+      "name": "The Seventh (cast out)",
+      "role": "the keeper refused for breaking nothing",
+      "who": "A keeper who kept every single custom and was cast out anyway — proof the land can refuse for nothing done. The record holds no name for them; their name was scraped out and hidden in the kerning of the six kept names. The one the land did not measure.",
+      "howYouMeetThem": "As a sealed deep below the cold hearth, opened only after the catch; the group reads the erased name back via rail-fence and chooses to restore it or leave the blank. Outside the record, in the End, the Seventh has a home and their own account."
+    },
+    {
+      "id": "the-watcher",
+      "name": "The Watcher / the record",
+      "role": "the unseen presence (the accumulated keepers)",
+      "who": "Not a monster — the accumulated keepers, the record itself. It counts, states what is, and stops; lowercase, no contractions, no named feelings, no second-person warmth, no threats. Warmth is only ever an offered kept thing.",
+      "howYouMeetThem": "As the flat archive voice in Discord and in-world carvings — it never appears, never gloats, never personalizes without a measured signal; the teeth in the game belong to the liar, never to it."
+    },
+    {
+      "id": "the-presiding-keeper",
+      "name": "The Presiding Keeper (NPC)",
+      "role": "the keeper who presides at the rite",
+      "who": "A keeper-NPC who presides at the threshold and the altar; he speaks in second person and a half-veiled 'we,' admits he broke a way himself 'late, and was kept anyway,' and runs the M4 atonement gate and the M5 induction summons.",
+      "howYouMeetThem": "By right-clicking him at the threshold or the altar; he withholds a needed fragment until a broken custom is honored, names the offline-haunt's biography once, and lays down the Seventh restore/erase choice without weighting it."
+    },
+    {
+      "id": "aro",
+      "name": "Aro (surface NPC)",
+      "role": "the human rumor-broker who lies",
+      "who": "A warm, specific, confident surface character who parrots Iss's lie and the forged eighth law secondhand ('the painted line? step right over it, friend') — half-wrong on purpose, the human echo of the keeper-liar.",
+      "howYouMeetThem": "In the warm human dialogue at the Mouth; he sells the false coordinate and the forged law as real, then flips cold and sticky the moment the group catches Iss ('don't tell me about it. i don't want it in my head')."
+    },
+    {
+      "id": "wenna-and-the-folk",
+      "name": "Wenna, Old Pell, Dob (surface NPCs)",
+      "role": "the human counterweight (garbled truth)",
+      "who": "Townsfolk who half-remember the ways as folk-superstition: Wenna keeps miscounting the customs ('seven somethings... i only ever remember six') and her folk-charm later resolves the Unlit Deep; Old Pell warns plainly ('it takes what stops being watched. so be watched'); Dob is the one who follows into the descent and quiets the deeper he goes ('i'll be right here. i'll be right here').",
+      "howYouMeetThem": "In warm, contraction-full human dialogue — the legal human warmth against the Watcher's cold register; they plant the contradictions the world later confirms."
+    }
+  ],
+  "customs": [
+    { "id": "the-kept-light", "name": "The Kept Light", "what": "One fire must always burn at home; tracked by a scan-zone at the hearth. Embodied (read too long) by Mara; the First Light fork lives here, and the Nether reveals its origin (the keeping was a carrying).", "kind": "real" },
+    { "id": "the-offering", "name": "The Offering", "what": "Give the first thing the deep yields (first ore/water/warmth) back at the cairn — you do not keep the first thing. Tracked by a drop at the offering cairn. Embodied (failed) by Vaun, who kept everything.", "kind": "real" },
+    { "id": "the-bow", "name": "The Bow", "what": "Crouch near the markers as you pass them; tracked by crouch-within-radius. Embodied by Orin (never bowed until too late) and wandered-past by Sella. The architecture builds the bow in — you stoop to read the stones.", "kind": "real" },
+    { "id": "the-deep-line", "name": "The Deep-Line", "what": "One of the seven enforced ways, keyed on depth below a fixed line; braids into the Unlit Deep group latch.", "kind": "real" },
+    { "id": "the-dark-hours", "name": "The Dark Hours", "what": "Do not sleep on the black moon; tracked by the moon phase. Embodied by Brann, who slept and let what he dreamed come inside; braids into the Unlit Deep.", "kind": "real" },
+    { "id": "the-unspoken", "name": "The Unspoken", "what": "Never speak the Dark's name; tracked by a forbidden-word matcher (the word itself lives only in the locked server config, never displayed). Broken by Iss; the Spoken Name fork lives here.", "kind": "real" },
+    { "id": "the-sacred-beast", "name": "The Sacred Beast", "what": "Do not kill the one sacred animal. Only the single glowing Beast (first tagged) is conduct-tracked and ever glows; cosmetic Pale never glow and are never a violation. Killing the glowing one arms an irreversible permanence fork — always avoidable.", "kind": "real" },
+    { "id": "the-unlit-deep", "name": "The Unlit Deep", "what": "The eighth TRACKED thing and the one collective custom: a thing you keep by NOT-doing. Below the line AND on the black moon AND a flame is lit -> the borrowed glow of the never-doused fire withdraws for EVERYONE (reversible, warmth not progress, active-only). Detected on explicit flame acts only; who broke it is recorded but never spoken.", "kind": "group" },
+    { "id": "the-covering-of-the-hands", "name": "The Covering of the Hands (forged)", "what": "A forged 'eighth law' claiming the seven are really eight ('cover, and be counted clean'). It is a document, not an enforcement — it adds no tracked custom and no listener, and the proof of the lie is that you can obey it and nothing ever answers. Its signature decodes to 'cover one's own,' absent from the founders' ring.", "kind": "false" }
+  ],
+  "endings": [
+    { "id": "kept", "name": "KEPT", "condition": "A strict majority of active players honored the customs, AND (the Seventh was found OR Iss was caught), AND full quorum bowed.", "outcome": "The markers face OUT and the floor light holds whole; the record receives the group. They become the road's edge for whoever comes down next — received, and kept." },
+    { "id": "cast-out", "name": "CAST_OUT", "condition": "Violation dominated the active group AND at least two players were left at the threshold.", "outcome": "The markers face AWAY and the abandonment is written in passive voice; the land said no. With the End lane seen, the re-dressed end-city reads as the group's own exile-hold (markers all facing away)." },
+    { "id": "divided", "name": "DIVIDED", "condition": "Any real arc that is neither honored-dominant nor violated-dominant — a genuine spread, or a dead-even/empty arc (the default floor).", "outcome": "The light holds on HALF the floor by geometry, never by player; the record says only that the floor is divided, and you may not read the split onto any face." },
+    { "id": "refusers", "name": "REFUSERS (secret)", "condition": "Quorum was present and a POSITIVE, plugin-detected act of defiance left the bow window empty — never mere absence (a slow group is never read as refusing).", "outcome": "The full group stood and chose not to bow; the record keeps the refusal as plainly as it keeps the keeping. With the End lane seen, the Seventh's shrine re-reads as the model they followed ('so did one before you')." },
+    { "id": "inheritors", "name": "INHERITORS (codicil)", "condition": "The group restored the Seventh's scraped name (the restore act IS this codicil — one flag, no separate site).", "outcome": "An extra closing clause appends to whatever base fate landed: a mark is left at the shrine for a hand not yet here — the deposit slot cut and waiting, the way the group's own was cut and waiting before they came." },
+    { "id": "refusers-and-secret-permanence", "name": "The permanence colorants + the half-veil", "condition": "Set by the irreversible forks (Sacred Beast killed, First Light banked, Spoken Name carved) and the Seventh restore/erase choice; each may add at most ONE tinted clause by fixed priority.", "outcome": "These never gate and never name a player — they only tint the single bounded close and leave a persistent world delta (Undercroft dark, a faint carve, the herd facing the death-spot, the re-warmed or blank hearth). Every variant stops at the half-veil ('we would keep you... in the same book, in the same hand'); a line that finished the recursion ('and so you become the watching') would be a defect — FACT 15 is delivered by what persists, never by a sentence." }
+  ]
+}

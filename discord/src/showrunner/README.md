@@ -54,8 +54,41 @@ npm run showrunner               # one live tick (drip/gift + customs bridge)
   `CHANNEL_THE_RECORD` (+ `DISCORD_APP_ID`, `DISCORD_GUILD_ID` to satisfy shared config).
 - Idempotent + cheap: a tick with nothing to do just writes a heartbeat. Safe to over-schedule.
 
-## Still to come (tracked in `design/CRITIQUE-ACTIONS.md`)
+## The between-session AUTONOMY layer (`autonomy.run.ts` + the pure policy modules)
+On top of the deterministic spine, the showrunner authors the world between sessions. Every producer is
+a PURE policy module (importable by `autonomy.selftest.ts` with no DB) wrapped by `autonomy.run.ts`,
+each fault-isolated and **with a deterministic fallback behind any LLM call** (the SPOF mitigation —
+nothing ever blocks on the model):
+- **Difficulty grip** (`reckoning.ts`, A10/FACT 2b) — mastery → cadence multiplier + register `tone` +
+  dead-end staging, with hysteresis. Never touches `whisper_budgets` (INV-15, grep-guarded in the test).
+- **Cold-start prologue** (`prologue.ts`, B4) — ignition gate (no curatorial drip before
+  `prologue_ignited`); one-shot `recordOpened` ack; named-report precision floor.
+- **Personalized reports** (`reports.ts`, D1) — the "it knows me" observation, `voice.reportObserved`
+  as the deterministic floor, the scalpel offered only a constrained slot it may decline; precision-gated
+  (flat dossier → no report), idempotent on the dominant habit.
+- **Hold-Book** (`keeper-record.ts`, A3) — per-player keeper-voice page rows, precision floor (flat →
+  enrolled to no one), idempotent tiers, author-slot fallback.
+- **Divergent fates** (`fate.ts`, A2/INV-11) — active-only enum selector → the M5 composer (set-once in
+  `resolve.ts`, cross-owner).
+- **Liar engine** (`liar.ts`, D4) — flag-gated, one-way warm→cold re-stage of Iss's beats on
+  `iss_caught` (curated re-staging only; the activation lane is the `requires_flags` gate, cross-owner).
+- **Spawn-bias conductor** (`conductor.ts`, D7/INV-18) — the single-arbiter `apparition_claim` per drama
+  window; probabilistic (seeded weighted draw, never argmax) + per-player capped; every ambient lane
+  defers to the published claim.
+- **Keeper-NPC dialogue** (`keeper.ts`, D8/FACT 9) — dossier-conditioned node resolution; M-IV atonement
+  withholding; FACT-9 one-surface-per-window; defers to `apparition_claim` for the prior-keeper apparition.
+- **Grave / herd / forks / clock** (`grave.ts`/`herd.ts`/`forks.ts`/`clock.ts`) — the future-dated grave
+  (INV-14), the capped cosmetic pale spread (INV-13), one-way fork leaves (INV-12), the single Accepting
+  instant binder shared by the grave + website + summons.
+- **`readActiveRoster(windowMs)`** (`autonomy.run.ts`) — the single active-set source the conductor +
+  Accepting bridge + keeper-NPC consume; none re-derives the active set.
+
+```
+npm run showrunner:test:autonomy   # pure autonomy-policy unit tests (no DB/network/LLM)
+```
+
+## Still to come (cross-owner reads + tracked in `design/CRITIQUE-ACTIONS.md`)
 - Dashboard **health panel + manual-drip button** (reads `showrunner_state`, posts a `pending_drip`).
-- Drip ordering smarter than movement-asc (prefer entry clues; sequence dead-ends deliberately).
-- The **AI authoring layer** (personalized reports, "it knows me" hooks) on top, each write schema-validated
-  + `status='pending'` for curatorial beats.
+- The **dossier / visited-cells / compliance-spread readers** (SQL+PLUGIN lanes) that feed the
+  personalized-report / keeper-NPC / name-where / offline-skin passes — until they land those passes
+  degrade to a precise NO-OP (precision over recall), never a guess.

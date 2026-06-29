@@ -409,6 +409,68 @@ public final class SupabaseClient {
     }
 
     /* ==================================================================== */
+    /*  World paste ledger (FAWE single-paste idempotency, backlog D10)      */
+    /* ==================================================================== */
+
+    /**
+     * The DURABLE (cross-restart) single-paste guard for a large FAWE set-piece (BUILD-MANIFEST §6 /
+     * INTEGRATION-V2 D10). INSERT one {@code world_paste_ledger} row keyed by the UNIQUE
+     * {@code (world, site_id, schematic, base_x, base_y, base_z)} tuple, exactly like
+     * {@link #insertSolveIfNew} guards {@code solves}:
+     * <ul>
+     *   <li>a genuinely-new claim → 2xx with a one-row body → {@link PasteClaim#NEW} (proceed to paste);</li>
+     *   <li>an already-pasted footprint → 2xx with an EMPTY body → {@link PasteClaim#DUPLICATE} (skip);</li>
+     *   <li>any network/HTTP/parse failure → {@link PasteClaim#FAILED} (skip — never double-paste a
+     *       set-piece we couldn't durably guard; the in-process applied-set + footprint occupancy still
+     *       cover the common re-fire, this is only the durable backstop).</li>
+     * </ul>
+     * The ledger governs SINGLE-PASTE set-pieces ONLY; the M-III A→B swap rides {@code RoomSwapBeat}'s
+     * {@code swapped} PDC marker, NOT this table (no double-guard — BUILD-MANIFEST §8 / BP0-3).
+     *
+     * <p>Blocking I/O → MUST be called from an async thread (mirrors {@link #insertSolveIfNew}). When the
+     * client is not configured we cannot durably guard, so we return {@link PasteClaim#NEW} and let the
+     * footprint sweep be the sole guard (dev/offline parity — never silently swallow the set-piece).
+     */
+    public PasteClaim claimPasteLedger(String world, String siteId, String schematic,
+                                       int baseX, int baseY, int baseZ) {
+        if (world == null || world.isBlank() || schematic == null || schematic.isBlank()) {
+            return PasteClaim.FAILED;
+        }
+        if (!config.isConfigured()) {
+            // No durable store reachable — defer entirely to the footprint sweep (cannot block the build).
+            return PasteClaim.NEW;
+        }
+        String sid = (siteId == null) ? "" : siteId;
+        String body = "{\"world\":\"" + jsonEscape(world)
+                + "\",\"site_id\":\"" + jsonEscape(sid)
+                + "\",\"schematic\":\"" + jsonEscape(schematic)
+                + "\",\"base_x\":" + baseX
+                + ",\"base_y\":" + baseY
+                + ",\"base_z\":" + baseZ + "}";
+        return withRetries("claimPasteLedger", () -> {
+            HttpRequest req = baseRequest("world_paste_ledger", "")
+                    .header("Content-Type", "application/json")
+                    // ignore-duplicates → a UNIQUE-conflict is NOT an error; representation → see if a row came back.
+                    .header("Prefer", "resolution=ignore-duplicates,return=representation")
+                    .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                    .build();
+            HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+            int code = resp.statusCode();
+            if (code >= 200 && code < 300) {
+                markSuccess();
+                String b = resp.body();
+                boolean inserted = b != null && b.trim().length() > 2; // "[]" → conflict, "[{…}]" → new
+                return inserted ? PasteClaim.NEW : PasteClaim.DUPLICATE;
+            }
+            markFailure();
+            return PasteClaim.FAILED;
+        }, PasteClaim.FAILED);
+    }
+
+    /** Outcome of an idempotent {@code world_paste_ledger} claim (single-paste guard). */
+    public enum PasteClaim { NEW, DUPLICATE, FAILED }
+
+    /* ==================================================================== */
     /*  Offline queue                                                       */
     /* ==================================================================== */
 

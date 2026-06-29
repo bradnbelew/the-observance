@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdmin } from "@/lib/auth";
+import { coerceFate } from "@/app/author/fate-preview";
 import type { BeatStatus, Json } from "@/lib/database.types";
 
 /**
@@ -267,6 +268,58 @@ export async function triggerAccepting(
     level: "warn",
     source: "dashboard",
     message: "The Accepting was manually queued from the Author control surface.",
+  });
+
+  refresh();
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Ending selector — guarded manual fate override (testing the M5 colorants).
+// ---------------------------------------------------------------------------
+
+/**
+ * Insert a beat_queue row of type 'override_ending_fate' carrying one of the four base fates
+ * (A2 `divergent-fates`, WEB-MASTER §5/§8). This is the manual, FOR-TESTING path to force which
+ * colorant the M5 composer opens with; like the Accepting trigger it lands as a PENDING beat so it
+ * still flows through the same approve/force gate (the row is the request, NOT an immediate
+ * arc_state.ending_fate write — the engine's resolver owns the set-once write, idempotent).
+ *
+ * The fate is re-validated server-side against the four-value enum (coerceFate); a value outside it
+ * (a player name, "inheritors", junk) is rejected. INV-11/16: the fate is a GROUP enum and names no
+ * player — there is nothing here that can elect a chosen one. The action never reads or writes a
+ * per-player field.
+ */
+export async function overrideEndingFate(
+  formData: FormData,
+): Promise<ActionResult> {
+  if (!(await guard())) return FORBIDDEN;
+
+  if (String(formData.get("confirm")) !== "FATE") {
+    return { ok: false, error: "Confirmation phrase did not match." };
+  }
+
+  const fate = coerceFate(formData.get("fate"));
+  if (fate === null) {
+    return { ok: false, error: "Not a valid ending fate." };
+  }
+
+  const supabase = createAdminClient();
+
+  const payload: Json = { manual: true, source: "dashboard", fate };
+  const { error } = await supabase.from("beat_queue").insert({
+    type: "override_ending_fate",
+    target: null,
+    payload,
+    status: "pending",
+  });
+
+  if (error) return { ok: false, error: error.message };
+
+  await supabase.from("event_log").insert({
+    level: "warn",
+    source: "dashboard",
+    message: `Ending fate override "${fate}" was manually queued from the Author control surface.`,
   });
 
   refresh();

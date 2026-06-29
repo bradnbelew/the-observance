@@ -31,6 +31,57 @@ export interface ShowrunnerState {
    * every cadence. Absent/empty on a fresh deploy.
    */
   reported_customs?: Record<string, number>;
+
+  // -------------------------------------------------------------------------
+  // BETWEEN-SESSION AUTONOMY bookkeeping (A2/A3/A8–A13, B3/B4). Stored on this
+  // same jsonb row so the autonomy layer needs NO migration today (mirrors
+  // `reported_customs`). When the SQL lane lands the dedicated tables
+  // (grave_state, group_restraint_state, player_visited_cells, …) the run
+  // wrappers can be re-pointed; until then this is the durable, idempotent home.
+  // -------------------------------------------------------------------------
+
+  /** A10 difficulty hysteresis: the persisted grip state + when it was entered. */
+  reckoning_state?: 'tight' | 'even' | 'loose';
+  reckoning_since_ms?: number | null;
+
+  /** B4 cold-start: has the one-shot `recordOpened` ack already posted? (prologue idempotency). */
+  prologue_acked?: boolean;
+
+  /** A3 Hold-Book: per-player enrolment tier high-water (groupKey → tier ordinal 1..3). */
+  keeper_record?: Record<string, number>;
+
+  /** A9 grave: the two one-shot rows' fired-state + the bound subject (one grave per arc). */
+  grave?: { carved?: boolean; opened?: boolean; group_key?: string; name?: string };
+
+  /** A12 herd: the pale-cosmetic high-water + the last movement a spread pass ran. */
+  herd_pale_count?: number;
+  herd_pass_movement?: number;
+
+  /** A8 name-where: the cells already used for a carve this arc (one carve per cell). */
+  carved_cells?: string[];
+  /** A8 name-where: per-player carve count (chorus rotation — fewest-first). */
+  carve_counts?: Record<string, number>;
+
+  /** B3 offline-skin: per-player worn-count by phase (`${groupKey}|${phase}` → count). */
+  worn_skins?: Record<string, number>;
+
+  /** A2 fate: the set-once ending fate (mirrors arc_state.ending_fate; cached for the health panel). */
+  ending_fate?: 'kept' | 'cast_out' | 'divided' | 'refusers';
+
+  /** D1 reports: per-player dominant-habit ordinal already dripped (re-fire only on a habit change). */
+  reported_habits?: Record<string, number>;
+
+  /** D4 liar: the Iss warm-beat ids already re-staged cold (one-way high-water). */
+  liar_flipped?: string[];
+
+  /**
+   * D7 conductor: the single-arbiter apparition claim for the CURRENT window + the per-player
+   * apparition counts (the per-player cap). `claim_window` is the window seed the claim was made for,
+   * so a re-run in the same window re-derives the same claim instead of making a second one. The
+   * deferring lanes (offline-skin, name-where, keeper-NPC, the Ear) read `claim` before firing (INV-18).
+   */
+  apparition_claim?: { window: number; group_key: string; shape: string; beat: string } | null;
+  apparition_counts?: Record<string, number>;
 }
 
 /** Read a single settings value (jsonb) by key, or `fallback` if absent. */

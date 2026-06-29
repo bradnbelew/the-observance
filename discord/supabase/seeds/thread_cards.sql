@@ -237,7 +237,43 @@ values
 
   ( 'gather-rehearsal-human', 'human', 'the shape of the choice', 'cardGatherRehearsalHuman',
     'unbroken_light', 'verified',
-    '{}', null, 'bowed:as_one', 110 )
+    '{}', null, 'bowed:as_one', 110 ),
+
+  -- ========================================================================
+  -- WEB REALIZATION (WEB-MASTER / INTEGRATION-V2) — the four cards BUILD-MANIFEST §5
+  -- names (forged-eighth surface, three-hands, fate, record-url). Each body_voice_key
+  -- is a cardXxx key the TS-VOICE / archive owner must define in voice.archive.ts (the
+  -- threadCardVoiceCoverageSelfTest build guard fails until they exist — see the RETURN).
+  -- anchor_site_id ∈ enabled sites.yml ids; references_card_key resolve in THIS file;
+  -- revealed_by_solve is a real puzzle_key (NULL = not solve-gated).
+  -- ========================================================================
+
+  -- the forged eighth law, found as one more ordinance among the true seven (surface).
+  -- card_kind 'rumor' → flips to 'contradicted' at the M4 record correction. References
+  -- Aro's parrot-line card (surface-aro-lie) — the human who repeats the lie.
+  ( 'surface-eighth-forged', 'surface', 'the covering of the hands', 'cardSurfaceEighthForged',
+    'stone_iss', 'rumor',
+    array['surface-aro-lie','happened-no-wall'], 'forged-eighth', null, 80 ),
+
+  -- the three-hands gate — the cold square Mara typed into the dark, read as the rite
+  -- instruction at the catch (happened). Anchored at the Undercroft plate. Solve-gated on
+  -- the gate clearing. References the catch + the bound word's home.
+  ( 'happened-three-hands', 'happened', 'three hands at once', 'cardHappenedThreeHands',
+    'coop_plate', 'explore',
+    array['happened-no-wall','place-deep-line'], 'm4-three-hands', null, 100 ),
+
+  -- the fate — the ending the floor shows (happened). 'verified', written when the rite
+  -- resolves; event-revealed (revealed_by_solve null). Anchored at the Accepting floor.
+  -- Names no player (INV-11/16); the card is the neutral close the M5 composer emits.
+  ( 'happened-the-fate', 'happened', 'what the floor showed', 'cardHappenedTheFate',
+    'unbroken_light', 'verified',
+    array['happened-no-wall','human-they-were-kept'], null, null, 120 ),
+
+  -- the record kept elsewhere — the off-world page (surface). 'explore' (verified when the
+  -- group finds the path). References the founder archivists card. Solve-gated on record-url.
+  ( 'surface-record-elsewhere', 'surface', 'the record is kept elsewhere', 'cardSurfaceRecordElsewhere',
+    'first_report_lectern_01', 'explore',
+    array['surface-watcher-counts','human-the-record-opens'], 'record-url', null, 90 )
 
 on conflict (card_key) do nothing;
 

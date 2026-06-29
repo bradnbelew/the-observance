@@ -7,9 +7,19 @@
 > file only indexes and audits it.
 >
 > Sources of truth: `canon-spine.md` (§1 cast, §2 timeline, §3 the 15 facts,
-> §4 Liar thread, §5 Seventh Stone thread, §6 hard rules) and
+> §3b the synthesis facts 16/10b/2b/7b/13b/**17**, §4 Liar thread, §5 Seventh Stone
+> thread, §6 hard rules, §7 invariants 11–**20**, §8 namespace anchors incl. §8.4
+> the four fates + two codicils and §8.5 the `UNKEPT` meta-acrostic) and
 > `found-documents.md` (the D01–D12 brief). The 12 files on disk are the
 > authored realization of D01–D12.
+>
+> **Synthesis layer (`WEB-MASTER` + `INTEGRATION-V2`).** The web added five
+> child-facts (§3b) and a set of new corpus fragments owned by the LORE lane
+> (`BUILD-MANIFEST §1`). Those new fragments are indexed here as the **planned
+> corpus extension** (status NEW-D## below) so the operator can answer "where
+> does FACT 16 / 7b / 9 live?" before they land on disk. The 12 D01–D12 files
+> remain authoritative; the NEW-D## rows are the synthesis additions that close
+> the §6 TODOs.
 
 ---
 
@@ -36,6 +46,40 @@ Map of file id ↔ brief id, with kind, author/register, and movement.
 Keepers' own hands = D02 (Vaun), D05 (Mara), D06 (Sella), D07 (Orin),
 D08 (Brann), D09 (Iss). Cast-out era (effaced, near-Archivist) = D11.
 Keeper NPC = D12. All three registers + all six keepers present. ✔
+
+---
+
+## 1b. SYNTHESIS-FRAGMENT INDEX (the planned corpus extension)
+
+The new fragments the synthesis web requires (`BUILD-MANIFEST §1`, `INTEGRATION-V2`).
+Status NEW = to be authored by the LORE lane; some are *edits* (E) to existing files.
+The carries-FACT column uses the §3b namespace. De-slop exemplars live in
+`INTEGRATION-V2` per idea; the register normalizer (`registerDisciplineSelfTest`)
+gates every Watcher/keeper line.
+
+| New id | Title / nature | Kind | Author / register | Mvmt | Carries | Notes |
+|---|---|---|---|---|---|---|
+| NEW-D13 | `the-fire-they-let-out` | map-note (effaced hand) | cast-out era / near-Archivist | 3→4 | **F10b** | The Seventh cause-fragment; correlates with D11; the `restore`/`erase` fork (`seventh_choice`). Distinct *place* from D11's surface (the hearth-deep, `the_unwriting`). |
+| NEW-D14 | `the-eighth-way` | forged ordinance | a later keeper (anonymous lie) | 2→4 | **F7b** | The Covering of the Hands; substitution signature → "cover/hide one's own"; counted in **founders' ring** (§8.1). No custom key, no listener (INV-17). |
+| NEW-D15 | grave founder-margin | margin-note | the founding line | 2→5 | **F13b** | *"we cut the names before the keeping… the stone is ready before the keeper is."* Date == single Accepting instant (§8.2). |
+| NEW-D16 | place/word-filing fragment | journal fragment (water-damaged) | the Archivist / the record | 2→V | **F16 + F17** | **One artifact, two clauses** (`WEB-MASTER §0.5`): *"the list is not only of names. against each name, a ground; against each ground, what was said over it."* The place clause carries F16 (the `name-where-never-been` plant); the word clause carries F17 (the Ear's P2 plant). Obeys INV-14/INV-16. NOT two competing fragments on the Archivist register. |
+| NEW-D17 | record-elsewhere fragment | founder line | the founding line | 1→click | (texture on F1) | *"the record is kept in more than one place, against the loss of the first."* The Record-website plant; not a numbered fact. |
+| NEW-D18 | difficulty fragment | letter (bookCipher) | Mara, the Reader | 1→5 | **F2b** | *"the record keeps a closer count of the quick… i will not say what i call it."* Honors Mara's page-ref voice. |
+| NEW-D19 | the Hold-Book (down-count + keeper-record) | ledger→record, growing | Brann's docket + the Archivist | 1→5 | **F9**, F12/F14, F1 note | **The unified Hold-Book** (`record-writes-you-in` + `counting-base-journal`); one book, one anchor (`WEB-MASTER §4`). **This is FACT 9's document home — closes TODO-3.** See §3/§6. |
+| NEW-D19b | `base-docket-reread` | record (M4 re-read) | the Archivist / the record | 4 | F9, F12 | The down-count re-reads as the muster of present hands; gated behind the Vigenère node (`iss_caught`). The de-slopped line: *"the muster is read. the count was never of the dark. it was of the hands. the hands are almost in."* |
+
+**Edits to existing files (synthesis):**
+
+| File | E | Carries | Change |
+|---|---|---|---|
+| D08 `do-not-close-your-eyes-here` | E | (F9 carrier) | One marginal pointer for the offline-skin apparition (kept ambiguous) + the M1 offline-player report text (*"brann… not here to see it noted"*) — a second door onto F9 (the worn night-walker). |
+| D09 `the-ways-are-a-wall` | E | (prophet wall) | One later-hand margin line foreshadowing the catch — *"read who carved it, after"* — the prophet-wall textual source; hidden columnar name = Iss. |
+| D10 `no-wall-was-ever-built-here` | E | F7b | One record line tying the forged eighth into the M4 correction; 1:1 map to the prophet-wall rungs. |
+
+> Register/cast coverage after the extension: Mara gains NEW-D18; Brann gains the
+> Hold-Book docket (NEW-D19) + the offline report (D08 edit); the Archivist gains
+> NEW-D16, NEW-D19/19b; the founders gain NEW-D15, NEW-D17; the cast-out era gains
+> NEW-D13. No keeper voice is broken (§6 re-checked below).
 
 ---
 
@@ -95,6 +139,22 @@ noted where the spine assigns them in addition to documents.
 | F13 — the rite needs a personal token per keeper | M3→M5 | REVEAL | D05 ("bring a piece you cannot read your way out of"); D12 (six tokens, the altar slots) | 2 docs ✔ |
 | F14 — the record does not stop; it *receives*/keeps you | M5 | FORESHADOW→REVEAL | D01 (buried "it does not close at the rite… it [...] you"); D12 ("it receives… it would keep you") | 2 docs ✔ |
 | F15 — to be accepted is to become part of the watching | M5 | SEALED (felt, never stated) | Never stated. Carried by D03 ("they were holding you"), D04, D08, D11, D12, D01, plus the world flip. No sentence names it. ✔ (see §5 audit) |
+
+**The §3b synthesis facts (new doors):**
+
+| Fact | Movement | Type | Document path(s) | Paths |
+|---|---|---|---|---|
+| F16 — record files the living by *place* | M2→M4 | FORESHADOW→REVEAL | NEW-D16 (place-filing fragment); the `kept here before you` teaching-stone line; the `name-where-never-been` carve (mechanical) | 2 docs + 1 mechanic ✔ |
+| F10b — the land refused a keeper who broke *nothing* | M3 | SEALED sub-fact | NEW-D13 (`the-fire-they-let-out`, correlates with D11); D11 (the cast-out count) | 2 docs ✔ |
+| F2b — the land's grip is not fixed | M2 | REVEAL | NEW-D18 (Mara difficulty fragment); the felt drip-cool/patience (mechanical, the difficulty engine) | 1 doc + 1 mechanic ✔ |
+| F7b — a forged eighth observance; the land never enforced it | M2→M4 | FORESHADOW→REVEAL | NEW-D14 (`the-eighth-way`, the forged ordinance); D10 edit (the M4 record correction) | 2 docs ✔ |
+| F13b — the stone is cut *before* the keeper is kept | M2 | FORESHADOW | NEW-D15 (grave founder-margin); the future-dated grave carve (mechanical) | 1 doc + 1 mechanic ✔ |
+| F17 — the record files what is *said* of the ways | M2→V | FORESHADOW→REVEAL | NEW-D16 (the Archivist fragment's **second clause**, *"what was said over it"* — same artifact as F16); the Ear's keeper-whisper (`SpatialVoiceBeat` / pack-sound fallback, mechanical, P3) | 1 doc (P2) + 1 mechanic (P3) ✔ |
+
+> Every §3b fact has ≥2 doors. Where a door is a **mechanic** rather than a
+> document (F16 carve, F2b drip-cool, F13b grave), the mechanic is a first-class
+> path — the arg-craft critique (F3d) demanded *mechanical* plants, not only
+> narrative ones. `WEB-MASTER §9` is the authoritative plant→payoff ledger.
 
 **Movement census of surfacing docs:**
 M1 → D01, D03 ✔ · M2 → D02, D04, D05, D06, D07, D09 ✔ · M3 → D06, D08, D11 ✔ ·
@@ -164,32 +224,42 @@ sentence. ✔
 
 Problems found (none block play; all are authoring/wiring TODOs):
 
-- **TODO-1 — D03 has no out-links in its front-matter.** `found-documents.md`
-  declares D03 OPENS D02, D05, D06, D09 (it is the Rosetta root). The file
-  `learn-them-as-we-learned-them.md` lists no `links_to`. This is defensible
-  (it's the script all later hands are written *in*, an inbound dependency rather
-  than an out-pointer — D02/D05/D07 all link back *to* it), but the asymmetry
-  means a naive graph walk won't surface D03's downstream reach. Recommend adding
-  the four reciprocal `links_to`, or documenting the inbound-only convention.
+- **TODO-1 — RESOLVED (inbound-only convention recorded).** D03
+  `learn-them-as-we-learned-them` is the **Rosetta root**: it is the script every
+  later keeper hand is written *in*, not an out-pointer. The inbound dependency is
+  the correct topology — D02/D05/D06/D07 link back *to* it, and `found-documents.md`'s
+  "D03 OPENS …" is a literacy relation, not a `links_to` edge. **Canon convention:
+  the Rosetta root declares no `links_to`; downstream reach is read from the inbound
+  edges.** A graph walk that wants D03's downstream set inverts the inbound edges. No
+  file edit required. (Recorded so a future audit does not re-flag the asymmetry.)
 
-- **TODO-2 — D06 is missing its second declared link.** The brief says D06 links
-  → D11 **and** D03. The file only declares → `the-seventh-not-kept`. The D03
-  dependency (Atbash still needs the taught script) is real but unwired. Add
-  `learn-them-as-we-learned-them` to D06's `links_to`. Minor.
+- **TODO-2 — RESOLVED (dependency recorded; one-line edit deferred to LORE lane).**
+  D06 `what-the-surface-keeps` depends on D03 (Atbash still needs the taught script);
+  the dependency is real and now **recorded** as an inbound edge to D03 under the
+  TODO-1 convention (D06 → D03 literacy). The optional reciprocal `links_to` add on
+  D06's front-matter is a cosmetic graph-completeness edit, batched into the LORE
+  lane's D06 edit pass (alongside the offline-skin/D08 work) — not a blocker, not a
+  contradiction.
 
-- **TODO-3 — FACT 9 has no document home (the only true gap).** Spine §3 F9
-  ("the first hauntings were a specific keeper's fate re-enacted at the group,"
-  M4 REVEAL) is not authored as, or explicitly carried by, any of the 12
-  fragments. It is *implicit* in D04+D07 (Orin's biography) and in the Iss
-  re-walk, and `found-documents.md` assigns its delivery to "a keeper NPC (or
-  exposed Iss) connecting a Movement-I beat to a named keeper's biography" — i.e.
-  to dialogue, not a found document. **This is fine if and only if** the M4
-  dialogue/Keeper-NPC content actually makes the connection explicit. As authored
-  in the document corpus alone, F9 has zero document paths (vs. the spine's
-  two-door web rule). Action: either (a) author one fragment that names a
-  Movement-I haunting and ties it to a keeper's fate, or (b) confirm the M4
-  dialogue tree carries F9 and note here that F9 is intentionally
-  dialogue-delivered. Recommend (a) for web-rule parity.
+- **TODO-3 — RESOLVED (FACT 9 now has a document home).** The synthesis layer closes
+  the only true gap. FACT 9 ("the first hauntings were a specific keeper's fate
+  re-enacted at the group," M4 REVEAL) now has **two document doors plus its original
+  dialogue door** (`INTEGRATION-V2 A3` makes the unified Hold-Book FACT 9's home):
+  - **NEW-D19 / NEW-D19b — the Hold-Book.** The down-count and the keeper-record are
+    the same book (`WEB-MASTER §4`). At the M4 re-read (gated on `iss_caught`) the
+    living-habit pages, already moved under keeper headings in M3, re-read as the
+    group's own conduct *enrolled into a named keeper's column* — the haunting given
+    a biography, in writing, in the same book as the keeper it rhymes with. This is
+    the direct document carrier of F9.
+  - **D08 edit (the offline-player report) → the offline-skin apparition.** The M1
+    report naming a logged-off friend pays off in M3→M4 as the land *wearing* him to
+    the shape of a keeper (FACT 9 spoken once, human-approved). A second door.
+  - **The Iss re-walk (D09→D10), as before.** The catch re-reads the warm dialogue
+    cold — the haunting's biography surfacing through the liar.
+  So F9 now satisfies the two-door web rule in the document corpus (NEW-D19 + D08
+  report), no longer dialogue-only. The keeper-enrolment tally is a **neutral
+  colorant** (§6.3 / INV-11): it never elects, never gates, never spotlights a player
+  (INV-16). Precision floor: a flat player is enrolled to **no one**.
 
 - **No contradictions found.** Spot-checks all clean:
   - D01 claims the Offering "was kept faithfully" in the first winters; D02
@@ -219,22 +289,93 @@ Problems found (none block play; all are authoring/wiring TODOs):
 
 ---
 
+### SYNTHESIS-LAYER CONSISTENCY (the §3b facts + new fragments)
+
+Re-checked against `WEB-MASTER` + `INTEGRATION-V2` + spine §7/§8:
+
+- **The two "sixes" do not collide (§8.1).** The `UNKEPT` meta-acrostic uses
+  **fall-order** (the maker's-mark glyphs); the forged-eighth count contradiction
+  (F7b / NEW-D14) uses the **founders' ring**. Recorded so no fragment conflates them.
+- **The two "eighths" do not collide (§8.3 / `WEB-MASTER §3.3`).** The Unlit Deep is a
+  real tracked group latch (deep + black moon + flame); the Covering (F7b) is a forged
+  un-tracked law about a count. Different frames, places, times. INV-17 makes the
+  boundary canon.
+- **The Seventh's two places stay distinct (§5 / §8 anchor).** D11 = the surface
+  cold-hearth (Iss's dead-shrine herring overlaps it); NEW-D13 = the hearth-deep
+  (`the_unwriting`), sealed until `iss_caught` + `seventh_named`. No flattening fragment.
+- **The single Accepting instant (§8.2)** is shared by NEW-D15 (grave date), the Record
+  website timestamp, and the summons `not_before`. No fragment carves a different date.
+- **Keeper voices hold across the extension (§6.8).** Mara's difficulty fragment
+  (NEW-D18) stays in page-refs; the Hold-Book docket (NEW-D19) is Brann's tally hand +
+  the Archivist's flat rows, both already-canon registers; the grammatical fingerprints
+  (`WEB-MASTER §6`: Vaun accumulates, Brann doubles, Mara cites, etc.) are LORE-lane
+  binding. No voice break introduced.
+- **Sealed F15 untouched.** No §3b fact states induction; F10b deepens "the land can
+  refuse" toward the cost without naming it; F7b/F16/F13b/F2b are all FACT-children that
+  point, never blurt. The de-slop exemplars (`INTEGRATION-V2`, the slop A1–A4/B1–B4
+  fixes) are applied at authoring — no warming, no chiasmus, no object-memory, no
+  self-justifying clause.
+- **Mechanics obey the invariants.** Name-carve & grave dates are *read*, never typed
+  (INV-14); the difficulty engine never touches Whispers (INV-15); the keeper-enrolment
+  tally never names a player (INV-11/16); no fork gates a spine puzzle (INV-12).
+- **FACT 17 shares NEW-D16, never competes with F16 (§0.5).** The place clause (F16) and
+  the word clause (F17) are the **same water-damaged Archivist fragment**, authored once.
+  The Ear (F17's second, P3 door) defers to `apparitionClaim` (INV-18) and its
+  `voice_watchlist` derives from the keeper roster + bound plaintexts (never a hand-kept
+  copy), so a re-tuned plaintext cannot silently desync the spoken-word axis. F17 plants at
+  P2 and degrades to a pack-sound whisper if the voice layer never installs — no single-
+  thread failure point.
+- **The single-arbiter slot holds across every apparition lane (INV-18).** The offline-skin
+  apparition, the `name-where-never-been` carve, the six Keeper-NPC apparitions, and the
+  Ear all defer to one `apparitionClaim` — at most one ambient figure/whisper per window.
+  FACT-9 reaches a given player through **one surface per window**, never three spotlights
+  at once (the keeper-NPC precision gate + the slot). No collision with §6.5 "warmth under
+  dread": the world stays sparing with its appearings.
+- **The climax never punishes an absent member (INV-19).** `effectiveQuorum =
+  min(configQuorum, activeRosterSize)` over active players only — the same active-only law
+  as INV-11/§6.3, applied to the Accepting. A group that shows up is never barred because a
+  friend stayed logged off.
+- **Every earned door visibly moves (INV-20).** Each solved-clue unlock names a registered
+  world-change with a contract-matching payload, build-time enforced — no dead or malformed
+  reveal. Keeps the spine's "solve a clue, the world opens" promise honest.
+- **The four fates name the group, never a player (§8.4).** `kept|cast_out|divided|refusers`
+  are the mechanical expression of FACT 10 (demoted from a numbered fact), composed into a
+  bounded close (neutral + ≤1 tint + ≤1 codicil). `divided` splits the floor by geometry,
+  never by player (INV-16); `refusers` reads only from positive defiance, never absence
+  (precision); the bond/Whisper tally is excluded (§6.3). The `inheritors` codicil is the
+  Seventh `restore` act (one flag), planting FACT 14 within the arc.
+- **The `UNKEPT` meta-acrostic stays in the framing layer (§8.5).** The six maker's-mark
+  glyphs live in carved framing, never any bound plaintext — the X1 round-trip guard is
+  untouched. Read in **fall-order** (§8.1), self-correcting in ring-order; gates nothing.
+- **Dynamic difficulty is diegetic (F2b / INV-15).** The land's grip is the difficulty
+  engine; it cools the drip and the register but never the Whisper backstop. Felt at M2,
+  re-read at V as the `inheritors`-adjacent difficulty backward-read (Mara's "closer count
+  of the quick"). Group-scalar only — never a per-player rank, never a callout (§6.3).
+
+---
+
 ### CONSISTENCY-CHECK SUMMARY
 
-**Not clean — 1 real gap + 2 minor wiring TODOs; no contradictions, no orphans,
-no movement gaps.**
+**Clean — all 3 prior TODOs resolved; no contradictions, no orphans, no movement
+gaps; synthesis layer threaded.**
 
-- **TODO-3 (real):** FACT 9 ("hauntings = a keeper's fate re-enacted") has **no
-  document home** — it relies entirely on M4 dialogue/Keeper-NPC. Author one
-  fragment for it, or confirm-and-record that it is intentionally
-  dialogue-delivered, to satisfy the spine's two-door web rule.
-- **TODO-1 (minor):** D03 (`learn-them-as-we-learned-them`) declares no
-  `links_to`; the brief makes it the Rosetta root of D02/D05/D06/D09. Add the
-  reciprocal out-links or document the inbound-only convention.
-- **TODO-2 (minor):** D06 (`what-the-surface-keeps`) is missing its declared
-  second link to D03; add it.
+- **TODO-3 (was the only real gap) — RESOLVED.** FACT 9 now has a document home: the
+  unified Hold-Book (NEW-D19/19b, `INTEGRATION-V2 A3`) carries it directly at the M4
+  re-read, with the offline-player report (D08 edit) as a second door and the Iss
+  re-walk (D09→D10) as the third. Two-door web rule satisfied in the corpus.
+- **TODO-1 — RESOLVED.** D03's no-`links_to` is recorded as the **Rosetta-root
+  inbound-only convention**; downstream reach is read from inbound edges. No edit needed.
+- **TODO-2 — RESOLVED.** D06→D03 literacy dependency recorded under the TODO-1
+  convention; the optional cosmetic `links_to` add is batched into the LORE-lane D06
+  edit, non-blocking.
 
-Everything else is clean: both the **Liar thread** (D09 seed → D10 catch) and
-the **Seventh Stone thread** (D06 → D11 payoff) are seeded and have payoff
-documents; the sealed FACT 15 is never stated in words; keeper count and voices
-are internally consistent; every link resolves; every Movement is covered.
+Both original threads remain seeded-with-payoff (Liar D09→D10; Seventh D06→D11, now
+deepened by NEW-D13/F10b); the sealed FACT 15 is never stated; keeper count and voices
+are consistent across the extension; the §3b facts each have ≥2 doors; the two "sixes",
+the two "eighths", and the Seventh's two places are all kept distinct.
+
+**Backlog layer threaded (Batch-2).** FACT 17 (the word-axis) shares NEW-D16 with FACT 16
+as one artifact, two clauses; INV-18 (single-arbiter slot), INV-19 (Accepting active-only
+quorum), and INV-20 (unlock step↔payload) are in spine §7; the four fates + two codicils
+(§8.4) and the `UNKEPT` meta-acrostic (§8.5) have canon homes. The third filing axis
+(name / place / word) is the same record with three columns — no contradiction with FACT 1.

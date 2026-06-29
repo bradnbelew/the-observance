@@ -11,14 +11,22 @@ import { decide } from './decide.js';
 import { applyDecision } from './apply.js';
 import { runCustomsPass } from './customs.run.js';
 import { decideCustomReports, OBSERVE_AT, WARN_AT, LEFT_AT } from './customs.js';
+import { computeAutonomyGates, runAutonomyPasses } from './autonomy.run.js';
 import { readCustomViolations } from '../db/repo.js';
 import { readState } from './state.js';
 
 async function main(): Promise<void> {
   const dryRun = process.argv.includes('--dry-run');
   const nowMs = Date.now();
+  const nowIso = new Date(nowMs).toISOString();
 
-  const snapshot = await buildSnapshot(nowMs);
+  // A10/B4: compute the difficulty grip + the prologue gate FIRST, then fold them onto the snapshot so
+  // the cadence scaling + curatorial-drip suppression apply to THIS tick. Fault-isolated inside (a
+  // failure returns empty gates → the spine runs at its neutral defaults). On --dry-run the inner
+  // hysteresis persistence is suppressed, so a preview writes NOTHING.
+  const gates = await computeAutonomyGates(nowMs, nowIso, dryRun);
+  const baseSnapshot = await buildSnapshot(nowMs);
+  const snapshot = { ...baseSnapshot, reckoning: gates.reckoning, prologue: gates.prologue };
   const decision = decide(snapshot);
 
   if (dryRun) {
@@ -45,6 +53,10 @@ async function main(): Promise<void> {
           .map((p) => ({ puzzle: p.puzzleKey, failed: p.failedAttemptsInWindow, attempters: p.attempters.length })),
       },
       decision,
+      gates: {
+        reckoning: gates.reckoning ?? null,
+        prologue: gates.prologue ?? null,
+      },
       customs: {
         violations: violations.length,
         reports: customsDecision.reports.map((r) => ({ player: r.name, custom: r.customKey, rung: r.rung, toll: r.toll })),
@@ -60,17 +72,28 @@ async function main(): Promise<void> {
   // crossed rungs / lays soft tolls. Respects the kill-switch (asleep → silent, like decide)
   // and is fully fault-isolated, so it can never abort the tick the spine already applied.
   let customs = { reported: 0, tolled: 0 };
+  let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false };
   if (!snapshot.asleep) {
     try {
-      customs = await runCustomsPass(snapshot.mode, new Date(nowMs).toISOString());
+      customs = await runCustomsPass(snapshot.mode, nowIso);
     } catch (e) {
       console.error('[showrunner] customs pass error (isolated)', e);
+    }
+    // The between-session autonomy producers (grave / herd / forks / clock), beside the customs
+    // bridge. Fully fault-isolated internally; one wrap here keeps a hard failure off the spine.
+    try {
+      autonomy = await runAutonomyPasses(snapshot.mode, nowIso);
+    } catch (e) {
+      console.error('[showrunner] autonomy pass error (isolated)', e);
     }
   }
 
   console.log(
     `[showrunner] tick done: gifted=${result.gifted} dripped=${result.dripped} staged=${result.staged} ` +
-    `reported=${customs.reported} tolled=${customs.tolled}`,
+    `reported=${customs.reported} tolled=${customs.tolled} ` +
+    `grip=${gates.reckoning?.state ?? 'even'} tone=${decision.tone} ` +
+    `graves=${autonomy.graves} herd=${autonomy.herdSpreads} forks=${autonomy.forksSet} ` +
+    `cold=${autonomy.coldRestages} apparition=${autonomy.apparitionClaimed ? 1 : 0}`,
   );
 }
 

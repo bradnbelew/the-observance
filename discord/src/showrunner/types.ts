@@ -61,6 +61,21 @@ export interface AttempterState {
   nextTierHintExists: boolean;
 }
 
+/**
+ * The difficulty grip the showrunner reads onto the tick (A10 `dynamic-diegetic-difficulty`, FACT 2b).
+ * `state` is the grip; `cadenceMult` scales dripIntervalMs (the land waits / relents); `tone` selects
+ * the Watcher's register variant. Mirrors {@link reckon} in reckoning.ts. Carried OPTIONALLY on the
+ * Snapshot so the existing pure self-tests (which omit it) still compile — absent ⇒ `even`/×1/`plain`.
+ */
+export type ReckoningState = 'tight' | 'even' | 'loose';
+export type Tone = 'cold' | 'plain' | 'warm';
+
+/** The cold-start prologue gate the showrunner reads onto the tick (B4, WEB-MASTER §1.M1). */
+export interface PrologueGate {
+  /** whether the curatorial clue-drip is permitted this tick (false until the prologue is ignited). */
+  curatorialAllowed: boolean;
+}
+
 /** Immutable input to decide(). Thresholds are injected so the policy stays pure + tunable. */
 export interface Snapshot {
   nowMs: number;
@@ -77,6 +92,19 @@ export interface Snapshot {
   stallFailedThreshold: number;
   /** minimum gap between drips. */
   dripIntervalMs: number;
+  /**
+   * OPTIONAL difficulty grip for this tick (A10). When present, decide() multiplies the effective
+   * drip interval by `cadenceMult` (the land waits longer when the group races / sooner when it
+   * stumbles) and carries `tone` onto the Decision for the voice layer. Absent ⇒ neutral (no scaling,
+   * `plain` tone) — so the deterministic self-tests that omit it are unchanged.
+   */
+  reckoning?: { state: ReckoningState; cadenceMult: number; tone: Tone };
+  /**
+   * OPTIONAL cold-start prologue gate (B4). When present and NOT yet ignited, the curatorial drip is
+   * suppressed (gifts still apply — player-helpful, never gated). Absent ⇒ allowed (back-compat: the
+   * existing self-tests have no prologue and must keep dripping).
+   */
+  prologue?: PrologueGate;
 }
 
 /** Bump one earned whisper for a stuck, exhausted player so they can claim `tier`. */
@@ -115,6 +143,12 @@ export interface Decision {
   health: HealthBeat;
   gifts: GiftDecision[];
   drips: DripDecision[];
+  /**
+   * the register temperature for this tick's Watcher lines (A10). Carried so apply.ts can pass a
+   * `tone` arg into the voice calls (a SELECTION among authored variants, never generated text).
+   * Defaults to `'plain'` when the snapshot carries no reckoning — the back-compat neutral.
+   */
+  tone: Tone;
   /** human-readable trace lines (logged; never player-facing). */
   notes: string[];
 }

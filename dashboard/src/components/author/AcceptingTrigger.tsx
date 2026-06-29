@@ -12,6 +12,11 @@ const CONFIRM_PHRASE = "ACCEPTING";
  * enables, then it posts to the triggerAccepting server action which inserts a
  * pending beat_queue row of type 'trigger_accepting'. The action re-checks the
  * phrase server-side too, so the guard isn't merely cosmetic.
+ *
+ * When the Accepting resolves, the engine's fate sentinel sets the ending fate
+ * (the divergent colorant) set-once — preview it, or force one for testing,
+ * above in the Ending selector. This trigger only fires the rite; it elects no
+ * fate and no player.
  */
 export function AcceptingTrigger() {
   const [phrase, setPhrase] = useState("");
@@ -47,7 +52,8 @@ export function AcceptingTrigger() {
       <p className="mt-1 max-w-prose text-sm text-neutral-400">
         Manually queue the Act-3 ritual for testing. It lands as a{" "}
         <span className="font-mono">pending</span> beat and still flows through
-        the approval gate. Type{" "}
+        the approval gate. The ending fate it resolves to is shown in the Ending
+        selector above. Type{" "}
         <span className="font-mono text-red-300">{CONFIRM_PHRASE}</span> to arm.
       </p>
 

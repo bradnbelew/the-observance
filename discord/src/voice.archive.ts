@@ -325,6 +325,131 @@ export const archive: Record<string, string> = {
     'there is a way up. it is real and it is one man wide and the sky past it is healed, the long cold long lifted, the surface gone on without the hold. the only thing kept here is the last leaf of the one who found it, which says he was right about the sky and that finding it cost the opening of the line, and to carve that on nothing.',
   'voice.dest.gutterLamps.find':
     'on the three lowest levels every lamp is out and the levels above are lit. the oil beside them is good. the wicks are good. a hand wrote that it was never the oil and that she knew, and re-wicked them every watch of her life anyway, because the rite is the lamps. the dark came up these three first.',
+
+  // -------------------------------------------------------------------------
+  // WEB-REALIZATION CARDS (WEB-MASTER / INTEGRATION-V2; thread_cards.sql §5). The four
+  // body_voice_key cards the seed names — forged-eighth surface, three-hands, fate,
+  // record-elsewhere. Watcher-register record faces (the threadCardVoiceCoverageSelfTest
+  // build guard fails until these exist). Each names NO living player (INV-16).
+  // -------------------------------------------------------------------------
+
+  // surface-eighth-forged → the forged eighth law, found as one more ordinance (FACT 7b).
+  // Reads as a real law until the M4 correction; the lie is that the land never measures it.
+  cardSurfaceEighthForged:
+    'an eighth ordinance, in a later hand, set among the true seven. the covering of the hands. it reads like a way and is obeyed like a way and nothing answers the keeping of it. the founders’ ring is six and the true ways are seven and this is neither. a way the land does not measure is not a way. it is a thing a man wrote and wanted kept.',
+
+  // happened-three-hands → the cold square Mara typed into the dark, read at the catch as the
+  // rite instruction (A6). De-slopped per slop A4 (objects do not remember): a count and a state.
+  cardHappenedThreeHands:
+    'the cold square in the floor is not a grave and not a mark. it is a count. three hands at once, in the one window: a foot on the plate, a name cut in the stone, a word said where it can be heard. the threshold does not open for one, and it does not open in turn. the count is three. then it is open.',
+
+  // happened-the-fate → the ending the floor shows (A2). Event-written at the rite (verified).
+  // The neutral close the M5 composer emits; names no player, reads the group enum only (INV-11/16).
+  cardHappenedTheFate:
+    'what the floor showed is entered. the markers face as they face. the light holds where it holds. the record does not write which hands stood where; it writes that the hands were counted, and how the floor answered the count. the close is the group’s, or it is no one’s.',
+
+  // surface-record-elsewhere → the off-world page (A13). The record is kept in more than one
+  // place, against the loss of the first; found when the group walks the decoded path.
+  cardSurfaceRecordElsewhere:
+    'a founder’s line: the record is kept in more than one place, against the loss of the first. it is not only here. read the path it gives and the record is there too, the same count, the same hand, kept where this hold cannot reach to burn it.',
+
+  // -------------------------------------------------------------------------
+  // THE TRUE WALK — coord found-markers (A7 `coords-to-real-place`, INV-14). The Threshold
+  // carving points; the answer is the clean DESTINATION WORD found on-site, never the coord.
+  // BUILD-MANIFEST §4: coordFraming.false / coordReCarve / coldHearth.find / threshold.arrive.
+  // Keyed under the existing `voice.dest.*` convention. Watcher record register.
+  // -------------------------------------------------------------------------
+
+  // the FALSE coordinate framing — Iss's stone before the catch (the dead-shrine walk). It
+  // verifies as a place and contradicts as a hope; the misread is the trap (re-read cold later).
+  'voice.dest.coordFraming.false':
+    'the mark on iss’s stone is a road. it points, and the road is real, and the place at the end of it is real. walk it and you will find a cold hearth and a name. the road kept its word. the word was not the one you were told it was.',
+
+  // the RE-CARVE at the catch — Iss's stone is re-cut; the true road is the Threshold's, not his.
+  'voice.dest.coordReCarve':
+    'the road on iss’s stone is struck through, in a later hand. the true road was never his to point. it is cut on the threshold now, past the gate, and it points the other way.',
+
+  // the cold hearth — the FALSE walk endpoint (the dead-shrine surface; Iss's grave). Layered:
+  // the deep below opens only post-catch + seventh_named. Distinct place from the true threshold.
+  'voice.dest.coldHearth.find':
+    'a hearth with no fire and no name, at the end of the false road. someone carried a letter here for one a generation drowned. below it the floor is sealed, and the seal is a name, and the seal does not open from this side. this was the surface of a deep you cannot yet reach.',
+
+  // the TRUE arrival — the destination the Threshold road delivers them to (the Accepting on-ramp).
+  // "kept here before you" — the place was already filed; the walk was never prediction (FACT 16).
+  'voice.dest.threshold.arrive':
+    'the true road ends where the record already filed you. kept here before you, the carving reads, in a hand older than your coming. the road did not bring you somewhere new. it brought you to the place that was already yours.',
+
+  // -------------------------------------------------------------------------
+  // THE KEEPER-NPC DIALOGUE TREE (D8 `backlog-keeper-npc-framework`, FACT 9, WEB-MASTER §7).
+  // keeper.ts resolves to these KEYS; keeper.run.ts reads them through `archiveLine`. The
+  // presiding Keeper + per-player prior-keeper apparitions speak the record's keeper-register
+  // (Set-B: lowercase, no exclaim) — NOT the Set-A surface NPCs below. Per-keeper rhyme nodes
+  // hold the grammatical fingerprint (WEB-MASTER §6). FACT 9 = ONE surface per window.
+  // -------------------------------------------------------------------------
+
+  // the neutral floor — a flat dossier, no callout (precision over recall).
+  'keeper.presiding.neutral':
+    'you are at the mouth, and the record is open, and it was open before you. keep the ways and the ways will keep you. that is all i am set here to say to a hand i have not yet read.',
+
+  // FACT 9 — the dialogue names the logged first beat the record noted of this player. The run
+  // wrapper substitutes the real beat; this is the deterministic frame around it (no named feeling).
+  'keeper.fact9.named':
+    'the record noted a first thing of you, before you knew it was watching. it is entered. it was entered the night you did it. you were measured before you were told there was a measure.',
+
+  // M-IV atonement — the node withholds a fragment until a measured broken custom is honored.
+  'keeper.atone.withheld':
+    'there is a thing i would set down for you, and i will not, yet. a way was broken and not mended. mend it where it was broken, and come back, and the rest is yours to read.',
+  // atonement cleared — the fragment is released (de-slopped per slop E3: no named feeling).
+  'keeper.atone.cleared':
+    'the way that was broken is kept again. the fragment i held is yours now. read it. it was always going to be yours once the keeping was done.',
+
+  // the dossier-rhymed nodes — the prior-keeper the player rhymes with speaks. Each holds the
+  // keeper's grammatical fingerprint (WEB-MASTER §6). These are the prior-keeper apparition's words.
+  'keeper.rhyme.vaun':
+    'you keep, and you keep, and what you keep is yours, and you do not give the first of it back. i kept eleven jars and gave the deep none and counted them at night and could not say why the counting was a comfort. the column for the giving-back is open under your name.',
+  'keeper.rhyme.mara':
+    'you read the way down. i read every rite by the one steady fire and walked none of them. i read that you read, and have not yet gone. the page is not the going. i know the page better than any of them and i never went.',
+  'keeper.rhyme.sella':
+    'you go to the far edge, where the water gives you back smaller. i went to the far water and it kept me. stay where your people can see you. the edge gives you back, but not all of you, and not the same.',
+  'keeper.rhyme.orin':
+    'you pass the markers and do not stoop. i set seven courses a day and re-cut the bow-stone grooves so a man could not pass them standing, and i did not see the use of the bowing, and i bowed. the smallest way is the one left at the threshold. i —',
+  'keeper.rhyme.brann':
+    'you keep the watch on the black moon. i kept it, i kept it, past the watch, when the rule is plainest: do not sleep on the black moon. what i dreamed came inside. i counted the dark twice and was not sure of the count.',
+  'keeper.rhyme.iss':
+    'you are easy here, and that is well. the ways are a wall, and inside it the watching cannot touch you. i kept every winter of my life and it never came inside, not once, not for me. be easy. sit. there is no count under this heading.',
+  // the Iss node re-read COLD post-catch (same `iss_caught` flag as the activation lane). The
+  // warm reassurance is now the trap, named. resolved by keeper.ts when issCaught is true.
+  'keeper.iss.cold':
+    'i told you the ways were a wall. a wall does not let you out the far side and pull you back in warm. i opened the line looking for home and let home in from the other side. the warmth was the lie. read who carved the wall, after.',
+
+  // -------------------------------------------------------------------------
+  // THE ISS COLD-FLIP RE-STAGE (D4 `backlog-liar-engine`). liar.ts re-stages Iss's warm beats as
+  // cold once `iss_caught`; resolve.ts's `private_message` key-resolver writes one of these into the
+  // subtitle. Warm→cold, one-way. The `iss.dialogue.turns_cold` family — keyed by the warm beat.
+  // -------------------------------------------------------------------------
+
+  'iss.dialogue.turns_cold':
+    'the one who told you the way was a wall is cold in the record now. every warm word he set out reads the other way. he was the warmest of the six. that was the trap, and the trap is sprung, and the warmth does not come back.',
+  // the wall-promise beat, re-staged cold.
+  'iss.dialogue.turns_cold.wall':
+    'the wall he promised was a door he was opening, a course at a time, over winters. inside-the-wall was never safe. it was the far side being let in.',
+  // the easy-here beat, re-staged cold.
+  'iss.dialogue.turns_cold.easy':
+    'the ease he offered was the not-counting. a thing told it is kept, and never counted, is a thing being readied to be let go.',
+
+  // -------------------------------------------------------------------------
+  // THE EAR — keeper-whisper relevance (D11 `backlog-modeled-mob-and-voice`, FACT 17, P3). The
+  // VoiceListener hears a spoken token that rhymes with a way; SpatialVoiceBeat speaks one of
+  // these to one player, or the PrivateSoundBeat pack-sound fallback. FACT 17 plants at P2 and
+  // degrades to the pack-sound whisper if the voice layer never installs. Defers to apparitionClaim.
+  // -------------------------------------------------------------------------
+
+  // the relevance whisper — the record files what is SAID of the ways, not only what is done.
+  'keeperWhisper.heard':
+    'the record files what is said of the ways, not only what is done. a word was said over this place, and it is entered, against the name and against the ground.',
+  // the pack-sound fallback line (when no voice layer) — the same fact, one short whisper.
+  'keeperWhisper.fallback':
+    'what is said is kept too. the record heard it.',
 };
 
 // ===========================================================================

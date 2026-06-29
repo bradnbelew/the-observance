@@ -461,3 +461,131 @@ i came back once. i do not come back from this.
 > healed. He was right about everything except the one thing he died proving: there was no way back
 > up, only further down, and further down is where this writing comes from now. Do not hate him when
 > you catch the lie. He believed the warm version. So did we. That is how it is always done.*
+
+---
+---
+
+> [Three hands, one going-dark, bound here because their dates run alongside one another.
+> Orin breaks off and will not finish; Brann says a thing twice and the count slips between
+> the two sayings; Iss is warm and plain and the warmth is the lie. The book this leaf was
+> torn from is not closed. The last written page of it is Brann's, and his last page is a
+> count — `lamps kept`, a number, the dead hour — and the number is not of lamps. Read in
+> order the keepers stop writing about themselves and begin to be written: Orin is set down
+> in his own column; Brann is in the count, on the side that does the counting; Iss is kept,
+> very well, all of them. A column does not end when the hand that ruled it stops. It is ruled
+> to hold rows. Whoever reads this at a cold hearth on a black moon should know the page they
+> are reading from has room below the last line, and the same hand fills a column it did not
+> begin. Count the lights. Ask who the kept fire is kept for. The book keeps the asking too.]
+
+---
+---
+
+## SEALED APPENDIX — KEEPER-VOICE EXEMPLARS + THE DOCKET SOURCE
+> *Writer-facing. Not a player document. The showrunner patterns on this.*
+
+> This block exists so `keeper-record.ts` and the `keeperPage*` voice bank can write a *living*
+> player into Orin's, Brann's, or Iss's column in that keeper's exact degrading hand — the body of
+> FACT 16 and the keeper-face of the Hold-Book (WEB-MASTER §4; INTEGRATION-V2 A3). A living player
+> is filed under a keeper ONLY on a signal the tracker measured (precision floor; a flat player is
+> filed under no one — INV-16). The numeric slot is a raw measured count; the sentence is locked. The
+> LLM is never in the page path. Each keeper has ONE grammatical fingerprint (slop B3 / WEB-MASTER §6).
+
+> **Brann is the down-count's hand.** The base Hold-Book's last written page is one of Brann's
+> watch-dockets, recovered and left in the group's home — except it does not stop at his last night.
+> Its tally line `dead hour. lamps kept: [N]. i did not lie down.` is the count's M1–M3 face, where
+> **N = the muster of present hands not yet entered into the keeper columns** (the surplus R10 keeps),
+> never a wall-clock (counting-base-journal §1.2 Source A). It reads as a doom-clock — the bait for
+> Iss's lie — and re-reads at the catch as the roll-call it always was.
+
+---
+
+### BRANN — fingerprint: REPEATS AND OVER-CORRECTS
+
+He says things twice; he counts and re-counts; the second pass is always different and he trusts the
+count over his counting. This is the load-bearing separation from Vaun: **Vaun accumulates new clauses
+and will not release; Brann re-counts the same clause and the number slips.** Brann maps the living
+black-moon waker onto his own closed eyes.
+
+Tracked signal: `the_dark_hours` violations (black-moon waking/sleeping). Slot: `{lamps}` = the measured
+muster figure; `{name}` plural-capable.
+
+- **M1 docket seed (looks like ordinary corpus — the down-count plant):**
+  > dead hour. lamps kept: {lamps}. i did not lie down. i did not lie down.
+- **M2 re-read (smaller N; decay shown by spacing/doubling, never stated):**
+  > dead hour. lamps kept: {lamps}. i counted twice. the count was lower the second time. i think the
+  > count is right and my counting is wrong.
+- **M4 Brann's own hand (`keeperPageBrann`):**
+  > {name} wakes on the black moon. i warned that. i was the one who warned it and i closed my eyes.
+  > i count {name} in and the count comes out {lamps} and the pass before was more. the count is right.
+  > {name} is in it. {name} is in it.
+- **M5 close clause (feeds the composer):**
+  > lamps kept: all of them. i see {name} lit now. the counting is warm. it is not unkind.
+
+> Mimic check: every Brann line DOUBLES a clause and RE-COUNTS with a slipped number; he warns more
+> than he mourns. A Brann line that adds without repeating (Vaun's move) is wrong.
+
+---
+
+### ORIN — fingerprint: BREAKS OFF AND WILL NOT FINISH
+
+Incomplete strokes; sentences that stop. The fewest words of any keeper, ashamed. He keeps the small
+thing and will not soften it. He maps the living marker-passer onto his own season of standing.
+
+Tracked signal: `the_bow` violations (passes markers uncrouched). Slot: `{passed}` = measured markers
+passed without crouch.
+
+- **M3 column-heading:**
+  > the one called {name} passed {passed} markers and did not bow. this was Orin's keeping, late. it
+  > is set down in his column.
+- **M4 Orin's own hand (`keeperPageOrin`):**
+  > i passed them standing a season. i thought it small. it was not — {name} passed {passed} and i
+  > know the count {name} is in, i ruled the groove deep so the stone would ask, and no one asked me, i —
+  > set the mark. set the mark.
+- **M5 close clause:**
+  > {name} bowed at the last, or did not. i bowed to no one. keeping is not for the one bowed to. it
+  > was never —
+
+> Mimic check: every Orin line STOPS mid-thought at least once ("i —", "it was never —") and stays
+> terse; he repeats "set the mark" as the only thing he can finish. He does not over-count (Brann) or
+> inventory (Vaun).
+
+---
+
+### ISS — fingerprint: WARM, PLAIN, CONFIDENT — THE ONLY ONE WHO REASSURES
+
+He frames; he never counts. He is the warmest, most trustworthy hand of the six, which is the trap.
+Before the catch his living-page reassures; after `iss_caught` it re-reads cold (the same words, the
+warmth gone out like heat from a stone). A forged line in his register hides its author — never "me".
+He maps the living Whisper-leaner onto his own want to be told.
+
+Tracked signal: leaned hardest on Whispers (the bond tally — a colorant, never a gate). Slot: `{name}`
+plural-capable. **No numeric slot** — Iss frames, he does not count.
+
+- **M2 page, warm (pre-catch, `keeperPageIss`):**
+  > do not be afraid of the record, {name}. let it count. a wall does not mind being counted at. keep
+  > the ways and the watching stays out in the cold where it belongs. it has never come inside. not for me.
+- **M4 page, the same words read cold (post-`iss_caught`):**
+  > i told {name} the ways were a wall. i told it warm because i wanted it to be a wall. there is no
+  > out there. there is only in here, and in here keeps. {name} is in here. so am i. we count.
+- **M5 close clause:**
+  > i came back once. {name} does not come back from this. set that beside whatever is carved: he
+  > was sure enough of the morning to come back.
+
+> Mimic check: Iss REASSURES and FRAMES ("a wall does not mind", "do not be afraid"); he never gives a
+> number. The cold re-read keeps his exact warm clauses and removes the comfort. The forged register
+> never credits "me" (slop B4) — the lie is stronger anonymous.
+
+---
+
+### SHARED RULES (echo of the Vaun/Mara/Sella appendix — one source of truth)
+
+- **Plural-capable third person.** One name or five read identically; columns hold rows, not a chosen
+  one (INV-16, the collective law). The enrolment tally never gates the ending.
+- **One book, two faces** (WEB-MASTER §4). Brann's `lamps kept: [N]` down-count is the same Hold-Book
+  whose keeper columns these living rows fill. The number is the muster of present hands not yet
+  entered — never a wall-clock.
+- **The M4 re-read line (de-slopped, chiasmus cut — slop A3):**
+  > the muster is read. the count was never of the dark. it was of the hands. the hands are almost in.
+- **Foreshadow, never blurt.** No line says "you are becoming a keeper." Brann's margin already says
+  it sideways — *"he is in the count now, on the side that does the counting"* — and that is the
+  ceiling: the living rows point at the induction; the filing performs it; the prose never states it.

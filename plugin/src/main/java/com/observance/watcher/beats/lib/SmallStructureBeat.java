@@ -5,6 +5,7 @@ import com.observance.watcher.beats.BeatContext;
 import com.observance.watcher.beats.BeatPayload;
 import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
+import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.util.Placement;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -170,13 +171,14 @@ public final class SmallStructureBeat extends AbstractBeat {
         final boolean requireFloor = p.bool("require_floor", true);
         final Block baseBlock = base.getBlock();
 
-        // Footprint pre-check over the schematic's [base .. base+dims) box — never carve/float.
+        // Footprint pre-check over the schematic's [base .. base+dims) box — never carve/float. MAIN thread.
         if (!footprintClear(baseBlock, w, h, l, requireFloor)) {
             return BeatResult.skipped("footprint-occupied");
         }
 
-        // Reveal-disciplined: paste only when the base is hidden, re-checking the footprint first.
-        mutateWhenUnwitnessed(ctx, baseBlock, () -> {
+        // The actual paste + protect, reveal-disciplined, re-checking the footprint at mutation time.
+        // Factored so both the ledger-guarded and the no-ledger paths schedule the same main-thread work.
+        final Runnable doPaste = () -> mutateWhenUnwitnessed(ctx, baseBlock, () -> {
             if (!footprintClear(baseBlock, w, h, l, requireFloor)) return; // world changed — abort silently
             Boolean ok = ctx.safety().call("beat.structure.paste",
                     () -> paster.pasteAtMinCorner(file, base, true), Boolean.FALSE);
@@ -184,7 +186,35 @@ public final class SmallStructureBeat extends AbstractBeat {
                 protectBox(ctx, baseBlock, w, h, l);
             }
         });
-        return BeatResult.fired("schematic=" + schem + " " + w + "x" + h + "x" + l);
+
+        // Durable single-paste idempotency (backlog D10): claim the (world,site,schematic,base) tuple in
+        // world_paste_ledger BEFORE pasting, so a set-piece never re-pastes across a restart even if the
+        // footprint sweep is somehow fooled. The claim is blocking network I/O → it must run OFF the main
+        // thread; on a fresh claim (NEW) we hop the world write back onto main inside mutateWhenUnwitnessed.
+        // A DUPLICATE means it was already pasted here (skip). A FAILED means we couldn't durably guard —
+        // skip rather than risk a double set-piece (the in-process applied-set already covers the same-run
+        // re-fire; this is purely the cross-restart backstop). The ledger governs SINGLE-PASTE only — the
+        // A→B swap is RoomSwapBeat's `swapped` PDC marker's job, never this table (no double-guard, BP0-3).
+        final SupabaseClient supabase = ctx.supabase();
+        final String world = base.getWorld().getName();
+        final String siteId = req.hasSite() ? req.site().id() : "";
+        final int bx = baseBlock.getX(), by = baseBlock.getY(), bz = baseBlock.getZ();
+        if (supabase == null) {
+            // No durable store wired (test/standalone) → footprint sweep is the sole guard, paste directly.
+            doPaste.run();
+            return BeatResult.fired("schematic=" + schem + " " + w + "x" + h + "x" + l);
+        }
+        ctx.scheduler().asyncThenMain("beat.structure.ledger",
+                () -> supabase.claimPasteLedger(world, siteId, schem, bx, by, bz),
+                claim -> {
+                    if (claim == SupabaseClient.PasteClaim.NEW) {
+                        doPaste.run();
+                    }
+                    // DUPLICATE / FAILED → do nothing (already pasted, or couldn't guard → never double-paste).
+                });
+        // We initiated the guarded paste (it resolves async). Report fired so the poller marks the row done;
+        // a genuine DUPLICATE/FAILED simply leaves the world untouched (idempotent, no half-state).
+        return BeatResult.fired("schematic=" + schem + " " + w + "x" + h + "x" + l + " (ledger-guarded)");
     }
 
     /** Every cell of the [base..base+dims) box must be in-range + replaceable; floor optional. MAIN thread. */

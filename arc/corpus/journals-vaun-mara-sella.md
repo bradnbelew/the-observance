@@ -309,4 +309,131 @@ the others will be kept. i will be
 > herself among them, before any of it came — and then drew the healed surface, true,
 > in a water with no one left to face it. The corpus does not say what the gathering
 > at the fire is. The child drew it content. Read the drawings faced to the water,
-> the way she said. Then count again at the shore.]
+> the way she said. Then count again at the shore.
+>
+> These three columns are part of one book, the long ledger the warden ruled and never
+> closed. Vaun set down rows under names and left the second column unstruck; the second
+> column is the keeping, and it is still open. A ledger ruled to hold rows holds the rows
+> that come after, in the same lines, in a hand that did not begin them. Whoever reads
+> the count and thinks it a count of lamps has read the doom-clock the warm one wanted
+> them to read. It is a muster. The number is of present hands not yet entered. The book
+> is not finished being written. It writes in whoever is still keeping the light when the
+> last keeper sets the pen down. Count again at the shore, and then count who is counting.]
+
+═══════════════════════════════════════════════════════════════════════════
+  SEALED APPENDIX — KEEPER-VOICE EXEMPLARS FOR THE HOLD-BOOK
+  (writer-facing; never a player document; the showrunner patterns on this)
+═══════════════════════════════════════════════════════════════════════════
+
+> Not corpus. This block exists so `keeper-record.ts` (`decideKeeperEnrolment`)
+> and the `keeperPage*` voice bank can write a *living* player into a dead
+> keeper's column in that keeper's exact, degrading hand — the body of FACT 16
+> ("the record files the living by place, not only by name") and the keeper-face
+> of the Hold-Book down-count (WEB-MASTER §4; INTEGRATION-V2 A3). The mapping
+> from a living player to a keeper is decided ONLY on a signal the tracker
+> measured (precision floor; a flat player is filed under no one — INV-16). The
+> numeric slot in every line below is a raw measured count; the sentence around
+> it is pre-written and locked. The LLM is never in the page path.
+>
+> Each keeper has ONE grammatical fingerprint (slop B3 / WEB-MASTER §6). Theme
+> did not separate the six; grammar must. The single most load-bearing
+> distinction: **Vaun accumulates; Brann doubles** — never let a Vaun line
+> repeat a clause and never let a Brann line withhold a re-count.
+
+---
+
+### VAUN — fingerprint: ACCUMULATES AND WILL NOT RELEASE
+
+Clauses keep adding; the possessive recurs; he is never unsure of the number,
+only unwilling to give it back. He inventories. He does not name a feeling. He
+maps the living hoarder onto his own un-struck second column.
+
+Tracked signal that enrols a living player here: high `hoardedScore` + high
+`soloMiningRatio`. Slot: `{ore}` = measured `oresMined`.
+
+- **M3 column-heading (Archivist files the living under Vaun):**
+  > the one called {name} has {ore} of the deep and has set back none of the
+  > first of it. this was Vaun's keeping. it is set down in his column.
+- **M4 Vaun's own hand (`keeperPageVaun`):**
+  > i had three of each and i counted them in the dark and i kept them. {name}
+  > has {ore} and keeps them and counts them and keeps them. i ruled this column.
+  > i never struck the second of it. {name} has not struck it either.
+- **M5 close clause (feeds the composer, never written direct to M5):**
+  > {name} is entered in the first column. the second column is the keeping. it
+  > is still not struck.
+
+> Mimic check: every Vaun line GAINS a clause and REPEATS the possessive ("his",
+> "i kept", "keeps them"); none asks a question; none names dread. A Vaun line
+> that doubles back to re-count (Brann's move) is wrong.
+
+---
+
+### MARA — fingerprint: REFERENTIAL AND DEFERRED
+
+She cites; the others witness. Page/line citations, "i read that…", the map and
+never the tool. The loneliness is under the precision, never stated. She maps
+the living reader (high idle/lectern, low blocks-broken) onto her own un-walked
+rites.
+
+Tracked signal: high idle/lectern time + low `blocksMined`. Slot: `{idle}` =
+measured idle-or-lectern share; `{blocks}` = measured `blocksMined`.
+
+- **M3 column-heading:**
+  > the one called {name} reads and does not lift. {blocks} struck of the deep.
+  > this was Mara's keeping. it is set down in her column.
+- **M4 Mara's own hand (`keeperPageMara`):**
+  > i had the map of every rite and walked none. i read that the light is kept;
+  > i read it at the home-fire and i kept reading. {name} reads the same shelf.
+  > {idle} of the watch at the lectern. we are not counting the same number.
+- **M5 close clause:**
+  > {name} read it true. the light is kept. it is not the same thing as keeping
+  > it. i read that too late to walk it.
+
+> Mimic check: every Mara line CITES (a leaf, a rite, a shelf) and DEFERS the
+> doing to a witness; ends on the gap between reading and keeping. No inventory
+> (that is Vaun); no re-count (Brann).
+
+---
+
+### SELLA — fingerprint: MIRRORED AND RECEDING
+
+Sentences fold back spatially — shore, water, the face given back wrong.
+Child-adjacent diction, plain and flat about the wrong thing. She maps the
+living wanderer (high distance-from-group) onto her own walk past the last
+marker.
+
+Tracked signal: high `distanceFromGroup`, solo wandering. Slot: `{far}` =
+measured `distanceFromGroup` in the record's own coarse units; `{markers}` =
+markers passed uncrouched at distance.
+
+- **M3 column-heading:**
+  > the one called {name} went {far} from the others, past the markers, to the
+  > water. this was Sella's keeping. it is set down in her column.
+- **M4 Sella's own hand (`keeperPageSella`):**
+  > the far water gives {name} a face back and it is not the one they went in
+  > with. {name} passed {markers} and did not bow at the last. the last marker
+  > is not the last. count again at the shore. i counted. someone has to.
+- **M5 close clause:**
+  > {name} is at the shore now. the water keeps the looking. it kept mine. it
+  > folded it and gave it back and i am the looking now.
+
+> Mimic check: every Sella line FOLDS (water → face → water) and RECEDES toward
+> the shore; the flat child-statement of the wrong thing ("someone has to"). She
+> does not inventory, cite, or re-count.
+
+---
+
+### SHARED RULES FOR ALL THREE COLUMNS (and the other three keepers)
+
+- **Plural-capable third person.** One name or five must read identically; a
+  keeper column holds rows, never a chosen one (INV-16, the collective law).
+- **The down-count and these columns are the same book** (WEB-MASTER §4). The
+  Hold-Book's last page carries Brann's `lamps kept: [N]` muster on its M1–M3
+  face; these living rows are its M1→M5 face. The number is the count of present
+  hands not yet entered into exactly these columns — never a wall-clock.
+- **The M4 re-read line (de-slopped, chiasmus cut — slop A3):** when the muster
+  is read for what it is, the Watcher states it flat:
+  > the muster is read. the count was never of the dark. it was of the hands.
+  > the hands are almost in.
+- **Foreshadow, never blurt.** No column line says "you are becoming a keeper."
+  The filing says it; the prose only files.

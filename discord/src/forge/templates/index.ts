@@ -27,6 +27,12 @@ import { forgeClue, type ClueSpec, type ForgedClue } from '../index.js';
 import { el, renderPng, type VNode } from '../../render/render.js';
 import { getSigilSvg } from './sigil.js';
 import { runeBlockSvg, runeBlockSize, svgDataUri } from './svg-util.js';
+import {
+  embedRuneLayer,
+  stampRuneLayerPayload,
+  runeLayerSize,
+  ISS_STEGO_PAYLOAD,
+} from '../stego.js';
 
 // ---------------------------------------------------------------------------
 // PALETTE — the task's name for the brand colour tokens. near-black field,
@@ -94,6 +100,20 @@ export interface ClueRenderSpec {
   readonly place?: string;
   /** runeCipherCard only: override the key-hand hint (defaults to meta.keyHint). */
   readonly keyHint?: string;
+  /**
+   * P17 steganography (WEB-MASTER §1.M2): if set, composite a FAINT second rune
+   * layer carrying this payload into the card's rune block — the "second door" to
+   * a cipher key. Used ONLY on the Iss card, where the payload is his name / the
+   * Vigenère key. Pass `true` to use the canonical Iss key (ISS_STEGO_PAYLOAD), or
+   * an explicit uppercase letter string. Omit (default) for every other card.
+   */
+  readonly stego?: boolean | string;
+}
+
+/** Resolve the spec's `stego` flag to a concrete payload string (or undefined). */
+function stegoPayload(spec: ClueRenderSpec): string | undefined {
+  if (spec.stego === undefined || spec.stego === false) return undefined;
+  return spec.stego === true ? ISS_STEGO_PAYLOAD : spec.stego;
 }
 
 // ---------------------------------------------------------------------------
@@ -129,14 +149,41 @@ function sigilWatermark(size = 132, opacity = 0.1): VNode {
 function runeImg(
   forged: ForgedClue,
   color: string,
-  opts: { scale?: number; guide?: string; maxWidth?: number } = {},
+  opts: { scale?: number; guide?: string; maxWidth?: number; stego?: string } = {},
 ): VNode {
   const runWidth = forged.meta.layout.width;
-  const svg = runeBlockSvg(forged.svg, { runWidth, color, guide: opts.guide });
+  let svg = runeBlockSvg(forged.svg, { runWidth, color, guide: opts.guide });
+  // P17 stego (WEB-MASTER §1.M2): on the Iss card ONLY, composite a faint second
+  // rune layer carrying the Vigenère key INSIDE the same host <svg>, so it
+  // rasterises as one image and survives Discord's PNG re-encode exactly like the
+  // primary carving. Positioned just under the primary run, very dim. Opt-in via
+  // the spec's `stego` payload — every other card is byte-identical to before.
+  if (opts.stego) {
+    svg = withStegoRuneLayer(svg, opts.stego, runWidth);
+  }
   const nat = runeBlockSize(runWidth);
   // Scale to fit a maxWidth if the run is very long; preserve aspect ratio.
   const scale = opts.scale ?? (opts.maxWidth ? Math.min(1, opts.maxWidth / nat.width) : 1);
   return imgNode(svgDataUri(svg), Math.round(nat.width * scale), Math.round(nat.height * scale));
+}
+
+/**
+ * withStegoRuneLayer — splice the faint second-rune-layer into the host rune-block
+ * <svg> just before its closing tag. The layer is centered under the primary run
+ * (which svg-util pads by 8 and draws GLYPH_H tall); we offset it down by ~62% of
+ * the band so it reads as a ghost beneath the main marks, not over them. Pure.
+ */
+function withStegoRuneLayer(hostSvg: string, payload: string, runWidth: number): string {
+  const layerSize = runeLayerSize(payload);
+  const x = 8 + Math.max(0, (runWidth - layerSize.width) / 2); // svg-util pad = 8
+  const y = 8 + Math.round(layerSize.height * 0.62);
+  const layer = stampRuneLayerPayload(
+    embedRuneLayer(hostSvg, payload, { x, y, opacity: 0.12 }),
+    payload,
+  );
+  const close = hostSvg.lastIndexOf('</svg>');
+  if (close < 0) return hostSvg;
+  return hostSvg.slice(0, close) + layer + hostSvg.slice(close);
 }
 
 /** A hairline rule. */
@@ -238,7 +285,7 @@ export function parchmentCard(spec: ClueRenderSpec, forged: ForgedClue): VNode {
           border: `2px solid ${PALETTE.ash}`,
           borderRadius: 6,
         },
-        [runeImg(forged, PALETTE.ink, { maxWidth: CANVAS.clueWidth - 64 * 2 - 48, guide: PALETTE.ash })],
+        [runeImg(forged, PALETTE.ink, { maxWidth: CANVAS.clueWidth - 64 * 2 - 48, guide: PALETTE.ash, stego: stegoPayload(spec) })],
       ),
       footerRow(spec.footer ?? 'observed and recorded'),
       sigilWatermark(),
@@ -389,7 +436,7 @@ export function redactedDossier(spec: ClueRenderSpec, forged: ForgedClue): VNode
           backgroundColor: PALETTE.panel,
           border: `2px dashed ${PALETTE.ash}`,
         },
-        [runeImg(forged, PALETTE.ink, { maxWidth: CANVAS.clueWidth - 56 * 2 - 48 })],
+        [runeImg(forged, PALETTE.ink, { maxWidth: CANVAS.clueWidth - 56 * 2 - 48, stego: stegoPayload(spec) })],
       ),
       footerRow(spec.footer ?? `file ${forged.puzzleKey}`),
       sigilWatermark(120, 0.08),
@@ -490,7 +537,7 @@ export function mapFragment(spec: ClueRenderSpec, forged: ForgedClue): VNode {
           el(
             'div',
             { display: 'flex', flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
-            [runeImg(forged, PALETTE.ink, { maxWidth: W - 64 * 2 - 120, guide: PALETTE.soul })],
+            [runeImg(forged, PALETTE.ink, { maxWidth: W - 64 * 2 - 120, guide: PALETTE.soul, stego: stegoPayload(spec) })],
           ),
           // a place pin
           el(
@@ -572,7 +619,7 @@ export function runeCipherCard(spec: ClueRenderSpec, forged: ForgedClue): VNode 
             left: 0,
             top: 0,
           }),
-          runeImg(forged, PALETTE.soul, { maxWidth: W - 64 * 2 - 64, guide: PALETTE.ash }),
+          runeImg(forged, PALETTE.soul, { maxWidth: W - 64 * 2 - 64, guide: PALETTE.ash, stego: stegoPayload(spec) }),
         ],
       ),
       // key-hand panel
@@ -696,7 +743,7 @@ export function journalPage(spec: ClueRenderSpec, forged: ForgedClue): VNode {
           el(
             'div',
             { display: 'flex', flexGrow: 1, alignItems: 'center', justifyContent: 'flex-start', marginTop: 8 },
-            [runeImg(forged, PALETTE.ink, { maxWidth: W - 140 - 60, guide: PALETTE.ash })],
+            [runeImg(forged, PALETTE.ink, { maxWidth: W - 140 - 60, guide: PALETTE.ash, stego: stegoPayload(spec) })],
           ),
           el(
             'div',

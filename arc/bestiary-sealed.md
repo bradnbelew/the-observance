@@ -58,6 +58,8 @@ names from `design/bestiary.md`; sealed identity here.)
 | 4 | The Stoop | **Orin, the Silent** | The Bow (never bowed, until too late) | D07 `i-thought-it-small`, D04 `observed-warned-left-at-threshold` | substitution (plain alphabet, withheld) | Bow `violationRatio` (passes markers standing) |
 | 5 | The Sleepless | **Brann, the Night-Walker** | The Dark Hours (slept on the black moon) | D08 `do-not-close-your-eyes-here` | beacon / colour-sequence | sleeping on black-moon phase; Kept-Light lapse |
 | 6 | The Quiet Herd (Sacred Beast) | the keepers' kept faith, embodied — **the small life the markers stand for**; tonally **Mara**'s lonely watching | The Sacred Beast / the Bow's object | (the Haunted Herd, `arg-deepening §3`); Mara D05 tonal | book-cipher (Mara) | `mobKills` on the tagged beast |
+| 6b | The Pale field (cosmetic) | **the going-out itself** — the taking re-enacted as the herd turns pale, family by family | (the process behind all customs — the conversion) | herd count fragments (Mara, bookCipher) | book-cipher (Mara) | **none** — cosmetic, never tracked (INV-13) |
+| 7 | The offline-skin apparition | **a prior keeper's fate**, worn by **an absent friend** (re-skin of 1/3/4) | the custom that keeper broke | the M1 offline-player report; carrier of **FACT 9** | (inherits the worn keeper's) | the offline player canonically rhymed (OFFLINE-only, INV-16) |
 | — | Cold Hearth's tenant | **the Seventh, cast out** | the inverse of all customs | D11 `the-seventh-not-kept` | none (unwritten) | optional; non-gating |
 
 > **Note on Vaun doubling (creatures 1+2).** Vaun is both the canonical *watching
@@ -247,6 +249,99 @@ sealed in the ending design.)
 persistent, silent, idempotent); kill tracked via `DeathListener` PDC check; collective-gaze
 pass kept cheap/vanilla.
 
+### 2.5b — The slow herd conversion (the Pale field) = the going-out, made cosmetic
+
+**What it is.** The Sacred Beast (§2.5) is the one glowing, tracked, kept small life. The **Pale
+field** is the other half: a slow drift of cosmetic pale animals (`pale_cosmetic` PDC, never
+glowing, never tracked, never a violation — INV-13) that climbs between sessions, the herd turning
+pale a few head at a time, all of them facing one way. The conversion is never witnessed happening
+(reveal discipline): the group only ever finds *more of them pale than there were*, and finds them
+already turned to watch.
+
+**The keeper-enactment (sealed).** The Pale field is not weather and not decoration — it is **the
+going-out, re-enacted in miniature** (timeline §4 step 5: "family by family, lamp by lamp, the
+Kept were taken"). The grey herd is the settlement before the breaking; each head that turns pale
+is a family taken; the pale ones facing one way are the taken, *watching*, exactly as the Kept
+became watchers. The land is not showing the group a haunted herd — it is showing them **the
+conversion itself**, at the same patient cadence it once happened to the Kept, in the one register
+that needs no blood and breaks no anti-jank rule: animals, quietly, turning to look. The prior-
+keeper count fragment ("nine grey, one white" → later "they were grey when i shut the door") is
+the same event in a keeper's hand: a herd that was grey when a door closed and is not grey now.
+
+This is the bestiary's thesis stated in the gentlest possible material. Every other creature is
+*one* kept keeper worn as a shape; the Pale field is the **process** that makes them — the slow,
+total, mundane turning of the ordinary world into the watching, shown not as a single shape but as
+a *spread*. It is the FACT-15 visual: by Movement V the field stands fully pale, all facing the
+group, and the group has watched (without ever catching it) the same thing happen to a herd that
+happened to a colony — and is being asked to let it not happen to them.
+
+**Becoming discipline.** It must never be explained, never announced ("the herd grows" is
+forbidden — no step-ladder, no count). The marquee leans on **orientation** (the collective gaze,
+the formation) and never on number. The conversion is deniable at every step ("weren't there one
+of those?") until it is total and undeniable and still unspoken. No line ties the pale herd to the
+Kept; the rhyme is left for the group to feel when the timeline and the field stand side by side.
+
+**FACT-15 seal.** Nothing names the twist. The grey turns pale and faces one way, and the group
+infers — when it is far too late to un-see — that they have been watching a taking the whole time.
+
+**Beat wiring.** `SacredAnimalBeat` `mode:"spread"` + `target` + `pale_cosmetic` PDC (distinct
+from `sacred_beast`, **never glowing**, capped 16, one-per-pass, unwitnessed, babies not
+auto-pale); `DeathListener` ignores `paleCosmeticKey` for conduct (the precision guard — a pale is
+never a violation); `paleTarget` deterministic lookup in `snapshot.ts`; the collective-gaze facing
+pass (the one new code dep). Reuses `tollSacredBeast`/`keptSacredBeast` (no new voice key). The
+glowing Sacred Beast and the Pale field never collide: the fork-arming beast is always the glowing
+one, so a group that wants to spare the tracked life can always tell it from the cosmetic herd
+(INV-13).
+
+### 2.7 — The apparition wearing an offline player's skin = a keeper's fate, worn by one of you
+
+**What it is.** A rare re-skin of the existing keeper apparitions (§2.1–2.5) — the Watcher, the
+Surface-Walker, the Stoop — wearing the **skin of a friend who is logged off**. Reflection / edge
+/ crouch-revealed only; no walking, no following, no pathfinding, no chat (all cut). Name-tag is
+OFF by default; exactly **one** human-approved, group-witnessed, named glimpse is allowed, at M4
+(FACT 9 spoken). It despawns, reveal-disciplined, the moment the worn player rejoins.
+
+**The keeper-enactment (sealed).** This is the carrier of **FACT 9** — "the first hauntings were a
+specific keeper's fate re-enacted at the group" — and it closes the LORE-BIBLE TODO-3 gap by
+design (§4). Each keeper apparition already *is* a keeper enacting their own fate at the rhyming
+player (§2). The offline-skin tightens that one turn further: the fate is enacted **wearing one of
+the group's own**, the absent friend. Canon (timeline §5): the going-out took the Kept "family by
+family, lamp by lamp," and the ones most easily taken were the ones who had **stopped coming to
+the light** — who logged off, in the old sense: stopped keeping their lamp, stopped being witnessed.
+The land wears the offline friend because, in the world's grammar, the friend who is not here is
+the friend the going-out reaches first. The horror is not that a monster looks like your friend;
+it is that the land has begun to **file your absent friend the way it filed the Kept** — wearing
+their shape because they are, for now, one of the un-witnessed.
+
+**The precision law (sealed restatement).** The worn skin is the offline player **canonically
+rhymed** to the keeper shape, never a callout (INV-16, P2-5). Skin-wearing is **OFFLINE-only**;
+the name-carve (`name-where-never-been`) is **ACTIVE-only**; the two may never co-locate the same
+player's name and worn skin at the same keeper stone in the same window. The shape worn is the
+keeper apparition whose fate the *group* (collectively) is closest to — never a per-player
+accusation of the absent friend. A wrong wearing is worse than none: it fires only on a real
+offline player the tracker logged as absent.
+
+**Becoming discipline.** The M1 plant (the offline-player report — "brann… not here to see it
+noted") reads, at first, as "the record watches you even logged off." Its true meaning (III→IV):
+the land had begun to *wear* the friend from the night they stopped coming — the un-witnessed are
+the first taken. The first glimpse (M3) is the most deniable: a reflection only, no name-tag, gone
+before anyone is sure. The single M4 named glimpse, human-approved, is where FACT 9 is *spoken* by
+a keeper NPC tying a logged M1 beat to the keeper who enacted it: *the dread had a biography, and
+the body it borrowed was one of yours.* Then it stops — one glimpse, never a recurring jump.
+
+**FACT-15 seal.** The apparition never says what being worn *means*, never says the friend is
+"taken," never names induction. It shows a kept keeper's fate, worn by an absent friend, and lets
+the group feel the distance between *here, witnessed* and *gone, worn* — which is the whole of the
+ways stated in one image, and never in a sentence.
+
+**Beat wiring.** `NamedMobBeat` with `skin_player` + `offline_only` payload + `applyWornSkin`
+(cache-first, silhouette fallback if the skin won't load); `PresenceListener.onJoin` (new small
+hook — the assumed listener does not exist; `TerritoryListener` is the location source) →
+`despawnApparitionsWearing(uuid)`; per-worn-player one-shot budget; the M4 FACT-9 line via the
+M4 keeper-NPC dialogue (reads the haunting log, references the *actual* early beat that fired at
+that player — grounded, true). Reflection/edge/crouch reveal reuses the §2.1–2.5 apparition
+vocabulary; no new monster, no new model.
+
 ### 2.6 — The Cold Hearth's tenant = THE SEVENTH, cast out
 
 **Fate (D11, D06, D08).** The Seventh was **not kept** — cast out *before* the threshold, the
@@ -278,6 +373,59 @@ sharpest the corpus gets, and it is a *question*, not the answer.
 hearth (`TorchGutterBeat`/no-light), and at most a single retreating `NamedMobBeat` with a
 very short `despawn_seconds`, seen leaving. Off-path, non-gating; finding it earns Whisper
 budget (`FLOW §3`).
+
+### 2.8 — The keeper-enactment law (the offline-skin and the herd, read as one)
+
+The two creatures the task names — the offline-skin apparition (§2.7) and the slow herd
+conversion (§2.5b) — are not two unrelated spooks. They are the **two scales of the same
+sealed mechanism**, and naming the relationship here keeps either from drifting into a
+standalone effect with no narrative home (the orphan check, consistency law).
+
+**The shared law: every apparition is a keeper enacting a fate, never a monster performing a
+scare.** §2 established it per-keeper: each shape *is* a prior keeper, worn by the land, doing
+again at the rhyming player the thing that took them. The offline-skin and the herd extend that
+law in two directions:
+
+- **The herd-conversion is the enactment at the scale of the *settlement*** — the taking shown
+  not as one keeper but as the going-out itself (timeline §4 step 5), a colony turning to the
+  watching family by family, transposed to grey turning pale head by head. It is the *process*
+  that makes every other creature: the verb behind all the nouns. It wears no single keeper
+  because it is what *happened to all of them*.
+- **The offline-skin is the enactment at the scale of the *one***, and specifically the one who
+  is, for now, **un-witnessed** — the friend logged off, who in the world's grammar is the
+  friend the going-out reaches first (the un-lit, the un-kept-light). The land wears them because
+  the un-witnessed is what the taking is *for*. Where the herd is the process at large, the
+  offline-skin is the process arriving at a name the group knows.
+
+**Why they must be read as a pair (the sealed rhyme).** The herd makes "the ordinary world is
+turning to watch you" *mundane and total*; the offline-skin makes it *personal and singular*.
+Separately, the herd risks reading as ambiance and the skin as a single jump. Together they are
+the bestiary's whole thesis in two registers: a taking is happening, at the cadence of a colony
+and at the address of a friend, and the group is inside it. Neither is ever explained; the rhyme
+is left for the group to feel when the pale field and the worn friend stand in the same dark.
+
+**The enactment discipline both inherit (sealed restatement, no new mechanic):**
+1. **Reveal, never witness.** Neither is ever seen *becoming* — the herd is only ever found
+   *more pale than it was*, the skin only ever glimpsed (reflection / edge / crouch), never
+   walking, never approached as it spawns (`DESIGN §3` reveal discipline).
+2. **Grounded enactment only.** The herd's pale count climbs on a deterministic, capped cadence
+   (never a measured callout — it is the *process*, group-wide, INV-13); the skin fires only on a
+   real offline player the tracker logged as absent, worn as the keeper shape the *group* is
+   collectively nearest (never a per-player accusation of the absent friend, INV-16). A wrong
+   wearing is worse than none.
+3. **Single-arbiter restraint.** Both defer to the conductor's `apparitionClaim` (INV-18): at
+   most one ambient figure or turning per drama window. The taking is patient; it does not crowd
+   the frame. (The herd's *standing* pale field persists as world-dressing, not as a per-window
+   appearing — only its turnings and additions are claimed.)
+4. **The seal holds.** Neither names the twist. The herd turns pale and faces one way; the skin
+   shows a kept keeper's fate worn by an absent friend. Both let the group infer, far too late to
+   un-see, that what they have been watching the whole time was a taking — and never say so in a
+   sentence (FACT 15).
+
+**No new wiring.** §2.8 adds no beat, listener, site, flag, or voice key — it is the canon tie
+between §2.5b's `SacredAnimalBeat mode:"spread"`/`pale_cosmetic` field and §2.7's `NamedMobBeat
+skin_player`/`offline_only` apparition. The enactment law is a reading discipline over mechanics
+already specified in `BUILD-MANIFEST §6`, not a mechanism of its own.
 
 ---
 

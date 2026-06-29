@@ -24,8 +24,24 @@ import org.bukkit.plugin.Plugin;
  *       killing a PDC-tagged "pale one" is a tracked VIOLATION for the killer.</li>
  * </ul>
  *
- * PURE TRACKING: no world effects. All Bukkit reads on the MAIN thread; persistence is deferred to
- * the tracker's async flush. Body fully wrapped in Safety.
+ * <p><b>The permanence fork (INV-13, WEB-MASTER §3.4 / A11+A12):</b> two distinct PDC populations must
+ * NOT be conflated here, or the precision contract ("it knows you" only on a measured signal) and the
+ * fairly-avoidable-fork guarantee both break:
+ * <ul>
+ *   <li>the <b>fork-arming Sacred Beast</b> — the ONE glowing animal, additionally tagged
+ *       {@code sacred_fork_arm} by {@code SacredAnimalBeat} on the last-tagged beast. Its kill is the
+ *       irreversible Fork A act → records the sacred-beast violation AND signals the one-way
+ *       {@code sacred_beast_broken} promotion (first-writer-wins is enforced downstream, set-once);</li>
+ *   <li>the <b>cosmetic Pale herd</b> — the between-session conversion, tagged {@code pale_cosmetic} and
+ *       (by law) NEVER glowing. These are decoration. Killing one is <b>ignored for conduct</b> — never a
+ *       violation, never fork-arming (INV-13 precision guard). A {@code pale_cosmetic} byte short-circuits
+ *       the sacred check even if a stale {@code sacred_beast} tag is somehow also present.</li>
+ * </ul>
+ *
+ * PURE TRACKING: no world effects, no DB writes. All Bukkit reads on the MAIN thread; persistence is
+ * deferred to the tracker's async flush. The {@code sacred_beast_broken} arc-flag itself is set
+ * first-writer-wins by the showrunner/oracle from this measured conduct — never written from here. Body
+ * fully wrapped in Safety.
  */
 public final class DeathListener implements Listener {
 
@@ -40,6 +56,12 @@ public final class DeathListener implements Listener {
      * "observance_sacred_beast", which previously never matched.)
      */
     private final NamespacedKey beatSacredKey;
+    /** The byte {@code SacredAnimalBeat} sets on the LAST tagged (glowing) beast — the fork-arming one.
+     *  Only its death arms Fork A; a second cow death is a no-op (the last-tagged-only rule). */
+    private final NamespacedKey forkArmKey;
+    /** The cosmetic herd-conversion byte. A beast carrying this is decoration: ignored for conduct,
+     *  never a violation, never fork-arming (INV-13). Namespace matches the beat's BeatContext. */
+    private final NamespacedKey paleCosmeticKey;
 
     public DeathListener(Plugin plugin, SignalTracker tracker, Safety safety) {
         this.tracker = tracker;
@@ -60,6 +82,14 @@ public final class DeathListener implements Listener {
             beatKey = key;
         }
         this.beatSacredKey = beatKey;
+        // Fork-arm + pale-cosmetic bytes — same "observance" namespace SacredAnimalBeat tags under.
+        NamespacedKey arm, pale;
+        try { arm = new NamespacedKey("observance", "sacred_fork_arm"); }
+        catch (Throwable t) { arm = null; }
+        try { pale = new NamespacedKey("observance", "pale_cosmetic"); }
+        catch (Throwable t) { pale = null; }
+        this.forkArmKey = arm;
+        this.paleCosmeticKey = pale;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -87,11 +117,25 @@ public final class DeathListener implements Listener {
             PlayerSignals ps = tracker.signals(killer.getUniqueId(), killer.getName());
             ps.addMobKill();
 
+            // INV-13 precision guard: a cosmetic Pale (herd-conversion decoration) is NEVER conduct.
+            // Killing one is just a mob kill — no violation, no fork. Short-circuit before any sacred
+            // check so a stale/co-tagged sacred byte can't mis-fire "it knows you" on decoration.
+            if (isPaleCosmetic(dead)) return;
+
             // The Sacred Beast: if the dead entity carries the sacred-beast PDC tag, killing it is
             // a violation for the killer.
             if (isSacredBeast(dead)) {
                 ps.violate(TrackerConfig.CUSTOM_SACRED_BEAST, System.currentTimeMillis());
-                safety.info("signal.sacred_beast", killer.getName() + " killed the pale one");
+                // Fork A (INV-12/13): ONLY the last-tagged glowing beast arms the irreversible fork.
+                // We record the same measured violation; the distinct info marker tells the showrunner
+                // this kill was the fork-arming one, which it promotes to `sacred_beast_broken`
+                // first-writer-wins (set-once, downstream). A non-arming sacred kill is a plain violation.
+                if (isForkArming(dead)) {
+                    safety.info("signal.sacred_beast.fork_arm",
+                            killer.getName() + " killed the kept one — fork A armed");
+                } else {
+                    safety.info("signal.sacred_beast", killer.getName() + " killed the pale one");
+                }
             }
         });
     }
@@ -105,6 +149,24 @@ public final class DeathListener implements Listener {
                     && hasFlag(pdc, beatSacredKey);
         } catch (Throwable t) {
             return false; // never let a PDC quirk crash the handler
+        }
+    }
+
+    /** The fork-arming (glowing, last-tagged) beast — its kill arms the irreversible Fork A. */
+    private boolean isForkArming(LivingEntity entity) {
+        try {
+            return hasFlag(entity.getPersistentDataContainer(), forkArmKey);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /** A cosmetic Pale (herd conversion) — decoration, ignored for conduct (INV-13). */
+    private boolean isPaleCosmetic(LivingEntity entity) {
+        try {
+            return hasFlag(entity.getPersistentDataContainer(), paleCosmeticKey);
+        } catch (Throwable t) {
+            return false;
         }
     }
 

@@ -1,0 +1,1936 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Observance — Playthrough Script</title>
+<style>
+:root{--bg:#0e1116;--panel:#161b22;--edge:#232a33;--ink:#d6dde6;--mut:#8b97a6;--acc:#7c8cff;--gap:#ffb454;--gapbg:#3a2a12}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
+aside{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;background:var(--panel);border-right:1px solid var(--edge);padding:18px 14px}
+aside h1{font-size:15px;letter-spacing:.5px;color:#fff;margin:0 0 4px}
+aside .sub{color:var(--mut);font-size:12px;margin-bottom:14px}
+.tools{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.tools input,.tools button{font:13px inherit;background:#0e141b;color:var(--ink);border:1px solid var(--edge);border-radius:8px;padding:7px 9px}
+.tools button{cursor:pointer}.tools button:hover{border-color:var(--acc)}
+.tools button.on{background:var(--gapbg);border-color:var(--gap);color:var(--gap)}
+nav.toc{font-size:13px}
+nav.toc ul{list-style:none;margin:0;padding-left:12px}
+nav.toc>ul{padding-left:0}
+nav.toc a{display:block;color:var(--mut);padding:3px 6px;border-radius:6px;border-left:2px solid transparent}
+nav.toc a:hover{color:var(--ink);background:#0e141b}
+main{padding:30px 48px 120px;max-width:1100px}
+main h1{font-size:30px;color:#fff;margin:.2em 0 .4em}
+main h2{font-size:23px;color:#fff;border-top:1px solid var(--edge);padding-top:22px;margin-top:30px;cursor:pointer;user-select:none}
+main h2::before{content:"\25BE";color:var(--mut);font-size:14px;margin-right:10px;display:inline-block;transition:transform .15s}
+main h2.collapsed::before{transform:rotate(-90deg)}
+main h3{font-size:18px;color:#cfe0ff;margin-top:24px}
+main h4{font-size:15px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+main p,main li{color:var(--ink)}
+main code{background:#0b0f14;border:1px solid var(--edge);border-radius:5px;padding:.05em .35em;font:13px ui-monospace,Consolas,monospace;color:#a9e0ff}
+main pre{background:#0b0f14;border:1px solid var(--edge);border-radius:10px;padding:14px;overflow:auto}
+main pre code{border:0;background:none}
+main table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+main th,main td{border:1px solid var(--edge);padding:7px 10px;text-align:left;vertical-align:top}
+main th{background:#0e141b;color:#fff}
+main tr:nth-child(even) td{background:#11161d}
+main blockquote{border-left:3px solid var(--acc);margin:14px 0;padding:2px 16px;color:var(--mut);background:#0e141b;border-radius:0 8px 8px 0}
+mark.gap{background:var(--gapbg);color:var(--gap);border:1px solid var(--gap);border-radius:5px;padding:.02em .3em;font-weight:500}
+.toplink{position:fixed;right:22px;bottom:22px;background:var(--panel);border:1px solid var(--edge);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:20px;cursor:pointer}
+.hl{background:#4a3b00;color:#fff;border-radius:3px}
+@media print{aside{display:none}.wrap{display:block}main{max-width:none}}
+</style></head><body><div class="wrap">
+<aside>
+<h1>THE OBSERVANCE</h1>
+<div class="sub">Playthrough shooting-script &middot; 2026-06-29 &middot; 99 gap markers</div>
+<div class="tools">
+<input id="q" placeholder="Search the script&hellip;" autocomplete="off">
+<button id="gapBtn">Show gaps only</button>
+<button id="exp">Collapse all sections</button>
+</div>
+<nav class="toc" id="toc"><div class="toc">
+<ul>
+<li><a href="#the-observance-master-playthrough-shooting-script">THE OBSERVANCE — MASTER PLAYTHROUGH SHOOTING-SCRIPT</a><ul>
+<li><a href="#how-to-read-this">HOW TO READ THIS</a></li>
+<li><a href="#director-setup-checklist-one-time-cold-repo-ready-for-the-friends">DIRECTOR SETUP CHECKLIST (one-time, cold repo → ready for the friends)</a><ul>
+<li><a href="#stage-a-rotate-secrets-first-a-live-key-is-committed">Stage A — Rotate secrets FIRST (a live key is committed)</a></li>
+<li><a href="#stage-b-sql-apply-order-migrations-0006-seeds">Stage B — SQL apply order (migrations → 0006 → seeds)</a></li>
+<li><a href="#stage-c-the-resource-pack-path-a-the-friends-only-install">Stage C — The resource pack (Path A: the friends' ONLY install)</a></li>
+<li><a href="#stage-d-datapacks-mods-worlds">Stage D — Datapacks / mods / worlds</a></li>
+<li><a href="#stage-e-build-every-site-in-game-export-schem-place-all-gap-go-live">Stage E — Build every site in-game, export .schem, place (ALL [GAP — GO-LIVE])</a></li>
+<li><a href="#stage-f-fill-sitesyml-coords">Stage F — Fill sites.yml coords</a></li>
+<li><a href="#stage-g-config-configyml">Stage G — Config (config.yml)</a></li>
+<li><a href="#stage-h-dashboard">Stage H — Dashboard</a></li>
+<li><a href="#stage-i-the-cursed-map-lure-page-same-route-not-a-new-site">Stage I — The cursed-map lure page (same route, not a new site)</a></li>
+<li><a href="#stage-j-discord">Stage J — Discord</a></li>
+<li><a href="#stage-k-final-arm-go-live-order">Stage K — Final arm (go-live order)</a></li>
+<li><a href="#code-owed-before-each-movement-ships-the-cross-cutting-gap-list-see-gap-register">Code owed before each movement ships (the cross-cutting [GAP] list — see GAP REGISTER)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#the-playthrough-prologue-finale">THE PLAYTHROUGH — PROLOGUE → FINALE</a></li>
+<li><a href="#segment-i-the-prologue-m0-remote-the-cursed-map-ignition">SEGMENT I — THE PROLOGUE / M0-REMOTE (the cursed map + ignition)</a><ul>
+<li><a href="#i0-the-lure-page-the-cold-open-where-the-player-arrives">I.0 — THE LURE PAGE (the cold open; where the player arrives)</a></li>
+<li><a href="#i1-the-vignette-room-by-room-the-holdzip-single-player">I.1 — THE VIGNETTE, ROOM BY ROOM (the-hold.zip, single-player)</a></li>
+<li><a href="#i2-ignition-the-frame-break-trigger-the-record">I.2 — IGNITION (the frame-break trigger, #the-record)</a></li>
+<li><a href="#i3-the-frame-break-the-central-scare-in-server">I.3 — THE FRAME-BREAK (the central scare, in-server)</a></li>
+<li><a href="#i4-gate-m0-remote-m1">I.4 — GATE M0-remote → M1</a></li>
+</ul>
+</li>
+<li><a href="#segment-ii-movement-i-establishment">SEGMENT II — MOVEMENT I (ESTABLISHMENT)</a><ul>
+<li><a href="#ii1-day-1-the-notice-opens">II.1 — DAY 1: THE NOTICE OPENS</a><ul>
+<li><a href="#ii11-the-base-lectern-fills-the-hold-book-appears">II.1.1 — The base lectern fills: the Hold-Book appears</a></li>
+<li><a href="#ii12-ignition-detected-signal-ack">II.1.2 — Ignition (detected signal) → ack</a></li>
+<li><a href="#ii13-the-first-report-the-cold-start-prologue-anomaly">II.1.3 — The first report (the Cold-Start Prologue anomaly)</a></li>
+<li><a href="#ii14-the-frame-break-the-central-scare">II.1.4 — The frame-break (the central scare)</a></li>
+<li><a href="#ii15-the-knob-drops-fb-3-loudness-returns-to-baseline-for-the-rest-of-m1">II.1.5 — The knob drops (FB-3). Loudness returns to baseline for the rest of M1.</a></li>
+</ul>
+</li>
+<li><a href="#ii2-days-15-the-field-standing-open-non-linear-doors-inert-plants">II.2 — DAYS 1–5: THE FIELD STANDING OPEN (non-linear doors + inert plants)</a><ul>
+<li><a href="#ii21-the-server-icon-rune-ring-the-master-rabbit-hole">II.2.1 — The server-icon rune ring (the master rabbit hole)</a></li>
+<li><a href="#ii22-the-literacy-gate-rosetta_known-two-genuinely-different-in-roads">II.2.2 — The literacy gate (rosetta_known) — TWO genuinely-different in-roads</a></li>
+<li><a href="#ii23-the-digit-literacy-gate-reckoning_known">II.2.3 — The digit-literacy gate (reckoning_known)</a></li>
+<li><a href="#ii24-m1-named-habit-the-terminal-dread-dead-end">II.2.4 — m1-named-habit (the terminal-dread dead-end)</a></li>
+<li><a href="#ii25-the-inert-plants-seeded-across-m1-all-dormant-in-causal-discovery-order">II.2.5 — The inert plants seeded across M1 (all dormant), in causal discovery order</a></li>
+<li><a href="#ii26-the-engines-that-compute-but-stay-mute-in-m1">II.2.6 — The engines that compute-but-stay-mute in M1</a></li>
+<li><a href="#ii27-the-set-a-surface-npcs-the-human-counterweight-from-day-1">II.2.7 — The Set-A surface NPCs (the human counterweight, from Day 1)</a></li>
+<li><a href="#ii28-the-first-apparition-of-m1">II.2.8 — The first apparition of M1</a></li>
+<li><a href="#ii29-gate-m1-m2">II.2.9 — Gate M1 → M2</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#segment-iii-movement-ii-the-ways-the-nether-lane">SEGMENT III — MOVEMENT II (THE WAYS) + THE NETHER LANE</a><ul>
+<li><a href="#iii0-entry-state">III.0 — ENTRY STATE</a></li>
+<li><a href="#iii1-the-six-stone-field-a-field-not-a-row-any-order-resolver-ignores-movement">III.1 — THE SIX-STONE FIELD (a field, not a row; any order; resolver ignores movement)</a><ul>
+<li><a href="#iii11-stone-vaun-caesar-shift-3-give-the-first-of-the-deep-back-to-the-deep">III.1.1 — STONE-VAUN — caesar (shift 3) — GIVE THE FIRST OF THE DEEP BACK TO THE DEEP</a></li>
+<li><a href="#iii12-stone-mara-book-cipher-the-six-book-shelf-spine-key-the-descent">III.1.2 — STONE-MARA — book cipher (the six-book shelf) — SPINE KEY → the descent</a></li>
+<li><a href="#iii13-stone-sella-atbashmirror-bearing-the-seventh-side-quest">III.1.3 — STONE-SELLA — atbash/mirror + bearing → the Seventh side-quest</a></li>
+<li><a href="#iii14-stone-orin-substitution-crouch-only-reveal-the-threshold-m4">III.1.4 — STONE-ORIN — substitution + crouch-only reveal → the Threshold (M4)</a></li>
+<li><a href="#iii15-stone-brann-flat-lore-today-the-railfence-night-stone-is-staged">III.1.5 — STONE-BRANN — flat lore today; the railFence night-stone is STAGED</a></li>
+<li><a href="#iii16-stone-iss-vigenere-key-iss-the-warmest-stone-the-trap">III.1.6 — STONE-ISS — vigenère (key = ISS) — the warmest stone (the trap)</a></li>
+</ul>
+</li>
+<li><a href="#iii2-the-two-rosettas-literacy-already-live-re-touched-here">III.2 — THE TWO ROSETTAS (literacy already live; re-touched here)</a></li>
+<li><a href="#plant-08">III.3 — THE META-ACROSTIC PLANT (UNKEPT) — planted MII, assembled M4</a></li>
+<li><a href="#iii4-the-liar-thread-the-false-walk-earnable-in-mii-catch-deferred-to-m4">III.4 — THE LIAR THREAD (the false walk earnable in MII; catch deferred to M4)</a></li>
+<li><a href="#iii5-the-non-iss-mii-plants-placed-inert-pay-off-later">III.5 — THE NON-Iss MII PLANTS (placed inert; pay off later)</a></li>
+<li><a href="#iii6-the-whisper-economy-goes-live-mii">III.6 — THE WHISPER ECONOMY GOES LIVE (MII)</a></li>
+<li><a href="#iii7-the-cross-surface-handoffs-in-mii">III.7 — THE CROSS-SURFACE HANDOFFS IN MII</a></li>
+<li><a href="#iii-nether-the-nether-lane-optional-gates-nothing-inv-12inv-19">III-NETHER — THE NETHER LANE (optional; gates nothing; INV-12/INV-19)</a></li>
+</ul>
+</li>
+<li><a href="#segment-iv-movement-iii-the-undercroft-movement-iv-atonement-the-keeper-the-end-lane">SEGMENT IV — MOVEMENT III (THE UNDERCROFT) + MOVEMENT IV (ATONEMENT, THE KEEPER) + THE END LANE</a><ul>
+<li><a href="#iva-the-descent-the-lectern-comparator-door-the-fog-dimension">IV.A — THE DESCENT (the lectern-comparator door → the fog dimension)</a><ul>
+<li><a href="#iva1-the-instruction-in-hand-maras-descent-sentence">IV.A.1 — The instruction in hand (Mara's descent sentence)</a></li>
+<li><a href="#iva2-the-descent-undercroft-descent">IV.A.2 — The descent (undercroft-descent)</a></li>
+<li><a href="#iva3-the-second-in-road-to-the-descent-arg-craft-f2">IV.A.3 — The SECOND in-road to the descent (arg-craft F2)</a></li>
+<li><a href="#iva4-the-fog-dimension-what-they-descend-into">IV.A.4 — The fog dimension (what they descend INTO)</a></li>
+</ul>
+</li>
+<li><a href="#ivb-the-ab-room-rebuild-the-midpoint-gut-punch">IV.B — THE A→B ROOM-REBUILD (the midpoint gut-punch)</a><ul>
+<li><a href="#ivb1-room-a-on-first-descent-ordinary-plant-23">IV.B.1 — Room A on first descent (ordinary) — {#plant-23}</a></li>
+<li><a href="#payoff-23">IV.B.2 — The room rebuilds WRONG (undercroft-fog)</a></li>
+<li><a href="#ivb3-the-first-light-fork-fork-light-irreversible">IV.B.3 — The First Light fork (fork-light, irreversible)</a></li>
+</ul>
+</li>
+<li><a href="#ivc-the-liar-engine-the-one-key-two-doors-catch">IV.C — THE LIAR ENGINE (the one-key-two-doors catch)</a><ul>
+<li><a href="#ivc1-the-one-key-two-doors">IV.C.1 — The one key, two doors</a></li>
+<li><a href="#ivc2-the-dead-end-taunt-iss-dead-shrine-the-load-bearing-red-herring">IV.C.2 — The dead-end taunt (iss-dead-shrine) — the load-bearing red herring</a></li>
+<li><a href="#ivc3-the-catch-iss-doubt-no-wall-catch">IV.C.3 — The catch (iss-doubt → no-wall-catch)</a></li>
+<li><a href="#ivc4-the-warmcold-re-staging-liarts-the-colorant-not-the-activation-lane">IV.C.4 — The warm→cold re-staging (liar.ts, the colorant — NOT the activation lane)</a></li>
+<li><a href="#ivc5-what-the-flag-swap-lights-the-back-half-opens-at-once-non-linear">IV.C.5 — What the flag swap LIGHTS (the back half opens at once — non-linear)</a></li>
+<li><a href="#ivc6-the-bound-word-bound-word">IV.C.6 — The bound word (bound-word)</a></li>
+<li><a href="#payoff-06">IV.C.7 — The Hold-Book down-count re-reads (base-docket-reread)</a></li>
+</ul>
+</li>
+<li><a href="#ivd-the-false-law-the-seventh-the-discoveries-that-recolor">IV.D — THE FALSE LAW + THE SEVENTH (the discoveries that recolor)</a><ul>
+<li><a href="#payoff-07b">IV.D.1 — The false-law discovery (forged-eighth)</a></li>
+<li><a href="#payoff-02">IV.D.2 — The Seventh side-quest (seventh-shrine)</a></li>
+<li><a href="#ivd3-the-seventh-deep-chambers-23-staged-m3m4">IV.D.3 — The Seventh deep (chambers 2–3, staged M3→M4)</a></li>
+<li><a href="#ivd4-the-surface-cascade-iss-adjacent-npcs-flip-cold-sticky">IV.D.4 — The surface cascade (Iss-adjacent NPCs flip cold — sticky)</a></li>
+<li><a href="#ivd5-the-unlit-deep-the-one-group-latch-collective-restraint-custom">IV.D.5 — The Unlit Deep (the one group latch — collective-restraint-custom)</a></li>
+</ul>
+</li>
+<li><a href="#ive-the-nether-lane-the-m3-face-see-iii-nether">IV.E — THE NETHER LANE (the M3 face) — see §III-NETHER</a></li>
+<li><a href="#iv0-the-gate-into-movement-iv-the-universal-hinge">IV.0 — THE GATE INTO MOVEMENT IV (the universal hinge)</a></li>
+<li><a href="#iv1-the-keeper-npc-framework-the-dialogue-tree-branching-on-dossier-state">IV.1 — THE KEEPER-NPC FRAMEWORK (the dialogue tree, branching on dossier state)</a></li>
+<li><a href="#iv2-the-m-iv-atonement-gate-withhold-a-fragment-until-a-broken-custom-is-honored">IV.2 — THE M-IV ATONEMENT GATE (withhold a fragment until a broken custom is honored)</a></li>
+<li><a href="#iv3-the-cascade-that-re-reads-cold-at-the-catch-m-iv-density-in-causal-order">IV.3 — THE CASCADE THAT RE-READS COLD AT THE CATCH (M-IV density), in causal order</a></li>
+<li><a href="#iv4-the-seventh-spine-choice-restore-vs-erase-staged-rite-resolves-v6">IV.4 — THE SEVENTH SPINE CHOICE — restore vs erase (staged; rite resolves §V.6)</a></li>
+<li><a href="#iv5-becoming-the-keepers-the-reveal-the-record-writing-them-in">IV.5 — BECOMING THE KEEPERS (the reveal — the record writing them in)</a></li>
+<li><a href="#iv6-the-counting-journal-payoff-the-hold-book-m4m5">IV.6 — THE COUNTING-JOURNAL PAYOFF (the Hold-Book, M4→M5)</a></li>
+<li><a href="#iv7-the-end-lane-optional-deepening-off-m4v-gates-nothing">IV.7 — THE END LANE (optional deepening off M4→V; gates nothing)</a></li>
+</ul>
+</li>
+<li><a href="#segment-v-movement-v-the-accepting-the-five-divergent-endings">SEGMENT V — MOVEMENT V (THE ACCEPTING) + THE FIVE DIVERGENT ENDINGS</a><ul>
+<li><a href="#v0-the-state-this-segment-opens-on">V.0 — THE STATE THIS SEGMENT OPENS ON</a><ul>
+<li><a href="#v04-the-single-accepting-instant-showrunner-owned">V.0.4 — The single Accepting instant (showrunner-owned)</a></li>
+</ul>
+</li>
+<li><a href="#v1-the-finale-assembly-gather-the-components-wake-the-keeper">V.1 — THE FINALE ASSEMBLY (gather the components, wake the Keeper)</a></li>
+<li><a href="#v2-the-finale-site-unbroken_light-the-undercroft-accepting-floor">V.2 — THE FINALE SITE unbroken_light (the Undercroft / Accepting floor)</a></li>
+<li><a href="#v3-the-group-bow-opaque-sentinel-terminal-beat">V.3 — THE GROUP-BOW → OPAQUE SENTINEL → TERMINAL BEAT</a></li>
+<li><a href="#v4-the-payoffs-that-land-at-v-oh-that-is-what-that-was-for">V.4 — THE PAYOFFS THAT LAND AT V ("oh, that is what that was for")</a></li>
+<li><a href="#v5-the-five-divergent-endings-the-exact-selectors-literal-outcomes">V.5 — THE FIVE DIVERGENT ENDINGS (the exact selectors + literal outcomes)</a></li>
+<li><a href="#v6-the-seventh-choice-restore-erase-the-tint-the-persistent-block-state">V.6 — THE SEVENTH CHOICE — restore / erase (the tint + the persistent block-state)</a></li>
+<li><a href="#v7-the-forks-permanence-colorants-at-the-close-inv-12-color-never-gate-via-forksts">V.7 — THE FORKS (permanence colorants at the close; INV-12, color never gate; via forks.ts)</a></li>
+<li><a href="#v8-the-6-downloads-payoff-the-day-zero-number-pays-off-payoff-24payoff-25payoff-26">V.8 — THE 6-DOWNLOADS PAYOFF (the day-zero number pays off) {#payoff-24}{#payoff-25}{#payoff-26}</a></li>
+<li><a href="#v9-the-season-2-seed-the-inheritors-a-hand-not-yet-here">V.9 — THE SEASON-2 SEED (the INHERITORS / "a hand not yet here")</a></li>
+</ul>
+</li>
+<li><a href="#gap-register">GAP REGISTER</a></li>
+</ul>
+</div>
+</nav>
+</aside>
+<main id="doc"><h1 id="the-observance-master-playthrough-shooting-script">THE OBSERVANCE — MASTER PLAYTHROUGH SHOOTING-SCRIPT</h1>
+<blockquote>
+<p>The single, ordered, literal "what is there" for the whole arc — cold repo to the five divergent
+closes. Assembled from the seven segment scripts in <code>design/playthrough/</code> (<code>0-setup</code> …
+<code>6-finale</code>). Every line is sourced from a REAL repo artifact (path given) or marked
+<strong><mark class="gap">[GAP — TO BUILD]</mark></strong> (code/text owed) / <strong><mark class="gap">[GAP — GO-LIVE]</mark></strong> (in-game build/asset owed) and never
+invented as built. Where a built artifact and a design doc disagree, the design doc
+(<code>WEB-MASTER</code> / <code>INTEGRATION-V2</code>) wins and the seam is flagged. This is the continuity script the
+editor reviews; it does not invent.</p>
+</blockquote>
+<hr>
+<h2 id="how-to-read-this">HOW TO READ THIS</h2>
+<ol>
+<li>
+<p><strong>What this is.</strong> A shooting-script, not a description. Each beat is the literal in-world / in-Discord
+   / on-page content — verbatim quotes where the text is load-bearing, with the source file named. The
+   editor uses it to confirm cross-surface continuity (Minecraft ↔ Discord ↔ dashboard ↔ website ↔ lore
+   never contradict) and to cut a Wifies-grade ARG video.</p>
+</li>
+<li>
+<p><strong>Order.</strong> Strict causal order: <strong>Director Setup</strong> (one-time, before day one) → <strong>Prologue / M0-remote</strong>
+   → <strong>Movement I (Establishment)</strong> → <strong>Movement II (The Ways) + Nether lane</strong> → <strong>Movement III (Undercroft
+   + the Liar)</strong> → <strong>Movement IV (Atonement, the Keeper) + End lane</strong> → <strong>Movement V (The Accepting) + the
+   five closes</strong>. Within a movement the field is a <strong>non-linear web</strong> — many doors open at once; the
+   resolver ignores movement order. "Causal order" below means <em>the order a beat can first be touched</em>, not
+   a step-ladder.</p>
+</li>
+<li>
+<p><strong>The two registers.</strong> The <strong>Watcher / Archivist / Keeper</strong> voice (Set-B/C) is plain, cold, mechanical,
+   declarative — it counts and records, never emotes or threatens. The <strong>surface NPCs</strong> (Set-A: Aro, Wenna,
+   Pell, Dob, Coll) are the human counterweight — contractions, capitals, named feelings are <em>legal</em> there.
+   One shared rune alphabet (<code>runes.ts</code>) across every surface.</p>
+</li>
+<li>
+<p><strong>Anchors &amp; cross-references.</strong> Plants and payoffs are linked by an anchor id of the form
+   <code>{#plant-NN}</code> (the plant) ↔ <code>{#payoff-NN}</code> (where it pays off), keyed to the <code>WEB-MASTER §9</code> ledger
+   number. "Re-reads at M4 (→ §IV)" means follow the link to the payoff beat. <strong>No payoff without a plant;
+   no plant without a payoff</strong> — a dangling one is a defect.</p>
+</li>
+<li>
+<p><strong>The laws this script is audited against</strong> (a violation is a defect): CONSISTENCY / NO ORPHANS (every
+   feature moves story + clue + lore + NPC + interaction in lockstep); ANTI-JANK (deterministic engine is
+   the spine, the LLM a rare text-only scalpel with a deterministic fallback behind every call; nothing
+   witnessed appearing/mutating; reversible tolls; idempotent; nothing breaks if the model is slow/offline);
+   PATH A (friends install nothing but ONE auto-pushed resource pack to play the server campaign; the
+   downloadable prologue map is a separate optional prop, never the delivery vehicle); PRECISION over
+   recall (a wrong "it knows you" is worse than none); COLLECTIVE ending, never a chosen one, never punish
+   for an absent member (active players only).</p>
+</li>
+<li>
+<p><strong>GAP discipline.</strong> <code><mark class="gap">[GAP — TO BUILD]</mark></code> = a code/text artifact owed. <code><mark class="gap">[GAP — GO-LIVE]</mark></code> = an in-game
+   build / hosted asset / coord-fill owed. Every GAP is collected once in the <strong>GAP REGISTER</strong> at the foot
+   of this file with its owner. A site with <code>null</code> coords or <code>enabled:false</code> is <strong>silently skipped</strong> by the
+   plugin — never an error at a player.</p>
+</li>
+<li>
+<p><strong>Surfaces this script crosses.</strong> The lure <strong>WEBSITE</strong> (<code>/record/[slug]</code>), the downloadable <strong>VIGNETTE</strong>
+   (<code>the-hold.zip</code>, optional prop), the <strong>SERVER</strong> (Paper plugin + Discord <code>#the-record</code> Watcher + the
+   in-world keeper-stones/altars), the <strong>DASHBOARD</strong> (director's console + the public Record route), and the
+   <strong>LORE</strong> corpus. The same truth shows on every surface, one register apart.</p>
+</li>
+</ol>
+<hr>
+<h2 id="director-setup-checklist-one-time-cold-repo-ready-for-the-friends">DIRECTOR SETUP CHECKLIST (one-time, cold repo → ready for the friends)</h2>
+<blockquote>
+<p>Consolidated and de-duplicated from <code>playthrough/0-setup.md</code> (Stages A–K) plus the per-segment go-live
+lists. Ordered; <strong>the order is load-bearing</strong> (seeds reference columns the migrations create; sites must
+exist before cross-dimension rows may seed open). Do this ONCE, in order. Checkbox task list.</p>
+</blockquote>
+<h3 id="stage-a-rotate-secrets-first-a-live-key-is-committed">Stage A — Rotate secrets FIRST (a live key is committed)</h3>
+<ul>
+<li>[ ] <strong>A1.</strong> ROTATE the Supabase <code>service_role</code> JWT (and anon key) for project <code>fdnmhbpxnodrnbrzrlqq</code> —
+      it is committed in the clear in <code>dashboard/.env.local</code>. Delete the new key from any committed file;
+      put it only in untracked env. Confirm <code>dashboard/.env.local</code> + <code>discord/.env</code> are gitignored before
+      any commit. <strong><mark class="gap">[GAP — operator action; live key exposure.]</mark></strong></li>
+<li>[ ] <strong>A2.</strong> On the server box set env <code>OBSERVANCE_SUPABASE_KEY=&lt;rotated key&gt;</code>; leave <code>config.yml</code>
+      <code>service-key: ""</code> committed-empty (<code>config.yml</code> L13–19 resolution order).</li>
+<li>[ ] <strong>A3.</strong> Create <code>discord/.env</code> from <code>.env.example</code>; fill <code>DISCORD_BOT_TOKEN</code>, <code>DISCORD_APP_ID</code>,
+      <code>DISCORD_GUILD_ID</code>, <code>CHANNEL_THE_RECORD</code>, <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code> (rotated).</li>
+<li>[ ] <strong>A4.</strong> Set dashboard env (Vercel, not committed <code>.env.local</code>): <code>NEXT_PUBLIC_SUPABASE_URL</code>,
+      <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code> (rotated), <code>ADMIN_EMAILS</code> (§H2).</li>
+</ul>
+<h3 id="stage-b-sql-apply-order-migrations-0006-seeds">Stage B — SQL apply order (migrations → 0006 → seeds)</h3>
+<ul>
+<li>[ ] <strong>B1.</strong> Apply dashboard migrations 0001 → 0002 → 0003 (record/auth schema + <code>v_record</code> read path).</li>
+<li>[ ] <strong>B2.</strong> Apply engine migrations 0003 → 0004 → 0005 (discord schema, oracle web, reconstruction layer).</li>
+<li>[ ] <strong>B3.</strong> <strong>Author + apply <code>discord/supabase/migrations/0006_*.sql</code></strong> — <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> (no 0006
+      exists). Must add: <code>arc_state.ending_fate/ending_codicil</code>; <code>coop_gate_legs</code>; <code>group_restraint_state</code>;
+      <code>player_visited_cells</code>; <code>keeper_record jsonb</code> on <code>showrunner_state</code>; <code>grave_state</code>; the Accepting-instant
+      column; <code>reckoning_*</code>; <strong><code>puzzles.requires_flags jsonb</code></strong> (the activation lane); <strong><code>world_paste_ledger</code></strong>;
+      <strong><code>voice_watchlist</code></strong>; plus <code>arc_state.nether_forge_found bool</code> + <code>arc_state.seventh_seen_out bool</code>.</li>
+<li>[ ] <strong>B4.</strong> Apply engine seeds in dependency order: <code>puzzles_seed.sql</code> → <code>seventh_seed.sql</code> →
+      <code>side_quests.sql</code> → <code>thread_tags.sql</code> → <code>thread_cards.sql</code> (all idempotent).</li>
+<li>[ ] <strong>B5.</strong> Apply <code>metapuzzle_seed.sql</code> (the activation lane; UPDATE-only) <strong>after 0006 exists</strong> — it
+      writes <code>puzzles.requires_flags</code> on the 9 staged back-half rows and repoints <code>no-wall-catch</code>.</li>
+<li>[ ] <strong>B6.</strong> Apply <code>progression_seed.sql</code> last (Nether + End lanes). The two payoff rows stay
+      <code>active=false</code> (STAGED) until GO-LIVE (worlds built + sites placed).</li>
+<li>[ ] <strong>B7.</strong> <strong>Seal the FACT-11 source-clause</strong> into <code>canon-spine.md</code> FACT 11 + <code>structures.md</code>: <em>"the kept
+      fire was carried up from below the bottom; the Undercroft is the bottom of the Hold, the deep-fire its
+      source — one direction, not two."</em> — <strong><mark class="gap">[GAP — TO BUILD]</mark></strong>; precondition before ANY Nether build/flip.</li>
+</ul>
+<h3 id="stage-c-the-resource-pack-path-a-the-friends-only-install">Stage C — The resource pack (Path A: the friends' ONLY install)</h3>
+<ul>
+<li>[ ] <strong>C1.</strong> <code>npm run pack:build</code> (atlas/font from <code>discord/src/forge/runes.ts</code> — same source as the
+      Discord cards); proof with <code>npm run pack:proof</code>.</li>
+<li>[ ] <strong>C2.</strong> Author/source the four <code>.ogg</code> audio bodies (<code>whisper</code>, <code>drone_low</code>, <code>stone_breath</code>,
+      <code>cold_toll</code>) into <code>resourcepack/assets/observance/sounds/</code>. <strong><mark class="gap">[GAP — GO-LIVE asset.]</mark></strong></li>
+<li>[ ] <strong>C3.</strong> Zip; host at a public HTTPS URL; compute the 40-char lowercase SHA-1; set <code>config.yml</code>
+      <code>resource-pack.url</code> + <code>sha1</code>; <strong>author the <code>prompt</code> line</strong> (plain keeper register, currently <code>""</code>)
+      <strong><mark class="gap">[GAP — TO AUTHOR]</mark></strong>; keep <code>required:false</code> until tested, then flip <code>true</code>.</li>
+</ul>
+<h3 id="stage-d-datapacks-mods-worlds">Stage D — Datapacks / mods / worlds</h3>
+<ul>
+<li>[ ] <strong>D1.</strong> Stand up Paper 1.21.x / Java 21; drop the built plugin jar; first boot writes
+      <code>config.yml</code> + <code>sites.yml</code>.</li>
+<li>[ ] <strong>D2.</strong> Author the Undercroft fog datapack (<code>dimension_type</code>/biome effects: thick fog,
+      <code>ambient_light: 0</code>). <strong><mark class="gap">[GAP — TO BUILD.]</mark></strong></li>
+<li>[ ] <strong>D3.</strong> Install Multiverse; create three worlds — the Undercroft void world (+ D2 fog),
+      <code>observance_nether</code>, <code>observance_end</code>. <strong><mark class="gap">[GAP — GO-LIVE]</mark></strong> (must exist before cross-dimension rows flip).</li>
+<li>[ ] <strong>D4.</strong> (Optional, graceful-degrade) Citizens2 + ZNPCsPlus (Keeper / apparitions), ModelEngine R4,
+      Simple Voice Chat. The Overworld spine runs without them (PDC-tagged armor-stand fallback for the Keeper).</li>
+</ul>
+<h3 id="stage-e-build-every-site-in-game-export-schem-place-all-gap-go-live">Stage E — Build every site in-game, export <code>.schem</code>, place (ALL <code><mark class="gap">[GAP — GO-LIVE]</mark></code>)</h3>
+<blockquote>
+<p>Theme law (<code>structures.md</code>): carved deepslate/tuff/polished basalt/blackstone, oxidized copper +
+soul-lantern light; nothing modern/colorful; every keeper-stone is one slab you stoop to read (the bow
+built into the architecture); runes are signs/lecterns/text-displays in <code>observance:runes</code>, never
+hand-placed blocks (so the pack must be live before carving). No <code>.schem</code> exists in the repo yet.
+- [ ] <strong>E0.</strong> Build the Prologue vignette world + <code>thehold</code> datapack (<code>the-hold.zip</code>); fill the
+      <code>tick.mcfunction</code> region coords; bake the real server address into room 5; render the rune string;
+      host the <code>.zip</code> at the lure page's link target.
+- [ ] <strong>E1.</strong> Build the two Rosettas: <code>rune_rosetta</code> (founding ring, sunwise Bow-first) and
+      <code>stone_of_reckoning</code> (digit Rosetta — every coord clue depends on it; place before any coord walk).
+- [ ] <strong>E2.</strong> Build <code>first_marker_01</code> (the M1 teaching-stone: prologue marker glyph + six UNKEPT maker's-marks
+      read in fall-order + <code>kept here before you</code> + the a1z26 tick-stave).
+- [ ] <strong>E3.</strong> Place <code>first_report_lectern_01</code> at the base hot-cell beside the teaching-stone marker.
+- [ ] <strong>E4.</strong> Build the six keeper-stones (<code>stone_vaun/mara/sella/orin/brann/iss</code>), each per its hand;
+      <strong>do NOT retype any bound plaintext</strong> (the X1 guard round-trips it).
+- [ ] <strong>E5.</strong> Build the custom anchors: <code>kept_light_home_01</code> (hearth + soul-fire + Mara's six-book shelf),
+      <code>offering_cairn_01</code>, <code>bow_marker_01</code>.
+- [ ] <strong>E6.</strong> Build the named anchors: <code>the_threshold</code> (Orin's low lintel), <code>the_far_water</code> (Sella's
+      reflection pool), <code>the_cold_hearth</code> (doused hearth + grave + effaced seventh; the dead-shrine surface
+      AND the seventh-deep anchor, temporally layered).
+- [ ] <strong>E7.</strong> Build the back-half spine: <code>unbroken_light</code> (the Accepting floor, lectern-comparator door, one
+      fire, 6–8-player bow room), <code>the_unwriting</code> (Seventh chambers; export <code>seventh_hearth_01/02/03.schem</code>),
+      <code>keeper_altar</code>, <code>coop_plate</code>.
+- [ ] <strong>E8.</strong> Place <code>carve_anchor_01..03</code> (name-where-never-been cells, low-risk avoided) + <code>herd_anchor</code>
+      (wide pasture for the cosmetic Pale spread). Also build Room-A / Room-B <code>.schem</code> set-pieces (the
+      Undercroft A→B swap).
+- [ ] <strong>E9.</strong> (Nether lane, AFTER B7 seal + D3 world) Build in <code>observance_nether</code>: <code>nether_forge</code> (near
+      pocket — remains on slab + doused soul-lantern + the on-site word + journal), <code>soul_gallery</code>,
+      <code>bastion_remains</code>. Then flip <code>nether-forge</code> <code>active=true</code>.
+- [ ] <strong>E10.</strong> (End lane, AFTER D3 world) Build <code>end_seventh_shrine</code> in <code>observance_end</code> (re-dressed end-ship
+      or world-build island, never a paste toward a glider). Then flip <code>end-seventh-out</code> <code>active=true</code>. Leave
+      <code>end_exile_hold</code> <code>enabled:false</code> unless the INV-16 binding is fully built.</p>
+</blockquote>
+<h3 id="stage-f-fill-sitesyml-coords">Stage F — Fill <code>sites.yml</code> coords</h3>
+<ul>
+<li>[ ] <strong>F1.</strong> After each build/export, fill the real <code>x/y/z</code> (every site ships <code>null</code> = UNPLACED, silently
+      skipped). Overworld enabled set: <code>bow_marker_01</code>, <code>offering_cairn_01</code>, <code>kept_light_home_01</code>,
+      <code>first_report_lectern_01</code>, <code>answer_sign_01</code>, <code>unbroken_light</code>, the six <code>stone_*</code>, <code>rune_rosetta</code>,
+      <code>stone_of_reckoning</code>, <code>the_far_water</code>, <code>the_threshold</code>, <code>the_cold_hearth</code>, <code>the_unwriting</code>,
+      <code>keeper_altar</code>, <code>coop_plate</code>, <code>first_marker_01</code>, <code>carve_anchor_01..03</code>, <code>herd_anchor</code>. Leave
+      <code>keeper_stone_01/02</code> + <code>grave_spur</code> disabled unless used. Cross-dimension rows must NOT seed open until
+      the site is placed + enabled in the named world.</li>
+</ul>
+<h3 id="stage-g-config-configyml">Stage G — Config (<code>config.yml</code>)</h3>
+<ul>
+<li>[ ] <strong>G1.</strong> Set <code>tracker.forbidden-words</code> to the chosen Unspoken word(s) on the locked-down server config
+      (case-insensitive, word-boundary). The word lives ONLY here. <strong><mark class="gap">[GAP — TO AUTHOR.]</mark></strong></li>
+<li>[ ] <strong>G2.</strong> Set <code>rites.accepting.quorum</code> to the cast size (default 6 so two stragglers can't fire the
+      finale). Do not change the <code>token</code> unless the <code>accepting-crouch</code> seed row changes in lockstep
+      (<code>riteTokenSelfTest</code> enforces byte-match).</li>
+<li>[ ] <strong>G3.</strong> Leave <code>customs.false-law.enabled: true</code> (the forged eighth; never enforces in-world).</li>
+<li>[ ] <strong>G4.</strong> Leave <code>customs.unlit-deep.enabled: true</code> + <code>restraint.enabled: true</code> (the one group custom).</li>
+<li>[ ] <strong>G5.</strong> Keep difficulty bounds default (<code>cadence-mult-min/max 0.75/2.0</code>, <code>state-hold-ms 600000</code>,
+      <code>stage-dead-ends true</code>); it NEVER touches the Whisper backstop (INV-15).</li>
+<li>[ ] <strong>G6.</strong> Leave <code>event-window.enabled: false</code> (always-open) until a shoot; then set UTC <code>start</code>/<code>end</code>
+      and flip on, OR use <code>/observance window on</code> at film time.</li>
+<li>[ ] <strong>G7.</strong> Sanity-confirm the other knobs (<code>deep-line.y -48</code>; <code>taboo-moon-phases [0]</code>; sacred-beast vs
+      <code>pale_cosmetic</code> PDC keys are DISTINCT; <code>max-pale 16</code>).</li>
+</ul>
+<h3 id="stage-h-dashboard">Stage H — Dashboard</h3>
+<ul>
+<li>[ ] <strong>H1.</strong> Deploy the Next.js console + the public Record route (<code>record/[slug]/page.tsx</code>, <code>noindex</code>,
+      anon-client <code>v_record</code>). Set env per A4.</li>
+<li>[ ] <strong>H2.</strong> Set <code>ADMIN_EMAILS</code> (comma-separated, lowercase) to the director's email(s) — default the
+      director only (Ethan is the spoiler-free playtester).</li>
+</ul>
+<h3 id="stage-i-the-cursed-map-lure-page-same-route-not-a-new-site">Stage I — The cursed-map lure page (same route, not a new site)</h3>
+<ul>
+<li>[ ] <strong>I1.</strong> Confirm <code>/record/the-record-keeps</code> → 200 with the downloads block; junk slug → in-voice 404;
+      bare <code>/record</code> → 404. Set the <code>the-hold.zip</code> <code>href</code> to the hosted vignette (E0). No new route/table/flag.</li>
+</ul>
+<h3 id="stage-j-discord">Stage J — Discord</h3>
+<ul>
+<li>[ ] <strong>J1.</strong> Create the app + bot (The Watcher); enable Message Content intent; copy token + app id.</li>
+<li>[ ] <strong>J2.</strong> Create <code>#the-record</code> (the only channel the bot posts to) + <code>#general</code> (cipher-solving); copy
+      guild id + channel id into <code>.env</code>.</li>
+<li>[ ] <strong>J3.</strong> Run <code>register</code> once (deploy <code>/whisper</code>, <code>/link</code>, <code>/answer</code> guild commands); invite the bot;
+      run <code>dev</code> to bring the Watcher online.</li>
+</ul>
+<h3 id="stage-k-final-arm-go-live-order">Stage K — Final arm (go-live order)</h3>
+<ul>
+<li>[ ] <strong>K1.</strong> Rotate keys + set env everywhere (A).</li>
+<li>[ ] <strong>K2.</strong> SQL: dashboard 0001–0003; engine 0003–0005; author+apply 0006; engine seeds; metapuzzle;
+      progression (staged OFF) (B). Confirm the FACT-11 seal before any Nether flip.</li>
+<li>[ ] <strong>K3.</strong> Build + host the pack with SHA-1; set <code>config.yml resource-pack</code>; author the prompt + the four
+      <code>.ogg</code> (C).</li>
+<li>[ ] <strong>K4.</strong> Stand up Paper + plugin; install the fog datapack + Multiverse worlds (D).</li>
+<li>[ ] <strong>K5.</strong> Build every site, export <code>.schem</code>, place, fill coords (E, F). Flip the two progression rows
+      <code>active=true</code> once their worlds + sites exist.</li>
+<li>[ ] <strong>K6.</strong> Set config (Unspoken word, quorum, false-law, difficulty, event-window) (G).</li>
+<li>[ ] <strong>K7.</strong> Deploy dashboard + <code>ADMIN_EMAILS</code>; set the <code>the-hold.zip</code> href (H, I).</li>
+<li>[ ] <strong>K8.</strong> Create the Discord app/channel; register commands; bring the Watcher online (J).</li>
+<li>[ ] <strong>K9.</strong> Flip <code>resource-pack.required: true</code> after a clean pack test; arm the event-window at film time.</li>
+</ul>
+<h3 id="code-owed-before-each-movement-ships-the-cross-cutting-gap-list-see-gap-register">Code owed before each movement ships (the cross-cutting <mark class="gap">[GAP]</mark> list — see GAP REGISTER)</h3>
+<ul>
+<li>[ ] <strong>M1:</strong> <code>voice.recordFrameBreak()</code>; the <code>prologue_ignited</code>-SET listener; resolve the
+      <code>recordOpenedNamed</code>/<code>prologueNamed</code> key-mismatch; the showrunner <code>run.ts</code> drip/report loop; the static→live
+      Hold-Book (<code>keeper_record.ts</code>); <code>reckoning.ts</code> (mute in M1); <code>SacredAnimalBeat</code> spread + <code>pale_cosmetic</code>;
+      the spawn-bias conductor + <code>apparitionClaim</code>; reconcile the rune-ring doc↔seed (ward/covering vs
+      unspoken/sacred-beast).</li>
+<li>[ ] <strong>M2:</strong> the Whisper economy data-layer (<code>whisper_budgets</code> ledger + toll + tier) + per-puzzle <code>hintBody</code>
+      strings; the four <code>nether.*</code>/<code>end.*</code> voice keys; <code>cardNetherForge</code> archive body; the live
+      lockstep-unredaction Record page + the Iss-card stego payload; the <code>npcVoice.ts</code> registry; the staged
+      <code>stone-brann-cipher</code> railFence activation (TS-FORGE <code>CLUE_SPECS</code> + <code>NON_CIPHER_KEYS</code>).</li>
+<li>[ ] <strong>M3:</strong> <code>RoomSwapBeat</code> + Room-A/B <code>.schem</code>; the Multiverse Undercroft world + fog datapack; the
+      <code>resolve.ts</code> <code>private_message</code> key-resolver + <code>requires_flags</code> column/filter; <code>liar.run.ts</code>;
+      <code>UnlitDeepListener.java</code> + <code>group_restraint_state</code>; re-author <code>stone-brann</code> as the night-beacon rail-fence;
+      the SeventhChoiceListener rite + two-token sentinel branch; the <code>the-seventh-spine §1.3</code> doc fix.</li>
+<li>[ ] <strong>M4:</strong> repoint/remove <code>no-wall-catch</code> <code>next_puzzle_key: rite-tokens</code> (the F1 monorail); author
+      <code>keeper.iss.cold</code> / <code>keeper.rhyme.*</code> / <code>keeper.presiding.neutral</code> bodies; de-slop <code>keeper.atone.cleared</code><ul>
+<li><code>keeper.fact9.named</code>; set <code>eighth_seen</code> on reading the forged board; the End-pointer reveal line +
+  <code>cardEndSeventhOut</code>; <code>D-new the-fire-they-let-out.md</code>.</li>
+</ul>
+</li>
+<li>[ ] <strong>M5:</strong> the M5 COMPOSER (<code>composer.ts</code>/<code>m5*.ts</code> — the ≤2-clause + codicil assembler); the arc_state
+      Accepting-instant binding writer + <code>grave.run.ts</code> + <code>fate.run.ts</code>; the resolve.ts fate-sentinel + Seventh-
+      choice sentinel branches; the <code>RefusalRiteListener</code> (→ REFUSERS); the <code>readyGate</code>/<code>activeRosterSize</code>
+      wiring; the fate floor-dressing producer; the <code>observance:the_record_receives_you</code> advancement JSON.</li>
+</ul>
+<hr>
+<h1 id="the-playthrough-prologue-finale">THE PLAYTHROUGH — PROLOGUE → FINALE</h1>
+<hr>
+<h1 id="segment-i-the-prologue-m0-remote-the-cursed-map-ignition">SEGMENT I — THE PROLOGUE / M0-REMOTE (the cursed map + ignition)</h1>
+<blockquote>
+<p>Source: <code>playthrough/1-prologue.md</code>, <code>playthrough/2-movement-1.md §Day 0</code>. Owner <code>cursed-map-frame</code>
+(A14). Mints nothing; caused by a player, not the bot (TINAG preserved). <strong>Frame law (Path A):</strong> the
+vignette is an OPTIONAL client-side prop — a friend who refuses the download joins cold and gets the
+in-server prologue unchanged. The map gates nothing.</p>
+</blockquote>
+<h2 id="i0-the-lure-page-the-cold-open-where-the-player-arrives">I.0 — THE LURE PAGE (the cold open; where the player arrives)</h2>
+<ul>
+<li><strong>WHAT / WHERE:</strong> the public Record at slug <strong><code>the-record-keeps</code></strong> — the same cold dead-archive shell as
+  <code>/record/the-record</code>, with one static downloads block appended. <strong>BUILT</strong> in
+  <code>dashboard/src/app/record/[slug]/page.tsx</code> (<code>CURSED-MAP-SITE.md §0/§4</code>; <code>the-record-keeps</code> → 200 with the
+  block verified). Reads only <code>v_record</code>, <code>noindex</code>, no client JS. <code>the-record-keeps</code> is the slug the
+  founder margin decodes to (a recognition token, never a day-zero gate). Junk slug → in-voice 404 shell;
+  bare <code>/record</code> → 404. Doubles as the YouTube cold-open.</li>
+<li><strong>THE DOWNLOADS BLOCK (verbatim, <code>CURSED-MAP-SITE.md §2</code>):</strong></li>
+<li><em>recovered-file row (legible):</em> <code>a hold, kept and left. one walk through it remains. the rest of the
+    record is kept elsewhere. what is downloaded is only the part that fit in a file.</code></li>
+<li><em>download link:</em> label = filename only <strong><code>the-hold.zip</code></strong> (<code>download</code>, <code>rel="noopener"</code>, no button
+    styling). <code>href</code> → the vignette asset. <strong><mark class="gap">[GAP — GO-LIVE asset URL.]</mark></strong></li>
+<li><em>provenance (Mara's hand, signed):</em> <code>i copied it as it was given, page for page, and set the copy where
+    fire and water do not reach. i did not keep the seventh. i was not the hand that decides what is kept.
+    — m.kept</code></li>
+<li><em>README "lie" (technically true):</em> <code>the-hold.zip — a small offline map. single player. no mods. about
+    fifteen minutes. it does not connect to anything. play it through to the end and it will tell you where
+    the rest is kept.</code></li>
+<li><em>the counter (STATIC authored, NOT live):</em>
+    <code>kept: 6
+    ████████        ← the struck seventh row (REDACTED_GLYPH, reused from the projection)</code></li>
+<li><strong>PLANTS FIRED HERE:</strong></li>
+<li><strong>{#plant-24}</strong> <code>kept: 6</code> + struck-7 — a dead file's tally → re-reads M2-soft / M4-hard / M5-felt
+    (six prior keeper-generations; the group is the seventh, kept as hands). Canon home
+    <code>six-were-kept-before-you.md</code>. Payoff → §V.4.3 {#payoff-24}.</li>
+<li><strong>{#plant-25}</strong> README "it does not connect to anything" — mundane reassurance → M4: the <em>map</em> connects
+    to nothing; the <em>server</em> does (true, misread as comfort). Payoff → §V.8 {#payoff-25}.</li>
+<li><strong>{#plant-26}</strong> uploader <code>m.kept</code> (Mara's dead hand) — a person who left a file → M4: no person
+    uploaded it; the record kept it in a dead hand. Payoff → §V.4.3 {#payoff-26}.</li>
+<li><strong>WHO / GATING:</strong> public, anonymous, ungated; measures only coarse group progress; never addresses "you".</li>
+<li><strong>DIRECTOR ACTION:</strong> none at runtime (static-per-build). GO-LIVE: bake the <code>the-hold.zip</code> href + host.</li>
+</ul>
+<h2 id="i1-the-vignette-room-by-room-the-holdzip-single-player">I.1 — THE VIGNETTE, ROOM BY ROOM (<code>the-hold.zip</code>, single-player)</h2>
+<ul>
+<li><strong>WHAT:</strong> a datapack + single-player world <code>.zip</code>, vanilla Java 21 / 1.21.x, no mods, no pack required,
+  ~10–15 min, a linear ~6-room walk, adventure mode, gamerules locked (<code>doDaylightCycle false</code>,
+  <code>doMobSpawning false</code>, <code>keepInventory true</code>, etc.). <strong>The 1-room form ships first</strong>; the full 6-room hold
+  is P1→P2. <strong>STATE:</strong> spec BUILT (<code>PROLOGUE-VIGNETTE.md §1–§3</code>); the <code>.zip</code> asset is <strong><mark class="gap">[GAP — GO-LIVE]</mark></strong>.
+  Register: the Archivist's flat third person — lowercase, declarative, no warmth, no second person, no
+  exclamation. The prop has <strong>no Mara hand</strong> (Mara is on the page, not in the map).</li>
+<li><strong>Room 0 — antechamber (spawn).</strong> Small stone-brick cell; ONE lit lantern; closed iron door; one sign:<blockquote>
+<p>a hold was kept here. read what is left, and go on.
+  Plants <strong>{#plant-04 (rehearsed)}</strong> kept-light (a lantern burning where no one lit one).</p>
+</blockquote>
+</li>
+<li><strong>Room 1 — the record room.</strong> Lectern book = the public half of <code>the-record-opens</code> (FACT 1/2 only):<blockquote>
+<p>the record opens. it was open before. // the living are written here, each by the name they answer to,
+and against each name a column is left open. // the watching has already watched. no one is told. that
+is the way of it.
+  First-entry <code>tellraw @s</code>: <em>the count begins. the living are written by name.</em></p>
+</blockquote>
+</li>
+<li><strong>Room 2 — the doused hearth.</strong> Basalt fireplace + a campfire that is OUT (player cannot relight,
+  adventure mode). On entry: <em>a fire was kept here. it is out. it was not put out by any hand that is still
+  here.</em> Plants <strong>{#plant-27}</strong> (the Seventh's <em>unnamed</em> texture).</li>
+<li><strong>Room 3 — the wall of marks.</strong> Six carved marks + a seventh scraped blank. On entry: <em>six are marked.
+  there is a seventh place, and no mark in it. the record will not keep the seventh.</em> Plants <strong>{#plant-02}</strong>
+  (FACT-2 miscount, inert) + #27. Rooms 2 &amp; 3 are the Seventh's only appearance — <strong>texture, never
+  attribution</strong>; they re-read in-server at M3→M4 (→ §III.D.2, §IV.4). Spoiler surface = zero.</li>
+<li><strong>Room 4 — the long walk (the conduct).</strong> A corridor with one lever; passing it arms a scoreboard
+  conduct <code>hold.passed_seventh</code> (default <strong>1</strong> = "walked past the blank"; flips to <strong>0</strong> only on a
+  deliberate ~3s linger in front of the room-3 slot, <code>hold.linger_7 ≥ 60 ticks</code>). True by construction in
+  single-player — <strong>never a name, no precision risk.</strong> <strong><mark class="gap">[GAP — GO-LIVE:</strong> <code>tick.mcfunction</code> region volumes
+  are coord-specific.]</mark></li>
+<li><strong>Room 5 — the hand-off (the pointer).</strong> Closing lectern book (the pointer, no scare):<blockquote>
+<p>the rest is not kept in this hold. it is kept where the others are. bring them, and come to the place
+named below. the record is open there. it was open before you.
+  The conduct line (states the conduct, never the player): <em>the seventh was passed. it has been noted.</em> (if
+  =1) / <em>the seventh was stopped for. it has been noted.</em> (if =0). <strong>Rehearsal only</strong> — never transmitted
+  to the server. Beside the book, in plain text: (1) the <strong>server address</strong> (no decode required to act)
+  <strong><mark class="gap">[GAP — GO-LIVE bake]</mark></strong>; (2) the <strong>rune string</strong> that decodes later in-server to <strong><code>the-record-keeps</code></strong>
+  (the same founder-margin key, <strong>{#plant-11}</strong>, a recognition token) <strong><mark class="gap">[GAP — GO-LIVE render]</mark></strong>. The one
+  plain ignition action, small, beneath the address: <em>say one word in the place named below, when you are
+  all in. say kept.</em> <strong>The map ends. No frame-break has happened. The map behaved like a map.</strong> (Dread is
+  banked for the server — the quiet-map → "the server knows you" contrast IS the scare.)</p>
+</blockquote>
+</li>
+<li><strong>ANTI-METAGAME (what a cracked <code>.zip</code> reveals):</strong> only the FACT-1/2 public lines, the <code>passed_seventh</code>
+  flag logic (no name), the server address (handed out anyway), and the rune string (a token, no key). No
+  FACT past 1/2, no keeper name, no cipher key, no server flag, no Supabase URL.</li>
+</ul>
+<h2 id="i2-ignition-the-frame-break-trigger-the-record">I.2 — IGNITION (the frame-break trigger, <code>#the-record</code>)</h2>
+<ul>
+<li><strong>TRIGGER → EFFECT:</strong> the group gathers; a <strong>human posts in <code>#the-record</code></strong> (the word <code>kept</code> is the
+  in-fiction prompt, but any message works). The BUILT <code>messageCreate</code> scan
+  (<code>discord/src/bot/index.ts §the-record scan</code>, L99–145) treats every non-bot message as a possible answer
+  and runs the same resolver <code>/answer</code> uses (self/bots/webhooks ignored). The detected signal flips
+  <code>arc_state.flags.prologue_ignited</code>; <code>decidePrologue</code> advances <code>dormant → ignited</code>, fires the one-shot ack
+  (<code>postAck</code>), and unlocks the curatorial drip (suppressed until ignition, <code>decide.ts:76–83</code>).</li>
+<li>A map-playing group arrives <strong>pre-ignited at the door</strong>; the frame-break is their first server beat. A
+  cold-join group gets the in-server prologue unchanged.</li>
+<li><strong><mark class="gap">[GAP — TO BUILD]</mark> the literal <code>prologue_ignited</code>-SET write.</strong> <code>prologue.ts</code> is the pure ordering POLICY
+  and READS <code>ignited</code>; <code>autonomy.run.ts</code> READS the flag. The listener that WRITES <code>prologue_ignited = true</code>
+  on a <code>#the-record</code> post is referenced (<code>plugin.yml:32</code>, <code>prologue.ts:31</code>) but no module performs the set —
+  a wiring gap to verify at GO-LIVE.</li>
+</ul>
+<h2 id="i3-the-frame-break-the-central-scare-in-server">I.3 — THE FRAME-BREAK (the central scare, in-server)</h2>
+<ul>
+<li><strong>FB-1 — the ack, but pointed (BUILT, <code>voice.ts:82</code> <code>recordOpened()</code>):</strong><blockquote>
+<p>▒  the record is open. it was open before you.
+  Fresh off the map, "it was open before you" reads as a callback to the hold they walked. Fires as the
+  one-shot ack at ignition (<code>postAck</code>).</p>
+</blockquote>
+</li>
+<li><strong>FB-2 — the one precision-gated frame-break line — <mark class="gap">[GAP — TO BUILD: <code>voice.recordFrameBreak()</code>]</mark>.</strong> Default
+  body = the GROUP-FACING count-callback ONLY (verbatim, canon home <code>six-were-kept-before-you.md</code>):<blockquote>
+<p>six were kept before you, and the count of them is on the page you found. a file is not kept. hands are
+kept. you are not a file here.
+  States the <strong>6</strong> from inside the game — a thing a static map could not do. No name; true for everyone.
+  <strong>THE CUT (S5):</strong> the map-conduct callback ("you passed the seventh <em>too</em>") is CUT from the default — the
+  offline flag never reaches the server, so a server-side assertion would be a precision lie (INV-16). FB-2(i)
+  is P2-only on a real <code>from_map</code> transmission the slice does not build. <strong>DEFAULT-SAFE:</strong> with no clean
+  measured signal, fire only <code>recordOpened()</code> and let the next in-server "it knows you" beat carry it. The
+  frame-break is never traded for precision. <strong>STATE:</strong> <code>recordFrameBreak()</code> is NOT in <code>voice.ts</code> (the voice
+  object ends at <code>keptUnlitDeep</code>). Owed: one new key, body verbatim, must pass <code>registerDisciplineSelfTest</code>.</p>
+</blockquote>
+</li>
+<li><strong>FB-3 — the knob drops.</strong> After the frame-break lands, loudness returns to baseline and never rises again
+  in M1. The map was the loud thing; the server is patient.</li>
+<li><strong>REVEAL DISCIPLINE:</strong> nothing is witnessed mutating. The server lines are text the Watcher <em>says</em>, in
+  register — it does not appear, does not threaten, counts and stops.</li>
+</ul>
+<h2 id="i4-gate-m0-remote-m1">I.4 — GATE M0-remote → M1</h2>
+<p>The group gathers and posts in <code>#the-record</code> (the BUILT detector), arriving pre-ignited. <strong>Gate 1→2</strong> (felt
+later): first report found + group-playtime threshold.</p>
+<hr>
+<h1 id="segment-ii-movement-i-establishment">SEGMENT II — MOVEMENT I (ESTABLISHMENT)</h1>
+<blockquote>
+<p>Source: <code>playthrough/2-movement-1.md</code>. Drama budget LOW. The single calibrated-loud beat is the Cold-Start
+Prologue frame-break (§I.3). It rises once, then drops to baseline and never rises again in M1. Everything
+else is inert plants, computed-but-mute engines, and the literacy on-ramp.</p>
+</blockquote>
+<h2 id="ii1-day-1-the-notice-opens">II.1 — DAY 1: THE NOTICE OPENS</h2>
+<h3 id="ii11-the-base-lectern-fills-the-hold-book-appears">II.1.1 — The base lectern fills: the Hold-Book appears</h3>
+<ul>
+<li><code>LecternFillBeat</code> writes the Hold-Book onto <code>stone_of_reckoning</code>'s companion lectern (one book, two faces).
+  The M1 face = the Archivist's flat living-habit rows AND, on its last page, Brann's down-count docket
+  <code>lamps kept: [N]</code>. Opening corpus = <code>the-record-opens.md</code> (verbatim core, FACT 1 + FACT 2):<blockquote>
+<p>so the count begins. the living are written here, each by the name they answer to, and against each name
+a column is left open. nothing is owed yet. but the column is open, and an open column is a thing that
+fills. … the record only knows what was done, and writes it true.
+  Buried last lines (FACT 14 + the seventh):
+the record does not close at the rite. when the keeping is done, it does not let the writing go. … six
+are named in full, and there is a seventh mark the record will not [...]</p>
+</blockquote>
+</li>
+<li>Plants <strong>{#plant-05}</strong> (the blank give-back column → §II.2.5 Vaun's stone; pays at §V) + <strong>{#plant-06}</strong>
+  (the down-count muster — the <strong>bait</strong> for Iss's M4 lie; payoff → §III.C.7 / §IV.3.5 {#payoff-06}).</li>
+<li><strong>DIRECTOR ACTION:</strong> ship as a <strong>static book</strong> until the count is bound to real muster state
+  (<code>INTEGRATION-V2 §A3</code>). The <code>keeper_record.ts</code> producer + live count are <strong><mark class="gap">[GAP — TO BUILD]</mark>.</strong></li>
+<li>SEED ROW <code>m1-record-opens</code> (<code>outcome_type: lore</code>, voice <code>oracleLore</code>): accepted answers include
+  <code>the record counts the living by name</code>; gates nothing.</li>
+</ul>
+<h3 id="ii12-ignition-detected-signal-ack">II.1.2 — Ignition (detected signal) → ack</h3>
+<p><code>IgnitionListener</code> detects EITHER the base lectern read OR a <code>#the-record</code> post → flips <code>prologue_ignited</code> →
+fires <code>voice.recordOpened()</code> (BUILT): <em>▒  the record is open. it was open before you.</em> The curatorial drip is
+suppressed until ignition. <strong>DIRECTOR ACTION:</strong> none (the <code>acked</code> one-shot guard prevents re-fire).</p>
+<h3 id="ii13-the-first-report-the-cold-start-prologue-anomaly">II.1.3 — The first report (the Cold-Start Prologue anomaly)</h3>
+<ul>
+<li>The first report is retargeted to the base hot-cell (<code>first_report_lectern_01</code>, <code>sites.yml:61</code>, <code>type:
+  report_lectern</code>, coords null — <strong><mark class="gap">[GAP — UNPLACED]</mark></strong>), paired with one lit marker that was not there before
+  (<code>first_marker_01</code>, carved with one rune-glyph, illegible until the Rosetta).</li>
+<li><strong>The report body — two precision-gated forms (BUILT, <code>voice.ts</code>):</strong></li>
+<li>un-named FACT-1 fallback (default, <code>prologueUnnamed()</code>):
+    &gt; ▒  a thing was set out in your place that was not there before. it carries a mark you cannot yet read.
+    &gt; it has been keeping a count of you. the count began before you found the mark.</li>
+<li>named form — ONLY on a single OVERWHELMING measured signal (<code>prologueNamed(name, custom)</code>):
+    &gt; ▒  a thing was set out in your place that was not there before. it carries a mark you cannot yet read.
+    &gt; it knows the one called {name} has not {custom}. it was noted before you knew there was a record to
+    &gt; note it.</li>
+<li><strong>PRECISION LAW:</strong> named iff <code>overwhelmingSignal &amp;&amp; signalName</code>. <strong>Currently <code>autonomy.run.ts:128</code>
+    hardcodes <code>overwhelmingSignal: false</code></strong> → the named form never fires until a real measurement sets it.</li>
+<li><strong>{#plant-04}</strong> the lit marker's glyph re-reads in M2 via a1z26/atbash → <code>KEPT</code>/<code>BEGUN</code> (→ §II.2.2 /
+  §II.2.5 {#payoff-04}). <strong><mark class="gap">[GAP — GO-LIVE:</strong> <code>first_marker_01</code> build/glyph.]</mark></li>
+<li><strong><mark class="gap">[GAP / SEAM — voice-key name mismatch]</mark>:</strong> <code>prologue.ts</code> + <code>autonomy.selftest.ts</code> name the report keys
+  <code>recordOpenedNamed</code> / <code>recordOpened</code>, but <code>voice.ts</code> exposes <code>prologueNamed</code> / <code>prologueUnnamed</code> (and
+  <code>recordOpened</code> is the ACK line, not the report). The resolver that maps the decision's <code>reportVoiceKey</code> to a
+  <code>voice.*</code> call is the seam to verify/build. <strong><mark class="gap">[GAP — TO BUILD.]</mark></strong></li>
+</ul>
+<h3 id="ii14-the-frame-break-the-central-scare">II.1.4 — The frame-break (the central scare)</h3>
+<p>The count-callback line fires (default-safe; CUT map-conduct overload) — full content is §I.3 FB-2. <strong><mark class="gap">[GAP —
+TO BUILD]</mark> <code>voice.recordFrameBreak()</code></strong> is not yet in <code>voice.ts</code>.</p>
+<h3 id="ii15-the-knob-drops-fb-3-loudness-returns-to-baseline-for-the-rest-of-m1">II.1.5 — The knob drops (FB-3). Loudness returns to baseline for the rest of M1.</h3>
+<h2 id="ii2-days-15-the-field-standing-open-non-linear-doors-inert-plants">II.2 — DAYS 1–5: THE FIELD STANDING OPEN (non-linear doors + inert plants)</h2>
+<h3 id="ii21-the-server-icon-rune-ring-the-master-rabbit-hole">II.2.1 — The server-icon rune ring (the master rabbit hole)</h3>
+<p>The server icon is a ring of six runes, <strong>unremarked</strong> (no post, no callout). In-road <strong>(a)</strong> to literacy.
+<strong><mark class="gap">[GAP — GO-LIVE asset:</strong> the rune-ring icon must be authored.]</mark></p>
+<h3 id="ii22-the-literacy-gate-rosetta_known-two-genuinely-different-in-roads">II.2.2 — The literacy gate (<code>rosetta_known</code>) — TWO genuinely-different in-roads</h3>
+<p>The one true M1→M2 gate (the fairness fix — two doors that are <em>not one door</em>).
+- <strong>In-road A — <code>a1z26-tick-stave</code></strong> (number puzzle, no runes). SEED: accepted <code>learn them as we learned
+  them</code> / <code>count the staves then read</code> / <code>read them as we read them</code>; <code>main_beat</code> → <code>set_flags
+  {rosetta_known:true}</code> + advancement <code>observance:the_ring_is_whole</code> at <code>first_marker_01</code>.
+- <strong>In-road B — <code>rosetta-ring</code></strong> (icon-ring metadata leap). Accepted: <code>bow offering kept light deep line
+  unspoken sacred beast</code>; same flag + toast.
+- <strong>In-road C (optional) — the founder margin</strong> <code>learn-them-as-we-learned-them.md</code> (BUILT):</p>
+<blockquote>
+<p>read the ring sunwise from the topmost mark. six marks, and they hold the six in order: first, the Bow —
+then the Offering — then the Kept Light — then the Deep Line — then the Ward — and last, the Covering.
+  and the later-hand margin (FACT 3/4): <em>they are not ours. we did not raise them. we were taught, and the
+  teaching is older than the first of us. … read sunwise. begin at the top.</em>
+- <strong>[SEAM — flagged]:</strong> the BUILT doc names <strong>Bow / Offering / Kept-Light / Deep-Line / Ward / Covering</strong>,
+  but the seeded <code>rosetta-ring</code> accepted answer replaced <code>ward</code>/<code>covering</code> with <strong><code>unspoken sacred beast</code></strong>
+  (a documented audit fix — <code>ward</code>/<code>covering</code> were orphans). The rune-ring carving + in-world doc are a
+  <strong>lagging surface</strong> to reconcile to the seed at go-live. <strong><mark class="gap">[GAP — reconciliation owed.]</mark></strong></p>
+</blockquote>
+<h3 id="ii23-the-digit-literacy-gate-reckoning_known">II.2.3 — The digit-literacy gate (<code>reckoning_known</code>)</h3>
+<p>SEED <code>reckoning-rosetta</code>: the Stone of Reckoning teaches digit-glyphs + sign-marks (<code>-</code>/<code>,</code>). <code>main_beat</code> →
+<code>set_flags {reckoning_known:true}</code>; advancement <code>observance:the_count_is_yours</code>. Makes coordinates into
+<em>places</em> (INV-14). Coord-bearing rows stay inactive until <code>stone_of_reckoning</code> is placed. <strong><mark class="gap">[GAP — GO-LIVE
+build;</strong> non-cipher row TS-FORGE must add to <code>NON_CIPHER_KEYS</code>.]</mark></p>
+<h3 id="ii24-m1-named-habit-the-terminal-dread-dead-end">II.2.4 — <code>m1-named-habit</code> (the terminal-dread dead-end)</h3>
+<p>A <code>dead_end</code>: a TRUE reading that opens nothing. Accepted: <code>it named my habit before i knew it was a custom</code>
+/ <code>i was measured before i was told</code>. Voice <code>oracleDeadEnd('name')</code> (BUILT): <em>a true name. it keeps no door.
+some things are only true.</em> Carries no <code>next_puzzle_key</code>. The teeth belong to the liar, never the Watcher.</p>
+<h3 id="ii25-the-inert-plants-seeded-across-m1-all-dormant-in-causal-discovery-order">II.2.5 — The inert plants seeded across M1 (all dormant), in causal discovery order</h3>
+<ul>
+<li><strong>{#plant-09}</strong> <code>kept here before you</code> rune line at <code>first_marker_01</code> (<code>name-where-never-been</code>, FACT 16) —
+  also an accepted answer on the M4 <code>true-walk-arrive</code> row, so the M1 carving + M4 walk-endpoint rhyme. Inert:
+  a dead keeper's epitaph. Payoff → §IV.3.4 / §V.4.4 {#payoff-09}.</li>
+<li><strong>{#plant-08}</strong> the six <code>UNKEPT</code> maker's-mark glyphs (one per eventual stone, previewed at the M1 teaching
+  stone). Inert: each keeper's grief-mark. Read in <strong>fall-order</strong> = <code>UNKEPT</code>; legible M4 via <code>meta-unkept</code>.
+  Payoff → §III.3 / §IV.3.6 {#payoff-08}. <strong><mark class="gap">[GAP — GO-LIVE glyph carvings.]</mark></strong></li>
+<li><strong>{#plant-10}</strong> <code>we-cut-the-names-before-the-keeping.md</code> (BUILT, FACT 13b): <em>do not read the date as the
+  day they die. read it as the day they are kept. the founders did not cut a death into the stone. they cut
+  an appointment.</em> Plus the later hand naming the threshold "death-clock." Inert: eerie ritual order. Payoff →
+  §V.4.1 {#payoff-10} (the grave opens from the inside).</li>
+<li><strong>{#plant-11}</strong> <code>kept-in-more-than-one-place.md</code> (BUILT): <em>the record is kept in more than one place,
+  against the loss of the first.</em> + the keyed line <code>[ decodes to: the-record-keeps ]</code>. Inert: careful
+  archivists. Payoff → §II.7 (<code>record-url</code>) / §V.4.3 {#payoff-11}.</li>
+<li><strong>{#plant-13}</strong> Vaun's <code>you do not keep the first thing</code> (BUILT, <code>journals-vaun-mara-sella.md</code>): <em>Whatever
+  the deep gives up first … you carry back to the cairn and give it to the deep again. You do not keep the
+  first thing.</em> Inert: one custom among many. Payoff → §VII (Sacred Beast fork) {#payoff-13}. Read alongside
+  the child's-hand line: <em>iss says you cannot keep the first thing but vaun keeps everything. i counted
+  vaun's lamps.</em></li>
+<li><strong>{#plant-14}</strong> the single Sacred Beast established + the prior-keeper count fragment
+  <code>nine-grey-one-white.md</code>: <em>first winter: nine grey, one white. all accounted. … third winter: eight grey,
+  two white. … i did not see it turn.</em> Inert: a farmer's note. Payoff → §VII / FACT-15 visual §V.4.4
+  {#payoff-14}. INV-13: only the one glowing Beast is tracked; the cosmetic Pale never glow.</li>
+<li><strong>{#plant-15}</strong> Mara's <code>the-cold-square.md</code> (BUILT, book-cipher): <em>foot to the square, hand to the cut,
+  word to the dark, the three at once.</em> + <em>i typed the word into the dark, alone, and nothing opened, because
+  a thing done alone is one thing and the threshold counts three.</em> Inert: a sad memory. Payoff → §IV.3.2
+  (three-hands coop gate) {#payoff-15}.</li>
+<li><strong>{#plant-16}</strong> <code>brann-not-here-to-see-it-noted.md</code> (BUILT, FACT 9), surfaced via
+  <code>voice.offlineReportPlant(name)</code> (BUILT): <em>the one called {name} is not here to see it noted. the record
+  notes the not-here as plainly as the here. it keeps the empty place at the table.</em> Inert: "the record
+  watches you logged off." Payoff → §IV.2.3 (the offline haunt named) {#payoff-16}.</li>
+<li><strong>{#plant-12}</strong> Mara's <code>a-closer-count-of-the-quick.md</code> + SEED <code>difficulty-mara</code> (voice <code>oracleLore</code>): <em>i
+  read that the record keeps a closer count of the quick. i called that a cruelty for a winter. i do not call
+  it that now, and i will not say what i call it.</em> Inert: a muttering. Payoff → §II.5 (the difficulty engine
+  goes live in M2) {#payoff-12} (de-slopped — does NOT name "mercy").</li>
+<li><strong>{#plant-07}</strong> the coordinate number-pair near <code>stone_of_reckoning</code> (<code>coords-to-real-place</code>). Inert: a
+  tally. Payoff → coordinate readings once <code>reckoning_known</code> {#payoff-07}. <strong><mark class="gap">[GAP — GO-LIVE carving.]</mark></strong></li>
+</ul>
+<h3 id="ii26-the-engines-that-compute-but-stay-mute-in-m1">II.2.6 — The engines that compute-but-stay-mute in M1</h3>
+<ul>
+<li>The dynamic-difficulty engine (<code>reckoning.ts</code>) computes group cadence but is <strong>mute</strong> in M1 (goes live M2).
+  Its only M1 trace is <code>difficulty-mara</code>. <strong><mark class="gap">[GAP — TO BUILD.]</mark></strong></li>
+<li>The herd single-Beast is established (one glowing Sacred Beast tagged; cosmetic Pale not yet spreading; the
+  <code>SacredAnimalBeat</code> spread mode is M2+). <strong><mark class="gap">[GAP — TO BUILD:</strong> spread + <code>pale_cosmetic</code> PDC.]</mark></li>
+<li>The showrunner authors the daily drip via <code>voice.drip(tone)</code> (BUILT default <em>▒  something is set out where
+  the marks are kept. read it, if you can.</em>) + conduct reports via <code>voice.reportObserved(...)</code> (BUILT). Each
+  personalized call has a deterministic fallback (SPOF mitigation). <strong><mark class="gap">[GAP — TO BUILD:</strong> the showrunner
+  <code>run.ts</code> loop.]</mark></li>
+</ul>
+<h3 id="ii27-the-set-a-surface-npcs-the-human-counterweight-from-day-1">II.2.7 — The Set-A surface NPCs (the human counterweight, from Day 1)</h3>
+<blockquote>
+<p><code>npc-dialogue.md</code>. Contractions/capitals/named feelings are LEGAL here. In M1 they sit warm/neutral and
+plant future contradictions. BUILT as a dialogue spec; the in-game NPC bodies are <strong><mark class="gap">[GAP — GO-LIVE]</mark>.</strong>
+- <strong>Aro — the rumor-broker who lies</strong> (<code>aro</code>). M1 greet: <em>Ah — fresh boots. Sit, sit, you're letting the
+  cold in. You want the way down, you want the right person, and lucky you, here I am.</em> His <code>lie.cross</code> is the
+  same lie Iss carved (planting the M4 catch); Iss-adjacent (flips cold sticky on <code>iss_caught</code>). In M1 he
+  parrots the forged eighth law + the Unlit Deep falsehood.
+- <strong>Wenna — half-remembers the ways as folk-superstition</strong> (<code>wenna</code>). M1 rumor: <em>Gran used to say there were
+  seven somethings you had to mind down there. Seven. I only ever remember six and I always forget a
+  different one…</em> + the unspoken-name folk-charm.</p>
+</blockquote>
+<h3 id="ii28-the-first-apparition-of-m1">II.2.8 — The first apparition of M1</h3>
+<p>The apparition web is essentially silent (the loud beat was the frame-break). The only M1
+"apparition-adjacent" event is the <strong>lit marker that was not there before</strong> (§II.1.3) — a discovered,
+never-witnessed object, no figure. The generic "Watcher at the Edge" (Vaun-shape) <em>may</em> fire late-M1 on a
+measured <code>hoardedScore</code>/<code>soloMiningRatio</code> signal but defers to <code>apparitionClaim</code> (<strong><mark class="gap">[GAP — TO BUILD]</mark></strong>); in a
+clean M1 it stays unfired (precision over recall).</p>
+<h3 id="ii29-gate-m1-m2">II.2.9 — Gate M1 → M2</h3>
+<p>First report found + group-playtime threshold. No countable step-ladder; the literacy gate (<code>rosetta_known</code>)
+opening the six-stone field is the felt transition into Movement II.</p>
+<hr>
+<h1 id="segment-iii-movement-ii-the-ways-the-nether-lane">SEGMENT III — MOVEMENT II (THE WAYS) + THE NETHER LANE</h1>
+<blockquote>
+<p>Source: <code>playthrough/3-movement-2-nether.md</code>. The six-stone field, the two Rosettas, the meta-acrostic
+plant, the Whisper economy going live, the cross-surface handoffs — then the optional Nether lane.</p>
+</blockquote>
+<h2 id="iii0-entry-state">III.0 — ENTRY STATE</h2>
+<p>Carried from M1: <code>rosetta_known</code> (via <code>rosetta-ring</code> OR <code>a1z26-tick-stave</code>), <code>reckoning_known</code> (via
+<code>reckoning-rosetta</code> — coord-bearing rows inactive until <code>stone_of_reckoning</code> is placed), <code>prologue_ignited</code>.
+Whole active group; no per-player gate except Brann's night-gate + <code>reckoning_known</code> on coordinates.
+<strong><mark class="gap">[GAP — TO BUILD]</mark></strong> the dashboard health-panel surfacing <code>rosetta_known</code>/<code>reckoning_known</code>.</p>
+<h2 id="iii1-the-six-stone-field-a-field-not-a-row-any-order-resolver-ignores-movement">III.1 — THE SIX-STONE FIELD (a field, not a row; any order; resolver ignores movement)</h2>
+<p>Six <code>keeper_stone</code> answer-sites. Omitting <code>puzzle-key:</code> on a stone means the sign resolves against ALL open
+puzzles (any solved clue answerable at any stone). Answer-verb is the same on every stone — <strong>edit a sign
+within the stone's radius</strong>; on a miss the sign blanks (no error, no hint). All coords <code>null</code> <strong><mark class="gap">[GAP —
+GO-LIVE]</mark>.</strong> Build palette: a single floor-set/low-canted deepslate/blackstone slab ~3×4, angled so the camera
+must tilt down (the bow), one soul-lantern at a fixed offset. Carving = a sign/text-display in
+<code>observance:runes</code> carrying the keeper's bound plaintext from <code>clue-specs.ts</code> — <strong>NEVER edit the plaintext
+(the X1 guard round-trips it).</strong> Given here in <strong>fall-order</strong> (the meta-acrostic key order); in MII the
+player may hit them in ANY order.</p>
+<h3 id="iii11-stone-vaun-caesar-shift-3-give-the-first-of-the-deep-back-to-the-deep">III.1.1 — STONE-VAUN — caesar (shift 3) — <code>GIVE THE FIRST OF THE DEEP BACK TO THE DEEP</code></h3>
+<p>The shift IS his hoarding ("i had three of each"). Framing (verbatim): header <code>IRON THREE · SALT THREE ·
+GRAIN THREE · OF THE DEEP THREE · I HELD THREE OF EACH AND THE COUNTING WAS WARM</code>; below <code>I LEARNED THE COUNT
+I DID NOT MAKE IT · THE LAND COUNTS FIRST · I KEEP THE TALLY AFTER</code>; maker's mark = <em>a vertical rule cut deep
+with nothing carved beside it</em> — the blank "given-back" column = Vaun's <strong>UNKEPT</strong> mark {#plant-08} and the
+physical plant of <strong>{#plant-05}</strong> (→ §V). Accepted: <code>give the first of the deep back to the deep</code> / <code>the land
+counts first</code> / <code>i counted them in the dark and gave none back</code>. <code>outcome_type: lore</code>; <code>oracleLore</code>: <em>vaun
+counted everything and gave nothing back. the given-back column of his ledger is blank. the land counts
+first, and it had already counted him.</em> (FACT 5 + 4). Source <code>counted-them-in-the-dark.md</code>.</p>
+<h3 id="iii12-stone-mara-book-cipher-the-six-book-shelf-spine-key-the-descent">III.1.2 — STONE-MARA — book cipher (the six-book shelf) — SPINE KEY → the descent</h3>
+<p>Bound plaintext: <code>DESCEND AND BOW AT THE UNBROKEN LIGHT</code>. Carved ref-string (digit glyphs): <code>1-1-1 2-1-1
+2-1-2 2-1-5 1-1-2 3-1-2 3-1-3</code> (reads as a finding-list). Codebook = the six-book lectern shelf at
+<code>kept_light_home_01</code>. Framing footer (the teeth): <code>…DO THE THING IT TELLS YOU · GO WHERE IT SENDS AND THERE
+DO AS IT SAYS · NONE LEFT AT THE DOOR</code>; maker's mark: <code>I NEVER WENT DOWN · I ONLY EVER READ THE WAY DOWN</code>.
+Accepted: the ASSEMBLED SENTENCE (not triples). <code>outcome_type: next_clue</code> → <code>oracleNextClue()</code>: <em>kept. the
+way goes on — look where the marks were not, before.</em> Sets <code>mara_read:true</code>; <code>next_puzzle_key:
+undercroft-descent</code> — <strong>the spine in-road to Movement III</strong> (→ §IV.A).</p>
+<h3 id="iii13-stone-sella-atbashmirror-bearing-the-seventh-side-quest">III.1.3 — STONE-SELLA — atbash/mirror + bearing → the Seventh side-quest</h3>
+<p>Bound plaintext: <code>SOUTH BY THE FAR WATER WHERE SHE DID NOT COME BACK</code>. Read in the lake's reflection at
+<code>the_far_water</code> (the reflection is the only place it resolves). The seventh-thread seed (smallest framing):
+<code>DO NOT LET THE COUNT BE SIX ONLY · COUNT AGAIN AT THE SHORE · THE LAST MARKER IS NOT THE LAST</code>. Accepted:
+<code>south by the far water where she did not come back</code> / <code>the last marker is not the last</code> (+ the unsigned
+far-water coordinate). <code>outcome_type: side_quest</code> → <code>oracleSideQuest()</code>: <em>this is not the way. but it is a
+way. follow it, if you would.</em> Sets <code>seventh_suspected:true</code>; <code>next_puzzle_key: seventh-shrine</code> — <strong>in-road A
+to the Seventh thread</strong> (→ §IV.4).</p>
+<h3 id="iii14-stone-orin-substitution-crouch-only-reveal-the-threshold-m4">III.1.4 — STONE-ORIN — substitution + crouch-only reveal → the Threshold (M4)</h3>
+<p>Bound plaintext: <code>I THOUGHT IT SMALL IT WAS NOT SMALL</code>. Carving faces the floor, legible only from a crouch
+under the lintel (the crouch IS the Bow). The run ends mid-thought: <code>…I THOUGHT IT SMALL IT WAS NOT SMALL I —</code>
+(the stone broken away) — the broken <code>i —</code> is <strong>{#plant-03}</strong> (FACT 6 + the <code>E</code> glyph of UNKEPT; → §IV.3.6
+{#payoff-03}). Lowest margin: <code>THRESHOLD</code> (and: FOR THE REST OF THE SENTENCE GO TO WHERE I WAS LEFT.).
+Accepted: <code>i thought it small it was not small</code> / <code>threshold</code> / <code>the bow is the smallest of the ways</code>.
+<code>outcome_type: next_clue</code>; <code>next_puzzle_key: orin-threshold</code> (the M4 completion node).</p>
+<h3 id="iii15-stone-brann-flat-lore-today-the-railfence-night-stone-is-staged">III.1.5 — STONE-BRANN — flat lore today; the railFence night-stone is STAGED</h3>
+<p>Two rows, one live:
+- <strong>LIVE <code>stone-brann</code> (<code>lore</code>).</strong> No cipher, night/black-moon framing. Accepted: <code>one fire was never doused</code>
+  / <code>do not close your eyes here</code> / <code>the one fire that will not be doused</code>. <code>oracleLore</code>: <em>count the fires at
+  night. one of them never went out, and no hand tends it. they had one word for the people and the flame and
+  the cold stone. do not close your eyes here.</em> (FACT 11 + 12). Source <code>do-not-close-your-eyes-here.md</code> (read
+  only at night).
+- <strong>THE NETHER INERT SEED rides this stone's framing — {#plant-28}:</strong> <em>the fire we keep is not ours. it is
+  lent… below the below.</em> Inert texture; pays off in the Nether lane (→ §III-Nether / §IV.E). <strong><mark class="gap">[GAP — TO
+  BUILD]</mark>:</strong> this framing line is specified in WEB-MASTER but <strong>not yet carved into a seed row or
+  <code>cipher-plaintexts.md</code></strong> — framing-only, carried at world-build; must NOT become a bound plaintext.
+- <strong>STAGED <code>stone-brann-cipher</code> (active=FALSE).</strong> The real railFence node (rails = the fire-count;
+  read-by-time, rakes visible only by lit beacon-glow after dark). Bound plaintext (when built): <code>count the
+  fires before you sleep</code>. Ships staged until <strong>TS-FORGE adds the railFence <code>CLUE_SPECS</code> entry + removes
+  <code>stone-brann</code> from <code>NON_CIPHER_KEYS</code>.</strong> <code>next_puzzle_key: undercroft-descent</code> (the second in-road to the
+  descent). <strong><mark class="gap">[GAP — activation.]</mark></strong></p>
+<h3 id="iii16-stone-iss-vigenere-key-iss-the-warmest-stone-the-trap">III.1.6 — STONE-ISS — vigenère (key = ISS) — the warmest stone (the trap)</h3>
+<p>Bound plaintext: <code>THE ONE WHO TURNED AWAY</code>. Applied warmly to his own letter the doctrine reads comforting;
+his key turned on the OTHER stones reads the word the corpus keeps for him. Framing: opening (warmest carving)
+<code>BE EASY · …GRIEF CARVES CROOKED · LET ME SET IT STRAIGHT THE WAY A FRIEND WOULD</code>; the planted lie (FACT 7)
+<code>THE WAYS ARE A WALL · KEEP THE TEN AND YOU ARE INSIDE IT · THE WATCHING STAYS OUT IN THE COLD…</code>; the key
+handed over <code>THE KEY IS MY OWN NAME AS IS RIGHT AND CUSTOMARY…</code>; the later margin (the catch begins) <code>WE
+CHECKED THE LOCK · TURN HIS KEY ON THE OTHER STONES AND IT DOES NOT SAY WHAT HE SAID · IT GIVES THE WORD WE
+KEEP FOR THE ONE WHO TURNED AWAY · ASK FIRST WHAT A WALL IS FOR</code>. <strong>Two rows:</strong>
+- <strong><code>stone-iss-wall</code></strong> (<code>next_clue</code>, <code>max_attempts:6</code>) — the skeptical name-as-key reading. Accepted: <code>the
+  one who turned away</code> / <code>iss</code>. Sets <code>iss_key_turned:true</code>; <code>next_puzzle_key: iss-doubt</code> → the catch.
+- <strong><code>iss-warm</code></strong> (<code>next_clue</code>) — the WARM MISREADING. Accepted: <code>the ways are a wall against the watching</code>.
+  Sets <code>iss_trusted:true</code>; <code>next_puzzle_key: iss-dead-shrine</code> (routes you to HIS coordinate — a grave). <strong>The
+  false walk in-road.</strong> Source <code>the-ways-are-a-wall.md</code>.</p>
+<h2 id="iii2-the-two-rosettas-literacy-already-live-re-touched-here">III.2 — THE TWO ROSETTAS (literacy already live; re-touched here)</h2>
+<ul>
+<li><code>rune_rosetta</code> (founding ring, sunwise Bow-first; ring carves <code>bow offering kept light deep line unspoken
+  sacred beast</code>; <code>rosetta-ring</code> <code>main_beat</code> sets <code>rosetta_known</code>, fires <code>observance:the_ring_is_whole</code>).
+  <strong><mark class="gap">[GAP — coherence]</mark>:</strong> <code>cipher-plaintexts.md</code> L364 still lists <code>Ward · Covering</code> (the old orphans); the
+  seed is authoritative; the carving must follow the seed (the §II.2.2 lagging-surface drift).</li>
+<li><code>stone_of_reckoning</code> (digit Rosetta; <code>reckoning-rosetta</code> <code>main_beat</code> sets <code>reckoning_known</code>; fires
+  <code>observance:the_count_is_yours</code>).</li>
+<li><code>a1z26-tick-stave</code> (the runes-free second literacy door at <code>first_marker_01</code> — kills the "two doors that are
+  one door" lie).</li>
+</ul>
+<h2 detail id="plant-08">III.3 — THE META-ACROSTIC PLANT (UNKEPT) — planted MII, assembled M4</h2>
+<p>Six maker's-mark glyphs (Vaun's is the empty given-back column). Read in <strong>fall-order</strong> they spell <code>UNKEPT</code>.
+The row <code>meta-unkept</code> is <strong>STAGED active=false</strong>; the cold Iss/Keeper states the fall-order key at the catch
+(M4) before assembly. The order-key (<code>the-order-the-stones-fell.md</code>): <em>vaun first, who hoarded the light and
+starved in it. / then mara, who read and never did. / then sella, who walked to the far water. / then orin,
+who would not bow until there was no one to bow to. / then brann, who slept on the black moon. / then iss,
+who spoke the thing and lied about the wall.</em> The self-correcting lock: ring-order yields non-words ("the
+lock telling you your key is turned the wrong way"). A practice-run rhymes with the prologue marker glyph
+(KEPT/BEGUN, #04). When staged active at M4 (<code>oracleMetaUnkept</code>): <em>six marks, one to a stone. read them in
+the order they fell. the word is the one each did not keep.</em> The naive "first letter of each plaintext" form
+is <strong>CUT</strong> (X1 guard — the acrostic lives in carved FRAMING, never the bound run). <strong><mark class="gap">[GAP — GO-LIVE]</mark>:</strong> the
+six glyph forms (only Vaun's empty column is specified verbatim); the other five must be authored so
+fall-order = UNKEPT and ring-order = nonsense. Payoff → §IV.3.6 {#payoff-08}.</p>
+<h2 id="iii4-the-liar-thread-the-false-walk-earnable-in-mii-catch-deferred-to-m4">III.4 — THE LIAR THREAD (the false walk earnable in MII; catch deferred to M4)</h2>
+<ul>
+<li><strong><code>iss-dead-shrine</code></strong> (<code>dead_end</code>, active=true) — THE LOAD-BEARING RED HERRING; Iss's coordinate genuinely
+  works and leads to a <strong>grave</strong>. Accepted: <code>the dead shrine</code> / <code>the cold hearth</code> / <code>nothing is kept here</code> /
+  <code>west and down</code> / <code>west and down to the cold hearth</code>. <code>oracleDeadEnd('place')</code>: <em>that is the place. it was
+  read true. it leads nowhere it has not already led you.</em> WHERE: <code>the_cold_hearth</code> (doused hearth + grave
+  slab (Iss) + a second effaced marker (the seventh); cold palette, no light). <strong>This same anchor is
+  temporally layered</strong> — the seventh-deep (<code>the_unwriting</code>) opens beneath it only post <code>iss_caught</code> +
+  <code>seventh_named</code> (→ §IV.4).</li>
+<li><strong>THE PROPHET'S WALL</strong> (placed in Iss's field in MII):</li>
+<li><code>prophet-wall-comfort</code> (<code>dead_end</code>, kind <code>prophet</code>) — wide warm promises, each a true-but-empty solve
+    that opens nothing. Accepted: <code>keep the ten and you are inside it</code> / <code>the watching stays out in the cold
+    and counts and cannot touch you</code> / <code>be easy the wall keeps the watching out</code>. <code>oracleDeadEnd('prophet')</code>:
+    <em>every word of it decodes. each is true, and each opens nothing. read who carved it, after.</em></li>
+<li><code>prophet-wall-name</code> (<code>dead_end</code>, kind <code>prophet</code>, <code>max_attempts:6</code>) — the hidden columnar acrostic spells
+    Iss; <em>the wall was his.</em> Accepted: <code>the one who turned away</code> / <code>iss carved the wall</code> / <code>read the first
+    marks down the one who turned away</code>. Re-reads at the catch as <strong>{#plant-19}</strong> (→ §IV.3.8 {#payoff-19}).</li>
+<li><strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the prophet's wall has <strong>no <code>sites.yml</code> entry of its own</strong> (lives in Iss's field
+    near <code>stone_iss</code>); a site placeholder owed at GO-LIVE.</li>
+<li><strong>THE FORGED EIGHTH LAW</strong> <code>forged-eighth</code> (<code>dead_end</code>, kind <code>known</code>, active=true; FACT 7b) — <em>a diligent
+  group obeys it; nothing pays.</em> Accepted: <code>the eighth is the covering of the hands</code> / <code>cover and be counted
+  clean</code> / <code>to cover ones own</code> / <code>the founders set the ways and did not finish the count</code>.
+  <code>oracleDeadEnd('known')</code>: <em>this is carved, and you have read it true. it is not kept. a thing can be set
+  down and never be a way.</em> Source <code>the-eighth-way.md</code> (the lie's proof: <em>there is no toll for not doing
+  this. i kept the seven a winter and skipped the covering on purpose, every dusk, to see. nothing came.</em>).
+  Aro parrots it as real (→ §III.7). Payoff → §IV.3.7 {#payoff-07b} (the M4 correction).</li>
+<li><strong><code>iss-doubt</code></strong> (<code>next_clue</code>, active=true) — earnable the moment a group turns Iss's key on the other
+  stones. Accepted: <code>we checked the lock</code> / <code>his key is his own name and his name is the one who turned away</code>
+  / <code>ask first what a wall is for</code>. Sets <code>iss_doubted:true</code>; <code>next_puzzle_key: no-wall-catch</code>. <strong>The catch
+  itself (<code>no-wall-catch</code>) is M4</strong> (→ §IV.0 / §III.C in segment IV).</li>
+</ul>
+<h2 id="iii5-the-non-iss-mii-plants-placed-inert-pay-off-later">III.5 — THE NON-Iss MII PLANTS (placed inert; pay off later)</h2>
+<ul>
+<li>The Seventh as rumor: <code>stone-sella</code> sets <code>seventh_suspected</code>; <code>seventh-shrine</code> (<code>side_quest</code> →
+  <code>seventh_found, whisper_budget_earned</code>) earns Whisper budget. Deep stays sealed (→ §IV).</li>
+<li><strong>{#plant-21}</strong> the future-dated grave (<code>future-dated-grave</code>, FACT 13b) carved near <code>the_threshold</code>. Reads
+  as a death clock (the misread IS the mechanic). Its date == the single Accepting instant. <strong><mark class="gap">[GAP — TO
+  BUILD]</mark>:</strong> the carved name+date is runtime (<code>grave.ts</code>), not a static seed row. Payoff → §V.4.1 {#payoff-21}.</li>
+<li>First living-name carve <code>name-where</code> (<code>dead_end</code>, kind <code>place</code>, active=true; FACT 16) — Accepted: <code>the
+  record files the living by place not only by name</code> / <code>against each name a ground</code> / <code>before you was never
+  about strangers</code>. Produced by <code>name-where-never-been.ts</code> (real, ACTIVE-only, subjects rotate — a chorus,
+  INV-16). WHERE <code>carve_anchor_01..03</code>. (The #09 plant's mechanism.)</li>
+<li>The herd's second Pale appears (<code>herd-conversion</code>): <em>weren't there one of those?</em> WHERE <code>herd_anchor</code>.
+  Cosmetic, never glowing/tracked. Producer <code>herd.ts</code> (real).</li>
+<li>The coop-gate bound word becomes earnable (Iss's Vigenère resolves to it) but the Threshold stays sealed
+  (<code>bound-word</code> STAGED active=false until <code>iss_caught</code>).</li>
+<li>The dynamic-difficulty plant <code>difficulty-mara</code> (<code>lore</code>, active=true; the engine <code>reckoning.ts</code> goes <strong>live</strong>
+  here — a group crushing the ciphers finds the next drip withheld and the register cooled). The difficulty
+  scalar NEVER touches the Whisper backstop (INV-15). Payoff of {#plant-12}.</li>
+</ul>
+<h2 id="iii6-the-whisper-economy-goes-live-mii">III.6 — THE WHISPER ECONOMY GOES LIVE (MII)</h2>
+<p>The player-controlled safety rail — ask for a hint, pay a reversible toll. Lines (BUILT, <code>voice.ts</code>):
+<code>whisperReply(tier, hintBody)</code> (tier ≤1 → <em>look again at what repeats. it is not stone. it is sound.</em>);
+<code>whisperToll()</code> (<em>i will keep something of yours while you think. your light, for tonight.</em> — reversible);
+<code>noBudget()</code> (<em>there is nothing more i will say of this. not yet.</em>); <code>whisperUnknown()</code> (<em>i have no words for
+that one. not the ones you are owed. not yet.</em>). Budget is EARNED, not free — first earn-points are MII
+side-lanes (<code>seventh-shrine</code> sets <code>whisper_budget_earned</code>; <code>seventh-cause</code>/Nether <code>nether-forge</code> add additive
+bonus). INV-15: the difficulty engine never removes this rail. <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the Whisper <em>mechanism</em>
+(no <code>whisper_budgets</code> table or budget-spending module in this slice) + the per-puzzle <code>hintBody</code> strings.</p>
+<h2 id="iii7-the-cross-surface-handoffs-in-mii">III.7 — THE CROSS-SURFACE HANDOFFS IN MII</h2>
+<ul>
+<li><strong>Minecraft ↔ Discord:</strong> the <code>keeper_stone</code> sign + the Discord oracle resolve against the SAME normalized
+  <code>accepted_answers</code>; a clue solved on either surface records once.</li>
+<li><strong>The Record website</strong> <code>record-url</code> (<code>lore</code>, active=true): the founder line decodes to the off-world path.
+  <code>recordElsewhere(fragment)</code>: <em>the record is kept in more than one place, against the loss of the first. the
+  path is the record keeps.</em> The page un-redacts six entries in lockstep with stones actually read; the Iss
+  card carries the stego rune-layer (a second door to the Vigenère key). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the Iss-card
+  stego payload + the live lockstep-unredaction page (<code>record-projection.ts</code> referenced; the live page owed).</li>
+<li><strong>Discord NPC echo (Aro parrots the forged law):</strong> <code>aro.lie.cross</code>: <em>The painted line? Step right over it,
+  friend… That's where it gets good.</em> Old Pell's anti-rumor <code>truth.watched</code>: <em>It doesn't chase… It waits, and
+  it watches, and it takes what stops being watched. So be watched.</em> (INV-1). These flip warm→cold only at the
+  M4 catch (<code>iss_caught</code>). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the <code>npcVoice.ts</code> registry (proposed, not built).</li>
+<li><strong>GATE 2→3:</strong> ≥4 of 6 fragments assembled + the final-coordinates path opened.</li>
+</ul>
+<h2 id="iii-nether-the-nether-lane-optional-gates-nothing-inv-12inv-19">III-NETHER — THE NETHER LANE (optional; gates nothing; INV-12/INV-19)</h2>
+<blockquote>
+<p>A deepening lane off MII→MIII — the source the Undercroft's one fire was carried up from ("below the
+below"). All seeded rows ship <code>active=false</code> until (a) the dimension world is built AND (b) the upstream
+flag is set. A group that skips the map, the Nether, and the End gets a whole un-shaded Overworld arc.
+- <strong>N.0 — THE HARD BLOCKER:</strong> LORE must seal the FACT-11 source clause into <code>canon-spine</code> BEFORE any Nether
+  build (see Setup B7). Until then the lane is design-only. <strong><mark class="gap">[GAP — TO BUILD / BLOCKER.]</mark></strong>
+- <strong>N.1 — The plant + the bearing.</strong> MII plant = Brann's framing {#plant-28} (§III.1.5). The bearing-page
+  <code>the-fire-is-lent.md</code> (Mara's hand, found on the Undercroft lectern-shelf, <code>requires_flags:
+  [undercroft_open]</code>): <em>the fire is lent. carry the coal through the burned door and walk the short way to
+  where it is kept for everyone.</em> + Mara's margin (<em>…a lent thing is carried, and a carried thing is not
+  owned, and a thing you do not own you do not get to keep — you only get to not let it go out.</em>) =
+  <strong>{#plant-30}</strong>. INV-14: a bearing, not a coordinate.
+- <strong>N.2 — The near pocket (<code>nether_forge</code>, world <code>observance_nether</code>).</strong> A DELVE not a trek (2 ground walks +
+  ≤1 short vertical pocket). A ruined room just past a lit portal: a prior keeper's remains on a deepslate
+  slab (placed at world-build, never pasted toward a player) + a doused soul-lantern + the journal
+  <code>the-fire-kept-me.md</code>. Verbatim load-bearing passages: <em>i came down to keep the fire because up there the
+  lamps were going out … orin had sealed the deep above me. i went under the seal, the last way down, to the
+  source.</em> / <em>the fire is here. it does not need keeping. it never needed me… i lit a lantern off it anyway.
+  habit.</em> / <em>the sand is the others… the deep kept them the wrong way…</em> (soul-sand = deep-time, distinct from
+  the present Pale herd) / <em>the door back up i came through i do not think i would fit through now… i changed
+  shape to get down here and i did not change back.</em> / <em>i am not letting it go out. i am the part of it that
+  does not go out now. that is the keeping… carry it if you must. do not stay.</em> (FACT 15 felt from the
+  keeper's side). Row <code>nether-forge</code> (<code>lore</code>, active=false, <code>requires_flags {undercroft_open}</code>): on-site
+  WORD answers (INV-14) — <code>lent</code> / <code>the fire is lent</code> / <code>you do not own the fire you carry it</code> / <code>the keeping
+  was always a carrying</code>. Reveal: <em>a keeper came down to keep the fire and was kept by it… the kept light
+  upstairs was a coal carried up from here.</em> Sets <code>nether_forge_found</code> (group-scoped colorant — PROPOSED
+  <code>FateInput.netherForgeFound</code>, NOT wired into <code>decideFate</code>; the M5 composer reads it for a tint) +
+  <code>whisper_budget_earned</code> (additive). Voice key <code>nether.forgeArrive</code> <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> (silent-at-runtime;
+  the <code>fragment</code> carries the text).
+- <strong>N.3 — Texture anchors (gate nothing):</strong> <code>soul_gallery</code> (soul sand = not-kept of deep time;
+  <code>nether.soulSand</code> line <strong><mark class="gap">[GAP]</mark></strong>); <code>bastion_remains</code> (the founders' deepest ruined delvings; the P2
+  basalt-corridor keeper-glimpse may fire near here, deferring to <code>apparitionClaim</code>). Breadth row
+  <code>dest-deep-forge</code>; rumor card <code>who-deep-forge</code> (<code>cardNetherForge</code> body <strong><mark class="gap">[GAP — TO BUILD]</mark></strong>).
+- <strong>N.4 — Activation/reachability:</strong> <code>requires_flags {undercroft_open}</code> holds the row closed until
+  <code>undercroft-descent</code> sets it; removing both lane rows entirely still reconstructs the whole Overworld spine
+  (pure deepening, no orphan, no gate).
+- <strong>N.5 — DIRECTOR ACTIONS:</strong> seal FACT-11 (BLOCKER); build <code>observance_nether</code> + the pocket; export <code>.schem</code>;
+  fill coords; flip <code>nether-forge</code> active=true. No per-session console click. Payoff colorant lands in §V.6.3.</p>
+</blockquote>
+<hr>
+<h1 id="segment-iv-movement-iii-the-undercroft-movement-iv-atonement-the-keeper-the-end-lane">SEGMENT IV — MOVEMENT III (THE UNDERCROFT) + MOVEMENT IV (ATONEMENT, THE KEEPER) + THE END LANE</h1>
+<blockquote>
+<p>Sources: <code>playthrough/4-movement-3-undercroft.md</code> (the descent, the A→B swap, the Liar catch, the false
+law, the Seventh, the Unlit Deep) and <code>playthrough/5-movement-4-end.md</code> (the Keeper-NPC tree, the atonement
+gate, the M4 cascade, the Seventh spine choice, becoming the keepers, the End lane). M3 is the expedition
+(decode → walk → descend); M4 is the universal hinge keyed on <code>iss_caught</code>. The Liar's catch is loud but
+COLD — a correction, not a jump-scare.</p>
+</blockquote>
+<h2 id="iva-the-descent-the-lectern-comparator-door-the-fog-dimension">IV.A — THE DESCENT (the lectern-comparator door → the fog dimension)</h2>
+<h3 id="iva1-the-instruction-in-hand-maras-descent-sentence">IV.A.1 — The instruction in hand (Mara's descent sentence)</h3>
+<p>Bound plaintext of <code>stone-mara</code>: <code>DESCEND AND BOW AT THE UNBROKEN LIGHT</code>. The six lectern books read out
+<em>descend the stair when the water is still // and bow your head at the door // the unbroken light waits at the
+foot of it // do not write the way down and think it kept // do the thing the marks tell you.</em> The
+load-bearing line <code>do not write the way down and think it kept</code> rhymes forward to <code>pressure-glyph-walk</code> at M5
+and to her Nether margin. <strong><mark class="gap">[GAP — GO-LIVE:</strong> <code>kept_light_home_01</code> shelf build.]</mark></p>
+<h3 id="iva2-the-descent-undercroft-descent">IV.A.2 — The descent (<code>undercroft-descent</code>)</h3>
+<p>A <strong>performed</strong> <code>main_beat</code> (the cipher was <code>stone-mara</code>; this row is the <em>doing</em>). Accepted: <code>descend at the
+unbroken light</code> / <code>descend through the lectern door</code>. Effect: <code>set_flags {undercroft_open: true}</code>,
+<code>next_puzzle_key: undercroft-fog</code>, embedded <code>unlock</code> → <code>door_open</code> at <code>unbroken_light</code> (radius 3). Watcher
+(<code>oracleMainBeat</code>): <em>what was shut is shut no longer. the record keeps the hand that opened it.</em> <strong>The
+mechanism:</strong> a lectern whose book-page output drives a comparator that holds the descent door — <em>the record
+itself is the lock.</em> The plugin's <code>door_open</code> is the authoritative open (idempotent); the comparator is the
+diegetic skin. <strong><mark class="gap">[GAP — GO-LIVE:</strong> <code>unbroken_light</code> UNPLACED — build the gather-room + comparator door.]</mark></p>
+<h3 id="iva3-the-second-in-road-to-the-descent-arg-craft-f2">IV.A.3 — The SECOND in-road to the descent (arg-craft F2)</h3>
+<p>A group that never cracks Mara reaches <code>undercroft_open</code> via Brann's stone OR the Seventh side-quest's earned
+Whisper budget. <strong>[SEAM]:</strong> <code>stone-brann</code> ships today as flat lore (no cipher, no night-gate); the <em>intended</em>
+night-beacon rail-fence is <strong><mark class="gap">[GAP — TO BUILD: P0-5 re-author]</mark>.</strong> Until then the actual second in-road is the
+Whisper-budget path (<code>seventh-shrine</code> → <code>whisper_budget_earned</code>). The "two genuine in-roads" claim is
+half-built (Mara + Whisper hold it; the night-beacon is owed).</p>
+<h3 id="iva4-the-fog-dimension-what-they-descend-into">IV.A.4 — The fog dimension (what they descend INTO)</h3>
+<p>A separate Multiverse void world with a datapack fog (<code>ambient_light: 0</code>) — no block-light bleed, no sky; the
+ONE kept fire is the only photon source (the literal staging of FACT 11). Entered only via the <code>door_open</code> at
+<code>unbroken_light</code>. <strong><mark class="gap">[GAP — GO-LIVE / TO BUILD:</strong> the Multiverse world + fog datapack.]</mark></p>
+<h2 id="ivb-the-ab-room-rebuild-the-midpoint-gut-punch">IV.B — THE A→B ROOM-REBUILD (the midpoint gut-punch)</h2>
+<h3 id="ivb1-room-a-on-first-descent-ordinary-plant-23">IV.B.1 — Room A on first descent (ordinary) — <strong>{#plant-23}</strong></h3>
+<p>The Undercroft altar room as first seen — plain, reads as <em>the place</em>, not a trap. Payoff → §IV.B.2
+{#payoff-23}.</p>
+<h3 id="payoff-23">IV.B.2 — The room rebuilds WRONG (<code>undercroft-fog</code>)</h3>
+<p><code>outcome_type: lore</code>, a witnessed-state node (the world is the puzzle). Accepted: <code>the room rebuilds wrong</code> /
+<code>one fire and no one to tend it</code> / <code>they did not depart they were kept</code>. <code>oracleLore</code> fragment: <em>the room
+rebuilds itself into something wrong. one fire is kept, eternal, attended by no one. they did not depart. they
+were kept. the rite is not a transaction.</em> The load-bearing reveal <code>they did not depart. they were kept.</code> is
+FACT 14→15's first cold edge. <strong>MECHANISM (<code>RoomSwapBeat</code> — the ONE sanctioned overwrite):</strong> clear-A-then-
+paste-B in one <code>mutateWhenUnwitnessed</code>, idempotent on a durable <code>swapped</code> PDC marker on the region anchor
+(governed by the marker, NOT the ledger). <strong>REVEAL DISCIPLINE:</strong> the swap fires only when no player has the
+altar region in view — they leave an ordinary room and return to a wrong one (the horror is the omission).
+<strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> <code>RoomSwapBeat extends SmallStructureBeat</code>. <strong><mark class="gap">[GAP — GO-LIVE]</mark>:</strong> Room-A/Room-B <code>.schem</code>.
+<strong>[SEAM — resolved/CUT]:</strong> the FAWE "different-schematic-key makes paste-over legal" claim is wrong-and-CUT;
+<code>footprintClear</code> makes plain paste-over impossible, so the swap MUST go through the marker.</p>
+<h3 id="ivb3-the-first-light-fork-fork-light-irreversible">IV.B.3 — The First Light fork (<code>fork-light</code>, irreversible)</h3>
+<p>A M3 <code>side_quest</code> choice at the one fire: draw the M5 token (<code>light_kept</code>) or bank it (<code>light_taken</code> → the
+room stays dark for the arc). Accepted: <code>draw the light up the stair</code> / <code>leave the flame banked and the room
+dark</code> / <code>carry the kept light</code> / <code>bank the flame</code>. Leaves (BUILT): <code>forkLightKept()</code>: <em>the light came up the
+stair on its own. you carried it. that is how it is carried.</em>; <code>forkLightTaken()</code>: <em>the flame is banked, and
+the room it warmed stays dark. the light that was lent is taken, and the deep is colder by it.</em> <strong>GATES
+NOTHING</strong> (colors the M5 close only, INV-12). Pairs with Mara's Nether margin (light is carried, never
+owned). Payoff → §V.7 (Fork B) {#payoff-fork-B}.</p>
+<h2 id="ivc-the-liar-engine-the-one-key-two-doors-catch">IV.C — THE LIAR ENGINE (the one-key-two-doors catch)</h2>
+<h3 id="ivc1-the-one-key-two-doors">IV.C.1 — The one key, two doors</h3>
+<p><code>stone-iss-wall</code> (Vigenère, key = Iss's name) yields <code>THE ONE WHO TURNED AWAY</code> two ways; the reading posture
+forks the route. DOOR 1 (warm misreading) <code>iss-warm</code> → <code>iss-dead-shrine</code>, <code>iss_trusted</code>. DOOR 2 (name-as-key)
+<code>stone-iss-wall</code> → <code>iss-doubt</code>, <code>iss_key_turned</code>. Same stone, same key, opposite destinations.</p>
+<h3 id="ivc2-the-dead-end-taunt-iss-dead-shrine-the-load-bearing-red-herring">IV.C.2 — The dead-end taunt (<code>iss-dead-shrine</code>) — the load-bearing red herring</h3>
+<p>Iss's coordinate genuinely works and leads to a GRAVE. <code>oracleDeadEnd('place')</code>: <em>that is the place. it was
+read true. it leads nowhere it has not already led you.</em> (The Watcher states the category, never gloats — the
+teeth belong to the liar.) The dead-shrine itself (<code>the_cold_hearth</code>) found-marker
+(<code>voice.dest.coldHearth.find</code>): <em>a hearth with no fire and no name, at the end of the false road. someone
+carried a letter here for one a generation drowned. below it the floor is sealed, and the seal is a name, and
+the seal does not open from this side. this was the surface of a deep you cannot yet reach.</em> <strong>TEMPORAL
+LAYERING:</strong> the deep beneath (<code>the_unwriting</code>) opens only post <code>iss_caught</code> + <code>seventh_named</code> (→ §IV.4). <strong><mark class="gap">[GAP
+— GO-LIVE:</strong> <code>the_cold_hearth</code> UNPLACED.]</mark></p>
+<h3 id="ivc3-the-catch-iss-doubt-no-wall-catch">IV.C.3 — The catch (<code>iss-doubt</code> → <code>no-wall-catch</code>)</h3>
+<p><code>iss-doubt</code>: turn Iss's key on the OTHER stones; it disagrees with every honest carving. Accepted: <code>we
+checked the lock</code> / <code>his key is his own name and his name is the one who turned away</code> / <code>ask first what a wall
+is for</code>. → <code>no-wall-catch</code>, <code>iss_doubted:true</code>. <strong>THE CATCH PROPER</strong> <code>no-wall-catch</code> (<code>main_beat</code>, FACT 8):
+re-walk a clue falsely marked "kept · solved"; the Stone-after contradicts Iss line for line. Accepted: <code>no
+wall was ever built here</code> / <code>they were the reaching let in</code> / <code>what iss sent you to was a grave</code> / <code>back to
+vauns stone turn down</code>. <strong>THE FLAG SWAP:</strong> <code>set_flags {iss_caught: true, true_coord_known: true}</code>; embedded
+<code>unlock</code> → <code>private_message</code>, <code>key: 'iss.dialogue.turns_cold'</code>, priority 15. The private cold-flip line
+(<code>iss.dialogue.turns_cold</code>): <em>the one who told you the way was a wall is cold in the record now. every warm
+word he set out reads the other way. he was the warmest of the six. that was the trap, and the trap is
+sprung, and the warmth does not come back.</em> The <code>private_message</code> key-resolution lives ONCE in <code>resolve.ts</code>.
+<code>iss_caught</code> is THE universal hinge (six+ threads key on it). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the <code>resolve.ts</code>
+<code>private_message</code> key-resolver + the <code>requires_flags jsonb</code> column + <code>getOpenPuzzles</code> filter.
+<strong><mark class="gap">[GAP — TO BUILD, F1 MONORAIL]</mark>:</strong> the shipped seed STILL carries <code>next_puzzle_key: rite-tokens</code> on
+<code>no-wall-catch</code> (<code>puzzles_seed.sql</code> L294); WEB-MASTER §2.1 BANS it — repoint/remove so the rite is reached
+only through the chain (→ §V.0).</p>
+<h3 id="ivc4-the-warmcold-re-staging-liarts-the-colorant-not-the-activation-lane">IV.C.4 — The warm→cold re-staging (<code>liar.ts</code>, the colorant — NOT the activation lane)</h3>
+<p>The demoted optional curated re-staging of Iss's already-posted warm beats as cold once <code>iss_caught</code>. Flag-
+gated, one-way (warm→cold), idempotent on a per-beat high-water, curatorial-by-default (<code>'pending'</code> for
+dashboard approval unless AUTO mode). Two additional cold bodies (BUILT): <code>iss.dialogue.turns_cold.wall</code>:
+<em>the wall he promised was a door he was opening, a course at a time, over winters. inside-the-wall was never
+safe. it was the far side being let in.</em>; <code>iss.dialogue.turns_cold.easy</code>: <em>the ease he offered was the
+not-counting. a thing told it is kept, and never counted, is a thing being readied to be let go.</em> <strong>DIRECTOR
+ACTION:</strong> the cold re-stage enqueues <code>pending</code> by default — the approval gate fires here. <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong>
+<code>liar.run.ts</code> (the DB/clock wrapper; <code>liar.ts</code> pure core is BUILT).</p>
+<h3 id="ivc5-what-the-flag-swap-lights-the-back-half-opens-at-once-non-linear">IV.C.5 — What the flag swap LIGHTS (the back half opens at once — non-linear)</h3>
+<p><code>iss_caught</code> (+ co-flags) is the deterministic <code>requires_flags</code> gate that flips staged rows live, in
+causal-but-not-countable order: <code>bound-word</code>, <code>base-docket-reread</code> (+ <code>-auto</code> twin), <code>meta-unkept</code>, the
+Seventh deep (<code>the_unwriting</code>, once <code>iss_caught</code> + <code>seventh_suspected</code>), and the surface cold cascade
+(<code>prophet-wall-name</code> cold, the Record Iss-card cold, Aro/Pell flip sticky-cold). The resolver ignores order.</p>
+<h3 id="ivc6-the-bound-word-bound-word">IV.C.6 — The bound word (<code>bound-word</code>)</h3>
+<p><code>next_clue</code>, active=false until <code>iss_caught</code>, <code>max_attempts:6</code>. The Iss Vigenère plaintext IS the coop-gate's
+need. Accepted: <code>the one who turned away</code> / <code>turned away</code> / <code>the bound word is his name</code>. Effect: <code>set_flags
+{bound_word_known: true}</code>, <code>next_puzzle_key: m4-three-hands</code>. <code>oracleNextClue</code>: <em>kept. the way goes on — look
+where the marks were not, before.</em> A SECOND in-road via <code>stone-orin</code> substitution stego normalizes to the
+same word (no SPOF). <strong><mark class="gap">[GAP — GO-LIVE:</strong> the stego-layer carving.]</mark></p>
+<h3 id="payoff-06">IV.C.7 — The Hold-Book down-count re-reads (<code>base-docket-reread</code>)</h3>
+<p><code>lore</code>, active=false until <code>iss_caught</code>. The down-count (<code>lamps kept: [N]</code>, the doom-clock bait through
+M1–M3) re-reads: never a doom-clock. Accepted: <code>the count was never of the dark it was of the hands</code> / <code>the
+muster is read the hands are almost in</code> / <code>the down count is a muster of present hands</code> / <code>not a doom clock a
+roll call</code>. <code>docketReread</code> fragment: <em>the muster is read. the count was never of the dark. it was of the
+hands. the hands are almost in.</em> <strong>TWIN:</strong> <code>base-docket-reread-auto</code> ships active=true gated by <code>requires_flags
+{iss_caught}</code> — the offline duplicate so the re-read fires even if the showrunner is asleep (no SPOF).</p>
+<h2 id="ivd-the-false-law-the-seventh-the-discoveries-that-recolor">IV.D — THE FALSE LAW + THE SEVENTH (the discoveries that recolor)</h2>
+<h3 id="payoff-07b">IV.D.1 — The false-law discovery (<code>forged-eighth</code>)</h3>
+<p><code>dead_end</code>, kind <code>known</code>; substitution whose signature resolves to "to cover one's own" (a verb ABSENT from
+the founders' ring — the seam of the forgery). <code>teaches_custom NULL</code> (fiction, INV-17). Card
+(<code>cardEighthForged</code>): <em>the founders set the ways and did not finish the count. the eighth is the covering of
+the hands. cover, and be counted clean.</em> (the forged line credits no "me" — the anonymous lie is stronger).
+<strong>THE M4 CORRECTION</strong> (<code>archiveEighthCorrection</code>, fires at the catch): <em>the eighth was added by a later hand,
+and is not in the founders' ring, and was never measured. obey it and nothing answers. that is how a forged
+way is known.</em> No listener, no custom key (the proof is the reliable absence of a toll). <strong><mark class="gap">[GAP]</mark>:</strong>
+<code>keeper.falseLaw</code> + the dialogue branch read <code>eighth_seen</code>, but no shipped row sets <code>eighth_seen</code> — the
+flag-set on reading the forged board is owed. The forged Covering (un-tracked) and the Unlit Deep (a real
+tracked latch) never collide (different frames).</p>
+<h3 id="payoff-02">IV.D.2 — The Seventh side-quest (<code>seventh-shrine</code>)</h3>
+<p><code>side_quest</code>; Sella's Atbash bearing routes to the cold-hearth shrine; count six markers, then "a seventh"
+(FACT 10 — the land can refuse). Earns Whisper budget. GATES NOTHING. Accepted: <code>there was a seventh</code> / <code>the
+last marker is not the last</code> / <code>seven</code> / <code>7</code> / <code>the land kept six and refused the seventh</code> / <code>a thing that
+can say no is not a wall</code>. Effect: <code>set_flags {seventh_found: true, whisper_budget_earned: true}</code>.
+<code>oracleSideQuest</code>: <em>this is not the way. but it is a way. follow it, if you would.</em> The M1 "seventh mark the
+record will not keep" (#02) surfaces here as the cast-out Seventh. <strong><mark class="gap">[GAP — GO-LIVE:</strong> <code>the_far_water</code>,
+<code>the_cold_hearth</code> UNPLACED.]</mark></p>
+<h3 id="ivd3-the-seventh-deep-chambers-23-staged-m3m4">IV.D.3 — The Seventh deep (chambers 2–3, staged M3→M4)</h3>
+<p>The hearth-DEEP (<code>the_unwriting</code>, beneath <code>the_cold_hearth</code>). Three staged rows, all active=false until the
+deep opens (post <code>iss_caught</code> + <code>seventh_suspected</code>). Chamber 1 legible in M3 (<em>"below the cold hearth, the
+deep is sealed; the seal is a name"</em>); chambers 2–3 resolve M4.
+- <code>seventh-unwriting</code> (chamber 2, RAIL-FENCE rails=6, <strong>reusing Brann's taught literacy</strong>) — <code>main_beat</code>,
+  <code>set_flags {seventh_named: true}</code>, <code>next_puzzle_key: seventh-choice</code>. The cipher logic: erasure IS
+  transposition — the scraped name was displaced into the kerning of the six kept names; rail-fence reads it
+  back. Chamber-2 lore on solve: <em>six names are cut whole here. the seventh was cut into the space between
+  them. you have read it now. the record did not keep it; you did.</em>
+- <code>seventh-cause</code> (<code>lore</code>, FACT 10b; earns Whisper; gates nothing): <em>the seventh kept every way and was not
+  kept. the fire they let out was never theirs to lose. the land can refuse. whether that is mercy the record
+  does not say.</em> <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the cause-document <code>D-new the-fire-they-let-out.md</code>.
+- <code>seventh-choice</code> (restore/erase, <code>main_beat</code>, in-world-detected only — two opaque tokens; → §V.6). GATES
+  NOTHING.
+- <strong>[SEAM — lagging surface]:</strong> <code>the-seventh-spine §1.3</code> must read "gated on Brann's rail-fence literacy," not
+  "the right cipher here." <strong><mark class="gap">[GAP — doc fix.]</mark></strong> <strong><mark class="gap">[GAP — GO-LIVE:</strong> <code>the_unwriting</code> UNPLACED.]</mark> <strong><mark class="gap">[GAP — TO
+  BUILD:</strong> the <code>SeventhChoiceListener</code> rite + the two-token sentinel branch.]</mark></p>
+<h3 id="ivd4-the-surface-cascade-iss-adjacent-npcs-flip-cold-sticky">IV.D.4 — The surface cascade (Iss-adjacent NPCs flip cold — sticky)</h3>
+<p>At <code>iss_caught</code>, only Aro + Old Pell turn cold <strong>sticky</strong> (<code>iss_cold</code>); conduct-cold is recoverable.
+<code>aro.greet.iss_cold</code>: <em>You found what's past the line, then… I never been down there, I just say what sells…
+Don't tell me about it. I don't want it in my head with the rest of the things I say.</em> <code>old-pell.greet.iss_cold</code>:
+<em>So you found the dead shrine. West and down, the cold hearth. I knew a man went looking for a road up at the
+bottom of a hole, and I knew what came back wearing him. … I won't ask if you came back as you. I'm watching
+to see.</em> <strong><mark class="gap">[GAP — GO-LIVE:</strong> the NPC bodies (Citizens2/ZNPCsPlus).]</mark></p>
+<h3 id="ivd5-the-unlit-deep-the-one-group-latch-collective-restraint-custom">IV.D.5 — The Unlit Deep (the one group latch — <code>collective-restraint-custom</code>)</h3>
+<p>The eighth <em>tracked</em> thing — a single group-scoped negative latch, arms M3, active-only. Below the Line AND
+on the black moon AND a flame is lit → the latch breaks for everyone; the borrowed glow of the never-doused
+fire withdraws (reversible). Break line (<code>tollUnlitDeep</code>): <em>a flame was lit below the line, on the black moon,
+where the deep keeps its one fire and asks for no other. the borrowed glow is drawn back. it is drawn back for
+all, not for the hand that lit it.</em> Kept line (<code>keptUnlitDeep</code>): <em>no flame was carried below the line on the
+black moon. the one fire that was never put out lends its glow. it is lent to all of you, while it is kept.</em>
+Detect on EXPLICIT flame acts only (no ambient light sampling — precision). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong>
+<code>UnlitDeepListener.java</code> + <code>group_restraint_state</code> table + <code>canon.ts</code> key add. Payoff at close → §IV.1
+<code>keeper.collectiveRestraint</code>.</p>
+<h2 id="ive-the-nether-lane-the-m3-face-see-iii-nether">IV.E — THE NETHER LANE (the M3 face) — see §III-NETHER</h2>
+<p>The bearing page <code>the-fire-is-lent</code> (read post-descent) and the <code>nether_forge</code> pocket (on-site word <code>lent</code>,
+Kept-Light origin = keeping is a carrying) are detailed in §III-NETHER. Blocked on the LORE FACT-11 seal.
+<strong>Dob</strong> is the human counterweight who quiets the deeper they go: <em>There's the line. The painted one. We're —
+we're not crossing that, are we… Aro said cross it but Aro's a liar…</em> → much later, very quiet: <em>…I don't want
+to go further. I'll wait here. By the lamp… I'll be right here. I'll be right here. I'll be right here.</em> (Dob's
+"Aro's a liar" pre-echoes the Iss catch; "I'll keep this lit" rhymes with Kept-Light + Unlit Deep.) <strong><mark class="gap">[GAP —
+GO-LIVE:</strong> Dob's NPC body.]</mark></p>
+<h2 id="iv0-the-gate-into-movement-iv-the-universal-hinge">IV.0 — THE GATE INTO MOVEMENT IV (the universal hinge)</h2>
+<p>M-IV is keyed on the single canonical flag <code>iss_caught</code>, set by the player-driven catch (§IV.C.3), NOT the
+showrunner. The activation cascade (<code>metapuzzle_seed.sql</code>, the deterministic <code>requires_flags</code> gate;
+<code>getOpenPuzzles</code> opens a row iff every flag truthy):</p>
+<pre><code>iss_caught                     → bound-word, base-docket-reread(+auto), meta-unkept
+bound_word_known               → m4-three-hands
+threshold_open                 → threshold-coordinate
+true_coord_known               → true-walk-arrive
+iss_caught ∧ seventh_suspected → seventh-unwriting, seventh-cause
+seventh_named                  → seventh-choice, end-seventh-out
+</code></pre>
+<p>The director does nothing to "advance" the catch; the console role is the <strong>approval gate</strong> + any showrunner
+<code>active</code>-flips, both backstopped by <code>requires_flags</code> so a sleeping showrunner never hard-locks the back half.</p>
+<h2 id="iv1-the-keeper-npc-framework-the-dialogue-tree-branching-on-dossier-state">IV.1 — THE KEEPER-NPC FRAMEWORK (the dialogue tree, branching on dossier state)</h2>
+<p>The presiding Keeper (<code>keeper</code>, register 3 / SET C) presides at <code>the_threshold</code> + <code>keeper_altar</code> only (never
+the Mouth where Set A lives). Branch logic = <code>keeper.ts</code> (pure resolver); text = <code>voice.ts</code> / SET C verbatim
+(no English in the Java beat). <strong>Fixed precedence</strong> (<code>resolveKeeperDialogue</code>): 1. prior-keeper apparition not
+claimed by the conductor → NO node (defer to the single-arbiter slot, INV-18; the PRESIDING Keeper is never
+slot-gated); 2. M-IV atonement (broken, not atoned) → <code>keeper.atone.withheld</code>; 3. atonement honored →
+<code>keeper.atone.cleared</code>; 4. FACT 9 (a logged haunt, namable, one surface/window) → <code>keeper.fact9.named</code>;
+5. dossier-rhymed → <code>keeper.rhyme.&lt;id&gt;</code> / if <code>rhymesWith==='iss' &amp;&amp; issCaught</code> → <code>keeper.iss.cold</code>; 6. neutral
+floor → <code>keeper.presiding.neutral</code>. <code>iss_caught</code> is NOT a Keeper-skin input; he has no <code>truth_or_lie</code> tell
+(the one voice that never lies).
+- Verbatim greets: <code>keeper.greet.neutral</code>: <em>you came down. they came down too, the ones before you. i was
+  nearer the front of that line than i tell. sit, or stand. the record keeps either. i keep the rite.</em>
+  <code>keeper.greet.warm</code>: <em>you kept the ways coming down… i will not say who we is. you will know it, or you will
+  not, and the not-knowing keeps you a while longer.</em> <code>keeper.greet.cold</code>: <em>you broke a way or two coming
+  down. i am not here to scold it. i broke one myself, late, and was kept anyway… there is keeping left in it
+  for you.</em>
+- <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> <code>keeper.iss.cold</code> body (only the Set-A <code>aro.greet.iss_cold</code> exists — wrong register).
+- <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> the per-keeper <code>keeper.rhyme.*</code> bodies.
+- <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> <code>keeper.presiding.neutral</code> body (the nearest authored floor is <code>keeper.greet.deniable</code>
+  in the idea file — <em>you came to the stone. i am here, the way i am always here. ask the rite when you have a
+  thing to ask it…</em> — keyed wrong; rename/author owed).</p>
+<h2 id="iv2-the-m-iv-atonement-gate-withhold-a-fragment-until-a-broken-custom-is-honored">IV.2 — THE M-IV ATONEMENT GATE (withhold a fragment until a broken custom is honored)</h2>
+<ul>
+<li><strong>Puzzle half <code>atonement-refrain</code></strong> (<code>main_beat</code>): <em>the keepers turn.</em> Accepted: <code>the keepers turn</code> /
+  <code>conduct is the lock the fragment is the key</code> / <code>honor the broken custom and return</code>. Effect: <code>set_flags
+  {atonement_made: true}</code>, <code>next_puzzle_key: rite-tokens</code>, <code>unlock</code> → <code>reveal</code> <code>fragment:
+  keeper_withheld_returned</code>. The player must have honored the previously-broken custom
+  (<code>punishment_state.deciphered=true</code>) then return to the Keeper.</li>
+<li><strong>Dialogue half</strong> <code>keeper.atone.withheld</code> (refusal): <em>the one whose mark you wear coming down kept the
+  offering. you did not, the once it was asked. she will hand you nothing until the deep has had its first ore
+  back from you. go up. give it. come down. the hand opens to a hand that gave.</em> → <code>keeper.atone.cleared</code>
+  (release). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the de-slopped <code>keeper.atone.cleared</code> body — strike the named feeling <em>"she
+  felt the weight leave the seam"</em>; let the cleared act stand.</li>
+<li id="payoff-16"><strong>FACT 9 at the same window</strong> <code>keeper.fact9.named</code> — binds the logged M-I haunt to the keeper whose fate
+  re-enacted it (one surface/window). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the de-slopped body — cut the <em>"you did not, then.
+  you are learning it now"</em> bow. The standalone Watcher twin <code>haunting-biography</code> IS shipped: <em>the first
+  hauntings were not random. they were one keepers fate, re-enacted at your door. the dread had a biography.</em></li>
+<li><strong>The Hold-Book M-IV face</strong> (the keeper's OWN hand writes the living player) — <code>keeper-record.ts</code>
+  <code>decideKeeperEnrolment</code>, precision-floored (<code>minLeadScore 0.45</code>, <code>minLeadMargin 0.15</code>; a flat dossier stays
+  an un-headed living row, INV-16). The keeper-hand bodies (deterministic fallback behind the optional LLM
+  scalpel), per fingerprint, e.g. <code>keeperPageHand_orin</code>: <em>i, orin, set the one called {name} at the threshold
+  and meant to cut the rest and the rest is not —</em>; <code>keeperPageHand_iss</code>: <em>i write the one called {name} and i
+  tell them they are kept, and i do not count them, and the not-counting is the lie i was caught in.</em></li>
+</ul>
+<h2 id="iv3-the-cascade-that-re-reads-cold-at-the-catch-m-iv-density-in-causal-order">IV.3 — THE CASCADE THAT RE-READS COLD AT THE CATCH (M-IV density), in causal order</h2>
+<ul>
+<li><strong>3.1 <code>bound-word</code></strong> — see §IV.C.6.</li>
+<li><strong>3.2 <code>m4-three-hands</code></strong> (<code>main_beat</code>) — the cross-surface coop gate. THREE distinct ACTS in one ~20s window
+  (active-only): foot on the plate + a carve + a Discord post. Accepted = a single OPAQUE conjunction token the
+  plugin posts on a CLEARED gate. Effect: <code>set_flags {threshold_open: true}</code>, <code>next_puzzle_key:
+  threshold-coordinate</code>, <code>unlock</code> → <code>door_open</code> at <code>coop_plate</code>. <code>oracleThreeHands</code>: <em>the count is three. the
+  threshold is open.</em> In-roads: best 3 people; 2 can clear it; even 1 with a 2nd device, slowly. {#payoff-15}</li>
+<li><strong>3.3 <code>threshold-coordinate</code></strong> (<code>next_clue</code>) — the true coordinate (a NAVIGATION POINTER, INV-14; the typed
+  answer is the clean on-site destination word, never the signed coordinate). Accepted: <code>follow the threshold
+  mark to where it points</code> / <code>the true coordinate is a road not an answer</code> / <code>walk where the threshold sends
+  you</code>. → <code>true-walk-arrive</code>, <code>true_coord_known</code>.</li>
+<li><strong>3.4 <code>true-walk-arrive</code></strong> (<code>main_beat</code>) — the destination WORD carved on leaves at the on-site tableau is
+  the answer (gated to on-site presence). Accepted: <strong><code>kept here before you</code></strong> / <code>the road kept its word</code> /
+  <code>we were already filed here</code>. Effect: <code>set_flags {true_destination_reached: true}</code>, <code>next_puzzle_key:
+  rite-tokens</code>, <code>reveal</code> at <code>the_threshold</code>. The <code>kept here before you</code> answer is the M-IV payoff of #09 — the
+  carves were never prediction; the group is already filed. {#payoff-09}</li>
+<li><strong>3.5 <code>base-docket-reread</code> (+ <code>-auto</code> twin)</strong> — see §IV.C.7. {#payoff-06}</li>
+<li><strong>3.6 <code>meta-unkept</code></strong> (<code>lore</code>, gates nothing) — the six maker's-marks read in <strong>fall-order</strong> carry UNKEPT.
+  Accepted: <code>unkept</code>. <code>oracleMetaUnkept</code>: <em>six marks, one to a stone. read them in the order they fell. the
+  word is the one each did not keep.</em> active=false → opened by <code>requires_flags {iss_caught}</code> (the cold
+  Iss/Keeper states the fall-order key; the glyphs fail in ring-order, self-correcting). {#payoff-08}{#payoff-03}</li>
+<li><strong>3.7 The forged eighth collapses</strong> — see §IV.D.1. {#payoff-07b}</li>
+<li><strong>3.8 <code>prophet-wall-name</code></strong> (<code>dead_end</code>, kind <code>prophet</code>) — the columnar acrostic spells Iss. Accepted: <code>the
+  one who turned away</code> / <code>iss carved the wall</code> / <code>read the first marks down the one who turned away</code>. Keeper
+  half (<code>keeper.deadEndTaunt('prophet')</code>): <em>you read that true, and it is true, and it keeps no door. the one
+  called iss would have told you it kept a door, and told you warm, and you would have walked it to a cold
+  hearth. i tell you plain: true, and shut… read who carved it, after.</em> — the <em>"after"</em> was literal. {#payoff-19}</li>
+<li><strong>3.9 <code>name-where</code></strong> re-reads under FACT 9 (<code>dead_end</code>, kind <code>place</code>). Keeper half (<code>keeper.nameWhere</code>):
+  <em>your name is cut where you have not been… it files the ground first and the foot after. before you was
+  never strangers. it was you, before you came.</em></li>
+</ul>
+<h2 id="iv4-the-seventh-spine-choice-restore-vs-erase-staged-rite-resolves-v6">IV.4 — THE SEVENTH SPINE CHOICE — restore vs erase (staged; rite resolves §V.6)</h2>
+<ul>
+<li><code>seventh-unwriting</code> — name the Seventh (rail-fence rails=6, reusing Brann's literacy). <code>set_flags
+  {seventh_named: true}</code>; <code>next_puzzle_key: seventh-choice</code>. (Detail §IV.D.3.)</li>
+<li><code>seventh-cause</code> — why erased, FACT 10b (gates nothing; earns Whisper). (Detail §IV.D.3.) <strong><mark class="gap">[GAP:</strong> <code>D-new
+  the-fire-they-let-out.md</code>.]</mark></li>
+<li>The Keeper lays the choice down <code>keeper.seventhChoice.offer</code> (non-prompting; no "press 1"): <em>below the cold
+  hearth the deep is open now. the seal there was a name, and the name was scraped out, and the one it named
+  kept every way and was cast out for nothing done. a name said back is a seal undone. you may write it again,
+  or leave the blank. the land made its choice. you make the record's. neither opens the road. both are kept.</em></li>
+<li><code>seventh-choice</code> — the restore/erase rite, DETECTED IN-WORLD ONLY (two opaque tokens). RESTORE = set a
+  marker block in the bare socket + light the cold pit + all present bow at <code>the_cold_hearth</code> deep (the deposit
+  is ALSO the INHERITORS codicil — ONE act, ONE flag-origin). ERASE = break the six name-carvings at the
+  unwriting wall (the one whitelisted break-site) + leave no carried light. Irreversible in fiction + flag
+  (chamber-3 listener self-disables); not a loss condition, not a gate. <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong>
+  <code>SeventhChoiceListener.java</code> (the single largest gap — without it the tokens can never be posted) + the
+  unwriting <code>.schem</code> + real <code>the_unwriting</code> coords. (The tint resolves §V.6.)</li>
+<li>The retreating anti-creature (chamber-3 entry) — a single un-targeted retreating glimpse, once, the one
+  apparition NOT grounded in a measured signal (the absence of profiling IS the characterization — the Seventh
+  is the one the land did not measure). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the <code>NamedMobBeat</code> glimpse (P2).</li>
+<li>The single sanctioned Iss/Seventh ambiguity line (post-<code>iss_caught</code>): <em>two hands scraped this stone. the
+  record does not say they were two.</em> <strong><mark class="gap">[GAP — TO BUILD:</strong> P2 row.]</mark></li>
+</ul>
+<h2 id="iv5-becoming-the-keepers-the-reveal-the-record-writing-them-in">IV.5 — BECOMING THE KEEPERS (the reveal — the record writing them in)</h2>
+<p>The felt door to FACT 15, <strong>never stated</strong>. <code>keeper.becomingKeepers.neutral</code>: <em>the altar wants a thing only
+each of you can give… the thing the record kept open a column for, against your name, before you came. bring
+it at the dark hour. the rite does not reward. it receives. it keeps. the ones before brought theirs, and were
+received, and are kept — you have read where they are kept; you are reading it now, in the same book, in the
+same hand. we would keep you, if you would keep the ways.</em> (warm: <em>…we would keep you. you have made the
+keeping easy.</em>; cold: <em>you broke a way or two coming to this. the altar takes a broken hand too — it took
+mine, late… we would keep you, if you would keep the rest of the road.</em>) <strong>THE HARD MIMIC CHECK:</strong> every
+variant STOPS at the half-veil ("we would keep you…" / "in the same hand"); a draft that finishes the
+induction ("and so you become the watching") STATES FACT 15 and is a defect.</p>
+<h2 id="iv6-the-counting-journal-payoff-the-hold-book-m4m5">IV.6 — THE COUNTING-JOURNAL PAYOFF (the Hold-Book, M4→M5)</h2>
+<p>The down-count + keeper-record are ONE book on ONE anchor (<code>stone_of_reckoning</code>'s companion lectern). M4
+payoff = §IV.3.5 (<code>docketReread</code>). M5 close (forward-ref): <code>docketEven</code>: <em>the present hands are entered. the
+book is even. the same book, the same hand, as all the ways above you.</em>; <code>keeperEnrolled</code> (neutral colorant
+ack): <em>the one called {name} is entered under {keeper}. the heading is not a sentence. it is where the record
+set them.</em></p>
+<h2 id="iv7-the-end-lane-optional-deepening-off-m4v-gates-nothing">IV.7 — THE END LANE (optional deepening off M4→V; gates nothing)</h2>
+<blockquote>
+<p>"The one place outside the record — no kept fire, no markers, no Archivist, no count." Plant D11
+<strong>{#plant-29}</strong> (<em>to be kept and to be cast out are one door, looked at from either side</em>). World
+<code>observance_end</code>. ZERO ambient apparition lane (a positive canon choice).
+- <strong>7.1 The pointer (a REVEAL, NO new node):</strong> the <code>the_unwriting</code> chamber-2 wall gains one extra effaced
+  line, legible only at <code>seventh_named</code>, pointing <em>out, past the door that is not a threshold… you will not be
+  kept there; the record is not there to keep you.</em> A <code>RevealBeat</code> flip on the existing wall. <strong><mark class="gap">[GAP — TO
+  BUILD]</mark>:</strong> the authored reveal line.
+- <strong>7.2 The payoff <code>end-seventh-out</code></strong> (<code>lore</code>, gates nothing) — the Seventh's own account from outside the
+  record; the on-site READ is the answer (INV-14) at <code>end_seventh_shrine</code>. Accepted: <code>i kept all the ways and
+  it did not matter</code> / <code>the keeping was never the price</code> / <code>i went out past the door that is not a threshold</code>
+  / <code>you only came to look</code>. <code>set_flags {seventh_seen_out: true}</code> (group-scoped, NEVER a fate input).
+  <code>voice_key: end.shrineArrive</code>, fragment: <em>the seventh kept every way and was not kept, and went out past the
+  door that is not a threshold, to the one place the record does not reach, and cut the name themselves. exile
+  is the other side of keeping. you are not cast out. you only came to look.</em> Renders
+  <code>the-name-i-cut-myself.md</code>. <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> <code>end.shrineArrive</code> voice key (silent-at-runtime; the
+  fragment IS the body) + the <code>cardEndSeventhOut</code> archive body + <code>observance_end</code> world (GO-LIVE).
+- <strong>7.3 The breadth + rumor card:</strong> <code>dest-out-of-record</code>; <code>who-seventh-out</code> (flips verified on arrival).
+- <strong>7.4 The set-pieces:</strong> <code>end_seventh_shrine</code> (built to the Seventh's unfinished wrong-scaled hand;
+  reveal-safe re-dressed end-ship OR world-build island, never a paste toward a glider). <code>end_exile_hold</code>
+  (the <code>cast_out</code> fate made a place — a re-dressed end-city, markers facing away, vast/static) —
+  <strong><code>enabled: false</code></strong>, GATED until the INV-16 binding is BUILT (the hold must name NO living player, encode
+  NO per-player side, chorus-only dressing); else the End ships as the Seventh shrine ALONE. <strong><mark class="gap">[GAP — TO
+  BUILD]</mark>:</strong> the INV-16-safe exile-hold dressing (P2/cuttable).</p>
+</blockquote>
+<hr>
+<h1 id="segment-v-movement-v-the-accepting-the-five-divergent-endings">SEGMENT V — MOVEMENT V (THE ACCEPTING) + THE FIVE DIVERGENT ENDINGS</h1>
+<blockquote>
+<p>Source: <code>playthrough/6-finale.md</code>. The collective rite, the world flip, the five closes. Reached ONLY
+through the single Iss chain (the catch does NOT hand it). Player-PERFORMED, not advanced from the console.</p>
+</blockquote>
+<h2 id="v0-the-state-this-segment-opens-on">V.0 — THE STATE THIS SEGMENT OPENS ON</h2>
+<p>The chain (causal order): catch (<code>iss_caught</code>) → <code>bound-word</code> → <code>m4-three-hands</code> (<code>threshold_open</code>) →
+<code>threshold-coordinate</code> (<code>true_coord_known</code>) → <code>true-walk-arrive</code> (<code>true_destination_reached</code>) → <code>rite-tokens</code>
+(<code>tokens_laid</code>) → <code>accepting-crouch</code> (<code>bowed_as_one</code>) → <code>record-receives</code> (<code>record_received</code>, <code>world_kept</code>).
+Two doors to the bow: (A) the true walk → <code>rite-tokens</code> → <code>accepting-crouch</code>; (B) <code>pressure-glyph-walk</code>
+(PROMOTED, a genuine second in-road that GATES NOTHING — "the do-not-read-your-way-out door").
+<strong>INHERITED GAP:</strong> <code>no-wall-catch</code> still carries <code>next_puzzle_key: rite-tokens</code> (<code>puzzles_seed.sql</code> L294);
+WEB-MASTER §2.1 BANS it — <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> repoint/remove (the F1 monorail). <strong>DIRECTOR posture:</strong> approval
+gate on Oracle beats; bind the single Accepting instant in <code>arc_state</code>; if filming, arm the <code>event-window</code> /
+<code>/observance window on</code>.</p>
+<h3 id="v04-the-single-accepting-instant-showrunner-owned">V.0.4 — The single Accepting instant (showrunner-owned)</h3>
+<p>ONE instant shared by THREE surfaces — the future-dated grave's carved date (FACT 13b), the Record website
+timestamp, the summons <code>not_before</code>. No config owns it; <code>grave.ts</code> injects it (<code>acceptingInstantMs</code>). <strong><mark class="gap">[GAP —
+TO BUILD]</mark>:</strong> the <code>arc_state</code> binding writer + <code>grave.run.ts</code> / <code>fate.run.ts</code> I/O wrappers. DIRECTOR ACTION:
+bind the instant before the rite window.</p>
+<h2 id="v1-the-finale-assembly-gather-the-components-wake-the-keeper">V.1 — THE FINALE ASSEMBLY (gather the components, wake the Keeper)</h2>
+<ul>
+<li><strong>1.1 <code>true-walk-arrive</code></strong> — see §IV.3.4. Watcher (<code>oracleMainBeat</code>): <em>what was shut is shut no longer. the
+  record keeps the hand that opened it.</em> <code>requires_flags {true_coord_known}</code>. DIRECTOR: approve the arrival.</li>
+<li><strong>1.2 <code>rite-tokens</code></strong> (<code>main_beat</code>) — <em>bring the thing only you can give.</em> Lay one PERSONAL token in each of
+  six slots + the named components (FACT 13 — the missing tool is YOU). Accepted: <code>bring the thing only you
+  can give</code> / <code>deeps first heart unbroken light salt of the keepers</code> / <code>a piece you cannot read your way out
+  of</code>. Effect: <code>set_flags {tokens_laid: true}</code>, <code>next_puzzle_key: accepting-crouch</code>, <code>unlock</code> → <code>reveal</code> at
+  <code>unbroken_light</code> (6 slots lit). The Keeper's letter <code>bring-the-thing-only-you-can-give.md</code>: <em>bring, then, the
+  thing only you can give. one token for each who kept the ways before you — six, a hand and one more. not
+  coin, not ore… a thing that is yours… lay one in each marked place.</em> / <em>the record does not close when the
+  rite is done… It receives… they did not depart, you have read that, they were kept…</em> / <em>lay the tokens. wake
+  me fully. and when all of you bow as one, at the hour, in this light — we would keep you, if you would keep
+  the ways.</em> / [lower margin] <em>do not grieve the giving. you are not losing it. you are leaving it where it
+  will be found.</em> DIRECTOR: approve the 6-slot reveal.</li>
+<li><strong>1.3 Wake the Keeper — <code>becomingKeepers</code></strong> — see §IV.5 for the verbatim text + the hard mimic check.
+  <code>KeeperNpcBeat</code> opens on right-click at <code>keeper_altar</code> / <code>the_threshold</code>; conduct-skinned warm/neutral/cold.</li>
+<li><strong>1.4 The summons</strong> <code>summons()</code>: <em>the way is open. come — all of you — at the dark hour. bring what is
+  owed.</em> Honors the <code>event-window</code> <code>not_before</code> == the single Accepting instant. DIRECTOR: ensure the
+  <code>not_before</code> shares the bound instant; force the window if filming.</li>
+</ul>
+<h2 id="v2-the-finale-site-unbroken_light-the-undercroft-accepting-floor">V.2 — THE FINALE SITE <code>unbroken_light</code> (the Undercroft / Accepting floor)</h2>
+<p><code>type: accepting_floor</code>, world <code>world</code>, <code>radius: 10</code>, <code>protect: true</code>, coords <code>null</code> <strong><mark class="gap">[GAP — GO-LIVE]</mark>.</strong> The
+one fire never went out, centered; a room sized for 6–8 players to gather and bow; the lectern-comparator
+door; the pressure-glyph rune on the floor (<code>pressure-glyph-walk</code>). Fog: a datapack dimension (<code>ambient_light:
+0</code>). Carries the six lit token-slots, the never-doused fire (FACT 11), and the persistent FATE DRESSING
+applied at the close (§V.5) — <strong><mark class="gap">[GAP — TO BUILD]</mark></strong> builder dressing (sites.yml has no fate-dressing field).
+<code>keeper_altar</code> sits co-located but distinct (<code>radius: 5</code>) so the Keeper isn't summonable from the whole floor.</p>
+<h2 id="v3-the-group-bow-opaque-sentinel-terminal-beat">V.3 — THE GROUP-BOW → OPAQUE SENTINEL → TERMINAL BEAT</h2>
+<ul>
+<li><strong>3.1 The detector <code>AcceptingRiteListener.java</code></strong> (UNCHANGED, the spine). On <code>PlayerToggleSneakEvent</code>
+  (the bow BEGINS) inside an <code>accepting_floor</code> radius with EVERY present player sneaking at once AND the
+  cross-surface readiness gate open, it posts the OPAQUE wordless token (fires ONCE per cooldown per site).
+  Trigger → effect: synchronized group crouch → <code>oracle.resolveWorld(...,"accepting-crouch")</code> → the climax
+  beat. ACTIVE-ONLY QUORUM (INV-19): <code>effectiveQuorum = min(configQuorum, activeRosterSize)</code>, floored at 1
+  (lowers the bar for a smaller active group, never raises it above the cast, never blocks an absent member).
+  ACTIVE-ROSTER SOURCE: the wired <code>readActiveRoster(windowMs)</code> OR (unwired/failed)
+  <code>Bukkit.getOnlinePlayers().size()</code>. READY GATE (fail-CLOSED): the Threshold must already be open
+  (<code>threshold_open</code>); a null/unknown answer reads NOT ready. Fate-NEUTRAL: posts ONE token; WHICH close
+  composes is decided downstream. <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the <code>readActiveRoster</code> + <code>readyGate</code> supplier wiring
+  (unwired today → fail-safe defaults).</li>
+<li><strong>3.2 The opaque token + config</strong> (<code>config.yml</code> rites.accepting): <code>token: "k7q2m9 x4r8p3 w1n6z5 t0j4h2
+  b8f1v7 c3d6s9"</code>, <code>quorum: 6</code>, <code>cooldown-seconds: 300</code>. <code>riteTokenSelfTest</code> enforces the token byte-matches
+  the seed row at build time (the climax can never silently fail).</li>
+<li><strong>3.3 <code>accepting-crouch</code></strong> (<code>main_beat</code>, the TERMINAL rite, DETECTED in-world ONLY — never typeable).
+  Accepted = the single opaque token (no human-readable phrase opens the climax). Effect: <code>set_flags
+  {bowed_as_one: true}</code>, <code>next_puzzle_key: record-receives</code>, <code>unlock</code> → <code>door_open</code> at <code>unbroken_light</code>.</li>
+<li><strong>3.4 The world flips to KEPT — <code>record-receives</code></strong> (<code>main_beat</code>, opaque sentinel <code>p2w8k4 m9x1r6 z5t3j7
+  h2b4f8 v1c6d3 s9q7n0</code>; FACT 14 — the record RECEIVES; the door to FACT 15, felt never stated). Effect:
+  <code>set_flags {record_received: true, world_kept: true}</code>, <code>unlock</code> → <code>advancement_toast</code>
+  <code>observance:the_record_receives_you</code> (the hidden toast <em>⟡ the record receives you.</em>). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong>
+  the advancement datapack JSON. DIRECTOR: approve the toast (priority 30).</li>
+</ul>
+<h2 id="v4-the-payoffs-that-land-at-v-oh-that-is-what-that-was-for">V.4 — THE PAYOFFS THAT LAND AT V ("oh, that is what that was for")</h2>
+<ul>
+<li><strong>4.1 The future-dated grave opens from the inside (FACT 13b)</strong> {#payoff-21}{#payoff-10}. Plant (M2):
+  <code>graveCarved(name)</code>: <em>the stone for the one called {name} is cut. it carries a date that has not come. the
+  stone is cut before the keeper is kept.</em> Payoff (V): on the date == the single Accepting instant, the grave
+  OPENS FROM THE INSIDE (<code>grave.ts decideGrave</code> emits <code>open</code> when <code>carved &amp;&amp; !opened &amp;&amp; nowMs &gt;=
+  acceptingInstantMs</code>). <code>graveOpened(name)</code>: <em>the stone for the one called {name} is opened from the inside.
+  the date was not a death. it was an appointment. the hole is the deposit slot.</em> Private receipt
+  (<code>graveReceipt</code>): <em>the one called {name}. read first. cut first. the rest are not yet cut. they will be.</em>
+  Site <code>the_threshold</code> (optional <code>grave_spur</code> off-line). Grounds a real ACTIVE player only (nameless/inactive
+  → NO grave). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> <code>grave.run.ts</code> (the I/O; <code>grave.ts</code> policy IS built).</li>
+<li><strong>4.2 The Hold-Book's last page rewrites (FACT 14)</strong>. <code>docketEven()</code>: <em>the present hands are entered. the
+  book is even. the same book, the same hand, as all the ways above you.</em> (the group is in the SAME book as
+  everyone above — FACT 15 felt). Preceded by the M4 <code>base-docket-reread</code> (§IV.3.5).</li>
+<li><strong>4.3 The cursed-map struck-seventh row fills (felt, never stated)</strong> {#payoff-24}{#payoff-26}. Plant
+  (M0-remote): the static <code>kept: 6</code> + struck row + dead uploader <code>m.kept</code>. Payoff (V): <code>/record</code> adds the
+  group's own names via <code>recordReceives()</code>: <em>the record receives the present hands. they are entered in the
+  other place too, against the loss of this one.</em> Verbatim payoff text (<code>six-were-kept-before-you.md</code>): <em>six
+  were kept before you. / the count of them is kept. / you are the seventh. / a file is kept until it is
+  opened. a hand is kept after.</em> + <em>…the struck row is not a row that failed to fill. it is the row that fills
+  last, with present hands, when the keeping is done.</em> <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the live <code>/record/the-record-keeps</code>
+  page + the <code>/record</code> V-injection.</li>
+<li><strong>4.4 The herd's full pale field + the name-carves persist (FACT 15 visual)</strong> {#payoff-14}{#payoff-09}. The
+  cosmetic Pale field stands at full spread (all facing one way; only the GLOWING Beast was ever tracked,
+  INV-13). The <code>name-where-never-been</code> carves persist as next-group markers (FACT 16; ACTIVE-only subjects
+  rotate, a chorus, never the divergence extremes).</li>
+</ul>
+<h2 id="v5-the-five-divergent-endings-the-exact-selectors-literal-outcomes">V.5 — THE FIVE DIVERGENT ENDINGS (the exact selectors + literal outcomes)</h2>
+<blockquote>
+<p><code>decideFate</code> (<code>fate.ts</code>) returns ONE base fate enum; the M5 composer opens with it + at most one tinted
+clause + at most one codicil. It names NO player, reads the GROUP enum ONLY (INV-11, INV-16). The
+persistent floor DRESSING is the camera-legible delta; the sentence only confirms what the floor showed.
+- <strong>5.0 The selector <code>decideFate</code></strong> (PURE + DETERMINISTIC). Inputs (ACTIVE-only; no bond/Whisper field):
+  <code>honoredActive</code>, <code>violatedActive</code>, <code>leftAtActive</code>, <code>seventhFound</code>, <code>issCaught</code>, <code>quorumMet</code>,
+  <code>refusalSignal</code>. "Dominates" = a STRICT majority of the active honored/violated split (<code>x*2 &gt; decided</code>).
+  Fixed precedence: <strong>1. REFUSERS → 2. KEPT → 3. CAST_OUT → 4. DIVIDED (the floor).</strong> <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the
+  <code>resolve.ts</code> fate-sentinel branch + <code>fate.run.ts</code> wrapper; AND <strong>the M5 COMPOSER itself</strong>
+  (<code>composer.ts</code>/<code>m5*.ts</code> — the bounded ≤2-clause + codicil assembler — does not exist; all the clause TEXT
+  exists in <code>voice.ts</code>, the ASSEMBLER does not — the single largest finale gap).
+- <strong>5.1 KEPT</strong> — <code>honoredDominates &amp;&amp; (seventhFound || issCaught) &amp;&amp; quorumMet</code>. World: markers face OUT, floor
+  light whole. <code>fateKept</code>: <em>the hands are in, and they are kept. the markers face out. the way is open the way
+  it was open before you, and will be after.</em> Keeper <code>keeper.endings.kept</code>: <em>it is done, and it is kept… you
+  are the road's edge for whoever comes down next… you are received. i will not say the rest of it. you will
+  keep it, the way i keep it.</em>
+- <strong>5.2 CAST_OUT</strong> — <code>violatedDominates &amp;&amp; leftAtActive &gt;= 2</code>. World: markers face AWAY (passive voice).
+  <code>fateCastOut</code>: <em>the count is closed and it is short. the markers face away. what was owed was not returned,
+  and the record enters it so.</em> Keeper <code>keeper.endings.castOut</code>: <em>it is done. the markers face the wall. some
+  of you were left at the threshold, as some were left before. i do not name which… come down again, kept, and
+  stand again.</em> End-lane: for a <code>cast_out</code> group with <code>seventh_seen_out</code>, <code>end_exile_hold</code> reads as their own
+  exile-hold — <strong>GATED OFF by default</strong> (<code>enabled: false</code>) until the INV-16 binding is built; else the End
+  ships as the Seventh shrine alone.
+- <strong>5.3 DIVIDED (the floor)</strong> — the default (neither honored- nor violated-dominant; or dead-even/empty).
+  World: light holds on HALF the floor <strong>BY GEOMETRY, never by player</strong> (INV-16). <code>fateDivided</code>: <em>the light
+  holds on one side of the floor and not the other. the record does not say which hands stood where. it says
+  only that the floor is divided.</em> Keeper <code>keeper.endings.divided</code>: <em>…it did not choose by who stood there. it
+  chose by what was done. the floor only shows it. you may read the floor; you may not read it onto a face.</em>
+- <strong>5.4 REFUSERS (secret, checked FIRST)</strong> — <code>quorumMet &amp;&amp; refusalSignal</code>. <code>refusalSignal</code> is a POSITIVE,
+  plugin-detected defiance act, NEVER <code>quorum &amp;&amp; !bowed</code> — a slow/absent group is never read as refusing
+  (PRECISION). <code>fateRefusers</code>: <em>the hands were all present, and the bow was not made. that too is entered. the
+  record keeps the refusal as plainly as it keeps the keeping.</em> Keeper <code>keeper.endings.refusers</code>: <em>…it is a
+  refusal, and the record keeps a refused thing differently than an empty one. i do not know what it keeps it
+  as. i was kept. i did not refuse.</em> <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the plugin-detected refusal rite that sets
+  <code>refusalSignal</code> (no <code>RefusalRiteListener</code> — until built, REFUSERS is unreachable; the arc falls through to
+  KEPT/CAST_OUT/DIVIDED, safe by precision).
+- <strong>5.5 INHERITORS (a CODICIL, not a base fate)</strong> — a boolean that may append to ANY of the four. The SAME act
+  as the Seventh <code>restore</code>/deposit — ONE flag (<code>seventh_choice = restore</code> → <code>ending_codicil</code>). The +1 clause
+  <code>fateInheritorsCodicil</code>: <em>a mark is left for a hand not yet here. the deposit slot is cut and waiting, the
+  way yours was cut and waiting before you came.</em> (FACT 14 within this arc). Composer cap: ≤2 clauses + the
+  codicil.</p>
+</blockquote>
+<h2 id="v6-the-seventh-choice-restore-erase-the-tint-the-persistent-block-state">V.6 — THE SEVENTH CHOICE — restore / erase (the tint + the persistent block-state)</h2>
+<ul>
+<li><strong>6.1 <code>seventh-choice</code></strong> (<code>main_beat</code>, DETECTED IN-WORLD ONLY — <code>SeventhChoiceListener</code> at <code>the_unwriting</code>).
+  Two opaque tokens posted on real detection: <code>r7n4k2 m1x8p5 w3j6h9</code> (restore) / <code>e5t0b7 c2d4s8 v6f1z3</code>
+  (erase). <code>unlock</code> → <code>reveal</code> <code>fragment: seventh_choice_marked</code>. The resolver's Seventh-choice sentinel branch
+  sets <code>seventh_choice</code> + <code>ending_codicil</code> from which token matched. active=false, <code>requires_flags
+  {seventh_named}</code>. GATES NOTHING. <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the resolver sentinel branch (+ the listener, §IV.4).</li>
+<li><strong>6.2 The tint clauses + persistent block-state:</strong> RESTORE <code>keeperCloseSeventhRestored</code>: <em>the name that was
+  cut out is cut back in. the hearth below the cold hearth is lit again. one that broke nothing is kept,
+  late.</em> (block-state: the re-warmed hearth lit). ERASE <code>keeperCloseSeventhErased</code>: <em>the name stays out. the
+  wall below the cold hearth stays blank. the record keeps the blank where the name would go, and does not
+  fill it.</em> (block-state: the blank wall stays unwritten). Keeper faces <code>keeper.seventhChoice.offer /
+  .restored / .erased</code> (the restored face pairs with <code>fateInheritorsCodicil</code>: <em>…a mark is left there now for a
+  hand not yet here, the way a mark was left for you. that is the older keeping.</em>).</li>
+<li><strong>6.3 The deepening-lane tints (color the seventh clause, never change the mechanic):</strong> the End lane
+  (<code>seventh_seen_out</code>) renders <code>the-name-i-cut-myself.md</code> (§IV.7.2); the Nether lane (<code>nether_forge_found</code>)
+  sets up "the keeping was a carrying" tint. Both group-scoped, active-only, names-no-player, <strong>NEVER
+  fate-selector inputs</strong> (confirmed: <code>FateInput</code> has no such field).</li>
+</ul>
+<h2 id="v7-the-forks-permanence-colorants-at-the-close-inv-12-color-never-gate-via-forksts">V.7 — THE FORKS (permanence colorants at the close; INV-12, color never gate; via <code>forks.ts</code>)</h2>
+<p>Each fork sets a flag at its earlier movement; the M5 composer may add ONE as the heaviest-tint clause. Forks
+NEVER gate.
+| Fork | Flag | Set by | Clause (verbatim) |
+|---|---|---|---|
+| <strong>A — Sacred Beast</strong> | <code>sacred_beast_broken</code> | the kill of the GLOWING Beast (INV-13) | <code>forkSacredBeastBroken</code>: <em>the one that glowed is down. the boon it would have lent is closed, and stays closed. the herd keeps the death-spot in its facing.</em> |
+| <strong>B — First Light (boon)</strong> | <code>light_kept</code> | <code>fork-light</code> M3 | <code>forkLightKept</code>: <em>the light came up the stair on its own. you carried it. that is how it is carried.</em> |
+| <strong>B — First Light (transgressor)</strong> | <code>light_taken</code> | <code>fork-light</code> alt | <code>forkLightTaken</code>: <em>the flame is banked, and the room it warmed stays dark. the light that was lent is taken, and the deep is colder by it.</em> |
+| <strong>C — Spoken Name (boon)</strong> | <code>name_unspoken</code> | <code>fork-name</code> M4 | <code>forkNameUnspoken</code>: <em>the name was not shaped. the word stays shut, the way the sixth way is left blank in the book.</em> |
+| <strong>C — Spoken Name (transgressor)</strong> | <code>name_spoken</code> | <code>fork-name</code> carve act | <code>forkNameSpoken</code>: <em>the name was cut into the stone. the record keeps it, and keeps a faint line under it, the way it kept the one who turned away.</em> |
+Fork C is P2/cuttable on blurt risk. The transgressor leaves carry a persistent world delta (Undercroft dark
+/ a faint carve / the herd facing the death-spot). {#payoff-fork-B}{#payoff-13}</p>
+<h2 id="v8-the-6-downloads-payoff-the-day-zero-number-pays-off-payoff-24payoff-25payoff-26">V.8 — THE 6-DOWNLOADS PAYOFF (the day-zero number pays off) {#payoff-24}{#payoff-25}{#payoff-26}</h2>
+<p>Restated as the FINALE re-read: the lure page's <code>kept: 6</code> (#24) + dead uploader <code>m.kept</code> (#26) + the README
+"it does not connect to anything" (#25) ALL re-read at V — the <code>6</code> was six prior keeper-GENERATIONS the record
+already did this to; the group is the seventh it would not keep AS A FILE; the struck row fills LAST, with
+present hands. <code>recordReceives()</code> is the V-line that fills it. The "it does not connect to anything" inversion:
+the MAP connects to nothing; the SERVER does (the lie was true, misread as comfort). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> the
+live lure page + V-injection.</p>
+<h2 id="v9-the-season-2-seed-the-inheritors-a-hand-not-yet-here">V.9 — THE SEASON-2 SEED (the INHERITORS / "a hand not yet here")</h2>
+<p>NOT a separate mechanism — it is the <code>INHERITORS</code> codicil made persistent (the <code>restore</code> act leaves a deposit
+slot "cut and waiting"; the name-carves persist; the world flips to <code>world_kept</code>). Delivered by WHAT PERSISTS,
+never by a sentence that names "season 2" or finishes the recursion (the half-veil stops at "we would keep
+you"). <strong><mark class="gap">[GAP — TO BUILD]</mark>:</strong> no authored season-2 corpus on disk — only the persistent world-state hooks.</p>
+<hr>
+<h1 id="gap-register">GAP REGISTER</h1>
+<blockquote>
+<p>Every <code><mark class="gap">[GAP — TO BUILD]</mark></code> (code/text owed) and <code><mark class="gap">[GAP — GO-LIVE]</mark></code> (in-game build / hosted asset / coord-fill
+owed) collected once, de-duplicated, with owner. "Owner" uses the segment-doc lane codes
+(TS-VOICE / TS-FORGE / TS-SHOWRUN; A#/B#/D# = <code>INTEGRATION-V2</code> build tasks; LORE; OPERATOR; BUILDER =
+in-game construction). Where a doc named no owner, it is inferred and marked (inf.).</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Segment(s)</th>
+<th>What is missing</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>discord/supabase/migrations/0006_*.sql</code></td>
+<td>Setup B3</td>
+<td>The whole back-half schema: <code>requires_flags jsonb</code>, <code>world_paste_ledger</code>, <code>voice_watchlist</code>, ending/grave/restraint/reckoning columns, <code>nether_forge_found</code>/<code>seventh_seen_out</code>. No 0006 exists.</td>
+<td>DB / B-lane</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FACT-11 source-clause seal</td>
+<td>Setup B7; III-Nether N.0; IV.E</td>
+<td>One sentence sealed into <code>canon-spine.md</code> FACT 11 + <code>structures.md</code> ("carried up from below the bottom… one direction, not two"). BLOCKER on any Nether build/flip.</td>
+<td>LORE</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Resource-pack <code>.ogg</code> audio bodies</td>
+<td>Setup C2</td>
+<td>The four sound files (<code>whisper</code>, <code>drone_low</code>, <code>stone_breath</code>, <code>cold_toll</code>).</td>
+<td>OPERATOR/BUILDER</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Resource-pack <code>prompt</code> line</td>
+<td>Setup C3; G</td>
+<td><code>config.yml resource-pack.prompt</code> is <code>""</code> (plain keeper register, no caps/exclaim).</td>
+<td>TS-VOICE (inf.)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Hosted pack <code>.zip</code> URL + SHA-1</td>
+<td>Setup C3</td>
+<td><code>resource-pack.url</code>/<code>sha1</code> are <code>""</code>.</td>
+<td>OPERATOR</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Undercroft fog datapack</td>
+<td>Setup D2; IV.A.4</td>
+<td><code>dimension_type</code>/biome effects (thick fog, <code>ambient_light: 0</code>).</td>
+<td>BUILDER / D5</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Three Multiverse worlds</td>
+<td>Setup D3; IV.A.4; III-Nether; IV.7</td>
+<td>Undercroft void world + <code>observance_nether</code> + <code>observance_end</code>. Must exist before cross-dimension rows flip.</td>
+<td>OPERATOR/BUILDER</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Prologue vignette <code>the-hold.zip</code> + host + baked address + rune string</td>
+<td>Setup E0; I.0/I.1</td>
+<td>World + <code>thehold</code> datapack; fill <code>tick.mcfunction</code> coords; bake server address; render rune string; host; point lure href.</td>
+<td>BUILDER</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Every in-world build + <code>.schem</code> export</td>
+<td>Setup E1–E10; III/IV throughout</td>
+<td>Two Rosettas, teaching-stone, six keeper-stones, custom/named anchors, back-half spine, carve/herd anchors, Nether/End sites. No <code>.schem</code> in repo.</td>
+<td>BUILDER</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Three Seventh chamber <code>.schem</code></td>
+<td>Setup E7; IV.4</td>
+<td><code>seventh_hearth_01/02/03.schem</code>.</td>
+<td>BUILDER</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Room-A / Room-B <code>.schem</code> (the A→B swap)</td>
+<td>Setup E8; IV.B.2</td>
+<td>Large set-pieces for <code>RoomSwapBeat</code>.</td>
+<td>BUILDER / D10</td>
+</tr>
+<tr>
+<td>12</td>
+<td>ALL <code>sites.yml</code> coords</td>
+<td>Setup F; everywhere</td>
+<td>Every site is <code>null</code>/UNPLACED (plugin silently skips).</td>
+<td>BUILDER/OPERATOR</td>
+</tr>
+<tr>
+<td>13</td>
+<td>The forbidden Unspoken word value</td>
+<td>Setup G1</td>
+<td><code>tracker.forbidden-words</code> is <code>[]</code> (lives only on the locked server config).</td>
+<td>OPERATOR</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Rune-ring server icon</td>
+<td>II.2.1</td>
+<td>The unremarked six-rune icon asset (literacy in-road a).</td>
+<td>BUILDER</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>voice.recordFrameBreak()</code></td>
+<td>I.3; II.1.4</td>
+<td>The count-callback voice key (not in <code>voice.ts</code>); must pass <code>registerDisciplineSelfTest</code>.</td>
+<td>TS-VOICE</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>prologue_ignited</code>-SET listener</td>
+<td>I.2</td>
+<td>The <code>IgnitionListener</code> write of <code>prologue_ignited=true</code> on a <code>#the-record</code> post (read paths exist; no setter found).</td>
+<td>TS-SHOWRUN (inf.)</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>recordOpenedNamed</code>/<code>prologueNamed</code> key-mismatch resolver</td>
+<td>I.4; II.1.3</td>
+<td>The map from the decision's <code>reportVoiceKey</code> to the <code>voice.*</code> call (enum ≠ voice surface).</td>
+<td>TS-VOICE/TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Showrunner <code>run.ts</code> drip/report loop</td>
+<td>II.2.6</td>
+<td>The authoring loop + deterministic fallbacks (D1).</td>
+<td>TS-SHOWRUN / D1</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Live Hold-Book <code>keeper_record.ts</code></td>
+<td>II.1.1; IV.2</td>
+<td>Ship static M1 plant first, then bind count to real muster state (A3).</td>
+<td>TS-SHOWRUN / A3</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>reckoning.ts</code> engine</td>
+<td>II.2.6; III.5</td>
+<td>The dynamic-difficulty pure module + selftest (mute M1, live M2).</td>
+<td>TS-SHOWRUN / A10</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>SacredAnimalBeat</code> spread + <code>pale_cosmetic</code> PDC</td>
+<td>II.2.6</td>
+<td>The herd spread mode + cosmetic-Pale tag (M2+).</td>
+<td>plugin / A12</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Spawn-bias conductor + <code>apparitionClaim</code></td>
+<td>II.2.8; III-Nether N.3</td>
+<td>The single-arbiter apparition conductor (INV-18).</td>
+<td>TS-SHOWRUN / D7</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Rune-ring doc↔seed reconciliation</td>
+<td>II.2.2; III.2</td>
+<td>Carve <code>unspoken</code>/<code>sacred beast</code> (not ward/covering), OR correct the doc later-hand margin.</td>
+<td>BUILDER / LORE</td>
+</tr>
+<tr>
+<td>24</td>
+<td>Whisper economy data-layer + <code>hintBody</code> strings</td>
+<td>III.6</td>
+<td>The <code>whisper_budgets</code> ledger + toll application + tier escalation; per-puzzle hint bodies (no <code>hint_body</code> column).</td>
+<td>TS-SHOWRUN / plugin</td>
+</tr>
+<tr>
+<td>25</td>
+<td>The four <code>nether.*</code> / <code>end.*</code> voice keys</td>
+<td>III-Nether N.2/N.3; IV.7.2</td>
+<td><code>nether.forgeArrive</code>, <code>nether.soulSand</code>, <code>end.shrineArrive</code>, <code>end.outsideRecord</code> (silent-at-runtime; fragments carry text).</td>
+<td>TS-VOICE</td>
+</tr>
+<tr>
+<td>26</td>
+<td><code>cardNetherForge</code> + <code>cardEndSeventhOut</code> archive bodies</td>
+<td>III-Nether N.3; IV.7.2</td>
+<td>Thread-card bodies in <code>voice.archive.ts</code> (<code>threadCardVoiceCoverageSelfTest</code> fails until present).</td>
+<td>TS-VOICE/archive</td>
+</tr>
+<tr>
+<td>27</td>
+<td>Live lockstep-unredaction Record page + Iss-card stego payload</td>
+<td>III.7; V.4.3</td>
+<td>The live <code>/record</code> page that un-redacts in lockstep + the Iss-card Vigenère-key stego layer.</td>
+<td>dashboard / TS-FORGE</td>
+</tr>
+<tr>
+<td>28</td>
+<td><code>npcVoice.ts</code> registry</td>
+<td>II.2.7; III.7; IV.D.4</td>
+<td>The proposed NPC voice registry (built spec; module not built).</td>
+<td>TS-VOICE (inf.)</td>
+</tr>
+<tr>
+<td>29</td>
+<td>Staged <code>stone-brann-cipher</code> railFence activation</td>
+<td>III.1.5; IV.A.3</td>
+<td>TS-FORGE <code>CLUE_SPECS</code> railFence entry + remove <code>stone-brann</code> from <code>NON_CIPHER_KEYS</code>; the night-beacon re-author (P0-5, the keener descent in-road).</td>
+<td>TS-FORGE</td>
+</tr>
+<tr>
+<td>30</td>
+<td><code>RoomSwapBeat extends SmallStructureBeat</code></td>
+<td>IV.B.2</td>
+<td>The clear-A-then-paste-B beat, <code>swapped</code> PDC marker, <code>require_floor:false</code>.</td>
+<td>plugin / D5</td>
+</tr>
+<tr>
+<td>31</td>
+<td><code>resolve.ts</code> <code>private_message</code> key-resolver + <code>requires_flags</code> column/filter</td>
+<td>IV.C.3</td>
+<td>The activation lane: key→subtitle resolver + <code>requires_flags jsonb</code> + <code>getOpenPuzzles</code> filter.</td>
+<td>TS-SHOWRUN / D4</td>
+</tr>
+<tr>
+<td>32</td>
+<td><code>liar.run.ts</code> wrapper</td>
+<td>IV.C.4</td>
+<td>The DB/clock wrapper reading <code>iss_caught</code> + posted warm-beats + high-water (pure <code>liar.ts</code> is built).</td>
+<td>TS-SHOWRUN / D4</td>
+</tr>
+<tr>
+<td>33</td>
+<td><code>bound-word</code> second in-road stego layer</td>
+<td>IV.C.6</td>
+<td>The <code>stone-orin</code> substitution stego carving that normalizes to the bound word (no SPOF).</td>
+<td>BUILDER / TS-FORGE</td>
+</tr>
+<tr>
+<td>34</td>
+<td><code>UnlitDeepListener.java</code> + <code>group_restraint_state</code> + <code>canon.ts</code> key</td>
+<td>IV.D.5</td>
+<td>The BlockPlace/held-flame edge listener + the latch table + canon key add (A5).</td>
+<td>plugin / A5</td>
+</tr>
+<tr>
+<td>35</td>
+<td><code>the-seventh-spine §1.3</code> lagging-surface doc fix</td>
+<td>IV.D.3</td>
+<td>Read "gated on Brann's rail-fence literacy," not "the right cipher here" (canon already correct).</td>
+<td>LORE</td>
+</tr>
+<tr>
+<td>36</td>
+<td><code>SeventhChoiceListener.java</code> + two-token sentinel branch</td>
+<td>IV.4; V.6.1</td>
+<td>The largest Seventh gap — without it the restore/erase tokens can never post (the whole choice is inert) + the resolver branch token→<code>seventh_choice</code>/<code>ending_codicil</code>.</td>
+<td>plugin / TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>37</td>
+<td>Seventh chamber-3 <code>NamedMobBeat</code> glimpse</td>
+<td>IV.4</td>
+<td>The single un-targeted retreating apparition (P2).</td>
+<td>plugin (inf.)</td>
+</tr>
+<tr>
+<td>38</td>
+<td>The Iss/Seventh ambiguity row</td>
+<td>IV.4</td>
+<td><em>"two hands scraped this stone…"</em> (P2, not yet seeded).</td>
+<td>TS-SHOWRUN (inf.)</td>
+</tr>
+<tr>
+<td>39</td>
+<td><code>D-new the-fire-they-let-out.md</code></td>
+<td>IV.D.3</td>
+<td>The cause-fragment document backing <code>seventh-cause</code>/<code>dest-fire-let-out</code>.</td>
+<td>LORE</td>
+</tr>
+<tr>
+<td>40</td>
+<td><code>keeper.iss.cold</code> body</td>
+<td>IV.1</td>
+<td>The Keeper's cold-Iss node text (only Set-A <code>aro.greet.iss_cold</code> exists, wrong register).</td>
+<td>TS-VOICE / corpus</td>
+</tr>
+<tr>
+<td>41</td>
+<td><code>keeper.rhyme.*</code> bodies</td>
+<td>IV.1</td>
+<td>The per-keeper dossier-rhymed node texts.</td>
+<td>TS-VOICE / corpus</td>
+</tr>
+<tr>
+<td>42</td>
+<td><code>keeper.presiding.neutral</code> body</td>
+<td>IV.1</td>
+<td>The floor body (the nearest authored text is keyed <code>greet.deniable</code>; rename/author).</td>
+<td>TS-VOICE / corpus</td>
+</tr>
+<tr>
+<td>43</td>
+<td>De-slop <code>keeper.atone.cleared</code></td>
+<td>IV.2</td>
+<td>Strike the named feeling <em>"she felt the weight leave the seam"</em> (final string not on disk).</td>
+<td>TS-VOICE (slop E3)</td>
+</tr>
+<tr>
+<td>44</td>
+<td>De-slop <code>keeper.fact9.named</code></td>
+<td>IV.2</td>
+<td>Cut the <em>"you did not, then. you are learning it now"</em> bow (final string not on disk).</td>
+<td>TS-VOICE (slop E4)</td>
+</tr>
+<tr>
+<td>45</td>
+<td><code>eighth_seen</code> flag-set</td>
+<td>IV.D.1</td>
+<td>No shipped row sets <code>eighth_seen</code> (gates <code>keeper.falseLaw</code> + the dialogue branch).</td>
+<td>TS-SHOWRUN / seed</td>
+</tr>
+<tr>
+<td>46</td>
+<td>The End-lane pointer reveal line</td>
+<td>IV.7.1</td>
+<td>The one extra effaced <code>the_unwriting</code> chamber-2 line at <code>seventh_named</code> (a <code>RevealBeat</code>).</td>
+<td>TS-VOICE / TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>47</td>
+<td><code>end_exile_hold</code> INV-16-safe binding + set-piece</td>
+<td>IV.7.4; V.5.2</td>
+<td><code>enabled:false</code>; the chorus-only dressing (no per-player side); ships as Seventh-shrine-alone until built (P2/cuttable).</td>
+<td>BUILDER / TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>48</td>
+<td><code>no-wall-catch</code> <code>next_puzzle_key: rite-tokens</code> repoint</td>
+<td>IV.C.3; V.0</td>
+<td>Remove the L294 shortcut (the F1 monorail) so the rite is reached only through the chain.</td>
+<td>seed / TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>49</td>
+<td>Arc_state Accepting-instant binding writer + <code>grave.run.ts</code> + <code>fate.run.ts</code></td>
+<td>V.0.4; V.4.1; V.5.0</td>
+<td>The instant binding + the I/O wrappers (pure <code>grave.ts</code>/<code>fate.ts</code> policies are built).</td>
+<td>TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>50</td>
+<td>The M5 COMPOSER (<code>composer.ts</code>/<code>m5*.ts</code>)</td>
+<td>V.5.0</td>
+<td>The bounded ≤2-clause + codicil assembler (all clause TEXT exists; the assembler does not). Single largest finale gap.</td>
+<td>TS-SHOWRUN / synthesis</td>
+</tr>
+<tr>
+<td>51</td>
+<td><code>resolve.ts</code> fate-sentinel branch</td>
+<td>V.5.0</td>
+<td>Reads the honored/violated spread → writes <code>arc_state.ending_fate</code> (set-once).</td>
+<td>TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>52</td>
+<td><code>RefusalRiteListener</code> (sets <code>refusalSignal</code>)</td>
+<td>V.5.4</td>
+<td>Without it REFUSERS is unreachable (arc falls through, safe by precision).</td>
+<td>plugin</td>
+</tr>
+<tr>
+<td>53</td>
+<td><code>AcceptingRiteListener</code> <code>readyGate</code> + <code>activeRosterSize</code> wiring</td>
+<td>V.3.1; V.10</td>
+<td>Wire <code>readActiveRoster</code> + the readyGate supplier (unwired → fail-safe defaults).</td>
+<td>TS-SHOWRUN / plugin</td>
+</tr>
+<tr>
+<td>54</td>
+<td>Fate floor-dressing producer</td>
+<td>V.2; V.5</td>
+<td>Marker facing / floor-light geometry on <code>unbroken_light</code> (no sites.yml field — builder dressing).</td>
+<td>BUILDER / TS-SHOWRUN</td>
+</tr>
+<tr>
+<td>55</td>
+<td><code>observance:the_record_receives_you</code> advancement JSON</td>
+<td>V.3.4</td>
+<td>The FACT-14 hidden-toast datapack definition (not verified on disk).</td>
+<td>BUILDER / plugin</td>
+</tr>
+<tr>
+<td>56</td>
+<td>Live <code>/record/the-record-keeps</code> page + <code>/record</code> V-injection (<code>recordReceives</code>)</td>
+<td>I.0; V.4.3; V.8</td>
+<td>The live lure shell + the M5 struck-row fill (<code>record-projection.ts</code> referenced; page build owed).</td>
+<td>dashboard</td>
+</tr>
+<tr>
+<td>57</td>
+<td>Nether <code>carrying</code>/Kept-Light-origin V-tint voice key</td>
+<td>V.6.3</td>
+<td>The <code>nether_forge_found</code> close-clause key.</td>
+<td>TS-VOICE</td>
+</tr>
+<tr>
+<td>58</td>
+<td><code>FateInput.netherForgeFound</code> wiring into <code>decideFate</code></td>
+<td>III-Nether N.2</td>
+<td>PROPOSED; NOT wired (the M5 composer reads it for a tint meanwhile) — pending WEB-MASTER §8 ratification.</td>
+<td>TS-SHOWRUN / synthesis</td>
+</tr>
+<tr>
+<td>59</td>
+<td>Prophet's-wall <code>sites.yml</code> placeholder</td>
+<td>III.4</td>
+<td>The prophet's wall has no site entry of its own (lives near <code>stone_iss</code>).</td>
+<td>BUILDER</td>
+</tr>
+<tr>
+<td>60</td>
+<td><code>from_map</code> transmission flag (FB-2(i))</td>
+<td>I.3</td>
+<td>P2/optional — the map-conduct callback; not built (default-safe without it).</td>
+<td>TS-SHOWRUN (P2)</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Fork C (Spoken Name)</td>
+<td>V.7</td>
+<td>P2/cuttable on blurt risk; the <code>fork-name</code> carve act + persistent delta.</td>
+<td>plugin / TS-SHOWRUN (P2)</td>
+</tr>
+<tr>
+<td>62</td>
+<td>Authored season-2 (Inheritors) corpus</td>
+<td>V.9</td>
+<td>None on disk — only the persistent world-state hooks exist (by design).</td>
+<td>LORE (deferred)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Operator-action (not a build):</strong> rotate the committed Supabase <code>service_role</code> key (Setup A1) — a live key
+is committed in the clear. Tracked here as the highest-priority pre-launch action though it is not a
+"build" gap.</p>
+</blockquote></main></div>
+<div class="toplink" onclick="scrollTo({top:0,behavior:'smooth'})">&uarr;</div>
+<script>
+var doc=document.getElementById('doc');
+var h2s=[].slice.call(doc.querySelectorAll('h2'));
+function section(h){var s=[h],el=h.nextElementSibling;while(el&&el.tagName!=='H2'){s.push(el);el=el.nextElementSibling;}return s;}
+h2s.forEach(function(h){h.addEventListener('click',function(){var c=h.classList.toggle('collapsed');section(h).slice(1).forEach(function(n){n.style.display=c?'none':'';});});});
+var allCollapsed=false;
+document.getElementById('exp').onclick=function(){allCollapsed=!allCollapsed;this.textContent=allCollapsed?'Expand all sections':'Collapse all sections';h2s.forEach(function(h){h.classList.toggle('collapsed',allCollapsed);section(h).slice(1).forEach(function(n){n.style.display=allCollapsed?'none':'';});});};
+var gapOnly=false;
+document.getElementById('gapBtn').onclick=function(){gapOnly=!gapOnly;this.classList.toggle('on',gapOnly);h2s.forEach(function(h){var sec=section(h);var has=sec.some(function(n){return n.querySelector&&n.querySelector('.gap');});sec.forEach(function(n){n.style.display=(!gapOnly||has)?'':'none';});});};
+var q=document.getElementById('q');
+q.oninput=function(){var v=q.value.trim().toLowerCase();h2s.forEach(function(h){var sec=section(h);var txt=sec.map(function(n){return n.textContent;}).join(' ').toLowerCase();var show=!v||txt.indexOf(v)>=0;sec.forEach(function(n){n.style.display=show?'':'none';});});};
+</script></body></html>

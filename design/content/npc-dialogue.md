@@ -400,6 +400,121 @@ Same person, colder. (The corpus separation law, applied to the human register.)
 
 ---
 
+## 7. THE PRESIDING KEEPER — the rite-side NPC (`npc_key: keeper`)   ·   the KeeperNpcBeat tree
+
+> **A different register from §1–§5.** The five surface NPCs are SET A (modern-rough,
+> human). The Keeper is canon **register 3** (`canon-spine §0`; corpus SET C): the NPC who
+> presides over the rite, older than the six prior keepers, nearer the thing the world has
+> become. He speaks **second-person to the group** and half-says **we** of the kept dead.
+> He is **lowercase like the Watcher** but he is **not** the Watcher — the Watcher is
+> third-person and names names; the Keeper addresses *all of you* and names no one (INV-16).
+> He may be a touch more human than the Watcher (the *you*, the half-veiled *we*) but he
+> obeys the de-slop law absolutely and **NEVER states FACT 15**.
+>
+> Text source: every line is authored verbatim in `arc/corpus/npc-and-watcher-voice.md`
+> **SET C** (and the new-thread Watcher keys in **SET B-NEW**). This section is the
+> **tree + branch logic** that drives the **KeeperNpcBeat** — the plugin/showrunner reads
+> a `node_key` + the dossier and posts the bound `keeper.*` text. No English in the beat.
+>
+> **He presides on the rite-side, not the surface** — he appears at `the_threshold` and the
+> Undercroft altar, the places the synthesized threads converge, never at the Mouth where
+> Set A lives. He is the human-presiding twin of the new Watcher keys: each Keeper node has a
+> Watcher key it does not contradict (cross-surface truth law).
+
+### 7.0 How the Keeper tree runs (branch on dossier state)
+
+Same dossier the Watcher and Set A read — **no new measurement**. The Keeper's skin and
+which thread-node he opens are computed from `arc_state.flags` + `punishment_state`:
+
+```
+node_key             dossier read (existing flags/state)                 voice key
+─────────            ──────────────────────────────────                  ─────────
+greet                conduct skin: warm | neutral | cold                 keeper.greet.<skin>
+falseLaw             arc_state.flags.eighth_seen (forged ordinance read) keeper.falseLaw
+seventhChoice/offer  seventh_named == true AND deep open (post-iss_caught) keeper.seventhChoice.offer
+seventhChoice/done   arc_state.flags.seventh_choice ∈ {restore|erase}    keeper.seventhChoice.<restored|erased>
+becomingKeepers      near the rite (M5 on-ramp) + conduct skin           keeper.becomingKeepers.<neutral|warm|cold>
+collectiveRestraint  group_restraint_state.state ∈ {kept|broken}         keeper.collectiveRestraint.<kept|broken>
+endings              arc_state.ending_fate (read AFTER the bow fires)    keeper.endings.<kept|castOut|divided|refusers>
+deadEndTaunt         solved dead_end node + its kind (voice_args.kind)   keeper.deadEndTaunt(<name|count|place|known|prophet>)
+```
+
+Conduct skin resolution is identical to §0.2 (read off `punishment_state` toll_tier/
+deciphered; `iss_caught` is **not** a Keeper-skin input — the Keeper is of the record, not
+Iss-adjacent; he names the catch in `seventhChoice`/`becomingKeepers` by *flag*, not by a
+warm→cold flip). The Keeper has **no `truth_or_lie` tell** — he is the one voice that never
+lies and never reassures falsely; that honesty is his whole function against Iss (C7).
+
+### 7.1 The Keeper tree (nodes → voice keys → branch)
+
+```
+TREE: keeper   (rite-side; cursor follows arc state, not a menu the player drives)
+──────────
+greet ──▶ { falseLaw (if eighth_seen) , seventhChoice (if seventh_named & deep open) ,
+            collectiveRestraint (if restraint armed) , deadEndTaunt (on a dead-end solve) }
+       ──▶ becomingKeepers (M5 on-ramp)
+       ──▶ endings (after the bow)
+```
+
+| node_key | voice key | branch condition | thread / fact | INV |
+|---|---|---|---|---|
+| `greet` (neutral) | `keeper.greet.neutral` | early; nothing measured | the presider, half-veiled | — |
+| `greet` (warm) | `keeper.greet.warm` | KEPT conduct | warmth-under-dread | §6.3 collective |
+| `greet` (cold) | `keeper.greet.cold` | BROKEN conduct | grief not threat; reversible | §6.5, §6.10 |
+| `falseLaw` | `keeper.falseLaw` | `eighth_seen` | the forged eighth (FACT 7b) | INV-17 |
+| `seventhChoice` (offer) | `keeper.seventhChoice.offer` | `seventh_named` & deep open | the Seventh (FACT 10b) | INV-12 (colors, gates nothing) |
+| `seventhChoice` (restored) | `keeper.seventhChoice.restored` | `seventh_choice = restore` | the INHERITORS codicil (FACT 14) | INV-16 |
+| `seventhChoice` (erased) | `keeper.seventhChoice.erased` | `seventh_choice = erase` | the blank left | INV-16 |
+| `becomingKeepers` (neutral) | `keeper.becomingKeepers.neutral` | M5 on-ramp, no skin | the rite (FACT 13/14); door to 15 | §6.2 never blurt |
+| `becomingKeepers` (warm) | `keeper.becomingKeepers.warm` | M5 on-ramp, KEPT | the rite; the keeping made easy | §6.2 never blurt |
+| `becomingKeepers` (cold) | `keeper.becomingKeepers.cold` | M5 on-ramp, BROKEN | the rite; grieves, never gates | §6.2 never blurt; reversible-tone |
+| `endings` (kept) | `keeper.endings.kept` | `ending_fate = kept` | M5 close, human face | INV-11/16 |
+| `endings` (castOut) | `keeper.endings.castOut` | `ending_fate = cast_out` | M5 close | INV-11/16 |
+| `endings` (divided) | `keeper.endings.divided` | `ending_fate = divided` | M5 close; split by geometry | INV-16 |
+| `endings` (refusers) | `keeper.endings.refusers` | `ending_fate = refusers` | M5 close; positive defiance | INV-11 |
+| `collectiveRestraint` (kept) | `keeper.collectiveRestraint.kept` | `group_restraint_state = kept` | the Unlit Deep | INV-17 |
+| `collectiveRestraint` (broken) | `keeper.collectiveRestraint.broken` | `group_restraint_state = broken` | the Unlit Deep; `broken_by` never spoken | INV-17 |
+| `deadEndTaunt` (kind) | `keeper.deadEndTaunt(kind)` | on a dead-end solve; pass the row's `kind` | the honest counterweight to Iss | precision contract |
+
+### 7.2 The cross-surface-truth map (Keeper node ↔ its non-contradicting Watcher key)
+
+Each Keeper node has a Watcher key on the same thread; they never contradict (one voice
+register on every surface). The Keeper says the human-presiding half; the Watcher records
+the flat half. **Both feed the same flags** — the Keeper is read text, not a second source
+of truth.
+
+| Keeper node | paired Watcher key(s) (SET B-NEW) | shared flag / source |
+|---|---|---|
+| `keeper.falseLaw` | `cardEighthForged` (plant) → `archiveEighthCorrection` (catch) | `eighth_seen`; FACT 7b |
+| `keeper.seventhChoice.*` | `keeperCloseSeventhRestored` / `keeperCloseSeventhErased`; `fateInheritorsCodicil` | `seventh_choice`; FACT 10b |
+| `keeper.becomingKeepers.*` | (the rite-side `oracleThreeHands`; the Hold-Book `keeperEnrolled`) | the rite; FACT 13/14 |
+| `keeper.endings.*` | `fateKept` / `fateCastOut` / `fateDivided` / `fateRefusers` (the composer base) | `ending_fate`; INV-11 |
+| `keeper.collectiveRestraint.*` | `tollUnlitDeep` / `keptUnlitDeep`; `CUSTOM_PHRASES.the_unlit_deep` | `group_restraint_state`; INV-17 |
+| `keeper.deadEndTaunt(kind)` | `oracleDeadEnd(kind)` — SAME `kind`, the flat label the Keeper humanizes | the dead-end solve + `voice_args.kind`; precision |
+| (place-filing) `keeper.nameWhere` | `clueDrip` place-filing (BN10) | `player_visited_cells`; FACT 16 |
+
+> **`keeper.nameWhere` (the name-where half-veiled M4 line)** — the BUILD-MANIFEST §4
+> "name-where: the place-filing clueDrip + Keeper half-veiled line" pair. The Watcher drip
+> (`clueDrip`, SET B-NEW BN10) surfaces the place-filing; the Keeper's half-veiled M4 line
+> is authored in SET C as `keeper.nameWhere`:
+>
+> > *"your name is cut where you have not been. the record does not wait for your foot to file
+> > you. it files the ground first and the foot after. before you was never strangers. it
+> > was you, before you came."*
+>
+> Obeys INV-16 (chorus, never which-player) and INV-14 (the back-pointer is read, not typed).
+
+### 7.3 The Keeper register discipline (the hard test)
+
+A Keeper line that reads **third-person ledgerlike** is the Watcher's, not the Keeper's
+(wrong set). A Keeper line with a **contraction, capital, exclamation, or named feeling**
+is Set A's (wrong set). A Keeper line that **finishes the induction thought** ("and so you
+become the watching") **states FACT 15** and is a defect — he stops at "we would keep you,
+if you would keep the ways" and at "i will not say the rest of it." The half-veiled *we* is
+the *only* place the recursion shows, and it only points.
+
+---
+
 ## SCHEMA
 
 ```yaml

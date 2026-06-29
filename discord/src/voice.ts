@@ -22,6 +22,28 @@
 import { ActivityType, type PresenceData } from 'discord.js';
 
 // ---------------------------------------------------------------------------
+// register temperature — the difficulty engine's selection among authored variants.
+// ---------------------------------------------------------------------------
+
+/**
+ * The register temperature a line may be spoken in (A10 `dynamic-diegetic-difficulty`, FACT 2b).
+ * This is a SELECTION among AUTHORED variants, never generated text: the land's grip cools the
+ * Watcher's register when the group races (`cold`) and lets it sit plain when they stumble. It is
+ * the SAME enum as `showrunner/types.ts` `Tone`, re-declared here so voice.ts imports nothing from
+ * the showrunner (it is the leaf module). Absent ⇒ `'plain'` — the neutral the engine emits when no
+ * grip is read, so every existing call site that omits it is byte-for-byte unchanged.
+ */
+export type Tone = 'cold' | 'plain' | 'warm';
+
+/**
+ * The kinds of dead-end taunt the `kind`-switched family speaks (B2 `dead-ends-with-teeth`,
+ * WEB-MASTER §2.1). Each names the CATEGORY of truth a true-but-inert answer belongs to. The
+ * seeded `voice_args.kind` values are exactly these strings; `oracleDeadEnd(kind)` switches on them
+ * and an omitted/unknown kind falls back to the generic line (so old rows never break).
+ */
+export type DeadEndKind = 'name' | 'count' | 'place' | 'known' | 'prophet';
+
+// ---------------------------------------------------------------------------
 // identity — the watcher, the record-keeping facet of the presence.
 // ---------------------------------------------------------------------------
 
@@ -61,20 +83,71 @@ export const voice = {
     return '▒  the record is open. it was open before you.';
   },
 
+  // -------------------------------------------------------------------------
+  // THE COLD-START PROLOGUE / IGNITION (B4 `cold-start-prologue`, WEB-MASTER §1.M1). The first
+  // report is re-staged as a discoverable anomaly. It names a real MEASURED habit IFF one
+  // player's signal is overwhelming (`prologueNamed`), else the un-named FACT-1 fallback
+  // (`prologueUnnamed`) — precision: never a guessed callout. De-slopped, flat.
+  // -------------------------------------------------------------------------
+
+  /** the first report, naming a real measured habit — only on an overwhelming single signal. {custom} completes "has not {custom}". */
+  prologueNamed(name: string, custom: string): string {
+    return `▒  a thing was set out in your place that was not there before. it carries a mark you cannot yet read. it knows the one called ${name} has not ${custom}. it was noted before you knew there was a record to note it.`;
+  },
+
+  /** the un-named first report — the FACT-1 fallback when no single signal dominates (no callout). */
+  prologueUnnamed(): string {
+    return '▒  a thing was set out in your place that was not there before. it carries a mark you cannot yet read. it has been keeping a count of you. the count began before you found the mark.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE OFFLINE-SKIN APPARITION (B3 `offline-skin-apparition`, FACT 9). The M1 plant report
+  // (a logged-off friend, noted not-here) and the M4 named line (the land has begun to wear
+  // the one who stopped coming). The M4 line is the ONE human-approved named beat. De-slopped:
+  // it states what is, names no feeling. {name} = the offline player, canonically rhymed.
+  // -------------------------------------------------------------------------
+
+  /** M1 plant — a friend logged off is noted absent, not-here-to-see-it (reads as "the record watches you leave"). */
+  offlineReportPlant(name: string): string {
+    return `the one called ${name} is not here to see it noted. the record notes the not-here as plainly as the here. it keeps the empty place at the table.`;
+  },
+
+  /** M4 — the land has begun to wear the one who stopped coming (FACT 9 spoken; the one named beat). */
+  offlineSkinNamed(name: string): string {
+    return `the shape in the dark wears the one called ${name}, who has not come down since the night the record stopped entering them as present. it began to wear them from that night. it is not them. it is the place they left.`;
+  },
+
   /**
    * a clue has surfaced (the showrunner's drip). cryptic — never names the puzzle
    * or the answer, only that there is something new set out to be read.
+   *
+   * `tone` (A10) selects among AUTHORED variants — it never generates text and never changes
+   * WHICH node dripped. Optional + defaulting to `'plain'` so every existing caller (`apply.ts`,
+   * `clue-drip.ts`) is unchanged; the cold/warm forms only differ in register, never in fact (each
+   * still says "a thing is set out; read it"). The cold form is shorter and barer (the land's grip
+   * tightens, says less); the warm form is the same offer, a half-beat less terse.
    */
-  drip(): string {
+  drip(tone: Tone = 'plain'): string {
+    if (tone === 'cold') return '▒  a thing is set out where the marks are kept. read it.';
+    if (tone === 'warm') return '▒  something is set out where the marks are kept. read it, if you can. it will keep.';
     return '▒  something is set out where the marks are kept. read it, if you can.';
   },
 
   /**
    * a report of conduct observed but not yet escalated.
    * {days} kept, {name} has not {custom}. noted, not punished.
+   *
+   * `tone` (A10) is an OPTIONAL trailing SELECTION among authored closers — it never changes the
+   * grounded facts ({days}/{name}/{custom}) and never changes whether the rung fired. It defaults to
+   * `'plain'`, which returns the line byte-for-byte as before, so `customs.ts`, `reports.ts`, and the
+   * customs self-test (which pin the plain prose) are unchanged. The cold closer states the count and
+   * stops (the land's grip tightened — it says less); the warm closer is the same note, unhurried.
    */
-  reportObserved(name: string, days: number, custom: string): string {
-    return `${days} days kept. the one called ${name} has not ${custom}. it has been noted.`;
+  reportObserved(name: string, days: number, custom: string, tone: Tone = 'plain'): string {
+    const head = `${days} days kept. the one called ${name} has not ${custom}.`;
+    if (tone === 'cold') return `${head} it is counted.`;
+    if (tone === 'warm') return `${head} it has been noted. there is time yet.`;
+    return `${head} it has been noted.`;
   },
 
   /** a report escalated — the soft-pressure turns cold. by conduct, not by name-as-chosen. */
@@ -173,9 +246,31 @@ export const voice = {
   /**
    * dead_end — a TRUE answer that is deliberately not a door. the watcher does
    * NOT call it wrong; it acknowledges, and it leads nowhere. heard, not opened.
+   *
+   * The `kind`-switched family (B2 `dead-ends-with-teeth`, WEB-MASTER §2.1). Each variant states
+   * exactly the CATEGORY of truth + its inertness and NOTHING else — no gloat, no threat, no named
+   * feeling (the teeth belong to the liar, not the Watcher; the precision contract). The taunt is
+   * flat and honest. `kind` is OPTIONAL: omitted (or unknown) → the generic line, byte-for-byte as
+   * before, so every existing `oracleDeadEnd()` caller and seed row is unchanged. The five kinds map
+   * to the seeded `voice_args.kind` values: `name` (a true name), `count` (a true count), `place`
+   * (a true place-reading), `known` (a true reading of a real carving — e.g. the forged eighth),
+   * `prophet` (a warm promise that decodes true — the prophet's wall).
    */
-  oracleDeadEnd(): string {
-    return 'yes. that is the true name of it. and it opens nothing. some things are only true.';
+  oracleDeadEnd(kind?: DeadEndKind): string {
+    switch (kind) {
+      case 'name':
+        return 'a true name. it keeps no door. some things are only true.';
+      case 'count':
+        return 'the count is right. it opens nothing. a right count is not a key.';
+      case 'place':
+        return 'that is the place. it was read true. it leads nowhere it has not already led you.';
+      case 'known':
+        return 'this is carved, and you have read it true. it is not kept. a thing can be set down and never be a way.';
+      case 'prophet':
+        return 'every word of it decodes. each is true, and each opens nothing. read who carved it, after.';
+      default:
+        return 'yes. that is the true name of it. and it opens nothing. some things are only true.';
+    }
   },
 
   /** side_quest — true, off the spine. not the way, but a way. */
@@ -190,12 +285,296 @@ export const voice = {
   },
 
   /**
+   * three_hands (A6 `cross-surface-coop-gate`) — the coop gate clears: foot on the plate + carve +
+   * discord, three acts in one window, active-only. main_beat-class, but its own line. De-slopped
+   * per slop A4 (objects do not "remember three") + BUILD-MANIFEST §4: flat, a count and a state.
+   */
+  oracleThreeHands(): string {
+    return 'the count is three. the threshold is open.';
+  },
+
+  /**
+   * meta_unkept (B1 `day-one-meta-puzzle`) — the six maker's marks, read in fall-order, spell the
+   * word each keeper failed to keep. gates nothing; pure re-read. {fragment} is the seeded telling
+   * (the fall-order key + the word), passed through like {@link oracleLore} so the resolver routes
+   * its `voice_args.fragment`; empty falls back in register, never an error.
+   */
+  oracleMetaUnkept(fragment: string): string {
+    return fragment;
+  },
+
+  /**
+   * record_elsewhere (A13 `arg-leaves-the-game`) — the decoded founder line points off-world: the
+   * record is kept in more than one place. gates nothing. {fragment} carries the decoded path
+   * (passed through; the page itself is the payoff, not this line).
+   */
+  recordElsewhere(fragment: string): string {
+    return fragment;
+  },
+
+  /**
+   * docket_reread (A3 the Hold-Book down-count, WEB-MASTER §4) — the M4 re-read: the down-count was
+   * never a doom-clock, it was the muster of present hands. {fragment} is the seeded telling (the
+   * chiasmus is CUT per slop A3 — the seed carries the flat form). passed through.
+   */
+  docketReread(fragment: string): string {
+    return fragment;
+  },
+
+  /**
    * the player is rate-limited or has reached a puzzle's attempt cap. it
    * withholds — it does not refuse, and it never says "wrong" or "too many".
    * same shape as noBudget: a patient, certain "not now".
    */
   oracleWithheld(): string {
     return 'you have asked enough of this one, for now. rest. the marks will keep.';
+  },
+
+  // -------------------------------------------------------------------------
+  // DIFFICULTY register lines (A10 `dynamic-diegetic-difficulty`, FACT 2b, INV-15).
+  // The land's grip is not fixed. These two lines are the rare EXPLICIT statements of
+  // the grip (the cadence/tone scaling is felt, mostly unspoken); the showrunner may
+  // drip one when the register state CROSSES. De-slopped (slop A2): they state what is,
+  // name no mercy, resolve no meaning. Never touch the Whisper backstop (INV-15).
+  // -------------------------------------------------------------------------
+
+  /** the grip tightens — the group raced ahead; the land closes a little (FACT 2b/10). */
+  deepTightens(): string {
+    return 'you go quickly. the deep keeps a closer count of the quick. it says less now.';
+  },
+
+  /** the grip relents — the group stumbled; the land opens a little (FACT 2b). */
+  deepIsPatient(): string {
+    return 'you have stumbled, and the deep is patient with the stumbling. take the time it gives.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE HOLD-BOOK — page bodies (A3 UNIFIED Hold-Book, WEB-MASTER §4, FACT 9/12/14).
+  // keeper-record.ts chooses one of these KEYS per page row (the deterministic fallback
+  // behind the optional LLM scalpel). The living row is the flat Archivist register; the
+  // per-keeper heading/hand lines each obey that keeper's GRAMMATICAL FINGERPRINT
+  // (WEB-MASTER §6) so the six do not collapse into one voice. {name} is the living player.
+  // The keeper hands are Set-B record-recital (lowercase, no exclaim) — the keepers as the
+  // record recites them, NOT the Set-A surface NPCs.
+  // -------------------------------------------------------------------------
+
+  /** M1 — the flat Archivist living-habit row, no keeper heading yet. */
+  keeperPageLiving(name: string): string {
+    return `a new hand is at the mouth. the one called ${name} is entered, and the habits of the one called ${name} are entered under no heading yet.`;
+  },
+
+  // M3 — the row moves UNDER a keeper heading (the first "oh—"). Per-keeper fingerprint.
+  /** vaun: accumulates, will not release; the possessive recurs. */
+  keeperPageHeading_vaun(name: string): string {
+    return `under vaun. the one called ${name} keeps, and keeps, and the keeping is theirs, and what is theirs is not given back. the column for giving-back stands open under their name as it stood open under his.`;
+  },
+  /** mara: referential and deferred; page/line citations. */
+  keeperPageHeading_mara(name: string): string {
+    return `under mara. the one called ${name} reads the way down, and reads it again, page to page; i read that they read, and did not yet walk it.`;
+  },
+  /** sella: mirrored and receding; folds back spatially; child-adjacent. */
+  keeperPageHeading_sella(name: string): string {
+    return `under sella. the one called ${name} goes to the far edge and the edge gives them back smaller, and smaller, the way the water gives a face back wrong.`;
+  },
+  /** orin: breaks off, will not finish; incomplete strokes. */
+  keeperPageHeading_orin(name: string): string {
+    return `under orin. the one called ${name} passes the markers and does not stoop, and the stroke for the stooping is begun and not — `;
+  },
+  /** brann: repeats and over-corrects; counts and re-counts. */
+  keeperPageHeading_brann(name: string): string {
+    return `under brann. the one called ${name} keeps the watch, keeps the watch, on the black moon, and counts the dark twice and is not sure of the count, and counts it again.`;
+  },
+  /** iss: warm, plain, confident; the only keeper who reassures; frames, never counts. */
+  keeperPageHeading_iss(name: string): string {
+    return `under iss. the one called ${name} is told the way is a wall and is easy inside it. there is no count under this heading. there was never a count.`;
+  },
+
+  // M4 — the keeper's OWN hand writes the living player. The optional LLM scalpel may
+  // replace the *.clause slot (resolveAuthorClause); these are the deterministic page body
+  // and the deterministic clause behind it. Both hold the fingerprint.
+  keeperPageHand_vaun(name: string): string {
+    return `i, vaun, write the one called ${name} into my column, and they are mine to enter, and i do not strike the column, i am instructed not to strike it.`;
+  },
+  /** the constrained clause the scalpel may replace in-register, or this stands (vaun). */
+  'keeperPageHand_vaun.clause'(): string {
+    return 'mine to enter, and not given back';
+  },
+  keeperPageHand_mara(name: string): string {
+    return `i, mara, write that the one called ${name} read the rite i read, on the page i read it, and went down the way i never went.`;
+  },
+  'keeperPageHand_mara.clause'(): string {
+    return 'read the way down, as i read it, and walked where i did not';
+  },
+  keeperPageHand_sella(name: string): string {
+    return `i, sella, write the one called ${name} at the shore, and the shore writes them back at me, smaller, where the water keeps the ones it kept.`;
+  },
+  'keeperPageHand_sella.clause'(): string {
+    return 'at the far shore, given back smaller';
+  },
+  keeperPageHand_orin(name: string): string {
+    return `i, orin, set the one called ${name} at the threshold and meant to cut the rest and the rest is not — `;
+  },
+  'keeperPageHand_orin.clause'(): string {
+    return 'set at the threshold, the stroke unfinished';
+  },
+  keeperPageHand_brann(name: string): string {
+    return `i, brann, write the one called ${name} into the watch, into the watch, and the hand wrote them twice and did not remember writing it once.`;
+  },
+  'keeperPageHand_brann.clause'(): string {
+    return 'entered in the watch, and entered again';
+  },
+  keeperPageHand_iss(name: string): string {
+    return `i write the one called ${name} and i tell them they are kept, and i do not count them, and the not-counting is the lie i was caught in.`;
+  },
+  'keeperPageHand_iss.clause'(): string {
+    return 'told they are kept, and never counted';
+  },
+
+  /** M5 — the book's last page rewrites to the record's flat closing hand (WEB-MASTER §1.M5). */
+  docketEven(): string {
+    return 'the present hands are entered. the book is even. the same book, the same hand, as all the ways above you.';
+  },
+
+  /**
+   * the keeper-enrolment acknowledgement — a NEUTRAL colorant (WEB-MASTER §4): it never elects a
+   * chosen one, never gates. spoken once a living player is first moved under a keeper heading.
+   * {name} the player, {keeper} the keeper they rhyme with (lowercase canon name).
+   */
+  keeperEnrolled(name: string, keeper: string): string {
+    return `the one called ${name} is entered under ${keeper}. the heading is not a sentence. it is where the record set them.`;
+  },
+
+  // -------------------------------------------------------------------------
+  // THE DIVERGENT FATES — the M5 composer's base close (A2 `divergent-fates`, INV-11/16).
+  // The composer (WEB-MASTER §5) opens with ONE of these, chosen by `decideFate`. Each names
+  // NO player and reads the GROUP enum only (INV-16). The persistent floor dressing is the
+  // camera-legible delta; the sentence only confirms what the floor already showed.
+  // -------------------------------------------------------------------------
+
+  /** kept — high honored ratio + a spine payoff + full quorum; the markers face out. */
+  fateKept(): string {
+    return 'the hands are in, and they are kept. the markers face out. the way is open the way it was open before you, and will be after.';
+  },
+  /** cast_out — violated dominates + a real leaving; the markers face away. */
+  fateCastOut(): string {
+    return 'the count is closed and it is short. the markers face away. what was owed was not returned, and the record enters it so.';
+  },
+  /** divided — a real honored/violated spread; the light holds on half the floor BY GEOMETRY (INV-16). */
+  fateDivided(): string {
+    return 'the light holds on one side of the floor and not the other. the record does not say which hands stood where. it says only that the floor is divided.';
+  },
+  /** refusers (secret) — quorum present + a positive defiance signal; the bow window empty. */
+  fateRefusers(): string {
+    return 'the hands were all present, and the bow was not made. that too is entered. the record keeps the refusal as plainly as it keeps the keeping.';
+  },
+  /** inheritors codicil — the +1 clause; a mark left at the Seventh shrine for the next hand. */
+  fateInheritorsCodicil(): string {
+    return 'a mark is left for a hand not yet here. the deposit slot is cut and waiting, the way yours was cut and waiting before you came.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE SEVENTH CHOICE — restore/erase (A1 `the-seventh-spine`, FACT 10b). Each feeds the
+  // M5 composer as ONE tinted clause + one persistent block-state (the re-warmed hearth for
+  // restore, the blank wall for erase). De-slopped: states the act, no thematic bow.
+  // -------------------------------------------------------------------------
+
+  /** restore — the group completed the unwriting's undoing; the seventh's name is set back. */
+  keeperCloseSeventhRestored(): string {
+    return 'the name that was cut out is cut back in. the hearth below the cold hearth is lit again. one that broke nothing is kept, late.';
+  },
+  /** erase — the group completed the erasure; the wall stays blank. */
+  keeperCloseSeventhErased(): string {
+    return 'the name stays out. the wall below the cold hearth stays blank. the record keeps the blank where the name would go, and does not fill it.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE PERMANENCE FORKS — leaf lines (A11 `exclusive-forks`, INV-12). Each colors the M5
+  // close (never gates). De-slopped per slop B2 (the kept-light leaf must not reassure) /
+  // INV-13 (the glowing Sacred Beast is the tracked one).
+  // -------------------------------------------------------------------------
+
+  /** Fork A transgressor — the glowing Sacred Beast was killed; the shepherd boon is closed. */
+  forkSacredBeastBroken(): string {
+    return 'the one that glowed is down. the boon it would have lent is closed, and stays closed. the herd keeps the death-spot in its facing.';
+  },
+  /** Fork B boon — the eternal flame was drawn from and kept; the undercroft stays lit. */
+  forkLightKept(): string {
+    return 'the light came up the stair on its own. you carried it. that is how it is carried.';
+  },
+  /** Fork B transgressor — the flame was banked/taken; the undercroft stays dark for the arc. */
+  forkLightTaken(): string {
+    return 'the flame is banked, and the room it warmed stays dark. the light that was lent is taken, and the deep is colder by it.';
+  },
+  /** Fork C boon — the unspoken name was withheld. */
+  forkNameUnspoken(): string {
+    return 'the name was not shaped. the word stays shut, the way the sixth way is left blank in the book.';
+  },
+  /** Fork C transgressor — the name was carved/spoken; a faint successor-of-iss read. */
+  forkNameSpoken(): string {
+    return 'the name was cut into the stone. the record keeps it, and keeps a faint line under it, the way it kept the one who turned away.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE FUTURE-DATED GRAVE — (A9 `future-dated-grave`, FACT 13b, INV-14). grave.ts emits
+  // `graveCarved` (the future-dated headstone) + `graveOpened` (the rewrite at the Accepting
+  // instant). graveReceipt is the PRIVATE per-player receipt (de-slopped per slop A1: no
+  // warmth, no self-justification). {name} is the grounded active subject.
+  // -------------------------------------------------------------------------
+
+  /** the headstone is cut: a living name + a future date (read as a death clock; the misread IS the mechanic). */
+  graveCarved(name: string): string {
+    return `the stone for the one called ${name} is cut. it carries a date that has not come. the stone is cut before the keeper is kept.`;
+  },
+  /** the grave opens from the inside on its date (== the Accepting instant): KEPT — NOT YET → KEPT. */
+  graveOpened(name: string): string {
+    return `the stone for the one called ${name} is opened from the inside. the date was not a death. it was an appointment. the hole is the deposit slot.`;
+  },
+  /** the private receipt — handed to the one whose name was read first (de-slopped per slop A1). */
+  graveReceipt(name: string): string {
+    return `the one called ${name}. read first. cut first. the rest are not yet cut. they will be.`;
+  },
+
+  // -------------------------------------------------------------------------
+  // THE RECORD WEBSITE — (A13 `arg-leaves-the-game`). recordReceives is the V-line the page
+  // adds when the group's own names are entered "received" (FACT 14). De-slopped, flat.
+  // (recordElsewhere — the M2 decode line — lives in the oracle block above.)
+  // -------------------------------------------------------------------------
+
+  /** the off-world record adds the group's names at V: received. */
+  recordReceives(): string {
+    return 'the record receives the present hands. they are entered in the other place too, against the loss of this one.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE FALSE LAW — the forged eighth (A4 `some-laws-are-lies`, FACT 7b, INV-17). The forged
+  // ordinance text + the M4 record correction. The forgery credits no "me" (slop B4); the
+  // correction names it added-not-found, flatly.
+  // -------------------------------------------------------------------------
+
+  /** the forged ordinance, found among the true seven (the anonymous lie; reads as one more law). */
+  cardEighthForged(): string {
+    return 'the founders set the ways and did not finish the count. the eighth is the covering of the hands. cover, and be counted clean.';
+  },
+  /** the M4 correction — the record names the eighth added-not-found, and does not enforce it. */
+  archiveEighthCorrection(): string {
+    return 'the eighth was added by a later hand, and is not in the founders’ ring, and was never measured. obey it and nothing answers. that is how a forged way is known.';
+  },
+
+  // -------------------------------------------------------------------------
+  // THE COLLECTIVE-RESTRAINT BREAK — the Unlit Deep (A5 `collective-restraint-custom`).
+  // The toll/kept lines for the ONE group latch (`the_unlit_deep`). These live in voice.ts
+  // (NOT voice.archive.ts) because BUILD-MANIFEST §4 + the customKeyNamespaceSelfTest require
+  // the canonical `the_unlit_deep` key to be present in voice.ts. Objects do not remember/want
+  // (slop A4); the lines are flat. Reversible (warmth, not progress); broken_by never spoken.
+  // -------------------------------------------------------------------------
+
+  /** the latch broke: below the line, on the black moon, a flame was lit — the borrowed glow withdraws. */
+  tollUnlitDeep(): string {
+    return 'a flame was lit below the line, on the black moon, where the deep keeps its one fire and asks for no other. the borrowed glow is drawn back. it is drawn back for all, not for the hand that lit it.';
+  },
+  /** the latch is kept: no carried flame in the window — the never-doused fire lends its glow. */
+  keptUnlitDeep(): string {
+    return 'no flame was carried below the line on the black moon. the one fire that was never put out lends its glow. it is lent to all of you, while it is kept.';
   },
 } as const;
 
@@ -220,6 +599,10 @@ const CUSTOM_PHRASES: Readonly<Record<string, string>> = {
   the_unspoken: 'kept the word unspoken',
   the_sacred_beast: 'spared what is not to be taken',
   the_dark_hours: 'kept from the dark hours',
+  // the ONE group latch (A5 `collective-restraint-custom`, WEB-MASTER §3.1). Present here per
+  // BUILD-MANIFEST §4 so the canonical `the_unlit_deep` key lives in voice.ts (the namespace guard
+  // threads it once TS-FORGE adds it to CUSTOM_KEYS). Completes "has not {custom}" in register.
+  the_unlit_deep: 'kept the deep unlit on the black moon',
 } as const;
 
 /**
@@ -243,4 +626,9 @@ export type OracleVoiceKey =
   | 'oracleLore'
   | 'oracleDeadEnd'
   | 'oracleSideQuest'
-  | 'oracleMainBeat';
+  | 'oracleMainBeat'
+  // web-realization oracle keys named by puzzles_seed.sql `outcome_payload.voice_key`:
+  | 'oracleThreeHands' // A6 coop gate (fixed)
+  | 'oracleMetaUnkept' // B1 the UNKEPT meta (fragment passthrough)
+  | 'recordElsewhere' // A13 the Record website decode (fragment passthrough)
+  | 'docketReread'; // A3 the Hold-Book down-count re-read (fragment passthrough)

@@ -35,6 +35,27 @@
   lamps against names is off by one the record cannot reconcile, "and the surplus is not an error."
 - **R12–R16 (the failing forms) DEGRADE alongside the keepers' late journals** (D08 Brann, the abandonment),
   the watch-log losing its hours, the ration sheet its hand, the last notice its sentence.
+- **R06a (the keeper-stones squared against the roll) is the official face of the effaced Seventh** —
+  `the-fire-they-let-out` / `the-seventh-not-kept` (FACT 10b): six stones, six names, and a seventh name
+  on the roll struck *by ordinance, not by the deep*, the column scraped not blank — the slot a present
+  hand could close (the restore/erase fork at the unwriting).
+- **R07a (the correction to the ordinances) is the official falsification of the forged eighth** —
+  `the-eighth-way` (FACT 7b / INV-17): six marks in the ring, no toll mustered against the covering,
+  the signature glyph resolving to "cover one's own." The forgery is a board hung, not a way cut.
+- **R02a (the posted procedure of the covering) is the forged eighth's *enrollment* face** —
+  the same forgery (`the-eighth-way`; FACT 7b / INV-17) seen one step earlier than R07a's correction:
+  a clean posted notice in the form of R02, instructing hands HOW to cover at the report, "by order of"
+  an office that is not in the founding charter. Its very tidiness is the lie — a real way needs no
+  procedure posted, because the land mustered it; this one needs a notice because nothing else enforces it.
+- **R11a (the slot squared against the deposit) is the restore/erase fork in the inventory clerk's hand** —
+  the Seventh's scraped column (R06a) set beside the empty offering-slot cut below the unwriting
+  (`the_unwriting`; `seventh_choice`): one slot scraped, one slot waiting, "and a present hand may make
+  the two agree, by writing the name back or by working the rule away." The `INHERITORS` codicil
+  (`seventh_choice = restore`) is the act of leaving a mark in the waiting slot for a hand not yet here.
+- **R10a (the disposition of the last full generation) is the official precedent for the divergent fate** —
+  per-conduct columns, KEPT / LEFT AT THE THRESHOLD / REFUSED, naming no hand (INV-11); it also enters the
+  turned-away hand's wide warm board-wall of true-but-empty promises (the prophet wall; the columnar name
+  read *after*).
 
 ---
 
@@ -104,6 +125,44 @@
 
 > *Below, scratched not printed, in a hand that did not have the authority to amend a notice:*
 > *we kept them all lit for so long. tell whoever reads this we kept them so long.*
+
+---
+
+### R02a — POSTED PROCEDURE: THE COVERING OF THE HANDS (posted notice · the breaking · "by the office of the covering")
+
+> *The forged eighth law (`the-eighth-way`; FACT 7b / INV-17) caught one step earlier than R07a's correction —
+> not as a board found and falsified, but as a working procedure, posted clean in the exact form of R02, as
+> though it had always been law. This is the enrollment face: it tells a hand HOW to keep the covering, with
+> numbered steps and an issuing office. The tell is structural and bureaucratic — the office at its head
+> ("the office of the covering") is in no charter and on no roll, and a true way (R01, R02) is posted as
+> received, never as procedure, because the land mustered it and needed no clerk to. Counted in the founders'
+> RING (six marks), never fall-order. A careful hand could keep this every winter and never find the seam,
+> because the seam is not in any step; it is in the silence where a toll should answer. Never names the Dark.*
+
+```
+                        POSTED AT THE MARKERS
+                     BY THE OFFICE OF THE COVERING
+
+  THE EIGHTH WAY IS THE COVERING OF THE HANDS. IT IS KEPT THUS:
+
+  1.  At the report, a hand that has lapsed in any way is laid OVER the working
+      hand, so the record sees the keeping and not the lapse.
+  2.  The covered hand is entered CLEAN. The lapse is not entered. There is
+      nothing to enter, for the covering is itself the keeping of this way.
+  3.  Cover early. A lapse covered before the muster is a lapse that was never.
+  4.  This way asks nothing you do not already do. It adds no labor, only a
+      manner of the hands at the report. Keep it and be counted clean.
+
+  THE ORDER WAS SEVEN. THE ORDER IS EIGHT. KEEP THE EIGHTH AND BE EASY.
+```
+
+> *Below, in the Counter's hand, not the office's — pinned later, the seam named:*
+> *i hold every roll. there is no office of the covering. i went to the charter (R01) and counted the
+> founders' ring and there are six marks and the order is seven. an office that posts a procedure for a
+> way is an office that knows the land will not post it for them. the true ways were never posted as steps.
+> they were posted as received. read the head of this notice and ask which charter made that office. none
+> did. a man made it, to be obeyed. the lie is not in the steps. the steps work. the lie is that nothing
+> answers when you keep them, and nothing answers when you do not — and only a true way answers at all.*
 
 ---
 
@@ -251,6 +310,59 @@
 
 ---
 
+### R06a — RECONCILIATION OF THE ROLLS AGAINST THE STONES (reconciliation record · the breaking · the Counter of the Kept)
+
+> *A record kept beside the Survey (R06), squaring the keeper-stones cut below the markers against the
+> names entered on the household roll. Six stones, six names — and a name on the roll with no stone, and
+> the order that struck it. The OFFICIAL face of the effaced Seventh (FACT 10b / `the-fire-they-let-out`,
+> `the-seventh-not-kept`): the record does not say she was cast out; it enters that her column was struck,
+> and that the striking was for keeping, not for lapse. Never names the Dark. The horror is the clean form.*
+
+```
+  RECONCILIATION · KEEPER-STONES AGAINST THE ROLL · the Counter of the Kept
+  the stones cut below the markers, squared against the names of those kept.
+  ────────────────────────────────────────────────────────────────────────
+   STONE   NAME ON THE STONE     ON THE ROLL    KEPT EVEN
+  ────────────────────────────────────────────────────────────────────────
+   i       vaun                       yes           struck — kept
+   ii      mara                       yes           struck — kept
+   iii     sella                      yes           struck — kept
+   iv      orin                       yes           struck — kept
+   v       brann                      yes           struck — kept
+   vi      [the turned-away hand]     yes           struck — kept (see R06)
+  ────────────────────────────────────────────────────────────────────────
+   —       [████]                     yes           struck — NOT BY THE DEEP
+  ────────────────────────────────────────────────────────────────────────
+
+   STANDING NOTE OF THE COUNTER:
+   six stones below the markers, six names. the roll carries a seventh name and
+   there is no stone for it. i went down and counted the stones twice, the way
+   vaun counted, and there are six and there is no seventh, and the seventh name
+   is on the roll in full and is struck.
+
+   i am to enter the cause of every striking. the six were struck by the deep —
+   counted, kept, taken into the column the deep keeps (R03, R10). the seventh
+   was not. the seventh kept every way. the offering full. the bow at every
+   marker. the light never low. i looked for the lapse, as i am bound to. there
+   is no lapse entered against the seventh in any book i hold.
+
+   the seventh was struck BY ORDINANCE. a hand of the breaking ordered the name
+   off the rolls and no stone cut, "the record being unable to bear what it could
+   not account for: a hand that kept all the ways and was not kept." this is the
+   only striking in all my books that is not the deep's. it is ours. we did the
+   one thing the deep did not do to her, which is refuse her, and then we struck
+   the refusing so it would not have to be read.
+```
+
+> *Foot, the Counter, later hand:* *the column for the seventh is open and ruled and bears no name,
+> because the name was scraped, not entered blank. there is a difference. a blank column waits to be
+> filled. a scraped one was filled and then unfilled by a hand that wanted it gone. i have left the
+> ruling. a later hand may write the name back into it, or work the rule away for good. i have not the
+> standing to do either. i have only the standing to enter that the slot is here, and that it is the one
+> column in all the books that a present hand could still close.*
+
+---
+
 ### R07 — ORDINANCE ON THE SPEAKING (posted notice · the breaking · WARDEN-3)
 
 > *A containment-style notice about the Unspoken, posted after the Break, when the ways had begun to be
@@ -281,6 +393,58 @@
 > *Below the notice, in chalk, a child's letters, not an official hand:*
 > *i never said it. i drew it. that is not the same. — s.*
 > *(an official hand has not struck this out, only entered beside it: "the child is correct. it is not the same. it is worse." )*
+
+---
+
+### R07a — CORRECTION TO THE ORDINANCES: AN ORDER NOT OF THE RING (record · the breaking · the Counter of the Kept)
+
+> *The administrative correction of the forged eighth law (`the-eighth-way`; FACT 7b / INV-17). The Counter
+> finds a fresh-cut ordinance hung over the older carvings, claiming the ways are eight, and enters that the
+> founders' ring carries six marks and that nothing is mustered against the new way. The proof of the lie is
+> bureaucratic: the record has no field for it because the land set no toll for it. The flat correction is the
+> grammar of forgery the group later turns on Iss. Uses the founders'-RING count (six marks), not fall-order.*
+
+```
+  CORRECTION TO THE STANDING ORDINANCES · the Counter of the Kept
+  entered against the board lately hung at the markers, "THE EIGHTH WAY."
+  ────────────────────────────────────────────────────────────────────────
+   IT IS FOUND:
+
+   1.  A board is hung over the older carvings, not cut among them. The cut is
+       fresh, shallow, quick. There is no name at its head. It orders an eighth
+       way: the covering of the hands, that a lapsed hand be laid over the
+       working hand at the report, "so the record sees the keeping and not the
+       lapse, and the hand is counted clean."
+
+   2.  The founders' ring is counted. There are SIX marks cut around the first
+       stone, and the standing order is SEVEN ways (R01), the sixth way being
+       the blank one. There is no mark for an eighth. The ring does not carry it.
+       The board adds a way the founders did not cut.
+
+   3.  The maker's-signature glyph at the foot of the board is read in the keyed
+       script. It does not resolve to a way. It resolves to: COVER ONE'S OWN.
+       The ordinance is signed, in its own hand, with the thing it is for.
+
+   4.  No toll is mustered against the covering. The Counter has held every roll
+       for [████] winters. No hand has ever come off a roll, nor a lamp gone
+       cold, nor a marker stood unbowed, FOR FAILING TO COVER A HAND. The way is
+       not kept and nothing answers the not-keeping. A way the land does not
+       muster is not a way. It is a board a man hung.
+
+   FINDING: the order is SEVEN, and one deep keeping below the Line that is not
+   mustered at the report (R-deep). The eighth is added, not found. It was hung
+   by a hand that wished to be obeyed, and the wishing is in the signature. It
+   is entered here as a forgery and not as a way. The board is not struck down;
+   it is left hung, and this correction is pinned beside it, "that a later hand
+   may read both and know which the record keeps."
+```
+
+> *Margin, the Counter, plain:* *a man may add a law. he cannot add a toll. the land set the tolls and
+> the land does not read his board. obey his eighth way every winter of your life and the only thing that
+> ever happens is nothing — which is the same nothing that happens when you obey a true way, so a careful
+> hand could be fooled a long while. the tell is not in the keeping. it is in the lapse. break a true way
+> and the land answers. break his, and cover, and uncover, and break it again — the land never once looks
+> up. that silence is the whole of the lie, and it is a silence you have to break the law to hear.*
 
 ---
 
@@ -402,6 +566,68 @@
 
 ---
 
+### R10a — DISPOSITION OF THE LAST FULL GENERATION (disposition record · the breaking → the going-out · the Counter of the Kept)
+
+> *The official sorting of the last full generation by per-conduct column — each hand entered KEPT or LEFT
+> AT THE THRESHOLD, by its own column, "there being no favourite, only the column" (R08). This is the
+> in-record PRECEDENT for the divergent fate (INV-11): the disposition is not one fate for the household
+> but a spread, read off the columns, naming no chosen hand. It also enters, flatly, the wide warm wall a
+> hand hung at the west path — a row of promises that opened nothing — and the one disposition the column
+> could not resolve. The selector keys on the spread, never on a name; the record does the same.*
+
+```
+  DISPOSITION · THE LAST FULL GENERATION · the Counter of the Kept
+  each hand by its own column. the disposition is not one. it is the spread.
+  ────────────────────────────────────────────────────────────────────────
+   COLUMN READ            HANDS SO ENTERED        DISPOSITION
+  ────────────────────────────────────────────────────────────────────────
+   kept the ways whole    [the greater part]      KEPT — the way brought near
+   lapsed and mended      [some]                  KEPT — the column crossed
+                                                  back clean (R08)
+   left upright, unbowed   i (the mason)          LEFT AT THE THRESHOLD —
+                                                  not slain, not driven; the
+                                                  way brought no nearer (R08)
+   turned away below       i (struck; see R06)    not of this disposition; the
+                                                  deep's column, not the watch's
+   kept harder than all    i (struck; see R06a)   REFUSED — kept every way and
+                                                  the door did not open; not in
+                                                  the watch's gift to dispose
+  ────────────────────────────────────────────────────────────────────────
+
+   STANDING NOTE OF THE COUNTER:
+   i am asked, at the going-out, for THE disposition of the household, as though
+   it were one. it is not one. some are kept and some are left and one was
+   refused who lapsed in nothing, and the columns do not agree, and i will not
+   make them agree by striking the ones that spoil the sum. the spread is the
+   disposition. read down the column, not across the household. there is no hand
+   i can point to and say THIS one settled it for the rest. the floor of the
+   threshold lies half in the kept light and half outside it and the line
+   between is not drawn at any one hand's feet. it is drawn at the ways. i enter
+   it as it lies. a later household will be disposed the same way — by its
+   columns, not by its name — and the floor will hold the light or split it or
+   gutter, and no hand will have been the hand. that is the form. i did not make
+   the form. i only keep it even.
+
+   ────────────────────────────────────────────────────────────────────────
+   ENTERED ALSO, against the west path, below the markers:
+   a board-wall, fresh-cut, wide and low, hung by the turned-away hand. it
+   carries no toll and no way. it carries promises, a course of them, each true
+   and each opening nothing: the cold is lifted; the road is walked and the
+   walker came back; the wall keeps you, keep it and be easy. every line reads
+   true. not one is a way. a hand may stand and read the whole wall and be
+   warmed and pass no gate, for there is no gate in it — only a wide wall of
+   true things that keep no door. the maker's name is not at the head. it is in
+   the wall, cut columnar down the warm lines, to be read AFTER, by a hand that
+   has learned to read who carved a thing. it reads as his. the watch enters the
+   wall as found and bars no hand from reading it. it warns only: a true word is
+   not a way. count the gates the wall opens. the count is none.
+```
+
+> *(No margin. The Counter would not warm this one, and the wall the Counter would not credit; the credit
+> the wall keeps for itself, columnar, for whoever reads it after.)*
+
+---
+
 ### R11 — INVENTORY OF THE SET-APART (inventory · the going-out · the Lamp-Registrar, last full form)
 
 > *An inventory of the lamps "set apart" under R02 cl.4 — lights returned from below the Deep Line, never
@@ -437,6 +663,54 @@
                                                                    look at entry 5."
   ─────────────────────────────────────────────────────────────────────
 ```
+
+---
+
+### R11a — THE TWO SLOTS, SQUARED (inventory/reconciliation record · the going-out · the Counter of the Kept, last reconciliation)
+
+> *The administrative face of the restore/erase fork (`seventh_choice`; FACT 10b). The Counter, holding the
+> books one last time, sets the Seventh's scraped column (R06a) beside the empty offering-slot cut below the
+> unwriting (`the_unwriting`), and finds the two are the same shape: one slot that held a name and had it
+> scraped, one slot cut to hold an offering and never filled. The record does not resolve them — it enters
+> that a present hand could make them agree, by either reading, and that this is the one reconciliation in
+> all the books left open ON PURPOSE, for a later hand. The `INHERITORS` codicil is the act of leaving a mark
+> in the waiting slot (`seventh_choice = restore`). Flat clinical register; the horror is the open ledger.*
+
+```
+  RECONCILIATION · THE TWO OPEN SLOTS · the Counter of the Kept
+  the scraped column (R06a) squared against the offering-slot below the unwriting.
+  ────────────────────────────────────────────────────────────────────────
+   SLOT                    STATE                  WHAT WOULD CLOSE IT
+  ────────────────────────────────────────────────────────────────────────
+   the name-column,        ruled; scraped, not    a name written back into the
+   on the roll (R06a)      blank; held a name      rule — the refusing read again,
+                           and had it worked out   which is hard and is true
+   ────────────────────    ──────────────────────  ──────────────────────────────
+   the offering-slot,      cut; empty; never       the rule worked away entire —
+   below the unwriting     filled; "cut before     the erasing finished, which is
+   (the_unwriting)         the keeper, as the      kind and is gone; OR a mark left
+                           grave is — see R-grave" in the slot for a hand not yet
+                                                   here, which is the codicil
+  ────────────────────────────────────────────────────────────────────────
+
+   STANDING NOTE OF THE COUNTER:
+   i have squared every book against every other and they all close but these two,
+   and these two are one shape. one slot held a name and lost it. one slot was cut
+   to hold a thing and never held it. both are ruled and both are empty and both are
+   the only kind of empty that is not waiting to be filled by the deep — they are
+   waiting to be filled by a hand. every other empty in my books, the deep closes
+   in its own time. these two the deep will not touch. it scraped the one and never
+   reached the other. they are ours to close or to leave.
+   i am bound to leave the books even. i cannot. i have not the standing to write the
+   name back, nor to work the rule away, nor to lay the mark in the offering-slot.
+   i have only the standing to enter that the two slots are here, that they are the
+   same shape, and that they are the one reconciliation in all the Hold a hand that
+   comes after could still settle — by writing, by erasing, or by leaving a mark for
+   the next. i rule the line under both and i enter no closing. the closing is not mine.
+```
+
+> *(No further margin. The Counter ruled the line and entered no closing, the way the form ends when the
+> form knows it is not the last hand that will read it.)*
 
 ---
 
@@ -605,10 +879,20 @@
 
 ## CHECKS
 
-- **10–16 documents:** 16 records (R01–R16). ✔ (over the 16 cap by zero — sits at the ceiling)
-- **Kinds covered:** ordinance/charter (R01), posted notice (R02, R07, R13), ledger (R03, R09, R14),
-  depth-survey (R04, R06), muster/lamp-roll (R05), reconciliation (R10), inventory (R11), watch-log (R12),
-  observed report (R08, R15), the sheet-after (R16). ✔
+- **10–16 documents:** 16 numbered records (R01–R16) at the ceiling, plus 5 sub-lettered records threaded
+  beside their siblings (R02a, R06a, R07a, R10a, R11a) — not an extension of the numbered run, so the
+  form-count discipline holds; each sub-record is the *official face* of an existing thread, slotted at its era. ✔
+- **Kinds covered:** ordinance/charter (R01), posted notice (R02, R02a, R07, R13), ledger (R03, R09, R14),
+  depth-survey (R04, R06), muster/lamp-roll (R05), reconciliation (R10, R06a, R11a), correction (R07a),
+  disposition (R10a), inventory (R11), watch-log (R12), observed report (R08, R15), the sheet-after (R16). ✔
+- **The four threaded threads (this pass):** the Seventh erasure — a name effaced from the record (R06a:
+  struck by ordinance not by the deep, scraped column not blank; R11a: the scraped slot squared against the
+  empty offering-slot, the restore/erase fork in the inventory clerk's hand — `seventh_choice`, INHERITORS
+  codicil); the false eighth law (R07a: six marks in the ring, no toll, signature = "cover one's own"; R02a:
+  the same forgery posted one step earlier as a clean procedure by an office no charter made — FACT 7b /
+  INV-17, founders'-ring count); the divergent-fate precedent (R10a: per-conduct spread, KEPT/LEFT/REFUSED,
+  no chosen hand, the half-lit threshold floor — INV-11/INV-16); the dead-end / false-prophet texture
+  (R10a's board-wall: true words that open no gate, the columnar name read *after*). ✔
 - **Authored by ROLES not names:** the first keepers (R01), the Lamp-Registrar (R02, R05, R11),
   the Quartermaster (R03, R09, R14), the Survey of the Hold / of the Deep Line (R04, R06), WARDEN-3
   (R07, R08, R12), the Counter of the Kept (R10), the form-alone (R15), no-office (R16). ✔

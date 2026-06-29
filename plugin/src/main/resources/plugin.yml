@@ -5,19 +5,43 @@ api-version: '1.21'
 author: Voxaris
 description: The Observance — deterministic soft-pressure haunting engine (Phase 0).
 website: https://the-observance.local
-# Phase 0 is self-contained. FastAsyncWorldEdit is an OPTIONAL softdepend: when present it
-# enables SmallStructureBeat's curated-schematic paste branch; when absent every other beat
-# (and the inline cairn path) runs unchanged. Later phases may add Citizens2 / PacketEvents.
-softdepend: [FastAsyncWorldEdit]
+# Phase 0 is self-contained. Every entry below is an OPTIONAL softdepend — each enables one beat's
+# richer branch when present, and EVERY branch degrades to a deterministic vanilla path when the
+# plugin is absent or throws (the anti-jank fallback law). softdepend only orders load (so the
+# optional plugin is enabled before us); it NEVER makes us hard-require it. A softdepend name MUST
+# byte-match the dependency's declared `name:` — so only plugins the engine actually probes by name
+# (Bukkit.getPluginManager().isPluginEnabled(...)) are listed here:
+#   - FastAsyncWorldEdit / WorldEdit : SmallStructureBeat / RoomSwapBeat curated-schematic paste
+#       (Schematics.java probes both; D5/D10). Absent ⇒ the inline cairn / block-state path runs unchanged.
+#   - ModelEngine : ModeledMobBeat's R4 rig (ModeledMobBeat.java probes it; D11/P2). Absent/throws ⇒
+#       degrades to exactly NamedMobBeat.
+# GO-LIVE (cross-owner): when the D8 Keeper-NPC beat lands (Citizens / ZNPCsPlus) and the D11 Ear lands
+# (the Simple Voice Chat plugin, declared name `voicechat`), the owning Java engineer adds those names
+# here AND the matching isPluginEnabled() probe — both must use the dep's real `name:`. They are NOT
+# added pre-emptively (an unmatched softdepend name is silently inert, but listing names no code probes
+# invites drift). The Keeper listener already needs no softdepend: it reads the `keeper_npc` PDC tag,
+# never the Citizens API (Path-A self-containment).
+# NOTE (Bukkit): event LISTENERS are registered in code (ObservancePlugin.registerListeners()), NOT here.
+softdepend: [FastAsyncWorldEdit, WorldEdit, ModelEngine]
 load: POSTWORLD
 
+# NOTE (Bukkit): event LISTENERS are NOT declared here — they are registered in code, in
+# ObservancePlugin.registerListeners(). The Deep-Hold back-half adds these new listeners, which the
+# PLUGIN-Java owner must register there (cross-owner hook, see RETURN): UnlitDeepListener (the group
+# latch), SeventhChoiceListener (the staged unwriting rite), CoopPlateListener (the IV→V hinge), and
+# IgnitionListener (prologue ignition). PresenceListener and DeathListener already exist and are
+# registered — DeathListener is EXTENDED in place (the glowing-beast fork), not newly registered.
+# plugin.yml only carries commands + permissions; the new admin toggles below cover the new knobs.
 commands:
   observance:
     description: Admin/status command for The Observance plugin.
     usage: |
-      /observance status        - show plugin health (db, queue, last beat)
+      /observance status        - show plugin health (db, queue, last beat, reckoning state)
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
+      /observance falselaw <on|off>   - toggle the forged-eighth false-law fiction (lore-only; enforces nothing)
+      /observance restraint <on|off>  - master toggle for the collective-restraint (Unlit Deep) latch
+      /observance window <on|off>     - force-open/close the real-clock event window (override the schedule)
     aliases: [obs]
     permission: observance.admin
 

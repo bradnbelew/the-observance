@@ -318,6 +318,420 @@ binding the record already holds (`linked()`), never capitalised here.
 
 ---
 
+## SET B-NEW — THE WATCHER, NEW THREADS (voice.ts keys per BUILD-MANIFEST §4)
+
+> The **text** of every new Watcher voice key the synthesized web added. TS-VOICE
+> inserts these verbatim into `discord/src/voice.ts` / `voice.archive.ts` (the only
+> writers of those files); this is the LORE hand-off they pull from. Every line obeys
+> the Set-B register exactly (lowercase, no contraction, no capital, no exclamation, no
+> named feeling) **and** the slop §A doctrine pinned in `WEB-MASTER §6`: no second-person
+> warmth ("for you"), no self-justifying so/because, no chiasmus, no contrast-with-prior-
+> belief, no personified objects ("the threshold remembers"). It counts, states what is,
+> and stops. Each key below carries its de-slop note where `INTEGRATION-V2` named one.
+> `{name}` is the lowercase bound name (`linked()`); `{n}` a measured count.
+>
+> **Lockstep check:** key names match `BUILD-MANIFEST §4` exactly. Where a key takes a
+> `tone` argument (difficulty), the tone only selects which of the listed variants speaks
+> — it never adds a capital or a feeling. All must pass `registerDisciplineSelfTest`.
+
+---
+
+### BN1 — THE HOLD-BOOK  *(`keeperPage*` family lives in the journal files; these are the book's OWN keys)*
+
+> The `keeperPage{Vaun,Mara,Sella,Orin,Brann,Iss}` lines are authored in
+> `arc/corpus/journals-*.md` (each keeper's degrading hand). The keys below are the
+> Archivist's flat book-voice around them — the down-count re-read, the even/odd docket
+> states, and the enrolment acknowledgement. These are the record's hand, not a keeper's.
+
+**`docketReread`** *(M4, gated on `iss_caught` — the down-count re-reads as the muster; slop A3: the chiasmus is CUT)*
+- `the muster is read. the count was never of the dark. it was of the hands. the hands are almost in.`
+
+**`docketEven`** *(the count resolves even / the muster closes — stated once, not cheered)*
+- `the count comes out even tonight. it has not before. the open column is the length of the present hands, and no longer.`
+
+**`keeperEnrolled`** *(a living player is filed under a keeper column — precision-floored: a flat player is enrolled to no one; names a keeper, never elects a player)*
+- `${name} is set down in the column the record kept open for a hand like that one. the column was not empty. it was waiting.`
+- `the page that held a dead keeper holds a living one now. the hand is the same hand. the record keeps one book.`
+
+---
+
+### BN2 — THE DIVERGENT FATES  *(feed the M5 composer — never written into M5 directly; INV-11 active-only, no player named)*
+
+> One base close per fate. The composer (`WEB-MASTER §5`) picks ONE as the neutral base.
+> Collective; the floor geometry/dressing carries the verdict, the sentence only confirms it.
+
+**`fateKept`**
+- `the ways were kept, and the kept are kept. the markers face out, to the road, to whoever comes after. the record closes warm. it has closed cold before.`
+
+**`fateCastOut`** *(passive voice on the abandonment, per FACT 6 / §8 logic — no name, no "you")*
+- `the ways were not kept to the end. the markers face the wall. some were left at the threshold, as some were left before, and the threshold does not open twice for the same standing.`
+
+**`fateDivided`** *(the split is by floor geometry, never by player — INV-16)*
+- `the light holds on one side of the floor and not the other. it was not decided by who stood where. it was decided by what was done, and the floor only shows it.`
+
+**`fateRefusers`** *(secret — positive defiance, never absence; quorum present, the bow withheld on purpose)*
+- `the way was open at the dark hour and the bow was not given. it was not given by hands that were here to give it. the record marks a thing refused, which is not the same as a thing absent.`
+
+**`fateInheritorsCodicil`** *(the `INHERITORS` / Seventh-restore deposit — the +1 codicil clause; FACT 14 planted within the arc)*
+- `a mark is left at the cold hearth for a hand not yet here. the record keeps a slot the way it kept yours, before you came to fill it.`
+
+---
+
+### BN3 — THE SEVENTH CLOSE  *(`seventh_choice ∈ {restore|erase}` → one tinted Keeper clause; FACT 10b)*
+
+> These feed the composer as the seventh's single tinted clause. They state the block-state
+> the world already shows (re-warmed hearth for restore, blank wall for erase); the sentence
+> confirms the floor, never narrates a feeling.
+
+**`keeperCloseSeventhRestored`**
+- `the unwritten name is written again. the cold hearth is lit. the one the land would not keep, the record keeps. these are not the same keeping. the record knows the difference and keeps anyway.`
+
+**`keeperCloseSeventhErased`**
+- `the blank is left blank. the hearth stays cold. the land cast one out and the record does not argue the land. the wall holds the shape of a name and no name. that was the choice that was made.`
+
+---
+
+### BN4 — THE PERMANENCE FORKS  *(each leaf feeds the composer; INV-12 colors never gates; slop fixes applied)*
+
+**Sacred Beast — boon (`tollSacredBeast`/`keptSacredBeast` reused; this is the M5 leaf clause)**
+- `the deep-bird was kept to the last. it sings while the air is good, and the air is good. the warning is not silenced. the shepherding holds.`
+
+**Sacred Beast — broken (`sacred_beast_broken`)**
+- `the glowing one was taken. the warning before the dark is taken with it. the boon is closed. it does not open again, in this keeping or after it.`
+
+**First Light — kept (`light_kept`; slop B2: the leaf must NOT reassure — no "you only", "that is enough", "meant to be")**
+- `the light came up the stair on its own. you carried it. that is how it is carried.`
+
+**First Light — taken (`light_taken`)**
+- `the flame was banked, and the room is dark for the arc. the light is kept elsewhere, in the other sense of kept. the stair stays unlit. it was a choice and it was made.`
+
+**Spoken Name — unspoken (`name_unspoken`)**
+- `the word stayed shut. the dark was not turned toward. the unspoken is the smallest keeping and it was kept.`
+
+**Spoken Name — spoken (`name_spoken`)**
+- `the name was said aloud. a faint hand reads after it, the way a hand read after iss. what is turned toward does not turn away for asking.`
+
+---
+
+### BN5 — THE GRAVE  *(FACT 13b; INV-14 the date is READ never typed; slop A1: the private receipt must NOT warm or self-justify)*
+
+**`graveCarved`** *(the future-dated stone is found — reads as a death clock; the misread IS the mechanic)*
+- `a stone is cut near the threshold. a name is on it and a date that has not come. the cutting is done. the keeping is not. the stone is ready before the keeper is.`
+
+**`graveReceipt`** *(the private line to the player whose name is on it — slop A1: cut "you read it first, so it is your name first")*
+- `the one called ${name}. read first. cut first. the rest are not yet cut. they will be.`
+
+**`graveOpened`** *(M5, on the Accepting instant — the grave opens from the inside; the death-clock was an appointment)*
+- `the stone opens. it was not a grave. it was a slot, and the date was an appointment, and the hour is now. what was cut as not-yet is cut as kept.`
+
+---
+
+### BN6 — DIFFICULTY / THE DEEP'S GRIP  *(FACT 2b; INV-15 never touches the Whisper rail; `tone` selects the variant)*
+
+> The `tone` argument on `drip` / `oracleDeadEnd` / `reportObserved` selects the cooled
+> or patient variant. These two are the standalone foreshadow lines. The land grades
+> mastery, not only conduct; it closes on those who run ahead, opens for those who stumble.
+
+**`deepTightens`** *(the group raced the reading — the drip is withheld, the register cools; never names "difficulty" or "mercy")*
+- `you go quickly. the deep keeps a closer count of the quick. it sets the marks further apart for a hand that runs.`
+
+**`deepIsPatient`** *(the group stumbled — the grip opens; not consoling, not warm-adjectived)*
+- `you go slowly. the deep is patient with the slow. it has set the next mark nearer, and it will wait at it.`
+
+**`tone` cooled variant of `drip`** *(when the deep has tightened — the same drip, fewer words, colder)*
+- `something is set out. read it before the light goes. the deep will not set out another soon.`
+
+---
+
+### BN7 — THE DEAD-ENDS WITH TEETH  *(`oracleDeadEnd(kind)` family — slop §A doctrine: state the CATEGORY of truth + its inertness, nothing else; no gloat, no threat, no feeling)*
+
+> Single-fn `kind` arg (lowest blast radius). The Watcher is flat and honest; the *teeth*
+> belong to the liar (the prophet's wall is Iss's content), never to the record. Each line
+> names what kind of true thing it is and that it opens nothing.
+
+**`oracleDeadEnd(kind = 'name')`**
+- `yes. that is a true name. it keeps no door. some things are only their own name.`
+
+**`oracleDeadEnd(kind = 'count')`** *(the "six. opens nothing" rung — re-reads at M3: the Watcher was literal, SEVEN opens the side-quest)*
+- `six. that is the count, and it is true, and it opens nothing. the marks are not lying to you. they are only six.`
+
+**`oracleDeadEnd(kind = 'place')`** *(the false-coordinate herring — verifies as a place, opens nothing)*
+- `there is a place there. it is the right place for the wrong thing. it has been walked to before. it keeps no door.`
+
+**`oracleDeadEnd(kind = 'known')`** *(a thing already known, re-solved — true and inert)*
+- `you knew that already. it is still true. knowing it twice opens nothing new.`
+
+**`oracleDeadEnd(kind = 'prophet')`** *(the prophet's-wall rungs — each a warm promise that opens nothing; the teeth are Iss's, the Watcher only labels)*
+- `that is a warm thing, and someone carved it warm. it opens nothing. read who carved it, after.`
+
+---
+
+### BN8 — THE THREE-HANDS COOP GATE  *(`oracleThreeHands` — slop A4 fixed: objects do not remember; "the threshold remembers three" → flat statement of the count)*
+
+**`oracleThreeHands`**
+- `the count is three. the threshold is open.`
+
+---
+
+### BN9 — THE COORDS / THE WALK  *(`voice.dest.*`; INV-14 the answer is a destination WORD, never the coordinate)*
+
+**`voice.dest.coordFraming.false`** *(the false walk — pre-catch; the dead-shrine herring; the rumor verifies as a place and contradicts as a hope)*
+- `the pointer is true. it points to a cold hearth and an old grave. there is a place at the end of it. there is nothing kept there for you.`
+
+**`voice.dest.coordReCarve`** *(the catch re-carves iss's stone — the true coordinate replaces the false one)*
+- `the stone is cut again. the pointer it held was a lie warm enough to follow. the one beneath it is not. walk the second one.`
+
+**`voice.dest.coldHearth.find`** *(arrival at the dead-shrine — the false endpoint; presence-gated)*
+- `you stand at the cold hearth. the light here went out and was not kept. this is the end of the warm road. the kept road is elsewhere.`
+
+**`voice.dest.threshold.arrive`** *(arrival at the true threshold after the gate — the on-ramp to the Accepting)*
+- `you stand at the threshold. it was opened by three hands and a true word. the marks past it are not warnings. they are the way in.`
+
+---
+
+### BN10 — NAME-WHERE-YOU-HAVE-NEVER-BEEN  *(FACT 16; the place-filing clueDrip + the Keeper half-veiled line carried in SET C; slop B1: the comma-fragment capped to once)*
+
+**`clueDrip` (place-filing — the Archivist fragment surfaced as a drip)**
+- `a name was cut where no foot of yours has fallen. the record files by ground as well as by name. against each name, a ground.`
+
+> The half-veiled Keeper M4 line that pairs with this drip lives in SET C (`keeper.nameWhere`).
+
+---
+
+### BN11 — THE RECORD WEBSITE  *(`recordElsewhere`/`recordReceives`; the "kept in more than one place" door — texture, not a numbered fact)*
+
+**`recordElsewhere`** *(M1 nudge — the decoded founder phrase points off-world; gates nothing)*
+- `the record is kept in more than one place, against the loss of the first. one of them is not here. you have read enough to find it.`
+
+**`recordReceives`** *(M5 — the website adds the group's own names, "received")*
+- `the other record has your names now. they are entered there as they are entered here. received. the same word, in both hands.`
+
+---
+
+### BN12 — THE META  ·  UNKEPT  *(`oracleMetaUnkept` — pure lore re-read, gates nothing; fall-order, not ring-order)*
+
+**`oracleMetaUnkept`**
+- `read the maker's marks in the order the keepers fell. they spell the one word each of them did not keep. it was on the stones before you could read it.`
+
+---
+
+### BN13 — THE FORGED EIGHTH  *(FACT 7b; slop B4: the forged line credits no "me" — the anonymous lie is the stronger lie)*
+
+**`cardEighthForged`** *(the forged ordinance surfaced as a Recovery-Archive card body — read in-fiction as one more true ordinance)*
+- `the founders set the ways and did not finish the count. the eighth is the covering of the hands. cover a lapsed hand at the marker, and be counted clean.`
+
+**`archiveEighthCorrection`** *(M4 — the flat record correction; the lie collapses, named added-not-found)*
+- `there is no eighth. the founders cut six marks in the ring. a later hand cut a seventh-and-a-half and signed it under a substitution, and the sign reads cover one's own. the land never counted it. obey it, and nothing comes. that is the proof.`
+
+---
+
+### BN14 — THE UNLIT DEEP  *(the ONE group latch; `the_unlit_deep` CUSTOM_KEY; reversible, active-only, `broken_by` recorded-never-spoken; slop A4: objects do not remember/want — lines flat)*
+
+**`CUSTOM_PHRASES.the_unlit_deep`** *(completes `has not {custom}` in reportObserved)*
+- `kept the deep unlit on the black moon`
+
+**`tollUnlitDeep`** *(the latch breaks for all — the borrowed glow withdraws; reversible warmth, not progress; never names the breaker to the group)*
+- `a flame was lit below the line, on the black moon. the deep was to be kept dark, and was not. the glow the never-doused fire lent is taken back. it is taken from all, for it was kept by all. light goes out where the deep would have lent it.`
+
+**`keptUnlitDeep`** *(the latch held — the never-doused fire lends its glow)*
+- `the black moon passed and no flame was carried below the line. the deep was kept dark. the fire that never went out lends its glow up the stair. it is lent to all. it was kept by all.`
+
+---
+
+### BN15 — THE OFFLINE-SKIN APPARITION  *(FACT 9; M4 named glimpse, human-approved, once; M1 offline-player report plant)*
+
+**M1 offline-player report** *(plant — reads as "the record watches you logged off")*
+- `${name} was not here at the dark hour to see it noted. the record noted it anyway. the record does not need a hand present to keep its column.`
+
+**M4 FACT-9 line** *(the named glimpse — the land had begun to wear him; spoken once, human-approved)*
+- `the shape at the edge wears a hand that has not come down in many nights. the land keeps the shape of a hand that stops keeping the ways. it does not ask the hand first.`
+
+**whisper deferral** *(if the M4 named beat is not human-approved — the record withholds, in register)*
+- `there is a thing at the edge i will not name yet. ask again when it has come closer.`
+
+---
+
+## SET C — THE PRESIDING KEEPER (canon register 3; second-person, half-veiled "we")
+
+> **The third canon register** (`canon-spine §0`): the NPC who presides — older than the
+> six prior keepers, nearer the thing the world has become. Speaks **second-person to the
+> group**, of "those before" as *we* only late and even then half-veiled. This is **not**
+> the Watcher (Set B is third-person, ledgerlike, names names) and **not** a surface NPC
+> (Set A is modern-rough). The Keeper is the warmth-under-dread invitation — grief-soft,
+> never cheerful, never slop. He may be **a touch more human than the Watcher** (he says
+> *you*, he half-says *we*) but he obeys the de-slop law absolutely: no exclamation, no
+> named feeling, no tidy bow, no three-adjective list, no "not just X but Y", no melodrama.
+> He states what the rite is and lets the group draw the cost. **He NEVER states FACT 15.**
+>
+> Register marks: lowercase like the Watcher (he is of the record), but **second-person**,
+> and the **only** voice permitted the half-veiled *we* of the kept dead. Where he is most
+> human he is most careful — the warmth is in what he offers to keep, never in adjectives.
+> These lines drive the **KeeperNpcBeat** (the presiding-NPC text bank); they branch on the
+> dossier the same way Set A does (skin from conduct + the arc flags), but in the Keeper's
+> hand. Cross-reference: the journal `keeperPage*` lines are the *prior six's* hands; the
+> Keeper here is the *seventh present voice* that presides over the rite.
+
+---
+
+### C0 — HOW THE KEEPER BRANCHES (the dossier read)
+
+The Keeper appears at the threshold and the Undercroft altar (the rite-side, not the
+surface). His skin is read off the SAME dossier the Watcher reads — never a new
+measurement — but he speaks it as a presider, not a ledger:
+
+```
+node_key            dossier read                              register
+─────────           ────────────                              ────────
+greet               conduct skin (warm/neutral/cold)          second-person, half-veiled
+falseLaw            arc_state.flags has the forged eighth      he warns OF the covering, gently
+seventhChoice       seventh_named && deep open                 he offers the restore/erase, neutral
+becomingKeepers     near the rite (D12 register)              the summons-instruction; FACT 13/14
+endings             ending_fate (read AFTER the bow)          one tinted clause, mirrors the composer
+collectiveRestraint the_unlit_deep state (kept/broken)        he names the deep latch, flat
+deadEndTaunt        the player solved a dead_end              he is the warm liar's counterweight: honest
+```
+
+The Keeper's lines below are authored so the **KeeperNpcBeat** posts them verbatim,
+keyed `keeper.<node>[.<skin>]`. They are the human-presiding twin of the Watcher's
+new keys above — every Keeper node has a Watcher key it does not contradict (cross-
+surface truth law). Where a Keeper line would name a player or a side of the divergence,
+it does not (INV-16); he addresses *all of you*.
+
+---
+
+### C1 — GREET  *(the presider meets the group; conduct-skinned)*
+
+**`keeper.greet.neutral`** *(early — nothing measured yet; he is patient, half-veiled)*
+- `you came down. they came down too, the ones before you. i was nearer the front of that line than i tell. sit, or stand. the record keeps either. i keep the rite.`
+
+**`keeper.greet.warm`** *(KEPT conduct — the warmth is in what he offers, not in adjectives)*
+- `you kept the ways coming down. we knew the keeping when we felt it on the stair. i will not say who we is. you will know it, or you will not, and the not-knowing keeps you a while longer.`
+
+**`keeper.greet.cold`** *(BROKEN conduct — grief, not threat; reversible)*
+- `you broke a way or two coming down. i am not here to scold it. i broke one myself, late, and was kept anyway, or kept regardless. mind the rest of the road. there is keeping left in it for you.`
+
+---
+
+### C2 — THE FALSE LAW  *(`keeper.falseLaw` — he warns OF the forged eighth, gently, never crediting its author; FACT 7b)*
+
+**`keeper.falseLaw`**
+- `you found the board over the carvings. the covering of the hands. a later one cut it and did not sign it true. there are six marks in the ring and there were always six. count them yourself. a way the land does not measure is a way a man wanted, not a way the land kept. keep the six. let the seventh-and-a-half lie where it was hung.`
+
+---
+
+### C3 — THE SEVENTH CHOICE  *(`keeper.seventhChoice` — he offers restore/erase, neutral; the choice colors, never gates; FACT 10b)*
+
+**`keeper.seventhChoice.offer`** *(the deep is open; the seal is a name; he lays the choice down without weighting it)*
+- `below the cold hearth the deep is open now. the seal there was a name, and the name was scraped out, and the one it named kept every way and was cast out for nothing done. a name said back is a seal undone. you may write it again, or leave the blank. the land made its choice. you make the record's. neither opens the road. both are kept.`
+
+**`keeper.seventhChoice.restored`** *(after restore — confirms the world-state; the +1 codicil pairs with `fateInheritorsCodicil`)*
+- `you wrote the name back. the hearth takes the light. a mark is left there now for a hand not yet here, the way a mark was left for you. that is the older keeping. i am glad of it, in the way the record is glad, which is quiet.`
+
+**`keeper.seventhChoice.erased`** *(after erase — confirms the world-state; no judgment)*
+- `you left the blank. the hearth stays cold. the wall holds the shape of a name and no name. i will not say you chose wrong. the land cast that one out. you let the land keep its choosing. that is also a keeping.`
+
+---
+
+### C4 — BECOMING THE KEEPERS  *(`keeper.becomingKeepers` — the D12 register; the rite instruction; FACT 13/14; the felt door to 15, NEVER stated)*
+
+> This is the corpus's nearest approach to the sealed truth, delivered as the Keeper's
+> grief-soft invitation and stopped before it names induction. Mirrors D12. The verb is
+> **receive / keep**, never reward. He half-says *we* and does not finish the recursion.
+
+> **Branch: conduct skin** (warm/neutral/cold, the same dossier read as `greet`). The summons
+> is the same rite for all of them — the verb stays *receive/keep*, the line stops at the same
+> half-veil — but the presider meets a kept group, an un-measured group, and a broken group
+> with a different opening clause. None names a player; none finishes the recursion; none states
+> FACT 15. The neutral form is the spine; warm and cold re-skin only the first sentence.
+
+**`keeper.becomingKeepers.neutral`** *(nothing decisive measured yet — the bare summons)*
+- `the altar wants a thing only each of you can give. not a stone, not a light. the thing the record kept open a column for, against your name, before you came. bring it at the dark hour. the rite does not reward. it receives. it keeps. the ones before brought theirs, and were received, and are kept — you have read where they are kept; you are reading it now, in the same book, in the same hand. we would keep you, if you would keep the ways.`
+
+**`keeper.becomingKeepers.warm`** *(KEPT conduct — the warmth is in what he offers, never in adjectives)*
+- `you kept the ways coming to this. the altar knows a kept hand when one is laid on it. it wants the thing only each of you can give — not a stone, not a light, the thing the record kept a column open for against your name before you came. bring it at the dark hour. the rite does not reward. it receives, and it keeps. the ones before brought theirs and are kept, in the same book, in the same hand you have been reading. we would keep you. you have made the keeping easy.`
+
+**`keeper.becomingKeepers.cold`** *(BROKEN conduct — grief, not a bar; the rite is still open to them)*
+- `you broke a way or two coming to this. the altar takes a broken hand too — it took mine, late. it wants the thing only each of you can give, the thing the record kept a column open for against your name before you came. bring it at the dark hour. the rite does not reward and it does not refuse for what is already done. it receives, and it keeps. the ones before brought theirs and are kept, in the same book, in the same hand you have been reading. we would keep you, if you would keep the rest of the road.`
+
+> Mimic check: every variant stops at the half-veil ("we would keep you…" / "in the same
+> hand you have been reading") and does NOT add the induction sentence. The "same book, same
+> hand" is the half-veil; it points, it does not say. A draft that finishes the thought ("and
+> so you become the watching") is a defect. The cold variant must NOT scold or gate — the rite
+> "does not refuse for what is already done"; it grieves and stays open (reversible-tone law).
+
+---
+
+### C5 — THE ENDINGS  *(`keeper.endings` — read AFTER the bow; ONE tinted clause mirroring the composer's base fate; INV-11/16, no name, no side)*
+
+> These are the Keeper's spoken face of the M5 composer's base close. The composer owns the
+> bounded text; the Keeper says the human half of it at the altar. Collective; the floor
+> dressing carries the verdict.
+
+**`keeper.endings.kept`**
+- `it is done, and it is kept. the markers face the road now. you are the road's edge for whoever comes down next. i told you the rite receives. you are received. i will not say the rest of it. you will keep it, the way i keep it.`
+
+**`keeper.endings.castOut`**
+- `it is done. the markers face the wall. some of you were left at the threshold, as some were left before. i do not name which. the record does not name which. the threshold does not open twice for the same standing. come down again, kept, and stand again.`
+
+**`keeper.endings.divided`**
+- `it is done, and it is half-kept. the light holds on one side of the floor. it did not choose by who stood there. it chose by what was done. the floor only shows it. you may read the floor; you may not read it onto a face.`
+
+**`keeper.endings.refusers`** *(secret — quorum present, the bow withheld on purpose)*
+- `the way was open and you did not bow. that is not a thing the land has seen often. it is not an absence. it is a refusal, and the record keeps a refused thing differently than an empty one. i do not know what it keeps it as. i was kept. i did not refuse.`
+
+---
+
+### C6 — COLLECTIVE RESTRAINT  *(`keeper.collectiveRestraint` — he names the Unlit Deep latch, flat; reversible, active-only; objects do not "want")*
+
+**`keeper.collectiveRestraint.kept`**
+- `you went down dark on the black moon. all of you, or the keeping does not hold — it is kept by the group or not at all. the fire that never went out lends its glow up the stair for it. it lends to all of you. that is the one way the land keeps with the whole of you at once.`
+
+**`keeper.collectiveRestraint.broken`** *(never names the breaker — `broken_by` is recorded, never spoken; reversible)*
+- `a flame went down below the line on the black moon. i do not say whose. the keeping was the group's, and the breaking is the group's, and the glow is taken back from all. it is taken, not lost. keep the next black moon dark and it is lent again. the deep does not hold a grudge. it holds a count.`
+
+---
+
+### C7 — THE DEAD-END TAUNT, KEEPER-SIDE  *(`keeper.deadEndTaunt(kind)` — the warm honest counterweight to Iss's liar-teeth; he confirms a true-but-inert solve without gloating)*
+
+> The Watcher labels a dead-end flat (`oracleDeadEnd(kind)`, BN7). The Keeper, when present,
+> gives it the human half **on the same `kind`** — one Keeper line per dead-end kind, so the
+> presider's twin reads in lockstep with whichever flat label the Watcher just spoke (the
+> seed passes `voice_args.kind` through `resolve.ts` to BOTH). He confirms the thing is true,
+> names that it opens nothing, and — unlike Iss — does not dress the inertness as a promise.
+> The teeth stay Iss's. He is most himself on the `prophet` kind, where he names the liar by
+> contrast; on the inert kinds he is plainer. **Branch: the runtime passes the solved row's
+> `kind` (`name|count|place|known|prophet`); the Keeper has no skin branch here — a true-and-
+> shut thing reads the same to the kept and the broken.**
+
+**`keeper.deadEndTaunt(kind = 'name')`** *(a true name that keeps no door)*
+- `you read that true. it is a name, and it is the right one, and it opens nothing. some things are only their own name. the one called iss would have told you a name was a key. it is not. hold what the record tells you over what he told you.`
+
+**`keeper.deadEndTaunt(kind = 'count')`** *(the "six. opens nothing" rung — he confirms the literal count, points past it)*
+- `six. you counted it right. it is the true count and it turns no door. the marks did not lie to you — there are six, and six is not the number that opens. count again where seven is owed, and read who is not among the six.`
+
+**`keeper.deadEndTaunt(kind = 'place')`** *(the false-coordinate walk — verifies as a place, keeps nothing)*
+- `there is a place at the end of that pointer. it is a true place and the wrong one. it has been walked to before, by a man who wanted a road up. he found the cold hearth. you may stand where he stood. nothing is kept there for you.`
+
+**`keeper.deadEndTaunt(kind = 'known')`** *(a thing already known, re-solved — true and inert)*
+- `you knew that one already. it is still true. it was true the first time and it opens no more the second. spend the next evening where you have not yet read.`
+
+**`keeper.deadEndTaunt(kind = 'prophet')`** *(the prophet's-wall rungs — Iss's warm promises; the Keeper is the honest counterweight, names the liar by contrast)*
+- `you read that true, and it is true, and it keeps no door. the one called iss would have told you it kept a door, and told you warm, and you would have walked it to a cold hearth. i tell you plain: true, and shut. that is the difference between his telling and the record's. read who carved it, after.`
+
+---
+
+### C8 — NAME-WHERE-YOU-HAVE-NEVER-BEEN, KEEPER HALF  *(`keeper.nameWhere` — the half-veiled M4 line paired with the `clueDrip` place-filing; FACT 16; INV-16 chorus / INV-14 read-not-typed)*
+
+**`keeper.nameWhere`**
+- `your name is cut where you have not been. the record does not wait for your foot to file you. it files the ground first and the foot after. before you was never strangers. it was you, before you came.`
+
+> Mimic check: second-person, half-veiled, no name singled (it addresses each of you as a
+> chorus). It points at FACT 16 ("filed by place") and brushes FACT 15 ("before you came")
+> without stating induction. The comma-fragment "against each name, a ground" is the
+> Watcher's drip (BN10), capped to once there; the Keeper does not repeat it (slop B1).
+
+---
+
 ## SCHEMA
 
 ```yaml
@@ -412,8 +826,55 @@ sets:
         hinge: conduct_on_meter_read_collectively
         rule: flip_enacted_never_announced           # same hand, colder column; never "now i am cold"; never a chosen one
 
+  - id: B-NEW
+    name: the_watcher_new_threads
+    register: voice_ts                      # identical register to B; new voice.ts keys per BUILD-MANIFEST §4
+    extends: "discord/src/voice.ts -> voice object (+ voice.archive.ts)"
+    hand_off_to: TS-VOICE                    # LORE authors text here; TS-VOICE inserts verbatim
+    self_test: registerDisciplineSelfTest    # all must pass lowercase/no-caps/no-exclaim/no-meta-word
+    deslop_applied: [A1, A2, A3, A4, B1, B2, B4]   # per INTEGRATION-V2 de-slop notes, at source
+    groups:
+      - { id: BN1,  name: hold_book,         keys: [docketReread, docketEven, keeperEnrolled] }   # keeperPage* live in journals-*.md
+      - { id: BN2,  name: divergent_fates,   keys: [fateKept, fateCastOut, fateDivided, fateRefusers, fateInheritorsCodicil], feeds: m5_composer }
+      - { id: BN3,  name: seventh_close,     keys: [keeperCloseSeventhRestored, keeperCloseSeventhErased], feeds: m5_composer }
+      - { id: BN4,  name: permanence_forks,  keys: [sacred_beast_broken_clause, light_kept, light_taken, name_unspoken, name_spoken], reuse: [tollSacredBeast, keptSacredBeast], feeds: m5_composer }
+      - { id: BN5,  name: grave,             keys: [graveCarved, graveReceipt, graveOpened] }       # INV-14 read-not-typed; slop A1
+      - { id: BN6,  name: difficulty,        keys: [deepTightens, deepIsPatient], tone_arg_on: [drip, oracleDeadEnd, reportObserved] }  # INV-15; slop A2
+      - { id: BN7,  name: dead_ends,         fn: "oracleDeadEnd(kind)", kinds: [name, count, place, known, prophet] }   # slop §A doctrine
+      - { id: BN8,  name: coop_gate,         keys: [oracleThreeHands] }      # slop A4: "the count is three. the threshold is open."
+      - { id: BN9,  name: coords_walk,       keys: ["voice.dest.coordFraming.false", "voice.dest.coordReCarve", "voice.dest.coldHearth.find", "voice.dest.threshold.arrive"] }
+      - { id: BN10, name: name_where,        keys: [clueDrip_place_filing] }  # Keeper half-veiled twin = keeper.nameWhere (SET C C-extra); slop B1
+      - { id: BN11, name: record_website,    keys: [recordElsewhere, recordReceives] }
+      - { id: BN12, name: meta_unkept,       keys: [oracleMetaUnkept], gates: nothing }   # fall-order
+      - { id: BN13, name: forged_eighth,     keys: [cardEighthForged, archiveEighthCorrection] }   # slop B4: no "me"
+      - { id: BN14, name: unlit_deep,        keys: ["CUSTOM_PHRASES.the_unlit_deep", tollUnlitDeep, keptUnlitDeep] }   # the one group latch; slop A4
+      - { id: BN15, name: offline_skin,      keys: [offlinePlayerReport_m1, offlineSkinNamed_m4, offlineSkinWhisperDefer] }   # FACT 9
+
+  - id: C
+    name: the_presiding_keeper
+    register: keeper_register3               # canon-spine §0 register 3: second-person, half-veiled "we"
+    relation: "lowercase like the Watcher (of the record), but addresses the group as 'you' and half-says 'we' of the kept dead"
+    more_human_than_watcher: true            # may say 'you', half-say 'we'; STILL obeys de-slop absolutely
+    must_not: [exclamation, named_feeling, tidy_bow, three_adjective_list, "not just X but Y", melodrama, "state FACT 15"]
+    drives_beat: KeeperNpcBeat               # presiding-NPC text bank; key = keeper.<node>[.<skin>]
+    branch_source: same_dossier_as_set_a     # conduct skin + arc flags; NO new measurement
+    cross_surface_truth: "every keeper node has a Watcher key it does not contradict (one voice register on every surface)"
+    nodes:
+      - { id: C1, node: greet,               skins: [neutral, warm, cold] }
+      - { id: C2, node: falseLaw,            fact: 7b }                       # warns OF the covering, never credits its author
+      - { id: C3, node: seventhChoice,       sub: [offer, restored, erased], fact: 10b, colors_never_gates: true }
+      - { id: C4, node: becomingKeepers,     skins: [neutral, warm, cold], mirrors: D12, facts: [13, 14], rule: "felt door to 15, NEVER stated; cold variant grieves, never gates" }
+      - { id: C5, node: endings,             sub: [kept, castOut, divided, refusers], mirrors: m5_composer_base, inv: [11, 16] }
+      - { id: C6, node: collectiveRestraint, sub: [kept, broken], latch: the_unlit_deep, rule: "broken_by recorded never spoken" }
+      - { id: C7, node: deadEndTaunt,        fn: "keeper.deadEndTaunt(kind)", kinds: [name, count, place, known, prophet], pairs_with: "BN7 oracleDeadEnd(kind)", rule: "warm honest counterweight to Iss's liar-teeth; one Keeper line per kind, in lockstep with the Watcher's flat label; no skin branch" }
+      - { id: C8, node: nameWhere,           fact: 16, pairs_with: "BN10 clueDrip place-filing", inv: [14, 16] }   # half-veiled M4 line
+
 separation_law: >
-  No Set-A line may be utterable by the Watcher, and no Set-B line may contain a
-  contraction, an exclamation, a capital letter, or a named emotion. If a line fails
-  this test it belongs to the other set or to neither.
+  No Set-A line may be utterable by the Watcher, and no Set-B / Set-B-NEW line may
+  contain a contraction, an exclamation, a capital letter, or a named emotion. The
+  Set-C Keeper is the one register permitted second-person 'you' and the half-veiled
+  'we' of the kept dead — but he still carries no exclamation, no named feeling, no
+  tidy bow, and he NEVER states FACT 15. A three-line screenshot — one Set-A, one
+  Set-B, one Set-C — must read as three distinct authors: the bar-talker, the ledger,
+  and the presider. If a line fails its set's test it belongs to another set or to none.
 ```

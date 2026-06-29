@@ -44,6 +44,7 @@
  */
 import { voice, customPhrase } from '../voice.js';
 import type { CustomViolation } from '../db/repo.js';
+import type { Tone } from './types.js';
 
 // --- rung thresholds (module constants; injected into the pure policy so it stays tunable) ---
 /** violated_count at which the record first NOTES the lapse (observed). */
@@ -66,6 +67,14 @@ export interface CustomReportInput {
   observeAt: number;
   warnAt: number;
   leftAt: number;
+  /**
+   * OPTIONAL difficulty register (A10) for this tick's report lines — a SELECTION among authored
+   * voice variants, carried through so the report can speak colder/warmer with the land's grip once
+   * voice.ts gains the `tone` arg (TS-VOICE hand-off; see worker RETURN). Absent ⇒ `'plain'` (the
+   * current behavior, so the existing customs self-test is unchanged). The pure policy only PASSES
+   * it onto each report; it never changes which rung fires.
+   */
+  tone?: Tone;
 }
 
 /** One report the pass should emit — a prose line and/or a soft toll, plus the new mark. */
@@ -83,6 +92,12 @@ export interface CustomReport {
   line: string;
   /** true when this rung also lays a soft reversible toll (warned). */
   toll: boolean;
+  /**
+   * the difficulty register this report should speak in (A10). `'plain'` unless the tick carries a
+   * grip. Carried for the run wrapper to pass into voice.ts once the `tone` arg lands (TS-VOICE
+   * hand-off); today it is informational + drives no prose change, so prose stays byte-identical.
+   */
+  tone: Tone;
 }
 
 export interface CustomReportDecision {
@@ -145,6 +160,7 @@ export function decideCustomReports(input: CustomReportInput): CustomReportDecis
       honoredCount: v.honoredCount,
       line,
       toll: rung === 'warned', // the soft toll lands at the warn rung
+      tone: input.tone ?? 'plain', // A10: carried through; never changes which rung fires
     });
     // High-water mark = the measured count, so any lower rung is also considered "covered".
     marks[id] = v.violatedCount;

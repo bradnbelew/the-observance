@@ -34,6 +34,23 @@ import java.util.function.Supplier;
  *
  * <p>Sites are resolved live via a {@link Supplier} so a config reload (which rebuilds SitesConfig)
  * is picked up without re-registering the listener.
+ *
+ * <p><b>The closed-set boundary (INV-17, WEB-MASTER §3.2/§3.3 — the two "eighths"):</b> this file is a
+ * PER-PLAYER, per-conduct compliance detector for the enforced customs. It must NEVER be extended to
+ * track either of the arc's two "eighths", because neither is a per-player proximity custom:
+ * <ul>
+ *   <li>the <b>forged eighth law — the Covering</b> ({@code some-laws-are-lies}, FACT 7b) is a
+ *       <i>document, not an enforcement</i>. Its whole proof-of-lie is that the land never measures it.
+ *       It adds NO {@code CUSTOM_KEYS} member and NO listener. If a future hand wires "the Covering" as a
+ *       tracked custom here, the falsification ("obey it, observe nothing") is destroyed — that is a
+ *       canon defect, not a feature. There is deliberately no code for it.</li>
+ *   <li>the <b>collective-restraint latch — the Unlit Deep</b> ({@code the_unlit_deep}, the one group
+ *       latch INV-17 permits) is GROUP-scoped and negative (a thing kept by not-doing below the Line on
+ *       the black moon), detected on explicit flame acts by its own {@code UnlitDeepListener} — never as a
+ *       per-player honored/violated tally here. Its reward is borrowed warmth, not a compliance count.</li>
+ * </ul>
+ * So the engine enforces exactly the seven {@code CUSTOM_KEYS} (two of them here) plus the one group
+ * latch (elsewhere); any law outside that closed set is fiction, by construction.
  */
 public final class CustomComplianceListener implements Listener {
 

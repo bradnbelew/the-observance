@@ -4,7 +4,7 @@ title: letters and notes between the Kept
 kind: corpus (collected correspondence)
 movement: 2→5
 clue_bearing: false
-authors: [Vaun, Mara, Sella, Orin, Brann, Iss, the seventh (effaced), the record]
+authors: [Vaun, Mara, Sella, Orin, Brann, Iss, the seventh (effaced), the Counter of the Kept, the lad (a follower of the wall), the record]
 recipients: various (named per letter)
 era: the taking-hold → the breaking → the abandonment
 reveals:
@@ -14,6 +14,10 @@ foreshadows:
   - "Iss said the ways are a wall (FACT 7) — argued here directly to Orin, Brann, and Mara, who reply"
   - "the kept ones did not depart, they were kept (FACT 12) — Orin and Brann circle it without naming it"
   - "acceptance is a choice the land can refuse (FACT 10) — the cast-out seventh, named only as 'her'/'the one we don't write'"
+  - "the land refused a keeper who broke nothing (FACT 10b) — L14a: the seventh struck by us, not by the deep; the scraped column a present hand could close (restore/erase)"
+  - "a later keeper forged an eighth way the land never enforced (FACT 7b / INV-17) — L08a: the warm circle of true words that opens no door (the spoken twin of the forged ordinance)"
+  - "the fate is a spread read off per-conduct columns, naming no chosen hand (INV-11/INV-16) — L13a: Brann refuses the single disposition field; the threshold floor splits at the ways, not at a hand; L05a: the Counter hands the same finding forward to its successor as procedure — a divergent disposition has been ruled before, read down the column never across the household"
+  - "the covering is a board the land does not muster (FACT 7b / INV-17) felt from inside — L08b: a follower keeps the forged covering a whole winter, finds the same nothing that true-keeping gives, and reads the silence as the wall holding; the dead-end that costs nothing and teaches the wrong thing perfectly (R02a/R07a)"
 links_to:
   - the-ways-are-a-wall
   - no-wall-was-ever-built-here
@@ -24,6 +28,10 @@ links_to:
   - i-thought-it-small
   - observed-warned-left-at-threshold
   - the-seventh-not-kept
+  - the-fire-they-let-out
+  - the-eighth-way
+  - observed-warned-left-at-threshold
+  - the-order-the-stones-fell
 contradiction_set:
   - "THE BREAK — three accounts that cannot all be true: L09 (Brann: an accident, the Line gave way), L10 (Orin: a betrayal, Iss dug it on purpose), L11 (Mara: a mercy, Iss meant to let them all out)"
 note: >
@@ -167,6 +175,49 @@ only argument i have with a dead man.
 
 ---
 
+## L05a — the Counter to the Counter who comes after · the breaking → the going-out · (re: the field they will ask you to fill)
+
+> *A letter from the Counter of the Kept to whoever next holds the books — the office writing to its own
+> successor, not a keeper. It is the precedent under the divergent fate (R10a; INV-11/INV-16): the Counter
+> warns that the form will ask for ONE disposition of the household, that it asked before, and that the honest
+> answer was a spread read off the columns and not a hand. Flat, administrative, kept with the letters because
+> it is addressed to a person, not posted as a record. The spoken twin of R10a's standing note and L13a — the
+> same finding, handed forward as procedure: read down the column, never across the household.*
+
+to the hand that holds these books after me —
+
+they will send you the form with the single field at the foot, DISPOSITION OF THE HOUSEHOLD, and the field
+is one word wide, and they will want one word. i am writing so you do not waste the winters i wasted learning
+not to give it to them.
+
+it has been asked before. i hold the old disposition (R10a) and i have read it the way you will read mine.
+the household before went every way at once — most kept, some lapsed and mended and kept, one left upright
+at the threshold, one turned away below, one kept harder than all and was refused. five answers. they do not
+add to one, and the Counter before me would not make them add to one by striking the ones that spoiled the
+sum, and i have honored that, and you will honor it after me.
+
+here is the procedure, since the form gives you none: do not look for the hand that tipped it. you will want
+to. the form trains you to. you will look for the one keeper whose keeping or whose lapse settled the rest,
+so you can write that one name and close the book. there is no such hand. i looked the way you look for the
+lamp that went dark first when a stretch goes out, and there is no first lamp; they gutter along the whole
+stretch at once, each on its own oil. the light on the threshold floor lies half in the kept light and half
+out, and the line between does not fall at any one hand's feet. it falls at the ways.
+
+so: read down the column, not across the household. enter the spread. if the floor holds the light, enter
+that the floor held it; if it splits, enter the split as it lies and do not draw the splitting line at a name;
+if it gutters, enter the guttering. the disposition is the columns. it is never the keeper. write it as it
+lies and rule the line and do not sign a hand to it. that is the whole of the office. i did not make the form.
+i only kept it even, and i could not, and i am telling you that you will not either, and that the not-closing
+is the true closing of this one field.
+
+— the Counter of the Kept
+
+> *(the official ruling agrees:* R10a*; the watch had it from the Stair foot first:* L13a*. three hands — the
+> watch, the Counter, the Counter-after — and not one of them will name a keeper, because the fate was never
+> a keeper's. it was the columns'.)*
+
+---
+
 ## L06 — Iss to Orin · the last full generation · (re: the markers; Iss arguing)
 
 orin, friend —
@@ -241,6 +292,87 @@ with me and read the sky for once instead of the way down to it.
 > *(mara's reply: not in the tin. a leaf is missing here — torn at the fold, only "iss, i
 > cannot, because—" surviving, the rest gone. the record keeps the tear and not the
 > reason. EXPUNGED.)*
+
+---
+
+## L08a — Iss to a younger keeper · the last full generation · (the warm circle; a promise that opens nothing)
+
+> *Pinned in the Lamp-works, not in the tin. A short note in Iss's warm hand to a keeper a generation
+> younger, named only "lad." It is the spoken twin of the board-wall (`the-ways-are-a-wall`; the official
+> face is R10a's wide warm wall): every line is true and reassuring and asks nothing and opens nothing.
+> Read cold, it is a circle — each promise leans on the next and the last leans back on the first, and the
+> ring encloses no door. The draft Iss kept of his own true word is L15; this is the warm one, sent.*
+
+lad —
+
+you came to me white at the shrine-row asking was it true a hand was struck off the rolls
+for keeping the ways too hard, and is the keeping worth it then, and should a careful keeper
+not just cover his lapses and be easy. sit. i will tell you the whole of it and you will sleep.
+
+here is the whole of it. the ways are a wall. keep them and you are kept. that is true — i
+have kept them every winter and i am here, warm, writing to you. is it true because i kept
+them? it is true because i am here. am i here because i kept them? i am here because the
+wall holds. does the wall hold because i kept the ways? the wall holds. keep the ways and be
+inside the wall that holds and you will be here, warm, as i am.
+
+you see there is nothing in it to fear. every word of it is true. not one word of it is a
+thing you have to *do* past what you already do. that is the mercy of it, lad — it asks
+nothing new. the careful keeper does not need an eighth way nor a harder seventh. he needs
+only to be easy inside the wall, and the wall, which holds, will hold him.
+
+go to sleep. there is no door in any of this you have to find. that is the whole comfort. go.
+
+— iss
+
+> *(read it again and find the gate. there is none. each line is true and each leans on the
+> next and the circle shuts on nothing. this is the texture the catch exposes: not a lie in any
+> word, a lie in the shape — a wall of true things with no door in it. the official wall, wide
+> and warm, is R10a; the name cut columnar down the warm lines, read* after*, is his.)*
+
+---
+
+## L08b — the lad to Iss · the last full generation · (re: i kept it and nothing came; a follower of the wall)
+
+> *The reply L08a never shows getting — the younger keeper ("lad") who took Iss's warm circle to heart, kept
+> the forged covering every winter, and writes back to report that it changed nothing. This is the dead-end /
+> false-prophet thread from the deceived hand's side: not a victim of harm, a victim of *nothing* — he obeyed
+> a true-sounding wall of words, covered his hands at every report, and the land never once looked up. He
+> reads it as the wall working; the empty result is the tell he cannot see. The seam he misses is the seam
+> R07a/R02a name administratively: a way the land does not muster is not a way. Iss kept no reply leaf — the
+> wall does not answer; it only encloses.*
+
+iss —
+
+i did what you said. i have been easy a whole winter. i went white at the shrine-row that night you sat me
+down, asking was the keeping worth it, and you told me there is no door i have to find, only be easy inside
+the wall — and i have been. i covered my hands at every report, the way the new notice says (the one at the
+markers, the eighth way, the covering). i laid my lapsed hand over my working hand and was entered clean.
+i lapsed and covered and lapsed and covered and the muster came up clean every time.
+
+i am writing to tell you it worked, i think. nothing came. nothing ever comes. you are right that the wall
+holds — i kept the covering all winter and not once did the watching come over it. i was afraid it would
+catch me covering. it did not. nothing caught me. nothing answered at all.
+
+but i will tell you the small thing that sits wrong, and you will laugh at me. when i kept the true ways
+before — bowed, kept the lamp, gave the offering — and i kept them clean, nothing came either. it is the
+same nothing. i cannot tell, by what happens, the winter i covered from the winter i kept true, because
+both winters nothing happened. so how does a hand know the covering is a way at all? the true ways and the
+covering feel the same from inside the wall, which is to say they feel like nothing. you said that is the
+comfort. i am finding it is not quite a comfort. it is a thing i cannot get behind to check.
+
+tell me how a man knows a way is a way, if keeping it and not keeping it both come up nothing. then i will
+sleep. until you tell me i am going to keep covering, because it is no labor, and because you are warm and
+here and have kept it longest of any of us.
+
+— the lad
+
+> *(no reply leaf. the wall does not answer; it encloses. the lad asks the one question that cracks the
+> circle — how do you tell a true way from a covering, if both keep up nothing? — and the answer he is not
+> told is the catch itself: a true way answers when you BREAK it; the covering answers never, kept or broken.
+> the official seam is* R02a *and* R07a *— "a way the land does not muster is not a way." the lad obeyed a
+> board a man hung, found the silence, and read the silence as the wall holding. that is the dead-end with
+> teeth: it costs nothing, it harms nothing, and it teaches the wrong thing perfectly. see* the-eighth-way*,*
+> the-ways-are-a-wall*.)*
 
 ---
 
@@ -388,6 +520,45 @@ count something. count anything. count until you cannot.
 
 ---
 
+## L13a — Brann to the Counter · the breaking, deep in · (re: the disposition; there is no one hand)
+
+> *A note from Brann, the watch, to the Counter of the Kept, after the watch was asked for the household's
+> disposition as though it were one thing (the official record is R10a). Brann counts; he has watched the
+> household come apart unevenly and he refuses the single answer the form wants. The spoken twin of R10a's
+> standing note: the fate is a spread read off the columns, no chosen hand settles it for the rest.*
+
+counter —
+
+you sent down the form again, the one with the single field at the foot: DISPOSITION OF THE
+HOUSEHOLD, and the field is the width of one word, and you want one word in it. i will not
+give you one word. i have watched them from the Stair foot for a generation and i will tell
+you what i watched and you can rule it how you like.
+
+they do not go one way. orin stands at the threshold upright and is left there. the most of
+them keep and are kept. one was struck for keeping too hard and the deep never touched her,
+we did. iss turned and was right about the sky and wrong about the door. that is not a
+disposition. that is five answers and they do not add to one.
+
+you will want, the way the form wants, to find the hand that tipped it — the one keeper whose
+keeping or whose lapse settled the rest, so you can write that one name in the single field
+and close the book. there is no such hand. i looked for it the way i look for the lamp that
+went out first when a stretch goes dark, and there is no first lamp. they guttered along the
+whole stretch at once, each by its own oil. the light on the threshold floor lies half in and
+half out and the line does not fall at anyone's feet. it falls at the ways.
+
+write it as a spread or do not write it. but do not write one name in that field. whoever
+comes after will be disposed the same — by their columns, not by their chosen one — and the
+floor will hold the light or split it, and it will not have been a hand that did it. count
+it. you will get the same sum i did, which is more than one.
+
+— brann, the watch
+
+> *(the official ruling agrees:* R10a *— the disposition is the spread, naming no hand; the
+> selector keys on the columns, never on a keeper. brann had it from the Stair foot before the
+> Counter ruled it from the books.)*
+
+---
+
 ## L14 — the seventh, to whoever finds her shrine · the breaking era · (effaced, recovered at the dead shrine)
 
 > [recovered at the doused shrine off the far west path. the leaf is burned along one edge
@@ -417,6 +588,48 @@ me, and that — only that — is mine.
 > *(see* the-seventh-not-kept*. distinct from iss: iss broke faith and came back and is
 > argued over on a stone; the seventh kept faith hardest and was refused, and is on no stone
 > at all. the corpus keeps both wonders open. do not collapse them.)*
+
+---
+
+## L14a — the Counter to no one · the breaking era · (re: the struck name; the column left ruled)
+
+> *Recovered at the dead shrine with L12 and the seventh's effaced leaf (L14), but in a different hand —
+> flat, administrative, the Counter of the Kept's. It is the record-side answer to L14: the keeper who had
+> to enter the striking, and would not strike it clean. The official twin is R06a. It does not name her —
+> the name was scraped before this hand could keep it — but it keeps the *slot*, and enters that the slot
+> is the one column a later hand could still close. The administrative grammar of the restore/erase fork.*
+
+i am bound to enter the cause of every name struck from the rolls, and i have entered them
+all, and there is one i cannot enter, so i am writing it here where the form cannot follow me.
+
+the deep struck six. that is its column and i keep it and i do not argue with it. vaun,
+mara, sella, orin, brann, the one who turned away — six, counted, kept, taken into the column
+the deep keeps. i can write the cause against each. the cause is the deep.
+
+there is a seventh struck and the deep did not strike it. i looked for the lapse the way i am
+bound to, through every book i hold, the offering ledger, the lamp-rolls, the bow-count, the
+watch's reports. there is no lapse entered against this hand in any book. it kept the ways
+whole, harder than the six, and the door did not open, and then *we* struck the name — a hand
+of the breaking ordered it off the rolls and no stone cut, because the record could not bear
+to keep writing a name it could not account for. the deep refused her. we erased the refusing.
+
+so the cause i am bound to enter is: struck by us, to hide that the land said no to a clean
+hand. i will not write that in the form. i have written it here.
+
+the column for the name is ruled and empty, and i have left it so. understand the difference,
+whoever you are: it is not a blank column waiting for a name. it is a column that *held* a name
+and had it scraped out by a hand that wanted it gone. the rule is still there. a present hand
+could write the name back into the rule, and the record would keep it, and the refusing would
+be read again, which is hard but is true. or a present hand could work the rule away entire,
+and let the erasing be finished, and the kindness of that is that no one need read the refusing
+again, and the cruelty of it is that then she is gone the way the eraser wanted. i have not the
+standing to do either. i have only the standing to leave the rule, and to enter that it is here,
+and that it is the one column in all the books a hand that comes after could still close.
+
+> *(the official face is* R06a*; the why she was refused is* the-fire-they-let-out*; the where
+> is* the-seventh-not-kept*. the restore and the erase are both kept open. do not collapse them,
+> and do not collapse her with iss — he broke faith and is argued over on a stone; she kept it
+> hardest and is on no stone, and the difference is the whole of what is left of her.)*
 
 ---
 

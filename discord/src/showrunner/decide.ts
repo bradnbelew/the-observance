@@ -20,7 +20,7 @@
  *     dashboard approval); in AUTO it fires live. Player-helpful gifts always apply; only the curatorial
  *     drip respects the gate. Still PURE + deterministic: same snapshot in → same decision out.
  */
-import type { Decision, GiftDecision, DripDecision, OutcomeType, Snapshot } from './types.js';
+import type { Decision, GiftDecision, DripDecision, OutcomeType, Snapshot, Tone } from './types.js';
 
 /**
  * Drip ordering by story-shape (COHERENCE-AUDIT C2 / P0-7). LOWER ranks first, so a node that
@@ -41,10 +41,14 @@ export function decide(s: Snapshot): Decision {
   const notes: string[] = [];
   const health = { atMs: s.nowMs, openPuzzleCount: s.openPuzzles.length, note: '' };
 
+  // A10: the register temperature for this tick (selection among authored voice variants). Neutral
+  // (`plain`) when the snapshot carries no difficulty grip — the back-compat default for the spine.
+  const tone: Tone = s.reckoning?.tone ?? 'plain';
+
   if (s.asleep) {
     health.note = 'asleep';
     notes.push('watcher_sleep=true — kill-switch engaged; heartbeat only');
-    return { health, gifts: [], drips: [], notes };
+    return { health, gifts: [], drips: [], tone, notes };
   }
 
   // 1. Stall auto-gifts ------------------------------------------------------
@@ -66,8 +70,18 @@ export function decide(s: Snapshot): Decision {
   }
 
   // 2. Clue drip -------------------------------------------------------------
+  // A10: the land's grip scales the cadence — it WAITS longer on a racing group, RELENTS for one that
+  // stumbles. One pure line: multiply the interval by cadenceMult (×1 when no reckoning is present).
+  const effectiveDripInterval = s.dripIntervalMs * (s.reckoning?.cadenceMult ?? 1);
+  // B4: never drip a curatorial clue before the prologue is ignited (gifts above are unaffected —
+  // player-helpful, never gated). Absent prologue ⇒ allowed (back-compat with the existing tests).
+  const curatorialAllowed = s.prologue?.curatorialAllowed ?? true;
+
   const drips: DripDecision[] = [];
-  const dripDue = s.lastDripAtMs == null || s.nowMs - s.lastDripAtMs >= s.dripIntervalMs;
+  const dripDue = curatorialAllowed && (s.lastDripAtMs == null || s.nowMs - s.lastDripAtMs >= effectiveDripInterval);
+  if (!curatorialAllowed) {
+    notes.push('curatorial drip suppressed — prologue not ignited');
+  }
   if (dripDue) {
     const next = s.openPuzzles
       // Only Discord-decodable forged-clue nodes are drippable (COHERENCE-AUDIT C3 / P0-7):
@@ -100,10 +114,10 @@ export function decide(s: Snapshot): Decision {
           : 'drip due but no forgeable (Discord-decodable) puzzle is open — pool empty',
       );
     }
-  } else {
+  } else if (curatorialAllowed) {
     notes.push('drip not due yet');
   }
 
-  health.note = `gifts=${gifts.length} drips=${drips.length}`;
-  return { health, gifts, drips, notes };
+  health.note = `gifts=${gifts.length} drips=${drips.length} tone=${tone}`;
+  return { health, gifts, drips, tone, notes };
 }

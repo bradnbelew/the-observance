@@ -48,3 +48,18 @@
   (`26519d1`). Full disposition in [CRITIQUE-ACTIONS.md](design/CRITIQUE-ACTIONS.md). **Next:** build from
   the action ledger — showrunner deterministic spine + resource pack + FAWE branch → prove the vertical
   slice before authoring more arc (the critics' unanimous gate).
+- **2026-06-29** — Final QA/integrator pass. Verified `PLAYTHROUGH-SCRIPT.md` (93 inline GAP markers →
+  **62 de-duplicated GAP-REGISTER items**), `story-web.json` (104 nodes / 170 edges — every endpoint a real
+  id), `WEB-MASTER §9` (31 ledger rows), and the design docs against the **real working tree** file-by-file.
+  COHERENCE: ground-truth largely agrees; the build has moved AHEAD of the GAP register in places —
+  `RoomSwapBeat.java` (GAP #30), the slug-aware `/record` route (GAP #56 / CP1-7), and most of the plugin
+  beat library now EXIST (those docs are stale, corrected in the new prep doc). The headline real gap: **the
+  engine can ENACT the back half but has no signal listeners to ARM it** — `IgnitionListener`,
+  `UnlitDeepListener`, `SeventhChoiceListener`, `CoopPlateListener`, `RefusalRiteListener`, `VoiceListener`
+  are all ABSENT. GUARD-RISK: `getOpenPuzzles` filters `active` only (the seeded `requires_flags` is inert —
+  the dark-back-half bug, GAP #31), and the three new seedcheck guards (`activationReachability`,
+  `unlockStepContract`, `watchlistSubset`) are specified in `BUILD-MANIFEST §8` but **not in `seedcheck.ts`**.
+  REGENERATED `design/MINECRAFT-INGEST-PREP.md` (ordered GO-LIVE + testing + guard-risk + movement build
+  order, built-vs-prepared). **Next physical step: author `migrations/0006_*.sql` + the `getOpenPuzzles`
+  `requires_flags` filter** — the unblocker for the entire back half (everything downstream stays dark
+  without it).
