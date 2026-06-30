@@ -1,9 +1,13 @@
 # THE OBSERVANCE — THE BUILD PLAN (start → finish, build-ready skeleton)
 
-> **The operative doc.** Open this first next session. It is the ordered, checklist-style
-> backbone for building the whole ARG to the chosen v2 direction. Strategy/why lives in
-> [OVERHAUL.md](OVERHAUL.md); puzzle design in [PUZZLES.md](PUZZLES.md); integration menu in
-> [INTEGRATION.md](INTEGRATION.md). This doc = WHAT to build, in WHAT order, with status.
+> **THE RESUME ENTRYPOINT.** If the session opens with "pick up where we left off on the Minecraft
+> ARG," read this doc start-to-finish — it is the **complete** build/fix/expand guide for the whole
+> thing (code · plugin · datapacks · resource pack · ciphers/puzzles · structures/world · story/lore ·
+> NPCs · the bot · the record website · the Observer Engine), in order, with status. Strategy/why is
+> in [OVERHAUL.md](OVERHAUL.md); puzzle design in [PUZZLES.md](PUZZLES.md); the integration menu in
+> [INTEGRATION.md](INTEGRATION.md). **Trust only these 4 docs + the code/seeds.** Everything under
+> `design/archive/` is superseded — do NOT build from it. §9 = the content-staleness fix-list; §10 =
+> the stale-code fence (rework these before reusing). This doc = WHAT to build, in WHAT order, with status.
 
 ---
 
@@ -189,12 +193,11 @@ are fine. This is a content-rewrite job (mostly §6/§7), not an engine job.
   third-seven reading. → "you are the next." (The `kept:6` lure mechanic itself still works.)
 
 ### B. PLANS STALE — prefer the canon; flag, don't trust
-- `cipher-web.md`, `clue-web.md` — encode the OLD cipher-monotone plan (11 letter-transforms as the
-  first-class catalog). Use only as raw node/cipher *reference*; **PUZZLES.md is canon.**
-- ⚠ `bestiary.md` — specs every apparition as a **ModelEngine** rig as the PRIMARY build. **ModelEngine is
-  CUT** (INTEGRATION.md). Use the creature *lore*; ignore the rig specs (vanilla texture-swaps are canon).
-- `atmosphere-stack.md` — ModelEngine-first framing; defer to INTEGRATION.md's CUT.
-- `SETTINGS.md` — the dead 3-setting pitch → **archived this session.**
+- **ALL ARCHIVED 2026-06-29** (in `design/archive/`, pull only if a specific artifact is wanted):
+  `cipher-web.md` / `clue-web.md` (old cipher-monotone plan + the node/edge map — PUZZLES.md is canon);
+  `bestiary.md` (specced ModelEngine rigs, which are CUT — but its creature *lore* is worth salvaging
+  into a v2 vanilla-reskin bestiary in Phase E); `atmosphere-stack.md` (ModelEngine-first — INTEGRATION.md
+  supersedes); `SETTINGS.md` (the dead 3-setting pitch).
 - `RoomSwapBeat.java` — still in-place mutation; v2 = sealed-door teleport (known; compile-pending).
 - **OPEN DECISION (owner's call):** `sites.yml` + `progression_seed.sql` still carry the **Nether/End as
   live worlds** (`observance_nether`/`observance_end`, gated `active=false` so harmless now). OVERHAUL/
@@ -218,3 +221,30 @@ are fine. This is a content-rewrite job (mostly §6/§7), not an engine job.
 ### D. SURFACE
 `voice.ts` content isn't text-stale, but it currently *posts through the Discord bot*. Phase B must route
 the Watcher's voice to the world + record website (mechanical re-wiring, not a rewrite).
+
+---
+
+## 10. STALE CODE — rework before reuse (so old code can't infect the new build)
+
+The **Discord engine is clean** (the soldered gate, resolver, oracle, showrunner — all GREEN; build on
+it freely). The **Java parity wiring is new but compile-pending** (gradle build it first). The items
+below are **older plugin code that must NOT be reused as-is** — each contradicts the v2 integration model
+(INTEGRATION.md). Rework or replace before building on them:
+
+- **The global "mutate-only-when-unwitnessed" model** (`Reveal.mutateWhenUnwitnessed`, relied on by
+  `RevealBeat`/`SignWriteBeat`/`SmallStructureBeat`/`RoomSwapBeat`/`LecternFillBeat`) — never fires for a
+  co-located group. v2 = **per-player illusion** (`showEntity`/`sendBlockChange`/packet-light). Keep the
+  static world-build pastes; replace the "live reveal" reliance with per-player illusion.
+- **`RoomSwapBeat`** — in-place mutation → **sealed-door + teleport-on-reentry**.
+- **`ModeledMobBeat`** + the worn-skin path in `NamedMobBeat`/`offline-skin` — **ModelEngine is CUT** and a
+  mislabeled Warden is worse than nothing. Use **vanilla texture-swap reskins** only.
+- **`SpatialVoiceBeat`** — not actually positional (reads `behind`/`offset`, ignores them). Use
+  `PerPlayer.soundAt(loc)` at a real behind-the-player location, or drop the dead params.
+- **`FaweSchematicPaster`** — pastes on the **main thread** (tick-stall tell). Wrap async +
+  `fastMode(true)` + `changeSetNull()` + relight.
+- **5 beats coded but NOT registered** in `BeatLibrary` (`reveal`/`room_swap`/`keeper_npc`/`modeled_mob`/
+  `spatial_voice`) — the enactor can't fire them. Register them only **after** the rework above.
+- **`BeatQueuePoller`** double-fire window on a crash mid-PATCH — claim-then-act (flip to `firing` before
+  enacting) when hardening for a real run.
+- **The 5 missing flag producers** (`IgnitionListener` etc.) don't exist — build them (Ignition first; the
+  arc can't start without it). `/observance flag` is the stopgap that proves gating meanwhile.
