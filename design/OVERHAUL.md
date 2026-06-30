@@ -1,10 +1,13 @@
 # THE OBSERVANCE — THE OVERHAUL (single source of truth)
 
-> Canonical document. Supersedes the 28 drifted design docs. Where any doc disagrees with
-> this, this wins; where any doc disagrees with the **code/seeds**, the code wins (verified
-> state is §2). The DIRECTION below (§0–§4) was decided with the owner on 2026-06-29 after a
-> full step-back; it is **not** the original design and intentionally departs from several
-> old docs. Build order is §6. Read this top-to-bottom before touching functionality.
+> Canonical STRATEGY doc (the why + the direction). Part of the canonical set (all 2026-06-29):
+> **[BUILD-PLAN.md](BUILD-PLAN.md)** = the operative start→finish build skeleton + status + the
+> Seventh/"kept" story repair (open that first when building); **[PUZZLES.md](PUZZLES.md)** = the
+> diverse puzzle system (the cipher-monotony fix); **[INTEGRATION.md](INTEGRATION.md)** = the
+> Minecraft integration catalog. Where any doc disagrees with this set, this set wins; where any
+> disagrees with the **code/seeds**, the code wins (verified state is §2). Old planning docs are
+> archived under `design/archive/`. The DIRECTION (§0–§4) was decided with the owner after a full
+> step-back — not the original design.
 
 ---
 
