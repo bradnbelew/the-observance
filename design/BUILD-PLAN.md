@@ -127,6 +127,12 @@ The honest shape: a strong *engine + script* for a game that **has not been buil
 
 ## 6. STORY REPAIR — THE SEVENTH + "KEPT" (folded here; the one thing the new direction broke)
 
+> **DRAFTED 2026-06-29:** the Seventh is now written as a living character in
+> [`arc/lore/documents/the-seventh-below.md`](../arc/lore/documents/the-seventh-below.md) — their leaves,
+> the "kept" reconciliation line, the reunion's first spoken line, AND a rewrite-spec for the stale
+> Seventh docs + voice.ts keys + the Iss-seam. Next session: apply that rewrite-spec (wire the lines into
+> voice.ts/seeds, retire the contradicted old docs). The remaining items below are that application.
+
 The v2 "Seventh is alive / reunion finale" needs a Seventh that the corpus never wrote — they exist
 only as **absence**. And **"kept"** now means two opposite things (corpus: *absorbed = horror*; v2:
 *rescued/recorded-true*). Fix, in Phase E (or earlier if a seed lands):
@@ -347,7 +353,8 @@ Owner calls / design choices still open. Resolve as they come up; none should be
 4. **Audio direction** — palette + sourcing standard (§12) not yet chosen.
 5. **Hint content** — the `hints` table is empty; tiers per spine puzzle unwritten.
 6. **The actual diverse puzzles** — designed at palette level (PUZZLES §5), not as concrete puzzles yet.
-7. **Session-zero consent script** — principle only; the actual out-of-fiction message unwritten.
+7. **Session-zero consent script** — DRAFTED in [`design/SESSION-ZERO.md`](SESSION-ZERO.md) (the
+   out-of-fiction consent message + the cursed-map handoff + the debrief + a setup checklist). Review/adjust.
 8. **Recording/YouTube layer** — mentioned, not planned (Replay Mod + shaders, Ethan-only).
 9. **Hosting + cost budget** — where the always-on bot/showrunner/Observer runs, and the monthly $.
 10. **Website security model** — RLS vs edge-function read path (NEVER the service key in browser).
