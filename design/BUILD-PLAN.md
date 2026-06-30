@@ -158,4 +158,63 @@ only as **absence**. And **"kept"** now means two opposite things (corpus: *abso
 ## 8. NEXT SESSION, START HERE
 Read §0 → §3. If a Supabase seed + a built room exist, do **Phase A** to first real run. If not, do
 the **Seventh writing (§6)** and **author diverse puzzles + hints (PUZZLES)** — pure content that needs
-no server — while the world-build and hosting happen in parallel.
+no server — while the world-build and hosting happen in parallel. Also clear the §9 staleness ledger.
+
+---
+
+## 9. STALENESS LEDGER — content vs v2 (audited 2026-06-29; the cohesion fix-list)
+
+**Verdict:** the 4 canonical docs (§0) are current + self-consistent. But ~**60–65% of player-facing
+STORY/LORE content is stale**, concentrated in two places (the Seventh; "kept" as an ending), and
+several old PLAN docs contradict the canon. The engine + the 6 keeper journals' *personal histories*
+are fine. This is a content-rewrite job (mostly §6/§7), not an engine job.
+
+### A. CONTENT STALE — contradicts v2, must rewrite (sources to fix)
+- **The Seventh (BLOCKER).** Every dedicated doc treats them as cast-out/absent: `arc/lore/documents/
+  the-seventh-not-kept.md` (frames refusal as *mercy*), `the-fire-they-let-out.md` (restore = a name in
+  a ledger), `arc/corpus/letters.md` L14a, `official-records.md` R06a. **Worst: `the-name-i-cut-myself.md`
+  has the Seventh go "not down… the other way," directly contradicting "alive far DOWN."** Rewrite all to
+  alive-below-waiting (see §6); recontextualize "not down" (they returned to the Deep once they understood).
+- **"kept" collision (SERIOUS).** The v2 third meaning (rescued/recorded-true) exists *nowhere*. Old
+  horror-meaning anchors: Mara's last entry ("the light keeps — it is not the same thing" — keep it, but
+  the Seventh's new line must recharge it), Brann marginalia ("joined the watching") + his M5 close
+  ("i see {name} lit now"), Iss appendix ("{name} does not come back from this"). Fix the **payoffs** in
+  `voice.ts`: `keeperCloseSeventhRestored()` ("kept, late" → reunion-with-living) and `graveOpened()`
+  ("the hole is the deposit slot" → the Seventh opens it from inside to meet them).
+- **Enrollment valence (SERIOUS).** `voice.ts` `keeperPageHeading_*` / `keeperPageHand_*` read as
+  *consumed* ("mine to enter, and not given back"). Keep each keeper's grammatical fingerprint; flip the
+  meaning to *recognized* ("i saw this in you and named it"). NOTE: these keys are authored in the journal
+  appendices but several are **missing from `voice.ts`** — populate + re-valence together.
+- **"you are the seventh" (SERIOUS).** `arc/lore/documents/six-were-kept-before-you.md` uses the DROPPED
+  third-seven reading. → "you are the next." (The `kept:6` lure mechanic itself still works.)
+
+### B. PLANS STALE — prefer the canon; flag, don't trust
+- `cipher-web.md`, `clue-web.md` — encode the OLD cipher-monotone plan (11 letter-transforms as the
+  first-class catalog). Use only as raw node/cipher *reference*; **PUZZLES.md is canon.**
+- ⚠ `bestiary.md` — specs every apparition as a **ModelEngine** rig as the PRIMARY build. **ModelEngine is
+  CUT** (INTEGRATION.md). Use the creature *lore*; ignore the rig specs (vanilla texture-swaps are canon).
+- `atmosphere-stack.md` — ModelEngine-first framing; defer to INTEGRATION.md's CUT.
+- `SETTINGS.md` — the dead 3-setting pitch → **archived this session.**
+- `RoomSwapBeat.java` — still in-place mutation; v2 = sealed-door teleport (known; compile-pending).
+- **OPEN DECISION (owner's call):** `sites.yml` + `progression_seed.sql` still carry the **Nether/End as
+  live worlds** (`observance_nether`/`observance_end`, gated `active=false` so harmless now). OVERHAUL/
+  INTEGRATION *demoted* them to Undercroft lore (a "land it small" call). Given the taste for rich + lots
+  of content, this may be wrong — **decide: fully cut them, OR re-allow the 2 deepening lanes** (and
+  update INTEGRATION.md). Don't leave the docs contradicting the seeds.
+
+### C. THE CALLBACK WEB (spiderweb) — plants mostly solid, some payoffs broken
+- **INTACT (keep):** Iss lie→catch (now *more* central — it's how players learn to distrust his account
+  of the Seventh); forged eighth; prophet wall; UNKEPT acrostic; offline-skin apparition; Sella's shore →
+  "the last marker is not the last" (now the *descent entry* toward the Seventh); the Unlit Deep latch;
+  the fate keys; `thread_cards` structure; `recordReceives`; the Break triangle (accident/betrayal/mercy —
+  *improved* under v2 as three accounts held until the reunion); `fateInheritorsCodicil` ("a hand not yet
+  here" now foreshadows the Seventh).
+- **BROKEN payoffs:** the future-dated grave (plant solid; payoff "deposit slot" stale → reunion); the
+  Seventh restore (absorb-a-name → meet-a-living-person).
+- **MISSING new connection:** catching Iss's wall-lie must *also* prompt re-reading his testimony about
+  the Seventh — one oracle line + one `thread_cards` edge (`happened-no-wall` → re-open `surface-seventh-
+  marker`). This is the seam that wires the solved catch into the new main quest.
+
+### D. SURFACE
+`voice.ts` content isn't text-stale, but it currently *posts through the Discord bot*. Phase B must route
+the Watcher's voice to the world + record website (mechanical re-wiring, not a rewrite).
