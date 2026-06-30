@@ -1,0 +1,14 @@
+{
+  "type": "observance:undercroft",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "observance:undercroft_dark",
+      "lakes": false,
+      "features": false,
+      "layers": [
+        { "block": "minecraft:air", "height": 1 }
+      ]
+    }
+  }
+}

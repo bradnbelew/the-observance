@@ -85,3 +85,28 @@ the ways also re-opens his lie about the Seventh — wiring the solved catch int
 
 **"you are the seventh":** in `six-were-kept-before-you.md`, change to "you are the next" (the group is
 not the Seventh; the Seventh is below).
+
+### COPY-PASTE-READY voice.ts strings (drop in when wiring; keep register)
+```ts
+// keeperCloseSeventhRestored() — was "one that broke nothing is kept, late."
+'the name that was cut out is read back in, in your voices, not to replace her but so she can hear it. she is down there. she kept every way, and she is not where the record left her.'
+
+// keeperCloseSeventhErased() — keep as-is (the blank stays a blank), it is already v2-true.
+
+// graveOpened(name) — was "the hole is the deposit slot."
+`the stone for the one called ${name} opens from the inside. the date was not a death. it was an appointment, and the one who set it has been waiting longer than you have been alive.`
+
+// enrollment re-valence — pattern: from "mine to enter / not given back" → "i saw this in you and named it".
+// keeperPageHand_vaun(name): was "...they are mine to enter, and i do not strike the column..."
+`i, vaun, see the keeping in the one called ${name} — the holding-on i knew — and i name it, and naming is not the same as keeping them. the column is open under their name the way it was open under mine.`
+// (apply the same shift to the other five *_Hand/_Heading keys: recognized, not consumed.)
+```
+
+### The Iss-seam (one line + one edge — wire at the catch)
+```ts
+// add to the no-wall-catch oracle reply (after the catch lands):
+'he lied about the wall. ask what else he told you warmly. ask who he said was cast out for nothing.'
+```
+Thread-card edge: on `happened-no-wall` solve, re-open `surface-seventh-marker` (set its
+`alt_text_condition`/`revealed_by_solve` so the Seventh thread re-surfaces — catching Iss's lie about the
+ways re-opens his lie about the Seventh, wiring the solved catch into the main quest).

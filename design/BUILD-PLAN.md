@@ -64,6 +64,14 @@ The honest shape: a strong *engine + script* for a game that **has not been buil
 7. **Missing flag producers** — at minimum `IgnitionListener` (the arc can't start); `/obs flag` is
    the stopgap.
 
+> **PREP DONE 2026-06-29 (server-free head-starts on these blockers):** #4 Seventh → written
+> ([the-seventh-below.md](../arc/lore/documents/the-seventh-below.md), with copy-paste voice fixes).
+> #5 hint rail → DRAFTED ([`discord/supabase/seeds/hints_seed.sql`](../discord/supabase/seeds/hints_seed.sql),
+> drop-in for the 5 ciphers + the catch). #3 atmosphere → fog datapack SCAFFOLDED
+> ([`datapack/observance/`](../datapack/observance/), untested — verify pack_format + dimension load).
+> #1 world → concrete room-by-room build plan in [WORLD-BUILD.md](WORLD-BUILD.md). Session-zero/consent →
+> [SESSION-ZERO.md](SESSION-ZERO.md). Still fully yours: the manual world-build, hosting, apply 0006.
+
 ---
 
 ## 3. THE PHASES (start → finish)

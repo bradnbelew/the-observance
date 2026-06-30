@@ -1,0 +1,6 @@
+{
+  "pack": {
+    "description": "The Observance — the Undercroft (fog dimension + dark biome). MATCH pack_format to your pinned 1.21.x: 1.21.0-1=48, 1.21.2-3=57, 1.21.4=61. UNTESTED on a server — verify before a real run.",
+    "pack_format": 48
+  }
+}
