@@ -6,8 +6,10 @@
 > NPCs · the bot · the record website · the Observer Engine), in order, with status. Strategy/why is
 > in [OVERHAUL.md](OVERHAUL.md); puzzle design in [PUZZLES.md](PUZZLES.md); the integration menu in
 > [INTEGRATION.md](INTEGRATION.md). **Trust only these 4 docs + the code/seeds.** Everything under
-> `design/archive/` is superseded — do NOT build from it. §9 = the content-staleness fix-list; §10 =
-> the stale-code fence (rework these before reusing). This doc = WHAT to build, in WHAT order, with status.
+> `design/archive/` is superseded — do NOT build from it. §9 = content-staleness fix-list; §10 =
+> stale-code fence; **§11 = the "Minimum Amazing" fallback scope; §12 = world+audio art direction;
+> §13 = the Observer Engine fallback tiers; §14 = the playtest loop; §15 = the risk register;
+> §16 = the open-decisions register.** This doc = WHAT to build, in WHAT order, with status, with risks.
 
 ---
 
@@ -248,3 +250,107 @@ below are **older plugin code that must NOT be reused as-is** — each contradic
   enacting) when hardening for a real run.
 - **The 5 missing flag producers** (`IgnitionListener` etc.) don't exist — build them (Ignition first; the
   arc can't start without it). `/observance flag` is the stopgap that proves gating meanwhile.
+
+---
+
+## 11. "MINIMUM AMAZING" — the ruthless fallback scope (build this even if everything else is cut)
+
+The honest risk is not "it's bad" — it's "60% built, then stalls" (months of work, sole builder). So
+define the smallest version that is **still genuinely great**, and treat everything past it as
+enhancement. If time/energy/budget runs short, ship THIS and it's a real, finished experience:
+
+- **One well-built region** (not the whole Deep Hold sprawl) — the descent, ~3 keeper-stones placed,
+  the Cold Hearth, the shore pool, the Undercroft gather-room. Quality over extent.
+- **The 6 keepers** via their journals (the gold) + **~6–8 diverse puzzles** (PUZZLES §5 palettes,
+  spanning ≥4 types — NOT 6 ciphers).
+- **The Iss lie → catch** (built + central) and **the Seventh reunion** (the rewritten §6 payoff).
+- **Per-player illusion + the 4 audio events + the fog datapack** (the atmosphere floor).
+- **The world + the record website** as the two surfaces; **text-only Observer** (Tier 0–1, §13).
+- **2 playtests** (§14).
+
+**Cut first if needed (in this order):** the external surfaces (Drive/YouTube/Voice) → the asymmetric
+co-op vault (nice-to-have, hard) → the **voice** layer of the Observer → the Nether/End → most optional
+sidequests → the full Undercroft sprawl. None of these are load-bearing for a great experience.
+
+## 12. ART DIRECTION — world + audio are CRAFT, not checklist items (the amazing-determiners)
+
+The engine can be perfect and the game still mediocre if these are phoned in. Budget real hours + a
+reference board for each:
+- **World / level design** (elevate `structures.md` from spec to *built craft*): built-by-hands-then-
+  abandoned; **carved, never default** blocks; the **bow built into the architecture** (stones angled so
+  you must stoop to read); vertical-descent dread; sightline reveals (round a corner into a thing);
+  cold-hearth and shore-pool as set-pieces; a few deliberate **"wrongness"** details. Decide ONE palette +
+  a lighting discipline (dark is the default; light is earned). FAWE-relight after every paste.
+- **Audio direction** (the project's #1 missing layer — don't ship generic stings): **mono** OGG Vorbis,
+  sparse, restrained; a sub-bass room-tone drone bed; the whisper, the cold toll, stone-breath; **6
+  keeper voices, distinct + degraded**; positional always; lean on biome **`mood_sound`** so the engine
+  self-generates dread. Sourcing bar: CC0 + ElevenLabs is fine ONLY if processed/curated to feel
+  *recovered*, not stock. Priority: the 4 declared events first, then keeper voices.
+
+## 13. OBSERVER ENGINE — graceful-degrade TIERS (so the north star never depends on flaky voice infra)
+
+The "it knows your name" payoff must land WITHOUT the fragile parts. Build bottom-up; each tier is
+complete on its own:
+- **Tier 0 (no infra, always works, ethically cleanest):** profile **in-world behavior only** + speak in
+  *implication* ("you keep one thing you never use") — vague-true-of-anyone lines grounded in real
+  actions. Delivers ~80% of the magic with zero chat/voice/LLM. **The whole arc must work at Tier 0.**
+- **Tier 1 (cheap):** + ingest **in-game chat + Discord text** → LLM archivist extracts grounded
+  observations → sparse, precise weaponization (quote a real phrase back).
+- **Tier 2 (expensive/fragile, build LAST, optional):** + Discord **voice (Whisper)**. Flag the cost
+  (always-on host + Whisper + LLM $) and the dependence on the group actually being in VC.
+- **Always:** grounding (only REAL observed things, never fabricated) + session-zero consent/opt-out +
+  debrief. If voice proves impractical, the experience is unharmed.
+
+## 14. THE PLAYTEST LOOP — amazing is iterated, not specced (bake it into the phases)
+
+The gap between "the loop runs" and "they were genuinely hooked for weeks" only closes with real players.
+Expect the first run to reveal it is **not amazing yet** — that's the input, not failure.
+- **Playtest 1** — after Phase A (the vertical slice, 3–4 friends). Watch: findability (dead air?),
+  dread (did a scare land?), friction (did they know HOW to answer?), illusion desync.
+- **Playtest 2** — mid-build, one full movement. Watch: pacing over a real gap, tone fatigue, the salience
+  drip picking the right thread, answer-type discoverability.
+- **Playtest 3** — pre-finale, the catch → reunion. Watch: does the emotional payoff land; does "kept" read right.
+- After each: capture findings → revise the plan/content/tuning. **Findability and pacing can only be
+  tuned here** (the original "too dense to find" sin is solved in playtest, not on paper).
+
+## 15. RISK REGISTER (every factor that could sink "amazing" — keep visible)
+
+| Risk | Severity | Mitigation |
+|---|---|---|
+| Scope > one builder's capacity; stalls at 60% | HIGH | §11 Minimum Amazing; cut ruthlessly |
+| Bus factor 1 (sole builder/host/director, burnout on the manual world-build) | HIGH | smallest world that's great; recruit a build helper if possible |
+| "Amazing" unvalidated — nothing playtested | HIGH | §14 loop; first run = feedback, not verdict |
+| Amazing-determiners (world/audio) least planned | HIGH | §12 art direction as first-class craft |
+| Findability ("too dense to find") only testable late | HIGH | salience drip + hint rail; tune in §14; don't over-add content (§7) |
+| Observer voice layer flaky/expensive | MED-HIGH | §13 tiers; arc works at Tier 0 |
+| Asymmetric co-op hard to build fair across dynamic N | MED | mark nice-to-have; degrade to solo if it fights the roster |
+| Answer-type discoverability (player doesn't know what KIND to submit) | MED | diegetic signposting per answer_kind; teach the verb in-world |
+| Surface migration (Discord→world+website) = worse UX | MED | validate the in-world sign + website input UX in Playtest 1 |
+| Per-player packet illusion desyncs (chunk reload/interaction) | MED | use for simple blocks; revert on move/timer; TextDisplay for tile-entities |
+| Resource-pack decline → degraded clues | MED | vanilla-first (illageralt) + Discord/website mirror; `force=true` + reason |
+| Supabase service key in the browser (website) | HIGH (security) | website reads via RLS/edge function ONLY; never ship the service key |
+| Shared DB outage → both surfaces go silent (dead-looking) | MED | the code fails-safe to silence (good); add a liveness alarm |
+| Hosting + LLM + Whisper recurring cost/ops | MED | budget it; Tier 0–1 keeps it near-zero |
+| External surfaces (Drive/YouTube/Voice) rot + pull players out | LOW-MED | use sparingly; treat as enhancement |
+| Engagement collapses after week 1 (hook didn't hold) | HIGH | ignition is strong; Playtest 1 must prove session-1 grips |
+| Seventh/"kept" rewrite lands saccharine or loses the dread | MED | §6 seed lines; keep bittersweet, test in Playtest 3 |
+| "Lots of content" vs "findable/cohesive" tension re-bloats it | MED | every add passes the cohesion gate (§7); salience surfaces one thread |
+| Pin: exact Paper 1.21.x not chosen → font/model/packet drift | LOW | pin ONE version, author for exactly it |
+
+## 16. OPEN DECISIONS REGISTER (undecided — do not let these get forgotten)
+
+Owner calls / design choices still open. Resolve as they come up; none should be silently defaulted:
+1. **Nether/End** — fully cut, or keep as 2 optional deepening lanes? (taste leans keep; OVERHAUL demoted
+   them; seeds still carry them gated). §9.B.
+2. **NPCs** — Citizens2 vs vanilla-PDC framework? (recommend vanilla-PDC for minimal deps).
+3. **World layout** — the actual level design is undesigned (only a spec). Needs a real plan/reference board.
+4. **Audio direction** — palette + sourcing standard (§12) not yet chosen.
+5. **Hint content** — the `hints` table is empty; tiers per spine puzzle unwritten.
+6. **The actual diverse puzzles** — designed at palette level (PUZZLES §5), not as concrete puzzles yet.
+7. **Session-zero consent script** — principle only; the actual out-of-fiction message unwritten.
+8. **Recording/YouTube layer** — mentioned, not planned (Replay Mod + shaders, Ethan-only).
+9. **Hosting + cost budget** — where the always-on bot/showrunner/Observer runs, and the monthly $.
+10. **Website security model** — RLS vs edge-function read path (NEVER the service key in browser).
+11. **Asymmetric co-op** — core feature or nice-to-have? (recommend nice-to-have until the loop is proven).
+12. **Paper version pin** — choose ONE 1.21.x and author for exactly it.
+13. **Cohesion-vs-"lots" mechanism** — how much sidequest/lore, gated by what, so it stays findable.
