@@ -18,8 +18,8 @@ begin;
 insert into public.hints (puzzle_key, tier, body) values
 
 -- rosetta-ring — the rune-literacy on-ramp (assemble the six ways, in order, off the carved ring).
-('rosetta-ring', 2, 'the ring is not decoration. it is a key. the marks around it are the ways, set in the order the record keeps them. read them, and you can read the rest.'),
-('rosetta-ring', 3, 'six ways, in the carved order: bow, offering, kept light, deep line, unspoken, sacred beast. learn the mark beside each. that is the alphabet the stones are cut in.'),
+('rosetta-ring', 2, 'these marks are not decoration. you have seen them elsewhere — cut beside the fire, the water, the graves. the thing each sits beside is what it says.'),
+('rosetta-ring', 3, 'read them where they name something you already know: the mark by the flame is "fire," the mark by the pool is "water." learn a few letters that way and the ring — and every stone — begins to speak.'),
 
 -- stone-vaun — Caesar (every letter held back by a fixed amount; his hoarding made literal).
 ('stone-vaun', 2, 'vaun gave nothing back. even his letters are held back — every one, by the same measure. find the measure and give them back.'),
@@ -51,8 +51,8 @@ insert into public.hints (puzzle_key, tier, body) values
 ('no-wall-catch', 3, 'the warm voice lied. his key turns his own stone to the name they used for him: the one who turned away. the land kept the proof he hoped you would not find.'),
 
 -- a1z26-tick-stave — the numeral-literacy twin (tick marks as counts → letters).
-('a1z26-tick-stave', 2, 'these are not words. they are counts. each cluster of ticks is a number, and each number is a letter in its order.'),
-('a1z26-tick-stave', 3, 'count the ticks: one is a, two is b, on down the row. read the counts as letters and the stave speaks.'),
+('a1z26-tick-stave', 2, 'these are counts, not words — but you are not meant to be handed the trick. count what is set out in the world in ones, and let it tell you.'),
+('a1z26-tick-stave', 3, 'each cluster is a number and each number a letter in its order; you will have proved this to yourself at the counting-stones before you need it here.'),
 
 -- stone-brann — (when re-authored as the railFence/beacon night cipher, P0-5) the count-the-fires read.
 ('stone-brann', 2, 'brann kept the watch by the lamps, and counted them twice. the order the lights are read is the order that matters here — not the marks, the sequence.'),

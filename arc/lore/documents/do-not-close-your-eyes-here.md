@@ -11,6 +11,8 @@ reveals: []
 foreshadows:
   - "one fire never went out through the abandoned years (FACT 11)"
   - "the kept ones did not depart — they were kept (FACT 12)"
+  - "there was a seventh — Brann counts seven keeper-shrines and six lit fires; the seventh shrine is cold all through, off the far path (seven-motif, one of >=3 independent keeper sites)"
+  - "cipher-as-inversion: Brann's rail-fence reads only in the dark ('the day lies by leaving the cold one off; the dark has it at seven') — the night-walker who traded the kept dark hours for the only hours he could read the truth"
 links_to:
   - the-seventh-not-kept
 ---
@@ -30,6 +32,16 @@ the whole settlement and never lose the warm. now most are doused. the offering-
 went cold three nights back. the bow-stones at the threshold, cold. the drowned one's
 water keeps no flame and never did. one by one the keepers' lights go out as the keepers
 do.
+
+i counted the keeper-fires proper tonight, the shrine-fires, one to a keeper. i made
+the count seven. i made it seven three nights running and each night one of the seven
+is already out cold — not doused that night, out long before, out all through, a shrine
+off the far path with no warmth in it and no marker by it. so i cross that one and my
+count of the lit is six, and my count of the shrines is seven, and the difference is a
+keeper the row does not stand a stone for. i only find the seventh by counting in the
+dark. by day i cross the whole settlement and count six and think six is all there was.
+the day lies by leaving the cold one off. the dark has it at seven, and i read only in
+the dark.
 
 but one will not be doused.
 

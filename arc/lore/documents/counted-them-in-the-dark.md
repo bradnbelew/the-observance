@@ -11,6 +11,8 @@ reveals:
   - "each prior keeper's fate matches the custom they broke — Vaun starved in the light he hoarded (the Offering went unkept; his last column falls to zero and nothing is crossed back to the deep)"
 foreshadows:
   - "the customs were learned from the land, not invented — 'i did not make the count. i learned it. the land counts first.'"
+  - "there was a seventh — Vaun's own keeper-count reads vii where the row stands six (seven-motif, one of >=3 independent keeper sites)"
+  - "cipher-as-inversion: Vaun's Caesar is a count read a fixed amount under its true value ('held back the fixed amount so the giver keeps the odd') — the shape of the man who kept the most and gave the least"
 links_to:
   - the-record-opens
   - learn-them-as-we-learned-them
@@ -53,6 +55,23 @@ i did not go up to the cairn.
 
 *margin, later hand: the offering is the first of the deep, returned. it is the
 one law he embodied and the one he would not keep.*
+
+---
+
+*the count of keepers, entered by me who keeps all counts.*
+
+i keep the tally of us too, the way i keep the iron. there are markers cut for
+seven and stones stood for six. i set the true number down here where i set every
+true number: **vii.** one short of it is stood in the row. one short is what the
+row shows, and one short is what i always leave — a keeping is a count read one
+notch under its true value, held back the fixed amount so the giver keeps the
+odd. i did it with the deep. i did it with the giving-back. i did it here, with
+us. the last of us i left off the row the way i left the first of the deep off
+the cairn — owed, and never marked over.
+
+*margin, later hand: he could not stop holding the last one back. even in the
+count of the kept he kept one under. seven he knew, six he stood. the shortfall
+is always the same size, and it is always the last one, and it is always owed.*
 
 ---
 

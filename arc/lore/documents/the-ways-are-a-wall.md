@@ -11,6 +11,7 @@ reveals: []
 foreshadows:
   - one keeper said the ways are a wall against the watching (FACT 7, the planted lie)
   - Iss lied — the ways are not a wall (FACT 8, set up to be overturned)
+  - "cipher-as-inversion: Iss's Vigenere key is his own name, which decodes to its own inverse ('the one who turned away') — 'if the key is a man's own name, the lock can only ever give back the man'; he confesses the shape of his self-defeat without naming it"
 links_to:
   - no-wall-was-ever-built-here
   - the-seventh-not-kept
@@ -26,6 +27,8 @@ the ways are a **wall**. that is the whole of it. you crouch at the markers, you
 so do not be afraid of the record. let it count. a wall does not mind being counted at.
 
 [...] and i know what you will hear about me from the later stones. let them say it. i have set down my name in the keyed script the way we all do, and the key is my own name, as is right and customary — read it against the others and you will hear me agree with every honest carving here. that is how you know a man is telling you true: he hands you the key and lets you check the lock.
+
+and if the key is a man's own name, then the lock can only ever give back the man. mind that. a man who keys the truth on himself has made himself the measure of it, and if the man is bent the truth comes out bent to exactly his shape and no other. i did not think of that when i chose the key. i chose my name because it was mine and i was proud of it. i did not stop to read what my own name says when you turn it on a straight line.
 
 > *(margin, a later and harder hand:)* we checked the lock. turn his key on the other stones and it does not say what he said. it gives the word we keep for **the one who turned away**. read it for yourself before you trust a line of this. [...]
 

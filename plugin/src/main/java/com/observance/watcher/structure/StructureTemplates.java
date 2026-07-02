@@ -177,26 +177,36 @@ public final class StructureTemplates {
         pen.clusterOn(cx, cy + 1, cz + 1, BlockFace.UP);
 
         // Ring of 6 inscribed way-mark pillars around the dais (hex-ish placement on the 7x7).
+        // RESHAPE R0: marks are worn/partial carvings — NOT sequential Roman numerals (that reads as a
+        // tutorial list). Index 4 (the abraded pillar) uses a cracked block + a subtly different mark
+        // so its content differs; the "wrong" outward-facing pillar is now the abraded one (i==4) so it
+        // is physically distinct (cracked cap + different mark), not just blank+outward.
         int[][] ring = {{0, -3}, {3, -1}, {3, 2}, {0, 3}, {-3, 2}, {-3, -1}};
-        String[] marks = {"i", "ii", "iii", "iv", "v", "vi"};
+        // Worn/partial marks — non-sequential, fragmentary, like worn carvings (not a numbered list).
+        String[] marks = {"·", "··", "·", "···", "·̃", "··"};
         for (int i = 0; i < ring.length; i++) {
             int px = cx + ring[i][0], pz = cz + ring[i][1];
             pen.set(px, cy, pz, Material.POLISHED_BLACKSTONE_BRICKS);
             pen.set(px, cy + 1, pz, Material.POLISHED_BLACKSTONE);
-            pen.set(px, cy + 2, pz, Material.CHISELED_POLISHED_BLACKSTONE);
+            // Abraded pillar (index 4): cracked cap — physically distinct, content subtly differs.
+            boolean abraded = i == 4;
+            pen.set(px, cy + 2, pz, abraded ? Material.CRACKED_POLISHED_BLACKSTONE_BRICKS
+                    : Material.CHISELED_POLISHED_BLACKSTONE);
             // A hanging sign on chains under a small overhang block, facing the centre (a way-mark).
             pen.set(px, cy + 4, pz, Material.POLISHED_BLACKSTONE_SLAB);
             BlockFace toCentre = pen.toward(px, pz, cx, cz);
-            boolean wrong = i == 3; // one way-mark faces OUT and is left blank — the wrongness detail
-            pen.hangingSign(px, cy + 3, pz, wrong ? toCentre.getOppositeFace() : toCentre,
-                    wrong ? new String[]{"", "", "", ""} : new String[]{"·", marks[i], "·", ""});
+            // Abraded pillar faces OUT (its face is turned away, the mark worn) — the wrongness detail.
+            pen.hangingSign(px, cy + 3, pz, abraded ? toCentre.getOppositeFace() : toCentre,
+                    new String[]{"·", marks[i], "·", ""});
         }
         // Wrongness: a cobweb clinging in one corner of the dais.
         pen.setIfAir(cx - 3, cy, cz - 3, Material.COBWEB);
 
-        // A separate WAXED label sign (does not pollute answers) on the dais front rim.
+        // RESHAPE R0: label REDUCED — cut "read, then answer" (English instruction); title only.
+        // RESHAPE R2: notation TBD — a world-cipher mark replaces the English subtitle when cipher-as-
+        // inversion motif is authored (Wave R2 fills this label's lower lines).
         pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
-                new String[]{"the rosetta", "six ways, one", "hand — read,", "then answer"});
+                new String[]{"the rosetta", "", "", ""});
         return answer;
     }
 
@@ -245,9 +255,24 @@ public final class StructureTemplates {
         pen.set(cx, cy, cz - 1, Material.CHISELED_TUFF_BRICKS);
         pen.set(cx, cy + 1, cz - 1, Material.CHISELED_TUFF);
         Location answer = pen.wallSign(cx, cy + 1, cz, BlockFace.SOUTH, Material.SPRUCE_WALL_SIGN);
-        // Separate WAXED label — the ledger's heading (does not pollute answers).
-        pen.labelWallSign(cx + 1, cy + 1, cz - 1, BlockFace.SOUTH, Material.SPRUCE_WALL_SIGN,
-                new String[]{"vaun's ledger", "all of it kept", "none of it", "spent"});
+        // RESHAPE R0: label CUT. FOLD — the ledger line is moved into a partly-worn carving on the
+        // chiseled ledger stone itself. The final line is left blank (visible erasure — the tally that
+        // was never completed, not an empty "fill-me-in" box). The carving is on the adjacent face of
+        // the ledger-stone so it reads as worn into the stone, not as a posted notice.
+        pen.labelWallSign(cx - 1, cy + 1, cz - 1, BlockFace.EAST, Material.SPRUCE_WALL_SIGN,
+                new String[]{"all of it kept", "none of it", "spent —", ""});
+
+        // RUNE-CRIB "KEPT" — on the hoard barrels (the thing Vaun did: kept it all). Mounted on the SOUTH face
+        // of the stacked barrels at (cx-2,cy+1,cz-1), facing the room. crib: the referent is the barrel-hoard
+        // directly north of this sign.
+        pen.runeCrib(cx - 2, cy + 1, cz, BlockFace.SOUTH, Material.SPRUCE_WALL_SIGN, "KEPT");
+        // RUNE-CRIB "DEEP" — placed here (Vaun has no descent-mouth) on the corroding copper back wall, per the
+        // task's fallback. Mounted on the SOUTH face of the weathered-cut-copper back wall at (cx+1,cy+1,cz-2),
+        // facing the room. crib: the referent is the treasury back wall (the hoard walled deep behind copper).
+        pen.runeCrib(cx + 1, cy + 1, cz - 1, BlockFace.SOUTH, Material.SPRUCE_WALL_SIGN, "DEEP");
+        // GIVE — OMITTED at Vaun: this site is a hoard (barrels/chests/pots), with NO offering/deposit area.
+        // Vaun kept everything and gave nothing, so there is no diegetic give-surface here to label (the only
+        // deposit-slot in these methods is the Seventh's empty offering-slot in unwriting(), a different site).
         return answer;
     }
 
@@ -280,16 +305,28 @@ public final class StructureTemplates {
         pen.stairs(cx + 1, cy, cz + 1, Material.DARK_OAK_STAIRS, BlockFace.NORTH, false);
         pen.trapdoorBack(cx + 1, cy + 1, cz, BlockFace.NORTH);
 
-        // The reading lectern (THE ANSWER) with a book already on it — the margin-note lives on a sign.
+        // The reading lectern (THE ANSWER) — the margin-note framing now lives IN the book text (RESHAPE R0
+        // fold: the margin note belongs on the diegetic surface, not a posted label). Book updated to carry
+        // both the text and "her hand" attribution as a genuine margin note in the prose.
         Location answer = pen.lectern(cx, cy, cz + 1, BlockFace.NORTH);
         pen.putBook(cx, cy, cz + 1, "the lampwright's hand",
-                "i can't keep them all lit —\nthe words stay when the\nlamps do not.");
+                "i can't keep them all lit —\nthe words stay when the\nlamps do not.\n\n" +
+                        "[in the margin, her hand:]\n\"read it back to me —\"");
 
         // Reading candles on a small deepslate-tile side table — sparse, warm.
         pen.set(cx - 1, cy, cz + 1, Material.DEEPSLATE_TILE_SLAB);
         pen.candle(cx - 1, cy + 1, cz + 1, Material.CANDLE, true);
 
-        // A second lectern with no book (a place someone stopped reading).
+        // RUNE-CRIB "LIGHT" — beside the reading candle (the lampwright's earned light). Mounted facing EAST on
+        // the west side-shelf block (cx-2,cy+1,cz), at (cx-1,cy+1,cz) — immediately beside the candle at
+        // (cx-1,cy+1,cz+1). crib: the referent is the reading candle one cell south of this sign.
+        pen.runeCrib(cx - 1, cy + 1, cz, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "LIGHT");
+
+        // A second lectern with no book (a place someone stopped reading). RESHAPE R0 fold: the submission
+        // surface IS this empty lectern + the bookshelf gap — "return the missing volume" reads as the
+        // diegetic action, not a blank "fill-me-in" box. The label sign is CUT (margin-note now lives in
+        // the first lectern's book text above). The gap in the bookshelf (dx==-1, dy==1) is the answer's
+        // physical shape: a volume that belongs there and isn't.
         pen.lectern(cx + 2, cy, cz - 1, BlockFace.WEST);
 
         // Heavy cobwebs/dust — the wrongness (a room read in, never left).
@@ -297,11 +334,7 @@ public final class StructureTemplates {
         pen.setIfAir(cx + 2, cy + 2, cz + 1, Material.COBWEB);
         pen.setIfAir(cx, cy + 2, cz, Material.COBWEB);
 
-        // The "margin-note" label sign — a small WAXED wall sign beside the lectern carrying the margin flavour.
-        // (The lectern is the answer surface; this waxed sign is a label only — it is NOT a submission slot and
-        // never pollutes an answer.)
-        pen.labelWallSign(cx + 1, cy + 1, cz - 2, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
-                new String[]{"in the margin:", "\"read it back", "to me —\"", "(her hand)"});
+        // RESHAPE R0: margin-note label sign CUT — framing folded into the lectern book text above.
         return answer;
     }
 
@@ -346,6 +379,11 @@ public final class StructureTemplates {
         // Wrongness: a single poppy floating on the far side of the pool.
         pen.setIfAir(cx - 2, cy, cz - 2, Material.POPPY);
 
+        // RUNE-CRIB "NAME" — beside the child's cairn, where a name would be cut. Mounted on the SOUTH face of
+        // the cobblestone cairn stone (cx+2,cy+1,cz+2), facing out at head height by the flowers — the carved
+        // word for the thing a grave-marker holds. crib: the referent is the flowered cairn directly north.
+        pen.runeCrib(cx + 2, cy + 1, cz + 3, BlockFace.SOUTH, Material.WARPED_WALL_SIGN, "NAME");
+
         // The copybook lectern at the pool's edge (a child practicing letters).
         pen.lectern(cx - 2, cy, cz, BlockFace.EAST);
         pen.putBook(cx - 2, cy, cz, "sella's copybook",
@@ -363,9 +401,19 @@ public final class StructureTemplates {
         pen.set(cx, cy - 1, cz - 4, Material.DARK_PRISMARINE);    // the dry approach step the reader stands on
         Location answer = pen.wallSign(cx, cy + 1, cz - 3, BlockFace.NORTH, Material.WARPED_WALL_SIGN);
 
-        // Separate WAXED "far marker" label sign, above the answer on the same dry post (does not pollute answers).
+        // RUNE-CRIB "WATER" — at the reflecting pool's dry SOUTH rim, labelling the pool itself. A short dark-
+        // prismarine rim-post rises on the south edge (cx,cy,cz+2, dry rim — outside the 3x3 water) and the crib
+        // is mounted on its SOUTH face at rim height, read from the dry standing spot south of the pool. Small,
+        // carved, easy to miss. crib: the referent is the reflecting pool immediately north of this rim-post.
+        pen.set(cx, cy, cz + 2, Material.DARK_PRISMARINE);        // rim-post backing for the water crib
+        pen.runeCrib(cx, cy, cz + 3, BlockFace.SOUTH, Material.WARPED_WALL_SIGN, "WATER");
+
+        // RESHAPE R0: label CUT. FOLD — the "far marker" label is replaced with a partly-worn carved name
+        // on the marker post. The name is partially legible (some letters worn smooth), which is the
+        // diegetic surface: a child's name cut into stone and then worn by water, not a posted sign.
+        // The reflecting pool + child's copybook already tell it; the blank label was the only wrong note.
         pen.labelWallSign(cx, cy + 2, cz - 3, BlockFace.NORTH, Material.WARPED_WALL_SIGN,
-                new String[]{"far marker —", "read what the", "water keeps", "still"});
+                new String[]{"s e l  ·  ·", "", "", ""});
         return answer;
     }
 
@@ -402,6 +450,12 @@ public final class StructureTemplates {
         pen.set(cx - 1, cy, cz, Material.IRON_BARS);
         pen.set(cx + 1, cy, cz, Material.IRON_BARS);
 
+        // RUNE-CRIB "BOW" — under/beside the low lintel you must stoop through (the bow built into the door).
+        // Mounted LOW at crouch height (cy) at (cx,cy,cz-1), facing EAST so it hangs on the solid west corridor
+        // wall (cx-1,cy,cz-1) — iron bars can't hold a sign, the stone wall can. A carved word read at a stoop
+        // right at the lintel. crib: the referent is the low lintel at (cx,cy+1,cz), one cell north of this sign.
+        pen.runeCrib(cx, cy, cz - 1, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "BOW");
+
         // Beyond the threshold: an unfinished/broken carving on the back wall (Orin carving the same line).
         for (int dx = -1; dx <= 1; dx++) {
             pen.set(cx + dx, cy,     cz + 3, Material.STONE_BRICKS);
@@ -410,6 +464,11 @@ public final class StructureTemplates {
         pen.set(cx, cy + 1, cz + 3, Material.CHISELED_STONE_BRICKS);
         pen.set(cx - 1, cy, cz + 3, Material.CRACKED_STONE_BRICKS);   // the unfinished carving
         pen.set(cx + 1, cy + 1, cz + 3, Material.STONE_BRICK_STAIRS); // a chisel-stroke left mid-cut
+
+        // RUNE-CRIB "STONE" — on the unfinished carving wall (Orin carving the same line into stone). Mounted on
+        // the NORTH face of the back stone-brick wall at (cx-1,cy,cz+3, the cracked unfinished carving), facing
+        // up the passage at (cx-1,cy,cz+2). crib: the referent is the unfinished stone carving-wall behind it.
+        pen.runeCrib(cx - 1, cy, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN, "STONE");
 
         // One soul lantern past the threshold — cold blue light (earned, sparse).
         pen.set(cx, cy + 2, cz + 2, Material.DEEPSLATE_BRICKS);
@@ -421,11 +480,9 @@ public final class StructureTemplates {
         // (cx,cy-1,cz+1) — clear of the lintel and below the soul-lantern. Left LOW at cy so Orin's stoop is
         // built into reading it too (blank submission slot). Backing = the back wall; standing cell open.
         Location answer = pen.wallSign(cx, cy, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN);
-        // Separate WAXED label ABOVE the lintel (read before you stoop) — does not pollute answers. Add a
-        // solid backing block behind it (cx,cy+2,cz-2) so the wall sign cannot pop off.
+        // RESHAPE R0: label CUT — the low-lintel mechanic speaks for itself; the backing block is kept
+        // so the approach wall exists (do not remove the structural block).
         pen.set(cx, cy + 2, cz - 2, Material.DEEPSLATE_BRICKS);
-        pen.labelWallSign(cx, cy + 2, cz - 1, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
-                new String[]{"orin's threshold", "the low stone", "asks a bow —", "stoop to read"});
         return answer;
     }
 
@@ -477,6 +534,11 @@ public final class StructureTemplates {
         // watch-stone plinth stays below it at (cx,cy,cz+1); firelight from the sheltered fire still falls here.
         pen.set(cx, cy, cz + 1, Material.CHISELED_DEEPSLATE);
         Location answer = pen.wallSign(cx, cy + 1, cz + 1, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN);
+        // RUNE-CRIB "MOON" — beside the amethyst set into the watch-floor (the black-moon in the night-sky
+        // floor). Mounted low at (cx,cy,cz) facing NORTH, backed by the watch-stone plinth just set at
+        // (cx,cy,cz+1) — a small carved word right beside the amethyst floor-stud. Placed AFTER the plinth so
+        // the backing exists. crib: the referent is the amethyst at (cx,cy-1,cz), directly under this sign.
+        pen.runeCrib(cx, cy, cz, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN, "MOON");
         // Separate WAXED label sign on the watch-post — add a solid backing block behind it so it cannot
         // pop off (the 5x5 platform has no wall at cx-2,cz-3).
         pen.set(cx - 2, cy + 1, cz - 3, Material.COBBLED_DEEPSLATE);
@@ -533,9 +595,20 @@ public final class StructureTemplates {
         // stone — the deception). Blank submission slot at reading height on the hearth face.
         pen.set(cx - 1, cy + 1, cz - 1, Material.CHISELED_POLISHED_BLACKSTONE);
         Location answer = pen.wallSign(cx - 1, cy + 1, cz, BlockFace.SOUTH, Material.BIRCH_WALL_SIGN);
-        // Separate WAXED label — the inviting lie (does not pollute answers).
-        pen.labelWallSign(cx + 1, cy + 1, cz - 1, BlockFace.SOUTH, Material.BIRCH_WALL_SIGN,
-                new String[]{"come and warm", "yourself —", "the fire is", "kept (it lies)"});
+
+        // RUNE-CRIB "FIRE" — beside the false hearth's soul-fire/magma-behind-glass. Mounted on the SOUTH face
+        // of the solid brick hearth-surround block at (cx+1,cy,cz-2), facing the room, right beside the "fire".
+        // crib: the referent is the magma/soul-fire directly left of this sign.
+        pen.runeCrib(cx + 1, cy, cz - 1, BlockFace.SOUTH, Material.BIRCH_WALL_SIGN, "FIRE");
+        // RUNE-CRIB "COLD" — the contradiction crib: low and subtle, on the cold-black front floor of the same
+        // hearth (the "warm" place labels itself cold once readable). A small cold-black backing block at floor
+        // level (cx+1,cy,cz+2 is BLACKSTONE floor edge) carries it; sign one course up facing SOUTH, easy to miss.
+        // crib: sits low over the blackstone (the cold truth) that curdled out from under the warm brick.
+        pen.set(cx + 1, cy, cz + 1, Material.POLISHED_BLACKSTONE); // low backing for the subtle cold crib
+        pen.runeCrib(cx + 1, cy, cz + 2, BlockFace.SOUTH, Material.BIRCH_WALL_SIGN, "COLD");
+
+        // RESHAPE R0: label CUT entirely (including "(it lies)" spoiler) — the soul-fire-behind-glass +
+        // soul-soil creeping onto warm brick do the lying; narration kills the deception.
         return answer;
     }
 
@@ -595,11 +668,12 @@ public final class StructureTemplates {
         // Wrongness: the E arm scored through — a cracked block, someone disputed the reckoning.
         pen.set(cx + 3, cy, cz + 1, Material.CRACKED_DEEPSLATE_TILES);
 
-        // Separate WAXED label — the reckoning heading. Mounted on the raised S-arm, facing NORTH into the
-        // square (backing = the S-arm at cz+3), so it does not overwrite the arm and cannot pop off. Sits at
-        // cy+1, clear of the answer slot (which is at cy) — does not pollute the answer.
+        // RESHAPE R0: label REDUCED — cut "count the marks, then the way — north, down, read" (a walkthrough).
+        // The cracked/disputed compass arm is the detail to study; the title stays as a site anchor.
+        // RESHAPE R2: notation TBD — world-cipher coordinate marks replace the English lines when the
+        // cipher-as-inversion notation is authored (Wave R2 fills these lower lines).
         pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, deepslateWallSign(),
-                new String[]{"the reckoning", "count the marks,", "then the way —", "north, down, read"});
+                new String[]{"the reckoning", "", "", ""});
         return answer;
     }
 
@@ -662,9 +736,8 @@ public final class StructureTemplates {
         Location answer = pen.lectern(cx, cy + 1, cz - 1, BlockFace.SOUTH);
         pen.putBook(cx, cy + 1, cz - 1, "the house at the end of the path",
                 "we came out here on a\nwarm man's word.\n\nthe fire is out. there is\nno door up. only the\nwalk back.");
-        // Separate WAXED label — the dead-shrine's cold truth.
-        pen.labelWallSign(cx - 1, cy + 1, cz - 1, BlockFace.SOUTH, Material.BIRCH_WALL_SIGN,
-                new String[]{"nothing is kept", "here. he sent", "you out —", "the fire is out"});
+        // RESHAPE R0: label CUT entirely — the doused hearth + roots-grown-over-the-door + cold-ash spill
+        // deliver the emotional beat silently; "he sent you out" explains what should be felt, not told.
         return answer;
     }
 
@@ -721,11 +794,8 @@ public final class StructureTemplates {
         Location answer = pen.lectern(cx, cy, cz - 1, BlockFace.NORTH);
         pen.putBook(cx, cy, cz - 1, "the accepting",
                 "the dark cannot be killed\nor escaped. only witnessed.\n\nbow, together, and be the\ncompany the kept were.");
-        // Separate WAXED label at the ring's edge — the one instruction, sparse. Mounted just inside the south
-        // lamp-post (cz+4, solid), facing NORTH into the gather-floor so the quorum reads it — the lamp-post is
-        // the backing, so it neither overwrites the post nor pops off (the open floor has no wall).
-        pen.labelWallSign(cx, cy, cz + 3, BlockFace.NORTH, Material.WARPED_WALL_SIGN,
-                new String[]{"unbroken light", "one fire, kept.", "bow as one —", "all who are here"});
+        // RESHAPE R0: label CUT entirely — "bow as one" is a stage direction; AcceptingRiteListener handles
+        // the crouch-detection and the lectern book carries the text; the label is redundant narration.
         return answer;
     }
 
@@ -780,11 +850,13 @@ public final class StructureTemplates {
         // block further south at cz+2) and past the crouch-gap. The east wall is the backing; the passage
         // column is the open standing cell (blank submission slot). Returned as the answer surface.
         Location answer = pen.wallSign(cx, cy + 1, cz + 1, BlockFace.WEST, Material.DARK_OAK_WALL_SIGN);
-        // Separate WAXED grave-marker — the future date, and who opened it. (Does not pollute the answer.) Add
-        // a solid grave-head block behind it (cx,cy,cz+2 sits over the open grave) so the sign cannot pop off.
+        // RESHAPE R0: grave-marker REDUCED to date-only in world-notation (unglossed).
+        // CUT "the stone is open from the inside" — the shoved-out capstone lit from within IS the story.
+        // RESHAPE R2: notation TBD — the world-calendar notation for the future date is authored in Wave R2
+        // when the date-in-world-notation system is established; placeholder below is the bare site-mark.
         pen.set(cx, cy, cz + 2, Material.POLISHED_BLACKSTONE_BRICKS);
         pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
-                new String[]{"the date is not", "yet come. the", "stone is open", "from the inside"});
+                new String[]{"· · — · · ·", "", "", ""});
         return answer;
     }
 
@@ -855,11 +927,9 @@ public final class StructureTemplates {
         pen.set(cx, cy + 2, cz - 1, Material.DEEPSLATE_BRICKS);
         pen.clusterOn(cx, cy + 1, cz - 1, BlockFace.DOWN);
 
-        // Separate WAXED label — the seal's truth (the deep is sealed with the WITHHOLDING of a name). Mounted
-        // one cell into the chamber (cz-2) facing SOUTH so the effaced back-wall block at cz-3 is its solid
-        // backing — it no longer overwrites the scrape-course and cannot pop off.
-        pen.labelWallSign(cx - 2, cy + 1, cz - 2, BlockFace.SOUTH, Material.WARPED_WALL_SIGN,
-                new String[]{"the seal is a", "name. the wall", "was scraped —", "read it back"});
+        // RESHAPE R0: label CUT entirely — scraped wall vs one clean slab + the stopped ceiling already
+        // carry the full narrative; narration of "the seal is a name / read it back" spoils what should be
+        // the strongest room in the build.
         return answer;
     }
 
@@ -915,11 +985,13 @@ public final class StructureTemplates {
         // THE VAULT SIGN — the group types the assembled combination here (blank unwaxed submission slot on
         // the vault's plinth, facing the room). The ThresholdVaultListener resolves the SignChangeEvent here.
         Location answer = pen.wallSign(cx, cy, cz - 1, BlockFace.SOUTH, copperWallSign());
-        // Separate WAXED label on the rune-wall — the co-op instruction (does not pollute the combination).
-        // Mounted one cell into the room (cz+2) facing NORTH into the chamber so the rune-wall block at cz+3
-        // is its solid backing — it no longer overwrites the rune-wall face and cannot pop off.
+        // RESHAPE R0: label REDUCED — cut "each holds one rune — read them as one" (narrates the mechanic).
+        // Replaced with an untranslatable cipher inscription so the vault reads as a made lock, not a
+        // tutorial. The honest co-op mechanic is allowed to show, but not to narrate itself.
+        // RESHAPE R2: notation TBD — the actual cipher inscription is authored in Wave R2 (cipher-as-
+        // inversion motif); placeholder dots stand in until then.
         pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN,
-                new String[]{"the threshold", "vault. each holds", "one rune —", "read them as one"});
+                new String[]{"· — ·· — ···", "·· — · — ··", "", ""});
         return answer;
     }
 
@@ -1114,6 +1186,43 @@ public final class StructureTemplates {
                     var front = sign.getSide(Side.FRONT);
                     for (int i = 0; i < 4; i++) front.setLine(i, clamp(lines, i));
                     try { sign.setWaxed(true); } catch (Throwable ignored) { }
+                    try { sign.update(true, false); } catch (Throwable ignored) { }
+                }
+            } catch (Throwable ignored) { }
+        }
+
+        /**
+         * A RUNE-CRIB: a small WAXED wall-sign whose single word is rendered in the {@code observance:runes}
+         * bitmap font (ASCII A–Z / 0–9 map 1:1 to rune glyphs), so it displays as a carved rune label beside
+         * the thing it names — the earned-literacy "crib" (Chants-of-Sennaar / Tunic style). WAXED so it is
+         * un-editable → never a submission slot and never pollutes an answer; it reads only as a carved word.
+         *
+         * <p>Uses the Paper rich-text Sign API ({@code side.line(i, Component)}) with the rune {@link
+         * net.kyori.adventure.key.Key} — the SAME font key ({@code observance:runes}) the rune beats use
+         * (see {@code NameOnWallBeat} / {@code KeeperNpcBeat}). Word is upper-cased so it hits the A–Z/0–9
+         * glyph range of the font. Null/quirk-safe like the other sign helpers (try/catch Throwable).
+         *
+         * @param word the plain-ASCII word to carve (e.g. "FIRE"); rendered in rune glyphs.
+         */
+        void runeCrib(int x, int y, int z, BlockFace facing, Material wallSignMat, String word) {
+            if (world == null || word == null) return;
+            try {
+                Block b = world.getBlockAt(x, y, z);
+                Material mat = wallSignMat != null && wallSignMat.name().contains("WALL_SIGN")
+                        ? wallSignMat : Material.DARK_OAK_WALL_SIGN;
+                b.setType(mat, false);
+                if (b.getBlockData() instanceof Directional d) { d.setFacing(facing); b.setBlockData(d, false); }
+                if (b.getState() instanceof Sign sign) {
+                    var side = sign.getSide(Side.FRONT);
+                    // Rune glyphs: the font maps ASCII A–Z / 0–9 1:1, so upper-case the word first.
+                    net.kyori.adventure.text.Component glyphs = net.kyori.adventure.text.Component
+                            .text(word.toUpperCase(Locale.ROOT))
+                            .font(net.kyori.adventure.key.Key.key("observance", "runes"));
+                    side.line(0, net.kyori.adventure.text.Component.empty());
+                    side.line(1, glyphs);
+                    side.line(2, net.kyori.adventure.text.Component.empty());
+                    side.line(3, net.kyori.adventure.text.Component.empty());
+                    try { sign.setWaxed(true); } catch (Throwable ignored) { } // a carved label, never a slot
                     try { sign.update(true, false); } catch (Throwable ignored) { }
                 }
             } catch (Throwable ignored) { }

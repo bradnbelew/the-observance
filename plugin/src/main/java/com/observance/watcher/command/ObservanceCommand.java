@@ -223,31 +223,83 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         };
 
         int count = spine.length;
-        // BRANCHING DESCENT (WORLD-BUILD §4). The descent axis is EAST (+X): each site steps `spacing`
-        // east of the last. Two deterministic dressings turn the old flat row into an evocative field:
-        //   * zig-zag Z — an alternating +/- lateral offset (a fraction of spacing, capped) so adjacent
-        //     alcoves sit off the centre-line, north then south — a FIELD, not a line. X separation
-        //     always stays a full `spacing` apart, so the lateral offset never lets two dense builds
-        //     (up to ~9 wide) overlap.
-        //   * step DOWN — each subsequent site drops `descentStep` blocks below the last, so walking the
-        //     spine reads as sinking into the ground (the rosetta at the mouth, keepers descending past).
-        // The mouth (index 0) sits a little west of the sender; the field extends east + down from there.
-        int zAmp = Math.min(4, spacing / 3);              // lateral zig-zag amplitude (< spacing/2, no overlap)
-        double startX = centre.getX() - spacing;          // mouth one step west of the sender
-        int baseZ  = centre.getBlockZ();
+        // WAVE R6 — NON-UNIFORM SCATTER (replaces the east-march corridor).
+        //
+        // Old behaviour: constant east step (spacing), alternating ±4-block N/S wobble → a straight
+        // corridor that read as "walk these in order."
+        //
+        // New behaviour: sites feel independently-placed, as if they were always-there in the world.
+        // Three levers, ALL deterministic (seeded from siteIndex + origin coords, NOT Math.random()):
+        //
+        //   1. NON-UNIFORM X intervals — base step + a per-site delta from siteHash, so the east gaps
+        //      are irregular (half-step … full-step … one-and-a-half-step). Sites are never too close
+        //      (cumulative east advance always ≥ i * minStep so the field still spreads east overall).
+        //
+        //   2. LARGE IRREGULAR Z spread — ±zRange (= ~60 % of spacing), per-site from hash. This is
+        //      ~6–10× the old ±4-block wobble. Sites land at clearly different N/S positions instead
+        //      of hugging the centre-line.
+        //
+        //   3. MINIMUM PAIRWISE SEPARATION — after each candidate position is chosen, we check every
+        //      already-placed site. If the XZ distance is < minSep (= 9 blocks = worst-case footprint),
+        //      we nudge the candidate N or S by minSep until it clears. This guarantees no two
+        //      set-pieces overlap regardless of the hash values produced.
+        //
+        // Y follows the terrain (OCEAN_FLOOR heightmap + 1) — unchanged from before.
+        // Total site count stays 7 (rosetta + 6 keepers) — unchanged.
 
+        // Stable per-site seed: mix the site index with the block-coord origin so the same survey
+        // origin always produces the same layout, but a different origin produces a different layout.
+        // We use the classic Wang hash (bit-mixing, no floating-point, no wall-clock).
+        long originSeed = wangHash((long) centre.getBlockX() * 73856093L ^ (long) centre.getBlockZ() * 19349663L);
+
+        int minStep  = Math.max(8, spacing - 4);   // minimum east advance per site
+        int maxDelta = Math.max(0, spacing - minStep); // extra east randomisation range
+        int zRange   = Math.max(5, (int)(spacing * 0.6)); // ±lateral range (~60 % of spacing)
+        int minSep   = 9;                           // minimum pairwise XZ clearance (worst footprint ≈ 7×7 + margin)
+
+        // Accumulate already-placed XZ positions for the overlap check.
+        int[] placedXs = new int[count];
+        int[] placedZs = new int[count];
+        int overlapCount = 0;
+
+        double curX = centre.getX() - spacing;     // first site starts one base-step west of sender
         int placed = 0;
         for (int i = 0; i < count; i++) {
             String siteId   = spine[i][0];
             String siteType = spine[i][1];
 
-            // Deterministic (no RNG): east step, alternating N/S zig-zag. Y FOLLOWS THE TERRAIN — seat each
-            // set-piece on the real ground surface at its (x,z) so it never floats or buries on uneven land.
-            // OCEAN_FLOOR = highest solid ground, skipping water + leaves (snowy-taiga-safe).
-            double sx = startX + (long) i * spacing;
-            int sz = baseZ + ((i % 2 == 0) ? -zAmp : zAmp) * ((i == 0) ? 0 : 1); // mouth on centre-line
-            int sy = centre.getWorld().getHighestBlockYAt((int) Math.floor(sx), sz,
-                    org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+            // Per-site hash (Wang mix of originSeed + index so each site is independent).
+            long h = wangHash(originSeed ^ wangHash((long) i + 1));
+
+            // 1. Non-uniform east advance (always positive, min minStep).
+            int xDelta = (int)(h & 0x7FFFFFFFL) % (maxDelta + 1);   // 0 … maxDelta
+            curX += minStep + xDelta;
+
+            // 2. Irregular lateral (Z) spread in range [-zRange … +zRange].
+            // Use the upper bits of h for the Z draw (independent of the X delta bits).
+            int hZ = (int)((h >>> 32) & 0x7FFFFFFFL);
+            int sz = centre.getBlockZ() + (hZ % (2 * zRange + 1)) - zRange;
+
+            int sx = (int) Math.floor(curX);
+
+            // 3. Minimum pairwise separation — nudge Z if needed.
+            for (int k = 0; k < overlapCount; k++) {
+                int dx = Math.abs(sx - placedXs[k]);
+                int dz = Math.abs(sz - placedZs[k]);
+                if (dx < minSep && dz < minSep) {
+                    // Too close: push Z away from the conflicting site, then re-check from scratch.
+                    sz = placedZs[k] + ((sz >= placedZs[k]) ? minSep : -minSep);
+                    k = -1;
+                }
+            }
+
+            // Terrain-seat: highest solid block (OCEAN_FLOOR skips water + leaves). Unchanged from before.
+            int sy = centre.getWorld().getHighestBlockYAt(sx, sz, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+
+            // Record position for subsequent overlap checks.
+            placedXs[overlapCount] = sx;
+            placedZs[overlapCount] = sz;
+            overlapCount++;
 
             Location pillarLoc = new Location(centre.getWorld(), sx, sy, sz);
 
@@ -272,9 +324,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Observance: placeregion complete — " + placed + "/" + count
                 + " spine sites placed and persisted.");
-        sender.sendMessage("  Field mouth near " + centre.getBlockX() + "," + centre.getBlockZ()
-                + " in " + world + " — branches east, zig-zag=" + zAmp
-                + ", each site seated on the terrain surface (spacing=" + spacing + ").");
+        sender.sendMessage("  Field scatter origin " + centre.getBlockX() + "," + centre.getBlockZ()
+                + " in " + world + " — non-uniform east intervals, ±" + zRange + "z spread, minSep=" + minSep
+                + " (spacing=" + spacing + "). Reproducible: same origin = same layout.");
         if (placed < count) {
             sender.sendMessage("  WARNING: " + (count - placed) + " site(s) skipped (chunks unloaded?).");
         }
@@ -337,15 +389,28 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         };
 
         int count = deep.length;
-        // BRANCHING DESCENT (WORLD-BUILD §4), STEEPER than the region half above. Same three dressings —
-        // east step, zig-zag Z, progressive drop — but the deep starts BELOW the sender and sinks a full
-        // 4 blocks per site (vs 3 in the region), so this half reads as the bottom of the descent. The wide
-        // 11×11 Accepting floor never overlaps a neighbour: X separation is a full `spacing` (min 13) while
-        // the lateral zig-zag is capped well under spacing/2.
-        int zAmp = Math.min(4, spacing / 4);              // lateral zig-zag amplitude (< spacing/2, no overlap)
-        double startX = centre.getX() - spacing;          // deep mouth one step west of the sender
-        int baseZ  = centre.getBlockZ();
+        // WAVE R6 — NON-UNIFORM SCATTER (mirrors the placeregion change; same algorithm, wider minSep).
+        //
+        // The deep set-pieces are the biggest builds (unbrokenLight is 11×11), so minSep is raised to
+        // 12 (vs 9 for the surface) to guarantee no overlap between the wide builds. Everything else
+        // is identical to placeregion: non-uniform X intervals, large irregular ±Z spread, deterministic
+        // seed from origin coords + site index. Terrain-seating unchanged (OCEAN_FLOOR + 1).
 
+        long originSeed = wangHash((long) centre.getBlockX() * 73856093L ^ (long) centre.getBlockZ() * 19349663L);
+        // Offset the deep seed so the deep scatter is independent from the surface scatter even if run
+        // from the same origin (avoids all six deep sites landing on top of the seven surface sites).
+        originSeed = wangHash(originSeed ^ 0xDEEDFACEDEADBEEFL);
+
+        int minStep  = Math.max(11, spacing - 5);
+        int maxDelta = Math.max(0, spacing - minStep);
+        int zRange   = Math.max(7, (int)(spacing * 0.65));  // slightly wider spread for the deep half
+        int minSep   = 12;                                   // wider clearance for the 11×11 floor
+
+        int[] placedXs = new int[count];
+        int[] placedZs = new int[count];
+        int overlapCount = 0;
+
+        double curX = centre.getX() - spacing;
         int placed = 0;
         for (int i = 0; i < count; i++) {
             String siteId   = deep[i][0];
@@ -353,12 +418,31 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             int radius;
             try { radius = Integer.parseInt(deep[i][2]); } catch (NumberFormatException e) { radius = 8; }
 
-            // Deterministic (no RNG): east step, alternating N/S zig-zag. Y FOLLOWS THE TERRAIN — seat each
-            // set-piece on the real ground surface so it never floats or buries on uneven land.
-            double sx = startX + (long) i * spacing;
-            int sz = baseZ + ((i % 2 == 0) ? -zAmp : zAmp);
-            int sy = centre.getWorld().getHighestBlockYAt((int) Math.floor(sx), sz,
-                    org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+            long h = wangHash(originSeed ^ wangHash((long) i + 1));
+
+            int xDelta = (int)(h & 0x7FFFFFFFL) % (maxDelta + 1);
+            curX += minStep + xDelta;
+
+            int hZ = (int)((h >>> 32) & 0x7FFFFFFFL);
+            int sz = centre.getBlockZ() + (hZ % (2 * zRange + 1)) - zRange;
+
+            int sx = (int) Math.floor(curX);
+
+            // Minimum pairwise separation (same nudge logic as placeregion).
+            for (int k = 0; k < overlapCount; k++) {
+                int dx = Math.abs(sx - placedXs[k]);
+                int dz = Math.abs(sz - placedZs[k]);
+                if (dx < minSep && dz < minSep) {
+                    sz = placedZs[k] + ((sz >= placedZs[k]) ? minSep : -minSep);
+                    k = -1;
+                }
+            }
+
+            int sy = centre.getWorld().getHighestBlockYAt(sx, sz, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+
+            placedXs[overlapCount] = sx;
+            placedZs[overlapCount] = sz;
+            overlapCount++;
 
             Location siteLoc = new Location(centre.getWorld(), sx, sy, sz);
 
@@ -381,9 +465,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Observance: placedeep complete — " + placed + "/" + count
                 + " deep-half set-pieces placed and persisted.");
-        sender.sendMessage("  Deep mouth near " + centre.getBlockX() + "," + centre.getBlockZ()
-                + " in " + world + " — branches east, zig-zag=" + zAmp
-                + ", each site seated on the terrain surface (spacing=" + spacing + ").");
+        sender.sendMessage("  Deep scatter origin " + centre.getBlockX() + "," + centre.getBlockZ()
+                + " in " + world + " — non-uniform east intervals, ±" + zRange + "z spread, minSep=" + minSep
+                + " (spacing=" + spacing + "). Reproducible: same origin = same layout.");
         if (placed < count) {
             sender.sendMessage("  WARNING: " + (count - placed) + " site(s) skipped (chunks unloaded?).");
         }
@@ -542,6 +626,24 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(" wren:               " + (wren.isSpawned() ? "present" : "not spawned")
                     + " (" + wren.backend() + ")");
         }
+    }
+
+    /**
+     * Wang hash (integer bit-mixer). Produces a well-distributed 64-bit value from any long seed.
+     * Used by the Wave-R6 placement scatter to derive per-site X interval and Z offsets without
+     * Math.random() or wall-clock time, guaranteeing that the same survey origin always produces
+     * the same layout (reproducible, ARG-safe). This is a standard finalisation step from the
+     * 64-bit variant of the Wang hash (public domain).
+     */
+    private static long wangHash(long x) {
+        x = (~x) + (x << 21);
+        x ^= (x >>> 24);
+        x = (x + (x << 3)) + (x << 8);
+        x ^= (x >>> 14);
+        x = (x + (x << 2)) + (x << 4);
+        x ^= (x >>> 28);
+        x += (x << 31);
+        return x;
     }
 
     @Override

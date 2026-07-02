@@ -11,6 +11,7 @@ reveals: []
 foreshadows:
   - "the untainted keeper-memory relief that survives the reckoning — a kinder margin note (OVERHAUL Pillar 2 relief split)"
   - "the rite needs a personal token per keeper (FACT 13) — 'a thing of your own, set down, not copied'"
+  - "cipher-as-inversion: Mara's book-cipher yields truth only at the crossing of two other hands' words, never direct ('she points you to where the thing is kept, never says the thing') — the Reader who read instead of going; her one direct leaf is the one warmth no other book held"
 links_to:
   - page-line-word
   - bring-the-thing-only-you-can-give
@@ -25,6 +26,13 @@ links_to:
 ---
 
 *whose hand: mine, mara. no page. no line. this one is not to be read as the others.*
+
+*(every other leaf of hers gives a page and a line, and you go and read a second book to find
+what she means, and a third to be sure — she never says the thing, she points you to where the
+thing is kept, truth only ever at the crossing of two other hands' words, never in her own. that
+was the reading, and the reading was how she never had to go. this leaf has no page and no line.
+it is the once she spoke direct, and it is about the one thing she could not keep by cross-
+reference, because a warmth given to you is in no other book to point at.)*
 
 i have written every rite down and walked none of them, and the record has that of me and
 it is true. let it stand. but there is one thing i kept that is not in any book and not on

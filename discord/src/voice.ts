@@ -408,7 +408,7 @@ export const voice = {
   },
   /** brann: repeats and over-corrects; counts and re-counts. (re-valenced: recognized, not consumed) */
   keeperPageHeading_brann(name: string): string {
-    return `under brann. the one called ${name} keeps the watch, keeps the watch, on the black moon; brann kept that watch, kept that watch, and knows it when he sees it, and names them by it, and counts the naming twice to be sure, and counts it again.`;
+    return `under brann. the one called ${name} keeps the watch, keeps the watch, on the black moon; brann kept that watch, kept that watch, and knows it when he sees it, and names them by it, and counts the naming twice to be sure, and counts it again, and the count comes out one over the stones every time, in the dark, where he does his counting.`;
   },
   /** iss: warm, plain, confident; the only keeper who reassures; frames, never counts. (re-valenced: recognized, not consumed) */
   keeperPageHeading_iss(name: string): string {

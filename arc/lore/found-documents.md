@@ -369,3 +369,32 @@ it should not, after dark).
   cross-owner deps the Finalize phase must verify (see RETURN summary).
 - **FACT 15 never stated:** no document above — original twelve or synthesis web — contains a
   sentence naming the induction twist; it is left to event/accumulation per the spine.
+
+---
+
+## WAVE R2 ADDITIONS (motif + fact-layer reshape, 2026-07-02)
+
+Three new artifacts + six in-place keeper edits, per `design/CHANGE-MANIFEST.md` §"WAVE R2" and
+`design/OVERHAUL.md` §5 FACT-LAYER LEDGER. All obey the established Archivist/keeper registers.
+
+- **NEW `the-seventh-was-spared.md`** (misleading layer) — an earnest keeper who accepts Iss's
+  *the Seventh was spared / it was mercy* framing WHOLE, with **no internal skepticism and no
+  refuting margin**. This **intentionally supersedes the old A10 "no mercy" de-slop note** for
+  this one document only: A10 forbade a *cheap* mercy-comfort; R2 requires a *real, held-whole*
+  false account so the group holds two competing readings in tension until the Seventh speaks
+  direct. Its counterweights are OTHER docs (`the-fire-they-let-out`, `the-seventh-not-kept`,
+  `the-name-i-cut-myself`) — never a margin on this leaf. Do not "fix" it by adding doubt.
+- **NEW `the-faithful-are-kept.md`** (misleading / correlation-as-cause) — an M1 record fragment
+  that reads as good-conduct → being-kept but only states the correlation; sets up F10b to land
+  as a reframe. Fair per Van Dine #15 (the Archivist margin flags the gap; the naïve later hand
+  closes it wrongly and forward-points to the breaking leaf).
+- **NEW `a-a-a-the-copybook-by-the-water.md`** (Sella, childhood) — the third independent
+  seven-motif site (a child counts markers to *seven*, the far water folds it) + Sella's
+  cipher-as-inversion made explicit as the water's mirror (NOT a letter cipher; Atbash cut in R1).
+- **Seven-motif threaded ≥3 independent keeper sites:** Vaun's tally (`counted-them-in-the-dark`,
+  keeper-count *vii*/row six), Brann's fires (`do-not-close-your-eyes-here`, seven shrines/six
+  lit), Sella's copybook (above). Recognizable-not-loud; never spelled out.
+- **Cipher-as-inversion, in-voice, all six keepers:** Vaun (held-back-fixed-amount), Mara
+  (never-direct/cross-reference), Sella (mirror in water), Orin (everything stands for what it is
+  not), Iss (key-is-his-own-name → the one who turned away), Brann (read only in the dark). No
+  document states the rule; a pattern-reader arrives at the motif unaided.

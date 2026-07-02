@@ -16,6 +16,135 @@
 
 ---
 
+# ✅ CONVERGED (2026-07-02) — the parallel R-fold is ADOPTED into WAVE S
+
+> A **separate autonomous session** produced this R-fold (below) IN PARALLEL, in the same worktree, before
+> the WAVE S plan was known. Both sessions independently reached the SAME core audit finding. On review
+> (director pass, 2026-07-02), the two are **complementary, both green, both on-direction — so the R-fold
+> is ADOPTED, not reverted.** WAVE S remains the authoritative numbering/plan; the R-work slots into it:
+> - **R0 (plugin 0.3.0, green) — ADOPTED as WAVE S-B (done).** The label cull. Agrees with S-B on 9 sites.
+>   The 3 that S1 had marked KEEP (Unwriting "the seal is a name", Cold Hearth, Sella "far marker") — **let
+>   the cuts STAND**: the no-label ethos is more consistent, and each scene still delivers (Unwriting: scraped
+>   wall + book + clean slab; Cold Hearth: the book + doused hearth + roots; Sella: pool + copybook doc +
+>   carved name). S1's KEEP verdicts on those three are superseded by this call. Coexists green with S-A cribs.
+> - **R2 (green) — ADOPTED (supersedes S2 "inviolable").** The journal edits are **additive margin-lines, not
+>   rewrites** (+3..19 lines each): they thread the **seven-motif as a ≥3-clue web** (Vaun's tally reads vii;
+>   Brann counts 7 shrines/6 lit; Sella's copybook counts 7) AND add **"cipher-as-inversion"** (each keeper's
+>   cipher mirrors their flaw — Iss's Vigenère keyed on his own name "gives back only the man"; Vaun's Caesar
+>   = a count held back; Orin's substitution = won't let a thing be itself; Mara's book-cipher = points, never
+>   says). This makes the ciphers *characterization*, reconciling with Ethan's "pure-lore ciphers are good."
+>   The **3 new docs** are FAIR RED HERRINGS (Principle 5, the *misleading* fact-layer done as whole believable
+>   documents, counterweighted, never self-refuting) — which is the RIGHT way to layer facts (show-not-label,
+>   canon §6.2) and exactly the immersive discovery-lore Ethan asked for. **KEEP all of R2.**
+> - **R6 (green) — ADOPTED.** Placement scatter (ObservanceCommand): serves "world, not rows" — on-direction.
+>
+> **Net:** both sessions' work merges cleanly (verified green together: plugin jar · tsc · seedcheck ·
+> gatecheck · specscheck · showrunner). WAVE S §S2 relaxes: keeper-journal *additive plants* are welcome
+> (the sin is rewriting the voice or inert puzzle-costume, neither of which R2 did). The R-wave sections
+> below are the build record of S-B/adopted-lore; WAVE S (§S0–S8) remains the forward plan.
+
+# ⭐ RESHAPE FOLD (2026-07-02) — [SUPERSEDED BY WAVE S] the add/change/cut pass for the deep reshape
+
+> Produced from the 4-surface live-state audit in `design/RESHAPE-AUDIT.md`, applied against
+> `design/THE-RESHAPE.md` (plan) + `design/RESHAPE-RESEARCH.md` (evidence). Mandate: reshape ALL five
+> surfaces (structures · lore · ciphers→puzzles · web · integrations) so the world stops announcing "here
+> is a puzzle" and becomes a mystery you slowly learn to read. **Core audit truth: most of it is already
+> good — this is surgical, not a rewrite.** Organized into BUILD WAVES (each a disjoint lane, buildable +
+> green on its own). Scope tags `[cheap]`/`[medium]`/`[expensive]`. ✅=done ▶=building ⬜=queued.
+
+## WAVE R0 — the LABEL CULL (structures) `[cheap]` — biggest feel-change per hour ✅ (0.3.0, verified green)
+Every set-piece carries a waxed "label sign" that announces what it is / what to do. That single
+contamination is the #1 reason it reads as a puzzle game. The spaces already read as world-mystery.
+- **CUT the label entirely (no replacement):** orin ("stoop to read"), iss ("the fire is kept (it lies)"),
+  unwriting ("the seal is a name… read it back"), coldHearth ("he sent you out"), unbrokenLight ("bow as one").
+- **REDUCE to notation only** (world-cipher, untranslatable w/o the reckoning site): rosetta, reckoning,
+  threshold (grave→date only), thresholdVault.
+- **Fold cut content into a DIEGETIC surface** where it carried info: vaun's ledger line → partially-worn
+  carving on the chiseled stone (final line blank = visible erasure, not an empty form); mara's margin-note →
+  into the book text; the answer/submission surface stops being a blank "fill-me-in" sign (mara → the empty
+  2nd lectern + bookshelf gap = "return the missing volume"; sella → partly-worn carved name).
+- **Touchpoints:** `plugin/.../structure/StructureTemplates.java` (all 14 templates) · answer-sign reachability
+  (keep intact) · any RUNBOOK/FIRST-PLAYTEST text that told players to read a label. LORE dependency: what
+  notation replaces reduced labels comes from Wave R2 (cipher-as-inversion) — R0 can cut/blank first, R2 fills.
+
+## WAVE R1 — LITERACY RECONSTRUCTION (the P0) `[medium]` — the highest-leverage change ⬜
+Kill the alphabet tutorial; make literacy EARNED (Tunic/Fez; fair by the ~25-char frequency proof).
+- **CONVERT** the three literacy-gate rows: `rosetta-ring`, `a1z26-tick-stave`, `reckoning-rosetta` stop being
+  single-recitation gates. `rosetta_known` / `reckoning_known` get set by ACCRETED comprehension.
+- **SCATTER glyph-referent pairings** across all 6 keeper sites — a rune carved *next to the thing it names*
+  (Chants-of-Sennaar cribs): mark over the hearth/water/grave/hoard/lamp. ≥3 sites teach enough to force the rest.
+- **CUT `stone-sella` Atbash** — redundant with `sella-reflection-bearing` (environmental). Stone becomes the
+  observation prompt; bearing comes only from the reflection.
+- **Touchpoints:** `discord/.../puzzles_seed.sql` (3 literacy rows + stone-sella) · oracle answers · the
+  keeper-site templates (carve the referent-pairs — plugin, coordinates with R0) · the `rosetta_known` gate
+  consumers across Java + 2× TS gate mirrors + record · re-sequence every cipher gate that depended on the old
+  single literacy flag. **This re-sequences downstream — do the gate audit as part of the wave.**
+
+## WAVE R2 — MOTIF + FACT-LAYER (lore) `[medium]` ⬜
+- **Thread the number SEVEN** independently at ≥3 keeper sites (Vaun's tally, Brann's fires, Sella's copybook)
+  so "there was a seventh" triangulates instead of resting on the sella→shrine chain.
+- **Cipher-as-inversion motif:** author each keeper's cipher as the formal shape of their self-defeat (Caesar=
+  held back a fixed amount; Vigenère key = a name that decodes to its own inverse) — ciphers become
+  characterization; the pattern-reader who notices all six share the structure arrives at the motif unaided.
+  (Feeds R0's reduced-label notation + R1's carvings.)
+- **Fix the weak MISLEADING layer:** add ONE earnestly-believed, internally-unrefuted false account (someone who
+  accepted Iss's "the Seventh was spared / mercy" framing) so the group holds two accounts in tension; plant an
+  M1 fragment that *seems* to confirm good-conduct→kept (only correlation) so F10b lands as a reframe; make F4
+  ("customs learned from the land") plausible-but-self-serving, not flat-true.
+- **Touchpoints:** `arc/lore/documents/*.md` (new + edits) · keeper-voice content in `discord/src/voice.ts` ·
+  the record copy in `record-projection.ts` · OVERHAUL.md fact ledger · `found-documents.md`.
+
+## WAVE R3 — WEB-NOT-CHAIN + THE RECORD (web + integrations) `[medium]` ⬜
+Flag graph is already partly a web; the record + drip are the linear bits.
+- **Land the staged `stone-brann-cipher`** as the 2nd door into `undercroft-descent` (fixes the mara-sole-door
+  fragile node — cheap, row already authored).
+- **Environmental corroboration for "descend at the unbroken light"** — the single Undercroft lamp VISIBLE from
+  the surface through a gap before descent (structures + a puzzle clue).
+- **Fact-layers in the record:** `record-projection.ts` → add `factLayer: confirmed|implied|misleading|false`
+  per entry + gate `legible` on `arc_state.flags` keys (not movement index); `record/[slug]/page.tsx` render
+  per-layer styling + pass flags into `project()`; `record/terminal` show the certainty distinction.
+- **Web-aware drip + certainty gradient:** `voice.drip()` + oracle lines get `certainty: certain|implied|
+  false_trail`; `decide.ts` can surface a constellation / imply-without-unlock; add cross-clue edges
+  (`outcome_payload.implies_keys[]/contradicts_keys[]` read in `snapshot.ts`/`types.ts`, threaded via `apply.ts`).
+- **Touchpoints:** dashboard record files · `discord/src/showrunner/{decide,snapshot,clue-drip,apply}.ts` ·
+  `types.ts` · `voice.ts` · puzzles_seed (brann-cipher active + edge fields) · gate mirrors stay in lockstep.
+
+## WAVE R4 — SILENCE / CONTRADICTION environmental pass (structures + lore) `[medium]` ⬜
+Make three underused assets load-bearing with zero text:
+- **The erasure-smear:** a PHYSICAL blotted line / ink-run in the record-book where the Seventh's name was
+  unwritten — the most disturbing thing in the first look (build the artifact; plant its lore).
+- **The fire-geometry contradiction = physical proof of F10b:** Brann says the home-fire needs no hand → the
+  Seventh's fire going out was a REFUSAL not neglect. Make it an observable world-state clue.
+- **Sella's blank-page-as-epiphany:** the Atbash journal is blank away from water, text at the shore pool →
+  weaponize "why is this page blank?" as the question that leads to the water (earned literacy, ties to R1).
+- **Empty Offering cairn** (deposit-tally reads zero) makes the ledger-vs-record contradiction visible from one
+  text + one silence; **Iss keyhole** that turned reveals "the one who turned away" carved behind it (not a door).
+- **Touchpoints:** StructureTemplates (record-book artifact, cairn tally, iss keyhole, fire-state) · lore docs.
+
+## WAVE R5 — ORPHAN / CALLBACK cleanup + per-player SIGNAL `[medium]` ⬜
+- **Unblock per-player scares (high-leverage):** land the plugin **dossier + visited-cell reader** so
+  `conductor.ts shapeRhyme` stops being hardwired `{}` → per-player apparition, offline-skin, grave-targeting,
+  name-on-unvisited-wall, Observer tiers all go live (delivery already works via mc_uuid beats).
+- **Close orphans:** add the missing `voice.ts` line for discovering your name carved where you've never been;
+  give the asymmetric co-op vault a lore justification (the record deliberately splits knowledge); wire the
+  **Wren-relocate-during-Watcher-beats** listener (else Wren present at a scare breaks the two-register model);
+  add a prior-keeper document that parallels the composure-signal Tier-0 tracking; wire pale-lamb → INV-13 or
+  label it cosmetic; ensure Wren's tally-page degrades gracefully if the Observer Engine hasn't populated it.
+- **Touchpoints:** plugin measurement layer · `voice.ts` · lore docs · beat listeners · autonomy.run.ts wiring.
+
+## WAVE R6 — PLACEMENT (structures) `[cheap]` ⬜
+Both placeregion/placedeep produce an east-marching corridor (±4-block wobble) read as "walk in order." →
+non-uniform X intervals, per-site orientation rotation, let terrain (cliff/waterway) separate sites so they
+feel independently always-there. **Touchpoint:** `plugin/.../command/ObservanceCommand.java` placement helpers.
+
+### BUILD ORDER & LANING (director's call)
+R0 first (cheap, huge, self-contained plugin lane) → R1 (the P0, plugin+seed+oracle, coordinates carvings with
+R0) → R2 (lore, mostly docs+voice) → R3 (web+integrations, disjoint from plugin) → R4 (structures+lore) →
+R5 (plugin signal + wiring) → R6 (placement). **ONE plugin agent at a time** (R0/R1/R4/R6 all touch plugin —
+serialize them); R2 (lore) and R3 (web/integrations) can run PARALLEL to a plugin lane. Verify-green after each.
+
+---
+
 ## 0. DECISIONS LOCKED (2026-06-30) — the spine of this fold
 
 | # | Decision | Supersedes / notes |
@@ -570,3 +699,255 @@ Flag-parity audit: ZERO dead gates (all 14 gated flags produced). **Trust code, 
    entities/ModelEngine (P1-V2, the biggest "amazing" lever), salience/roster rewrite of decide.ts
    (P1-C4 dead-air after Mvt II), per-player illusion primitives (P1-A6), SESSION-ZERO consent-script
    alignment (P1-I2 — over-discloses dormant voice T1), and the modpack-enabled Voice Chat "Ear".
+
+---
+
+# WAVE S — THE RESHAPE (2026-07-02) — from cipher-chain to a mysterious world
+
+> **This is the add/change/cut pass for the deep reshape** (mandate in `NEXT-SESSION.md`; plan in
+> `THE-RESHAPE.md`; evidence in `RESHAPE-RESEARCH.md`). Produced from a full live-code audit of all
+> five surfaces (five parallel Explore passes, each verdicting every layer against the direction).
+> Nothing here is built yet — this is the pass Ethan reviews before any build. Cross-checked against
+> `LAYER-LEDGER.md` (§S6 below); every touched layer marked **keep / migrate / rebuild / cut**.
+
+## S0. THE DIRECTOR'S READ (the honest finding — smaller than the docs feared)
+
+**The world is already built rich and diverse. What makes it "play like a puzzle GAME" is a THIN
+layer of ANNOUNCEMENT plus ONE structural spine — not the content.** The meta-lesson held again:
+`THE-RESHAPE.md`'s diagnosis was written before the diversity work shipped, and overstates how much
+must be rebuilt. Live-code truth per surface:
+
+- **Puzzles (grade A already):** ~70 rows spanning observation / behavior / object / code / coords /
+  spoken / lore. Letter-ciphers are **already a minority** (8 active/staged of ~70). The "cure
+  cipher-monotony" work of `PUZZLES.md` **shipped.** The reshape here is *subtraction + one web fix*,
+  not "add variety."
+- **Structures:** all 5 ambient mutation beats (decay/room-swap/doors/torch-gutter) are already
+  silent-world-mutation — pure KEEP. The 13 static set-pieces already carry the mystery in their
+  BLOCKS (significant absence, contradiction, architecture-as-grammar). Their ONE shared flaw is a
+  **WAXED label sign that names the keeper and explains the mechanic** ("stoop to read", "count the
+  black moons — do not sleep", and worst, Iss's **"the fire is kept (it lies)"** — which spoils the
+  entire trap). The reshape is **strip/rewrite the didactic labels**, not rebuild geometry.
+- **Integrations:** flag graph, oracle, normalizer are byte-identical across both surfaces — the
+  reliability floor, KEEP untouched. Per-player illusion primitives are live and wired. The ONE real
+  seam: the showrunner **drips a linear rank-ordered sequence, not the salient web Pillar 2 promised.**
+- **Web:** the record is well-built, secure, cross-surface-consistent — but redaction is **binary
+  (legible↔struck) and linear (stone 1→2→3)**, with no model for corrected/implied/absent facts.
+- **Lore:** the prose is the gold; motifs (SEVEN / FIRE / SILENCE / KEEPING / PLACE) are already
+  threaded; fact-layering is **shown-via-register by design** (canon §6.2 "never label it"). The
+  corpus **needs finishing, not rewriting.**
+
+**So the reshape is five surgical moves, in lockstep — not a teardown:**
+1. **P0 — kill the up-front alphabet tutorial** (the single highest-leverage change; touches puzzles
+   + structures + lore-cribs together).
+2. **Strip the didactic structure labels** (structures).
+3. **Subtract redundant ciphers + deepen the front/back into a ≥3-clue web** (puzzles).
+4. **Reflect fact-layering + decay on the record** (web) — *mirror* the register-layering the prose
+   already has; do NOT add didactic "this is misleading" labels.
+5. **Salience-pick the drip** (integrations) — the web-not-chain fix on the showrunner side.
+
+Plus the lockstep callbacks (lore) and the "reward the theory not the lookup" batch-confirm (the one
+genuinely-new mechanic — flagged as a BIG CALL in §S7, not assumed).
+
+---
+
+## S1. STRUCTURES — add/change/cut
+
+**Verdict pattern:** KEEP all geometry + all ambient beats; MIGRATE = strip/rewrite the WAXED label
+(remove keeper-name, remove instruction, remove spoiler); the blocks already do the work.
+
+| Set-piece | File:line | Verdict | The change |
+|---|---|---|---|
+| Rosetta | `StructureTemplates.java:159` | **MIGRATE (P0)** | Remove Roman-numeral marks (i–vi) from the way-mark signs; strip the "the rosetta — read, then answer" label. Keep dais/amethyst/ring/architecture. It becomes a *place where literacy happens*, not a labeled lesson. |
+| Vaun | `:210` | **MIGRATE** | Cut the "vaun's ledger, all of it kept, none of it spent" label. The oxidized-copper decay + crammed hoard + cracked pot + cobwebs already say it. |
+| Mara | `:261` | **MIGRATE** | Cut the "in the margin: 'read it back to me'" label. The empty shelf-gaps + abandoned 2nd lectern + dust are the story. |
+| Sella | `:315` | **KEEP** | Label ("read what the water keeps still") is poetic process-language, not instruction. Reflecting pool is diegetic. Model to copy. |
+| Orin | `:379` | **MIGRATE** | Cut "the low stone asks a bow — stoop to read." The low lintel *is* the instruction. Reduce label to one word or nothing. |
+| Brann | `:439` | **MIGRATE** | Cut "count the black moons — do not sleep." Tally-marks + never-dying campfire speak. |
+| Iss | `:497` | **REBUILD-label** | **Remove the "the fire is kept (it lies)" label entirely** — it spoils the trap. Keep the magma-behind-glass / soul-fire / creeping soul-soil contradiction; let the cold be *felt*. |
+| Stone of Reckoning | `:560` | **MIGRATE** | Cut "count the marks, then the way — north, down, read." The 6 studs + 4 arms are a visual system to be read, not narrated. |
+| Cold Hearth | `:616` | **KEEP** | Label + book are diegetic truth-of-the-place, poetic not instructional. (Optional: trim to one phrase.) |
+| Unbroken Light | `:682` | **MIGRATE** | Cut "bow as one — all who are here." The fire + ring-of-lanterns + one dark 7th place invoke the rite; the listener watches the crouch. |
+| The Threshold | `:743` | **MIGRATE** | Trim "the date is not yet come…" to a word/glyph. Capstone-ajar + lantern-glow tell it. |
+| The Unwriting | `:805` | **KEEP** | "the seal is a name" is cryptic poetry; scrape-marks + undegraded hand + empty slot carry it. Load-bearing chamber. |
+| Threshold Vault | `:877` | **MIGRATE** | Trim "each holds one rune — read them as one" → "threshold." The listener shows each player their fragment; the sign shouldn't teach the mechanic. |
+| Ambient beats ×5 (DecayCreep / RoomSwap / DoorOpen / TorchGutter / SmallStructure) | `beats/lib/*` | **KEEP** | Silent world-mutation — exactly the direction. Untouched. |
+
+**New (P0 support):** author **rune-cribs** into the keeper set-pieces — a rune-word carved *next to
+the thing it names* (a mark over the hearth = the word "fire"; over the pool = "water"; over the
+grave = "kept"). This is the Chants-of-Sennaar / Fez-pangram move that makes literacy *earnable* once
+the rosetta stops teaching it. (Lore-authored in S5; block-placed here.)
+
+**Touchpoints:** `StructureTemplates.java` (labels + cribs); `voice.ts` / lore (crib words must be
+real decodable rune-words, S5); PUZZLES (the rosetta migrate pairs with S3's literacy change); no DB.
+
+---
+
+## S2. LORE — add/change/cut (finish, do not rewrite)
+
+**Verdict pattern:** KEEP all six keeper journals + Archivist register + Keeper summons + the motif web
+(inviolable — the gold). The work is FINISHING design-complete pieces + P0 cribs + lockstep callbacks.
+
+| Layer | Verdict | The change |
+|---|---|---|
+| Six keeper journals (Vaun/Mara/Sella/Orin/Brann/Iss) | **KEEP** | Do not edit. Voices inviolable, fates earned, degradation complete. |
+| Archivist / official records (R01–R16) + margins | **KEEP** | Register perfect; margins do the "warmth under dread." |
+| Keeper summons (`bring-the-thing-only-you-can-give`) | **KEEP** | Load-bearing; does the mechanical explaining the game needs. |
+| Motifs SEVEN / FIRE / SILENCE / KEEPING / PLACE | **KEEP** | Already threaded + paid off. The reshape's "recurring motif" (Principle 3) is **already present** — this is a relief. |
+| Fact-layering *signals* (confirmed/implied/misleading/false) | **KEEP-as-is** | Canon §6.2 shows-not-labels (warm=Iss lie / cold=record / broken=Brann). The WEB reflects this structurally (S4); do NOT add didactic labels to the prose. |
+| Rune-cribs (P0) | **ADD** | Author the real rune-words that sit beside hearth/water/grave/etc. so literacy is earned by cross-reference (S1 places them). The one genuinely-new authoring the reshape *requires*. |
+| `the-seventh-below.md` | **REBUILD (author)** | Design-complete spec → diegetic first-person journal. Pays off the SEVEN motif + Iss's lie + the reunion. Serves the direction (the theory the player builds). |
+| Optional subtle fact-layer plants (Vaun "it is counting me"; Mara "silence is keeping too"; Orin "watched before warned") | **ADD (optional)** | Three margin lines that deepen without blurting. Only if they don't slow the prose. |
+| Wren dialogue trees + "kept close" artifact prose | **MIGRATE (finish)** | Draft lines → full `voice.ts` branches + lectern artifact. *Finishing*, not reshape — flag scope in §S7. |
+| Living-keeper enrollment lines (`keeperPage*`) | **MIGRATE (finish)** | Design exemplars → full per-keeper prose. Finishing. |
+| Every reshape mechanic gets its callback (lockstep) | **ADD** | Each S1–S5 change that alters a mechanic gets a one-line story callback in the fiction/record (consistency principle). Most already have one. |
+
+**Touchpoints:** `arc/lore/documents/*`, `arc/corpus/*`, `voice.ts`, the record projection (S4).
+
+---
+
+## S3. CIPHERS → PUZZLES — add/change/cut (subtract + web)
+
+**Verdict pattern:** the *system* is grade-A and diverse; reshape = remove up-front teaching, cut
+redundant ciphers, deepen into a ≥3-clue web. Active letter-ciphers **8 → 4**, all earned.
+
+| Puzzle | Verdict | The change |
+|---|---|---|
+| `rosetta-ring` | **MIGRATE (P0)** | Stop teaching the alphabet by typing its decode. Convert to *observation* — literacy accretes from scattered cribs (S1/S5); `rosetta_known` becomes *earned by noticing*, not a typed tutorial gate. |
+| `a1z26-tick-stave` | **MIGRATE (P0)** | Redundant second door to `rosetta_known`. Convert to observation (watch the count play), or fold into the accretion model. |
+| `reckoning-rosetta` (2nd literacy, digit-glyphs) | **MIGRATE** | Same treatment — earn digit-literacy by observation, or push to the deep/optional layer. |
+| `stone-vaun` (Caesar) | **KEEP (as honest lore)** | *(Revised 2026-07-02 per Ethan: pure-lore ciphers are GOOD — gathering backstory you don't yet know is relevant is immersion + discovery, welcome if well done. The sin is only inert content costuming as a load-bearing puzzle; a `lore`-outcome cipher with no door is honest flavor, not that.)* A decodable Vaun carving that pays *backstory*, off-spine, no gate. Well-space it from the other Vaun beats; keep its framing honestly flavor (never pretend it's a required gate). |
+| `stone-sella` (Atbash, phrase+coords) | **REBUILD** | Split/convert: the *reflection* is the read (observation), the *bearing* is the walk. Stop teaching atbash as a lookup. |
+| `stone-brann` (phrase) | **MIGRATE** | → observation (beacon-count at night). The real cipher is `stone-brann-cipher` (rail-fence, staged). |
+| `iss-warm` | **MIGRATE** | → clean `dead_end` (a true-feeling phrase that goes nowhere); drop the unnecessary `iss_trusted` routing. |
+| `base-docket-reread` | **CUT** | Superseded by `base-docket-reread-auto` (deterministic twin). Retire. |
+| Kept letter-ciphers: `stone-mara` (book) · `stone-orin` (substitution, behavior-earned) · `stone-iss-wall`+`bound-word` (Vigenère) · rail-fence ×2 (staged) | **KEEP** | All earned via behavior/observation, well-spaced. The load-bearing minority. |
+| ~55 non-cipher rows (observation/behavior/object/code/coords/spoken/lore + 20 breadth quests) | **KEEP** | The diversity that already shipped. Untouched except where a label/structure changes (S1). |
+| **The web (front + back)** | **REBUILD (structure)** | Front-half is a **single-point gate** (`rosetta_known` → all six stones); back-half a **tight chain** (Vigenère→substitution→co-op). Add the **≥3-clue-per-conclusion web**: redundant clues to each keeper-fate, one **cross-keeper motif combination** (a clue at keeper A + a clue at keeper B → a third thing), and one **cross-surface lock** (in-world mark + `#the-record` fragment cash out only combined). |
+
+**Touchpoints:** `puzzles_seed.sql` / `metapuzzle_seed.sql` / `progression_seed.sql` (rows + flags);
+`OracleResolver.java` + `resolve.ts` (unchanged — surface-agnostic gate); `hints_seed.sql` (hints
+teach the cipher *family*, not the plaintext — align cipher t3s per the OPEN #2 above); the record
+web (S4) for the cross-surface lock. Re-run seedcheck/specscheck/gatecheck.
+
+---
+
+## S4. WEB (the record) — add/change/cut
+
+**Verdict pattern:** KEEP the security model + cross-surface consistency; extend the projection to
+*reflect* fact-layering and decay (mirror the prose's existing register-layering — no didactic labels).
+
+| Route / layer | File | Verdict | The change |
+|---|---|---|---|
+| `/record/[slug]` (the-record) projection | `record-projection.ts` | **REBUILD (extend)** | Multi-state legibility: `legible / corrected / struck / silent-absence` (not just legible↔struck). Add the M4 **correction variant** (the record was told X, later writes Y). Model **silence** (a fact kept so well it is *absent*, not struck). Corruption/decay skin. |
+| `/record/terminal` (ledger + threads + integrity) | `terminal/page.tsx` + `ledger.ts` + `integrity.ts` | **MIGRATE** | Keep structure; add **layered ledger history** (not just current count), **web-branching threads** (a clue → multiple nodes), recovered-note decay aesthetic. |
+| `/record/the-record-keeps` (lure) | same route | **KEEP** | Solid fiction; optional light decay skin. |
+| `layout.tsx` nav bleed | `record/layout.tsx` / `app/layout.tsx` | **FIX (bug)** | Public record still renders the admin Status/Author nav. Conditional on pathname so the archive reads as a standalone off-world artifact. |
+| `/status`, `/author` | — | **KEEP** | Infrastructure / director console; not narrative surface. |
+| `/` home | `page.tsx` | **MIGRATE (minor)** | Admin hub — keep, but ensure it never appears on the public archive side. |
+| `voice.ts` record strings | `voice.ts` | **KEEP + EXTEND** | Add correction lines ("the record had written X; it now writes Y") + implied/pointing lines. Register locked. |
+| Cross-surface lock (new, pairs with S3) | `record-projection` + seed | **ADD** | One record fragment that only resolves combined with an in-world mark (I Love Bees model). |
+
+**Touchpoints:** `record-projection.ts` (+ its selftest), `ledger.ts`/`integrity.ts`, `layout.tsx`,
+`voice.ts`, the seed row for the cross-surface lock. Keep RLS/edge-function read path only.
+
+---
+
+## S5. INTEGRATIONS — add/change/cut
+
+**Verdict pattern:** KEEP the reliability floor (flag graph / oracle / normalizer / autonomy
+producers); the reshape touches exactly the salience picker (+ optional illusion registry).
+
+| Piece | File:line | Verdict | The change |
+|---|---|---|---|
+| Flag graph (both surfaces) | `gate.ts:23` / `OracleResolver.java:221` | **KEEP** | Byte-identical twins, fail-closed. Do not touch. |
+| Oracle normalizer (TS+Java) | `normalize.ts` / `AnswerNormalizer.java` | **KEEP** | Agree today. (Nice-to-have: a CI parity check.) |
+| Discord commands (`/whisper /link /answer`) + `#the-record` scan | `bot/*` | **KEEP** | Clean, rate-limited, one resolver path. |
+| Showrunner spine (snapshot→decide→apply) | `showrunner/*` | **KEEP** | Deterministic, testable, fault-isolated. |
+| **Drip picker** | `decide.ts:113–121` | **REBUILD** | Today: "first un-dripped by story-shape rank → forgeable → movement → key" = a **linear queue.** Reshape: **salience-weighted + roster-aware** pick (recency × player-fingerprint − recent-same-tone; never surface a convergence thread below effective quorum). This is the integration face of web-not-chain + Pillar 2. |
+| Per-player illusion primitives | `PerPlayer.java` / beats | **KEEP; MIGRATE (optional)** | Live + wired. Optional: a central "what is player X seeing" registry so multiple "it knows ME" beats compose without fighting. Not load-bearing. |
+| Autonomy producers (prologue/reckoning/reports/customs/companion/…) | `showrunner/*.run.ts` | **KEEP** | Grounded, idempotent, degrade gracefully. |
+| Observer Engine (voice-scan / "it hears me") | spec only | **DEFER** | Matches LAYER-LEDGER forgotten #1/#2 (LLM brain + `0008_observations`) — SCOPE DECISION, not reshape scope. |
+
+**Touchpoints:** `decide.ts` (+ selftest), `snapshot.ts` (feed salience inputs), reckoning/roster
+reads; no schema change for salience (reads existing signals). Illusion registry = plugin-only.
+
+---
+
+## S6. LAYER-LEDGER CROSS-CHECK (nothing silently dropped)
+
+Reconciled against `LAYER-LEDGER.md`. The reshape does **not** revive the ledger's "forgotten/unwired"
+items as reshape scope — it confirms their status and stays in its lane:
+
+- **Ledger "DONE + PROVEN" floor** (requires_flags gate · deterministic decide · clue-card render ·
+  migrations 0006/0007 · seeds/flag-graph/hints · session-zero) — **all KEEP.** The reshape edits
+  content *on top of* this floor; the floor is untouched (S5 keeps the gate/oracle; S3 only edits rows).
+- **Ledger "WIRED BUT UNPROVEN" (the playtest list)** — the reshape's structure-label + puzzle-web +
+  salience changes **feed the same playtest**; they don't add unproven surface, they *reshape existing*.
+- **Ledger forgotten #1 (LLM brain) + #2 (`0008_observations`)** — **still DEFERRED scope decisions**
+  (S5 Observer row). The reshape neither builds nor deletes them; it removes any dependence of the
+  reshaped spine on them (the salience picker uses deterministic signals only).
+- **Ledger forgotten #3 (keeper voices)** — DONE (source pack); unaffected (carry-over: resourcepack
+  re-host).
+- **Ledger "built not wired" (ThresholdVault roster supplier `null`)** — folds into **S5 roster-aware
+  salience** (the same active-roster read the drip picker now needs). Marked: wire it as part of S5.
+- **No planned layer is cut without a reason** — the only CUTs are `stone-vaun` and
+  `base-docket-reread` (both redundant twins, replacement named in S3). Everything else keep/migrate/
+  rebuild.
+
+---
+
+## S7. THE BIG CALLS FOR ETHAN (decide before build)
+
+Four real decisions (everything else has an obvious default and is queued):
+
+1. **P0 literacy model — how far.** (a) **Full Tunic/Fez** (recommended): never teach the alphabet;
+   scatter rune-cribs; `rosetta_known` earned by the "these are letters" epiphany an hour+ in —
+   highest payoff, biggest new build (cribs + reflow the opening). (b) **Soften:** keep the rosetta
+   as an optional *place* (strip labels), add cribs so literacy is earnable elsewhere too. (c)
+   **Reframe-only:** keep the gate, strip the announcement so it stops *feeling* like a tutorial.
+2. **Record fact-layering.** Confirm **"reflect, don't annotate"** — the web mirrors the prose's
+   existing register-layering (corrected/struck/silent states) but adds **no** didactic
+   "misleading/false" labels (honors canon §6.2). (Recommended.)
+3. **Scope boundary: reshape vs finishing.** Author the design-complete pieces that *serve the
+   direction* now (rune-cribs, `the-seventh-below` journal), and **defer pure-finishing** (Wren
+   dialogue trees, enrollment lines, staged rail-fence activation) unless cheap? (Recommended.)
+4. **"Reward the theory, not the lookup" (Obra-Dinn batch-confirm).** The one genuinely-new mechanic:
+   the record "receives" a keeper-fate only when a *cluster* is coherent (build-a-theory), vs the
+   current per-cipher solve. Deep change to how "solving" feels; touches oracle + record + showrunner.
+   **In-scope for this reshape, or a follow-on wave?**
+
+## S8. DECISIONS LOCKED (2026-07-02, with Ethan) — the reshape is full-send
+
+Ethan chose the most ambitious option on every call + reaffirmed the north star (*cohesive · difficult-
+but-fair · lore/story-heavy · a **web not a chain** · deeply MC-native · weeks-long even with 6+ ·
+spooky/unsettling/emotional · production-quality · not broken · lots of variety + NPC interaction*) and
+granted latitude ("you are not a slave to the guide docs — flag anything outdated/forgotten/improvable").
+
+| # | Call | DECISION |
+|---|---|---|
+| S7-1 | P0 literacy depth | **FULL EARNED LITERACY.** Kill the alphabet tutorial; never teach it. Scatter rune-cribs (a rune-word beside the thing it names). `rosetta_known` becomes *earned by the "these are letters" epiphany*, not a typed gate. Guardrail: every glyph decodable by cross-reference + hint rail as safety valve (difficult, never punishing / retrace-fair). |
+| S7-4 | Reward-the-theory (Obra-Dinn batch-confirm) | **BUILD IN THIS RESHAPE.** The record "receives" a keeper's fate only when a *cluster* is coherent; players build+lock a theory per keeper, not type one decode. Touches oracle + record + showrunner. |
+| S7-3 | NPC interaction depth | **FULL NPC LANE.** Place + wire the surface townsfolk (Aro/Wenna/Dob/Pell) with their designed dialogue trees; give the six keepers interactive presence; finish Wren's full tree. Distinct build lane (biggest content add — directly serves story-heavy + NPC-rich). |
+| S7-2 | Record fact-layering | **REFLECT, DON'T ANNOTATE** (my default): mirror the prose's register-layering (corrected/struck/silent states + decay skin); no didactic "false/misleading" labels (honors canon §6.2). |
+
+**Beyond-docs improvements greenlit into scope (Ethan invited these):**
+- **NPC lane** (S7-3) — was thin vs the goal; now a first-class lane.
+- **Cross-surface literacy payoff** — some record entries themselves rune-locked, legible only as
+  literacy is earned in-world (P0 pays off on two surfaces). Fold into S4.
+- **Fairness rail** — every earned-literacy / theory leap must pass the retrace test; the
+  integrity/hint log is the always-available safety valve (difficult ≠ punishing).
+
+**BUILD ORDER (green waves, pipeline-disciplined; baseline verified GREEN 2026-07-02 — plugin jar ·
+datapack JSON · tsc · seedcheck/gatecheck/specscheck/showrunner×4 all pass):**
+- **Wave S-A — P0 literacy** (plugin structure labels+cribs · rosetta/a1z26/reckoning-rosetta seed →
+  observation · lore crib-words · record rune-lock). The feel-changer; do first.
+- **Wave S-B — structure de-announcement** (strip the 10 didactic labels; keep Sella/ColdHearth/Unwriting).
+- **Wave S-C — puzzle subtraction + web** (CUT stone-vaun + base-docket twin; REBUILD stone-sella;
+  MIGRATE stone-brann/iss-warm; add ≥3-clue redundancy + cross-keeper motif combo + cross-surface lock).
+- **Wave S-D — reward-the-theory batch-confirm** (oracle cluster-receive · record theory-lock · showrunner).
+- **Wave S-E — record layering + decay + nav fix + voice correction lines.**
+- **Wave S-F — salience drip** (decide.ts → salience-weighted + roster-aware; wire ThresholdVault roster).
+- **Wave S-G — full NPC lane** (townsfolk place+wire+author · keeper presence · Wren tree finish).
+- **Wave S-H — lore finish** (the-seventh-below journal · enrollment lines · lockstep callbacks · optional plants).
+Each wave: cohesion + lore-callback + integration wired together (consistency principle), green after each,
+commit at clean wave boundaries. `.env*` stays gitignored.

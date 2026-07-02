@@ -2952,8 +2952,8 @@ begin;
 insert into public.hints (puzzle_key, tier, body) values
 
 -- rosetta-ring — the rune-literacy on-ramp (assemble the six ways, in order, off the carved ring).
-('rosetta-ring', 2, 'the ring is not decoration. it is a key. the marks around it are the ways, set in the order the record keeps them. read them, and you can read the rest.'),
-('rosetta-ring', 3, 'six ways, in the carved order: bow, offering, kept light, deep line, unspoken, sacred beast. learn the mark beside each. that is the alphabet the stones are cut in.'),
+('rosetta-ring', 2, 'these marks are not decoration. you have seen them elsewhere — cut beside the fire, the water, the graves. the thing each sits beside is what it says.'),
+('rosetta-ring', 3, 'read them where they name something you already know: the mark by the flame is "fire," the mark by the pool is "water." learn a few letters that way and the ring — and every stone — begins to speak.'),
 
 -- stone-vaun — Caesar (every letter held back by a fixed amount; his hoarding made literal).
 ('stone-vaun', 2, 'vaun gave nothing back. even his letters are held back — every one, by the same measure. find the measure and give them back.'),
@@ -2985,12 +2985,18 @@ insert into public.hints (puzzle_key, tier, body) values
 ('no-wall-catch', 3, 'the warm voice lied. his key turns his own stone to the name they used for him: the one who turned away. the land kept the proof he hoped you would not find.'),
 
 -- a1z26-tick-stave — the numeral-literacy twin (tick marks as counts → letters).
-('a1z26-tick-stave', 2, 'these are not words. they are counts. each cluster of ticks is a number, and each number is a letter in its order.'),
-('a1z26-tick-stave', 3, 'count the ticks: one is a, two is b, on down the row. read the counts as letters and the stave speaks.'),
+('a1z26-tick-stave', 2, 'these are counts, not words — but you are not meant to be handed the trick. count what is set out in the world in ones, and let it tell you.'),
+('a1z26-tick-stave', 3, 'each cluster is a number and each number a letter in its order; you will have proved this to yourself at the counting-stones before you need it here.'),
 
 -- stone-brann — (when re-authored as the railFence/beacon night cipher, P0-5) the count-the-fires read.
 ('stone-brann', 2, 'brann kept the watch by the lamps, and counted them twice. the order the lights are read is the order that matters here — not the marks, the sequence.'),
 ('stone-brann', 3, 'read the lit lamps in their rows, top to bottom, the way a watchman counts down a black moon. the sequence spells what he could not say twice the same.'),
+
+-- stone-brann-cipher — the SIXTH keeper-stone as its real cipher (railFence, read-by-time): the
+-- carving rakes visible only by the lit beacon-glow after dark. Rails = the fire-count brann names.
+-- Reuses brann''s taught rail literacy; tier 2 points at the night gate + the rails, tier 3 the read.
+('stone-brann-cipher', 2, 'brann''s stone keeps nothing in the day. wait for the dark and let the lamps light the marks. the number he counted twice is the number of rails his line is raked along.'),
+('stone-brann-cipher', 3, 'count the fires brann kept — that count is the rails. after dark, read the lit marks down each rail in turn, the way you read his lamps, and the raked line comes back together.'),
 
 -- ===========================================================================
 -- BACK-HALF SPINE (Movements II→V). The front-half ciphers had a safety net;
@@ -3078,7 +3084,7 @@ insert into public.hints (puzzle_key, tier, body) values
 
 -- bound-word — the Iss vigenère plaintext IS the coop-gate''s need (the convergence word).
 ('bound-word', 2, 'the catch re-cut iss''s stone. read it now with his own name laid over it, and it yields a single bound word — the word another gate is waiting to be given.'),
-('bound-word', 3, 'lay iss''s name over his stone, letter against letter, and it reads: the one who turned away. that is the bound word. carry it to the gate that needs it.'),
+('bound-word', 3, 'the catch re-cut his stone; the key is still the man. lay his own name over the fresh marks, letter against letter, and read the single word that comes. that word is the bound word — carry what you read to the gate that waits on it.'),
 
 -- m4-three-hands — the cross-surface co-op gate (three acts in one window; not typed).
 ('m4-three-hands', 2, 'this gate does not open to a word. it opens to three things done at once — a foot, a carve, a word posted here — inside the same short breath.'),
@@ -3353,6 +3359,22 @@ begin
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
       where puzzle_key = 'seventh-choice';
 
+    -- P1-C3 COLLISION FIX (audit): the phrase `the last marker is not the last` is an accepted
+    -- answer on BOTH stone-sella (ungated active=true) and seventh-shrine. Both were open at once,
+    -- so the resolver always resolved stone-sella (first UNSOLVED in DB order) and seventh-shrine's
+    -- second payoff for that string never surfaced. GATE seventh-shrine on seventh_suspected — the
+    -- flag stone-sella''s next-clue SETS — so the two are never open simultaneously (the exact
+    -- bound-word/iss_caught sequencing the audit blesses). Order preserved: before Sella is solved,
+    -- seventh_suspected is false → seventh-shrine is closed → the phrase resolves to stone-sella (its
+    -- intended first payoff); after Sella is solved, stone-sella is solved (the resolver prefers the
+    -- unsolved candidate) AND seventh_suspected is true → the phrase resolves to seventh-shrine (its
+    -- intended second payoff). No accepted-answer string changes; no lore/clue doc changes. This is
+    -- consistent with the established contract — seventh-unwriting/seventh-cause (the shrine''s deeper
+    -- chambers) already require seventh_suspected, so Sella-first is the canonical Seventh-thread order.
+    -- seventh-shrine stays active=true (its active flag is untouched; requires_flags is the AND-gate).
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
+      where puzzle_key = 'seventh-shrine';
+
     -- ── THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — the gated new-puzzle rows.
     -- Each hangs off a flag its UPSTREAM door SETS (the same deterministic gate the back-half
     -- spine uses). Shipped active=false in puzzles_seed's second insert; lit here + flipped
@@ -3426,6 +3448,7 @@ end $$;
 --      m4-three-hands            → bound_word_known                    (bound-word)
 --      threshold-coordinate      → threshold_open                      (m4-three-hands)
 --      true-walk-arrive          → true_coord_known                    (threshold-coordinate)
+--      seventh-shrine            → seventh_suspected                   (stone-sella)     [P1-C3 collision gate; ungated upstream, stays active=true]
 --      seventh-unwriting         → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
 --      seventh-cause             → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
 --      seventh-choice            → seventh_named                       (seventh-unwriting)

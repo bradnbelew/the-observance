@@ -337,6 +337,44 @@ its build against the same Paper 1.21.x chosen at D5 (version pin is load-bearin
   0006 migration, gate-aware `getOpenPuzzles`, `matchPuzzles` — is reusable here since the chosen
   direction keeps flag-gating for the sequential spine.)*
 
+### FACT-LAYER LEDGER — WAVE R2 (motif + fact-layer, 2026-07-02)
+
+The fact-layers players triangulate. `confirmed` = flat Archivist voice; `implied`/`sealed` = strong;
+`false` = weaponized (the forged eighth way, INV-17). The **misleading** layer was the audit's weakest
+(Iss's lie self-refuted in its own margins) — R2 rebuilds it into a real, held-whole false trail plus a
+fair correlation herring, and unsettles F4. Changes this wave:
+
+- **F4 — "customs learned from the land."** WAS flat-true (`learn-them-as-we-learned-them` margin: *"it
+  is true, all but one word"*). NOW **plausible-but-possibly-self-serving**: added a colder later margin
+  noting *"learned, not made" is the reading that costs the founders least, and it was the founders who
+  wrote it* — not refuted, only made un-restful. Layer: confirmed → **confirmed-but-contested**.
+- **F-mercy (NEW, misleading) — "the Seventh was spared / it was mercy."** New doc
+  `the-seventh-was-spared.md`: an earnest keeper who accepts Iss's framing whole, **with NO internal
+  skepticism and NO refuting margin** (its counterweights live in *other* docs). The group must hold it
+  in tension against F10b/`the-fire-they-let-out`/`the-seventh-not-kept` until the Seventh speaks direct.
+  Recontextualizes on the Seventh's own hand: *spared* → *refused* (same door, warm side vs cold side).
+- **F-faithful (NEW, misleading→correlation) — "the faithful are kept."** New doc
+  `the-faithful-are-kept.md`: an M1 (movement 1) record fragment that reads as good-conduct → being-kept
+  but only ever states the **correlation, never the cause** (*"the kept had kept the ways" ≠ "the ways
+  got them kept"*). Fair by Van Dine #15 (the Archivist margin flags the gap for the careful reader; the
+  naïve later hand closes it wrongly and forward-points to the leaf that breaks it). Sets up **F10b** (the
+  land refused a keeper who broke nothing) to land as a **reframe**, not a flat contradiction.
+- **Seven-motif (threaded, ≥3 independent keeper sites).** "There was a seventh" now triangulates without
+  the sella→shrine chain: **Vaun's tally** (`counted-them-in-the-dark`: keeper-count reads *vii*, row
+  stands six), **Brann's fires** (`do-not-close-your-eyes-here`: seven shrines, six lit, the seventh cold
+  all through), **Sella's copybook** (NEW `a-a-a-the-copybook-by-the-water`: a child counts markers to
+  seven, the far water folds it). Subtle, recognizable-not-loud (leitmotif sweet spot); never spelled out.
+- **Cipher-as-inversion (motif made characterization, all six keepers, in-voice not stated as a rule).**
+  Each keeper's cipher is now the formal shape of their self-defeat: **Vaun** Caesar = a count read a fixed
+  amount under its true value (held back the odd); **Mara** book-cipher = truth only at the crossing of
+  two other hands' words, never direct (the Reader who read instead of going); **Sella** = the reflection
+  in the water, everything given back mirror-wrong (NOT a letter cipher — Atbash cut in R1); **Orin**
+  substitution = every letter stands for what it is not, read by putting each back to the form it refused
+  to bow to; **Iss** Vigenère = key is his own name, so the lock can only give back the man, and it decodes
+  to his own inverse (*the one who turned away*); **Brann** rail-fence = read only in the dark (*the day
+  lies by leaving the cold one off*). A pattern-reader who notices all six share an inversion structure
+  arrives at the motif unaided.
+
 ---
 
 ## 6. BUILD ORDER (run-first; guardrail priority: runs → cohesive → great)
