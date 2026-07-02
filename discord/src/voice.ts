@@ -582,6 +582,21 @@ export const voice = {
   },
 
   // -------------------------------------------------------------------------
+  // THE THEORY-LOCK (S-D `reward-the-theory`). Wave S-D: the record RECEIVES a keeper's
+  // fate when a COHERENT CLUSTER of that keeper's evidence is assembled — the player has
+  // built a theory (Obra Dinn), not typed one decode. This is NOT a per-cipher un-redact
+  // and NOT a gate; it is the record acknowledging the SHAPE of the marks, whole. Fires
+  // once per keeper when their `<keeper>_theory` flag first locks. {keeper} is the keeper's
+  // canonical (lowercase) name — the same id the Hold-Book headings use. De-slopped, flat:
+  // it states that the understanding is kept; it names no feeling, awards no chosen hand.
+  // -------------------------------------------------------------------------
+
+  /** the record receives an assembled theory of one keeper — not the marks, the shape of them, whole. */
+  theoryReceived(keeper: string): string {
+    return `the record receives what you have put together of the one called ${keeper}. not the marks — the shape of them. it is kept now, whole.`;
+  },
+
+  // -------------------------------------------------------------------------
   // THE FALSE LAW — the forged eighth (A4 `some-laws-are-lies`, FACT 7b, INV-17). The forged
   // ordinance text + the M4 record correction. The forgery credits no "me" (slop B4); the
   // correction names it added-not-found, flatly.

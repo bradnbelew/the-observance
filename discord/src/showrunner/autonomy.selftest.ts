@@ -24,6 +24,7 @@ import { selectApparition, type ConductorInput, type ApparitionCandidate } from 
 import { resolveKeeperDialogue, type KeeperDialogueInput, type KeeperDialogueDossier } from './keeper.js';
 import { resolveCompanionDialogue, type CompanionDialogueInput, type CompanionArcFlags } from './companion.js';
 import { composeFinale, type FinaleComposeInput } from './finale.js';
+import { decideTheories, CLUSTERS, theoryFlag } from './theory.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -524,6 +525,40 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   const understand = decidePersonalizedReports({ ...base, reckoningShift: 'understand' });
   check('reports: reckoning understand → still fires (quotes persist)', understand.reports.length === 1);
   check('reports: reckoning understand → the line reads differently (kept-true framing)', understand.reports[0]!.line !== plainLine);
+}
+
+// ===========================================================================
+// theory.ts — S-D theory-lock: cluster threshold, idempotent flag high-water, fall-order, partials.
+// ===========================================================================
+{
+  // THRESHOLD NOT MET: a single stone-decode is NOT a coherent theory (threshold 2) → none.
+  check('theory: below threshold (one solve) → no lock',
+    decideTheories(new Set(['stone-vaun']), new Set()).length === 0);
+  // THRESHOLD MET: stone + one corroborating solve → the keeper's theory locks.
+  check('theory: threshold met → keeper locks',
+    JSON.stringify(decideTheories(new Set(['stone-vaun', 'vaun-hoard-sorted']), new Set())) === JSON.stringify(['vaun']));
+  // IDEMPOTENT: an already-locked keeper is never re-emitted (the flag is the high-water).
+  check('theory: already-locked keeper → not re-emitted',
+    decideTheories(new Set(['stone-vaun', 'vaun-hoard-sorted', 'vaun-bookshelf-tally']), new Set(['vaun'])).length === 0);
+  // PARTIAL CLUSTERS across keepers: only the keeper(s) that CROSS threshold lock, others held.
+  const mixed = decideTheories(
+    new Set(['stone-vaun', 'vaun-hoard-sorted', 'stone-mara' /* mara has only 1 → held */, 'stone-brann', 'brann-black-moon-toll']),
+    new Set(),
+  );
+  check('theory: partial clusters → only threshold-crossers lock', JSON.stringify(mixed) === JSON.stringify(['vaun', 'brann']));
+  // FALL-ORDER DETERMINISM: many keepers coherent at once → emitted in CLUSTERS declaration order.
+  const all = new Set<string>();
+  for (const c of CLUSTERS) for (const k of c.evidence) all.add(k);
+  check('theory: all clusters coherent → all keepers, in fall-order',
+    JSON.stringify(decideTheories(all, new Set())) === JSON.stringify(['vaun', 'mara', 'sella', 'orin', 'brann', 'iss']));
+  check('theory: deterministic',
+    JSON.stringify(decideTheories(new Set(['stone-sella', 'sella-overlay-lake']), new Set())) ===
+    JSON.stringify(decideTheories(new Set(['stone-sella', 'sella-overlay-lake']), new Set())));
+  // The flag key is the canonical `<keeper>_theory` (the S-E dovetail contract).
+  check('theory: flag key is <keeper>_theory', theoryFlag('iss') === 'iss_theory');
+  // Alread-locked mid-set: locked vaun + newly-coherent mara → only mara (locked never repeats).
+  check('theory: locked one + new one → only the new one',
+    JSON.stringify(decideTheories(new Set(['stone-vaun', 'vaun-hoard-sorted', 'stone-mara', 'mara-lectern-lock']), new Set(['vaun']))) === JSON.stringify(['mara']));
 }
 
 if (failures > 0) {

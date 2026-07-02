@@ -38,6 +38,7 @@ import { decideColdRestage, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ApparitionCandidate } from './conductor.js';
 import { runCompanionPass } from './companion.run.js';
 import { runFinalePass } from './finale.run.js';
+import { runTheoryPass } from './theory.run.js';
 import type { BeatStatus } from '../db/types.js';
 import type { PrologueGate, ReckoningState, Tone } from './types.js';
 
@@ -152,6 +153,8 @@ export interface AutonomyPassResult {
   companionBeats: number;
   /** M5 finale: the composed close was posted this pass. */
   finalePosted: boolean;
+  /** S-D theory-lock: keepers whose evidence cluster became coherent this pass (flag locked + beat posted). */
+  theoriesLocked: number;
 }
 
 /**
@@ -159,7 +162,7 @@ export interface AutonomyPassResult {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false, theoriesLocked: 0 };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -375,6 +378,19 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     if (fin.dirty) dirty = true;
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `finale error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- S-D theory-lock: the record RECEIVES a keeper's fate once a COHERENT CLUSTER of that keeper's
+  //     evidence is solved (a built theory, not one decode). The `<keeper>_theory` arc flag is the
+  //     idempotent high-water (mirrors finale_posted / the fork flags); each newly-coherent keeper is
+  //     locked + gets ONE #the-record beat (voice.theoryReceived). Group-wide (any player's solve
+  //     counts). No orphaned flag: the flag is set together with its consumer beat. The flags are
+  //     available for the record-projection (S-E dovetail) to read later with no further wiring here.
+  try {
+    const th = await runTheoryPass(flags);
+    result.theoriesLocked += th.locked.length;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `theory error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // NOTE — keeper-record, name-where-never-been, offline-skin, reports, keeper-NPC, and the fate
