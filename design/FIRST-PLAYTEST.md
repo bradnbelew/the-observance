@@ -60,11 +60,15 @@ Discord drip feel alive or noisy? · pacing. That feedback is what turns "it run
   implication) is live.
 - **The deep half** (Undercroft descent, the Seventh finale, the co-op vault) is later-weeks content; the
   `the_threshold` deep-site answer sign still needs a corridor redesign (tracked).
-- **Reward-the-theory batch-confirm** demonstrates for the **Iss** cluster in week one (stone-iss-wall →
-  iss_key_turned → iss-which-is-true). Other keepers' second cluster-evidence needs the `object`/`code`
-  plugin producers (vaun-hoard-sorted, vaun-bookshelf-tally, mara-lectern-lock, …) — flagged "NEEDS PLUGIN
-  PRODUCER" in the seed. Until they ship, those keepers un-redact on the **stonesRead fallback** (correct +
-  backward-compatible), just not via assembled theory. **Top post-playtest build item.**
+- **Reward-the-theory batch-confirm** works for MULTIPLE keepers in week one — the `object`/`code` plugin
+  producers are all **built + registered** in `ObservancePlugin` (HoardSortedListener, BookshelfTallyListener,
+  LecternLockListener, FrameDialsListener, GroupWalkListener, ShoreMemorialListener, OrderedBowListener,
+  BlackMoonTollListener). Vaun demonstrates it end-to-end: deposit the first-of-the-deep in the "given back"
+  chest → HoardSortedListener fires vaun-hoard-sorted → `vaun_cache_open` → vaun-bookshelf-tally lights →
+  second cluster-evidence → `vaun_theory`. (The seed's "NEEDS PLUGIN PRODUCER" comments are STALE — written
+  when they were TODOs, never updated after the listeners shipped; a readiness audit was misled by them.) The
+  ONE genuinely-deferred producer is `spine-spoken-name` (the Observer voice-scan) — the deferred Observer
+  Engine, an accepted scope call, not a week-one gap.
 - **Literacy debt (minor, fair):** the 10 rune-cribs teach every letter in the rosetta answer **except U**
   (in "unspoken"). Cold players infer that one letter from context (fair by the ~25-char cryptanalysis proof).
   Admin-guided slice is unaffected. Add a U-crib only if a cold real-player run stalls.
