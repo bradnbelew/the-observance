@@ -72,6 +72,31 @@ console.log('record-projection.selftest');
   check('withheld entries are flagged, not blanked, in the model', p.entries.some((e) => !e.legible && e.line.length > 0));
 }
 
+// 7. S-D reward-the-theory: when `theories` is present, a keeper's fate un-redacts on its assembled
+//    THEORY (not stone-read count); absent → the stonesRead fallback still governs (backward-compat).
+{
+  // theories present + non-empty → exactly those keepers' entries legible, regardless of stonesRead.
+  const t = project({ movement: 2, stonesRead: 6, theories: ['vaun', 'sella'] });
+  const legible = t.entries.filter((e) => e.legible && e.id.startsWith('stone-'));
+  check('theories present → only theory-locked keepers legible', legible.length === 2);
+  check('theories map to the right entries (vaun=stone-1, sella=stone-3)',
+    legible.map((e) => e.id).sort().join(',') === 'stone-1,stone-3');
+  check('a stone read but theory NOT locked stays withheld (reward the theory, not the lookup)',
+    t.entries.find((e) => e.id === 'stone-2')!.legible === false);
+
+  // empty theories present → no keeper fate received yet (the reward-the-theory zero state).
+  const empty = project({ stonesRead: 4, theories: [] });
+  check('empty theories → no keeper entry legible despite stones read', empty.entries.filter((e) => e.id.startsWith('stone-') && e.legible).length === 0);
+
+  // theories ABSENT → the pre-S-D stonesRead lockstep is preserved (progressive rollout).
+  const fallback = project({ stonesRead: 3 });
+  check('theories absent → stonesRead fallback still governs', fallback.entries.filter((e) => e.id.startsWith('stone-') && e.legible).length === 3);
+
+  // an unknown/garbage keeper id in the set simply matches nothing (can't over-reveal).
+  const junk = project({ theories: ['nobody', 'vaun'] });
+  check('unknown theory id matches nothing; known one still resolves', junk.entries.filter((e) => e.id.startsWith('stone-') && e.legible).length === 1);
+}
+
 if (failures > 0) {
   console.error(`\nrecord-projection.selftest: ${failures} FAILED`);
   process.exit(1);

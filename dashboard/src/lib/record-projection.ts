@@ -37,6 +37,13 @@ export interface RecordSignal {
   stonesRead?: number | null;
   /** the keeping has closed (the Accepting resolved). the ONLY arc-end signal the Record may know. */
   accepted?: boolean | null;
+  /**
+   * S-D (reward-the-theory): the keeper ids whose evidence-CLUSTER is coherent (`<keeper>_theory` locked
+   * in arc_state.flags, surfaced coarsely by v_record). When present, a keeper's fate un-redacts on its
+   * assembled THEORY — not on a single stone read. Absent/null → fall back to the stonesRead lockstep
+   * (progressive: preserves the pre-S-D behavior until the v_record theories column is deployed).
+   */
+  theories?: string[] | null;
 }
 
 /** A single archive entry. `legible` lines are shown plain; redacted lines render as a struck block. */
@@ -81,13 +88,15 @@ function clampInt(v: number | null | undefined, lo: number, hi: number): number 
  * NB: these are the keepers' OWN dead names (canon, not the living players) — the Record files the dead
  * by place; it never files a living player here (that lives in-world only; INV-16 / the privacy law).
  */
-const STONE_ENTRIES: ReadonlyArray<{ id: string; line: string }> = [
-  { id: 'stone-1', line: 'the first was kept. the offering was not made.' },
-  { id: 'stone-2', line: 'the second was kept. the light was read too long.' },
-  { id: 'stone-3', line: 'the third was kept. the far water kept her.' },
-  { id: 'stone-4', line: 'the fourth was kept. the threshold was not crossed.' },
-  { id: 'stone-5', line: 'the fifth was kept. the black moon was slept through.' },
-  { id: 'stone-6', line: 'the sixth was kept. the name was spoken.' },
+// Each entry carries its keeper id (fall-order: vaun/mara/sella/orin/brann/iss) so the projection can
+// un-redact a fate on that keeper's assembled THEORY (S-D), matching the six lines to the six clusters.
+const STONE_ENTRIES: ReadonlyArray<{ id: string; keeper: string; line: string }> = [
+  { id: 'stone-1', keeper: 'vaun',  line: 'the first was kept. the offering was not made.' },
+  { id: 'stone-2', keeper: 'mara',  line: 'the second was kept. the light was read too long.' },
+  { id: 'stone-3', keeper: 'sella', line: 'the third was kept. the far water kept her.' },
+  { id: 'stone-4', keeper: 'orin',  line: 'the fourth was kept. the threshold was not crossed.' },
+  { id: 'stone-5', keeper: 'brann', line: 'the fifth was kept. the black moon was slept through.' },
+  { id: 'stone-6', keeper: 'iss',   line: 'the sixth was kept. the name was spoken.' },
 ];
 
 const CLOSING_ENTRY = {
@@ -116,12 +125,15 @@ export function project(signal: RecordSignal): RecordProjection {
   const movement = clampInt(signal.movement, 0, 5);
   const stonesRead = clampInt(signal.stonesRead, 0, STONE_ENTRIES.length);
   const closed = signal.accepted === true;
+  // S-D: when the coarse theory set is present, a fate un-redacts on its assembled THEORY (reward the
+  // theory, not the lookup). Absent → the pre-S-D stonesRead lockstep (progressive, backward-compatible).
+  const theories = Array.isArray(signal.theories) ? signal.theories : null;
 
   const entries: RecordEntry[] = STONE_ENTRIES.map((e, i) => ({
     id: e.id,
     line: e.line,
-    // REVEAL DISCIPLINE: an entry is legible only once its stone has actually been read — never ahead.
-    legible: i < stonesRead,
+    // REVEAL DISCIPLINE (never ahead of progress): by assembled theory when known, else by stone-read count.
+    legible: theories ? theories.includes(e.keeper) : i < stonesRead,
   }));
 
   // The closing entry is withheld until the keeping has closed (the one arc-end signal we may know).

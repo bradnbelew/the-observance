@@ -93,7 +93,7 @@ async function readSignal(): Promise<RecordSignal> {
       };
     })
       .from("v_record")
-      .select("movement, stones_read, accepted")
+      .select("movement, stones_read, accepted, theories")
       .maybeSingle();
 
     if (error || !data) return {};
@@ -101,6 +101,11 @@ async function readSignal(): Promise<RecordSignal> {
       movement: typeof data.movement === "number" ? data.movement : null,
       stonesRead: typeof data.stones_read === "number" ? data.stones_read : null,
       accepted: data.accepted === true,
+      // S-D: the coarse set of coherent keeper theories (a text[] of dead-keeper ids). Only accept a
+      // clean string[]; anything else → null, and the projection falls back to the stonesRead lockstep.
+      theories: Array.isArray(data.theories) && data.theories.every((t) => typeof t === "string")
+        ? (data.theories as string[])
+        : null,
     };
   } catch {
     // No view, no env, no DB — the sealed baseline. The archive a fresh world shows.
