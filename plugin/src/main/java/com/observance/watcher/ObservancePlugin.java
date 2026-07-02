@@ -76,6 +76,8 @@ public final class ObservancePlugin extends JavaPlugin {
     //     that flips companion_revealed off iss_caught is rebuilt per registration. ---
     private com.observance.watcher.npc.WrenNpc wren;
     private com.observance.watcher.npc.CompanionArcWatcher companionWatcher;
+    /** The five surface townsfolk NPC body manager (Wave S-G). Created ONCE (survives a config reload). */
+    private com.observance.watcher.npc.TownsfolkNpc townsfolk;
 
     // --- the asymmetric co-op vault (INTEGRATION signature #2): per-player fragment illusion + combination
     //     sign. Held so its per-player refresh loop can be started on enable and torn down on reload/disable
@@ -150,6 +152,13 @@ public final class ObservancePlugin extends JavaPlugin {
             this.wren = new com.observance.watcher.npc.WrenNpc("observance");
         }
         this.companionWatcher = new com.observance.watcher.npc.CompanionArcWatcher(supabase, safety);
+
+        // 5a-townsfolk. The five surface townsfolk (Aro, Wenna, Coll, Dob, Old Pell). Created ONCE (like
+        //               Wren) so a config reload doesn't orphan spawned bodies. Interactive via the
+        //               TownsfolkNpcListener registered below; their SET-A lines are spoken in-world.
+        if (this.townsfolk == null) {
+            this.townsfolk = new com.observance.watcher.npc.TownsfolkNpc("observance");
+        }
 
         // 5b. Signal tracker (the dossier) — pure tracking, no world effects.
         this.trackerConfig = TrackerConfig.from(getConfig());
@@ -402,6 +411,14 @@ public final class ObservancePlugin extends JavaPlugin {
         // regardless of whether Wren is spawned yet (the listener is inert until a tagged body exists).
         pm.registerEvents(new com.observance.watcher.signal.listener.WrenNpcListener(
                 supabase, wren, rateLimiter, scheduler, safety, "observance"), this);
+
+        // The surface townsfolk (Wave S-G) — a right-click on one of the five townsfolk bodies speaks
+        // that townsperson's authored SET-A lines to the clicking player, immediately and in-world
+        // (greet first, then their rumor/truth/react lines cycled on repeat clicks). Ordinary human
+        // register, no showrunner round-trip, touches no arc_state / flag graph / oracle. Inert until a
+        // tagged townsfolk body exists (spawned via /observance townsfolk spawn).
+        pm.registerEvents(new com.observance.watcher.signal.listener.TownsfolkNpcListener(
+                townsfolk, rateLimiter, scheduler, safety), this);
 
         // The Accepting — the TERMINAL group rite (MF-8). A synchronized group bow on the
         // accepting_floor site posts the opaque token to the same oracle (never typeable). Config-driven;
@@ -688,6 +705,8 @@ public final class ObservancePlugin extends JavaPlugin {
 
     /** The companion (Wren) NPC body manager — spawn/despawn/tag the one group-scoped Wren. */
     public com.observance.watcher.npc.WrenNpc wren() { return wren; }
+
+    public com.observance.watcher.npc.TownsfolkNpc townsfolk() { return townsfolk; }
 
     public boolean isLocallyAsleep() { return locallyAsleep; }
     public void setLocallyAsleep(boolean asleep) {

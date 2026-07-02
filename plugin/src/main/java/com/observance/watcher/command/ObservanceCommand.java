@@ -69,7 +69,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placedeep" -> handlePlaceDeep(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | placeroom <keeperId> | placeregion | placedeep | lens give [player] | wren <spawn|despawn|reckoning>");
+            case "townsfolk" -> handleTownsfolk(sender, args);
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | placeroom <keeperId> | placeregion | placedeep | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id]");
         }
     }
 
@@ -607,6 +608,74 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage("Observance: placed " + placed + "/3 reckoning markers. "
                 + "They resolve only after companion_revealed, and only once.");
+    }
+
+    /**
+     * {@code /observance townsfolk <spawn|despawn> [id]} — places (or removes) the five surface townsfolk
+     * NPCs for the surface town. Mirrors {@link #handleWren}: uses Citizens2 when present (pass-as-human),
+     * else PDC-tagged armor-stand fallbacks. Right-click any of them to hear their authored SET-A lines.
+     *
+     * <ul>
+     *   <li>{@code spawn} — place all five in a short row at the sender's feet (or, with an {@code id},
+     *       just that one: {@code aro|wenna|coll|dob|old-pell}). A re-spawn relocates rather than clones.</li>
+     *   <li>{@code despawn} — remove all townsfolk bodies (or, with an {@code id}, just that one).</li>
+     * </ul>
+     */
+    private void handleTownsfolk(CommandSender sender, String[] args) {
+        var townsfolk = plugin.townsfolk();
+        if (townsfolk == null) {
+            sender.sendMessage("Observance: townsfolk subsystem unavailable.");
+            return;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance townsfolk must be run by a player (needs a location).");
+            return;
+        }
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "spawn";
+        String id = args.length > 2 && !args[2].isBlank() ? args[2].trim().toLowerCase(Locale.ROOT) : null;
+        switch (op) {
+            case "spawn" -> {
+                Location loc = player.getLocation();
+                if (loc == null || loc.getWorld() == null) {
+                    sender.sendMessage("Observance: could not resolve your location.");
+                    return;
+                }
+                if (id != null) {
+                    if (com.observance.watcher.npc.TownsfolkNpc.byId(id) == null) {
+                        sender.sendMessage("Observance: unknown townsperson '" + id
+                                + "'. One of: aro | wenna | coll | dob | old-pell.");
+                        return;
+                    }
+                    var body = townsfolk.spawnOne(id, loc);
+                    if (body == null) {
+                        sender.sendMessage("Observance: could not spawn '" + id + "' here (world/chunk unavailable?).");
+                        return;
+                    }
+                    sender.sendMessage("Observance: " + id + " is here (" + townsfolk.backend()
+                            + "). Right-click to talk.");
+                } else {
+                    int placed = townsfolk.spawnAll(loc);
+                    sender.sendMessage("Observance: placed " + placed + "/"
+                            + com.observance.watcher.npc.TownsfolkNpc.TOWNSFOLK.size()
+                            + " townsfolk (" + townsfolk.backend() + "). Right-click any to talk.");
+                }
+            }
+            case "despawn" -> {
+                if (id != null) {
+                    if (com.observance.watcher.npc.TownsfolkNpc.byId(id) == null) {
+                        sender.sendMessage("Observance: unknown townsperson '" + id
+                                + "'. One of: aro | wenna | coll | dob | old-pell.");
+                        return;
+                    }
+                    int n = townsfolk.despawnOne(id);
+                    sender.sendMessage("Observance: removed " + n + " body/bodies for '" + id + "'.");
+                } else {
+                    int n = townsfolk.despawnAll();
+                    sender.sendMessage("Observance: the townsfolk have gone in (" + n + " removed).");
+                }
+            }
+            default -> sender.sendMessage("Usage: /observance townsfolk <spawn|despawn> [aro|wenna|coll|dob|old-pell]");
+        }
     }
 
     private void sendStatus(CommandSender sender) {
