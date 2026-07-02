@@ -171,7 +171,8 @@ function simulatePlayers(w: World, rng: () => number): void {
   const dripTimes: number[] = [];
   let giftTotal = 0;
   let openedOnDeadEnd = false;
-  let drippedNonForgeable = false;
+  let drippedTerminalFoundDoc = false;
+  let drippedNonForgeableMover = false;
 
   for (let t = 0; t <= 14 * DAY; t += HOUR) {
     const d = decide(project(w, 1000 * HOUR + t));
@@ -179,7 +180,16 @@ function simulatePlayers(w: World, rng: () => number): void {
       dripTimes.push(1000 * HOUR + t);
       const pz = w.puzzles.find((p) => p.puzzleKey === drip.puzzleKey)!;
       if (pz.outcomeType === 'dead_end' || pz.outcomeType === 'lore') openedOnDeadEnd = true;
-      if (!pz.forgeable) drippedNonForgeable = true;
+      // The found-document guardrail (audit #7 corrected intent): a non-forgeable TERMINAL row
+      // (lore / dead_end — the found-document / observation nodes with no card and no forward
+      // motion) must never drip. A non-forgeable MOVER (e.g. accepting-crouch, a main_beat) MAY
+      // drip via the in-world report line — that is the dead-air fix, tracked separately.
+      if (!pz.forgeable && (pz.outcomeType === 'dead_end' || pz.outcomeType === 'lore')) {
+        drippedTerminalFoundDoc = true;
+      }
+      if (!pz.forgeable && (pz.outcomeType === 'next_clue' || pz.outcomeType === 'main_beat' || pz.outcomeType === 'side_quest')) {
+        drippedNonForgeableMover = true;
+      }
     }
     giftTotal += d.gifts.length;
     applyDecision(w, d, 1000 * HOUR + t);
@@ -192,7 +202,10 @@ function simulatePlayers(w: World, rng: () => number): void {
   check('A: drip cadence never violated (no spam)', dripTimes.length < 2 || minGap >= DRIP_INTERVAL,
     `minGap=${minGap === Infinity ? 'n/a' : (minGap / HOUR).toFixed(1) + 'h'} < ${DRIP_INTERVAL / HOUR}h`);
   check('A: never opens the arc on a dead_end/lore row', !openedOnDeadEnd);
-  check('A: never drips a non-forgeable found-document row', !drippedNonForgeable);
+  check('A: never drips a non-forgeable TERMINAL found-document row (lore/dead_end)', !drippedTerminalFoundDoc);
+  // audit #7 salience fix: the non-forgeable back-half MOVER (accepting-crouch, a main_beat) IS
+  // surfaced via the report line once the forgeable ciphers are spent — no dead-air cliff.
+  check('A: DOES surface the non-forgeable story-advancing back-half node (dead-air fix)', drippedNonForgeableMover);
   check('A: the arc PROGRESSES (forgeable cipher nodes get solved)',
     w.puzzles.filter((p) => p.forgeable && p.solved).length >= 3,
     `${w.puzzles.filter((p) => p.forgeable && p.solved).length} forgeable solved`);
@@ -276,10 +289,15 @@ function simulatePlayers(w: World, rng: () => number): void {
   check('D: all solved → no drips, no crash', d2.drips.length === 0);
 
   const onlyFound = freshWorld();
-  onlyFound.puzzles = onlyFound.puzzles.filter((p) => !p.forgeable); // only non-forgeable rows open
+  // Only TERMINAL non-forgeable rows open (lore / dead_end found-documents). A non-forgeable MOVER
+  // (accepting-crouch) is drippable via the report line now, so exclude movers from this "nothing
+  // to point at" case (audit #7).
+  onlyFound.puzzles = onlyFound.puzzles.filter(
+    (p) => !p.forgeable && (p.outcomeType === 'lore' || p.outcomeType === 'dead_end'),
+  );
   const d3 = decide(project(onlyFound, 1000 * HOUR));
-  check('D: only found-document rows → no drip + a "no forgeable" note',
-    d3.drips.length === 0 && d3.notes.some((n) => n.includes('no forgeable')));
+  check('D: only terminal found-document rows → no drip + a "pool empty" note',
+    d3.drips.length === 0 && d3.notes.some((n) => n.includes('no forgeable or story-advancing')));
 }
 
 // ===========================================================================

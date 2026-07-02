@@ -10,15 +10,18 @@
  *     puzzle, gift ONE earned whisper to each attempter who is OUT of whispers AND has a real next-tier
  *     hint to receive. The double guard (exhausted + hint-exists) makes it a true backstop — it never
  *     over-gifts a player who still has a whisper, and never promises a hint that wasn't authored.
- *  3. Clue drip: when the cadence is due, announce the next un-dripped open puzzle. The pool snapshot.ts
- *     hands us is ALREADY filtered to Discord-decodable forged-clue nodes (COHERENCE-AUDIT C3 / P0-7) —
- *     found-document / sentinel / in-world-only rows never reach here. Among those, the order respects
- *     STORY SHAPE before sort-key (COHERENCE-AUDIT C2 / P0-7): a node that MOVES the web
- *     (next_clue / main_beat / side_quest) is preferred over a true-but-terminal one (lore / dead_end),
- *     so the first-ever drip can never open the arc on a dead-end. Within an outcome rank the order is
- *     the original deterministic (movement asc, then key asc). In CONFIRM mode the drip is staged (awaits
- *     dashboard approval); in AUTO it fires live. Player-helpful gifts always apply; only the curatorial
- *     drip respects the gate. Still PURE + deterministic: same snapshot in → same decision out.
+ *  3. Clue drip: when the cadence is due, announce the next un-dripped open puzzle. The pool is every
+ *     open row that is EITHER forgeable (a Discord-decodable clue card, COHERENCE-AUDIT C3 / P0-7) OR a
+ *     non-forgeable STORY-ADVANCING node apply.ts can surface via the in-world report line (audit #7,
+ *     the salience dead-air fix — so a pointer keeps flowing after the five keeper ciphers are spent).
+ *     Non-forgeable TERMINAL rows (lore / dead_end / unknown found-documents) never enter the pool.
+ *     Among the pool, the order respects STORY SHAPE before sort-key (COHERENCE-AUDIT C2 / P0-7): a node
+ *     that MOVES the web (next_clue / main_beat / side_quest) is preferred over a true-but-terminal
+ *     forgeable one (lore / dead_end), so the first-ever drip can never open the arc on a dead-end.
+ *     Within an outcome rank a forgeable node (real card) is preferred over a report-line node, then the
+ *     original deterministic order (movement asc, then key asc). In CONFIRM mode the drip is staged
+ *     (awaits dashboard approval); in AUTO it fires live. Player-helpful gifts always apply; only the
+ *     curatorial drip respects the gate. Still PURE + deterministic: same snapshot in → same decision out.
  */
 import type { Decision, GiftDecision, DripDecision, OutcomeType, Snapshot, Tone } from './types.js';
 
@@ -36,6 +39,18 @@ const OUTCOME_RANK: Readonly<Record<OutcomeType, number>> = {
   lore: 4,
   dead_end: 5,
 };
+
+/**
+ * Story-ADVANCING outcome types (a node that MOVES the web). Used by the drip pool to decide when a
+ * NON-forgeable row may be surfaced (audit #7, the salience dead-air fix): a non-cipher node has no
+ * clue card, but apply.ts already degrades such a drip to the in-world-pointing report line
+ * (`voice.drip()`). So a non-forgeable MOVER — the currently-live back-half spine node after the five
+ * keeper ciphers are spent (undercroft-descent, rite-tokens, accepting-crouch, …) — can still get a
+ * pointer, closing the "nothing points at the next thread" cliff. A non-forgeable TERMINAL row
+ * (lore / dead_end / unknown) is still NEVER dripped: it has neither a card nor forward motion, so a
+ * report line about it would point at a thread that opens nothing (the found-document guardrail).
+ */
+const MOVER_OUTCOMES: ReadonlySet<OutcomeType> = new Set<OutcomeType>(['next_clue', 'main_beat', 'side_quest']);
 
 export function decide(s: Snapshot): Decision {
   const notes: string[] = [];
@@ -83,18 +98,27 @@ export function decide(s: Snapshot): Decision {
     notes.push('curatorial drip suppressed — prologue not ignited');
   }
   if (dripDue) {
-    const next = s.openPuzzles
-      // Only Discord-decodable forged-clue nodes are drippable (COHERENCE-AUDIT C3 / P0-7):
-      // found-document / sentinel / in-world-only rows have no card to surface. snapshot.ts
-      // marks each row's `forgeable` from the P0-1 registry; non-forgeable rows still flow
-      // through openPuzzles for the stall backstop, but never enter the drip pool.
-      .filter((p) => !p.dripped && p.forgeable)
-      .sort(
-        (x, y) =>
-          OUTCOME_RANK[x.outcomeType] - OUTCOME_RANK[y.outcomeType] ||
-          x.movement - y.movement ||
-          x.puzzleKey.localeCompare(y.puzzleKey),
-      )[0];
+    // DRIP POOL (COHERENCE-AUDIT C3 / P0-7 + audit #7 salience fix): a node is drippable if it
+    // EITHER carries a Discord-decodable forged clue card (`forgeable`, the P0-1 registry) OR it is
+    // a NON-forgeable STORY-ADVANCING node (a mover) that apply.ts can surface via the
+    // in-world-pointing report line. This is what keeps a pointer flowing after Movement II: once
+    // the five keeper ciphers are spent, the live back-half spine (undercroft-descent, rite-tokens,
+    // accepting-crouch, the catch chain, …) is non-forgeable, and WITHOUT this fallback the pool
+    // went empty → dead-air with no in-world pointer to the next thread. A non-forgeable TERMINAL
+    // row (lore / dead_end / unknown) is still excluded: no card, no forward motion — a report line
+    // about it would point at a found-document that opens nothing.
+    const drippable = s.openPuzzles.filter(
+      (p) => !p.dripped && (p.forgeable || MOVER_OUTCOMES.has(p.outcomeType)),
+    );
+    const next = drippable.sort(
+      (x, y) =>
+        OUTCOME_RANK[x.outcomeType] - OUTCOME_RANK[y.outcomeType] ||
+        // Within the same story-shape rank, PREFER a forgeable node (a real decodable clue card
+        // beats a bare in-world report line) before falling back to (movement asc, key asc).
+        Number(y.forgeable) - Number(x.forgeable) ||
+        x.movement - y.movement ||
+        x.puzzleKey.localeCompare(y.puzzleKey),
+    )[0];
     if (next) {
       drips.push({
         puzzleKey: next.puzzleKey,
@@ -104,14 +128,16 @@ export function decide(s: Snapshot): Decision {
         reason: s.lastDripAtMs == null ? 'first drip' : 'cadence due',
       });
     } else {
-      // Nothing drippable. Distinguish "all forgeable nodes already dripped" from "no forgeable
-      // node is open at all" (the pool is all found-document / sentinel rows, C3) so the trace is
-      // accurate — both leave the cadence anchor untouched (apply.ts only advances it on a drip).
-      const anyForgeableOpen = s.openPuzzles.some((p) => p.forgeable);
+      // Nothing drippable. Distinguish "everything drippable is already dripped" from "no drippable
+      // (forgeable OR mover) node is open at all" (the pool is only terminal found-document /
+      // sentinel rows, C3) so the trace is accurate — both leave the cadence anchor untouched
+      // (apply.ts only advances it on a drip). "no forgeable" is retained in the empty-pool note so
+      // the existing pool-empty guardrail assertions stay meaningful.
+      const anyDrippableOpen = s.openPuzzles.some((p) => p.forgeable || MOVER_OUTCOMES.has(p.outcomeType));
       notes.push(
-        anyForgeableOpen
-          ? 'drip due but every forgeable puzzle has already been dripped'
-          : 'drip due but no forgeable (Discord-decodable) puzzle is open — pool empty',
+        anyDrippableOpen
+          ? 'drip due but every drippable (forgeable or story-advancing) puzzle has already been dripped'
+          : 'drip due but no forgeable or story-advancing puzzle is open — pool empty',
       );
     }
   } else if (curatorialAllowed) {

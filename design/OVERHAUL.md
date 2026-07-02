@@ -134,10 +134,22 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
   Seventh** (alive, far down) to **correct the record**: gather each keeper's testimony, prove
   Iss's lie, carry it down. The grading still happens (the land/Seventh only trusts those who
   keep the ways) but it now *serves a goal the players want*.
+- **The traitor-companion (Wren) — the living present-tense betrayal.** A companion NPC
+  (Citizens2 — passes as a normal player-friend) joins the descent early, builds genuine trust
+  over weeks (helps, warns, gifts), and is revealed to be a **Kept-in-part** who has been
+  feeding the group to the Watcher to preserve his own remaining self, steering them toward the
+  Seventh as his escape key. His "I was protecting you from being taken like Iss" is a half-
+  believed excuse over genuine self-interest. He is a **present-tense mirror of Iss** (Iss lies
+  from pride/historical; Wren lies from shame + self-preservation/living). The reckoning gives
+  the group a choice (condemn / understand / free) that feeds the ending. He is **the diegetic
+  reason the Watcher knows sharp, quoted, precise things** about the group — see Pillar 5 two-
+  register model. Gate his reveal behind the Iss-catch (players learn the pattern first on Iss).
+  See `arc/lore/documents/the-companion.md` for his full character, voice, arc, and seed flags.
 - **The finale = the reunion.** The future-dated grave that opens from the inside is the
   Seventh's long wait ending. Hard-won, bittersweet, not saccharine. The induction-twist
   survives as the **cost** of correcting the record (chosen, meaningful), and the divergent
-  fates are authored by the group's own conduct.
+  fates are authored by the group's own conduct. The reckoning choice (Wren) feeds a branch
+  on the finale fates.
 - **Per-keeper agency:** each keeper gets a thing players *do*, not just read (honor the way
   they broke — give back what Vaun hoarded, walk the rite Mara only read), with a mechanical
   payoff (the record updates; a door opens; the testimony is collected).
@@ -155,6 +167,13 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
 - **Tone rotation:** never stay in one register >2 sessions — **Uncanny** (something's wrong),
   **Archive** (pure cipher/lore satisfaction — genuinely fun), **Warm-Grief** (a keeper's
   humanity breaks through). This is how the multi-week experience avoids bleakness-fatigue.
+  **Warm-Grief also carries pacing relief (the "exhale"):** schedule an explicit relief beat
+  after every climax (a kinder keeper memory, a safe hearth, a small true gift — the "ways that
+  companied the Dark"). These must be diegetic, never a gamey healing chest. Relief flows from
+  two sources: Wren (warmth that curdles at the reveal) and untainted keeper memories that
+  survive the reckoning (Mara's kinder margin note; a Sella copybook drawing that is only joy).
+  Post-reckoning, keeper-memory relief is the honest warmth that remains — never route ALL
+  warmth through Wren.
 
 ### Pillar 3 — Balanced integration: solo dread + asymmetric co-op
 - **Solo per-player dread** (vanilla-first, no pack required to convey the beat): a block only
@@ -168,6 +187,12 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
   **say what they each see out loud and combine it**. *Keep Talking and Nobody Explodes*, native
   to the illusion tech. **Must scale to dynamic N** (§4): the fragments are partitioned over the
   *active* roster at solve-time, and degrade to fewer-but-still-solvable with 3 or grow with 8.
+  **The signature co-op vault (the Threshold) is backed by a vanilla trial-chamber vault (1.21)
+  with per-player keys** — vanilla's per-player lock-and-key mechanic handles the dynamic roster
+  by default. Composition: the asymmetric fragments *produce* the combination/keys (the puzzle);
+  the vault is the reward container the combination opens. Fragments = puzzle; vault = payoff.
+  The companion (Wren) may have been steering the group toward this convergence beat as his
+  escape key — wire the reckoning to the vault if the lore pass confirms it.
 - **Beats trigger on player ACTIONS**, not only a calendar (first sleep on a black moon, first
   step past the Deep Line, first refused bow) — the world reacts to what they *do*.
 
@@ -175,12 +200,25 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
 - **Primary surface = the world.** The Watcher speaks through books that appear, signs that
   rewrite, titles/subtitles, the rune font, per-player whispers. Answers are submitted in-world
   at the keeper stones (`AnswerSignListener`, already built).
-- **Out-of-game = "the record" website** (the reframed Vercel app): an eerie real webpage the
-  group **discovers via a URL hidden in-game**, showing the ledger fill with their names and
-  letting them **write answers into it** (diegetic remote submission — inscribing the record,
-  not "typing to a bot"). It also carries the between-session "the record remembers…" memory.
-- **Discord has no game-persona.** It is just the friends' own chat — *which the Observer Engine
+- **Out-of-game = "the record" website** (the reframed Vercel app): not a clean puzzle site —
+  a **half-corrupted archive terminal of the Hold's own record-keeping** (a "recovered system"):
+  degraded, half-redacted, entries out of order, integrity warnings. It unifies four surfaces into
+  one artifact: the ledger (names write in) · the hint rail (an "integrity check / error log" that
+  surfaces clearer warnings the longer a thread stalls) · the Iss lie (falsified entries the group
+  corrects) · the Seventh's true record (restored as flags flip). The group **discovers it via a
+  URL hidden in-game** and can **write answers into it** (diegetic remote submission — inscribing
+  the record, not "typing to a bot"). It also carries the between-session "the record remembers…"
+  memory. Security: website reads via RLS / edge-function ONLY — never the service key in the
+  browser.
+- **Discord has no game-persona.** It is the friends' own chat — *which the Observer Engine
   reads* (Pillar 5), but nothing in it presents as "The Watcher." This is the TINAG fix.
+  However, Discord *is* permitted to carry **corrupted artifact leaks**: on specific in-game
+  triggers (entering a cursed chunk, reaching a threshold) the bot may drop a degraded artifact
+  (a corrupted OGG file, a status/PFP change to something they're looking at). No dialogue, no
+  persona — a grounded corrupted echo of something real (a clip of their own VC, a screenshot of
+  what they're looking at). This reads as the same recovered system bleeding into their comms,
+  not as a character posting. Sequence: Observer capture must exist first; sequence D1 artifact
+  leaks *after* that.
 
 ### Pillar 5 — The Observer Engine (the literal "it knows your name")
 - **Sources:** in-game chat (`ChatListener` → log), Discord text (bot already has MessageContent
@@ -191,6 +229,20 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
   definitely…" statements — into an `observations` table. **Grounding discipline (non-
   negotiable):** only real, attributed, observed things; *never* a fabricated callout (the
   codebase's existing "precision over recall / silence-is-canon" ethic extends here).
+- **Two-register "how it knows" (the T1 resolution — the companion's reveal pays this off):**
+  - *Ambient register (Tier 0 = the land itself).* Grounded in the **composure signal**: a
+    per-player behavior accumulator tracking time in dark, recent damage, alone-vs-grouped,
+    hoarding one item, revisiting one block. Lets the Watcher speak in implication with **zero
+    chat/voice/LLM** ("you keep one thing you never use"; "you haven't looked up since you came
+    down"). Always-on; never names, never quotes; needs no in-fiction channel. The land notices.
+  - *Sharp register (Tier 1/2 = via the companion's leak).* Quotes *real* words and plans; rare,
+    precise, uncanny. The companion (see §3 Pillar 1 and the traitor-companion character) has
+    been relaying real group words and plans to the Watcher. This is the diegetic channel that
+    explains the *specific* scares. Ramps with `companion_trust`. After the reckoning
+    (`condemn`/`free`), the sharp quotes cease — the channel is gone, the world goes quieter.
+    Under `understand`, the quotes persist but the group now reads them as sorrow, not threat.
+  - **Consequence to author:** after the reckoning the sharp-quote scares must *change*; losing
+    the channel must be felt. Ambient Tier 0 stays always; sharp quotes ramp then resolve.
 - **Weaponization:** the showrunner selects an observation and surfaces it diegetically and
   **rarely** (rate-limited — rare = uncanny; frequent = creepy spam that breaks the spell): a
   sign that quotes a real phrase, a book that references a real plan, a whisper of their own
@@ -202,7 +254,7 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
 
 ---
 
-## 4. THE TWO INVARIANTS THAT TOUCH EVERYTHING
+## 4. THE THREE INVARIANTS THAT TOUCH EVERYTHING
 
 ### Dynamic roster (player count is not fixed; people join late)
 - No role is assigned to a specific person — **roles emerge and are reassignable**.
@@ -220,6 +272,16 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
   in Discord, and in voice, and will use what it hears; you can opt out or dial it down anytime"
   + a working mid-experience opt-out that reduces personalization no-questions, + an end debrief.
   The owner hosts and knows the group; this is shipped on by default, not a moral gate.
+
+### Async-first design (6+ veterans never all log on at once)
+- Progress **persists and leaves traces** — the record website is the async shared brain; a
+  solo player can advance a thread any night without needing the full group.
+- Most puzzles are solo or "night-shift" solvable. Only **convergence beats** (the asymmetric
+  co-op vault, the reckoning) need quorum — and that quorum is relative to the **active** roster.
+- The showrunner salience must be **roster-aware**: never surface a convergence-required thread
+  unless `activeRosterSize ≥ effectiveQuorum`; else surface a solo/night-shift thread. Dead air
+  caused by mis-tuned quorum requirements is the failure mode to avoid.
+- Audit every new mechanic: can a player make meaningful progress alone? If not, reconsider.
 
 ---
 
@@ -252,8 +314,20 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
   next," and "the Seventh" is reserved for the keeper).
 
 ### CUT / DEFER
-- ModelEngine + worn-skin apparition (unbought; a mislabeled Warden is worse than none).
+- ModelEngine + worn-skin apparition (unbought; a mislabeled Warden is worse than none). The
+  creature *lore* from `bestiary.md` is NOT discarded — it is salvaged into vanilla texture-swap
+  reskins + display-entity (`text_display` / `block_display` / `item_display`) apparitions (per
+  INTEGRATION Layer 3). The bestiary's lore is the gold; the ModelEngine rig is what was cut.
 - The broken global unwitnessed-mutation model (replaced by per-player illusion).
+- **Player saboteur / sleeper agent** — CUT entirely. Replaced by the traitor-companion NPC (see
+  Pillar 1; betrayal is felt by the whole group together, not between friends).
+
+### NPC FRAMEWORK — resolved (D4 hybrid, 2026-06-30)
+**Citizens2** for anyone who must read as a regular person as far as players can tell: the
+traitor-companion (Wren) and the surface townsfolk (Aro / Wenna / Dob / Pell). **Vanilla-uncanny**
+(armor-stand / display entity + PDC + interaction entity) for everything non-human or uncanny: the
+six keepers, apparitions, the Watcher, statue-things. Citizens2 is now a justified dependency; pin
+its build against the same Paper 1.21.x chosen at D5 (version pin is load-bearing).
 
 ### Collisions / specscheck (still required for "it runs", but only on surviving content)
 - One live answer collision (`the one who turned away` on `stone-iss-wall` + `prophet-wall-name`)
@@ -303,3 +377,18 @@ Re-audited against HEAD by three parallel passes (DB/seeds, Java, lore) + direct
    behavior and speak in implication; never break frame.
 
 Plus the two invariants (§4): **dynamic roster** and **grounding + consent**.
+
+**Design gates (apply before any new addition):**
+
+- **D6 — Known-author lens.** Our players know Ethan built this; classic "is this real?" TINAG
+  is off the table. Immersion comes from (a) diegetic consistency, (b) reactivity they didn't
+  expect us to build, (c) discovery deeper than they assumed we'd bother with. This governs
+  every decision about surface, NPC, and mechanic.
+- **D7 — Anti-datamining stance.** Assume transparency AND weaponize it. Don't build fun a
+  file-read destroys — the joy is in the *doing*. Reward the datamine: the NBT-heavy item is
+  meant to be inspected; leave a message for the xrayer.
+- **D8 — The Golden Question.** For every puzzle: *"If they ignore my intended solution, is
+  there another logical path to the truth?"* If no, the puzzle is too fragile — make the
+  environment reactive to their attempts.
+- **D9 — Economy of mystery.** Every answer opens a slightly bigger question until the finale;
+  the Seventh reunion must pay off emotionally *and* concretely (no empty mystery box).

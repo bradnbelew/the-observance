@@ -13,61 +13,74 @@ import org.bukkit.block.Block;
 import org.bukkit.persistence.PersistentDataType;
 
 /**
- * THE ONE A→B OVERWRITE ({@code backlog-undercroft-dimension} / D5; INTEGRATION-V2 §0.5/§D5, BP0-3).
+ * THE ROOM-SWAP — reworked from an in-place overwrite to a SEALED-DOOR + TELEPORT-ON-REENTRY move
+ * ({@code backlog-undercroft-dimension} / D5; the §10-fence rework: rework BEFORE register).
  *
- * <p>The Undercroft "the room rebuilds itself" move: clear region A (the room as the group last left it)
- * and paste schematic B (the changed room) in a single unwitnessed instant, so the change is discovered,
- * never seen mutating. This is the <b>only</b> path in the plugin that overwrites an occupied footprint —
- * every other set-piece ({@link SmallStructureBeat}'s schematic branch) pastes onto a CLEAR footprint and
- * refuses an occupied one. Keeping overwrite isolated to this one beat is the anti-jank contract: a swap
- * is irreversible-looking and must be deliberate.
+ * <p><b>Why the rework.</b> The old model cleared the occupied room A and pasted the changed room B onto
+ * the SAME footprint in one hidden instant — the only overwrite path in the plugin. That is exactly the
+ * jank the reveal contract exists to prevent: an overwrite-in-place is irreversible-looking, is only
+ * "hidden" if literally no one is in the sealed room (rare, since the group is usually the reason to swap
+ * it), and a half-applied clear (paste failed after clear) leaves an empty room. The Undercroft "the room
+ * rebuilds itself" beat is now delivered the safe way instead: room B is pre-built at a HIDDEN destination
+ * offset (never overwriting A), the DOOR back into A is SEALED (a reveal-disciplined real flip), and the
+ * changed room is entered by TELEPORT when a player crosses back through the sealed threshold. The player
+ * walks out, the door is closed behind them, and when they push back in they are in the new room — the
+ * illusion of a rebuilt room, with no occupied overwrite and no witnessable in-place mutation.
  *
- * <p><b>Why not {@code extends SmallStructureBeat}.</b> The manifest sketches this as a subclass, but
- * {@code SmallStructureBeat} is {@code final} and its footprint/paste helpers are {@code private} — it was
- * authored as a clear-footprint-only paster and would have to be re-opened to subclass. Rather than weaken
- * that class's invariant (occupied footprint = skip), this beat composes the SAME FAWE seam
- * ({@link Schematics#paster()}) and the SAME reveal/idempotency idioms directly on {@link AbstractBeat},
- * and a one-line API request to un-{@code final} {@code SmallStructureBeat} is left in the return for the
- * owning worker. Behavior is identical to the manifest's intent; only the inheritance edge differs.
+ * <p><b>The two halves.</b> This beat is the PRODUCER half:
+ * <ol>
+ *   <li>paste room B at the destination offset ({@code dest_dx/dy/dz}) onto a VERIFIED-CLEAR footprint —
+ *       reusing the clear-footprint discipline ({@link SmallStructureBeat}'s contract: an occupied
+ *       destination is a SKIP, never an overwrite). If FAWE is absent or the footprint is occupied the
+ *       swap simply doesn't arm (soft, in-fiction — the room stays A);</li>
+ *   <li>seal the door cell ({@code door_dx/dy/dz}) with {@code door_seal_material} via a reveal-disciplined
+ *       real flip ({@link #mutateWhenUnwitnessed}) — A is now closed;</li>
+ *   <li>record the destination ENTRY point on the anchor chunk's PDC ({@code observance:swap_dest.<coords>})
+ *       so the companion re-entry listener knows where to teleport a player who crosses the sealed door.</li>
+ * </ol>
+ * The CONSUMER half — teleporting a re-entering player to B — is
+ * {@link com.observance.watcher.signal.listener.RoomSwapReentryListener}, a self-contained
+ * {@link org.bukkit.event.player.PlayerMoveEvent} guard keyed on the sealed door cell + the recorded
+ * destination. Keeping the teleport in a listener (not this beat) means it works for any player, any time
+ * after the swap arms, without the beat holding cross-tick state.
  *
- * <p><b>Idempotency is the {@code swapped} PDC marker, NOT the {@code world_paste_ledger} (BP0-3/BP2-4).</b>
- * The ledger guards single-paste set-pieces (paste-once onto clear ground); a swap is a different shape —
- * it overwrites, so the ledger's {@code (world,site,schematic,base)} key would either block the legitimate
- * swap or need a second row. Instead the swap is guarded by a durable {@code observance:swapped} marker
- * written into the region ANCHOR block's {@link org.bukkit.persistence.PersistentDataContainer} (a marker
- * block authored at {@code marker_dx/dy/dz}, default the base). Once set, a re-fire reads the marker and
- * skips — no double-guard, ever. The in-process applied-set + durable {@code beat_queue.status} guard the
- * row on top of that.
+ * <p><b>Idempotency</b> is the same durable {@code observance:swapped} PDC marker on the anchor chunk as
+ * before (BP0-3): once armed, a re-fire reads the marker and skips — B is not re-pasted, the door is not
+ * re-sealed. The in-process applied-set + {@code beat_queue.status} guard the row on top.
  *
  * <p>Payload:
  * <pre>{@code
  * {
- *   "schematic": "undercroft_room_b",   // B: the changed room (curated .schem, FAWE-pasted)
- *   "clear": true,                       // (default true) clear A to air before pasting B
- *   "clear_w": 9, "clear_h": 5, "clear_l": 9,   // optional A box; defaults to B's dimensions
- *   "marker_dx": 0, "marker_dy": 0, "marker_dz": 0  // where the durable 'swapped' marker lives
+ *   "schematic": "undercroft_room_b",     // B: the changed room (curated .schem, FAWE-pasted at the offset)
+ *   "dest_dx": 0, "dest_dy": -24, "dest_dz": 0,   // where B is pre-built (hidden; default straight down 24)
+ *   "door_dx": 0, "door_dy": 0, "door_dz": 0,     // the door cell to seal (relative to the anchor)
+ *   "door_seal_material": "DEEPSLATE_BRICKS",      // what the door becomes (default deepslate bricks)
+ *   "entry_dx": 1, "entry_dy": 1, "entry_dz": 1,   // where inside B a re-entering player lands (rel. to dest base)
+ *   "marker_dx": 0, "marker_dy": 0, "marker_dz": 0 // where the durable 'swapped'/'swap_dest' markers live
  * }
  * }</pre>
  *
- * <p><b>Anti-jank.</b> {@code require_floor:false} by design (the Undercroft has no surface — A→B is a
- * sealed room, not a ground build). The clear-then-paste runs entirely inside one
- * {@link #mutateWhenUnwitnessed} so no one ever sees A empty between clear and paste. If FAWE is absent the
- * beat skips (never errors) — the swap simply doesn't happen and the room stays as A (a soft, in-fiction
- * outcome, not a crash). Volume-capped like the structure paster. MAIN-thread only; never throws.
+ * <p><b>Anti-jank.</b> No occupied overwrite anywhere (B lands on clear ground or the swap doesn't arm).
+ * The door seal is reveal-disciplined. If FAWE is absent the beat skips (never errors). Volume-capped like
+ * the structure paster. MAIN-thread only; never throws.
  */
 public final class RoomSwapBeat extends AbstractBeat {
 
     /** Same hard cap as {@link SmallStructureBeat} — a swap is a room, not a region. */
     private static final int MAX_SWAP_VOLUME = 32_768;
 
-    /** PDC sub-key marking a region as already swapped (durable across restarts; the sole idempotency guard). */
-    private static final String PDC_SWAPPED = "swapped";
+    /** PDC sub-keys on the anchor chunk: the swap guard, and the recorded destination entry point. */
+    private static final String PDC_SWAPPED   = "swapped";
+    private static final String PDC_SWAP_DEST = "swap_dest";
 
-    /** Authored marker-offset clamp (the marker block lives within or just at the room). */
-    private static final int OFFSET_LIMIT = 32;
+    /** Authored offset clamp (offsets live within reach of the room). */
+    private static final int OFFSET_LIMIT = 64;
+
+    /** Default: build B straight down out of sight if no dest offset is authored. */
+    private static final int DEFAULT_DEST_DY = -24;
 
     @Override public String name() { return "room_swap"; }
-    @Override public String description() { return "The ONE A→B overwrite: clear a room and paste the changed room, unwitnessed."; }
+    @Override public String description() { return "Seal the room's door + teleport into the pre-built changed room on re-entry (no in-place overwrite)."; }
     @Override public BeatCategory category() { return BeatCategory.DIRECTED; }
 
     @Override
@@ -100,8 +113,8 @@ public final class RoomSwapBeat extends AbstractBeat {
         if (base == null || base.getWorld() == null) return BeatResult.skipped("no-base");
         final Block baseBlock = base.getBlock();
 
-        // Durable idempotency: the swap marker on the anchor block. Read BEFORE doing any work so a
-        // re-fire (process restart, re-queued row) never overwrites a room that already became B.
+        // Durable idempotency: the swap marker on the anchor chunk. Read BEFORE any work so a re-fire never
+        // re-arms a room that already swapped.
         final Block markerBlock = baseBlock.getRelative(
                 clampOffset(p.integer("marker_dx", 0)),
                 clampOffset(p.integer("marker_dy", 0)),
@@ -112,48 +125,70 @@ public final class RoomSwapBeat extends AbstractBeat {
             return BeatResult.skipped("base-unloaded");
         }
 
-        final boolean clear = p.bool("clear", true);
-        final int cw = boundDim(p.integer("clear_w", w), w);
-        final int ch = boundDim(p.integer("clear_h", h), h);
-        final int cl = boundDim(p.integer("clear_l", l), l);
+        // Destination: where B is pre-built (hidden; default straight down). Its MIN corner.
+        final Location dest = base.clone().add(
+                clampOffset(p.integer("dest_dx", 0)),
+                clampOffset(p.integer("dest_dy", DEFAULT_DEST_DY)),
+                clampOffset(p.integer("dest_dz", 0)));
+        if (dest.getWorld() == null
+                || !dest.getWorld().isChunkLoaded(dest.getBlockX() >> 4, dest.getBlockZ() >> 4)) {
+            return BeatResult.skipped("dest-unloaded");
+        }
+        // NEVER overwrite: B must land on a CLEAR footprint (the clear-footprint contract). An occupied
+        // destination is a skip, not a clobber — the swap just doesn't arm (soft, in-fiction).
+        if (!footprintClear(dest, w, h, l)) return BeatResult.skipped("dest-occupied");
 
-        // Reveal-disciplined: the WHOLE swap (clear A → paste B → set marker) happens in one hidden instant.
-        // Gate on the base block; the room is sealed so the base is the natural witness anchor.
-        mutateWhenUnwitnessed(ctx, baseBlock, () -> {
-            // Re-read the marker at mutation time (another instance may have swapped during the retry wait).
-            if (isSwapped(ctx, markerBlock)) return;
+        // Paste B at the destination (clear ground; no clear-in-place, no occupied overwrite).
+        Boolean ok = ctx.safety().call("beat.room_swap.paste",
+                () -> paster.pasteAtMinCorner(file, dest, true), Boolean.FALSE);
+        if (!Boolean.TRUE.equals(ok)) return BeatResult.skipped("paste-failed"); // nothing armed, A intact
+        protectBox(ctx, dest.getBlock(), w, h, l);
 
-            if (clear) {
-                clearBox(baseBlock, cw, ch, cl);
+        // The door cell to seal (relative to the anchor) + what it becomes.
+        final Block doorBlock = baseBlock.getRelative(
+                clampOffset(p.integer("door_dx", 0)),
+                clampOffset(p.integer("door_dy", 0)),
+                clampOffset(p.integer("door_dz", 0)));
+        final Material sealMat = material(p.string("door_seal_material", null), Material.DEEPSLATE_BRICKS);
+
+        // Where inside B a re-entering player lands (relative to B's min corner), recorded for the listener.
+        final int entryDx = clampOffset(p.integer("entry_dx", 1));
+        final int entryDy = clampOffset(p.integer("entry_dy", 1));
+        final int entryDz = clampOffset(p.integer("entry_dz", 1));
+        final Location entry = dest.clone().add(entryDx, entryDy, entryDz);
+
+        // Seal the door with a reveal-disciplined real flip; record the swap + destination on the same
+        // hidden instant so the listener can teleport re-entrants to B.
+        mutateWhenUnwitnessed(ctx, doorBlock, () -> {
+            if (isSwapped(ctx, markerBlock)) return;   // re-read at mutate time (another instance armed it)
+            if (Placement.isWithinBuildRange(doorBlock.getWorld(), doorBlock.getY())
+                    && doorBlock.getType() != sealMat) {
+                doorBlock.setType(sealMat, false);
             }
-            Boolean ok = ctx.safety().call("beat.room_swap.paste",
-                    () -> paster.pasteAtMinCorner(file, base, true), Boolean.FALSE);
-            if (Boolean.TRUE.equals(ok)) {
-                protectBox(ctx, baseBlock, w, h, l);
-                markSwapped(ctx, markerBlock);
-            }
-            // If the paste failed AND we cleared, the room is now empty — but the marker is NOT set, so a
-            // re-fire will retry the full swap (clear is convergent: re-clearing air is a no-op). No
-            // half-swapped state survives as "done".
+            try { if (!sealMat.isAir()) ctx.protectedRegistry().protect(doorBlock); } catch (Throwable ignored) { }
+            recordDestination(ctx, markerBlock, doorBlock, entry);
+            markSwapped(ctx, markerBlock);
         });
-        return BeatResult.fired("room_swap=" + schem + " " + w + "x" + h + "x" + l);
+        return BeatResult.fired("room_swap=" + schem + " sealed+dest " + w + "x" + h + "x" + l);
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Region clear (vanilla, FAWE-free — paste B handles the fill)       */
+    /*  Clear-footprint check (NEVER overwrite — B lands on air only)      */
     /* ------------------------------------------------------------------ */
 
-    /** Set every cell of the [base..base+dims) box to air. Convergent (re-clearing air is a no-op). MAIN thread. */
-    private static void clearBox(Block baseBlock, int w, int h, int l) {
+    /** True iff every cell of the [dest..dest+dims) box is air/replaceable — B may paste here safely. */
+    private static boolean footprintClear(Location dest, int w, int h, int l) {
+        Block b0 = dest.getBlock();
         for (int dx = 0; dx < w; dx++) {
             for (int dy = 0; dy < h; dy++) {
                 for (int dz = 0; dz < l; dz++) {
-                    Block b = baseBlock.getRelative(dx, dy, dz);
-                    if (!Placement.isWithinBuildRange(b.getWorld(), b.getY())) continue;
-                    if (!b.getType().isAir()) b.setType(Material.AIR, false);
+                    Block b = b0.getRelative(dx, dy, dz);
+                    if (!Placement.isWithinBuildRange(b.getWorld(), b.getY())) return false;
+                    if (!Placement.isReplaceable(b)) return false;   // occupied → refuse (no overwrite)
                 }
             }
         }
+        return true;
     }
 
     /** Protect the solid blocks B left behind (so the anti-grief listener keeps the changed room intact). */
@@ -171,18 +206,19 @@ public final class RoomSwapBeat extends AbstractBeat {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  The durable 'swapped' marker (the SOLE idempotency guard, BP0-3)   */
+    /*  Durable markers on the anchor chunk (swap guard + destination)     */
     /* ------------------------------------------------------------------ */
 
-    // The marker lives in the CHUNK's PersistentDataContainer (a {@link org.bukkit.Chunk} is a durable
-    // PersistentDataHolder, unlike a plain block — a sealed room's anchor is usually air/stone, not a
-    // TileState). It is keyed to the exact anchor block coordinates so two swaps anchored in the same
-    // chunk never collide. This is the SOLE swap guard (no world_paste_ledger row — BP0-3/BP2-4).
-
-    /** PDC key on the anchor's chunk: {@code observance:swapped.<x>_<y>_<z>}. Durable, block-agnostic. */
     private static NamespacedKey markerKey(BeatContext ctx, Block markerBlock) {
         String sub = PDC_SWAPPED + "." + markerBlock.getX() + "_" + markerBlock.getY() + "_" + markerBlock.getZ();
         return new NamespacedKey(ctx.namespace(), sub.toLowerCase(java.util.Locale.ROOT));
+    }
+
+    /** PDC key on the door block's chunk recording the destination entry: keyed to the sealed DOOR cell so
+     *  the re-entry listener (which sees the door the player steps on) can look it up directly. */
+    public static NamespacedKey destKey(String namespace, Block doorBlock) {
+        String sub = PDC_SWAP_DEST + "." + doorBlock.getX() + "_" + doorBlock.getY() + "_" + doorBlock.getZ();
+        return new NamespacedKey(namespace, sub.toLowerCase(java.util.Locale.ROOT));
     }
 
     private static boolean isSwapped(BeatContext ctx, Block markerBlock) {
@@ -191,7 +227,7 @@ public final class RoomSwapBeat extends AbstractBeat {
             var pdc = markerBlock.getChunk().getPersistentDataContainer();
             return pdc.has(markerKey(ctx, markerBlock), PersistentDataType.BYTE);
         } catch (Throwable t) {
-            return false; // a read failure must never make us RE-RUN a destructive swap on a false negative...
+            return false;
         }
     }
 
@@ -200,27 +236,34 @@ public final class RoomSwapBeat extends AbstractBeat {
         try {
             markerBlock.getChunk().getPersistentDataContainer()
                     .set(markerKey(ctx, markerBlock), PersistentDataType.BYTE, (byte) 1);
-        } catch (Throwable ignored) {
-            // If the marker can't be written, the room still swapped; worst case is a possible re-swap,
-            // which is convergent against the SAME schematic B (clear B, paste B again = B). Acceptable.
-        }
+        } catch (Throwable ignored) { }
+    }
+
+    /** Record B's entry point on the DOOR chunk's PDC as "world x y z (yaw pitch)" so the re-entry listener
+     *  can parse + teleport. Stored against the door cell the listener detects the player stepping onto. */
+    private static void recordDestination(BeatContext ctx, Block markerBlock, Block doorBlock, Location entry) {
+        if (doorBlock == null || entry == null || entry.getWorld() == null) return;
+        try {
+            String encoded = encodeDest(entry);
+            doorBlock.getChunk().getPersistentDataContainer()
+                    .set(destKey(ctx.namespace(), doorBlock), PersistentDataType.STRING, encoded);
+        } catch (Throwable ignored) { }
+    }
+
+    /** Encode a destination as "world x y z" (block-centered, feet). Parsed by the re-entry listener. */
+    static String encodeDest(Location entry) {
+        return entry.getWorld().getName() + " "
+                + (entry.getBlockX() + 0.5) + " " + entry.getBlockY() + " " + (entry.getBlockZ() + 0.5);
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Shared helpers (mirrors SmallStructureBeat's idioms)               */
+    /*  Shared helpers                                                     */
     /* ------------------------------------------------------------------ */
 
-    /** Choose the swap base: the resolved anchor block (the room is sealed; no surface search like a build). */
     private static Location resolveBase(BeatContext ctx, BeatRequest req) {
         Location anchor = anchor(ctx, req);
         if (anchor == null || anchor.getWorld() == null) return null;
         return anchor;
-    }
-
-    /** A clear-box dimension defaults to B's matching dimension and is bounded to it (never clear beyond B). */
-    private static int boundDim(int v, int def) {
-        if (v <= 0) return def;
-        return Math.min(v, def);
     }
 
     private static int clampOffset(int v) { return Math.max(-OFFSET_LIMIT, Math.min(OFFSET_LIMIT, v)); }
@@ -238,22 +281,21 @@ public final class RoomSwapBeat extends AbstractBeat {
 
     /**
      * Guards the pure helpers the swap's safety leans on: the schematic name is sanitized against
-     * path-traversal, the clear-box dimension is bounded to B (never clears beyond the new room), and
-     * marker offsets clamp. A regression here would let a swap clear arbitrary world or escape its room.
+     * path-traversal, offsets clamp (a typo can't reach across the world), and the destination encoding
+     * round-trips a namespaced-key sub-string that is always PDC-legal (lowercased, coordinate-keyed). A
+     * regression here would let a swap escape its bounds or write an un-parseable destination.
      */
     static boolean roomSwapSelfTest() {
-        if (sanitizeSchemName("../../etc/passwd") == null) {
-            // stripping non [a-z0-9_-] leaves "etcpasswd" — non-null but harmless (no slashes/dots).
-        }
         if (sanitizeSchemName("../../etc/passwd").contains("/")) return false; // traversal stripped
         if (sanitizeSchemName("..") != null) return false;                     // empties to null
         if (!"undercroft_room_b".equals(sanitizeSchemName("Undercroft_Room_B"))) return false;
-        // clear-box defaults to B's dim and never exceeds it.
-        if (boundDim(0, 9) != 9) return false;       // 0 → default
-        if (boundDim(-5, 9) != 9) return false;      // negative → default
-        if (boundDim(20, 9) != 9) return false;      // clamp down to B
-        if (boundDim(5, 9) != 5) return false;       // a smaller A box is honored
-        // offsets clamp.
-        return clampOffset(9999) == OFFSET_LIMIT && clampOffset(-9999) == -OFFSET_LIMIT;
+        // offsets clamp both ways.
+        if (clampOffset(9999) != OFFSET_LIMIT || clampOffset(-9999) != -OFFSET_LIMIT) return false;
+        if (clampOffset(5) != 5) return false;
+        // The dest-key sub-string is coordinate-keyed + lowercase (PDC-legal); distinct door cells → distinct
+        // keys (so two swaps in one chunk never collide on the destination record).
+        String a = PDC_SWAP_DEST + ".10_5_-3";
+        String b = PDC_SWAP_DEST + ".10_5_-4";
+        return !a.equals(b);
     }
 }

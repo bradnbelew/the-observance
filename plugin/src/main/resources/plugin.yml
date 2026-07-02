@@ -22,7 +22,11 @@ website: https://the-observance.local
 # invites drift). The Keeper listener already needs no softdepend: it reads the `keeper_npc` PDC tag,
 # never the Citizens API (Path-A self-containment).
 # NOTE (Bukkit): event LISTENERS are registered in code (ObservancePlugin.registerListeners()), NOT here.
-softdepend: [FastAsyncWorldEdit, WorldEdit, ModelEngine]
+# Citizens : the companion NPC (Wren) passes as a human via a Citizens PLAYER-type NPC when present.
+#   WrenNpc probes it by name ("Citizens") + Class.forName and drives it ENTIRELY by reflection (no
+#   compile-time dependency, no hard import). Absent Citizens ⇒ Wren degrades to a PDC-tagged
+#   armor-stand fallback — the WrenNpcListener reads the `wren_npc` PDC tag either way (Path-A).
+softdepend: [FastAsyncWorldEdit, WorldEdit, ModelEngine, Citizens]
 load: POSTWORLD
 
 # NOTE (Bukkit): event LISTENERS are NOT declared here — they are registered in code, in
@@ -40,6 +44,10 @@ commands:
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
       /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)
+      /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
+      /observance placeregion [spacing] - stamp the starter spine (rosetta + six keeper stones) here
+      /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
+      /observance wren <spawn|despawn|reckoning> - place the companion NPC (Wren) here, or the three reckoning-choice markers
     aliases: [obs]
     permission: observance.admin
 

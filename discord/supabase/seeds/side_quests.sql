@@ -57,7 +57,42 @@ values
   ('dest-way-up',          'place',    null,
    'SIDE-TRACK: Iss''s forgotten Mouth — real but saves no one; verified-but-hollow, place',      'rumored', 25),
   ('dest-gutter-lamps',    'human',    null,
-   'keeping the rite knowing it failed (the three dark levels); the_kept_light; card under human','ambient', 11)
+   'keeping the rite knowing it failed (the three dark levels); the_kept_light; card under human','ambient', 11),
+
+  -- ==========================================================================
+  --  THE TWO HOME-ANCHORED [FLAVOR] ANOMALIES (design/SIDEQUEST-PLAN.md §5.1, §5.3).
+  --  NOT travel destinations (no 1-3k-block walk) — these are the two anomalies that
+  --  appear in the group's OWN base, engine-seated in a PLUGIN/SHOWRUNNER beat, never a
+  --  submit-answer (honest [flavor / atmosphere]; nothing inert costumes itself as a
+  --  puzzle — OVERHAUL §5 cohesion gate). They GATE NOTHING (gates_progress false + CHECK,
+  --  INV-12) and entry_puzzle_key is NULL (discovered, not opened by a spine node — the
+  --  same "no node gates them, they gate no node" property the 18 travel rows carry). They
+  --  are seeded HERE as the breadth-ledger acknowledgement the Recovery Archive can cluster
+  --  a card under; their PRODUCERS are plugin beats (noted in the report), not seed rows.
+  -- ==========================================================================
+
+  -- SQ-COLD (§5.1, cold-start-prologue.md + cursed-map-frame.md) — the week-zero ignition
+  -- anomaly: ONE incongruity juicy enough to screenshot unprompted (the cursed adventure-map
+  -- frame / the lit marker that knows a real number it should not), placed at the first-report
+  -- surface so the FIRST notice is findable. PRODUCER: the IgnitionListener + prologue.ts drip
+  -- gate (already built) sets arc_state.flags.prologue_ignited on read/post — the lure, never a
+  -- gate (it only lifts the curatorial-drip suppression; gifts are ungated). Grounding/consent
+  -- (OVERHAUL §4): the "number it should not know" is a REAL observed value (the world seed / a
+  -- real count), never fabricated. thread surface (the record on the surface). ambient. NO card
+  -- added here (its surface home is first_report_lectern_01, already the anchor of surface cards).
+  ('sq-cold-ignition',     'surface',  null,
+   '[FLAVOR/lure] week-zero ignition anomaly (cursed map-frame / lit marker knowing a real number); PRODUCER IgnitionListener+prologue.ts sets prologue_ignited; GATES NOTHING (lifts drip suppression only); grounded real value, never fabricated', 'ambient', 6),
+
+  -- SQ-COUNT (§5.3, counting-base-journal.md, pairs record-writes-you-in.md) — a book in the
+  -- group''s OWN base whose successive pages, in a dead keeper''s (Orin''s) hand, count DOWN a
+  -- buried number toward nothing explained; the last page finally rewrites to address the living
+  -- reader. PRODUCER: BookAppearsBeat / LecternFillBeat page-swap (mutateWhenUnwitnessed), the
+  -- count derived as ceil(remaining_until_accepting / cadence) — a REAL measured progress value,
+  -- never faked (grounding). Honest [flavor]: there is nothing to submit; it REACTS as flags flip
+  -- (the FACT 13b payoff — the count is the muster/appointment, not a per-player death-clock; it
+  -- carves no living name). thread human (the record writing the living in a dead hand). ambient.
+  ('sq-count-journal',     'human',    null,
+   '[FLAVOR] the base-journal that counts down in a dead keeper''s hand (Orin); PRODUCER BookAppearsBeat/LecternFillBeat page-swap; count = ceil(remaining/cadence), real progress not faked; GATES NOTHING, no submit — reacts as flags flip; FACT13b muster payoff', 'ambient', 8)
 on conflict (quest_key) do nothing;
 
 commit;

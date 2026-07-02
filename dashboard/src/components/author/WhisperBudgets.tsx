@@ -58,7 +58,7 @@ export function WhisperBudgets({ rows }: { rows: WhisperBudgetRow[] }) {
                     </td>
                     <td colSpan={3} className="px-0 py-1">
                       <form
-                        action={updateWhisperBudget}
+                        action={async (fd: FormData) => { await updateWhisperBudget(fd); }}
                         className="flex items-center gap-2"
                       >
                         <input type="hidden" name="id" value={row.id} />

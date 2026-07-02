@@ -48,19 +48,46 @@ or are folded into the four canonical docs. History is in git if anything's need
 
 The honest shape: a strong *engine + script* for a game that **has not been built**. Phase A below is sacred.
 
+### DB / MIGRATIONS STATUS (verified 2026-06-30, additive-only — never edit an applied migration)
+
+| Migration | Status | Notes |
+|---|---|---|
+| `0001`–`0005` | ✅ applied | Foundation; do not touch |
+| `0006_requires_flags.sql` | ⚠️ **PENDING apply** | Keystone — additive + idempotent; everything gated (incl. companion reveal) needs it. Apply first. |
+| `0007_answer_kind.sql` | ⬜ **new, not yet written** | Adds `answer_kind` col on `puzzles`, default `'phrase'` — existing rows untouched. Needed for A3 puzzle types (PUZZLES §4). Apply after 0006. |
+| `0008_observations.sql` | ⬜ **new, Phase D** | Observer Engine `observations` table. Apply when building Phase D. |
+
+**Companion / Nether / End schema:** none — their state is jsonb keys in `arc_state.flags` (0006).
+Seed-only changes (new flags, storylets, companion flags) are idempotent `ON CONFLICT` upserts and
+re-run safely after any fold.
+
+**Ethan's DB to-do order:** apply `0006` → apply `0007` → re-run seeds → (Phase D) apply `0008`.
+
 ---
 
 ## 2. HARD BLOCKERS FROM THE CRAFT AUDIT (do these or it can't run / can't land)
 
-1. **No world.** Hand-build the Deep Hold (descent shaft, 6 keeper-stones, the two Rosettas, the
-   Threshold, the Cold Hearth, the Undercroft gather-room, the shore pool). Export each `.schem`,
-   fill `sites.yml` coords. ~10–20 hrs in a client. **Nothing else matters until this exists.**
+1. **No world — reframed (D7w/A11/A12, 2026-06-30).** The world is zero-manual: Ethan
+   hand-builds nothing that is required. The model:
+   - **Choose a seed** with good ancient-city / trial-chamber / village placement (use `/locate`
+     or seed-browser tools to verify before committing).
+   - **Director stamps code-placed primitives + set-pieces** (keeper stones, answer lecterns,
+     reflection room, the Threshold) via the procedural code-gen system (A11 — a real R&D task).
+   - **Re-dress vanilla bones** additively via the dresser pass (A11a) — runes, carvings, decay
+     overlaid by code, never by hand.
+   - **Hand-build is Ethan's OPTION** (e.g. a hero hero-space he wants to craft personally),
+     never a requirement.
+   - **Capture coords via `site set`** survey command (walk-and-click, not hand-editing
+     `sites.yml`).
+   The quality burden shifts onto **procedural-craft skill** (tight palettes, decay passes, jigsaw
+   assembly — see §12 art direction). Validate with a generated test room in Playtest 1.
 2. **No audio.** Ship the 4 declared OGG events + keeper voices (mono Vorbis). A sound beat that
    plays silence is worse than no beat.
 3. **No atmosphere.** Author the Undercroft fog **datapack** (dimension + ≤3 biomes + `mood_sound`).
 4. **The Seventh is a void** (and the new ending needs them) — §6.
 5. **Empty hint rail.** Author 2–3 diegetic hint tiers per spine puzzle (the `hints` table is empty).
-6. **FAWE paste is main-thread** (tick-stall tell) — wrap async + relight.
+6. **FAWE paste is main-thread** (tick-stall tell) — wrap async + `fastMode(true)` + `changeSetNull()`
+   + relight. Must be fixed before the dresser pass or any display-entity work.
 7. **Missing flag producers** — at minimum `IgnitionListener` (the arc can't start); `/obs flag` is
    the stopgap.
 
@@ -69,21 +96,26 @@ The honest shape: a strong *engine + script* for a game that **has not been buil
 > #5 hint rail → DRAFTED ([`discord/supabase/seeds/hints_seed.sql`](../discord/supabase/seeds/hints_seed.sql),
 > drop-in for the 5 ciphers + the catch). #3 atmosphere → fog datapack SCAFFOLDED
 > ([`datapack/observance/`](../datapack/observance/), untested — verify pack_format + dimension load).
-> #1 world → concrete room-by-room build plan in [WORLD-BUILD.md](WORLD-BUILD.md). Session-zero/consent →
-> [SESSION-ZERO.md](SESSION-ZERO.md). Still fully yours: the manual world-build, hosting, apply 0006.
+> #1 world → world model reframed above (zero-manual; [WORLD-BUILD.md](WORLD-BUILD.md) needs
+> rewrite to match). Session-zero/consent → [SESSION-ZERO.md](SESSION-ZERO.md). Still fully yours:
+> seed selection, hosting, apply 0006.
 
 ---
 
 ## 3. THE PHASES (start → finish)
 
 ### PHASE A — PROVE THE CORE LOOP ON A REAL SERVER (sacred; nothing past it counts first)
-- [ ] Apply `0006` + re-run seeds on the Supabase project (lights the back half).
+- [ ] Apply `0006` → apply `0007_answer_kind` → re-run seeds on the Supabase project (lights the
+      back half; 0006 is still pending apply; 0007 is additive + safe after 0006).
 - [ ] `gradle build` the plugin; fix any compile errors in the Java parity wiring; fix the FAWE async bug.
-- [ ] Build **one room**: one keeper-stone + labeled answer lectern, statically placed, real coords.
+- [ ] **Generate one room** (not hand-build): use the director code-gen system (A11) to place one
+      keeper-stone + labeled answer lectern via procedural code at captured coords. Proves the
+      zero-manual world model; validates the dresser pass and block palette.
 - [ ] One **per-player illusion** ("it knows ME": a fake block / a rune only one player sees).
 - [ ] One sealed-door reveal; ignition fires; one cipher solvable **with a hint**.
 - [ ] Ship the **4 OGG sounds** + a **stub fog datapack** so the room has atmosphere.
-- [ ] **Run it with 3–4 friends.** Prove: ignition → gate → solve → unlock → a scare lands.
+- [ ] **Run it with 3–4 friends.** Prove: ignition → gate → solve → unlock → a scare lands. Watch
+      for: does the code-generated room read as intentional? Tune procedural craft if not.
 
 ### PHASE B — THE SURFACE + THE SAFETY RAIL
 - [ ] The **record website** (reframe Vercel app): discover-by-URL, ledger view, **write answers in**,
@@ -119,17 +151,26 @@ The honest shape: a strong *engine + script* for a game that **has not been buil
 - **Dynamic roster** — no fixed N, no role pinned to a person, quorums relative to active roster,
   asymmetric puzzles partition over who's active.
 - **Grounding + consent** — the Watcher uses only REAL observed things; disclosure/opt-out by default.
+- **Async-first** — most puzzles are solo / night-shift solvable; progress persists and leaves traces;
+  convergence beats (co-op vault, reckoning) only surface when `activeRosterSize ≥ effectiveQuorum`.
+  The salience drip must be roster-aware. Dead air from mis-tuned quorum is the failure mode.
 - **Cohesion** — nothing inert may costume itself as a puzzle; rich standalone lore is fine as honest flavor.
 - **Vanilla-first degrade** — every clue legible without the pack (illageralt / Discord mirror).
+- **Zero-manual world** — Ethan hand-builds nothing that is required; all sites come from code-gen +
+  vanilla-gen dressed by the plugin. Hand-build is his option, never a blocker.
 
 ---
 
 ## 5. EXTERNAL DEPENDENCIES / DECISIONS THE OWNER OWNS
-- Apply migrations + re-seed (only Ethan can reach the Supabase project).
+- Apply migrations + re-seed (only Ethan can reach the Supabase project). Order: 0006 → 0007 →
+  re-run seeds → (later Phase D) 0008.
 - A **host** for the bot/showrunner/Observer (must be always-on for between-session + voice).
-- The **world-build** (manual client hours) — the one thing no code can do.
-- Citizens2 vs vanilla-PDC for NPCs (recommend vanilla-PDC to keep deps minimal).
+- **Seed selection** — choose one Paper 1.21.x + find a world seed with good ancient-city /
+  trial-chamber / village placement; commit the seed (D5 version pin is load-bearing).
+- **NPC framework = D4 hybrid (decided 2026-06-30).** Citizens2 for Wren + surface townsfolk;
+  vanilla-uncanny for keepers/apparitions. Pin Citizens2 build against the chosen Paper version.
 - Whether to ship the **voice** layer (consent call for the veteran group).
+- Session-zero consent script review (DRAFT exists at [SESSION-ZERO.md](SESSION-ZERO.md)).
 
 ---
 
@@ -215,11 +256,14 @@ are fine. This is a content-rewrite job (mostly §6/§7), not an engine job.
   into a v2 vanilla-reskin bestiary in Phase E); `atmosphere-stack.md` (ModelEngine-first — INTEGRATION.md
   supersedes); `SETTINGS.md` (the dead 3-setting pitch).
 - `RoomSwapBeat.java` — still in-place mutation; v2 = sealed-door teleport (known; compile-pending).
-- **OPEN DECISION (owner's call):** `sites.yml` + `progression_seed.sql` still carry the **Nether/End as
-  live worlds** (`observance_nether`/`observance_end`, gated `active=false` so harmless now). OVERHAUL/
-  INTEGRATION *demoted* them to Undercroft lore (a "land it small" call). Given the taste for rich + lots
-  of content, this may be wrong — **decide: fully cut them, OR re-allow the 2 deepening lanes** (and
-  update INTEGRATION.md). Don't leave the docs contradicting the seeds.
+- **Nether/End — D-NE decided 2026-06-30: KEEP and INTEGRATE as non-gating optional deepening.**
+  Both stay `active=false` in `sites.yml` and are harmless until the lore pass (L1) is applied.
+  The integration pass (pass 4) must: update `sites.yml` entries to real gen anchors (A11/A12);
+  confirm non-gating; apply the L1 End exile→return reframe to the relevant lore docs. The
+  **worst stale offender** (`the-name-i-cut-myself.md` — "not down… the other way") is fixed in
+  L1 (End = where the Seventh was cast out FIRST, carved their name, then went back DOWN). This is
+  the integration pass's job, not this doc's. §16 decision #1 is still flagged open for Ethan's
+  final confirmation, but the design direction is D-NE.
 
 ### C. THE CALLBACK WEB (spiderweb) — plants mostly solid, some payoffs broken
 - **INTACT (keep):** Iss lie→catch (now *more* central — it's how players learn to distrust his account
@@ -273,8 +317,10 @@ The honest risk is not "it's bad" — it's "60% built, then stalls" (months of w
 define the smallest version that is **still genuinely great**, and treat everything past it as
 enhancement. If time/energy/budget runs short, ship THIS and it's a real, finished experience:
 
-- **One well-built region** (not the whole Deep Hold sprawl) — the descent, ~3 keeper-stones placed,
-  the Cold Hearth, the shore pool, the Undercroft gather-room. Quality over extent.
+- **One well-generated region** (not the whole Deep Hold sprawl) — the descent, ~3 keeper-stones
+  code-placed, the Cold Hearth, the shore pool, the Undercroft gather-room (= one well-dressed
+  ancient-city anchor). Quality over extent. Proven by a *code-generated* room that reads as
+  intentional (Phase A milestone).
 - **The 6 keepers** via their journals (the gold) + **~6–8 diverse puzzles** (PUZZLES §5 palettes,
   spanning ≥4 types — NOT 6 ciphers).
 - **The Iss lie → catch** (built + central) and **the Seventh reunion** (the rewritten §6 payoff).
@@ -290,11 +336,20 @@ sidequests → the full Undercroft sprawl. None of these are load-bearing for a 
 
 The engine can be perfect and the game still mediocre if these are phoned in. Budget real hours + a
 reference board for each:
-- **World / level design** (elevate `structures.md` from spec to *built craft*): built-by-hands-then-
-  abandoned; **carved, never default** blocks; the **bow built into the architecture** (stones angled so
-  you must stoop to read); vertical-descent dread; sightline reveals (round a corner into a thing);
-  cold-hearth and shore-pool as set-pieces; a few deliberate **"wrongness"** details. Decide ONE palette +
-  a lighting discipline (dark is the default; light is earned). FAWE-relight after every paste.
+- **World / procedural craft (the new quality burden — D7w shifts it here).** The zero-manual model
+  means quality lives in the *craft of the code-generator*, not in Ethan's hands. The levers:
+  - **Tight block palette + strict lighting discipline** — dark is the default; light is earned.
+    Decide ONE palette (stone type, age indicator, accent block) and enforce it across all generated
+    rooms. Never let the generator reach outside the palette.
+  - **Decay / wear passes** — soot, cracks, moss, rubble, half-collapse overlaid by the dresser pass
+    after the main generation. This is what separates "intentional" from "noise."
+  - **Symmetry + modular jigsaw assembly** — mirror the vanilla village/trial-chamber approach: small
+    authored-in-code pieces the director stitches. Study these before building the generator.
+  - **Rule-placed "wrongness" details** — the bow built into the architecture; stones angled so you
+    must stoop to read; a single out-of-place block that repays a second look.
+  - **FAWE relight after every paste** — non-negotiable for atmosphere.
+  - Study references: vanilla jigsaw system internals, known procedural builders, the ancient-city
+    design language. This R&D is Phase A work, not Phase E polish.
 - **Audio direction** (the project's #1 missing layer — don't ship generic stings): **mono** OGG Vorbis,
   sparse, restrained; a sub-bass room-tone drone bed; the whisper, the cold toll, stone-breath; **6
   keeper voices, distinct + degraded**; positional always; lean on biome **`mood_sound`** so the engine
@@ -305,11 +360,15 @@ reference board for each:
 
 The "it knows your name" payoff must land WITHOUT the fragile parts. Build bottom-up; each tier is
 complete on its own:
-- **Tier 0 (no infra, always works, ethically cleanest):** profile **in-world behavior only** + speak in
-  *implication* ("you keep one thing you never use") — vague-true-of-anyone lines grounded in real
-  actions. Delivers ~80% of the magic with zero chat/voice/LLM. **The whole arc must work at Tier 0.**
+- **Tier 0 (no infra, always works, ethically cleanest) — the composure signal.** A per-player
+  behavior accumulator tracking: time in dark, recent damage, alone-vs-grouped, hoarding one item,
+  revisiting one block. The Watcher speaks in *implication* grounded in this signal — **never names,
+  never quotes** ("you keep one thing you never use"; "you haven't looked up since you came down").
+  Extends the existing Attention layer. Delivers ~80% of the ambient dread magic with zero chat/voice/
+  LLM. **The whole arc must work at Tier 0.** This is the "land noticing" ambient register (T1).
 - **Tier 1 (cheap):** + ingest **in-game chat + Discord text** → LLM archivist extracts grounded
-  observations → sparse, precise weaponization (quote a real phrase back).
+  observations → sparse, precise weaponization (quote a real phrase back). These are the sharp-register
+  scares fed via Wren's leak channel — ramp with `companion_trust`; resolve at reckoning.
 - **Tier 2 (expensive/fragile, build LAST, optional):** + Discord **voice (Whisper)**. Flag the cost
   (always-on host + Whisper + LLM $) and the dependence on the group actually being in VC.
 - **Always:** grounding (only REAL observed things, never fabricated) + session-zero consent/opt-out +
@@ -332,11 +391,15 @@ Expect the first run to reveal it is **not amazing yet** — that's the input, n
 | Risk | Severity | Mitigation |
 |---|---|---|
 | Scope > one builder's capacity; stalls at 60% | HIGH | §11 Minimum Amazing; cut ruthlessly |
-| Bus factor 1 (sole builder/host/director, burnout on the manual world-build) | HIGH | smallest world that's great; recruit a build helper if possible |
+| Bus factor 1 — sole builder/host/director | MED | Zero-manual world model (D7w) removes the world-build bottleneck; world is relocatable/regenerable; risk now = procedural-craft skill, not builder-hours |
 | "Amazing" unvalidated — nothing playtested | HIGH | §14 loop; first run = feedback, not verdict |
-| Amazing-determiners (world/audio) least planned | HIGH | §12 art direction as first-class craft |
+| Amazing-determiners (world/audio) least planned | HIGH | §12 art direction as first-class craft; procedural-craft levers are now first-class |
 | Findability ("too dense to find") only testable late | HIGH | salience drip + hint rail; tune in §14; don't over-add content (§7) |
+| **Procedural code-generated world looks generic / bad (D7w/A11)** | **MED-HIGH** | **A11 craft levers: tight palette, lighting discipline, decay passes, jigsaw assembly, FAWE relight. Lean on already-good vanilla-gen bones. Validate in Playtest 1.** |
 | Observer voice layer flaky/expensive | MED-HIGH | §13 tiers; arc works at Tier 0 |
+| **Citizens2 dependency + version drift (D5)** | **MED** | **Pin Citizens2 build against the same Paper 1.21.x chosen at D5; test Citizens2 NPC load on that exact build before committing.** |
+| **Companion reveal (Wren) lands flat or redundant with Iss-catch** | **MED** | **Differentiate in every place both appear (pride/past vs shame/present); plant retroactive tells early; gate reveal behind the Iss-catch so players learn the pattern first.** |
+| **Async model mis-tuned → dead air (A7)** | **MED** | **Salience must be roster-aware; never surface a convergence thread unless activeRosterSize ≥ effectiveQuorum. Test in Playtest 2.** |
 | Asymmetric co-op hard to build fair across dynamic N | MED | mark nice-to-have; degrade to solo if it fights the roster |
 | Answer-type discoverability (player doesn't know what KIND to submit) | MED | diegetic signposting per answer_kind; teach the verb in-world |
 | Surface migration (Discord→world+website) = worse UX | MED | validate the in-world sign + website input UX in Playtest 1 |
@@ -349,23 +412,42 @@ Expect the first run to reveal it is **not amazing yet** — that's the input, n
 | Engagement collapses after week 1 (hook didn't hold) | HIGH | ignition is strong; Playtest 1 must prove session-1 grips |
 | Seventh/"kept" rewrite lands saccharine or loses the dread | MED | §6 seed lines; keep bittersweet, test in Playtest 3 |
 | "Lots of content" vs "findable/cohesive" tension re-bloats it | MED | every add passes the cohesion gate (§7); salience surfaces one thread |
-| Pin: exact Paper 1.21.x not chosen → font/model/packet drift | LOW | pin ONE version, author for exactly it |
+| Pin: exact Paper 1.21.x not chosen → font/model/packet drift | MED | pin ONE version + Citizens2 build; D5 is now a real pre-build step, not a LOW |
 
 ## 16. OPEN DECISIONS REGISTER (undecided — do not let these get forgotten)
 
-Owner calls / design choices still open. Resolve as they come up; none should be silently defaulted:
-1. **Nether/End** — fully cut, or keep as 2 optional deepening lanes? (taste leans keep; OVERHAUL demoted
-   them; seeds still carry them gated). §9.B.
-2. **NPCs** — Citizens2 vs vanilla-PDC framework? (recommend vanilla-PDC for minimal deps).
-3. **World layout** — the actual level design is undesigned (only a spec). Needs a real plan/reference board.
+Owner calls / design choices still open. Resolved items are noted. Resolve open ones as they come up;
+none should be silently defaulted:
+
+1. **Nether/End** — fully cut, or keep as 2 optional deepening lanes? **STILL OPEN** (taste leans
+   keep; D-NE decision 2026-06-30 KEEPS both as non-gating optional deepening, but this is Ethan's
+   final call — see BUILD-PLAN §9.B and CHANGE-MANIFEST D-NE). Don't touch until the decision is
+   confirmed and the lore pass (L1) is applied. Seeds carry them gated and harmless.
+2. **NPCs — RESOLVED (D4 hybrid, 2026-06-30).** Citizens2 for Wren + surface townsfolk
+   (Aro/Wenna/Dob/Pell); vanilla-uncanny (armor-stand/display + PDC + Interaction entity) for the
+   six keepers, apparitions, the Watcher, statue-things. Citizens2 is now a justified dependency
+   (see §15 risk + D5 version pin).
+3. **World layout** — the actual level design is undesigned (only a spec). Seed selection + `site set`
+   survey replaces hand-layout planning; still needs a reference board for the procedural craft pass.
 4. **Audio direction** — palette + sourcing standard (§12) not yet chosen.
-5. **Hint content** — the `hints` table is empty; tiers per spine puzzle unwritten.
-6. **The actual diverse puzzles** — designed at palette level (PUZZLES §5), not as concrete puzzles yet.
-7. **Session-zero consent script** — DRAFTED in [`design/SESSION-ZERO.md`](SESSION-ZERO.md) (the
-   out-of-fiction consent message + the cursed-map handoff + the debrief + a setup checklist). Review/adjust.
+5. **Hint content** — `hints_seed.sql` drafted (§2 PREP); tiers per diverse puzzle still unwritten for
+   the A3 puzzle types (do in Phase B alongside PUZZLES §5 authoring).
+6. **The actual diverse puzzles** — designed at palette level (PUZZLES §5 + A3 types now injected),
+   not yet as concrete placed puzzles.
+7. **Session-zero consent script** — DRAFTED in [`design/SESSION-ZERO.md`](SESSION-ZERO.md). Review
+   to ensure it covers Citizens2 NPC / companion disclosure + the Discord artifact-leak (D1).
 8. **Recording/YouTube layer** — mentioned, not planned (Replay Mod + shaders, Ethan-only).
 9. **Hosting + cost budget** — where the always-on bot/showrunner/Observer runs, and the monthly $.
-10. **Website security model** — RLS vs edge-function read path (NEVER the service key in browser).
-11. **Asymmetric co-op** — core feature or nice-to-have? (recommend nice-to-have until the loop is proven).
-12. **Paper version pin** — choose ONE 1.21.x and author for exactly it.
+10. **Website security model** — RLS + edge-function read path (NEVER the service key in browser).
+    Note: the recovered-system reframe (A5) is additive, not a security change.
+11. **Asymmetric co-op** — core feature or nice-to-have? (recommend nice-to-have until the loop is
+    proven; the trial-chamber vault reduces its build cost significantly).
+12. **Paper version pin + Citizens2 build pin — ELEVATED (D5).** Choose ONE Paper 1.21.x AND a
+    matching Citizens2 build BEFORE any Phase A work. Now a real pre-build step, not a LOW.
+13. **Cohesion-vs-"lots" mechanism** — how much sidequest/lore, gated by what, so it stays findable.
+14. **Companion (Wren) exact motive-mix — RESOLVED (D3, 2026-06-30).** A Kept-in-part feeding the
+    group to the Watcher to preserve his own remaining self, steering them toward the Seventh as his
+    escape key. "I was protecting you from being taken like Iss" = a half-believed excuse over genuine
+    self-interest. Present-tense mirror of Iss. Three reckoning branches: condemn / understand / free.
+    Full character in `arc/lore/documents/the-companion.md`.
 13. **Cohesion-vs-"lots" mechanism** — how much sidequest/lore, gated by what, so it stays findable.

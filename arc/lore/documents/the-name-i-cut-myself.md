@@ -11,10 +11,12 @@ reveals: []
 foreshadows:
   - "exile is the other side of keeping — to be kept and to be cast out are one door (FACT 10b / D11's one door)"
   - "the land's choice was never a count of deeds — the keeping was never the price (FACT 10b deepened)"
+  - "the Seventh did not stay out — they went back DOWN to wait on the ones who would come to mend the record (v2 reunion; 'look for me below')"
 links_to:
   - the-seventh-not-kept
   - the-fire-they-let-out
   - the-ways-are-a-wall
+  - the-seventh-below
 ---
 
 ` the name i cut myself `
@@ -68,6 +70,20 @@ was nothing.
 > i have had a long time out here to decide and i have not. that is the truest
 > thing on this stone, and it is the one i did not cut, so you will have to take
 > it from me said and not carved. [...]
+
+---
+
+> *(and then, cut later — the same hand, but the tool gone blunt and the strokes
+> driven deeper, the way a thing is cut when it has stopped being a question:)*
+> i went back. not to be kept — i had my answer about keeping and it was no, and
+> out here i have kept nothing and been kept by nothing, and it is quiet, and it
+> is mine. i went back for the other reason. a record with a lie in it is a wound
+> that will not close, and a wound that will not close draws someone, in the end,
+> to come and close it. when they come i mean to be there to say what is true,
+> since no one out here will say it for them. so this stone is not where i am. it
+> is only the one thing i could cut where it could not be unwritten, and leave, so
+> you would know i was somewhere to be found. i am below — down where the lie is,
+> down past the line, waiting on the ones who come to mend it. **look for me below.**
 
 > *(see* the-seventh-not-kept *for the count the record would not write; see*
 > the-fire-they-let-out *for the hand that kept it down there, on the other side

@@ -196,7 +196,7 @@ public final class KeeperNpcListener implements Listener {
         if (!"abc".equals(esc("abc"))) return false;
         if (!"a\\\"b".equals(esc("a\"b"))) return false;        // embedded quote escaped
         String ctrl = "x" + ((char) 0x01) + "y";
-        if (!"x\\u0001y".equals(esc(ctrl))) return false;       // control char → \u escape
+        if (!"x\\u0001y".equals(esc(ctrl))) return false;       // control char → unicode escape
         return "a\\\\b".equals(esc("a\\b"));                     // backslash escaped
     }
 }

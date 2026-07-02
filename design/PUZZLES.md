@@ -15,6 +15,11 @@ A puzzle is a point in a 4-axis space; vary at least two axes every step. The 5 
 become ~1/4 of the puzzles, deliberately spaced. Difficulty lives in **noticing the puzzle
 exists and what kind it is**, not in grinding a known cipher (DOSSIER §B3).
 
+**The Golden Question (D8 — apply before every puzzle is finalized):** *"If they ignore my
+intended solution, is there another logical path to the truth?"* If no, the puzzle is too fragile
+— make the environment reactive to their attempts (wrong attempts still produce content). Every
+spine puzzle has a fast surface read *and* a deep true read: nobody should be fully blocked.
+
 The four axes:
 - **TYPE** — how the secret is encoded.
 - **SURFACE** — where it lives (which platform/medium).
@@ -53,6 +58,29 @@ Classic ciphers are ONE row of many. The full menu:
   black moon), or after a real-world delay ("come back when it's dark").
 - **Voice-heard (Observer Engine):** the answer is **spoken in voice chat**; the Watcher hears it
   (Whisper) and the world reacts — the players never type it.
+- **Behavior-heard (composure signal, Tier 0):** the world reacts to a *pattern of behavior* —
+  not a single action, but an accumulation (staying in dark, hoarding, revisiting). The Watcher
+  speaks in implication grounded in that pattern. No chat/voice/LLM; pure plugin behavior read.
+
+**Minecraft-native puzzle types (A3 — cure cipher-monotony, all vanilla-first):**
+- **Map-art forced perspective** — an item-frame mural that resolves only from one standing block.
+- **Banner heraldry cipher** — 6 keeper sigils built from banner patterns = a substitution
+  alphabet.
+- **Lectern-page redstone lock** — lecterns turned to specific pages (page = comparator signal
+  strength) complete a circuit; the combination is a *journal quote*.
+- **Chiseled-bookshelf register** — a comparator-read 6-slot positional puzzle that opens a door.
+- **Calibrated-sculk "it hears you"** — a corridor passable only in silence (sneak / muffle); a
+  shrieker that answers *voice chat* (ties to Observer). Sculk as the Watcher's sensory organ.
+- **F3 as a diegetic instrument** — clues that are a biome name / coord / "looking-at" readout.
+- **Villager-trade oracle** — a walled villager (Citizens2 or vanilla) that trades *answers* for
+  offered items (a Kept? the Seventh's proxy?).
+- **NBT-"heavy" item stego** — a normal-looking item whose NBT hides a URL/hex; *meant* to be
+  inspected (weaponizes datamining per D7).
+- **Carved-pumpkin-overlay reveal** — text invisible until a carved pumpkin is worn (vanilla
+  overlay, no shader).
+- **Recovery-compass / lodestone pointer** — the needle that settles toward the Seventh once
+  earned.
+- **Item-frame rotation dials** — 8-position physical combination locks.
 
 ---
 
@@ -110,6 +138,13 @@ none`. `phrase`/`url_token`/`coords-as-typed` reuse the current resolver; `behav
 `coords-arrival`/`spoken` are produced by plugin listeners + the Observer Engine that set the
 puzzle's flag directly (the gate engine is already built and surface-agnostic).
 
+**DB note (migration 0007):** `0007_answer_kind.sql` adds the `answer_kind` column to the
+`puzzles` table with a default of `'phrase'` — existing rows are untouched and all new A3-type
+puzzles can tag their kind at author time. New A3 types fit existing `answer_kind` values:
+map-art/forced-perspective → `behavior` (stand at the block); bookshelf-register → `code`;
+sculk-corridor → `behavior`; villager-oracle → `object`; NBT item → `object`; pumpkin-reveal →
+`behavior`; lodestone pointer → `behavior`; item-frame dials → `code`.
+
 ---
 
 ## 5. PER-KEEPER PUZZLE PALETTES (use the character, vary the axes)
@@ -118,23 +153,31 @@ Each keeper's puzzles should *feel like that keeper* AND span types. The cipher 
 beat per keeper; the rest use the keeper's nature:
 
 - **Vaun (the hoarder):** a **chest-arrange / sorting** puzzle (his hoard, in a deliberate order);
-  an **inventory-count** observation; his Caesar stone (the one cipher). Answer types: object, count,
-  phrase. Verb: arrange, count, decode.
+  an **inventory-count** observation; his Caesar stone (the one cipher); a **chiseled-bookshelf
+  register** (his tally — 6-slot positional, opens his cache door). Answer types: object, count,
+  phrase, code. Verb: arrange, count, decode, set-combination.
 - **Mara (the reader who never walked):** a **book-cipher** (page/line/word across a lectern shelf —
   built) but the payoff is a **research/cross-reference** ("she read the rite for X; what rite?");
-  a **"check this"** answer that sends them to walk where she didn't. Surfaces: lectern → in-world
+  a **"check this"** answer that sends them to walk where she didn't; a **lectern-page redstone
+  lock** (her rite, the page she annotated, completes the circuit). Surfaces: lectern → in-world
   travel.
 - **Sella (the drowned child):** a **reflection puzzle** (rune legible only in the shore pool);
   her copybook's **drawings-as-clue** (the final wordless leaves predict a real location); an
-  **overlay** of two map-arts. Verb: reflect, observe, travel. Answer: coords / comprehension.
+  **overlay** of two map-arts; a **map-art forced perspective** (her shore memorial, legible only
+  from one block above the pool). Verb: reflect, observe, travel. Answer: coords / comprehension.
 - **Orin (won't bow):** an **embodied** puzzle — **bow at the markers in fall-order** (the plugin
-  detects); his substitution stone; a **build/arrange** (re-cut a mark). Answer: behavior, phrase.
+  detects); his substitution stone built from **banner heraldry** (his sigil = the cipher key);
+  a **build/arrange** (re-cut a mark); **item-frame rotation dials** (the marker sequence lock).
+  Answer: behavior, phrase, code.
 - **Brann (black moon):** a **temporal** puzzle (only solvable on the black moon / at night); a
-  **beacon-colour / counting** (count the fires); an **audio** rhythm (his watch-tolls = morse).
-  Answer: temporal-gated phrase, count, listen.
+  **beacon-colour / counting** (count the fires); an **audio** rhythm (his watch-tolls = morse);
+  a **calibrated-sculk silence corridor** (his watch-walk, the Watcher listening). Answer:
+  temporal-gated phrase, count, listen, behavior.
 - **Iss (the Liar):** a **logic/deduction** ("his warm reading and the land disagree — which is
   true?"); the **layered** Vigenère whose key is **his own name earned earlier**; a **callback**
-  (re-submit the bound word at the M4 gate — built). The catch is a deduction, not a decode.
+  (re-submit the bound word at the M4 gate — built); an **NBT-heavy item** whose hidden field
+  carries the falsified record entry (meant to be inspected — the datamine is the find). The
+  catch is a deduction, not a decode.
 
 Plus **cross-keeper / spine** puzzles that use the **external surfaces** (a Drive archive of
 "recovered records," a found-footage YouTube clip), the **asymmetric co-op vault** (the Threshold),

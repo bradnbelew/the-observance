@@ -1,0 +1,163 @@
+package com.observance.watcher.signal.listener;
+
+import com.observance.watcher.config.Site;
+import com.observance.watcher.config.SitesConfig;
+import com.observance.watcher.oracle.OracleResolver;
+import com.observance.watcher.util.RateLimiter;
+import com.observance.watcher.util.Safety;
+import com.observance.watcher.util.Scheduler;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Lectern;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.List;
+import java.util.function.Supplier;
+
+/**
+ * Mara — {@code mara-lectern-lock} (design/PUZZLE-DESIGNS.md §3.1). Five lecterns stand before a
+ * sealed reading-alcove; each holds one of Mara's books, and each book's open page is the combination
+ * digit. Turned to the pages Mara annotated (the marker-count key {@code 1 2 4 4 6}, legible from the
+ * marker row), the lecterns clear a comparator page-lock. This producer reads the whole combination —
+ * the open page of every {@code mara_lectern} site, ordered by the site id's trailing index — on any
+ * lectern interaction; when EVERY lectern shows its marked page, it posts the puzzle's OPAQUE token to
+ * the shared oracle (a redstone lock the plugin reads, the token posted on the cleared combination).
+ *
+ * <p>Vanilla feedback teaches wrong attempts (a lamp per correct lectern, wired in-world) so this
+ * producer stays PURE detection: it never cancels the page-turn, never mutates the world, never
+ * messages. The combination is checked on a short settle-tick after the interact so the block state
+ * reflects the just-turned page. A per-lock cooldown collapses rapid page-flipping into one check; the
+ * solve is idempotent regardless.
+ *
+ * <p>Fault-isolated (Safety), sites resolved live via a {@link Supplier}. All block reads on the MAIN
+ * thread; only the oracle resolve hops async.
+ */
+public final class LecternLockListener implements Listener {
+
+    private static final String LECTERN_TYPE = "mara_lectern";
+    private static final long CHECK_COOLDOWN_MS = 1_500L;
+    private static final long SETTLE_TICKS = 1L;
+
+    private final Supplier<SitesConfig> sitesSupplier;
+    private final OracleResolver oracle;
+    private final RateLimiter rateLimiter;
+    private final Scheduler scheduler;
+    private final Safety safety;
+
+    private final boolean enabled;
+    private final String token;
+    private final String puzzleKey;
+    /** Target 1-based page per lectern, ordered by the lectern site's trailing index (1..N). */
+    private final int[] markedPages;
+
+    public LecternLockListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
+                               RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
+                               boolean enabled, String token, String puzzleKey,
+                               List<Integer> markedPages) {
+        this.sitesSupplier = sitesSupplier;
+        this.oracle = oracle;
+        this.rateLimiter = rateLimiter;
+        this.scheduler = scheduler;
+        this.safety = safety;
+        this.enabled = enabled;
+        this.token = token == null ? "" : token.trim();
+        this.puzzleKey = (puzzleKey == null || puzzleKey.isBlank()) ? "mara-lectern-lock" : puzzleKey.trim();
+        this.markedPages = toIntArray(markedPages);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        if (!enabled || token.isBlank()) return;
+        Block b = event.getClickedBlock();
+        if (b == null || !(b.getState() instanceof Lectern)) return;   // cheap: only lectern clicks
+
+        safety.run("mara.lectern.interact", () -> {
+            Player p = event.getPlayer();
+            if (p == null || oracle == null || scheduler == null) return;
+            SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
+            if (sites == null) return;
+
+            Location loc = b.getLocation();
+            if (loc.getWorld() == null) return;
+            String world = loc.getWorld().getName();
+            // Only proceed if the clicked lectern is actually one of the lock's lecterns.
+            Site here = nearestPlacedOfType(sites, LECTERN_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
+            if (here == null) return;
+
+            final String mc = p.getUniqueId().toString();
+            final String name = p.getName();
+            // Re-read the whole combination after a settle tick (the page flip applies post-event).
+            scheduler.runLaterSafe("mara.lectern.settle", SETTLE_TICKS, () -> safety.run(
+                    "mara.lectern.check", () -> checkCombination(mc, name)));
+        });
+    }
+
+    /** MAIN-thread: read every placed lectern's open page and, if the full combination matches, post. */
+    private void checkCombination(String mcUuid, String playerName) {
+        SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
+        if (sites == null) return;
+        List<Site> lecterns = sites.placedOfType(LECTERN_TYPE);
+        if (lecterns.isEmpty()) return;
+        if (markedPages.length == 0) return;                 // nothing to match against — inert
+
+        boolean allMatch = true;
+        int matched = 0;
+        for (Site s : lecterns) {
+            int idx = OrderedBowListener.trailingRank(s.id());   // reuse the trailing-index parse (1..6)
+            if (idx < 1 || idx > markedPages.length) { allMatch = false; continue; }
+            int targetPage = markedPages[idx - 1];
+            Integer openPage = openPageOf(s);
+            if (openPage == null || openPage != targetPage) { allMatch = false; }
+            else matched++;
+        }
+        // Require that every configured page has a matching, correctly-turned lectern.
+        if (!allMatch || matched < markedPages.length) return;
+
+        if (!rateLimiter.tryCooldown("mara_lectern:lock", CHECK_COOLDOWN_MS)) return;
+        safety.info("mara.lectern", playerName + " cleared the lectern lock — posting mara-lectern-lock");
+        scheduler.runAsyncSafe("mara.lectern.resolve",
+                () -> oracle.resolveWorld(mcUuid, playerName, token, puzzleKey));
+    }
+
+    /** The 1-based open page of a placed lectern site's block, or null if not a loaded lectern. */
+    private Integer openPageOf(Site s) {
+        Location loc = s.location();
+        if (loc == null || loc.getWorld() == null) return null;
+        BlockState state = loc.getBlock().getState();
+        if (!(state instanceof Lectern lectern)) return null;
+        // Lectern.getPage() is 0-based; the combination is expressed 1-based (a "page number").
+        return lectern.getPage() + 1;
+    }
+
+    /* ----------------------------- helpers ---------------------------- */
+
+    static int[] toIntArray(List<Integer> list) {
+        if (list == null || list.isEmpty()) return new int[0];
+        int[] out = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            Integer v = list.get(i);
+            out[i] = v == null ? -1 : v;
+        }
+        return out;
+    }
+
+    private Site nearestPlacedOfType(SitesConfig sites, String type,
+                                     String world, double x, double y, double z) {
+        Site best = null;
+        double bestD2 = Double.MAX_VALUE;
+        for (Site s : sites.placedOfType(type)) {
+            if (!s.contains(world, x, y, z)) continue;
+            Location c = s.location();
+            if (c == null) { if (best == null) best = s; continue; }
+            double dx = x - c.getX(), dy = y - c.getY(), dz = z - c.getZ();
+            double d2 = dx * dx + dy * dy + dz * dz;
+            if (d2 < bestD2) { bestD2 = d2; best = s; }
+        }
+        return best;
+    }
+}

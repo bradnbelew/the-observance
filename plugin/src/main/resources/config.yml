@@ -168,6 +168,234 @@ rites:
     cooldown-seconds: 300    # one detection attempt per site per 5 min (well past a filmed take)
 
 # ----------------------------------------------------------------------------
+#  THE NON-TYPED PUZZLE PRODUCERS (design/PUZZLE-DESIGNS.md §2–§6). Each opaque,
+#  high-entropy token below MUST byte-match its seed row's accepted_answers (the
+#  token is stored already-normalized, so the plugin submits it verbatim and the
+#  oracle's AnswerNormalizer passes it through unchanged). A detected in-world ACT
+#  is the ONLY way its token enters the system — it cannot be typed, guessed, or
+#  read off a wiki. Mirror the `rites.accepting` pattern: detect → post token →
+#  the existing engine records the solve + fires the authored outcome/flags.
+#
+#  Token parity note: these are the SAME strings the puzzles_seed.sql rows carry.
+#  If a seed token is ever re-rolled, mirror it here (there is no runtime cross-
+#  check against the DB — the seed is the source of truth, this file the producer).
+# ----------------------------------------------------------------------------
+puzzles:
+  # --- BEHAVIOR (§5.1 / §3.2 / §4.3) ---------------------------------------
+  # Orin — bow (crouch) at the six `orin_marker` sites in fall-order (Vaun, Mara,
+  # Sella, Orin, Brann, Iss). The marker's fall-order rank is the trailing digit
+  # of its site id (orin_marker_1..orin_marker_6). Per-player, solo-friendly.
+  orin-bow-fall-order:
+    enabled: true
+    token: "o9k2 mq6w x1n8 t4d7 fall order"
+    puzzle-key: "orin-bow-fall-order"
+
+  # Mara — the active roster reaches the `mara_map_marker` site together and bows
+  # (walk the rite she only read). Group-scoped, active-only quorum (like the
+  # Accepting: min(configQuorum, activeRoster)). Gated on mara_alcove_open by the
+  # seed's storylet gate (the row is only OPEN once the lectern lock has set it).
+  mara-walk-the-map:
+    enabled: true
+    token: "w7k4 mq2p n9x1 b3d6 walked together"
+    puzzle-key: "mara-walk-the-map"
+    quorum: 3                 # a small group "walked together"; clamped to active roster
+    cooldown-seconds: 60
+
+  # Sella — stand AT the `sella_anchor` block and look DOWN (the scatter resolves
+  # into her bird-over-water glyph only from the one worn stone above the pool).
+  sella-shore-memorial:
+    enabled: true
+    token: "s4k7 vq1m x8d2 p6n3 the bird"
+    puzzle-key: "sella-shore-memorial"
+    # Pitch (degrees) at/below which the keeper is "looking down" (90 = straight down).
+    look-down-min-pitch: 55
+
+  # --- OBJECT (§2.1) -------------------------------------------------------
+  # Vaun — deposit the first-of-the-deep back into the `vaun_hoard_chest` container
+  # (the offering he never made). A sorted-hoard content check the producer runs on
+  # the close of the container: the required items must all be present.
+  vaun-hoard-sorted:
+    enabled: true
+    token: "g8k2 vq7m x4d9 p1n6 given back"
+    puzzle-key: "vaun-hoard-sorted"
+    # The materials that must ALL be present in the chest for the offering to read as
+    # made. Empty ⇒ a sensible default (a single deepslate / raw-ore token; see the
+    # listener's DEFAULT_REQUIRED). Material names are Bukkit enum names.
+    required-materials: []
+
+  # --- CODE / REDSTONE LOCKS (§3.1 / §2.2 / §5.3) --------------------------
+  # These read a Minecraft-native redstone/positional state and post the token when
+  # the correct combination is achieved. Detection is driven by the player INTERACT
+  # that changes the state (lectern page turn, book slot, item-frame rotation), then
+  # a settle-tick re-reads the whole combination.
+  mara-lectern-lock:
+    enabled: true
+    token: "l5p2 mq8k w1n4 t6d3 marked pages"
+    puzzle-key: "mara-lectern-lock"
+    # The marked pages, one per lectern, in the site's fall-order (mara_lectern_1..N).
+    # A lectern is "correct" when its open page (1-based) equals the target. Vanilla
+    # lecterns hold up to 100 pages; the target is 1-based. Default 1 2 4 4 6 (the
+    # marker-count key legible from the marker row, §3.1). Length = lectern count.
+    marked-pages: [1, 2, 4, 4, 6]
+
+  # Vaun — a chiseled-bookshelf 6-slot register; fill the slots that reproduce the
+  # "all taken, none given" tally. A slot is "filled" when it holds a book item.
+  vaun-bookshelf-tally:
+    enabled: true
+    token: "b6t3 kq9w m2x7 v4d1 taken column"
+    puzzle-key: "vaun-bookshelf-tally"
+    # Which of the 6 chiseled-bookshelf slots must be FILLED (1-based slot indices).
+    # Default: the "taken column" — slots 1..6 (all taken). Order-independent set.
+    filled-slots: [1, 2, 3, 4, 5, 6]
+
+  # Orin — six item-frame rotation dials pointed to match the markers' fall-order
+  # facings. Each `orin_frame_dial_1..6` frame must show the target rotation (0..7,
+  # vanilla item-frame rotation index). Default all 0 until the world build fixes
+  # the mason's facings; length = dial count.
+  orin-frame-dials:
+    enabled: true
+    token: "d7k1 mq4x n2w9 t8d3 six dials"
+    puzzle-key: "orin-frame-dials"
+    dial-rotations: [0, 0, 0, 0, 0, 0]
+
+  # --- SILENCE / TEMPORAL (§6.2 / §6.1) ------------------------------------
+  # Brann — traverse the calibrated-sculk corridor from the `brann_corridor_start`
+  # site to the `brann_corridor_end` site WHILE SNEAKING the whole way (no sprint,
+  # no vibration). Reaching the end door in silence posts the behavior token.
+  brann-silence-corridor:
+    enabled: true
+    token: "r6k3 mq1w x9n2 t5d8 in silence"
+    puzzle-key: "brann-silence-corridor"
+
+  # --- ASYMMETRIC CO-OP VAULT (§8.2, INTEGRATION signature #2) -------------
+  # The Threshold vault — the social centerpiece. Each active player at the
+  # `threshold_vault` site (a coop_plate-family site whose id names the vault) is
+  # shown a DIFFERENT fragment of the `combination` below via per-player showEntity
+  # (a rune only they can see). Read aloud + combined, the fragments assemble the
+  # full code; typing it at the vault SIGN posts the OPAQUE `token` — recording the
+  # solve and opening the vault (the seed's door_open beat). The `combination` is
+  # NEVER in the seed (only the token is): a player cannot bypass the fragments by
+  # typing the token, nor solve by guessing the combination anywhere but the sign.
+  #
+  # PARTITION (dynamic-roster, OVERHAUL §4): the space-separated `combination`
+  # groups are partitioned over the players present at the vault at solve-time —
+  # fewer players → fewer/larger fragments; more → more/smaller; every active player
+  # gets a distinct non-empty piece. Recomputed on every roster change (late joiner
+  # folded in; a leaver's slice redealt), so the puzzle self-heals to who is here.
+  #
+  # TOKEN PARITY: `token` MUST byte-match the seed row spine-threshold-vault's
+  # accepted_answers ('v8k3 mq2n x6w1 t4d9 c7s5 assembled'). The `combination` is
+  # the plugin-only assembled code (the seed never sees it). Gated on deep_gate_open
+  # by the seed's requires_flags — the producer also fail-CLOSED-gates the display +
+  # solve on that flag so runes never appear (and the vault never opens) early.
+  spine-threshold-vault:
+    enabled: true
+    # The OPAQUE token posted on a correct combination (byte-matches the seed).
+    token: "v8k3 mq2n x6w1 t4d9 c7s5 assembled"
+    puzzle-key: "spine-threshold-vault"
+    # The combination the fragments assemble (space-separated groups). Each group is
+    # one fragment unit; the partition slices these contiguously over the roster.
+    # Plugin-only — do NOT put this in the seed (the seed carries the token above).
+    combination: "v8k3 mq2n x6w1 t4d9 c7s5"
+    # Convergence quorum (INV-19): min players AT the vault for the solve to land,
+    # clamped to the live active roster so an absent member never blocks it. Keeps a
+    # lone player who learned the whole code from opening it alone.
+    quorum: 2
+
+  # THE FINALE RITE — the Seventh's restore/erase choice (seventh-choice; INTEGRATION-V2
+  # A1 / FACT 10b). SeventhChoiceListener watches for a right-click on a restore/erase
+  # choice marker (PDC observance:seventh_choice = restore|erase) standing at the
+  # the_unwriting (seventh_shrine) effaced-name wall. On restore it sets seventh_named +
+  # seventh_choice=restore; on erase it sets seventh_choice=erase; then it posts the
+  # matching OPAQUE token below so the showrunner's Seventh-choice sentinel composes the
+  # close. Gated on deep_gate_open (fail-CLOSED) — the finale can't fire before the deep
+  # opens. One-and-once (a set seventh_choice blocks a second hand). Markers are stamped
+  # by a world build (or wire them into placedeep); an unplaced site is silently inert.
+  #
+  # TOKEN PARITY: restore-token / erase-token MUST byte-match the seed row seventh-choice's
+  # accepted_answers (the two opaque, wordless tokens). They are NEVER typeable — only a
+  # real marker touch at the wall produces them (no-leaked-sentinel, B-5).
+  seventh-choice:
+    enabled: true
+    puzzle-key: "seventh-choice"
+    restore-token: "r7n4k2 m1x8p5 w3j6h9"
+    erase-token: "e5t0b7 c2d4s8 v6f1z3"
+
+  # Brann — the black-moon toll. This is a TYPED phrase ('awake'), but only accepted
+  # once the toll has been HEARD on the in-game black moon. This producer plays the
+  # toll (a private sound cue) to keepers standing at the `brann_toll_tower` site on
+  # the black moon and sets the temporal gate flag `brann_toll_heard` so the seed
+  # row (requires that flag) becomes answerable at a keeper-stone. It never posts a
+  # solve itself (the phrase is typed) — it only opens the temporal window.
+  brann-black-moon-toll:
+    enabled: true
+    # The vanilla moon phase(s) that count as the "black moon" (0..7; 0 = full moon,
+    # the arc's canonical black moon per DarkHoursListener). Empty ⇒ [0].
+    black-moon-phases: [0]
+
+# ----------------------------------------------------------------------------
+#  OBSERVER TIER-0 (BUILD-PLAN §13 / CHANGE-MANIFEST A2) — the "it knows you" that
+#  needs NO chat, voice, or LLM. It profiles REAL in-world behavior (from the signal
+#  tracker) and, when something is CLEARLY true of a player, speaks ONE grounded
+#  implication line to that player alone (a private title / action-bar). This is the
+#  cheapest, always-works, ethically-cleanest tier: behavior-only, consent-clean.
+#
+#  GROUNDING: a line is spoken ONLY when the player's measured signals clear the
+#  thresholds below; otherwise the watcher stays SILENT (never a guess). Delivery is
+#  an AMBIENT beat (name: "composure"), so every fire also passes the drama budget
+#  (per-player + global ambient cooldowns + the rolling-window cap). Rare = uncanny.
+#
+#  REGISTER: lowercase, sparse, certain. IMPLICATION, never accusation —
+#  "you keep one thing you never use", NOT "you are a hoarder". Edit lines freely;
+#  a blank/absent line falls back to the built-in default for that observation.
+# ----------------------------------------------------------------------------
+tier0:
+  enabled: true
+
+  # Don't repeat the SAME observation to the SAME player within this many minutes
+  # (on top of the drama budget's ambient cooldowns). A high floor keeps it uncanny.
+  per-observation-cooldown-minutes: 180
+
+  # The thresholds each observation must CLEARLY clear to be spoken (precision > recall).
+  thresholds:
+    # KEEPS_TO_THE_DARK — mines mostly alone AND has actually put in solo time.
+    solo-mining-ratio-min: 0.80       # fraction (0..1) of sampled mining done alone
+    solo-mining-seconds-min: 600      # and >= 10 min of solo mining (substance)
+    # ALWAYS_THE_FARTHEST — last sampled distance to the nearest other player, in blocks.
+    farthest-distance-min: 48.0
+    # KEEPS_WHAT_IS_NEVER_USED — hoard score (same scale as tracker.hoard-score-cap).
+    hoard-score-min: 600.0
+    # DIES_IN_THE_DARK — repeated deaths AND a genuinely deep run.
+    deaths-min: 3
+    deep-death-y-max: 24              # must have broken a block at/below this Y (was in the dark)
+    # ALWAYS_GOES_DEEPER — deepest Y a block was broken at (lower = deeper).
+    deeper-y-max: -16
+    # TAKES_AND_TAKES — much broken, almost none of it ore ("takes, gives little").
+    blocks-mined-min: 2000
+    taker-ore-ratio-max: 0.02        # ores_mined / blocks_mined at/below this
+
+  # The Watcher-register implication lines, keyed by observation. Each value may be a
+  # single string OR a list (one is chosen at random). Lowercase; kept short. LORE goes
+  # here, never in code. Omit any key to use the built-in default line for it.
+  lines:
+    keeps_to_the_dark:
+      - "you keep to the dark, alone"
+      - "the dark is where you go"
+    always_the_farthest:
+      - "you are always the farthest"
+      - "the others are never near you"
+    keeps_what_is_never_used:
+      - "you keep one thing you never use"
+      - "so much held. so little used"
+    dies_in_the_dark:
+      - "you die where the light does not reach"
+    always_goes_deeper:
+      - "you always go deeper"
+      - "down is the only way you go"
+    takes_and_takes:
+      - "you take, and you take"
+
+# ----------------------------------------------------------------------------
 #  RESOURCE PACK (PATH A — friends install nothing but ONE auto-pushed pack).
 #  Read by listener.ResourcePackPusher. While `url` is blank the push is SKIPPED
 #  SILENTLY (a go-live residue, logged once) — every non-rune beat runs unchanged.

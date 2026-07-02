@@ -29,6 +29,11 @@ public final class BeatContext {
     private final RateLimiter rateLimiter;
     private final ProtectedRegistry protectedRegistry;
 
+    /** The Lens registry ("second sight", INTEGRATION §SIGNATURE #3) — beats register per-player gated
+     *  displays here so the {@code LensListener} reveals them only while the Lens is held. Nullable
+     *  (a build without the Lens wired still runs; reflection-style beats just skip gating). */
+    private final com.observance.watcher.lens.LensRegistry lensRegistry;
+
     /** A namespaced key root the beats use for PersistentDataContainer tags + advancement ids. */
     private final String namespace;
 
@@ -41,6 +46,7 @@ public final class BeatContext {
                        Reveal reveal,
                        RateLimiter rateLimiter,
                        ProtectedRegistry protectedRegistry,
+                       com.observance.watcher.lens.LensRegistry lensRegistry,
                        String namespace) {
         this.plugin = plugin;
         this.config = config;
@@ -51,6 +57,7 @@ public final class BeatContext {
         this.reveal = reveal;
         this.rateLimiter = rateLimiter;
         this.protectedRegistry = protectedRegistry == null ? new ProtectedRegistry() : protectedRegistry;
+        this.lensRegistry = lensRegistry;
         this.namespace = (namespace == null || namespace.isBlank()) ? "observance" : namespace;
     }
 
@@ -63,5 +70,7 @@ public final class BeatContext {
     public Reveal reveal() { return reveal; }
     public RateLimiter rateLimiter() { return rateLimiter; }
     public ProtectedRegistry protectedRegistry() { return protectedRegistry; }
+    /** The Lens registry, or null if the Lens is not wired in this build. */
+    public com.observance.watcher.lens.LensRegistry lensRegistry() { return lensRegistry; }
     public String namespace() { return namespace; }
 }

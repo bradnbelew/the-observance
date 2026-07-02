@@ -46,6 +46,23 @@ update public.puzzles
     and outcome_payload ? 'next_puzzle_key';
 
 -- ===========================================================================
+-- 0b. THE ISS-SEAM oracle line (the-seventh-below.md REWRITE SPEC "Iss-seam").
+--     When the wall-lie catch fires, the Watcher adds ONE callback line that wires the
+--     solved catch into the Seventh's main quest: "he lied about the wall. ask what else
+--     he told you warmly. ask who he said was cast out for nothing." The line is authored
+--     in voice.ts as oracleNoWallCatch() (the base main_beat turn + the seam callback);
+--     here we only REPOINT the catch's voice_key from oracleMainBeat → oracleNoWallCatch,
+--     so puzzles_seed.sql stays untouched and the base turn is preserved (the seam is
+--     appended, not a replacement). The paired thread_cards edge (happened-no-wall solve
+--     re-opens surface-seventh-marker) is seeded in thread_cards.sql. Idempotent: sets an
+--     absolute value; safe to re-run.
+-- ===========================================================================
+
+update public.puzzles
+  set outcome_payload = jsonb_set(outcome_payload, '{voice_key}', '"oracleNoWallCatch"', true)
+  where puzzle_key = 'no-wall-catch';
+
+-- ===========================================================================
 -- 1. THE UnlockBeat PRODUCER-CONTRACT FIXES (backlog-unlockbeat-producers §2 R-A,
 --    §4.6 decision 1). Three advancement_toast rows pass step_payload:{key:"observance:…"},
 --    but AdvancementToastBeat reads `advancement` / `fallback_title` / `fallback_subtitle`
@@ -134,13 +151,53 @@ begin
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
       where puzzle_key = 'seventh-choice';
 
+    -- ── THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — the gated new-puzzle rows.
+    -- Each hangs off a flag its UPSTREAM door SETS (the same deterministic gate the back-half
+    -- spine uses). Shipped active=false in puzzles_seed's second insert; lit here + flipped
+    -- active below. Each behavior/object/code/spoken row still needs a PLUGIN PRODUCER (later
+    -- round) — the gate is wired now so the row is invisible until its door opens.
+    --
+    --   vaun-bookshelf-tally     → vaun_cache_open      (vaun-hoard-sorted)
+    --   mara-walk-the-map        → mara_alcove_open     (mara-lectern-lock)
+    --   sella-overlay-lake       → sella_bearing_read   (sella-reflection-bearing)
+    --   sella-shore-memorial     → sella_overlay_read   (sella-overlay-lake)
+    --   orin-frame-dials         → orin_bowed           (orin-bow-fall-order)
+    --   iss-which-is-true        → iss_key_turned       (stone-iss-wall)
+    --   iss-nbt-falsified-entry  → iss_caught           (no-wall-catch)
+    --   iss-bound-word-callback  → bound_word_known     (bound-word)
+    --   spine-threshold-vault    → deep_gate_open       (iss-bound-word-callback)
+    --   spine-spoken-name        → iss_caught           (no-wall-catch)
+    --   spine-unkept-acrostic    → iss_caught           (no-wall-catch)
+    update public.puzzles set requires_flags = jsonb_build_object('vaun_cache_open', true)
+      where puzzle_key = 'vaun-bookshelf-tally';
+    update public.puzzles set requires_flags = jsonb_build_object('mara_alcove_open', true)
+      where puzzle_key = 'mara-walk-the-map';
+    update public.puzzles set requires_flags = jsonb_build_object('sella_bearing_read', true)
+      where puzzle_key = 'sella-overlay-lake';
+    update public.puzzles set requires_flags = jsonb_build_object('sella_overlay_read', true)
+      where puzzle_key = 'sella-shore-memorial';
+    update public.puzzles set requires_flags = jsonb_build_object('orin_bowed', true)
+      where puzzle_key = 'orin-frame-dials';
+    update public.puzzles set requires_flags = jsonb_build_object('iss_key_turned', true)
+      where puzzle_key = 'iss-which-is-true';
+    update public.puzzles set requires_flags = jsonb_build_object('bound_word_known', true)
+      where puzzle_key = 'iss-bound-word-callback';
+    update public.puzzles set requires_flags = jsonb_build_object('deep_gate_open', true)
+      where puzzle_key = 'spine-threshold-vault';
+    update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
+      where puzzle_key in ('iss-nbt-falsified-entry', 'spine-spoken-name', 'spine-unkept-acrostic');
+
     -- Activating the gate flips these rows' static active flag ON (so getOpenPuzzles' active
     -- pre-filter does not exclude them before the requires_flags AND-test runs). The pair
     -- (active=true AND requires_flags-satisfied) is the open condition; both must hold.
     update public.puzzles set active = true
       where puzzle_key in (
         'bound-word', 'm4-three-hands', 'threshold-coordinate', 'true-walk-arrive',
-        'seventh-unwriting', 'seventh-cause', 'seventh-choice', 'meta-unkept'
+        'seventh-unwriting', 'seventh-cause', 'seventh-choice', 'meta-unkept',
+        -- the diverse-expansion gated rows:
+        'vaun-bookshelf-tally', 'mara-walk-the-map', 'sella-overlay-lake', 'sella-shore-memorial',
+        'orin-frame-dials', 'iss-which-is-true', 'iss-nbt-falsified-entry', 'iss-bound-word-callback',
+        'spine-threshold-vault', 'spine-spoken-name', 'spine-unkept-acrostic'
       );
 
   else
@@ -174,5 +231,49 @@ end $$;
 --    FORK flag (seedcheck §A11) — fork-light/fork-name set color flags read only by the M5
 --    composer, never by requires_flags.
 -- ===========================================================================
+
+-- ===========================================================================
+-- 4. THE COMPANION REVEAL GATE (the-companion.md §4/§7). Wren's reveal is tied to
+--    the Iss catch, NOT a calendar (async-safe): the same lens that caught Iss's warm
+--    lie (iss_caught) turns on the living warm liar. So the companion reveal is gated
+--    behind iss_caught with the SAME guarded requires_flags pattern used in §2 — a row
+--    is OPEN iff active=true AND every requires_flags key is truthy in arc_state.flags.
+--
+--    THE FLAG CONTRACT (§7 seeds/flags), all group-scoped arc_state flags:
+--      companion_introduced   — set when Wren first appears (M1). PRODUCER: plugin.
+--      companion_trust (int)  — rises across M1–M3 (harvest ramps with it). PRODUCER: plugin.
+--      companion_tells_seeded — his steering tells are planted (M3). PRODUCER: plugin.
+--      companion_revealed     — the reveal event fired (M4); GATE: iss_caught. PRODUCER: plugin.
+--      reckoning_condemn | reckoning_understand | reckoning_free — the group's chosen
+--                               record-line about him (M5), mutually exclusive. PRODUCER: plugin.
+--
+--    PENDING PRODUCERS (out of THIS scope): the flag PRODUCERS are plugin listeners
+--    (the companion is Citizens2 / a beat listener; §7 NPC framework). This file wires
+--    the DATA + GATING only. The reveal's CONTENT is npcLines.wren.reveal.* and the
+--    found tally is cardKeptClose (thread_cards `kept-close`, alt_text_condition
+--    'companion:revealed'); both are authored now. The producer that SETS
+--    companion_revealed must AND-check iss_caught before firing (mirrored below in SQL
+--    so that, the instant a `companion-reveal` puzzle row is ever seeded, its gate is
+--    correct without a second edit).
+--
+--    GUARDED + IDEMPOTENT: the block no-ops cleanly if 0006 (the column) has not landed
+--    AND no-ops if the companion reveal row is not seeded yet (the UPDATE matches 0 rows).
+--    So it is safe today (row absent → 0 rows updated) and correct the day the row lands.
+-- ===========================================================================
+
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'puzzles' and column_name = 'requires_flags'
+  ) then
+    -- Gate the companion reveal behind the Iss catch (the-companion.md §4). No-ops
+    -- until a 'companion-reveal' row exists (producers pending; §7); harmless today.
+    update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
+      where puzzle_key = 'companion-reveal';
+  else
+    raise notice 'metapuzzle_seed: puzzles.requires_flags absent (0006 not applied) — companion reveal gate skipped, re-run after the migration.';
+  end if;
+end $$;
 
 commit;

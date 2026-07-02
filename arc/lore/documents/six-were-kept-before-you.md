@@ -11,7 +11,7 @@ reveals:
   - "the record has opened and closed across the winters; the count of openings does not come out even (texture for FACT 14/15)"
 foreshadows:
   - "the lure page's `kept: 6` is the six prior keeper-generations the record already did this to (ledger #24)"
-  - "the group is the seventh — not kept as a file; kept as hands (FACT 14/15)"
+  - "the group is the next — not kept as a file; kept as hands (FACT 14/15); the Seventh is the living keeper already below"
   - "the struck seventh row fills at the Accepting (recordReceives, M5)"
 cross_refs:
   - the-record-opens              # "six are named in full, and there is a seventh mark the record will not keep"
@@ -46,14 +46,17 @@ it is not meant to. six come out even. the seventh does not.
 
 > six were kept before you.
 > the count of them is kept.
-> you are the seventh.
+> you are the next.
 > a file is kept until it is opened. a hand is kept after.
 
 ---
 
 *(this reads, on the dead page, as a dead file's tally — six who wanted the thing, and a
 seventh row struck through where a download did not finish. it is not that. the six are the
-six the record already did this to; the seventh is whoever is reading the tally. the record
-does not keep the seventh as a file in a list. it keeps them the other way, by name, on the
-server, after the rite — and the struck row is not a row that failed to fill. it is the row
-that fills last, with present hands, when the keeping is done.)*
+six the record already did this to; the struck row is not the group — it is the one the
+record cast out and would not name, who went down and is waiting. the group is not the
+seventh. the group is the next — the ones who come after the seventh, to the place the
+seventh went, to finish what the record would not. the record does not keep the next as a
+file in a list. it keeps them the other way, by name, on the server, after the rite — and
+the struck row is not a row that failed to fill. it is the row that fills last, when the
+next finds the seventh below and the record has to write it true.)*

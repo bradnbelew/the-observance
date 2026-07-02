@@ -189,6 +189,11 @@ its true cost. → 6, 12.
 M3 · FORESHADOW · *Paths:* the Undercroft (a single lit point in a doused world); a
 journal line ("we left, but the light is kept"). The Kept Light, eternal, unattended.
 Beautiful and wrong. → quiet pointer to "the kept ones did not simply leave."
+**Source clause (SEALED 2026-06-30 — unblocks the Nether lane, WORLD-BIBLE §12.1 / S11):** the kept
+fire was *carried up from below the bottom.* The Undercroft is the bottom of the Hold; the deep-fire is
+its **source** — one direction, not two, never a second bottom. The keeping was always a *carrying*:
+you do not make the fire and you do not own it; you carry it down and do not let it die (which quietly
+seeds the induction — you, too, will be carried, not owned). → licenses the Nether as the fire's source.
 
 **FACT 12 — "The kept ones did not depart. They were kept."**
 M3→M4 · FORESHADOW (strongest) · *Paths:* an abandonment-era report (passive voice

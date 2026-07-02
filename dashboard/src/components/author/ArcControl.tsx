@@ -61,7 +61,7 @@ export function ArcControl({ arc }: { arc: ArcState | null }) {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <form action={rewindArc}>
+          <form action={async (fd: FormData) => { await rewindArc(fd); }}>
             <input type="hidden" name="current_act" value={current} />
             <button
               type="submit"
@@ -71,7 +71,7 @@ export function ArcControl({ arc }: { arc: ArcState | null }) {
               ← Rewind
             </button>
           </form>
-          <form action={advanceArc}>
+          <form action={async (fd: FormData) => { await advanceArc(fd); }}>
             <input type="hidden" name="current_act" value={current} />
             <button
               type="submit"

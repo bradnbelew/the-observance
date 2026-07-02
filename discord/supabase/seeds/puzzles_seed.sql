@@ -1123,4 +1123,533 @@ on conflict (puzzle_key) do update set
   active           = excluded.active,
   max_attempts     = excluded.max_attempts;
 
+-- ===========================================================================
+-- THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — 17 new puzzles across 11 TYPE
+-- categories, wired here as a SECOND insert whose column list carries the 0007
+-- `answer_kind` column (the first insert's rows all default to 'phrase' in the DB).
+--
+-- answer_kind PLACEMENT: it sits BEFORE (movement, active, max_attempts) so the
+-- trailing (movement, active, max) triple that specsCoverageSelfTest / parseSeedKeys
+-- anchor on stays the LAST such triple in each row body (the parser is unchanged).
+--
+-- CONVENTIONS (identical to the first insert):
+--   * Every accepted_answers value is pre-normalized (lower, [a-z0-9 ], single-spaced,
+--     trimmed, NO apostrophe) per ORACLE.md §2 — seedcheck enforces it.
+--   * TYPED kinds (phrase | coords | url_token) carry the real readable answer the
+--     resolver matches. PLUGIN-PRODUCED kinds (behavior | object | code | spoken)
+--     carry an OPAQUE, wordless, high-entropy token the plugin posts on real detection
+--     (red-team B-5 / no-leaked-sentinel) — never a human-typeable phrase, so a
+--     detected act cannot be spoofed by typing. Each such row NEEDS a plugin PRODUCER
+--     listener (a later round; see the report) — the row + gating are wired now.
+--   * New voice keys are avoided: every row reuses an existing oracle voice key
+--     (oracleNextClue / oracleLore / oracleDeadEnd / oracleSideQuest / oracleMainBeat),
+--     which the resolver already speaks — nothing to add to voice.ts.
+--   * Non-cipher classification: every ACTIVE row here is added to NON_CIPHER_KEYS in
+--     src/forge/clue-specs.ts (none carries a Discord-decodable cipher carving).
+--   * Gating: rows that hang off the Iss catch / Seventh deep are shipped active=false
+--     and lit by the requires_flags activation lane in metapuzzle_seed.sql §2 (the same
+--     deterministic gate the back-half spine uses) — so they never leak before their door.
+-- ===========================================================================
+
+insert into public.puzzles
+  (puzzle_key, title, accepted_answers, outcome_type, outcome_payload, answer_kind, movement, active, max_attempts)
+values
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 2. VAUN — the hoarder (arrange/count; object/code)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- vaun-hoard-sorted (§2.1) — deposit the first-of-the-deep into the empty "given back"
+-- chest (the offering Vaun never made). answer_kind 'object': a container-content check
+-- the plugin performs; the token below is the opaque flag the producer posts on the real
+-- deposit (never the typed fallback phrase, which would leak). main_beat: opens Vaun's
+-- cache (his Caesar stone becomes readable behind it). NEEDS PLUGIN PRODUCER (container watch).
+( 'vaun-hoard-sorted',
+  'give the first of the deep back',
+  array[
+    'g8k2 vq7m x4d9 p1n6 given back'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleMainBeat',
+    'set_flags', jsonb_build_object('vaun_cache_open', true),
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'stone_vaun',
+      'priority', 12,
+      'payload', jsonb_build_object(
+        'step', 'reveal',
+        'step_payload', jsonb_build_object('fragment', 'vaun_cache_opened')
+      )
+    )
+  ),
+  'object', 2, true, null ),
+
+-- vaun-bookshelf-tally (§2.2) — a chiseled-bookshelf 6-slot register; place books to
+-- reproduce Vaun's "all taken, none given" tally. answer_kind 'code' (a comparator lock
+-- the plugin reads); opaque token posted on the cleared pattern. next_clue → stone-vaun
+-- (points at the now-readable Caesar stone). Gated on vaun_cache_open (the cache must be
+-- open first). NEEDS PLUGIN PRODUCER (comparator/bookshelf lock). active=false → lit at
+-- vaun_cache_open by the metapuzzle activation lane.
+( 'vaun-bookshelf-tally',
+  'count the door open',
+  array[
+    'b6t3 kq9w m2x7 v4d1 taken column'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'stone-vaun'
+  ),
+  'code', 2, false, null ),
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 3. MARA — the reader who never walked (arrange/perform; code/behavior)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- mara-lectern-lock (§3.1) — five lecterns turned to the pages Mara annotated (a
+-- comparator page-lock). answer_kind 'code'; opaque token on the cleared combination.
+-- next_clue → mara-walk-the-map (the alcove says "walk the rite you have only read").
+-- NEEDS PLUGIN PRODUCER (lectern-page comparator lock).
+( 'mara-lectern-lock',
+  'the rite read and never walked',
+  array[
+    'l5p2 mq8k w1n4 t6d3 marked pages'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'mara-walk-the-map',
+    'set_flags', jsonb_build_object('mara_alcove_open', true),
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'stone_mara',
+      'priority', 11,
+      'payload', jsonb_build_object(
+        'step', 'door_open',
+        'step_payload', jsonb_build_object('radius', 3, 'open', true)
+      )
+    )
+  ),
+  'code', 3, true, null ),
+
+-- mara-walk-the-map (§3.2) — the group physically travels to the marker row and bows
+-- together with the active roster (quorum = effectiveQuorum). answer_kind 'behavior';
+-- opaque token on the detected group-bow. main_beat: the record writes Mara whole.
+-- Gated on mara_alcove_open. NEEDS PLUGIN PRODUCER (group-bow at marker site + window).
+-- active=false → lit at mara_alcove_open by the metapuzzle activation lane.
+( 'mara-walk-the-map',
+  'what she read you walked',
+  array[
+    'w7k4 mq2p n9x1 b3d6 walked together'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleMainBeat',
+    'set_flags', jsonb_build_object('mara_walked', true),
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'first_marker_01',
+      'priority', 12,
+      'payload', jsonb_build_object(
+        'step', 'reveal',
+        'step_payload', jsonb_build_object('fragment', 'mara_written_whole')
+      )
+    )
+  ),
+  'behavior', 3, false, null ),
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 4. SELLA — the drowned child (reflection/overlay/forced-perspective; coords/behavior)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- sella-reflection-bearing (§4.1) — the blank shore stone reads a bearing only in the
+-- water's reflection; the bearing points to the far water. answer_kind 'coords': the
+-- clean DESTINATION WORD found on-site (INV-14), never the signed coordinate. next_clue
+-- → sella-overlay-lake (at the far water). Typed (a word read off the reflection).
+( 'sella-reflection-bearing',
+  'the rune only the water shows',
+  array[
+    'south by the far water where the reeds fold back',
+    'the far water where the reeds fold back',
+    'where the reeds fold back'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'sella-overlay-lake',
+    'set_flags', jsonb_build_object('sella_bearing_read', true)
+  ),
+  'coords', 2, true, null ),
+
+-- sella-overlay-lake (§4.2) — two filled maps overlaid resolve into a shore outline with
+-- an X. answer_kind 'coords': the destination word the overlaid X marks, read on-site.
+-- lore payoff (a Sella drawing that is only joy) + next_clue seed toward the deep. Typed.
+-- Gated on sella_bearing_read (you must have followed the bearing to the far water).
+-- active=false → lit at sella_bearing_read by the metapuzzle activation lane.
+( 'sella-overlay-lake',
+  'two leaves become one place',
+  array[
+    'the drowned place the child drew',
+    'where she went the shore with the x',
+    'the shore the two maps make'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'sella-shore-memorial',
+    'set_flags', jsonb_build_object('sella_overlay_read', true)
+  ),
+  'coords', 3, false, null ),
+
+-- sella-shore-memorial (§4.3) — a scatter of blocks that forced-perspective-resolves,
+-- from one anchor block, into Sella's bird-over-water glyph. answer_kind 'behavior':
+-- stand-at-anchor + look-down detection; opaque token on the detected vantage. lore: a
+-- wordless Sella beat (only the bird). Gated on sella_overlay_read. NEEDS PLUGIN PRODUCER
+-- (stand-at-anchor + gaze detection). active=false → lit at sella_overlay_read.
+( 'sella-shore-memorial',
+  'legible only from above',
+  array[
+    's4k7 vq1m x8d2 p6n3 the bird'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'voice_args', jsonb_build_object(
+      'fragment', 'from the one worn stone above the pool the scatter is a bird over water. she kept it. the record, for once, has nothing to say. only the bird.'
+    )
+  ),
+  'behavior', 3, false, null ),
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 5. ORIN — the mason who would not bow (perform/decrypt/rotate; behavior/phrase/code)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- orin-bow-fall-order (§5.1) — bow (crouch) at the six markers in FALL-ORDER (Vaun, Mara,
+-- Sella, Orin, Brann, Iss). answer_kind 'behavior'; opaque token on the ordered-bow
+-- sequence. next_clue → orin-threshold (his threshold-stone becomes readable from the
+-- crouch). NEEDS PLUGIN PRODUCER (ordered crouch-at-marker sequence).
+( 'orin-bow-fall-order',
+  'bow at the markers in fall order',
+  array[
+    'o9k2 mq6w x1n8 t4d7 fall order'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'orin-threshold',
+    'set_flags', jsonb_build_object('orin_bowed', true),
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'first_marker_01',
+      'priority', 11,
+      'payload', jsonb_build_object(
+        'step', 'reveal',
+        'step_payload', jsonb_build_object('fragment', 'orin_threshold_readable')
+      )
+    )
+  ),
+  'behavior', 4, true, null ),
+
+-- orin-banner-heraldry (§5.2) — six keeper banners; Orin's mason-square sigil IS the
+-- substitution KEY that unlocks his EXISTING substitution stone (stone-orin). answer_kind
+-- 'phrase': the substitution plaintext, now solvable via the found key (canon plaintext
+-- already exists on stone-orin). next_clue → stone-orin. Typed. NOT a new cipher — it is
+-- the KEY-DELIVERY for the existing Orin substitution (PUZZLES.md §0 "difficulty in noticing").
+( 'orin-banner-heraldry',
+  'the sigil that is the key',
+  array[
+    'the mason square is the key to his stone',
+    'the banner is the substitution key',
+    'read his stone with the mason square'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'stone-orin',
+    'set_flags', jsonb_build_object('orin_key_found', true)
+  ),
+  'phrase', 2, true, null ),
+
+-- orin-frame-dials (§5.3) — six item-frame rotation dials pointed to match the markers'
+-- fall-order facings (a physical combination lock). answer_kind 'code'; opaque token on
+-- the cleared 6x8 rotation state. lore: Orin's private offering (the one custom he DID
+-- keep). Gated on orin_bowed (you must have walked the markers first). NEEDS PLUGIN
+-- PRODUCER (item-frame rotation lock). active=false → lit at orin_bowed.
+( 'orin-frame-dials',
+  'the marker sequence lock',
+  array[
+    'd7k1 mq4x n2w9 t8d3 six dials'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'voice_args', jsonb_build_object(
+      'fragment', 'the dials turn to face the way the markers face, and the niche gives. inside is the one offering orin kept. he would not bow to the living. he bowed here, alone, to no one, and told no one.'
+    )
+  ),
+  'code', 4, false, null ),
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 6. BRANN — the watchman on the black moon (temporal/audio; phrase/behavior)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- brann-black-moon-toll (§6.1) — a note-block/bell morse toll that plays ONLY on the
+-- in-game black moon; the rhythm spells the word Brann most needs said. answer_kind
+-- 'phrase' (temporal-gated): typed, but the plugin only accepts it once the toll has been
+-- heard on a black moon (a temporal flag the producer sets). next_clue → stone-brann.
+-- Typed. NEEDS PLUGIN PRODUCER (black-moon temporal gate + toll).
+( 'brann-black-moon-toll',
+  'the toll that rings in the dark',
+  array[
+    'awake',
+    'stay awake',
+    'do not close your eyes'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'stone-brann',
+    'set_flags', jsonb_build_object('brann_toll_heard', true)
+  ),
+  'phrase', 2, true, null ),
+
+-- brann-silence-corridor (§6.2) — a calibrated-sculk corridor passable only in silence
+-- (sneak; no vibration). answer_kind 'behavior'; opaque token on reaching the far door
+-- quietly. next_clue → stone-brann (the far door opens onto his watch-record). NEEDS
+-- PLUGIN PRODUCER (sculk/silence traversal detection; optional voice-chat tie-in later).
+( 'brann-silence-corridor',
+  'the corridor that hears you',
+  array[
+    'r6k3 mq1w x9n2 t5d8 in silence'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'stone-brann',
+    'set_flags', jsonb_build_object('brann_corridor_passed', true),
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'stone_brann',
+      'priority', 11,
+      'payload', jsonb_build_object(
+        'step', 'door_open',
+        'step_payload', jsonb_build_object('radius', 3, 'open', true)
+      )
+    )
+  ),
+  'behavior', 2, true, null ),
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 7. ISS — the liar (logic/stego/callback; phrase/object/callback)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- iss-which-is-true (§7.1) — cross-check Iss's warm wall-doctrine against the land (the
+-- cold hearth, the later stone, the record's flat line): which account does the land agree
+-- with? answer_kind 'phrase'. lore (NOT a second owner of iss_caught — the canonical catch
+-- stays no-wall-catch; this is the additive deduction rung that primes it). Gated on
+-- iss_key_turned (you must have turned his key). Points at iss-doubt (the existing catch
+-- path). Typed.
+( 'iss-which-is-true',
+  'the warm account against the land',
+  array[
+    'the ways are not a wall',
+    'no wall was ever built here',
+    'he lied about the wall'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'iss-doubt',
+    'set_flags', jsonb_build_object('iss_wall_doubted', true)
+  ),
+  'phrase', 3, false, null ),
+
+-- iss-nbt-falsified-entry (§7.2) — a warm-worded "keepsake lamp" whose NBT hides the
+-- falsified record entry Iss wrote about the Seventh (a hex/base64 field decodes to a line
+-- + a record-website path token). answer_kind 'url_token': the decoded path the group then
+-- corrects on the record website. next_clue → seventh-shrine (correcting it advances the
+-- Seventh thread). Gated on iss_caught (a group that has learned to distrust Iss inspects
+-- his gift). Typed (the decoded path token). active=false → lit at iss_caught.
+( 'iss-nbt-falsified-entry',
+  'the record he doctored',
+  array[
+    'the record keeps the seventh was not spared',
+    'he wrote the seventh a mercy it was not',
+    'the falsified entry the seventh was cast out'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'seventh-shrine',
+    'set_flags', jsonb_build_object('iss_entry_corrected', true)
+  ),
+  'url_token', 4, false, null ),
+
+-- iss-bound-word-callback (§7.3) — re-submit the earned bound word in a NEW context at the
+-- deep gate. answer_kind 'phrase' (a callback — a re-submitted earned phrase). The existing
+-- bound-word / m4-three-hands chain already owns the literal `the one who turned away`
+-- re-submission (OVERHAUL §5 prefer-unsolved); to avoid a THIRD open owner of that exact
+-- string shadowing the catch, this row carries its OWN distinct callback readings that name
+-- the same act. main_beat → opens the deep gate toward the Threshold vault. Gated on
+-- bound_word_known (the M4 chain must have yielded the word). active=false → lit at
+-- bound_word_known. This is the one genuinely-sequential deep gate (keeps a hard gate).
+( 'iss-bound-word-callback',
+  'speak again the one who turned away',
+  array[
+    'speak again the one who turned away',
+    'the bound word binds the deep gate',
+    'the name that binds the deep'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleMainBeat',
+    'set_flags', jsonb_build_object('deep_gate_open', true),
+    'next_puzzle_key', 'spine-threshold-vault',
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'the_threshold',
+      'priority', 13,
+      'payload', jsonb_build_object(
+        'step', 'door_open',
+        'step_payload', jsonb_build_object('radius', 3, 'open', true)
+      )
+    )
+  ),
+  'phrase', 4, false, null ),
+
+-- ───────────────────────────────────────────────────────────────────────────
+-- 8. CROSS-KEEPER / SPINE (external / co-op vault / Observer / meta-acrostic)
+-- ───────────────────────────────────────────────────────────────────────────
+
+-- spine-recovered-archive (§8.1) — a carved string resolves to an unlisted Drive folder;
+-- an image inside hides a name in its audio spectrogram. answer_kind 'phrase': the hidden
+-- spectrogram name. lore + a Whisper-budget grant. Typed. OPTIONAL external surface — the
+-- spine never depends on it (INV-12). No site (external → web).
+( 'spine-recovered-archive',
+  'the salvaged archive',
+  array[
+    'the name the spectrogram keeps',
+    'the recovered name in the waveform',
+    'the seventh adjacent name off the record'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('recovered_archive_read', true, 'whisper_budget_earned', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'what was recovered is kept off the record. the image is a waveform. read it as a spectrogram and it holds a name the record would not.'
+    )
+  ),
+  'phrase', 3, true, null ),
+
+-- spine-threshold-vault (§8.2) — an asymmetric co-op vault (vanilla 1.21 trial-chamber
+-- per-player keys). Each active player is shown a different rune fragment via per-player
+-- showEntity; read aloud + combined they assemble the code (fragments partitioned over the
+-- active roster at solve time). answer_kind 'code'; opaque token on the assembled
+-- combination. main_beat → the Threshold opens; the true-walk on-ramp is cut on the inner
+-- lintel. Convergence beat — NEEDS QUORUM (effectiveQuorum) + a PLUGIN PRODUCER (per-player
+-- illusion + vault). Gated on deep_gate_open. active=false → lit at deep_gate_open.
+( 'spine-threshold-vault',
+  'the asymmetric co-op vault',
+  array[
+    'v8k3 mq2n x6w1 t4d9 c7s5 assembled'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleMainBeat',
+    'set_flags', jsonb_build_object('threshold_vault_open', true),
+    'next_puzzle_key', 'true-walk-arrive',
+    'beat', jsonb_build_object(
+      'type', 'unlock',
+      'mc_uuid', '{solver}',
+      'site_id', 'threshold_vault',
+      'priority', 13,
+      'payload', jsonb_build_object(
+        'step', 'door_open',
+        'step_payload', jsonb_build_object('radius', 3, 'open', true)
+      )
+    )
+  ),
+  'code', 4, false, null ),
+
+-- spine-spoken-name (§8.3) — once a player SAYS the catch's truth aloud in voice chat, the
+-- Observer Engine (Whisper) hears it and the Watcher quotes it back carved on a sign.
+-- answer_kind 'spoken'; opaque token the Observer transcript scan posts on the REAL spoken
+-- phrase (grounding discipline — never fabricated; degrades to silence if the voice layer is
+-- absent). lore (a bonus "it knows" beat) — GATES NOTHING. Gated on iss_caught (the truth
+-- must be known first). NEEDS PLUGIN PRODUCER (Observer voice scan). active=false → lit at
+-- iss_caught.
+( 'spine-spoken-name',
+  'the watcher quotes you back',
+  array[
+    'q5k8 mq3w x1n7 t2d6 heard aloud'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'voice_args', jsonb_build_object(
+      'fragment', 'you said it aloud, and it was heard. before the hour was out the words were cut where you would pass. it kept what you spoke.'
+    )
+  ),
+  'spoken', 4, false, null ),
+
+-- spine-unkept-acrostic (§8.4) — the six maker's-mark glyphs (one per stone) read in
+-- FALL-ORDER spell UNKEPT. answer_kind 'phrase'. NOTE: the existing meta-unkept row already
+-- owns the bare `unkept` answer (gated on iss_caught); to avoid a same-string collision,
+-- this row carries its own distinct phrasing that names the read. lore — GATES NOTHING.
+-- Gated on iss_caught (the catch hands the fall-order key). Typed. active=false → lit at
+-- iss_caught. max_attempts capped (a short dictionary phrase).
+( 'spine-unkept-acrostic',
+  'the six marks spell one word',
+  array[
+    'the six marks spell unkept',
+    'read in fall order the word is unkept',
+    'the word each keeper did not keep'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'voice_args', jsonb_build_object(
+      'fragment', 'six marks, one to a stone, read in the order they fell. they were cut as a set, a commission, not a graveyard. the word is the one none of them kept.'
+    )
+  ),
+  'phrase', 4, false, 8 ),
+
+-- spine-cold-hearth-shadow (§8.5) — at the dead-shrine, notice the one thing wrong: the
+-- hearth is cold all through, the only fire in the Hold let go out (an optional F3-as-
+-- instrument layer confirms ash, not fire). answer_kind 'phrase'. dead_end WITH TEETH (the
+-- false walk — the surface answers Iss, the deep answers the Seventh); it yields the
+-- QUESTION, not progress. Typed. Reuses the 'place' dead-end kind (a real place that keeps
+-- no road on). Sited at the cold hearth.
+( 'spine-cold-hearth-shadow',
+  'the shrine that is only cold',
+  array[
+    'the only fire let go out',
+    'a cold hearth',
+    'the fire was not kept'
+  ],
+  'dead_end',
+  jsonb_build_object(
+    'voice_key', 'oracleDeadEnd',
+    'voice_args', jsonb_build_object('kind', 'place')
+  ),
+  'phrase', 2, true, null )
+
+on conflict (puzzle_key) do update set
+  title            = excluded.title,
+  accepted_answers = excluded.accepted_answers,
+  outcome_type     = excluded.outcome_type,
+  outcome_payload  = excluded.outcome_payload,
+  answer_kind      = excluded.answer_kind,
+  movement         = excluded.movement,
+  active           = excluded.active,
+  max_attempts     = excluded.max_attempts;
+
 commit;

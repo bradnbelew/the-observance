@@ -296,6 +296,39 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   // is a Phase-3 integration concern, not a forgeable carving:
   'fork-light': 'in-world permanence-fork choice (carry vs bank the kept light); side_quest setting an M5 colorant flag, no cipher',
   'fork-name': 'in-world permanence-fork choice (speak vs withhold the unspoken name); side_quest setting an M5 colorant flag, no cipher',
+  // --- THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — 17 new puzzles across 11 TYPE
+  //     categories, none carrying a Discord-decodable letter-cipher carving (the 5 ciphers
+  //     stay the minority baseline). TYPED rows (phrase/coords/url_token) are matched by the
+  //     resolver but are observation / bearing / found-object reads, not forgeable ciphers;
+  //     PLUGIN-PRODUCED rows (behavior/object/code/spoken) resolve via an in-world listener
+  //     token, never a forged card. Each is classified with its honest reason + answer_kind.
+  // Vaun (hoarder):
+  'vaun-hoard-sorted': 'deposit the first-of-the-deep into the empty "given back" chest (answer_kind object); container-content check by a plugin producer, not a cipher',
+  'vaun-bookshelf-tally': 'chiseled-bookshelf comparator register (answer_kind code); a lock the plugin reads, not a Discord cipher',
+  // Mara (reader who never walked):
+  'mara-lectern-lock': 'five-lectern comparator page-lock (answer_kind code); a plugin-read combination, not a cipher',
+  'mara-walk-the-map': 'group-bow at the marker row with the active roster (answer_kind behavior); detected, not a cipher',
+  // Sella (drowned child):
+  'sella-reflection-bearing': 'a bearing read only in the water reflection → the far-water destination WORD (answer_kind coords, INV-14); on-site read, not a cipher',
+  'sella-overlay-lake': 'two map-arts overlaid resolve to a shore X → the destination WORD (answer_kind coords, INV-14); comprehension, not a cipher',
+  'sella-shore-memorial': 'map-art forced-perspective bird-glyph seen from one anchor block (answer_kind behavior); stand-at-anchor detection, not a cipher',
+  // Orin (mason who would not bow):
+  'orin-bow-fall-order': 'ordered crouch-at-marker sequence in fall-order (answer_kind behavior); detected, not a cipher',
+  'orin-banner-heraldry': 'the mason-square banner sigil is the KEY that unlocks Orin’s EXISTING substitution stone (answer_kind phrase); key-delivery, not a new cipher',
+  'orin-frame-dials': 'six item-frame rotation dials matched to the markers’ facings (answer_kind code); a plugin-read rotation lock, not a cipher',
+  // Brann (watchman on the black moon):
+  'brann-black-moon-toll': 'a morse toll that rings only on the in-game black moon (answer_kind phrase, temporal-gated by the producer); the plaintext is foreshadowed, not a Discord cipher',
+  'brann-silence-corridor': 'a calibrated-sculk corridor passed in silence (answer_kind behavior); traversal detection, not a cipher',
+  // Iss (the liar):
+  'iss-which-is-true': 'cross-check the warm wall-doctrine against the land — a deduction (answer_kind phrase); derived contradiction, no own carving',
+  'iss-nbt-falsified-entry': 'a doctored record entry hidden in item NBT → a record-website path token the group corrects (answer_kind url_token); datamine/found-object, not a Discord cipher',
+  'iss-bound-word-callback': 're-submit the earned bound word at the deep gate (answer_kind phrase, a callback); recognition of an earned answer, not a new cipher',
+  // Cross-keeper / spine:
+  'spine-recovered-archive': 'a salvaged Drive folder + an audio-spectrogram name (answer_kind phrase); external research, not a Discord cipher',
+  'spine-threshold-vault': 'asymmetric co-op vault; per-player rune fragments assemble a combination (answer_kind code); a plugin illusion + vault, not a cipher',
+  'spine-spoken-name': 'the Observer Engine hears the spoken truth and quotes it back (answer_kind spoken); voice-scan token, not a cipher',
+  'spine-unkept-acrostic': 'the six maker’s-mark glyphs read in fall-order spell UNKEPT (answer_kind phrase); an in-world observation acrostic in the carved framing, not a bound cipher',
+  'spine-cold-hearth-shadow': 'notice the one cold hearth in a Hold where every fire is kept (answer_kind phrase); observation dead_end (the false walk), the world is the puzzle',
 };
 
 // ---------------------------------------------------------------------------

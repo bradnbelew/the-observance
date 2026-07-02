@@ -5,12 +5,14 @@ import com.observance.watcher.beats.BeatContext;
 import com.observance.watcher.beats.BeatPayload;
 import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
+import com.observance.watcher.util.PerPlayer;
 import com.observance.watcher.util.Placement;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Lightable;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +54,26 @@ import java.util.Locale;
  * }
  * }</pre>
  *
- * <p><b>Anti-jank.</b> Reveal-disciplined: every flip runs inside {@link #mutateWhenUnwitnessed} keyed on
- * the FIRST cell's block, so the change is discovered, never witnessed mutating. Idempotent two ways —
+ * <p><b>Two reveal modes — the co-located-group fix (MF-9).</b> The old model was global-only: every flip
+ * ran inside {@link #mutateWhenUnwitnessed}, which waits for an instant when NO player can see the block —
+ * an instant that never comes when the group is standing together at the slot, so the reveal simply never
+ * fired for a convened group (the whole point of a rite). This beat now has two modes:
+ * <ul>
+ *   <li><b>per-player illusion</b> (when the request carries a target player) — the flips are delivered as
+ *       CLIENT-ONLY {@code sendBlockChange} to that one player via {@link #privateRevealWhenUnwitnessed}
+ *       (the per-player half of the two-path reveal — the primitive now exists on {@link AbstractBeat}).
+ *       Fanned over a scene by {@link GroupBeat}, every member of a co-located group discovers the change
+ *       on their own client without anyone seeing it appear. The real world is never touched, so it is
+ *       reveal-safe by construction and needs no protection registry entry;</li>
+ *   <li><b>global world flip</b> (when there is no target — a site/world beat) — the original path: a real
+ *       block-state flip gated on {@link #mutateWhenUnwitnessed}, for solo / unattended reveals.</li>
+ * </ul>
+ * The showrunner picks the mode by targeting: a group rite enqueues a per-player {@code reveal} (or wraps
+ * it in a {@code group} beat); an unattended slot-lighting stays a world {@code reveal}.
+ *
+ * <p><b>Anti-jank.</b> Reveal-disciplined: in the world mode every flip runs inside {@link
+ * #mutateWhenUnwitnessed} keyed on the FIRST cell's block, so the change is discovered, never witnessed
+ * mutating; the per-player mode uses {@link #privateRevealWhenUnwitnessed} on the target. Idempotent two ways —
  * {@link AbstractBeat}'s in-process applied-set + the durable {@code beat_queue.status='fired'} guard the
  * row, and each flip is itself convergent (setting a block that is already the target material, or lighting
  * a lamp that is already lit, is a harmless re-apply). Bounded to {@value #MAX_CELLS} cells (a reveal is a
@@ -100,12 +120,27 @@ public final class RevealBeat extends AbstractBeat {
         final Block anchorBlock = anchor.getBlock();
         final boolean requireExisting = p.bool("require_existing", true);
 
-        // Reveal-disciplined: flip the whole set only when the FIRST cell is hidden. A reveal is small
-        // and local; one witness gate over the lead cell keeps the change unwitnessed without the cost of
-        // gating each cell independently (which could half-apply across retries).
         Flip lead = flips.get(0);
         Block leadBlock = anchorBlock.getRelative(lead.dx(), lead.dy(), lead.dz());
 
+        // PER-PLAYER illusion mode (co-located-group fix): a targeted reveal lands as a client-only
+        // sendBlockChange to that one player, gated on their own witness. The real world is untouched.
+        Player targetPlayer = target(req);
+        if (targetPlayer != null) {
+            privateRevealWhenUnwitnessed(ctx, targetPlayer, leadBlock, () -> {
+                for (Flip f : flips) {
+                    Block b = anchorBlock.getRelative(f.dx(), f.dy(), f.dz());
+                    if (!Placement.isWithinBuildRange(b.getWorld(), b.getY())) continue;
+                    applyClientFlip(targetPlayer, b, f, requireExisting);
+                }
+            });
+            return BeatResult.fired("reveal=" + flips.size() + " per-player");
+        }
+
+        // WORLD mode (solo / unattended): reveal-disciplined real flip. Flip the whole set only when the
+        // FIRST cell is hidden. A reveal is small and local; one witness gate over the lead cell keeps the
+        // change unwitnessed without the cost of gating each cell independently (which could half-apply
+        // across retries).
         mutateWhenUnwitnessed(ctx, leadBlock, () -> {
             for (Flip f : flips) {
                 Block b = anchorBlock.getRelative(f.dx(), f.dy(), f.dz());
@@ -114,6 +149,47 @@ public final class RevealBeat extends AbstractBeat {
             }
         });
         return BeatResult.fired("reveal=" + flips.size());
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Per-player client flip (illusion; the real world is untouched)     */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Deliver one flip as a CLIENT-ONLY block change to a single player. The real block never changes, so
+     * a co-located group can each discover the reveal privately (reveal-safe by construction). A {@code lit}
+     * flip is rendered by toggling the lit flag on the block's CURRENT data (so the client sees the same
+     * lamp lit/unlit); a {@code set}/{@code state} flip sends the authored material/data. MAIN thread;
+     * never throws (per-cell guarded — one bad cell never aborts the rest).
+     */
+    private static void applyClientFlip(Player pl, Block b, Flip f, boolean requireExisting) {
+        try {
+            switch (f.kind()) {
+                case SET -> {
+                    Material m = f.material();
+                    if (m == null) return;
+                    PerPlayer.fakeBlock(pl, b.getLocation(), m.createBlockData());
+                }
+                case LIT -> {
+                    if (requireExisting && b.getType().isAir()) return;
+                    BlockData bd = b.getBlockData();
+                    if (bd instanceof Lightable lightable) {
+                        boolean want = f.lit() != null && f.lit();
+                        lightable.setLit(want);
+                        PerPlayer.fakeBlock(pl, b.getLocation(), lightable);
+                    }
+                    // Non-lightable existing block → no-op (a 'lit' flip on stone is a misconfig, not a crash).
+                }
+                case STATE -> {
+                    BlockData data = f.data();
+                    if (data == null) return;
+                    if (requireExisting && b.getType().isAir() && data.getMaterial().isAir()) return;
+                    PerPlayer.fakeBlock(pl, b.getLocation(), data);
+                }
+            }
+        } catch (Throwable ignored) {
+            // One bad cell never aborts the rest — degrade that flip to a no-op.
+        }
     }
 
     /* ------------------------------------------------------------------ */

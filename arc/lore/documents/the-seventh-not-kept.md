@@ -11,6 +11,8 @@ reveals: []
 foreshadows:
   - "acceptance is a choice the land makes and can refuse (FACT 10)"
   - "the cast-out / kept-vs-left binary as the group's own possible fate"
+  - "the Seventh was refused, not spared — iss lied that it was mercy (v2 canon; the-seventh-below)"
+  - "the Seventh did not stay cast out — they came back down to wait on the ones who would mend the record (v2 reunion)"
 links_to:
   - what-the-surface-keeps
   - the-ways-are-a-wall
@@ -75,5 +77,6 @@ ask the question the six never had to ask.
       it has not yet said which we are.
 
 `[ below, scratched, not in the old script, in a hand that learned the letters late ]`
-` whatever it costs to be kept — the seventh was spared it. `
-` i do not know yet whether that is mercy. `
+` iss told us the seventh was spared whatever it costs. `
+` i believed him. i think i was wrong. a thing spared is let go gently. `
+` a thing refused is turned away at the door. those are not the same thing. `

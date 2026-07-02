@@ -6,7 +6,9 @@ import com.observance.watcher.beats.BeatPayload;
 import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
 import com.observance.watcher.util.PerPlayer;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 /**
  * OPTIONAL LATE-ARC GARNISH ({@code backlog-modeled-mob-and-voice} / D11, P3 — the Ear's reply half).
@@ -66,15 +68,41 @@ public final class SpatialVoiceBeat extends AbstractBeat {
         final String named = resolveClip(p.string("named_sound", null));
         final float volume = clampVol(p.floatValue("volume", 0.7f));
         final float pitch = clampPitch(p.floatValue("pitch", 1.0f));
+        final boolean behind = p.bool("behind", true);
+        final double offset = clampOffset(p.number("offset", 5.0));
 
-        // A named pack sound delivered to one player only — the permanent, plugin-free floor. A named
-        // (resource-pack) key has no Sound enum, so vanilla per-player audio can only play it at the
-        // player; the spatial "from behind/around you" read is therefore carried by the clip's own authored
-        // panning + the pitch/volume framing. The Simple Voice Chat go-live upgrade replaces this single
-        // line with a true positional voice source at the behind-offset point (computed from `offset`);
-        // until then the keeper line is private and never silent. MAIN thread.
-        PerPlayer.namedSound(pl, named, volume, pitch);
+        // A named pack sound delivered to one player only — the permanent, plugin-free floor. The spatial
+        // read is now REAL: vanilla client audio pans/attenuates a POSITIONED sound by the listener's
+        // facing, so playing the clip at a point a few blocks behind (or offset around) the player makes it
+        // seem to come from over there — "the dark said your word back from behind you". This actually uses
+        // the `behind`/`offset` params (previously ignored). A true Simple Voice Chat positional source is a
+        // later upgrade that would replace only the delivery point computed here; the beat's contract is
+        // unchanged and the line is never silent. MAIN thread.
+        Location at = voiceSpot(pl, behind, offset);
+        PerPlayer.namedSoundAt(pl, at, named, volume, pitch);
         return BeatResult.fired(named.equals(FALLBACK_NAMED_SOUND) ? "voice-fallback" : "voice");
+    }
+
+    /**
+     * The point the voice appears to come from: {@code offset} blocks BEHIND the player (opposite their
+     * look direction) when {@code behind}, else {@code offset} blocks IN FRONT. Horizontal only (we zero
+     * the Y component of the look vector) so the source hangs at ear height, never below the floor or up in
+     * the air. Falls back to the player's own location if the direction is degenerate (straight up/down).
+     */
+    static Location voiceSpot(Player pl, boolean behind, double offset) {
+        Location eye = pl.getEyeLocation();
+        if (eye.getWorld() == null) return pl.getLocation();
+        Vector dir = eye.getDirection().clone();
+        dir.setY(0);                                   // horizontal only — ear height, not underfoot/overhead
+        if (dir.lengthSquared() < 1.0e-6) return eye;  // looking straight up/down → play at the player
+        dir.normalize().multiply(behind ? -offset : offset);
+        return eye.clone().add(dir);
+    }
+
+    /** Keep the source close enough to read as "right behind you", not across the room. */
+    static double clampOffset(double v) {
+        if (Double.isNaN(v)) return 5.0;
+        return Math.max(0.5, Math.min(16.0, v));
     }
 
     /** A blank/missing clip name resolves to the permanent keeper-voice fallback (never silence). */
@@ -104,6 +132,11 @@ public final class SpatialVoiceBeat extends AbstractBeat {
         if (!"observance:keeper_voice.your_word".equals(resolveClip("observance:keeper_voice.your_word"))) return false;
         // Clamps stay in range / never NaN.
         if (clampVol(Float.NaN) != 0.7f) return false;
-        return clampPitch(99f) == 2f && clampPitch(0.1f) == 0.5f;
+        if (clampPitch(99f) != 2f || clampPitch(0.1f) != 0.5f) return false;
+        // Offset (the now-used spatial param) clamps to a "close behind you" range and never NaN.
+        if (clampOffset(Double.NaN) != 5.0) return false;
+        if (clampOffset(999.0) != 16.0) return false;
+        if (clampOffset(0.0) != 0.5) return false;
+        return clampOffset(5.0) == 5.0;
     }
 }

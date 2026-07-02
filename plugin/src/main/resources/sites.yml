@@ -316,6 +316,24 @@ sites:
     protect: true
     enabled: true
 
+  # The Threshold vault (design/PUZZLE-DESIGNS.md §8.2) — the asymmetric co-op vault (INTEGRATION
+  # signature #2). ThresholdVaultListener watches this site: each active player HERE is shown a
+  # different rune fragment of the combination via per-player showEntity; read aloud + combined, the
+  # fragments assemble the code, which the group types at the vault SIGN to post the opaque token and
+  # open the vault (fragments = puzzle, vault = payoff). The combination + quorum live in config.yml
+  # (puzzles.spine-threshold-vault); the seed carries only the opaque token. The listener keys off this
+  # site by its id containing "threshold_vault" (so it stays distinct from the IV→V coop_plate above).
+  # Convergence beat — needs quorum (effectiveQuorum). Coords null = UNPLACED (go-live), skipped safely.
+  threshold_vault:
+    type: "coop_plate"           # the per-player co-op gate family (assembled-combination window)
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    protect: true
+    enabled: true
+
   # The M1 teaching-stone — the one coordinated layout that carries the prologue marker glyph, the six
   # UNKEPT maker's-marks (read in fall-order), and the `kept here before you` plant (INTEGRATION-V2
   # B1/B4, coherence P2-4). IgnitionListener's lectern read also lives at the report lectern; this is the
@@ -500,3 +518,280 @@ sites:
     radius: 18                     # a vast exile-hold over the open End; markers face away
     protect: true
     enabled: false                 # GATED: stays off until the INV-16 binding is built (S10), else cut
+
+  # ==========================================================================
+  #  THE NON-TYPED PUZZLE DETECTION ANCHORS (design/PUZZLE-DESIGNS.md §2–§6).
+  #  Each is watched by its producer listener (registered in ObservancePlugin's
+  #  registerPuzzleProducers). Coords null = UNPLACED until the world is built;
+  #  an unplaced site is SILENTLY skipped (Site.contains → false), so every
+  #  producer is inert-but-safe until a builder sites it in-game (a go-live step).
+  #  ORDERED families encode fall-order in the trailing id digit (…_1 … …_6).
+  # ==========================================================================
+
+  # --- Orin: bow-in-fall-order markers (§5.1). Six markers; the trailing digit IS the
+  #     fall-order rank (1=Vaun … 6=Iss). OrderedBowListener watches type `orin_marker`.
+  orin_marker_1:
+    type: "orin_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+  orin_marker_2:
+    type: "orin_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+  orin_marker_3:
+    type: "orin_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+  orin_marker_4:
+    type: "orin_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+  orin_marker_5:
+    type: "orin_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+  orin_marker_6:
+    type: "orin_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+
+  # --- Mara: walk-the-map group marker (§3.2). GroupWalkListener watches `mara_map_marker`;
+  #     the active roster bows here together. Gated on mara_alcove_open (seed storylet gate).
+  mara_map_marker:
+    type: "mara_map_marker"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 4
+    protect: true
+    enabled: true
+
+  # --- Sella: shore-memorial vantage (§4.3). ShoreMemorialListener watches `sella_anchor`;
+  #     stand here + look down = "saw the bird". Gated on sella_overlay_read.
+  sella_anchor:
+    type: "sella_anchor"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+
+  # --- Vaun: the "given back" hoard chest (§2.1). HoardSortedListener watches `vaun_hoard_chest`;
+  #     deposit the first-of-the-deep + close = the offering made.
+  vaun_hoard_chest:
+    type: "vaun_hoard_chest"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+
+  # --- Mara: the lectern page-lock (§3.1). Five lecterns; trailing digit = the lectern index
+  #     (matched to puzzles.mara-lectern-lock.marked-pages by position). LecternLockListener.
+  mara_lectern_1:
+    type: "mara_lectern"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  mara_lectern_2:
+    type: "mara_lectern"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  mara_lectern_3:
+    type: "mara_lectern"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  mara_lectern_4:
+    type: "mara_lectern"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  mara_lectern_5:
+    type: "mara_lectern"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+
+  # --- Vaun: the chiseled-bookshelf tally (§2.2). One shelf block. BookshelfTallyListener
+  #     watches `vaun_bookshelf`; the 6-slot fill mask must match filled-slots. Gated on vaun_cache_open.
+  vaun_bookshelf:
+    type: "vaun_bookshelf"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+
+  # --- Orin: the six item-frame rotation dials (§5.3). Trailing digit = dial index (matched to
+  #     puzzles.orin-frame-dials.dial-rotations by position). FrameDialsListener. Gated on orin_bowed.
+  orin_frame_dial_1:
+    type: "orin_frame_dial"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  orin_frame_dial_2:
+    type: "orin_frame_dial"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  orin_frame_dial_3:
+    type: "orin_frame_dial"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  orin_frame_dial_4:
+    type: "orin_frame_dial"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  orin_frame_dial_5:
+    type: "orin_frame_dial"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+  orin_frame_dial_6:
+    type: "orin_frame_dial"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 2
+    vertical-radius: 2
+    protect: true
+    enabled: true
+
+  # --- Brann: the silence corridor endpoints (§6.2). Enter the START sneaking, reach the END
+  #     still silent = passed. SilenceCorridorListener watches both types.
+  brann_corridor_start:
+    type: "brann_corridor_start"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+  brann_corridor_end:
+    type: "brann_corridor_end"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 3
+    vertical-radius: 3
+    protect: true
+    enabled: true
+
+  # --- Brann: the black-moon toll tower (§6.1). BlackMoonTollListener plays the toll + sets the
+  #     temporal gate flag brann_toll_heard when a keeper lingers here on the black moon. The word
+  #     'awake' is then typed at a keeper-stone (this is the ONLY temporal-gated typed puzzle).
+  brann_toll_tower:
+    type: "brann_toll_tower"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 6
+    protect: true
+    enabled: true

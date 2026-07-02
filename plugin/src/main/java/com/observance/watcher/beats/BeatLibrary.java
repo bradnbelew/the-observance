@@ -5,23 +5,31 @@ import com.observance.watcher.beats.lib.AdvancementToastBeat;
 import com.observance.watcher.beats.lib.BookAppearsBeat;
 import com.observance.watcher.beats.lib.BossBarBeat;
 import com.observance.watcher.beats.lib.ChestArrangeBeat;
+import com.observance.watcher.beats.lib.ComposureBeat;
 import com.observance.watcher.beats.lib.DecayCreepBeat;
 import com.observance.watcher.beats.lib.DoorOpenBeat;
 import com.observance.watcher.beats.lib.FakeBlockBeat;
 import com.observance.watcher.beats.lib.GroupBeat;
+import com.observance.watcher.beats.lib.HintWhisperBeat;
 import com.observance.watcher.beats.lib.ItemRelabelBeat;
 import com.observance.watcher.beats.lib.ItemSwapBeat;
+import com.observance.watcher.beats.lib.KeeperNpcBeat;
 import com.observance.watcher.beats.lib.LecternFillBeat;
 import com.observance.watcher.beats.lib.MapMarkBeat;
+import com.observance.watcher.beats.lib.NameOnWallBeat;
 import com.observance.watcher.beats.lib.NamedMobBeat;
 import com.observance.watcher.beats.lib.PrivateDarknessBeat;
 import com.observance.watcher.beats.lib.PrivateMessageBeat;
 import com.observance.watcher.beats.lib.PrivateParticleBeat;
 import com.observance.watcher.beats.lib.PrivateSoundBeat;
 import com.observance.watcher.beats.lib.PrivateTimeShiftBeat;
+import com.observance.watcher.beats.lib.ReflectionBeat;
+import com.observance.watcher.beats.lib.RevealBeat;
+import com.observance.watcher.beats.lib.RoomSwapBeat;
 import com.observance.watcher.beats.lib.SacredAnimalBeat;
 import com.observance.watcher.beats.lib.SignWriteBeat;
 import com.observance.watcher.beats.lib.SmallStructureBeat;
+import com.observance.watcher.beats.lib.SpatialVoiceBeat;
 import com.observance.watcher.beats.lib.TorchGutterBeat;
 import com.observance.watcher.beats.lib.UnlockBeat;
 import com.observance.watcher.beats.lib.WhisperTollBeat;
@@ -70,9 +78,21 @@ public final class BeatLibrary {
         register(new DoorOpenBeat());
         register(new DecayCreepBeat());
         register(new SmallStructureBeat());
+        // PRODUCER TRIAD (design manifest): reveal (flip existing, per-player OR world) + room_swap
+        // (sealed-door + teleport-on-reentry) alongside small_structure (paste). Reworked to fire for
+        // co-located groups (reveal) / avoid in-place overwrite (room_swap) before registration (§10 fence).
+        register(new RevealBeat());
+        register(new RoomSwapBeat());
         // MOBS
         register(new NamedMobBeat());
         register(new SacredAnimalBeat());
+        // PERSONALIZED — the signature per-player illusion ("it knows ME")
+        register(new NameOnWallBeat());
+        // OBSERVER TIER-0 (BUILD-PLAN §13) — behavior-only "it knows you": a grounded implication line
+        // to one player, derived purely from their measured signals. AMBIENT (paced by the drama budget).
+        register(new ComposureBeat());
+        // PERSONALIZED — Sella's rune, legible only in water's reflection (INTEGRATION §SIGNATURE #7)
+        register(new ReflectionBeat());
         // SENSORY (per-player)
         register(new PrivateSoundBeat());
         register(new PrivateParticleBeat());
@@ -81,10 +101,17 @@ public final class BeatLibrary {
         register(new BossBarBeat());
         register(new FakeBlockBeat());
         register(new PrivateTimeShiftBeat());
+        // SENSORY (per-player) — the Ear's reply: a keeper voice clip spatialized behind the target.
+        register(new SpatialVoiceBeat());
         // ACK
         register(new AdvancementToastBeat());
         // DIRECTED specials (bot/dashboard enqueued)
         register(new WhisperTollBeat());
+        // DIRECTED — in-world hint delivery (findability): private whisper + optional floating note
+        register(new HintWhisperBeat());
+        // DIRECTED — the presiding Keeper / Wren speaks a resolved dialogue node to one player (the NPC
+        // dialogue path; WrenNpcListener + KeeperNpcListener enqueue this with bound lines). Safe + used.
+        register(new KeeperNpcBeat());
         register(new UnlockBeat(this));     // dispatcher — delegates to another beat type
         register(new GroupBeat(this));      // dispatcher — fans a delegate to every player in a scene (gather-events)
     }

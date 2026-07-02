@@ -403,6 +403,9 @@ function speakOutcome(type: OutcomeType, payload: OutcomePayload): string {
       return voice.oracleSideQuest();
     case 'oracleMainBeat':
       return voice.oracleMainBeat();
+    case 'oracleNoWallCatch':
+      // the Iss-seam: the catch's main_beat line + the callback into the Seventh quest.
+      return voice.oracleNoWallCatch();
     case 'oracleLore':
       return voice.oracleLore(loreFragment(payload));
     default:

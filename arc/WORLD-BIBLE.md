@@ -408,10 +408,20 @@ lane); the End shows vast still things and never moves while watched.
 
 **The way out (no new puzzle node).** Post-`seventh_named`, the `the_unwriting` chamber-2 wall
 gains **one extra effaced line** (a *reveal on the existing surface*, S9), legible only then:
-*they did not go down — the deep is keeping; they went out, to the door that is not a threshold.*
-It points at the vanilla End gateway *diegetically* (going out to where the unwritten go, never
-"go to the End" in plain words — the group decodes places in its own cosmology, R6). The
-**arrival** at the shrine is the only new row (`end-seventh-out`).
+*they went out before they came back down — out first to the door that is not a threshold, where
+the unwritten go.* It points at the vanilla End gateway *diegetically* (going out to where the
+unwritten go, never "go to the End" in plain words — the group decodes places in its own
+cosmology, R6). The **arrival** at the shrine is the only new row (`end-seventh-out`).
+
+> **v2 RECONCILIATION (2026-06-30) — the exile is the Seventh's PAST, not their place.** The shrine
+> and its carving (`the-name-i-cut-myself`) record where the Seventh was cast out *and waited* — and
+> the carving's later-cut layer now sends the reader back DOWN (*"look for me below"*). The Seventh is
+> the **one cast-out who did not stay out**: they went out, understood, and returned to the deep to
+> wait on the ones who would come to mend the record (the reunion, §1). So the End **completes the
+> story of the casting-out and points the group back to the deep** — it enriches the path to the
+> reunion and **never relocates the living Seventh out of the deep**. INV-12 still holds: skip the End
+> and the spine still reaches the deep; walk it and the reunion lands harder + the group learns *why*
+> the Seventh waits.
 
 > **Anchor discipline.** §12 adds **no new custom key, no new sealed FACT, no new INV** (both
 > lanes are *delivery bodies* for FACT 10/10b, 11, 12, 14/15 — `INTEGRATION-V2 A15`). It adds

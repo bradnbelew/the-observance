@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     // Paper API — provided by the server at runtime, so compileOnly.
-    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
 
     // Gson — Paper bundles Gson on its classpath, so compileOnly is enough to compile.
     compileOnly 'com.google.code.gson:gson:2.11.0'

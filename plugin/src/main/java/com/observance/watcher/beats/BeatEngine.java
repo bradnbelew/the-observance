@@ -56,6 +56,7 @@ public final class BeatEngine {
                     plugin.reveal(),
                     plugin.rateLimiter(),
                     protectedRegistry,
+                    plugin.lensRegistry(),
                     "observance");
 
             this.library = new BeatLibrary(plugin.safety());

@@ -450,6 +450,20 @@ export const archive: Record<string, string> = {
   // the pack-sound fallback line (when no voice layer) — the same fact, one short whisper.
   'keeperWhisper.fallback':
     'what is said is kept too. the record heard it.',
+
+  // -------------------------------------------------------------------------
+  // THE COMPANION — the found "kept close" tally (the-companion.md §6). The ONE
+  // in-fiction document Wren authors: not a journal, an inventory of the group.
+  // It surfaces ONLY post-reveal (thread_cards `kept-close`, gated on the reveal
+  // condition) — the proof no accusation could be. Wren's own SPOKEN lines are
+  // Set-A human speech and live in npcLines below; THIS is the record showing the
+  // find, so it holds the Watcher record register (lowercase, no exclaim). The
+  // Observer's sharp quotes were harvested here — this is where "it knows your
+  // name" is earned, not magic (§6 design note). Names no living player (INV-16);
+  // the tally IS the group's own words, shown back.
+  // -------------------------------------------------------------------------
+  cardKeptClose:
+    'a tally-book, soft with handling, the hand the same one that drew the safe path on the first night. it is not a journal. it is an inventory. of you. every page dated, the last entries today. the thing you said you would never do is written here. where you said you would go if it ever got bad is written here. the name you use only for each other is written here. he kept you close. this is what close was. the sharp things the dark knew of you were not known by the dark. they were carried down, one page at a time, in this hand.',
 };
 
 // ===========================================================================
@@ -603,6 +617,62 @@ export const npcLines: Record<string, string> = {
     'No. You don’t get that one. I carried it up alone so nobody else would have to carry it. Don’t you dare make me hand it to you.',
   'old-pell.bye':
     'Go on. I’ll be here. Where else.',
+
+  // --- WREN — the trusted companion (npc_key: wren) --------------------------
+  // the-companion.md. Set-A HUMAN speech, but a DISTINCT fingerprint from the five
+  // above: warm, present-tense, contraction-heavy, HEDGED, and deliberately lowercase
+  // (§3 — "uncertain and modern" where the keepers are certain and archaic). He
+  // under-claims, asks about YOU (the questions are the harvest, legible only in
+  // hindsight), and is never present when the Watcher manifests. His verbal tic is
+  // "stay close" — care in Trust, control at the Reveal, and the heading of his found
+  // tally ("kept close", cardKeptClose in the archive above). These lines are gated in
+  // the plugin/dialogue layer by the companion_* flags (companion_introduced →
+  // companion_trust → companion_revealed → reckoning_*), the PRODUCERS of which are
+  // plugin listeners not in this scope; here is the CONTENT they resolve to.
+
+  // M1–M2 · TRUST I–II (companion_introduced; companion_trust rises) — the one warm
+  // voice down here. Warns off a bad path, hands a true gift, asks a lot of gentle
+  // questions. The last clause of the care line is the harvest.
+  'wren.trust.meet':
+    'oh — hey. you’re new. real people, not the dark doing a voice. sorry, you get careful about that down here. i’m no one, honestly — just someone who’s been down here a while. stay close, would you. i lost people going off alone and i’m not doing that again.',
+  'wren.trust.warn':
+    'not that way. i mean it — not that way. i know it looks like the easy road. the easy road down here is how you lose someone. let me walk it with you, or don’t walk it. those are the two i’d pick.',
+  'wren.trust.gift':
+    'here. take it, it’s nothing, it’s just a spare — you’ll want it before i will. no, keep it. tell me where you’re headed and i’ll tell you what’s waiting. that’s the trade. it’s a good trade.',
+  'wren.trust.ask':
+    'so tell me about you lot. the real stuff. what you’d never do, where you’d go if it got bad, the name you only use for each other. no — i like knowing. it’s how i keep track of who to keep close.',
+  'wren.trust.absent':
+    'i stepped out — sorry — thought i heard something in the dark and went to check and it was nothing, it’s always nothing. you’re alright? good. i hate that i wasn’t just behind you. i’m always just behind you.',
+
+  // M3 · TRUST III + the first hairline crack — every warning is the cautious
+  // direction, always with a good reason, and the scares track what they told him.
+  'wren.crack.slow':
+    'not tonight. it’s a black moon — brann’s night, we wait, you don’t want to be moving under that. i know, i know, it’s always a reason with me. they’re good reasons. that’s the thing about me. the reasons are always good.',
+  'wren.crack.notice':
+    'you’re looking at me funny. that — okay. no, say it. you noticed it only ever knows the things you said out loud. near me. that’s. that’s a hard thing to have noticed. i’m not going to tell you you’re wrong.',
+
+  // M4 · THE REVEAL (companion_revealed; gated on iss_caught — the same lens that
+  // caught Iss turns on Wren). He does not deny the what. He denies the WHY — insists,
+  // to the end, that it was protection. The lie is in "safe".
+  'wren.reveal.yes':
+    'yes. all of it. from the first night. i fed it your names, your plans, the thing you said you’d never do — i fed it you. and i’d do it again. every time i handed it one of you it took me instead of you, for a night, and you’re all still here, aren’t you. still here. i kept you close. i kept you safe.',
+  'wren.reveal.tally':
+    'you found the book. yeah. that’s my hand. it’s not a journal — i know how it looks. it’s where i kept you. every page. i told myself it was so it would take me slow instead of taking you. that part’s even true. it’s just not the whole of the true.',
+
+  // M5 · THE RECKONING — three lines the group chooses to enter into the record about
+  // him (the same correct-the-record verb as the Seventh's quest). All hard: he was
+  // scared AND self-serving, and he will not clarify it for them.
+  'wren.reckoning.condemn':
+    'that’s — fair. write it. write me as what i did, a man who traded you to save himself. at least it’s true. the record can have that one true. stay cl—',
+  'wren.reckoning.understand':
+    'you’re not going to make it simple. scared and selfish, both, all of it, none of it crossed out. that’s the hardest one to write and you wrote it anyway. i don’t get to be a hero or a monster. i just get to be true. i can hold that. i think that’s the only thing i can hold.',
+  'wren.reckoning.free':
+    'oh. you’re not going to keep me either. neither one. you’re just going to — let go. i forgot that was a thing you could do to a person. it ends me, you know that, unfed i don’t hold together. but it ends me let go, not taken. thank you. i’m sorry. i wasn’t only lying.',
+
+  // async / dynamic-roster — a late joiner gets a Wren line (the reveal is one group
+  // event, quorum-free; §7 invariants).
+  'wren.roster.newhand':
+    'a new hand — good. more of you is better. stay close, all of you. that’s the only rule i’ve got and it’s the whole of what i know.',
 };
 
 // ===========================================================================

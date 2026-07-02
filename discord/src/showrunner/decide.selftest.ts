@@ -151,6 +151,51 @@ function snap(over: Partial<Snapshot> = {}): Snapshot {
   check('mixed pool → exactly one drip', d.drips.length === 1);
 }
 
+// 7e. AUDIT #7 (salience dead-air fix): after the forgeable ciphers are spent, a non-forgeable
+//    STORY-ADVANCING back-half node is surfaced (via apply.ts's in-world report line) so a pointer
+//    keeps flowing — no dead-air cliff. It carries forgeable=false, so apply.ts routes it to the
+//    report line, not a forged card.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      // The live back-half spine after Movement II: all non-forgeable, but movers.
+      puzzle({ puzzleKey: 'undercroft-descent', movement: 3, outcomeType: 'main_beat', forgeable: false }),
+      puzzle({ puzzleKey: 'seventh-shrine', movement: 3, outcomeType: 'side_quest', forgeable: false }),
+    ],
+  }));
+  check('back-half: non-forgeable mover is surfaced (dead-air fix)', d.drips.length === 1);
+  check('back-half: prefers the story-advancing main_beat', d.drips[0]?.puzzleKey === 'undercroft-descent');
+  check('back-half: dripped node carries forgeable=false (routes to report line)', d.drips[0]?.forgeable === false);
+}
+
+// 7f. AUDIT #7 guardrail: a non-forgeable TERMINAL row (lore/dead_end found-document) is STILL never
+//    dripped even when it is the only open row — a report line about it would point at a thread that
+//    opens nothing. Pool empty → no drip, "pool empty" note.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      puzzle({ puzzleKey: 'undercroft-fog', movement: 3, outcomeType: 'lore', forgeable: false }),
+      puzzle({ puzzleKey: 'name-where', movement: 2, outcomeType: 'dead_end', forgeable: false }),
+    ],
+  }));
+  check('back-half: terminal non-forgeable rows never drip', d.drips.length === 0);
+  check('back-half: empty pool leaves a note', d.notes.some((n) => n.includes('no forgeable or story-advancing')));
+}
+
+// 7g. AUDIT #7: within the SAME story-shape rank, a forgeable card beats a non-forgeable report-line
+//    node (better player experience), regardless of key/movement order.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      // both next_clue (rank 0); the non-forgeable one sorts earlier by key + lower movement, but the
+      // forgeable card must still win the tiebreak.
+      puzzle({ puzzleKey: 'aaa-report-node', movement: 2, outcomeType: 'next_clue', forgeable: false }),
+      puzzle({ puzzleKey: 'stone-mara', movement: 3, outcomeType: 'next_clue', forgeable: true }),
+    ],
+  }));
+  check('same rank → forgeable card preferred over report line', d.drips[0]?.puzzleKey === 'stone-mara');
+}
+
 // 8. AUTO mode → drip not staged.
 {
   const d = decide(snap({ mode: 'auto', openPuzzles: [puzzle()] }));

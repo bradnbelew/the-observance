@@ -285,6 +285,20 @@ export const voice = {
   },
 
   /**
+   * no-wall-catch — the ISS-SEAM (the-seventh-below.md REWRITE SPEC). main_beat-class,
+   * its own line: the base turn PLUS the one callback that wires the solved wall-lie into
+   * the Seventh's main quest. Catching that a warm, plausible account can be false and the
+   * truth is in the record is the SAME lens the Seventh's quest needs — so the catch also
+   * re-opens his lie about the one cast out for nothing (the surface-seventh-marker thread,
+   * re-opened by the thread_cards edge on this solve). Routed to `no-wall-catch` via
+   * metapuzzle_seed.sql's payload UPDATE (voice_key), so puzzles_seed.sql is untouched and
+   * the base main_beat line is preserved, with the seam appended.
+   */
+  oracleNoWallCatch(): string {
+    return `${this.oracleMainBeat()} he lied about the wall. ask what else he told you warmly. ask who he said was cast out for nothing.`;
+  },
+
+  /**
    * three_hands (A6 `cross-surface-coop-gate`) — the coop gate clears: foot on the plate + carve +
    * discord, three acts in one window, active-only. main_beat-class, but its own line. De-slopped
    * per slop A4 (objects do not "remember three") + BUILD-MANIFEST §4: flat, a count and a state.
@@ -364,70 +378,70 @@ export const voice = {
   },
 
   // M3 — the row moves UNDER a keeper heading (the first "oh—"). Per-keeper fingerprint.
-  /** vaun: accumulates, will not release; the possessive recurs. */
+  /** vaun: accumulates, will not release; the possessive recurs. (re-valenced: recognized, not consumed) */
   keeperPageHeading_vaun(name: string): string {
-    return `under vaun. the one called ${name} keeps, and keeps, and the keeping is theirs, and what is theirs is not given back. the column for giving-back stands open under their name as it stood open under his.`;
+    return `under vaun. the one called ${name} keeps, and keeps, and vaun knew that keeping, and names it where he sees it. the column for giving-back stands open under their name the way it stood open under his — not held against them, held beside them.`;
   },
-  /** mara: referential and deferred; page/line citations. */
+  /** mara: referential and deferred; page/line citations. (re-valenced: recognized, not consumed) */
   keeperPageHeading_mara(name: string): string {
-    return `under mara. the one called ${name} reads the way down, and reads it again, page to page; i read that they read, and did not yet walk it.`;
+    return `under mara. the one called ${name} reads the way down, and reads it again, page to page; mara knew that reading, page to page, and names them by it — the reading that stands in for the going, and holds the going off a while longer.`;
   },
-  /** sella: mirrored and receding; folds back spatially; child-adjacent. */
+  /** sella: mirrored and receding; folds back spatially; child-adjacent. (re-valenced: recognized, not consumed) */
   keeperPageHeading_sella(name: string): string {
-    return `under sella. the one called ${name} goes to the far edge and the edge gives them back smaller, and smaller, the way the water gives a face back wrong.`;
+    return `under sella. the one called ${name} goes to the far edge, and the edge gives them back smaller, and smaller; sella went to that same edge and was given back small, and knows the look of it, and names it — the water does not keep them, it only shows them the way it showed her.`;
   },
-  /** orin: breaks off, will not finish; incomplete strokes. */
+  /** orin: breaks off, will not finish; incomplete strokes. (re-valenced: recognized, not consumed) */
   keeperPageHeading_orin(name: string): string {
-    return `under orin. the one called ${name} passes the markers and does not stoop, and the stroke for the stooping is begun and not — `;
+    return `under orin. the one called ${name} passes the markers and does not stoop, and orin knew that not-stooping, and set the stroke for it himself, and the stroke is begun and not — `;
   },
-  /** brann: repeats and over-corrects; counts and re-counts. */
+  /** brann: repeats and over-corrects; counts and re-counts. (re-valenced: recognized, not consumed) */
   keeperPageHeading_brann(name: string): string {
-    return `under brann. the one called ${name} keeps the watch, keeps the watch, on the black moon, and counts the dark twice and is not sure of the count, and counts it again.`;
+    return `under brann. the one called ${name} keeps the watch, keeps the watch, on the black moon; brann kept that watch, kept that watch, and knows it when he sees it, and names them by it, and counts the naming twice to be sure, and counts it again.`;
   },
-  /** iss: warm, plain, confident; the only keeper who reassures; frames, never counts. */
+  /** iss: warm, plain, confident; the only keeper who reassures; frames, never counts. (re-valenced: recognized, not consumed) */
   keeperPageHeading_iss(name: string): string {
-    return `under iss. the one called ${name} is told the way is a wall and is easy inside it. there is no count under this heading. there was never a count.`;
+    return `under iss. iss sees the ease in the one called ${name}, and names it warmly, and tells them the way is a wall and they are safe inside it. there is no count under this heading. there was never a count. that was the kindness, and it was the lie.`;
   },
 
   // M4 — the keeper's OWN hand writes the living player. The optional LLM scalpel may
   // replace the *.clause slot (resolveAuthorClause); these are the deterministic page body
   // and the deterministic clause behind it. Both hold the fingerprint.
   keeperPageHand_vaun(name: string): string {
-    return `i, vaun, write the one called ${name} into my column, and they are mine to enter, and i do not strike the column, i am instructed not to strike it.`;
+    return `i, vaun, see the keeping in the one called ${name} — the holding-on i knew — and i name it, and naming is not the same as keeping them. the column is open under their name the way it was open under mine, and i do not strike it, and it is not held against them.`;
   },
   /** the constrained clause the scalpel may replace in-register, or this stands (vaun). */
   'keeperPageHand_vaun.clause'(): string {
-    return 'mine to enter, and not given back';
+    return 'seen, and named, and the column left open beside them';
   },
   keeperPageHand_mara(name: string): string {
-    return `i, mara, write that the one called ${name} read the rite i read, on the page i read it, and went down the way i never went.`;
+    return `i, mara, see in the one called ${name} the rite i read, on the page i read it, and i name them by it — and they went down the way i never went. the page was never the going. i knew that better than any of them, and i name it, and i do not hold them to the page.`;
   },
   'keeperPageHand_mara.clause'(): string {
-    return 'read the way down, as i read it, and walked where i did not';
+    return 'seen in the reading i knew, and named, and not held to the page';
   },
   keeperPageHand_sella(name: string): string {
-    return `i, sella, write the one called ${name} at the shore, and the shore writes them back at me, smaller, where the water keeps the ones it kept.`;
+    return `i, sella, see the one called ${name} at the shore, and the shore gives them back at me, smaller, the way it gave me back; i knew that shore, and i name them by it, and the water does not keep them — it only shows them small, as it showed me.`;
   },
   'keeperPageHand_sella.clause'(): string {
-    return 'at the far shore, given back smaller';
+    return 'seen at the far shore i knew, given back smaller, not kept';
   },
   keeperPageHand_orin(name: string): string {
-    return `i, orin, set the one called ${name} at the threshold and meant to cut the rest and the rest is not — `;
+    return `i, orin, see the one called ${name} at the threshold, the not-stooping i knew, and i name it, and i meant to cut the rest myself and the rest is not — `;
   },
   'keeperPageHand_orin.clause'(): string {
-    return 'set at the threshold, the stroke unfinished';
+    return 'seen at the threshold i knew, named, the stroke unfinished';
   },
   keeperPageHand_brann(name: string): string {
-    return `i, brann, write the one called ${name} into the watch, into the watch, and the hand wrote them twice and did not remember writing it once.`;
+    return `i, brann, see the one called ${name} in the watch, in the watch, the keeping i kept, and i name it, and i name it again to be sure, and the hand named them twice and did not remember naming it once.`;
   },
   'keeperPageHand_brann.clause'(): string {
-    return 'entered in the watch, and entered again';
+    return 'seen in the watch i kept, named, and named again';
   },
   keeperPageHand_iss(name: string): string {
-    return `i write the one called ${name} and i tell them they are kept, and i do not count them, and the not-counting is the lie i was caught in.`;
+    return `i see the one called ${name}, and i name them warmly, and i tell them they are kept — and i do not count them, and the not-counting was the kindness, and the kindness was the lie i was caught in.`;
   },
   'keeperPageHand_iss.clause'(): string {
-    return 'told they are kept, and never counted';
+    return 'seen, named warmly, told they are kept, and never counted';
   },
 
   /** M5 — the book's last page rewrites to the record's flat closing hand (WEB-MASTER §1.M5). */
@@ -480,7 +494,7 @@ export const voice = {
 
   /** restore — the group completed the unwriting's undoing; the seventh's name is set back. */
   keeperCloseSeventhRestored(): string {
-    return 'the name that was cut out is cut back in. the hearth below the cold hearth is lit again. one that broke nothing is kept, late.';
+    return 'the name that was cut out is read back in, in your voices, not to replace her but so she can hear it. she is down there. she kept every way, and she is not where the record left her.';
   },
   /** erase — the group completed the erasure; the wall stays blank. */
   keeperCloseSeventhErased(): string {
@@ -527,7 +541,7 @@ export const voice = {
   },
   /** the grave opens from the inside on its date (== the Accepting instant): KEPT — NOT YET → KEPT. */
   graveOpened(name: string): string {
-    return `the stone for the one called ${name} is opened from the inside. the date was not a death. it was an appointment. the hole is the deposit slot.`;
+    return `the stone for the one called ${name} opens from the inside. the date was not a death. it was an appointment, and the one who set it has been waiting longer than you have been alive.`;
   },
   /** the private receipt — handed to the one whose name was read first (de-slopped per slop A1). */
   graveReceipt(name: string): string {
@@ -627,6 +641,7 @@ export type OracleVoiceKey =
   | 'oracleDeadEnd'
   | 'oracleSideQuest'
   | 'oracleMainBeat'
+  | 'oracleNoWallCatch' // the Iss-seam catch line (routed via metapuzzle_seed.sql payload UPDATE)
   // web-realization oracle keys named by puzzles_seed.sql `outcome_payload.voice_key`:
   | 'oracleThreeHands' // A6 coop gate (fixed)
   | 'oracleMetaUnkept' // B1 the UNKEPT meta (fragment passthrough)

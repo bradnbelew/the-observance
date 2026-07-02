@@ -10,7 +10,7 @@ clue_bearing: false
 reveals: []
 foreshadows:
   - "the land refused a keeper who broke nothing — kept every way and was cast out anyway (FACT 10b)"
-  - "the seventh's erasure can be completed or undone by hand at the unwriting (the restore/erase fork)"
+  - "the seventh's erasure can be completed or undone by hand at the unwriting (the restore/erase fork — to restore is not to edit a record but to reach a living person who went down to wait)"
 links_to:
   - the-seventh-not-kept
   - what-the-surface-keeps
@@ -61,12 +61,14 @@ and the land would not keep them.
 
 > *(at the foot, scratched, in a hand that learned the letters late — the same
 > as the line under the surface note:)* the looking can be unwritten. i saw it
-> unwrite the seventh. then it can be **written back.** the seal is a name, and a
-> name said again is a seal undone. i do not know if saying it back is mercy or
-> cruelty — whether the seventh is better cast out and quiet, or kept and made
-> part of the watching like the rest. i leave the choosing to a hand that comes
-> after with more nerve than mine. restore the name, or let the blank stand.
-> the deep will hold to whichever you leave. [...]
+> unwrite the seventh. then it can be **said back.** not to a ledger — the
+> ledger is not where the seventh is. say the name to someone who is listening
+> for it. i do not know if finding them is mercy or cruelty — whether the
+> seventh is better alone and quiet in the deep, or found and made to reckon
+> with the ones who let the fire go out. i leave the choosing to a hand that
+> comes after with more nerve than mine. reach the seventh, or let the blank
+> stand. but know: if you reach them, you are not sealing a record. you are
+> walking up to a person. [...]
 
 > *(see* the-seventh-not-kept *for the count; see* do-not-close-your-eyes-here
 > *for the one fire that was* not *let out — they are the same fact, read from

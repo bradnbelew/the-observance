@@ -77,6 +77,20 @@ public final class SitesConfig {
         return new SitesConfig(Collections.emptyMap(), "world", Collections.emptyList());
     }
 
+    /**
+     * Returns a NEW snapshot with {@code site} added (or replacing an existing site of the same id).
+     * Immutable-copy semantics: this config is unchanged. Used for runtime site registration (e.g. the
+     * {@code /observance placeroom} admin command) — the added site lives in memory only and does NOT
+     * survive a reload/restart, because {@link #from} rebuilds solely from sites.yml. Null-safe: a null
+     * site yields the same logical config.
+     */
+    public SitesConfig withSite(Site site) {
+        if (site == null) return this;
+        Map<String, Site> next = new LinkedHashMap<>(byId);
+        next.put(site.id(), site);
+        return new SitesConfig(next, defaultWorld, warnings);
+    }
+
     /** A site by id, or null. */
     public Site get(String id) {
         return id == null ? null : byId.get(id);

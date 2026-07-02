@@ -109,9 +109,11 @@ values
     array['happened-no-wall','surface-iss-was-right'], 'iss-warm', null, 20 ),
 
   -- ← CONTRADICTS happened-ways-are-wall (the catch that overturns the doctrine)
+  -- THE ISS-SEAM: this catch also re-opens surface-seventh-marker (cited here) — overturning
+  -- the wall-lie overturns "cast out for nothing" (the-seventh-below.md REWRITE SPEC).
   ( 'happened-no-wall', 'happened', 'no wall was ever built here', 'cardHappenedNoWall',
     'stone_iss', 'explore',
-    array['happened-ways-are-wall','surface-iss-was-right','human-they-were-kept'], 'no-wall-catch', null, 30 ),
+    array['happened-ways-are-wall','surface-iss-was-right','human-they-were-kept','surface-seventh-marker'], 'no-wall-catch', null, 30 ),
 
   -- the Break hub: points at three accounts that cannot all be true
   ( 'happened-the-break', 'happened', 'the break', 'cardHappenedTheBreak',
@@ -171,9 +173,15 @@ values
     array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 60 ),
 
   -- ← CONTRADICTS the official "six markers" count (Sella's count against the record's)
+  -- THE ISS-SEAM (the-seventh-below.md REWRITE SPEC "Iss-seam"): catching Iss's wall-lie
+  -- (the happened-no-wall solve) RE-OPENS this Seventh-marker card — the same lens that
+  -- overturns "the ways are a wall" overturns "cast out for nothing", wiring the solved
+  -- catch into the Seventh's main quest. The edge is the added happened-no-wall citation +
+  -- alt_text_condition 'reopened:no-wall-catch' (the re-surface trigger; the primary
+  -- revealed_by_solve 'seventh-shrine' is kept so the first surfacing is unchanged).
   ( 'surface-seventh-marker', 'surface', 'the last marker is not the last', 'cardSurfaceSeventhMarker',
     'the_far_water', 'explore',
-    array['who-sella-token','surface-wenna-folk','human-names-over-heads'], 'seventh-shrine', null, 70 ),
+    array['who-sella-token','surface-wenna-folk','human-names-over-heads','happened-no-wall'], 'seventh-shrine', 'reopened:no-wall-catch', 70 ),
 
   -- ========================================================================
   -- THREAD: human — were they human?  (black)
@@ -273,7 +281,26 @@ values
   -- group finds the path). References the founder archivists card. Solve-gated on record-url.
   ( 'surface-record-elsewhere', 'surface', 'the record is kept elsewhere', 'cardSurfaceRecordElsewhere',
     'first_report_lectern_01', 'explore',
-    array['surface-watcher-counts','human-the-record-opens'], 'record-url', null, 90 )
+    array['surface-watcher-counts','human-the-record-opens'], 'record-url', null, 90 ),
+
+  -- ========================================================================
+  -- THE COMPANION — the found "kept close" tally (the-companion.md §6). Wren's ONE
+  -- authored artifact: an inventory of the group in his own hand, the proof no
+  -- accusation could be. It CANNOT be found during Trust (he carries it) — it
+  -- surfaces ONLY post-reveal, so it is NOT solve-gated (revealed_by_solve null) and
+  -- carries alt_text_condition 'companion:revealed' (the reveal event, one group
+  -- flag, quorum-free — companion_revealed). It retroactively explains the Observer's
+  -- precision (the sharp quotes were harvested here, not magic; §6 design note), so
+  -- it clusters under 'human' (the fourth face of "kept" — kept-in-part, a person
+  -- holding his edges together with other people's names). card_kind 'verified'
+  -- (event-revealed at the reveal, like the gather cards). References the record-
+  -- knows-your-name card (surface-watcher-counts — the north-star it earns) + the
+  -- open-column card (human-the-record-opens). body_voice_key cardKeptClose is the
+  -- Watcher-register archive body defined in voice.archive.ts. Anchored at the cold
+  -- hearth (the dead-shrine surface — where a warm liar's proof is dropped).
+  ( 'kept-close', 'human', 'kept close', 'cardKeptClose',
+    'the_cold_hearth', 'verified',
+    array['surface-watcher-counts','human-the-record-opens'], null, 'companion:revealed', 130 )
 
 on conflict (card_key) do nothing;
 

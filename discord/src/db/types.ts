@@ -96,6 +96,23 @@ export type OutcomeType =
   | 'main_beat';
 
 /**
+ * The answer modality (0007_answer_kind.sql; design/PUZZLE-DESIGNS.md §1). `phrase`
+ * (the default) / `coords` / `url_token` are TYPED and matched by the resolver against
+ * accepted_answers; `code` / `behavior` / `object` / `spoken` are PLUGIN-produced (a
+ * listener posts the opaque sentinel token or sets the flag directly — no new resolver
+ * branch); `none` is a comprehension beat with nothing to submit.
+ */
+export type AnswerKind =
+  | 'phrase'
+  | 'coords'
+  | 'url_token'
+  | 'code'
+  | 'behavior'
+  | 'object'
+  | 'spoken'
+  | 'none';
+
+/**
  * The in-world reward an outcome may enqueue. Mirrors the beat_queue row shape
  * the plugin reads (mc_uuid / site_id / priority / payload). `mc_uuid` may carry
  * the literal "{solver}" placeholder, resolved to the solving player's uuid at
@@ -144,6 +161,18 @@ export interface Puzzle {
   active: boolean;
   /** per-puzzle attempt cap, or null for no per-puzzle cap. */
   max_attempts: number | null;
+  /**
+   * The answer modality (0007_answer_kind.sql; design/PUZZLE-DESIGNS.md §1). One of
+   * `phrase | coords | url_token | code | behavior | object | spoken | none`.
+   * DECLARATIVE metadata: `phrase`/`coords`/`url_token` are typed and matched by the
+   * resolver against {@link accepted_answers}; `code`/`behavior`/`object`/`spoken` are
+   * produced by an in-world plugin listener (which posts the opaque sentinel token or sets
+   * the flag directly), so the resolver needs NO new branch; `none` is a comprehension
+   * beat. Optional here because `getOpenPuzzles` does not select it (the resolver never
+   * reads it) — it defaults to `'phrase'` in the DB and is loaded only where explicitly
+   * queried. Widened to `string` so a future kind never breaks the type.
+   */
+  answer_kind?: AnswerKind | (string & {});
   /**
    * The storylet gate (0006_requires_flags.sql; OVERHAUL.md §3). A flat
    * `{ flag_key: true }` object; the row is OPEN iff `active` AND every key here is

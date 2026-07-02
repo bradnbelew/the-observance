@@ -73,7 +73,7 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
 
                   {pending ? (
                     <div className="flex items-center gap-2">
-                      <form action={approveBeat}>
+                      <form action={async (fd: FormData) => { await approveBeat(fd); }}>
                         <input type="hidden" name="id" value={beat.id} />
                         <button
                           type="submit"
@@ -82,7 +82,7 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
                           Approve
                         </button>
                       </form>
-                      <form action={forceBeat}>
+                      <form action={async (fd: FormData) => { await forceBeat(fd); }}>
                         <input type="hidden" name="id" value={beat.id} />
                         <button
                           type="submit"
@@ -91,7 +91,7 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
                           Force
                         </button>
                       </form>
-                      <form action={skipBeat}>
+                      <form action={async (fd: FormData) => { await skipBeat(fd); }}>
                         <input type="hidden" name="id" value={beat.id} />
                         <button
                           type="submit"

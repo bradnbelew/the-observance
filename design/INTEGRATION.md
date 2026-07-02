@@ -41,6 +41,22 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
 - ⬜ **Functions / predicates** — scripted micro-sequences (tellraw/particle/sound/structure-load)
   with no plugin code; cheap scares + lore reveals. 👻🗺️
 - ⬜ **Custom recipes / loot** — craft a keeper-token or the Lens; "recovered" loot in structures. 🧩🗺️
+- ⬜ **`/place structure` + jigsaw** — force-place load-bearing vanilla structures (ancient city /
+  trial chamber / village) at known coords via datapack `/place structure` or seed-select + `/locate`;
+  use vanilla jigsaw system for modular set-piece assembly. Precision sites go here, not to
+  vanilla-gen randomness. 🗺️⚙️
+- ⬜ **Vanilla structures re-dressed (A12).** Use natural Minecraft generation for the world's bones,
+  re-dressed additively so it reads as ours — by CODE (the A11 dresser pass), never by hand:
+  - **Ancient City (deep dark) = the Undercroft / keeper-stone sites** — a built-then-abandoned
+    civilization drowned in sculk; plugs directly into A10 (sculk = Watcher's sense) and licenses
+    a legitimately-placed Warden as ambient dread (gated so it can't wipe a convergence beat).
+  - **Trial Chamber vault (1.21) = the asymmetric co-op vault** — per-player keys are vanilla
+    behavior; the vault backs the Threshold with near-zero plugin overhead.
+  - **Village = surface town** (Aro/Wenna/Dob/Pell) — dressed + Citizens2 townsfolk.
+  - **Mineshaft / stronghold / ruined portal / ocean ruins** = "recovered ruins" lore anchors.
+  Division of labor: vanilla-gen for connective tissue + dread-texture + the vault; code-placed
+  (A11) for load-bearing precision puzzles (never leave a comparator-read bookshelf lock to raw
+  generation). Veterans recognize raw vanilla → always apply the dresser pass. 🗺️🌌
 
 ## LAYER 3 — PLUGIN (Paper — the reactive engine) — *core built, signature features TODO*
 
@@ -49,6 +65,16 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
 - ◑ **Per-player illusion primitives** — `fakeBlock`/`isHiddenFrom` built; **ADD `showEntity`
   (per-player entity visibility), per-player packet light (dims when watched), per-player fog.** 👻🧩🌌
   *The "it knows ME" feel + the asymmetric co-op vault depend on these.*
+- ⬜ **Display + Interaction entities — the illusion backbone.** `text_display` / `block_display` /
+  `item_display` (packet, per-player, transform-animated) for floating runes, block-built faces /
+  figures, glitch-corruption text, "the thing in the trees" one player sees. **Interaction entities**
+  for clickable diegetic buttons / NPC surfaces without Citizens. These replace the CUT ModelEngine
+  bestiary illusion — the bestiary *lore* is salvaged into vanilla-reskin + display apparitions.
+  The FAWE async bug (below) must be fixed before these can be pasted reliably. 👻🧩🌌
+- ⬜ **Composure signal (Observer Tier 0).** A per-player behavior accumulator: time in dark, recent
+  damage, alone-vs-grouped, hoarding one item, revisiting one block. The Watcher speaks in
+  *implication* grounded in this signal with zero chat/voice/LLM. Extends the existing Attention
+  layer. "Behavior-heard" variant of PUZZLES §1 voice-heard. 👻🧑
 - ⬜ **Asymmetric co-op controller** — partitions clue-fragments over the **active roster** at
   solve-time (dynamic-N), shows each player their piece via `showEntity`. 🧩🌌
 - ⬜ **The Observer Engine** — in-game chat (`ChatListener` ✅) + Discord text + Discord **voice
@@ -60,16 +86,34 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
   the in-game face of the website. 📖🔗
 - ⬜ **Behavior-answer listeners** — bow-in-order, build-an-answer, walk-a-rune, hold-a-sequence,
   coords-arrival (extends `CustomComplianceListener`/`TerritoryListener`). 🧩 (PUZZLES §4)
+- ⬜ **A3 Minecraft-native listeners** — sculk-corridor silence detector, villager-trade oracle
+  watcher, item-frame dial reader, bookshelf-register comparator reader, NBT item inspector. 🧩
 - ⬜ **The missing flag producers** — Ignition/CoopPlate/SeventhChoice/UnlitDeep (the arc can't start
   without Ignition; `/obs flag` ✅ proves gating meanwhile). 🧩📖
 - ⬜ **Desire-paths** — read `heatmap_cells` (✅ tracked) → place a worn path / the future-dated grave
   on a player's most-walked route. 👻🗺️ ([backlog](ideas/backlog-desire-paths.md))
-- ◑ **NPC framework** — `KeeperNpcBeat`/`Listener` exist (PDC-tag, no Citizens); `npcVoice.ts`
-  stub. Decide Citizens2 vs vanilla-PDC; place Aro/Wenna/Dob/Pell. 🧑🗺️
+- ◑ **NPC framework — D4 hybrid (resolved 2026-06-30).** Citizens2 for human-passing NPCs (the
+  companion Wren; surface townsfolk Aro/Wenna/Dob/Pell). Vanilla-uncanny (armor-stand / display +
+  PDC + Interaction entity) for non-human / uncanny (the six keepers, apparitions, the Watcher,
+  statue-things). `KeeperNpcBeat`/`Listener` (PDC-tag) stay for the keeper layer. Citizens2 version
+  must be pinned against the same Paper 1.21.x as the rest (D5). 🧑🗺️
+- ⬜ **Director structure-generation system (D7w/A11).** Two code-driven sources only — no hand-
+  building by Ethan required: **(a) Vanilla-gen dresser:** the plugin overlays runes/carvings/decay/
+  lore onto located vanilla structures additively (never overwrites). **(b) Procedural code-gen:**
+  the director builds primitives (keeper stone, cairn, answer lectern, plate) AND set-pieces
+  (reflection room, bookshelf-register room, threshold) from block templates + modular jigsaw pieces
+  assembled by code. A **`/observance survey` / `site set`** command captures coords by walking-and-
+  clicking. Schematic-stamp (FAWE) is available if Ethan opts to author a piece, but is never
+  required. **R&D sub-task (quality):** learn cohesive procedural building — tight block palette,
+  strict lighting (dark default, light earned), decay/wear passes, symmetry + modular jigsaw, rule-
+  placed "wrongness" details, FAWE relight after every write. Without this craft, the zero-manual
+  world looks generic. Validate in Playtest 1. 🗺️⚙️
 - ⬜ **Reflection / display puzzles** — `TextDisplay`/`BlockDisplay`/`ItemDisplay` beats (none exist):
   floating runes, looming player-head faces, mirrored carvings. 🧩👻🌌
 - ◑ **RoomSwap → teleport** — rework from in-place mutation to sealed-door + teleport-on-reentry. 👻
-- ◑ **FAWE paster → async** — currently main-thread (tick-stall bug); wrap async + relight. ⚙️
+- ◑ **FAWE paster → async** — currently main-thread (tick-stall bug); wrap async + `fastMode(true)`
+  + `changeSetNull()` + relight. **Must be fixed before display-entity pastes or any dresser pass.**
+  ⚙️
 
 ## LAYER 4 — COMMAND-TIER (cheap, high-leverage, no new systems)
 
@@ -80,8 +124,22 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
 
 ## LAYER 5 — EXTERNAL / CROSS-SURFACE (the ARG "leaves the game")
 
-- ⬜ **The record website** (reframed Vercel app) — discover-by-URL, ledger fills with their names,
-  **write answers INTO it**, redactions lift with progress. 📖🔗🧩 *(primary out-of-game surface).*
+> **Cohesion doctrine: one artifact, many windows.** The record website, the hint rail, the
+> Discord artifact-leak, and the Iss falsified entries are all the SAME recovered-system artifact
+> bleeding through different surfaces. The `hints` table is the single source; render it in-world
+> AND on the website; ensure they don't double-deliver or desync. The Discord bot drops the *same
+> system's echoes* into the friends' comms — not a separate game channel.
+
+- ⬜ **The record website** (reframed Vercel app) — a **half-corrupted archive terminal of the
+  Hold's own record-keeping**: degraded, half-redacted, entries out of order, integrity warnings.
+  Discover-by-URL; ledger fills with names; **write answers INTO it**; redactions lift with flags;
+  hint rail rendered as "error log / integrity checker" (same `hints` table as in-world whispers).
+  Security: RLS / edge-function read path ONLY — never the service key in the browser. 📖🔗🧩
+- ⬜ **Discord — haunted surface (D1, A9, Phase D).** The bot drops **corrupted artifact leaks** on
+  in-game triggers (enters a cursed chunk → a degraded OGG drops; status changes to what they're
+  looking at). No dialogue, no persona — a grounded corrupted echo (clip of their own VC, screenshot
+  of what they're looking at). Reads as the recovered system bleeding into comms. Requires Observer
+  capture infra to exist first; sequence after that. Same hosting as the Observer Engine. 👻🌌
 - ⬜ **Google Drive "recovered archive"** — found docs/images/audio (lore + stego clues). 🗺️🔗🧩
 - ⬜ **Unlisted YouTube "found footage"** — generate via **HyperFrames**; the Seventh waiting; a clue
   in a frame. 📖👻🔗
@@ -98,7 +156,9 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
 ## THE SIGNATURE INTEGRATIONS (build these first to define the feel)
 
 1. **Per-player illusion** (`showEntity` + packet light + per-player fog) — the literal "it knows ME."
-2. **The asymmetric co-op vault** — each sees a fragment, combine aloud. The social centerpiece.
+2. **The asymmetric co-op vault (the Threshold)** — each sees a fragment, combine aloud. The social
+   centerpiece. Backed by a **vanilla trial-chamber vault** (per-player keys by default). Composition:
+   fragments = the puzzle; vault = the payoff. Companion (Wren) may tie the betrayal to this beat.
 3. **The Lens** — held item reveals hidden runes; "second sight" as item + puzzle.
 4. **The Observer-heard scare** — say it in VC, the world quotes you back.
 5. **The black-moon events** — real lunar-gated dread (Brann).
