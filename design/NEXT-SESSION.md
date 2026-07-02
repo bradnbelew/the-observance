@@ -1,14 +1,21 @@
 # THE OBSERVANCE — NEXT SESSION START HERE
 
-> ⛔ **PAUSE — DO NOT START BUILDING.** ⛔
-> Ethan has **new research from Perplexity** to integrate before any more work. When the session opens:
-> 1. Briefly confirm you're oriented (read this doc + the canonical set below).
-> 2. **STOP and ask Ethan for the Perplexity research.** Do not build, edit, or spawn agents until he
->    pastes it and you've discussed what to fold in.
-> 3. Then run his established pipeline (below) on the new research.
+> ✅ **PERPLEXITY RESEARCH INTEGRATED (2026-07-01).** The research was triaged (mostly ratified existing
+> principles; genuine deltas = modpack-OK → Voice Chat, server-side visual tools, the audit overstates
+> brokenness) and executed as **4 committed all-green waves** on `feat/build-everything-2026-07-01`.
+> Full ledger: `design/CHANGE-MANIFEST.md` → "AUTONOMOUS SESSION LOG". Read that FIRST.
 >
-> The project is in a **fully-built, all-green, live-server-unproven** state. There is no fire to fight.
-> The next move is *integrate the new research*, then *playtest*, not *keep building blindly*.
+> **State now:** still fully-built + all-green + **live-server-unproven**. Two things gate real progress:
+> 1. **Ethan must APPLY the new SQL to live Supabase by hand** (0004_v_record, 0005_reconcile_tracker_views,
+>    schema-repair owner_uuid idx, `npm run db:seed`→apply-all.sql). Code fixes assume these are applied.
+> 2. **PLAYTEST** with friends. The next move is *prove the loop live*, not keep building blindly.
+>
+> **Key lesson:** the `IMPROVEMENT-AUDIT.md` **overstates brokenness** — verify every finding against live
+> code before acting (each wave, most "broken" P0s were already fixed). Trust the code.
+>
+> **Open design rulings waiting on Ethan** (see CHANGE-MANIFEST "OPEN"): tier-3 hint philosophy for cipher
+> nodes · world-craft (display entities/ModelEngine) · decide.ts salience rewrite · per-player illusion
+> primitives · SESSION-ZERO consent-script alignment · the Voice Chat "Ear".
 
 ---
 
