@@ -15,13 +15,20 @@
  *     non-forgeable STORY-ADVANCING node apply.ts can surface via the in-world report line (audit #7,
  *     the salience dead-air fix — so a pointer keeps flowing after the five keeper ciphers are spent).
  *     Non-forgeable TERMINAL rows (lore / dead_end / unknown found-documents) never enter the pool.
- *     Among the pool, the order respects STORY SHAPE before sort-key (COHERENCE-AUDIT C2 / P0-7): a node
- *     that MOVES the web (next_clue / main_beat / side_quest) is preferred over a true-but-terminal
- *     forgeable one (lore / dead_end), so the first-ever drip can never open the arc on a dead-end.
- *     Within an outcome rank a forgeable node (real card) is preferred over a report-line node, then the
- *     original deterministic order (movement asc, then key asc). In CONFIRM mode the drip is staged
- *     (awaits dashboard approval); in AUTO it fires live. Player-helpful gifts always apply; only the
- *     curatorial drip respects the gate. Still PURE + deterministic: same snapshot in → same decision out.
+ *     ROSTER GUARD (S-F): a convergence/quorum-gated node (requiresQuorum > activeRosterSize) is ALSO
+ *     excluded — surfacing a thread the present roster cannot close is the dead-air failure we are
+ *     fixing. The guard is optional/no-op when either field is absent (see types.ts).
+ *     Among the pool, the pick order is (COHERENCE-AUDIT C2 / P0-7 + the S-F salience reshape "web not
+ *     chain"):
+ *       (a) STORY SHAPE first — a node that MOVES the web (next_clue / main_beat / side_quest) outranks a
+ *           true-but-terminal one (lore / dead_end), so the first-ever drip can never open on a dead_end;
+ *       (b) then ENGAGEMENT SALIENCE desc — the thread the group is actually pulling on rises: distinct
+ *           attempter count (player-fingerprints) first, then failed-attempts-in-window (recency);
+ *       (c) then the existing deterministic tiebreakers: forgeable desc (a real card beats a report
+ *           line), movement asc, then puzzleKey asc.
+ *     In CONFIRM mode the drip is staged (awaits dashboard approval); in AUTO it fires live.
+ *     Player-helpful gifts always apply; only the curatorial drip respects the gate. Still PURE +
+ *     deterministic: same snapshot in → same decision out.
  */
 import type { Decision, GiftDecision, DripDecision, OutcomeType, Snapshot, Tone } from './types.js';
 
@@ -51,6 +58,26 @@ const OUTCOME_RANK: Readonly<Record<OutcomeType, number>> = {
  * report line about it would point at a thread that opens nothing (the found-document guardrail).
  */
 const MOVER_OUTCOMES: ReadonlySet<OutcomeType> = new Set<OutcomeType>(['next_clue', 'main_beat', 'side_quest']);
+
+/**
+ * S-F ROSTER GUARD. `true` unless the node is quorum-gated AND the active roster is below that quorum.
+ * Never surface a convergence thread the present group cannot possibly close (the dead-air failure the
+ * reshape is fixing). Optional-and-safe: if the puzzle carries no `requiresQuorum`, or the snapshot
+ * carries no `activeRosterSize`, this is a pure no-op (returns true) — so it does nothing until BOTH
+ * fields are wired, and the existing quorum-free self-tests are unchanged.
+ *
+ * TODO(S-F roster): the puzzles table has no quorum column today (0004_oracle.sql) and the real
+ * effectiveQuorum is computed IN THE PLUGIN (AcceptingRiteListener: effectiveQuorum =
+ * min(configQuorum, activeRosterSize)). To make this guard bite for real: (1) add a nullable
+ * `requires_quorum int` column to the coop/behavior rows (e.g. mara-walk-the-map, accepting-crouch)
+ * and select it in snapshot.ts; (2) populate Snapshot.activeRosterSize from
+ * `readActiveRoster(STALL_WINDOW_MS).length` (autonomy.run.ts — the single active-set source). Until
+ * then the fields stay undefined and this guard is inert-but-correct.
+ */
+function rosterCanClose(p: { requiresQuorum?: number }, s: Snapshot): boolean {
+  if (p.requiresQuorum == null || s.activeRosterSize == null) return true;
+  return s.activeRosterSize >= p.requiresQuorum;
+}
 
 export function decide(s: Snapshot): Decision {
   const notes: string[] = [];
@@ -108,12 +135,23 @@ export function decide(s: Snapshot): Decision {
     // row (lore / dead_end / unknown) is still excluded: no card, no forward motion — a report line
     // about it would point at a found-document that opens nothing.
     const drippable = s.openPuzzles.filter(
-      (p) => !p.dripped && (p.forgeable || MOVER_OUTCOMES.has(p.outcomeType)),
+      (p) => !p.dripped && (p.forgeable || MOVER_OUTCOMES.has(p.outcomeType)) && rosterCanClose(p, s),
     );
+    // PICK ORDER (S-F salience reshape). Lower = picked first:
+    //   (a) story-shape rank (OUTCOME_RANK): a mover MUST still outrank a terminal — the "a drip can
+    //       never open on a dead_end" guarantee holds because shape is the FIRST key;
+    //   (b) SALIENCE desc: surface the thread the group is actually pulling on. Score = distinct
+    //       attempter count (player-fingerprints), then failed-attempts-in-window (recency/engagement);
+    //   (c) tiebreakers, unchanged + deterministic: forgeable desc (a real card beats a report line),
+    //       movement asc, then puzzleKey asc.
     const next = drippable.sort(
       (x, y) =>
         OUTCOME_RANK[x.outcomeType] - OUTCOME_RANK[y.outcomeType] ||
-        // Within the same story-shape rank, PREFER a forgeable node (a real decodable clue card
+        // (b) engagement salience — higher wins. Distinct attempters first (how many DIFFERENT people
+        // are on this thread), then failed attempts in the window (how hard the group is pulling).
+        y.attempters.length - x.attempters.length ||
+        y.failedAttemptsInWindow - x.failedAttemptsInWindow ||
+        // (c) Within the same shape+salience, PREFER a forgeable node (a real decodable clue card
         // beats a bare in-world report line) before falling back to (movement asc, key asc).
         Number(y.forgeable) - Number(x.forgeable) ||
         x.movement - y.movement ||
@@ -133,7 +171,9 @@ export function decide(s: Snapshot): Decision {
       // sentinel rows, C3) so the trace is accurate — both leave the cadence anchor untouched
       // (apply.ts only advances it on a drip). "no forgeable" is retained in the empty-pool note so
       // the existing pool-empty guardrail assertions stay meaningful.
-      const anyDrippableOpen = s.openPuzzles.some((p) => p.forgeable || MOVER_OUTCOMES.has(p.outcomeType));
+      const anyDrippableOpen = s.openPuzzles.some(
+        (p) => (p.forgeable || MOVER_OUTCOMES.has(p.outcomeType)) && rosterCanClose(p, s),
+      );
       notes.push(
         anyDrippableOpen
           ? 'drip due but every drippable (forgeable or story-advancing) puzzle has already been dripped'

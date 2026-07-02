@@ -47,6 +47,16 @@ export interface SnapshotPuzzle {
   attempters: AttempterState[];
   /** has this puzzle already been announced/dripped before? (drip each clue once). */
   dripped: boolean;
+  /**
+   * OPTIONAL convergence quorum (S-F roster guard). When set, this node only opens once a group of
+   * >= N active players converges on it (a coop/behavior gate like the Accepting rite / group-bow).
+   * The drip picker EXCLUDES such a node while {@link Snapshot.activeRosterSize} is below it — surfacing
+   * a quorum-gated thread to a sub-quorum roster is the exact dead-air failure we are fixing (the group
+   * pulls on a thread they cannot possibly close). Absent (undefined) ⇒ NO quorum gate: the node is
+   * always eligible (back-compat — every existing puzzle row today has no quorum column). The guard is
+   * a no-op unless BOTH this and `activeRosterSize` are present.
+   */
+  requiresQuorum?: number;
 }
 
 /** A player's whisper state for one stuck puzzle — enough to decide a fair auto-gift. */
@@ -105,6 +115,16 @@ export interface Snapshot {
    * existing self-tests have no prologue and must keep dripping).
    */
   prologue?: PrologueGate;
+  /**
+   * OPTIONAL active-roster size for this tick (S-F roster guard). The count of distinct players who
+   * have engaged within the active window — the SAME active-set definition the plugin's
+   * AcceptingRiteListener uses for `effectiveQuorum = min(configQuorum, activeRosterSize)` and that
+   * {@link readActiveRoster} (autonomy.run.ts) mirrors on the Discord side. When present, the drip
+   * picker excludes any open puzzle whose {@link SnapshotPuzzle.requiresQuorum} exceeds it (never
+   * surface a convergence thread the current roster cannot close → dead-air). Absent (undefined) ⇒
+   * the quorum guard is a no-op (back-compat: the existing self-tests omit it and are unchanged).
+   */
+  activeRosterSize?: number;
 }
 
 /** Bump one earned whisper for a stuck, exhausted player so they can claim `tier`. */

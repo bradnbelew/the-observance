@@ -971,3 +971,46 @@ datapack JSON · tsc · seedcheck/gatecheck/specscheck/showrunner×4 all pass):*
 - **Wave S-H — lore finish** (the-seventh-below journal · enrollment lines · lockstep callbacks · optional plants).
 Each wave: cohesion + lore-callback + integration wired together (consistency principle), green after each,
 commit at clean wave boundaries. `.env*` stays gitignored.
+
+## S9. PROGRESS + CLARIFIED SCOPE (2026-07-02, verified against live code)
+
+Building the waves surfaced the meta-lesson at full strength — **most of the reshape was ALREADY DONE by
+prior waves + the R2 converge.** Verified done against live code:
+- **S-A (earned literacy) — DONE + committed `6f026a4`.** runeCrib helper + 10 cribs + detuned teaching + founders' note.
+- **S-B (label cull) — DONE** (adopted R0; plugin 0.3.0). Verified: the `RESHAPE R0` comments cut the labels.
+- **S-C (puzzle web) — DONE/PIVOTED + committed `cf782c9`.** Ciphers KEPT-as-characterization (R2 cipher-as-
+  inversion); ≥3-clue web delivered by R2 seven-motif; only the cross-surface lock survives → S-E.
+- **S-E (nav-bleed) — partial DONE `cf782c9`** (SiteChrome; record full-bleed). Remainder: multi-state record
+  redaction + decay skin + the cross-surface lock (fold with S-D record work).
+- **S-H (lore finish) — DONE (verified).** the-seventh-below.md authored; voice.ts payoffs (graveOpened /
+  keeperCloseSeventhRestored / all 6 enrollment keys re-valenced) already wired; Iss-seam wired
+  (`voice.ts:310` + thread_cards edge); "you are the next" in six-were-kept-before-you.md:49. The 3 old
+  Seventh docs left as honest older-era texture (R2's fact-layer reconciled them; retiring would orphan the
+  intentional `the-seventh-was-spared` herring). Optional subtle plants: R2 delivered them.
+
+**GENUINELY REMAINING (the only real new builds):**
+- **S-F — salience drip.** IN PROGRESS (agent): decide.ts linear→salience-weighted + roster-aware, tests kept green.
+- **S-D — reward-the-theory batch-confirm.** UNBUILT (verified: no theory/cluster mechanic exists). Design below.
+- **S-G — full NPC lane.** PARTIAL: townsfolk (Aro/Wenna/Coll/Dob/Old-Pell) have authored dialogue in
+  `voice.archive.ts` (SET A) + gather-event lines, but are NOT placed/wired as in-world NPCs (only Wren has a
+  spawn cmd via Citizens2, `ObservanceCommand.java:526`). Build = extend the Wren spawn/interaction pattern to
+  the townsfolk (spawn cmd + click-dialogue driven by the authored SET-A voice) + keeper interactive presence.
+
+### S-D DESIGN (batch-confirm, additive — reuses the flag engine + the autonomy-producer pattern)
+The record already "receives" per-stone (record-projection maps solves→legible). Batch-confirm makes it
+receive a keeper's **fate** only when a *cluster* of that keeper's evidence is coherent (build-a-theory):
+1. **Cluster def (seed):** each keeper's "theory" = its evidence-flag set, e.g. Vaun = {stone-vaun (lore),
+   vaun-hoard-sorted (object), vaun-bookshelf-tally (code)}; threshold = author-set (e.g. ≥2 of 3, or all
+   "mover" nodes). Author these clusters + thresholds in a new seed block (data, not code).
+2. **Theory-lock producer (showrunner, pure/idempotent — the autonomy-producer pattern):** a deterministic
+   pass over `arc_state.flags`; when a keeper's cluster meets threshold, set a DERIVED flag `<keeper>_theory`.
+   Fault-isolated, no LLM, testable. (Twin the plugin side only if in-world receipt is wanted — else the
+   showrunner sets it and both surfaces read it via the shared gate, no plugin change.)
+3. **Record consumes theories (dashboard, dovetails S-E):** record-projection reads `<keeper>_theory` (not raw
+   stonesRead) to decide which keeper fates are "received" → the record reflects assembled theories, giving
+   the Obra-Dinn "commit a coherent set" payoff, not per-cipher un-redact.
+4. **Lore callback (voice.ts):** one Watcher line on theory-lock ("the record receives what you have understood
+   of [keeper]"). Keep register.
+Additive, deterministic, retrace-fair; per-puzzle solves still set flags (the theory is a derived layer).
+Touchpoints: new seed (clusters) · showrunner theory-lock producer + selftest · record-projection + selftest ·
+voice.ts (+ specscheck) · no schema change (derived flags are jsonb keys). Keep all checks green.

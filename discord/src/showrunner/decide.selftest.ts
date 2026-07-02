@@ -196,6 +196,87 @@ function snap(over: Partial<Snapshot> = {}): Snapshot {
   check('same rank → forgeable card preferred over report line', d.drips[0]?.puzzleKey === 'stone-mara');
 }
 
+// 7h. S-F SALIENCE: among SAME story-shape peers, the thread the group is actually pulling on wins.
+//    Both are next_clue (rank 0) and forgeable. The higher-engagement node (more distinct attempters)
+//    must be dripped over the lower-engagement one, EVEN THOUGH the low-engagement key sorts earlier
+//    and has lower movement — proving salience outranks the old (forgeable, movement, key) tiebreakers.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      // sorts first by key + lower movement, but NOBODY is on it → low salience.
+      puzzle({ puzzleKey: 'aaa-quiet', movement: 2, outcomeType: 'next_clue', attempters: [] }),
+      // three distinct players are actively pulling on this thread → high salience, wins.
+      puzzle({
+        puzzleKey: 'zzz-hot', movement: 3, outcomeType: 'next_clue',
+        attempters: [attempter({ playerId: 'a' }), attempter({ playerId: 'b' }), attempter({ playerId: 'c' })],
+      }),
+    ],
+  }));
+  check('salience: higher-engagement same-rank node is dripped first', d.drips[0]?.puzzleKey === 'zzz-hot');
+}
+
+// 7i. S-F SALIENCE tiebreak: equal distinct-attempter count → failed-attempts-in-window (recency)
+//    breaks the tie. The thread being hammered harder this window rises.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      puzzle({ puzzleKey: 'aaa-cool', movement: 2, outcomeType: 'next_clue', attempters: [attempter({ playerId: 'a' })], failedAttemptsInWindow: 1 }),
+      puzzle({ puzzleKey: 'zzz-warm', movement: 2, outcomeType: 'next_clue', attempters: [attempter({ playerId: 'a' })], failedAttemptsInWindow: 9 }),
+    ],
+  }));
+  check('salience: equal attempters → more failed attempts (recency) wins', d.drips[0]?.puzzleKey === 'zzz-warm');
+}
+
+// 7j. S-F SALIENCE never overrides STORY SHAPE: a heavily-engaged dead_end must STILL never open the
+//    arc — shape is the first sort key, so a quiet mover beats a hammered terminal.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      puzzle({
+        puzzleKey: 'busy-dead', movement: 1, outcomeType: 'dead_end', forgeable: true, failedAttemptsInWindow: 99,
+        attempters: [attempter({ playerId: 'a' }), attempter({ playerId: 'b' }), attempter({ playerId: 'c' }), attempter({ playerId: 'd' })],
+      }),
+      puzzle({ puzzleKey: 'quiet-mover', movement: 5, outcomeType: 'next_clue', attempters: [] }),
+    ],
+  }));
+  check('salience never opens on a dead_end (shape dominates engagement)', d.drips[0]?.puzzleKey === 'quiet-mover');
+}
+
+// 7k. S-F ROSTER GUARD: a convergence/quorum-gated node is EXCLUDED while the active roster is below
+//    its quorum (never surface a thread the present group cannot close → dead-air). Here the only OTHER
+//    open row is the quorum-gated one; with the roster under quorum the pool is empty → no drip.
+{
+  const d = decide(snap({
+    activeRosterSize: 2,
+    openPuzzles: [
+      puzzle({ puzzleKey: 'group-bow', movement: 3, outcomeType: 'main_beat', requiresQuorum: 5 }),
+    ],
+  }));
+  check('roster guard: sub-quorum → convergence node excluded → no drip', d.drips.length === 0);
+}
+
+// 7l. S-F ROSTER GUARD: once the roster meets the quorum, the same node becomes eligible and drips.
+{
+  const d = decide(snap({
+    activeRosterSize: 5,
+    openPuzzles: [
+      puzzle({ puzzleKey: 'group-bow', movement: 3, outcomeType: 'main_beat', requiresQuorum: 5 }),
+    ],
+  }));
+  check('roster guard: roster meets quorum → convergence node drips', d.drips[0]?.puzzleKey === 'group-bow');
+}
+
+// 7m. S-F ROSTER GUARD is optional/no-op: with a quorum on the puzzle but NO activeRosterSize on the
+//    snapshot (the back-compat default), the guard does nothing and the node still drips.
+{
+  const d = decide(snap({
+    openPuzzles: [
+      puzzle({ puzzleKey: 'group-bow', movement: 3, outcomeType: 'main_beat', requiresQuorum: 5 }),
+    ],
+  }));
+  check('roster guard: absent activeRosterSize → guard is a no-op (still drips)', d.drips[0]?.puzzleKey === 'group-bow');
+}
+
 // 8. AUTO mode → drip not staged.
 {
   const d = decide(snap({ mode: 'auto', openPuzzles: [puzzle()] }));
