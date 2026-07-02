@@ -45,6 +45,7 @@ const ORDER: readonly string[] = [
   'migrations/0005_threads.sql',
   'migrations/0006_requires_flags.sql',
   'migrations/0007_answer_kind.sql',
+  'migrations/0008_requires_quorum.sql',
   // ---- seeds (puzzles_seed FIRST; metapuzzle + progression LAST — they gate on 0006's column) ----
   'seeds/puzzles_seed.sql',
   'seeds/seventh_seed.sql',

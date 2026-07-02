@@ -6,6 +6,7 @@
 import { supabase } from '../db/client.js';
 import { getArcAct, getBudget, countWhispersForPuzzle, getHint } from '../db/repo.js';
 import { hasClueSpec } from '../forge/clue-specs.js';
+import { readActiveRoster } from './autonomy.run.js';
 import { readSetting, readState } from './state.js';
 import type { AttempterState, OutcomeType, ShowrunnerMode, Snapshot, SnapshotPuzzle } from './types.js';
 
@@ -37,10 +38,17 @@ export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
 
   const { data: puzzleRows, error: pErr } = await supabase
     .from('puzzles')
-    .select('puzzle_key, movement, outcome_type')
+    .select('puzzle_key, movement, outcome_type, requires_quorum')
     .eq('active', true)
-    .returns<{ puzzle_key: string; movement: number | null; outcome_type: string | null }[]>();
+    .returns<{ puzzle_key: string; movement: number | null; outcome_type: string | null; requires_quorum: number | null }[]>();
   if (pErr) throw pErr;
+
+  // S-F ROSTER GUARD (activeRosterSize): the count of distinct players active within the SAME window
+  // the stall backstop uses, from readActiveRoster — the single active-set source (autonomy.run.ts;
+  // the same definition the plugin's AcceptingRiteListener uses for effectiveQuorum). Fed onto the
+  // snapshot so decide.rosterCanClose can withhold a convergence node the present roster cannot close.
+  // readActiveRoster is fault-isolated (returns [] on any error), so this degrades to 0 — never throws.
+  const activeRosterSize = (await readActiveRoster(STALL_WINDOW_MS)).length;
 
   const openPuzzles: SnapshotPuzzle[] = [];
   for (const row of puzzleRows ?? []) {
@@ -84,6 +92,9 @@ export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
       solvedInWindow: (solvedCount ?? 0) > 0,
       attempters,
       dripped: drippedKeys.has(key),
+      // S-F ROSTER GUARD: the convergence quorum, or undefined when the row carries none (NULL) — the
+      // guard no-ops per-row on undefined, so an ungated row's drip eligibility is unchanged.
+      requiresQuorum: row.requires_quorum ?? undefined,
     });
   }
 
@@ -96,5 +107,6 @@ export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
     lastDripAtMs: state.last_drip_at_ms ?? null,
     stallFailedThreshold: STALL_FAILED_THRESHOLD,
     dripIntervalMs: DRIP_INTERVAL_MS,
+    activeRosterSize,
   };
 }

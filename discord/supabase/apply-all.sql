@@ -17,15 +17,16 @@
 --   03. migrations/0005_threads.sql
 --   04. migrations/0006_requires_flags.sql
 --   05. migrations/0007_answer_kind.sql
---   06. seeds/puzzles_seed.sql
---   07. seeds/seventh_seed.sql
---   08. seeds/thread_tags.sql
---   09. seeds/thread_cards.sql
---   10. seeds/side_quests.sql
---   11. seeds/hints_seed.sql
---   12. seeds/metapuzzle_seed.sql
---   13. seeds/progression_seed.sql
---   14. schema-repair.sql
+--   06. migrations/0008_requires_quorum.sql
+--   07. seeds/puzzles_seed.sql
+--   08. seeds/seventh_seed.sql
+--   09. seeds/thread_tags.sql
+--   10. seeds/thread_cards.sql
+--   11. seeds/side_quests.sql
+--   12. seeds/hints_seed.sql
+--   13. seeds/metapuzzle_seed.sql
+--   14. seeds/progression_seed.sql
+--   15. schema-repair.sql
 -- ============================================================================
 
 
@@ -669,6 +670,57 @@ comment on column public.puzzles.answer_kind is
   'the resolver against accepted_answers; code/behavior/object/spoken are produced by a plugin '
   'listener that posts the sentinel token or sets the flag directly (no new resolver branch); '
   'none is a comprehension beat. Default ''phrase'' = the historical typed-solve path.';
+
+commit;
+
+
+-- ============================================================
+-- FILE: migrations/0008_requires_quorum.sql
+-- ============================================================
+
+-- The Observance — 0008_requires_quorum.sql
+-- THE ROSTER-QUORUM COLUMN (S-F roster guard). Adds the one nullable column the showrunner's
+-- convergence guard reads: `puzzles.requires_quorum`.
+--
+-- Why (design/OVERHAUL.md dynamic-roster invariant + decide.ts rosterCanClose): a handful of beats
+-- are genuine CONVERGENCES — they cannot be closed by a lone player because the in-world detection is
+-- a group act (everyone present bows as one; three hands on three surfaces at once; the group walks
+-- the map; an asymmetric co-op vault). The showrunner must NOT drip such a thread to a roster too
+-- small to close it — surfacing a convergence the present group cannot possibly complete is the
+-- dead-air failure the reshape fixes. `decide.rosterCanClose(p, s)` already implements the guard
+-- (excludes a row when requires_quorum > activeRosterSize); it was inert because no column fed it.
+--
+-- THE CONTRACT (decide.ts / snapshot.ts / types.ts):
+--   requires_quorum NULL  ⟺  no quorum gate — the row is always eligible for the drip (back-compat:
+--                            every existing row keeps NULL, so its drip eligibility is unchanged).
+--   requires_quorum = N   ⟺  the node opens to the drip only once >= N active players are present
+--                            (the SAME active-set the plugin's AcceptingRiteListener uses for
+--                            effectiveQuorum = min(configQuorum, activeRosterSize)). snapshot.ts
+--                            selects this column onto SnapshotPuzzle.requiresQuorum; the guard is a
+--                            no-op for any row that leaves it NULL.
+--
+-- Security model (identical to 0004/0005/0006): RLS already enabled on puzzles; service_role
+-- bypasses; no anon/authenticated policies. Additive + idempotent (add column if not exists) — safe
+-- to re-run and changes the behavior of NO existing row until a seed sets a non-NULL value.
+
+begin;
+
+-- ===========================================================================
+-- 1. puzzles.requires_quorum — the convergence gate for the showrunner drip.
+--    Nullable integer, default NULL = no quorum gate. Adding the column changes the
+--    behavior of NO existing row (the guard no-ops on NULL); a later seed sets it on
+--    the genuine convergence rows (metapuzzle_seed.sql §5).
+-- ===========================================================================
+
+alter table public.puzzles
+  add column if not exists requires_quorum integer;
+
+comment on column public.puzzles.requires_quorum is
+  'Convergence quorum for the showrunner drip (decide.rosterCanClose): the minimum number of ACTIVE '
+  'players that must be present before this node is surfaced in the clue-drip. NULL = no quorum gate '
+  '(the default; the guard no-ops). Read by snapshot.ts onto SnapshotPuzzle.requiresQuorum and '
+  'compared against Snapshot.activeRosterSize (readActiveRoster().length). Does NOT gate resolution '
+  '(that is requires_flags / the in-world detection) — only the curatorial drip.';
 
 commit;
 
@@ -3505,6 +3557,43 @@ begin
     -- FAIL LOUD (P0-C6): consistent with §2 — the column's absence means a mis-order; abort
     -- rather than silently skip. Apply 0006 first (db:seed / apply-all.sql enforce it), then re-run.
     raise exception 'metapuzzle_seed: puzzles.requires_flags absent — apply migration 0006_requires_flags BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting.';
+  end if;
+end $$;
+
+-- ===========================================================================
+-- 5. THE ROSTER-QUORUM CONVERGENCE TAGS (S-F roster guard; 0008_requires_quorum.sql).
+--    Tag the beats that GENUINELY need multiple players present with requires_quorum = 2 (a
+--    convergence needs at least two hands). The showrunner drip (decide.rosterCanClose) then WITHHOLDS
+--    these threads whenever the active roster is below quorum — never surfacing a convergence the
+--    present group cannot possibly close (the dead-air failure the reshape fixes). This gates ONLY the
+--    curatorial drip; resolution is still governed by requires_flags + the in-world group detection.
+--
+--    The four convergence rows (verified against puzzles_seed.sql — each is a group act, not a solo
+--    decode; accepted_answers is an opaque plugin-posted conjunction token):
+--      m4-three-hands        — three hands on three surfaces inside one window (the cross-surface gate)
+--      accepting-crouch      — everyone present bows as one (the collective climax rite)
+--      spine-threshold-vault — an asymmetric co-op vault (roles split across players)
+--      mara-walk-the-map     — the group physically walks the marker row and bows together
+--
+--    Guarded + idempotent (mirrors §2/§4): sets an ABSOLUTE value, so re-running is safe; no-ops
+--    cleanly if 0008 (the column) has not landed yet, and touches NO other column on these rows.
+-- ===========================================================================
+
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'puzzles' and column_name = 'requires_quorum'
+  ) then
+    update public.puzzles set requires_quorum = 2
+      where puzzle_key in (
+        'm4-three-hands', 'accepting-crouch', 'spine-threshold-vault', 'mara-walk-the-map'
+      );
+  else
+    -- FAIL LOUD (P0-C6): consistent with §2/§4 — the column's absence means a mis-order; abort
+    -- rather than silently skip so the convergence guard is never half-wired. Apply 0008 first
+    -- (db:seed / apply-all.sql enforce it), then re-run.
+    raise exception 'metapuzzle_seed: puzzles.requires_quorum absent — apply migration 0008_requires_quorum BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting.';
   end if;
 end $$;
 

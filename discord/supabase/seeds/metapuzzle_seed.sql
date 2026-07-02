@@ -300,4 +300,41 @@ begin
   end if;
 end $$;
 
+-- ===========================================================================
+-- 5. THE ROSTER-QUORUM CONVERGENCE TAGS (S-F roster guard; 0008_requires_quorum.sql).
+--    Tag the beats that GENUINELY need multiple players present with requires_quorum = 2 (a
+--    convergence needs at least two hands). The showrunner drip (decide.rosterCanClose) then WITHHOLDS
+--    these threads whenever the active roster is below quorum — never surfacing a convergence the
+--    present group cannot possibly close (the dead-air failure the reshape fixes). This gates ONLY the
+--    curatorial drip; resolution is still governed by requires_flags + the in-world group detection.
+--
+--    The four convergence rows (verified against puzzles_seed.sql — each is a group act, not a solo
+--    decode; accepted_answers is an opaque plugin-posted conjunction token):
+--      m4-three-hands        — three hands on three surfaces inside one window (the cross-surface gate)
+--      accepting-crouch      — everyone present bows as one (the collective climax rite)
+--      spine-threshold-vault — an asymmetric co-op vault (roles split across players)
+--      mara-walk-the-map     — the group physically walks the marker row and bows together
+--
+--    Guarded + idempotent (mirrors §2/§4): sets an ABSOLUTE value, so re-running is safe; no-ops
+--    cleanly if 0008 (the column) has not landed yet, and touches NO other column on these rows.
+-- ===========================================================================
+
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'puzzles' and column_name = 'requires_quorum'
+  ) then
+    update public.puzzles set requires_quorum = 2
+      where puzzle_key in (
+        'm4-three-hands', 'accepting-crouch', 'spine-threshold-vault', 'mara-walk-the-map'
+      );
+  else
+    -- FAIL LOUD (P0-C6): consistent with §2/§4 — the column's absence means a mis-order; abort
+    -- rather than silently skip so the convergence guard is never half-wired. Apply 0008 first
+    -- (db:seed / apply-all.sql enforce it), then re-run.
+    raise exception 'metapuzzle_seed: puzzles.requires_quorum absent — apply migration 0008_requires_quorum BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting.';
+  end if;
+end $$;
+
 commit;

@@ -277,6 +277,41 @@ function snap(over: Partial<Snapshot> = {}): Snapshot {
   check('roster guard: absent activeRosterSize → guard is a no-op (still drips)', d.drips[0]?.puzzleKey === 'group-bow');
 }
 
+// 7n. S-F ROSTER GUARD end-to-end (snapshot→decide): prove the SAME wiring snapshot.ts performs feeds
+//    the guard correctly. This mirrors snapshot.ts's exact mapping — a DB row's `requires_quorum`
+//    (NULL → undefined) becomes SnapshotPuzzle.requiresQuorum, and Snapshot.activeRosterSize is
+//    readActiveRoster(...).length — so a convergence row is WITHHELD below quorum and ADMITTED at/above
+//    it, driven only by the roster size, with no other input changing. (Kept pure — no DB — by
+//    replaying the same field mapping the live snapshot builder uses on a stubbed puzzle row.)
+{
+  // A stubbed DB puzzles row exactly as snapshot.ts selects it (a genuine convergence: accepting-crouch,
+  // the collective bow, requires_quorum = 2) plus an ungated control row (requires_quorum NULL).
+  type PuzzleRow = { puzzle_key: string; movement: number | null; outcome_type: string; requires_quorum: number | null };
+  const rows: PuzzleRow[] = [
+    { puzzle_key: 'accepting-crouch', movement: 3, outcome_type: 'main_beat', requires_quorum: 2 },
+  ];
+  // The SAME mapping snapshot.ts applies (requires_quorum ?? undefined → requiresQuorum).
+  const mapRow = (r: PuzzleRow): SnapshotPuzzle => puzzle({
+    puzzleKey: r.puzzle_key,
+    movement: r.movement ?? 0,
+    outcomeType: 'main_beat',
+    forgeable: false, // accepting-crouch is non-forgeable (opaque token) — surfaces via the report line
+    requiresQuorum: r.requires_quorum ?? undefined,
+  });
+  // Below quorum: readActiveRoster(...).length === 1 → convergence node withheld → pool empty → no drip.
+  const dLow = decide(snap({ activeRosterSize: 1, openPuzzles: rows.map(mapRow) }));
+  check('roster guard e2e: DB requires_quorum=2 + roster 1 → convergence withheld (no drip)', dLow.drips.length === 0);
+  // At quorum: roster grows to 2 → the SAME node is now admitted and drips. Only the roster changed.
+  const dAt = decide(snap({ activeRosterSize: 2, openPuzzles: rows.map(mapRow) }));
+  check('roster guard e2e: same node + roster 2 (== quorum) → admitted → drips', dAt.drips[0]?.puzzleKey === 'accepting-crouch');
+  // An ungated row (requires_quorum NULL → requiresQuorum undefined) is always eligible regardless of roster.
+  const dNull = decide(snap({
+    activeRosterSize: 1,
+    openPuzzles: [mapRow({ puzzle_key: 'stone-vaun', movement: 2, outcome_type: 'next_clue', requires_quorum: null })],
+  }));
+  check('roster guard e2e: NULL requires_quorum → undefined → node eligible below any roster', dNull.drips[0]?.puzzleKey === 'stone-vaun');
+}
+
 // 8. AUTO mode → drip not staged.
 {
   const d = decide(snap({ mode: 'auto', openPuzzles: [puzzle()] }));
