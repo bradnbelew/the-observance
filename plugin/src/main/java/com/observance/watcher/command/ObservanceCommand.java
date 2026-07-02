@@ -172,14 +172,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     /**
      * {@code /observance placeregion} — stamps the ENTIRE starter spine in one command: the
      * {@code rune_rosetta} structure stone + the six keeper stones (vaun, mara, sella, orin, brann,
-     * iss), arranged in a straight east–west row with {@code spacing} blocks between each pillar.
-     * Each structure is placed with {@link com.observance.watcher.structure.StructureTemplates#keeper}
-     * (each keeper gets its own distinct set-piece), registered live via
-     * {@code registerRuntimeSite}, and persisted to {@code sites.yml}. Player-only. Run from where
-     * you want the CENTRE of the row to be — the row extends equally either side of the sender.
+     * iss). Per WORLD-BUILD §4 ("a FIELD not a row"; "one vertical descent; the descent IS the dread")
+     * the sites are NOT stamped in a straight east–west line at one Y. Instead they follow a
+     * deterministic BRANCHING DESCENT: each subsequent site steps {@code spacing} blocks east, offset
+     * north/south by an alternating zig-zag so the eye reads a branching field, and a few blocks LOWER
+     * than the last so the whole spine sinks into the ground as you walk it. The rosetta (index 0) sits
+     * at the mouth; each keeper descends past it.
+     *
+     * <p>Each structure is placed with {@link com.observance.watcher.structure.StructureTemplates#keeper}
+     * (each keeper gets its own distinct set-piece), registered live via {@code registerRuntimeSite},
+     * and persisted to {@code sites.yml}. Player-only. Run from where you want the MOUTH of the descent
+     * to be — the field extends east + down from a little west of the sender.
      *
      * <p>Usage: {@code /observance placeregion [spacing]} (spacing defaults to 12 blocks; min 9 so the
-     * dense per-keeper set-pieces don't overlap).
+     * dense per-keeper set-pieces don't overlap). Reveal-safe (command-placed, never toward a player).
      */
     private void handlePlaceRegion(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -217,25 +223,39 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         };
 
         int count = spine.length;
-        // Row: starts half-width west of centre, steps east by `spacing` each element.
-        double startX = centre.getX() - ((count - 1) / 2.0) * spacing;
-        int baseY   = centre.getBlockY();
-        int baseZ   = centre.getBlockZ();
+        // BRANCHING DESCENT (WORLD-BUILD §4). The descent axis is EAST (+X): each site steps `spacing`
+        // east of the last. Two deterministic dressings turn the old flat row into an evocative field:
+        //   * zig-zag Z — an alternating +/- lateral offset (a fraction of spacing, capped) so adjacent
+        //     alcoves sit off the centre-line, north then south — a FIELD, not a line. X separation
+        //     always stays a full `spacing` apart, so the lateral offset never lets two dense builds
+        //     (up to ~9 wide) overlap.
+        //   * step DOWN — each subsequent site drops `descentStep` blocks below the last, so walking the
+        //     spine reads as sinking into the ground (the rosetta at the mouth, keepers descending past).
+        // The mouth (index 0) sits a little west of the sender; the field extends east + down from there.
+        int descentStep = 3;                              // blocks each site sinks below the previous
+        int zAmp = Math.min(4, spacing / 3);              // lateral zig-zag amplitude (< spacing/2, no overlap)
+        double startX = centre.getX() - spacing;          // mouth one step west of the sender
+        int mouthY = centre.getBlockY();
+        int baseZ  = centre.getBlockZ();
 
         int placed = 0;
         for (int i = 0; i < count; i++) {
             String siteId   = spine[i][0];
             String siteType = spine[i][1];
 
-            Location pillarLoc = new Location(centre.getWorld(),
-                    startX + (long) i * spacing, baseY, baseZ);
+            // Deterministic (no RNG): east step, alternating N/S zig-zag, progressive descent.
+            double sx = startX + (long) i * spacing;
+            int sz = baseZ + ((i % 2 == 0) ? -zAmp : zAmp) * ((i == 0) ? 0 : 1); // mouth on centre-line
+            int sy = mouthY - i * descentStep;
+
+            Location pillarLoc = new Location(centre.getWorld(), sx, sy, sz);
 
             // Dispatch by siteId so each keeper gets its own distinct set-piece (rosetta / vaun / mara /
             // sella / orin / brann / iss). The builder strips the "stone_"/"rune_" prefix internally.
             Location signLoc = com.observance.watcher.structure.StructureTemplates.keeper(siteId, pillarLoc);
             if (signLoc == null) {
                 sender.sendMessage("  [!] Could not place '" + siteId + "' — chunk unavailable at "
-                        + pillarLoc.getBlockX() + "," + baseY + "," + baseZ);
+                        + pillarLoc.getBlockX() + "," + sy + "," + sz);
                 continue;
             }
 
@@ -251,8 +271,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Observance: placeregion complete — " + placed + "/" + count
                 + " spine sites placed and persisted.");
-        sender.sendMessage("  Row centred at " + centre.getBlockX() + "," + baseY + "," + baseZ
-                + " in " + world + " (spacing=" + spacing + " blocks).");
+        sender.sendMessage("  Descent mouth near " + centre.getBlockX() + "," + mouthY + "," + baseZ
+                + " in " + world + " — branches east + down (spacing=" + spacing + ", drop=" + descentStep
+                + "/site, zig-zag=" + zAmp + ").");
         if (placed < count) {
             sender.sendMessage("  WARNING: " + (count - placed) + " site(s) skipped (chunks unloaded?).");
         }
@@ -264,8 +285,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * (Iss's false-warm dead shrine), {@code unbroken_light} (the Undercroft Accepting floor), {@code the_threshold}
      * (the future-dated grave that opens from the inside), {@code the_unwriting} (the Seventh's chamber), and
      * {@code threshold_vault} (the co-op vault room). Mirrors {@link #handlePlaceRegion}: each set-piece is built
-     * with {@link StructureTemplates#keeper}, arranged in a straight east–west row spaced so the dense builds
-     * don't overlap, registered live via {@code registerRuntimeSite}, and PERSISTED to {@code sites.yml}.
+     * with {@link StructureTemplates#keeper}, arranged as a BRANCHING DESCENT (WORLD-BUILD §4 — "a FIELD
+     * not a row"; "the descent IS the dread") that sinks FURTHER and STEEPER than the region half above it:
+     * each site steps east, zig-zags north/south off the centre-line, and drops several blocks lower than
+     * the last so the deep half reads as the bottom of the world. Registered live via {@code registerRuntimeSite}
+     * and PERSISTED to {@code sites.yml}.
      *
      * <p>Each site keeps the TYPE its listeners key off (from sites.yml): {@code unbroken_light} =
      * {@code accepting_floor} (AcceptingRiteListener), {@code the_unwriting} = {@code seventh_shrine},
@@ -274,7 +298,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * {@code marker}. Player-only. Reveal-safe (placed by command, never toward an approaching player).
      *
      * <p>Usage: {@code /observance placedeep [spacing]} (spacing defaults to 16 blocks — the Undercroft floor
-     * is 11×11 — min 13 so the wide Accepting floor never overlaps its neighbours).
+     * is 11×11 — min 13 so the wide Accepting floor never overlaps its neighbours). Deterministic
+     * (re-runnable without desync). Reveal-safe (command-placed, never toward an approaching player).
      */
     private void handlePlaceDeep(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -311,9 +336,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         };
 
         int count = deep.length;
-        double startX = centre.getX() - ((count - 1) / 2.0) * spacing;
-        int baseY = centre.getBlockY();
-        int baseZ = centre.getBlockZ();
+        // BRANCHING DESCENT (WORLD-BUILD §4), STEEPER than the region half above. Same three dressings —
+        // east step, zig-zag Z, progressive drop — but the deep starts BELOW the sender and sinks a full
+        // 4 blocks per site (vs 3 in the region), so this half reads as the bottom of the descent. The wide
+        // 11×11 Accepting floor never overlaps a neighbour: X separation is a full `spacing` (min 13) while
+        // the lateral zig-zag is capped well under spacing/2.
+        int descentStep = 4;                              // steeper drop than the region (this is the deep half)
+        int zAmp = Math.min(4, spacing / 4);              // lateral zig-zag amplitude (< spacing/2, no overlap)
+        double startX = centre.getX() - spacing;          // deep mouth one step west of the sender
+        int mouthY = centre.getBlockY() - descentStep;    // start already below the sender's feet
+        int baseZ  = centre.getBlockZ();
 
         int placed = 0;
         for (int i = 0; i < count; i++) {
@@ -322,15 +354,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             int radius;
             try { radius = Integer.parseInt(deep[i][2]); } catch (NumberFormatException e) { radius = 8; }
 
-            Location siteLoc = new Location(centre.getWorld(),
-                    startX + (long) i * spacing, baseY, baseZ);
+            // Deterministic (no RNG): east step, alternating N/S zig-zag, steeper progressive descent.
+            double sx = startX + (long) i * spacing;
+            int sz = baseZ + ((i % 2 == 0) ? -zAmp : zAmp);
+            int sy = mouthY - i * descentStep;
+
+            Location siteLoc = new Location(centre.getWorld(), sx, sy, sz);
 
             // Dispatch by siteId so each deep site gets its own distinct set-piece. The builder strips the
             // "the_"/"stone_of_" prefixes internally.
             Location signLoc = StructureTemplates.keeper(siteId, siteLoc);
             if (signLoc == null) {
                 sender.sendMessage("  [!] Could not place '" + siteId + "' — chunk unavailable at "
-                        + siteLoc.getBlockX() + "," + baseY + "," + baseZ);
+                        + siteLoc.getBlockX() + "," + sy + "," + sz);
                 continue;
             }
 
@@ -344,8 +380,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Observance: placedeep complete — " + placed + "/" + count
                 + " deep-half set-pieces placed and persisted.");
-        sender.sendMessage("  Row centred at " + centre.getBlockX() + "," + baseY + "," + baseZ
-                + " in " + world + " (spacing=" + spacing + " blocks).");
+        sender.sendMessage("  Deep mouth near " + centre.getBlockX() + "," + mouthY + "," + baseZ
+                + " in " + world + " — branches east + steeply down (spacing=" + spacing + ", drop="
+                + descentStep + "/site, zig-zag=" + zAmp + ").");
         if (placed < count) {
             sender.sendMessage("  WARNING: " + (count - placed) + " site(s) skipped (chunks unloaded?).");
         }

@@ -130,10 +130,18 @@ public final class StructureTemplates {
         Pen pen = new Pen(world);
         int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
 
-        // A carved 1x1 plinth of tuff/deepslate with a chiseled cap.
+        // Seat it INTO the ground: a shallow 3x3 cobbled-deepslate hollow (WORLD-BUILD §4 palette +
+        // "dark is the default") so the shrine sits carved into the earth, not as a bright pillar on grass.
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                pen.set(bx + dx, by - 1, bz + dz, Material.COBBLED_DEEPSLATE);   // hollow floor
+            }
+        }
+        // A carved plinth of tuff/deepslate with a chiseled cap, rising from the hollow.
         pen.set(bx, by, bz, Material.TUFF_BRICKS);
         pen.set(bx, by + 1, bz, Material.POLISHED_DEEPSLATE);
         pen.set(bx, by + 2, bz, Material.CHISELED_DEEPSLATE);
+        // One guttering candle — the single earned light (sparse, not a bright cap).
         pen.candle(bx, by + 3, bz, Material.CANDLE, true);
 
         // Answer sign recessed on the south face at reading height (blank submission slot).
