@@ -8,14 +8,21 @@
 ## 1. ONE-TIME SETUP
 
 ### 1a. Database (Supabase, project `fdnmhbpxnodrnbrzrlqq`)
-- SQL Editor → paste **`discord/supabase/apply-tonight.sql`** (the whole file) → Run. It applies, in order:
-  0005 (missing tables) → 0006 (the flag gate) → the 8 seeds → **schema-repair.sql** (the plugin↔DB
-  drift fix that stops the tracker 400s). Idempotent — safe to re-run.
+- SQL Editor → paste **`discord/supabase/apply-all.sql`** (the whole file) → Run. It is the CURRENT,
+  order-enforcing bundle: 0005 (tables) → 0006 (flag gate) → **0008 (`requires_quorum` — the reshape
+  roster-quorum guard)** → the seeds (incl. the metapuzzle §5 quorum values) → **schema-repair.sql**.
+  Idempotent — safe to re-run. *(Do NOT use the older `apply-tonight.sql` — it predates the reshape and
+  omits the quorum column/values.)*
+- **Record-website view (reshape S-D):** also paste **`dashboard/supabase/migrations/0006_v_record_theories.sql`**
+  → Run. It extends the public `v_record` view so the archive un-redacts a keeper's fate by assembled
+  THEORY. Idempotent (`create or replace view`); requires `0004_v_record.sql` already applied (it is, from
+  the earlier go-live). Without it the record falls back to stone-count un-redaction (still correct).
 - Grab your **`service_role`** key (Project Settings → API → `service_role`, the *secret* one).
 
 ### 1b. Server (Crafty)
 - Create a **Paper 1.21.11** server; give it Java 21 + 3–4 GB RAM.
-- **Plugin:** upload `plugin/build/libs/observance-0.2.2.jar` to `plugins/`.
+- **Plugin:** upload `plugin/build/libs/observance-0.3.0.jar` to `plugins/` (the reshape build — earned-
+  literacy rune-cribs, de-announced structure labels, terrain-following + scattered placement, townsfolk).
 - **Key:** in `plugins/Observance/config.yml`, set `supabase.service-key: "<service_role key>"`
   (leave `service-key-env` alone). The `url` is already filled.
 - **Datapack:** upload the `datapack/observance/` folder into the world's `datapacks/` folder
@@ -44,6 +51,9 @@
 - **The Undercroft dimension** (datapack) is a real descendable dark cavern — reach it via Multiverse:
   `/mv create undercroft NORMAL -g observance:undercroft`.
 - **The companion:** `/observance wren spawn` places Wren (Citizens if installed, else a fallback body).
+- **The townsfolk (REQUIRED — reshape S-G):** `/observance townsfolk spawn` places the 5 surface people
+  (Aro/Wenna/Coll/Dob/Old Pell) with their walk-up-and-talk dialogue. `placeregion` does NOT spawn them;
+  without this the world's social surface is dark.
 
 ## 3. SESSION ZERO (before the friends join the fiction)
 - Read **`design/SESSION-ZERO.md`** — the out-of-fiction consent + onboarding script. Cover: this
