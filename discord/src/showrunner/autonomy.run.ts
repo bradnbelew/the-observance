@@ -36,6 +36,8 @@ import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
 import { bindAcceptingInstant, instantReached } from './clock.js';
 import { decideColdRestage, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ApparitionCandidate } from './conductor.js';
+import { runCompanionPass } from './companion.run.js';
+import { runFinalePass } from './finale.run.js';
 import type { BeatStatus } from '../db/types.js';
 import type { PrologueGate, ReckoningState, Tone } from './types.js';
 
@@ -146,6 +148,10 @@ export interface AutonomyPassResult {
   forksSet: number;
   coldRestages: number;
   apparitionClaimed: boolean;
+  /** D3 companion: Wren reveal/reckoning last-words beats enqueued this pass. */
+  companionBeats: number;
+  /** M5 finale: the composed close was posted this pass. */
+  finalePosted: boolean;
 }
 
 /**
@@ -153,7 +159,7 @@ export interface AutonomyPassResult {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -343,6 +349,32 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     }
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `liar error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- D3 companion (Wren): the reveal pair + the one-of-three reckoning last-words. Gated on the
+  //     already-fetched arc flags (companion_revealed / reckoning_*). The trust-ladder + newhand lines
+  //     are the plugin's own right-click surface; the showrunner owns only these set-once beats. The
+  //     pure resolver maps flags + the companion event_log context to a wren.* npcLines key, delivered
+  //     in-world (private_message, SET-A human register via npcLine — never the Watcher's close).
+  try {
+    let movement = 1;
+    try { movement = await getArcAct(); } catch { /* graceful — default M1 */ }
+    const comp = await runCompanionPass(mode, flags, movement, state);
+    result.companionBeats += comp.enqueued;
+    if (comp.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `companion error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- M5 finale: post the composed close (fate + seventh_choice + fork leaves + reckoning_free cost)
+  //     to #the-record ONCE the Accepting instant is reached. The sole consumer of seventh_choice /
+  //     the free-branch cost — the authored voice.ts keys were never read by any composer before this.
+  try {
+    const fin = await runFinalePass(flags, acceptingInstantMs, nowMs, state);
+    if (fin.posted) result.finalePosted = true;
+    if (fin.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `finale error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // NOTE — keeper-record, name-where-never-been, offline-skin, reports, keeper-NPC, and the fate

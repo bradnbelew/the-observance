@@ -22,6 +22,8 @@ import { decidePersonalizedReports, resolveReportLine, type ReportInput, type Ob
 import { decideColdRestage, type LiarInput, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ConductorInput, type ApparitionCandidate } from './conductor.js';
 import { resolveKeeperDialogue, type KeeperDialogueInput, type KeeperDialogueDossier } from './keeper.js';
+import { resolveCompanionDialogue, type CompanionDialogueInput, type CompanionArcFlags } from './companion.js';
+import { composeFinale, type FinaleComposeInput } from './finale.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -434,6 +436,94 @@ function kInput(over: Partial<KeeperDialogueInput> = {}): KeeperDialogueInput {
   const neutral = resolveKeeperDialogue(kInput({ dossier: kDossier({ rhymesWith: null }) }));
   check('keeper: flat dossier → neutral presiding node (no callout)', neutral.node?.voiceKey === 'keeper.presiding.neutral');
   check('keeper: deterministic', JSON.stringify(resolveKeeperDialogue(kInput())) === JSON.stringify(resolveKeeperDialogue(kInput())));
+}
+
+// ===========================================================================
+// companion.ts — Wren resolver: reckoning one-of-three set-once, reveal pair, the arc precedence.
+// ===========================================================================
+function cFlags(over: Partial<CompanionArcFlags> = {}): CompanionArcFlags {
+  return { companionRevealed: false, reckoningCondemn: false, reckoningUnderstand: false, reckoningFree: false, ...over };
+}
+function cInput(over: Partial<CompanionDialogueInput> = {}): CompanionDialogueInput {
+  return { flags: cFlags(), trust: 0, movement: 2, context: null, lateJoiner: false, revealDelivered: false, reckoningDelivered: false, ...over };
+}
+{
+  // TRUST ladder (M1–M2): rungs map to the wren.trust.* keys; below the floor → absent.
+  check('companion: trust floor → absent', resolveCompanionDialogue(cInput({ trust: 0 })).node?.voiceKey === 'wren.trust.absent');
+  check('companion: trust rung → meet', resolveCompanionDialogue(cInput({ trust: 1 })).node?.voiceKey === 'wren.trust.meet');
+  check('companion: trust ask rung', resolveCompanionDialogue(cInput({ trust: 4 })).node?.voiceKey === 'wren.trust.ask');
+  // M3 crack.
+  check('companion: M3 low-trust → crack.slow', resolveCompanionDialogue(cInput({ movement: 3, trust: 0 })).node?.voiceKey === 'wren.crack.slow');
+  check('companion: M3 noticed → crack.notice', resolveCompanionDialogue(cInput({ movement: 3, trust: 2 })).node?.voiceKey === 'wren.crack.notice');
+  // LATE JOINER (quorum-free).
+  check('companion: late joiner → newhand', resolveCompanionDialogue(cInput({ lateJoiner: true })).node?.voiceKey === 'wren.roster.newhand');
+  // M4 REVEAL — companion_revealed && !reckoned → reveal.yes; already delivered → null (one-shot).
+  check('companion: revealed → reveal.yes (once)', resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true }) })).node?.voiceKey === 'wren.reveal.yes');
+  check('companion: reveal already delivered → null', resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true }), revealDelivered: true })).node === null);
+  // M5 RECKONING — the flag AND the matching context BOTH required; one-of-three; set-once.
+  check('companion: condemn flag + context → reckoning.condemn',
+    resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true, reckoningCondemn: true }), context: 'reckoning.condemn' })).node?.voiceKey === 'wren.reckoning.condemn');
+  check('companion: understand flag + context → reckoning.understand',
+    resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true, reckoningUnderstand: true }), context: 'reckoning.understand' })).node?.voiceKey === 'wren.reckoning.understand');
+  check('companion: free flag + context → reckoning.free',
+    resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true, reckoningFree: true }), context: 'reckoning.free' })).node?.voiceKey === 'wren.reckoning.free');
+  // A flag WITHOUT its context does not fire the reckoning branch (falls through to the reveal beat).
+  check('companion: reckoning flag but no context → not the reckoning node',
+    resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true, reckoningCondemn: true }), context: null })).node?.isReckoning !== true);
+  // set-once: an already-delivered reckoning → null.
+  check('companion: reckoning already delivered → null',
+    resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true, reckoningFree: true }), context: 'reckoning.free', reckoningDelivered: true })).node === null);
+  check('companion: reckoning node flagged isReckoning',
+    resolveCompanionDialogue(cInput({ flags: cFlags({ companionRevealed: true, reckoningCondemn: true }), context: 'reckoning.condemn' })).node?.isReckoning === true);
+  check('companion: deterministic', JSON.stringify(resolveCompanionDialogue(cInput())) === JSON.stringify(resolveCompanionDialogue(cInput())));
+}
+
+// ===========================================================================
+// finale.ts — M5 composer: ordered close, seventh_choice tint, reckoning_free cost, reckoning optional.
+// ===========================================================================
+function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
+  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, inheritorsCodicil: false, reckoningFree: false, ...over };
+}
+{
+  // The base opener is always present (never an empty close).
+  check('finale: base close is the fate opener', composeFinale(finInput({ fate: 'kept' })).lines.length >= 1);
+  // seventh_choice tints the close.
+  const restore = composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore' }));
+  check('finale: seventh restore → 2 lines (opener + restored clause)', restore.lines.length === 2);
+  const erase = composeFinale(finInput({ seventhChoice: 'erase' }));
+  check('finale: seventh erase → erased clause present', erase.lines.length === 2);
+  // null seventh_choice → no seventh clause (the fork is the spine but not yet made).
+  check('finale: seventh null → opener only (no seventh clause)', composeFinale(finInput()).lines.length === 1);
+  // reckoning is OPTIONAL: none set → no cost clause; FREE set → the cost clause is appended LAST.
+  const noReck = composeFinale(finInput({ seventhChoice: 'restore' }));
+  const free = composeFinale(finInput({ seventhChoice: 'restore', reckoningFree: true }));
+  check('finale: reckoning_free appends exactly one extra (cost) line', free.lines.length === noReck.lines.length + 1);
+  check('finale: the free-cost clause is LAST', free.lines[free.lines.length - 1] !== noReck.lines[noReck.lines.length - 1]);
+  // fork colorants stack in order.
+  const forks = composeFinale(finInput({ fate: 'cast_out', lightTaken: true, nameSpoken: true, sacredBeastBroken: true }));
+  check('finale: fork leaves add colorant lines', forks.lines.length === 4);
+  check('finale: inheritors codicil appends', composeFinale(finInput({ inheritorsCodicil: true })).lines.length === 2);
+  check('finale: deterministic', JSON.stringify(composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true }))) ===
+    JSON.stringify(composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true }))));
+}
+
+// ===========================================================================
+// reports.ts — the post-reckoning sharp-quote SHIFT (§7 T1): condemn/free quiet, understand re-framed.
+// ===========================================================================
+{
+  const base = reportInput(); // one dossier with a dominant 'night-walks' habit
+  // Default (no shift) → the sharp lane is unchanged (back-compat).
+  check('reports: no shift → the sharp lane fires as before', decidePersonalizedReports(base).reports.length === 1);
+  // condemn / free → the harvest channel closes: NO reports (the sharp NAMED lane goes quiet).
+  check('reports: reckoning condemn → sharp lane quiet (no reports)',
+    decidePersonalizedReports({ ...base, reckoningShift: 'condemn' }).reports.length === 0);
+  check('reports: reckoning free → sharp lane quiet (no reports)',
+    decidePersonalizedReports({ ...base, reckoningShift: 'free' }).reports.length === 0);
+  // understand → the quotes PERSIST but READ DIFFERENTLY (still one report, a DIFFERENT line).
+  const plainLine = decidePersonalizedReports(base).reports[0]!.line;
+  const understand = decidePersonalizedReports({ ...base, reckoningShift: 'understand' });
+  check('reports: reckoning understand → still fires (quotes persist)', understand.reports.length === 1);
+  check('reports: reckoning understand → the line reads differently (kept-true framing)', understand.reports[0]!.line !== plainLine);
 }
 
 if (failures > 0) {

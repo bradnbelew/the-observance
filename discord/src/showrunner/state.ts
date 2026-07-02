@@ -75,6 +75,20 @@ export interface ShowrunnerState {
   liar_flipped?: string[];
 
   /**
+   * D3 companion (Wren, the-companion.md). Idempotency high-waters for the NEW companion consumers.
+   * These are DISTINCT from `reckoning_state`/`reckoning_since_ms` above — those belong to the
+   * DIFFICULTY grip engine (reckoning.ts) and are unrelated to Wren's condemn/understand/free arc
+   * flags (the naming-collision guard in the wiring spec). `companion_lines_delivered` is the set of
+   * one-shot Wren line keys (reveal.yes / reveal.tally / roster.newhand) already enqueued;
+   * `companion_reckoning_delivered` marks his single last-words node fired (one-of-three, set-once).
+   */
+  companion_lines_delivered?: string[];
+  companion_reckoning_delivered?: boolean;
+
+  /** M5 finale: has the composed close already been posted to #the-record? (set-once, idempotent). */
+  finale_posted?: boolean;
+
+  /**
    * D7 conductor: the single-arbiter apparition claim for the CURRENT window + the per-player
    * apparition counts (the per-player cap). `claim_window` is the window seed the claim was made for,
    * so a re-run in the same window re-derives the same claim instead of making a second one. The

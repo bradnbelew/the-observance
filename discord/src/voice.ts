@@ -150,6 +150,18 @@ export const voice = {
     return `${head} it has been noted.`;
   },
 
+  /**
+   * The post-`reckoning_understand` framing of the SAME observed conduct (the-companion.md §7 T1). When
+   * the group wrote the companion whole — scared AND selfish, uncollapsed — the sharp harvested quotes
+   * PERSIST (he stays kept-in-part, still the channel), but they READ DIFFERENTLY: the record names the
+   * thing it knows as KEPT TRUE, not gloated — mercy as accuracy, the branch that rhymes with the
+   * Seventh's thesis ("the record will have you wrong; i will have you true"). Same grounded facts
+   * ({days}/{name}/{custom}); only the closer changes. Selected by reports.ts on reckoning_understand.
+   */
+  reportObservedKeptTrue(name: string, days: number, custom: string): string {
+    return `${days} days kept. the one called ${name} has not ${custom}. it is not held over you. it is only kept true, the way a thing is kept true when someone chose to hold it whole.`;
+  },
+
   /** a report escalated — the soft-pressure turns cold. by conduct, not by name-as-chosen. */
   reportEscalated(name: string): string {
     return `${name} takes and does not return. they have been told. if they will not keep the ways, the ways will not keep them.`;
@@ -499,6 +511,16 @@ export const voice = {
   /** erase — the group completed the erasure; the wall stays blank. */
   keeperCloseSeventhErased(): string {
     return 'the name stays out. the wall below the cold hearth stays blank. the record keeps the blank where the name would go, and does not fill it.';
+  },
+
+  /**
+   * The FREE-branch cost, NAMED BY THE SEVENTH at the reunion (the-companion.md §5/§7). Letting the
+   * companion go — unfed, on his own terms — ended the one face the dark still wore, and the group paid
+   * for it: a way it will not open again, a warmth the deep keeps for itself now. Watcher register,
+   * flat, no thematic bow. Composed by finale.ts ONLY when reckoning_free is set (M5 composer).
+   */
+  seventhNamesFreedCompanionCost(): string {
+    return 'you let the last face go, and unheld it did not last. the dark wears none now. the seventh reads the price plainly: a way that answered because he carried your words down it stays shut, and what warmth the deep lent through him the deep keeps. it is entered as a thing you chose and a thing it cost.';
   },
 
   // -------------------------------------------------------------------------

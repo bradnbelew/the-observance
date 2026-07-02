@@ -133,6 +133,19 @@ export interface ReportDecision {
   notes: string[];
 }
 
+/**
+ * The post-reckoning sharp-quote shift (the-companion.md §7 T1). The personalized "it knows me"
+ * observation IS the sharp NAMED-quote lane the companion (Wren) is the in-fiction channel for. When
+ * his reckoning resolves, that lane must change:
+ *   - 'condemn' | 'free' → Wren (the harvest channel) is taken/let-go, so the harvest CLOSES: the sharp
+ *     NAMED callouts go QUIET (this producer emits no reports). The ambient Tier-0 land-behavior lines
+ *     (customs.ts / the drip) are a DIFFERENT lane and are never gated here.
+ *   - 'understand' → he stays kept-in-part, still the channel, so the quotes PERSIST but READ
+ *     DIFFERENTLY (the kept-true framing — mercy as accuracy).
+ *   - null (pre-reckoning, or no reckoning) → the sharp lane is unchanged (the back-compat default).
+ */
+export type ReckoningShift = 'condemn' | 'understand' | 'free' | null;
+
 /** Immutable input. `reported` is the per-player dominant-habit ordinal already dripped (idempotency). */
 export interface ReportInput {
   dossiers: ObservationDossier[];
@@ -142,6 +155,12 @@ export interface ReportInput {
   mode: 'auto' | 'confirm';
   /** OPTIONAL difficulty register (A10) — carried onto each report; never changes WHO is reported. */
   tone?: Tone;
+  /**
+   * OPTIONAL post-reckoning sharp-quote shift (§7 T1). Absent/null ⇒ the lane is unchanged (the
+   * back-compat default the self-test pins). condemn/free ⇒ the sharp lane goes quiet (no reports);
+   * understand ⇒ the same grounded facts, re-framed as kept-true.
+   */
+  reckoningShift?: ReckoningShift;
 }
 
 /** The dominant habit for a dossier, or null if flat/tied (precision floor). */
@@ -171,6 +190,14 @@ export function decidePersonalizedReports(
   const marks: Record<string, number> = {};
   const notes: string[] = [];
   const tone: Tone = input.tone ?? 'plain';
+  const shift: ReckoningShift = input.reckoningShift ?? null;
+
+  // §7 T1: condemn/free close the harvest channel — the sharp NAMED lane goes QUIET. (The ambient
+  // Tier-0 land-behavior lines live in a different producer and are never gated here.)
+  if (shift === 'condemn' || shift === 'free') {
+    notes.push(`sharp-quote lane quiet — reckoning '${shift}' closed the harvest channel (§7 T1); ambient Tier-0 unaffected`);
+    return { reports, marks, notes };
+  }
 
   for (const d of input.dossiers) {
     if (!d.name) {
@@ -189,7 +216,12 @@ export function decidePersonalizedReports(
 
     // The deterministic floor — ALWAYS the authored voice line, chosen before the model is offered
     // the slot. customPhrase resolves the chorus custom; reportObserved is the Watcher register.
-    const line = voice.reportObserved(d.name, d.honoredCount, customPhrase(HABIT_CUSTOM[habit]));
+    // §7 T1: post-'understand' the quotes PERSIST but READ DIFFERENTLY — the same grounded facts,
+    // re-framed as kept-true (mercy as accuracy). Any other shift value uses the standard line.
+    const phrase = customPhrase(HABIT_CUSTOM[habit]);
+    const line = shift === 'understand'
+      ? voice.reportObservedKeptTrue(d.name, d.honoredCount, phrase)
+      : voice.reportObserved(d.name, d.honoredCount, phrase);
 
     reports.push({
       groupKey: d.groupKey,
