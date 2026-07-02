@@ -1,69 +1,73 @@
 # THE OBSERVANCE — NEXT SESSION START HERE
 
-> ✅ **PERPLEXITY RESEARCH INTEGRATED (2026-07-01).** The research was triaged (mostly ratified existing
-> principles; genuine deltas = modpack-OK → Voice Chat, server-side visual tools, the audit overstates
-> brokenness) and executed as **4 committed all-green waves** on `feat/build-everything-2026-07-01`.
-> Full ledger: `design/CHANGE-MANIFEST.md` → "AUTONOMOUS SESSION LOG". Read that FIRST.
+> 🔴 **THE MANDATE (2026-07-02, Ethan, verbatim):** *"reshape everything, build everything, and make sure we
+> dont skip out on editing anything, the structures, the lore, the ciphers, the web, the integrations. but
+> do it on a fresh session."* Scope chosen: **"Deeper redesign"** — also rework puzzle *content* (fewer
+> letter-ciphers, more observation / environmental / lateral puzzles), not just structure.
 >
-> **State now:** still fully-built + all-green + **live-server-unproven**. Two things gate real progress:
-> 1. **Ethan must APPLY the new SQL to live Supabase by hand** (0004_v_record, 0005_reconcile_tracker_views,
->    schema-repair owner_uuid idx, `npm run db:seed`→apply-all.sql). Code fixes assume these are applied.
-> 2. **PLAYTEST** with friends. The next move is *prove the loop live*, not keep building blindly.
+> **This IS that fresh session. Build the reshape. Do not ask whether to start — start.**
 >
-> **Key lesson:** the `IMPROVEMENT-AUDIT.md` **overstates brokenness** — verify every finding against live
-> code before acting (each wave, most "broken" P0s were already fixed). Trust the code.
->
-> **Open design rulings waiting on Ethan** (see CHANGE-MANIFEST "OPEN"): tier-3 hint philosophy for cipher
-> nodes · world-craft (display entities/ModelEngine) · decide.ts salience rewrite · per-player illusion
-> primitives · SESSION-ZERO consent-script alignment · the Voice Chat "Ear".
+> The whole point of the reshape: playtest-honest verdict was *"it plays like a puzzle GAME, not a
+> mysterious WORLD you slowly learn about."* Great research had been filed and NOT applied. This session
+> applies it — deeply, everywhere, in lockstep.
 
 ---
 
-## 1. WHERE THINGS STAND (2026-07-01, end of the "build everything" wave)
-The haunting layer is BUILT and green across all three layers (plugin jar ~487 KB / 32 beats · discord
-×7 test suites · datapack JSON). Full inventory is in the memory note `[[the-observance-v2-direction]]`
-(the ★ "build everything" wave entry) — don't re-derive it. Highlights: 65 puzzles + producers · per-
-player illusion (name-on-wall, Lens, reflection, fog) · Observer Tier-0 · Wren's companion arc live +
-reckoning · the co-op vault · the finale rite · the deep structures (`placedeep`: the future-dated grave
-+ the Seventh's chamber) · the Undercroft dimension · the record website (deployable) · DB schema-repair.
+## 1. READ THESE TWO FIRST (they are the whole brief)
+1. **`design/THE-RESHAPE.md`** — THE PLAN. 6 principles (hide the language / world carries the mystery /
+   web-not-chain / reward the theory / layered facts / 3-layer architecture) + an appendix folding in all
+   deep research, cited to shipped games. This is the spine of the reshape.
+2. **`design/RESHAPE-RESEARCH.md`** — THE EVIDENCE LIBRARY. The full cited corpus (~15 games + ARG canon +
+   insight psychology + tabletop clue theory + a verified Minecraft-1.21-affordances inventory) distilled
+   into actionable techniques with sources. Pull from here so every build decision is grounded, not vibes.
 
-**Remaining ceiling (NOT missing features — needs Ethan/infra):** audio (zero OGG, can't generate) ·
-Observer Tiers 1–2 (needs hosted bot + Whisper + LLM) · world *arrangement* (set-pieces stamp in flat
-rows) + surface-town NPCs · P2 polish (desire-path grave, deep-site choice-marker placement, black-moon
-temporal gate, `bases` id-type). Full prioritized backlog: **`design/IMPROVEMENT-AUDIT.md`**.
+Then skim, for grounding only: `design/RUNBOOK.md` (how it's actually played) and
+`design/LAYER-LEDGER.md` (the 236-layer anti-forgetting sweep — the "don't skip anything" checklist).
 
-## 2. CANONICAL DOCS — trust these, ignore the rest
-- **`design/RUNBOOK.md`** — the operator's guide (setup → run with friends → admin commands → honest
-  status). READ FIRST for "how do we actually play it."
-- **`design/IMPROVEMENT-AUDIT.md`** — the 41-row prioritized P0/P1/P2 backlog (some findings already
-  fixed — it ran concurrently with builders, so cross-check against live code before acting).
-- **`design/CHANGE-MANIFEST.md`** — the decisions ledger (every locked decision + the fold passes).
-- The four canon docs: `design/{OVERHAUL,BUILD-PLAN,PUZZLES,INTEGRATION}.md`. Where they disagree with
-  code, **the code wins** (they drifted forward — several claimed problems are already fixed).
+## 2. THE RESHAPE, CONCRETELY — what "reshape everything" touches (all five, in lockstep)
+Ethan named five surfaces explicitly. None may be skipped; a change in one MUST update the others.
+- **STRUCTURES** (plugin `StructureTemplates.java` + placement). Today's set-pieces stamp as legible
+  "here-is-a-puzzle" stones in flat rows. Reshape → the world carries the mystery: decay-as-clock (copper
+  oxidation / sculk), the significant *absence*, placement-as-grammar, the deliberate contradiction as the
+  load-bearing clue. Hide the "this is a puzzle" framing. (See RESHAPE-RESEARCH §3, §4, §8.)
+- **LORE** (`design/OVERHAUL.md` canon + keeper voices + the record). Layered facts
+  (confirmed/implied/misleading/false); the motif that makes distant things rhyme; silence-is-information.
+  Every mechanical change gets its story callback (the lockstep/consistency principle —
+  `[[the-observance-consistency-principle]]`).
+- **CIPHERS → PUZZLES** (`design/PUZZLES.md` + oracle + datapack). THE biggest content shift: **fewer
+  letter-ciphers.** Hide the alphabet and make literacy *earned* (Tunic/Fez); convert lookup-ciphers into
+  observation / environmental / lateral puzzles that resolve to an *action* using universal competence, not
+  an invented alphabet. Keep every leap retrace-fair (moon-logic test). Build a redundant WEB (≥3 clues
+  per conclusion, Three-Clue-Rule), not the current chain. Reward the theory, not the lookup.
+  (RESHAPE-RESEARCH §1, §2, §5, §6.)
+- **WEB** (`dashboard/` — /record, /author, /status). The record must reflect the new fact-layering
+  (redaction = confirmed vs implied), the new web (not a linear un-redact), and stay in sync with the arc.
+- **INTEGRATIONS** (discord bot + showrunner cron + the flag graph + the oracle normalizer). The
+  cross-surface oracle (Java ↔ TS same normalizer), `requires_flags`/`set_flags` graph, showrunner drip,
+  and per-player illusion primitives (Paper `sendBlockChange`/`hideEntity`) must all move with the redesign.
 
-## 3. THE PIPELINE FOR THE PERPLEXITY RESEARCH (Ethan's established discipline — reuse it)
-When Ethan provides the research, do NOT take it at face value:
-1. **Expand + triage it** as creative leverage — sort each idea into: sharpens-what-exists (fold) /
-   new-cheap-high-leverage (fold) / expensive-park / conflicts-a-locked-decision (surface for a ruling).
-   Weigh everything against the sole-builder scope + the two invariants (dynamic-roster, grounding/
-   consent). Tell Ethan your read BEFORE integrating. He wants to DECIDE together.
-2. **Then his two-pass integration:** (a) a "what to add/change/cut" pass captured in the CHANGE-MANIFEST
-   (nothing orphaned) → (b) a cohesion pass → (c) a lore/character/story pass → (d) an integration pass
-   that wires every touchpoint (code · plugin · seeds · docs · callbacks) — because a change added in one
-   place must update the story that calls back to it, the plugin that makes it work, and the doc players
-   find later. THEN build.
+## 3. THE PIPELINE (Ethan's established discipline — DO NOT skip; this is how nothing gets orphaned)
+Two-pass integration, every touchpoint, in this order — captured in `design/CHANGE-MANIFEST.md`:
+1. **Add/change/cut pass** → write it into CHANGE-MANIFEST (nothing orphaned; every old layer either
+   migrates, is rebuilt, or is explicitly cut with a reason). Cross-check against the LAYER-LEDGER so no
+   planned layer silently drops.
+2. **Cohesion pass** — do the pieces still form one world? Audit for orphaned mechanics on stale ARG state.
+3. **Lore / character / story pass** — every changed mechanic gets its callback in the fiction + the record.
+4. **Integration pass** — wire EVERY touchpoint: plugin · datapack · discord · showrunner · oracle · seeds
+   · website · docs · player-facing callbacks. A change added in one place updates the story that calls
+   back to it, the plugin that makes it work, and the doc/record the player finds later.
+5. **THEN build** — and keep it green after each change.
 
-## 4. HOW TO BUILD (the pattern that worked this session)
-- **Orchestrate with background subagents on DISJOINT domains** (discord / plugin / datapack / arc+design
-  / dashboard). **Only ONE plugin agent at a time** (plugin/ Java serializes — concurrent edits collide).
-- Every agent's PRIME DIRECTIVE: **keep the checks green / keep it compiling after each change; revert
-  anything that goes red.** A green subset beats a broken full set.
-- **Director (you) verifies each agent's output independently** — don't trust "it's registered/green"
-  reports blindly (this session caught several stale/inaccurate claims by re-checking live code).
-- Worker agents on Sonnet for mechanical work, **Opus for delicate voice/creative/integration** + your
-  own director reasoning (usage efficiency).
+## 4. HOW TO BUILD (the orchestration pattern that worked)
+- Background subagents on **DISJOINT domains** (discord / plugin / datapack / arc+lore / dashboard).
+  **Only ONE plugin agent at a time** — `plugin/` Java serializes; concurrent edits collide.
+- Every agent's PRIME DIRECTIVE: **keep it compiling / keep checks green after each change; revert red.**
+- **You (director) verify each agent's output against live code** — reports overstate done-ness; re-check.
+- Sonnet for mechanical work; **Opus for voice / creative / integration** + your own director reasoning.
+- **META-LESSON (proven repeatedly):** `IMPROVEMENT-AUDIT.md` and seed comments **OVERSTATE brokenness.**
+  Verify each "broken" claim against live code before acting — many are already fixed. Trust the code.
 
-## 5. VERIFY-GREEN COMMANDS (run to confirm the baseline before + after any change)
+## 5. VERIFY-GREEN COMMANDS (baseline before + after every change)
 ```
 # plugin (Java)
 cd /d/the-observance/plugin && "D:/_gradle/gradle-8.10.2/bin/gradle" --offline jar -q
@@ -77,15 +81,31 @@ cd /d/the-observance/discord && npx tsc --noEmit \
 cd /d/the-observance/datapack && for f in $(find . -name '*.json' -o -name '*.mcmeta'); do \
   node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || echo "INVALID: $f"; done
 ```
-Gradle is at `D:/_gradle/gradle-8.10.2/bin/gradle`. The DB is Braden's Supabase acct
-(`fdnmhbpxnodrnbrzrlqq`) — the connected Supabase MCP can't reach it; Ethan applies SQL by hand via
-`discord/supabase/apply-tonight.sql`.
+Gradle: `D:/_gradle/gradle-8.10.2/bin/gradle`.
 
-## 6. GIT NOTE
-Nothing has been committed this session (local edits only, per policy — commit only when Ethan says).
-There is a large uncommitted working tree. If Ethan wants a checkpoint, offer to commit before the next
-big wave so the research-integration is a clean diff on top.
+## 6. CURRENT STATE — what the reshape starts FROM (all live + green as of 2026-07-02)
+The full stack is DEPLOYED and working — the reshape edits a live, green baseline, not a broken one:
+- **Plugin 0.2.2** on the server (terrain-following placement fixed; answer-sign reachability fixed).
+- **Resourcepack** (rune font + 4 ambient sounds) + **datapack** on the server.
+- **Discord bot + showrunner cron** on Railway (Node-22 + ws polyfill fixed the crash-loop; `tsx` in deps).
+- **The Record website** on Vercel (/record public · /author + /status admin-gated).
+- Env vars all set on the platforms. `.env` / `.env.local` gitignored (never committed).
+
+**Known-not-yet-active (don't mistake for reshape scope — these are pre-existing carry-overs):**
+- Keeper voices (6 OGGs) built in source — need a **resourcepack re-host** (new zip + sha1) to be heard.
+- `the_threshold` deep-site answer sign — needs the crouch-corridor redesign (deferred; fold into reshape).
+- Observer Tiers 1–2 (chat/voice "it knows your name") — scope decisions (LLM brain + `0008_observations`).
+- **Rotate the exposed credentials** (service_role key + Discord bot token were pasted in chat earlier) once
+  everything's stable: Supabase Settings→API roll service_role; Discord Bot→Reset Token. Then update the
+  Railway/Vercel env vars. Not a blocker for building, but do it before any wider playtest.
+
+## 7. GIT
+On `feat/build-everything-2026-07-01`. Reshape docs committed (515cb4b + the RESHAPE-RESEARCH commit).
+Commit in clean waves per the pipeline (add/change/cut → cohesion → lore → integration → build), each
+green. Commit only at wave boundaries, not mid-edit. `.env*` stays gitignored.
 
 ---
-**TL;DR for the fresh session:** read this + RUNBOOK, confirm you're oriented, then **STOP and ask Ethan
-for the Perplexity research.** Don't build until it's folded in via his pipeline.
+**TL;DR for the fresh session:** you are cleared to build the deep reshape NOW. Read `THE-RESHAPE.md` +
+`RESHAPE-RESEARCH.md`, run the add/change/cut pass into `CHANGE-MANIFEST.md` (touching all five surfaces —
+structures, lore, ciphers→puzzles, web, integrations, nothing orphaned), then build in green waves via the
+pipeline. The world should stop announcing "here is a puzzle" and start being a mystery you slowly learn.
