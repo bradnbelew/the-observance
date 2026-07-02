@@ -824,6 +824,26 @@ redundant ciphers, deepen into a ≥3-clue web. Active letter-ciphers **8 → 4*
 | ~55 non-cipher rows (observation/behavior/object/code/coords/spoken/lore + 20 breadth quests) | **KEEP** | The diversity that already shipped. Untouched except where a label/structure changes (S1). |
 | **The web (front + back)** | **REBUILD (structure)** | Front-half is a **single-point gate** (`rosetta_known` → all six stones); back-half a **tight chain** (Vigenère→substitution→co-op). Add the **≥3-clue-per-conclusion web**: redundant clues to each keeper-fate, one **cross-keeper motif combination** (a clue at keeper A + a clue at keeper B → a third thing), and one **cross-surface lock** (in-world mark + `#the-record` fragment cash out only combined). |
 
+### S3 PIVOT (2026-07-02, post-converge) — the cipher migrations are SUPERSEDED; keep the ciphers
+
+The converge (R2's **cipher-as-inversion** motif) + Ethan's **"pure-lore ciphers are good"** call
+change S3's answer. Converting the ciphers to observation would now *orphan* the R2 lore that made
+each cipher meaningful. So the three MIGRATE/REBUILD rows above are **superseded → KEEP-as-characterization:**
+- **`stone-sella` (atbash)** — KEEP. R2 recast the atbash AS Sella's drowning-motif (the far water gives
+  everything back mirror-wrong; `a-a-a-the-copybook` explains it). The reflection *is* the atbash; with
+  cribs the reversed runes are now readable. Only ensure hints frame it as reading-the-reflection (R2's
+  copybook already does). Do NOT strip the atbash.
+- **`stone-brann` (rail-fence, staged)** — KEEP. R2 recast it as "reads only in the dark" (his traded
+  dark-hours). Already a lore/observation node; the cipher is now characterization. No conversion.
+- **`iss-warm`** — KEEP. Verified already a fair dead-end-with-teeth (the warm misreading routes to the
+  cold grave that pays nothing — Principle 5). `iss_trusted` is set-but-required-by-nothing (harmless).
+- **`stone-vaun` (Caesar)** — KEEP as honest lore (S3 revised entry above).
+**What genuinely survives S-C:** (1) the **cross-keeper ≥3-clue web** — *already delivered* by R2's
+seven-motif (Vaun vii / Brann 7-shrines / Sella copybook = ≥3 independent sites); (2) the **cross-surface
+lock** (in-world mark + `#the-record` fragment, combined) — the one net-new S-C item → folded into **S-E**.
+Net: S-C is essentially DONE by the converge; the reshape's "fewer letter-ciphers" goal is met by
+**ciphers-that-mean-something**, a better answer than deletion.
+
 **Touchpoints:** `puzzles_seed.sql` / `metapuzzle_seed.sql` / `progression_seed.sql` (rows + flags);
 `OracleResolver.java` + `resolve.ts` (unchanged — surface-agnostic gate); `hints_seed.sql` (hints
 teach the cipher *family*, not the plaintext — align cipher t3s per the OPEN #2 above); the record
