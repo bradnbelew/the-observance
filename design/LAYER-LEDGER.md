@@ -78,3 +78,18 @@ the puzzle seed + flag-graph + tiered hints + thread cards (applied live) · the
 **Rule (the consistency principle):** do not add new arc until the vertical slice is seen working
 end-to-end live. The ledger's lesson is that we already have *more* built than proven — the next win is
 **proof**, not more code.
+
+---
+
+## LOOP-TICK CORRECTIONS (2026-07-01, verified against live code)
+- **Companion-reveal chain — NOT a gap.** The reveal is flag-driven: `WrenNpcListener` sets
+  `companion_revealed` → `thread_cards.sql:303` surfaces a card gated on `companion:revealed`. The missing
+  `companion-reveal` *puzzle row* is intentional (`metapuzzle_seed:293`: "harmless today"). No action.
+- **ThresholdVault roster supplier — acceptable for week one.** There is no existing active-roster source;
+  `AcceptingRiteListener` uses the same online-count fallback. For a small synchronous group, online-count
+  ≈ the active roster, so this does NOT block week one. A true "active roster" (opted-in / dossier-bearing
+  players) is a deferred deep-half design decision, not a bug. Downgraded from built_not_wired → deferred.
+
+**Director status:** week-one *building* is essentially complete. The remaining path is DEPLOY (bot/cron on
+Render, website on Vercel, packs on the server — all in progress) + the first VERTICAL-SLICE PLAYTEST. Per
+the consistency principle, no new arc is being added until that slice is proven live.
