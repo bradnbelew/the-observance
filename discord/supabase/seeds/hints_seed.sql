@@ -150,7 +150,7 @@ insert into public.hints (puzzle_key, tier, body) values
 
 -- bound-word — the Iss vigenère plaintext IS the coop-gate''s need (the convergence word).
 ('bound-word', 2, 'the catch re-cut iss''s stone. read it now with his own name laid over it, and it yields a single bound word — the word another gate is waiting to be given.'),
-('bound-word', 3, 'lay iss''s name over his stone, letter against letter, and it reads: the one who turned away. that is the bound word. carry it to the gate that needs it.'),
+('bound-word', 3, 'the catch re-cut his stone; the key is still the man. lay his own name over the fresh marks, letter against letter, and read the single word that comes. that word is the bound word — carry what you read to the gate that waits on it.'),
 
 -- m4-three-hands — the cross-surface co-op gate (three acts in one window; not typed).
 ('m4-three-hands', 2, 'this gate does not open to a word. it opens to three things done at once — a foot, a carve, a word posted here — inside the same short breath.'),
