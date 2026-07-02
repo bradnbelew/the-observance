@@ -297,8 +297,9 @@ public final class StructureTemplates {
         pen.setIfAir(cx + 2, cy + 2, cz + 1, Material.COBWEB);
         pen.setIfAir(cx, cy + 2, cz, Material.COBWEB);
 
-        // The "margin-note" answer sign — a small wall sign beside the lectern, BLANK (submission slot).
-        // (The lectern is the primary answer surface; this sign is a second slot integrated as a margin.)
+        // The "margin-note" label sign — a small WAXED wall sign beside the lectern carrying the margin flavour.
+        // (The lectern is the answer surface; this waxed sign is a label only — it is NOT a submission slot and
+        // never pollutes an answer.)
         pen.labelWallSign(cx + 1, cy + 1, cz - 2, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"in the margin:", "\"read it back", "to me —\"", "(her hand)"});
         return answer;
@@ -350,13 +351,20 @@ public final class StructureTemplates {
         pen.putBook(cx - 2, cy, cz, "sella's copybook",
                 "i drew the dark before\nthey would look at it.\n\na a a  b b b");
 
-        // THE ANSWER: a dark-prismarine slab set flush at the water's edge, readable looking down into
-        // the pool. Answer sign recessed low so it reads like writing under the surface (a submission slot).
-        pen.set(cx, cy - 1, cz - 2, Material.DARK_PRISMARINE);
-        Location answer = pen.wallSign(cx, cy, cz - 1, BlockFace.SOUTH, Material.WARPED_WALL_SIGN);
+        // THE ANSWER: the "far marker" at the pool's DRY north rim (outside the 3x3 water). A dark-prismarine
+        // marker-post rises from the dry north-edge block; the answer sign is on its NORTH face at head height
+        // (cy+1), facing OUT away from the pool toward a dry standing spot on solid prismarine — so a player
+        // reads/edits it standing on land, never in the water (blank submission slot). Sella's reflecting-pool
+        // identity is kept: this is the far marker read across the still water from the dry rim.
+        pen.set(cx, cy, cz - 2, Material.DARK_PRISMARINE);        // marker-post base (backing, body height)
+        pen.set(cx, cy + 1, cz - 2, Material.DARK_PRISMARINE);    // marker-post: backing behind the answer sign
+        pen.set(cx, cy + 2, cz - 2, Material.DARK_PRISMARINE);    // marker-post: backing behind the label
+        pen.set(cx, cy - 1, cz - 3, Material.DARK_PRISMARINE);    // dry standing ground north of the pool
+        pen.set(cx, cy - 1, cz - 4, Material.DARK_PRISMARINE);    // the dry approach step the reader stands on
+        Location answer = pen.wallSign(cx, cy + 1, cz - 3, BlockFace.NORTH, Material.WARPED_WALL_SIGN);
 
-        // Separate WAXED "far marker" label sign, hung above (does not pollute answers).
-        pen.labelWallSign(cx, cy + 1, cz - 2, BlockFace.SOUTH, Material.WARPED_WALL_SIGN,
+        // Separate WAXED "far marker" label sign, above the answer on the same dry post (does not pollute answers).
+        pen.labelWallSign(cx, cy + 2, cz - 3, BlockFace.NORTH, Material.WARPED_WALL_SIGN,
                 new String[]{"far marker —", "read what the", "water keeps", "still"});
         return answer;
     }
@@ -407,10 +415,15 @@ public final class StructureTemplates {
         pen.set(cx, cy + 2, cz + 2, Material.DEEPSLATE_BRICKS);
         pen.hangingLantern(cx, cy + 1, cz + 2, true);
 
-        // THE ANSWER: a carved threshold-stone LOW to the floor just past the lintel, so you must stoop
-        // (bow) to read/edit it. Answer sign at cy on the back stone (blank submission slot).
-        Location answer = pen.wallSign(cx, cy, cz + 2, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN);
-        // Separate WAXED label ABOVE the lintel (read before you stoop) — does not pollute answers.
+        // THE ANSWER: a carved threshold-stone on the back wall just past the lintel. The single-file passage
+        // is walled cx-1/cx+1, so the readable face must point up the passage (NORTH) toward the player: the
+        // sign hangs on the solid stone-brick back wall (cz+3) facing NORTH, read from the dry solid floor at
+        // (cx,cy-1,cz+1) — clear of the lintel and below the soul-lantern. Left LOW at cy so Orin's stoop is
+        // built into reading it too (blank submission slot). Backing = the back wall; standing cell open.
+        Location answer = pen.wallSign(cx, cy, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN);
+        // Separate WAXED label ABOVE the lintel (read before you stoop) — does not pollute answers. Add a
+        // solid backing block behind it (cx,cy+2,cz-2) so the wall sign cannot pop off.
+        pen.set(cx, cy + 2, cz - 2, Material.DEEPSLATE_BRICKS);
         pen.labelWallSign(cx, cy + 2, cz - 1, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"orin's threshold", "the low stone", "asks a bow —", "stoop to read"});
         return answer;
@@ -458,11 +471,15 @@ public final class StructureTemplates {
         // Amethyst bud on the back wall — a sliver of moon (earned cool light).
         pen.clusterOn(cx + 1, cy + 2, cz + 2, BlockFace.SOUTH);
 
-        // THE ANSWER: a watch-stone the fire lights — a chiseled block facing the campfire with the
-        // answer sign (blank submission slot) so firelight falls on it.
+        // THE ANSWER: a watch-stone the fire still lights — the answer sign is mounted on the tally back-wall
+        // (cz+2, solid) at head height, facing NORTH out over the open platform so a player standing on the
+        // dry watch-floor (at cz, never in the campfire at cz-1) faces it head-on (blank submission slot). The
+        // watch-stone plinth stays below it at (cx,cy,cz+1); firelight from the sheltered fire still falls here.
         pen.set(cx, cy, cz + 1, Material.CHISELED_DEEPSLATE);
-        Location answer = pen.wallSign(cx, cy, cz, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN);
-        // Separate WAXED label sign on the watch-post (does not pollute answers).
+        Location answer = pen.wallSign(cx, cy + 1, cz + 1, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN);
+        // Separate WAXED label sign on the watch-post — add a solid backing block behind it so it cannot
+        // pop off (the 5x5 platform has no wall at cx-2,cz-3).
+        pen.set(cx - 2, cy + 1, cz - 3, Material.COBBLED_DEEPSLATE);
         pen.labelWallSign(cx - 2, cy + 1, cz - 2, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"brann's watch", "count the black", "moons — do not", "sleep"});
         return answer;
@@ -554,9 +571,12 @@ public final class StructureTemplates {
         // The reckoning-table: a low chiseled slab you stoop to read (the bow built in), centred.
         pen.set(cx, cy - 1, cz, Material.CHISELED_DEEPSLATE);
         pen.stairs(cx, cy, cz, Material.POLISHED_DEEPSLATE_STAIRS, BlockFace.SOUTH, false); // the canted reading face
-        // THE ANSWER: the inscribed slab-face — a blank unwaxed submission slot on the table's front.
+        // THE ANSWER: the inscribed slab-face — a blank unwaxed submission slot on the table's FRONT. Placed one
+        // cell forward (south) of the canted stair so BOTH survive: the stair (cx,cy,cz) is the solid backing,
+        // the sign faces SOUTH and is read stooped from the dry floor at (cx,cy-1,cz+2). (Backing block behind
+        // the table kept at cz-1.)
         pen.set(cx, cy, cz - 1, Material.CHISELED_DEEPSLATE);
-        Location answer = pen.wallSign(cx, cy, cz, BlockFace.SOUTH, deepslateWallSign());
+        Location answer = pen.wallSign(cx, cy, cz + 1, BlockFace.SOUTH, deepslateWallSign());
 
         // The counting-row: six amethyst studs set into the north rim — the digit-glyphs, i..vi, cool light.
         int[] cols = {-3, -2, -1, 1, 2, 3};
@@ -569,13 +589,16 @@ public final class StructureTemplates {
         // The four sign-mark arms — a compass of the coordinate marks (N/S/E/down) squared around the table.
         pen.set(cx, cy, cz - 3, Material.CHISELED_DEEPSLATE);         // N arm
         pen.set(cx, cy, cz + 3, Material.CHISELED_DEEPSLATE);         // S arm
+        pen.set(cx, cy + 1, cz + 3, Material.CHISELED_DEEPSLATE);     // S arm raised — solid backing for the heading
         pen.set(cx + 3, cy, cz, Material.CHISELED_DEEPSLATE);         // E arm
-        pen.set(cx, cy - 1, cz, Material.CHISELED_DEEPSLATE);         // down arm (under the table itself)
+        // (down arm at (cx,cy-1,cz) is the table's base block, already set above — no redundant re-set.)
         // Wrongness: the E arm scored through — a cracked block, someone disputed the reckoning.
         pen.set(cx + 3, cy, cz + 1, Material.CRACKED_DEEPSLATE_TILES);
 
-        // Separate WAXED label — the reckoning heading (does not pollute the answer slot).
-        pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, deepslateWallSign(),
+        // Separate WAXED label — the reckoning heading. Mounted on the raised S-arm, facing NORTH into the
+        // square (backing = the S-arm at cz+3), so it does not overwrite the arm and cannot pop off. Sits at
+        // cy+1, clear of the answer slot (which is at cy) — does not pollute the answer.
+        pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, deepslateWallSign(),
                 new String[]{"the reckoning", "count the marks,", "then the way —", "north, down, read"});
         return answer;
     }
@@ -698,8 +721,10 @@ public final class StructureTemplates {
         Location answer = pen.lectern(cx, cy, cz - 1, BlockFace.NORTH);
         pen.putBook(cx, cy, cz - 1, "the accepting",
                 "the dark cannot be killed\nor escaped. only witnessed.\n\nbow, together, and be the\ncompany the kept were.");
-        // Separate WAXED label at the ring's edge — the one instruction, sparse.
-        pen.labelWallSign(cx, cy, cz + 4, BlockFace.SOUTH, Material.WARPED_WALL_SIGN,
+        // Separate WAXED label at the ring's edge — the one instruction, sparse. Mounted just inside the south
+        // lamp-post (cz+4, solid), facing NORTH into the gather-floor so the quorum reads it — the lamp-post is
+        // the backing, so it neither overwrites the post nor pops off (the open floor has no wall).
+        pen.labelWallSign(cx, cy, cz + 3, BlockFace.NORTH, Material.WARPED_WALL_SIGN,
                 new String[]{"unbroken light", "one fire, kept.", "bow as one —", "all who are here"});
         return answer;
     }
@@ -749,10 +774,15 @@ public final class StructureTemplates {
         // the warmth is below, and someone is there (the-seventh-below: "further down is where the warmth is").
         pen.hangingLantern(cx, cy - 2, cz + 2, true);
 
-        // THE ANSWER-LINTEL: the true-walk arrival word is cut on the OPEN lintel (a door let stand). A blank
-        // unwaxed submission slot on the lintel's inner face, read stooped. Returned as the answer surface.
-        Location answer = pen.wallSign(cx, cy, cz + 1, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN);
-        // Separate WAXED grave-marker — the future date, and who opened it. (Does not pollute the answer.)
+        // THE ANSWER-LINTEL: the true-walk arrival word, cut on the corridor's east inner wall (cx+1, solid
+        // deepslate brick) just past the lintel, facing WEST into the passage at head height. A player reads/
+        // edits it standing on the dry solid floor at (cx,cy-1,cz+1) — clear of the open grave (the pit is one
+        // block further south at cz+2) and past the crouch-gap. The east wall is the backing; the passage
+        // column is the open standing cell (blank submission slot). Returned as the answer surface.
+        Location answer = pen.wallSign(cx, cy + 1, cz + 1, BlockFace.WEST, Material.DARK_OAK_WALL_SIGN);
+        // Separate WAXED grave-marker — the future date, and who opened it. (Does not pollute the answer.) Add
+        // a solid grave-head block behind it (cx,cy,cz+2 sits over the open grave) so the sign cannot pop off.
+        pen.set(cx, cy, cz + 2, Material.POLISHED_BLACKSTONE_BRICKS);
         pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"the date is not", "yet come. the", "stone is open", "from the inside"});
         return answer;
@@ -825,8 +855,10 @@ public final class StructureTemplates {
         pen.set(cx, cy + 2, cz - 1, Material.DEEPSLATE_BRICKS);
         pen.clusterOn(cx, cy + 1, cz - 1, BlockFace.DOWN);
 
-        // Separate WAXED label — the seal's truth (the deep is sealed with the WITHHOLDING of a name).
-        pen.labelWallSign(cx - 2, cy + 1, cz - 3, BlockFace.SOUTH, Material.WARPED_WALL_SIGN,
+        // Separate WAXED label — the seal's truth (the deep is sealed with the WITHHOLDING of a name). Mounted
+        // one cell into the chamber (cz-2) facing SOUTH so the effaced back-wall block at cz-3 is its solid
+        // backing — it no longer overwrites the scrape-course and cannot pop off.
+        pen.labelWallSign(cx - 2, cy + 1, cz - 2, BlockFace.SOUTH, Material.WARPED_WALL_SIGN,
                 new String[]{"the seal is a", "name. the wall", "was scraped —", "read it back"});
         return answer;
     }
@@ -884,7 +916,9 @@ public final class StructureTemplates {
         // the vault's plinth, facing the room). The ThresholdVaultListener resolves the SignChangeEvent here.
         Location answer = pen.wallSign(cx, cy, cz - 1, BlockFace.SOUTH, copperWallSign());
         // Separate WAXED label on the rune-wall — the co-op instruction (does not pollute the combination).
-        pen.labelWallSign(cx, cy + 1, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
+        // Mounted one cell into the room (cz+2) facing NORTH into the chamber so the rune-wall block at cz+3
+        // is its solid backing — it no longer overwrites the rune-wall face and cannot pop off.
+        pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"the threshold", "vault. each holds", "one rune —", "read them as one"});
         return answer;
     }

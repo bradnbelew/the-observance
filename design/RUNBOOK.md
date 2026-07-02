@@ -15,7 +15,7 @@
 
 ### 1b. Server (Crafty)
 - Create a **Paper 1.21.11** server; give it Java 21 + 3–4 GB RAM.
-- **Plugin:** upload `plugin/build/libs/observance-0.2.1.jar` to `plugins/`.
+- **Plugin:** upload `plugin/build/libs/observance-0.2.2.jar` to `plugins/`.
 - **Key:** in `plugins/Observance/config.yml`, set `supabase.service-key: "<service_role key>"`
   (leave `service-key-env` alone). The `url` is already filled.
 - **Datapack:** upload the `datapack/observance/` folder into the world's `datapacks/` folder

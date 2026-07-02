@@ -6,7 +6,7 @@ secrets, or a human decision. The plugin is built to run safely even before all 
 
 ## 1. Build + upload
 - [ ] On a machine with JDK 21 + Gradle ≥ 8.10: `cd plugin && gradle wrapper && ./gradlew build`.
-- [ ] Upload `build/libs/observance-0.2.1.jar` to **PebbleHost** `plugins/` (SFTP or panel file
+- [ ] Upload `build/libs/observance-0.2.2.jar` to **PebbleHost** `plugins/` (SFTP or panel file
       manager). Restart the server once so `config.yml` + `sites.yml` are written.
 
 ## 2. Secrets (host env — never commit)

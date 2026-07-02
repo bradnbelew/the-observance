@@ -22,7 +22,7 @@ gradle wrapper
 ./gradlew build        # Windows: gradlew.bat build
 ```
 
-The shaded jar lands in `build/libs/observance-0.2.1.jar`. Copy that into the server's `plugins/`.
+The shaded jar lands in `build/libs/observance-0.2.2.jar`. Copy that into the server's `plugins/`.
 
 Notes:
 - `paper-api` and `gson` are `compileOnly` (Paper provides both at runtime). The `shadow` plugin is
