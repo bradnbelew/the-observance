@@ -69,8 +69,14 @@ export default async function AuthorPage() {
       .select("*")
       .order("bond_points", { ascending: false }),
     supabase.from("players").select("*").order("name", { ascending: true }),
-    supabase.from("dossiers").select("*"),
-    supabase.from("custom_compliance").select("*"),
+    // Read the reconciling views (0005_reconcile_tracker_views.sql), not the raw
+    // tables: the plugin writes flat, mc_uuid-keyed rows with a NULL player_id and
+    // renamed columns, so a direct table read would miss the player_id join and
+    // render blank. The views synthesize player_id via players.mc_uuid and alias
+    // the flat columns back into the Dossier / CustomCompliance shapes these casts
+    // (and database.types.ts) already declare.
+    supabase.from("v_dossiers").select("*"),
+    supabase.from("v_custom_compliance").select("*"),
     supabase.from("settings").select("*"),
   ]);
 

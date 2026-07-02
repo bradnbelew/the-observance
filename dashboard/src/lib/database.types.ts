@@ -403,6 +403,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      // Reconciling views (0005_reconcile_tracker_views.sql). They reshape the
+      // plugin's flat, mc_uuid-keyed dossiers / custom_compliance rows back into
+      // the SAME Row shapes the dossiers / custom_compliance tables declare above,
+      // synthesizing player_id via players.mc_uuid. SPOILER-RICH — read only by
+      // the service_role admin client (no anon grant). The author page reads
+      // these instead of the raw tables so plugin rows join and render.
+      v_dossiers: {
+        Row: {
+          player_id: string;
+          solo_ratio: number;
+          deaths: number;
+          hoard_summary: string | null;
+          group_distance: number | null;
+          chat_sentiment: number | null;
+          blocks_mined: number;
+          updated_at: string;
+        };
+        Relationships: [];
+      };
+      v_custom_compliance: {
+        Row: {
+          id: number;
+          player_id: string | null;
+          custom_key: string;
+          last_observed: string | null;
+          violation_count: number;
+          status: string;
+        };
+        Relationships: [];
+      };
     };
     Functions: Record<string, never>;
     Enums: Record<string, never>;
