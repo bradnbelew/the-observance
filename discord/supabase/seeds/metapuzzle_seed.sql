@@ -151,6 +151,22 @@ begin
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
       where puzzle_key = 'seventh-choice';
 
+    -- P1-C3 COLLISION FIX (audit): the phrase `the last marker is not the last` is an accepted
+    -- answer on BOTH stone-sella (ungated active=true) and seventh-shrine. Both were open at once,
+    -- so the resolver always resolved stone-sella (first UNSOLVED in DB order) and seventh-shrine's
+    -- second payoff for that string never surfaced. GATE seventh-shrine on seventh_suspected — the
+    -- flag stone-sella''s next-clue SETS — so the two are never open simultaneously (the exact
+    -- bound-word/iss_caught sequencing the audit blesses). Order preserved: before Sella is solved,
+    -- seventh_suspected is false → seventh-shrine is closed → the phrase resolves to stone-sella (its
+    -- intended first payoff); after Sella is solved, stone-sella is solved (the resolver prefers the
+    -- unsolved candidate) AND seventh_suspected is true → the phrase resolves to seventh-shrine (its
+    -- intended second payoff). No accepted-answer string changes; no lore/clue doc changes. This is
+    -- consistent with the established contract — seventh-unwriting/seventh-cause (the shrine''s deeper
+    -- chambers) already require seventh_suspected, so Sella-first is the canonical Seventh-thread order.
+    -- seventh-shrine stays active=true (its active flag is untouched; requires_flags is the AND-gate).
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
+      where puzzle_key = 'seventh-shrine';
+
     -- ── THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — the gated new-puzzle rows.
     -- Each hangs off a flag its UPSTREAM door SETS (the same deterministic gate the back-half
     -- spine uses). Shipped active=false in puzzles_seed's second insert; lit here + flipped
@@ -224,6 +240,7 @@ end $$;
 --      m4-three-hands            → bound_word_known                    (bound-word)
 --      threshold-coordinate      → threshold_open                      (m4-three-hands)
 --      true-walk-arrive          → true_coord_known                    (threshold-coordinate)
+--      seventh-shrine            → seventh_suspected                   (stone-sella)     [P1-C3 collision gate; ungated upstream, stays active=true]
 --      seventh-unwriting         → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
 --      seventh-cause             → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
 --      seventh-choice            → seventh_named                       (seventh-unwriting)

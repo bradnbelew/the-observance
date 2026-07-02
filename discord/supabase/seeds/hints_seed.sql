@@ -58,6 +58,12 @@ insert into public.hints (puzzle_key, tier, body) values
 ('stone-brann', 2, 'brann kept the watch by the lamps, and counted them twice. the order the lights are read is the order that matters here — not the marks, the sequence.'),
 ('stone-brann', 3, 'read the lit lamps in their rows, top to bottom, the way a watchman counts down a black moon. the sequence spells what he could not say twice the same.'),
 
+-- stone-brann-cipher — the SIXTH keeper-stone as its real cipher (railFence, read-by-time): the
+-- carving rakes visible only by the lit beacon-glow after dark. Rails = the fire-count brann names.
+-- Reuses brann''s taught rail literacy; tier 2 points at the night gate + the rails, tier 3 the read.
+('stone-brann-cipher', 2, 'brann''s stone keeps nothing in the day. wait for the dark and let the lamps light the marks. the number he counted twice is the number of rails his line is raked along.'),
+('stone-brann-cipher', 3, 'count the fires brann kept — that count is the rails. after dark, read the lit marks down each rail in turn, the way you read his lamps, and the raked line comes back together.'),
+
 -- ===========================================================================
 -- BACK-HALF SPINE (Movements II→V). The front-half ciphers had a safety net;
 -- these did not, and a group stalled here dead-airs with no in-world pointer. Same
