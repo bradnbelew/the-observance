@@ -93,3 +93,7 @@ end-to-end live. The ledger's lesson is that we already have *more* built than p
 **Director status:** week-one *building* is essentially complete. The remaining path is DEPLOY (bot/cron on
 Render, website on Vercel, packs on the server — all in progress) + the first VERTICAL-SLICE PLAYTEST. Per
 the consistency principle, no new arc is being added until that slice is proven live.
+- **Keeper voices (forgotten #3) — DONE (5cb42e4).** Generated `keeper_voice` (the SpatialVoiceBeat
+  fallback that was referenced-but-missing → silent) + 6 per-keeper voices tuned to each keeper's
+  identity; `sounds.json` maps them. Source-pack only; activates on the next resourcepack re-host.
+  Remaining forgotten items are now just the two SCOPE DECISIONS: the LLM brain (#1) and 0008 Observer (#2).
