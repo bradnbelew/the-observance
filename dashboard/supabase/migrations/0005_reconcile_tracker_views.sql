@@ -40,12 +40,34 @@
 -- REVOKE from both explicitly. Only service_role (the dashboard's admin client)
 -- reads them. This does NOT weaken RLS and never exposes the service key.
 --
--- Additive + idempotent (create or replace view). Apply as the migration/
--- service role AFTER discord/supabase/schema-repair.sql has landed (it adds the
--- flat plugin columns these views alias).
+-- Additive + idempotent (create or replace view). ORDER-INDEPENDENT: the shim
+-- below adds the flat plugin columns these views alias, so this migration may be
+-- applied before OR after discord/supabase/schema-repair.sql (both idempotent).
 -- ---------------------------------------------------------------------------
 
 begin;
+
+-- ---------------------------------------------------------------------------
+-- COMPATIBILITY SHIM (order-independence). These views alias the flat plugin
+-- columns that discord/supabase/schema-repair.sql adds to dossiers /
+-- custom_compliance. Guarantee those columns exist FIRST so this migration can be
+-- hand-applied in ANY order relative to schema-repair (a stray order previously
+-- errored: "column d.mc_uuid does not exist"). Idempotent + type-matched to
+-- schema-repair, so whichever lands first wins and the other no-ops. Column DATA
+-- is still populated only by the plugin's upserts; this just ensures the view can
+-- be CREATED regardless of apply order.
+alter table public.dossiers
+  add column if not exists mc_uuid             text,
+  add column if not exists solo_mining_seconds bigint,
+  add column if not exists hoarded_score       double precision,
+  add column if not exists distance_from_group double precision,
+  add column if not exists extra               text;
+
+alter table public.custom_compliance
+  add column if not exists mc_uuid        text,
+  add column if not exists violated_count int default 0,
+  add column if not exists last_event_at  timestamptz;
+-- ---------------------------------------------------------------------------
 
 -- v_dossiers — plugin FLAT dossier rows reshaped into the dashboard's declared
 -- Tables<'dossiers'> Row. Joins to players by mc_uuid to synthesize player_id.
