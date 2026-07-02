@@ -30,5 +30,61 @@
         "attenuation_distance": 24
       }
     ]
+  },
+  "keeper_voice": {
+    "sounds": [
+      {
+        "name": "observance:keeper_voice",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "keeper_voice.vaun": {
+    "sounds": [
+      {
+        "name": "observance:keeper_vaun",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "keeper_voice.mara": {
+    "sounds": [
+      {
+        "name": "observance:keeper_mara",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "keeper_voice.sella": {
+    "sounds": [
+      {
+        "name": "observance:keeper_sella",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "keeper_voice.orin": {
+    "sounds": [
+      {
+        "name": "observance:keeper_orin",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "keeper_voice.brann": {
+    "sounds": [
+      {
+        "name": "observance:keeper_brann",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "keeper_voice.iss": {
+    "sounds": [
+      {
+        "name": "observance:keeper_iss",
+        "attenuation_distance": 16
+      }
+    ]
   }
 }
