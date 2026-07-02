@@ -16,6 +16,8 @@
 ```
 /observance placeregion      # rosetta + 6 keeper stones, seated on the terrain, each with a blank answer-sign
 /observance placedeep        # the deep-half payoff sites (later-weeks; place them elsewhere)
+/observance townsfolk spawn  # REQUIRED: the 5 surface townsfolk (Aro/Wenna/Coll/Dob/Pell) — placeregion does
+                             #   NOT spawn them, and without this the world's social surface is dark
 /observance status           # sites placed should jump to 7 (or 13 with placedeep)
 ```
 Eyeball: a branching field (not a flat row), sparse light, each keeper stone has a **blank** wall-sign or
@@ -58,6 +60,19 @@ Discord drip feel alive or noisy? · pacing. That feedback is what turns "it run
   implication) is live.
 - **The deep half** (Undercroft descent, the Seventh finale, the co-op vault) is later-weeks content; the
   `the_threshold` deep-site answer sign still needs a corridor redesign (tracked).
+- **Reward-the-theory batch-confirm** demonstrates for the **Iss** cluster in week one (stone-iss-wall →
+  iss_key_turned → iss-which-is-true). Other keepers' second cluster-evidence needs the `object`/`code`
+  plugin producers (vaun-hoard-sorted, vaun-bookshelf-tally, mara-lectern-lock, …) — flagged "NEEDS PLUGIN
+  PRODUCER" in the seed. Until they ship, those keepers un-redact on the **stonesRead fallback** (correct +
+  backward-compatible), just not via assembled theory. **Top post-playtest build item.**
+- **Literacy debt (minor, fair):** the 10 rune-cribs teach every letter in the rosetta answer **except U**
+  (in "unspoken"). Cold players infer that one letter from context (fair by the ~25-char cryptanalysis proof).
+  Admin-guided slice is unaffected. Add a U-crib only if a cold real-player run stalls.
+- **`v_record` theories view** (S-D theory un-redaction) is not yet applied to live Supabase — the route
+  falls back to stonesRead correctly meanwhile. Deploy with the migrations (OPS list) to activate it.
+- **Cold-open P2:** on a `computeAutonomyGates()` crash, curatorial drip defaults to allowed (`?? true`, a
+  deliberate test back-compat). Irrelevant to an admin run (you fire `prologue_ignited`). Harden later with a
+  test update, not a bare flip.
 
 **Bottom line:** if the slice in §2 lands end-to-end, week one is proven. Everything else is tuning + the
 two scope calls, not missing pieces.
