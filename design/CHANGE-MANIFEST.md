@@ -531,3 +531,42 @@ existing beat/listener architecture. No refactors, no renames.
   do the exact strings the Java producers write byte-match the SQL seed gates? A 1-char drift = a silently
   dead branch. THEN: per-player illusion primitives (P1-A6), display-entity/ModelEngine world craft
   (P1-V2), salience+hints (P1-C4/C10), and the Voice Chat "Ear". Playtest is the real gate.
+
+---
+
+# AUTONOMOUS SESSION LOG (2026-07-01, Ethan away ~30min — self-directed)
+
+Four waves, each verified GREEN independently by the director and committed separately.
+Branch `feat/build-everything-2026-07-01`. Nothing pushed.
+
+- **Wave 1 `6fc64e1`** — P0s: DB-write 400s (event_log/bases/settings matched to live schema),
+  seed-order ENFORCED (`npm run db:seed` + fail-loud guards), `bases.owner_uuid` idx, `v_record`
+  view, 4 synthesized OGGs, pack_format reconciled, Undercroft deferred, ignition sneak-gate.
+- **Wave 2 `d036eca`** — wired the reckoning + finale-fork payoff (companion.ts/.run.ts,
+  finale.ts/.run.ts, voice.ts, reports.ts). The already-written lore now has live consumers;
+  reckoning_* + seventh_choice are player-facing. +28 self-tests.
+- **Wave 3 `8a7d101`** — stone-brann-cipher hint (only genuinely-bare back-half node); P1-C3
+  collision FIXED via a pure requires_flags gate (no answer/lore change).
+- **Wave 4 `e298577`** — author-dashboard read-drift: two SECURITY-DEFINER reconciling views
+  (v_dossiers/v_custom_compliance) join plugin mc_uuid rows to players, synthesize player_id,
+  coerce drifted columns. anon-revoked. Dossiers/customs no longer render blank.
+
+## RECURRING FINDING (carry forward): the IMPROVEMENT-AUDIT overstates brokenness
+Every wave, most "broken" P0/P1 findings were ALREADY fixed in live code (audit drifted). Confirmed
+false/stale: P0-A1 (4/5 beats registered), P0-V1 (dispatcher wired), P0-C1 (companion arc ALIVE),
+P0-R1 (pack_format 75), P1-R3 (Undercroft is a real cavern), P1-C10 (6/7 back-half nodes had hints).
+Flag-parity audit: ZERO dead gates (all 14 gated flags produced). **Trust code, not the audit.**
+
+## OPEN — need Ethan's ruling / action (NOT done autonomously)
+1. **APPLY SQL to live Supabase (operator, by hand — MCP can't reach it):** the new migrations
+   `0004_v_record.sql`, `0005_reconcile_tracker_views.sql`, the `bases_owner_uuid_key` in
+   `schema-repair.sql`, and the seed order via `npm run db:seed` → `apply-all.sql`. The code fixes
+   ASSUME these are applied. Nothing works on the live DB until they are.
+2. **Tier-3 hint philosophy (design ruling):** tier-3 "rescue floor" hints systemically hand over the
+   exact typeable answer (27 rows, by documented design). For typed-CIPHER nodes (bound-word,
+   true-walk-arrive) this nullifies the decode. `stone-iss-wall` t3 shows the better pattern (give the
+   KEY/method, not the plaintext). Left unchanged — your call whether to align cipher-node t3s.
+3. **Deferred with recommendations (design-laden, want you present):** world-craft via display
+   entities/ModelEngine (P1-V2, the biggest "amazing" lever), salience/roster rewrite of decide.ts
+   (P1-C4 dead-air after Mvt II), per-player illusion primitives (P1-A6), SESSION-ZERO consent-script
+   alignment (P1-I2 — over-discloses dormant voice T1), and the modpack-enabled Voice Chat "Ear".
