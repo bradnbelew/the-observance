@@ -468,3 +468,66 @@ reunion line must *charge* the third; Wren *embodies* the fourth. Files: `the-se
 **Lore/story pass COMPLETE. Next: the integration pass (pass 4)** — wire every L1–L6 + §1–§4 touchpoint
 into the actual files (docs / seeds / voice / plugin / sites / the 4 canon docs), reconcile every stale
 line, and keep specscheck/seedcheck/gatecheck/typecheck GREEN. Establish a green baseline FIRST.
+
+---
+
+# WAVE R — PERPLEXITY RESEARCH INTEGRATION (2026-07-01)
+
+Ethan supplied a Perplexity research/directive doc (ARG-design craft + "keep your head straight" audit
+discipline + a client/server visual-tool brief). Triaged, then executed under his ruling: **full-send —
+build/change/audit/fix, major changes authorized; a curated modpack for the vetted group is acceptable.**
+Ran the established pipeline (triage → plan → modify → verify). Started from a CONFIRMED-GREEN baseline.
+
+## R0. Triage verdict (the honest read)
+- ~90% of the research **ratifies principles we already lock** (layer separation, data-driven state,
+  recovery/fallback, no-orphan lockstep, silence-is-information, difficulty-from-depth). Folded as a
+  *lens*, not new work.
+- The **audit-asks were already satisfied** by `IMPROVEMENT-AUDIT.md` (41 grounded findings). Executed
+  THAT backlog rather than re-auditing.
+- Three genuine deltas: (1) modpack now allowed → **Simple Voice Chat** green-lit (the one client mod
+  worth the consent budget — buys a new *sense*, not cosmetics); (2) verified server-side visual
+  upgrades (**display entities + 1.21.4 `item_model` + ModelEngine**) — zero-client-mod, all degrade to
+  vanilla; (3) **Iris+Photon shaders = recorder's client ONLY** for the YouTube capture.
+- **Client-mod ruling:** Figura is version-blocked (no 1.21.11) and cosmetic-only-to-same-mod-users;
+  CPM has a 1.21.11 build but same limitation. Spend the single modpack "consent budget" on Voice Chat's
+  new capability, approximate avatars server-side (ModelEngine + display entities). Full tool report in
+  session transcript (2026-07-01).
+
+## R1. Wave-1 changes SHIPPED (all green after each change; smallest-safe diffs)
+| Area | Change | File(s) |
+|---|---|---|
+| Plugin | Registered `ModeledMobBeat` (the only truly-missing beat) | `beats/BeatLibrary.java:92` |
+| Plugin | `EventLogRow` reshaped to live `{level,source,message,created_at}`; `type`→CHECK-legal `info\|warn\|error`, uuid/detail folded into message (fixes every plugin log 400ing) | `data/rows/EventLogRow.java` |
+| Plugin | `bases` upsert re-keyed `id`→`owner_uuid`; null id omitted so bigserial PK assigns (fixes base-detection 400) | `SupabaseClient.upsertBase`, `BaseDetector.java:107` |
+| Plugin | `SettingsRow.value` String→`JsonElement` (dashboard watcher-sleep toggle no longer inert) | `data/rows/SettingsRow.java` |
+| Plugin | `fetchArcState` → `id=eq.1` | `SupabaseClient.java` |
+| Plugin | Ignition proximity trigger now requires **sneak** (incidental clicks can't ignite) | `IgnitionListener.java:120` |
+| DB | `bases_owner_uuid_key` unique index (the plugin's upsert contract) | `discord/supabase/schema-repair.sql:66` |
+| DB | **Seed-order ENFORCED** — new `npm run db:seed` → `build-apply-all.ts` → `apply-all.sql` (0006+0007 before seeds); guards flipped `raise notice`→**`raise exception`** (mis-order now aborts loud instead of silently leaking the 4 M4 docket answers). Caught a 2nd latent hazard: `apply-tonight.sql` omitted 0007. | `discord/package.json`, `src/db/build-apply-all.ts`, `seeds/{metapuzzle,progression}_seed.sql`, `apply-tonight.sql` |
+| DB | `v_record` view authored — coarse spoiler-safe `{movement, stones_read, accepted}`, SECURITY DEFINER, anon-read only (un-wires the frozen public archive) | `dashboard/supabase/migrations/0004_v_record.sql` |
+| Pack | `pack.mcmeta` → unified `min_format/max_format [75,0]` (1.21.11); 3 conflicting doc-truths reconciled | `resourcepack/pack.mcmeta`, README, `design/WORLD-BUILD.md` |
+| Audio | **4 atmospheric OGGs synthesized** (cold_toll bell, drone_low bed, stone_breath rumble, whisper) — atmosphere no longer mute | `resourcepack/assets/observance/sounds/*.ogg` |
+| Datapack | New `datapack/README.md` — Undercroft marked BUILT-but-DEFERRED (real noise-cavern, interior unfurnished) | `datapack/README.md` |
+
+## R2. CRITICAL CORRECTION — the audit overstates brokenness
+Verified against live code (director re-checks caught these): several audit P0s had **already drifted
+fixed** and were NO-OPs — 4 of 5 "unregistered" beats were registered; keeper dispatcher already wired at
+3 call sites; `pack_format` already 75; Undercroft already a valid noise-cavern. **Most important:
+audit P0-C1 ("companion/reckoning/co-op = dead gates") is FLATLY WRONG** — `WrenNpcListener` (reg L403)
+sets `companion_trust/companion_revealed/reckoning_{condemn,understand,free}`, `CompanionArcWatcher`
+(L152) sets `companion_revealed`, `SeventhChoiceListener` (reg L542) merges finale flags, the co-op vault
+runs via `ThresholdVaultListener` — all registered and writing via `mergeArcFlags`. **Wren's betrayal arc
+is ALIVE.** ⟹ Do NOT plan future waves off the audit's content findings; use code truth.
+
+## R3. Preserved deliberately (per research "treat as intentional")
+Flag-flow atomicity (`observance_merge_arc_flags`), RLS deny-by-default + 0003 lockdown, dashboard
+service-key server-only, idempotent seeds, the advancement icon schema, the Undercroft generator, the
+existing beat/listener architecture. No refactors, no renames.
+
+## R4. NEXT — Wave 2 (cohere) + Wave 3 (amazing), grounded in code truth not the audit
+- **Wave 2:** doc reconciliation (P1-I1/I2, SESSION-ZERO over-disclosure), live answer-collision
+  `the last marker is not the last` (P1-C3), dashboard read-drift (P1-D5), seedcheck hardening (P1-C9).
+- **Wave 3 opening move (revised):** NOT "build missing producers" — instead a **flag-name parity audit**:
+  do the exact strings the Java producers write byte-match the SQL seed gates? A 1-char drift = a silently
+  dead branch. THEN: per-player illusion primitives (P1-A6), display-entity/ModelEngine world craft
+  (P1-V2), salience+hints (P1-C4/C10), and the Voice Chat "Ear". Playtest is the real gate.

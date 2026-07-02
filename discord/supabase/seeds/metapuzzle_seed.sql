@@ -201,7 +201,12 @@ begin
       );
 
   else
-    raise notice 'metapuzzle_seed: puzzles.requires_flags absent (0006 not applied) — activation lane skipped, re-run after the migration.';
+    -- FAIL LOUD (P0-C6): a silent no-op here is the footgun — the nine staged rows would stay
+    -- dark AND base-docket-reread-auto (ships active=true) would keep its default empty
+    -- requires_flags and LEAK its four M4 docket answers from minute one. Aborting the whole
+    -- seed batch is strictly safer than half-applying it. The fix is to apply 0006 first (the
+    -- db:seed runner and apply-tonight.sql both do); then re-run. Never downgrade this to a notice.
+    raise exception 'metapuzzle_seed: puzzles.requires_flags absent — apply migration 0006_requires_flags BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting to avoid leaking the M4 docket answers.';
   end if;
 end $$;
 
@@ -272,7 +277,9 @@ begin
     update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
       where puzzle_key = 'companion-reveal';
   else
-    raise notice 'metapuzzle_seed: puzzles.requires_flags absent (0006 not applied) — companion reveal gate skipped, re-run after the migration.';
+    -- FAIL LOUD (P0-C6): consistent with §2 — the column's absence means a mis-order; abort
+    -- rather than silently skip. Apply 0006 first (db:seed / apply-all.sql enforce it), then re-run.
+    raise exception 'metapuzzle_seed: puzzles.requires_flags absent — apply migration 0006_requires_flags BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting.';
   end if;
 end $$;
 

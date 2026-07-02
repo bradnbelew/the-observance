@@ -16,6 +16,7 @@ import com.observance.watcher.beats.lib.ItemSwapBeat;
 import com.observance.watcher.beats.lib.KeeperNpcBeat;
 import com.observance.watcher.beats.lib.LecternFillBeat;
 import com.observance.watcher.beats.lib.MapMarkBeat;
+import com.observance.watcher.beats.lib.ModeledMobBeat;
 import com.observance.watcher.beats.lib.NameOnWallBeat;
 import com.observance.watcher.beats.lib.NamedMobBeat;
 import com.observance.watcher.beats.lib.PrivateDarknessBeat;
@@ -86,6 +87,9 @@ public final class BeatLibrary {
         // MOBS
         register(new NamedMobBeat());
         register(new SacredAnimalBeat());
+        // MOBS (optional garnish) — a NamedMobBeat that wears a ModelEngine rig; degrades to exactly
+        // NamedMobBeat when ModelEngine is absent/unknown-model (reflection-isolated, never gates).
+        register(new ModeledMobBeat());
         // PERSONALIZED — the signature per-player illusion ("it knows ME")
         register(new NameOnWallBeat());
         // OBSERVER TIER-0 (BUILD-PLAN §13) — behavior-only "it knows you": a grounded implication line

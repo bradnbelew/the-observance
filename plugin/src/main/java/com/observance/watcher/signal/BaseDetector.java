@@ -104,7 +104,8 @@ public final class BaseDetector {
                 double conf = confidence(c);
                 if (conf < cfg.baseConfidenceFloor()) continue;
                 row = new BaseRow();
-                row.id = e.getKey().toString();
+                // Upsert conflict-targets owner_uuid (see SupabaseClient.upsertBase); NEVER set id — a
+                // UUID string cannot go into the bigint PK, and Gson omits the null id from the body.
                 row.ownerUuid = e.getKey().toString();
                 row.world = c.world;
                 // Prefer the bed as the human "center" if present (where they sleep is "home").

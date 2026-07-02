@@ -111,11 +111,13 @@ public final class IgnitionListener implements Listener {
                 }
             }
 
-            // --- Trigger 2: rosetta / reckoning stone proximity touch ---
-            // Any right-click while the player is inside the rosetta or reckoning site radius counts
-            // as "examining the stone". We check by site ID rather than block type because the pillar
-            // is built from deepslate/blackstone (common materials) and we don't want false positives
-            // from identical blocks elsewhere.
+            // --- Trigger 2: rosetta / reckoning stone SNEAK-touch ---
+            // A right-click near the rosetta/reckoning stone counts as "examining the stone" ONLY when
+            // the player is SNEAKING — a deliberate gesture. This keeps the proximity radius (we check
+            // by site ID, not block type, since the pillar is common deepslate/blackstone) but ANDs it
+            // with sneak so incidental interaction near the stone (placing a torch, opening a chest)
+            // can no longer ignite the arc before the group has read anything.
+            if (!player.isSneaking()) return;
             for (String siteId : new String[]{SITE_RUNE_ROSETTA, SITE_RECKONING}) {
                 Site s = sites.get(siteId);
                 if (s != null && s.isPlaced() && s.contains(world, px, py, pz)) {

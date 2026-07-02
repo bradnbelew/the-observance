@@ -47,10 +47,12 @@ alter table public.custom_compliance
 create unique index if not exists custom_compliance_mcuuid_key_uidx
   on public.custom_compliance (mc_uuid, custom_key);
 
--- ===== bases — plugin upserts on id with owner_uuid + center_x/y/z + label + radius =====
--- NOTE: bases.id is a bigint PK but the plugin upserts a STRING id → the id-conflict still
--- mismatches. These column adds are additive/harmless; the full bases fix (id type) is deferred
--- (base-detection is non-critical background tracking, not the puzzle loop). See IMPROVEMENT-AUDIT.
+-- ===== bases — plugin upserts on owner_uuid (TEXT) with center_x/y/z + label + radius =====
+-- CONTRACT (P0-D2): the plugin's BaseDetector upsert is re-keyed to conflict on the TEXT
+-- column `owner_uuid` (one base per keeper), NOT on the bigint `id`. So this repair guarantees
+-- the column exists AND a UNIQUE index it can name as the ON CONFLICT target. bases.id stays the
+-- bigint PK (untouched) — old dashboard reads by id/owner_player_id keep resolving; new plugin
+-- rows carry owner_uuid. Idempotent: add column / create index if not exists.
 alter table public.bases
   add column if not exists owner_uuid text,
   add column if not exists label      text,
@@ -58,6 +60,10 @@ alter table public.bases
   add column if not exists center_y   int,
   add column if not exists center_z   int,
   add column if not exists radius     numeric;
+
+-- The upsert conflict target: one base row per owner_uuid. Named exactly `bases_owner_uuid_key`
+-- so the plugin's `on_conflict=owner_uuid` upsert resolves against it.
+create unique index if not exists bases_owner_uuid_key on public.bases (owner_uuid);
 
 -- ===== event_log — plugin writes type/context/mc_uuid/detail; the table has only level/source =====
 -- Without these columns every plugin log write 400s (all plugin diagnostics lost). Additive.

@@ -15,6 +15,8 @@
     "seedcheck": "tsx src/oracle/seedcheck.ts",
     "gatecheck": "tsx src/oracle/gate.selftest.ts",
     "specscheck": "tsx src/forge/specs.selftest.ts",
+    "db:seed": "tsx src/db/build-apply-all.ts",
+    "db:apply": "npm run -s db:seed",
     "showrunner": "tsx src/showrunner/run.ts",
     "showrunner:dry": "tsx src/showrunner/run.ts --dry-run",
     "showrunner:test": "tsx src/showrunner/decide.selftest.ts",

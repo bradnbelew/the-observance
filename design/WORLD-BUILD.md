@@ -66,7 +66,7 @@ accent only: the single never-doused fire (campfire/soul-fire under a hearth).
    reunion, opens from the inside. Sites: `the_threshold`, `the_unwriting`, `grave`.
 
 ## Loading the Undercroft datapack (`datapack/observance/`)
-1. Set `pack.mcmeta` `pack_format` to your pinned 1.21.x (48 / 57 / 61 — see the file).
+1. `pack.mcmeta` ships datapack format `[94,1]` (`min_format`/`max_format`) — correct for the pinned server MC 1.21.11 (data-pack format 94.1). No change needed unless the server version moves.
 2. Drop the `observance` folder into `<world>/datapacks/`, `/reload` (or restart).
 3. The custom dimension is `observance:undercroft`. Reach it with `/execute in observance:undercroft run
    tp @s <x> <y> <z>` (or a plugin teleport beat) — Multiverse does NOT create datapack dimensions; the

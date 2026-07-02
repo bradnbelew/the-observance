@@ -129,9 +129,14 @@ public final class SupabaseClient {
         return upsert("heatmap_cells", "world,cell_x,cell_z", row, "upsertHeatmapCell");
     }
 
-    /** Upsert a detected base (id conflict target). */
+    /**
+     * Upsert a detected base. Conflict target is {@code owner_uuid} (a text column with a unique index,
+     * guaranteed by the concurrent SQL migration) — NOT the bigint {@code id} PK, which a UUID string
+     * cannot populate (the historical UUID-into-bigint upsert 400'd). The row never sends {@code id}
+     * (left null → omitted by Gson), so the DB assigns the serial PK.
+     */
     public SupabaseResult<Void> upsertBase(BaseRow row) {
-        return upsert("bases", "id", row, "upsertBase");
+        return upsert("bases", "owner_uuid", row, "upsertBase");
     }
 
     /**
@@ -233,7 +238,9 @@ public final class SupabaseClient {
     /** Read current arc state (act). Returns ok with null if absent. */
     public SupabaseResult<ArcStateRow> fetchArcState() {
         if (!config.isConfigured()) return SupabaseResult.ok(0, null);
-        String q = "order=updated_at.desc&limit=1";
+        // arc_state is single-row (id=1 check constraint) — read it directly by PK rather than
+        // ordering the whole table, so a stray second row could never surface the wrong state.
+        String q = "id=eq.1&limit=1";
         SupabaseResult<List<ArcStateRow>> r = doRead("arc_state", q, LIST_ARC, "fetchArcState");
         if (!r.ok()) return SupabaseResult.fail(r.httpStatus(), r.error());
         List<ArcStateRow> list = r.value();

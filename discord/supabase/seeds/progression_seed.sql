@@ -221,7 +221,10 @@ begin
       where puzzle_key = 'end-seventh-out';
 
   else
-    raise notice 'progression_seed: puzzles.requires_flags absent (0006 not applied) — Nether/End activation gates skipped, re-run after the migration.';
+    -- FAIL LOUD (P0-C6): mirror metapuzzle_seed — a mis-order (seeds before 0006) must abort, not
+    -- silently skip the Nether/End gates. Apply 0006 first (db:seed / apply-all.sql enforce it),
+    -- then re-run. Never downgrade this to a notice.
+    raise exception 'progression_seed: puzzles.requires_flags absent — apply migration 0006_requires_flags BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting.';
   end if;
 end $$;
 
