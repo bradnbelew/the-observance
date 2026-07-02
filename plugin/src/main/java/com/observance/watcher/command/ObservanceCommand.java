@@ -232,10 +232,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         //   * step DOWN — each subsequent site drops `descentStep` blocks below the last, so walking the
         //     spine reads as sinking into the ground (the rosetta at the mouth, keepers descending past).
         // The mouth (index 0) sits a little west of the sender; the field extends east + down from there.
-        int descentStep = 3;                              // blocks each site sinks below the previous
         int zAmp = Math.min(4, spacing / 3);              // lateral zig-zag amplitude (< spacing/2, no overlap)
         double startX = centre.getX() - spacing;          // mouth one step west of the sender
-        int mouthY = centre.getBlockY();
         int baseZ  = centre.getBlockZ();
 
         int placed = 0;
@@ -243,10 +241,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             String siteId   = spine[i][0];
             String siteType = spine[i][1];
 
-            // Deterministic (no RNG): east step, alternating N/S zig-zag, progressive descent.
+            // Deterministic (no RNG): east step, alternating N/S zig-zag. Y FOLLOWS THE TERRAIN — seat each
+            // set-piece on the real ground surface at its (x,z) so it never floats or buries on uneven land.
+            // OCEAN_FLOOR = highest solid ground, skipping water + leaves (snowy-taiga-safe).
             double sx = startX + (long) i * spacing;
             int sz = baseZ + ((i % 2 == 0) ? -zAmp : zAmp) * ((i == 0) ? 0 : 1); // mouth on centre-line
-            int sy = mouthY - i * descentStep;
+            int sy = centre.getWorld().getHighestBlockYAt((int) Math.floor(sx), sz,
+                    org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
 
             Location pillarLoc = new Location(centre.getWorld(), sx, sy, sz);
 
@@ -271,9 +272,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Observance: placeregion complete — " + placed + "/" + count
                 + " spine sites placed and persisted.");
-        sender.sendMessage("  Descent mouth near " + centre.getBlockX() + "," + mouthY + "," + baseZ
-                + " in " + world + " — branches east + down (spacing=" + spacing + ", drop=" + descentStep
-                + "/site, zig-zag=" + zAmp + ").");
+        sender.sendMessage("  Field mouth near " + centre.getBlockX() + "," + centre.getBlockZ()
+                + " in " + world + " — branches east, zig-zag=" + zAmp
+                + ", each site seated on the terrain surface (spacing=" + spacing + ").");
         if (placed < count) {
             sender.sendMessage("  WARNING: " + (count - placed) + " site(s) skipped (chunks unloaded?).");
         }
@@ -341,10 +342,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         // 4 blocks per site (vs 3 in the region), so this half reads as the bottom of the descent. The wide
         // 11×11 Accepting floor never overlaps a neighbour: X separation is a full `spacing` (min 13) while
         // the lateral zig-zag is capped well under spacing/2.
-        int descentStep = 4;                              // steeper drop than the region (this is the deep half)
         int zAmp = Math.min(4, spacing / 4);              // lateral zig-zag amplitude (< spacing/2, no overlap)
         double startX = centre.getX() - spacing;          // deep mouth one step west of the sender
-        int mouthY = centre.getBlockY() - descentStep;    // start already below the sender's feet
         int baseZ  = centre.getBlockZ();
 
         int placed = 0;
@@ -354,10 +353,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             int radius;
             try { radius = Integer.parseInt(deep[i][2]); } catch (NumberFormatException e) { radius = 8; }
 
-            // Deterministic (no RNG): east step, alternating N/S zig-zag, steeper progressive descent.
+            // Deterministic (no RNG): east step, alternating N/S zig-zag. Y FOLLOWS THE TERRAIN — seat each
+            // set-piece on the real ground surface so it never floats or buries on uneven land.
             double sx = startX + (long) i * spacing;
             int sz = baseZ + ((i % 2 == 0) ? -zAmp : zAmp);
-            int sy = mouthY - i * descentStep;
+            int sy = centre.getWorld().getHighestBlockYAt((int) Math.floor(sx), sz,
+                    org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
 
             Location siteLoc = new Location(centre.getWorld(), sx, sy, sz);
 
@@ -380,9 +381,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Observance: placedeep complete — " + placed + "/" + count
                 + " deep-half set-pieces placed and persisted.");
-        sender.sendMessage("  Deep mouth near " + centre.getBlockX() + "," + mouthY + "," + baseZ
-                + " in " + world + " — branches east + steeply down (spacing=" + spacing + ", drop="
-                + descentStep + "/site, zig-zag=" + zAmp + ").");
+        sender.sendMessage("  Deep mouth near " + centre.getBlockX() + "," + centre.getBlockZ()
+                + " in " + world + " — branches east, zig-zag=" + zAmp
+                + ", each site seated on the terrain surface (spacing=" + spacing + ").");
         if (placed < count) {
             sender.sendMessage("  WARNING: " + (count - placed) + " site(s) skipped (chunks unloaded?).");
         }

@@ -7,7 +7,7 @@
 > this loop proven first + iteration to verify — they are explicitly **not** in tonight's test.
 >
 > **State as of 2026-07-01:** engine (TS) all-green; plugin **compiles + jars** (`plugin/build/libs/
-> observance-0.2.0.jar`, 331 KB); lore reconciled; canon docs + the zero-manual `placeroom` command
+> observance-0.2.1.jar`, 331 KB); lore reconciled; canon docs + the zero-manual `placeroom` command
 > in progress. What's below is what YOU do (the infra Claude can't reach).
 
 ---
@@ -32,7 +32,7 @@ spoiler tables behind RLS).
 3. *(Not needed tonight — `0007_answer_kind` is for the diverse-answer types, a later phase.)*
 
 ## 2. PLUGIN
-1. The jar is already built: **`plugin/build/libs/observance-0.2.0.jar`**. (To rebuild:
+1. The jar is already built: **`plugin/build/libs/observance-0.2.1.jar`**. (To rebuild:
    `cd plugin && "D:/_gradle/gradle-8.10.2/bin/gradle" --offline jar`.)
 2. Drop it in the server's `plugins/` folder.
 3. Point the plugin at your DB: set the env var **`OBSERVANCE_SUPABASE_KEY`** = your Supabase
