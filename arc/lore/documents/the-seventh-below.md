@@ -1,12 +1,39 @@
-# THE SEVENTH — THE LEAVES BELOW
+---
+id: the-seventh-below
+title: the seventh — the leaves below
+kind: journal
+author: the Seventh (their own hand, the clearest of the seven — they kept every way; the voice is not degraded)
+recipient: whoever comes down to mend the record
+era: the breaking of faith → the long waiting (present)
+movement: 5
+clue_bearing: false
+reveals:
+  - "the Seventh kept every way and was refused, not spared — iss lied that it was mercy (v2 canon; supersedes the-seventh-not-kept)"
+  - "keeping and being-kept are not the same; only one is what the record owes (FACT 10b, the Seventh's own thesis)"
+  - "the Seventh is alive, below, waiting on the ones who come to close the wound in the record (the v2 living reunion; 'i am not where it left me')"
+foreshadows:
+  - "the reunion is a meeting, not a restored file — the grave opens from the inside, on its date, because the one who set it is on the other side (graveOpened)"
+  - "being kept is a faith held for a person, not an entry owed — you came down; that is the other keeping (FACT 14/15)"
+links_to:
+  - the-name-i-cut-myself          # the carving out past the door — cut FIRST, then they came back down
+  - the-seventh-not-kept           # the count the record would not write; refused, not spared
+  - the-fire-they-let-out          # the hand that kept the fire down there, other side of the same door
+  - the-fire-kept-me               # the going-down; keeping as becoming the fire that does not go out
+  - six-were-kept-before-you       # you are the next — the group is not the Seventh; the Seventh is below
+  - the-ways-are-a-wall            # iss's warm lie the reader is steered to believe; believe nothing he carved
+---
 
-> **v2 canon (2026-06-29).** The Seventh, written as a living character (BUILD-PLAN §6). The corpus
-> previously had the Seventh only as *absence* — this is the artifact the group recovers and carries
-> down, and it is what reframes "kept" at the reunion. Register: lowercase, sparse, no contractions,
-> certain — but the Seventh's hand is the **clearest and most direct of the seven** (they kept every
-> way; their voice is not degraded). Their name stays **unwritten** (the restore/erase choice is the
-> group's). **Supersedes** the absence-framing in `the-seventh-not-kept.md`, `the-name-i-cut-myself.md`,
-> `the-fire-they-let-out.md` (retire/rewrite those per the spec at the bottom).
+` the seventh — the leaves below `
+
+[ a sheaf of leaves, laid where they cannot be missed by anyone who reaches the
+deep — past the cold hearth, past the line, at the foot of the descent, held down
+under a stone the way a thing is left for a person and not for a shelf. the hand
+is the clearest and most direct of the seven: they kept every way, and the record
+never got its blade to this. no water has taken it. it is the one writing of the
+Seventh's that was not unwritten and not cut in stone from outside, but set down,
+plainly, in the place they went back to wait. the old script, whole. the name at
+no point written — that stays for whoever reads to decide. this is the thing the
+group carries down, and it is what reframes *kept* at the meeting. ]
 
 ---
 
@@ -53,60 +80,16 @@ the seventh is not a blank. tell it i am not where it left me.
 
 ---
 
-### the reunion — the first spoken line (the grave/door opens from the inside, on its date)
-> someone came. i had stopped marking the days for someone coming. say your names — slowly — i want to
-> put them down right. the record will have you wrong. i will have you true.
+> *(the reunion — the first spoken line, when the stone opens from the inside on its date:)* someone
+> came. i had stopped marking the days for someone coming. say your names — slowly — i want to put them
+> down right. the record will have you wrong. i will have you true.
 
 ---
 
-## REWRITE SPEC (apply when wiring v2; closes BUILD-PLAN §9.C)
-
-**Retire / rewrite** (old absence-framing, now contradicted):
-- `the-seventh-not-kept.md` — the "spared / mercy" reading. Retire; the Seventh says plainly above they
-  were *refused, not spared*.
-- `the-name-i-cut-myself.md` — the "went the other way, not down" geography. Reconciled above: they went
-  out FIRST (cut the name where the record cannot reach), then **came back and went down** to wait. Keep
-  the carved-my-own-name image; fix the ending so they descend.
-- `the-fire-they-let-out.md` — the restore = "a name back in a ledger" framing. Rewrite: the restore is
-  *reaching a living person*, not editing a record.
-
-**voice.ts keys to rewrite** (the broken payoffs):
-- `keeperCloseSeventhRestored()` — drop "one that broke nothing is kept, late." → the Seventh is *down
-  there, alive*; the name is written for her to read, not to replace her.
-- `graveOpened()` — drop "the hole is the deposit slot." → the stone opens from the inside because the
-  Seventh is on the other side; the date was an appointment, the appointment is a meeting.
-- The 6 `keeperPageHeading_*` / `keeperPageHand_*` enrollment keys — re-valence from *consumed* ("mine to
-  enter, and not given back") to *recognized* ("i saw this in you and named it"). Populate the ones
-  missing from `voice.ts`.
-
-**The Iss-seam (the missing callback):** when the wall-lie catch fires, add one Watcher line + one
-`thread_cards` edge (`happened-no-wall` re-opens `surface-seventh-marker`) so catching Iss's lie about
-the ways also re-opens his lie about the Seventh — wiring the solved catch into the new main quest.
-
-**"you are the seventh":** in `six-were-kept-before-you.md`, change to "you are the next" (the group is
-not the Seventh; the Seventh is below).
-
-### COPY-PASTE-READY voice.ts strings (drop in when wiring; keep register)
-```ts
-// keeperCloseSeventhRestored() — was "one that broke nothing is kept, late."
-'the name that was cut out is read back in, in your voices, not to replace her but so she can hear it. she is down there. she kept every way, and she is not where the record left her.'
-
-// keeperCloseSeventhErased() — keep as-is (the blank stays a blank), it is already v2-true.
-
-// graveOpened(name) — was "the hole is the deposit slot."
-`the stone for the one called ${name} opens from the inside. the date was not a death. it was an appointment, and the one who set it has been waiting longer than you have been alive.`
-
-// enrollment re-valence — pattern: from "mine to enter / not given back" → "i saw this in you and named it".
-// keeperPageHand_vaun(name): was "...they are mine to enter, and i do not strike the column..."
-`i, vaun, see the keeping in the one called ${name} — the holding-on i knew — and i name it, and naming is not the same as keeping them. the column is open under their name the way it was open under mine.`
-// (apply the same shift to the other five *_Hand/_Heading keys: recognized, not consumed.)
-```
-
-### The Iss-seam (one line + one edge — wire at the catch)
-```ts
-// add to the no-wall-catch oracle reply (after the catch lands):
-'he lied about the wall. ask what else he told you warmly. ask who he said was cast out for nothing.'
-```
-Thread-card edge: on `happened-no-wall` solve, re-open `surface-seventh-marker` (set its
-`alt_text_condition`/`revealed_by_solve` so the Seventh thread re-surfaces — catching Iss's lie about the
-ways re-opens his lie about the Seventh, wiring the solved catch into the main quest).
+> *(a later hand, the record's flat register, set beneath — the correction it was made to write:)* the
+> seventh kept the seven ways and was not kept. the record wrote *spared* and the record was made to
+> write *refused*, and then, read back in the present hands' own voices, *not where it left them.* the
+> blank where the name goes is not an absence. it is a place held for a hand that is still down there to
+> fill. (see *the-name-i-cut-myself* for the stone cut out past the door, before the going-down; see
+> *the-fire-they-let-out* for the hand on the other side of the same door; see *six-were-kept-before-you*
+> — you are not the seventh, you are the next.)

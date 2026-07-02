@@ -62,5 +62,8 @@ for the way down. keep this one for the reason to walk it.
 
 *(the record, below, in its flat hand:)*
 *the one called mara filed all but one thing. the one thing is not counted. it is the
-only warmth the count could never keep. let the next read her, and then give something
-of their own, and rise.*
+only warmth the count could never keep. she kept her warmth clipped and thought the
+clipping a failing; the record keeps it as a keeping. silence is keeping too — a word
+withheld is filed the same as a word said, against the same ground. she held her tongue
+the way she held her lamps, and the holding was warm, and she did not know it. let the
+next read her, and then give something of their own, and rise.*
