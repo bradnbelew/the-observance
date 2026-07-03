@@ -88,7 +88,7 @@ values
       'fragment', 'a keeper came down to keep the fire and was kept by it. you do not make the fire. you do not own it. you carry it, and you do not let it die, and that is the whole of it. the kept light upstairs was a coal carried up from here.'
     )
   ),
-  3, false, null ),
+  3, true, null ),
 
 -- ───────────────────────────────────────────────────────────────────────────
 -- THE END LANE — the Seventh shrine / the one place outside the record (FACT 10b / D11)
@@ -119,7 +119,7 @@ values
       'fragment', 'the seventh kept every way and was not kept, and went out past the door that is not a threshold, to the one place the record does not reach, and cut the name themselves. exile is the other side of keeping. you are not cast out. you only came to look.'
     )
   ),
-  4, false, null )
+  4, true, null )
 
 on conflict (puzzle_key) do update set
   title            = excluded.title,

@@ -114,6 +114,9 @@ public final class StructureTemplates {
             case "threshold", "the_threshold"                      -> threshold(pen, base);
             case "unwriting", "the_unwriting", "seventh"           -> unwriting(pen, base);
             case "threshold_vault", "vault"                        -> thresholdVault(pen, base);
+            // --- THE TWO DEEPENING LANES (real Nether + End; approach A) ---
+            case "nether_forge", "forge"                           -> netherForge(pen, base);
+            case "end_seventh_shrine", "seventh_shrine", "end_shrine" -> endShrine(pen, base);
             default        -> keeperStone(base); // generic fallback
         };
     }
@@ -1073,6 +1076,159 @@ public final class StructureTemplates {
         // inversion motif); placeholder dots stand in until then.
         pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"· — ·· — ···", "·· — · — ··", "", ""});
+        return answer;
+    }
+
+    /* ================================================================================================
+     * ============================  THE TWO DEEPENING LANES  ==========================================
+     * The Nether forge-pocket + the End Seventh-shrine, built in the REAL vanilla Nether/End (approach A —
+     * no custom dimensions; sites.yml targets world_nether / world_the_end). Same craft law as the keepers
+     * (carved-never-default, dark-default earned light, per-place palette+prop+light, one or two wrongness
+     * touches). Additive + protected: they claim only the footprint they carve, terrain-agnostic (they seat
+     * their own floor/walls), and are placed AT BUILD TIME at the surveyed/scattered spot — never pasted
+     * toward an approaching player (reveal-safe, like every other builder here).
+     * ============================================================================================== */
+
+    /* ================================================================================================
+     * NETHER FORGE — the deep fire-source made walkable ("below the below"; sites.yml `nether_forge`). A
+     * small ruined pocket-room just past a lit portal (a DELVE, not a build-out): a prior keeper's remains
+     * laid on a DEEPSLATE SLAB, a DOUSED soul-lantern, and the on-site WORD surface — a blank answer-sign
+     * the AnswerSignListener reads at the slab (INV-14; the-fire-kept-me fiction). Nether-palette, modest.
+     * Palette: blackstone + basalt + deepslate (the fire-scorched deep). Prop: the keeper's remains on the
+     * slab + the doused soul-lantern + a decaying journal (lectern book). Light: NONE earned — the lantern
+     * is out; one dim glow-block glimmer only. Wrongness: the doused lantern where fire should be + a
+     * scorch of magma/soul-fire the room was built around.
+     * ============================================================================================== */
+    private static Location netherForge(Pen pen, Location base) {
+        int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // 5x5 pocket floor: polished-blackstone field with a basalt rim (a ruined room carved into the
+        // fire-deep, not a bright build on the surface). The builder seats its own floor so it is terrain-
+        // agnostic in the broken Nether ground (nether-rack / lava-edge) — additive, claims only this cell.
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                pen.set(cx + dx, cy - 1, cz + dz, rim ? Material.BASALT : Material.POLISHED_BLACKSTONE);
+            }
+        }
+        // Low back + side walls of blackstone brick, curdling to raw basalt columns at the corners (the
+        // fire-scorched deep). Two courses tall — a delve, not a hall.
+        for (int dx = -2; dx <= 2; dx++) {
+            pen.set(cx + dx, cy,     cz - 2, Material.POLISHED_BLACKSTONE_BRICKS);
+            pen.set(cx + dx, cy + 1, cz - 2, Material.BLACKSTONE);
+        }
+        pen.set(cx - 2, cy, cz - 1, Material.POLISHED_BASALT);
+        pen.set(cx + 2, cy, cz - 1, Material.POLISHED_BASALT);
+        pen.set(cx - 2, cy + 1, cz - 1, Material.BLACKSTONE);
+        pen.set(cx + 2, cy + 1, cz - 1, Material.BLACKSTONE);
+
+        // The scorch the room was built around: a magma seam behind glass in the back wall, with a smear of
+        // soul-fire above it (cold blue "flame" over the dead-warm fire — the-fire-kept-me, and it went out).
+        pen.set(cx, cy, cz - 2, Material.MAGMA_BLOCK);              // the ember-seam that gave no lasting warmth
+        pen.setIfAir(cx, cy + 1, cz - 2, Material.SOUL_FIRE);       // wrongness: cold flame over dead embers
+
+        // THE PRIOR KEEPER'S REMAINS on a DEEPSLATE SLAB — the fire-forge slab (sites.yml design). A low
+        // chiseled-deepslate plinth capped with a deepslate slab; the remains (a skull) laid on it. Placed
+        // AT BUILD TIME, never toward a player (reveal-safe). This is the slab the WORD is read + answered at.
+        pen.set(cx, cy - 1, cz, Material.CHISELED_DEEPSLATE);       // the slab's plinth
+        pen.set(cx, cy, cz, Material.COBBLED_DEEPSLATE_SLAB);       // THE DEEPSLATE SLAB (the fire-forge slab)
+        pen.setIfAir(cx, cy + 1, cz, Material.SKELETON_SKULL);      // the prior keeper's remains laid on the slab
+
+        // The DOUSED soul-lantern — cold, no light earned (the-fire-kept-me: the keeping was a carrying, and
+        // it stopped). A soul-lantern block that reads as a snuffed lamp, hung on a basalt post at the slab's side.
+        pen.set(cx - 1, cy, cz, Material.POLISHED_BASALT);
+        pen.set(cx - 1, cy + 2, cz, Material.BLACKSTONE);          // the beam it hangs from
+        pen.hangingLantern(cx - 1, cy + 1, cz, true);              // soul-lantern (cold blue, the doused keep-light)
+
+        // The decaying journal — the-fire-kept-me — on a lectern at the slab's other side (flavour, not an
+        // answer surface; the answer is the blank sign below). The origin: the keeping was always a carrying.
+        pen.set(cx + 1, cy, cz, Material.CHISELED_POLISHED_BLACKSTONE);
+        pen.lectern(cx + 1, cy + 1, cz, BlockFace.WEST);
+        pen.putBook(cx + 1, cy + 1, cz, "the fire kept me",
+                "i went down to keep the\nfire and the fire kept\nme instead.\n\n" +
+                        "the keeping was always\na carrying. read it back\nand carry it up.");
+
+        // RUNE-CRIB "FIRE" — carved beside the magma/soul-fire seam (the deep fire-source this pocket is).
+        // Mounted on the SOUTH face of the solid blackstone-brick back wall at (cx+1,cy,cz-2), facing the room,
+        // right beside the ember-seam. crib: the referent is the magma/soul-fire directly west of this sign.
+        pen.runeCrib(cx + 1, cy, cz - 1, BlockFace.SOUTH, deepslateWallSign(), "FIRE");
+
+        // THE ANSWER: a blank UNWAXED answer-sign recessed on the slab's front, at the DEEPSLATE SLAB — the
+        // AnswerSignListener reads a player's overwrite here (INV-14; the on-site WORD is read off the room —
+        // the journal + the FIRE crib — never off the coordinate, and typed at the slab). Backed by the slab
+        // plinth just south of the slab; a player reads/edits it standing on the dry floor at (cx,cy-1,cz+2).
+        pen.set(cx, cy - 1, cz + 1, Material.CHISELED_DEEPSLATE);   // backing plinth for the answer sign
+        pen.set(cx, cy, cz + 1, Material.DEEPSLATE_TILES);          // the sign's solid backing block
+        Location answer = pen.wallSign(cx, cy, cz + 2, BlockFace.SOUTH, deepslateWallSign());
+
+        // One faint glimmer only — a single glowstone stud low in the far corner, so the pocket is not pitch
+        // black but the earned light is gone (the lantern is out). Sparse, dark-default.
+        pen.setIfAir(cx - 2, cy, cz + 2, Material.SHROOMLIGHT);
+        return answer;
+    }
+
+    /* ================================================================================================
+     * END SHRINE — the Seventh's exile-shrine OUTSIDE the record (sites.yml `end_seventh_shrine`). An
+     * end-stone/purpur/obsidian shrine holding the "the-name-i-cut-myself" leaf: a carving-slab where the
+     * Seventh cut their own name, the-name-i-cut-myself. The Seventh's exile made a place — no kept fire,
+     * no markers, no count. Built to the Seventh's unfinished, wrong-scaled hand (the_unwriting signature).
+     * Modest, end-palette. Additive: seats its own end-stone plinth so it stands over the void-adjacent End
+     * ground without overwriting real terrain beyond the footprint (S7: additive onto verified-clear cells).
+     * Palette: end-stone brick + purpur + obsidian (the exile-stone) + a single amethyst (the deep-bird's
+     * cool — the one light carried out). Prop: the carving-slab (the cut name) + the unfinished stopped edge.
+     * Light: ONE amethyst (earned, cool, the only light outside the record). Wrongness: the shrine unfinished,
+     * stopped mid-cut (the hand cast out before it could finish — the_unwriting's stopped-ceiling echo).
+     * ============================================================================================== */
+    private static Location endShrine(Pen pen, Location base) {
+        int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // 5x5 shrine floor: end-stone-brick field, purpur rim (the exile-stone; a made place with no count).
+        // The builder seats its own floor so it stands over the End's void-adjacent ground — additive, it
+        // claims only this footprint (S7: pasted onto its own verified-clear cells, never a void overwrite).
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                pen.set(cx + dx, cy - 1, cz + dz, rim ? Material.PURPUR_BLOCK : Material.END_STONE_BRICKS);
+            }
+        }
+        // The back wall: end-stone brick banded with obsidian (the exile-stone), two courses. UNFINISHED —
+        // one upper block left as raw end-stone and a chisel-stroke stair jutting mid-air (the Seventh's hand
+        // cast out before it could finish; the_unwriting's stopped-cut signature, re-skinned end-palette).
+        for (int dx = -2; dx <= 2; dx++) {
+            pen.set(cx + dx, cy,     cz - 2, Material.END_STONE_BRICKS);
+            pen.set(cx + dx, cy + 1, cz - 2, dx == 2 ? Material.END_STONE : Material.OBSIDIAN); // the stopped, unfinished course
+        }
+        pen.set(cx + 1, cy + 2, cz - 2, Material.PURPUR_STAIRS);   // a chisel-stroke left mid-cut (the unfinished hand)
+
+        // THE CARVING-SLAB — the "the-name-i-cut-myself" leaf: a low canted purpur slab the Seventh cut their
+        // own name on. A chiseled-purpur plinth capped with a canted purpur stair (stooped-to-read, the same
+        // low reading-stone the deep sites use). This is the on-site read surface.
+        pen.set(cx, cy - 1, cz, Material.END_STONE_BRICKS);
+        pen.stairs(cx, cy, cz, Material.PURPUR_STAIRS, BlockFace.SOUTH, false);   // the canted carving face
+        // The Seventh's own words on a lectern at the slab (the-name-i-cut-myself; flavour, the emotional read).
+        pen.set(cx, cy, cz - 1, Material.CHISELED_QUARTZ_BLOCK);   // a clean pale backing for the cut name (unlike the dark deep)
+        pen.lectern(cx, cy + 1, cz - 1, BlockFace.SOUTH);
+        pen.putBook(cx, cy + 1, cz - 1, "the name i cut myself",
+                "no one kept me, so i\ncut my own name here,\noutside the count.\n\n" +
+                        "the record does not\nreach this far. only\nyou did.");
+
+        // RUNE-CRIB "NAME" — carved beside the carving-slab (the name the Seventh cut for themselves). Mounted
+        // on the SOUTH face of the pale quartz backing block at (cx,cy,cz-1), facing the room at the slab.
+        // crib: the referent is the carving-slab directly south of this sign (the-name-i-cut-myself).
+        pen.runeCrib(cx - 1, cy, cz - 1, BlockFace.SOUTH, Material.WARPED_WALL_SIGN, "NAME");
+
+        // THE ANSWER: a blank UNWAXED answer-sign at the carving-slab — the AnswerSignListener reads the on-
+        // site read here (INV-14; the WORD is read off the room — the leaf-book + the NAME crib — and typed at
+        // the slab, never the coordinate). Recessed on the slab's front, backed by a purpur post; a player
+        // reads/edits it standing on the dry end-stone at (cx,cy-1,cz+2), clear of the shrine's front edge.
+        pen.set(cx, cy - 1, cz + 1, Material.PURPUR_PILLAR);       // backing post for the answer sign
+        pen.set(cx, cy, cz + 1, Material.PURPUR_BLOCK);            // the sign's solid backing block
+        Location answer = pen.wallSign(cx, cy, cz + 2, BlockFace.SOUTH, Material.WARPED_WALL_SIGN);
+
+        // The ONE kept light carried this far out: a single amethyst on the back wall (the deep-bird's cool —
+        // no kept fire out here, only this one cold light the Seventh brought). Earned, sparse, the only light.
+        pen.set(cx - 2, cy + 1, cz - 2, Material.OBSIDIAN);
+        pen.clusterOn(cx - 2, cy + 1, cz - 1, BlockFace.SOUTH);
         return answer;
     }
 

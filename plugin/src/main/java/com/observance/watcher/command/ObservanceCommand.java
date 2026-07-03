@@ -153,7 +153,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         { "the_threshold",      "the_threshold",   "6"  },   // the grave that opens from the inside
         { "the_unwriting",      "seventh_shrine",  "6"  },   // the Seventh's chamber (payoff)
         { "threshold_vault",    "coop_plate",      "6"  },   // the co-op vault room
+        // --- the two DEEPENING LANES (real Nether + End; approach A). Cross-dimension: these are
+        //     SURVEY-ONLY (see LANE_SITE_IDS + handlePlaceWorld) — placeworld stamps them ONLY at a
+        //     surveyed anchor in their target dimension, and SKIPS them (never auto-scatters into the
+        //     overworld) when unsurveyed, mirroring sites.yml's "silently skip an unplaced site" rule.
+        { "nether_forge",       "answer_sign",     "5"  },   // the Nether forge-pocket (the-fire-kept-me)
+        { "end_seventh_shrine", "answer_sign",     "6"  },   // the End exile-shrine (the-name-i-cut-myself)
     };
+
+    /**
+     * The cross-dimension DEEPENING-LANE site ids — the two lanes that live in the real Nether/End rather
+     * than the overworld the surface/deep spines scatter across. These are SURVEY-ONLY in {@code placeworld}:
+     * they are stamped ONLY at a surveyed anchor whose world matches the dimension the operator is standing
+     * in, and are SKIPPED (never auto-scattered) otherwise — so running {@code placeworld} in the overworld
+     * never drops a Nether/End set-piece into the overworld. FLOW: stand in the Nether/End, run
+     * {@code /observance site set <id>}, then {@code /observance placeworld} FROM that dimension.
+     */
+    private static boolean isLaneSite(String siteId) {
+        return "nether_forge".equals(siteId) || "end_seventh_shrine".equals(siteId);
+    }
 
     /** Look up a keeper row by its canonical siteId (case-insensitive; accepts the bare form too). */
     private static String[] keeperRow(String rawId) {
@@ -273,7 +291,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         baseX = base[0]; baseZ = base[1];
         baseSource = base[2] == 1 ? "detected base" : "world spawn";
 
-        int surveyed = 0, auto = 0, placed = 0, occupied = 0, failed = 0;
+        int surveyed = 0, auto = 0, placed = 0, occupied = 0, failed = 0, skippedLanes = 0;
         sender.sendMessage("== placeworld — scattering keepers away from " + baseSource
                 + " " + baseX + "," + baseZ + " in " + worldName + " ==");
 
@@ -294,8 +312,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 az = el.getBlockZ();
                 fromSurvey = true;
                 surveyed++;
+            } else if (isLaneSite(siteId)) {
+                // 2a) CROSS-DIMENSION LANE (nether_forge / end_seventh_shrine): never auto-scatter — that would
+                // drop a Nether/End set-piece into the overworld. It is placed ONLY at a surveyed anchor in its
+                // OWN dimension. Unsurveyed here (or surveyed in a different world) → SKIP (sites.yml's "silently
+                // skip an unplaced site" rule). Survey it in-dimension, then run placeworld FROM that dimension.
+                skippedLanes++;
+                boolean surveyedElsewhere = existing != null && existing.isPlaced();
+                sender.sendMessage("  " + siteId + ": cross-dimension lane -> skipped ("
+                        + (surveyedElsewhere
+                            ? "surveyed in " + existing.worldName() + ", not " + worldName
+                            : "not surveyed") + "). Stand in the "
+                        + (siteId.startsWith("nether") ? "Nether" : "End")
+                        + ", run `/observance site set " + siteId + "`, then placeworld there.");
+                continue;
             } else {
-                // 2) Auto-scatter: a distant, per-keeper anchor far from the base on its own bearing.
+                // 2b) Auto-scatter: a distant, per-keeper anchor far from the base on its own bearing.
                 int[] scatter = autoScatterAnchor(baseX, baseZ, siteId);
                 ax = scatter[0];
                 az = scatter[1];
@@ -349,10 +381,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
 
         sender.sendMessage("Observance: placeworld complete — " + placed + " placed, " + occupied
-                + " occupied, " + failed + " failed (" + surveyed + " surveyed / " + auto + " auto-scattered) of "
+                + " occupied, " + failed + " failed, " + skippedLanes + " lane(s) skipped ("
+                + surveyed + " surveyed / " + auto + " auto-scattered) of "
                 + KEEPER_SPINE.length + " keepers.");
         sender.sendMessage("  Scatter is deterministic (same base = same auto anchors). Re-run is idempotent. "
                 + "Survey a spot with /observance site set <keeperId> to override an auto anchor.");
+        if (skippedLanes > 0) {
+            sender.sendMessage("  Nether/End lanes are survey-only: stand IN the Nether/End, `site set` the lane, "
+                    + "then run placeworld FROM that dimension to stamp it there.");
+        }
     }
 
     /**

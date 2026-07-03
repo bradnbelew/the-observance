@@ -422,21 +422,28 @@ sites:
   # ==========================================================================
   #  THE TWO DEEPENING LANES — the Nether (deep fire-source) + the End (exile /
   #  the Seventh's absence). INTEGRATION-V2 A15 / BUILD-MANIFEST §6 / WORLD-BIBLE §12.
-  #  These sit in SEPARATE worlds (`observance_nether` / `observance_end` — the
-  #  Multiverse pattern, like the Undercroft void world). `LocationSampler` already
-  #  keys proximity/heatmap on `worldName`, so a cross-dimension site needs ZERO new
-  #  tracking infra — `Site.contains` is the dimension-presence signal. Both lanes
+  #
+  #  APPROACH A (world retarget, 2026-07): these lanes now target the REAL vanilla
+  #  Nether + End, NOT custom Multiverse worlds. The default vanilla dimension world-
+  #  folders for the primary level-name "world" are `world_nether` and `world_the_end`.
+  #  If this server's level-name differs (server.properties `level-name: <name>`), the
+  #  vanilla dimension worlds are `<name>_nether` / `<name>_the_end` — override the
+  #  `world:` lines below (or re-survey in-dimension with `/observance site set`, which
+  #  records the ACTUAL world name the operator is standing in). `LocationSampler`
+  #  already keys proximity/heatmap on `worldName`, so a cross-dimension site needs ZERO
+  #  new tracking infra — `Site.contains` is the dimension-presence signal. Both lanes
   #  GATE NOTHING (INV-12) and are NOT in the Accepting quorum (INV-19).
   #
   #  GO-LIVE / world-coverage note (siteCoverageSelfTest extension, R7): a cross-
   #  dimension row (nether-forge / end-seventh-out in progression_seed.sql) must NOT
-  #  seed OPEN unless its site here is placed + enabled IN THE NAMED WORLD — i.e. the
-  #  Multiverse world `observance_nether` / `observance_end` must EXIST first. Coords
-  #  null = UNPLACED until the dimension worlds are built; the plugin SILENTLY skips an
-  #  unplaced site, never errors at a player.
+  #  seed OPEN unless its site here is placed + enabled IN THE NAMED WORLD. Coords
+  #  null = UNPLACED until surveyed in-dimension; the plugin SILENTLY skips an unplaced
+  #  site, never errors at a player. FLOW: stand in the Nether/End, run
+  #  `/observance site set nether_forge` (resp. `end_seventh_shrine`), then
+  #  `/observance placeworld` from that dimension to stamp the set-piece there.
   # ==========================================================================
 
-  # --- The Nether lane (observance_nether) ----------------------------------
+  # --- The Nether lane (world_nether) ---------------------------------------
 
   # The Nether forge / near pocket — the deep fire-source made walkable ("below the below"). A short
   # ruined room just past a lit portal (a DELVE, not a trek; the walk-budget is 2 ground walks + <=1
@@ -449,7 +456,7 @@ sites:
   # (BUILD-MANIFEST §0.12 / S11) before any build; enabled here so the seed site_id resolves.
   nether_forge:
     type: "answer_sign"            # the on-site word is submitted at the slab (INV-14 destination word)
-    world: "observance_nether"
+    world: "world_nether"          # vanilla Nether for level-name "world"; override if level-name differs
     x: null
     y: null
     z: null
@@ -466,7 +473,7 @@ sites:
   # built where the vanilla block suffices. A wide occlusion zone the group crosses to reach the pocket.
   soul_gallery:
     type: "marker"
-    world: "observance_nether"
+    world: "world_nether"          # vanilla Nether for level-name "world"; override if level-name differs
     x: null
     y: null
     z: null
@@ -482,7 +489,7 @@ sites:
   # (INV-18) — the Nether has no apparition lane of its own. NOT an answer slot.
   bastion_remains:
     type: "structure"
-    world: "observance_nether"
+    world: "world_nether"          # vanilla Nether for level-name "world"; override if level-name differs
     x: null
     y: null
     z: null
@@ -490,7 +497,7 @@ sites:
     protect: false                 # vanilla bastion re-read in-fiction; additive dressing only, no overwrite
     enabled: true
 
-  # --- The End lane (observance_end) ----------------------------------------
+  # --- The End lane (world_the_end) -----------------------------------------
 
   # The End Seventh-shrine — the Seventh's home OUTSIDE the record (no kept fire, no markers, no count).
   # Carried by a re-dressed end-ship (reveal-safe: force-load -> mutate on unwitnessed relog -> unload) OR
@@ -503,7 +510,7 @@ sites:
   # carving-slab beside the vanilla blocks) or RevealBeat flips — NEVER an occupied overwrite, NEVER RoomSwapBeat.
   end_seventh_shrine:
     type: "answer_sign"            # the on-site read is answered at the carving-slab (INV-14)
-    world: "observance_end"
+    world: "world_the_end"         # vanilla End for level-name "world"; override if level-name differs
     x: null
     y: null
     z: null
@@ -521,7 +528,7 @@ sites:
   # End ships as the Seventh shrine ALONE (the default). Discovered-never-witnessed static set-piece only.
   end_exile_hold:
     type: "structure"
-    world: "observance_end"
+    world: "world_the_end"         # vanilla End for level-name "world"; override if level-name differs
     x: null
     y: null
     z: null
