@@ -157,6 +157,14 @@ export const archive: Record<string, string> = {
   cardHumanRecordOpens:
     'it is observed that new hands are at the mouth. they carry lamps, and the lamps are lit, and this is well, and it has begun the same way every time. the rolls of those before are closed and were not reconciled. there is room in the markers’ column. there has always been room. an open column is a thing that fills. keep your lamp.',
 
+  // ===== the count of the openings (six-were-kept-before-you.md; W3c) =====
+  cardHumanCountUneven:
+    'the record has opened and closed and opened again across the winters, by hands that are no longer hands. a tally of the openings is kept in the other place, where fire and deep-water do not reach. the tally does not come out even.',
+  cardHumanSixOpenings:
+    'six times it was opened and a keeping was kept and a count was set down in full. six are named. six come out even. under the six a row is struck through, where a name is not kept. the mark for the seventh is not a name.',
+  cardHumanYouAreNext:
+    'six were kept before you. the count of them is kept. a file is kept until it is opened. a hand is kept after. the struck row is not a row that failed to fill. it is the row that fills last.',
+
   // -------------------------------------------------------------------------
   // GATHER-EVENTS (design/content/gather-events.md §7) — the `gather.*` block.
   // The #the-record Discord lines + in-world beat text + thread_card bodies.

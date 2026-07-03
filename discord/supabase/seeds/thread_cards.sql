@@ -300,7 +300,25 @@ values
   -- hearth (the dead-shrine surface — where a warm liar's proof is dropped).
   ( 'kept-close', 'human', 'kept close', 'cardKeptClose',
     'the_cold_hearth', 'verified',
-    array['surface-watcher-counts','human-the-record-opens'], null, 'companion:revealed', 130 )
+    array['surface-watcher-counts','human-the-record-opens'], null, 'companion:revealed', 130 ),
+
+  -- ===== THE COUNT OF THE OPENINGS (W3c — six-were-kept-before-you.md) =====
+  -- The 6-prior-groups slow-burn, surfaced as three human-thread cards that ACCRETE across late solves:
+  -- the count that will not come out even (Brann, the counter) → the six openings + the struck seventh
+  -- (post-catch, once the record is understood to keep people) → "you are the next" (when the Seventh is
+  -- named). Each rhymes into the human spine (the open column that fills, the surplus that is kept) and,
+  -- via the struck seventh, cross-references Sella's uncounted seventh. Spoiler-safe: surface facts +
+  -- the induction frame the human thread already approaches — no fate, no key, no name, revealed only on
+  -- earned late solves. Bodies are Watcher-register (voice.archive.ts cardHumanCount* / cardHumanYouAreNext).
+  ( 'human-count-uneven', 'human', 'the count does not come out even', 'cardHumanCountUneven',
+    'first_report_lectern_01', 'explore',
+    array['human-names-over-heads','human-the-record-opens'], 'stone-brann', null, 200 ),
+  ( 'human-six-openings', 'human', 'six openings, one struck', 'cardHumanSixOpenings',
+    'first_report_lectern_01', 'explore',
+    array['human-count-uneven','human-the-record-opens','surface-seventh-marker'], 'no-wall-catch', null, 210 ),
+  ( 'human-you-are-the-next', 'human', 'you are the next', 'cardHumanYouAreNext',
+    'first_report_lectern_01', 'explore',
+    array['human-six-openings','human-the-record-opens','human-they-were-kept'], 'seventh-unwriting', null, 220 )
 
 on conflict (card_key) do nothing;
 
