@@ -115,6 +115,20 @@ const CANONICAL_THREADS: ReadonlyArray<{ key: string; label: string; color: stri
 ];
 
 /**
+ * RUMOR RESOLUTION — the "which rumor is true?" payoff. A rumor card RESOLVES once its evidence card is
+ * ALSO revealed: the surface NPCs speak before you can check them, and the deep either breaks the claim
+ * (Aro's "the line means nothing" → contradicted once you stand at the real Deep Line) or bears it out
+ * (Wenna's garbled seven-charm → verified once you read the true seven ways). Pure + reveal-gated: the
+ * flip shows ONLY when the evidence card is in the revealed set (never ahead of it), so a player who has
+ * not yet found the evidence still sees the rumor as unverified. No schema/plugin — the projection already
+ * knows what is revealed. (Extend this map as more rumor threads earn their resolution.)
+ */
+const RUMOR_RESOLVES: Readonly<Record<string, { when: string; becomes: 'contradicted' | 'verified' }>> = {
+  'surface-aro-lie': { when: 'place-deep-line', becomes: 'contradicted' },
+  'surface-wenna-folk': { when: 'place-seven-ways', becomes: 'verified' },
+};
+
+/**
  * projectArchive — the pure mapping. Given the revealed cards the view handed over, return the arranged
  * archive: five canonical threads in order (empty ones included), each thread's cards sorted, and each
  * card's citation web filtered to the revealed set. Total + deterministic: same input → same output. An
@@ -165,11 +179,14 @@ export function projectArchive(cards: ArchiveCard[]): ArchiveProjection {
         seen.add(key);
         references.push({ card_key: target.card_key, title: target.title });
       }
+      // Rumor resolution: a rumor whose evidence is now revealed flips to contradicted/verified.
+      const resolve = RUMOR_RESOLVES[c.card_key];
+      const card_kind = resolve && revealedByKey.has(resolve.when) ? resolve.becomes : c.card_kind;
       return {
         card_key: c.card_key,
         title: c.title,
         body: c.body,
-        card_kind: c.card_kind,
+        card_kind,
         references,
       };
     });

@@ -122,6 +122,25 @@ function card(over: Partial<ArchiveCard> & Pick<ArchiveCard, 'card_key' | 'threa
   check('body is carried verbatim', a.body === 'the light was read too long.');
 }
 
+// 9. Rumor resolution — a rumor flips only once its evidence card is ALSO revealed (never ahead of it).
+{
+  const aroAlone = projectArchive([card({ card_key: 'surface-aro-lie', thread_key: 'surface', card_kind: 'rumor' })]);
+  check('rumor stays unverified without its evidence',
+    aroAlone.threads.find((t) => t.key === 'surface')!.cards[0]!.card_kind === 'rumor');
+  const aroResolved = projectArchive([
+    card({ card_key: 'surface-aro-lie', thread_key: 'surface', card_kind: 'rumor', card_sort: 1 }),
+    card({ card_key: 'place-deep-line', thread_key: 'place', card_sort: 2 }),
+  ]);
+  check('rumor flips to contradicted once its evidence is revealed',
+    aroResolved.threads.find((t) => t.key === 'surface')!.cards[0]!.card_kind === 'contradicted');
+  const wennaResolved = projectArchive([
+    card({ card_key: 'surface-wenna-folk', thread_key: 'surface', card_kind: 'rumor', card_sort: 1 }),
+    card({ card_key: 'place-seven-ways', thread_key: 'place', card_sort: 2 }),
+  ]);
+  check('garbled charm verifies once the true ways are revealed',
+    wennaResolved.threads.find((t) => t.key === 'surface')!.cards[0]!.card_kind === 'verified');
+}
+
 if (failures > 0) {
   console.error(`\narchive-projection.selftest: ${failures} FAILED`);
   process.exit(1);
