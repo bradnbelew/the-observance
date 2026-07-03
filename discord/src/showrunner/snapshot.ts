@@ -4,7 +4,8 @@
  * reads. Thresholds are module constants (tunable later via settings without changing decide()).
  */
 import { supabase } from '../db/client.js';
-import { getArcAct, getBudget, countWhispersForPuzzle, getHint } from '../db/repo.js';
+import { getArcAct, getArcFlags, getBudget, countWhispersForPuzzle, getHint } from '../db/repo.js';
+import { flagsSatisfied } from '../oracle/gate.js';
 import { hasClueSpec } from '../forge/clue-specs.js';
 import { readActiveRoster } from './autonomy.run.js';
 import { readSetting, readState } from './state.js';
@@ -27,20 +28,21 @@ export const DRIP_INTERVAL_MS = 20 * HOUR;
 export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
   const sinceIso = new Date(nowMs - STALL_WINDOW_MS).toISOString();
 
-  const [asleep, modeRaw, currentAct, state] = await Promise.all([
+  const [asleep, modeRaw, currentAct, state, arcFlags] = await Promise.all([
     readSetting<boolean>('watcher_sleep', false),
     readSetting<string>('showrunner_mode', 'confirm'),
     getArcAct(),
     readState(),
+    getArcFlags(),
   ]);
   const mode: ShowrunnerMode = modeRaw === 'auto' ? 'auto' : 'confirm';
   const drippedKeys = new Set(state.dripped_keys ?? []);
 
   const { data: puzzleRows, error: pErr } = await supabase
     .from('puzzles')
-    .select('puzzle_key, movement, outcome_type, requires_quorum')
+    .select('puzzle_key, movement, outcome_type, requires_quorum, requires_flags')
     .eq('active', true)
-    .returns<{ puzzle_key: string; movement: number | null; outcome_type: string | null; requires_quorum: number | null }[]>();
+    .returns<{ puzzle_key: string; movement: number | null; outcome_type: string | null; requires_quorum: number | null; requires_flags: Record<string, unknown> | null }[]>();
   if (pErr) throw pErr;
 
   // S-F ROSTER GUARD (activeRosterSize): the count of distinct players active within the SAME window
@@ -95,6 +97,9 @@ export async function buildSnapshot(nowMs: number): Promise<Snapshot> {
       // S-F ROSTER GUARD: the convergence quorum, or undefined when the row carries none (NULL) — the
       // guard no-ops per-row on undefined, so an ungated row's drip eligibility is unchanged.
       requiresQuorum: row.requires_quorum ?? undefined,
+      // REVEAL-GATE MIRROR: mirrors the real oracle's getOpenPuzzles gate (flagsSatisfied against the
+      // live arc_state.flags) so the drip pool can never point at a row the oracle would still reject.
+      flagsOpen: flagsSatisfied(row.requires_flags, arcFlags),
     });
   }
 

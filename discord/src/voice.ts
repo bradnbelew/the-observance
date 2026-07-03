@@ -298,10 +298,12 @@ export const voice = {
 
   /**
    * lore — a true answer that reveals story, opens nothing. the watcher tells
-   * a fragment; {fragment} is the seeded telling. nothing unlocks.
+   * a fragment; {fragment} is the seeded telling. nothing unlocks. an empty/unseeded
+   * fragment falls back to a calm in-register placeholder — never an error, never blank.
    */
   oracleLore(fragment: string): string {
-    return fragment;
+    const trimmed = fragment.trim();
+    return trimmed !== '' ? trimmed : 'there is more here than the mark. but the telling is not ready. not yet.';
   },
 
   /**

@@ -428,12 +428,11 @@ function deadEndKind(payload: OutcomePayload): DeadEndKind | undefined {
     : undefined;
 }
 
-/** The lore telling lives in voice_args.fragment; empty falls back in register. */
+/** The lore telling lives in voice_args.fragment. Empty/absent → '' — voice.oracleLore owns the
+ *  in-register fallback (the sole source of this player-facing English). */
 function loreFragment(payload: OutcomePayload): string {
   const frag = payload.voice_args?.['fragment'];
-  if (typeof frag === 'string' && frag.trim() !== '') return frag;
-  // no seeded telling — speak a calm placeholder in register, never an error.
-  return 'there is more here than the mark. but the telling is not ready. not yet.';
+  return typeof frag === 'string' ? frag : '';
 }
 
 /** Default voice line per outcome type when no explicit voice_key is given. */

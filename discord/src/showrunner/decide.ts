@@ -80,6 +80,18 @@ function rosterCanClose(p: { requiresQuorum?: number }, s: Snapshot): boolean {
   return s.activeRosterSize >= p.requiresQuorum;
 }
 
+/**
+ * REVEAL-GATE MIRROR (audit fix). `false` only when snapshot.ts has explicitly measured the row's
+ * `requires_flags` as unsatisfied against live `arc_state.flags` — the same predicate the real oracle
+ * gates answers on. Absent (undefined) ⇒ back-compat (ungated rows, and every pre-existing test
+ * fixture that never set this field) — open. Without this, the drip pool could point at a puzzle the
+ * oracle would still silently reject (a moon-logic dead end), and the row would then be marked dripped
+ * forever, so the real announcement never fires once the gate genuinely opens.
+ */
+function flagsOpenOk(p: { flagsOpen?: boolean }): boolean {
+  return p.flagsOpen !== false;
+}
+
 export function decide(s: Snapshot): Decision {
   const notes: string[] = [];
   const health = { atMs: s.nowMs, openPuzzleCount: s.openPuzzles.length, note: '' };
@@ -136,7 +148,11 @@ export function decide(s: Snapshot): Decision {
     // row (lore / dead_end / unknown) is still excluded: no card, no forward motion — a report line
     // about it would point at a found-document that opens nothing.
     const drippable = s.openPuzzles.filter(
-      (p) => !p.dripped && (p.forgeable || MOVER_OUTCOMES.has(p.outcomeType)) && rosterCanClose(p, s),
+      (p) =>
+        !p.dripped &&
+        (p.forgeable || MOVER_OUTCOMES.has(p.outcomeType)) &&
+        rosterCanClose(p, s) &&
+        flagsOpenOk(p),
     );
     // PICK ORDER (S-F salience reshape). Lower = picked first:
     //   (a) story-shape rank (OUTCOME_RANK): a mover MUST still outrank a terminal — the "a drip can

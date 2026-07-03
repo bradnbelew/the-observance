@@ -57,6 +57,20 @@ export interface SnapshotPuzzle {
    * a no-op unless BOTH this and `activeRosterSize` are present.
    */
   requiresQuorum?: number;
+  /**
+   * OPTIONAL flag-gate state (the reveal-gate, ORACLE.md §1 / oracle/gate.ts `flagsSatisfied`). A row
+   * can be `active=true` in the DB long before its `requires_flags` are actually satisfied (temporal
+   * layering — e.g. `m4-three-hands` waits on `bound_word_known`) — that is how the real answer oracle
+   * (`getOpenPuzzles`) decides what a player can actually solve right now. The DRIP pool must mirror
+   * that same gate: a curatorial hint that points at a puzzle the oracle would still silently reject
+   * is a moon-logic dead end, and once dripped it is marked in `dripped_keys` and never re-announced
+   * even after the gate genuinely opens (a permanently missed announcement). `false` ⇒ still flag-gated
+   * shut, excluded from the drip pool. Absent (undefined) ⇒ back-compat (every existing test fixture
+   * and any ungated row) — treated as open, so old tests are unaffected. The STALL auto-gift backstop
+   * deliberately does NOT read this field (a player already grinding a not-yet-open row still earns
+   * whispers once it opens) — only the drip step gates on it.
+   */
+  flagsOpen?: boolean;
 }
 
 /** A player's whisper state for one stuck puzzle — enough to decide a fair auto-gift. */
