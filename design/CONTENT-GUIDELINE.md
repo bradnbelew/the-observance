@@ -83,6 +83,23 @@ and the plaintext; I author the check + the redundant clues.
 - **The recovered-archive (Google Drive) folder** — a small set of the above, framed as a salvaged archive;
   one file carries the payload, the rest are lore/texture.
 
+## 6b. THE DISCOVERY WORKFLOW (how players FIND the scattered sites — the vibe engine)
+Sites are now scattered far apart + terrain-integrated (W2: `/observance site set <keeper>` marks a spot,
+`placeworld` stamps it). They are **not** handed to players on a map — the investigation *points* to them.
+The primary, most-on-vibe path is **coords-in-artifacts**, and it's YOUR workflow because you survey the spots:
+1. **Survey a site** where it fits the world (Vaun's treasury in a cave, Brann's watch on a hill you can see
+   from afar, Sella's pool on a shore): stand there, `/observance site set brann`. Note the **XYZ**.
+2. **Hide those coords** in the artifact that should lead there (§4 toolbox — a margin coordinate, a
+   spectrogram, an acrostic that spells a bearing, a frame in the found-footage). The artifact is found
+   *through the haunt/investigation*, cracked, and its payload is *the place*.
+3. **Hand me** the artifact + "these coords → Brann's watch." I wire the haunt that surfaces the artifact,
+   the arrival check at the site, and the redundant clues (so a missed artifact doesn't dead-end anyone).
+Reliable fallbacks I build so nothing is ever un-findable: **legible-geography landmarks** (tall sites like
+Brann's watch are visible from range — a sightline pulls players out to them) and a **late-earned
+recovery-compass** whose needle settles toward the Seventh once earned (a reward, not an early crutch).
+Rule: **every site reachable ≥3 ways** (its artifact-coords · a landmark or a second clue · the salience
+drip that surfaces its thread) so the scatter is *mysterious*, never *lost*.
+
 ## 7. THE WORKFLOW (how we hand off)
 1. You make an artifact + decide the plaintext payload + roughly where it should point (a keeper? the deep?
    the first place?).
