@@ -95,4 +95,63 @@ half-ready code). Ethan's decisions on the earlier open items are recorded here.
 `m4-three-hands` slipped (an opaque-token puzzle with no producer) because nothing asserts that every
 plugin/voice-produced puzzle has a registered producer. A build-time check (seed opaque-token rows ↔
 config.yml producer tokens + the discord producers) would catch this class of orphan. Not built (a robust
-version needs careful SQL/YAML parsing); worth adding before scaling the puzzle set.
+version needs careful SQL/YAML parsing); worth adding before scaling the puzzle set. **2026-07-03 audit:
+this exact class of bug recurred twice more (§5) — the guardrail's value just went up.**
+
+---
+
+## 5. 2026-07-03 audit pass — fixed, and what's still open
+
+A from-scratch adversarial audit (not trusting this doc's own "verified sound" claims) plus a manual
+playtest trace (cold-open → the M4/Iss chain → finale → companion reckoning). Two real bugs fixed and
+committed on this branch; everything re-verified green after each.
+
+**Fixed (commits `bb72be5`, `5a47b35`):**
+- **The resource-pack PUSH half was never registered — launch-blocking.** `ResourcePackPusher.java` was
+  complete, self-tested, and config-driven, but `ObservancePlugin` only ever registered its RECEIVE
+  counterpart (`ResourcePackTracker`). Practical effect: completing the go-live step "host the pack, set
+  config.yml url/sha1" (§2) would have done *nothing* — no player is ever prompted, so the rune font (and
+  every rosetta/rune beat depending on it) would silently never render. Now registered; inert-and-safe
+  until the URL is set, as designed.
+- **The curatorial drip pool didn't apply the reveal-gate (`requires_flags`).** `snapshot.ts` fed
+  `decide.ts` every `active=true` puzzle row without checking `flagsSatisfied` against `arc_state.flags`
+  — unlike the real answer oracle (`getOpenPuzzles`), which does. A flag-gated-but-not-yet-open row (e.g.
+  `m4-three-hands` waiting on `bound_word_known`) could be dripped as a hint before it was actually
+  solvable (a moon-logic dead end for the group attempting it), and once dripped it is *permanently*
+  excluded from future announcements — so the real in-world pointer would never fire once the gate
+  genuinely opened. Fixed via a new optional `SnapshotPuzzle.flagsOpen`, back-compat with every existing
+  test fixture.
+- A minor register-separation violation: `oracle/resolve.ts`'s lore-fallback line was hardcoded inline
+  instead of sourced from `voice.ts`. Moved into `voice.oracleLore()`.
+
+**Found, NOT fixed — needs your call, not a unilateral build:**
+- **The Unlit Deep (the one group-restraint custom, `config.yml` `customs.unlit-deep`) was never built.**
+  `UnlitDeepListener` + `CUSTOM_UNLIT_DEEP` are named in comments/config but no such class exists anywhere.
+  This is INV-17's "seven CUSTOM_KEYS + the one group latch" — the group latch is currently missing
+  entirely, not deferred-and-flagged like the other items in §3. This is a real feature build (a new
+  Listener: BlockPlace + held-flame-edge detection + debounce + cooldown + group latch state), not a
+  wiring fix — flagging for you to prioritize rather than improvising it.
+- **The `keeper.ts` gap is bigger than previously stated.** Not just the TS dialogue resolver missing a
+  runner — `KeeperNpcListener.java` (the presiding-Keeper interaction producer) is also never registered,
+  and nothing anywhere tags an NPC entity with the `keeper_npc` PDC key it looks for. So today, right-
+  clicking the presiding Keeper NPC does literally nothing (no event fires at all), not just "no
+  personalized branch yet." Still correctly deferred per your prior call — just noting the full scope.
+- **Two Nether/End `progression_seed.sql` rows reference voice keys that don't exist**
+  (`nether.forgeArrive`, `end.shrineArrive`, plus `nether.soulSand`/`end.outsideRecord` named in its own
+  header). Harmless today (`active=false`, staged), but will speak nothing the moment you place those
+  Nether/End sites and flip them on — worth writing the four lines before that go-live step, not after.
+- Smaller cosmetic/config drift (no functional impact, not fixed): `event-window.*` and
+  `customs.false-law.enabled` are documented in config.yml but read by no code; `herd.pale-cosmetic-pdc-key`
+  is declared but the actual PDC key is hardcoded elsewhere (moot today since nothing writes the tag either
+  way — the "cosmetic Pale" producer doesn't exist yet, same shape as the Unlit Deep gap); `SceneAwareness.java`
+  (util) is unreferenced anywhere.
+
+**Playtest trace (manual, content-quality + retrace-fairness read, not a live human group):** Sampled the
+cold-open hook, the full M4/Iss chain (`no-wall-catch` → `bound-word` → `m4-three-hands` → `threshold-
+coordinate` → `true-walk-arrive`), the M5 finale composer + all fate/fork/seventh-choice prose, and the
+companion reckoning lines. All hold up well: the cold-open lands the haunt correctly (an anomaly that
+already knows something about you before you knew it was watching); the M4 chain properly teaches its own
+technique via hint tier 3 before requiring it (no moon-logic) and varies mechanically (cipher → coop-
+coordination → physical road-following → presence-gated read); the finale/reckoning prose is genuinely
+strong and register-disciplined. No additional pacing/fairness bugs surfaced beyond the drip-gate fix
+above (which the trace would have hit directly on the M4 chain).

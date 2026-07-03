@@ -20,6 +20,18 @@ weeks-long even with **7 players**, tons of story/lore/NPC-interaction, spooky, 
 emotion-inducing. **No half-ready anything** — every mechanic has its story + clue + interaction in
 lockstep (the consistency principle); inert content reads honestly as flavor, never costumes as a puzzle.
 
+## 0b. 2026-07-03 PM — audit + playtest pass (read `LAUNCH-READINESS.md §5` for the full ledger)
+A from-scratch adversarial audit (not trusting this doc's prior "verified sound" claims) found and fixed
+two real bugs, committed on this branch: **the resource-pack PUSH half was never registered** (launch-
+blocking — the go-live "host the pack" step would have done nothing), and **the curatorial drip pool
+didn't apply the reveal-gate** (`requires_flags`), so a flag-gated puzzle could be hinted before it was
+solvable and then never re-announced once it opened. A manual playtest trace (cold-open → the M4/Iss
+chain → finale → companion reckoning) found the authored content and pacing hold up well — no new
+fairness bugs beyond the drip-gate fix. Also surfaced: the Unlit Deep group-custom was never built at all
+(bigger than a wiring gap — a real feature), and the `keeper.ts` deferred item is wider in scope than
+previously stated (the plugin-side NPC listener + entity-tagging producer are also missing, not just the
+TS resolver). See `LAUNCH-READINESS.md §5` before starting any Unlit Deep / Keeper-NPC work.
+
 ## 1. CURRENT STATE (2026-07-03) — everything built, all green, NOTHING pushed
 Branch `feat/build-everything-2026-07-01`. Every surface green: **plugin jar · discord tsc + 9 selftests ·
 dashboard tsc + 2 selftests · datapack JSON.** The full player journey is **code-complete end to end**:
