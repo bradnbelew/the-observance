@@ -150,15 +150,15 @@ values
   -- ← CONTRADICTED on arrival at place-deep-line (Aro's lie; flips rumor → contradicted)
   ( 'surface-aro-lie', 'surface', 'step right over it', 'cardSurfaceAroLie',
     'first_report_lectern_01', 'rumor',
-    array['place-deep-line','surface-pell-truth'], null, null, 10 ),
+    array['place-deep-line','surface-pell-truth'], 'm1-record-opens', null, 10 ),
 
   ( 'surface-wenna-folk', 'surface', 'seven somethings', 'cardSurfaceWennaFolk',
     'first_report_lectern_01', 'rumor',
-    array['place-seven-ways','surface-seventh-marker'], null, null, 20 ),
+    array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 20 ),
 
   ( 'surface-pell-truth', 'surface', 'it does not chase', 'cardSurfacePellTruth',
     'first_report_lectern_01', 'explore',
-    array['surface-watcher-counts','surface-aro-lie'], null, null, 30 ),
+    array['surface-watcher-counts','surface-aro-lie'], 'm1-named-habit', null, 30 ),
 
   ( 'surface-iss-was-right', 'surface', 'right about the sky', 'cardSurfaceIssWasRight',
     'the_threshold', 'explore',
