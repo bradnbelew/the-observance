@@ -28,6 +28,10 @@ make/apply, which the code already degrades around safely).
     → they persist as sorrow. (`observer.run.ts` had no reckoning gate.)
   - Rosetta literacy KEY made concrete (rune↔plaintext crib pairs — the "these are letters" turn).
   - Mara (the thinnest keeper) given her 2nd clue.
+- **A3 — keeper-record wired (post-W9, Ethan-approved).** The Hold-Book now writes each living player in
+  (living row → keeper heading → the keeper's own hand) from their measured habit, re-filling the lectern
+  on each tier crossing. Delivers the authored `keeperPage*` pages that were wired nowhere before. Mapping:
+  hoards→vaun, reads→mara, wanders→sella, silent→orin, night-walks→brann, spends-words→iss.
 
 ---
 
@@ -65,22 +69,17 @@ make/apply, which the code already degrades around safely).
 
 ## 3. Deferred enhancements (designed, NOT half-shipped — each flagged honestly)
 
-These are real "could be more" items surfaced by the audits. None is a blocker; none is shipped in a
-degraded state (the disciplined choice — no half-ready code). Each has its exact missing leg noted.
+These are real "could be more" items. None is a blocker; none is shipped in a degraded state (no
+half-ready code). Ethan's decisions on the earlier open items are recorded here.
 
-- **Keeper-record dynamic enrolment** (`keeper.ts` + `keeper-record.ts`, both pure + self-tested, unwired).
-  The deeper "the book re-files your living row under a keeper heading, then the keeper's own hand writes
-  you" layer. Missing legs: a run wrapper + the dossier→per-keeper-rhyme signal source + the M1→M3→M4
-  `tierFor` mapping + a LecternFillBeat producer. **The keeper payoff is NOT absent** — the per-player
-  Hold-Book pages (`voice.ts:425-487`) already deliver each keeper's voice. This is an on-top enhancement
-  whose tier tuning wants a playtest; wiring it hastily would be degraded/flat. Decide the keeper→signal
-  mapping with intent, then wire.
-- **REFUSERS ending (secret).** The fate sentinel reads `flags.refusal_signal`; nothing sets it yet, so
-  REFUSERS is unreachable (by design — precision: a slow group must never read as refusing). To enable it,
-  add a plugin refusal-rite producer that sets `refusal_signal` on a positive defiance act.
-- **Self-firing cold open (optional).** The base anomaly is operator-staged (`/observance placeprologue`) —
-  intentional (you control the base edit). A one-shot autonomy producer could stage it automatically after
-  the base accrues confidence; not built (autonomous base-editing carries more risk than the operator model).
+- **REFUSERS ending — DECIDED OUT (Ethan).** Not wanted. The fate sentinel still reads `flags.refusal_signal`
+  (nothing sets it), so REFUSERS stays a designed-but-dormant fifth ending; the other three fates
+  (kept/cast_out/divided) are the live set. To revive it later, add a plugin refusal-rite that sets the flag.
+- **Self-firing cold open — DECIDED: operator-staged (Ethan).** The base anomaly is staged by
+  `/observance placeprologue` (you control the base edit). No autonomous base-editing is built (intentional).
+- **`keeper.ts` (keeper-rhyme NPC beat).** Separate from the now-wired keeper-record: an in-world keeper NPC
+  line that rhymes with a player's habit. Pure + self-tested, still unwired (no beat producer). Lower value
+  than keeper-record (which delivers the same rhyme via the Hold-Book); leave until it has a clear surface.
 - **Early first-find trailhead for a sky-blocked first site.** The recovery needle is a late (post-Seventh)
   aid; the first-find coords are meant to come from your hero artifact. If a keeper site is sky-blocked (no
   beacon beam) AND no coord artifact is authored, a group could lack a trailhead. Mitigation: ensure the
