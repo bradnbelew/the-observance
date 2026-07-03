@@ -25,6 +25,8 @@ import { resolveKeeperDialogue, type KeeperDialogueInput, type KeeperDialogueDos
 import { resolveCompanionDialogue, type CompanionDialogueInput, type CompanionArcFlags } from './companion.js';
 import { composeFinale, type FinaleComposeInput } from './finale.js';
 import { decideTheories, CLUSTERS, theoryFlag } from './theory.js';
+import { decideRelief, RELIEF_BEATS } from './relief.js';
+import { archiveLine } from '../voice.archive.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
@@ -559,6 +561,26 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   // Alread-locked mid-set: locked vaun + newly-coherent mara → only mara (locked never repeats).
   check('theory: locked one + new one → only the new one',
     JSON.stringify(decideTheories(new Set(['stone-vaun', 'vaun-hoard-sorted', 'stone-mara', 'mara-lectern-lock']), new Set(['vaun']))) === JSON.stringify(['mara']));
+}
+
+// ===========================================================================
+// relief.ts — the warm-memory exhale after a climax (W3e). Fires once per climax,
+// idempotent via the relieved_* flag; never before its climax.
+// ===========================================================================
+{
+  check('relief: no climax → no exhale', decideRelief({}).length === 0);
+  check('relief: undercroft_open set → the market exhales',
+    decideRelief({ undercroft_open: true }).map((r) => r.relievedFlag).join() === 'relieved_market');
+  check('relief: idempotent — already relieved → nothing',
+    decideRelief({ undercroft_open: true, relieved_market: true }).length === 0);
+  check('relief: iss_caught set → Iss remembered exhales',
+    decideRelief({ iss_caught: true }).map((r) => r.bodyKey).join() === 'cardWhoIssFriend');
+  check('relief: both climaxes, none relieved → both, in order',
+    JSON.stringify(decideRelief({ undercroft_open: true, iss_caught: true }).map((r) => r.climax)) ===
+    JSON.stringify(['undercroft_open', 'iss_caught']));
+  // Every relief body key must resolve in the Watcher archive (no blank exhale on camera).
+  check('relief: every bodyKey resolves in voice.archive',
+    RELIEF_BEATS.every((r) => archiveLine(r.bodyKey) != null));
 }
 
 if (failures > 0) {

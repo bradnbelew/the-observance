@@ -35,6 +35,9 @@ import { paceHerd, type HerdInput } from './herd.js';
 import { decideGrave, type GraveInput } from './grave.js';
 import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
 import { bindAcceptingInstant, instantReached } from './clock.js';
+import { decideRelief } from './relief.js';
+import { archiveLine } from '../voice.archive.js';
+import { postToTheRecord } from './discord.js';
 import { decideColdRestage, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ApparitionCandidate } from './conductor.js';
 import { runCompanionPass } from './companion.run.js';
@@ -177,6 +180,8 @@ export interface AutonomyPassResult {
   theoriesLocked: number;
   /** W3/W2-owed: the kept-needle recovery-compass was granted this pass (the Seventh was named). */
   keptNeedleGranted: boolean;
+  /** W3e relief: warm-memory exhales posted to #the-record this pass (after a heavy climax). */
+  reliefPosted: number;
 }
 
 /**
@@ -195,7 +200,7 @@ export function shouldGrantKeptNeedle(flags: Record<string, unknown>): boolean {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -267,6 +272,28 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     }
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `kept-needle error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- relief / exhale (W3e): after a heavy climax the record surfaces a warm MEMORY (the Hold alive,
+  //     a keeper loved) so weeks of dread don't fatigue. Warm SUBJECT, cold register — an existing
+  //     archive body posted ONCE to #the-record per climax (undercroft_open → the market; iss_caught →
+  //     Iss remembered kindly). Idempotent via the relieved_* set-once flags; posted only after a
+  //     successful send (a failed post leaves the flag unset to retry). Fault-isolated off the spine. ---
+  try {
+    for (const r of decideRelief(flags)) {
+      const body = archiveLine(r.bodyKey);
+      if (body == null) continue; // key missing (never — GUARD-9) → skip, never a placeholder
+      const ok = await postToTheRecord(body);
+      if (ok) {
+        await setArcFlags({ [r.relievedFlag]: true });
+        result.reliefPosted += 1;
+        await logEvent('info', 'showrunner.autonomy', `relief: ${r.label} exhaled after ${r.climax}`);
+      } else {
+        await logEvent('warn', 'showrunner.autonomy', `relief: post failed for ${r.label} — leaving ${r.relievedFlag} unset to retry`);
+      }
+    }
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `relief error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- A12 herd: pace the cosmetic pale field (capped, monotone, one-per-pass) ---
