@@ -267,3 +267,63 @@ export function resolveReportLine(
   }
   return report.authorSlot.fallbackLine;
 }
+
+/**
+ * One player's raw MEASURED behavior — the minimal shape buildObservationDossiers scores (the plugin's
+ * `dossiers` row satisfies this structurally; reports.run.ts feeds it in). Kept here, in the PURE policy,
+ * so the group-relative scoring is DB-free and self-testable.
+ */
+export interface MeasuredBehavior {
+  /** stable per-player key (mc_uuid). */
+  groupKey: string;
+  name: string | null;
+  hoardedScore: number;
+  soloMiningSeconds: number;
+  distanceFromGroup: number;
+  forbiddenWordHits: number;
+}
+
+/** The chorus axes buildObservationDossiers can score today (v1) — those measured in the flushed dossier. */
+const SCORED_AXES: readonly HabitAxis[] = ['hoards', 'wanders', 'spends-words'];
+
+/** The raw per-player signal for each scored axis (higher = more of that habit). Pure. */
+function rawSignal(b: MeasuredBehavior, axis: HabitAxis): number {
+  switch (axis) {
+    case 'hoards': return Math.max(b.hoardedScore, b.soloMiningSeconds / 60); // score, or minutes mined alone
+    case 'wanders': return Math.max(0, b.distanceFromGroup);
+    case 'spends-words': return Math.max(0, b.forbiddenWordHits);
+    default: return 0;
+  }
+}
+
+/**
+ * buildObservationDossiers — PURE. Turn measured behavior into the group-relative habit scores the policy
+ * consumes. For each scored axis a player's score is where they sit in the GROUP'S SPREAD on that axis —
+ * (raw − groupMin) ÷ (groupMax − groupMin) — so the standout leads at 1.0 and a FLAT axis (everyone the
+ * same, e.g. all mining equally) scores EVERYONE 0. That is what makes "dominant" mean "dominant FOR THIS
+ * GROUP": if no one stands out, no one is named (a raw ÷ max would falsely crown every identical player).
+ * honoredCount is looked up on the player's OWN argmax axis's custom (HABIT_CUSTOM), so the line's "days
+ * kept" matches the habit the policy will name (same scores → same argmax). Deterministic.
+ */
+export function buildObservationDossiers(
+  rows: readonly MeasuredBehavior[],
+  honoredByPlayerCustom: ReadonlyMap<string, number>,
+): ObservationDossier[] {
+  const spreadByAxis = new Map<HabitAxis, { min: number; max: number }>();
+  for (const axis of SCORED_AXES) {
+    const vals = rows.map((r) => rawSignal(r, axis));
+    spreadByAxis.set(axis, { min: Math.min(...vals), max: Math.max(...vals) });
+  }
+  return rows.map((r) => {
+    const habits: Partial<Record<HabitAxis, number>> = {};
+    for (const axis of SCORED_AXES) {
+      const { min, max } = spreadByAxis.get(axis) ?? { min: 0, max: 0 };
+      // A flat axis (max === min) → 0 for everyone: no standout, no false "dominant".
+      habits[axis] = max > min ? (rawSignal(r, axis) - min) / (max - min) : 0;
+    }
+    let argmax: HabitAxis = SCORED_AXES[0]!;
+    for (const axis of SCORED_AXES) if ((habits[axis] ?? 0) > (habits[argmax] ?? 0)) argmax = axis;
+    const honoredCount = honoredByPlayerCustom.get(`${r.groupKey}:${HABIT_CUSTOM[argmax]}`) ?? 0;
+    return { groupKey: r.groupKey, name: r.name, honoredCount, habits };
+  });
+}

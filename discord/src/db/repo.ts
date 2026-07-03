@@ -331,6 +331,60 @@ function num(v: unknown): number | undefined {
   return undefined;
 }
 
+/** One player's measured behavior signals, read from the plugin-written `dossiers` table (W3 Tier-0). */
+export interface DossierRead {
+  /** stable per-player key — mc_uuid (matches custom_compliance.groupKey + reports.groupKey). */
+  groupKey: string;
+  name: string | null;
+  /** cumulative seconds spent mining away from the group (the Vaun/hoards signal). */
+  soloMiningSeconds: number;
+  /** the plugin's computed hoarding score (the Vaun/hoards signal, primary). */
+  hoardedScore: number;
+  /** current distance from the group centroid (the Sella/wanders signal); <0 → 0 (alone/unknown). */
+  distanceFromGroup: number;
+  /** times the player has spoken the forbidden word (the Iss/spends-words signal), parsed from `extra`. */
+  forbiddenWordHits: number;
+}
+
+/**
+ * Read every `dossiers` row (the plugin flushes an absolute per-player snapshot on `mc_uuid`) and project
+ * it to the behavior signals the Tier-0 observation loop scores (reports.run.ts). Flat columns +
+ * the `extra` JSON blob (hand-parsed). Fault-isolated: ANY failure → `[]` (the loop simply stays silent —
+ * silence-is-canon, a missing "it knows you" is always safer than a misfire).
+ */
+export async function readDossiers(): Promise<DossierRead[]> {
+  try {
+    const { data, error } = await supabase
+      .from('dossiers')
+      .select('mc_uuid, name, solo_mining_seconds, hoarded_score, distance_from_group, extra')
+      .returns<Record<string, unknown>[]>();
+    if (error || !data) return [];
+    return data
+      .map((r) => {
+        const groupKey = typeof r.mc_uuid === 'string' ? r.mc_uuid : '';
+        const name = typeof r.name === 'string' && r.name.trim() !== '' ? r.name : null;
+        let forbiddenWordHits = 0;
+        if (typeof r.extra === 'string' && r.extra.trim() !== '') {
+          try {
+            const e = JSON.parse(r.extra) as Record<string, unknown>;
+            forbiddenWordHits = num(e.forbidden_word_hits) ?? 0;
+          } catch { /* malformed extra → 0, never throw */ }
+        }
+        return {
+          groupKey,
+          name,
+          soloMiningSeconds: num(r.solo_mining_seconds) ?? 0,
+          hoardedScore: num(r.hoarded_score) ?? 0,
+          distanceFromGroup: Math.max(0, num(r.distance_from_group) ?? 0),
+          forbiddenWordHits,
+        };
+      })
+      .filter((r) => r.groupKey !== '');
+  } catch {
+    return [];
+  }
+}
+
 /** Write a row to event_log. Best-effort: swallows its own failure so logging
  *  never throws into a command handler. */
 export async function logEvent(

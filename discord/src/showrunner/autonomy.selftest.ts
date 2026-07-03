@@ -18,7 +18,7 @@ import { paceHerd } from './herd.js';
 import { bindAcceptingInstant, instantReached, encodeTimestamp } from './clock.js';
 import { selectCarve, type PlayerPresence, type CarveAnchor } from './name-where-never-been.js';
 import { selectGlimpse, type OfflineCandidate } from './offline-skin.js';
-import { decidePersonalizedReports, resolveReportLine, type ReportInput, type ObservationDossier } from './reports.js';
+import { decidePersonalizedReports, resolveReportLine, buildObservationDossiers, type ReportInput, type ObservationDossier, type MeasuredBehavior } from './reports.js';
 import { decideColdRestage, type LiarInput, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ConductorInput, type ApparitionCandidate } from './conductor.js';
 import { resolveKeeperDialogue, type KeeperDialogueInput, type KeeperDialogueDossier } from './keeper.js';
@@ -581,6 +581,43 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   // Every relief body key must resolve in the Watcher archive (no blank exhale on camera).
   check('relief: every bodyKey resolves in voice.archive',
     RELIEF_BEATS.every((r) => archiveLine(r.bodyKey) != null));
+}
+
+// ===========================================================================
+// reports.run buildObservationDossiers — the group-relative scoring that makes the
+// Tier-0 "it knows you" loop fire (W3). Pure; the DB read/post live in reports.run.ts.
+// ===========================================================================
+{
+  const mb = (groupKey: string, name: string, o: Partial<MeasuredBehavior>): MeasuredBehavior => ({
+    groupKey, name, hoardedScore: 0, soloMiningSeconds: 0, distanceFromGroup: 0, forbiddenWordHits: 0, ...o,
+  });
+  const honored = new Map<string, number>([['p1:the_offering', 5]]);
+
+  // A clear hoarder vs a clear wanderer → each leads its own axis at 1.0, the other proportional.
+  const ds = buildObservationDossiers(
+    [mb('p1', 'vaun', { hoardedScore: 100, distanceFromGroup: 10 }),
+     mb('p2', 'sella', { hoardedScore: 10, distanceFromGroup: 100 })],
+    honored,
+  );
+  const p1 = ds.find((d) => d.groupKey === 'p1')!;
+  const p2 = ds.find((d) => d.groupKey === 'p2')!;
+  check('reports: group-relative — hoarder leads hoards at 1.0', p1.habits.hoards === 1);
+  check('reports: group-relative — wanderer leads wanders at 1.0', p2.habits.wanders === 1);
+  check('reports: honoredCount looked up on the argmax custom', p1.honoredCount === 5);
+  // The hoarder is dominant on hoards for this group → a named report.
+  const fired = decidePersonalizedReports({ dossiers: ds, reported: {}, mode: 'auto' }).reports;
+  check('reports: the clear hoarder is named', fired.some((r) => r.name === 'vaun' && r.habit === 'hoards'));
+
+  // A FLAT group (identical behavior) names no one — the precision floor (a wrong "it knows you" is worse).
+  const flat = buildObservationDossiers(
+    [mb('a', 'a', { hoardedScore: 50 }), mb('b', 'b', { hoardedScore: 50 })],
+    new Map(),
+  );
+  check('reports: flat group → no report (precision floor)',
+    decidePersonalizedReports({ dossiers: flat, reported: {}, mode: 'auto' }).reports.length === 0);
+  // Zero signal everywhere → all scores 0, no report, no throw.
+  check('reports: all-zero group → no report, no throw',
+    decidePersonalizedReports({ dossiers: buildObservationDossiers([mb('a', 'a', {}), mb('b', 'b', {})], new Map()), reported: {}, mode: 'auto' }).reports.length === 0);
 }
 
 if (failures > 0) {

@@ -13,6 +13,7 @@ import { runCustomsPass } from './customs.run.js';
 import { decideCustomReports, OBSERVE_AT, WARN_AT, LEFT_AT } from './customs.js';
 import { computeAutonomyGates, runAutonomyPasses } from './autonomy.run.js';
 import { materializeArchive } from './archive.run.js';
+import { runReportsPass } from './reports.run.js';
 import { readCustomViolations } from '../db/repo.js';
 import { readState } from './state.js';
 
@@ -73,6 +74,7 @@ async function main(): Promise<void> {
   // crossed rungs / lays soft tolls. Respects the kill-switch (asleep → silent, like decide)
   // and is fully fault-isolated, so it can never abort the tick the spine already applied.
   let customs = { reported: 0, tolled: 0 };
+  let reports = { reported: 0, staged: 0 };
   let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
   if (!snapshot.asleep) {
     try {
@@ -95,6 +97,13 @@ async function main(): Promise<void> {
     } catch (e) {
       console.error('[showrunner] archive materialize error (isolated)', e);
     }
+    // Tier-0 "it knows you" observation (W3): score the group's measured behavior and name a real
+    // dominant habit to #the-record (precision-gated; a flat group names no one). Fault-isolated.
+    try {
+      reports = await runReportsPass(snapshot.mode, decision.tone);
+    } catch (e) {
+      console.error('[showrunner] reports pass error (isolated)', e);
+    }
   }
 
   console.log(
@@ -103,7 +112,8 @@ async function main(): Promise<void> {
     `grip=${gates.reckoning?.state ?? 'even'} tone=${decision.tone} ` +
     `graves=${autonomy.graves} herd=${autonomy.herdSpreads} forks=${autonomy.forksSet} ` +
     `cold=${autonomy.coldRestages} apparition=${autonomy.apparitionClaimed ? 1 : 0} ` +
-    `theories=${autonomy.theoriesLocked} needle=${autonomy.keptNeedleGranted ? 1 : 0} relief=${autonomy.reliefPosted}`,
+    `theories=${autonomy.theoriesLocked} needle=${autonomy.keptNeedleGranted ? 1 : 0} relief=${autonomy.reliefPosted} ` +
+    `observed=${reports.reported}`,
   );
 }
 
