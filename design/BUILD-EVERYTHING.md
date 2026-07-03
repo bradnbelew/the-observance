@@ -55,10 +55,14 @@ Ordered so foundations land first and each wave is independently green + committ
   (3) **Discovery = investigation-gated:** a recovery-compass/lodestone needle toward the earned thread +
   coords hidden in found artifacts/whispers + visible landmarks; salience keeps one thread live. BUILD:
   (a) survey+scatter placement plugin core; (b) verify/wire the discovery-pointer (compass + coord clues).
-- **W3 — The field, not a spine (C6).** ⬜ De-linearize the six keepers into a parallel field (salience
-  surfaces them); build the offshoots with meat (townsfolk secrets · record-as-a-thread · the "6 prior
-  groups" · Nether/End deep lanes · per-player emergent threads); add the in-between tissue (motif rhymes ·
-  world-drift clocks · "previously on" · relief beats); delineate the 3 layers (spine/secret/community).
+- **W3 — The field, not a spine (C6).** ▶ MOSTLY SHIPPED (2026-07-02, green on feat/build-everything).
+  De-linearization + salience + roster-quorum were verified ALREADY BUILT. Shipped: the **Recovery Archive**
+  surfaced (`b31488c` — record-as-a-thread + motif web, spoiler-safe v_archive) · **6-prior-groups**
+  (`61578d7`) · found-on-descent + townsfolk archive gates (`e86f4a2`/`4948efa`) · **townsfolk conduct-skin**
+  (`cf31d0c` — Pell/Dob react to your conduct) · **relief/exhale beats** (`0ca4a1a`) · **world-drift clock**
+  (`8c2801c`) · kept-needle + beacons (`2c709f4`/`e96c1b9`). REMAINING (tasks #4-#7, cross-package): townsfolk
+  tracked quests + live rumor-flip · per-player Tier-0 report loop · join-recap "previously on" · Nether/End
+  content-completion · gather-card archive gate. Layer delineation lands via the archive (spine cards vs deep).
 - **W4 — The full Observer (Tier 1/2).** ⬜ `0008_observations` table; the archivist LLM pass (grounded
   extraction w/ provenance); capture from in-game chat + Discord text; sparse, precise weaponization; the
   consent/opt-out. The "it knows your name / your plan / your words" engine.
