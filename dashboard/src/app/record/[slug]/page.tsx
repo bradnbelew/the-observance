@@ -243,6 +243,10 @@ export default async function RecordPage({
 
   const signal = await readSignal();
   const rec = project(signal);
+  // Discoverability for the deeper layer (/record/archive), gated on the ALREADY-READ coarse signal (no
+  // second DB round-trip): at least one stone read ⇒ the recovery archive has something to show. The link
+  // is cold + in-register — a kept filename, never a CTA. Never shown on the sealed baseline.
+  const archiveHasContent = (signal.stonesRead ?? 0) > 0;
 
   return (
     <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
@@ -288,6 +292,19 @@ export default async function RecordPage({
         {/* The standing footer — a count, then the iceberg. */}
         <footer className="mt-8 text-center font-mono text-xs lowercase tracking-wide text-neutral-700">
           {rec.footer}
+          {/* The quiet link to the deeper layer — shown only once something is kept there (a stone read).
+              A plain underlined mono line in-register, never a CTA. */}
+          {archiveHasContent && (
+            <>
+              <br />
+              <a
+                href="/record/archive"
+                className="mt-2 inline-block text-neutral-600 underline decoration-neutral-800 underline-offset-4 hover:text-neutral-500"
+              >
+                the record is kept in more than one place.
+              </a>
+            </>
+          )}
         </footer>
       </div>
     </main>

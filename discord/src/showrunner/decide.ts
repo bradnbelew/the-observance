@@ -66,13 +66,14 @@ const MOVER_OUTCOMES: ReadonlySet<OutcomeType> = new Set<OutcomeType>(['next_clu
  * carries no `activeRosterSize`, this is a pure no-op (returns true) — so it does nothing until BOTH
  * fields are wired, and the existing quorum-free self-tests are unchanged.
  *
- * TODO(S-F roster): the puzzles table has no quorum column today (0004_oracle.sql) and the real
- * effectiveQuorum is computed IN THE PLUGIN (AcceptingRiteListener: effectiveQuorum =
- * min(configQuorum, activeRosterSize)). To make this guard bite for real: (1) add a nullable
- * `requires_quorum int` column to the coop/behavior rows (e.g. mara-walk-the-map, accepting-crouch)
- * and select it in snapshot.ts; (2) populate Snapshot.activeRosterSize from
- * `readActiveRoster(STALL_WINDOW_MS).length` (autonomy.run.ts — the single active-set source). Until
- * then the fields stay undefined and this guard is inert-but-correct.
+ * WIRED (S-F roster, 0008_requires_quorum): both feeds are live. snapshot.ts selects
+ * `puzzles.requires_quorum` (-> SnapshotPuzzle.requiresQuorum) and populates Snapshot.activeRosterSize
+ * from `readActiveRoster(STALL_WINDOW_MS).length` (the single active-set source, autonomy.run.js).
+ * Four convergence nodes carry requires_quorum=2 (m4-three-hands, accepting-crouch,
+ * spine-threshold-vault, mara-walk-the-map). The effectiveQuorum enforced in the plugin
+ * (AcceptingRiteListener: min(configQuorum, activeRosterSize)) is the in-world twin of this drip-side
+ * guard. A puzzle with no requires_quorum (the common case) still no-ops it, so the quorum-free
+ * self-tests are unchanged.
  */
 function rosterCanClose(p: { requiresQuorum?: number }, s: Snapshot): boolean {
   if (p.requiresQuorum == null || s.activeRosterSize == null) return true;

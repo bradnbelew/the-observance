@@ -12,6 +12,7 @@ import { applyDecision } from './apply.js';
 import { runCustomsPass } from './customs.run.js';
 import { decideCustomReports, OBSERVE_AT, WARN_AT, LEFT_AT } from './customs.js';
 import { computeAutonomyGates, runAutonomyPasses } from './autonomy.run.js';
+import { materializeArchive } from './archive.run.js';
 import { readCustomViolations } from '../db/repo.js';
 import { readState } from './state.js';
 
@@ -85,6 +86,14 @@ async function main(): Promise<void> {
       autonomy = await runAutonomyPasses(snapshot.mode, nowIso);
     } catch (e) {
       console.error('[showrunner] autonomy pass error (isolated)', e);
+    }
+    // Recovery Archive materialize (W3a): resolve the 42 card bodies from voice.archive.ts into
+    // thread_card_bodies so v_archive can reveal-gate them for the Record. Static authored text,
+    // idempotent, progress-independent; fault-isolated so it can never abort the applied tick.
+    try {
+      await materializeArchive();
+    } catch (e) {
+      console.error('[showrunner] archive materialize error (isolated)', e);
     }
   }
 

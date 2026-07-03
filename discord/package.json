@@ -25,6 +25,8 @@
     "showrunner:test:prologue": "tsx src/showrunner/prologue.selftest.ts",
     "showrunner:test:autonomy": "tsx src/showrunner/autonomy.selftest.ts && npm run -s showrunner:test:prologue",
     "showrunner:test:scenario": "tsx src/showrunner/scenario.selftest.ts",
+    "showrunner:test:archive": "tsx src/showrunner/archive.selftest.ts",
+    "archive:materialize": "tsx src/showrunner/archive.materialize.ts",
     "pack:build": "tsx src/render/build-runepack.ts",
     "pack:proof": "tsx src/render/rune-proof.ts"
   },
