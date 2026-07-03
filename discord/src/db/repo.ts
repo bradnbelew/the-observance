@@ -235,10 +235,13 @@ export async function enqueueBeat(
   target: string | null,
   payload: Record<string, unknown> = {},
   status: BeatStatus = 'pending',
+  siteId: string | null = null,
 ): Promise<BeatQueueRow> {
   const { data, error } = await supabase
     .from('beat_queue')
-    .insert({ type, target, payload, status })
+    // site_id is how the plugin resolves a beat's anchor Site (RealBeatEnactor); optional, null-safe for
+    // the site-less callers (grave/apparition) that pass everything in the payload.
+    .insert({ type, target, payload, status, site_id: siteId })
     .select('id, type, target, payload, status, created_at, decided_at')
     .single<BeatQueueRow>();
 

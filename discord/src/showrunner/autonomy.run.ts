@@ -35,6 +35,7 @@ import { paceHerd, type HerdInput } from './herd.js';
 import { decideGrave, type GraveInput } from './grave.js';
 import { decideFate } from './fate.js';
 import { LEFT_AT } from './customs.js';
+import { runKeeperRecordPass } from './keeper-record.run.js';
 import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
 import { bindAcceptingInstant, instantReached } from './clock.js';
 import { decideRelief } from './relief.js';
@@ -176,6 +177,8 @@ export interface AutonomyPassResult {
   apparitionClaimed: boolean;
   /** D3 companion: Wren reveal/reckoning last-words beats enqueued this pass. */
   companionBeats: number;
+  /** A3 keeper-record: players who crossed to a new Hold-Book enrolment tier this pass. */
+  keeperEnrolments: number;
   /** M5 finale: the composed close was posted this pass. */
   finalePosted: boolean;
   /** S-D theory-lock: keepers whose evidence cluster became coherent this pass (flag locked + beat posted). */
@@ -202,7 +205,7 @@ export function shouldGrantKeptNeedle(flags: Record<string, unknown>): boolean {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, keeperEnrolments: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -447,6 +450,19 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     if (comp.dirty) dirty = true;
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `companion error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- A3 keeper-record: "the record writes you in" — re-fill the Hold-Book when a player crosses a new
+  //     enrolment tier (living row → keeper heading → the keeper's own hand). Delivers the authored
+  //     keeperPage* pages (previously unwired). Mutates the shared state's high-water; persisted below.
+  try {
+    let movement = 1;
+    try { movement = await getArcAct(); } catch { /* graceful — default M1 */ }
+    const kr = await runKeeperRecordPass(flags.iss_caught === true, movement, state, beatStatus);
+    result.keeperEnrolments += kr.enrolled;
+    if (kr.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `keeper-record error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- M5 FATE SENTINEL: decide the ending fate ONCE the Accepting instant is reached, set-once, so the
