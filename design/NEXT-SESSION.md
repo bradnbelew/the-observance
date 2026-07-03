@@ -40,9 +40,18 @@ program: **W0** roster→dynamic-7 `3779cd8` (fixed a real finale-quorum bug) ·
 + scatter placement `46c2006` (`/observance site set` + `placeworld`, sites scatter terrain-integrated) ·
 **W2b** discovery model `e74d90d` (coords-in-artifacts = Ethan's workflow, documented).
 
-**Owed small builds from W2 (do early in W3):** legible-geography landmark visibility for tall sites +
-a late-earned recovery-compass toward the Seventh (so no scattered site is ever un-findable; every site
-reachable ≥3 ways).
+**Owed small builds from W2:** ✅ DONE (`2c709f4`) — legible-geography beacons (Brann watch-fire +
+unbroken light project a kept-light beam) + the kept-needle recovery-compass (admin path live; the earned
+seventh_named auto-grant is tracked task #3).
+
+**W3 progress (2026-07-02):** ✅ **W3a `b31488c`** surfaced the 42-card Recovery Archive — it was authored
++ voice-covered + never read. `0007_v_archive.sql` (SECURITY DEFINER, reveal-gated in SQL) + showrunner
+materializer (INV-1 intact) + the `/record/archive` reading-room (5 threads, citation web = the motif
+rhymes, filtered to the revealed set). Closes record-as-a-thread + motif rhymes + layer-delineation in one
+build. De-linearization/salience/roster-quorum were verified ALREADY BUILT (only a stale TODO fixed).
+**Remaining W3 = tracked tasks #3–#7** (townsfolk mini-arcs · 6-prior-groups drip + per-player Tier-0 loop ·
+in-between tissue + null-gate card gates · Nether/End content). Deferred op: apply 0007_v_archive.sql to
+live Supabase + `npm run archive:materialize` at deploy.
 
 ## 3. THE DECISIONS LOCKED (see BUILD-EVERYTHING for the full table — highlights)
 Fresh world (Ethan can pre-place hero things) · full latitude to haunt their base · haunting-first in-server
