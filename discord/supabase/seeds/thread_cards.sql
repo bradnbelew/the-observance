@@ -43,7 +43,7 @@ values
   -- ========================================================================
   ( 'who-deep-market', 'who', 'the deep market', 'cardWhoDeepMarket',
     'stone_of_reckoning', 'explore',
-    '{}', null, null, 10 ),
+    '{}', 'undercroft-descent', null, 10 ),
 
   ( 'who-vaun-counted', 'who', 'the founder who counted', 'cardWhoVaunCounted',
     'stone_vaun', 'explore',
@@ -74,7 +74,7 @@ values
   -- ========================================================================
   ( 'place-came-down', 'place', 'we came down', 'cardPlaceCameDown',
     'the_threshold', 'explore',
-    array['place-deeper-wrong'], null, null, 10 ),
+    array['place-deeper-wrong'], 'rosetta-ring', null, 10 ),
 
   ( 'place-seven-ways', 'place', 'the order is seven', 'cardPlaceSevenWays',
     'rune_rosetta', 'explore',
@@ -90,7 +90,7 @@ values
 
   ( 'place-cairn', 'place', 'the offering-cairn', 'cardPlaceCairn',
     'offering_cairn_01', 'explore',
-    array['who-vaun-counted','human-offering-ledger'], null, null, 50 ),
+    array['who-vaun-counted','human-offering-ledger'], 'stone-vaun', null, 50 ),
 
   ( 'place-undercroft-sealed', 'place', 'the sealed undercroft', 'cardPlaceUndercroftSealed',
     'unbroken_light', 'explore',
@@ -198,11 +198,11 @@ values
 
   ( 'human-ration-redivided', 'human', 'a head off the roll, still hungry', 'cardHumanRation',
     'stone_of_reckoning', 'explore',
-    array['human-names-over-heads','who-deep-market'], null, null, 30 ),
+    array['human-names-over-heads','who-deep-market'], 'undercroft-fog', null, 30 ),
 
   ( 'human-hand-as-lamp', 'human', 'entry five', 'cardHumanHandAsLamp',
     'kept_light_home_01', 'explore',
-    array['human-lamp-roll-counts-down','human-they-were-kept'], null, null, 40 ),
+    array['human-lamp-roll-counts-down','human-they-were-kept'], 'undercroft-fog', null, 40 ),
 
   ( 'human-names-over-heads', 'human', 'nine heads, two hundred fourteen names', 'cardHumanNamesOverHeads',
     'stone_of_reckoning', 'explore',
