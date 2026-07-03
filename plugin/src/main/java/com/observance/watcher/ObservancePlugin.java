@@ -111,6 +111,7 @@ public final class ObservancePlugin extends JavaPlugin {
 
     // --- resource-pack load gate (MF-11): rune rendering is unsafe until the client applies the pack ---
     private com.observance.watcher.signal.ResourcePackTracker resourcePack;
+    private com.observance.watcher.listener.ResourcePackPusher resourcePackPusher;
 
     // --- beat pipeline ---
     private BeatQueuePoller poller;
@@ -380,6 +381,16 @@ public final class ObservancePlugin extends JavaPlugin {
         // Resource-pack load gate (MF-11) — the SAME instance across reloads (its map is the truth of
         // who has the pack applied); re-registered here because reloadAll() unregisters all handlers.
         if (resourcePack != null) pm.registerEvents(resourcePack, this);
+
+        // Resource-pack PUSH half (MF-11) — the one-click install. Rebuilt each registerListeners() call
+        // (unlike the tracker above, it holds no state worth preserving across a reload) so an operator
+        // setting resource-pack.url/sha1 and running /observance reload takes effect immediately. Inert
+        // (logs once, pushes nothing) while the URL is blank — safe to always register, pre- or post-go-live.
+        this.resourcePackPusher = new com.observance.watcher.listener.ResourcePackPusher(
+                scheduler, safety,
+                config.resourcePackUrl(), config.resourcePackSha1(), config.resourcePackRequired(),
+                config.resourcePackPrompt(), config.resourcePackDelayTicks());
+        pm.registerEvents(resourcePackPusher, this);
 
         // The Lens (INTEGRATION §SIGNATURE #3) — reveals/hides gated per-player runes as the relic is
         // equipped/holstered. Rebuilt each registration so it points at the current shared registry;

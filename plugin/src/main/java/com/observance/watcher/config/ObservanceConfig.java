@@ -56,6 +56,13 @@ public final class ObservanceConfig {
     private final int revealRetryDelayTicks;
     private final int revealRetryMaxAttempts;
 
+    // --- resource pack (MF-11 push half) ---
+    private final String resourcePackUrl;
+    private final String resourcePackSha1;
+    private final boolean resourcePackRequired;
+    private final String resourcePackPrompt;
+    private final long resourcePackDelayTicks;
+
     // --- logging ---
     private final boolean debug;
 
@@ -98,6 +105,12 @@ public final class ObservanceConfig {
         this.witnessRadius = clampInt(c.getInt("reveal.witness-radius", 64), 4, 256);
         this.revealRetryDelayTicks = clampInt(c.getInt("reveal.retry-delay-ticks", 40), 1, 1200);
         this.revealRetryMaxAttempts = clampInt(c.getInt("reveal.retry-max-attempts", 10), 0, 200);
+
+        this.resourcePackUrl = c.getString("resource-pack.url", "").trim();
+        this.resourcePackSha1 = c.getString("resource-pack.sha1", "").trim();
+        this.resourcePackRequired = c.getBoolean("resource-pack.required", false);
+        this.resourcePackPrompt = c.getString("resource-pack.prompt", "");
+        this.resourcePackDelayTicks = clampLong(c.getLong("resource-pack.delay-ticks", 20L), 0L, 1200L);
 
         this.debug = c.getBoolean("logging.debug", false);
     }
@@ -168,6 +181,12 @@ public final class ObservanceConfig {
     public int witnessRadius() { return witnessRadius; }
     public int revealRetryDelayTicks() { return revealRetryDelayTicks; }
     public int revealRetryMaxAttempts() { return revealRetryMaxAttempts; }
+
+    public String resourcePackUrl() { return resourcePackUrl; }
+    public String resourcePackSha1() { return resourcePackSha1; }
+    public boolean resourcePackRequired() { return resourcePackRequired; }
+    public String resourcePackPrompt() { return resourcePackPrompt; }
+    public long resourcePackDelayTicks() { return resourcePackDelayTicks; }
 
     public boolean debug() { return debug; }
 
