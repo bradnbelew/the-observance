@@ -1,0 +1,134 @@
+package com.observance.watcher.signal.listener;
+
+import com.google.gson.JsonObject;
+import com.observance.watcher.config.Site;
+import com.observance.watcher.config.SitesConfig;
+import com.observance.watcher.data.SupabaseClient;
+import com.observance.watcher.util.RateLimiter;
+import com.observance.watcher.util.Safety;
+import com.observance.watcher.util.Scheduler;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.function.Supplier;
+
+/**
+ * The three-hands coop gate — the IV→V hinge (seed {@code m4-three-hands}; design/PUZZLE-DESIGNS.md §A6).
+ *
+ * <p>The Threshold does not open to a word. It opens to THREE acts done in one short window (three acts,
+ * not necessarily three people): a FOOT on the plate + a CARVE at the mark + a WORD posted in Discord — the
+ * convergence word the catch yields ("the one who turned away"). It is the one CROSS-SURFACE coop gate: the
+ * two world legs are witnessed here, the word leg is witnessed in #the-record.
+ *
+ * <p><b>This listener owns only the two WORLD legs.</b> On a foot (a {@code PHYSICAL} step on the plate) or
+ * a carve (a {@code LEFT_CLICK_BLOCK} punch of the mark) inside the {@code coop_plate} site, it records the
+ * leg in memory; when BOTH are fresh together (within the window) it writes one timestamped arc flag,
+ * {@code coop_world_ready_at}. The Discord side is the SOLE closer: when the convergence word is posted
+ * while that flag is fresh, it submits the puzzle's opaque token to the oracle (which opens the Threshold).
+ * One closer → no double-fire; the join is self-healing (redo any leg to bring it back in-window).
+ *
+ * <p>Pure + safe: never cancels the event, never mutates the world, never messages players; body in Safety;
+ * the flag write is async (network) and throttled so plate-spam can't hammer the RPC. Unplaced/disabled →
+ * a clean no-op (go-live safe). Sites resolved live via a {@link Supplier} so a reload is picked up.
+ */
+public final class CoopPlateListener implements Listener {
+
+    private static final String SITE_TYPE = "coop_plate";
+    /** The shared marker Discord reads to close the gate on the WORD leg: epoch ms of the last time both
+     *  world legs (a foot on the plate + a carve) were fresh together. Kept in sync with the discord twin
+     *  (discord/src/showrunner/coop-gate.ts READY_FLAG). */
+    private static final String READY_FLAG = "coop_world_ready_at";
+    /** At most one ready-marker write per this interval — plate steps fire constantly; don't hammer the RPC. */
+    private static final long PUBLISH_THROTTLE_MS = 3_000L;
+
+    private final Supplier<SitesConfig> sitesSupplier;
+    private final SupabaseClient supabase;
+    private final RateLimiter rateLimiter;
+    private final Scheduler scheduler;
+    private final Safety safety;
+    private final boolean enabled;
+    /** Both world legs must fall within this window of each other to publish the ready marker. */
+    private final long windowMs;
+
+    // The two world legs, in memory (there is one coop_plate site). Set on the event thread; read in-line.
+    private volatile long lastFootMs = 0L;
+    private volatile long lastCarveMs = 0L;
+
+    public CoopPlateListener(Supplier<SitesConfig> sitesSupplier, SupabaseClient supabase,
+                             RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
+                             boolean enabled, long windowMs) {
+        this.sitesSupplier = sitesSupplier;
+        this.supabase = supabase;
+        this.rateLimiter = rateLimiter;
+        this.scheduler = scheduler;
+        this.safety = safety;
+        this.enabled = enabled;
+        this.windowMs = Math.max(5_000L, windowMs);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInteract(PlayerInteractEvent event) {
+        safety.run("coop.plate.interact", () -> {
+            if (!enabled || supabase == null || scheduler == null || rateLimiter == null) return;
+            Action action = event.getAction();
+            boolean foot = action == Action.PHYSICAL;          // a step on the plate
+            boolean carve = action == Action.LEFT_CLICK_BLOCK; // a punch of the mark ("cut")
+            if (!foot && !carve) return;
+
+            Player p = event.getPlayer();
+            if (p == null) return;
+            Block b = event.getClickedBlock();
+            if (b == null) return;
+            Location loc = b.getLocation();
+            if (loc.getWorld() == null) return;
+            String world = loc.getWorld().getName();
+
+            SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
+            if (sites == null) return;
+            Site site = nearestPlacedOfType(sites, SITE_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
+            if (site == null) return; // not at the coop plate (or unplaced → no-op, go-live safe)
+
+            long now = System.currentTimeMillis();
+            if (foot) lastFootMs = now; else lastCarveMs = now;
+
+            if (bothFresh(now)) tryPublish(now);
+        });
+    }
+
+    /** True iff both world legs have fired and both fall within the window ending now. */
+    private boolean bothFresh(long now) {
+        return lastFootMs > 0 && lastCarveMs > 0
+                && (now - lastFootMs) <= windowMs && (now - lastCarveMs) <= windowMs;
+    }
+
+    /** Publish coop_world_ready_at=now (throttled, async). The Discord word leg closes the gate. */
+    private void tryPublish(long now) {
+        if (!rateLimiter.tryCooldown("coop:plate:publish", PUBLISH_THROTTLE_MS)) return;
+        JsonObject flags = new JsonObject();
+        flags.addProperty(READY_FLAG, now);
+        safety.info("coop.plate", "world legs held (foot + carve) — the threshold waits on the word");
+        scheduler.runAsyncSafe("coop.plate.publish", () -> supabase.mergeArcFlags(flags));
+    }
+
+    /** The placed coop_plate the block sits inside, or null (mirrors AcceptingRiteListener). */
+    private Site nearestPlacedOfType(SitesConfig sites, String type,
+                                     String world, double x, double y, double z) {
+        Site best = null;
+        double bestD2 = Double.MAX_VALUE;
+        for (Site s : sites.placedOfType(type)) {
+            if (!s.contains(world, x, y, z)) continue;
+            Location c = s.location();
+            if (c == null) { if (best == null) best = s; continue; }
+            double dx = x - c.getX(), dy = y - c.getY(), dz = z - c.getZ();
+            double d2 = dx * dx + dy * dy + dz * dz;
+            if (d2 < bestD2) { bestD2 = d2; best = s; }
+        }
+        return best;
+    }
+}

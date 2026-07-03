@@ -597,6 +597,18 @@ public final class ObservancePlugin extends JavaPlugin {
                     supabase, this::sites, rateLimiter, scheduler, safety,
                     cfg.getIntegerList("puzzles.brann-black-moon-toll.black-moon-phases")), this);
         }
+
+        // --- THE THREE-HANDS COOP GATE (the IV→V hinge, m4-three-hands) ---
+        // Owns the two WORLD legs of the cross-surface gate: a foot on the coop_plate + a carve at the
+        // mark, within one window → writes the coop_world_ready_at marker. The Discord side (coop-gate.ts)
+        // is the sole closer: the convergence word posted while that marker is fresh opens the Threshold.
+        // Config-gated; unplaced/disabled → no-op (go-live safe).
+        if (cfg.getBoolean("puzzles.m4-three-hands.enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.CoopPlateListener(
+                    this::sites, supabase, rateLimiter, scheduler, safety,
+                    true,
+                    cfg.getLong("puzzles.m4-three-hands.window-seconds", 90L) * 1000L), this);
+        }
     }
 
     private void registerCommands() {

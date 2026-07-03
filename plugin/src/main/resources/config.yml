@@ -193,6 +193,16 @@ puzzles:
     token: "o9k2 mq6w x1n8 t4d7 fall order"
     puzzle-key: "orin-bow-fall-order"
 
+  # The three-hands coop gate (the IV->V hinge). CoopPlateListener owns the two WORLD legs — a foot on the
+  # coop_plate + a carve (left-click) at the mark — and writes coop_world_ready_at when both fall within the
+  # window. The Discord side (coop-gate.ts) closes it when the convergence word is posted while the marker is
+  # fresh. NOTE: no token here — the plugin does not post it; the Discord closer holds the opaque token
+  # (byte-matching the seed's m4-three-hands accepted_answers). Keep window-seconds in sync with the discord
+  # twin (COOP_WINDOW_MS). Unplaced coop_plate site → no-op (go-live safe).
+  m4-three-hands:
+    enabled: true
+    window-seconds: 90
+
   # Mara — the active roster reaches the `mara_map_marker` site together and bows
   # (walk the rite she only read). Group-scoped, active-only quorum (like the
   # Accepting: min(configQuorum, activeRoster)). Gated on mara_alcove_open by the

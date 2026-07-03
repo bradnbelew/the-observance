@@ -35,8 +35,9 @@ export interface WhisperEvent {
   created_at: string; // timestamptz (ISO)
 }
 
-/** public.beat_queue — story beats awaiting approval / firing. */
-export type BeatStatus = 'pending' | 'approved' | 'skipped' | 'fired';
+/** public.beat_queue — story beats awaiting approval / firing. `failed` is a terminal status the plugin
+ *  writes when an enactor throws (widened in the beat_queue status CHECK; see the dashboard migration). */
+export type BeatStatus = 'pending' | 'approved' | 'skipped' | 'fired' | 'failed';
 
 export interface BeatQueueRow {
   id: number;

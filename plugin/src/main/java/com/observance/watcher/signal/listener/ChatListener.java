@@ -128,6 +128,9 @@ public final class ChatListener implements Listener {
         try {
             return PLAIN.serialize(component);
         } catch (Throwable t) {
+            // a malformed component drops the observation — leave a trace so a systemic serializer
+            // problem is visible (still degrades to silence; never throws into the async-chat handler).
+            safety.warn("signal.chat.plain", "chat component serialize failed: " + t.getMessage());
             return "";
         }
     }

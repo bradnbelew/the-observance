@@ -31,7 +31,7 @@ import {
   logEvent,
 } from '../db/repo.js';
 import { voice } from '../voice.js';
-import type { OracleVoiceKey } from '../voice.js';
+import type { OracleVoiceKey, DeadEndKind } from '../voice.js';
 import type {
   AnswerSurface,
   OutcomePayload,
@@ -398,11 +398,17 @@ function speakOutcome(type: OutcomeType, payload: OutcomePayload): string {
     case 'oracleNextClue':
       return voice.oracleNextClue();
     case 'oracleDeadEnd':
-      return voice.oracleDeadEnd();
+      // speak the seeded dead-end KIND (name/count/place/known/prophet) so each dead-end reads specific,
+      // not generic — the resolver was dropping voice_args.kind. Unknown/absent kind → the generic default.
+      return voice.oracleDeadEnd(deadEndKind(payload));
     case 'oracleSideQuest':
       return voice.oracleSideQuest();
     case 'oracleMainBeat':
       return voice.oracleMainBeat();
+    case 'oracleThreeHands':
+      // the A6 three-hands coop gate — its bespoke "three hands at once" line (was falling through to
+      // the generic main_beat line before this case existed).
+      return voice.oracleThreeHands();
     case 'oracleNoWallCatch':
       // the Iss-seam: the catch's main_beat line + the callback into the Seventh quest.
       return voice.oracleNoWallCatch();
@@ -412,6 +418,14 @@ function speakOutcome(type: OutcomeType, payload: OutcomePayload): string {
       // no/unknown key → the default line for the outcome type.
       return defaultLineFor(type, payload);
   }
+}
+
+/** The seeded dead-end kind (name/count/place/known/prophet) from voice_args, or undefined (generic). */
+function deadEndKind(payload: OutcomePayload): DeadEndKind | undefined {
+  const k = payload.voice_args?.['kind'];
+  return k === 'name' || k === 'count' || k === 'place' || k === 'known' || k === 'prophet'
+    ? k
+    : undefined;
 }
 
 /** The lore telling lives in voice_args.fragment; empty falls back in register. */
@@ -430,7 +444,7 @@ function defaultLineFor(type: OutcomeType, payload: OutcomePayload): string {
     case 'lore':
       return voice.oracleLore(loreFragment(payload));
     case 'dead_end':
-      return voice.oracleDeadEnd();
+      return voice.oracleDeadEnd(deadEndKind(payload));
     case 'side_quest':
       return voice.oracleSideQuest();
     case 'main_beat':

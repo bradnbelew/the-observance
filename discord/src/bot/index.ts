@@ -25,6 +25,7 @@ import { readSetting } from '../showrunner/state.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
 import { startVoiceCapture } from '../voice/receiver.js';
+import { maybeCloseCoopGate } from '../showrunner/coop-gate.js';
 import { handleWhisper } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
 import { handleAnswer } from './commands/answer.js';
@@ -147,6 +148,18 @@ client.on('messageCreate', async (message: Message) => {
         // leave the latch unset so a later message retries; never speak an error.
         const m = err instanceof Error ? err.message : String(err);
         void logEvent('warn', SOURCE, `prologue ignition stumbled: ${m}`);
+      }
+    }
+
+    // THREE-HANDS COOP GATE (m4-three-hands): the WORD leg. If a linked keeper posts the convergence word
+    // while the plugin's world-legs marker is fresh, the Threshold opens. Runs alongside the normal scan
+    // (posting the word can also solve bound-word if still open). Fault-isolated — never blocks the scan.
+    if (player) {
+      try {
+        const coopReply = await maybeCloseCoopGate(player, raw);
+        if (coopReply) await message.reply({ content: coopReply });
+      } catch {
+        /* a missed coop close is silence too — never touches the scan */
       }
     }
 
