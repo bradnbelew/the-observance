@@ -23,6 +23,7 @@ import type { Client } from 'discord.js';
 import { getPlayerByDiscordId, observerOptedOut, insertObservation, logEvent } from '../db/repo.js';
 import { readSetting } from '../showrunner/state.js';
 import { transcribeWav, transcriptionConfigured } from './transcribe.js';
+import { maybeSolveSpokenName } from './spoken-name.js';
 
 /** Discord voice receive is 48kHz stereo signed-16 PCM. */
 const SAMPLE_RATE = 48_000;
@@ -155,6 +156,10 @@ async function captureUtterance(
     if (t.length < 4 || t.length > 512) return; // mirror the chat-capture bounds
 
     await insertObservation({ mc_uuid: player.mc_uuid, source: 'voice', text: t, context: 'voice' });
+
+    // Cohesion (§8.3): a spoken truth also SOLVES spine-spoken-name — the world answers what it heard.
+    // Gated + idempotent inside (fires only post-iss_caught, once); a no-op on non-match. Never throws.
+    await maybeSolveSpokenName(player, t);
   } finally {
     capturing.delete(userId);
   }

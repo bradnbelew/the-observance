@@ -1580,12 +1580,13 @@ values
   'code', 4, false, null ),
 
 -- spine-spoken-name (§8.3) — once a player SAYS the catch's truth aloud in voice chat, the
--- Observer Engine (Whisper) hears it and the Watcher quotes it back carved on a sign.
+-- Observer Engine (Whisper) hears it and the Watcher quotes it back (posted to #the-record).
 -- answer_kind 'spoken'; opaque token the Observer transcript scan posts on the REAL spoken
 -- phrase (grounding discipline — never fabricated; degrades to silence if the voice layer is
 -- absent). lore (a bonus "it knows" beat) — GATES NOTHING. Gated on iss_caught (the truth
--- must be known first). NEEDS PLUGIN PRODUCER (Observer voice scan). active=false → lit at
--- iss_caught.
+-- must be known first). PRODUCER (W5): discord/src/voice/spoken-name.ts — the voice tier
+-- detects "the one who turned away" in a transcript and submits this token via the oracle.
+-- active=false here → lit at iss_caught (metapuzzle_seed flips active=true + adds requires_flags).
 ( 'spine-spoken-name',
   'the watcher quotes you back',
   array[
