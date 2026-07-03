@@ -28,3 +28,6 @@ logs/
 .idea/
 *.iml
 out/
+
+# build-artifact zips (packaged resourcepack/datapack — outputs, never source)
+observance-*.zip
