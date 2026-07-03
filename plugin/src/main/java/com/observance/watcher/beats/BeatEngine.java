@@ -34,6 +34,7 @@ public final class BeatEngine {
     private Attention attention;
     private ProtectedRegistry protectedRegistry;
     private AmbientBeatGenerator ambient;
+    private WorldDriftClock driftClock;
     private final List<BukkitTask> tasks = new ArrayList<>();
     private volatile boolean active = false;
 
@@ -91,6 +92,17 @@ public final class BeatEngine {
             tasks.add(plugin.scheduler().runTimerSafe(
                     "beat.ambient.tick", periodTicks, periodTicks, () -> ambientTick()));
 
+            // 5) THE WORLD-DRIFT CLOCK — the world ages on its own between visits (sculk creeps near
+            //    already-found sites, scaled by real elapsed time, hard-capped so an absence never
+            //    carpets a place). Mirrors the ambient cadence but is world-scoped: it drifts a little
+            //    near a rotating subset of PLACED sites each tick and no-ops entirely until a site is
+            //    placed. Persists its one timestamp in arc_state.flags (no new table).
+            this.driftClock = new WorldDriftClock(
+                    ctx, library, plugin::isLocallyAsleep, config::dramaEnabled);
+            long driftTicks = Math.max(20L, driftPeriodTicks(config));
+            tasks.add(plugin.scheduler().runTimerSafe(
+                    "beat.world.drift", driftTicks, driftTicks, () -> driftClock.tick()));
+
             this.active = true;
             plugin.logEvent("info", "beat.engine",
                     "activated; beats=" + library.size(), null);
@@ -127,6 +139,17 @@ public final class BeatEngine {
         // Consider an ambient beat roughly every (ambient global cooldown / 3), floored at 60s.
         int globalMin = Math.max(1, config.ambientGlobalCooldownMinutes());
         long seconds = Math.max(60L, (globalMin * 60L) / 3L);
+        return seconds * 20L;
+    }
+
+    /**
+     * The world-drift cadence: a SLOW background rhythm (twice the ambient window, floored at 5 min).
+     * Drift is meant to be felt on RETURN, not watched happening — the elapsed-time scaling in
+     * {@link WorldDriftClock} carries the "how much aged", so the tick just needs to be unhurried.
+     */
+    private static long driftPeriodTicks(ObservanceConfig config) {
+        long ambientSeconds = ambientPeriodTicks(config) / 20L;
+        long seconds = Math.max(300L, ambientSeconds * 2L);
         return seconds * 20L;
     }
 

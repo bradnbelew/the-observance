@@ -36,6 +36,7 @@ import com.observance.watcher.beats.lib.SpatialVoiceBeat;
 import com.observance.watcher.beats.lib.TorchGutterBeat;
 import com.observance.watcher.beats.lib.UnlockBeat;
 import com.observance.watcher.beats.lib.WhisperTollBeat;
+import com.observance.watcher.beats.lib.WorldDriftBeat;
 import com.observance.watcher.util.Safety;
 
 import java.util.ArrayList;
@@ -84,6 +85,10 @@ public final class BeatLibrary {
         register(new TorchGutterBeat());
         register(new DoorOpenBeat());
         register(new DecayCreepBeat());
+        // WORLD — the DRIFT: the world ages on its own between visits. The WorldDriftClock (scheduled in
+        // BeatEngine) drives this near already-found sites, scaled by real elapsed time; the beat itself
+        // is a strictly-additive, protected, capped, out-of-sight dusting of sculk creep. Reveal-safe.
+        register(new WorldDriftBeat());
         register(new SmallStructureBeat());
         // PRODUCER TRIAD (design manifest): reveal (flip existing, per-player OR world) + room_swap
         // (sealed-door + teleport-on-reentry) alongside small_structure (paste). Reworked to fire for
