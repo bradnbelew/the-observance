@@ -33,7 +33,7 @@ export async function runObserverPass(): Promise<{ echoed: boolean }> {
   if (enabled !== true) return { echoed: false }; // gate 1: master switch off → the whole tier is silent
 
   const eligible: CapturedObservation[] = (await readUnweaponizedObservations()).map((o) => ({
-    id: o.id, name: o.name, text: o.text, observedAtMs: o.observedAtMs,
+    id: o.id, name: o.name, text: o.text, source: o.source, observedAtMs: o.observedAtMs,
   }));
 
   const nowMs = Date.now();
@@ -53,7 +53,9 @@ export async function runObserverPass(): Promise<{ echoed: boolean }> {
     if (picked) o = picked;
   }
   const nowIso = new Date(nowMs).toISOString();
-  const ok = await postToTheRecord(voice.observerHeard(o.name, o.text));
+  // voice captures echo in the "heard aloud" register — it did not only read, it listened.
+  const line = o.source === 'voice' ? voice.observerHeardAloud(o.name, o.text) : voice.observerHeard(o.name, o.text);
+  const ok = await postToTheRecord(line);
   if (!ok) return { echoed: false }; // failed post → leave it un-used + the high-water untouched to retry
 
   await markObservationWeaponized(o.id, nowIso);

@@ -24,6 +24,7 @@ import { ensurePrologueIgnited, getPlayerByDiscordId, insertObservation, logEven
 import { readSetting } from '../showrunner/state.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
+import { startVoiceCapture } from '../voice/receiver.js';
 import { handleWhisper } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
 import { handleAnswer } from './commands/answer.js';
@@ -45,6 +46,8 @@ const client = new Client({
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
+    // voice tier (W5) — needed to see who is in voice + receive audio. Harmless when the tier is off.
+    GatewayIntentBits.GuildVoiceStates,
   ],
 });
 
@@ -61,6 +64,10 @@ client.once('ready', (c) => {
     console.error('[the-watcher] command registration failed:', err);
     void logEvent('error', SOURCE, `command registration failed: ${message}`);
   });
+
+  // voice tier (W5) — "it heard you say it". Off unless voice_capture + a voice channel + a Whisper
+  // backend are all configured; a clean no-op otherwise. Fully fault-isolated (never blocks the bot).
+  void startVoiceCapture(c);
 });
 
 client.on('interactionCreate', async (interaction: Interaction) => {

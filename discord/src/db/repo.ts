@@ -681,7 +681,29 @@ export interface UnusedObservation {
   id: number;
   name: string;
   text: string;
+  /** how it was captured — 'voice' echoes in the "heard aloud" register (it heard you SAY it). */
+  source: 'discord' | 'chat' | 'voice';
   observedAtMs: number;
+}
+
+/**
+ * Voice-capture consent floor: true iff the player is opted OUT (or can't be confirmed opted-in). Used
+ * to gate voice capture BEFORE any audio is transcribed — stricter than chat, which only enforces opt-out
+ * at echo time. On any doubt (missing row / error) this returns true (skip), so a DB blip disables voice
+ * capture rather than recording someone who may not have consented.
+ */
+export async function observerOptedOut(mcUuid: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('players')
+      .select('observer_opt_out')
+      .eq('mc_uuid', mcUuid)
+      .maybeSingle();
+    if (error || !data) return true; // unknown → treat as opted out (privacy-safe)
+    return (data as { observer_opt_out?: unknown }).observer_opt_out === true;
+  } catch {
+    return true;
+  }
 }
 
 /**
@@ -694,7 +716,7 @@ export async function readUnweaponizedObservations(limit = 50): Promise<UnusedOb
   try {
     const { data, error } = await supabase
       .from('observations')
-      .select('id, text, observed_at, mc_uuid, players!inner(name, observer_opt_out)')
+      .select('id, text, source, observed_at, mc_uuid, players!inner(name, observer_opt_out)')
       .is('weaponized_at', null)
       .order('observed_at', { ascending: true })
       .limit(limit)
@@ -707,10 +729,12 @@ export async function readUnweaponizedObservations(limit = 50): Promise<UnusedOb
       const name = typeof p.name === 'string' && p.name.trim() !== '' ? p.name : null;
       const text = typeof r.text === 'string' ? r.text : '';
       if (!name || text.trim() === '') continue; // nameless / empty → never weaponized
+      const source = r.source === 'voice' || r.source === 'chat' ? r.source : 'discord';
       out.push({
         id: Number(r.id),
         name,
         text,
+        source,
         observedAtMs: typeof r.observed_at === 'string' ? Date.parse(r.observed_at) : 0,
       });
     }

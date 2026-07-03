@@ -27,6 +27,8 @@ export interface CapturedObservation {
   name: string;
   /** the player's verbatim words — echoed as-is, never rewritten. */
   text: string;
+  /** how it was captured — 'voice' echoes in the "heard aloud" register (it heard you SAY it). */
+  source: 'discord' | 'chat' | 'voice';
   observedAtMs: number;
 }
 

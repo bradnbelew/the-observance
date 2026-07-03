@@ -647,7 +647,7 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
 // substance-gated, deterministic pick; degrades to silence. NEVER fabricates.
 // ===========================================================================
 {
-  const obs = (id: number, text: string): CapturedObservation => ({ id, name: `p${id}`, text, observedAtMs: id });
+  const obs = (id: number, text: string): CapturedObservation => ({ id, name: `p${id}`, text, source: 'discord', observedAtMs: id });
   const HOUR = 3_600_000;
   const long = 'a'.repeat(MIN_QUOTE_LEN + 5);
   const longer = 'b'.repeat(MIN_QUOTE_LEN + 20);

@@ -190,6 +190,15 @@ export const voice = {
   },
 
   /**
+   * OBSERVER — "it heard you SAY it" (W5, voice tier). Same grounded, verbatim echo as observerHeard, but
+   * the register makes clear the record does not only READ — it listened to a spoken thing. The `quote` is
+   * the transcribed real utterance (never composed here). Sparse + grounded, like the read echo.
+   */
+  observerHeardAloud(name: string, quote: string): string {
+    return `it does not only read. the one called ${name} was heard to say, aloud, thinking it unkept: "${quote}". it is kept now, with the rest.`;
+  },
+
+  /**
    * the whisper itself. tier shapes how plainly it speaks: a nudge first,
    * then the keeper's own words (the seeded hint body) for the rest.
    */
