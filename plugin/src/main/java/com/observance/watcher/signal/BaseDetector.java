@@ -136,6 +136,43 @@ public final class BaseDetector {
 
     public int clusterCount() { return clusters.size(); }
 
+    /**
+     * Live read of the group's single most-confident base cell — the prologue's retarget anchor
+     * (cold-start §1.1: "the most-trafficked block the group passes through"). Returns the highest-
+     * confidence cluster's human center (the bed if one is known, else the placement centroid) as
+     * an {@link Anchor}, or {@code null} if no cluster yet clears the same floors {@link #buildRows}
+     * uses (precision over recall — we never point the prologue at a stray build). Pure snapshot
+     * under each cluster's lock; holds NO Bukkit references.
+     */
+    public Anchor primaryBase() {
+        Anchor best = null;
+        double bestConf = -1.0;
+        for (Cluster c : clusters.values()) {
+            synchronized (c) {
+                if (c.placements < cfg.baseMinPlacements() && !c.hasBed) continue;
+                double conf = confidence(c);
+                if (conf < cfg.baseConfidenceFloor()) continue;
+                if (conf <= bestConf) continue;
+                bestConf = conf;
+                int x = c.hasBed ? c.bedX : c.cx;
+                int y = c.hasBed ? c.bedY : c.cy;
+                int z = c.hasBed ? c.bedZ : c.cz;
+                best = new Anchor(c.world, x, y, z, conf);
+            }
+        }
+        return best;
+    }
+
+    /** Immutable snapshot of a base's anchor cell (world + block coords + confidence). */
+    public static final class Anchor {
+        public final String world;
+        public final int x, y, z;
+        public final double confidence;
+        public Anchor(String world, int x, int y, int z, double confidence) {
+            this.world = world; this.x = x; this.y = y; this.z = z; this.confidence = confidence;
+        }
+    }
+
     private static final class Cluster {
         String world;
         int cx, cy, cz;          // running centroid

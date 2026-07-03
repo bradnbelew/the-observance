@@ -94,3 +94,86 @@ export function decidePrologue(inp: PrologueInput): PrologueDecision {
     reason: 'prologue acknowledged — steady state',
   };
 }
+
+// ---------------------------------------------------------------------------
+// THE OVERWHELMING-SIGNAL MEASUREMENT (the precision gate's input, §1.4/§2.2).
+// Pure + grounded: given the per-player measured custom tallies, find the ONE player whose single
+// violated habit is OVERWHELMING — dominant for the whole group by a confident margin. NULL when no
+// such signal exists (a flat/tied field), so `decidePrologue` degrades safely to the un-named line.
+// A wrong "it knows you" is worse than none, so this NEVER guesses: it names a player only when one
+// measured habit stands clearly above all others across the group.
+// ---------------------------------------------------------------------------
+
+/** One measured (player, custom) tally — the projection prologue reads for the overwhelming signal. */
+export interface CustomTally {
+  groupKey: string;
+  /** the custom_key, e.g. 'the_offering'. */
+  customKey: string;
+  /** resolvable display name, or null. A nameless player is never named (precision). */
+  name: string | null;
+  /** measured "days kept" the named line cites (the honored count on this custom). */
+  honoredCount: number;
+  /** measured violations on this custom — the signal strength driver. Only a >0 count is nameable. */
+  violatedCount: number;
+}
+
+/** The overwhelming-signal result: a nameable single dominant habit, or a null-name flat field. */
+export interface OverwhelmingSignal {
+  overwhelmingSignal: boolean;
+  signalName: string | null;
+  /** the resolved (groupKey, customKey, honoredCount) behind the named signal, when overwhelming. */
+  groupKey: string | null;
+  customKey: string | null;
+  honoredCount: number;
+}
+
+/** Tunable precision constants (injected; keeps the policy pure + testable). */
+export interface SignalConstants {
+  /** the dominant tally must reach at least this violated count to be nameable at all (no faint signal). */
+  minViolated: number;
+  /** the dominant must beat the runner-up violated count by at least this margin (a real habit, not a tie). */
+  minMargin: number;
+}
+
+export const SIGNAL_DEFAULTS: SignalConstants = { minViolated: 3, minMargin: 2 };
+
+/**
+ * measureOverwhelmingSignal — the precision gate's grounded input. Selects the SINGLE (player, custom)
+ * whose measured `violatedCount` is the group-wide maximum AND clears both the floor and the margin
+ * over the next-highest DISTINCT tally, and whose player has a resolvable name. Returns a null-name,
+ * `overwhelmingSignal: false` result on any flat/tied/nameless/empty field — the un-named fallback.
+ * Deterministic: ties break to nothing (never a coin-flip callout). Same input → same output.
+ */
+export function measureOverwhelmingSignal(
+  tallies: readonly CustomTally[],
+  k: SignalConstants = SIGNAL_DEFAULTS,
+): OverwhelmingSignal {
+  const none: OverwhelmingSignal = {
+    overwhelmingSignal: false, signalName: null, groupKey: null, customKey: null, honoredCount: 0,
+  };
+  // rank by violated count desc; deterministic tiebreak by (groupKey, customKey) so ordering is stable.
+  const ranked = [...tallies]
+    .filter((t) => Number.isFinite(t.violatedCount))
+    .sort((a, b) =>
+      b.violatedCount - a.violatedCount ||
+      a.groupKey.localeCompare(b.groupKey) ||
+      a.customKey.localeCompare(b.customKey));
+  if (ranked.length === 0) return none;
+
+  const top = ranked[0]!;
+  if (!top.name) return none; // nameless → never named (precision)
+  if (top.violatedCount < k.minViolated) return none; // too faint to name anyone
+
+  // the runner-up is the next tally that is a DIFFERENT (player, custom) — the field it must dominate.
+  const runnerUp = ranked.find((t) => t.groupKey !== top.groupKey || t.customKey !== top.customKey);
+  const runnerUpViolated = runnerUp?.violatedCount ?? 0;
+  if (top.violatedCount - runnerUpViolated < k.minMargin) return none; // a tie → no confident signal
+
+  return {
+    overwhelmingSignal: true,
+    signalName: top.name,
+    groupKey: top.groupKey,
+    customKey: top.customKey,
+    honoredCount: top.honoredCount,
+  };
+}

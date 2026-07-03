@@ -162,9 +162,12 @@ rites:
     token: "k7q2m9 x4r8p3 w1n6z5 t0j4h2 b8f1v7 c3d6s9"
     puzzle-key: "accepting-crouch"
     # The TERMINAL climax must be the WHOLE cast bowing as one — set to the cast size (or cast-1 for
-    # safety), NOT a sub-group. Default 6 so two stragglers on the floor can't fire the finale. A re-fire
-    # is already harmless (the solve is idempotent), but the quorum is the gate that makes it the climax.
-    quorum: 6
+    # safety), NOT a sub-group. Default 7 (the active-cast size) so stragglers off the floor can't fire the
+    # finale. This is clamped at runtime to the live active roster (effectiveQuorum = min(quorum,
+    # activeRosterSize), AcceptingRiteListener.clampQuorum), so a smaller active group is never blocked and
+    # a larger one never raises the bar above the cast. A re-fire is already harmless (the solve is
+    # idempotent), but the quorum is the gate that makes it the climax.
+    quorum: 7
     cooldown-seconds: 300    # one detection attempt per site per 5 min (well past a filmed take)
 
 # ----------------------------------------------------------------------------

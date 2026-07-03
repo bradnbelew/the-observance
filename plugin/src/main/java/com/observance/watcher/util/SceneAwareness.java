@@ -12,8 +12,8 @@ import java.util.List;
  * Scene-awareness for GROUP moments (red-team MF-9). The gather-events (THE COUNT, the un-lighting, the
  * Accepting) and {@code GroupBeat} need to reason about who is CONVENED — clustered near a point — so a
  * moment can target the whole gathering, and so reveal-discipline can switch to its per-player path
- * ({@link Reveal#isHiddenFrom}) when a globally-unwitnessed instant never comes because 4-6 friends are
- * standing together.
+ * ({@link Reveal#isHiddenFrom}) when a globally-unwitnessed instant never comes because the convened
+ * group is standing together.
  *
  * <p>All methods are READ-ONLY world queries → MAIN thread only. Pure (no mutation, no I/O), null-safe,
  * and world-consistent (players in another world are ignored, never mixed into a centroid).

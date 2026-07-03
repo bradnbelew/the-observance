@@ -24,6 +24,7 @@ import com.observance.watcher.beats.lib.PrivateMessageBeat;
 import com.observance.watcher.beats.lib.PrivateParticleBeat;
 import com.observance.watcher.beats.lib.PrivateSoundBeat;
 import com.observance.watcher.beats.lib.PrivateTimeShiftBeat;
+import com.observance.watcher.beats.lib.ProximityDimBeat;
 import com.observance.watcher.beats.lib.ReflectionBeat;
 import com.observance.watcher.beats.lib.RevealBeat;
 import com.observance.watcher.beats.lib.RoomSwapBeat;
@@ -102,6 +103,9 @@ public final class BeatLibrary {
         register(new PrivateParticleBeat());
         register(new PrivateMessageBeat());
         register(new PrivateDarknessBeat());
+        // SENSORY (per-player) — "it knows ME": the light draws back from the lonely/dark player for a
+        // beat, then returns (wires PerPlayer.dimLightAround; reveal-safe, reversible, budget-paced).
+        register(new ProximityDimBeat());
         register(new BossBarBeat());
         register(new FakeBlockBeat());
         register(new PrivateTimeShiftBeat());

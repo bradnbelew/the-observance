@@ -100,6 +100,18 @@ export const voice = {
     return '▒  a thing was set out in your place that was not there before. it carries a mark you cannot yet read. it has been keeping a count of you. the count began before you found the mark.';
   },
 
+  /**
+   * recordOpenedNamed — the named first-naming inflection the prologue decider selects when the
+   * precision gate passes (`decidePrologue` returns `reportVoiceKey: 'recordOpenedNamed'` on an
+   * OVERWHELMING single signal + a name). Modeled on {@link reportObserved} (cold-start-prologue §3):
+   * it states a count and a fact and stops — the first naming, in the oldest keeper register. Never a
+   * guess: the un-named {@link recordOpened} fallback is emitted whenever the signal is not overwhelming.
+   * {days} kept; {name} the resolved keeper; {custom} completes "has not {custom}" (a customPhrase()).
+   */
+  recordOpenedNamed(name: string, days: number, custom: string): string {
+    return `▒  ${days} days kept. the one called ${name} has not ${custom}. it has been noted.`;
+  },
+
   // -------------------------------------------------------------------------
   // THE OFFLINE-SKIN APPARITION (B3 `offline-skin-apparition`, FACT 9). The M1 plant report
   // (a logged-off friend, noted not-here) and the M4 named line (the land has begun to wear

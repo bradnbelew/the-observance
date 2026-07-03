@@ -67,10 +67,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placeroom" -> handlePlaceRoom(sender, args);
             case "placeregion" -> handlePlaceRegion(sender, args);
             case "placedeep" -> handlePlaceDeep(sender, args);
+            case "placeprologue" -> handlePlacePrologue(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
             case "townsfolk" -> handleTownsfolk(sender, args);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | placeroom <keeperId> | placeregion | placedeep | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id]");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id]");
         }
     }
 
@@ -475,6 +476,144 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
+     * {@code /observance placeprologue} — stages the COLD-START PROLOGUE anomaly in the group's OWN base
+     * (cold-start-prologue §1.1–1.2 / §7 item 6): the first-report lectern + a lit marker that "wasn't
+     * there yesterday," discovered out of sight. This is the screenshot→ignition hook.
+     *
+     * <p><b>Retarget to the live base.</b> The two prologue sites ({@code first_report_lectern_01},
+     * {@code first_marker_01}) ship with null coords. This command resolves the group's most-confident
+     * base cell live via {@link com.observance.watcher.signal.BaseDetector#primaryBase()} (the bed/
+     * placement centroid — "the most-trafficked block the group passes through") and stamps BOTH sites
+     * beside it, persisting them via {@code registerRuntimeSite}. If no base has accrued enough signal
+     * yet (fresh world / first session), it falls back to the sender's own location so the prologue is
+     * still placeable — the base retarget simply improves aim when the data exists.
+     *
+     * <p><b>Reveal-disciplined.</b> Both objects are placed through the existing library beats under
+     * {@code mutateWhenUnwitnessed}: the report via {@link com.observance.watcher.beats.lib.LecternFillBeat}
+     * ({@code place_if_missing}) and the lit marker (one carved stone + one candle) via
+     * {@link com.observance.watcher.beats.lib.SmallStructureBeat}. Nothing is witnessed changing; the
+     * group discovers an after-state. Idempotent: the beats' footprint sweep + in-process applied-set
+     * mean a re-run never double-places, and the retarget writes the same coords for the same base.
+     *
+     * <p>The lectern carries the un-named FACT-1 collective marquee (§2.2 default-safe form) — the
+     * conditional named inflection is the showrunner's job, never guessed here. Player-only. Requires
+     * the beat engine to be active (it enacts through the shared {@link
+     * com.observance.watcher.beats.BeatContext}).
+     */
+    private void handlePlacePrologue(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance placeprologue must be run by a player (needs a location).");
+            return;
+        }
+        com.observance.watcher.beats.BeatEngine engine = plugin.beatEngine();
+        if (engine == null || !engine.isActive() || engine.context() == null || engine.library() == null) {
+            sender.sendMessage("Observance: beat engine is not active — cannot stage the prologue.");
+            return;
+        }
+
+        // 1) Resolve the base anchor: prefer the live detected base cell, fall back to the sender.
+        Location anchor = null;
+        String source = "your location (no base detected yet)";
+        try {
+            com.observance.watcher.signal.SignalTracker tracker = plugin.signalTracker();
+            if (tracker != null && tracker.baseDetector() != null) {
+                com.observance.watcher.signal.BaseDetector.Anchor a = tracker.baseDetector().primaryBase();
+                if (a != null) {
+                    org.bukkit.World w = Bukkit.getWorld(a.world);
+                    if (w != null) {
+                        anchor = new Location(w, a.x, a.y, a.z);
+                        source = "detected base " + a.x + "," + a.y + "," + a.z
+                                + " (confidence " + String.format(Locale.ROOT, "%.2f", a.confidence) + ")";
+                    }
+                }
+            }
+        } catch (Throwable ignored) { /* fall back below */ }
+        if (anchor == null) {
+            anchor = player.getLocation();
+        }
+        if (anchor == null || anchor.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve an anchor for the prologue.");
+            return;
+        }
+        final org.bukkit.World world = anchor.getWorld();
+        final String worldName = world.getName();
+
+        // 2) Seat the lectern on the surface at the anchor, and the marker one block to the side (east),
+        //    also surface-seated. Reveal discipline is enforced by the beats themselves at mutation time.
+        int lx = anchor.getBlockX(), lz = anchor.getBlockZ();
+        int ly = world.getHighestBlockYAt(lx, lz, org.bukkit.HeightMap.MOTION_BLOCKING) + 1;
+        Location lecternLoc = new Location(world, lx, ly, lz);
+
+        int mx = lx + 1, mz = lz;
+        int my = world.getHighestBlockYAt(mx, mz, org.bukkit.HeightMap.MOTION_BLOCKING) + 1;
+        Location markerLoc = new Location(world, mx, my, mz);
+
+        // 3) Retarget + persist BOTH prologue sites to these coords (idempotent — same base = same coords).
+        plugin.registerRuntimeSite(new Site("first_report_lectern_01", "report_lectern", worldName,
+                lecternLoc.getX(), lecternLoc.getY(), lecternLoc.getZ(), 4, 4, true, true, null));
+        plugin.registerRuntimeSite(new Site("first_marker_01", "structure", worldName,
+                markerLoc.getX(), markerLoc.getY(), markerLoc.getZ(), 6, 4, true, true, null));
+
+        com.observance.watcher.beats.BeatContext ctx = engine.context();
+        com.observance.watcher.beats.BeatLibrary lib = engine.library();
+
+        // 4a) The first report — un-named FACT-1 collective marquee (§2.2 default-safe). LecternFillBeat
+        //     places the lectern if missing and fills the book, all out of line of sight.
+        String lecternPayload = "{"
+                + "\"place_if_missing\":true,"
+                + "\"title\":\"the record opens\","
+                + "\"author\":\"the record\","
+                + "\"pages\":["
+                + "\"the record opens.\\n\\nit was opened before. it is opened again, as it is opened for any who come and stay.\","
+                + "\"so the count begins. the living are written here, each by the name they answer to, and against each name a column is left open.\","
+                + "\"nothing is owed yet. but the column is open, and an open column is a thing that fills.\""
+                + "]}";
+        Site lecternSite = plugin.sites().get("first_report_lectern_01");
+        com.observance.watcher.beats.BeatResult rLectern = enactDirected(ctx, lib,
+                "lectern_fill", "prologue-lectern", lecternSite,
+                com.observance.watcher.beats.BeatPayload.parse(lecternPayload));
+
+        // 4b) The lit marker — one carved stone + one candle "that wasn't there." SmallStructureBeat
+        //     footprint-checks + places out of sight; require_floor so it never floats.
+        String markerPayload = "{"
+                + "\"require_floor\":true,"
+                + "\"blocks\":["
+                + "{\"dx\":0,\"dy\":0,\"dz\":0,\"material\":\"CHISELED_STONE_BRICKS\"},"
+                + "{\"dx\":0,\"dy\":1,\"dz\":0,\"material\":\"CANDLE\"}"
+                + "]}";
+        Site markerSite = plugin.sites().get("first_marker_01");
+        com.observance.watcher.beats.BeatResult rMarker = enactDirected(ctx, lib,
+                "small_structure", "prologue-marker", markerSite,
+                com.observance.watcher.beats.BeatPayload.parse(markerPayload));
+
+        sender.sendMessage("Observance: prologue staged at " + source + ".");
+        sender.sendMessage("  lectern @ " + lx + "," + ly + "," + lz + " -> " + describe(rLectern));
+        sender.sendMessage("  lit marker @ " + mx + "," + my + "," + mz + " -> " + describe(rMarker));
+        sender.sendMessage("  (Placement is reveal-disciplined: if a player has line of sight now, the beat");
+        sender.sendMessage("   retries out of sight — re-run if it reports witnessed/occupied.)");
+    }
+
+    /** Enact one directed library beat by name against a resolved site, Safety-wrapped. Null-safe. */
+    private com.observance.watcher.beats.BeatResult enactDirected(
+            com.observance.watcher.beats.BeatContext ctx,
+            com.observance.watcher.beats.BeatLibrary lib,
+            String beatType, String beatId, Site site,
+            com.observance.watcher.beats.BeatPayload payload) {
+        com.observance.watcher.beats.Beat beat = lib.get(beatType);
+        if (beat == null) return com.observance.watcher.beats.BeatResult.skipped("no-beat:" + beatType);
+        com.observance.watcher.beats.BeatRequest req = new com.observance.watcher.beats.BeatRequest(
+                beatId, beatType, com.observance.watcher.beats.BeatCategory.DIRECTED, null, site, payload);
+        return safety.call("command.prologue.enact." + beatType,
+                () -> beat.enact(ctx, req),
+                com.observance.watcher.beats.BeatResult.failed("threw"));
+    }
+
+    private static String describe(com.observance.watcher.beats.BeatResult r) {
+        if (r == null) return "null";
+        return r.kind() + (r.reason() == null ? "" : " (" + r.reason() + ")");
+    }
+
+    /**
      * {@code /observance lens give [player]} — hands out {@link com.observance.watcher.lens.LensItem
      * the Lens} relic (INTEGRATION §SIGNATURE #3 "second sight"). With no player argument, gives it to
      * the sender (must be a player). Refreshes the recipient's gated-rune visibility immediately so a
@@ -719,7 +858,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "placeroom", "placeregion", "placedeep", "lens", "wren"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sleep")) {

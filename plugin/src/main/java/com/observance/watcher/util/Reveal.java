@@ -58,7 +58,7 @@ public final class Reveal {
 
     /**
      * True if THIS specific player cannot currently witness the target — the PER-PLAYER half of the
-     * two-path reveal (MF-9). When 4-6 friends are convened, a globally-hidden instant (isHidden) may
+     * two-path reveal (MF-9). When the group is convened, a globally-hidden instant (isHidden) may
      * never come, so a world beat near them would retry and die silently. The per-player path instead
      * delivers a CLIENT-SIDE illusion (via {@code player.sendBlockChange}) to each member at the moment
      * THEY aren't looking, so each "discovers" it without seeing it appear. A player in another world,

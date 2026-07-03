@@ -22,7 +22,8 @@
     "showrunner:dry": "tsx src/showrunner/run.ts --dry-run",
     "showrunner:test": "tsx src/showrunner/decide.selftest.ts",
     "showrunner:test:customs": "tsx src/showrunner/customs.selftest.ts",
-    "showrunner:test:autonomy": "tsx src/showrunner/autonomy.selftest.ts",
+    "showrunner:test:prologue": "tsx src/showrunner/prologue.selftest.ts",
+    "showrunner:test:autonomy": "tsx src/showrunner/autonomy.selftest.ts && npm run -s showrunner:test:prologue",
     "showrunner:test:scenario": "tsx src/showrunner/scenario.selftest.ts",
     "pack:build": "tsx src/render/build-runepack.ts",
     "pack:proof": "tsx src/render/rune-proof.ts"

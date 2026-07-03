@@ -77,6 +77,27 @@ export async function applyDecision(decision: Decision, snapshot: Snapshot): Pro
     }
   }
 
+  // --- B4 one-shot ignition ack: post `recordOpened` (named on the precision gate, else the un-named
+  //     FACT-1 fallback) to #the-record EXACTLY ONCE, on the ignition tick. Gated on the prologue gate's
+  //     `postAck` (set only when ignited && !acked) and guarded by state.prologue_acked so it never
+  //     double-posts. voice.ts is the sole text source — apply composes no English, only resolves the
+  //     decider's key. Best-effort: a failed post leaves `prologue_acked` unset so a later tick retries.
+  const pg = snapshot.prologue;
+  if (pg?.postAck && !state.prologue_acked) {
+    const line =
+      pg.reportVoiceKey === 'recordOpenedNamed' && pg.signalName
+        ? voice.recordOpenedNamed(pg.signalName, pg.signalDays ?? 0, pg.signalCustom ?? 'kept the ways')
+        : voice.recordOpened();
+    const posted = await postToTheRecord(line);
+    if (posted) {
+      state.prologue_acked = true; // one-shot guard: never re-post the ack.
+      await logEvent('info', 'showrunner',
+        `prologue ack posted (${pg.reportVoiceKey ?? 'recordOpened'})`);
+    } else {
+      await logEvent('warn', 'showrunner', 'prologue ack post FAILED (discord) — will retry next tick');
+    }
+  }
+
   // --- health heartbeat ---
   state.last_run_iso = nowIso;
   await writeState(state, nowIso);

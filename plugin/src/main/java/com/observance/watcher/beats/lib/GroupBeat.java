@@ -17,8 +17,8 @@ import java.util.List;
 /**
  * GROUP — fan ONE delegate beat out to EVERY player in a scene (red-team MF-8). The backbone of the
  * gather-events (THE COUNT, the un-lighting, the Accepting rehearsal): one authored beat felt by the
- * whole convened group at the same instant, so a moment lands on 4-6 friends together instead of one
- * lucky target. A dispatcher like {@link UnlockBeat} — the payload names a {@code beat} and carries
+ * whole convened group at the same instant, so a moment lands on the whole convened group together
+ * instead of one lucky target. A dispatcher like {@link UnlockBeat} — the payload names a {@code beat} and carries
  * its {@code beat_payload}; the {@code scene} selects which players receive it.
  *
  * <p>Payload:

@@ -430,7 +430,7 @@ public final class ObservancePlugin extends JavaPlugin {
                     true,
                     rites.getString("rites.accepting.token", ""),
                     rites.getString("rites.accepting.puzzle-key", "accepting-crouch"),
-                    rites.getInt("rites.accepting.quorum", 6),
+                    rites.getInt("rites.accepting.quorum", 7),  // default = active-cast size; clamped to the live active roster at runtime
                     rites.getLong("rites.accepting.cooldown-seconds", 300L) * 1000L), this);
         }
 

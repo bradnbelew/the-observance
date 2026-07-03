@@ -84,6 +84,34 @@ export type Tone = 'cold' | 'plain' | 'warm';
 export interface PrologueGate {
   /** whether the curatorial clue-drip is permitted this tick (false until the prologue is ignited). */
   curatorialAllowed: boolean;
+  /**
+   * the prologue sequencer step this tick ('dormant' | 'ignited' | 'acknowledged'). Carried so apply.ts
+   * can trace the ignition state without re-deriving it. Absent (undefined) on the existing self-tests'
+   * bare `{ curatorialAllowed }` gate ⇒ treated as no ack action (back-compat).
+   */
+  step?: 'dormant' | 'ignited' | 'acknowledged';
+  /**
+   * true on the ONE tick the one-shot `recordOpened` ack should post (exactly once, at ignition).
+   * apply.ts posts `voice.recordOpened()` to #the-record when this is true AND the `acked` guard is
+   * unset, then flips the guard so it never double-posts. Absent ⇒ no ack (back-compat).
+   */
+  postAck?: boolean;
+  /**
+   * the authored ack voice key: the NAMED first-naming ('recordOpenedNamed') only when the precision
+   * gate passed (an overwhelming single signal + a name), else the un-named FACT-1 fallback
+   * ('recordOpened'). A KEY, never composed text — apply.ts resolves it against voice.ts.
+   */
+  reportVoiceKey?: 'recordOpenedNamed' | 'recordOpened';
+  /**
+   * the resolved name behind the overwhelming signal (only set when `reportVoiceKey` is the named
+   * form), plus the measured `days` kept + the custom clause the named line cites. Null/absent forces
+   * the un-named fallback. Grounded off dossiers/custom_compliance; NEVER a guess.
+   */
+  signalName?: string | null;
+  /** the measured "days kept" the named line cites (grounded honored-count). */
+  signalDays?: number;
+  /** the custom clause (a resolved customPhrase) the named line completes "has not {custom}". */
+  signalCustom?: string;
 }
 
 /** Immutable input to decide(). Thresholds are injected so the policy stays pure + tunable. */

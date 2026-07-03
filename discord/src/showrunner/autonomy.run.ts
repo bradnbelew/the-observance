@@ -26,10 +26,11 @@
  * after a successful enqueue, so a restart mid-tick re-derives the same single beat.
  */
 import { supabase } from '../db/client.js';
-import { enqueueBeat, getArcAct, logEvent, setArcFlags } from '../db/repo.js';
+import { enqueueBeat, getArcAct, logEvent, readCustomViolations, setArcFlags } from '../db/repo.js';
 import { readState, writeState, type ShowrunnerState } from './state.js';
 import { reckon, RECKONING_DEFAULTS, type ReckoningInput } from './reckoning.js';
-import { decidePrologue } from './prologue.js';
+import { decidePrologue, measureOverwhelmingSignal, type CustomTally } from './prologue.js';
+import { customPhrase } from '../voice.js';
 import { paceHerd, type HerdInput } from './herd.js';
 import { decideGrave, type GraveInput } from './grave.js';
 import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
@@ -123,17 +124,36 @@ export async function computeAutonomyGates(nowMs: number, nowIso: string, dryRun
     }
 
     // --- B4 cold-start prologue gate ---
+    // The ignition inputs surfaced for decidePrologue, from their DB sources:
+    //   ignited            ← arc_state.flags.prologue_ignited (set by the IgnitionListener/bot detector)
+    //   acked              ← showrunner_state.prologue_acked (the one-shot ack high-water)
+    //   overwhelmingSignal ← the confident single-dominant habit measured off custom_compliance; NULL
+    //                        (false) when no habit dominates → decidePrologue degrades to the un-named line.
     const flags = await readArcFlags();
+    const tallies: CustomTally[] = (await readCustomViolations()).map((v) => ({
+      groupKey: v.groupKey, customKey: v.customKey, name: v.name,
+      honoredCount: v.honoredCount, violatedCount: v.violatedCount,
+    }));
+    const sig = measureOverwhelmingSignal(tallies);
     const p = decidePrologue({
       ignited: flags.prologue_ignited === true,
       acked: state.prologue_acked === true,
-      // No single overwhelming-signal source is wired yet → un-named FACT-1 fallback (precision).
-      overwhelmingSignal: false,
-      signalName: null,
+      overwhelmingSignal: sig.overwhelmingSignal,
+      signalName: sig.signalName,
     });
-    gates.prologue = { curatorialAllowed: p.curatorialAllowed };
-    // The one-shot ack is posted by apply.ts (it owns the #the-record seam); here we only persist the
-    // ack high-water so it never re-posts. (apply.ts flips this; we read it for the gate.)
+    // Fold the FULL decision onto the gate so apply.ts can emit the one-shot ack (it owns the
+    // #the-record seam) without re-deriving anything. curatorialAllowed stays the contract decide.ts
+    // reads; the ack fields are additive. The named line's grounded facts (days kept + the custom
+    // clause) ride along so apply.ts composes NO English — voice.ts stays the sole text source.
+    gates.prologue = {
+      curatorialAllowed: p.curatorialAllowed,
+      step: p.step,
+      postAck: p.postAck,
+      reportVoiceKey: p.reportVoiceKey,
+      signalName: p.reportVoiceKey === 'recordOpenedNamed' ? sig.signalName : null,
+      signalDays: sig.honoredCount,
+      signalCustom: sig.customKey ? customPhrase(sig.customKey) : undefined,
+    };
     if (p.postAck && !state.prologue_acked) {
       await logEvent('info', 'showrunner.autonomy', `prologue: ${p.reason} (ack via apply)`);
     }
