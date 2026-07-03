@@ -7,6 +7,7 @@ import com.observance.watcher.structure.StructureTemplates;
 import com.observance.watcher.util.Safety;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -64,6 +65,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("Observance: local watcher-sleep " + (on ? "ENABLED (muted)" : "disabled"));
             }
             case "flag" -> handleFlag(sender, args);
+            case "site" -> handleSite(sender, args);
+            case "placeworld" -> handlePlaceWorld(sender, args);
             case "placeroom" -> handlePlaceRoom(sender, args);
             case "placeregion" -> handlePlaceRegion(sender, args);
             case "placedeep" -> handlePlaceDeep(sender, args);
@@ -71,7 +74,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
             case "townsfolk" -> handleTownsfolk(sender, args);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id]");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id]");
         }
     }
 
@@ -123,6 +126,291 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             });
             default -> sender.sendMessage("Usage: /observance flag <set|clear|list> [key] [true|false]");
         }
+    }
+
+    /**
+     * The canonical keeper-site spine — the full set of terrain-scatterable set-pieces (WORLD-BUILD §4).
+     * Each row is {@code [siteId, siteType, radius]}. This is the SINGLE source of truth shared by
+     * {@link #handleSite} (survey — validates the keeperId + records an anchor) and {@link #handlePlaceWorld}
+     * (placement — reads the surveyed anchor or auto-scatters). Types/radii mirror {@code sites.yml} so the
+     * listeners that key off a site's type resolve a placeworld-placed site exactly as the config would. The
+     * seven surface sites come first (rosetta + the six keepers), then the six deep-half payoff sites.
+     */
+    private static final String[][] KEEPER_SPINE = {
+        // --- surface spine ---
+        { "rune_rosetta",       "structure",       "6"  },   // literacy gate / IgnitionListener anchor
+        { "stone_vaun",         "keeper_stone",    "8"  },
+        { "stone_mara",         "keeper_stone",    "8"  },
+        { "stone_sella",        "keeper_stone",    "8"  },
+        { "stone_orin",         "keeper_stone",    "8"  },
+        { "stone_brann",        "keeper_stone",    "8"  },
+        { "stone_iss",          "keeper_stone",    "8"  },
+        // --- deep-half payoff sites ---
+        { "stone_of_reckoning", "structure",       "6"  },   // the digit/sign-glyph Rosetta
+        { "the_cold_hearth",    "marker",          "6"  },   // Iss's false-warm dead shrine
+        { "unbroken_light",     "accepting_floor", "10" },   // the Undercroft Accepting floor (climax)
+        { "the_threshold",      "the_threshold",   "6"  },   // the grave that opens from the inside
+        { "the_unwriting",      "seventh_shrine",  "6"  },   // the Seventh's chamber (payoff)
+        { "threshold_vault",    "coop_plate",      "6"  },   // the co-op vault room
+    };
+
+    /** Look up a keeper row by its canonical siteId (case-insensitive; accepts the bare form too). */
+    private static String[] keeperRow(String rawId) {
+        if (rawId == null) return null;
+        String id = rawId.trim().toLowerCase(Locale.ROOT);
+        for (String[] row : KEEPER_SPINE) {
+            if (row[0].equals(id)) return row;
+            // Accept the bare form (vaun == stone_vaun, threshold == the_threshold, reckoning == stone_of_reckoning).
+            String bare = row[0]
+                    .replaceFirst("^stone_of_", "")
+                    .replaceFirst("^stone_", "")
+                    .replaceFirst("^rune_", "")
+                    .replaceFirst("^the_", "");
+            if (bare.equals(id)) return row;
+        }
+        return null;
+    }
+
+    /** The valid-keeper-id hint line, e.g. for a bad {@code site set} argument. */
+    private static String keeperIdList() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < KEEPER_SPINE.length; i++) {
+            if (i > 0) sb.append(" | ");
+            sb.append(KEEPER_SPINE[i][0]);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * {@code /observance site set <keeperId>} — SURVEY. Records the sender's CURRENT location (the block
+     * they are standing on) as {@code keeperId}'s site anchor and persists it to {@code sites.yml} via
+     * {@link ObservancePlugin#registerRuntimeSite} (idempotent — re-surveying overwrites). This lets the
+     * operator walk to a good, hidden, terrain-fitting spot pre-session and mark it, so {@link
+     * #handlePlaceWorld} later stamps the set-piece exactly there instead of in a visible cluster.
+     *
+     * <p>The saved anchor keeps the keeper's canonical {@code type}/{@code radius} (from {@link #KEEPER_SPINE},
+     * mirroring {@code sites.yml}) so the listeners that watch this site resolve it. Coords are the sender's
+     * block position; {@code placeworld} terrain-re-seats the set-piece on the surface at that X/Z, so an
+     * exact standing Y is fine. Validates {@code keeperId} against the known ids and lists them on bad input.
+     * Player-only (needs a location).
+     */
+    private void handleSite(CommandSender sender, String[] args) {
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
+        if (!op.equals("set")) {
+            sender.sendMessage("Usage: /observance site set <keeperId>   (ids: " + keeperIdList() + ")");
+            return;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance site set must be run by a player (needs a location).");
+            return;
+        }
+        if (args.length < 3 || args[2].isBlank()) {
+            sender.sendMessage("Usage: /observance site set <keeperId>   (ids: " + keeperIdList() + ")");
+            return;
+        }
+        String[] row = keeperRow(args[2]);
+        if (row == null) {
+            sender.sendMessage("Observance: unknown keeper '" + args[2].trim() + "'. Valid ids: " + keeperIdList());
+            return;
+        }
+        Location loc = player.getLocation();
+        if (loc == null || loc.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+        String siteId   = row[0];
+        String siteType = row[1];
+        int radius;
+        try { radius = Integer.parseInt(row[2]); } catch (NumberFormatException e) { radius = 8; }
+        String world = loc.getWorld().getName();
+
+        // Record the sender's block position as the survey anchor. placeworld terrain-re-seats on the
+        // surface at this X/Z, so the stored Y need only be in the right column.
+        Site site = new Site(siteId, siteType, world,
+                (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
+                radius, 6, true, true, null);
+        plugin.registerRuntimeSite(site); // also persists to sites.yml (idempotent — re-survey overwrites)
+
+        sender.sendMessage("Observance: surveyed '" + siteId + "' -> "
+                + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + " in " + world
+                + " (type " + siteType + ", r" + radius + ").");
+        sender.sendMessage("  Saved to sites.yml. Run /observance placeworld to stamp all keepers on their anchors.");
+    }
+
+    /**
+     * {@code /observance placeworld} — the REAL world-placement path (Wave W2). Places each keeper set-piece
+     * ({@link #KEEPER_SPINE}) at its SURVEYED anchor (from {@code sites.yml}, set via {@code site set}), each
+     * terrain-followed (seated on the surface via the OCEAN_FLOOR heightmap) and reveal-safe — NOT clustered.
+     *
+     * <p>For any keeper WITHOUT a surveyed anchor, it AUTO-SCATTERS: it derives a distant anchor far from the
+     * group's base ({@link com.observance.watcher.signal.BaseDetector#primaryBase()}, else world spawn) at a
+     * large per-keeper radius (hundreds–thousands of blocks) and its own bearing, so the sites do not line up
+     * or read as a cluster. The scatter is deterministic (seeded from the base cell + the keeper id via the
+     * Wang bit-mixer), so a re-run picks the SAME auto anchor — idempotent: same anchor -> same coords, and a
+     * site already placed at those coords is not double-placed (footprint occupancy sweep on re-seat).
+     *
+     * <p>Reuses the existing structure beats ({@link StructureTemplates#keeper}) and terrain-seat + reveal
+     * guards (command-placed, never toward an approaching player). Reports per-keeper: surveyed vs auto,
+     * coords, and placed/occupied/witnessed. Player-only (needs a world to resolve spawn as the fallback base).
+     */
+    private void handlePlaceWorld(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance placeworld must be run by a player (needs a world).");
+            return;
+        }
+        org.bukkit.World world = player.getWorld();
+        if (world == null) {
+            sender.sendMessage("Observance: could not resolve your world.");
+            return;
+        }
+        String worldName = world.getName();
+
+        // Resolve the base cell we scatter AWAY from: prefer the live detected base, else world spawn.
+        int baseX, baseZ;
+        String baseSource;
+        int[] base = resolveScatterBase(world);
+        baseX = base[0]; baseZ = base[1];
+        baseSource = base[2] == 1 ? "detected base" : "world spawn";
+
+        int surveyed = 0, auto = 0, placed = 0, occupied = 0, failed = 0;
+        sender.sendMessage("== placeworld — scattering keepers away from " + baseSource
+                + " " + baseX + "," + baseZ + " in " + worldName + " ==");
+
+        for (String[] row : KEEPER_SPINE) {
+            String siteId   = row[0];
+            String siteType = row[1];
+            int radius;
+            try { radius = Integer.parseInt(row[2]); } catch (NumberFormatException e) { radius = 8; }
+
+            // 1) Prefer a surveyed anchor (real coords already in sites.yml for this id).
+            Site existing = plugin.sites() == null ? null : plugin.sites().get(siteId);
+            int ax, az;
+            boolean fromSurvey;
+            if (existing != null && existing.isPlaced() && existing.location() != null
+                    && worldName.equals(existing.worldName())) {
+                Location el = existing.location();
+                ax = el.getBlockX();
+                az = el.getBlockZ();
+                fromSurvey = true;
+                surveyed++;
+            } else {
+                // 2) Auto-scatter: a distant, per-keeper anchor far from the base on its own bearing.
+                int[] scatter = autoScatterAnchor(baseX, baseZ, siteId);
+                ax = scatter[0];
+                az = scatter[1];
+                fromSurvey = false;
+                auto++;
+            }
+
+            // Terrain-seat: highest solid block (OCEAN_FLOOR skips water + leaves), + 1 — same seat logic the
+            // dev placers use, so the set-piece sits ON the surface rather than floating or buried.
+            int ay = world.getHighestBlockYAt(ax, az, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+            Location anchor = new Location(world, ax, ay, az);
+
+            // Idempotent occupancy sweep: if a set-piece is already stamped here (re-run at the same anchor),
+            // skip the re-place so we never double-stamp. We detect it by the set-piece's signature block at
+            // the pillar base column already matching a non-natural placed block.
+            if (looksAlreadyPlaced(world, ax, ay, az)) {
+                occupied++;
+                sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "surveyed" : "auto")
+                        + " @ " + ax + "," + ay + "," + az + " -> occupied (already placed; skipped).");
+                // Still (re)register the site so its coords are authoritative in sites.yml.
+                plugin.registerRuntimeSite(new Site(siteId, siteType, worldName,
+                        (double) ax, (double) ay, (double) az, radius, 6, true, true, null));
+                continue;
+            }
+
+            // Build the distinct per-keeper set-piece (reuses the existing beats — no new generator).
+            Location signLoc = StructureTemplates.keeper(siteId, anchor);
+            if (signLoc == null) {
+                failed++;
+                sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "surveyed" : "auto")
+                        + " @ " + ax + "," + ay + "," + az + " -> FAILED (chunk unavailable).");
+                continue;
+            }
+
+            plugin.registerRuntimeSite(new Site(siteId, siteType, worldName,
+                    (double) ax, (double) ay, (double) az, radius, 6, true, true, null));
+            placed++;
+            sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "SURVEYED" : "auto-scatter")
+                    + " @ " + ax + "," + ay + "," + az + " -> placed.");
+        }
+
+        sender.sendMessage("Observance: placeworld complete — " + placed + " placed, " + occupied
+                + " occupied, " + failed + " failed (" + surveyed + " surveyed / " + auto + " auto-scattered) of "
+                + KEEPER_SPINE.length + " keepers.");
+        sender.sendMessage("  Scatter is deterministic (same base = same auto anchors). Re-run is idempotent. "
+                + "Survey a spot with /observance site set <keeperId> to override an auto anchor.");
+    }
+
+    /**
+     * Resolve the cell keepers scatter AWAY from. Prefers the live detected group base
+     * ({@link com.observance.watcher.signal.BaseDetector#primaryBase()}); falls back to the world spawn.
+     * Returns {@code [x, z, sourceFlag]} where {@code sourceFlag} is 1 for a detected base, 0 for spawn.
+     * Null/quirk-safe: any failure falls through to spawn.
+     */
+    private int[] resolveScatterBase(org.bukkit.World world) {
+        try {
+            com.observance.watcher.signal.SignalTracker tracker = plugin.signalTracker();
+            if (tracker != null && tracker.baseDetector() != null) {
+                com.observance.watcher.signal.BaseDetector.Anchor a = tracker.baseDetector().primaryBase();
+                if (a != null && world.getName().equals(a.world)) {
+                    return new int[]{ a.x, a.z, 1 };
+                }
+            }
+        } catch (Throwable ignored) { /* fall through to spawn */ }
+        Location spawn = world.getSpawnLocation();
+        return new int[]{ spawn.getBlockX(), spawn.getBlockZ(), 0 };
+    }
+
+    /**
+     * Derive a distant, per-keeper auto-scatter anchor around the base cell. Each keeper gets its OWN
+     * radius (hundreds–thousands of blocks) and its OWN bearing, both deterministically from the keeper id
+     * mixed with the base cell (Wang bit-mixer — no {@code Math.random()}, no wall-clock), so the sites are
+     * spread across the map at varied distances and directions (never a line, never a cluster) and a re-run
+     * reproduces the SAME anchor (idempotent). Returns {@code [x, z]} block coords.
+     */
+    private static int[] autoScatterAnchor(int baseX, int baseZ, String keeperId) {
+        long seed = wangHash(((long) baseX * 73856093L) ^ ((long) baseZ * 19349663L) ^ idHash(keeperId));
+        // Radius in [512 .. 512+2560] = 512..3072 blocks — a large, varied ring per keeper.
+        int radius = 512 + (int) ((seed >>> 8) & 0x7FFL) * 2560 / 0x7FF;
+        // Bearing: full 0..2π, from independent bits of the seed.
+        double bearing = (((seed >>> 20) & 0xFFFFL) / (double) 0x10000) * (Math.PI * 2.0);
+        int x = baseX + (int) Math.round(Math.cos(bearing) * radius);
+        int z = baseZ + (int) Math.round(Math.sin(bearing) * radius);
+        return new int[]{ x, z };
+    }
+
+    /** Deterministic 64-bit hash of a keeper id (used to seed its scatter). */
+    private static long idHash(String s) {
+        long h = 1125899906842597L; // prime
+        if (s != null) for (int i = 0; i < s.length(); i++) h = 31 * h + s.charAt(i);
+        return wangHash(h);
+    }
+
+    /**
+     * Cheap idempotency probe: has a keeper set-piece already been stamped at this anchor column? Every
+     * keeper builder seats a non-natural, deliberately-placed block at (or just below) the pillar base, so a
+     * re-run over an already-built site sees deepslate/blackstone/brick family blocks here rather than the
+     * natural surface. We treat those as "already placed" and skip the re-stamp. Conservative + null-safe:
+     * on any doubt it returns false (allow the place) so we never wrongly skip a genuine first placement.
+     */
+    private static boolean looksAlreadyPlaced(org.bukkit.World world, int x, int y, int z) {
+        try {
+            if (world == null) return false;
+            if (!world.isChunkLoaded(x >> 4, z >> 4)) return false;
+            // Sample the pillar base + one below (builders carve a hollow floor / plinth here).
+            for (int dy = 0; dy >= -1; dy--) {
+                Material m = world.getBlockAt(x, y + dy, z).getType();
+                switch (m) {
+                    case COBBLED_DEEPSLATE, POLISHED_DEEPSLATE, CHISELED_DEEPSLATE, DEEPSLATE_BRICKS,
+                         DEEPSLATE_TILES, TUFF_BRICKS, POLISHED_BLACKSTONE, POLISHED_BLACKSTONE_BRICKS,
+                         CHISELED_POLISHED_BLACKSTONE, CHISELED_STONE_BRICKS -> { return true; }
+                    default -> { /* keep sampling */ }
+                }
+            }
+        } catch (Throwable ignored) { /* treat as not-placed on any error */ }
+        return false;
     }
 
     /**
@@ -858,8 +1146,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
+            if ("set".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("set");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("set")) {
+            for (String[] row : KEEPER_SPINE) {
+                if (row[0].startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(row[0]);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sleep")) {
             out.add("on");

@@ -43,9 +43,18 @@ Ordered so foundations land first and each wave is independently green + committ
   one: the base-anomaly hook (discovered out of sight), the per-player "it knows me" escalation, the
   earned-literacy turn. Wire the 4 prologue gaps (IgnitionListener on the base anomaly, lit-marker placement,
   snapshot inputs, ack, `recordOpenedNamed`) + the unwired illusion primitives (dimLight, fog).
-- **W2 — Discovered placement (C1).** ⬜ Kill the visible placeregion-field opening. Build the mixed
-  world model: director code-generation (research-driven, cohesive procedural craft) + vanilla-structure
-  re-dress; sites buried/far/gated, surfaced by the investigation (a whisper/compass/coord), not stamped.
+- **W2 — Discovered placement (C1).** ▶ Kill the visible placeregion-cluster. DESIGN (2026-07-02): the
+  set-pieces are already good post-reshape — change WHERE + HOW-INTEGRATED, not rebuild. (1) **Scatter +
+  legible geography:** only the prologue anomaly is near the base; the six keeper sites are far apart +
+  terrain-themed (Vaun cave/mineshaft · Mara cliff-ruin · Sella shore/lake · Orin rockface low-lintel ·
+  **Brann watch-tower on high ground = a visible distant LANDMARK, Dark-Souls sightline** · Iss cozy-false
+  hearth); the deep is DOWN. (2) **Build model = survey-first (lowest risk):** `/observance site set
+  <keeper>` lets Ethan walk to a good hidden terrain-fitting spot pre-session; `placeworld` stamps that
+  keeper's set-piece there, terrain-following, reveal-safe (auto-scatter only as the unsurveyed fallback);
+  vanilla re-dress (ancient city=Undercroft, trial chamber=vault, village=town) for connective structures.
+  (3) **Discovery = investigation-gated:** a recovery-compass/lodestone needle toward the earned thread +
+  coords hidden in found artifacts/whispers + visible landmarks; salience keeps one thread live. BUILD:
+  (a) survey+scatter placement plugin core; (b) verify/wire the discovery-pointer (compass + coord clues).
 - **W3 — The field, not a spine (C6).** ⬜ De-linearize the six keepers into a parallel field (salience
   surfaces them); build the offshoots with meat (townsfolk secrets · record-as-a-thread · the "6 prior
   groups" · Nether/End deep lanes · per-player emergent threads); add the in-between tissue (motif rhymes ·
