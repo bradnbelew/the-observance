@@ -25,7 +25,7 @@
 import { getArcFlags, readCustomViolations, readDossiers } from '../db/repo.js';
 import { readState, writeState } from './state.js';
 import { postToTheRecord } from './discord.js';
-import { decidePersonalizedReports, buildObservationDossiers, type ReckoningShift } from './reports.js';
+import { decidePersonalizedReports, buildObservationDossiers, type ReckoningShift, type MeasuredBehavior } from './reports.js';
 import { logEvent } from '../db/repo.js';
 import type { Tone } from './types.js';
 
@@ -49,11 +49,22 @@ export async function runReportsPass(mode: 'auto' | 'confirm', tone?: Tone): Pro
 
   const violations = await readCustomViolations();
   const honored = new Map<string, number>();
-  for (const v of violations) honored.set(`${v.groupKey}:${v.customKey}`, v.honoredCount);
+  const violated = new Map<string, number>();
+  for (const v of violations) {
+    honored.set(`${v.groupKey}:${v.customKey}`, v.honoredCount);
+    violated.set(`${v.groupKey}:${v.customKey}`, v.violatedCount);
+  }
 
   const flags = await getArcFlags();
   const state = await readState();
-  const dossiers = buildObservationDossiers(rows, honored);
+  // Merge the dossier signals with the compliance-derived axes (silent = the_bow violated; night-walks =
+  // the_dark_hours violated) into the shape the scorer reads — no new plugin tracking, existing data only.
+  const behaviors: MeasuredBehavior[] = rows.map((r) => ({
+    ...r,
+    bowViolations: violated.get(`${r.groupKey}:the_bow`) ?? 0,
+    darkHoursViolations: violated.get(`${r.groupKey}:the_dark_hours`) ?? 0,
+  }));
+  const dossiers = buildObservationDossiers(behaviors, honored);
 
   const decision = decidePersonalizedReports({
     dossiers,

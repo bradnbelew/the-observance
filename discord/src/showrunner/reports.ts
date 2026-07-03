@@ -281,10 +281,19 @@ export interface MeasuredBehavior {
   soloMiningSeconds: number;
   distanceFromGroup: number;
   forbiddenWordHits: number;
+  /** measured violations of the_bow — passing markers uncrouched (the `silent` axis; from custom_compliance). */
+  bowViolations: number;
+  /** measured violations of the_dark_hours — active on the black moon (the `night-walks` axis; compliance). */
+  darkHoursViolations: number;
 }
 
-/** The chorus axes buildObservationDossiers can score today (v1) — those measured in the flushed dossier. */
-const SCORED_AXES: readonly HabitAxis[] = ['hoards', 'wanders', 'spends-words'];
+/**
+ * The chorus axes buildObservationDossiers scores. Five of the six are measured today: hoards / wanders /
+ * spends-words from the dossier, plus silent / night-walks derived from custom_compliance VIOLATIONS (the
+ * player who most passes markers uncrouched / most walks the black moon). `reads` awaits a lectern-idle
+ * signal (the last unmeasured axis) — the policy knows it; the scorer does not yet feed it.
+ */
+const SCORED_AXES: readonly HabitAxis[] = ['hoards', 'wanders', 'spends-words', 'silent', 'night-walks'];
 
 /** The raw per-player signal for each scored axis (higher = more of that habit). Pure. */
 function rawSignal(b: MeasuredBehavior, axis: HabitAxis): number {
@@ -292,6 +301,8 @@ function rawSignal(b: MeasuredBehavior, axis: HabitAxis): number {
     case 'hoards': return Math.max(b.hoardedScore, b.soloMiningSeconds / 60); // score, or minutes mined alone
     case 'wanders': return Math.max(0, b.distanceFromGroup);
     case 'spends-words': return Math.max(0, b.forbiddenWordHits);
+    case 'silent': return Math.max(0, b.bowViolations);         // passes the markers without the bow
+    case 'night-walks': return Math.max(0, b.darkHoursViolations); // moves under the black moon
     default: return 0;
   }
 }

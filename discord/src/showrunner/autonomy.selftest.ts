@@ -589,7 +589,8 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
 // ===========================================================================
 {
   const mb = (groupKey: string, name: string, o: Partial<MeasuredBehavior>): MeasuredBehavior => ({
-    groupKey, name, hoardedScore: 0, soloMiningSeconds: 0, distanceFromGroup: 0, forbiddenWordHits: 0, ...o,
+    groupKey, name, hoardedScore: 0, soloMiningSeconds: 0, distanceFromGroup: 0, forbiddenWordHits: 0,
+    bowViolations: 0, darkHoursViolations: 0, ...o,
   });
   const honored = new Map<string, number>([['p1:the_offering', 5]]);
 
@@ -607,6 +608,17 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   // The hoarder is dominant on hoards for this group → a named report.
   const fired = decidePersonalizedReports({ dossiers: ds, reported: {}, mode: 'auto' }).reports;
   check('reports: the clear hoarder is named', fired.some((r) => r.name === 'vaun' && r.habit === 'hoards'));
+
+  // The compliance-derived axes: the one who most passes markers uncrouched is named `silent`.
+  const compliance = buildObservationDossiers(
+    [mb('p1', 'orin', { bowViolations: 20 }), mb('p2', 'other', { bowViolations: 1 })],
+    new Map(),
+  );
+  check('reports: silent axis scored from the_bow violations',
+    (compliance.find((d) => d.groupKey === 'p1')!.habits.silent ?? 0) === 1);
+  check('reports: the marker-passer is named silent',
+    decidePersonalizedReports({ dossiers: compliance, reported: {}, mode: 'auto' }).reports
+      .some((r) => r.name === 'orin' && r.habit === 'silent'));
 
   // A FLAT group (identical behavior) names no one — the precision floor (a wrong "it knows you" is worse).
   const flat = buildObservationDossiers(
