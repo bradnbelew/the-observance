@@ -73,7 +73,7 @@ async function main(): Promise<void> {
   // crossed rungs / lays soft tolls. Respects the kill-switch (asleep → silent, like decide)
   // and is fully fault-isolated, so it can never abort the tick the spine already applied.
   let customs = { reported: 0, tolled: 0 };
-  let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0 };
+  let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0, keptNeedleGranted: false };
   if (!snapshot.asleep) {
     try {
       customs = await runCustomsPass(snapshot.mode, nowIso);
@@ -103,7 +103,7 @@ async function main(): Promise<void> {
     `grip=${gates.reckoning?.state ?? 'even'} tone=${decision.tone} ` +
     `graves=${autonomy.graves} herd=${autonomy.herdSpreads} forks=${autonomy.forksSet} ` +
     `cold=${autonomy.coldRestages} apparition=${autonomy.apparitionClaimed ? 1 : 0} ` +
-    `theories=${autonomy.theoriesLocked}`,
+    `theories=${autonomy.theoriesLocked} needle=${autonomy.keptNeedleGranted ? 1 : 0}`,
   );
 }
 

@@ -175,6 +175,19 @@ export interface AutonomyPassResult {
   finalePosted: boolean;
   /** S-D theory-lock: keepers whose evidence cluster became coherent this pass (flag locked + beat posted). */
   theoriesLocked: number;
+  /** W3/W2-owed: the kept-needle recovery-compass was granted this pass (the Seventh was named). */
+  keptNeedleGranted: boolean;
+}
+
+/**
+ * shouldGrantKeptNeedle — the PURE guard for the earned recovery-compass. Grant the kept-needle exactly
+ * once, the moment the Seventh is named (`seventh_named`) and it has not already been granted
+ * (`kept_needle_granted` — the set-once idempotency mark). No clock, no roster, no LLM: same flags in →
+ * same decision out, so the autonomy self-test can pin it. The producer below enqueues the beat + sets
+ * the mark only when this returns true.
+ */
+export function shouldGrantKeptNeedle(flags: Record<string, unknown>): boolean {
+  return flags.seventh_named === true && flags.kept_needle_granted !== true;
 }
 
 /**
@@ -182,7 +195,7 @@ export interface AutonomyPassResult {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false, theoriesLocked: 0 };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -236,6 +249,24 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     }
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `forks error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- kept-needle: the earned recovery-compass (W3/W2-owed). The moment the Seventh is named
+  //     (seventh_named), grant the group the lodestone needle toward the light that did not go out —
+  //     "the way home," a late safety net so no scattered site is ever un-findable (reachable >=3 ways).
+  //     One-shot via the kept_needle_granted set-once mark (mirrors the clock/grave idempotency), so a
+  //     re-tick never re-grants. The plugin's KeptNeedleBeat reads {site,to} from the payload; to:'all'
+  //     gives it to everyone present when the Seventh is named (a group beat). Status follows the mode
+  //     gate (approved in AUTO, dashboard-staged in CONFIRM), like every other producer here.
+  try {
+    if (shouldGrantKeptNeedle(flags)) {
+      await enqueueBeat('kept_needle', null, { site: 'unbroken_light', to: 'all' }, beatStatus);
+      await setArcFlags({ kept_needle_granted: true });
+      result.keptNeedleGranted = true;
+      await logEvent('info', 'showrunner.autonomy', `kept-needle: granted — the Seventh is named [${beatStatus}]`);
+    }
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `kept-needle error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- A12 herd: pace the cosmetic pale field (capped, monotone, one-per-pass) ---
