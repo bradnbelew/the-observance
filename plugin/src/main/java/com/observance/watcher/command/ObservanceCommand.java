@@ -74,7 +74,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
             case "townsfolk" -> handleTownsfolk(sender, args);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id]");
+            case "needle" -> handleNeedle(sender, args);
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id] | needle [player]");
         }
     }
 
@@ -314,9 +315,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 occupied++;
                 sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "surveyed" : "auto")
                         + " @ " + ax + "," + ay + "," + az + " -> occupied (already placed; skipped).");
-                // Still (re)register the site so its coords are authoritative in sites.yml.
+                // Still (re)register the site so its coords are authoritative in sites.yml (keep its beacon flag).
+                boolean occBeacon = existing != null && existing.beacon();
                 plugin.registerRuntimeSite(new Site(siteId, siteType, worldName,
-                        (double) ax, (double) ay, (double) az, radius, 6, true, true, null));
+                        (double) ax, (double) ay, (double) az, radius, 6, true, true, null, occBeacon));
                 continue;
             }
 
@@ -329,11 +331,21 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 continue;
             }
 
+            // KEPT-LIGHT beacon: only the two canonically-lit sites (visual_beacon:true in sites.yml) get a
+            // landmark beam — the fiction's "one light, somewhere below, did not go out." Read the flag off the
+            // loaded config site, thread it into the runtime re-register so a reload keeps it, and stamp the beam.
+            boolean beacon = existing != null && existing.beacon();
             plugin.registerRuntimeSite(new Site(siteId, siteType, worldName,
-                    (double) ax, (double) ay, (double) az, radius, 6, true, true, null));
+                    (double) ax, (double) ay, (double) az, radius, 6, true, true, null, beacon));
             placed++;
+            String beaconNote = "";
+            if (beacon) {
+                boolean skyClear = StructureTemplates.keptLightBeacon(anchor, beaconTint(siteId));
+                beaconNote = skyClear ? " [kept-light beacon: beam projecting]"
+                        : " [kept-light beacon: sky blocked — base+light placed, no beam]";
+            }
             sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "SURVEYED" : "auto-scatter")
-                    + " @ " + ax + "," + ay + "," + az + " -> placed.");
+                    + " @ " + ax + "," + ay + "," + az + " -> placed." + beaconNote);
         }
 
         sender.sendMessage("Observance: placeworld complete — " + placed + " placed, " + occupied
@@ -379,6 +391,26 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int x = baseX + (int) Math.round(Math.cos(bearing) * radius);
         int z = baseZ + (int) Math.round(Math.sin(bearing) * radius);
         return new int[]{ x, z };
+    }
+
+    /**
+     * KEPT-LIGHT beam tint per site — the beacon glass reads as firelight, not a neutral waypoint.
+     * Brann's watch-fire is warm orange/red ("one fire was never doused"); the unbroken_light is pale/white
+     * (the one clean fire in the deep). Any other beaconed site → null (plain white beam). Never throws.
+     */
+    private static Material beaconTint(String siteId) {
+        String id = siteId == null ? "" : siteId.trim().toLowerCase(Locale.ROOT);
+        return switch (id) {
+            case "stone_brann", "brann"    -> Material.ORANGE_STAINED_GLASS;   // the watch-fire's firelight
+            case "unbroken_light"          -> Material.WHITE_STAINED_GLASS;    // the one unbroken light
+            default                        -> null;                            // plain white beam
+        };
+    }
+
+    /** First non-null Site among the candidates, or null. Used to resolve a keeperId to its config entry. */
+    private static Site firstNonNull(Site... sites) {
+        if (sites != null) for (Site s : sites) if (s != null) return s;
+        return null;
     }
 
     /** Deterministic 64-bit hash of a keeper id (used to seed its scatter). */
@@ -446,16 +478,30 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        // KEPT-LIGHT beacon: honor visual_beacon for the canonically-lit sites even on this manual path. The
+        // flag is read off the config entry the keeperId maps to (accepts the bare "brann" and the slug forms),
+        // so placing Brann's watch-stone or the unbroken_light by hand still raises its landmark beam.
+        Site cfg = plugin.sites() == null ? null : firstNonNull(
+                plugin.sites().get(siteId),           // keeper_<slug>
+                plugin.sites().get("stone_" + keeperId),
+                plugin.sites().get(keeperId));        // e.g. unbroken_light
+        boolean beacon = cfg != null && cfg.beacon();
+
         // Register the pillar's base as a live keeper_stone site. The site radius (config defaults) comfortably
         // covers the sign a few blocks above, so the answer sign resolves. In-memory only (see registerRuntimeSite).
         String world = loc.getWorld().getName();
         Site site = new Site(siteId, "keeper_stone", world,
                 (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
-                6, 6, false, true, null);
+                6, 6, false, true, null, beacon);
         plugin.registerRuntimeSite(site);
 
         sender.sendMessage("Observance: placed keeper stone '" + siteId + "' at "
                 + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + " in " + world + ".");
+        if (beacon) {
+            boolean skyClear = StructureTemplates.keptLightBeacon(loc, beaconTint(keeperId));
+            sender.sendMessage("  Kept-light beacon raised (" + (skyClear
+                    ? "beam projecting" : "sky blocked — base+light placed, no beam") + ").");
+        }
         sender.sendMessage("  Answer sign is live. Site persisted to sites.yml (survives reload/restart).");
     }
 
@@ -745,10 +791,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 continue;
             }
 
+            // KEPT-LIGHT beacon: unbroken_light carries visual_beacon (the one fire that never goes out). Deep
+            // in a roofed undercroft the sky is blocked, so keptLightBeacon leaves the base + a real light (no
+            // sky-beam) — the kept light reads on the ground where the descent ends, which is exactly right here.
+            Site cfg = plugin.sites() == null ? null : plugin.sites().get(siteId);
+            boolean beacon = cfg != null && cfg.beacon();
             Site site = new Site(siteId, siteType, world,
                     siteLoc.getX(), siteLoc.getY(), siteLoc.getZ(),
-                    radius, 6, true, true, null);
+                    radius, 6, true, true, null, beacon);
             plugin.registerRuntimeSite(site); // also writes to sites.yml
+            if (beacon) {
+                boolean skyClear = StructureTemplates.keptLightBeacon(siteLoc, beaconTint(siteId));
+                sender.sendMessage("  " + siteId + ": kept-light beacon "
+                        + (skyClear ? "beam projecting." : "sky blocked (deep) — base+light placed, no beam."));
+            }
 
             placed++;
         }
@@ -899,6 +955,65 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private static String describe(com.observance.watcher.beats.BeatResult r) {
         if (r == null) return "null";
         return r.kind() + (r.reason() == null ? "" : " (" + r.reason() + ")");
+    }
+
+    /**
+     * {@code /observance needle [player]} — the MANUAL TEST PATH for THE KEPT NEEDLE (the recovery-compass).
+     * Grants one recipient the lodestone-needle that points at the kept light ({@code unbroken_light}) so it
+     * can be verified in-world. This bypasses the LATE gate on purpose (admin test only); the REAL, earned
+     * grant is a directed {@code beat_queue} row of type {@code kept_needle} gated on {@code seventh_named}
+     * (the record hands it over post-reveal) — see {@link com.observance.watcher.beats.lib.KeptNeedleBeat}.
+     *
+     * <p>SHOWRUNNER WIRE-UP (what the director finishes): enqueue a beat_queue row
+     * {@code {type:"kept_needle", requires_flags:{seventh_named:true}, payload:{"site":"unbroken_light",
+     * "to":"target"}}} bound to the earning player — FlagGate keeps it closed until the Seventh is named, then
+     * the poller enacts it exactly like this command does. No plugin-side flag re-read is needed or wanted.
+     */
+    private void handleNeedle(CommandSender sender, String[] args) {
+        com.observance.watcher.beats.BeatEngine engine = plugin.beatEngine();
+        if (engine == null || !engine.isActive() || engine.context() == null || engine.library() == null) {
+            sender.sendMessage("Observance: beat engine is not active — cannot grant the needle.");
+            return;
+        }
+        // Recipient: an explicit player name, else the sender (must be a player).
+        Player target;
+        if (args.length >= 2 && !args[1].isBlank()) {
+            target = Bukkit.getPlayerExact(args[1].trim());
+            if (target == null) {
+                sender.sendMessage("Observance: player '" + args[1].trim() + "' is not online.");
+                return;
+            }
+        } else if (sender instanceof Player self) {
+            target = self;
+        } else {
+            sender.sendMessage("Observance: /observance needle needs a player (run in-game or pass a name).");
+            return;
+        }
+
+        // Confirm the kept light is placed, so the needle points somewhere (the beat also guards this).
+        Site kept = plugin.sites() == null ? null : plugin.sites().get("unbroken_light");
+        if (kept == null || kept.location() == null) {
+            sender.sendMessage("Observance: the kept light (unbroken_light) is not placed yet — run placedeep first.");
+            return;
+        }
+
+        // Enact the kept_needle beat directly at the target (DIRECTED; test-only, gate bypassed by intent).
+        com.observance.watcher.beats.BeatContext ctx = engine.context();
+        com.observance.watcher.beats.Beat beat = engine.library().get("kept_needle");
+        if (beat == null) {
+            sender.sendMessage("Observance: kept_needle beat is not registered.");
+            return;
+        }
+        com.observance.watcher.beats.BeatRequest req = new com.observance.watcher.beats.BeatRequest(
+                "needle-test", "kept_needle", com.observance.watcher.beats.BeatCategory.DIRECTED,
+                target, kept, com.observance.watcher.beats.BeatPayload.parse(
+                        "{\"site\":\"unbroken_light\",\"to\":\"target\"}"));
+        com.observance.watcher.beats.BeatResult r = safety.call("command.needle.enact",
+                () -> beat.enact(ctx, req), com.observance.watcher.beats.BeatResult.failed("threw"));
+
+        sender.sendMessage("Observance: kept needle -> " + target.getName() + " -> " + describe(r));
+        sender.sendMessage("  (Test grant — bypasses the seventh_named gate. The needle points at unbroken_light @ "
+                + kept.location().getBlockX() + "," + kept.location().getBlockY() + "," + kept.location().getBlockZ() + ".)");
     }
 
     /**
@@ -1146,7 +1261,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "townsfolk", "needle"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {

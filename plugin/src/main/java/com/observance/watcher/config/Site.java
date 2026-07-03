@@ -25,17 +25,25 @@ public final class Site {
     private final boolean protect;
     private final boolean enabled;
     private final String puzzleKey;   // nullable; only meaningful for answer-sign sites
+    private final boolean beacon;     // KEPT-LIGHT landmark: project a real beacon beam at this site's top
 
     public Site(String id, String type, String worldName,
                 Double x, Double y, Double z,
                 int radius, int verticalRadius, boolean protect, boolean enabled) {
-        this(id, type, worldName, x, y, z, radius, verticalRadius, protect, enabled, null);
+        this(id, type, worldName, x, y, z, radius, verticalRadius, protect, enabled, null, false);
     }
 
     public Site(String id, String type, String worldName,
                 Double x, Double y, Double z,
                 int radius, int verticalRadius, boolean protect, boolean enabled,
                 String puzzleKey) {
+        this(id, type, worldName, x, y, z, radius, verticalRadius, protect, enabled, puzzleKey, false);
+    }
+
+    public Site(String id, String type, String worldName,
+                Double x, Double y, Double z,
+                int radius, int verticalRadius, boolean protect, boolean enabled,
+                String puzzleKey, boolean beacon) {
         this.id = id;
         this.type = type == null ? "unknown" : type;
         this.worldName = worldName;
@@ -47,6 +55,7 @@ public final class Site {
         this.protect = protect;
         this.enabled = enabled;
         this.puzzleKey = (puzzleKey == null || puzzleKey.isBlank()) ? null : puzzleKey.trim();
+        this.beacon = beacon;
     }
 
     public String id() { return id; }
@@ -63,6 +72,15 @@ public final class Site {
      * non-linear web), the sign resolves against ALL open puzzles. Nullable.
      */
     public String puzzleKey() { return puzzleKey; }
+
+    /**
+     * KEPT-LIGHT landmark (Dark-Souls legible geography). When true, the placer stamps a real vanilla
+     * beacon on a small mineral base at this site's top so a KEPT LIGHT projects a beam skyward — the
+     * fiction's "one light, somewhere below, did not go out." ONLY the two canonically-lit sites carry
+     * it ({@code stone_brann}'s watch-fire, {@code unbroken_light}), so a scattered world is never lost
+     * yet the beam is never a game waypoint. Off by default; set {@code visual_beacon: true} in sites.yml.
+     */
+    public boolean beacon() { return beacon; }
 
     /** True if this site has real coords and is enabled — i.e. it can participate in beats. */
     public boolean isPlaced() {

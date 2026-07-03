@@ -58,9 +58,12 @@ public final class SitesConfig {
                     // Optional: bind an answer-sign site to a single puzzle_key. Null = match all
                     // open puzzles (the non-linear web default).
                     String puzzleKey = s.getString("puzzle-key", s.getString("puzzle_key", null));
+                    // Optional KEPT-LIGHT landmark: project a real beacon beam at this site's top (only
+                    // the two canonically-lit sites set it; every other site defaults dark). See Site#beacon.
+                    boolean beacon = s.getBoolean("visual_beacon", s.getBoolean("visual-beacon", false));
 
                     Site site = new Site(id, type, world, x, y, z, radius, vertical, protect, enabled,
-                            puzzleKey);
+                            puzzleKey, beacon);
                     map.put(id, site);
                 } catch (Exception ex) {
                     warnings.add("site '" + id + "' failed to parse (" + ex.getClass().getSimpleName()

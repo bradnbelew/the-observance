@@ -14,6 +14,7 @@ import com.observance.watcher.beats.lib.HintWhisperBeat;
 import com.observance.watcher.beats.lib.ItemRelabelBeat;
 import com.observance.watcher.beats.lib.ItemSwapBeat;
 import com.observance.watcher.beats.lib.KeeperNpcBeat;
+import com.observance.watcher.beats.lib.KeptNeedleBeat;
 import com.observance.watcher.beats.lib.LecternFillBeat;
 import com.observance.watcher.beats.lib.MapMarkBeat;
 import com.observance.watcher.beats.lib.ModeledMobBeat;
@@ -75,6 +76,10 @@ public final class BeatLibrary {
         register(new ChestArrangeBeat());
         // ITEMS
         register(new ItemSwapBeat());
+        // ITEMS — THE KEPT NEEDLE: a late-earned lodestone-needle pointing at the kept light (the keepers'
+        // way home). Gated LATE upstream by the row's requires_flags {seventh_named:true}; the beat is the
+        // pure enactor. Queued as a directed beat_queue row, or granted via /observance needle for testing.
+        register(new KeptNeedleBeat());
         // WORLD
         register(new TorchGutterBeat());
         register(new DoorOpenBeat());

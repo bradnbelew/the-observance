@@ -150,6 +150,87 @@ public final class StructureTemplates {
     }
 
     /* ================================================================================================
+     * KEPT-LIGHT BEACON — the landmark beam for the two canonically-lit sites (Site#beacon()).
+     * ------------------------------------------------------------------------------------------------
+     * FICTION: "one light, somewhere below, did not go out." A KEPT LIGHT — Brann's watch-fire that was
+     * never doused, or the one fire of the unbroken_light — is meant to be seen from far off across the
+     * black, so a scattered world is never lost (Dark-Souls legible geography). The beam is diegetically
+     * the kept light itself, NEVER a game waypoint marker.
+     * TRIGGER: stamped by {@code /observance placeworld} / {@code placeroom} / {@code placedeep} ONLY for a
+     * site whose sites.yml carries {@code visual_beacon: true} (read via {@link Site#beacon()}). Every other
+     * site stays dark — this is not a beam on every marker.
+     * INTERACTION: a real vanilla beacon on the minimum 3x3 mineral base, capped with firelight-tinted glass
+     * ({@code tint}: e.g. ORANGE_STAINED_GLASS for Brann's watch-fire). The beam projects only with sky
+     * access; when the sky is blocked (a deep/roofed site) we still leave the base + a real light source so
+     * the kept light reads on the ground, and return {@code false} so the caller can note it. Never throws.
+     *
+     * @param base    the site anchor (the set-piece's ground cell); the beacon rises a few courses above it
+     *                so it clears the set-piece and reads as the light at the site's top.
+     * @param tint    stained-glass material tinting the beam (firelight); null → no tint (plain white beam).
+     * @return true if the beam has clear sky above (it will project); false if the sky is blocked (base +
+     *         light still placed so the kept light reads; caller may log the note).
+     */
+    public static boolean keptLightBeacon(Location base, Material tint) {
+        if (base == null) return false;
+        World world = base.getWorld();
+        if (world == null) return false;
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        if (!world.isChunkLoaded(bx >> 4, bz >> 4)) return false;
+
+        Pen pen = new Pen(world);
+        // Raise the beacon above the set-piece: the tallest keeper caps around by+4, so seat the mineral base
+        // at by+5 and the beacon on top. This lifts the kept light to the site's top, clear of the structure.
+        int baseY = by + 5;
+        // The minimum pyramid: a single 3x3 iron tier directly under the beacon (one tier = a projecting beam).
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                pen.set(bx + dx, baseY, bz + dz, Material.IRON_BLOCK);
+            }
+        }
+        int beaconY = baseY + 1;
+        pen.set(bx, beaconY, bz, Material.BEACON);
+        // Firelight tint one course above the beacon (the glass the beam passes through takes its colour).
+        if (tint != null) pen.set(bx, beaconY + 1, bz, tint);
+
+        // Sky-access probe: a beacon only projects with an unobstructed column to the world height. Walk up
+        // from just above the beacon; any non-passable block blocks the beam. Passable = air / glass tint /
+        // transparent decor. Conservative: on any doubt we treat the column as blocked (return false).
+        boolean skyClear = true;
+        try {
+            int top = world.getMaxHeight();
+            for (int y = beaconY + 1; y < top; y++) {
+                Material m = world.getBlockAt(bx, y, bz).getType();
+                if (m == Material.AIR || m == Material.CAVE_AIR || m == Material.VOID_AIR) continue;
+                if (tint != null && y == beaconY + 1 && m == tint) continue;   // our own tint glass is beam-transparent
+                if (isBeamTransparent(m)) continue;
+                skyClear = false;
+                break;
+            }
+        } catch (Throwable ignored) {
+            skyClear = false;   // couldn't verify → treat as blocked (place the ground light below either way)
+        }
+
+        // Graceful when the sky is blocked (a deep/roofed site): the beam won't project, so drop a real light
+        // source ON the tint cap so the kept light still reads on the ground — never a crash, never darkness.
+        if (!skyClear) {
+            pen.setIfAir(bx, beaconY + 2, bz, Material.SHROOMLIGHT);
+        }
+        return skyClear;
+    }
+
+    /** Glass/leaves/thin blocks a beacon beam passes through (so a stained-glass roof doesn't count as blocking). */
+    private static boolean isBeamTransparent(Material m) {
+        if (m == null) return false;
+        String n = m.name();
+        // NB: TINTED_GLASS is deliberately EXCLUDED — vanilla tinted glass blocks the beacon beam (and light),
+        // unlike normal/stained glass which it passes through. The firelight tint we cap the beacon with is
+        // stained glass (ORANGE/WHITE), so it is beam-transparent; a tinted-glass roof would correctly block.
+        return n.endsWith("_STAINED_GLASS") || n.endsWith("_STAINED_GLASS_PANE")
+                || n.equals("GLASS") || n.equals("GLASS_PANE")
+                || n.endsWith("_LEAVES") || n.equals("BEACON");
+    }
+
+    /* ================================================================================================
      * ROSETTA — the literacy gate. A ring of 6 short inscribed polished-blackstone pillars around a
      * central lectern on a sculk-veined deepslate-brick dais; an amethyst cluster at the heart (the
      * learning-light). Answer = the central lectern.

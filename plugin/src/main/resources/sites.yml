@@ -136,6 +136,11 @@ sites:
     radius: 10
     protect: true
     enabled: true
+    # KEPT LIGHT (Landmark beacon). Canon: "one light, somewhere below, did not go out." This is THAT
+    # light — the one fire that never goes out, the descent to the Seventh. The beam is diegetically the
+    # kept light itself, never a game waypoint: a scattered party can always find its way back to the
+    # deep. Only the two canonically-lit sites carry it (see stone_brann); every other site stays dark.
+    visual_beacon: true
 
   # The six keeper-stones (one per Kept). Each carries that keeper's carved cipher and is a
   # valid answer-submission site. puzzle-key omitted = the non-linear web (any open clue
@@ -189,6 +194,11 @@ sites:
     radius: 8
     protect: true
     enabled: true
+    # KEPT LIGHT (Landmark beacon). Brann's watch-fire — "one fire was never doused / the black moon was
+    # slept through." The one keeper who kept a fire lit through the Dark Hours; his watch-point is meant
+    # to be seen from far off across the black. The beam is the watch-fire itself, tinted firelight-orange
+    # (see the Site.beacon() read + StructureTemplates.keptLightBeacon tint), never a waypoint marker.
+    visual_beacon: true
 
   stone_iss:
     type: "keeper_stone"
