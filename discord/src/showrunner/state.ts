@@ -71,6 +71,9 @@ export interface ShowrunnerState {
   /** D1 reports: per-player dominant-habit ordinal already dripped (re-fire only on a habit change). */
   reported_habits?: Record<string, number>;
 
+  /** W4 observer: epoch ms of the last "it heard you" echo (the sparse-rate high-water). */
+  observer_last_ms?: number;
+
   /** D4 liar: the Iss warm-beat ids already re-staged cold (one-way high-water). */
   liar_flipped?: string[];
 

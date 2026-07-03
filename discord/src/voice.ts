@@ -180,6 +180,16 @@ export const voice = {
   },
 
   /**
+   * OBSERVER TIER-1 — "it heard you say it". The record echoes a REAL captured utterance back (the
+   * `quote` is the player's own verbatim words — never composed here; only this cold frame is authored).
+   * Sparse + grounded: the weaponizer surfaces this at most once per long window, from a real un-used
+   * observation, and never fabricates a quote. Naming + quoting is the uncanny peak of "it knows you".
+   */
+  observerHeard(name: string, quote: string): string {
+    return `it keeps more than the count. the one called ${name} said, where the saying felt unheard: "${quote}". it is kept, with the rest.`;
+  },
+
+  /**
    * the whisper itself. tier shapes how plainly it speaks: a nudge first,
    * then the keeper's own words (the seeded hint body) for the rest.
    */

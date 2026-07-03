@@ -647,3 +647,80 @@ export async function ensurePrologueIgnited(nowMs: number): Promise<boolean> {
   await setArcFlags({ prologue_ignited: true, prologue_ignited_at_ms: nowMs });
   return true;
 }
+
+// ---------------------------------------------------------------------------
+// observations — the Observer Tier-1 store (W4). Grounded verbatim captures the
+// world may sparsely quote back. PRIVATE (service-role only). Consent is enforced
+// at the edges: capture behind the global observer_capture switch; the per-player
+// opt-out is enforced HERE (readUnweaponizedObservations filters observer_opt_out).
+// ---------------------------------------------------------------------------
+
+/** Insert one grounded capture. Every utterance is a new row (never an upsert). Best-effort. */
+export async function insertObservation(row: {
+  mc_uuid: string;
+  source: 'discord' | 'chat' | 'voice';
+  text: string;
+  context?: string | null;
+}): Promise<void> {
+  const { error } = await supabase.from('observations').insert({
+    mc_uuid: row.mc_uuid,
+    source: row.source,
+    text: row.text,
+    context: row.context ?? null,
+  });
+  if (error) throw error;
+}
+
+/** One eligible (un-used, consented, NAMED) captured utterance for the weaponizer. */
+export interface UnusedObservation {
+  id: number;
+  name: string;
+  text: string;
+  observedAtMs: number;
+}
+
+/**
+ * Read un-weaponized captures eligible to echo: un-used (weaponized_at null), from a player who is
+ * NAMED and has NOT opted out (players.observer_opt_out = false — the per-player consent floor, enforced
+ * here). Joined to players by mc_uuid. Oldest first, capped. Fault-isolated → [] on any failure (a
+ * missing echo is always safer than a misfire — silence-is-canon).
+ */
+export async function readUnweaponizedObservations(limit = 50): Promise<UnusedObservation[]> {
+  try {
+    const { data, error } = await supabase
+      .from('observations')
+      .select('id, text, observed_at, mc_uuid, players!inner(name, observer_opt_out)')
+      .is('weaponized_at', null)
+      .order('observed_at', { ascending: true })
+      .limit(limit)
+      .returns<Record<string, unknown>[]>();
+    if (error || !data) return [];
+    const out: UnusedObservation[] = [];
+    for (const r of data) {
+      const p = r.players as { name?: unknown; observer_opt_out?: unknown } | null;
+      if (!p || p.observer_opt_out === true) continue; // opted out → never eligible
+      const name = typeof p.name === 'string' && p.name.trim() !== '' ? p.name : null;
+      const text = typeof r.text === 'string' ? r.text : '';
+      if (!name || text.trim() === '') continue; // nameless / empty → never weaponized
+      out.push({
+        id: Number(r.id),
+        name,
+        text,
+        observedAtMs: typeof r.observed_at === 'string' ? Date.parse(r.observed_at) : 0,
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
+/** Stamp an observation used (set-once) so it is never echoed twice. Best-effort. */
+export async function markObservationWeaponized(id: number, nowIso: string): Promise<void> {
+  const { error } = await supabase
+    .from('observations')
+    .update({ weaponized_at: nowIso })
+    .eq('id', id)
+    .is('weaponized_at', null);
+  if (error) throw error;
+}

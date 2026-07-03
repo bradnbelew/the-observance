@@ -26,6 +26,7 @@ import { resolveCompanionDialogue, type CompanionDialogueInput, type CompanionAr
 import { composeFinale, type FinaleComposeInput } from './finale.js';
 import { decideTheories, CLUSTERS, theoryFlag } from './theory.js';
 import { decideRelief, RELIEF_BEATS } from './relief.js';
+import { decideWeaponization, MIN_QUOTE_LEN, type CapturedObservation } from './observer.js';
 import { archiveLine } from '../voice.archive.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -630,6 +631,31 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   // Zero signal everywhere → all scores 0, no report, no throw.
   check('reports: all-zero group → no report, no throw',
     decidePersonalizedReports({ dossiers: buildObservationDossiers([mb('a', 'a', {}), mb('b', 'b', {})], new Map()), reported: {}, mode: 'auto' }).reports.length === 0);
+}
+
+// ===========================================================================
+// observer.ts — the Tier-1 "it heard you" weaponizer. Sparse (rate-limited),
+// substance-gated, deterministic pick; degrades to silence. NEVER fabricates.
+// ===========================================================================
+{
+  const obs = (id: number, text: string): CapturedObservation => ({ id, name: `p${id}`, text, observedAtMs: id });
+  const HOUR = 3_600_000;
+  const long = 'a'.repeat(MIN_QUOTE_LEN + 5);
+  const longer = 'b'.repeat(MIN_QUOTE_LEN + 20);
+
+  check('observer: too soon since last echo → silence',
+    decideWeaponization([obs(1, long)], 100, 100 - 1000, HOUR).observation === null);
+  check('observer: nothing eligible → silence',
+    decideWeaponization([], 10 * HOUR, null, HOUR).observation === null);
+  check('observer: trivial (short) utterance is never echoed',
+    decideWeaponization([obs(1, 'ok')], 10 * HOUR, null, HOUR).observation === null);
+  check('observer: picks the most substantial utterance',
+    decideWeaponization([obs(1, long), obs(2, longer)], 10 * HOUR, null, HOUR).observation?.id === 2);
+  check('observer: deterministic — same in, same out',
+    JSON.stringify(decideWeaponization([obs(1, long), obs(2, longer)], 10 * HOUR, null, HOUR)) ===
+    JSON.stringify(decideWeaponization([obs(1, long), obs(2, longer)], 10 * HOUR, null, HOUR)));
+  check('observer: never fabricates — the echo is a verbatim captured text',
+    decideWeaponization([obs(7, longer)], 10 * HOUR, null, HOUR).observation?.text === longer);
 }
 
 if (failures > 0) {

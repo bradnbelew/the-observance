@@ -13,6 +13,7 @@ import com.observance.watcher.data.rows.DossierRow;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.data.rows.HeatmapCellRow;
 import com.observance.watcher.data.rows.NpcQuestRow;
+import com.observance.watcher.data.rows.ObservationRow;
 import com.observance.watcher.data.rows.PlayerLookupRow;
 import com.observance.watcher.data.rows.PlayerRow;
 import com.observance.watcher.data.rows.PuzzleRow;
@@ -150,6 +151,31 @@ public final class SupabaseClient {
      */
     public SupabaseResult<Void> upsertBase(BaseRow row) {
         return upsert("bases", "owner_uuid", row, "upsertBase");
+    }
+
+    /**
+     * INSERT an {@code observations} row — the Observer Tier-1 chat capture (0009_observations.sql).
+     * Not an upsert: every utterance is a NEW row. Mirrors {@link #insertAnswerAttempt}'s fire-and-forget
+     * durability — on failure it is queued (bounded) like other writes. Never throws.
+     *
+     * <p>Consent is enforced by the CALLER (the global {@code observer_capture} switch) before we ever get
+     * here; this method only writes. The per-player {@code observer_opt_out} gate is enforced DOWNSTREAM by
+     * the showrunner's weaponizer, which skips opted-out players before quoting.
+     */
+    public SupabaseResult<Void> insertObservation(ObservationRow row) {
+        if (row == null) return SupabaseResult.fail(0, "null-row");
+        String body = gson.toJson(row);
+        if (!config.isConfigured()) {
+            enqueue("insertObservation", () ->
+                    doWrite("POST", "observations", "", body, false, "insertObservation"));
+            return SupabaseResult.queued();
+        }
+        SupabaseResult<Void> r = doWrite("POST", "observations", "", body, false, "insertObservation");
+        if (!r.ok()) {
+            enqueue("insertObservation", () ->
+                    doWrite("POST", "observations", "", body, false, "insertObservation"));
+        }
+        return r;
     }
 
     /**

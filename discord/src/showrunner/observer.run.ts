@@ -1,0 +1,53 @@
+/**
+ * observer.run.ts — the I/O wrapper for the Observer Tier-1 weaponizer ("it heard you say it", W4).
+ *
+ * Sparingly, the record echoes ONE grounded, verbatim utterance the group actually said. This closes the
+ * words tier of the Observer (Tier-0 behavior is reports.run.ts). It reads the eligible captures, runs the
+ * pure precision-gated policy (observer.ts), posts the one chosen echo to #the-record, marks it used, and
+ * advances the sparse-rate high-water. No LLM: it QUOTES what was literally captured (never fabricates).
+ *
+ * CONSENT (both gates enforced before a word is ever surfaced):
+ *   - gate 1 (global): settings.observer_capture must be true — the operator's master switch. Off (the
+ *     default) → this whole pass is a no-op, so nothing is captured OR echoed until it is deliberately on.
+ *   - gate 2 (per-player): readUnweaponizedObservations filters players.observer_opt_out — an opted-out
+ *     person is never eligible, so their words are never echoed even if captured before they opted out.
+ * Grounded · sparse · degrade to silence: a failed/empty pass simply says nothing.
+ */
+import { readSetting, readState, writeState } from './state.js';
+import { readUnweaponizedObservations, markObservationWeaponized, logEvent } from '../db/repo.js';
+import { postToTheRecord } from './discord.js';
+import { decideWeaponization, type CapturedObservation } from './observer.js';
+import { voice } from '../voice.js';
+
+/** How rarely the record echoes a captured word — sparse by design (at most once per ~12h window). */
+const OBSERVER_MIN_INTERVAL_MS = 12 * 60 * 60 * 1000;
+
+/**
+ * runObserverPass — one Tier-1 tick. No-op unless the global switch is on. Reads eligible (un-used,
+ * consented, named) captures, picks at most one to echo (rate-limited + substance-gated), posts it, marks
+ * it used (set-once), and advances the high-water. Returns a small tally for the tick log.
+ */
+export async function runObserverPass(): Promise<{ echoed: boolean }> {
+  const enabled = await readSetting<boolean>('observer_capture', false);
+  if (enabled !== true) return { echoed: false }; // gate 1: master switch off → the whole tier is silent
+
+  const eligible: CapturedObservation[] = (await readUnweaponizedObservations()).map((o) => ({
+    id: o.id, name: o.name, text: o.text, observedAtMs: o.observedAtMs,
+  }));
+
+  const nowMs = Date.now();
+  const state = await readState();
+  const decision = decideWeaponization(eligible, nowMs, state.observer_last_ms ?? null, OBSERVER_MIN_INTERVAL_MS);
+  if (!decision.observation) return { echoed: false }; // too soon / nothing substantial → silence
+
+  const o = decision.observation;
+  const nowIso = new Date(nowMs).toISOString();
+  const ok = await postToTheRecord(voice.observerHeard(o.name, o.text));
+  if (!ok) return { echoed: false }; // failed post → leave it un-used + the high-water untouched to retry
+
+  await markObservationWeaponized(o.id, nowIso);
+  state.observer_last_ms = nowMs;
+  await writeState(state, nowIso);
+  await logEvent('info', 'showrunner.observer', `heard: echoed one utterance from ${o.name} (obs ${o.id})`);
+  return { echoed: true };
+}

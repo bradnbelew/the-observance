@@ -20,7 +20,8 @@ import {
   type Message,
 } from 'discord.js';
 import { config } from '../config.js';
-import { ensurePrologueIgnited, getPlayerByDiscordId, logEvent } from '../db/repo.js';
+import { ensurePrologueIgnited, getPlayerByDiscordId, insertObservation, logEvent } from '../db/repo.js';
+import { readSetting } from '../showrunner/state.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
 import { handleWhisper } from './commands/whisper.js';
@@ -160,6 +161,20 @@ client.on('messageCreate', async (message: Message) => {
         return;
       case 'silent':
         // ordinary chat, a true miss, an empty line, or a replay → say NOTHING.
+        // Observer Tier-1 capture (W4): ordinary chat is the material worth echoing — a puzzle answer
+        // lands in solved/withheld, so this never captures answers. Store verbatim ONLY when the global
+        // switch is on and the speaker is linked (gate 1); the per-player opt-out (gate 2) is enforced by
+        // the weaponizer. Fault-isolated — a capture stumble never touches the scan (silence-is-canon).
+        if (player) {
+          try {
+            const t = raw.trim();
+            if (t.length >= 4 && t.length <= 512 && (await readSetting<boolean>('observer_capture', false)) === true) {
+              await insertObservation({ mc_uuid: player.mc_uuid, source: 'discord', text: t, context: 'the-record' });
+            }
+          } catch {
+            /* a missing capture is always safer than a broken scan */
+          }
+        }
         return;
     }
   } catch (err) {

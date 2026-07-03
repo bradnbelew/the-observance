@@ -96,6 +96,11 @@ public final class ObservancePlugin extends JavaPlugin {
     //     config's tier0: block; consumed by the ComposureBeat. Rebuilt on reload. ---
     private volatile com.observance.watcher.tier0.Tier0Selector tier0Selector;
 
+    // --- OBSERVER TIER-1 (the "it heard you say it" words tier): the GLOBAL consent switch for chat
+    //     capture. Cached cheaply (refreshed on the async maint tick), NEVER read per-message. Defaults
+    //     to FALSE — zero capture until the operator sets the 'observer_capture' setting true. ---
+    private volatile boolean observerCaptureEnabled = false;
+
     // --- resource-pack load gate (MF-11): rune rendering is unsafe until the client applies the pack ---
     private com.observance.watcher.signal.ResourcePackTracker resourcePack;
 
@@ -380,7 +385,8 @@ public final class ObservancePlugin extends JavaPlugin {
         // Signal Tracker listeners (DESIGN §2.1 + §2.2) — pure tracking, no world effects.
         pm.registerEvents(new BlockBreakListener(signalTracker, rateLimiter, safety), this);
         pm.registerEvents(new DeathListener(this, signalTracker, safety), this);
-        pm.registerEvents(new ChatListener(signalTracker, safety), this);
+        pm.registerEvents(new ChatListener(
+                signalTracker, safety, supabase, this::observerCaptureEnabled), this);
         pm.registerEvents(new TerritoryListener(signalTracker, safety), this);
         pm.registerEvents(new CustomComplianceListener(
                 signalTracker, this::sites, rateLimiter, safety), this);
@@ -600,11 +606,16 @@ public final class ObservancePlugin extends JavaPlugin {
         scheduledTasks.add(scheduler.runAsyncTimerSafe(
                 "beat.poller", pollTicks, pollTicks, () -> poller.pollOnce()));
 
+        // Prime the OBSERVER TIER-1 global switch once at startup (async), so an already-enabled
+        // 'observer_capture' is honored without waiting a full maint cycle. Still defaults FALSE.
+        scheduler.runAsyncSafe("observer.capture.prime", this::refreshObserverCapture);
+
         // Offline-queue flush + rate-limiter prune — ASYNC, slower cadence.
         long maintTicks = 60L * 20L; // every 60s
         scheduledTasks.add(scheduler.runAsyncTimerSafe("maint", maintTicks, maintTicks, () -> {
             supabase.flushOfflineQueue();
             rateLimiter.prune();
+            refreshObserverCapture(); // OBSERVER TIER-1 global switch — cheap async refresh, never per-message
         }));
 
         // Companion reveal watcher — reads arc_state and flips companion_revealed once iss_caught (or
@@ -685,6 +696,29 @@ public final class ObservancePlugin extends JavaPlugin {
     public SitesConfig sites() { return sites; }
     public SupabaseClient supabase() { return supabase; }
     public Reveal reveal() { return reveal; }
+
+    /** OBSERVER TIER-1 global consent switch (cached). The {@link ChatListener} reads this cheaply on the
+     *  chat thread; it is refreshed off-thread by {@link #refreshObserverCapture()} on the maint cadence.
+     *  Defaults FALSE — no chat is captured until the operator flips the {@code observer_capture} setting. */
+    public boolean observerCaptureEnabled() { return observerCaptureEnabled; }
+
+    /**
+     * Refresh the cached {@code observer_capture} global switch from the {@code settings} table. ASYNC ONLY
+     * (does a DB read). Fail-CLOSED: any hiccup or unset value leaves capture OFF — a privacy-sensitive
+     * capture must never turn itself on by accident. Called on the slow maint tick, never per message.
+     */
+    private void refreshObserverCapture() {
+        boolean enabled = false;
+        try {
+            if (supabase != null && supabase.isConfigured()) {
+                var r = supabase.fetchSetting("observer_capture");
+                enabled = r.ok() && r.value() != null && r.value().asBoolean();
+            }
+        } catch (Throwable ignored) {
+            enabled = false; // fail-closed: never auto-enable capture on a DB error
+        }
+        this.observerCaptureEnabled = enabled;
+    }
     public RateLimiter rateLimiter() { return rateLimiter; }
 
     /** The Lens registry ("second sight"): beats register per-player gated displays here; the

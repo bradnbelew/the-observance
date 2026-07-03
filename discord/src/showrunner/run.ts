@@ -14,6 +14,7 @@ import { decideCustomReports, OBSERVE_AT, WARN_AT, LEFT_AT } from './customs.js'
 import { computeAutonomyGates, runAutonomyPasses } from './autonomy.run.js';
 import { materializeArchive } from './archive.run.js';
 import { runReportsPass } from './reports.run.js';
+import { runObserverPass } from './observer.run.js';
 import { readCustomViolations } from '../db/repo.js';
 import { readState } from './state.js';
 
@@ -75,6 +76,7 @@ async function main(): Promise<void> {
   // and is fully fault-isolated, so it can never abort the tick the spine already applied.
   let customs = { reported: 0, tolled: 0 };
   let reports = { reported: 0, staged: 0 };
+  let observer = { echoed: false };
   let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
   if (!snapshot.asleep) {
     try {
@@ -104,6 +106,13 @@ async function main(): Promise<void> {
     } catch (e) {
       console.error('[showrunner] reports pass error (isolated)', e);
     }
+    // Observer Tier-1 "it heard you" (W4): sparsely echo one grounded captured utterance. No-op unless
+    // the global observer_capture switch is on; consent + rate-limit enforced inside. Fault-isolated.
+    try {
+      observer = await runObserverPass();
+    } catch (e) {
+      console.error('[showrunner] observer pass error (isolated)', e);
+    }
   }
 
   console.log(
@@ -113,7 +122,7 @@ async function main(): Promise<void> {
     `graves=${autonomy.graves} herd=${autonomy.herdSpreads} forks=${autonomy.forksSet} ` +
     `cold=${autonomy.coldRestages} apparition=${autonomy.apparitionClaimed ? 1 : 0} ` +
     `theories=${autonomy.theoriesLocked} needle=${autonomy.keptNeedleGranted ? 1 : 0} relief=${autonomy.reliefPosted} ` +
-    `observed=${reports.reported}`,
+    `observed=${reports.reported} heard=${observer.echoed ? 1 : 0}`,
   );
 }
 
