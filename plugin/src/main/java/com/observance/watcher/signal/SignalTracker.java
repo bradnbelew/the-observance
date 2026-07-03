@@ -263,6 +263,7 @@ public final class SignalTracker {
         appendNum(b, "solo_mining_ratio", round3(s.soloMiningRatio())); b.append(',');
         appendNum(b, "deepest_y", s.deepestY()); b.append(',');
         appendNum(b, "forbidden_word_hits", s.forbiddenWordHits()); b.append(',');
+        appendNum(b, "lectern_reads", s.lecternReads()); b.append(',');
         appendNum(b, "chat_sentiment", round3(s.chatSentiment())); b.append(',');
         appendNum(b, "chat_messages", s.chatMessages()); b.append(',');
         appendBool(b, "first_ore_taken", s.firstOreThisSessionTaken()); b.append(',');

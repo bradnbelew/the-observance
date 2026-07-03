@@ -591,7 +591,7 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
 {
   const mb = (groupKey: string, name: string, o: Partial<MeasuredBehavior>): MeasuredBehavior => ({
     groupKey, name, hoardedScore: 0, soloMiningSeconds: 0, distanceFromGroup: 0, forbiddenWordHits: 0,
-    bowViolations: 0, darkHoursViolations: 0, ...o,
+    bowViolations: 0, darkHoursViolations: 0, lecternReads: 0, ...o,
   });
   const honored = new Map<string, number>([['p1:the_offering', 5]]);
 
@@ -620,6 +620,15 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   check('reports: the marker-passer is named silent',
     decidePersonalizedReports({ dossiers: compliance, reported: {}, mode: 'auto' }).reports
       .some((r) => r.name === 'orin' && r.habit === 'silent'));
+
+  // The 6th axis: the one who reads at the lecterns most is named `reads` (all six now measured).
+  const readers = buildObservationDossiers(
+    [mb('p1', 'mara', { lecternReads: 40 }), mb('p2', 'other', { lecternReads: 2 })],
+    new Map(),
+  );
+  check('reports: the lore-reader is named reads (6th axis live)',
+    decidePersonalizedReports({ dossiers: readers, reported: {}, mode: 'auto' }).reports
+      .some((r) => r.name === 'mara' && r.habit === 'reads'));
 
   // A FLAT group (identical behavior) names no one — the precision floor (a wrong "it knows you" is worse).
   const flat = buildObservationDossiers(

@@ -34,6 +34,7 @@ public final class SignalSnapshot {
     private final double soloMiningRatio;             // 0..1 fraction of sampled mining done alone
     private final int deepestY;                       // lowest Y a block was broken at this run
     private final long forbiddenWordHits;             // The Unspoken: count of forbidden chat words
+    private final long lecternReads;                  // The Reads: count of lectern/book reads (studies lore)
     private final double chatSentiment;               // running mean sentiment, -1..+1 (0 neutral)
     private final long chatMessages;
 
@@ -55,7 +56,7 @@ public final class SignalSnapshot {
                    long blocksMined, long oresMined, long deaths, long mobKills,
                    long soloMiningSeconds, long sessionPlaySeconds,
                    double hoardedScore, double distanceFromGroup, double soloMiningRatio,
-                   int deepestY, long forbiddenWordHits, double chatSentiment, long chatMessages,
+                   int deepestY, long forbiddenWordHits, long lecternReads, double chatSentiment, long chatMessages,
                    String lastWorld, int lastX, int lastY, int lastZ, long lastLocationMs,
                    boolean firstOreThisSessionTaken, boolean offeringHonoredThisSession,
                    Map<String, ComplianceTally> compliance) {
@@ -72,6 +73,7 @@ public final class SignalSnapshot {
         this.soloMiningRatio = soloMiningRatio;
         this.deepestY = deepestY;
         this.forbiddenWordHits = forbiddenWordHits;
+        this.lecternReads = lecternReads;
         this.chatSentiment = chatSentiment;
         this.chatMessages = chatMessages;
         this.lastWorld = lastWorld;
@@ -104,6 +106,9 @@ public final class SignalSnapshot {
 
     public int deepestY() { return deepestY; }
     public long forbiddenWordHits() { return forbiddenWordHits; }
+
+    /** Count of lectern/book reads — the player studying the lore (The Reads habit axis). */
+    public long lecternReads() { return lecternReads; }
 
     /** Running mean chat sentiment, clamped -1..+1 (0 = neutral / unknown). */
     public double chatSentiment() { return chatSentiment; }

@@ -285,15 +285,16 @@ export interface MeasuredBehavior {
   bowViolations: number;
   /** measured violations of the_dark_hours — active on the black moon (the `night-walks` axis; compliance). */
   darkHoursViolations: number;
+  /** lectern reads — studies the lore (the `reads` axis; from the dossier's lectern_reads). */
+  lecternReads: number;
 }
 
 /**
- * The chorus axes buildObservationDossiers scores. Five of the six are measured today: hoards / wanders /
- * spends-words from the dossier, plus silent / night-walks derived from custom_compliance VIOLATIONS (the
- * player who most passes markers uncrouched / most walks the black moon). `reads` awaits a lectern-idle
- * signal (the last unmeasured axis) — the policy knows it; the scorer does not yet feed it.
+ * ALL SIX chorus axes are measured now: hoards / wanders / spends-words from the dossier, silent /
+ * night-walks derived from custom_compliance VIOLATIONS (most passes markers uncrouched / most walks the
+ * black moon), and reads from the dossier's lectern_reads (studies the lore). The full "it knows you".
  */
-const SCORED_AXES: readonly HabitAxis[] = ['hoards', 'wanders', 'spends-words', 'silent', 'night-walks'];
+const SCORED_AXES: readonly HabitAxis[] = ['hoards', 'wanders', 'spends-words', 'silent', 'night-walks', 'reads'];
 
 /** The raw per-player signal for each scored axis (higher = more of that habit). Pure. */
 function rawSignal(b: MeasuredBehavior, axis: HabitAxis): number {
@@ -303,6 +304,7 @@ function rawSignal(b: MeasuredBehavior, axis: HabitAxis): number {
     case 'spends-words': return Math.max(0, b.forbiddenWordHits);
     case 'silent': return Math.max(0, b.bowViolations);         // passes the markers without the bow
     case 'night-walks': return Math.max(0, b.darkHoursViolations); // moves under the black moon
+    case 'reads': return Math.max(0, b.lecternReads);           // studies the lore at the lecterns
     default: return 0;
   }
 }

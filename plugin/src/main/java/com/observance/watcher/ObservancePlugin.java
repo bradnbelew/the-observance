@@ -22,6 +22,7 @@ import com.observance.watcher.signal.listener.CustomComplianceListener;
 import com.observance.watcher.signal.listener.DarkHoursListener;
 import com.observance.watcher.signal.listener.DeathListener;
 import com.observance.watcher.signal.listener.IgnitionListener;
+import com.observance.watcher.signal.listener.LecternReadListener;
 import com.observance.watcher.signal.listener.TerritoryListener;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Reveal;
@@ -100,6 +101,13 @@ public final class ObservancePlugin extends JavaPlugin {
     //     capture. Cached cheaply (refreshed on the async maint tick), NEVER read per-message. Defaults
     //     to FALSE — zero capture until the operator sets the 'observer_capture' setting true. ---
     private volatile boolean observerCaptureEnabled = false;
+
+    // --- SURFACE-TOWNSFOLK arc echo: whether the group has caught Iss / found the dead shrine
+    //     ({@code flags.iss_caught}). Cached cheaply (refreshed on the async maint tick), NEVER read
+    //     per-click — mirrors {@link #observerCaptureEnabled}. Fail-CLOSED (defaults FALSE): the
+    //     townsfolk lane is otherwise arc-agnostic, so with no flag / a DB hiccup Old Pell keeps his
+    //     existing conduct greet. Only used to colour ONE authored greet (old-pell.greet.iss_cold). ---
+    private volatile boolean issCaught = false;
 
     // --- resource-pack load gate (MF-11): rune rendering is unsafe until the client applies the pack ---
     private com.observance.watcher.signal.ResourcePackTracker resourcePack;
@@ -388,6 +396,8 @@ public final class ObservancePlugin extends JavaPlugin {
         pm.registerEvents(new ChatListener(
                 signalTracker, safety, supabase, this::observerCaptureEnabled), this);
         pm.registerEvents(new TerritoryListener(signalTracker, safety), this);
+        // The Reads axis (Tier-0 "studies the lore"): opening a lectern/book bumps lectern_reads.
+        pm.registerEvents(new LecternReadListener(signalTracker, rateLimiter, safety), this);
         pm.registerEvents(new CustomComplianceListener(
                 signalTracker, this::sites, rateLimiter, safety), this);
         // The Dark Hours custom — sleeping on a taboo moon phase is a tracked violation
@@ -426,7 +436,7 @@ public final class ObservancePlugin extends JavaPlugin {
         // register, no showrunner round-trip, touches no arc_state / flag graph / oracle. Inert until a
         // tagged townsfolk body exists (spawned via /observance townsfolk spawn).
         this.townsfolkListener = new com.observance.watcher.signal.listener.TownsfolkNpcListener(
-                townsfolk, signalTracker, rateLimiter, scheduler, safety, supabase, this::sites);
+                townsfolk, signalTracker, rateLimiter, scheduler, safety, supabase, this::sites, this::issCaught);
         pm.registerEvents(townsfolkListener, this);
 
         // The Accepting — the TERMINAL group rite (MF-8). A synchronized group bow on the
@@ -610,12 +620,17 @@ public final class ObservancePlugin extends JavaPlugin {
         // 'observer_capture' is honored without waiting a full maint cycle. Still defaults FALSE.
         scheduler.runAsyncSafe("observer.capture.prime", this::refreshObserverCapture);
 
+        // Prime the SURFACE-TOWNSFOLK iss_caught arc echo once at startup (async), so Old Pell's
+        // iss_cold greet is honored without waiting a full maint cycle. Still defaults FALSE.
+        scheduler.runAsyncSafe("townsfolk.iss.prime", this::refreshIssCaught);
+
         // Offline-queue flush + rate-limiter prune — ASYNC, slower cadence.
         long maintTicks = 60L * 20L; // every 60s
         scheduledTasks.add(scheduler.runAsyncTimerSafe("maint", maintTicks, maintTicks, () -> {
             supabase.flushOfflineQueue();
             rateLimiter.prune();
             refreshObserverCapture(); // OBSERVER TIER-1 global switch — cheap async refresh, never per-message
+            refreshIssCaught();       // SURFACE-TOWNSFOLK iss_caught echo — cheap async refresh, never per-click
         }));
 
         // Companion reveal watcher — reads arc_state and flips companion_revealed once iss_caught (or
@@ -718,6 +733,33 @@ public final class ObservancePlugin extends JavaPlugin {
             enabled = false; // fail-closed: never auto-enable capture on a DB error
         }
         this.observerCaptureEnabled = enabled;
+    }
+
+    /** Whether the group has caught Iss / found the dead shrine ({@code arc_state.flags.iss_caught}),
+     *  cached. The {@link com.observance.watcher.signal.listener.TownsfolkNpcListener} reads this
+     *  cheaply on the click thread; it is refreshed off-thread by {@link #refreshIssCaught()} on the
+     *  maint cadence. Defaults FALSE — Old Pell keeps his conduct greet until the flag is truly set. */
+    public boolean issCaught() { return issCaught; }
+
+    /**
+     * Refresh the cached {@code iss_caught} arc flag from {@code arc_state}. ASYNC ONLY (does a DB read).
+     * Fail-CLOSED: any hiccup or unset value leaves it FALSE — the townsfolk lane stays arc-agnostic
+     * (its pre-existing conduct behaviour) rather than falsely echoing the dead shrine. Called on the
+     * slow maint tick, never per click. Mirrors {@link #refreshObserverCapture()}.
+     */
+    private void refreshIssCaught() {
+        boolean caught = false;
+        try {
+            if (supabase != null && supabase.isConfigured()) {
+                var r = supabase.fetchArcState();
+                if (r != null && r.ok() && r.value() != null) {
+                    caught = truthyFlag(r.value().flagsMap().get("iss_caught"));
+                }
+            }
+        } catch (Throwable ignored) {
+            caught = false; // fail-closed: never echo the dead shrine on a DB error
+        }
+        this.issCaught = caught;
     }
     public RateLimiter rateLimiter() { return rateLimiter; }
 

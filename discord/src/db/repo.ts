@@ -344,6 +344,8 @@ export interface DossierRead {
   distanceFromGroup: number;
   /** times the player has spoken the forbidden word (the Iss/spends-words signal), parsed from `extra`. */
   forbiddenWordHits: number;
+  /** lectern reads — studies the lore (the Mara/reads signal), parsed from `extra.lectern_reads`. */
+  lecternReads: number;
 }
 
 /**
@@ -364,10 +366,12 @@ export async function readDossiers(): Promise<DossierRead[]> {
         const groupKey = typeof r.mc_uuid === 'string' ? r.mc_uuid : '';
         const name = typeof r.name === 'string' && r.name.trim() !== '' ? r.name : null;
         let forbiddenWordHits = 0;
+        let lecternReads = 0;
         if (typeof r.extra === 'string' && r.extra.trim() !== '') {
           try {
             const e = JSON.parse(r.extra) as Record<string, unknown>;
             forbiddenWordHits = num(e.forbidden_word_hits) ?? 0;
+            lecternReads = num(e.lectern_reads) ?? 0;
           } catch { /* malformed extra → 0, never throw */ }
         }
         return {
@@ -377,6 +381,7 @@ export async function readDossiers(): Promise<DossierRead[]> {
           hoardedScore: num(r.hoarded_score) ?? 0,
           distanceFromGroup: Math.max(0, num(r.distance_from_group) ?? 0),
           forbiddenWordHits,
+          lecternReads,
         };
       })
       .filter((r) => r.groupKey !== '');

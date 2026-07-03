@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
@@ -175,6 +176,8 @@ public final class TownsfolkNpcListener implements Listener {
                             "You. You’ve been down more than once and you come up the same every time. Same eyes. You don’t know what that’s worth. I do. Come here. Good. You’re still in there. Stay that way."},
                     new String[]{"old-pell.greet.cold",
                             "I’ve been watching you come and go. I watch everyone. And you — you’ve gone grey at the edges, the way they do, the way *they* did, and I’m not going to pretend I don’t see it to spare your feelings. I’m too old to lie about the grey."},
+                    new String[]{"old-pell.greet.iss_cold",
+                            "So you found the dead shrine. West and down, the cold hearth. I knew a man went looking for a road up at the bottom of a hole, and I knew what came back wearing him. You went where he went. I won’t ask if you came back as you. I’m watching to see."},
                     new String[]{"old-pell.greet.again",
                             "Sit if you like. Don’t sit if you don’t. I’m not lonely, I’m just old, the two get confused."},
                     new String[]{"old-pell.memory.kinds",
@@ -249,8 +252,9 @@ public final class TownsfolkNpcListener implements Listener {
             for (String[] pair : e.getValue()) {
                 String key = pair[0];
                 // The variant lines are reached only via tier resolution — never walked directly.
+                // (iss_cold is reached only via the cached iss_caught arc echo, not the cursor.)
                 if (key.endsWith(".greet.warm") || key.endsWith(".greet.cold")
-                        || key.endsWith(".react.bad")) continue;
+                        || key.endsWith(".greet.iss_cold") || key.endsWith(".react.bad")) continue;
                 // The quest PAYOFF is reached only by quest resolution (swapped in for the offer once
                 // the errand is done) — never walked directly, so it can't surface before it's earned.
                 if (key.endsWith(".quest.done")) continue;
@@ -343,9 +347,20 @@ public final class TownsfolkNpcListener implements Listener {
     private final SupabaseClient supabase;
     private final Supplier<SitesConfig> sitesSupplier;
 
+    /**
+     * CACHED arc echo: whether the group has caught Iss / found the dead shrine ({@code iss_caught}).
+     * Read off a plugin-side volatile that's refreshed on the maint timer (NEVER a per-click DB read),
+     * mirroring the Observer capture switch. Fail-CLOSED: a null supplier or a false read keeps the
+     * townsfolk lane arc-agnostic (its pre-existing conduct behaviour) — the ONE authored line it
+     * unlocks ({@code old-pell.greet.iss_cold}) is a specific acknowledgement of finding the dead
+     * shrine, spoken only when the arc actually says so.
+     */
+    private final BooleanSupplier issCaught;
+
     public TownsfolkNpcListener(TownsfolkNpc townsfolk, SignalTracker signals, RateLimiter rateLimiter,
                                 Scheduler scheduler, Safety safety,
-                                SupabaseClient supabase, Supplier<SitesConfig> sitesSupplier) {
+                                SupabaseClient supabase, Supplier<SitesConfig> sitesSupplier,
+                                BooleanSupplier issCaught) {
         this.townsfolk = townsfolk;
         this.signals = signals;
         this.rateLimiter = rateLimiter;
@@ -353,6 +368,7 @@ public final class TownsfolkNpcListener implements Listener {
         this.safety = safety;
         this.supabase = supabase;
         this.sitesSupplier = sitesSupplier;
+        this.issCaught = issCaught;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -394,6 +410,16 @@ public final class TownsfolkNpcListener implements Listener {
                 } else {
                     armQuest(p, q);                            // first hearing → offered/active
                 }
+            }
+
+            // Arc echo (Old Pell only): once the group has caught Iss / found the dead shrine, Pell's
+            // GREET becomes the specific narrative acknowledgement — it takes PRECEDENCE over the
+            // conduct WARM/COLD/NEUTRAL greet. Read from the CACHED flag (never a per-click DB read);
+            // fail-closed, so with no flag / no supplier the conduct greet below is unchanged.
+            if ("old-pell".equals(id) && key.endsWith(SLOT_GREET) && issCaughtCached()
+                    && TEXT.containsKey("old-pell.greet.iss_cold")) {
+                speak(p, id, TEXT.get("old-pell.greet.iss_cold"));
+                return;
             }
 
             // Conduct-skin: the greet + react slots are coloured by WHO THIS PLAYER IS BEING. Every
@@ -540,6 +566,20 @@ public final class TownsfolkNpcListener implements Listener {
      * </ul>
      * Degrades to NEUTRAL whenever the tracker or this player's signals are unavailable — never throws.
      */
+    /**
+     * The cached {@code iss_caught} arc echo, read fail-CLOSED: a null supplier or any throw returns
+     * false (the lane stays arc-agnostic). This is a cheap volatile read on the plugin side — NEVER a
+     * per-click DB round-trip (the plugin refreshes it off-thread on the maint timer).
+     */
+    private boolean issCaughtCached() {
+        if (issCaught == null) return false;
+        try {
+            return issCaught.getAsBoolean();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     private ConductTier conductTier(Player p) {
         if (signals == null || p == null) return ConductTier.NEUTRAL;
         PlayerSignals ps = signals.get(p.getUniqueId());

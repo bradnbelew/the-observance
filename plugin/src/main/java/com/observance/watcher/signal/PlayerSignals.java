@@ -32,6 +32,7 @@ public final class PlayerSignals {
     private double hoardedScore;
     private int deepestY = Integer.MAX_VALUE;     // sentinel "no block broken yet"
     private long forbiddenWordHits;
+    private long lecternReads;                     // The Reads axis: opened a lectern/book to study the lore
 
     // chat sentiment running mean (Welford-lite: keep sum + count)
     private double sentimentSum;
@@ -152,6 +153,12 @@ public final class PlayerSignals {
         dossierDirty = true;
     }
 
+    /** Record one lectern/book READ — the player studying the lore (The Reads habit axis). */
+    public synchronized void addLecternRead() {
+        lecternReads = sat(lecternReads + 1);
+        dossierDirty = true;
+    }
+
     /** Fold one chat message's sentiment (clamped -1..+1) into the running mean. */
     public synchronized void addChatSentiment(double sentiment) {
         double s = Double.isNaN(sentiment) ? 0.0 : Math.max(-1.0, Math.min(1.0, sentiment));
@@ -229,7 +236,7 @@ public final class PlayerSignals {
                 soloMiningSeconds, sessionPlaySeconds,
                 hoardedScore, distanceFromGroup, soloMiningRatio(),
                 deepestY == Integer.MAX_VALUE ? 0 : deepestY,
-                forbiddenWordHits, meanSentiment(), chatMessages,
+                forbiddenWordHits, lecternReads, meanSentiment(), chatMessages,
                 lastWorld, lastX, lastY, lastZ, lastLocationMs,
                 firstOreThisSessionTaken, offeringHonoredThisSession,
                 comp);
