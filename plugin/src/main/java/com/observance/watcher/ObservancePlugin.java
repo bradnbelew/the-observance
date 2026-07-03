@@ -89,6 +89,8 @@ public final class ObservancePlugin extends JavaPlugin {
     private SignalTracker signalTracker;
     private LocationSampler locationSampler;
     private InventoryScanner inventoryScanner;
+    // --- surface townsfolk lane (kept so its tracked-quest proximity sweep can be scheduled) ---
+    private com.observance.watcher.signal.listener.TownsfolkNpcListener townsfolkListener;
 
     // --- OBSERVER TIER-0 (BUILD-PLAN §13): the behavior-only "it knows you" selector. Built from the
     //     config's tier0: block; consumed by the ComposureBeat. Rebuilt on reload. ---
@@ -417,8 +419,9 @@ public final class ObservancePlugin extends JavaPlugin {
         // (greet first, then their rumor/truth/react lines cycled on repeat clicks). Ordinary human
         // register, no showrunner round-trip, touches no arc_state / flag graph / oracle. Inert until a
         // tagged townsfolk body exists (spawned via /observance townsfolk spawn).
-        pm.registerEvents(new com.observance.watcher.signal.listener.TownsfolkNpcListener(
-                townsfolk, signalTracker, rateLimiter, scheduler, safety), this);
+        this.townsfolkListener = new com.observance.watcher.signal.listener.TownsfolkNpcListener(
+                townsfolk, signalTracker, rateLimiter, scheduler, safety, supabase, this::sites);
+        pm.registerEvents(townsfolkListener, this);
 
         // The Accepting — the TERMINAL group rite (MF-8). A synchronized group bow on the
         // accepting_floor site posts the opaque token to the same oracle (never typeable). Config-driven;
@@ -627,6 +630,14 @@ public final class ObservancePlugin extends JavaPlugin {
         long invTicks = Math.max(20L, config.inventoryScanSeconds() * 20L);
         scheduledTasks.add(scheduler.runTimerSafe("sampler.inventory", invTicks, invTicks,
                 () -> inventoryScanner.scanTick()));
+
+        // Townsfolk tracked-quest proximity sweep — reads Bukkit sites/positions so MAIN thread.
+        // Light + cheap (only players with an ACTIVE quest are tested); rides the same cadence as the
+        // location sampler. Inert when no quest is armed. Never touches world blocks / arc_state / oracle.
+        if (townsfolkListener != null) {
+            scheduledTasks.add(scheduler.runTimerSafe("townsfolk.quest.completion", sampleTicks, sampleTicks,
+                    () -> townsfolkListener.completionTick()));
+        }
 
         // Dossier/compliance/heatmap flush — network I/O so ASYNC. Cadence = the presence
         // heartbeat (a sensible "write back what changed" rhythm).

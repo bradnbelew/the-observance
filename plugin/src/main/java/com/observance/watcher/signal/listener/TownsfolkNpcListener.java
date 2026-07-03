@@ -1,5 +1,9 @@
 package com.observance.watcher.signal.listener;
 
+import com.observance.watcher.config.Site;
+import com.observance.watcher.config.SitesConfig;
+import com.observance.watcher.data.SupabaseClient;
+import com.observance.watcher.data.rows.NpcQuestRow;
 import com.observance.watcher.npc.TownsfolkNpc;
 import com.observance.watcher.signal.PlayerSignals;
 import com.observance.watcher.signal.SignalTracker;
@@ -8,6 +12,9 @@ import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * THE SURFACE-TOWNSFOLK NPC LANE (Wave S-G). A player right-clicks one of the five townsfolk bodies
@@ -112,6 +120,8 @@ public final class TownsfolkNpcListener implements Listener {
                             "Keep your light. Above all the others, keep your light. That one she said like it mattered more than the rest put together, and she didn’t say things like that twice."},
                     new String[]{"wenna.quest.offer",
                             "Do me a kindness while you’re down there. There’s a little shelf-stall, sells nothing, kept lit for the dead — leave the crust there, not in your pocket. Gran’s gran kept that stall. I never can go myself. You’ll do it? Good."},
+                    new String[]{"wenna.quest.done",
+                            "You left it. At the dead-stall. I didn’t tell you where it was and you found it and you left the crust. You don’t know what that — no, you do, I think. I think you know exactly what that was."},
                     new String[]{"wenna.bye",
                             "Go on, love. The lamp’ll be lit for you. I mean that the ordinary way *and* the other way, if there is an other way, which I’ve never quite decided."}),
 
@@ -131,6 +141,8 @@ public final class TownsfolkNpcListener implements Listener {
                             "Keep one lamp more than you think you need. That’s not wisdom, that’s stock advice. The man with two lamps comes back to spend. The man with one comes back as a story. I’d rather you came back to spend."},
                     new String[]{"coll.quest.offer",
                             "You’re going down past where I go. Fine. Take this sealed jar to the third lamp on the Lamp-works stair — it’s been dark for years, some lampwright’s old stand, number’s worn off. Light it. I’ll knock the rope off your next bill. I don’t like a dark stand on my route, bad for trade."},
+                    new String[]{"coll.quest.done",
+                            "You lit it? The third one? Huh. It’s been dark longer than I’ve sold here. Rope’s free. And — nothing. Just. Good. A lit stand’s a lit stand."},
                     new String[]{"coll.bye",
                             "Buy and go. You know where I am. I’m always where the oil is."}),
 
@@ -239,6 +251,9 @@ public final class TownsfolkNpcListener implements Listener {
                 // The variant lines are reached only via tier resolution — never walked directly.
                 if (key.endsWith(".greet.warm") || key.endsWith(".greet.cold")
                         || key.endsWith(".react.bad")) continue;
+                // The quest PAYOFF is reached only by quest resolution (swapped in for the offer once
+                // the errand is done) — never walked directly, so it can't surface before it's earned.
+                if (key.endsWith(".quest.done")) continue;
                 keys.add(key);
             }
             out.put(e.getKey(), java.util.List.copyOf(keys));
@@ -255,6 +270,63 @@ public final class TownsfolkNpcListener implements Listener {
         return Map.copyOf(out);
     }
 
+    /* ================================================================== */
+    /*  THE TRACKED QUESTS (Wave S-G — two surface errands the world remembers) */
+    /* ================================================================== */
+    /*
+     * Two townsfolk offer a small errand and the world remembers whether you did it. A quest is a
+     * per-player, MULTI-SESSION state machine: offered→active the first time the player hears the
+     * OFFER line, done when they later come within range of the errand's target site. It is DURABLE
+     * (npc_quests, keyed on the resolved players.id), lazily loaded into the in-memory map on first
+     * interaction, and PAID OFF the next time the player right-clicks that townsperson while done —
+     * the quest.done line is swapped in for the offer line so the errand isn't perpetually re-offered.
+     *
+     * SCOPE: dialogue + npc_quests + proximity ONLY. No world blocks, no arc_state, no oracle, no
+     * rumor-flip. Every DB touch is async/fire-and-forget + Safety-wrapped; a DB hiccup only means
+     * the quest isn't tracked that tick (the quest just isn't remembered — never a crash, never a block).
+     */
+
+    /**
+     * One tracked quest, wiring an OFFER line to its opaque {@code questKey} and the {@code sites.yml}
+     * site id whose proximity COMPLETES it. Both quests complete on arrival at a DEEP site:
+     * <ul>
+     *   <li>{@code wenna_crust} — the dead-stall kept lit for the dead → {@code stone_of_reckoning}
+     *       (the deep-market reckoning structure).</li>
+     *   <li>{@code coll_lamp} — "light the lamp" / the kept light → {@code unbroken_light} (the one
+     *       fire below that never went out — the kept light).</li>
+     * </ul>
+     */
+    private record Quest(String questKey, String offerKey, String doneKey, String siteId) { }
+
+    /** ~24-block completion radius (squared) around the quest's target site. */
+    private static final double COMPLETE_RADIUS = 24.0;
+    private static final double COMPLETE_RADIUS_2 = COMPLETE_RADIUS * COMPLETE_RADIUS;
+
+    /** Offer-key → quest, so an offer line spoken can arm its quest cheaply. */
+    private static final Map<String, Quest> QUESTS_BY_OFFER = Map.of(
+            "wenna.quest.offer", new Quest("wenna_crust", "wenna.quest.offer",
+                    "wenna.quest.done", "stone_of_reckoning"),
+            "coll.quest.offer", new Quest("coll_lamp", "coll.quest.offer",
+                    "coll.quest.done", "unbroken_light"));
+
+    /** Townsperson-id → its quest (so a click can find whether that npc has a payoff owed). */
+    private static final Map<String, Quest> QUESTS_BY_NPC = Map.of(
+            "wenna", QUESTS_BY_OFFER.get("wenna.quest.offer"),
+            "coll", QUESTS_BY_OFFER.get("coll.quest.offer"));
+
+    /**
+     * Per-player quest state, mirroring the {@link #cursors} ConcurrentHashMap idiom so the proximity
+     * check is a cheap in-memory read (no DB round-trip per tick). Keyed by
+     * {@code playerUuid + ":" + questKey}; value is the last-known {@link QuestState}. Populated on
+     * offer, flipped to DONE on completion, and LAZILY loaded from npc_quests on first interaction.
+     * Unknown ⇒ NOT_OFFERED (a re-offer is harmless + idempotent).
+     */
+    private enum QuestState { NOT_OFFERED, ACTIVE, DONE }
+    private final Map<String, QuestState> questStates = new ConcurrentHashMap<>();
+
+    /** Players whose durable quest state has been lazily loaded this session (load-once guard). */
+    private final java.util.Set<UUID> questLoaded = ConcurrentHashMap.newKeySet();
+
     /**
      * Per-player, per-townsperson conversation cursor: how many utterances this player has already heard
      * from this townsperson. The next click speaks index {@code cursor % size}, then increments. Keyed by
@@ -268,14 +340,19 @@ public final class TownsfolkNpcListener implements Listener {
     private final RateLimiter rateLimiter;
     private final Scheduler scheduler;
     private final Safety safety;
+    private final SupabaseClient supabase;
+    private final Supplier<SitesConfig> sitesSupplier;
 
     public TownsfolkNpcListener(TownsfolkNpc townsfolk, SignalTracker signals, RateLimiter rateLimiter,
-                                Scheduler scheduler, Safety safety) {
+                                Scheduler scheduler, Safety safety,
+                                SupabaseClient supabase, Supplier<SitesConfig> sitesSupplier) {
         this.townsfolk = townsfolk;
         this.signals = signals;
         this.rateLimiter = rateLimiter;
         this.scheduler = scheduler;
         this.safety = safety;
+        this.supabase = supabase;
+        this.sitesSupplier = sitesSupplier;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -296,16 +373,156 @@ public final class TownsfolkNpcListener implements Listener {
             String cdKey = "townsfolk:" + p.getUniqueId() + ":" + id;
             if (!rateLimiter.tryCooldown(cdKey, OPEN_COOLDOWN_MS)) return;
 
+            // Quest lane: lazily load this player's durable quest state on first interaction (so a
+            // done errand pays off across a restart), then decide whether this npc owes a payoff.
+            lazyLoadQuests(p);
+
             // Advance the per-player conversation cursor for this townsperson and pick the source-key.
             String curKey = p.getUniqueId() + ":" + id;
             int idx = cursors.getOrDefault(curKey, 0);
             String key = cycle.get(idx % cycle.size());
             cursors.put(curKey, idx + 1);
 
+            // Quest resolution: when the cursor would speak an OFFER line, swap in the quest.done PAYOFF
+            // if this player has already completed that errand — so the world acknowledges the deed and
+            // the offer stops being the "new" thing. Otherwise, speaking the offer ARMS the quest.
+            Quest q = QUESTS_BY_OFFER.get(key);
+            if (q != null) {
+                QuestState st = questStates.getOrDefault(questStateKey(p.getUniqueId(), q), QuestState.NOT_OFFERED);
+                if (st == QuestState.DONE) {
+                    key = q.doneKey();                         // pay off the return, not re-offer
+                } else {
+                    armQuest(p, q);                            // first hearing → offered/active
+                }
+            }
+
             // Conduct-skin: the greet + react slots are coloured by WHO THIS PLAYER IS BEING. Every
             // other slot is spoken verbatim. Neutral (and any missing data) keeps the back-compat line.
             String line = resolve(id, key, conductTier(p));
             speak(p, id, line);
+        });
+    }
+
+    /* ================================================================== */
+    /*  Quest mechanics — offer, lazy-load, proximity completion            */
+    /* ================================================================== */
+
+    /** In-memory quest-state map key: {@code playerUuid + ":" + questKey}. */
+    private static String questStateKey(UUID uuid, Quest q) {
+        return uuid + ":" + q.questKey();
+    }
+
+    /**
+     * Arm a quest the first time its OFFER line is spoken: mark it ACTIVE in memory (so the proximity
+     * check is cheap) and durably upsert {@code npc_quests(...,'active')} — but only if it isn't
+     * already active/done (idempotent; never re-offer a live or finished errand). The DB write resolves
+     * mc_uuid → players.id off-thread and is fire-and-forget; a failure just means it isn't remembered
+     * this tick (the in-memory flag still drives completion for the session).
+     */
+    private void armQuest(Player p, Quest q) {
+        if (p == null || q == null) return;
+        String stKey = questStateKey(p.getUniqueId(), q);
+        QuestState st = questStates.getOrDefault(stKey, QuestState.NOT_OFFERED);
+        if (st == QuestState.ACTIVE || st == QuestState.DONE) return;   // already tracked — no re-offer
+        questStates.put(stKey, QuestState.ACTIVE);
+        upsertQuestAsync(p.getUniqueId(), q.questKey(), "active");
+    }
+
+    /**
+     * Lazily hydrate a player's durable quest states into the in-memory map, ONCE per session, on
+     * their first townsfolk interaction. Async (resolves players.id + reads npc_quests off-thread);
+     * degrades silently — on any DB failure the player is simply treated as not-offered (a re-offer is
+     * harmless + idempotent). Only fills states we don't already have locally, so a live-session flip
+     * (offered/done just now) is never clobbered by a stale read.
+     */
+    private void lazyLoadQuests(Player p) {
+        if (p == null || supabase == null) return;
+        final UUID uuid = p.getUniqueId();
+        if (!questLoaded.add(uuid)) return;               // already loaded (or in-flight) this session
+        scheduler.runAsyncSafe("townsfolk.quest.load", () -> {
+            var lookup = supabase.fetchPlayerByUuid(uuid.toString());
+            if (!lookup.ok() || lookup.value() == null) return;   // unknown player → leave as not-offered
+            var res = supabase.fetchQuestsForPlayer(lookup.value().id);
+            if (!res.ok() || res.value() == null) return;
+            for (NpcQuestRow row : res.value()) {
+                if (row == null || row.questKey == null || row.status == null) continue;
+                QuestState st = switch (row.status) {
+                    case "active", "offered" -> QuestState.ACTIVE;
+                    case "done" -> QuestState.DONE;
+                    default -> null;                      // 'failed' / unknown → not tracked here
+                };
+                if (st == null) continue;
+                // Don't clobber a state we already flipped locally this session.
+                questStates.putIfAbsent(uuid + ":" + row.questKey, st);
+            }
+        });
+    }
+
+    /**
+     * PERIODIC completion sweep (MAIN thread — reads Bukkit sites/positions). For each online player
+     * with an ACTIVE quest, if they're within {@link #COMPLETE_RADIUS} of that quest's target site,
+     * mark it done EXACTLY ONCE: flip the in-memory flag, durably upsert {@code npc_quests(...,'done')},
+     * and give a subtle, cold in-world acknowledgement (no quest-complete popup). Idempotent — a DONE
+     * quest is never re-completed. Registered as a light timer by the plugin (mirrors the location
+     * sampler); the whole body is Safety-wrapped, so a quirk never aborts the sweep.
+     */
+    public void completionTick() {
+        safety.run("townsfolk.quest.completionTick", () -> {
+            if (questStates.isEmpty()) return;
+            SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
+            if (sites == null) return;
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p == null || !p.isOnline()) continue;
+                Location loc = p.getLocation();
+                if (loc == null || loc.getWorld() == null) continue;
+                for (Quest q : QUESTS_BY_NPC.values()) {
+                    String stKey = questStateKey(p.getUniqueId(), q);
+                    if (questStates.get(stKey) != QuestState.ACTIVE) continue;   // only live errands
+                    Site site = sites.get(q.siteId());
+                    if (site == null) continue;
+                    Location center = site.location();      // null if unplaced / world unloaded
+                    if (center == null || !center.getWorld().equals(loc.getWorld())) continue;
+                    double dx = center.getX() - loc.getX();
+                    double dz = center.getZ() - loc.getZ();
+                    if (dx * dx + dz * dz > COMPLETE_RADIUS_2) continue;
+                    completeQuest(p, q, stKey);
+                }
+            }
+        });
+    }
+
+    /**
+     * Fire a quest's completion ONCE: flip in-memory ACTIVE→DONE (the flip itself is the idempotency
+     * guard — a second arrival finds DONE and skips), durably record it, and give an understated, cold
+     * acknowledgement (a faint sound + a small subtitle — NOT a quest-complete banner). The subtitle is
+     * lore-agnostic ("the world remembers"); the townsperson's own {@code quest.done} words wait for the
+     * return visit.
+     */
+    private void completeQuest(Player p, Quest q, String stKey) {
+        // Atomic single-fire: only the transition ACTIVE→DONE proceeds.
+        if (questStates.replace(stKey, QuestState.ACTIVE, QuestState.DONE)) {
+            upsertQuestAsync(p.getUniqueId(), q.questKey(), "done");
+            // Understated acknowledgement — cold, small, no popup.
+            try {
+                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_SNARE, 0.35f, 0.6f);
+                p.sendActionBar(Component.text("The world remembers.", NamedTextColor.DARK_GRAY));
+            } catch (Throwable ignored) {
+                // Cosmetic only — never let an acknowledgement quirk undo the recorded completion.
+            }
+        }
+    }
+
+    /**
+     * Fire-and-forget durable quest write: resolve mc_uuid → players.id off-thread, then
+     * upsert {@code npc_quests(player_id, quest_key, status)}. Safety-wrapped; a DB failure is queued by
+     * the client (or silently dropped when unconfigured), never blocking the main thread or throwing.
+     */
+    private void upsertQuestAsync(UUID uuid, String questKey, String status) {
+        if (supabase == null || uuid == null) return;
+        scheduler.runAsyncSafe("townsfolk.quest.upsert", () -> {
+            var lookup = supabase.fetchPlayerByUuid(uuid.toString());
+            if (!lookup.ok() || lookup.value() == null) return;   // no players row → can't key the FK
+            supabase.upsertQuest(new NpcQuestRow(lookup.value().id, questKey, status));
         });
     }
 

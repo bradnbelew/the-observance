@@ -12,6 +12,7 @@ import com.observance.watcher.data.rows.CustomComplianceRow;
 import com.observance.watcher.data.rows.DossierRow;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.data.rows.HeatmapCellRow;
+import com.observance.watcher.data.rows.NpcQuestRow;
 import com.observance.watcher.data.rows.PlayerLookupRow;
 import com.observance.watcher.data.rows.PlayerRow;
 import com.observance.watcher.data.rows.PuzzleRow;
@@ -78,6 +79,8 @@ public final class SupabaseClient {
             new TypeToken<List<PuzzleRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_PLAYER_LOOKUP =
             new TypeToken<List<PlayerLookupRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_NPC_QUEST =
+            new TypeToken<List<NpcQuestRow>>() {}.getType();
 
     private record QueuedWrite(String description, Supplier<SupabaseResult<Void>> attempt) { }
 
@@ -127,6 +130,16 @@ public final class SupabaseClient {
     /** Upsert a heatmap cell (world,cell_x,cell_z conflict target). */
     public SupabaseResult<Void> upsertHeatmapCell(HeatmapCellRow row) {
         return upsert("heatmap_cells", "world,cell_x,cell_z", row, "upsertHeatmapCell");
+    }
+
+    /**
+     * Upsert a townsfolk quest row — the offer → active → done errand state (Wave S-G).
+     * Conflict target is {@code (player_id, quest_key)} (the table's unique index), so re-writing the
+     * same quest at a new status merges rather than duplicates. {@code player_id} must be the resolved
+     * {@code players.id} (see {@link #fetchPlayerByUuid}), never the raw mc_uuid. Queues on failure.
+     */
+    public SupabaseResult<Void> upsertQuest(NpcQuestRow row) {
+        return upsert("npc_quests", "player_id,quest_key", row, "upsertQuest");
     }
 
     /**
@@ -246,6 +259,27 @@ public final class SupabaseClient {
         List<ArcStateRow> list = r.value();
         ArcStateRow first = (list == null || list.isEmpty()) ? null : list.get(0);
         return SupabaseResult.ok(r.httpStatus(), first);
+    }
+
+    /**
+     * Read a player's townsfolk quest rows (offer/active/done state) by resolved {@code players.id}.
+     * Used to LAZILY LOAD a player's quest states into the listener's in-memory map on first
+     * interaction, so the payoff line survives a restart. Mirrors {@link #fetchActionableBeats}: same
+     * async/graceful contract — returns an empty list on ANY failure (never null, never throws), and
+     * an unloaded player is simply treated as not-offered (a re-offer is harmless + idempotent).
+     */
+    public SupabaseResult<List<NpcQuestRow>> fetchQuestsForPlayer(String playerId) {
+        if (!config.isConfigured() || playerId == null || playerId.isBlank()) {
+            return SupabaseResult.ok(0, Collections.emptyList());
+        }
+        String q = "select=player_id,quest_key,status"
+                + "&player_id=eq." + enc(playerId.trim());
+        SupabaseResult<List<NpcQuestRow>> r =
+                doRead("npc_quests", q, LIST_NPC_QUEST, "fetchQuestsForPlayer");
+        if (!r.ok() || r.value() == null) {
+            return SupabaseResult.ok(r.httpStatus(), Collections.emptyList());
+        }
+        return r;
     }
 
     /* ==================================================================== */
