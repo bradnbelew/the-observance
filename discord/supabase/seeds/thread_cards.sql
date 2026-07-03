@@ -229,15 +229,15 @@ values
   -- ========================================================================
   ( 'gather-count-who', 'who', 'named in the same book', 'cardGatherCountWho',
     'unbroken_light', 'verified',
-    '{}', null, null, 100 ),
+    '{}', null, 'flag:count_done', 100 ),
 
   ( 'gather-count-happened', 'happened', 'the count predates you', 'cardGatherCountHappened',
     'unbroken_light', 'verified',
-    '{}', null, null, 100 ),
+    '{}', null, 'flag:count_done', 100 ),
 
   ( 'gather-unlight-surface', 'surface', 'the same hands, the last winter', 'cardGatherUnlightSurface',
     'unbroken_light', 'verified',
-    '{}', null, null, 100 ),
+    '{}', null, 'flag:unlight_done', 100 ),
 
   ( 'gather-dob-human', 'human', 'a witness, not a monster', 'cardGatherDobHuman',
     'unbroken_light', 'verified',

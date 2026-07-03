@@ -165,6 +165,14 @@ export const archive: Record<string, string> = {
   cardHumanYouAreNext:
     'six were kept before you. the count of them is kept. a file is kept until it is opened. a hand is kept after. the struck row is not a row that failed to fill. it is the row that fills last.',
 
+  // ===== the deep lanes (Nether origin · End exile) — cards under `who`, revealed on the on-site
+  // read when the lanes are built + activated. Dangling body_voice_keys for who-deep-forge /
+  // who-seventh-out in progression_seed.sql; authored here so the cards are not blank on arrival. =====
+  cardNetherForge:
+    'the kept light was not lit. it was carried. carried up from the deep fire that needs no hand, that was burning before the first course was laid. the record keeps one entry from below the line: a name, entered in the offering column and never struck, kept even. someone called it a keeper. the fire does not call itself anything.',
+  cardEndSeventhOut:
+    'cast out is not the same as taken. the taken are kept — named, columned, even. the seventh is not in the record because the seventh cut the name out first. their own hand, their own name, before the record could keep it. there is a place the unwriting could not reach, because there was nothing left there to unwrite. the name i cut myself, the leaf reads, is the one name that was ever mine.',
+
   // -------------------------------------------------------------------------
   // GATHER-EVENTS (design/content/gather-events.md §7) — the `gather.*` block.
   // The #the-record Discord lines + in-world beat text + thread_card bodies.
