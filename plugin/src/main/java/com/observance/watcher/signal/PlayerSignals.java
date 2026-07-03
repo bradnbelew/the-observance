@@ -266,6 +266,21 @@ public final class PlayerSignals {
                 : new SignalSnapshot.ComplianceTally(t.honored, t.violated, t.lastEventMs);
     }
 
+    /**
+     * Total honored / violated summed across ALL the ways this player has a tally for — the
+     * whole-conduct read that surface townsfolk (e.g. Old Pell) use to judge who the player is
+     * being at human scale. Returned as a {@code long[]{honored, violated}}, saturating, never
+     * null. Cheap counter read under the same lock as the mutators, so it is a consistent pair.
+     */
+    public synchronized long[] complianceTotals() {
+        long honored = 0, violated = 0;
+        for (Tally t : compliance.values()) {
+            honored = sat(honored + t.honored);
+            violated = sat(violated + t.violated);
+        }
+        return new long[]{honored, violated};
+    }
+
     /* ----------------------- internals ------------------------------- */
 
     /** Saturating increment guard: counters stay non-negative and never wrap. */

@@ -418,7 +418,7 @@ public final class ObservancePlugin extends JavaPlugin {
         // register, no showrunner round-trip, touches no arc_state / flag graph / oracle. Inert until a
         // tagged townsfolk body exists (spawned via /observance townsfolk spawn).
         pm.registerEvents(new com.observance.watcher.signal.listener.TownsfolkNpcListener(
-                townsfolk, rateLimiter, scheduler, safety), this);
+                townsfolk, signalTracker, rateLimiter, scheduler, safety), this);
 
         // The Accepting — the TERMINAL group rite (MF-8). A synchronized group bow on the
         // accepting_floor site posts the opaque token to the same oracle (never typeable). Config-driven;
