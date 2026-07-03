@@ -291,6 +291,20 @@ public final class StructureTemplates {
         // inversion motif is authored (Wave R2 fills this label's lower lines).
         pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"the rosetta", "", "", ""});
+
+        // RESHAPE R2 fill (was "notation TBD"): the earned-literacy KEY made concrete. Three rune↔plaintext
+        // crib PAIRS on the clear way-mark pillars — the same word in runes over its plain letters — so the
+        // rosetta actually TEACHES the alphabet (the "oh, these are letters" turn), show-not-tell. Placed on
+        // the outward pillar face at eye level, physics-free so they persist. Not the abraded pillar (i==4).
+        String[] cribWords = {"KEPT", "STONE", "NAME"};
+        int[] cribPillars = {0, 1, 2};
+        for (int c = 0; c < cribWords.length; c++) {
+            int[] rp = ring[cribPillars[c]];
+            int px = cx + rp[0], pz = cz + rp[1];
+            BlockFace out = pen.toward(px, pz, cx, cz).getOppositeFace();
+            pen.runeCribPair(px + out.getModX(), cy + 1, pz + out.getModZ(), out,
+                    Material.DARK_OAK_WALL_SIGN, cribWords[c]);
+        }
         return answer;
     }
 
@@ -1460,6 +1474,36 @@ public final class StructureTemplates {
                     side.line(2, net.kyori.adventure.text.Component.empty());
                     side.line(3, net.kyori.adventure.text.Component.empty());
                     try { sign.setWaxed(true); } catch (Throwable ignored) { } // a carved label, never a slot
+                    try { sign.update(true, false); } catch (Throwable ignored) { }
+                }
+            } catch (Throwable ignored) { }
+        }
+
+        /**
+         * A RUNE-CRIB PAIR — the Rosetta key itself: one waxed wall-sign carrying the SAME word twice, the
+         * rune glyphs ({@code observance:runes}) on top and the plain letters below, so a player reads the
+         * mapping directly ("oh — these glyphs ARE letters"). This is the earned-literacy turn made concrete
+         * at the rosetta (the literacy gate); the rune-only {@link #runeCrib} is for practice elsewhere.
+         * Waxed → never a submission slot. Null/quirk-safe like the other sign helpers.
+         */
+        void runeCribPair(int x, int y, int z, BlockFace facing, Material wallSignMat, String word) {
+            if (world == null || word == null) return;
+            try {
+                Block b = world.getBlockAt(x, y, z);
+                Material mat = wallSignMat != null && wallSignMat.name().contains("WALL_SIGN")
+                        ? wallSignMat : Material.DARK_OAK_WALL_SIGN;
+                b.setType(mat, false);
+                if (b.getBlockData() instanceof Directional d) { d.setFacing(facing); b.setBlockData(d, false); }
+                if (b.getState() instanceof Sign sign) {
+                    var side = sign.getSide(Side.FRONT);
+                    net.kyori.adventure.text.Component glyphs = net.kyori.adventure.text.Component
+                            .text(word.toUpperCase(Locale.ROOT))
+                            .font(net.kyori.adventure.key.Key.key("observance", "runes"));
+                    side.line(0, net.kyori.adventure.text.Component.empty());
+                    side.line(1, glyphs);                                            // the runes (the unknown)
+                    side.line(2, net.kyori.adventure.text.Component.text(word.toLowerCase(Locale.ROOT))); // the key
+                    side.line(3, net.kyori.adventure.text.Component.empty());
+                    try { sign.setWaxed(true); } catch (Throwable ignored) { }
                     try { sign.update(true, false); } catch (Throwable ignored) { }
                 }
             } catch (Throwable ignored) { }

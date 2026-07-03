@@ -33,6 +33,8 @@ import { decidePrologue, measureOverwhelmingSignal, type CustomTally } from './p
 import { customPhrase } from '../voice.js';
 import { paceHerd, type HerdInput } from './herd.js';
 import { decideGrave, type GraveInput } from './grave.js';
+import { decideFate } from './fate.js';
+import { LEFT_AT } from './customs.js';
 import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
 import { bindAcceptingInstant, instantReached } from './clock.js';
 import { decideRelief } from './relief.js';
@@ -445,6 +447,49 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     if (comp.dirty) dirty = true;
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `companion error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- M5 FATE SENTINEL: decide the ending fate ONCE the Accepting instant is reached, set-once, so the
+  //     finale pass (below, same tick) has a fate to open with. The pure decideFate policy + the M5
+  //     composer were built to sit behind exactly this reader — it was the missing I/O leg (ending_fate
+  //     was never written, so the whole composed close never posted). INV-11: reads the ACTIVE-only
+  //     custom-compliance spread (never an absentee), returns an enum, names no player.
+  try {
+    if (acceptingInstantMs != null && instantReached(acceptingInstantMs, nowMs)
+        && typeof flags.ending_fate !== 'string') {
+      const activeKeys = new Set((await readActiveRoster(MASTERY_WINDOW_MS)).map((r) => r.groupKey));
+      // Aggregate custom-compliance per ACTIVE player (readCustomViolations is per player+custom).
+      const per = new Map<string, { honored: number; violated: number; maxViolatedOnAny: number }>();
+      for (const v of await readCustomViolations()) {
+        if (!activeKeys.has(v.groupKey)) continue; // active players only (never punish an absentee)
+        const acc = per.get(v.groupKey) ?? { honored: 0, violated: 0, maxViolatedOnAny: 0 };
+        acc.honored += v.honoredCount;
+        acc.violated += v.violatedCount;
+        acc.maxViolatedOnAny = Math.max(acc.maxViolatedOnAny, v.violatedCount);
+        per.set(v.groupKey, acc);
+      }
+      let honoredActive = 0, violatedActive = 0, leftAtActive = 0;
+      for (const acc of per.values()) {
+        if (acc.honored > acc.violated) honoredActive += 1;
+        else if (acc.violated > acc.honored) violatedActive += 1;
+        if (acc.maxViolatedOnAny >= LEFT_AT) leftAtActive += 1; // reached the cold rung on some custom
+      }
+      const decision = decideFate({
+        honoredActive,
+        violatedActive,
+        leftAtActive,
+        seventhFound: flags.seventh_named === true || flags.seventh_found === true,
+        issCaught: flags.iss_caught === true,
+        quorumMet: true, // the instant only binds post iss_caught+threshold_open; the bow enforces quorum
+        refusalSignal: flags.refusal_signal === true, // SECRET: only a plugin refusal rite sets this
+      });
+      await setArcFlags({ ending_fate: decision.fate });
+      flags.ending_fate = decision.fate; // so runFinalePass sees it THIS tick (no wait for the next)
+      dirty = true;
+      await logEvent('info', 'showrunner.autonomy', `fate: ${decision.fate} — ${decision.reason}`);
+    }
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `fate sentinel error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- M5 finale: post the composed close (fate + seventh_choice + fork leaves + reckoning_free cost)

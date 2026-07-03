@@ -53,6 +53,13 @@ values
     'stone_mara', 'explore',
     array['who-vaun-counted','who-sella-token'], 'stone-mara', null, 30 ),
 
+  -- Mara's second clue (W9 completeness): the rite she annotated but never walked — revealed when the
+  -- group WALKS it (mara-walk-the-map), which also gives that expansion puzzle its archive payoff. Gives
+  -- Mara the >=3-clue web the design bar asks for (who-mara-read + this + the marker she read).
+  ( 'happened-mara-unwalked', 'happened', 'the rite she read but never walked', 'cardHappenedMaraUnwalked',
+    'stone_mara', 'explore',
+    array['who-mara-read'], 'mara-walk-the-map', null, 35 ),
+
   ( 'who-sella-token', 'who', 'the under-warden', 'cardWhoSellaToken',
     'the_far_water', 'explore',
     array['who-mara-read','surface-seventh-marker'], 'stone-sella', null, 40 ),

@@ -14,7 +14,7 @@
  * Grounded · sparse · degrade to silence: a failed/empty pass simply says nothing.
  */
 import { readSetting, readState, writeState } from './state.js';
-import { readUnweaponizedObservations, markObservationWeaponized, logEvent } from '../db/repo.js';
+import { readUnweaponizedObservations, markObservationWeaponized, logEvent, getArcFlags } from '../db/repo.js';
 import { postToTheRecord } from './discord.js';
 import { decideWeaponization, MIN_QUOTE_LEN, type CapturedObservation } from './observer.js';
 import { selectSalientObservationId } from './observer.llm.js';
@@ -32,12 +32,32 @@ export async function runObserverPass(): Promise<{ echoed: boolean }> {
   const enabled = await readSetting<boolean>('observer_capture', false);
   if (enabled !== true) return { echoed: false }; // gate 1: master switch off → the whole tier is silent
 
+  const nowMs = Date.now();
+  const state = await readState();
+
+  // POST-RECKONING (OVERHAUL Pillar 5 — the sharp-quote consequence must be FELT). The group's reckoning
+  // changes the "it heard you" channel:
+  //   - condemn / free → the channel is GONE. Announce the quiet ONCE, then cease echoing forever.
+  //   - understand     → the echoes persist, but in the SORROW register (handled at the render step below).
+  const flags = await getArcFlags();
+  const condemned = flags.reckoning_condemn === true;
+  const freed = flags.reckoning_free === true;
+  const understood = flags.reckoning_understand === true;
+  if (condemned || freed) {
+    if (state.observer_silenced !== true) {
+      const ok = await postToTheRecord(voice.observerChannelGone());
+      if (ok) {
+        state.observer_silenced = true;
+        await writeState(state, new Date(nowMs).toISOString());
+        await logEvent('info', 'showrunner.observer', 'the channel closed (reckoning) — echoes cease');
+      }
+    }
+    return { echoed: false }; // the channel is gone — no more captured words are echoed
+  }
+
   const eligible: CapturedObservation[] = (await readUnweaponizedObservations()).map((o) => ({
     id: o.id, name: o.name, text: o.text, source: o.source, observedAtMs: o.observedAtMs,
   }));
-
-  const nowMs = Date.now();
-  const state = await readState();
   const decision = decideWeaponization(eligible, nowMs, state.observer_last_ms ?? null, OBSERVER_MIN_INTERVAL_MS);
   if (!decision.observation) return { echoed: false }; // too soon / nothing substantial → silence
 
@@ -53,8 +73,12 @@ export async function runObserverPass(): Promise<{ echoed: boolean }> {
     if (picked) o = picked;
   }
   const nowIso = new Date(nowMs).toISOString();
-  // voice captures echo in the "heard aloud" register — it did not only read, it listened.
-  const line = o.source === 'voice' ? voice.observerHeardAloud(o.name, o.text) : voice.observerHeard(o.name, o.text);
+  // Render register: post-reckoning UNDERSTAND → sorrow; a voice capture → "heard aloud"; else the read echo.
+  const line = understood
+    ? voice.observerHeardSorrow(o.name, o.text)
+    : o.source === 'voice'
+      ? voice.observerHeardAloud(o.name, o.text)
+      : voice.observerHeard(o.name, o.text);
   const ok = await postToTheRecord(line);
   if (!ok) return { echoed: false }; // failed post → leave it un-used + the high-water untouched to retry
 

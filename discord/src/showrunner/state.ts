@@ -74,6 +74,10 @@ export interface ShowrunnerState {
   /** W4 observer: epoch ms of the last "it heard you" echo (the sparse-rate high-water). */
   observer_last_ms?: number;
 
+  /** W9 observer: set once the channel is closed post-reckoning (condemn/free) so the "record goes
+   *  quiet" line is spoken exactly once and the echoes then cease. */
+  observer_silenced?: boolean;
+
   /** D4 liar: the Iss warm-beat ids already re-staged cold (one-way high-water). */
   liar_flipped?: string[];
 

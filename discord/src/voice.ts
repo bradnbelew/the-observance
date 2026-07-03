@@ -199,6 +199,24 @@ export const voice = {
   },
 
   /**
+   * OBSERVER — post-reckoning SORROW register (OVERHAUL Pillar 5). When the group chose to UNDERSTAND, the
+   * echoes do not stop, but the taking-note is gone from them; the same kept words are set down as grief,
+   * not as a hand on the shoulder. Same grounded `quote` (verbatim, never composed).
+   */
+  observerHeardSorrow(name: string, quote: string): string {
+    return `it still keeps what it hears, but softer now. the one called ${name} said: "${quote}". it holds the saying the way you hold a thing you could not keep.`;
+  },
+
+  /**
+   * OBSERVER — the channel closes (OVERHAUL Pillar 5). Spoken ONCE when the group's reckoning was to
+   * CONDEMN or to FREE: the "it heard you" listening ends, and the ending must be FELT. After this the
+   * record echoes no more captured words. A quiet, not a threat.
+   */
+  observerChannelGone(): string {
+    return `it does not listen for you anymore. the count is closed; the saying goes unkept from here. the record is quieter than it was, and that is the shape of it now.`;
+  },
+
+  /**
    * the whisper itself. tier shapes how plainly it speaks: a nudge first,
    * then the keeper's own words (the seeded hint body) for the rest.
    */

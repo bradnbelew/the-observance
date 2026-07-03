@@ -86,6 +86,8 @@ export const archive: Record<string, string> = {
     'the one called vaun kept eleven jars of oil and gave the deep none. he counted his three good lamps at night, twice, and wrote that the counting was a comfort and did not know why he wrote it. the second column of his ledger he scored deep and left empty his whole life.',
   cardWhoMaraRead:
     'the one called mara kept every lamp in the hold lit and read every rite by the one steady fire and walked none of them. she kept the child’s chore-token in the oil-jar drawer and would not spend it. she said: i never went down. i only ever read the way down.',
+  cardHappenedMaraUnwalked:
+    'the lampwright kept the descent rite in the ledger margin — page nine, the whole of it, turn for turn — and set her own hand against it: read, not walked. she lit the way down for the ones who went, and did not go. the square the group walked in the dark matches her margin, line for line. she had the way right. she only ever read it.',
   cardWhoSellaToken:
     'the under-warden. eight years old. she minded a lamp at the market for a token and kept her own light lit and counted things the grown ones would not count. she said the dark is only where the light is not yet. she said it the way her mother told her to.',
   cardWhoOrinMason:
