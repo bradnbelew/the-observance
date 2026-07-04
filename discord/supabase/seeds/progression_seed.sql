@@ -82,7 +82,10 @@ values
   ],
   'lore',
   jsonb_build_object(
-    'voice_key', 'nether.forgeArrive',
+    -- oracleLore speaks voice_args.fragment verbatim (the arrival text below). Was 'nether.forgeArrive'
+    -- (a phantom key the resolver doesn't map — it fell through to the lore fallback and worked anyway;
+    -- made explicit so a future outcome_type change can't silently drop the authored arrival line).
+    'voice_key', 'oracleLore',
     'set_flags', jsonb_build_object('nether_forge_found', true, 'whisper_budget_earned', true),
     'voice_args', jsonb_build_object(
       'fragment', 'a keeper came down to keep the fire and was kept by it. you do not make the fire. you do not own it. you carry it, and you do not let it die, and that is the whole of it. the kept light upstairs was a coal carried up from here.'
@@ -113,7 +116,8 @@ values
   ],
   'lore',
   jsonb_build_object(
-    'voice_key', 'end.shrineArrive',
+    -- oracleLore speaks voice_args.fragment verbatim (was 'end.shrineArrive', a phantom key; see nether-forge).
+    'voice_key', 'oracleLore',
     'set_flags', jsonb_build_object('seventh_seen_out', true),
     'voice_args', jsonb_build_object(
       'fragment', 'the seventh kept every way and was not kept, and went out past the door that is not a threshold, to the one place the record does not reach, and cut the name themselves. exile is the other side of keeping. you are not cast out. you only came to look.'

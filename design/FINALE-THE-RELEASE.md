@@ -12,7 +12,11 @@
 > - **Simulated death + kick.** The world visibly ends; everyone is kicked with the Seventh's last words as
 >   the disconnect message; **Paper stays running** (Ethan controls re-entry). **Kick, never ban.**
 >
-> Status: DESIGN + PROSE (this doc). Code + lockstep lore edits are the build phase — not yet done.
+> Status: **BUILT + GREEN (2026-07-03).** Composer (composeRelease + kick line) · run passes (reveal +
+> release) · the `the_closing` death/kick beat · the ReleaseRiteListener · `/observance finale` marker
+> placement · config.yml `closing.*` · lockstep lore reconcile (the-seventh-below coda). Every surface
+> green. Awaits only: Ethan's canon Seventh name (optional — signs off as its reclaimed title without one),
+> world-placement of the finale markers, and a playtest. See §8 for the go-live checklist.
 
 ---
 

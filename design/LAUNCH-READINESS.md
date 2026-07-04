@@ -37,6 +37,17 @@ make/apply, which the code already degrades around safely).
 
 ## 2. MANUAL go-live actions (yours — the code degrades safely until each is done)
 
+**THE RELEASE finale (design/FINALE-THE-RELEASE.md — BUILT 2026-07-03)**
+- [ ] `/observance finale` at the Seventh's chamber (`the_unwriting`) — places the 3 finale-rite markers
+      (seventh restore · seventh erase · the release). NOTE: this ALSO fixes a latent gap — nothing spawned
+      the Seventh-choice markers before either, so the old finale rite was unstageable too. Both fixed.
+- [ ] (optional) Set the Seventh's canon name — arc flag `seventh_name` or the `seventh_name` setting. Unset
+      → the release signs off as its reclaimed title ("the seventh, kept no longer"); ships fine without it.
+- [ ] (optional) `closing.whitelist-after: true` in config.yml if you want "nothing to come back to"
+      enforced (whitelist flips ON after the kick — reversible, NEVER a ban). Default: they can rejoin.
+- [ ] `closing.enabled` default true = full auto (world dies + kick). false = the farewell still posts, you
+      stage the kick by hand. Tune `closing.theater-seconds` (default 8) to taste.
+
 **Apply / deploy**
 - [ ] Apply the Supabase migrations to the live DB (both lineages, in order). Newest this push:
       `discord/0009_observations`, `dashboard/0009_beat_queue_failed_status` (idempotent), and the earlier
@@ -145,6 +156,27 @@ committed on this branch; everything re-verified green after each.
   is declared but the actual PDC key is hardcoded elsewhere (moot today since nothing writes the tag either
   way — the "cosmetic Pale" producer doesn't exist yet, same shape as the Unlit Deep gap); `SceneAwareness.java`
   (util) is unreferenced anywhere.
+
+**2026-07-03 (later) — THE RELEASE built + full-ARG playability audit.** Built the unified finale (see
+above / FINALE-THE-RELEASE.md). Then a from-scratch playability pass across ALL content (not just the
+spine), John's-POV:
+- **Producer-token coverage: CLEAN.** All 14 plugin-produced puzzles (hoard/bookshelf/lectern/group-walk/
+  shore/bow/frame-dials/black-moon/silence/vault/accepting/coop/seventh/release) have a registered listener
+  posting a token that byte-matches the seed's accepted_answer; the voice-tier `spine-spoken-name` token
+  matches too. The m4-three-hands-class bug (producer with no/mismatched token) does NOT recur anywhere.
+- **Reachability: CLEAN.** Every one of the 13 `requires_flags` gate keys has a writer (a puzzle set_flags
+  or a plugin listener) — no puzzle is unreachable for lack of a flag producer. The new finale chain
+  (bowed_as_one → reveal → record_released → ending_fate → the_closing) is fully wired end to end.
+- **Finale-marker gap: FIXED** (`/observance finale`) — both the release AND the pre-existing Seventh-choice
+  markers were unstageable (nothing spawned them); one command now places all three.
+- **Nether/End "phantom voice keys": FALSE ALARM, hardened.** The earlier consistency audit flagged
+  `nether.forgeArrive`/`end.shrineArrive` as non-existent keys that would speak nothing. Traced live: both
+  rows are `outcome_type: lore`, so the resolver's lore fallback reads their authored `voice_args.fragment`
+  verbatim — they always worked. Swapped the phantom keys for the real `oracleLore` key so it's explicit +
+  robust to a future edit.
+- **Still open (content enrichment, not blockers):** the 20 diverse-expansion puzzles carry NULL thread
+  tags (not clustered in the Recovery Archive) — pure content add; the two non-canon prose docs
+  (thread-tagging.md / mc-build-visualize.md) still conflate "seven keepers" (LOW, non-canon guidance).
 
 **Playtest trace (manual, content-quality + retrace-fairness read, not a live human group):** Sampled the
 cold-open hook, the full M4/Iss chain (`no-wall-catch` → `bound-word` → `m4-three-hands` → `threshold-
