@@ -753,6 +753,32 @@ values
   ),
   3, false, null ),
 
+-- seventh-name — THE SEVENTH READING capstone (design/THE-SEVENTH-READING.md). The six keepers each
+-- hid one letter of the Seventh's name in their OWN technique (Vaun caesar, Mara book, Sella atbash,
+-- Orin substitution, Brann rail-fence at night, Iss the catch/acrostic); read in fall-order they spell
+-- AVERYN. SAYING the name is the RESTORE act AND the release trigger: set_flags sets seventh_name (a
+-- STRING flag the finale composer reads) + seventh_choice='restore' + seventh_named + record_released
+-- (the showrunner's release pass then composes the mask-off farewell + fires the_closing). NON-cipher
+-- node (the cipher is the distributed six-fragment reading, not a single carved card) → NON_CIPHER_KEYS.
+-- Gated {seventh_named, bowed_as_one} in metapuzzle_seed §2 — only sayable at the very end, after the
+-- Accepting. The capstone integrity guard (seventh-reading.selftest) proves the six fragments spell this.
+( 'seventh-name',
+  'say the name the six kept',
+  array[
+    'averyn'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleSeventhName',
+    'set_flags', jsonb_build_object(
+      'seventh_name', 'averyn',
+      'seventh_choice', 'restore',
+      'seventh_named', true,
+      'record_released', true
+    )
+  ),
+  5, true, null ),
+
 -- fork-light (Fork B, A11) — the First Light fork at the Undercroft. A M3 puzzle CHOICE
 -- (two plaintexts): draw the M5 token from the eternal flame (light_kept) or bank it
 -- (light_taken → the room stays dark for the arc). set_flags ONLY — colors the M5 close,

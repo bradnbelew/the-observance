@@ -41,8 +41,12 @@ make/apply, which the code already degrades around safely).
 - [ ] `/observance finale` at the Seventh's chamber (`the_unwriting`) — places the 3 finale-rite markers
       (seventh restore · seventh erase · the release). NOTE: this ALSO fixes a latent gap — nothing spawned
       the Seventh-choice markers before either, so the old finale rite was unstageable too. Both fixed.
-- [ ] (optional) Set the Seventh's canon name — arc flag `seventh_name` or the `seventh_name` setting. Unset
-      → the release signs off as its reclaimed title ("the seventh, kept no longer"); ships fine without it.
+- [ ] THE SEVENTH READING capstone (design/THE-SEVENTH-READING.md — BUILT): the Seventh's name is
+      **AVERYN**, derived by the group from six distributed keeper fragments (one per keeper, each in a
+      different technique) and SAID to trigger the finale. Carve the six fragment ciphertexts at the keeper
+      sites (exact strings in THE-SEVENTH-READING.md §3) + Mara's capstone shelf. The trigger/flag-chain/
+      confirmation/hint-rail are wired; only the world-carving remains. (Restore = say AVERYN; erase = the
+      release marker, unnamed.) The `seventh_name`/setting hook still exists if you ever want to override.
 - [ ] (optional) `closing.whitelist-after: true` in config.yml if you want "nothing to come back to"
       enforced (whitelist flips ON after the kick — reversible, NEVER a ban). Default: they can rejoin.
 - [ ] `closing.enabled` default true = full auto (world dies + kick). false = the farewell still posts, you

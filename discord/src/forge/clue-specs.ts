@@ -275,6 +275,7 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'pressure-glyph-walk': 'walk the rune with footsteps (physical verb); no carved Discord card',
   'accepting-crouch': 'synchronized group bow; opaque plugin-posted sentinel, never a forged clue',
   'record-receives': 'the world’s response; opaque plugin sentinel, staged active=false until M5',
+  'seventh-name': 'THE SEVENTH READING capstone — the name AVERYN, DERIVED from six distributed keeper fragments each in a different technique (seventh-reading.ts). No single carved card: the reading IS the puzzle. Saying the name triggers the release.',
   // --- OVERHAUL classification pass (2026-06-29): the 11 active rows specsCoverageSelfTest
   //     flagged UNCLASSIFIED. None carry a Discord-decodable cipher carving, so each is a
   //     non-cipher node (found document / in-world numeral-literacy / observation / in-world

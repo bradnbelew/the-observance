@@ -409,6 +409,9 @@ function speakOutcome(type: OutcomeType, payload: OutcomePayload): string {
       // the A6 three-hands coop gate — its bespoke "three hands at once" line (was falling through to
       // the generic main_beat line before this case existed).
       return voice.oracleThreeHands();
+    case 'oracleSeventhName':
+      // THE SEVENTH READING capstone — the name said, the seal gives (the release begins immediately).
+      return voice.oracleSeventhName();
     case 'oracleNoWallCatch':
       // the Iss-seam: the catch's main_beat line + the callback into the Seventh quest.
       return voice.oracleNoWallCatch();

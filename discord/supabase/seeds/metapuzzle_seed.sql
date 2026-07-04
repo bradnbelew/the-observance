@@ -150,6 +150,11 @@ begin
       where puzzle_key in ('seventh-unwriting', 'seventh-cause');
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
       where puzzle_key = 'seventh-choice';
+    -- seventh-name (THE SEVENTH READING capstone) — the name is only SAYABLE at the very end: after the
+    -- Seventh is named (the deep reached, seventh_named) AND the Accepting is made (bowed_as_one). Saying
+    -- it sets record_released → the release fires. Gated here so it never opens before the finale.
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true, 'bowed_as_one', true)
+      where puzzle_key = 'seventh-name';
 
     -- P1-C3 COLLISION FIX (audit): the phrase `the last marker is not the last` is an accepted
     -- answer on BOTH stone-sella (ungated active=true) and seventh-shrine. Both were open at once,

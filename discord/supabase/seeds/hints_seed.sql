@@ -115,6 +115,11 @@ insert into public.hints (puzzle_key, tier, body) values
 ('seventh-choice', 2, 'this one is not read. it is chosen. at the unwriting there are two things a hand can do to the seal, and only one can be done.'),
 ('seventh-choice', 3, 'lay the deposit back and the seventh is restored; strike the seal and it is erased for good. there is no word to type — do the one your hands will stand behind. the record keeps whichever you choose.'),
 
+-- seventh-name — THE SEVENTH READING capstone (the six keepers each kept a letter of the name, in their
+-- own tongue; read in the order they fell). The whisper points at the READING, never the name itself.
+('seventh-name', 2, 'the seal is a name, and no one hand holds it. the six kept a letter of it each, and each could keep it only the one way they knew. go back to them. read each stone the way that stone taught you — vaun''s shift, mara''s shelf, sella''s water, orin''s marks, brann''s rails after dark. the first mark of what each left you is the letter they kept.'),
+('seventh-name', 3, 'read the six in the order they fell — vaun, mara, sella, orin, brann, iss — and take the first letter each gives. five will give you their letter true. the sixth is iss, and iss lies once more: read his straight and he tells you the last letter warm and wrong; read the first mark of each of his lines down, the way you read his wall, and he gives you the true one. say the six together, and the seal gives.'),
+
 -- fork-light — draw the kept light up the stair, or bank it and leave the room dark.
 ('fork-light', 2, 'the eternal flame can be carried, or left. neither is safe and neither is wrong. the leaf you take is permanent — the room does not relight.'),
 ('fork-light', 3, 'draw the light up the stair and carry it into the close, or bank the flame and let the room stay dark for the rest of it. choose the one you will not want to undo. both are kept.'),

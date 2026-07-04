@@ -31,6 +31,7 @@ import {
   threadCardVoiceCoverageSelfTest,
   registerDisciplineSelfTest,
 } from './canon.js';
+import { readingSelfTest } from './seventh-reading.js';
 import { archive, npcLines } from '../voice.archive.js';
 
 // Resolve canon files relative to THIS file (src/forge/), so the checks run from any cwd.
@@ -67,9 +68,13 @@ try {
   const definedVoiceKeys = new Set<string>([...Object.keys(archive), ...Object.keys(npcLines)]);
   const cards = threadCardVoiceCoverageSelfTest(readFileSync(THREAD_CARDS_PATH, 'utf8'), definedVoiceKeys);
   const register = registerDisciplineSelfTest(archive);
+  // THE SEVENTH READING (capstone): the six keeper fragments round-trip under their real ciphers,
+  // Iss's acrostic corrects his lie, and fall-order spells AVERYN (== the seventh-name seed answer).
+  const reading = readingSelfTest();
   const all = [
     ...cases, ...cov.cases, ...reach.cases, ...sentinel.cases, ...namespace.cases,
     ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases, ...cards.cases, ...register.cases,
+    ...reading.cases,
   ];
   console.log(`clue-specs + canon self-tests passed (${all.length}):`);
   for (const c of all) console.log(`  ok   ${c}`);

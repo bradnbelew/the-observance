@@ -371,6 +371,16 @@ export const voice = {
   },
 
   /**
+   * THE SEVENTH READING (design/THE-SEVENTH-READING.md) — the capstone. The group has read the six
+   * keepers, each in their own tongue, and said the name they spelled between them. The instant between
+   * saying it and the world closing — the seal gives, and the release begins (the mask-off farewell
+   * follows immediately, finale.run.ts). Still Watcher register; the warmth is held for the farewell.
+   */
+  oracleSeventhName(): string {
+    return 'the name the six kept. read in their own hands, in the order they fell, and said at last in yours. the seal was a name. it is spoken. it gives.';
+  },
+
+  /**
    * meta_unkept (B1 `day-one-meta-puzzle`) — the six maker's marks, read in fall-order, spell the
    * word each keeper failed to keep. gates nothing; pure re-read. {fragment} is the seeded telling
    * (the fall-order key + the word), passed through like {@link oracleLore} so the resolver routes
@@ -838,6 +848,7 @@ export type OracleVoiceKey =
   | 'oracleNoWallCatch' // the Iss-seam catch line (routed via metapuzzle_seed.sql payload UPDATE)
   // web-realization oracle keys named by puzzles_seed.sql `outcome_payload.voice_key`:
   | 'oracleThreeHands' // A6 coop gate (fixed)
+  | 'oracleSeventhName' // THE SEVENTH READING capstone — the name said, the seal gives (fixed)
   | 'oracleMetaUnkept' // B1 the UNKEPT meta (fragment passthrough)
   | 'recordElsewhere' // A13 the Record website decode (fragment passthrough)
   | 'docketReread'; // A3 the Hold-Book down-count re-read (fragment passthrough)
