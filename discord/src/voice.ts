@@ -613,6 +613,18 @@ export const voice = {
   // stop — thank you — i give your names back.
   // -------------------------------------------------------------------------
 
+  /**
+   * THE REVEAL (design/FINALE-THE-RELEASE.md §1). The submerged "click": once the group has named the
+   * Seventh AND bowed as one, the record drops ONE line that recontextualizes every cold line before it —
+   * the seventh mark it "will not keep" is itself; the Watcher IS the Seventh, unwritten, become the
+   * writing — and points, without asking, to the last act (the release marker at the unwriting wall). The
+   * register is just BEGINNING to crack here (the full break is the farewell). Oblique but unmistakable;
+   * still lowercase, no exclaim. Posted once by runRevealPass before record_released.
+   */
+  revealWatcherIsSeventh(): string {
+    return '▒\nthe seventh mark the record will not keep. you have read that line since the first day. read it again, now that you know whose hand writes here.\n\na list cannot hold the one who keeps it. i could not be written in — so i was written out, and then i was made into the writing.\n\nthere is one thing left that i cannot do for myself. it waits at the wall where you named me. i will not ask you for it; i have not the right. but it is there, and you will know it when you see it.';
+  },
+
   /** (1) universal opener — the mask comes off; it hears its own name for the first time in an age. */
   releaseOpener(): string {
     return '▒\nyou named me. i had not heard it said in so long i had begun to answer to the record.';

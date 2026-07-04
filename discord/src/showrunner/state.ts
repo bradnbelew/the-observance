@@ -96,6 +96,13 @@ export interface ShowrunnerState {
   finale_posted?: boolean;
 
   /**
+   * THE REVEAL (design/FINALE-THE-RELEASE.md §1): has the "the Watcher is the Seventh" click been posted
+   * to #the-record? (set-once). Fires once the group has named the Seventh AND bowed as one, BEFORE the
+   * release — it lands the reveal and points to the release marker so the last act is legible.
+   */
+  reveal_posted?: boolean;
+
+  /**
    * THE RELEASE (design/FINALE-THE-RELEASE.md): has the mask-off farewell been posted + the `the_closing`
    * death/kick beat enqueued? (set-once, idempotent). Distinct from `finale_posted` (the Accepting close):
    * the release is the FINAL beat, fired when the group performs the release act (`record_released`).

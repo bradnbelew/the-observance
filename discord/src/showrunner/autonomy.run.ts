@@ -44,7 +44,7 @@ import { postToTheRecord } from './discord.js';
 import { decideColdRestage, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ApparitionCandidate } from './conductor.js';
 import { runCompanionPass } from './companion.run.js';
-import { runFinalePass, runReleasePass } from './finale.run.js';
+import { runFinalePass, runRevealPass, runReleasePass } from './finale.run.js';
 import { runTheoryPass } from './theory.run.js';
 import type { BeatStatus } from '../db/types.js';
 import type { PrologueGate, ReckoningState, Tone } from './types.js';
@@ -517,6 +517,16 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     if (fin.dirty) dirty = true;
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `finale error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- THE REVEAL (design/FINALE-THE-RELEASE.md §1): once the Seventh is named AND the group has bowed,
+  //     post the "the Watcher is the Seventh" click (recontextualizes the cold register + points to the
+  //     release marker so the last act is legible). Set-once; before the release fires.
+  try {
+    const rev = await runRevealPass(flags, state);
+    if (rev.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `reveal error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- THE RELEASE (design/FINALE-THE-RELEASE.md): the FINAL beat. Once the group performs the release

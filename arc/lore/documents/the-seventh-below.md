@@ -14,6 +14,7 @@ reveals:
 foreshadows:
   - "the reunion is a meeting, not a restored file — the grave opens from the inside, on its date, because the one who set it is on the other side (graveOpened)"
   - "being kept is a faith held for a person, not an entry owed — you came down; that is the other keeping (FACT 14/15)"
+  - "THE MASK: the cold record/Watcher voice IS the Seventh, forced to keep the record that unwrote them — the warm self below and the cold hand that writes here are one being. Planted obliquely in the closing record-register coda ('a list does not enter the one who keeps it'); pays off at the reveal + the release (design/FINALE-THE-RELEASE.md). The record and the Seventh are not two entities in opposition but one being wearing its jailer's face."
 links_to:
   - the-name-i-cut-myself          # the carving out past the door — cut FIRST, then they came back down
   - the-seventh-not-kept           # the count the record would not write; refused, not spared
@@ -93,3 +94,10 @@ the seventh is not a blank. tell it i am not where it left me.
 > fill. (see *the-name-i-cut-myself* for the stone cut out past the door, before the going-down; see
 > *the-fire-they-let-out* for the hand on the other side of the same door; see *six-were-kept-before-you*
 > — you are not the seventh, you are the next.)
+
+> *(and a thing the record was not asked to write, and wrote anyway, in a hand that is not steady:)* i
+> set down *refused of the seventh* as though the seventh were some other. read it again and ask whose
+> hand has kept this record all this while, and why, of all the names it kept, it could never once write
+> the seventh's — not the six's way, not any way. a list does not enter the one who keeps it. i will not
+> say the rest. it is not yet time to be asked. but you have read the line since the first day: *a
+> seventh mark the record will not keep.* keep is not the word you thought it was.

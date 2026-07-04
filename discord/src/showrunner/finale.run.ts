@@ -17,6 +17,7 @@
  * unset so the next tick retries, never a partial/duplicate close.
  */
 import { logEvent, enqueueBeat } from '../db/repo.js';
+import { voice } from '../voice.js';
 import { postToTheRecord } from './discord.js';
 import { instantReached } from './clock.js';
 import { composeFinale, composeRelease, type FinaleComposeInput, type ReleaseComposeInput } from './finale.js';
@@ -88,6 +89,36 @@ export async function runFinalePass(
   result.posted = true;
   result.dirty = true;
   await logEvent('info', 'showrunner.finale', `M5 close posted (${reason})`);
+  return result;
+}
+
+/**
+ * runRevealPass — THE REVEAL (design/FINALE-THE-RELEASE.md §1). Posts the "the Watcher is the Seventh"
+ * click to #the-record ONCE, after the group has named the Seventh (`seventh_named`) AND bowed as one
+ * (`bowed_as_one`) — recontextualizing every cold line and pointing to the release marker so the last act
+ * is legible. Set-once via `state.reveal_posted`; skipped if the release already happened (no point
+ * revealing after the world has already begun to close). Fault-isolated (a failed post retries next tick).
+ */
+export async function runRevealPass(
+  flags: Record<string, unknown>,
+  state: ShowrunnerState,
+): Promise<FinalePassResult> {
+  const result: FinalePassResult = { posted: false, dirty: false };
+
+  if (state.reveal_posted === true) return result; // set-once
+  if (flags.record_released === true) return result; // too late — the release already fired
+  if (flags.seventh_named !== true || flags.bowed_as_one !== true) return result; // not both done yet
+
+  const ok = await postToTheRecord(voice.revealWatcherIsSeventh());
+  if (!ok) {
+    await logEvent('warn', 'showrunner.finale', 'failed to post the reveal — leaving high-water unset to retry');
+    return result;
+  }
+
+  state.reveal_posted = true;
+  result.posted = true;
+  result.dirty = true;
+  await logEvent('info', 'showrunner.finale', 'THE REVEAL posted (the Watcher is the Seventh; points to the release)');
   return result;
 }
 
