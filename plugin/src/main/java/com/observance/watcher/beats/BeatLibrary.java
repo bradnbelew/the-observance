@@ -35,6 +35,7 @@ import com.observance.watcher.beats.lib.SmallStructureBeat;
 import com.observance.watcher.beats.lib.SpatialVoiceBeat;
 import com.observance.watcher.beats.lib.TorchGutterBeat;
 import com.observance.watcher.beats.lib.UnlockBeat;
+import com.observance.watcher.beats.lib.TheClosingBeat;
 import com.observance.watcher.beats.lib.WhisperTollBeat;
 import com.observance.watcher.beats.lib.WorldDriftBeat;
 import com.observance.watcher.util.Safety;
@@ -132,6 +133,9 @@ public final class BeatLibrary {
         register(new KeeperNpcBeat());
         register(new UnlockBeat(this));     // dispatcher — delegates to another beat type
         register(new GroupBeat(this));      // dispatcher — fans a delegate to every player in a scene (gather-events)
+        // THE RELEASE finale (FINALE-THE-RELEASE.md) — the world dies server-wide, then every player is
+        // kicked with the Seventh's composed sign-off. Enqueued once by the showrunner's release pass.
+        register(new TheClosingBeat());
     }
 
     /** Register (or override) a beat by its {@link Beat#name()}. Null-safe. */

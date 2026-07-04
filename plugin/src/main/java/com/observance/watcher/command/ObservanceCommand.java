@@ -75,7 +75,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "wren" -> handleWren(sender, args);
             case "townsfolk" -> handleTownsfolk(sender, args);
             case "needle" -> handleNeedle(sender, args);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id] | needle [player]");
+            case "finale" -> handleFinaleMarkers(sender);
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id] | needle [player] | finale");
         }
     }
 
@@ -1152,6 +1153,60 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * {@code observance:wren_reckoning} PDC value the {@code WrenNpcListener} reads. A right-click on
      * one, after {@code companion_revealed}, sets exactly one of the reckoning flags, once.
      */
+    /**
+     * {@code /observance finale} — place the three FINALE-RITE markers at the player's feet (stand at the
+     * Seventh's chamber, {@code the_unwriting}, and run this). Two Seventh-choice markers (restore/erase,
+     * read by {@link com.observance.watcher.signal.listener.SeventhChoiceListener}) + the RELEASE marker
+     * (read by {@link com.observance.watcher.signal.listener.ReleaseRiteListener}). Closes the "producer
+     * built, no way to place its marker" gap for the WHOLE finale (both the Seventh choice and the release
+     * were previously unstageable — no command spawned their markers). Each is an invulnerable, gravity-less,
+     * persistent armor stand tagged with the PDC value its listener reads.
+     */
+    private void handleFinaleMarkers(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance finale must be run by a player (needs a location).");
+            return;
+        }
+        Location base = player.getLocation();
+        if (base == null || base.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+        var seventhKey = new org.bukkit.NamespacedKey("observance",
+                com.observance.watcher.signal.listener.SeventhChoiceListener.PDC_SEVENTH_CHOICE);
+        var releaseKey = new org.bukkit.NamespacedKey("observance",
+                com.observance.watcher.signal.listener.ReleaseRiteListener.PDC_RELEASE);
+        // { pdc-key-selector, pdc-value, label }
+        Object[][] markers = {
+            { seventhKey, "restore", "Restore — read the seventh's name back in" },
+            { seventhKey, "erase",   "Erase — leave the blank a blank" },
+            { releaseKey, "release", "Let it stop — close the record (the last act)" },
+        };
+        int placed = 0;
+        for (int i = 0; i < markers.length; i++) {
+            Location at = base.clone().add(i * 2.0, 0, 0);   // 2-block spacing, east
+            try {
+                var as = (org.bukkit.entity.ArmorStand)
+                        at.getWorld().spawnEntity(at, org.bukkit.entity.EntityType.ARMOR_STAND);
+                as.customName(net.kyori.adventure.text.Component.text(
+                        (String) markers[i][2], net.kyori.adventure.text.format.NamedTextColor.GRAY));
+                as.setCustomNameVisible(true);
+                as.setGravity(false);
+                as.setBasePlate(true);
+                as.setInvulnerable(true);
+                as.setPersistent(true);
+                as.getPersistentDataContainer().set((org.bukkit.NamespacedKey) markers[i][0],
+                        org.bukkit.persistence.PersistentDataType.STRING, (String) markers[i][1]);
+                placed++;
+            } catch (Throwable t) {
+                sender.sendMessage("  [!] could not place finale marker '" + markers[i][1] + "'.");
+            }
+        }
+        sender.sendMessage("Observance: placed " + placed + "/3 finale markers at your feet. "
+                + "The Seventh-choice pair resolves after deep_gate_open; the release resolves after "
+                + "bowed_as_one — each once. Stand these at the unwriting wall.");
+    }
+
     private void placeReckoningMarkers(Player player, CommandSender sender) {
         Location base = player.getLocation();
         if (base == null || base.getWorld() == null) {
@@ -1298,7 +1353,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "townsfolk", "needle"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "townsfolk", "needle", "finale"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {

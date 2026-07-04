@@ -595,6 +595,16 @@ public final class ObservancePlugin extends JavaPlugin {
                     deepGateOpenFinale), this);
         }
 
+        // THE RELEASE — the final act (FINALE-THE-RELEASE.md). A release marker at the Seventh's chamber;
+        // right-clicking it after the Accepting (gated fail-closed on bowed_as_one) sets record_released,
+        // which the showrunner's release pass reads to compose the mask-off farewell + fire the_closing
+        // (the world dies + the kick). Registered regardless of whether the marker is placed yet (inert
+        // until a tagged marker exists at a placed seventh_shrine site — safe to always have registered).
+        if (cfg.getBoolean("closing.release-rite-enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.ReleaseRiteListener(
+                    supabase, this::sites, rateLimiter, scheduler, safety, "observance", true), this);
+        }
+
         // --- SILENCE / TEMPORAL ---
         if (cfg.getBoolean("puzzles.brann-silence-corridor.enabled", true)) {
             pm.registerEvents(new com.observance.watcher.signal.listener.SilenceCorridorListener(

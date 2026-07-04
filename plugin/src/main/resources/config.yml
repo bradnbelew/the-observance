@@ -429,6 +429,24 @@ resource-pack:
   delay-ticks: 20
 
 # ----------------------------------------------------------------------------
+#  THE RELEASE — the finale death/kick beat `the_closing` (design/FINALE-THE-RELEASE.md).
+#  Fires ONCE, enqueued by the showrunner when the group performs the release act. The
+#  world visibly "dies" (fog/dark/whisper, server-wide) for a few seconds, then EVERY
+#  player is KICKED with the Seventh's composed sign-off as the disconnect message.
+#  SIMULATED death — Paper keeps running; the operator controls re-entry. KICK, never ban.
+# ----------------------------------------------------------------------------
+closing:
+  # false = the showrunner still posts the mask-off farewell to #the-record, but the plugin
+  #         does NOT auto-kick (the operator stages the kick themselves). true = full auto.
+  enabled: true
+  # how long the world "dies" (fog/darkness/whisper swell) before the kick. 0 = kick immediately.
+  theater-seconds: 8
+  # true = turn the whitelist ON right after the kick, so the group CANNOT rejoin until you
+  #        re-open it ("there will be nothing here to come back to"). false = they can rejoin
+  #        immediately (rejoining proves it was authored theater, not a ban). NEVER a real ban.
+  whitelist-after: false
+
+# ----------------------------------------------------------------------------
 #  CUSTOMS — the closed set of group conducts the engine DETECTS (INV-17: exactly
 #  seven CUSTOM_KEYS already tracked above + the ONE group latch below). Anything
 #  else claiming to be an "observance" is fiction (the forged eighth). LORE-AGNOSTIC.

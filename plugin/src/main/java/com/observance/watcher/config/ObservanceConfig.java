@@ -63,6 +63,11 @@ public final class ObservanceConfig {
     private final String resourcePackPrompt;
     private final long resourcePackDelayTicks;
 
+    // --- the release / the_closing (FINALE-THE-RELEASE.md) ---
+    private final boolean closingEnabled;
+    private final int closingTheaterSeconds;
+    private final boolean closingWhitelistAfter;
+
     // --- logging ---
     private final boolean debug;
 
@@ -111,6 +116,10 @@ public final class ObservanceConfig {
         this.resourcePackRequired = c.getBoolean("resource-pack.required", false);
         this.resourcePackPrompt = c.getString("resource-pack.prompt", "");
         this.resourcePackDelayTicks = clampLong(c.getLong("resource-pack.delay-ticks", 20L), 0L, 1200L);
+
+        this.closingEnabled = c.getBoolean("closing.enabled", true);
+        this.closingTheaterSeconds = clampInt(c.getInt("closing.theater-seconds", 8), 0, 30);
+        this.closingWhitelistAfter = c.getBoolean("closing.whitelist-after", false);
 
         this.debug = c.getBoolean("logging.debug", false);
     }
@@ -187,6 +196,10 @@ public final class ObservanceConfig {
     public boolean resourcePackRequired() { return resourcePackRequired; }
     public String resourcePackPrompt() { return resourcePackPrompt; }
     public long resourcePackDelayTicks() { return resourcePackDelayTicks; }
+
+    public boolean closingEnabled() { return closingEnabled; }
+    public int closingTheaterSeconds() { return closingTheaterSeconds; }
+    public boolean closingWhitelistAfter() { return closingWhitelistAfter; }
 
     public boolean debug() { return debug; }
 
