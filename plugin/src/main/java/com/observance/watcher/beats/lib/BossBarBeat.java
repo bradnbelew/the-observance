@@ -10,6 +10,8 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
+import com.observance.watcher.util.TextFit;
+
 /**
  * SENSORY — a boss bar appears for ONE player: "the land's attention." Authored title + color; shows
  * for a bounded time then auto-removes (never sticks, never UI-clutters). Used as a proximity-pull
@@ -70,8 +72,9 @@ public final class BossBarBeat extends AbstractBeat {
         catch (Throwable t) { return BarStyle.SOLID; }
     }
 
+    // A boss bar is ONE non-wrapping line across the top of the screen — 256 characters would run
+    // well past a typical client's screen width and just be cut off by the client, not the server.
     private static String clamp(String s) {
-        if (s == null) return "";
-        return s.length() > 256 ? s.substring(0, 256) : s;
+        return TextFit.clampLine(s, TextFit.HUD_LINE_CHARS);
     }
 }

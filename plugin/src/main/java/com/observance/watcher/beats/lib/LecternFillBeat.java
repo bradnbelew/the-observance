@@ -12,6 +12,8 @@ import org.bukkit.block.Lectern;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import com.observance.watcher.util.TextFit;
+
 import java.util.List;
 
 /**
@@ -78,8 +80,11 @@ public final class LecternFillBeat extends AbstractBeat {
             if (book.getItemMeta() instanceof BookMeta meta) {
                 meta.setTitle(clamp(title, 32));
                 meta.setAuthor(clamp(author, 32));
+                // Each AUTHORED "page" string may be longer than a real book page can display (a
+                // vanilla page does not scroll or auto-paginate — overflow is simply invisible).
+                // Re-wrap every authored page into 1+ real, client-legible pages before writing them.
                 for (String page : pages) {
-                    meta.addPage(clamp(page == null ? "" : page, 1024));
+                    for (String real : TextFit.paginate(page == null ? "" : page)) meta.addPage(real);
                 }
                 book.setItemMeta(meta);
             }

@@ -12,6 +12,8 @@ import org.bukkit.block.Container;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import com.observance.watcher.util.TextFit;
+
 import java.util.List;
 
 /**
@@ -78,7 +80,7 @@ public final class ChestArrangeBeat extends AbstractBeat {
                     var meta = stack.getItemMeta();
                     if (meta != null) {
                         meta.displayName(net.kyori.adventure.text.Component.text(
-                                nm.length() > 100 ? nm.substring(0, 100) : nm));
+                                TextFit.clampLine(nm, TextFit.TOOLTIP_LINE_CHARS)));
                         stack.setItemMeta(meta);
                     }
                 }

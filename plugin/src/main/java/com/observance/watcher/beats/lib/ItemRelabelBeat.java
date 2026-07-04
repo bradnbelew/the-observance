@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.observance.watcher.util.TextFit;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -60,12 +62,12 @@ public final class ItemRelabelBeat extends AbstractBeat {
 
         if (p.has("name")) {
             String name = p.string("name", "");
-            meta.displayName(Component.text(clamp(name, 100)));
+            meta.displayName(Component.text(clamp(name, TextFit.TOOLTIP_LINE_CHARS)));
         }
         List<String> lore = p.stringList("lore");
         if (!lore.isEmpty()) {
             List<Component> comps = new ArrayList<>(lore.size());
-            for (String line : lore) comps.add(Component.text(clamp(line == null ? "" : line, 100)));
+            for (String line : lore) comps.add(Component.text(clamp(line == null ? "" : line, TextFit.TOOLTIP_LINE_CHARS)));
             meta.lore(comps);
         }
         item.setItemMeta(meta);

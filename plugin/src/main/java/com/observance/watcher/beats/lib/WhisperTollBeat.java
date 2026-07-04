@@ -7,6 +7,7 @@ import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
 import com.observance.watcher.util.PerPlayer;
 import com.observance.watcher.util.Placement;
+import com.observance.watcher.util.TextFit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -68,7 +69,9 @@ public final class WhisperTollBeat extends AbstractBeat {
             }
             String ab = p.string("actionbar", null);
             if (ab != null && !ab.isBlank()) {
-                PerPlayer.actionBar(pl, ab.length() > 256 ? ab.substring(0, 256) : ab);
+                // The action bar is ONE non-wrapping line — 256 characters would run well past what
+                // a client actually shows, clipped silently on the client, not the server.
+                PerPlayer.actionBar(pl, TextFit.clampLine(ab, TextFit.HUD_LINE_CHARS));
                 didSomething = true;
             }
         }

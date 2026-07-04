@@ -6,6 +6,7 @@ import com.observance.watcher.beats.BeatPayload;
 import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
 import com.observance.watcher.util.Placement;
+import com.observance.watcher.util.TextFit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -84,8 +85,12 @@ public final class SignWriteBeat extends AbstractBeat {
         return BeatResult.fired("sign-written");
     }
 
+    // A real sign has ~15 legible characters per line (the vanilla sign-editing screen enforces
+    // exactly this) — not the far more generous data-safety ceiling this used to clamp against.
+    // Authored "lines" are pre-composed per-slot text (not one flowing string), so this does not
+    // reflow overflow onto a neighboring line — it makes the actual displayable limit visible at the
+    // point authored content is written, instead of silently accepting text a real sign cannot show.
     private static String clampLine(String s) {
-        if (s == null) return "";
-        return s.length() > 100 ? s.substring(0, 100) : s;
+        return TextFit.clampLine(s, TextFit.SIGN_LINE_CHARS);
     }
 }

@@ -6,6 +6,7 @@ import com.observance.watcher.beats.BeatPayload;
 import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
 import com.observance.watcher.util.PerPlayer;
+import com.observance.watcher.util.TextFit;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
@@ -58,8 +59,9 @@ public final class PrivateMessageBeat extends AbstractBeat {
     }
 
     private static int clampTicks(int t) { return Math.max(0, Math.min(20 * 60, t)); }
+    // Title/subtitle/action-bar are all ONE non-wrapping line — 256 characters would run well past
+    // what a client actually shows, clipped silently on the client, not the server.
     private static String clamp(String s) {
-        if (s == null) return "";
-        return s.length() > 256 ? s.substring(0, 256) : s;
+        return TextFit.clampLine(s, TextFit.HUD_LINE_CHARS);
     }
 }

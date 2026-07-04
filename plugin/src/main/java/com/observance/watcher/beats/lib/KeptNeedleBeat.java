@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 
+import com.observance.watcher.util.TextFit;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,9 +103,9 @@ public final class KeptNeedleBeat extends AbstractBeat {
         if (needle.getItemMeta() instanceof CompassMeta meta) {
             meta.setLodestone(dest);
             meta.setLodestoneTracked(false);   // point at dest without a real lodestone block in the world
-            meta.displayName(Component.text(clamp(name, 100)));
+            meta.displayName(Component.text(clamp(name, TextFit.TOOLTIP_LINE_CHARS)));
             List<Component> comps = new ArrayList<>(lore.size());
-            for (String line : lore) comps.add(Component.text(clamp(line == null ? "" : line, 100)));
+            for (String line : lore) comps.add(Component.text(clamp(line == null ? "" : line, TextFit.TOOLTIP_LINE_CHARS)));
             meta.lore(comps);
             needle.setItemMeta(meta);
         }

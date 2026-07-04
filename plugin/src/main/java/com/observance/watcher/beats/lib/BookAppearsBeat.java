@@ -14,6 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import com.observance.watcher.util.TextFit;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -102,7 +104,12 @@ public final class BookAppearsBeat extends AbstractBeat {
         if (book.getItemMeta() instanceof BookMeta meta) {
             meta.setTitle(clamp(p.string("title", "Record"), 32));
             meta.setAuthor(clamp(p.string("author", "the record"), 32));
-            for (String page : pages) meta.addPage(clamp(page == null ? "" : page, 1024));
+            // Each AUTHORED "page" string may be longer than a real book page can display (a vanilla
+            // page does not scroll or auto-paginate — overflow is simply invisible). Re-wrap every
+            // authored page into 1+ real, client-legible pages before writing them.
+            for (String page : pages) {
+                for (String real : TextFit.paginate(page == null ? "" : page)) meta.addPage(real);
+            }
             book.setItemMeta(meta);
         }
         return book;
