@@ -1,8 +1,10 @@
 -- The Observance — thread_tags.sql
--- Tags each of the 24 seeded puzzle nodes to a reconstruction thread (which question its PAYOFF
--- advances) and, where the node teaches/hinges on a way, a teaches_custom (a canon CUSTOM_KEYS
--- the_-prefixed key). Content + rationale: design/content/thread-tagging.md (deliberately lopsided
--- by content, not a 1:1 pattern — the_bow is taught 5×, two ways teach 0 nodes here, 10 nodes NULL).
+-- Tags each seeded puzzle node (the original 24 + the WEB-realization/backlog rows + the 20 diverse-
+-- expansion rows = 44 total) to a reconstruction thread (which question its PAYOFF advances) and, where
+-- the node teaches/hinges on a way, a teaches_custom (a canon CUSTOM_KEYS the_-prefixed key). Content +
+-- rationale: design/content/thread-tagging.md (deliberately lopsided by content, not a 1:1 pattern —
+-- the_bow is taught most; ALL seven ways are now taught by ≥1 node, the_sacred_beast via Sella's
+-- deep-bird memorial in the expansion block below; many nodes teach no way, NULL).
 --
 -- Additive + idempotent (each update is keyed + sets absolute values). Apply AFTER 0005_threads.sql
 -- (adds the columns + seeds the five threads) and puzzles_seed.sql (inserts the 24 rows). Run as
@@ -94,5 +96,52 @@ update public.puzzles set thread_key = 'human',    teaches_custom = null        
 update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'reckoning-rosetta';
 update public.puzzles set thread_key = 'surface',  teaches_custom = 'the_dark_hours'  where puzzle_key = 'stone-brann-cipher';
 update public.puzzles set thread_key = 'human',    teaches_custom = null              where puzzle_key = 'base-docket-reread-auto';
+
+-- ===========================================================================
+-- THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — tags for the 20 expansion rows
+-- (the second puzzles_seed.sql insert). These were previously UNTAGGED (thread_key /
+-- teaches_custom silently NULL), so their solves did not cluster in the record's
+-- reconstruction (integrity.ts reads puzzles.thread_key). Tagged by CONTENT (which
+-- question the payoff advances + which way, if any, the solve turns on), lopsided by
+-- design (thread-tagging.md) — not a 1:1 pattern. NOTE: sella-shore-memorial teaches
+-- `the_sacred_beast` (Sella's kept deep-bird) — the ONE way previously taught by no node,
+-- now learned here. Every thread_key ∈ THREADS (FK), every non-null teaches_custom ∈
+-- CUSTOM_KEYS (threadTagSelfTest).
+-- ===========================================================================
+
+-- Vaun — the offering he never made (object/code; his personal, human failure)
+update public.puzzles set thread_key = 'human',    teaches_custom = 'the_offering'    where puzzle_key = 'vaun-hoard-sorted';
+update public.puzzles set thread_key = 'human',    teaches_custom = 'the_offering'    where puzzle_key = 'vaun-bookshelf-tally';
+
+-- Mara — read and never walked (the walk she could not make = the group's bow)
+update public.puzzles set thread_key = 'happened', teaches_custom = null              where puzzle_key = 'mara-lectern-lock';
+update public.puzzles set thread_key = 'happened', teaches_custom = 'the_bow'         where puzzle_key = 'mara-walk-the-map';
+
+-- Sella — the drowned child (the far water, the shore she drew, the deep-bird she kept)
+update public.puzzles set thread_key = 'surface',  teaches_custom = null              where puzzle_key = 'sella-reflection-bearing';
+update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'sella-overlay-lake';
+update public.puzzles set thread_key = 'human',    teaches_custom = 'the_sacred_beast' where puzzle_key = 'sella-shore-memorial';
+
+-- Orin — the mason who would not bow (his identity; the one offering he kept in secret)
+update public.puzzles set thread_key = 'who',      teaches_custom = 'the_bow'         where puzzle_key = 'orin-bow-fall-order';
+update public.puzzles set thread_key = 'who',      teaches_custom = null              where puzzle_key = 'orin-banner-heraldry';
+update public.puzzles set thread_key = 'who',      teaches_custom = 'the_offering'    where puzzle_key = 'orin-frame-dials';
+
+-- Brann — the watchman on the black moon (his night watch; passing his walk in silence)
+update public.puzzles set thread_key = 'surface',  teaches_custom = 'the_dark_hours'  where puzzle_key = 'brann-black-moon-toll';
+update public.puzzles set thread_key = 'surface',  teaches_custom = 'the_unspoken'    where puzzle_key = 'brann-silence-corridor';
+
+-- Iss — the liar (the deduction that catches him; his doctored record of the Seventh)
+update public.puzzles set thread_key = 'happened', teaches_custom = null              where puzzle_key = 'iss-which-is-true';
+update public.puzzles set thread_key = 'who',      teaches_custom = null              where puzzle_key = 'iss-nbt-falsified-entry';
+update public.puzzles set thread_key = 'happened', teaches_custom = 'the_deep_line'   where puzzle_key = 'iss-bound-word-callback';
+
+-- Cross-keeper / spine (the record kept elsewhere · the co-op threshold · it heard you ·
+-- the six marks · the one cold hearth)
+update public.puzzles set thread_key = 'surface',  teaches_custom = null              where puzzle_key = 'spine-recovered-archive';
+update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'spine-threshold-vault';
+update public.puzzles set thread_key = 'human',    teaches_custom = null              where puzzle_key = 'spine-spoken-name';
+update public.puzzles set thread_key = 'who',      teaches_custom = null              where puzzle_key = 'spine-unkept-acrostic';
+update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'spine-cold-hearth-shadow';
 
 commit;

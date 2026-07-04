@@ -35,12 +35,13 @@
    who still keep the ways." Those two are the *back half* of the spine; Movement I–II skew WHO/HAPPENED;
    PLACE is rare and concentrated where geography is the payoff (the descent). The distribution below is
    lopsided because the content is.
-4. **The seven ways are NOT evenly distributed across the seven keeper stones.** `the_bow` is taught by
+4. **The seven ways are NOT evenly distributed across the six keeper stones.** `the_bow` is taught by
    THREE different nodes (Orin's stone, the crouch-to-read verb, the synchronized Accepting) because the
    corpus makes the bow the load-bearing way — "the smallest of the ways," the one whose letting-go lets
-   the rest go. `the_sacred_beast` (the deep-bird) is taught by NONE of the 24 — it lives in the NPC /
-   side-quest layer (Wenna's charm, the coop survey, R11 entry 4), not in these cipher/rite nodes. A
-   way with zero teaching node here is honest; forcing one in would be the tidy pattern.
+   the rest go. `the_sacred_beast` (the deep-bird) was taught by NONE of the original 24 — it lived in
+   the NPC / side-quest layer (Wenna's charm, the coop survey, R11 entry 4). The diverse-expansion block
+   (thread_tags.sql) now teaches it in-line too, at **`sella-shore-memorial`** — the drowned child's kept
+   deep-bird, the forced-perspective glyph above her pool — so all seven ways now have ≥1 teaching node.
 
 ---
 

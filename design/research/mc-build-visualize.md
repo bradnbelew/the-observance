@@ -219,7 +219,8 @@ the upscale-able version for hero carvings.
 Source: PaperMC *Display Entities*; Minecraft Wiki *Display*.
 
 **Apply to The Observance:** Use **ImageFrame/ImageOnMap map-murals** for the *non-rune* found-media (a redacted notice, a
-"photo" of the seventh keeper's effaced face at `the_cold_hearth`, a hand-drawn Hold map) — automatable, atmospheric,
+"photo" of an effaced keeper's face — Iss's, at `the_cold_hearth`, his own dead-shrine; the Seventh's own effaced
+site is `the_unwriting` / `end_seventh_shrine`, kept distinct — a hand-drawn Hold map) — automatable, atmospheric,
 spread thin for perf. Use **TextDisplay in `observance:runes`** for hero rune-carvings that must be legible and huge
 (the Rosetta ring, the Accepting-floor inscription). Keep both behind line-of-sight reveal discipline.
 
