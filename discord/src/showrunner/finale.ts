@@ -108,3 +108,87 @@ export function composeFinale(inp: FinaleComposeInput): FinaleComposeDecision {
       (inp.reckoningFree ? ' +free-cost' : ''),
   };
 }
+
+// ---------------------------------------------------------------------------
+// THE RELEASE — the unified finale (design/FINALE-THE-RELEASE.md). This is the FINAL
+// beat, AFTER the Accepting close above: the mask comes off (the Watcher was the
+// Seventh all along), the group performs the release, and the world ends. This composer
+// assembles the register-break farewell + the disconnect-screen kick line, from the SAME
+// measured state the fate close reads. It EXTENDS composeFinale (does not replace it): the
+// Accepting close still posts at the bow; this posts when the group performs the release.
+// ---------------------------------------------------------------------------
+
+/** Everything the release composer reads — the finale inputs + the two extra reckoning branches
+ *  (condemn/understand, alongside the free branch already in FinaleComposeInput) + the restored name. */
+export interface ReleaseComposeInput extends FinaleComposeInput {
+  /** the group condemned Wren (cast him out for what he did — the Seventh notices the irony). */
+  reckoningCondemn: boolean;
+  /** the group held Wren whole (the truest read). */
+  reckoningUnderstand: boolean;
+  /** the Seventh's restored name, or null when no canon name is set (then it leaves as its title reclaimed). */
+  seventhName: string | null;
+}
+
+export interface ReleaseComposeDecision {
+  /** the ordered mask-off farewell lines to post to #the-record (Watcher register, broken warm). */
+  lines: string[];
+  /** the disconnect-screen sign-off (the kick reason the plugin shows every player). */
+  kickLine: string;
+  reason: string;
+}
+
+/** The fate → the TONE of the release (INV-11 group enum; never a player). */
+function releaseFateClause(fate: EndingFate): string {
+  switch (fate) {
+    case 'kept': return voice.releaseFateKept();
+    case 'cast_out': return voice.releaseFateCastOut();
+    case 'refusers': return voice.releaseFateRefusers();
+    case 'divided':
+    default: return voice.releaseFateDivided();
+  }
+}
+
+/**
+ * composeRelease — the pure mask-off farewell + kick line. Same input → same output. The three
+ * universal movements are always present (opener · what-they-made-me · the closing "i give them back");
+ * the fate/reckoning/seventh/light clauses weave BETWEEN them as the character of the release. The kick
+ * line is composed from the seventh choice (restored title/name vs the struck blank).
+ */
+export function composeRelease(inp: ReleaseComposeInput): ReleaseComposeDecision {
+  const lines: string[] = [];
+
+  // (1) + (2) universal: it hears its name; it says what it was made into.
+  lines.push(voice.releaseOpener());
+  lines.push(voice.releaseMade());
+
+  // (3) the fate flavor — the tone.
+  lines.push(releaseFateClause(inp.fate));
+
+  // (4) the Wren reckoning mirror (optional; mutually exclusive by the producer — free > understand > condemn).
+  if (inp.reckoningFree) lines.push(voice.releaseWrenFreed());
+  else if (inp.reckoningUnderstand) lines.push(voice.releaseWrenUnderstood());
+  else if (inp.reckoningCondemn) lines.push(voice.releaseWrenCondemned());
+
+  // (5) the seventh choice — who leaves (named/reclaimed vs the struck blank).
+  const restored = inp.seventhChoice === 'restore';
+  if (restored) lines.push(voice.releaseSeventhRestored(inp.seventhName));
+  else if (inp.seventhChoice === 'erase') lines.push(voice.releaseSeventhErased());
+
+  // (6) the light-fork colorant.
+  if (inp.lightKept) lines.push(voice.releaseLightKept());
+  else if (inp.lightTaken) lines.push(voice.releaseLightTaken());
+
+  // (7) the universal close — go, log off, i give your names back.
+  lines.push(voice.releaseClosing());
+
+  const kickLine = voice.releaseKickLine(restored ? inp.seventhName : null, restored);
+
+  return {
+    lines,
+    kickLine,
+    reason:
+      `release fate=${inp.fate}` +
+      (inp.seventhChoice ? ` seventh=${inp.seventhChoice}` : '') +
+      (inp.reckoningFree ? ' +free' : inp.reckoningUnderstand ? ' +understand' : inp.reckoningCondemn ? ' +condemn' : ''),
+  };
+}

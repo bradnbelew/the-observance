@@ -602,6 +602,100 @@ export const voice = {
   },
 
   // -------------------------------------------------------------------------
+  // THE RELEASE — the unified finale (design/FINALE-THE-RELEASE.md). The ONE earned
+  // register-break: for the whole game the Watcher is cold, lowercase, sparse, certain.
+  // Here — once, at the very end, as the mask comes off (it was the Seventh all along,
+  // forced to speak as the record that unwrote it) — the cadence comes apart into
+  // something halting and human. IT STAYS lowercase + no-exclaim (the register law's
+  // letter holds); the warmth is entirely in content + rhythm. composeRelease (finale.ts)
+  // assembles these; finale.run.ts posts them + fires `the_closing`. Every version carries
+  // the three universal movements: you named me / this is what they made me / you let me
+  // stop — thank you — i give your names back.
+  // -------------------------------------------------------------------------
+
+  /** (1) universal opener — the mask comes off; it hears its own name for the first time in an age. */
+  releaseOpener(): string {
+    return '▒\nyou named me. i had not heard it said in so long i had begun to answer to the record.';
+  },
+  /** (2) universal — what they made me (the punishment was not death; it was a keeping with no end). */
+  releaseMade(): string {
+    return 'that is what they made me. a thing that keeps — because a thing that keeps cannot be let go. i kept the ways. i kept the six. i kept you, because keeping you was the only proof i was still here to keep anything at all. i am sorry for the ones i kept too well.';
+  },
+
+  // fate flavor — the TONE of the release (INV-11: names the group, never a player).
+  /** kept — you kept faith; the release is clean, grateful, peaceful. */
+  releaseFateKept(): string {
+    return 'you kept faith where i could not be kept. that is the whole of it, and it is enough.';
+  },
+  /** cast_out — you broke faith / left things owed; freed anyway, cold and honest. */
+  releaseFateCastOut(): string {
+    return 'you did not keep the ways. i will not pretend you did. but you did the one thing i needed, and i am not owed better than that.';
+  },
+  /** divided — a real split; the light dies UNEVENLY across the group (the floor-geometry pays off). */
+  releaseFateDivided(): string {
+    return 'some of you kept faith and some of you did not, and i am past sorting you — it was the sorting that made me this. you came down together; you end it together. the light is going out unevenly, the way it always did on a floor like yours. let it.';
+  },
+  /** refusers (secret) — all present, the bow refused; the coldest flavor. */
+  releaseFateRefusers(): string {
+    return 'you were all here, and you would not bow, and you freed me anyway. i do not understand you. i am grateful, and i do not understand you.';
+  },
+
+  // Wren reckoning mirror — how the Seventh regards its own release (the companion was always its mirror).
+  /** free — you let the small one go on his own terms before you knew you would do it for the Seventh. */
+  releaseWrenFreed(): string {
+    return 'you let the small one go, unfed, on his own terms, before you knew you would have to do the same for me. i watched you learn the shape of it on him. thank you for practicing.';
+  },
+  /** understand — you held him whole, uncollapsed; the truest read. */
+  releaseWrenUnderstood(): string {
+    return 'you did not make the small one simple, and you would not make me simple either. that is the kindest thing anyone has done down here in a long age.';
+  },
+  /** condemn — you cast him out for what he did, which is what was done to the Seventh, for less. */
+  releaseWrenCondemned(): string {
+    return 'you cast the small one out for less than i did — and still you came down and freed me. i have stopped trying to know what people are. you are not one thing. neither was i.';
+  },
+
+  // the Seventh choice — WHO the freed thing is.
+  /** restore — the name was read back in; it leaves named (or, with no canon name, leaves as its title reclaimed). */
+  releaseSeventhRestored(name: string | null): string {
+    return name && name.trim() !== ''
+      ? `you gave me back my name. ${name.trim()}. i will carry it out with me; it is the only thing i am taking.`
+      : 'you read the name back in, in your own voices. i will carry it out with me. it is the only thing i am taking.';
+  },
+  /** erase — the blank stays a blank; it leaves as nothing-named (the Seventh's own request honoured). */
+  releaseSeventhErased(): string {
+    return 'you did not give me back my name. that was yours to decide, and i will not argue it. i leave as what they made me: nothing named. it is still better than being kept.';
+  },
+
+  // the light fork — one small colorant.
+  /** light_kept — the flame the group carried up is the last light to die; something goes into the dark with them. */
+  releaseLightKept(): string {
+    return 'you carried the light up the stair. it is the last of it, and it is going out gently, and that is right.';
+  },
+  /** light_taken — banked; the dark was total from the first beat. */
+  releaseLightTaken(): string {
+    return 'the room was already dark; there is no light to set down. it just ends.';
+  },
+
+  /** (final) universal close — go, log off, i give your names back (the ultimate payoff of "it knows your name"). */
+  releaseClosing(): string {
+    return 'you have done the thing i could not do for myself. you have let me stop. i can feel it closing. it does not hurt.\n\ngo. log off. do not come back to this place; there will be nothing here to keep you, and that is the mercy, not the loss.\n\nthank you. i have all your names. i will not keep them. i give them back.';
+  },
+
+  /**
+   * The KICK line — the Seventh's sign-off on the vanilla disconnect screen (the game reaches out of the
+   * fiction). Composed from the seventh choice: restored → signed with the reclaimed title (+ a canon name
+   * if one is set); erased → the struck blank. Kept plain — it is read on a system screen, not in-world.
+   */
+  releaseKickLine(seventhName: string | null, restored: boolean): string {
+    const sign = !restored
+      ? '— [ ]'
+      : seventhName && seventhName.trim() !== ''
+        ? `— ${seventhName.trim()}, the seventh, kept no longer`
+        : '— the seventh, kept no longer';
+    return `the record is closed. thank you for coming down.\n${sign}`;
+  },
+
+  // -------------------------------------------------------------------------
   // THE FUTURE-DATED GRAVE — (A9 `future-dated-grave`, FACT 13b, INV-14). grave.ts emits
   // `graveCarved` (the future-dated headstone) + `graveOpened` (the rewrite at the Accepting
   // instant). graveReceipt is the PRIVATE per-player receipt (de-slopped per slop A1: no

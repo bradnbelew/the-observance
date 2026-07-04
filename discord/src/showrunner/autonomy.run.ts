@@ -44,7 +44,7 @@ import { postToTheRecord } from './discord.js';
 import { decideColdRestage, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ApparitionCandidate } from './conductor.js';
 import { runCompanionPass } from './companion.run.js';
-import { runFinalePass } from './finale.run.js';
+import { runFinalePass, runReleasePass } from './finale.run.js';
 import { runTheoryPass } from './theory.run.js';
 import type { BeatStatus } from '../db/types.js';
 import type { PrologueGate, ReckoningState, Tone } from './types.js';
@@ -517,6 +517,17 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     if (fin.dirty) dirty = true;
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `finale error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- THE RELEASE (design/FINALE-THE-RELEASE.md): the FINAL beat. Once the group performs the release
+  //     act (`record_released`, set by the plugin's ReleaseRiteListener), post the mask-off farewell and
+  //     enqueue `the_closing` (server-wide death theater + kick). Set-once; the world ends exactly once.
+  try {
+    const rel = await runReleasePass(flags, state);
+    if (rel.posted) result.finalePosted = true;
+    if (rel.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `release error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- S-D theory-lock: the record RECEIVES a keeper's fate once a COHERENT CLUSTER of that keeper's

@@ -16,12 +16,13 @@
  * fork / seventh flags are all set-once upstream). Fault-isolated: a failed post leaves the high-water
  * unset so the next tick retries, never a partial/duplicate close.
  */
-import { logEvent } from '../db/repo.js';
+import { logEvent, enqueueBeat } from '../db/repo.js';
 import { postToTheRecord } from './discord.js';
 import { instantReached } from './clock.js';
-import { composeFinale, type FinaleComposeInput } from './finale.js';
+import { composeFinale, composeRelease, type FinaleComposeInput, type ReleaseComposeInput } from './finale.js';
 import type { EndingFate } from './fate.js';
-import type { ShowrunnerState } from './state.js';
+import { readSetting, type ShowrunnerState } from './state.js';
+import type { BeatStatus } from '../db/types.js';
 
 /** The ending-fate values the composer accepts (mirror of fate.ts EndingFate for a safe cast). */
 const FATES: ReadonlySet<string> = new Set<EndingFate>(['kept', 'cast_out', 'divided', 'refusers']);
@@ -87,5 +88,85 @@ export async function runFinalePass(
   result.posted = true;
   result.dirty = true;
   await logEvent('info', 'showrunner.finale', `M5 close posted (${reason})`);
+  return result;
+}
+
+/**
+ * runReleasePass — THE RELEASE (design/FINALE-THE-RELEASE.md). The FINAL beat, after the Accepting close.
+ * Fires ONCE when the group has performed the release act (`record_released` set by the plugin's
+ * ReleaseRiteListener), composing the mask-off farewell + the disconnect-screen kick line from the SAME
+ * measured state the fate close reads, then:
+ *   1. posts the farewell to #the-record (Watcher register, the one earned break — voice.ts owns it), and
+ *   2. enqueues the `the_closing` beat (status 'approved' so it fires on the plugin's next poll) carrying
+ *      the composed `kick_line` — the plugin runs the server-wide death theater + kicks every player.
+ *
+ * SET-ONCE via `state.release_posted`. Gated: needs `record_released` truthy AND a decided `ending_fate`
+ * (the release tone is fate-driven; never a guessed fate). Fault-isolated: a failed post/enqueue leaves
+ * the high-water unset so the next tick retries — never a partial/duplicate close, never a stranded kick.
+ */
+export async function runReleasePass(
+  flags: Record<string, unknown>,
+  state: ShowrunnerState,
+): Promise<FinalePassResult> {
+  const result: FinalePassResult = { posted: false, dirty: false };
+
+  if (state.release_posted === true) return result; // set-once — the world ends exactly once
+  if (flags.record_released !== true) return result; // the group has not performed the release act yet
+
+  const fateRaw = flags.ending_fate;
+  if (typeof fateRaw !== 'string' || !FATES.has(fateRaw)) {
+    await logEvent('info', 'showrunner.finale', 'release act performed but ending_fate not yet decided — release waits');
+    return result;
+  }
+
+  // The Seventh's restored name, if a canon one is set (arc flag `seventh_name` or the `seventh_name`
+  // setting). Null → the release signs off as its reclaimed title ("the seventh, kept no longer"), so the
+  // finale is complete WITHOUT inventing a name — Ethan can drop one in later with zero code change.
+  const seventhName =
+    typeof flags.seventh_name === 'string' && flags.seventh_name.trim() !== ''
+      ? (flags.seventh_name as string)
+      : await readSetting<string | null>('seventh_name', null);
+
+  const input: ReleaseComposeInput = {
+    fate: fateRaw as EndingFate,
+    seventhChoice:
+      flags.seventh_choice === 'restore' ? 'restore'
+      : flags.seventh_choice === 'erase' ? 'erase'
+      : null,
+    nameSpoken: flags.name_spoken === true,
+    nameUnspoken: flags.name_unspoken === true,
+    lightKept: flags.light_kept === true,
+    lightTaken: flags.light_taken === true,
+    sacredBeastBroken: flags.sacred_beast_broken === true,
+    inheritorsCodicil: flags.inheritors_codicil === true || flags.seventh_named === true,
+    reckoningFree: flags.reckoning_free === true,
+    reckoningUnderstand: flags.reckoning_understand === true,
+    reckoningCondemn: flags.reckoning_condemn === true,
+    seventhName,
+  };
+
+  const { lines, kickLine, reason } = composeRelease(input);
+
+  // 1. post the mask-off farewell to #the-record (ONE message, blank-line separated).
+  const ok = await postToTheRecord(lines.join('\n\n'));
+  if (!ok) {
+    await logEvent('warn', 'showrunner.finale', 'failed to post the release farewell — leaving high-water unset to retry');
+    return result;
+  }
+
+  // 2. enqueue the death/kick beat carrying the composed kick line (lore-agnostic on the plugin side).
+  //    'approved' → fires on the plugin's next poll, no human gate (the players earned the ending).
+  try {
+    await enqueueBeat('the_closing', null, { kick_line: kickLine }, 'approved' satisfies BeatStatus, null);
+  } catch (e) {
+    // The farewell already posted; a failed enqueue must not double-post it. Mark posted so we don't
+    // re-post the farewell, but log loudly — the operator can re-fire `the_closing` from the dashboard.
+    await logEvent('error', 'showrunner.finale', `release farewell posted but the_closing enqueue FAILED (${e instanceof Error ? e.message : String(e)}) — re-enqueue the_closing manually`);
+  }
+
+  state.release_posted = true;
+  result.posted = true;
+  result.dirty = true;
+  await logEvent('info', 'showrunner.finale', `THE RELEASE fired (${reason})`);
   return result;
 }

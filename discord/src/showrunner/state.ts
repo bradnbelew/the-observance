@@ -96,6 +96,13 @@ export interface ShowrunnerState {
   finale_posted?: boolean;
 
   /**
+   * THE RELEASE (design/FINALE-THE-RELEASE.md): has the mask-off farewell been posted + the `the_closing`
+   * death/kick beat enqueued? (set-once, idempotent). Distinct from `finale_posted` (the Accepting close):
+   * the release is the FINAL beat, fired when the group performs the release act (`record_released`).
+   */
+  release_posted?: boolean;
+
+  /**
    * D7 conductor: the single-arbiter apparition claim for the CURRENT window + the per-player
    * apparition counts (the per-player cap). `claim_window` is the window seed the claim was made for,
    * so a re-run in the same window re-derives the same claim instead of making a second one. The

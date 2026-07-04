@@ -23,7 +23,7 @@ import { decideColdRestage, type LiarInput, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ConductorInput, type ApparitionCandidate } from './conductor.js';
 import { resolveKeeperDialogue, type KeeperDialogueInput, type KeeperDialogueDossier } from './keeper.js';
 import { resolveCompanionDialogue, type CompanionDialogueInput, type CompanionArcFlags } from './companion.js';
-import { composeFinale, type FinaleComposeInput } from './finale.js';
+import { composeFinale, composeRelease, type FinaleComposeInput, type ReleaseComposeInput } from './finale.js';
 import { decideTheories, CLUSTERS, theoryFlag } from './theory.js';
 import { decideRelief, RELIEF_BEATS } from './relief.js';
 import { decideWeaponization, MIN_QUOTE_LEN, type CapturedObservation } from './observer.js';
@@ -509,6 +509,42 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   check('finale: inheritors codicil appends', composeFinale(finInput({ inheritorsCodicil: true })).lines.length === 2);
   check('finale: deterministic', JSON.stringify(composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true }))) ===
     JSON.stringify(composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true }))));
+}
+
+// ===========================================================================
+// finale.ts — THE RELEASE composer: mask-off farewell + disconnect kick line (FINALE-THE-RELEASE.md).
+// ===========================================================================
+function relInput(over: Partial<ReleaseComposeInput> = {}): ReleaseComposeInput {
+  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, inheritorsCodicil: false, reckoningFree: false, reckoningUnderstand: false, reckoningCondemn: false, seventhName: null, ...over };
+}
+{
+  // The three universal movements are ALWAYS present (opener + made + closing), whatever the flavor.
+  const bare = composeRelease(relInput());
+  check('release: universal spine is always ≥3 lines (opener/made/closing)', bare.lines.length >= 3);
+  check('release: always carries a kick line', typeof bare.kickLine === 'string' && bare.kickLine.length > 0);
+  // Every fate resolves to a distinct tone clause (line 3), never empty.
+  const kept = composeRelease(relInput({ fate: 'kept' }));
+  const cast = composeRelease(relInput({ fate: 'cast_out' }));
+  check('release: fate tone differs (kept vs cast_out)', kept.lines[2] !== cast.lines[2]);
+  // The Wren mirror is mutually exclusive and precedence-ordered (free > understand > condemn).
+  const free = composeRelease(relInput({ reckoningFree: true }));
+  const understand = composeRelease(relInput({ reckoningUnderstand: true }));
+  const condemn = composeRelease(relInput({ reckoningCondemn: true }));
+  check('release: each Wren branch adds exactly one line', free.lines.length === bare.lines.length + 1 && understand.lines.length === bare.lines.length + 1 && condemn.lines.length === bare.lines.length + 1);
+  check('release: Wren free/understand/condemn are distinct', free.lines.join() !== understand.lines.join() && understand.lines.join() !== condemn.lines.join());
+  const both = composeRelease(relInput({ reckoningFree: true, reckoningCondemn: true }));
+  check('release: free wins over condemn (mutually exclusive, one line)', both.lines.length === free.lines.length && both.lines.join() === free.lines.join());
+  // The kick line reflects the seventh choice: restored → title reclaimed; erased → the struck blank.
+  const restored = composeRelease(relInput({ seventhChoice: 'restore' }));
+  const erased = composeRelease(relInput({ seventhChoice: 'erase' }));
+  check('release: restored kick line signs off with the reclaimed title', restored.kickLine.includes('the seventh, kept no longer'));
+  check('release: erased kick line is the struck blank', erased.kickLine.includes('[ ]'));
+  // A canon name, when set, is woven into both the farewell and the kick sign-off.
+  const named = composeRelease(relInput({ seventhChoice: 'restore', seventhName: 'vael' }));
+  check('release: a set name reaches the kick sign-off', named.kickLine.toLowerCase().includes('vael'));
+  check('release: a set name reaches the farewell body', named.lines.some((l) => l.toLowerCase().includes('vael')));
+  check('release: deterministic', JSON.stringify(composeRelease(relInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true, seventhName: 'vael' }))) ===
+    JSON.stringify(composeRelease(relInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true, seventhName: 'vael' }))));
 }
 
 // ===========================================================================
