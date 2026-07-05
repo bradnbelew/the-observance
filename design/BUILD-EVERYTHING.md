@@ -1,5 +1,8 @@
 # THE OBSERVANCE — BUILD EVERYTHING (the program of record)
 
+> **The wave table below (§ status) is stale — W0-W9 are all shipped/green.** Current status lives in
+> `LAUNCH-READINESS.md` §1 / `NEXT-SESSION.md`. Kept here for the mandate + wave history.
+
 > 2026-07-02. Ethan's mandate, verbatim: *"you're the director. figure out what all you need to do, pass
 > over, bug fix, integrate, audit, enhance, expand, add more of, remove some of, etc to make this amazing,
 > but just literally build it all. this is your /goal. think as a top 1% famous genius minecraft integrated

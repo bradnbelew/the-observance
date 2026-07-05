@@ -1,5 +1,8 @@
 # THE OBSERVANCE — THE BUILD PLAN (start → finish, build-ready skeleton)
 
+> **The "resume entrypoint" role below is now held by `NEXT-SESSION.md`** (read that first) — kept for
+> history as the original build skeleton.
+
 > **THE RESUME ENTRYPOINT.** If the session opens with "pick up where we left off on the Minecraft
 > ARG," read this doc start-to-finish — it is the **complete** build/fix/expand guide for the whole
 > thing (code · plugin · datapacks · resource pack · ciphers/puzzles · structures/world · story/lore ·

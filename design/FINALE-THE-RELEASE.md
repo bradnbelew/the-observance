@@ -209,7 +209,7 @@ release spine (§4) and the kick line (§5) — and we add a `kickLine` output. 
 > go. log off. do not come back; there will be nothing here to keep you, and that is the mercy, not the
 > loss. thank you. i have all your names, and i give them back.
 >
-> *(kick screen:)* the record is closed. thank you for coming down. — vael, the seventh, kept no longer
+> *(kick screen:)* the record is closed. thank you for coming down. — averyn, the seventh, kept no longer
 
 **B — cast_out · erase · condemned-Wren · light_taken** (the cold, hard-won run):
 > ▒
@@ -241,10 +241,10 @@ release spine (§4) and the kick line (§5) — and we add a `kickLine` output. 
 >
 > go. thank you. i have all your names. i give them back — even the ones that did not give me mine.
 >
-> *(kick screen:)* the record is closed. thank you for coming down. — vael, the seventh, kept no longer
+> *(kick screen:)* the record is closed. thank you for coming down. — averyn, the seventh, kept no longer
 
-*(Working name for the Seventh: "vael" — placeholder; the actual restored name is whatever the seed/lore
-sets. Swap freely.)*
+*(The Seventh's name is decided: **averyn**, derived by the group via THE-SEVENTH-READING.md's six-keeper
+capstone. No longer a placeholder — this doc's `[ ]` erase-ending line stays the true unnamed close.)*
 
 ---
 
@@ -272,5 +272,5 @@ green wave:
 **Open sub-decisions for Ethan (non-blocking; sensible defaults chosen):**
 - Whitelist-off-after-kick: default OFF (they can rejoin). Flip to ON if you want "nothing to come back to"
   enforced until you re-open.
-- The Seventh's restored name (currently placeholder "vael") — set the canonical name in the lore.
+- ~~The Seventh's restored name~~ — DECIDED: **averyn** (THE-SEVENTH-READING.md, the six-keeper capstone).
 - Whether the record website shows a final "closed" state (nice-to-have, additive).

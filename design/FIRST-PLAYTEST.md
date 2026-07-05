@@ -1,5 +1,8 @@
 # THE OBSERVANCE — FIRST PLAYTEST (the vertical slice)
 
+> **Superseded by `LAUNCH-READINESS.md` §5** (the current playtest trace, 2026-07-03) — kept for history.
+> Historical below.
+
 > Written 2026-07-02, the day the full stack went live (plugin 0.2.2 + resourcepack + datapack on the
 > server · Discord bot + showrunner cron on Railway · the Record website on Vercel). This is the ONE gate
 > the design's own checkpoints demanded: **see the loop work end-to-end, live.** One run proves ~15

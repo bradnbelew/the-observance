@@ -11,6 +11,7 @@ import { decide } from './decide.js';
 import { applyDecision } from './apply.js';
 import { runCustomsPass } from './customs.run.js';
 import { decideCustomReports, OBSERVE_AT, WARN_AT, LEFT_AT } from './customs.js';
+import { runUnlitDeepPass } from './unlit-deep.run.js';
 import { computeAutonomyGates, runAutonomyPasses } from './autonomy.run.js';
 import { materializeArchive } from './archive.run.js';
 import { runReportsPass } from './reports.run.js';
@@ -77,12 +78,20 @@ async function main(): Promise<void> {
   let customs = { reported: 0, tolled: 0 };
   let reports = { reported: 0, staged: 0 };
   let observer = { echoed: false };
+  let unlitDeep = { reported: 0 };
   let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
   if (!snapshot.asleep) {
     try {
       customs = await runCustomsPass(snapshot.mode, nowIso);
     } catch (e) {
       console.error('[showrunner] customs pass error (isolated)', e);
+    }
+    // The Unlit Deep group latch's ONE report (INV-17): the plugin's UnlitDeepListener writes
+    // unlit_deep_broken_at directly to arc_state.flags; this posts the toll once per fresh break.
+    try {
+      unlitDeep = await runUnlitDeepPass(nowIso);
+    } catch (e) {
+      console.error('[showrunner] unlit-deep pass error (isolated)', e);
     }
     // The between-session autonomy producers (grave / herd / forks / clock), beside the customs
     // bridge. Fully fault-isolated internally; one wrap here keeps a hard failure off the spine.
@@ -122,7 +131,7 @@ async function main(): Promise<void> {
     `graves=${autonomy.graves} herd=${autonomy.herdSpreads} forks=${autonomy.forksSet} ` +
     `cold=${autonomy.coldRestages} apparition=${autonomy.apparitionClaimed ? 1 : 0} ` +
     `theories=${autonomy.theoriesLocked} needle=${autonomy.keptNeedleGranted ? 1 : 0} relief=${autonomy.reliefPosted} ` +
-    `observed=${reports.reported} heard=${observer.echoed ? 1 : 0}`,
+    `observed=${reports.reported} heard=${observer.echoed ? 1 : 0} unlit_deep=${unlitDeep.reported}`,
   );
 }
 

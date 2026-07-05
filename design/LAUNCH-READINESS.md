@@ -140,13 +140,25 @@ committed on this branch; everything re-verified green after each.
 - A minor register-separation violation: `oracle/resolve.ts`'s lore-fallback line was hardcoded inline
   instead of sourced from `voice.ts`. Moved into `voice.oracleLore()`.
 
+**2026-07-05 — Unlit Deep BUILT (Ethan approved the build).** `UnlitDeepListener.java` (BlockPlace +
+player-attributed `BlockIgniteEvent` "held-flame edge" detection, Y ≤ `deep-line-y`, taboo moon phase,
+GROUP-scoped cooldown via a single shared rate-limiter key — never a per-player tally, matching
+`CustomComplianceListener`'s own note on this boundary) + `TrackerConfig.CUSTOM_UNLIT_DEEP` + the
+`customs.unlit-deep`/`restraint.enabled` config resolution, registered in `ObservancePlugin`. On a fresh
+group-latch break it merges `unlit_deep_broken_at`/`unlit_deep_broken_by` into `arc_state.flags`
+(recorded, never spoken/messaged — a downstream discord pass owns the telling). The Discord side
+(`unlit-deep.ts` pure policy + `unlit-deep.run.ts` I/O, wired into the showrunner tick beside
+`runCustomsPass`) posts the already-authored `voice.tollUnlitDeep()` line to #the-record once per fresh
+break, idempotent on a high-water mark (`state.unlit_deep_last_reported_at`). **Not built (honestly
+deferred, not half-shipped): the KEPT side** (`voice.keptUnlitDeep()` is authored and ready) — it needs a
+per-black-moon-night idempotency signal ("was THIS black moon already reported kept or broken?") that
+nothing currently supplies cleanly from the Discord side; a good next step once there's a per-night
+marker to key off. **Also not built: the reward's visual payoff** ("the never-doused fire lends its
+glow") — the config's own "gated behind the Undercroft fire (FACT 11) existing" note means this is
+conditional on a physical light-source structure that hasn't been placed as a site yet; the flag write is
+ready for whatever beat eventually reads it. All 4 surfaces verified green after the build.
+
 **Found, NOT fixed — needs your call, not a unilateral build:**
-- **The Unlit Deep (the one group-restraint custom, `config.yml` `customs.unlit-deep`) was never built.**
-  `UnlitDeepListener` + `CUSTOM_UNLIT_DEEP` are named in comments/config but no such class exists anywhere.
-  This is INV-17's "seven CUSTOM_KEYS + the one group latch" — the group latch is currently missing
-  entirely, not deferred-and-flagged like the other items in §3. This is a real feature build (a new
-  Listener: BlockPlace + held-flame-edge detection + debounce + cooldown + group latch state), not a
-  wiring fix — flagging for you to prioritize rather than improvising it.
 - **The `keeper.ts` gap is bigger than previously stated.** Not just the TS dialogue resolver missing a
   runner — `KeeperNpcListener.java` (the presiding-Keeper interaction producer) is also never registered,
   and nothing anywhere tags an NPC entity with the `keeper_npc` PDC key it looks for. So today, right-
@@ -159,8 +171,8 @@ committed on this branch; everything re-verified green after each.
 - Smaller cosmetic/config drift (no functional impact, not fixed): `event-window.*` and
   `customs.false-law.enabled` are documented in config.yml but read by no code; `herd.pale-cosmetic-pdc-key`
   is declared but the actual PDC key is hardcoded elsewhere (moot today since nothing writes the tag either
-  way — the "cosmetic Pale" producer doesn't exist yet, same shape as the Unlit Deep gap); `SceneAwareness.java`
-  (util) is unreferenced anywhere.
+  way — the "cosmetic Pale" producer doesn't exist yet, the same "no producer yet" shape Unlit Deep was
+  in before 2026-07-05); `SceneAwareness.java` (util) is unreferenced anywhere.
 
 **2026-07-03 (later) — THE RELEASE built + full-ARG playability audit.** Built the unified finale (see
 above / FINALE-THE-RELEASE.md). Then a from-scratch playability pass across ALL content (not just the
@@ -180,8 +192,8 @@ spine), John's-POV:
   verbatim — they always worked. Swapped the phantom keys for the real `oracleLore` key so it's explicit +
   robust to a future edit.
 - **Still open (content enrichment, not blockers):** the 20 diverse-expansion puzzles carry NULL thread
-  tags (not clustered in the Recovery Archive) — pure content add; the two non-canon prose docs
-  (thread-tagging.md / mc-build-visualize.md) still conflate "seven keepers" (LOW, non-canon guidance).
+  tags (not clustered in the Recovery Archive) — pure content add. (The "seven keepers" doc conflation
+  noted here previously was fixed in `125fe56`.)
 
 **Playtest trace (manual, content-quality + retrace-fairness read, not a live human group):** Sampled the
 cold-open hook, the full M4/Iss chain (`no-wall-catch` → `bound-word` → `m4-three-hands` → `threshold-

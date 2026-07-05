@@ -24,6 +24,7 @@ import com.observance.watcher.signal.listener.DeathListener;
 import com.observance.watcher.signal.listener.IgnitionListener;
 import com.observance.watcher.signal.listener.LecternReadListener;
 import com.observance.watcher.signal.listener.TerritoryListener;
+import com.observance.watcher.signal.listener.UnlitDeepListener;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Reveal;
 import com.observance.watcher.util.Safety;
@@ -414,6 +415,10 @@ public final class ObservancePlugin extends JavaPlugin {
         // The Dark Hours custom — sleeping on a taboo moon phase is a tracked violation
         // (rate-limited per player). Pure tracking; escalation is a downstream beat's job.
         pm.registerEvents(new DarkHoursListener(signalTracker, rateLimiter, safety), this);
+        // The Unlit Deep — the ONE group-restraint latch (INV-17). GROUP-scoped, not a per-player
+        // tally: an explicit flame act at/below the deep line on a taboo moon phase breaks it for all.
+        // Config-gated (customs.unlit-deep.enabled + restraint.enabled) — a clean no-op when off.
+        pm.registerEvents(new UnlitDeepListener(signalTracker, supabase, rateLimiter, scheduler, safety), this);
 
         // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.

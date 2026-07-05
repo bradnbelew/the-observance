@@ -33,6 +33,8 @@ public final class TrackerConfig {
     public static final String CUSTOM_DEEP_LINE = "the_deep_line";
     public static final String CUSTOM_SACRED_BEAST = "the_sacred_beast";
     public static final String CUSTOM_DARK_HOURS = "the_dark_hours";
+    /** The ONE group-restraint latch (INV-17) — NOT one of the seven CUSTOM_KEYS above; see UnlitDeepListener. */
+    public static final String CUSTOM_UNLIT_DEEP = "the_unlit_deep";
 
     private final boolean enabled;
 
@@ -65,6 +67,15 @@ public final class TrackerConfig {
     // is a PDC key checked by the listener. Here we only carry the tag key name.
     private final String sacredBeastPdcKey;
 
+    // The Unlit Deep — the ONE group-restraint latch (customs.unlit-deep + the restraint.enabled master
+    // kill). A group-scoped cooldown (ms), not per-player: "one latch-edge per group per cooldown."
+    private final boolean unlitDeepEnabled;
+    private final boolean restraintEnabled;
+    private final Set<String> unlitDeepFlameMaterials;   // material names, upper-cased
+    private final int unlitDeepDeepLineY;
+    private final Set<Integer> unlitDeepMoonPhases;       // taboo phases in [0..7]; empty → reuse dark-hours
+    private final long unlitDeepCooldownMs;
+
     // base detection tuning
     private final int baseClusterRadius;             // blocks; place-events within this group up
     private final int baseMinPlacements;             // min block-places to call a cluster a base
@@ -78,6 +89,9 @@ public final class TrackerConfig {
                           boolean darkHoursEnabled, Set<Integer> darkHoursMoonPhases,
                           long darkHoursCooldownMs,
                           String sacredBeastPdcKey,
+                          boolean unlitDeepEnabled, boolean restraintEnabled,
+                          Set<String> unlitDeepFlameMaterials, int unlitDeepDeepLineY,
+                          Set<Integer> unlitDeepMoonPhases, long unlitDeepCooldownMs,
                           int baseClusterRadius, int baseMinPlacements, double baseConfidenceFloor) {
         this.enabled = enabled;
         this.forbiddenWords = forbiddenWords;
@@ -92,6 +106,12 @@ public final class TrackerConfig {
         this.darkHoursMoonPhases = darkHoursMoonPhases;
         this.darkHoursCooldownMs = darkHoursCooldownMs;
         this.sacredBeastPdcKey = sacredBeastPdcKey;
+        this.unlitDeepEnabled = unlitDeepEnabled;
+        this.restraintEnabled = restraintEnabled;
+        this.unlitDeepFlameMaterials = unlitDeepFlameMaterials;
+        this.unlitDeepDeepLineY = unlitDeepDeepLineY;
+        this.unlitDeepMoonPhases = unlitDeepMoonPhases;
+        this.unlitDeepCooldownMs = unlitDeepCooldownMs;
         this.baseClusterRadius = baseClusterRadius;
         this.baseMinPlacements = baseMinPlacements;
         this.baseConfidenceFloor = baseConfidenceFloor;
@@ -160,6 +180,28 @@ public final class TrackerConfig {
 
         String beastKey = t.getString("sacred-beast-pdc-key", "observance_sacred_beast");
 
+        // The Unlit Deep — customs.unlit-deep + the restraint.enabled master kill are ROOT-level
+        // sections (siblings of `tracker:`), not nested under it.
+        boolean restraintOn = c.getBoolean("restraint.enabled", true);
+        ConfigurationSection ud = c.getConfigurationSection("customs.unlit-deep");
+        boolean udEnabled = ud == null || ud.getBoolean("enabled", true);
+        Set<String> udMaterials = new HashSet<>();
+        if (ud != null) {
+            for (String m : ud.getStringList("flame-materials")) {
+                if (m != null && !m.isBlank()) udMaterials.add(m.trim().toUpperCase(Locale.ROOT));
+            }
+        }
+        if (udMaterials.isEmpty()) udMaterials.addAll(defaultUnlitDeepFlameMaterials());
+        int udY = ud == null ? -48 : clampI(ud.getInt("deep-line-y", -48), -64, 320);
+        Set<Integer> udPhases = new HashSet<>();
+        if (ud != null) {
+            for (int phase : ud.getIntegerList("taboo-moon-phases")) {
+                if (phase >= 0 && phase <= 7) udPhases.add(phase);
+            }
+        }
+        if (udPhases.isEmpty()) udPhases.addAll(dhPhases);   // empty ⇒ reuse dark-hours' taboo set
+        long udCdMs = (ud == null ? 300 : clampI(ud.getInt("cooldown-seconds", 300), 0, 86400)) * 1000L;
+
         ConfigurationSection base = t.getConfigurationSection("base-detection");
         int clusterR = base == null ? 24 : clampI(base.getInt("cluster-radius", 24), 4, 256);
         int minPlace = base == null ? 12 : clampI(base.getInt("min-placements", 12), 1, 100000);
@@ -169,7 +211,10 @@ public final class TrackerConfig {
                 Collections.unmodifiableSet(ores), Collections.unmodifiableList(weights), cap,
                 deepY, deepEnabled, deepCdMs, keptCdMs,
                 dhEnabled, Collections.unmodifiableSet(dhPhases), dhCdMs,
-                beastKey, clusterR, minPlace, confFloor);
+                beastKey,
+                udEnabled, restraintOn, Collections.unmodifiableSet(udMaterials), udY,
+                Collections.unmodifiableSet(udPhases), udCdMs,
+                clusterR, minPlace, confFloor);
     }
 
     /** All-defaults instance for when the section is entirely absent. */
@@ -182,7 +227,10 @@ public final class TrackerConfig {
                 Collections.unmodifiableList(defaultHoardWeights()), 1000.0,
                 -48, true, 300_000L, 600_000L,
                 true, Collections.unmodifiableSet(dhPhases), 60_000L,
-                "observance_sacred_beast", 24, 12, 0.4);
+                "observance_sacred_beast",
+                true, true, Collections.unmodifiableSet(new HashSet<>(defaultUnlitDeepFlameMaterials())),
+                -48, Collections.unmodifiableSet(dhPhases), 300_000L,
+                24, 12, 0.4);
     }
 
     /* ----------------------------- getters ---------------------------- */
@@ -213,6 +261,15 @@ public final class TrackerConfig {
     }
 
     public String sacredBeastPdcKey() { return sacredBeastPdcKey; }
+
+    public boolean unlitDeepEnabled() { return unlitDeepEnabled; }
+    public boolean restraintEnabled() { return restraintEnabled; }
+    public boolean isUnlitDeepFlameMaterial(String materialName) {
+        return materialName != null && unlitDeepFlameMaterials.contains(materialName.toUpperCase(Locale.ROOT));
+    }
+    public int unlitDeepDeepLineY() { return unlitDeepDeepLineY; }
+    public boolean isUnlitDeepTabooMoonPhase(int phase) { return unlitDeepMoonPhases.contains(phase); }
+    public long unlitDeepCooldownMs() { return unlitDeepCooldownMs; }
 
     public int baseClusterRadius() { return baseClusterRadius; }
     public int baseMinPlacements() { return baseMinPlacements; }
@@ -263,6 +320,15 @@ public final class TrackerConfig {
                 "DIAMOND_ORE", "DEEPSLATE_DIAMOND_ORE",
                 "EMERALD_ORE", "DEEPSLATE_EMERALD_ORE",
                 "NETHER_QUARTZ_ORE", "ANCIENT_DEBRIS");
+    }
+
+    private static List<String> defaultUnlitDeepFlameMaterials() {
+        // "a sensible vanilla fire/torch/lantern/campfire default set" (config.yml customs.unlit-deep).
+        return List.of(
+                "FIRE", "SOUL_FIRE",
+                "TORCH", "WALL_TORCH", "SOUL_TORCH", "SOUL_WALL_TORCH",
+                "LANTERN", "SOUL_LANTERN",
+                "CAMPFIRE", "SOUL_CAMPFIRE");
     }
 
     private static List<HoardWeight> defaultHoardWeights() {

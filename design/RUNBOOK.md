@@ -12,11 +12,16 @@
   order-enforcing bundle: 0005 (tables) → 0006 (flag gate) → **0008 (`requires_quorum` — the reshape
   roster-quorum guard)** → the seeds (incl. the metapuzzle §5 quorum values) → **schema-repair.sql**.
   Idempotent — safe to re-run. *(Do NOT use the older `apply-tonight.sql` — it predates the reshape and
-  omits the quorum column/values.)*
+  omits the quorum column/values.)* **apply-all.sql stops at 0008 — also paste
+  `discord/supabase/migrations/0009_observations.sql`** (the W5 voice-tier table) → Run. Idempotent.
 - **Record-website view (reshape S-D):** also paste **`dashboard/supabase/migrations/0006_v_record_theories.sql`**
   → Run. It extends the public `v_record` view so the archive un-redacts a keeper's fate by assembled
   THEORY. Idempotent (`create or replace view`); requires `0004_v_record.sql` already applied (it is, from
   the earlier go-live). Without it the record falls back to stone-count un-redaction (still correct).
+- **Also paste, in order** (all idempotent, both from the 2026-07-03 push — see LAUNCH-READINESS.md §2):
+  `dashboard/supabase/migrations/0007_v_archive.sql`, `0008_v_archive_flag_gate.sql`,
+  `0009_beat_queue_failed_status.sql`. Without these the archive/Observer flag-gating and the
+  `beat_queue` failed-status hazard fix are missing.
 - Grab your **`service_role`** key (Project Settings → API → `service_role`, the *secret* one).
 
 ### 1b. Server (Crafty)

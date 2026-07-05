@@ -1218,7 +1218,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 at.getWorld().spawn(at, org.bukkit.entity.TextDisplay.class, td -> {
                     td.text(finalLabel);
                     td.setPersistent(true);              // a world carving — survives restarts (visible to all)
-                    td.setBillboard(org.bukkit.entity.Display.Billboard.FIXED);
+                    // CENTER not FIXED: Site stores no yaw, so a FIXED display here has no real facing to
+                    // carve at and could render edge-on/backward from a stone's approach side (capstone risk).
+                    td.setBillboard(org.bukkit.entity.Display.Billboard.CENTER);
                     td.setSeeThrough(false);
                     td.setShadowed(true);
                     td.setDefaultBackground(false);

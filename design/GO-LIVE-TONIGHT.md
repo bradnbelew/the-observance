@@ -1,5 +1,8 @@
 # THE OBSERVANCE — GO-LIVE FOR TONIGHT'S FIRST TEST
 
+> **Superseded by `RUNBOOK.md`** (the current operator's guide for running a real session) — kept for
+> history. Historical below.
+
 > **Goal of tonight:** prove the **core loop on a real server** (BUILD-PLAN Phase A) — the smallest
 > genuinely-real slice: *ignition → a gated cipher → solve it (with a hint) at an in-world sign → the
 > gate opens → a beat/scare fires.* NOT the full game. The big subsystems (Observer voice, the companion

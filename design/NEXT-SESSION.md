@@ -30,7 +30,9 @@ chain → finale → companion reckoning) found the authored content and pacing 
 fairness bugs beyond the drip-gate fix. Also surfaced: the Unlit Deep group-custom was never built at all
 (bigger than a wiring gap — a real feature), and the `keeper.ts` deferred item is wider in scope than
 previously stated (the plugin-side NPC listener + entity-tagging producer are also missing, not just the
-TS resolver). See `LAUNCH-READINESS.md §5` before starting any Unlit Deep / Keeper-NPC work.
+TS resolver). **2026-07-05: Unlit Deep BUILT** (Ethan approved it) — see `LAUNCH-READINESS.md §5` for the
+full ledger (detector + group-latch flag + the Discord report, KEPT-side + the fire's visual glow honestly
+deferred). `keeper.ts` remains correctly deferred, unchanged.
 
 ## 1. CURRENT STATE (2026-07-03) — everything built, all green, NOTHING pushed
 Branch `feat/build-everything-2026-07-01`. Every surface green: **plugin jar · discord tsc + 9 selftests ·

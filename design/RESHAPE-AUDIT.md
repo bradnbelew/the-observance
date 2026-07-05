@@ -1,5 +1,8 @@
 # RESHAPE AUDIT — live-state findings feeding the add/change/cut pass
 
+> **Superseded — fully absorbed into `CHANGE-MANIFEST.md` / `THE-RESHAPE.md`** — kept for history.
+> Historical below.
+
 > 2026-07-02. Four read-only recon agents audited all five surfaces against the direction (world-not-puzzle-
 > game). Distilled verdicts below. This feeds `CHANGE-MANIFEST.md` (the add/change/cut pass). Status per
 > surface at bottom.

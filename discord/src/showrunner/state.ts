@@ -31,6 +31,12 @@ export interface ShowrunnerState {
    * every cadence. Absent/empty on a fresh deploy.
    */
   reported_customs?: Record<string, number>;
+  /**
+   * The Unlit Deep group latch's idempotency mark (unlit-deep.ts): the highest
+   * `arc_state.flags.unlit_deep_broken_at` already reported to #the-record. A break is re-posted only
+   * when a newer break timestamp arrives. Absent on a fresh deploy / before the latch's first break.
+   */
+  unlit_deep_last_reported_at?: number | null;
 
   // -------------------------------------------------------------------------
   // BETWEEN-SESSION AUTONOMY bookkeeping (A2/A3/A8–A13, B3/B4). Stored on this

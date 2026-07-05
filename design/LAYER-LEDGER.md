@@ -1,5 +1,9 @@
 # THE OBSERVANCE — PLANNED-LAYER LEDGER (the anti-forgetting sweep)
 
+> **Pre-deploy snapshot — badly stale.** Written before the server/bot/dashboard were ever live; its "not
+> one beat has been SEEN firing live" no longer holds. Current status: `LAUNCH-READINESS.md`. Kept for
+> the layer inventory itself, which is still useful.
+
 > Built 2026-07-01 by a full-corpus audit: **236 planned layers** enumerated from the design docs, each
 > checked against live code for **built → wired → deployed → proven**. This is the promise that nothing
 > was forgotten. Two director corrections are folded in (see ⚠️). Where this and a status-checker

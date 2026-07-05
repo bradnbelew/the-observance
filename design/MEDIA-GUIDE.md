@@ -51,11 +51,13 @@ optional; **this section is the one that actually gates the experience.**
   - `drone_low.ogg` — low dread bed.
   - `stone_breath.ogg` — the world "breathing"; stone-y, cold.
   - `cold_toll.ogg` — the reversible cold-toll cue (played when a Whisper is spent / a custom toll lands).
-- **The seven keeper voices** (played by `SpatialVoiceBeat` — "the Ear," the keeper speaks near one player):
+- **The six keeper voices, plus one fallback** (played by `SpatialVoiceBeat` — "the Ear," the keeper speaks
+  near one player):
   - `keeper_vaun.ogg`, `keeper_mara.ogg`, `keeper_sella.ogg`, `keeper_orin.ogg`, `keeper_brann.ogg`,
     `keeper_iss.ogg` — one short spoken/whispered clip per keeper, in-character (Vaun hoarder-gruff, Mara
     soft/referential, Sella child/drowned, Orin clipped/silent, Brann doubled/nightwatch, Iss warm-then-cold).
   - `keeper_voice.ogg` — the **generic fallback** used if a specific keeper clip is missing. Keep it.
+    (Seven files total; six keepers, not seven — don't read this as a seventh keeper's voice.)
 - **Design note:** these are the ONE thing "I can't generate game audio" — genuinely yours to source or
   make. Restraint wins: dead air + one wrong sound beats a busy soundscape. If you never touch them, the
   game degrades to silence gracefully (no crash) — but the "it heard you / the Ear" beats go quiet.
