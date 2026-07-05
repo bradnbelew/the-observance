@@ -47,20 +47,36 @@ public final class DeathListener implements Listener {
 
     private final SignalTracker tracker;
     private final Safety safety;
+    /**
+     * The ONE PDC key the Sacred Beast is tagged with — read ONLY from {@link TrackerConfig}
+     * ({@code tracker.sacred-beast-pdc-key}, default {@code "sacred_beast"} under the plugin's
+     * own namespace, e.g. {@code observance:sacred_beast}), matching exactly what
+     * {@code SacredAnimalBeat} writes via {@code BeatContext}'s {@code "observance"} namespace.
+     * (Cross-package desync fix: the config default used to be {@code "observance_sacred_beast"},
+     * which never matched the beat's actual {@code "sacred_beast"} key — DeathListener papered
+     * over that with a hardcoded parallel key checked alongside it. Now that the config default
+     * matches the real key, there is exactly one source of truth and no parallel key.)
+     */
     private final NamespacedKey sacredBeastKey;
     /**
-     * The canonical key the {@code sacred_animal} beat actually tags with:
-     * namespace "observance", key "sacred_beast". The config key ({@link #sacredBeastKey}) is a
-     * Phase-1 alias; we check BOTH so the violation fires regardless of which path set the tag.
-     * (Cross-package desync fix: SacredAnimalBeat writes "sacred_beast"; the config default is
-     * "observance_sacred_beast", which previously never matched.)
+     * The byte {@code SacredAnimalBeat} sets on the LAST tagged (glowing) beast — the fork-arming one.
+     * Only its death arms Fork A; a second cow death is a no-op (the last-tagged-only rule).
+     *
+     * <p><b>Deliberately NOT config-exposed (FIX-4 judgment call).</b> Unlike {@code sacred_beast},
+     * which has a real config knob ({@code tracker.sacred-beast-pdc-key}) that this class alone reads
+     * and {@code SacredAnimalBeat} independently writes as a hardcoded literal, the two keys below
+     * are hardcoded literals on BOTH sides of every reader/writer pair: {@code SacredAnimalBeat} and
+     * {@code HerdSpreadBeat} (both out of scope for this pass) write {@code "sacred_fork_arm"} /
+     * {@code "pale_cosmetic"} as literal strings with no config path at all. Exposing only the
+     * DeathListener side as a config knob here would be worse than the current hardcoding: an admin
+     * could edit config.yml, believe they've renamed the tag, and silently desync from the writers —
+     * recreating exactly the drift this fix is closing for sacred_beast. These stay fixed constants
+     * until the writer classes also grow a config path.
      */
-    private final NamespacedKey beatSacredKey;
-    /** The byte {@code SacredAnimalBeat} sets on the LAST tagged (glowing) beast — the fork-arming one.
-     *  Only its death arms Fork A; a second cow death is a no-op (the last-tagged-only rule). */
     private final NamespacedKey forkArmKey;
     /** The cosmetic herd-conversion byte. A beast carrying this is decoration: ignored for conduct,
-     *  never a violation, never fork-arming (INV-13). Namespace matches the beat's BeatContext. */
+     *  never a violation, never fork-arming (INV-13). Namespace matches the beat's BeatContext.
+     *  Deliberately NOT config-exposed — see {@link #forkArmKey}'s doc for why. */
     private final NamespacedKey paleCosmeticKey;
 
     public DeathListener(Plugin plugin, SignalTracker tracker, Safety safety) {
@@ -71,17 +87,9 @@ public final class DeathListener implements Listener {
         try {
             key = new NamespacedKey(plugin, safeKey(tracker.config().sacredBeastPdcKey()));
         } catch (Throwable t) {
-            key = new NamespacedKey(plugin, "observance_sacred_beast");
+            key = new NamespacedKey(plugin, "sacred_beast");
         }
         this.sacredBeastKey = key;
-        // The key the in-process SacredAnimalBeat uses (BeatContext namespace "observance").
-        NamespacedKey beatKey;
-        try {
-            beatKey = new NamespacedKey("observance", "sacred_beast");
-        } catch (Throwable t) {
-            beatKey = key;
-        }
-        this.beatSacredKey = beatKey;
         // Fork-arm + pale-cosmetic bytes — same "observance" namespace SacredAnimalBeat tags under.
         NamespacedKey arm, pale;
         try { arm = new NamespacedKey("observance", "sacred_fork_arm"); }
@@ -142,11 +150,7 @@ public final class DeathListener implements Listener {
 
     private boolean isSacredBeast(LivingEntity entity) {
         try {
-            PersistentDataContainer pdc = entity.getPersistentDataContainer();
-            if (hasFlag(pdc, sacredBeastKey)) return true;
-            // Also honor the canonical beat tag (namespace "observance", key "sacred_beast").
-            return beatSacredKey != null && !beatSacredKey.equals(sacredBeastKey)
-                    && hasFlag(pdc, beatSacredKey);
+            return hasFlag(entity.getPersistentDataContainer(), sacredBeastKey);
         } catch (Throwable t) {
             return false; // never let a PDC quirk crash the handler
         }
@@ -181,9 +185,9 @@ public final class DeathListener implements Listener {
     }
 
     private static String safeKey(String raw) {
-        if (raw == null || raw.isBlank()) return "observance_sacred_beast";
+        if (raw == null || raw.isBlank()) return "sacred_beast";
         // NamespacedKey keys must be [a-z0-9._-]; normalize defensively.
         String k = raw.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9._-]", "_");
-        return k.isBlank() ? "observance_sacred_beast" : k;
+        return k.isBlank() ? "sacred_beast" : k;
     }
 }

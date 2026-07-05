@@ -386,7 +386,7 @@ public final class ObservancePlugin extends JavaPlugin {
 
     private void registerListeners() {
         var pm = getServer().getPluginManager();
-        pm.registerEvents(new PresenceListener(supabase, scheduler, safety, signalTracker), this);
+        pm.registerEvents(new PresenceListener(supabase, scheduler, safety, signalTracker, "observance"), this);
 
         // Resource-pack load gate (MF-11) — the SAME instance across reloads (its map is the truth of
         // who has the pack applied); re-registered here because reloadAll() unregisters all handlers.
@@ -432,7 +432,8 @@ public final class ObservancePlugin extends JavaPlugin {
         // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.
         pm.registerEvents(new AnswerSignListener(
-                oracleResolver, this::sites, rateLimiter, scheduler, safety), this);
+                oracleResolver, this::sites, rateLimiter, scheduler, safety,
+                signalTracker.config().answerSignCooldownMs()), this);
 
         // Room-swap consumer (D5 rework): teleport a player who crosses a SEALED door (armed by
         // RoomSwapBeat) into the pre-built changed room. Reads only the durable swap_dest PDC the beat

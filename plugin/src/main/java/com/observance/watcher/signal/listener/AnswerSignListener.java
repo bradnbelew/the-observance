@@ -37,22 +37,28 @@ public final class AnswerSignListener implements Listener {
     private static final String TYPE_ANSWER_SIGN = "answer_sign";
     private static final String TYPE_KEEPER_STONE = "keeper_stone";
 
-    /** A coarse per-player submit cooldown — defense in depth on top of the resolver's own limiter. */
-    private static final long SUBMIT_COOLDOWN_MS = 3_000L;
+    /** A coarse per-player submit cooldown — defense in depth on top of the resolver's own limiter.
+     *  Config-driven (tracker.answer-sign.cooldown-seconds via TrackerConfig#answerSignCooldownMs),
+     *  matching the sibling cooldown pattern (dark-hours/kept-light/etc.); 3000ms is the fallback if
+     *  a non-positive value somehow reaches the constructor, preserving the old hardcoded behavior. */
+    private static final long DEFAULT_SUBMIT_COOLDOWN_MS = 3_000L;
 
     private final OracleResolver resolver;
     private final Supplier<SitesConfig> sitesSupplier;
     private final RateLimiter rateLimiter;
     private final Scheduler scheduler;
     private final Safety safety;
+    private final long submitCooldownMs;
 
     public AnswerSignListener(OracleResolver resolver, Supplier<SitesConfig> sitesSupplier,
-                              RateLimiter rateLimiter, Scheduler scheduler, Safety safety) {
+                              RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
+                              long submitCooldownMs) {
         this.resolver = resolver;
         this.sitesSupplier = sitesSupplier;
         this.rateLimiter = rateLimiter;
         this.scheduler = scheduler;
         this.safety = safety;
+        this.submitCooldownMs = submitCooldownMs > 0 ? submitCooldownMs : DEFAULT_SUBMIT_COOLDOWN_MS;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -85,7 +91,7 @@ public final class AnswerSignListener implements Listener {
 
             // Coarse anti-spam cooldown per player+site (the resolver also rate-limits durably).
             String cdKey = "answersign:" + p.getUniqueId() + ":" + site.id();
-            if (!rateLimiter.tryCooldown(cdKey, SUBMIT_COOLDOWN_MS)) {
+            if (!rateLimiter.tryCooldown(cdKey, submitCooldownMs)) {
                 return; // submitting too fast → withhold silently
             }
 

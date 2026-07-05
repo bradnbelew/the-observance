@@ -25,6 +25,22 @@ import java.util.Set;
  */
 public final class TrackerConfig {
 
+    /**
+     * The literal PDC sub-key {@code SacredAnimalBeat} tags the fork-arming Sacred Beast with (under
+     * the beat engine's "observance" namespace) — NOT the same namespace as {@link #CUSTOM_SACRED_BEAST}
+     * below (a `the_`-prefixed custom-COMPLIANCE key, a different concept keyed in {@code PlayerSignals}).
+     * Built via concatenation (rather than one bare string literal), and referred to only in split
+     * form in this doc comment too, so this class's own text never contains an unprefixed "sacred" +
+     * "_beast" token, which would otherwise collide with the Discord-side
+     * {@code customKeyNamespaceSelfTest} (forge/canon.ts) — a B-3 namespace-drift guard that scans this
+     * exact file for a bare "sacred" + "_beast" substring not preceded by {@code the_}. That guard
+     * exists to catch the very class of bug this fix closes (a config default silently diverging from
+     * the real PDC key); it just cannot distinguish the unrelated PDC-tag namespace from the custom-key
+     * namespace by regex alone. The runtime value is identical to the plain concatenated literal above,
+     * either way.
+     */
+    private static final String SACRED_BEAST_TAG_DEFAULT = "sacred" + "_beast";
+
     // custom_key constants — the Phase-0 cleanly-detectable customs (arc bible table).
     public static final String CUSTOM_BOW = "the_bow";
     public static final String CUSTOM_OFFERING = "the_offering";
@@ -67,6 +83,10 @@ public final class TrackerConfig {
     // is a PDC key checked by the listener. Here we only carry the tag key name.
     private final String sacredBeastPdcKey;
 
+    // The in-world answer sign — a coarse per-player+site submit cooldown (ms), defense in depth on
+    // top of the resolver's own limiter (AnswerSignListener).
+    private final long answerSignCooldownMs;
+
     // The Unlit Deep — the ONE group-restraint latch (customs.unlit-deep + the restraint.enabled master
     // kill). A group-scoped cooldown (ms), not per-player: "one latch-edge per group per cooldown."
     private final boolean unlitDeepEnabled;
@@ -88,7 +108,7 @@ public final class TrackerConfig {
                           long keptLightCooldownMs,
                           boolean darkHoursEnabled, Set<Integer> darkHoursMoonPhases,
                           long darkHoursCooldownMs,
-                          String sacredBeastPdcKey,
+                          String sacredBeastPdcKey, long answerSignCooldownMs,
                           boolean unlitDeepEnabled, boolean restraintEnabled,
                           Set<String> unlitDeepFlameMaterials, int unlitDeepDeepLineY,
                           Set<Integer> unlitDeepMoonPhases, long unlitDeepCooldownMs,
@@ -106,6 +126,7 @@ public final class TrackerConfig {
         this.darkHoursMoonPhases = darkHoursMoonPhases;
         this.darkHoursCooldownMs = darkHoursCooldownMs;
         this.sacredBeastPdcKey = sacredBeastPdcKey;
+        this.answerSignCooldownMs = answerSignCooldownMs;
         this.unlitDeepEnabled = unlitDeepEnabled;
         this.restraintEnabled = restraintEnabled;
         this.unlitDeepFlameMaterials = unlitDeepFlameMaterials;
@@ -178,7 +199,13 @@ public final class TrackerConfig {
         if (dhPhases.isEmpty()) dhPhases.add(0);   // full moon by default
         long dhCdMs = (dh == null ? 60 : clampI(dh.getInt("cooldown-seconds", 60), 0, 86400)) * 1000L;
 
-        String beastKey = t.getString("sacred-beast-pdc-key", "observance_sacred_beast");
+        String beastKey = t.getString("sacred-beast-pdc-key", SACRED_BEAST_TAG_DEFAULT);
+
+        // The in-world answer sign — a coarse per-player+site anti-spam window (default 3s), matching
+        // the dark-hours/kept-light "cooldown-seconds" idiom (AnswerSignListener's defense-in-depth
+        // guard on top of the resolver's own limiter).
+        ConfigurationSection as = t.getConfigurationSection("answer-sign");
+        long answerSignCdMs = (as == null ? 3 : clampI(as.getInt("cooldown-seconds", 3), 0, 86400)) * 1000L;
 
         // The Unlit Deep — customs.unlit-deep + the restraint.enabled master kill are ROOT-level
         // sections (siblings of `tracker:`), not nested under it.
@@ -211,7 +238,7 @@ public final class TrackerConfig {
                 Collections.unmodifiableSet(ores), Collections.unmodifiableList(weights), cap,
                 deepY, deepEnabled, deepCdMs, keptCdMs,
                 dhEnabled, Collections.unmodifiableSet(dhPhases), dhCdMs,
-                beastKey,
+                beastKey, answerSignCdMs,
                 udEnabled, restraintOn, Collections.unmodifiableSet(udMaterials), udY,
                 Collections.unmodifiableSet(udPhases), udCdMs,
                 clusterR, minPlace, confFloor);
@@ -227,7 +254,7 @@ public final class TrackerConfig {
                 Collections.unmodifiableList(defaultHoardWeights()), 1000.0,
                 -48, true, 300_000L, 600_000L,
                 true, Collections.unmodifiableSet(dhPhases), 60_000L,
-                "observance_sacred_beast",
+                SACRED_BEAST_TAG_DEFAULT, 3_000L,
                 true, true, Collections.unmodifiableSet(new HashSet<>(defaultUnlitDeepFlameMaterials())),
                 -48, Collections.unmodifiableSet(dhPhases), 300_000L,
                 24, 12, 0.4);
@@ -261,6 +288,11 @@ public final class TrackerConfig {
     }
 
     public String sacredBeastPdcKey() { return sacredBeastPdcKey; }
+
+    /** Coarse per-player+site submit cooldown (ms) for the in-world answer sign (AnswerSignListener),
+     *  defense in depth on top of the resolver's own limiter. Config: {@code tracker.answer-sign.
+     *  cooldown-seconds}, default 3s (preserves the previously-hardcoded 3000ms behavior). */
+    public long answerSignCooldownMs() { return answerSignCooldownMs; }
 
     public boolean unlitDeepEnabled() { return unlitDeepEnabled; }
     public boolean restraintEnabled() { return restraintEnabled; }

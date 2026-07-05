@@ -140,8 +140,16 @@ tracker:
     cooldown-seconds: 60
 
   # The Sacred Beast — the PDC tag key a "pale one" mob is marked with (set by the
-  # beast-tagging subsystem in a later phase). Killing a tagged mob = a violation.
-  sacred-beast-pdc-key: "observance_sacred_beast"
+  # beast-tagging subsystem, SacredAnimalBeat, under the plugin's "observance" namespace).
+  # Must match the literal sub-key SacredAnimalBeat tags with ("sacred_beast") — DeathListener
+  # reads ONLY this config value now (no hardcoded parallel key). Killing a tagged mob = a violation.
+  sacred-beast-pdc-key: "sacred_beast"
+
+  # The in-world answer sign (AnswerSignListener) — a coarse per-player+site submit cooldown, defense
+  # in depth on top of the resolver's own limiter. Matches the dark-hours/kept-light cooldown-seconds
+  # idiom; default 3s preserves the listener's previous hardcoded behavior.
+  answer-sign:
+    cooldown-seconds: 3
 
   # Base detection (clustering of block-places + bed anchors → the bases table).
   base-detection:
@@ -515,15 +523,17 @@ restraint:
 #  Read by SacredAnimalBeat (mode:"spread") + DeathListener (pale key ignored).
 # ----------------------------------------------------------------------------
 herd:
-  # NOTE (2026-07-05 audit): NEITHER key below is read by the Java plugin (verified — SacredAnimalBeat
-  # never touches PDC-key-from-config or a pale cap, despite the header comment above claiming it does).
-  # If the slow-herd-conversion spread mechanic is implemented, it is not wired to these config values —
-  # an operator raising/lowering max-pale here changes nothing today. Treat as documentation-only /
-  # aspirational until SacredAnimalBeat actually reads them, or fix the header comment if this is
-  # intentionally TS-side.
+  # UPDATE (2026-07-05 audit, later pass): SacredAnimalBeat's mode:"spread" IS now built and live
+  # (HerdSpreadBeat / BeatLibrary), but it still hardcodes its own PDC key literal ("pale_cosmetic")
+  # and its own cap (SacredAnimalBeat.PALE_CAP = 16) rather than reading these two config values —
+  # BeatContext/BeatEngine currently have no path to TrackerConfig at all, so wiring these through
+  # would mean extending that plumbing, a bigger change than this config-drift item alone justifies.
+  # Both values below happen to already match the hardcoded reality (pale_cosmetic / 16), so nothing
+  # is currently WRONG in-game — but an operator editing either key here still changes nothing.
+  # Treat as documentation-only until BeatContext gains a TrackerConfig accessor.
   # PDC key marking a cosmetic "pale one" — DISTINCT from tracker.sacred-beast-pdc-key so killing a Pale
   # is NOT a violation (the precision guard, INV-13). Never glowing; babies are not auto-pale.
-  pale-cosmetic-pdc-key: "observance_pale_cosmetic"
+  pale-cosmetic-pdc-key: "pale_cosmetic"
   # Hard cap on how many Pale exist at once (unwitnessed spread, one-per-pass between sessions).
   max-pale: 16
 

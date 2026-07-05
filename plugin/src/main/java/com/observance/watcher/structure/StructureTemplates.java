@@ -1,12 +1,16 @@
 package com.observance.watcher.structure;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Lectern;
 import org.bukkit.block.Sign;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.block.banner.PatternType;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Rotatable;
@@ -17,6 +21,7 @@ import org.bukkit.block.sign.Side;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -554,6 +559,33 @@ public final class StructureTemplates {
         // right at the lintel. crib: the referent is the low lintel at (cx,cy+1,cz), one cell north of this sign.
         pen.runeCrib(cx, cy, cz - 1, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "BOW");
 
+        // THE SIX KEEPER BANNERS (§5.2 orin-banner-heraldry) — "his mason-hall": the entry bay IS the
+        // mason-hall for placement purposes (the corridor's own widened threshold). Three banners per
+        // side wall, at z-rows cz-1/cz+1/cz+2 — deliberately SKIPPING the z=cz lintel row, which
+        // already carries the cracked-lintel/lintel-filler blocks (no collision with the low-lintel
+        // set-piece). Readable in fall-order (Vaun, Mara, Sella / Orin, Brann, Iss — canon-spine §8.1)
+        // as the group walks up to and past the lintel: WEST wall (cx-1) carries Vaun/Mara/Sella
+        // front-to-back, EAST wall (cx+1) carries Orin/Brann/Iss front-to-back — so reading west-then-
+        // east, near-to-far, IS fall-order. Each banner's pattern echoes that keeper's own maker's-mark
+        // LETTER from the UNKEPT acrostic (canon-spine §8.5: Vaun=U, Mara=N, Sella=K, Orin=E, Brann=P,
+        // Iss=T) via a simple, distinct vanilla glyph built from SQUARE_* patterns — not a new cipher
+        // (the acrostic already exists in each stone's own framing; this is the SAME six-symbol set,
+        // echoed here so the hall reads as "these six belong together," per the design's "matches the
+        // maker's-marks the group has been collecting"). Orin's OWN banner (east wall, front position)
+        // is additionally marked with the mason's-square motif (a bordered diagonal square) — his
+        // sigil, "the key" the design calls out by name. The real mechanical unlock stays what
+        // cipher-plaintexts.md already binds: stone-orin's run is the plain rune alphabet, read with
+        // the Rosetta (no separate per-puzzle key to build); the banners are the LEGIBLE path ("these
+        // mean something, go read the stone") with the Rosetta brute-force backup already covered by
+        // design (PUZZLE-DESIGNS.md §5.2: "if they ignore the banner they can still brute the
+        // substitution — the fragile solution has a backup").
+        pen.wallBanner(cx - 1, cy + 1, cz - 1, BlockFace.EAST, DyeColor.BLUE, keeperMark('U'));      // Vaun
+        pen.wallBanner(cx - 1, cy + 1, cz + 1, BlockFace.EAST, DyeColor.PURPLE, keeperMark('N'));    // Mara
+        pen.wallBanner(cx - 1, cy + 1, cz + 2, BlockFace.EAST, DyeColor.CYAN, keeperMark('K'));      // Sella
+        pen.wallBanner(cx + 1, cy + 1, cz - 1, BlockFace.WEST, DyeColor.LIGHT_GRAY, masonSquareMark()); // Orin
+        pen.wallBanner(cx + 1, cy + 1, cz + 1, BlockFace.WEST, DyeColor.ORANGE, keeperMark('P'));    // Brann
+        pen.wallBanner(cx + 1, cy + 1, cz + 2, BlockFace.WEST, DyeColor.RED, keeperMark('T'));       // Iss
+
         // Beyond the threshold: an unfinished/broken carving on the back wall (Orin carving the same line).
         for (int dx = -1; dx <= 1; dx++) {
             pen.set(cx + dx, cy,     cz + 3, Material.STONE_BRICKS);
@@ -582,6 +614,51 @@ public final class StructureTemplates {
         // so the approach wall exists (do not remove the structural block).
         pen.set(cx, cy + 2, cz - 2, Material.DEEPSLATE_BRICKS);
         return answer;
+    }
+
+    /**
+     * One keeper's banner pattern for the mason-hall banners ({@code orin-banner-heraldry}, §5.2): a
+     * single distinct glyph built from vanilla {@link PatternType#SQUARE_TOP_LEFT}/{@code
+     * SQUARE_BOTTOM_RIGHT}-family patterns, chosen per the keeper's own maker's-mark LETTER from the
+     * {@code UNKEPT} acrostic (canon-spine §8.5) so the six banners' marks are the SAME six symbols
+     * the group is already collecting from each keeper-stone's carved framing — not a fresh, arbitrary
+     * set. A simple corner/quadrant reading keeps each mark visually distinct at a glance without
+     * needing the custom rune bitmap font (banners can't carry a font glyph the way signs can).
+     */
+    private static List<Pattern> keeperMark(char unkeptLetter) {
+        DyeColor mark = DyeColor.WHITE;
+        return switch (Character.toUpperCase(unkeptLetter)) {
+            // Vaun = U: a single bottom-quadrant square (a mark low and grounded — the hoarder kept low).
+            case 'U' -> List.of(new Pattern(mark, PatternType.SQUARE_BOTTOM_LEFT),
+                                new Pattern(mark, PatternType.SQUARE_BOTTOM_RIGHT));
+            // Mara = N: two opposite top corners (the reader who never walked — a mark that doesn't meet).
+            case 'N' -> List.of(new Pattern(mark, PatternType.SQUARE_TOP_LEFT),
+                                new Pattern(mark, PatternType.SQUARE_TOP_RIGHT));
+            // Sella = K: a single top-quadrant square (the drowned child — a mark that stayed at the surface).
+            case 'K' -> List.of(new Pattern(mark, PatternType.SQUARE_TOP_LEFT),
+                                new Pattern(mark, PatternType.SQUARE_TOP_RIGHT),
+                                new Pattern(mark, PatternType.STRIPE_TOP));
+            // Brann = P: a border ring (the watcher who kept the perimeter, watching all night).
+            case 'P' -> List.of(new Pattern(mark, PatternType.BORDER));
+            // Iss = T: a straight cross (the liar's mark cancels itself — a symbol that crosses out).
+            case 'T' -> List.of(new Pattern(mark, PatternType.STRAIGHT_CROSS));
+            // Fallback: a plain center stripe (never reached for the six named keepers above).
+            default -> List.of(new Pattern(mark, PatternType.STRIPE_CENTER));
+        };
+    }
+
+    /**
+     * Orin's own sigil — the mason's square (§5.2: "his own sigil ... is the substitution alphabet
+     * key"). Built as a bordered diagonal-corner motif (a carpenter's/mason's set-square read as two
+     * meeting quadrants inside a frame), distinct from every {@link #keeperMark} glyph so it reads at
+     * a glance as "this one is different — this one is the key," even before a player can name why.
+     */
+    private static List<Pattern> masonSquareMark() {
+        DyeColor mark = DyeColor.BLACK;
+        return List.of(
+                new Pattern(mark, PatternType.BORDER),
+                new Pattern(mark, PatternType.SQUARE_BOTTOM_LEFT),
+                new Pattern(mark, PatternType.SQUARE_TOP_RIGHT));
     }
 
     /* ================================================================================================
@@ -689,6 +766,12 @@ public final class StructureTemplates {
 
         // Wrongness: soul-soil creeping onto the warm brick floor near the seat.
         pen.set(cx + 1, cy - 1, cz, Material.SOUL_SOIL);
+
+        // THE KEEPSAKE LAMP (§7.2 iss-nbt-falsified-entry, NBT-heavy item stego) — a small chest beside
+        // the seat, as if left for a guest: Iss's "warm-worded gift" sits where a visitor would find it
+        // without being told to look, framed by the warm brick corner (not the cold front edge). A found
+        // object, not an admin hand-out — the datamine is the find (PUZZLES.md §1/§5-Iss, D7).
+        pen.chestWithItem(cx + 2, cy, cz + 2, BlockFace.WEST, IssKeepsakeLampItem.create("observance"));
 
         // THE ANSWER: a warm-looking sign on the cold dead hearth (a birch/warm-wood sign against black
         // stone — the deception). Blank submission slot at reading height on the hearth face.
@@ -1384,6 +1467,28 @@ public final class StructureTemplates {
             } catch (Throwable ignored) { }
         }
 
+        /**
+         * A WALL banner: a base color + an ordered list of patterns, attached to the block behind
+         * {@code facing} (mirrors the wall-sign helpers' "attach to the solid backing wall" idiom).
+         * Used for keeper-heraldry set-pieces (Orin's mason-hall, {@code orin-banner-heraldry}) where
+         * the banner ITSELF — its base color and pattern order — is the legible content, not text on
+         * a sign. Null/quirk-safe like the other block-prop helpers.
+         */
+        void wallBanner(int x, int y, int z, BlockFace facing, DyeColor baseColor, List<Pattern> patterns) {
+            if (world == null) return;
+            try {
+                Material mat = matOr(Material.WHITE_WALL_BANNER, baseColor.name() + "_WALL_BANNER");
+                Block b = world.getBlockAt(x, y, z);
+                b.setType(mat, false);
+                if (b.getBlockData() instanceof Directional d) { d.setFacing(facing); b.setBlockData(d, false); }
+                if (b.getState() instanceof Banner banner) {
+                    banner.setBaseColor(baseColor);
+                    if (patterns != null) banner.setPatterns(patterns);
+                    banner.update(true, false);
+                }
+            } catch (Throwable ignored) { }
+        }
+
         /** A hanging lantern (attached below a block), optionally the soul variant. */
         void hangingLantern(int x, int y, int z, boolean soul) {
             if (world == null) return;
@@ -1571,6 +1676,26 @@ public final class StructureTemplates {
                 }
                 lectern.getInventory().setItem(0, book);
                 lectern.update(true, false);
+            } catch (Throwable ignored) { }
+        }
+
+        /**
+         * A small chest facing a direction, holding a single found-object {@link ItemStack} in its
+         * first slot — the "a found container holds a found item" placement idiom (mirrors
+         * {@link #putBook}'s "place a prop, then fill it" shape, but for a normal chest instead of a
+         * lectern). Used for set-piece finds that must be discoverable in the world rather than
+         * handed out by an admin command (e.g. Iss's keepsake lamp). Null/quirk-safe.
+         */
+        void chestWithItem(int x, int y, int z, BlockFace facing, ItemStack contents) {
+            if (world == null) return;
+            try {
+                Block b = world.getBlockAt(x, y, z);
+                b.setType(Material.CHEST, false);
+                if (b.getBlockData() instanceof Directional d) { d.setFacing(facing); b.setBlockData(d, false); }
+                if (contents != null && b.getState() instanceof org.bukkit.block.Chest chest) {
+                    chest.getBlockInventory().setItem(0, contents);
+                    chest.update(true, false);
+                }
             } catch (Throwable ignored) { }
         }
 

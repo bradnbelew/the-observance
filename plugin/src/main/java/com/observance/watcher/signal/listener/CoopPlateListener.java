@@ -36,6 +36,10 @@ import java.util.function.Supplier;
  * <p>Pure + safe: never cancels the event, never mutates the world, never messages players; body in Safety;
  * the flag write is async (network) and throttled so plate-spam can't hammer the RPC. Unplaced/disabled →
  * a clean no-op (go-live safe). Sites resolved live via a {@link Supplier} so a reload is picked up.
+ *
+ * <p>Both world-leg trackers are keyed by {@link Site#id()}, so if more than one {@code coop_plate} site
+ * is ever placed, a foot at one site and a carve at a different site can never combine into a false
+ * "both fresh together" — freshness is judged per-site, not globally.
  */
 public final class CoopPlateListener implements Listener {
 
@@ -56,9 +60,14 @@ public final class CoopPlateListener implements Listener {
     /** Both world legs must fall within this window of each other to publish the ready marker. */
     private final long windowMs;
 
-    // The two world legs, in memory (there is one coop_plate site). Set on the event thread; read in-line.
-    private volatile long lastFootMs = 0L;
-    private volatile long lastCarveMs = 0L;
+    // The two world legs, in memory, KEYED BY SITE ID so multiple placed coop_plate sites can't
+    // cross-contaminate freshness (a foot at site A + a carve at site B must NOT register as "both
+    // fresh together"). Today's only real deployment has exactly one placed site, so this is a
+    // behavior-preserving generalization of the old single-`long` fields, not a gate-logic rewrite.
+    // ConcurrentHashMap: writes happen on whichever thread fires the event; ready to be read/written
+    // from concurrent callbacks without external synchronization.
+    private final java.util.Map<String, Long> lastFootMsBySite = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<String, Long> lastCarveMsBySite = new java.util.concurrent.ConcurrentHashMap<>();
 
     public CoopPlateListener(Supplier<SitesConfig> sitesSupplier, SupabaseClient supabase,
                              RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
@@ -95,16 +104,21 @@ public final class CoopPlateListener implements Listener {
             if (site == null) return; // not at the coop plate (or unplaced → no-op, go-live safe)
 
             long now = System.currentTimeMillis();
-            if (foot) lastFootMs = now; else lastCarveMs = now;
+            String siteId = site.id();
+            if (foot) lastFootMsBySite.put(siteId, now); else lastCarveMsBySite.put(siteId, now);
 
-            if (bothFresh(now)) tryPublish(now);
+            if (bothFresh(siteId, now)) tryPublish(now);
         });
     }
 
-    /** True iff both world legs have fired and both fall within the window ending now. */
-    private boolean bothFresh(long now) {
-        return lastFootMs > 0 && lastCarveMs > 0
-                && (now - lastFootMs) <= windowMs && (now - lastCarveMs) <= windowMs;
+    /** True iff both world legs have fired at THIS site and both fall within the window ending now.
+     *  Keyed by site id so a foot at one placed coop_plate site and a carve at a different placed
+     *  coop_plate site never combine into a false "both fresh together". */
+    private boolean bothFresh(String siteId, long now) {
+        Long foot = lastFootMsBySite.get(siteId);
+        Long carve = lastCarveMsBySite.get(siteId);
+        return foot != null && carve != null
+                && (now - foot) <= windowMs && (now - carve) <= windowMs;
     }
 
     /** Publish coop_world_ready_at=now (throttled, async). The Discord word leg closes the gate. */
