@@ -76,7 +76,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "townsfolk" -> handleTownsfolk(sender, args);
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id] | needle [player] | finale");
+            case "reading" -> handleReadingCarvings(sender);
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
         }
     }
 
@@ -1162,6 +1163,81 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * were previously unstageable — no command spawned their markers). Each is an invulnerable, gravity-less,
      * persistent armor stand tagged with the PDC value its listener reads.
      */
+    /**
+     * {@code /observance reading} — carve the six SEVENTH READING fragments at the keeper sites
+     * (design/THE-SEVENTH-READING.md). Each is a persistent {@link org.bukkit.entity.TextDisplay} at that
+     * keeper's placed site: the letter-cipher fragments (Vaun/Sella/Orin/Brann) in the {@code
+     * observance:runes} font (illegible without the pack, carved with it); Mara's book-cipher refs and
+     * Iss's warm-prose acrostic in plain text (numbers + readable words, as their stones are). Read in
+     * fall-order the six letters spell AVERYN; saying it triggers the release. Automates "carve the six
+     * fragments" so it is one command, not hand-carving. Skips any keeper site not yet placed (a no-op).
+     *
+     * <p>The ciphertexts are the exact strings the discord capstone-integrity guard
+     * ({@code seventh-reading.selftest}) verifies decode back to the confessions — kept in sync with
+     * THE-SEVENTH-READING.md §3 (the carving spec; the discord {@code seventh-reading.ts} is the source).
+     */
+    private void handleReadingCarvings(CommandSender sender) {
+        if (plugin.sites() == null) {
+            sender.sendMessage("Observance: no sites loaded — run placeregion/placedeep first.");
+            return;
+        }
+        final net.kyori.adventure.key.Key RUNES = net.kyori.adventure.key.Key.key("observance:runes");
+        // { siteId, ciphertext (\n = line break), runeFont? }
+        Object[][] fragments = {
+            { "stone_vaun",  "D WKH ILUVW RI WKHLU QDPH L NHSW LW DQG JDYH QRQH EDFN", true },
+            { "stone_mara",  "1-1-1  1-1-5  2-1-2  2-1-3  1-1-7  1-1-8  1-1-9  3-1-4  2-1-3  3-1-6  3-1-7", false },
+            { "stone_sella", "V R PVKG RG ZG GSV UZI DZGVI", true },
+            { "stone_orin",  "R I WOULD NOT BOW TO GIVE IT AND GIVE IT NOW", true },
+            { "stone_brann", "YK LBHNI  ETI I YTEOEFRIPTT   E", true },
+            { "stone_iss",   "i told you the last of it was m\ntake the first mark of each line down\n"
+                             + "see what the warm words were laid over\nn is the letter i cut and called m", false },
+        };
+        var tagKey = new org.bukkit.NamespacedKey("observance", "reading_fragment");
+        int placed = 0, skipped = 0;
+        for (Object[] frag : fragments) {
+            String siteId = (String) frag[0];
+            String text = (String) frag[1];
+            boolean runeFont = (Boolean) frag[2];
+            com.observance.watcher.config.Site site = plugin.sites().get(siteId);
+            if (site == null || !site.isPlaced() || site.location() == null) {
+                sender.sendMessage("  · " + siteId + " — not placed yet, skipped.");
+                skipped++;
+                continue;
+            }
+            Location at = site.location().clone().add(0.5, 1.0, 0.5); // centered, at head height above the stone
+            if (at.getWorld() == null
+                    || !at.getWorld().isChunkLoaded(at.getBlockX() >> 4, at.getBlockZ() >> 4)) {
+                sender.sendMessage("  · " + siteId + " — chunk not loaded, skipped.");
+                skipped++;
+                continue;
+            }
+            net.kyori.adventure.text.Component label = net.kyori.adventure.text.Component.text(text);
+            if (runeFont) label = label.font(RUNES);
+            final net.kyori.adventure.text.Component finalLabel = label;
+            try {
+                at.getWorld().spawn(at, org.bukkit.entity.TextDisplay.class, td -> {
+                    td.text(finalLabel);
+                    td.setPersistent(true);              // a world carving — survives restarts (visible to all)
+                    td.setBillboard(org.bukkit.entity.Display.Billboard.FIXED);
+                    td.setSeeThrough(false);
+                    td.setShadowed(true);
+                    td.setDefaultBackground(false);
+                    try { td.setBackgroundColor(org.bukkit.Color.fromARGB(0)); } catch (Throwable ignored) {}
+                    td.setBrightness(new org.bukkit.entity.Display.Brightness(15, 15));
+                    td.getPersistentDataContainer().set(tagKey,
+                            org.bukkit.persistence.PersistentDataType.STRING, siteId);
+                });
+                placed++;
+            } catch (Throwable t) {
+                sender.sendMessage("  [!] could not carve at " + siteId + ".");
+                skipped++;
+            }
+        }
+        sender.sendMessage("Observance: THE SEVENTH READING — carved " + placed + "/6 fragments"
+                + (skipped > 0 ? " (" + skipped + " skipped — place those keeper sites first)" : "")
+                + ". Read in fall-order (vaun·mara·sella·orin·brann·iss) they spell the name; saying it ends it.");
+    }
+
     private void handleFinaleMarkers(CommandSender sender) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Observance: /observance finale must be run by a player (needs a location).");
@@ -1353,7 +1429,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "townsfolk", "needle", "finale"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "townsfolk", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {

@@ -8,9 +8,10 @@
 > **Saying the name IS the release trigger** (the mask-off farewell → the world dies → the kick).
 >
 > **Status: BUILT + GREEN.** The trigger row, the flag-chain into the finale, the confirmation line, the
-> hint rail, and the capstone-integrity guard (`seventh-reading.selftest`, folded into `specscheck`) all
-> ship green. What remains is **world-build** (carve the six fragments at the sites — §3) + optional
-> media. The integrity guard proves the six fragments round-trip under their real ciphers and spell AVERYN.
+> hint rail, the capstone-integrity guard (`seventh-reading.selftest`, folded into `specscheck`), AND the
+> in-world carving (`/observance reading` stamps all six fragments — §3) all ship green. The integrity
+> guard proves the six fragments round-trip under their real ciphers and spell AVERYN. Nothing manual
+> remains but running the command once the keeper sites are placed (+ optional site-reveal polish).
 
 ---
 
@@ -71,10 +72,16 @@ the whole game's lesson, delivered as the final beat.
 
 ---
 
-## 3. WORLD-BUILD — carve the six fragments (the remaining manual work)
+## 3. WORLD-BUILD — carve the six fragments (now ONE command)
 
-Carve each ciphertext (in the rune font) at its keeper's site. These are the exact strings the integrity
-guard verifies decode back to the confessions:
+**Run `/observance reading`** at any point after the keeper sites are placed (placeregion/placedeep). It
+stamps all six fragments as persistent rune carvings (TextDisplay) at the keeper sites automatically —
+Vaun/Sella/Orin/Brann in the `observance:runes` font, Mara's book-refs + Iss's warm-prose acrostic in
+plain text (numbers + readable words, as their stones are). Skips any keeper site not yet placed. The
+strings it carves are exactly those below (kept in sync with the discord `seventh-reading.ts` source that
+the integrity guard verifies). Hand-carving is no longer required — but the exact strings are here if you
+want to place them by hand or add the site-specific reveals (Orin low/crouch, Brann night, Sella
+reflection — the command places them plainly; those reveals are optional polish, the ciphers are the work):
 
 - **Vaun** (Caesar, at `stone_vaun`): `D WKH ILUVW RI WKHLU QDPH L NHSW LW DQG JDYH QRQH EDFN`
 - **Mara** (book, at `stone_mara` — carve the capstone shelf, see below): `1-1-1  1-1-5  2-1-2  2-1-3  1-1-7  1-1-8  1-1-9  3-1-4  2-1-3  3-1-6  3-1-7`

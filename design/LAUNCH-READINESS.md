@@ -43,10 +43,11 @@ make/apply, which the code already degrades around safely).
       the Seventh-choice markers before either, so the old finale rite was unstageable too. Both fixed.
 - [ ] THE SEVENTH READING capstone (design/THE-SEVENTH-READING.md — BUILT): the Seventh's name is
       **AVERYN**, derived by the group from six distributed keeper fragments (one per keeper, each in a
-      different technique) and SAID to trigger the finale. Carve the six fragment ciphertexts at the keeper
-      sites (exact strings in THE-SEVENTH-READING.md §3) + Mara's capstone shelf. The trigger/flag-chain/
-      confirmation/hint-rail are wired; only the world-carving remains. (Restore = say AVERYN; erase = the
-      release marker, unnamed.) The `seventh_name`/setting hook still exists if you ever want to override.
+      different technique) and SAID to trigger the finale. Run **`/observance reading`** (after the keeper
+      sites are placed) to stamp all six fragment carvings automatically — no hand-carving; then place
+      Mara's capstone shelf books (THE-SEVENTH-READING.md §3). Trigger/flag-chain/confirmation/hint-rail/
+      carving all wired. (Restore = say AVERYN; erase = the release marker, unnamed.) The `seventh_name`
+      setting hook still exists if you ever want to override.
 - [ ] (optional) `closing.whitelist-after: true` in config.yml if you want "nothing to come back to"
       enforced (whitelist flips ON after the kick — reversible, NEVER a ban). Default: they can rejoin.
 - [ ] `closing.enabled` default true = full auto (world dies + kick). false = the farewell still posts, you
