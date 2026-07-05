@@ -1,5 +1,18 @@
 # npc-dialogue.md — the five surface NPC dialogue trees (DRAFT / design content)
 
+> **2026-07-05 audit note: the SHIPPED implementation is simpler than this spec, by design
+> — read the code, not just this file, before extending it.** `plugin/src/main/java/com/
+> observance/watcher/signal/listener/TownsfolkNpcListener.java` is a flat index-cycling
+> scheme (no `node_key` state machine), conduct is read from local `PlayerSignals` totals
+> (not `punishment_state`), there is no `press` node, and Dob's cursor is not depth-gated.
+> All five NPCs' lines were copied byte-for-byte from this file into the listener's
+> embedded table (verified), so the TEXT below is still the live source of truth — only
+> the delivery MECHANISM described in this front-matter (Citizens2/ZNPCsPlus state
+> machine) is aspirational, not what's running. This is a legitimate simpler design the
+> listener's own javadoc justifies (no showrunner round-trip, casual chat), not a bug —
+> flagging only so a future author doesn't try to debug/extend against a contract that
+> isn't the real one.
+>
 > **DRAFT. Authoring file, not the live seed.** Content for `npc_dialogue_state` +
 > `npc_quests` (migration `0005_threads.sql`), to be driven through Citizens2/ZNPCsPlus.
 > Grounded line-for-line in `arc/corpus/npc-and-watcher-voice.md` (SET A — the surface

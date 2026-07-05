@@ -36,6 +36,8 @@ import { decideGrave, type GraveInput } from './grave.js';
 import { decideFate } from './fate.js';
 import { LEFT_AT } from './customs.js';
 import { runKeeperRecordPass } from './keeper-record.run.js';
+import { runNameWhereNeverBeenPass } from './name-where-never-been.run.js';
+import { runOfflineSkinPass } from './offline-skin.run.js';
 import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
 import { bindAcceptingInstant, instantReached } from './clock.js';
 import { decideRelief } from './relief.js';
@@ -187,6 +189,10 @@ export interface AutonomyPassResult {
   keptNeedleGranted: boolean;
   /** W3e relief: warm-memory exhales posted to #the-record this pass (after a heavy climax). */
   reliefPosted: number;
+  /** A8 name-where: a living-name carve was enqueued this pass (FACT 16). */
+  carveFired: boolean;
+  /** B3 offline-skin: an offline-skin apparition glimpse was enqueued this pass (FACT 9). */
+  offlineSkinFired: boolean;
 }
 
 /**
@@ -205,7 +211,7 @@ export function shouldGrantKeptNeedle(flags: Record<string, unknown>): boolean {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, keeperEnrolments: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, keeperEnrolments: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0, carveFired: false, offlineSkinFired: false };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -471,6 +477,28 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     await logEvent('warn', 'showrunner.autonomy', `keeper-record error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
+  // --- A8 name-where-never-been: the living-name carve (FACT 16). Runs BEFORE offline-skin below so its
+  //     `state.carve_active_claims` publish is visible to this SAME tick's separation-law read (INV-16:
+  //     a worn-skin glimpse must never collide with a name actively being carved this window).
+  try {
+    const nw = await runNameWhereNeverBeenPass(mode, state);
+    if (nw.fired) result.carveFired = true;
+    if (nw.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `name-where error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- B3 offline-skin: the apparition wearing a logged-off player's shape (FACT 9, INV-16). Reads the
+  //     carve claims just published above so the separation law holds within one tick, not just across
+  //     ticks. Previously wired only into autonomy.selftest.ts — this is the missing production caller.
+  try {
+    const os = await runOfflineSkinPass(mode, state, nowMs);
+    if (os.fired) result.offlineSkinFired = true;
+    if (os.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `offline-skin error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
   // --- M5 FATE SENTINEL: decide the ending fate ONCE the Accepting instant is reached, set-once, so the
   //     finale pass (below, same tick) has a fate to open with. The pure decideFate policy + the M5
   //     composer were built to sit behind exactly this reader — it was the missing I/O leg (ending_fate
@@ -559,13 +587,13 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     await logEvent('warn', 'showrunner.autonomy', `theory error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
-  // NOTE — keeper-record, name-where-never-been, offline-skin, reports, keeper-NPC, and the fate
-  // selector run from their own dedicated readers (dossiers / visited-cells / compliance-spread) the
-  // SQL+PLUGIN lanes own;
-  // those readers are listed in the worker RETURN. The pure policies (keeper-record.ts /
-  // name-where-never-been.ts / offline-skin.ts / fate.ts) are complete + self-tested and slot in
-  // behind those reads with no change here. The fate selector additionally lives in resolve.ts's
-  // set-once Accepting branch (TS-SHOWRUN owns resolve.ts) — see RETURN.
+  // NOTE — keeper-record, name-where-never-been, and offline-skin now run from their own dedicated
+  // run wrappers above (keeper-record.run.ts / name-where-never-been.run.ts / offline-skin.run.ts),
+  // each reading real state (dossiers / heatmap_cells / players.last_seen + the active roster) rather
+  // than being inert. name-where-never-been.run.ts's DESIGN-CALL doc comment covers the one remaining
+  // simplification (an aggregate-heatmap proof-of-absence proxy, pending a real per-player
+  // `player_visited_cells` plugin-side producer). reports / keeper-NPC / the fate selector still run
+  // from their own existing readers elsewhere in this file / resolve.ts, unchanged.
 
   // The clock predicate is exposed for the grave/summons/website to share one `not_before`.
   void instantReached;

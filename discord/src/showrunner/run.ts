@@ -99,7 +99,7 @@ async function runTick(dryRun: boolean, nowMs: number, nowIso: string): Promise<
   let reports = { reported: 0, staged: 0 };
   let observer = { echoed: false };
   let unlitDeep = { reported: 0 };
-  let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0 };
+  let autonomy = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0, carveFired: false, offlineSkinFired: false };
   if (!snapshot.asleep) {
     try {
       customs = await runCustomsPass(snapshot.mode, nowIso);
@@ -151,6 +151,7 @@ async function runTick(dryRun: boolean, nowMs: number, nowIso: string): Promise<
     `graves=${autonomy.graves} herd=${autonomy.herdSpreads} forks=${autonomy.forksSet} ` +
     `cold=${autonomy.coldRestages} apparition=${autonomy.apparitionClaimed ? 1 : 0} ` +
     `theories=${autonomy.theoriesLocked} needle=${autonomy.keptNeedleGranted ? 1 : 0} relief=${autonomy.reliefPosted} ` +
+    `carve=${autonomy.carveFired ? 1 : 0} offline_skin=${autonomy.offlineSkinFired ? 1 : 0} ` +
     `observed=${reports.reported} heard=${observer.echoed ? 1 : 0} unlit_deep=${unlitDeep.reported}`,
   );
 }

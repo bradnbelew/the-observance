@@ -558,6 +558,20 @@ binding the record already holds (`linked()`), never capitalised here.
 
 ---
 
+### BN17 — SELLA'S SECOND REFLECTION  *(the Lens-gated bonus fragment at the shore pool; `reflection` beat, `lens_gated: true`; INTEGRATION §SIGNATURE #3 crossover — bonus/flavor only, NEVER a required step of `sella-reflection-bearing`)*
+
+> A second, distinct rune under the SAME shore pool as the bearing (`sella-reflection-bearing`,
+> PUZZLE-DESIGNS.md §4.1), visible only to a player who holds the Lens while looking down. Not a
+> puzzle answer and not required to solve the bearing — it re-uses the copybook's OWN authored
+> motif (`arc/lore/documents/a-a-a-the-copybook-by-the-water.md`: she counted seven at the water
+> and the water gave back "nevees", seven reversed) rather than inventing new lore. A deeper look
+> at the same water for a player who happens to carry the relic, nothing more.
+
+**`reflection.lensBonus.sella`** *(the second, mirror-wrong fragment — flavor/foreshadow only)*
+- `she counted seven here. the water kept its own count and gave back nevees. a child could not tell the true seven from the given-back one. count again, and mind which one you are holding.`
+
+---
+
 ## SET C — THE PRESIDING KEEPER (canon register 3; second-person, half-veiled "we")
 
 > **The third canon register** (`canon-spine §0`): the NPC who presides — older than the

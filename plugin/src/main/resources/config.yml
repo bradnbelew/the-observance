@@ -226,6 +226,19 @@ puzzles:
     # Pitch (degrees) at/below which the keeper is "looking down" (90 = straight down).
     look-down-min-pitch: 55
 
+  # Sella — the reflection bearing (§4.1, bug fix 2026-07-05). SellaReflectionListener fires the
+  # "reflection" beat DIRECTLY through the beat engine (no oracle token here — this puzzle has no
+  # solve to detect; it is the CLUE DELIVERY itself). The bearing text is the authored line from
+  # design/PUZZLE-DESIGNS.md §4.1; the answer stays the destination word read at the far water. The
+  # bonus line ALSO fires (lens_gated:true) only while the same player holds the Lens.
+  sella-reflection-bearing:
+    enabled: true
+    bearing-text: "south, by the far water, where the reeds fold back"
+    bonus-text: "she counted seven here. the water kept its own count and gave back nevees. a child could not tell the true seven from the given-back one. count again, and mind which one you are holding."
+    # Pitch (degrees) at/above which the player is "looking down" (matches ReflectionBeat's own
+    # default pitch_min, so the trigger and delivery sides judge the same gaze the same way).
+    look-down-min-pitch: 25
+
   # --- OBJECT (§2.1) -------------------------------------------------------
   # Vaun — deposit the first-of-the-deep back into the `vaun_hoard_chest` container
   # (the offering he never made). A sorted-hoard content check the producer runs on

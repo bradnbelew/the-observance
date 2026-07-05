@@ -22,6 +22,15 @@ keepers_referenced: [vaun, mara, sella, orin, brann, iss]
 
 # discover-by-punishment — the seven ways
 
+> **2026-07-05 audit note:** this proposes 14 bespoke per-way voice keys (`tollKeptLight` /
+> `keptKeptLight` / etc.). The LIVE system (`discord/src/showrunner/customs.ts` + `voice.ts`'s
+> `CUSTOM_PHRASES` map) is a simpler generic 3-rung ladder (observed/warned/left) shared
+> across all 7 ways, not per-way bespoke lines — none of the 14 proposed keys exist in
+> `voice.ts` today. That's consistent with this file's own `status: DRAFT` / `not_to_edit`
+> front-matter (a proposal awaiting integration, not a claim about what's live) — flagging
+> only so a reader treats the live 3-rung ladder as current behavior, not this doc's richer
+> proposal, unless/until someone actually integrates it.
+
 > The loop the player must be able to walk WITHOUT being told the rule: a small, deniable
 > thing keeps happening; they notice it keeps happening **when they do X**; they read X off a
 > placed surface as a forbidden way; they perform Y and it stops. The Watcher never says

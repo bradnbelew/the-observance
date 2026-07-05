@@ -523,6 +523,18 @@ public final class ObservancePlugin extends JavaPlugin {
                     cfg.getString("puzzles.sella-shore-memorial.puzzle-key", "sella-shore-memorial"),
                     (float) cfg.getDouble("puzzles.sella-shore-memorial.look-down-min-pitch", 55.0)), this);
         }
+        // Sella — the reflection bearing (§4.1, bug fix 2026-07-05). NOT an oracle producer: this
+        // puzzle has no solve to detect, only a clue to DELIVER, so the listener fires the
+        // "reflection" beat directly through the beat engine (this::beatEngine). See the listener's
+        // own javadoc for the full reasoning + the Lens bonus-use fix riding alongside it.
+        if (cfg.getBoolean("puzzles.sella-reflection-bearing.enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.SellaReflectionListener(
+                    this::sites, this::beatEngine, rateLimiter, safety, "observance",
+                    true,
+                    cfg.getString("puzzles.sella-reflection-bearing.bearing-text", ""),
+                    cfg.getString("puzzles.sella-reflection-bearing.bonus-text", ""),
+                    cfg.getDouble("puzzles.sella-reflection-bearing.look-down-min-pitch", 25.0)), this);
+        }
 
         // --- OBJECT ---
         if (cfg.getBoolean("puzzles.vaun-hoard-sorted.enabled", true)) {

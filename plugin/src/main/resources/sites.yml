@@ -634,6 +634,22 @@ sites:
     protect: true
     enabled: true
 
+  # --- Sella: the shore pool (§4.1, bug fix 2026-07-05). SellaReflectionListener watches
+  #     `sella_pool`; stand here + look DOWN into the water = the reflection beat fires (the
+  #     bearing rune, or ALSO a Lens-gated bonus fragment if the player holds the relic).
+  #     Distinct from sella_anchor (the LATER shore-memorial vantage, gated on this puzzle
+  #     having already been read) — this is the FIRST Sella site a group finds.
+  sella_pool:
+    type: "sella_pool"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    vertical-radius: 3
+    protect: true
+    enabled: true
+
   # --- Vaun: the "given back" hoard chest (§2.1). HoardSortedListener watches `vaun_hoard_chest`;
   #     deposit the first-of-the-deep + close = the offering made.
   vaun_hoard_chest:

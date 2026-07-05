@@ -67,6 +67,13 @@ export interface ShowrunnerState {
   carved_cells?: string[];
   /** A8 name-where: per-player carve count (chorus rotation — fewest-first). */
   carve_counts?: Record<string, number>;
+  /**
+   * A8 name-where / B3 separation law (INV-16): the carve cell each player is ACTIVELY claimed at THIS
+   * window (groupKey → cellId). name-where-never-been.run.ts writes this; offline-skin.run.ts reads it
+   * as `carveClaimsByPlayer` so a worn-skin glimpse never collides with that same player's live carve.
+   * Cleared/replaced each pass — it is a per-window claim, not a permanent record (see `carved_cells`).
+   */
+  carve_active_claims?: Record<string, string>;
 
   /** B3 offline-skin: per-player worn-count by phase (`${groupKey}|${phase}` → count). */
   worn_skins?: Record<string, number>;
