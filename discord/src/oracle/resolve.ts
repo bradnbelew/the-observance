@@ -32,8 +32,10 @@ import {
 } from '../db/repo.js';
 import { voice } from '../voice.js';
 import type { OracleVoiceKey, DeadEndKind } from '../voice.js';
+import { archiveLine } from '../voice.archive.js';
 import type {
   AnswerSurface,
+  OutcomeBeat,
   OutcomePayload,
   OutcomeType,
   Player,
@@ -361,7 +363,7 @@ async function applyOutcome(
   let enqueuedBeat = false;
   if (payload.beat && payload.beat.type) {
     try {
-      await enqueueOracleBeat(payload.beat, solver.mc_uuid);
+      await enqueueOracleBeat(resolvePrivateMessageKey(payload.beat), solver.mc_uuid);
       enqueuedBeat = true;
     } catch (err) {
       const m = err instanceof Error ? err.message : String(err);
@@ -382,6 +384,38 @@ async function applyOutcome(
     reply,
     ...(payload.next_puzzle_key ? { nextPuzzleKey: payload.next_puzzle_key } : {}),
     enqueuedBeat,
+  };
+}
+
+/**
+ * THE `private_message` KEY-RESOLVER (`backlog-liar-engine`/`backlog-unlockbeat-producers`).
+ * `PrivateMessageBeat` (plugin) only reads `title`/`subtitle`/`actionbar`/`text` — it has no
+ * notion of a symbolic voice key. Authors write the SYMBOLIC key instead (never English in the
+ * seed), e.g. `{ step:'private_message', step_payload:{ key:'iss.dialogue.turns_cold' } }` — this
+ * is where that key gets resolved into the real line from `voice.archive.ts` before the beat is
+ * written to `beat_queue`, so the plugin beat only ever sees the contract it actually reads.
+ * Generic: works for any `unlock`→`private_message` row that carries a `key`, not just the one
+ * Iss cold-flip line this was built for. Non-`private_message` beats (or ones already carrying a
+ * real `title`/`subtitle`/`actionbar`/`text`) pass through untouched. An unresolvable key is left
+ * as-is rather than guessed at — the beat then harmlessly skips ("empty") the same way a future
+ * authoring typo would, instead of erroring the player's solve.
+ */
+export function resolvePrivateMessageKey(beat: OutcomeBeat): OutcomeBeat {
+  if (beat.type !== 'unlock') return beat;
+  const outer = beat.payload ?? {};
+  if (outer['step'] !== 'private_message') return beat;
+  const stepPayload = (outer['step_payload'] ?? {}) as Record<string, unknown>;
+  const key = stepPayload['key'];
+  if (typeof key !== 'string' || key.length === 0) return beat;
+  if (stepPayload['title'] || stepPayload['subtitle'] || stepPayload['actionbar'] || stepPayload['text']) {
+    return beat; // already carries a real field — a key alongside one is left alone, not overwritten.
+  }
+  const line = archiveLine(key);
+  if (line === null) return beat; // unresolvable — degrade to the beat's existing (empty) skip, not a guess.
+  const { key: _drop, ...rest } = stepPayload;
+  return {
+    ...beat,
+    payload: { ...outer, step_payload: { ...rest, subtitle: line } },
   };
 }
 

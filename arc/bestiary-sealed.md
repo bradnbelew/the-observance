@@ -276,6 +276,8 @@ conversion itself**, at the same patient cadence it once happened to the Kept, i
 that needs no blood and breaks no anti-jank rule: animals, quietly, turning to look. The prior-
 keeper count fragment ("nine grey, one white" → later "they were grey when i shut the door") is
 the same event in a keeper's hand: a herd that was grey when a door closed and is not grey now.
+A second, later hand keeps the same count in `keeper-tally.md` (M2→M4, three degrading leaves) —
+the two documents are the same watch kept by two keepers, in two eras, of the one going-out.
 
 This is the bestiary's thesis stated in the gentlest possible material. Every other creature is
 *one* kept keeper worn as a shape; the Pale field is the **process** that makes them — the slow,

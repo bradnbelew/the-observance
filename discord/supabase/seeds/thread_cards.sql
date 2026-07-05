@@ -270,6 +270,17 @@ values
     'stone_iss', 'rumor',
     array['surface-aro-lie','happened-no-wall'], 'forged-eighth', null, 80 ),
 
+  -- the lad (letters L08a/L08b) — the eighth's one human cost. He obeyed the covering all
+  -- winter, asked the one question that names the catch itself (a true way answers when
+  -- broken; a covering answers never), and is answered with silence — read, at the time, as
+  -- the wall holding. Revealed post-catch (2026-07-05 audit): every other planted thread in
+  -- the corpus has a traceable payoff card; this was the one exception, a fully-written
+  -- figure whose fate had nowhere left to go. References the same forged board + the catch
+  -- that retroactively names his silence for what it was.
+  ( 'human-lad-unanswered', 'human', 'no reply is filed', 'cardHumanLadUnanswered',
+    'stone_iss', 'explore',
+    array['surface-eighth-forged','happened-no-wall'], 'no-wall-catch', null, 81 ),
+
   -- the three-hands gate — the cold square Mara typed into the dark, read as the rite
   -- instruction at the catch (happened). Anchored at the Undercroft plate. Solve-gated on
   -- the gate clearing. References the catch + the bound word's home.

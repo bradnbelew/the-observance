@@ -27,17 +27,20 @@ import {
   threadRegistrySelfTest,
   siteCoverageSelfTest,
   riteTokenSelfTest,
+  coopGateTokenSelfTest,
   threadTagSelfTest,
   threadCardVoiceCoverageSelfTest,
   registerDisciplineSelfTest,
 } from './canon.js';
 import { readingSelfTest } from './seventh-reading.js';
 import { archive, npcLines } from '../voice.archive.js';
+import { M4_TOKEN, CONVERGENCE_WORD } from '../showrunner/coop-gate.js';
 
 // Resolve canon files relative to THIS file (src/forge/), so the checks run from any cwd.
 // The seed/plugin/voice are the sources of truth; we only READ them to prove coherence.
 const here = dirname(fileURLToPath(import.meta.url));
 const SEED_PATH = resolve(here, '../../supabase/seeds/puzzles_seed.sql');
+const METAPUZZLE_SEED_PATH = resolve(here, '../../supabase/seeds/metapuzzle_seed.sql');
 const VOICE_PATH = resolve(here, '../voice.ts');
 const TRACKER_PATH = resolve(
   here,
@@ -52,7 +55,8 @@ const THREAD_CARDS_PATH = resolve(here, '../../supabase/seeds/thread_cards.sql')
 try {
   const { cases } = specsSelfTest();
   const seedSql = readFileSync(SEED_PATH, 'utf8');
-  const cov = specsCoverageSelfTest(seedSql);
+  const metapuzzleSql = readFileSync(METAPUZZLE_SEED_PATH, 'utf8');
+  const cov = specsCoverageSelfTest(seedSql, metapuzzleSql);
   // Canon coherence guards (red-team §5): reachability (B-6), no-leaked-sentinel (B-5),
   // custom-key namespace (B-3). Each throws on drift → the build fails, not the camera.
   const reach = reachabilitySelfTest(seedSql);
@@ -64,6 +68,7 @@ try {
   const threads = threadRegistrySelfTest(readFileSync(MIGRATION_0005_PATH, 'utf8'));
   const sites = siteCoverageSelfTest(seedSql, readFileSync(SITES_PATH, 'utf8'));
   const rite = riteTokenSelfTest(readFileSync(CONFIG_PATH, 'utf8'), seedSql);
+  const coopGate = coopGateTokenSelfTest(M4_TOKEN, CONVERGENCE_WORD, seedSql);
   const tags = threadTagSelfTest(readFileSync(THREAD_TAGS_PATH, 'utf8'));
   const definedVoiceKeys = new Set<string>([...Object.keys(archive), ...Object.keys(npcLines)]);
   const cards = threadCardVoiceCoverageSelfTest(readFileSync(THREAD_CARDS_PATH, 'utf8'), definedVoiceKeys);
@@ -73,7 +78,7 @@ try {
   const reading = readingSelfTest();
   const all = [
     ...cases, ...cov.cases, ...reach.cases, ...sentinel.cases, ...namespace.cases,
-    ...threads.cases, ...sites.cases, ...rite.cases, ...tags.cases, ...cards.cases, ...register.cases,
+    ...threads.cases, ...sites.cases, ...rite.cases, ...coopGate.cases, ...tags.cases, ...cards.cases, ...register.cases,
     ...reading.cases,
   ];
   console.log(`clue-specs + canon self-tests passed (${all.length}):`);

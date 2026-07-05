@@ -158,6 +158,8 @@ export const archive: Record<string, string> = {
     'they did not depart. it is written of the faithful that they did not depart. the word for what they did instead is the word this record uses for a stone, and for a flame, and for the cold marker at the threshold, and it does not change between the people and the things. the room rebuilds wrong. one fire is kept, attended by no one.',
   cardHumanRecordOpens:
     'it is observed that new hands are at the mouth. they carry lamps, and the lamps are lit, and this is well, and it has begun the same way every time. the rolls of those before are closed and were not reconciled. there is room in the markers’ column. there has always been room. an open column is a thing that fills. keep your lamp.',
+  cardHumanLadUnanswered:
+    'the lad who wrote iss asked how a way is told from a covering, when both keep up nothing, kept or broken. no reply is filed against the question. the record read the silence as the wall holding. a way answers when it is broken. a covering answers never. he kept a board a man hung over him and read the silence for an answer. it was not one.',
 
   // ===== the count of the openings (six-were-kept-before-you.md; W3c) =====
   cardHumanCountUneven:
@@ -454,6 +456,16 @@ export const archive: Record<string, string> = {
   // the easy-here beat, re-staged cold.
   'iss.dialogue.turns_cold.easy':
     'the ease he offered was the not-counting. a thing told it is kept, and never counted, is a thing being readied to be let go.',
+
+  // -------------------------------------------------------------------------
+  // ATONEMENT-REFRAIN RELEASE (M-IV, `backlog-unlockbeat-producers` R-C). The custom the group
+  // broke is honored and walked back; the fragment a keeper withheld is handed over. No fixed
+  // world site backs this moment (the solver may be anywhere), so it is delivered as a private
+  // acknowledgement rather than a world block-flip — same class as `iss.dialogue.turns_cold`.
+  // -------------------------------------------------------------------------
+
+  'atonement.refrain.returned':
+    'the custom that was broken is walked back now, and the walking is entered against the name that broke it. what was withheld is not withheld any further. it was always going to be handed over once the mending was done.',
 
   // -------------------------------------------------------------------------
   // THE EAR — keeper-whisper relevance (D11 `backlog-modeled-mob-and-voice`, FACT 17, P3). The

@@ -280,10 +280,12 @@ realized as the canon **document** `kept-in-more-than-one-place.md`, not a numbe
 - **Clock:** `discord/src/showrunner/clock.ts` `[BUILT]` (`bindAcceptingInstant`,
   `instantReached`, `encodeTimestamp`), wired in `autonomy.run.ts` (imports
   `bindAcceptingInstant`, `instantReached`).
-- **`[TODO]` Dashboard route:** `dashboard/src/app/record/[slug]/page.tsx` — a server component
-  that (a) validates `slug === 'the-record-keeps'` (else the in-voice 404), (b) reads the neutral
-  spoiler-free view into a `RecordSignal`, (c) renders `project(signal)` as static HTML in the
-  cream/navy→ash palette. No client JS, `noindex` inherited from `layout.tsx`.
+- **`[BUILT]` Dashboard route:** `dashboard/src/app/record/[slug]/page.tsx` — a server component
+  with a `resolveSlug()` helper validating the slug against a closed set (`'the-record-keeps'` →
+  the lure, else the in-voice 404 — confirmed live in code, 2026-07-05 audit; this item used to
+  read `[TODO]` and no longer does). Reads the neutral spoiler-free view into a `RecordSignal`,
+  renders `project(signal)` as static HTML in the cream/navy→ash palette. No client JS, `noindex`
+  inherited from `layout.tsx`.
 - **`[TODO]` Forge wiring:** route the Iss node's drip through `embedRuneLayer` (+ optional
   `embedLsb` on the PNG frame) in the card render for `stone-iss-wall` only — one branch behind
   the existing forge call (`forge/templates/index.ts` apply hook / `clue-drip.ts`).
@@ -335,7 +337,7 @@ Liar engine already canon).
 
 | Sub-thread | Lives in | Depends on | Depended on by | Priority | State |
 |---|---|---|---|---|---|
-| **The Record website** (`/record/[slug]`) | M1 (path-find) → M5 (received) | the founder-line plant (M1 doc, BUILT); P4 literacy (`D03`); the spoiler-free `arc_state` projection (BUILT) | nothing gates on it (additive); it *expresses* FACT 1/8/11/14/15 as a third door | **P1** | projection BUILT; route TODO |
+| **The Record website** (`/record/[slug]`) | M1 (path-find) → M5 (received) | the founder-line plant (M1 doc, BUILT); P4 literacy (`D03`); the spoiler-free `arc_state` projection (BUILT) | nothing gates on it (additive); it *expresses* FACT 1/8/11/14/15 as a third door | **P1** | projection + route BUILT (slug validation confirmed live, 2026-07-05) |
 | **Stego key** (rune layer + LSB, P17→P3) | M2 (forged on the Iss card) | the forge render pipeline; `runes.ts`; `stone-iss-wall` | nothing (the P3 key is also in `D09`); a second in-door to `iss_caught` | **P1** | BUILT + self-tested; forge wiring TODO |
 | **Encoded-timestamp clock** | M4 publish → M5 fire | a showrunner-bound instant in `arc_state` (BUILT); the rite/`accepted` signal | the M5 "received" flip + `voice.summons()` | **P2** | BUILT; route read of `instantReached` TODO |
 

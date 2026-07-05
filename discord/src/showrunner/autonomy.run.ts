@@ -310,13 +310,19 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
       passDoneThisWindow: state.herd_pass_movement === movement,
     } satisfies HerdInput);
     if (herd.spread) {
+      // site_id 'herd_anchor' (sites.yml) is the shared anchor the singular Sacred Beast and the
+      // Pale field both use — without it the plugin's beat request carries no site, resolves no
+      // anchor, and the spread silently no-ops (BeatRequest.hasSite() false, AbstractBeat.anchor()
+      // falls through to a null target). The 'sacred_animal' mode:"spread" payload contract (design
+      // doc §4.5 item 1) reads `pale_target`/`match_type`/`radius`/`bearing`; herd_spread forces mode.
       await enqueueBeat('herd_spread', null, {
         kind: 'pale_spread',
+        match_type: 'COW',
         pale_target: herd.paleTarget,
         add: herd.addThisPass,
         reversible: false, // a converted animal stays converted (cosmetic, not a toll)
         reason: herd.reason,
-      }, beatStatus);
+      }, beatStatus, 'herd_anchor');
       state.herd_pale_count = herd.paleTarget;
       state.herd_pass_movement = movement;
       dirty = true;

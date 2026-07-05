@@ -10,6 +10,7 @@ import com.observance.watcher.beats.lib.DecayCreepBeat;
 import com.observance.watcher.beats.lib.DoorOpenBeat;
 import com.observance.watcher.beats.lib.FakeBlockBeat;
 import com.observance.watcher.beats.lib.GroupBeat;
+import com.observance.watcher.beats.lib.HerdSpreadBeat;
 import com.observance.watcher.beats.lib.HintWhisperBeat;
 import com.observance.watcher.beats.lib.ItemRelabelBeat;
 import com.observance.watcher.beats.lib.ItemSwapBeat;
@@ -98,7 +99,14 @@ public final class BeatLibrary {
         register(new RoomSwapBeat());
         // MOBS
         register(new NamedMobBeat());
-        register(new SacredAnimalBeat());
+        SacredAnimalBeat sacredAnimal = new SacredAnimalBeat();
+        register(sacredAnimal);
+        // MOBS — herd_spread: the between-session Pale-herd conversion pass (A12, design/ideas/
+        // herd-conversion.md). Was previously unregistered under this exact name, which is what
+        // autonomy.run.ts's paceHerd() glue enqueues — a thin delegator (like UnlockBeat/GroupBeat)
+        // that forces SacredAnimalBeat's mode:"spread" branch. Registered right after sacred_animal
+        // since the two share one PDC precision contract (INV-13).
+        register(new HerdSpreadBeat(sacredAnimal));
         // MOBS (optional garnish) — a NamedMobBeat that wears a ModelEngine rig; degrades to exactly
         // NamedMobBeat when ModelEngine is absent/unknown-model (reflection-isolated, never gates).
         register(new ModeledMobBeat());

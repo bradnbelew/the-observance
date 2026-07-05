@@ -70,6 +70,11 @@ export async function runFinalePass(
     lightKept: flags.light_kept === true,
     lightTaken: flags.light_taken === true,
     sacredBeastBroken: flags.sacred_beast_broken === true,
+    // The Pale field's M5 condition (design/ideas/herd-conversion.md §1.2, FACT 15.a): read straight
+    // off state.herd_pale_count (the pacer's persisted high-water — herd.ts/autonomy.run.ts), NOT a
+    // new measurement. Gated at >1 so the clause never fires on the M1-only single-beast state (the
+    // spread genuinely has to have begun); a small/absent field composes with no clause (INV-12).
+    paleFieldStands: (state.herd_pale_count ?? 0) > 1,
     inheritorsCodicil: flags.inheritors_codicil === true || flags.seventh_named === true,
     // The reckoning is OPTIONAL content — only the FREE branch carries a finale cost (condemn/understand
     // do not reach the ending with a price; their weight is in-world + the sharp-quote shift).
@@ -169,6 +174,11 @@ export async function runReleasePass(
     lightKept: flags.light_kept === true,
     lightTaken: flags.light_taken === true,
     sacredBeastBroken: flags.sacred_beast_broken === true,
+    // The Release (the LAST beat, after the Accepting close) does not carry its own Pale-field
+    // clause — the design doc scopes the field's M5 read to the Accepting close (composeFinale)
+    // only; runReleasePass has no `state` param to read herd_pale_count from. Left false rather
+    // than threading a second read path for a clause the design doesn't ask this composer to add.
+    paleFieldStands: false,
     inheritorsCodicil: flags.inheritors_codicil === true || flags.seventh_named === true,
     reckoningFree: flags.reckoning_free === true,
     reckoningUnderstand: flags.reckoning_understand === true,

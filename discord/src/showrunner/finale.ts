@@ -47,6 +47,14 @@ export interface FinaleComposeInput {
   lightTaken: boolean;
   /** fork A transgressor leaf. */
   sacredBeastBroken: boolean;
+  /**
+   * The Pale field's M5 condition (design/ideas/herd-conversion.md §1.2/§3, FACT 15.a): true once
+   * the cosmetic pale count has climbed enough to read as "a field", at the close. A small/absent
+   * field composes with NO clause (INV-12 — colors, never gates; the vertical slice stands without
+   * it). Distinct from `sacredBeastBroken`: the field is cosmetic/untracked (INV-13) and never
+   * substitutes for the tracked beast's own fork line — both may appear, in that order.
+   */
+  paleFieldStands: boolean;
   /** the +1 inheritors codicil applies (a deposit left for the next hand). */
   inheritorsCodicil: boolean;
   /** the companion FREE branch — releasing Wren cost the group; the Seventh names the price. */
@@ -91,6 +99,14 @@ export function composeFinale(inp: FinaleComposeInput): FinaleComposeDecision {
   if (inp.nameUnspoken) lines.push(voice.forkNameUnspoken());
   else if (inp.nameSpoken) lines.push(voice.forkNameSpoken());
   if (inp.sacredBeastBroken) lines.push(voice.forkSacredBeastBroken());
+
+  // (3b) the Pale field's condition — cosmetic, colors only, appended right after the tracked
+  // beast's own fork line so the two never get read as the same thing (INV-13: one glowing +
+  // tracked, the rest pale + cosmetic). A broken Fork A gets the distinct "did not need the one
+  // you took" variant; otherwise the plain "they were yours, now they keep the count" line.
+  if (inp.paleFieldStands) {
+    lines.push(inp.sacredBeastBroken ? voice.forkPaleFieldStandsForkBroken() : voice.forkPaleFieldStands());
+  }
 
   // (4) the inheritors codicil (+1 clause) if it applies.
   if (inp.inheritorsCodicil) lines.push(voice.fateInheritorsCodicil());

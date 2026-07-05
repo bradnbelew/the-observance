@@ -870,8 +870,15 @@ values
   ),
   2, true, null ),
 
--- stone-sella — Atbash/mirror + bearing. side_quest → seventh-shrine. FACT 5 + seeds
--- the Seventh. Coord-tolerant: bearing words AND the unsigned far-water coordinate.
+-- stone-sella — DEACTIVATED (puzzle-variety audit): this Atbash letter-cipher is
+-- redundant with its own better replacement, sella-reflection-bearing (environmental,
+-- no letter-reversal) — and cipher-plaintexts.md's own "LATER DRIFT" note says Sella's
+-- later marks resolve into drawings, not words, which cuts against keeping a letter-
+-- cipher for her at all. Following the stone-brann-cipher convention exactly: the row
+-- is deactivated, not deleted, so history is preserved. Its seventh_suspected flag-set
+-- (the sole gate the whole Seventh side-quest thread — seventh-shrine, seventh-unwriting,
+-- seventh-cause — waits on) MOVES to sella-reflection-bearing below so the thread does
+-- not go dark; see that row's set_flags.
 ( 'stone-sella',
   'what the surface keeps',
   array[
@@ -885,7 +892,7 @@ values
     'next_puzzle_key', 'seventh-shrine',
     'set_flags', jsonb_build_object('seventh_suspected', true)
   ),
-  2, true, null ),
+  2, false, null ),
 
 -- stone-orin — substitution + CROUCH-only reveal. next_clue → orin-threshold (M4).
 -- FACT 5 (bowed at last to no one) + FACT 6 seed (breaks at "i —").
@@ -903,20 +910,30 @@ values
   ),
   2, true, null ),
 
--- stone-brann — beacon colour-sequence + night/black-moon gate + count-the-fires.
--- Pure lore. FACT 11 (one fire never out) + FACT 12 (same word, people/flame/stone).
+-- stone-brann — NOW the carved FRAMING for the rail-fence cipher (puzzle-variety audit
+-- fix). Previously shipped as pure inert lore, explicitly commented "do not forge it"
+-- (stone-brann-cipher had no CLUE_SPECS entry). That comment is no longer true: Brann's
+-- real cipher is live at stone-brann-cipher (railfence, rails=9), and this stone is now
+-- its carved framing panel — the plain-script header/footer a reader turns to BEFORE
+-- the ciphered run, in Brann's own voice (doubles a clause, re-counts, the number slips
+-- — his exact fingerprint per journals-orin-brann-iss.md "REPEATS AND OVER-CORRECTS").
+-- The framing hands the rail count (nine) the same way Vaun's threes hand shift-3: by
+-- being said, miscounted, and said again. FACT 11 (one fire never out) + FACT 12 (same
+-- word, people/flame/stone) both survive in the footer lines.
 ( 'stone-brann',
   'do not close your eyes here',
   array[
     'one fire was never doused',
     'do not close your eyes here',
-    'the one fire that will not be doused'
+    'the one fire that will not be doused',
+    'nine lit i counted nine',
+    'count the fires before you sleep'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'oracleLore',
     'voice_args', jsonb_build_object(
-      'fragment', 'count the fires at night. one of them never went out, and no hand tends it. they had one word for the people and the flame and the cold stone. do not close your eyes here.'
+      'fragment', 'nine lit. i counted nine. the count was lower the first time and i think the second count is the true one. count the fires before you sleep, and count them again, because the pass before is always more. one of them never went out, and no hand tends it. they had one word for the people and the flame and the cold stone. do not close your eyes here.'
     )
   ),
   2, true, null ),
@@ -938,14 +955,30 @@ values
   ),
   2, true, 6 ),
 
--- iss-warm — the WARM MISREADING of Iss's stone: read trustingly it COMFORTS ("the ways
--- are a wall against the watching"). Trusting the liar routes you to HIS coordinate — the
--- dead shrine, a grave (red-team B-6: this is the inbound edge iss-dead-shrine lacked).
--- The skeptical name-as-key reading on stone-iss-wall instead goes to iss-doubt → the catch.
+-- iss-warm — REPLACES A FAKED CIPHER (puzzle-variety audit). Previously this row's
+-- accepted answer was just a re-stated carved phrase ("the ways are a wall against the
+-- watching") with NO forge spec behind it — a seeded phrase dressed as a second decode
+-- when it was really just quoting the framing back. It now has a REAL second decode: the
+-- SAME carved wall-stone carries a second, legitimate reading — an ACROSTIC (read the
+-- first letter of each of Iss's six warm lines, top to bottom) — verifiable by hand, no
+-- forge/DB needed, and using a method already canonical for Iss (seventh-reading.ts's
+-- ISS_ACROSTIC_LINES uses the identical technique for his capstone fragment). The full
+-- worked cipher (all six carved lines + the acrostic) is written out in
+-- arc/corpus/cipher-plaintexts.md under "stone-iss-wall — the second reading (acrostic)".
+-- Read WARM (trustingly, line by line) the stone still comforts and routes to the dead
+-- shrine (the false lead is unchanged — iss_trusted still fires). Read COLD (the acrostic,
+-- first letter of each line, down) it spells "no wall" — the same correction stone-iss-wall's
+-- Vigenère name-as-key yields, reached by an entirely different, independently-verifiable
+-- method. This is the "warm account vs. the land" deduction made literal IN THE CARVING
+-- itself, not just cross-document. Accepts BOTH the acrostic answer and the (unchanged)
+-- warm phrase, so a group that reads it either way is heard; next_puzzle_key + set_flags
+-- (routing to the dead shrine) are unchanged.
 ( 'iss-warm',
   'the warm reading',
   array[
-    'the ways are a wall against the watching'
+    'the ways are a wall against the watching',
+    'no wall',
+    'read down the first letter of each warm line'
   ],
   'next_clue',
   jsonb_build_object(
@@ -1145,6 +1178,12 @@ values
 
 -- atonement-refrain — honor a previously-broken custom, then return to the keeper who
 -- withheld its fragment. main_beat: the M4 turn (conduct is the lock, fragment the key).
+-- NO site_id (the solver may be anywhere at fire time; backlog-unlockbeat-producers R-C
+-- flagged this row as lacking a real world anchor and needing either a site_id or a
+-- downgrade). Downgraded reveal -> private_message: this moment has no physical slot to
+-- flip, so it is delivered as a private acknowledgement (same pattern as no-wall-catch's
+-- iss.dialogue.turns_cold cold-flip) via the atonement.refrain.returned archive key
+-- (voice.archive.ts), resolved by resolve.ts's resolvePrivateMessageKey.
 ( 'atonement-refrain',
   'the keepers turn',
   array[
@@ -1162,8 +1201,8 @@ values
       'mc_uuid', '{solver}',
       'priority', 12,
       'payload', jsonb_build_object(
-        'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'keeper_withheld_returned')
+        'step', 'private_message',
+        'step_payload', jsonb_build_object('key', 'atonement.refrain.returned')
       )
     )
   ),
@@ -1175,6 +1214,16 @@ values
 
 -- rite-tokens — lay one personal token in each of six slots + the named components.
 -- main_beat. FACT 13 (the missing tool is YOU). → accepting-crouch / pressure-glyph-walk.
+-- REVEAL FIX (was a dead {"slots":6,"lit":true} shape RevealBeat never read — no-cells no-op).
+-- unbrokenLight()'s real last-lamps ring (StructureTemplates.java:879-888) places only 4 posts
+-- at (dx,dz) in {(0,-4),(4,0),(0,4),(-4,0)}: three are already-lit soul lanterns at dy+1 (i=0..2,
+-- hangingLantern(...,true)), and the fourth (i==3, dx=-4,dz=0) is deliberately left "capped" —
+-- DEEPSLATE_TILES at dy+1, no lantern at all ("the seventh place: post capped, lamp doused",
+-- line 884) — the one open/unlit seat the design calls out by name. There is no 6-lightable-slot
+-- altar anywhere in the built structure (Lantern is not Lightable in Bukkit either, so a `lit`
+-- cell on the other three would silently no-op) — the ONE real, earned flip here is that capped
+-- seventh seat finally taking its lamp: a `set` cell swapping the cap to a standing lit
+-- SOUL_LANTERN, at the exact (dx,dy,dz) the cap occupies.
 ( 'rite-tokens',
   'bring the thing only you can give',
   array[
@@ -1194,7 +1243,11 @@ values
       'priority', 10,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('slots', 6, 'lit', true)
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', -4, 'dy', 1, 'dz', 0, 'kind', 'set', 'material', 'SOUL_LANTERN')
+          )
+        )
       )
     )
   ),
@@ -1409,6 +1462,11 @@ values
 -- literacy (P1-5) — it does not teach the cipher cold. Solving it NAMES the Seventh →
 -- sets seventh_named (FACT 10b). Gated by active=false until the deep opens (post-iss_caught
 -- + seventh_suspected); the SeventhChoiceListener / TS-SHOWRUN flips it. main_beat.
+-- REVEAL FIX (was a dead {"fragment":"seventh_name_unsealed"} shape). unwriting()'s hearth-stone
+-- (StructureTemplates.java:1016-1019) places a real CAMPFIRE at (dx=-2,dy=1,dz=2) built UNLIT
+-- (`pen.campfire(cx-2, cy+1, cz+2, false)` — "the hearth, never lit"). Campfire is Lightable in
+-- Bukkit, so this is a genuine earned flip: the name being unsealed ("below the cold hearth...
+-- the seal is a name") is realized as the cold hearth finally taking flame.
 ( 'seventh-unwriting',
   'the seal is a name',
   array[
@@ -1428,7 +1486,11 @@ values
       'priority', 12,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'seventh_name_unsealed')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', -2, 'dy', 1, 'dz', 2, 'kind', 'lit', 'lit', true)
+          )
+        )
       )
     )
   ),
@@ -1462,6 +1524,14 @@ values
 -- The resolver's Seventh-choice sentinel branch sets seventh_choice + ending_codicil from
 -- which token matched (TS-SHOWRUN owns the branch). main_beat; gated active=false until
 -- seventh_named. GATES NOTHING on the spine (colors the ending only, INV-12-style).
+-- REVEAL FIX (was a dead {"fragment":"seventh_choice_marked"} shape). unwriting()'s deposit-slot
+-- (StructureTemplates.java:1016,1020-1022, distinct from seventh-unwriting's hearth above) is a
+-- CHISELED_POLISHED_BLACKSTONE backing block at (dx=2,dy=0,dz=1) beside the empty offering-cut —
+-- "the empty deposit-slot (an offering never received)". This row's own comment ties the deposit
+-- directly to the choice ("the deposit (restore) is ALSO the INHERITORS codicil"), so the mark
+-- here is the once-waiting deposit backing finally reading as closed/resolved: swapped to plain
+-- POLISHED_BLACKSTONE_BRICKS (the same material already used for the slot's front face at
+-- dz=2), converging the ornamental "waiting" chisel into the settled brick once the choice lands.
 ( 'seventh-choice',
   'restore or erase the seventh',
   array[
@@ -1478,7 +1548,11 @@ values
       'priority', 11,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'seventh_choice_marked')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 2, 'dy', 0, 'dz', 1, 'kind', 'set', 'material', 'POLISHED_BLACKSTONE_BRICKS')
+          )
+        )
       )
     )
   ),
@@ -1630,6 +1704,15 @@ values
 -- main_beat → the Accepting on-ramp (rite-tokens). The PrivateSound/ParticleBeat per-presence
 -- arrival fires in-world; the word here is what a present keeper reads off the destination
 -- carving. Gated active=false until true_coord_known. coldHearth.find / threshold.arrive voice.
+-- REVEAL FIX (was a dead {"fragment":"destination_leaves_read"} shape). threshold()'s tableau
+-- (StructureTemplates.java:952-958) never places literal `_LEAVES` blocks — BUILD-MANIFEST
+-- always slated "destination leaves" as a sign/lectern rewrite (SignWriteBeat/LecternFillBeat),
+-- which RevealBeat is not. The one real, standalone site-mark block the template DOES place is
+-- the bare POLISHED_BLACKSTONE_BRICKS at (dx=0,dy=0,dz=2), directly over the grave and right
+-- before the date-notation label sign (cz+3) — a placeholder marker with no other role. Opening
+-- it to AIR is the canonical "open the way" flip (RevealBeat javadoc) and reads as the tableau
+-- clearing so the destination carving is finally legible, grounded in a block the build actually
+-- places (not invented geometry).
 ( 'true-walk-arrive',
   'the road kept its word',
   array[
@@ -1649,7 +1732,11 @@ values
       'priority', 13,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'destination_leaves_read')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 0, 'dy', 0, 'dz', 2, 'kind', 'set', 'material', 'AIR')
+          )
+        )
       )
     )
   ),
@@ -1761,10 +1848,9 @@ values
 -- COVERAGE NOTE (specsCoverageSelfTest, clue-specs.ts ~L477): every ACTIVE row
 -- must be a registered CLUE_SPECS cipher OR in NON_CIPHER_KEYS. The two ACTIVE
 -- rows below (reckoning-rosetta, base-docket-reread-auto) are non-cipher
--- observation/lore nodes — the TS-FORGE lane must add them to NON_CIPHER_KEYS
--- (listed in the RETURN) or the coverage self-test fails. The STAGED row
--- (stone-brann-cipher, active=false) is exempt until it is both activated AND
--- given a real railFence CLUE_SPECS entry by TS-FORGE.
+-- observation/lore nodes, registered in NON_CIPHER_KEYS. stone-brann-cipher
+-- (puzzle-variety audit fix) is now ACTIVE and has a real railFence CLUE_SPECS
+-- entry (clue-specs.ts, rails=9) — no longer staged/exempt.
 -- ===========================================================================
 
 -- ───────────────────────────────────────────────────────────────────────────
@@ -1802,17 +1888,17 @@ values
   1, true, null ),
 
 -- ───────────────────────────────────────────────────────────────────────────
--- D2 — the SIXTH keeper-stone expedition: Brann, read-by-time (the genuinely-unbuilt
--- modality, backlog-keeper-stone-expeditions §1.4). Today stone-brann ships as flat lore;
--- this is its real cipher node — railFence (rails = the fire-count Brann names in D08),
+-- D2 — the SIXTH keeper-stone expedition: Brann, read-by-time (puzzle-variety audit
+-- fix — ACTIVATED). backlog-keeper-stone-expeditions §1.4. This is Brann's real cipher
+-- node — railFence (rails = 9, the fire-count Brann himself names — "nine lit one out"),
 -- the verb is read-by-time (the carving rakes visible only by the lit beacon-glow after
 -- dark). The bound plaintext "count the fires before you sleep" round-trips under
--- specsSelfTest ONLY ONCE TS-FORGE adds the CLUE_SPECS railFence entry + removes stone-brann
--- from NON_CIPHER_KEYS (the cross-owner dependency in the RETURN). Until then this row is
--- STAGED (active=false) so it neither (a) trips specsCoverageSelfTest as an unclassified
--- active row, nor (b) presents a cipher the forge cannot yet bind. next_clue → the descent
--- (a second in-road to undercroft-descent, the web rule). The rail-key is day-fair: the
--- fire-count is also countable in daylight (backlog §R-3), only the READING is night-gated.
+-- specsSelfTest via the CLUE_SPECS railFence entry now registered in clue-specs.ts.
+-- stone-brann (the flat-lore stone) is a SEPARATE row and stays non-cipher lore; only
+-- its inscription text changed (see that row, above in MOVEMENT II) to set up this cipher
+-- in-world. next_clue → the descent (a second in-road to undercroft-descent, the web
+-- rule). The rail-key is day-fair: the fire-count is also countable in daylight
+-- (backlog §R-3), only the READING is night-gated.
 ( 'stone-brann-cipher',
   'count the fires before you sleep',
   array[
@@ -1838,7 +1924,7 @@ values
       )
     )
   ),
-  2, false, null ),
+  2, true, null ),
 
 -- ───────────────────────────────────────────────────────────────────────────
 -- D4 — the Liar engine OFFLINE/AUTO duplicate (backlog-liar-engine §0.2, MASTER-PLAN
@@ -1920,7 +2006,17 @@ values
 -- chest (the offering Vaun never made). answer_kind 'object': a container-content check
 -- the plugin performs; the token below is the opaque flag the producer posts on the real
 -- deposit (never the typed fallback phrase, which would leak). main_beat: opens Vaun's
--- cache (his Caesar stone becomes readable behind it). PRODUCER: HoardSortedListener.java.
+-- cache (his Caesar stone becomes readable behind it). PRODUCER: HoardSortedListener.java
+-- (confirmed world-inert — it only posts the oracle token on deposit, never mutates a block,
+-- so this reveal is the ONLY real world change the offering earns).
+-- REVEAL FIX (was a dead {"fragment":"vaun_cache_opened"} shape). vaun()'s hoard containers
+-- (StructureTemplates.java:332-336, CHEST/TRAPPED_CHEST/BARRELs) are live inventory blocks —
+-- flipping their material via RevealBeat's `set` would delete their contents, so they are not
+-- safe reveal targets. The genuine non-container "wrongness" prop the same method places
+-- (line 342) — "a cracked pot on the floor... the hoard is failing" — is the honest target:
+-- CRACKED_STONE_BRICKS at (dx=1,dy=0,dz=2), beside the plain "chipped pot" at (dx=0,dy=0,dz=2).
+-- The cache opening is realized as that failing-hoard tell resolving: cracked brick made whole
+-- (STONE_BRICKS), the wrongness undone once the first-of-the-deep is finally given back.
 ( 'vaun-hoard-sorted',
   'give the first of the deep back',
   array[
@@ -1937,7 +2033,11 @@ values
       'priority', 12,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'vaun_cache_opened')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 1, 'dy', 0, 'dz', 2, 'kind', 'set', 'material', 'STONE_BRICKS')
+          )
+        )
       )
     )
   ),
@@ -1997,6 +2097,14 @@ values
 -- opaque token on the detected group-bow. main_beat: the record writes Mara whole.
 -- Gated on mara_alcove_open. PRODUCER: GroupWalkListener.java.
 -- active=false → lit at mara_alcove_open by the metapuzzle activation lane.
+-- REVEAL FIX (was a dead {"fragment":"mara_written_whole"} shape). first_marker_01 is placed by
+-- /observance placeprologue's SmallStructureBeat (ObservanceCommand.java:961-968), NOT a
+-- StructureTemplates.keeper() dispatch — its only two real blocks are a CHISELED_STONE_BRICKS
+-- at (0,0,0) and a CANDLE at (0,1,0) (the same "small structure" payload cited there, ground
+-- truth for the site). The candle is the one real Lightable object here, and Mara's own motif
+-- established throughout her build (mara(), StructureTemplates.java:410-411: "i can't keep them
+-- all lit — the words stay when the lamps do not") is precisely light enabling reading — so
+-- "the record writes Mara whole" is realized as this candle finally catching.
 ( 'mara-walk-the-map',
   'what she read you walked',
   array[
@@ -2013,7 +2121,11 @@ values
       'priority', 12,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'mara_written_whole')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 0, 'dy', 1, 'dz', 0, 'kind', 'lit', 'lit', true)
+          )
+        )
       )
     )
   ),
@@ -2027,6 +2139,9 @@ values
 -- water's reflection; the bearing points to the far water. answer_kind 'coords': the
 -- clean DESTINATION WORD found on-site (INV-14), never the signed coordinate. next_clue
 -- → sella-overlay-lake (at the far water). Typed (a word read off the reflection).
+-- Also now the sole producer of seventh_suspected (moved off the deactivated
+-- stone-sella above, puzzle-variety audit) — the Seventh side-quest thread
+-- (seventh-shrine, seventh-unwriting, seventh-cause) still gates on this same flag key.
 ( 'sella-reflection-bearing',
   'the rune only the water shows',
   array[
@@ -2038,21 +2153,34 @@ values
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
     'next_puzzle_key', 'sella-overlay-lake',
-    'set_flags', jsonb_build_object('sella_bearing_read', true)
+    'set_flags', jsonb_build_object('sella_bearing_read', true, 'seventh_suspected', true)
   ),
   'coords', 2, true, null ),
 
--- sella-overlay-lake (§4.2) — two filled maps overlaid resolve into a shore outline with
--- an X. answer_kind 'coords': the destination word the overlaid X marks, read on-site.
--- lore payoff (a Sella drawing that is only joy) + next_clue seed toward the deep. Typed.
--- Gated on sella_bearing_read (you must have followed the bearing to the far water).
--- active=false → lit at sella_bearing_read by the metapuzzle activation lane.
+-- sella-overlay-lake — RETHEMED (puzzle-variety audit): was "look at something → get a
+-- destination word → walk there → read a sign," the same template as its neighbors
+-- sella-reflection-bearing (before it) and sella-shore-memorial (after it) — three in a
+-- row, the clearest back-to-back template repeat in the whole puzzle set (PUZZLES.md §0).
+-- Converted to a numeral/positional lock, REUSING the exact producer/answer_kind pairing
+-- already proven live at mara-lectern-lock (LecternLockListener.java, answer_kind 'code')
+-- — no new mechanic type invented, no new Java. Re-themed to Sella's water/reflection
+-- motif rather than Mara's reading motif: at the shore pool, her copybook's ring-drawings
+-- (concentric ripples she drew fanning out from a dropped stone, each ring numbered in her
+-- own hand — a child's tally, not a rite) give five page-numbers; five lecterns holding the
+-- OTHER half of her copybook (loose pages, not the six-book Kept-Light shelf — a different
+-- physical shelf, hers) must be turned to those five pages. The comparator circuit behind
+-- the shore-pool alcove completes only when all five match — same water-logic verb as her
+-- other puzzles (count the rings, not read them), so the axis that changes is TYPE/VERB/
+-- answer_kind while the SURFACE (in-world, shore pool) stays hers. answer_kind 'code'; the
+-- lock listener reads the five-lectern comparator line (mirrors mara-lectern-lock's rig
+-- exactly). next_clue → sella-shore-memorial (unchanged spine). Gated on sella_bearing_read
+-- (unchanged). active=false → lit at sella_bearing_read by the metapuzzle activation lane
+-- (unchanged — the gate + downstream flag sella_overlay_read are untouched so
+-- sella-shore-memorial's own gate does not need to move).
 ( 'sella-overlay-lake',
-  'two leaves become one place',
+  'count the rings she drew',
   array[
-    'the drowned place the child drew',
-    'where she went the shore with the x',
-    'the shore the two maps make'
+    's3k9 vq2m x7d4 p1n6 the rings she counted'
   ],
   'next_clue',
   jsonb_build_object(
@@ -2060,7 +2188,7 @@ values
     'next_puzzle_key', 'sella-shore-memorial',
     'set_flags', jsonb_build_object('sella_overlay_read', true)
   ),
-  'coords', 3, false, null ),
+  'code', 3, false, null ),
 
 -- sella-shore-memorial (§4.3) — a scatter of blocks that forced-perspective-resolves,
 -- from one anchor block, into Sella's bird-over-water glyph. answer_kind 'behavior':
@@ -2089,6 +2217,14 @@ values
 -- Sella, Orin, Brann, Iss). answer_kind 'behavior'; opaque token on the ordered-bow
 -- sequence. next_clue → orin-threshold (his threshold-stone becomes readable from the
 -- crouch). PRODUCER: OrderedBowListener.java.
+-- REVEAL FIX (was a dead {"fragment":"orin_threshold_readable"} shape). Same first_marker_01
+-- ground truth as mara-walk-the-map above (ObservanceCommand.java:961-968: one
+-- CHISELED_STONE_BRICKS at (0,0,0), one CANDLE at (0,1,0)) — the candle is claimed by Mara's
+-- reveal (her lamp/lit-reading motif), so this row's distinct flip is the stone itself: a
+-- `set` swap to CHISELED_DEEPSLATE, the exact material Orin's own threshold lintel is built
+-- from (orin(), StructureTemplates.java:543: "the lintel block, dead centre"). His
+-- threshold-stone "becoming readable" is realized as the plain marker taking his own
+-- carved-deepslate signature.
 ( 'orin-bow-fall-order',
   'bow at the markers in fall order',
   array[
@@ -2106,7 +2242,11 @@ values
       'priority', 11,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'orin_threshold_readable')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 0, 'dy', 0, 'dz', 0, 'kind', 'set', 'material', 'CHISELED_DEEPSLATE')
+          )
+        )
       )
     )
   ),
@@ -2914,6 +3054,17 @@ values
   ( 'surface-eighth-forged', 'surface', 'the covering of the hands', 'cardSurfaceEighthForged',
     'stone_iss', 'rumor',
     array['surface-aro-lie','happened-no-wall'], 'forged-eighth', null, 80 ),
+
+  -- the lad (letters L08a/L08b) — the eighth's one human cost. He obeyed the covering all
+  -- winter, asked the one question that names the catch itself (a true way answers when
+  -- broken; a covering answers never), and is answered with silence — read, at the time, as
+  -- the wall holding. Revealed post-catch (2026-07-05 audit): every other planted thread in
+  -- the corpus has a traceable payoff card; this was the one exception, a fully-written
+  -- figure whose fate had nowhere left to go. References the same forged board + the catch
+  -- that retroactively names his silence for what it was.
+  ( 'human-lad-unanswered', 'human', 'no reply is filed', 'cardHumanLadUnanswered',
+    'stone_iss', 'explore',
+    array['surface-eighth-forged','happened-no-wall'], 'no-wall-catch', null, 81 ),
 
   -- the three-hands gate — the cold square Mara typed into the dark, read as the rite
   -- instruction at the catch (happened). Anchored at the Undercroft plate. Solve-gated on

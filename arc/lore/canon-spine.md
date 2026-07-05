@@ -247,6 +247,16 @@ by the accumulated weight of 3,4,6,11,12,13,14 — never by a sentence that says
 > least seven independent foreshadows (3,4,6,11,12,13,14) across all five Movements and
 > every surface, so no single missed clue can either *block* the landing or *spoil* it.
 
+**FACT 15.a — The land is accepted before its keepers are — the animals turn first.**
+M2→M5 · FORESHADOW (felt, never stated) · child of FACT 15 · *Paths:* the Pale herd
+(`design/ideas/herd-conversion.md`) — a few more ordinary animals near the group's
+territory turn pale between sessions, never witnessed mutating, never glowing, never
+tracked, until a field stands facing one bearing by M5; the keeper's tally
+(`keeper-tally.md`) counting the same conversion in a prior keeper's hand. It is the
+**animal-scale rehearsal** of 15: the same induction, run first on the herd, at a
+register that needs no blood and breaks no anti-jank rule. Colors only — INV-12 (this
+fact gates nothing; a small or empty field costs the ending nothing). → the door to 15.
+
 ---
 
 ## 3b. THE FROZEN-NAMESPACE FACTS (added by synthesis — `WEB-MASTER §0.1`)

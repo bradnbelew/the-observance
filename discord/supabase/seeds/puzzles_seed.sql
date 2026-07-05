@@ -447,6 +447,12 @@ values
 
 -- atonement-refrain — honor a previously-broken custom, then return to the keeper who
 -- withheld its fragment. main_beat: the M4 turn (conduct is the lock, fragment the key).
+-- NO site_id (the solver may be anywhere at fire time; backlog-unlockbeat-producers R-C
+-- flagged this row as lacking a real world anchor and needing either a site_id or a
+-- downgrade). Downgraded reveal -> private_message: this moment has no physical slot to
+-- flip, so it is delivered as a private acknowledgement (same pattern as no-wall-catch's
+-- iss.dialogue.turns_cold cold-flip) via the atonement.refrain.returned archive key
+-- (voice.archive.ts), resolved by resolve.ts's resolvePrivateMessageKey.
 ( 'atonement-refrain',
   'the keepers turn',
   array[
@@ -464,8 +470,8 @@ values
       'mc_uuid', '{solver}',
       'priority', 12,
       'payload', jsonb_build_object(
-        'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'keeper_withheld_returned')
+        'step', 'private_message',
+        'step_payload', jsonb_build_object('key', 'atonement.refrain.returned')
       )
     )
   ),
@@ -477,6 +483,16 @@ values
 
 -- rite-tokens — lay one personal token in each of six slots + the named components.
 -- main_beat. FACT 13 (the missing tool is YOU). → accepting-crouch / pressure-glyph-walk.
+-- REVEAL FIX (was a dead {"slots":6,"lit":true} shape RevealBeat never read — no-cells no-op).
+-- unbrokenLight()'s real last-lamps ring (StructureTemplates.java:879-888) places only 4 posts
+-- at (dx,dz) in {(0,-4),(4,0),(0,4),(-4,0)}: three are already-lit soul lanterns at dy+1 (i=0..2,
+-- hangingLantern(...,true)), and the fourth (i==3, dx=-4,dz=0) is deliberately left "capped" —
+-- DEEPSLATE_TILES at dy+1, no lantern at all ("the seventh place: post capped, lamp doused",
+-- line 884) — the one open/unlit seat the design calls out by name. There is no 6-lightable-slot
+-- altar anywhere in the built structure (Lantern is not Lightable in Bukkit either, so a `lit`
+-- cell on the other three would silently no-op) — the ONE real, earned flip here is that capped
+-- seventh seat finally taking its lamp: a `set` cell swapping the cap to a standing lit
+-- SOUL_LANTERN, at the exact (dx,dy,dz) the cap occupies.
 ( 'rite-tokens',
   'bring the thing only you can give',
   array[
@@ -496,7 +512,11 @@ values
       'priority', 10,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('slots', 6, 'lit', true)
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', -4, 'dy', 1, 'dz', 0, 'kind', 'set', 'material', 'SOUL_LANTERN')
+          )
+        )
       )
     )
   ),
@@ -711,6 +731,11 @@ values
 -- literacy (P1-5) — it does not teach the cipher cold. Solving it NAMES the Seventh →
 -- sets seventh_named (FACT 10b). Gated by active=false until the deep opens (post-iss_caught
 -- + seventh_suspected); the SeventhChoiceListener / TS-SHOWRUN flips it. main_beat.
+-- REVEAL FIX (was a dead {"fragment":"seventh_name_unsealed"} shape). unwriting()'s hearth-stone
+-- (StructureTemplates.java:1016-1019) places a real CAMPFIRE at (dx=-2,dy=1,dz=2) built UNLIT
+-- (`pen.campfire(cx-2, cy+1, cz+2, false)` — "the hearth, never lit"). Campfire is Lightable in
+-- Bukkit, so this is a genuine earned flip: the name being unsealed ("below the cold hearth...
+-- the seal is a name") is realized as the cold hearth finally taking flame.
 ( 'seventh-unwriting',
   'the seal is a name',
   array[
@@ -730,7 +755,11 @@ values
       'priority', 12,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'seventh_name_unsealed')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', -2, 'dy', 1, 'dz', 2, 'kind', 'lit', 'lit', true)
+          )
+        )
       )
     )
   ),
@@ -764,6 +793,14 @@ values
 -- The resolver's Seventh-choice sentinel branch sets seventh_choice + ending_codicil from
 -- which token matched (TS-SHOWRUN owns the branch). main_beat; gated active=false until
 -- seventh_named. GATES NOTHING on the spine (colors the ending only, INV-12-style).
+-- REVEAL FIX (was a dead {"fragment":"seventh_choice_marked"} shape). unwriting()'s deposit-slot
+-- (StructureTemplates.java:1016,1020-1022, distinct from seventh-unwriting's hearth above) is a
+-- CHISELED_POLISHED_BLACKSTONE backing block at (dx=2,dy=0,dz=1) beside the empty offering-cut —
+-- "the empty deposit-slot (an offering never received)". This row's own comment ties the deposit
+-- directly to the choice ("the deposit (restore) is ALSO the INHERITORS codicil"), so the mark
+-- here is the once-waiting deposit backing finally reading as closed/resolved: swapped to plain
+-- POLISHED_BLACKSTONE_BRICKS (the same material already used for the slot's front face at
+-- dz=2), converging the ornamental "waiting" chisel into the settled brick once the choice lands.
 ( 'seventh-choice',
   'restore or erase the seventh',
   array[
@@ -780,7 +817,11 @@ values
       'priority', 11,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'seventh_choice_marked')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 2, 'dy', 0, 'dz', 1, 'kind', 'set', 'material', 'POLISHED_BLACKSTONE_BRICKS')
+          )
+        )
       )
     )
   ),
@@ -932,6 +973,15 @@ values
 -- main_beat → the Accepting on-ramp (rite-tokens). The PrivateSound/ParticleBeat per-presence
 -- arrival fires in-world; the word here is what a present keeper reads off the destination
 -- carving. Gated active=false until true_coord_known. coldHearth.find / threshold.arrive voice.
+-- REVEAL FIX (was a dead {"fragment":"destination_leaves_read"} shape). threshold()'s tableau
+-- (StructureTemplates.java:952-958) never places literal `_LEAVES` blocks — BUILD-MANIFEST
+-- always slated "destination leaves" as a sign/lectern rewrite (SignWriteBeat/LecternFillBeat),
+-- which RevealBeat is not. The one real, standalone site-mark block the template DOES place is
+-- the bare POLISHED_BLACKSTONE_BRICKS at (dx=0,dy=0,dz=2), directly over the grave and right
+-- before the date-notation label sign (cz+3) — a placeholder marker with no other role. Opening
+-- it to AIR is the canonical "open the way" flip (RevealBeat javadoc) and reads as the tableau
+-- clearing so the destination carving is finally legible, grounded in a block the build actually
+-- places (not invented geometry).
 ( 'true-walk-arrive',
   'the road kept its word',
   array[
@@ -951,7 +1001,11 @@ values
       'priority', 13,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'destination_leaves_read')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 0, 'dy', 0, 'dz', 2, 'kind', 'set', 'material', 'AIR')
+          )
+        )
       )
     )
   ),
@@ -1221,7 +1275,17 @@ values
 -- chest (the offering Vaun never made). answer_kind 'object': a container-content check
 -- the plugin performs; the token below is the opaque flag the producer posts on the real
 -- deposit (never the typed fallback phrase, which would leak). main_beat: opens Vaun's
--- cache (his Caesar stone becomes readable behind it). PRODUCER: HoardSortedListener.java.
+-- cache (his Caesar stone becomes readable behind it). PRODUCER: HoardSortedListener.java
+-- (confirmed world-inert — it only posts the oracle token on deposit, never mutates a block,
+-- so this reveal is the ONLY real world change the offering earns).
+-- REVEAL FIX (was a dead {"fragment":"vaun_cache_opened"} shape). vaun()'s hoard containers
+-- (StructureTemplates.java:332-336, CHEST/TRAPPED_CHEST/BARRELs) are live inventory blocks —
+-- flipping their material via RevealBeat's `set` would delete their contents, so they are not
+-- safe reveal targets. The genuine non-container "wrongness" prop the same method places
+-- (line 342) — "a cracked pot on the floor... the hoard is failing" — is the honest target:
+-- CRACKED_STONE_BRICKS at (dx=1,dy=0,dz=2), beside the plain "chipped pot" at (dx=0,dy=0,dz=2).
+-- The cache opening is realized as that failing-hoard tell resolving: cracked brick made whole
+-- (STONE_BRICKS), the wrongness undone once the first-of-the-deep is finally given back.
 ( 'vaun-hoard-sorted',
   'give the first of the deep back',
   array[
@@ -1238,7 +1302,11 @@ values
       'priority', 12,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'vaun_cache_opened')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 1, 'dy', 0, 'dz', 2, 'kind', 'set', 'material', 'STONE_BRICKS')
+          )
+        )
       )
     )
   ),
@@ -1298,6 +1366,14 @@ values
 -- opaque token on the detected group-bow. main_beat: the record writes Mara whole.
 -- Gated on mara_alcove_open. PRODUCER: GroupWalkListener.java.
 -- active=false → lit at mara_alcove_open by the metapuzzle activation lane.
+-- REVEAL FIX (was a dead {"fragment":"mara_written_whole"} shape). first_marker_01 is placed by
+-- /observance placeprologue's SmallStructureBeat (ObservanceCommand.java:961-968), NOT a
+-- StructureTemplates.keeper() dispatch — its only two real blocks are a CHISELED_STONE_BRICKS
+-- at (0,0,0) and a CANDLE at (0,1,0) (the same "small structure" payload cited there, ground
+-- truth for the site). The candle is the one real Lightable object here, and Mara's own motif
+-- established throughout her build (mara(), StructureTemplates.java:410-411: "i can't keep them
+-- all lit — the words stay when the lamps do not") is precisely light enabling reading — so
+-- "the record writes Mara whole" is realized as this candle finally catching.
 ( 'mara-walk-the-map',
   'what she read you walked',
   array[
@@ -1314,7 +1390,11 @@ values
       'priority', 12,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'mara_written_whole')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 0, 'dy', 1, 'dz', 0, 'kind', 'lit', 'lit', true)
+          )
+        )
       )
     )
   ),
@@ -1406,6 +1486,14 @@ values
 -- Sella, Orin, Brann, Iss). answer_kind 'behavior'; opaque token on the ordered-bow
 -- sequence. next_clue → orin-threshold (his threshold-stone becomes readable from the
 -- crouch). PRODUCER: OrderedBowListener.java.
+-- REVEAL FIX (was a dead {"fragment":"orin_threshold_readable"} shape). Same first_marker_01
+-- ground truth as mara-walk-the-map above (ObservanceCommand.java:961-968: one
+-- CHISELED_STONE_BRICKS at (0,0,0), one CANDLE at (0,1,0)) — the candle is claimed by Mara's
+-- reveal (her lamp/lit-reading motif), so this row's distinct flip is the stone itself: a
+-- `set` swap to CHISELED_DEEPSLATE, the exact material Orin's own threshold lintel is built
+-- from (orin(), StructureTemplates.java:543: "the lintel block, dead centre"). His
+-- threshold-stone "becoming readable" is realized as the plain marker taking his own
+-- carved-deepslate signature.
 ( 'orin-bow-fall-order',
   'bow at the markers in fall order',
   array[
@@ -1423,7 +1511,11 @@ values
       'priority', 11,
       'payload', jsonb_build_object(
         'step', 'reveal',
-        'step_payload', jsonb_build_object('fragment', 'orin_threshold_readable')
+        'step_payload', jsonb_build_object(
+          'cells', jsonb_build_array(
+            jsonb_build_object('dx', 0, 'dy', 0, 'dz', 0, 'kind', 'set', 'material', 'CHISELED_DEEPSLATE')
+          )
+        )
       )
     )
   ),

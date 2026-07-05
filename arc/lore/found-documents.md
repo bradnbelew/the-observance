@@ -298,6 +298,18 @@ emote). Links → `the-record-opens`, `against-each-name-a-ground` (the where wi
 ground that keeps him), `do-not-close-your-eyes-here` (Brann knew the cold hearth renders what
 it should not, after dark).
 
+### Keeper's tally — "keeper's tally" (unsigned herd-keeper hand · ledger · M2→M4 · clue-bearing: no)
+**File:** `keeper-tally.md`. The anti-orphan plant for the **Pale herd** cosmetic
+(`design/ideas/herd-conversion.md`, FACT 15.a): three leaves, found out of writing-order,
+by the SAME unsigned hand, counting a herd going pale — degrading in spacing and
+legibility fragment to fragment (the keeper's hand failing, not just the herd's colour).
+Not a new D-number (outside the D01–D23 set, same footing as D21–D23's late additions);
+no existing file is edited. Companion to the pre-existing `nine-grey-one-white.md` (a
+different keeper, an earlier era, the identical conversion witnessed from outside the
+fold rather than from within it) — read together they are two keepers, two winters, one
+going-out. Links → `nine-grey-one-white`, `counted-them-in-the-dark`,
+`do-not-close-your-eyes-here`.
+
 ---
 
 ## SYNTHESIS INTERLINK ADDITIONS (the new web edges)

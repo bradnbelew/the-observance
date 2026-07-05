@@ -119,7 +119,8 @@ cd /d/the-observance/plugin && "D:/_gradle/gradle-8.10.2/bin/gradle" --offline j
 # discord (TS + SQL) — the full gauntlet
 cd /d/the-observance/discord && npx tsc --noEmit \
   && for s in seedcheck gatecheck specscheck showrunner:test showrunner:test:autonomy \
-       showrunner:test:archive showrunner:test:scenario showrunner:test:customs showrunner:test:prologue; \
+       showrunner:test:archive showrunner:test:scenario showrunner:test:customs showrunner:test:prologue \
+       showrunner:test:herd; \
      do npm run -s "$s"; done
 # dashboard
 cd /d/the-observance/dashboard && npx tsc --noEmit \

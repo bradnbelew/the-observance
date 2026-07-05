@@ -14,7 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.EnumSet;
@@ -152,11 +151,5 @@ public final class HoardSortedListener implements Listener {
             if (d2 < bestD2) { bestD2 = d2; best = s; }
         }
         return best;
-    }
-
-    // Retained for potential future holder-based resolution; block containers expose getLocation().
-    @SuppressWarnings("unused")
-    private static InventoryHolder holderOf(Inventory inv) {
-        return inv == null ? null : inv.getHolder();
     }
 }

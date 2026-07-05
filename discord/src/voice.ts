@@ -594,6 +594,22 @@ export const voice = {
   forkSacredBeastBroken(): string {
     return 'the one that glowed is down. the boon it would have lent is closed, and stays closed. the herd keeps the death-spot in its facing.';
   },
+
+  /**
+   * The Pale field's M5 condition (design/ideas/herd-conversion.md §3/§4.3, FACT 15.a). Composed
+   * ONLY when the cosmetic pale count is non-trivial at the close (a small/empty field composes
+   * with NO clause — INV-12, colors never gates). Reuses the `keptSacredBeast` REGISTER (flat,
+   * ledgerlike, no new voice concept) rather than a new tone; distinct clause for the Fork-A-broken
+   * variant, so the field's read never contradicts the tracked beast's own fork line above.
+   */
+  forkPaleFieldStands(): string {
+    return 'the pale ones face the road you came in by. they were yours. now they keep the count.';
+  },
+  /** Same field condition, composed when Fork A (the glowing Sacred Beast) was ALSO broken — the
+   *  field does not need the tracked one to keep facing; it was never counting that one alone. */
+  forkPaleFieldStandsForkBroken(): string {
+    return 'the kept one is down and the field still faces east. it did not need the one you took.';
+  },
   /** Fork B boon — the eternal flame was drawn from and kept; the undercroft stays lit. */
   forkLightKept(): string {
     return 'the light came up the stair on its own. you carried it. that is how it is carried.';

@@ -310,6 +310,31 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'record-url': 'the founder line pointing off-world to the record website (A13) — found lore, the page is the payoff, no carving',
   'difficulty-mara': 'Mara’s “closer count of the quick” fragment — demoted to texture/lore (OVERHAUL §5: the difficulty REVEAL is cut; the line stays), not a deterministic cipher',
   'base-docket-reread-auto': 'the Hold-Book down-count re-read (A3), found-document lore gated on iss_caught via requires_flags; the showrunner-flipped twin base-docket-reread is retired (OVERHAUL §5)',
+  // S3-A (archived puzzles-ciphers.md audit): ships active=false in puzzles_seed.sql (so a
+  // base-seed-only parse never sees it), then metapuzzle_seed.sql flips it active=true once
+  // iss_caught fires — a cross-file activation this file's own coverage guard structurally
+  // couldn't see until parseSeedKeys/specsCoverageSelfTest also read metapuzzle_seed.sql's
+  // activation UPDATEs (below). The row's own comment settles the classification: "NON-cipher
+  // (plain lore, NON_CIPHER_KEYS)" — the fall-order acrostic lives in the carved FRAMING
+  // glyphs (read by hand off the existing keeper-stone carvings), never a separately forged run.
+  'meta-unkept': 'the fall-order acrostic re-read (framing glyphs, not the bound run); plain lore staged active=false then flipped true post-iss_caught by metapuzzle_seed.sql, no separate cipher to forge',
+  // THE M4 / SEVENTH-DEEP CHAINS (S3-A, same blind spot as meta-unkept above) — all six ship
+  // active=false in the base seed then get flipped true by metapuzzle_seed.sql's activation
+  // UPDATEs once their upstream flag fires; none carries its own separately-forged Discord
+  // cipher carving, so all six belong here rather than in CLUE_SPECS:
+  'bound-word': 'the Iss Vigenère plaintext IS the coop-gate\'s need — derived from stone-iss-wall\'s carving after the catch (a re-walk/second-reading), not a separately forged cipher of its own',
+  'm4-three-hands': 'the cross-surface co-op gate (A6) — CoopPlateListener posts an opaque, wordless AND-join conjunction token on a cleared gate; never human-typeable, no carving (no-leaked-sentinel)',
+  'threshold-coordinate': 'the Threshold carving\'s decoded value is a navigation POINTER (INV-14); the typed answer is the clean destination WORD found on-site, never the signed coordinate — an on-site read, not a separately forged cipher',
+  'true-walk-arrive': 'the true walk\'s destination WORD, carved on leaves placed at the on-site tableau; gated to on-site presence, no Discord carving',
+  // seventh-unwriting's OWN seed comment still says "RAIL-FENCE... counted in-world on the
+  // wall," but StructureTemplates.java's unwriting() build explicitly cut that (RESHAPE R0:
+  // "label CUT entirely — scraped wall vs one clean slab + the stopped ceiling already carry
+  // the full narrative; narration... spoils what should be the strongest room") — no literal
+  // rail-fence carving exists anywhere to decode. The seed comment is stale (not re-audited
+  // here beyond this classification note); the room's architecture is what's actually read.
+  'seventh-unwriting': 'chamber 2 of the Seventh shrine — the room\'s architecture (the scraped wall, the one clean slab, the stopped ceiling) carries the narrative (RESHAPE R0 cut the literal carving the seed comment still describes); explored/read in-world, no forged cipher',
+  'seventh-cause': 'pure told lore (outcome_type lore, oracleLore fragment) — the cause-fragment correlating the-fire-they-let-out with D11; no cipher of any kind',
+  'seventh-choice': 'the restore-OR-erase choice (A1) — DETECTED IN-WORLD ONLY by SeventhChoiceListener\'s rite; two opaque, wordless tokens posted by the plugin on real detection, never human-typeable (no-leaked-sentinel)',
   // in-world permanence-fork CHOICES (A11) — a stated intent the world detects, not a typed cipher.
   // They set the M5 composer colorant flags (light_kept / name_unspoken); the detection mechanism
   // is a Phase-3 integration concern, not a forgeable carving:
@@ -540,8 +565,40 @@ export function parseSeedKeys(seedSql: string): { active: string[]; all: string[
   return { active, all };
 }
 
-export function specsCoverageSelfTest(seedSql: string): { passed: number; cases: string[] } {
-  const { active: activeKeys, all: allKeys } = parseSeedKeys(seedSql);
+/**
+ * S3-A FIX (archived `design/archive/audit/puzzles-ciphers.md`): `parseSeedKeys` only sees a row's
+ * OWN literal `active` boolean in `puzzles_seed.sql` — it has no notion of a LATER file flipping
+ * that row active at apply time. `metapuzzle_seed.sql` does exactly that (`update public.puzzles
+ * set active = true where puzzle_key in (...)`, e.g. for `meta-unkept` once `iss_caught` fires) —
+ * a row shipped inactive in the base seed becomes genuinely active in the live database, but the
+ * coverage guard that's supposed to catch "an active row nobody classified" never saw it happen.
+ * This parses those activation UPDATEs (best-effort, matches this repo's one established idiom:
+ * `where puzzle_key in (...)` / `where puzzle_key = '...'`) so `specsCoverageSelfTest` can union
+ * them into its active set — closing the blind spot instead of leaving it open for the next
+ * cross-file-activated row to slip through unnoticed the same way `meta-unkept` did.
+ */
+export function parseActivationUpdates(metapuzzleSql: string): string[] {
+  const sql = metapuzzleSql.replace(/--[^\n]*/g, '');
+  const keys = new Set<string>();
+  const updateRe = /update\s+public\.puzzles\s+set\s+active\s*=\s*true\s+where\s+puzzle_key\s+(in\s*\(([^)]*)\)|=\s*'([a-z0-9-]+)')/gi;
+  let m: RegExpExecArray | null;
+  while ((m = updateRe.exec(sql))) {
+    const list = m[2] ?? m[3];
+    if (!list) continue;
+    for (const km of list.matchAll(/'([a-z0-9-]+)'/g)) keys.add(km[1]!);
+  }
+  return [...keys];
+}
+
+export function specsCoverageSelfTest(
+  seedSql: string,
+  activationSql?: string,
+): { passed: number; cases: string[] } {
+  const { active: parsedActive, all: allKeys } = parseSeedKeys(seedSql);
+  // Union in any cross-file runtime activations (S3-A) so a row that's inactive in the base
+  // seed but flipped active by metapuzzle_seed.sql is treated as active here too.
+  const activatedElsewhere = activationSql ? parseActivationUpdates(activationSql) : [];
+  const activeKeys = [...new Set([...parsedActive, ...activatedElsewhere])];
   if (activeKeys.length === 0) {
     throw new Error('specsCoverageSelfTest: parsed 0 active rows from the seed — parser or seed broke.');
   }

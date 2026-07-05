@@ -20,12 +20,15 @@ import type { Player } from '../db/types.js';
  * The convergence word the catch yields — the word another gate waits on (hints_seed.sql:157). It is the
  * same phrase as bound-word's answer and spine-spoken-name's spoken truth (a deliberate motif rhyme).
  */
-const CONVERGENCE_WORD = 'the one who turned away';
+export const CONVERGENCE_WORD = 'the one who turned away';
 /**
  * The opaque accepted token for m4-three-hands (discord/supabase/seeds/puzzles_seed.sql). The closer posts
  * this on a cleared gate — never typeable by a player (it is not in any hint), kept in sync with the seed.
+ * Exported (not just a hand-checked comment) so `canon.ts`'s `coopGateTokenSelfTest` can cross-check both
+ * constants against the live seed at build time — a hand-synced constant with no build-time guard is
+ * exactly the class of drift this project's own history shows recurs (2026-07-05 audit).
  */
-const M4_TOKEN = 'h3n8k1 q5m2x7 w9j4p6 t1b6f0 c8d3s5 v2z7r4';
+export const M4_TOKEN = 'h3n8k1 q5m2x7 w9j4p6 t1b6f0 c8d3s5 v2z7r4';
 /** The plugin's ready marker (kept in sync with CoopPlateListener.READY_FLAG). */
 const READY_FLAG = 'coop_world_ready_at';
 /** How fresh the world-legs marker must be for the word to close the gate. Match the plugin window-seconds. */

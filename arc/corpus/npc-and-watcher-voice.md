@@ -551,6 +551,13 @@ binding the record already holds (`linked()`), never capitalised here.
 
 ---
 
+### BN16 — ATONEMENT-REFRAIN RELEASE  *(M-IV; `atonement.refrain.returned` — the honored custom's fragment handed over; solver may be anywhere, no fixed site, so this is a private acknowledgement, not a world block-flip; distinct delivery from the Keeper-dialogue `keeper.atone.cleared` node)*
+
+**`atonement.refrain.returned`** *(the withheld fragment is returned once the broken custom is walked back)*
+- `the custom that was broken is walked back now, and the walking is entered against the name that broke it. what was withheld is not withheld any further. it was always going to be handed over once the mending was done.`
+
+---
+
 ## SET C — THE PRESIDING KEEPER (canon register 3; second-person, half-veiled "we")
 
 > **The third canon register** (`canon-spine §0`): the NPC who presides — older than the

@@ -236,6 +236,52 @@ export function riteTokenSelfTest(configYml: string, seedSql: string): { passed:
 }
 
 /**
+ * GUARD 6b — the coop-gate token (2026-07-05 audit: `coop-gate.ts`'s `M4_TOKEN`/`CONVERGENCE_WORD` were a
+ * hand-synced pair with NO build-time check, unlike the Accepting rite token above — a real drift risk on
+ * a puzzle-critical closer (`m4-three-hands`): if the seed's accepted answer ever changed, the closer would
+ * silently stop closing the gate (fails safe — degrades to silence — but would be invisible until someone
+ * noticed the gate never clears). Asserts `M4_TOKEN` byte-matches `m4-three-hands`'s FIRST accepted answer
+ * in the seed, and `CONVERGENCE_WORD` matches one of `bound-word`'s accepted answers (the "deliberate motif
+ * rhyme" coop-gate.ts's own header comment claims).
+ */
+export function coopGateTokenSelfTest(
+  m4Token: string,
+  convergenceWord: string,
+  seedSql: string,
+): { passed: number; cases: string[] } {
+  const sql = seedSql.replace(/--[^\n]*/g, '');
+
+  const gate = sql.match(/\(\s*'m4-three-hands'\s*,[\s\S]*?array\s*\[\s*'([^']*)'/i);
+  if (!gate) {
+    throw new Error("coopGateTokenSelfTest: could not find the m4-three-hands row's token in the seed.");
+  }
+  const seedToken = gate[1]!.trim();
+  if (m4Token !== seedToken) {
+    throw new Error(
+      `coopGateTokenSelfTest: coop-gate.ts's M4_TOKEN disagrees with the seed — the coop gate would ` +
+        `never close.\n  coop-gate.ts: "${m4Token}"\n  seed:         "${seedToken}"\n` +
+        `Keep M4_TOKEN === the m4-three-hands accepted_answer.`,
+    );
+  }
+
+  const boundWord = sql.match(/\(\s*'bound-word'\s*,[\s\S]*?array\s*\[([\s\S]*?)\]/i);
+  if (!boundWord) {
+    throw new Error("coopGateTokenSelfTest: could not find the bound-word row's answers in the seed.");
+  }
+  const boundAnswers = [...boundWord[1]!.matchAll(/'([^']*)'/g)].map((m) => m[1]!.trim());
+  if (!boundAnswers.includes(convergenceWord)) {
+    throw new Error(
+      `coopGateTokenSelfTest: coop-gate.ts's CONVERGENCE_WORD "${convergenceWord}" is not one of bound-word's ` +
+        `accepted answers (${boundAnswers.map((a) => `"${a}"`).join(', ')}) — the claimed motif rhyme has drifted.`,
+    );
+  }
+  return {
+    passed: 1,
+    cases: [`coop-gate token: M4_TOKEN matches the seed, CONVERGENCE_WORD matches a bound-word answer`],
+  };
+}
+
+/**
  * GUARD 7 — the thread tags (content integration). thread_tags.sql sets puzzles.thread_key +
  * teaches_custom. thread_key has a DB FK to threads, but teaches_custom is a plain text column with
  * NO FK — so a typo'd custom key would silently link a node to a non-existent way. This asserts every

@@ -486,7 +486,7 @@ function cInput(over: Partial<CompanionDialogueInput> = {}): CompanionDialogueIn
 // finale.ts — M5 composer: ordered close, seventh_choice tint, reckoning_free cost, reckoning optional.
 // ===========================================================================
 function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
-  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, inheritorsCodicil: false, reckoningFree: false, ...over };
+  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, paleFieldStands: false, inheritorsCodicil: false, reckoningFree: false, ...over };
 }
 {
   // The base opener is always present (never an empty close).
@@ -507,6 +507,16 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   const forks = composeFinale(finInput({ fate: 'cast_out', lightTaken: true, nameSpoken: true, sacredBeastBroken: true }));
   check('finale: fork leaves add colorant lines', forks.lines.length === 4);
   check('finale: inheritors codicil appends', composeFinale(finInput({ inheritorsCodicil: true })).lines.length === 2);
+  // A12 herd: the Pale field's M5 condition colors only (INV-12) — absent by default, one extra
+  // line when the field stands, and a DISTINCT line when Fork A is also broken (never the same
+  // clause as the plain field-stands case, and never contradicting the tracked beast's own line).
+  check('finale: pale field absent by default → no extra line', composeFinale(finInput()).lines.length === 1);
+  const paleOnly = composeFinale(finInput({ paleFieldStands: true }));
+  check('finale: pale field stands → exactly one extra line', paleOnly.lines.length === 2);
+  const paleAndBroken = composeFinale(finInput({ sacredBeastBroken: true, paleFieldStands: true }));
+  check('finale: pale field + fork A broken → both colorant lines present', paleAndBroken.lines.length === 3);
+  check('finale: pale-field-stands line differs from the fork-broken variant',
+    paleOnly.lines[paleOnly.lines.length - 1] !== paleAndBroken.lines[paleAndBroken.lines.length - 1]);
   check('finale: deterministic', JSON.stringify(composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true }))) ===
     JSON.stringify(composeFinale(finInput({ fate: 'kept', seventhChoice: 'restore', reckoningFree: true }))));
 }
@@ -515,7 +525,7 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
 // finale.ts — THE RELEASE composer: mask-off farewell + disconnect kick line (FINALE-THE-RELEASE.md).
 // ===========================================================================
 function relInput(over: Partial<ReleaseComposeInput> = {}): ReleaseComposeInput {
-  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, inheritorsCodicil: false, reckoningFree: false, reckoningUnderstand: false, reckoningCondemn: false, seventhName: null, ...over };
+  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, paleFieldStands: false, inheritorsCodicil: false, reckoningFree: false, reckoningUnderstand: false, reckoningCondemn: false, seventhName: null, ...over };
 }
 {
   // The three universal movements are ALWAYS present (opener + made + closing), whatever the flavor.
