@@ -13,7 +13,15 @@
   roster-quorum guard)** → the seeds (incl. the metapuzzle §5 quorum values) → **schema-repair.sql**.
   Idempotent — safe to re-run. *(Do NOT use the older `apply-tonight.sql` — it predates the reshape and
   omits the quorum column/values.)* **apply-all.sql stops at 0008 — also paste
-  `discord/supabase/migrations/0009_observations.sql`** (the W5 voice-tier table) → Run. Idempotent.
+  `discord/supabase/migrations/0009_observations.sql`** (the W5 voice-tier table) **and
+  `discord/supabase/migrations/0010_answer_attempts_web_rate_limit.sql`** (adds the `web` surface + an
+  `ip_hash` column so the record website's unresolved-name submissions get IP-throttled, not skipped)
+  **and `discord/supabase/migrations/0011_showrunner_lock.sql`** (an atomic lease lock so two
+  overlapping cron ticks can never clobber the `showrunner_state` row's high-water marks or double-post
+  a one-shot announcement) → Run all three. Idempotent. Without 0010 the website still works exactly as
+  before — an unresolved name just isn't IP-rate-limited yet (fails open, not closed). Without 0011 the
+  showrunner also still works exactly as before — it just isn't overlap-protected yet (the race is real
+  only if a tick's cron schedule is shorter than its worst-case run time).
 - **Record-website view (reshape S-D):** also paste **`dashboard/supabase/migrations/0006_v_record_theories.sql`**
   → Run. It extends the public `v_record` view so the archive un-redacts a keeper's fate by assembled
   THEORY. Idempotent (`create or replace view`); requires `0004_v_record.sql` already applied (it is, from

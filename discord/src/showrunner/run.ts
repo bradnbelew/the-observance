@@ -17,13 +17,33 @@ import { materializeArchive } from './archive.run.js';
 import { runReportsPass } from './reports.run.js';
 import { runObserverPass } from './observer.run.js';
 import { readCustomViolations } from '../db/repo.js';
-import { readState } from './state.js';
+import { readState, tryAcquireShowrunnerLock, releaseShowrunnerLock } from './state.js';
 
 async function main(): Promise<void> {
   const dryRun = process.argv.includes('--dry-run');
   const nowMs = Date.now();
   const nowIso = new Date(nowMs).toISOString();
 
+  // Overlap guard (migration 0011): a real tick writes the showrunner_state row via a plain
+  // read-then-upsert, so two overlapping cron invocations could clobber each other's high-water marks
+  // or double-post a one-shot announcement. --dry-run writes NOTHING (safe to run any time, even
+  // alongside a live tick), so it never contends for the lock. A tick that can't acquire it simply
+  // skips — the next cadence catches up; skipping is always safe, racing is not.
+  if (!dryRun) {
+    const acquired = await tryAcquireShowrunnerLock();
+    if (!acquired) {
+      console.log('[showrunner] another tick holds the lock — skipping this run');
+      return;
+    }
+  }
+  try {
+    await runTick(dryRun, nowMs, nowIso);
+  } finally {
+    if (!dryRun) await releaseShowrunnerLock();
+  }
+}
+
+async function runTick(dryRun: boolean, nowMs: number, nowIso: string): Promise<void> {
   // A10/B4: compute the difficulty grip + the prologue gate FIRST, then fold them onto the snapshot so
   // the cadence scaling + curatorial-drip suppression apply to THIS tick. Fault-isolated inside (a
   // failure returns empty gates → the spine runs at its neutral defaults). On --dry-run the inner

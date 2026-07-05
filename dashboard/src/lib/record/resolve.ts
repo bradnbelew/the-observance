@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 
 import { getOracleClient } from "./oracle-client";
 import { normalizeAnswer, MAX_RAW_LEN } from "./normalize";
@@ -95,7 +96,7 @@ async function getOpenPuzzles(
   return data.filter((p) => flagsSatisfied(p.requires_flags, flags));
 }
 
-/** attempts by this player (or discord_id) within the window — the rate-limit substrate. Fails OPEN. */
+/** attempts by this player within the window — the rate-limit substrate. Fails OPEN. */
 async function countRecentAttempts(
   client: NonNullable<ReturnType<typeof getOracleClient>>,
   opts: { playerId: string | null; windowMs: number; puzzleKey?: string },
@@ -114,6 +115,38 @@ async function countRecentAttempts(
   }
 }
 
+/** SHA-256 of the client IP, truncated — never store a raw IP. Migration 0010's ip_hash column. */
+function hashIp(ip: string): string {
+  return createHash("sha256").update(ip).digest("hex").slice(0, 32);
+}
+
+/**
+ * Attempts within the window from an unresolved (no player_id) submitter sharing this IP hash — the
+ * throttle an unknown name otherwise skips entirely (INV: unresolved names can't be rate-keyed by
+ * player_id, so without this an anonymous prober could hammer the endpoint at zero cost beyond a DB
+ * write). Scoped to player_id IS NULL so it can never merge with a known keeper's own bucket. Fails OPEN
+ * (same contract as countRecentAttempts) — including when migration 0010 (the ip_hash column) hasn't
+ * been applied yet, since the query then simply never finds a match.
+ */
+async function countRecentAttemptsByIp(
+  client: NonNullable<ReturnType<typeof getOracleClient>>,
+  opts: { ipHash: string; windowMs: number },
+): Promise<number> {
+  try {
+    const since = new Date(Date.now() - opts.windowMs).toISOString();
+    const { count, error } = await client
+      .from("answer_attempts")
+      .select("id", { count: "exact", head: true })
+      .is("player_id", null)
+      .eq("ip_hash", opts.ipHash)
+      .gte("at", since);
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 async function logAttempt(
   client: NonNullable<ReturnType<typeof getOracleClient>>,
   a: {
@@ -123,21 +156,23 @@ async function logAttempt(
     raw: string;
     normalized: string;
     matched: boolean;
+    ipHash?: string | null;
   },
 ): Promise<void> {
   try {
-    // surface: 'discord' — the answer_attempts CHECK constraint only permits ('discord','world'); the
-    // website is not a distinct enum value in the sealed schema, so we log under 'discord' (the closest
-    // non-world surface) rather than fail the insert. (A future migration could add a 'web' surface.)
+    // surface: 'web' (migration 0010) — the record website's own value. Used to log under 'discord' as
+    // a stopgap before 0010 widened the CHECK constraint; kept distinct from 'discord' so this surface's
+    // anonymous-IP rate-limit bucket can never merge with the Discord bot's own unlinked-user one.
     await client.from("answer_attempts").insert({
       puzzle_key: a.puzzleKey,
       player_id: a.playerId,
       mc_uuid: a.mcUuid,
       discord_id: null,
-      surface: "discord",
+      surface: "web",
       raw: a.raw,
       normalized: a.normalized,
       matched: a.matched,
+      ip_hash: a.playerId ? null : a.ipHash ?? null,
     });
   } catch {
     /* logging never throws into the loop */
@@ -227,8 +262,17 @@ async function applyOutcome(
  * Resolve one inscribed answer under one keeper name. The whole closed loop, server-side. Returns the
  * neutral RecordOutcome only. Any unexpected fault degrades to 'unresolved' (silence) — never an error
  * surfaced to the player, never a leak.
+ *
+ * @param clientIp best-effort caller IP (from the route handler's request headers), used ONLY to throttle
+ *   unresolved-name submissions (see countRecentAttemptsByIp); never stored raw, never used to identify
+ *   a real keeper. Optional — if omitted (or unavailable behind whatever proxy fronts this), an unknown
+ *   name simply isn't IP-throttled, exactly as before this was added (fails open, never fails closed).
  */
-export async function resolveInscription(rawName: string, rawAnswer: string): Promise<RecordOutcome> {
+export async function resolveInscription(
+  rawName: string,
+  rawAnswer: string,
+  clientIp?: string | null,
+): Promise<RecordOutcome> {
   const client = getOracleClient();
   if (!client) return "unresolved"; // no backend → the record simply keeps nothing (fail-soft).
 
@@ -242,13 +286,21 @@ export async function resolveInscription(rawName: string, rawAnswer: string): Pr
     // enumerate who is real. We still don't short-circuit before the rate-limit/log for a known keeper.
     const keeper = await findKeeperByName(client, rawName);
     const playerId = keeper?.id ?? null;
+    const ipHash = !playerId && clientIp ? hashIp(clientIp) : null;
 
-    // Global token bucket (only meaningful for a known keeper; unknown names can't be rate-keyed
-    // safely and are answered as a miss below regardless).
+    // Global token bucket for a known keeper; a separate, IP-keyed bucket for an unresolved name (INV:
+    // never merge the two — an unresolved submitter must never be able to spend or starve a real
+    // keeper's bucket, and vice versa).
     if (playerId) {
       const recent = await countRecentAttempts(client, { playerId, windowMs: RATE_WINDOW_MS });
       if (recent >= RATE_MAX_IN_WINDOW) {
         await logAttempt(client, { puzzleKey: null, playerId, mcUuid: keeper?.mc_uuid ?? null, raw: rawCapped, normalized, matched: false });
+        return "withheld";
+      }
+    } else if (ipHash) {
+      const recent = await countRecentAttemptsByIp(client, { ipHash, windowMs: RATE_WINDOW_MS });
+      if (recent >= RATE_MAX_IN_WINDOW) {
+        await logAttempt(client, { puzzleKey: null, playerId: null, mcUuid: null, raw: rawCapped, normalized, matched: false, ipHash });
         return "withheld";
       }
     }
@@ -259,14 +311,14 @@ export async function resolveInscription(rawName: string, rawAnswer: string): Pr
 
     // True miss → log (matched=false), stay silent.
     if (candidates.length === 0) {
-      await logAttempt(client, { puzzleKey: null, playerId, mcUuid: keeper?.mc_uuid ?? null, raw: rawCapped, normalized, matched: false });
+      await logAttempt(client, { puzzleKey: null, playerId, mcUuid: keeper?.mc_uuid ?? null, raw: rawCapped, normalized, matched: false, ipHash });
       return "unresolved";
     }
 
     // Matched, but no known keeper to reward → log matched=true (audit), answer as a miss (never leak
     // that the string WAS a real answer to an anonymous inscriber).
     if (!keeper) {
-      await logAttempt(client, { puzzleKey: candidates[0]!.puzzle_key, playerId: null, mcUuid: null, raw: rawCapped, normalized, matched: true });
+      await logAttempt(client, { puzzleKey: candidates[0]!.puzzle_key, playerId: null, mcUuid: null, raw: rawCapped, normalized, matched: true, ipHash });
       return "unresolved";
     }
 

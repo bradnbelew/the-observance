@@ -37,7 +37,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const name = typeof body.name === "string" ? body.name : "";
   const answer = typeof body.answer === "string" ? body.answer : "";
 
-  const outcome = await resolveInscription(name, answer);
+  // Best-effort caller IP, ONLY to throttle unresolved-name submissions (see resolve.ts). Never a real
+  // keeper identifier, never stored raw. x-forwarded-for's first hop is the original client on Vercel;
+  // absent behind a different proxy, this is simply null and that submission just isn't IP-throttled.
+  const clientIp =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || null;
+
+  const outcome = await resolveInscription(name, answer, clientIp);
 
   // Cold-register lines the UI may show; the endpoint returns the kind + a line, nothing spoiler.
   const line = LINE[outcome];

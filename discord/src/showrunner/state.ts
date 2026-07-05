@@ -151,3 +151,28 @@ export async function readState(): Promise<ShowrunnerState> {
 export async function writeState(state: ShowrunnerState, nowIso: string): Promise<void> {
   return writeSetting(STATE_KEY, state, nowIso);
 }
+
+/**
+ * Try to acquire the showrunner tick lock (migration 0011). readState/writeState do a plain
+ * SELECT-then-upsert of this WHOLE row — the exact read-modify-write clobber
+ * `observance_merge_arc_flags` was built to kill for `arc_state.flags` — so two overlapping
+ * `main()` runs (a slow tick outlasting the cron interval) could silently drop each other's
+ * high-water-mark advances, or worse, both post the same one-shot announcement before either
+ * writes its mark. This is the root-cause fix: only one tick may hold the lock at a time.
+ * Fails CLOSED on any DB error (returns false — skip this tick rather than risk racing) since
+ * skipping one tick is always safe (the next cadence catches up) but a race is not.
+ */
+export async function tryAcquireShowrunnerLock(leaseSeconds = 600): Promise<boolean> {
+  const { data, error } = await supabase.rpc('showrunner_try_acquire_lock', { p_lease_seconds: leaseSeconds });
+  if (error) return false;
+  return data === true;
+}
+
+/** Release the showrunner tick lock. Best-effort — a stale lease self-expires regardless. */
+export async function releaseShowrunnerLock(): Promise<void> {
+  try {
+    await supabase.rpc('showrunner_release_lock');
+  } catch {
+    /* the lease timeout is the backstop if this never runs */
+  }
+}

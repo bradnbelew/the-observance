@@ -195,5 +195,6 @@ export interface Solve {
   solved_at: string; // timestamptz (ISO)
 }
 
-/** Which entry-point an answer arrived on. */
-export type AnswerSurface = 'discord' | 'world';
+/** Which entry-point an answer arrived on. 'web' (migration 0010) is the record website's own value —
+ *  it used to log under 'discord' as a stopgap (the CHECK constraint's only non-'world' option then). */
+export type AnswerSurface = 'discord' | 'world' | 'web';
