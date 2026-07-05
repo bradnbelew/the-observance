@@ -71,7 +71,7 @@ make/apply, which the code already degrades around safely).
 - [ ] Voice tier: set `DISCORD_VOICE_CHANNEL_ID` + a Whisper backend (`WHISPER_API_URL`/`_KEY` or `WHISPER_BIN`)
       + flip the `voice_capture` setting, then restart the bot. (Deps auto-install as optionalDependencies.)
 
-**Real media (the hero artifacts — the code has the wiring + graceful placeholders)**
+**Real media (the hero artifacts — the code has the wiring and safely withholds live lures until files exist)**
 - [ ] `dashboard/public/the-hold/the-hold.zip` — the offline "cursed map" the lure page links. Until it's
       hosted, **don't plant the in-world clue to the lure slug** (`/record/the-record-keeps`) — the link 404s otherwise.
 - [ ] The found-footage clip + the recovered Drive folder + the waveform/spectrogram image — for
@@ -106,13 +106,28 @@ half-ready code). Ethan's decisions on the earlier open items are recorded here.
 
 ---
 
-## 4. Producer-coverage guardrail (recommended)
+## 4. Director coherence guardrails (built)
 
-`m4-three-hands` slipped (an opaque-token puzzle with no producer) because nothing asserts that every
-plugin/voice-produced puzzle has a registered producer. A build-time check (seed opaque-token rows ↔
-config.yml producer tokens + the discord producers) would catch this class of orphan. Not built (a robust
-version needs careful SQL/YAML parsing); worth adding before scaling the puzzle set. **2026-07-03 audit:
-this exact class of bug recurred twice more (§5) — the guardrail's value just went up.**
+`m4-three-hands` slipped because player-facing continuity was being verified by large manual audits instead
+of one repeatable check. The current launch branch now has a director-level check:
+
+```powershell
+python tools\check_experience_coherence.py
+```
+
+It verifies that Recovery Archive cards resolve to real voice bodies, card references point at real cards,
+archive anchors point at real `sites.yml` ids, revealed-by-solve values point at real puzzle keys, side
+quests use real thread lanes, and the experience manifest exists with the major lanes represented.
+
+Keep running it beside:
+
+```powershell
+python tools\check_namespace_collisions.py
+python tools\check_voice_register.py
+```
+
+This does not replace the lower-level producer/token checks in the TS/Java pipeline. It closes the recurring
+director problem: a player-facing thread exists in one file but silently dangles in another.
 
 ---
 

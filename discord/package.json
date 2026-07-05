@@ -17,6 +17,7 @@
     "gatecheck": "tsx src/oracle/gate.selftest.ts",
     "resolvecheck": "tsx src/oracle/resolve.selftest.ts",
     "specscheck": "tsx src/forge/specs.selftest.ts",
+    "experiencecheck": "python ../tools/check_experience_coherence.py",
     "db:seed": "tsx src/db/build-apply-all.ts",
     "db:apply": "npm run -s db:seed",
     "showrunner": "tsx src/showrunner/run.ts",

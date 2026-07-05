@@ -21,6 +21,8 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * THE COMPANION FLAG PRODUCERS (the missing piece — audit #5). A player right-clicks Wren's body →
@@ -44,9 +46,9 @@ import java.util.Map;
  * resolve which {@code companion.*} node opens and enqueue the {@link
  * com.observance.watcher.beats.lib.KeeperNpcBeat} with the bound lines — the same NPC-dialogue delivery
  * path the Keeper uses. To guarantee Wren *speaks in-world even before that DB branch is wired*, this
- * listener ALSO drips a small set of built-in warm lines to the interacting player on the KeeperNpc
- * cadence (private chat, per-player, reveal-trivially-safe). The built-in lines are minimal
- * placeholders; the showrunner's bound lines are the real content.
+ * listener ALSO speaks a restrained built-in companion line to the interacting player (private chat,
+ * per-player, reveal-trivially-safe). These fallback lines are launch-grade companion beats; the
+ * showrunner's bound lines remain the richer canonical branch when available.
  *
  * <p>Mirrors {@link KeeperNpcListener} / {@link IgnitionListener}: Safety-wrapped body, MONITOR
  * priority, a {@link RateLimiter} guard, all writes hopped ASYNC, silent on any DB failure. Never
@@ -67,7 +69,7 @@ public final class WrenNpcListener implements Listener {
     /** Per-player interaction cooldown (also long enough for the async round-trip). */
     private static final long OPEN_COOLDOWN_MS = 4_000L;
 
-    /** Cadence between the built-in fallback lines (matches KeeperNpcBeat's default feel). */
+    /** Cadence between name attribution and the fallback line (matches townsfolk / Keeper feel). */
     private static final int LINE_DELAY_TICKS = 35;
 
     /**
@@ -76,11 +78,16 @@ public final class WrenNpcListener implements Listener {
      */
     public static final String PDC_RECKONING = "wren_reckoning";
 
-    /** Minimal, warm, present-tense placeholder lines so Wren speaks even pre-showrunner-binding. */
+    /** Warm, present-tense companion beats so Wren speaks even pre-showrunner-binding. */
     private static final List<String> INTRO_LINES = List.of(
-            "oh — hey. you made it down. good.",
-            "i've been down here a while. it's easier with people. stay close, yeah?",
-            "tell me where you're headed and i'll tell you what's waiting.");
+            "oh - hey. you're new. real people, not the dark doing a voice. sorry, you get careful about that down here. stay close, would you.",
+            "not that way. i mean it - not that way. i know it looks like the easy road. the easy road down here is how you lose someone.",
+            "here. take it, it's nothing, it's just a spare - you'll want it before i will. no, keep it.",
+            "tell me where you're headed and i'll tell you what i know. that's the trade. it's a good trade.",
+            "i stepped out for a second. sorry. thought i heard something in the dark and went to check and it was nothing. it's always nothing.");
+
+    /** Per-player fallback speech cursor so Wren advances instead of repeating a packet every click. */
+    private final Map<UUID, Integer> speechCursors = new ConcurrentHashMap<>();
 
     private final SupabaseClient supabase;
     private final WrenNpc wren;
@@ -120,7 +127,8 @@ public final class WrenNpcListener implements Listener {
             String cdKey = "wrenopen:" + p.getUniqueId();
             if (!rateLimiter.tryCooldown(cdKey, OPEN_COOLDOWN_MS)) return;
 
-            // Speak in-world immediately (built-in cadence) — replaced by the showrunner's bound lines.
+            // Speak in-world immediately (restrained fallback); the showrunner can still deliver richer
+            // bound companion lines from the event_log signal.
             speakBuiltIn(p);
 
             // Advance the arc + signal the showrunner (async, fault-isolated).
@@ -239,19 +247,21 @@ public final class WrenNpcListener implements Listener {
     /*  Built-in in-world speech (KeeperNpc cadence)                        */
     /* ------------------------------------------------------------------ */
 
-    /** Drip the built-in warm lines to one player on the speech cadence (private chat). */
+    /** Speak the next built-in warm line to one player on the speech cadence (private chat). */
     private void speakBuiltIn(Player p) {
-        final java.util.UUID id = p.getUniqueId();
-        int tick = 0;
-        for (String raw : INTRO_LINES) {
-            final String line = raw;
-            scheduler.runLaterSafe("signal.wren.line", tick, () -> {
-                Player pl = org.bukkit.Bukkit.getPlayer(id);
-                if (pl == null || !pl.isOnline()) return;   // logout mid-speech → just ends
-                pl.sendMessage(Component.text(line, NamedTextColor.GRAY));
-            });
-            tick += LINE_DELAY_TICKS;
-        }
+        final UUID id = p.getUniqueId();
+        int idx = speechCursors.merge(id, 1, Integer::sum) - 1;
+        final String line = INTRO_LINES.get(Math.floorMod(idx, INTRO_LINES.size()));
+        scheduler.runLaterSafe("signal.wren.name", 0, () -> {
+            Player pl = org.bukkit.Bukkit.getPlayer(id);
+            if (pl == null || !pl.isOnline()) return;
+            pl.sendMessage(Component.text(WrenNpc.DISPLAY_NAME, NamedTextColor.YELLOW));
+        });
+        scheduler.runLaterSafe("signal.wren.line", LINE_DELAY_TICKS, () -> {
+            Player pl = org.bukkit.Bukkit.getPlayer(id);
+            if (pl == null || !pl.isOnline()) return;   // logout mid-speech -> just ends
+            pl.sendMessage(Component.text(line, NamedTextColor.GRAY));
+        });
     }
 
     /* ------------------------------------------------------------------ */

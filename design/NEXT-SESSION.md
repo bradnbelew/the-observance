@@ -71,11 +71,17 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
 ## 2. READ FIRST (in order)
 1. **`design/LAUNCH-READINESS.md`** — THE operative doc: what shipped, every MANUAL go-live action
    (Ethan's B = media, C = ops), and the honestly-flagged deferred enhancements + their exact missing legs.
-2. Memory notes: **`the-observance-completion-push-2026-07-03`** (authoritative latest — full ledger),
+2. **`design/EXPERIENCE-MANIFEST.md`** — THE player-facing director map: canonical order, side-story
+   lanes, NPCs, media, archive threads, and what counts as live vs. placement/media/ops-required.
+3. **`design/OPERATOR-LIVE-CONTROLS.md`** — THE operator-safe control guide: what config actually affects
+   launch, what is spec-only, and which manual steps remain.
+4. **`design/PERSONAL-PLAYTEST-SCRIPT.md`** — Ethan's pre-launch solo route: first hour, literacy, record
+   elsewhere, side-story sampling, Wren, Iss, final name, release, and media-slot checks.
+5. Memory notes: **`the-observance-completion-push-2026-07-03`** (authoritative latest — full ledger),
    **`the-observance-consistency-principle`** (the lockstep rule), **`the-observance-reshape-mandate`**
    (the design history), **`the-observance-v2-direction`** (the locked direction/invariants).
-3. **`design/BUILD-EVERYTHING.md`** — the decisions table + the wave program (all done).
-4. **`design/OPENING-RESEQUENCE.md`** (the vibe + field design) + **`design/PUZZLE-DESIGNS.md`** (per-keeper
+6. **`design/BUILD-EVERYTHING.md`** — the decisions table + the wave program (all done).
+7. **`design/OPENING-RESEQUENCE.md`** (the vibe + field design) + **`design/PUZZLE-DESIGNS.md`** (per-keeper
    specs + adjacency rules) + **`design/CONTENT-GUIDELINE.md`** (Ethan's artifact field guide) when touching
    those areas.
 
@@ -132,6 +138,8 @@ cd /d/the-observance/datapack && for f in $(find . -name '*.json' -o -name '*.mc
 cd /d/the-observance && python tools/check_namespace_collisions.py
 # voice/register lint (Watcher lowercase, no named emotions, no chiasmus)
 cd /d/the-observance && python tools/check_voice_register.py
+# player-facing continuity (archive bodies, card refs, site anchors, puzzle gates, manifest lanes)
+cd /d/the-observance && python tools/check_experience_coherence.py
 ```
 Gradle: `D:/_gradle/gradle-8.10.2/bin/gradle`.
 

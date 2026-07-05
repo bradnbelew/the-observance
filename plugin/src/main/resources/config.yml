@@ -3,6 +3,12 @@
 # ----------------------------------------------------------------------------
 #  Lore-AGNOSTIC: this plugin reads ALL story text (documents, clues, beats)
 #  from Supabase + config. Never hardcode narrative here.
+#
+#  OPERATOR NOTE (2026-07-05 director pass):
+#  This file contains live Java plugin controls plus a few historical/spec notes
+#  for systems owned by the separate showrunner. For launch operation, use
+#  design/OPERATOR-LIVE-CONTROLS.md as the plain-English source of truth before
+#  tuning a knob here.
 # ============================================================================
 
 supabase:
