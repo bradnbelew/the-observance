@@ -645,19 +645,22 @@ it does not (INV-16); he addresses *all of you*.
 > FACT 15. The neutral form is the spine; warm and cold re-skin only the first sentence.
 
 **`keeper.becomingKeepers.neutral`** *(nothing decisive measured yet — the bare summons)*
-- `the altar wants a thing only each of you can give. not a stone, not a light. the thing the record kept open a column for, against your name, before you came. bring it at the dark hour. the rite does not reward. it receives. it keeps. the ones before brought theirs, and were received, and are kept — you have read where they are kept; you are reading it now, in the same book, in the same hand. we would keep you, if you would keep the ways.`
+- `the altar wants a thing only each of you can give. not a stone, not a light. the thing the record kept open a column for, against your name, before you came. bring it at the dark hour. the rite does not reward. it receives. it keeps. the ones before brought theirs, and were received, and are kept — you have read where they are kept; you are reading it now, in the same book, in the same hand. a column left open this long is not a debt. it is a place still set at a table.`
 
 **`keeper.becomingKeepers.warm`** *(KEPT conduct — the warmth is in what he offers, never in adjectives)*
 - `you kept the ways coming to this. the altar knows a kept hand when one is laid on it. it wants the thing only each of you can give — not a stone, not a light, the thing the record kept a column open for against your name before you came. bring it at the dark hour. the rite does not reward. it receives, and it keeps. the ones before brought theirs and are kept, in the same book, in the same hand you have been reading. we would keep you. you have made the keeping easy.`
 
 **`keeper.becomingKeepers.cold`** *(BROKEN conduct — grief, not a bar; the rite is still open to them)*
-- `you broke a way or two coming to this. the altar takes a broken hand too — it took mine, late. it wants the thing only each of you can give, the thing the record kept a column open for against your name before you came. bring it at the dark hour. the rite does not reward and it does not refuse for what is already done. it receives, and it keeps. the ones before brought theirs and are kept, in the same book, in the same hand you have been reading. we would keep you, if you would keep the rest of the road.`
+- `you broke a way or two coming to this. the altar takes a broken hand too — it took mine, late. it wants the thing only each of you can give, the thing the record kept a column open for against your name before you came. bring it at the dark hour. the rite does not reward and it does not refuse for what is already done. it receives, and it keeps. the ones before brought theirs and are kept, in the same book, in the same hand you have been reading. the road does not close behind a hand that stumbled on it. it only asks the hand keep walking.`
 
-> Mimic check: every variant stops at the half-veil ("we would keep you…" / "in the same
-> hand you have been reading") and does NOT add the induction sentence. The "same book, same
-> hand" is the half-veil; it points, it does not say. A draft that finishes the thought ("and
-> so you become the watching") is a defect. The cold variant must NOT scold or gate — the rite
-> "does not refuse for what is already done"; it grieves and stays open (reversible-tone law).
+> Mimic check: every variant stops at the half-veil ("in the same hand you have been reading" /
+> the table still set / the road that does not close) and does NOT add the induction sentence.
+> The "same book, same hand" is the half-veil; it points, it does not say. A draft that finishes
+> the thought ("and so you become the watching") is a defect. The warm variant alone keeps the
+> full canonical phrasing ("we would keep you") — neutral and cold carry the same warmth-under-
+> dread beat in different images, so a group does not hear the identical sentence three times
+> running across three skins. The cold variant must NOT scold or gate — the rite "does not refuse
+> for what is already done"; it grieves and stays open (reversible-tone law).
 
 ---
 

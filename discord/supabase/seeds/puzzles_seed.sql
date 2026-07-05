@@ -139,8 +139,15 @@ values
   ),
   2, true, null ),
 
--- stone-sella — Atbash/mirror + bearing. side_quest → seventh-shrine. FACT 5 + seeds
--- the Seventh. Coord-tolerant: bearing words AND the unsigned far-water coordinate.
+-- stone-sella — DEACTIVATED (puzzle-variety audit): this Atbash letter-cipher is
+-- redundant with its own better replacement, sella-reflection-bearing (environmental,
+-- no letter-reversal) — and cipher-plaintexts.md's own "LATER DRIFT" note says Sella's
+-- later marks resolve into drawings, not words, which cuts against keeping a letter-
+-- cipher for her at all. Following the stone-brann-cipher convention exactly: the row
+-- is deactivated, not deleted, so history is preserved. Its seventh_suspected flag-set
+-- (the sole gate the whole Seventh side-quest thread — seventh-shrine, seventh-unwriting,
+-- seventh-cause — waits on) MOVES to sella-reflection-bearing below so the thread does
+-- not go dark; see that row's set_flags.
 ( 'stone-sella',
   'what the surface keeps',
   array[
@@ -154,7 +161,7 @@ values
     'next_puzzle_key', 'seventh-shrine',
     'set_flags', jsonb_build_object('seventh_suspected', true)
   ),
-  2, true, null ),
+  2, false, null ),
 
 -- stone-orin — substitution + CROUCH-only reveal. next_clue → orin-threshold (M4).
 -- FACT 5 (bowed at last to no one) + FACT 6 seed (breaks at "i —").
@@ -172,20 +179,30 @@ values
   ),
   2, true, null ),
 
--- stone-brann — beacon colour-sequence + night/black-moon gate + count-the-fires.
--- Pure lore. FACT 11 (one fire never out) + FACT 12 (same word, people/flame/stone).
+-- stone-brann — NOW the carved FRAMING for the rail-fence cipher (puzzle-variety audit
+-- fix). Previously shipped as pure inert lore, explicitly commented "do not forge it"
+-- (stone-brann-cipher had no CLUE_SPECS entry). That comment is no longer true: Brann's
+-- real cipher is live at stone-brann-cipher (railfence, rails=9), and this stone is now
+-- its carved framing panel — the plain-script header/footer a reader turns to BEFORE
+-- the ciphered run, in Brann's own voice (doubles a clause, re-counts, the number slips
+-- — his exact fingerprint per journals-orin-brann-iss.md "REPEATS AND OVER-CORRECTS").
+-- The framing hands the rail count (nine) the same way Vaun's threes hand shift-3: by
+-- being said, miscounted, and said again. FACT 11 (one fire never out) + FACT 12 (same
+-- word, people/flame/stone) both survive in the footer lines.
 ( 'stone-brann',
   'do not close your eyes here',
   array[
     'one fire was never doused',
     'do not close your eyes here',
-    'the one fire that will not be doused'
+    'the one fire that will not be doused',
+    'nine lit i counted nine',
+    'count the fires before you sleep'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'oracleLore',
     'voice_args', jsonb_build_object(
-      'fragment', 'count the fires at night. one of them never went out, and no hand tends it. they had one word for the people and the flame and the cold stone. do not close your eyes here.'
+      'fragment', 'nine lit. i counted nine. the count was lower the first time and i think the second count is the true one. count the fires before you sleep, and count them again, because the pass before is always more. one of them never went out, and no hand tends it. they had one word for the people and the flame and the cold stone. do not close your eyes here.'
     )
   ),
   2, true, null ),
@@ -207,14 +224,30 @@ values
   ),
   2, true, 6 ),
 
--- iss-warm — the WARM MISREADING of Iss's stone: read trustingly it COMFORTS ("the ways
--- are a wall against the watching"). Trusting the liar routes you to HIS coordinate — the
--- dead shrine, a grave (red-team B-6: this is the inbound edge iss-dead-shrine lacked).
--- The skeptical name-as-key reading on stone-iss-wall instead goes to iss-doubt → the catch.
+-- iss-warm — REPLACES A FAKED CIPHER (puzzle-variety audit). Previously this row's
+-- accepted answer was just a re-stated carved phrase ("the ways are a wall against the
+-- watching") with NO forge spec behind it — a seeded phrase dressed as a second decode
+-- when it was really just quoting the framing back. It now has a REAL second decode: the
+-- SAME carved wall-stone carries a second, legitimate reading — an ACROSTIC (read the
+-- first letter of each of Iss's six warm lines, top to bottom) — verifiable by hand, no
+-- forge/DB needed, and using a method already canonical for Iss (seventh-reading.ts's
+-- ISS_ACROSTIC_LINES uses the identical technique for his capstone fragment). The full
+-- worked cipher (all six carved lines + the acrostic) is written out in
+-- arc/corpus/cipher-plaintexts.md under "stone-iss-wall — the second reading (acrostic)".
+-- Read WARM (trustingly, line by line) the stone still comforts and routes to the dead
+-- shrine (the false lead is unchanged — iss_trusted still fires). Read COLD (the acrostic,
+-- first letter of each line, down) it spells "no wall" — the same correction stone-iss-wall's
+-- Vigenère name-as-key yields, reached by an entirely different, independently-verifiable
+-- method. This is the "warm account vs. the land" deduction made literal IN THE CARVING
+-- itself, not just cross-document. Accepts BOTH the acrostic answer and the (unchanged)
+-- warm phrase, so a group that reads it either way is heard; next_puzzle_key + set_flags
+-- (routing to the dead shrine) are unchanged.
 ( 'iss-warm',
   'the warm reading',
   array[
-    'the ways are a wall against the watching'
+    'the ways are a wall against the watching',
+    'no wall',
+    'read down the first letter of each warm line'
   ],
   'next_clue',
   jsonb_build_object(
@@ -1030,10 +1063,9 @@ values
 -- COVERAGE NOTE (specsCoverageSelfTest, clue-specs.ts ~L477): every ACTIVE row
 -- must be a registered CLUE_SPECS cipher OR in NON_CIPHER_KEYS. The two ACTIVE
 -- rows below (reckoning-rosetta, base-docket-reread-auto) are non-cipher
--- observation/lore nodes — the TS-FORGE lane must add them to NON_CIPHER_KEYS
--- (listed in the RETURN) or the coverage self-test fails. The STAGED row
--- (stone-brann-cipher, active=false) is exempt until it is both activated AND
--- given a real railFence CLUE_SPECS entry by TS-FORGE.
+-- observation/lore nodes, registered in NON_CIPHER_KEYS. stone-brann-cipher
+-- (puzzle-variety audit fix) is now ACTIVE and has a real railFence CLUE_SPECS
+-- entry (clue-specs.ts, rails=9) — no longer staged/exempt.
 -- ===========================================================================
 
 -- ───────────────────────────────────────────────────────────────────────────
@@ -1071,17 +1103,17 @@ values
   1, true, null ),
 
 -- ───────────────────────────────────────────────────────────────────────────
--- D2 — the SIXTH keeper-stone expedition: Brann, read-by-time (the genuinely-unbuilt
--- modality, backlog-keeper-stone-expeditions §1.4). Today stone-brann ships as flat lore;
--- this is its real cipher node — railFence (rails = the fire-count Brann names in D08),
+-- D2 — the SIXTH keeper-stone expedition: Brann, read-by-time (puzzle-variety audit
+-- fix — ACTIVATED). backlog-keeper-stone-expeditions §1.4. This is Brann's real cipher
+-- node — railFence (rails = 9, the fire-count Brann himself names — "nine lit one out"),
 -- the verb is read-by-time (the carving rakes visible only by the lit beacon-glow after
 -- dark). The bound plaintext "count the fires before you sleep" round-trips under
--- specsSelfTest ONLY ONCE TS-FORGE adds the CLUE_SPECS railFence entry + removes stone-brann
--- from NON_CIPHER_KEYS (the cross-owner dependency in the RETURN). Until then this row is
--- STAGED (active=false) so it neither (a) trips specsCoverageSelfTest as an unclassified
--- active row, nor (b) presents a cipher the forge cannot yet bind. next_clue → the descent
--- (a second in-road to undercroft-descent, the web rule). The rail-key is day-fair: the
--- fire-count is also countable in daylight (backlog §R-3), only the READING is night-gated.
+-- specsSelfTest via the CLUE_SPECS railFence entry now registered in clue-specs.ts.
+-- stone-brann (the flat-lore stone) is a SEPARATE row and stays non-cipher lore; only
+-- its inscription text changed (see that row, above in MOVEMENT II) to set up this cipher
+-- in-world. next_clue → the descent (a second in-road to undercroft-descent, the web
+-- rule). The rail-key is day-fair: the fire-count is also countable in daylight
+-- (backlog §R-3), only the READING is night-gated.
 ( 'stone-brann-cipher',
   'count the fires before you sleep',
   array[
@@ -1107,7 +1139,7 @@ values
       )
     )
   ),
-  2, false, null ),
+  2, true, null ),
 
 -- ───────────────────────────────────────────────────────────────────────────
 -- D4 — the Liar engine OFFLINE/AUTO duplicate (backlog-liar-engine §0.2, MASTER-PLAN
@@ -1296,6 +1328,9 @@ values
 -- water's reflection; the bearing points to the far water. answer_kind 'coords': the
 -- clean DESTINATION WORD found on-site (INV-14), never the signed coordinate. next_clue
 -- → sella-overlay-lake (at the far water). Typed (a word read off the reflection).
+-- Also now the sole producer of seventh_suspected (moved off the deactivated
+-- stone-sella above, puzzle-variety audit) — the Seventh side-quest thread
+-- (seventh-shrine, seventh-unwriting, seventh-cause) still gates on this same flag key.
 ( 'sella-reflection-bearing',
   'the rune only the water shows',
   array[
@@ -1307,21 +1342,34 @@ values
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
     'next_puzzle_key', 'sella-overlay-lake',
-    'set_flags', jsonb_build_object('sella_bearing_read', true)
+    'set_flags', jsonb_build_object('sella_bearing_read', true, 'seventh_suspected', true)
   ),
   'coords', 2, true, null ),
 
--- sella-overlay-lake (§4.2) — two filled maps overlaid resolve into a shore outline with
--- an X. answer_kind 'coords': the destination word the overlaid X marks, read on-site.
--- lore payoff (a Sella drawing that is only joy) + next_clue seed toward the deep. Typed.
--- Gated on sella_bearing_read (you must have followed the bearing to the far water).
--- active=false → lit at sella_bearing_read by the metapuzzle activation lane.
+-- sella-overlay-lake — RETHEMED (puzzle-variety audit): was "look at something → get a
+-- destination word → walk there → read a sign," the same template as its neighbors
+-- sella-reflection-bearing (before it) and sella-shore-memorial (after it) — three in a
+-- row, the clearest back-to-back template repeat in the whole puzzle set (PUZZLES.md §0).
+-- Converted to a numeral/positional lock, REUSING the exact producer/answer_kind pairing
+-- already proven live at mara-lectern-lock (LecternLockListener.java, answer_kind 'code')
+-- — no new mechanic type invented, no new Java. Re-themed to Sella's water/reflection
+-- motif rather than Mara's reading motif: at the shore pool, her copybook's ring-drawings
+-- (concentric ripples she drew fanning out from a dropped stone, each ring numbered in her
+-- own hand — a child's tally, not a rite) give five page-numbers; five lecterns holding the
+-- OTHER half of her copybook (loose pages, not the six-book Kept-Light shelf — a different
+-- physical shelf, hers) must be turned to those five pages. The comparator circuit behind
+-- the shore-pool alcove completes only when all five match — same water-logic verb as her
+-- other puzzles (count the rings, not read them), so the axis that changes is TYPE/VERB/
+-- answer_kind while the SURFACE (in-world, shore pool) stays hers. answer_kind 'code'; the
+-- lock listener reads the five-lectern comparator line (mirrors mara-lectern-lock's rig
+-- exactly). next_clue → sella-shore-memorial (unchanged spine). Gated on sella_bearing_read
+-- (unchanged). active=false → lit at sella_bearing_read by the metapuzzle activation lane
+-- (unchanged — the gate + downstream flag sella_overlay_read are untouched so
+-- sella-shore-memorial's own gate does not need to move).
 ( 'sella-overlay-lake',
-  'two leaves become one place',
+  'count the rings she drew',
   array[
-    'the drowned place the child drew',
-    'where she went the shore with the x',
-    'the shore the two maps make'
+    's3k9 vq2m x7d4 p1n6 the rings she counted'
   ],
   'next_clue',
   jsonb_build_object(
@@ -1329,7 +1377,7 @@ values
     'next_puzzle_key', 'sella-shore-memorial',
     'set_flags', jsonb_build_object('sella_overlay_read', true)
   ),
-  'coords', 3, false, null ),
+  'code', 3, false, null ),
 
 -- sella-shore-memorial (§4.3) — a scatter of blocks that forced-perspective-resolves,
 -- from one anchor block, into Sella's bird-over-water glyph. answer_kind 'behavior':

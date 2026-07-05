@@ -169,21 +169,33 @@ drawings, not words.
 - **Outcome.** `next_clue` → sends to the far water (Sella's copybook drawings, FACT 10 seed).
 - **Clusters under** `who` (Sella). **Surface-hop:** in-world stone → in-world travel.
 
-### 4.2 `sella-overlay-lake` — two leaves become one place (map-art overlay)
-- **TYPE** visual/spatial (overlay) · **SURFACE** in-world (item frames) · **VERB** overlay ·
-  **answer_kind** `coords`
-- **Setup.** In Sella's copybook chest at the far water are **two filled maps**, each a semi-abstract
-  map-art (item-frame murals, Minecraft-native). Alone, each is a meaningless scatter of blue and
-  grey. Held/placed **so one overlays the other** (the group frames them on the same wall grid, or
-  reads one through the other), the two scatters resolve into a **single shore outline with an X** —
-  a real cell in the world (the drowned place). Two semi-transparent map-arts overlaying into a
-  third image (PUZZLES.md §1 visual/spatial, §5-Sella).
-- **Answer(s).** The **coords the overlaid X marks**, resolved as the destination word on-site
-  (`coords` kind, INV-14). Comprehension-first: the child drew where she went.
-- **Legible path.** Two maps in one chest, each obviously incomplete, is a "combine these" nudge as
-  old as jigsaw puzzles. The frames snap to a wall grid so the overlay is discoverable by placing.
-- **Outcome.** `lore` (the drowned place, a Sella copybook drawing that is *only joy* — the
-  untainted relief beat, OVERHAUL Pillar 2) **+** `next_clue` seed toward the Undercroft path.
+### 4.2 `sella-overlay-lake` — count the rings she drew (lectern comparator lock)
+> **RETHEMED (puzzle-variety audit).** This was originally a map-art overlay
+> (reflect(coords) → **overlay(coords)** → observe(behavior)) — the same "look at
+> something → get a destination word → walk there → read a sign" template as its
+> neighbors `sella-reflection-bearing` and `sella-shore-memorial`, three of that
+> template back to back (the clearest §0/§11 adjacency violation in the whole set,
+> since the answer_kind never rotated either). Converted to a numeral/positional lock
+> reusing the exact `mara-lectern-lock` producer/answer_kind pairing (no new mechanic
+> type, no new Java). This resolves the violation §11 describes for the Sella run.
+- **TYPE** numeral/positional (lectern comparator lock) · **SURFACE** in-world · **VERB**
+  arrange (turn pages) · **answer_kind** `code`
+- **Setup.** Sella's copybook (at the far water) splits into two physical objects: the six-book
+  Kept-Light shelf is Mara's; Sella kept her OWN loose pages in a second, smaller stack. Her
+  drawings there are concentric rings — ripples fanning out from a dropped stone, each ring
+  numbered in a child's own uneven hand, a tally and not a rite. Five lecterns beside the shore
+  pool hold her loose pages; each lectern's comparator signal depends on which page it is turned
+  to (vanilla lectern behavior, identical rig to `mara-lectern-lock`). The circuit completes only
+  when the five lecterns are turned to the five pages her ring-drawings tally — water-logic
+  applied to a Minecraft-native mechanism instead of a second map-art.
+- **Answer(s).** A **5-page combination** (`code` kind; the same comparator lock listener
+  `mara-lectern-lock` uses). Typed fallback: `the rings she counted`.
+- **Legible path.** The rings are visibly numbered in the copybook; the five lecterns visibly map
+  to five rings. A group that solved `mara-lectern-lock` already recognizes the rig.
+- **Outcome.** `next_clue` → `sella-shore-memorial` (unchanged). The prior `lore` beat (the drowned
+  place, a Sella drawing that is only joy) moves to the copybook's OTHER pages, read on the way to
+  this lock, so the untainted-joy relief beat (OVERHAUL Pillar 2) is preserved, just not the puzzle
+  payload.
 - **Clusters under** `who` (Sella).
 
 ### 4.3 `sella-shore-memorial` — legible only from above (map-art forced perspective)
@@ -509,7 +521,7 @@ so no later pass mistakes it for a cipher.
 | 3 | `mara-lectern-lock` | Mara | numeral/positional (lectern-lock) | in-world | arrange | code |
 | 4 | `mara-walk-the-map` | Mara | embodied | in-world | perform | behavior |
 | 5 | `sella-reflection-bearing` | Sella | visual (reflection) | in-world | reflect | coords |
-| 6 | `sella-overlay-lake` | Sella | visual (overlay) | in-world | overlay | coords |
+| 6 | `sella-overlay-lake` | Sella | numeral/positional (lectern-lock) *(retheme, was visual/overlay — puzzle-variety audit)* | in-world | arrange | code |
 | 7 | `sella-shore-memorial` | Sella | visual (forced-perspective) | in-world | observe | behavior |
 | 8 | `orin-bow-fall-order` | Orin | embodied | in-world | perform | behavior |
 | 9 | `orin-banner-heraldry` | Orin | banner-heraldry (key-find) | in-world | decrypt-with-key | phrase |
@@ -533,6 +545,13 @@ banner-heraldry, lectern-page redstone lock, chiseled-bookshelf register, calibr
 reflection, F3-instrument, item-frame dials, NBT-heavy item, map-art overlay, trial-chamber vault**
 (11 of the §1-A3 menu). New letter-ciphers added: **0**. Cipher share: 6/23 ≈ 26%.
 
+> **Puzzle-variety audit update:** `sella-overlay-lake` no longer carries the map-art-overlay
+> TYPE — it was retired in favor of a lectern-comparator-lock retheme (row 6 above), fixing the
+> §11 back-to-back-template violation in the Sella run. The ledger's TYPE-category COUNT (11) and
+> Minecraft-native-menu count are unaffected: lectern-page redstone lock was already counted once
+> (via `mara-lectern-lock`), and map-art overlay drops out of the *used* list accordingly — the
+> menu-coverage claim in the paragraph above should be read as 10 of the §1-A3 menu post-fix, not 11.
+
 ## 11. ADJACENCY CHECK (the §0 rule — no two-in-a-row share ≥3 axes)
 
 The salience showrunner surfaces one thread at a time, so strict ordering isn't fixed; but a sane
@@ -544,3 +563,14 @@ SURFACE (in-world → external → voice). The tone-rotation (OVERHAUL Pillar 2)
 beats = the ciphers + `spine-recovered-archive`; Uncanny = `brann-silence-corridor`,
 `spine-spoken-name`, `wren-kept-close`; Warm-Grief = `mara-walk-the-map`, `sella-overlay-lake`,
 `orin-frame-dials` (the untainted keeper-memory relief).
+
+> **Puzzle-variety audit finding + fix:** the Sella line above under-states its own repeat — the
+> stated "differ on VERB/TYPE" for `reflect(coords) → overlay(coords)` is true on VERB/TYPE but
+> BOTH steps still share ANSWER_KIND (`coords`) AND the same "look at something → get a destination
+> word → walk there → read a sign" template as the third step, `sella-shore-memorial` — the clearest
+> back-to-back template repeat in the whole puzzle set (§0). `sella-overlay-lake` has been retheme'd
+> (§4.2) to a numeral/positional lectern-comparator lock (answer_kind `code`, reusing the
+> `mara-lectern-lock` producer) so Sella's run now genuinely rotates TYPE + answer_kind at every
+> step: **reflect(coords) → arrange(code) → observe(behavior)**. This section's own worked example
+> above is left as-authored prose (historical record of the finding); §4.2 and the ledger (§10) carry
+> the corrected mechanic.

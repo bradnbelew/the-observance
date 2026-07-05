@@ -29,9 +29,9 @@ i kept the count of the seventh because someone has to, and the record will not.
 i set down the cause here, where the surface note could not say it, in case a
 later hand wants the *why* and not only the *that*.
 
-the seventh kept the ways. understand me. the seventh kept all of them, every
-winter, harder than i ever did. the offering full. the bow at every marker. the
-light never low. the dark hours kept dark. there was no lapse to find. i looked.
+the seventh kept the ways. understand me. every winter, harder than i ever did.
+the offering full. the bow at every marker. the light never low. the black moon
+found them awake every time it came. there was no lapse to find. i looked.
 the record looked. there was nothing.
 
 and the land would not keep them.

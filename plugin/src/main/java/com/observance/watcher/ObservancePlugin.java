@@ -78,6 +78,9 @@ public final class ObservancePlugin extends JavaPlugin {
     //     that flips companion_revealed off iss_caught is rebuilt per registration. ---
     private com.observance.watcher.npc.WrenNpc wren;
     private com.observance.watcher.npc.CompanionArcWatcher companionWatcher;
+    /** The presiding Keeper's in-world NPC body manager (the rite-side "open"). Created ONCE (survives a
+     *  config reload so a spawned Keeper isn't orphaned) — mirrors {@code wren} exactly. */
+    private com.observance.watcher.npc.KeeperNpc keeper;
     /** The five surface townsfolk NPC body manager (Wave S-G). Created ONCE (survives a config reload). */
     private com.observance.watcher.npc.TownsfolkNpc townsfolk;
 
@@ -169,6 +172,12 @@ public final class ObservancePlugin extends JavaPlugin {
             this.wren = new com.observance.watcher.npc.WrenNpc("observance");
         }
         this.companionWatcher = new com.observance.watcher.npc.CompanionArcWatcher(supabase, safety);
+
+        // 5a-keeper. The presiding Keeper (the rite-side "open"). Same singleton discipline as Wren: the
+        //            NPC body manager is created ONCE so a config reload doesn't orphan a spawned Keeper.
+        if (this.keeper == null) {
+            this.keeper = new com.observance.watcher.npc.KeeperNpc("observance");
+        }
 
         // 5a-townsfolk. The five surface townsfolk (Aro, Wenna, Coll, Dob, Old Pell). Created ONCE (like
         //               Wren) so a config reload doesn't orphan spawned bodies. Interactive via the
@@ -445,6 +454,15 @@ public final class ObservancePlugin extends JavaPlugin {
         // regardless of whether Wren is spawned yet (the listener is inert until a tagged body exists).
         pm.registerEvents(new com.observance.watcher.signal.listener.WrenNpcListener(
                 supabase, wren, rateLimiter, scheduler, safety, "observance"), this);
+
+        // THE PRESIDING-KEEPER OPEN — a right-click on the tagged Keeper NPC at a rite-side site
+        // (the Threshold / the Undercroft altar) signals the showrunner to resolve the dossier branch
+        // and speak the bound keeper.* lines (see KeeperNpcListener's own javadoc). Registered
+        // unconditionally, like WrenNpcListener — inert until a tagged body exists (`/observance keeper
+        // spawn`). Closes the previously-flagged gap: this registration + the KeeperNpc body/PDC tagger
+        // were the two missing legs; the TS-side dossier resolver was already live.
+        pm.registerEvents(new com.observance.watcher.signal.listener.KeeperNpcListener(
+                this::sites, supabase, rateLimiter, scheduler, safety, "observance"), this);
 
         // The surface townsfolk (Wave S-G) — a right-click on one of the five townsfolk bodies speaks
         // that townsperson's authored SET-A lines to the clicking player, immediately and in-world
@@ -830,6 +848,9 @@ public final class ObservancePlugin extends JavaPlugin {
 
     /** The companion (Wren) NPC body manager — spawn/despawn/tag the one group-scoped Wren. */
     public com.observance.watcher.npc.WrenNpc wren() { return wren; }
+
+    /** The presiding Keeper NPC body manager — spawn/despawn/tag the one group-scoped Keeper. */
+    public com.observance.watcher.npc.KeeperNpc keeper() { return keeper; }
 
     public com.observance.watcher.npc.TownsfolkNpc townsfolk() { return townsfolk; }
 

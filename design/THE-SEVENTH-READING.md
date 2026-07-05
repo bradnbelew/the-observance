@@ -12,6 +12,13 @@
 > in-world carving (`/observance reading` stamps all six fragments — §3) all ship green. The integrity
 > guard proves the six fragments round-trip under their real ciphers and spell AVERYN. Nothing manual
 > remains but running the command once the keeper sites are placed (+ optional site-reveal polish).
+>
+> **Canon note (2026-07-05 — the Watcher-identity fork, closed elsewhere, confirmed compatible here.)** This
+> capstone already plays true under the closed synthesis (`canon-spine.md §0`, `WORLD-BIBLE.md §3`,
+> `FINALE-THE-RELEASE.md §1`): the six did not each independently choose to protect a stranger's secret —
+> they *are* the one hand that had the secret, split six ways, so no single erasure could take the whole
+> name at once. Nothing below needs to change; the mechanic was always compatible; it just wasn't yet true
+> on purpose.
 
 ---
 

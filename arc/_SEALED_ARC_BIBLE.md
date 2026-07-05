@@ -4,6 +4,13 @@
 > the Deep Hold rewrite), and `arc/lore/canon-spine.md` is the binding internal canon for keeper
 > names/voices/fates going forward. Kept here for history only — do not treat anything below as current
 > canon if it conflicts with either of those two.
+>
+> **Watcher-identity fork: reconciled elsewhere, not here (2026-07-05).** This file's "the presence is the
+> accumulated keepers... they became the world" (below) reads, unedited, as the load-bearing seed of the
+> synthesis now sealed in `arc/WORLD-BIBLE.md §3` and `arc/lore/canon-spine.md §0`: the six were never
+> separate people the record fused after the fact — they are the one taken mind's own six-fold accounting
+> of itself, kept apart because that is how it stayed anything at all. Nothing below needed correcting to
+> support that reading; it already only ever said "accumulated," never "six who joined." Left as-is.
 
 This is the authored arc for *The Observance*. Ethan intends to play as a participant.
 If that's you: **close this file.** The system is built so you never need to open it —

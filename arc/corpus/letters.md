@@ -687,8 +687,8 @@ last to no one and sealed himself below to slow it, is kept. the one called bran
 not sleep and slept once, is kept. the one called iss, who turned away and was right about
 the sky, is kept.
 
-there was a seventh. she is not written, by her own last hand, and the record keeps even
-that — keeps the not-writing, in the column it keeps.
+there was a seventh. she is not written, by her own last hand, and the record enters that
+too — the blank itself, ruled and dated, the way an empty stall is still marked on a map.
 
 they did not depart. it is written of the faithful that they did not depart. the word for
 what they did instead is the word this record uses for a stone, and for a flame, and for the

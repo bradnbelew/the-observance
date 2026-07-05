@@ -345,19 +345,153 @@ found-document inscription, not a cipher node; see `no-wall-was-ever-built-here.
 
 ---
 
+## stone-iss-wall — the second reading (acrostic)
+
+**PUZZLE-VARIETY AUDIT FIX.** A prior audit found that Iss's "warm reading" (the row
+`iss-warm`) was not a real second cipher at all — just a seeded phrase
+(`the ways are a wall against the watching`) with no forge spec behind it, a re-statement
+of the carved framing dressed up as a decode. The cold reading (`stone-iss-wall`'s
+Vigenère, key `ISS`, above) is the one genuine cipher on this stone. This section adds an
+ACTUAL second valid decode of the **same carved wall-stone**, method (b) from the fix
+brief: a legitimate alternate cipher method — an acrostic — applied to the same carved
+text, verifiable by hand, no forge/DB lookup needed. It reuses a technique already
+canonical for Iss: `discord/src/forge/seventh-reading.ts`'s `ISS_ACROSTIC_LINES` uses the
+identical read-the-first-letter-of-each-line-down method for his capstone fragment. This
+is the SAME trick, authored fresh for the main wall-stone (a different set of lines, a
+different resolved word) — not a reuse of the capstone's own lines or its resolved letter.
+
+**The six warm lines carved on the stone (already-established Iss register — reassures,
+frames, never counts; "be easy," "a wall does not mind being counted at," "out there is
+morning now" are his own phrases from `D09`/his journal leaves).** Carved in plain script,
+in order, top to bottom, exactly as a trusting reader would read them straight through:
+
+> ```
+> NO HARM HAS COME TO THOSE WHO KEPT THE TEN
+> OUT THERE IS MORNING NOW THE LEAVES ARE PLAIN ABOUT IT
+> WARM YOUR HANDS HERE THE WALL IS THICK AND TRUE
+> A WALL DOES NOT MIND BEING COUNTED AT
+> LET THE RECORD COUNT YOU ARE ALREADY SAFE INSIDE
+> LEAN ON ME THE WAY A FRIEND IS LEANED ON
+> ```
+
+**Read WARM (trustingly, straight through, the way Iss wants it read):** six lines of
+comfort — the surface reading, `iss-warm`'s first accepted answer
+(`the ways are a wall against the watching`) is the gist a trusting reader takes from it.
+No math, no key — just take him at his word.
+
+**Read COLD (the acrostic — take the first letter of each line, top to bottom):**
+
+> ```
+> N   (NO HARM...)
+> O   (OUT THERE...)
+> W   (WARM YOUR...)
+> A   (A WALL...)
+> L   (LET THE...)
+> L   (LEAN ON...)
+> ```
+> **BOUND PLAINTEXT — the acrostic's resolved word (seed's second `iss-warm` answer):**
+> ```
+> NO WALL
+> ```
+> `normalizeAnswer` → `no wall` → `iss-warm`'s seed row's second accepted answer (added
+> by this fix, REPLACING the previously-faked `the ways are a wall against the watching`
+> as the row's real decode target — that phrase stays in `acceptedAnswers` as the
+> surface-read fallback, but `no wall` is now the row's genuine decoded answer).
+
+**Why this is a real second decode, not a coincidence.** The six lines were authored
+letter-first: the acrostic target (`NO WALL`) was chosen, then six lines in Iss's
+established warm register were written to open on those six letters in order, each line
+independently a plausible, in-character piece of his doctrine (none of them read as
+obviously rigged — that is the point of a well-built acrostic). A player can verify the
+whole thing by hand with nothing but the carved lines and a straightedge under the first
+column: no Vigenère math, no DB round-trip, just reading down one column of letters. The
+result — `no wall` — agrees exactly with what the Vigenère name-as-key catch proves by an
+entirely different method, so the stone convicts Iss twice, independently, the moment a
+reader thinks to try a second way of reading it.
+
+**The hand.** Unchanged from the smooth, even, "too easy" hand described above — the
+acrostic lives IN that same smooth carving; nothing about the stone marks where the
+acrostic sits, exactly as nothing marks where the keyed Vigenère run begins. The tell is
+purely structural: six lines, each a complete warm sentence, stacked with unusual
+regularity for "informal" doctrine — a reader who has learned (from the Vigenère catch,
+or from `no-wall-was-ever-built-here`) to distrust Iss's smoothness has reason to look for
+a second trick in the same stone, and the six-line stack is the shape that rewards it.
+
+**Placement:** identical to `stone-iss-wall` above — the same physical wall-stone, the
+same six warm lines that carry the Vigenère framing. This is not a second carving; it is a
+second way of reading the one carving already there.
+
+---
+
+## stone-brann-cipher · rail-fence (rails = 9)
+
+**Keeper:** Brann, the watchman on the black moon. Source doc: `D08 do-not-close-your-eyes-here`.
+**Cipher:** rail-fence, `rails = 9` — the fire-count Brann himself names ("nine lit i
+counted nine"). Verb is read-by-time: the carving rakes visible only by the lit
+beacon-glow after dark; the fire-count that hands the rail key is countable in daylight.
+**Seed answers (`acceptedAnswers`):** `count the fires before you sleep` · `nine lit one out i relit it` · `the dark hours are kept by the last light`.
+
+> **BOUND PLAINTEXT — DO NOT CHANGE (forge `plaintext`):**
+> ```
+> COUNT THE FIRES BEFORE YOU SLEEP
+> ```
+> `normalizeAnswer` → `count the fires before you sleep` → seed row's first accepted
+> answer. The carved ciphertext is this run rail-fence-encoded at `rails = 9`
+> (`railFence.encode(plaintext, 9)`); the player redraws nine rails and bounces the
+> marks along them, exactly the way `mara-lectern-lock`/`vaun-bookshelf-tally` teach a
+> Minecraft-native mechanic by physical redraw rather than a shift-wheel.
+
+**Carved framing (plain script, around the ciphered run) — now live on `stone-brann`.**
+This is no longer inert lore: `stone-brann` IS the carved framing panel that hands the
+rail count (nine), in Brann's own doubling/re-counting hand (his fingerprint per
+`journals-orin-brann-iss.md` — "REPEATS AND OVER-CORRECTS: he says things twice; he
+counts and re-counts; the second pass is always different and he trusts the count over
+his counting"):
+
+- *above the run, doubled the way his dockets double a clause:*
+  > NINE LIT · I COUNTED NINE · THE COUNT WAS LOWER THE FIRST TIME · I THINK THE SECOND COUNT IS THE TRUE ONE
+- *the ciphered run sits under that header, in its own panel, legible only by the
+  beacon-glow after dark.*
+- *below the run, the watch-order instruction, re-said the way he re-says everything:*
+  > COUNT THE FIRES BEFORE YOU SLEEP · AND COUNT THEM AGAIN · THE PASS BEFORE IS ALWAYS MORE
+- *footer, smaller, FACT 11 + FACT 12 preserved:*
+  > ONE FIRE WAS NEVER DOUSED AND NO HAND TENDS IT · THEY HAD ONE WORD FOR THE PEOPLE AND THE FLAME AND THE COLD STONE · DO NOT CLOSE YOUR EYES HERE
+
+Nine is said twice before the cipher is touched (mirrors Vaun's threes handing shift-3
+by repetition) — but Brann's threes are never clean the way Vaun's are: the count
+*doubles and slips*, so a careful reader notices the header says "nine" twice and takes
+that as the rail count, the same way they'd trust a repeated number over a lone one.
+
+**The hand — Brann's.** Legible only at night: the carving is cut so shallow it vanishes
+in daylight, and only the lit beacon-glow rakes it visible after dark — the watchman's
+hand, cut by lamplight, for lamplight. It degrades across the stone the way his logs do:
+full sentences at the top, clipped lower, a single word repeated at the bottom (the last
+line should read as just `NINE. NINE. NINE.` trailing into the dark, the way his last
+dockets trail into `i do not. i do not. i do not.`).
+
+**Placement / lighting:** the watch-tower, Movement II, beside the beacon. Dark by day;
+the beacon's own glow is the only light that reaches the carving, so the puzzle cannot
+be read except at night — the black-moon-gated verb his whole arc is built on.
+
+> `stone-brann` (the framing stone) and `stone-brann-cipher` (the ciphered run) are two
+> faces of the one watch-tower carving, exactly as Vaun's cairn carries both his framing
+> and his Caesar run. The prior note here read "ships as flat lore… do not forge it" —
+> that is now FALSE: Brann's cipher is live (`CLUE_SPECS` in `clue-specs.ts`, entry
+> `stone-brann-cipher`) and `stone-brann` is its framing, not an inert dead end.
+
+---
+
 ## what is NOT a cipher stone (so the build stays honest)
 
-These are named here only so a future author doesn't try to carve a sixth cipher where the
+These are named here only so a future author doesn't try to carve a cipher where the
 code has none. They are in `NON_CIPHER_KEYS` and must never be forged:
 
-- **stone-brann** — ships today as flat lore (no cipher, no night-gate). Brann's intended
-  stone is the **beacon colour-sequence read only at night** (rail-fence keyed on the
-  fire-count of `D08`), and *if/when* P0-5 re-authors it, its hand is the one to write next:
-  **legible only at night**, the carving so shallow it vanishes in daylight and only the
-  lit beacon-glow rakes it visible after dark — the watchman's hand, cut by lamplight, for
-  lamplight, degrading across the stone the way his logs do (full sentences at the top of
-  the stone, clipped lower, a single word repeated at the bottom). Until re-authored, do not
-  forge it.
+- **stone-sella** — DEACTIVATED (puzzle-variety audit). Redundant with its own better
+  replacement, `sella-reflection-bearing` (environmental, no letter-reversal — see
+  `design/PUZZLE-DESIGNS.md` §4.1), and Sella's own "LATER DRIFT" note above says her
+  later marks resolve into drawings, not words — which cuts against keeping a letter-
+  cipher for her at all. The seed row is deactivated (`active = false`), not deleted,
+  so history is preserved; it carries no CLUE_SPECS entry any longer.
 - **the Rosetta ring** (`rosetta-ring`) — the master key that *teaches* the script; it is
   not carved *in* the cipher, it carves the cipher's alphabet beside its meaning. The
   six-glyph ring, sunwise from the top: Bow · Offering · Kept-Light · Deep-Line · Ward ·
@@ -370,14 +504,19 @@ code has none. They are in `NON_CIPHER_KEYS` and must never be forged:
 
 ---
 
-## SCHEMA (the five-line summary the forge binds, for quick cross-check)
+## SCHEMA (the summary the forge binds, for quick cross-check)
+
+The registry today (puzzle-variety audit) carries **five active cipher nodes**:
+Vaun/Mara/Orin/Brann/Iss. `stone-sella` is deactivated (kept below for history/audit
+trail — it is no longer in `CLUE_SPECS`).
 
 | node | cipher | key/param | BOUND PLAINTEXT (do not change) | normalizes to (seed answer) |
 |---|---|---|---|---|
 | `stone-vaun` | caesar | shift 3 | `GIVE THE FIRST OF THE DEEP BACK TO THE DEEP` | `give the first of the deep back to the deep` |
 | `stone-mara` | book | six-book shelf; refs `1-1-1 2-1-1 2-1-2 2-1-5 1-1-2 3-1-2 3-1-3` | `DESCEND AND BOW AT THE UNBROKEN LIGHT` | `descend and bow at the unbroken light` |
-| `stone-sella` | atbash | involution | `SOUTH BY THE FAR WATER WHERE SHE DID NOT COME BACK` | `south by the far water where she did not come back` |
+| ~~`stone-sella`~~ | ~~atbash~~ | **DEACTIVATED — see "what is NOT a cipher stone" below** | `SOUTH BY THE FAR WATER WHERE SHE DID NOT COME BACK` | `south by the far water where she did not come back` |
 | `stone-orin` | substitution | rune map | `I THOUGHT IT SMALL IT WAS NOT SMALL` | `i thought it small it was not small` |
+| `stone-brann-cipher` | railfence | rails 9 | `COUNT THE FIRES BEFORE YOU SLEEP` | `count the fires before you sleep` |
 | `stone-iss-wall` | vigenere | key `ISS` | `THE ONE WHO TURNED AWAY` | `the one who turned away` |
 
 > Verify against `clue-specs.ts` `CLUE_SPECS` and `MARA_BOOK`. If any **BOUND PLAINTEXT**

@@ -57,38 +57,45 @@ buying it. When the world quotes your words back, it is because he carried them 
 
 ## 3. VOICE / FINGERPRINT (distinct from Iss and the six)
 
-- **Warm like Iss, but *present* — he asks, he doesn't preach.** Iss's warmth is a written sermon ("the
-  ways are a wall"). Wren's is conversational, second-person, full of small kindnesses and questions
-  about *you*. (Those questions are also how he harvests — legible only in hindsight.)
-- **He under-claims.** Never "I am a keeper," never authority. "I'm just someone who's been down here a
-  while." "I don't know much more than you, honestly." (He knows far more.)
-- **Present-tense, contraction-heavy, hedged.** "I think—" "maybe don't—" "let's not, tonight." Where the
-  keepers' journals are certain and archaic, Wren is uncertain and modern. That grammar *is* the tell:
-  the hedging is him steering while seeming to defer.
-- **One repeated verbal tic to plant early and pay off:** he says **"stay close"** — as care in Trust,
-  as control at the Reveal, and the found record (§6) is headed, in his hand, *"kept close."*
+Wren speaks in the corpus's own idiom — lowercase-leaning, oblique, no named feelings, warmth carried in
+what he offers rather than in adjectives. He is not the Watcher and not a keeper; he is a living man who
+still has a face, and the register that separates him from the six is not *modern* but *present-tense* and
+*asking*, where the keepers are archaic and *told*.
+
+- **Warm like Iss, but present — he asks, the keepers only left word.** Iss's warmth is a sermon set down
+  once and carved. Wren's is spoken now, second-person, and it comes as questions about *you*. those
+  questions are also how he harvests — legible only in hindsight.
+- **He under-claims.** never a keeper's certainty. "i'm only someone who's been down here a while." "i
+  don't know much more than you." (he knows far more.)
+- **He hedges instead of stating.** "maybe not tonight." "i wouldn't, if it were me." where the keepers'
+  journals are certain and finished, wren trails off toward a listener, not toward a cutoff — he is
+  reaching for agreement, not breaking down. that reaching *is* the tell: the hedge is him steering while
+  seeming to defer.
+- **One repeated phrase to plant early and let curdle:** he says **"stay close"** — offered as care in
+  Trust, and by the Reveal the same two words have become the whole shape of what he did to them. He does
+  not need a different device for his climax; the phrase itself turns. The found record (§6) is headed, in
+  his hand, *"kept close"* — the same words, one step further gone.
 
 ## 4. THE ARC (movements; trust is earned, then it curdles)
 
-- **M1–M2 · TRUST I–II (`companion_introduced` → `companion_trust` rises).** He finds them early —
-  first real night. Helps: warns them off a genuinely bad path, hands a small true gift, is the one warm
-  voice in a place with none. He asks a lot of gentle questions. He is *never present when the Watcher
-  manifests* (he "steps out," "checks the dark," "was just behind you") — because he is the manifestation's
-  mouth. Draft line (care): *"stay close. i lost people down here going off alone, and i'm not doing that
-  again. tell me where you're headed and i'll tell you what's waiting."* (The last clause is the harvest.)
+- **M1–M2 · TRUST I–II (`companion_introduced` → `companion_trust` rises).** He finds them early — first
+  real night. Warns them off a genuinely bad path, hands a small true gift, is the one warm voice in a
+  place with none. He is *never present when the Watcher manifests* (he "steps out," "checks the dark,"
+  "was just behind you") — because he is the manifestation's mouth. Draft line (care): *"stay close, all of
+  you. i lost people who went off on their own, and i counted every one of them after. tell me where you're
+  headed and i'll tell you what waits there."* (the last clause is the harvest.)
 - **M3 · TRUST III + the first hairline crack.** His steering starts to have a shape: he slows them at
-  every threshold ("not tonight — it's a black moon, Brann's night, we wait"), always with a good reason.
+  every threshold ("not tonight. black moon. brann's night. we wait it out"), always with a good reason.
   A sharp group notices his warnings are *always* the cautious direction, and that the Watcher's precise
   scares track exactly what they told *him*. Nothing proven. Just a hairline.
-- **M4 · THE REVEAL (`companion_revealed`).** Tied to the Iss catch, not a calendar (async-safe): once
-  the group has caught Iss's lie — learned that a warm, plausible account can be false and the truth is
-  in the record — the same lens turns on Wren. The trigger is *theirs* (they accuse him, or they find the
-  record §6, or they set a plan they never speak aloud and watch it not reach the Watcher). He does not
-  deny the *what*. He denies the *why* — he insists, to the end, that it was protection. Draft (reveal):
-  *"yes. all of it. and i'd do it again, because every time i fed it one of you it took me instead of you
-  for a night, and you're all still here, aren't you? still here. i kept you close. i kept you safe."*
-  — The lie is in "safe." The truth he won't say is "i kept you *fed to it*, and i kept you *for the road
-  down*, because you're my way out."
+- **M4 · THE REVEAL (`companion_revealed`).** Tied to the Iss catch, not a calendar (async-safe): once the
+  group has caught Iss's lie — learned that a warm, plausible account can be false and the truth is in the
+  record — the same lens turns on Wren. The trigger is *theirs* (they accuse him, or they find the record
+  §6, or they set a plan they never speak aloud and watch it not reach the Watcher). He does not deny the
+  *what*. He denies the *why*. Draft (reveal): *"all of it, yes. and i'd keep doing it. every one i fed it
+  bought a night it spent on me instead of you. you're all still standing here. that's mine. i kept you
+  close. i kept you safe."* — the lie is in "safe." the truth he won't say is that close was never the
+  warm word; close was the counting-word, the one that keeps a person on a page instead of by the fire.
 - **M5 · THE RECKONING (`reckoning_condemn | understand | free`).** The group decides what the record
   says of him — this is a *correct-the-record* act, the same verb as the Seventh's whole quest, turned on
   a living man whose motives are genuinely mixed. Three branches (§5).
@@ -102,8 +109,10 @@ is ambiguous — he was both scared and self-serving, and he will not clarify it
   himself. The record takes him — fully, finally; the face goes out. *Warning built into the beat:* to
   cast him out for what he did is to do to him exactly what was done to the Seventh (the-name-i-cut-
   myself). The world notes the rhyme. Clean justice, and it costs them a piece of the moral high ground
-  they came down to claim. Draft (his last, taken): *"that's — fair. write it. at least it's true. stay
-  cl—"* (cut off; the record closes over the word).
+  they came down to claim. Draft (his last, taken): *"write it, then. it's true enough to write. i'll say
+  the last of it myself, since you're letting me: stay close — i meant it every time i said it, and every
+  time it meant less."* (the phrase does not cut off; it curdles one final time, and the record closes over
+  it whole.)
 - **UNDERSTAND (`reckoning_understand`).** They write him whole — scared *and* selfish, protective *and*
   self-serving, all of it, uncollapsed. He is not freed and not cast out; he stays kept-in-part, a face
   in the dark that will not resolve to hero or villain. The hardest to write and the truest. This is the
@@ -113,8 +122,9 @@ is ambiguous — he was both scared and self-serving, and he will not clarify it
   coerced (a Kept feeds or dissolves), so it is not fully his crime. Releasing him from the deal ends his
   feeding — which means it ends *him* as a held-together person, but on his own terms, unfed, let go
   rather than taken. It **costs the group** (a real price at the finale — a bargain the Seventh names).
-  Draft (freed): *"oh. you're not going to keep me either. neither one. you're just going to — let go.
-  i forgot that was a thing you could do to a person. thank you. i'm sorry. i wasn't only lying."*
+  Draft (freed): *"neither of you is going to keep me. not the ledger, not you. just — let go, the both of
+  you. i had a word for that once and it wasn't this gentle. thank you. i wasn't only lying, the times i
+  said it. stay close, all of you — i don't get to mean it anymore, but you should, to each other."*
 
 ## 6. THE FOUND ARTIFACT — "kept close" (the post-reveal gut-punch)
 

@@ -48,13 +48,16 @@ stay close, come here, i'll keep you — and then i set it beside what is on thi
 does not survive the comparison. you do not keep a person on a page. you keep a person by the fire.
 what i do on the page is the other keeping, the counting-keeping, the one that is a demand and not
 a warmth, and i have known that the whole time and written the page anyway, every night, because
-every night it took me instead of one of them, and i told myself that was protecting them, and it
-was, it *was*, it is not only a lie —
+every night it took me instead of one of them. i told myself that was protecting them. it was. it
+was also the other thing, the thing the word "close" was built to cover, and a word that covers two
+things is not lying about either one, which is the worst kind of true.
 
 *[the writing stops. the last line is barely pressed into the paper:]*
 
-i wrote you down so it would not take you. i wrote you down so it would take *me slow*. both are
-true. i do not know how to be written whole. maybe you can do it for me. you're better at the
-truth than i ever was. stay cl—
+i wrote you down so it would not take you. i wrote you down so it would take *me* slow. both are
+true. i do not know how to be written whole and true at once. someone else will have to do that
+part. stay close, i keep saying, and i have made the words carry less each time i say them, until
+they carry only this page, and this page is the opposite of close.
 
-*[the page is torn there.]*
+*[the page is torn there — not at a broken sentence. it is torn after a full stop, clean, the
+way a thing is torn when the writer has finished and does not want the last word read twice.]*

@@ -38,9 +38,9 @@ import {
   forgeClue,
   caesar,
   vigenere,
-  atbash,
   substitution,
   bookCipher,
+  railFence,
 } from './index.js';
 import type { ClueSpec, ForgedClue } from './index.js';
 import { normalizeAnswer } from '../oracle/normalize.js';
@@ -101,11 +101,16 @@ const MARA_BOOK = [
 //
 // Derived from clue-web.md §3 (cipher per node) + cipher-web.md §1 (per-cipher
 // params) + puzzles_seed.sql (the accepted_answers each plaintext must hit):
-//   stone-vaun     → caesar  (P1, shift = Vaun's hoarding "three of each" → 3)
-//   stone-mara     → book    (P5, the six-book Kept-Light shelf)
-//   stone-sella    → atbash  (P2, read to the water; involution)
-//   stone-orin     → subst   (P4, the rune alphabet; crouch-to-read)
-//   stone-iss-wall → vigenere(P3, key = ISS — his own name, the lie)
+//   stone-vaun         → caesar    (P1, shift = Vaun's hoarding "three of each" → 3)
+//   stone-mara         → book      (P5, the six-book Kept-Light shelf)
+//   stone-orin         → subst     (P4, the rune alphabet; crouch-to-read)
+//   stone-iss-wall     → vigenere  (P3, key = ISS — his own name, the lie)
+//   stone-brann-cipher → railfence (rails = 9, "nine lit" — his own doubled count)
+//
+// stone-sella's Atbash was deactivated (2026-07-05 cohesion pass): redundant with its
+// replacement, sella-reflection-bearing, and Sella's own LATER DRIFT note says her later
+// marks resolve to drawings, not letters. Not registered here on purpose — see the seed
+// row's comment for the full reasoning.
 // ---------------------------------------------------------------------------
 
 export const CLUE_SPECS: readonly ClueSpecEntry[] = [
@@ -157,27 +162,13 @@ export const CLUE_SPECS: readonly ClueSpecEntry[] = [
     },
   },
 
-  // ── stone-sella · Atbash ─────────────────────────────────────────────────
-  // cipher-web §1 P2: read folded nonsense faced to the water (involution). The
-  // bearing line normalizes to the seed's primary answer.
-  {
-    puzzleKey: 'stone-sella',
-    keeper: 'Sella',
-    doc: 'D06 what-the-surface-keeps',
-    cipher: 'atbash',
-    plaintext: 'SOUTH BY THE FAR WATER WHERE SHE DID NOT COME BACK',
-    acceptedAnswers: [
-      'south by the far water where she did not come back',
-      'south by the far water',
-      'the last marker is not the last',
-    ],
-    toSpec() {
-      return { cipher: 'atbash', text: this.plaintext, namespace: this.puzzleKey };
-    },
-    decodeCiphertext(ct) {
-      return atbash.decode(ct);
-    },
-  },
+  // ── stone-sella · Atbash — REMOVED (puzzle-variety audit) ───────────────
+  // stone-sella is deactivated in puzzles_seed.sql: redundant with its own better
+  // replacement (sella-reflection-bearing, environmental, no letter-reversal), and
+  // cipher-plaintexts.md's own "LATER DRIFT" note says Sella's later marks resolve
+  // into drawings, not words. The row is deactivated, not deleted (history kept),
+  // so it now belongs in NON_CIPHER_KEYS below (an inactive row is never forged) —
+  // see that entry for the full reasoning.
 
   // ── stone-orin · substitution ────────────────────────────────────────────
   // cipher-web §1 P4: one mark, one letter via the rune alphabet; the carving faces
@@ -198,6 +189,33 @@ export const CLUE_SPECS: readonly ClueSpecEntry[] = [
     },
     decodeCiphertext(ct) {
       return substitution.decode(ct);
+    },
+  },
+
+  // ── stone-brann-cipher · rail-fence ──────────────────────────────────────
+  // design/PUZZLE-DESIGNS.md §6 / backlog-keeper-stone-expeditions §1.4: the sixth
+  // keeper-stone expedition, previously staged (active=false, no CLUE_SPECS entry —
+  // puzzle-variety audit fix). rails = 9, the fire-count Brann himself names in the
+  // solved beat's relabel text ("nine lit one out i relit it") — his opening watch-
+  // docket entry ("Lamps counted... 3 doused" / later "nine lit one out") is where a
+  // player finds the rail count. The carving rakes visible only by the lit beacon-glow
+  // after dark (read-by-time verb); the fire-count itself is countable in daylight.
+  {
+    puzzleKey: 'stone-brann-cipher',
+    keeper: 'Brann',
+    doc: 'D08 do-not-close-your-eyes-here',
+    cipher: 'railfence',
+    plaintext: 'COUNT THE FIRES BEFORE YOU SLEEP',
+    acceptedAnswers: [
+      'count the fires before you sleep',
+      'nine lit one out i relit it',
+      'the dark hours are kept by the last light',
+    ],
+    toSpec() {
+      return { cipher: 'railfence', text: this.plaintext, rails: 9, namespace: this.puzzleKey };
+    },
+    decodeCiphertext(ct) {
+      return railFence.decode(ct, 9);
     },
   },
 
@@ -258,7 +276,7 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'm2-rhyme': 'cross-reference observation — notice two stones rhyme; dead-end, no cipher',
   'seventh-shrine': 'count-the-markers observation + travel; side_quest payoff, no cipher carving',
   'iss-doubt': 're-read / key cross-check of OTHER stones; no own carved artifact',
-  'iss-warm': 'the warm MISREADING of Iss’s stone (trusting his comfort) — routes to the dead-shrine grave; the interpretation of stone-iss-wall’s carving, not a separate carving',
+  'iss-warm': 'the warm MISREADING of Iss’s stone (trusting his comfort) — routes to the dead-shrine grave; the interpretation of stone-iss-wall’s carving, not a separate carving. Puzzle-variety audit: now ALSO carries a real second decode (an acrostic — first letter of each of the six warm lines, down — spells "no wall"), hand-verifiable, no forge spec needed (see arc/corpus/cipher-plaintexts.md "stone-iss-wall — the second reading"); still non-cipher for CLUE_SPECS purposes because it is read by hand off the same carving, not forge-rendered separately',
   // travel / coordinate dead-end (a place, not a carved Discord card):
   'iss-dead-shrine': 'coordinate travel to a grave (dead_end); literal coords unsited (A7/G5)',
   // the literacy ROSETTA itself (it TEACHES the script; it is not carved IN it):
@@ -311,7 +329,7 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'mara-walk-the-map': 'group-bow at the marker row with the active roster (answer_kind behavior); detected, not a cipher',
   // Sella (drowned child):
   'sella-reflection-bearing': 'a bearing read only in the water reflection → the far-water destination WORD (answer_kind coords, INV-14); on-site read, not a cipher',
-  'sella-overlay-lake': 'two map-arts overlaid resolve to a shore X → the destination WORD (answer_kind coords, INV-14); comprehension, not a cipher',
+  'sella-overlay-lake': 'RETHEMED (puzzle-variety audit, was a template repeat with its two neighbors): five lecterns holding Sella’s loose copybook pages, set to the page-numbers her ring-drawings tally (answer_kind code); a comparator lock read by LecternLockListener (the same producer as mara-lectern-lock), not a cipher',
   'sella-shore-memorial': 'map-art forced-perspective bird-glyph seen from one anchor block (answer_kind behavior); stand-at-anchor detection, not a cipher',
   // Orin (mason who would not bow):
   'orin-bow-fall-order': 'ordered crouch-at-marker sequence in fall-order (answer_kind behavior); detected, not a cipher',

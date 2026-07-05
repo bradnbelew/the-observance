@@ -6,6 +6,7 @@ import {
   type ArchiveThread,
   type ArchiveCardView,
 } from "@/lib/archive-projection";
+import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * The Recovery Archive — the reading-room, one stratum below The Record (A13 `arg-leaves-the-game`, §7).
@@ -190,11 +191,8 @@ function SealedShell() {
     <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
       <div className="mx-auto max-w-xl">
         <header className="mb-10 text-center">
-          <div
-            aria-hidden
-            className="mb-4 select-none font-mono text-2xl tracking-[0.5em] text-neutral-700"
-          >
-            ᛟ ᚲ ᛖ ᛈ ᛏ
+          <div className="mb-4 flex select-none justify-center text-neutral-700">
+            <RuneGlyphs text="THE RECOVERY ARCHIVE" height={24} />
           </div>
           <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
             the recovery archive
@@ -219,11 +217,8 @@ export default async function ArchivePage() {
       <div className="mx-auto max-w-xl">
         {/* The rune-mark header — the same seal as the Record, this being its deeper layer, not a new page. */}
         <header className="mb-10 text-center">
-          <div
-            aria-hidden
-            className="mb-4 select-none font-mono text-2xl tracking-[0.5em] text-neutral-700"
-          >
-            ᛟ ᚲ ᛖ ᛈ ᛏ
+          <div className="mb-4 flex select-none justify-center text-neutral-700">
+            <RuneGlyphs text="THE RECOVERY ARCHIVE" height={24} />
           </div>
           <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
             the recovery archive

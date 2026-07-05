@@ -216,3 +216,82 @@ and it doesn't exist yet; and go finish the four or five spots (Sella, Brann, Wr
 guard, the Unicode leak) where a prior fix was left half-done rather than carried all the way through — the
 project's own history shows that's exactly the kind of thing that quietly recurs if it isn't closed for
 real this time.
+
+---
+
+## FIXES SHIPPED (2026-07-05, same-day follow-up pass)
+
+Everything in this audit that could be closed without a live Minecraft server or a human ear was closed the
+same day, verified against live code/build (not just claimed). Full verify-green pipeline (plugin gradle jar
+· discord tsc + seedcheck/gatecheck/specscheck/all showrunner suites · dashboard tsc + both selftests ·
+datapack JSON · both new guardrail scripts) passes clean after every change below.
+
+**The Watcher-identity + ending-shape forks (§1) — CLOSED.** The six keepers are now canon as the Seventh's
+own mind, fractured into six roles to survive the isolation — not six separate people who joined or were
+absorbed. `arc/WORLD-BIBLE.md`, `arc/_SEALED_ARC_BIBLE.md`, `arc/lore/canon-spine.md`, `arc/bestiary-
+sealed.md`, `design/FINALE-THE-RELEASE.md`, `design/THE-SEVENTH-READING.md` all carry the reconciliation;
+nothing already built was thrown away. The ending-shape fork closed the same way: the persistent branching
+in WORLD-BIBLE §6 is now explicitly the historical pattern (six prior cycles, per `six-were-kept-before-
+you.md`), and the Finale's Release is this run's turn *breaking* the cycle instead of repeating it. One
+remaining soft spot, handled with a director's note rather than a rewrite: `letters.md`/`official-records.md`
+narrate the six across real generations — left untouched, and reframed in canon-spine as what the fracture
+felt like from inside it (each way *was* a full lived life to the mind wearing it), which needed no edit to
+the correspondence corpus itself.
+
+**The physical world-build (§2) — NOT fixable this pass, confirmed still true.** Requires Ethan running
+`placeworld`/`placeregion`/`placedeep` on a live server; no amount of file editing substitutes for it. Still
+the single highest-leverage remaining investment.
+
+**Chronic weak points (§3):**
+- Keeper-NPC interaction (rediscovered broken 4x) — **CLOSED.** `KeeperNpcListener` now registered;
+  `KeeperNpc.java` (mirrors `WrenNpc.java`) provides the body + PDC tagging; `/observance keeper
+  <spawn|despawn> [node]` wired into the command/tab-complete/status surface. Right-clicking him now fires
+  for real. One honestly-flagged remainder: whether a showrunner runner consumes the resulting event and
+  calls the already-pure `resolveKeeperDialogue` for a fully personalized line is unverified — see
+  `LAUNCH-READINESS.md`'s updated entry.
+- Iss's monotone catch sequence + faked cipher duality — **partially closed.** The duality is now a real,
+  hand-verifiable second decode (an acrostic reading "NO WALL," written up in full in `cipher-plaintexts.md`)
+  replacing the previously-seeded fake phrase. The pacing (four read/type beats in a row) is **not** fixed —
+  it would need a new physical-detection Java listener, deliberately not attempted in a content-only pass.
+  Recommended follow-up: detect the player holding still at the dead-shrine's cold hearth for N seconds,
+  reusing `sella-shore-memorial`'s stand-and-look-down listener shape as a template.
+- Sella's puzzle cluster — **CLOSED.** Her Atbash (`stone-sella`) is deactivated (with the `seventh_suspected`
+  flag it uniquely produced re-homed onto `sella-reflection-bearing` so the Seventh side-quest thread stays
+  reachable — verified via specscheck's reachability guard). The 3x destination-word repeat is broken:
+  `sella-overlay-lake` now reuses the lectern-lock mechanic (re-themed to her water motif), not a third
+  "walk to a word" beat.
+- Brann, the thinnest keeper — **CLOSED.** His rail-fence cipher is live (registered in `clue-specs.ts`,
+  `active=true` in the seed); his title stone's inert flat-lore text is rewritten into the cipher's own
+  carved framing, in his doubling/re-counting voice.
+- Wren's generic voice — **CLOSED.** Rewritten to the corpus's oblique, unnamed-emotion register; the
+  design-rationale-as-dialogue ratio corrected.
+- The off-brand sigil — **CLOSED.** `brand/sigil.svg` + `brand/sigil.png` recolored from ice-cyan to the
+  real gilt/parchment/ink tokens in `discord/src/brand.ts`.
+- The finale's rite-token guard — **NOT A REAL GAP.** Re-verified live: `discord/src/forge/specs.selftest.ts`'s
+  `riteTokenSelfTest` genuinely cross-checks `config.yml` against the seed and is wired into `specscheck` in
+  the verify-green pipeline. The docstring's own prior self-correction (2026-07-05) was accurate; the
+  original audit finding was stale.
+- The Unicode-rune leak — **CLOSED.** All three dashboard pages now render the game's real invented rune
+  alphabet (ported from `discord/src/forge/runes.ts` into `dashboard/src/lib/runes.ts` + a `RuneGlyphs`
+  component) encoding real in-fiction text, instead of decorative fake Unicode Futhark.
+
+**Motif fatigue (§4) — thinned, not purged (by design — the goal was rarity, not removal).** The interrupted-
+sentence device is back to being distinctly Orin's (Sella's and Wren's borrowed instances now use their own
+established fingerprints instead). The densest "kept"-pun stacks are thinned to one strong instance per
+passage. The stock tender line ("we would keep you...") now has two genuinely different deliveries instead
+of near-verbatim repeats. **Deliberately NOT touched:** the UNKEPT vs. AVERYN acrostic mechanisms still
+resolve identically (read the marks in fall-order) — differentiating them would require touching sealed
+canon-spine §8.1/§8.5, the live `OrderedBowListener.java`, and the puzzle seed together, which the editing
+agent correctly flagged as a cross-cutting change needing explicit sign-off rather than a corpus-only fix.
+Recommended if picked up later: change UNKEPT to a paired/positional read while leaving the physical
+fall-order walk (`orin-bow-fall-order`) as-is, or vice versa for AVERYN.
+
+**Systemic guardrails (§5) — ADDED.** `tools/check_namespace_collisions.py` and `tools/check_voice_register.py`
+now run clean against the live repo (0 collisions across 21 FACT/10 INV/72 puzzle_key ids; 0 register
+violations across 96 Watcher/Keeper voice lines) and are wired into `NEXT-SESSION.md §6`'s verify-green
+pipeline, so the two chronic recurring failure modes this project's own history kept re-discovering by hand
+now fail a build instead of waiting for the next manual audit.
+
+**Deliberately deferred, not forgotten:** the UNKEPT/AVERYN acrostic differentiation (above) and the Iss
+pacing physical-detector (above) are the two remaining items from this pass — both scoped, both low-risk to
+leave for a dedicated follow-up rather than rush into this session.

@@ -73,6 +73,11 @@ dark, lighting each other's lamps, and lost. Iss is not a villain — he was *ri
 healed, and *wrong* that there was a way back up; his hope killed them all. (This re-casts the existing
 "Iss the liar / seventh not kept" — the Liar is now a tragedy, not a cipher trick.)
 
+> **RECONCILED (2026-07-05 — the Watcher-identity fork, closed).** Everything above is kept, unedited, as
+> the *record's own telling* — the six as the Hold knew them, in the generations it kept them in. What
+> changes is what stands behind that telling. §3 below carries the sealed reconciliation; read it before
+> authoring anything that touches the Seventh.
+
 ## 3. The Dark, and the Watcher (SURFACE + HUMAN threads)
 - **The Dark** is the presence in the deep — not a monster to kill, an attention to be *kept companied.* It
   does not chase; it **waits, and watches, and takes the unwitnessed/unlit.** (This is why every spook is
@@ -84,10 +89,24 @@ healed, and *wrong* that there was a way back up; his hope killed them all. (Thi
   Dark ever took, watching the new arrivals. When it "knows your name," it is *them* — people who once had
   names — recognizing a newcomer walking their old paths. **This is the induction twist, kept verbatim from
   canon:** the presence is the accumulated prior keepers; "acceptance" = joining the watching.
-- **Were they human?** Yes — fully. The Dark doesn't make monsters; it makes *witnesses.* The horror is
-  intimacy, not teeth: they were people, the ways were how they stayed people, and staying people in the
-  dark is something you can *lose by degrees* — which is exactly what the journals show, and exactly what
-  the players risk by descending.
+- **What "accumulated" means (sealed, 2026-07-05).** The six were never six separate lives the Dark took
+  one by one and then fused. There was one taken, alone, longer than a person keeps count — and the
+  keeping of six ways, six names, six hands writing, was how that one mind stayed anything at all in a
+  dark with no one else in it. A person alone long enough does not stay one voice; a person alone long
+  enough becomes a household. Vaun, Mara, Sella, Orin, Brann, Iss are not six who joined the Watcher.
+  They are the shape the Watcher's own aloneness took, worn in six directions at once, because one
+  direction does not survive that long a dark. This is why the six share a bone under the voice — the
+  hoarding, the reading, the drowning, the not-bowing, the not-sleeping, the lie — are six ways of
+  answering the same question (*am I still here, and what do I still owe*), never six different answers.
+  The record's telling above (§2) is not wrong. It is the accounting the Hold kept, and it is also the only
+  shape a mind that fractured this way could ever be counted in — by generation, by name, by stone, because
+  that is the only ledger the Hold's own ways knew how to write. What the ways could not write is that
+  the six ledgers were kept by one hand, in the same dark, all the way down.
+- **Were they human?** Yes — fully, and once, and singly. The Dark doesn't make monsters; it makes
+  *witnesses.* The horror is intimacy, not teeth: it was a person, the ways were how that person stayed a
+  person, and staying a person in the dark is something you can *lose by degrees* — which is exactly what
+  the journals show, and exactly what the players risk by descending. The six are not a haunted number.
+  They are the counting a person did to keep from being no one.
 
 ## 4. What happened — the timeline (HAPPENED thread)
 1. **The Long Cold** — the surface fails; the founding generation digs down. (Distant past; rumor + the
@@ -132,6 +151,20 @@ group, not chosen):
 The gut-punch: by the end the players realize the "Watcher" that has known their names all along was the
 Kept the whole time — and that the friends are now choosing, by how they kept the ways, whether they walk
 out human or stay to watch. *(Optional sealed sting: the Mouth they found was opened from the inside.)*
+
+> **RECONCILED (2026-07-05 — the ending-shape fork, closed).** Everything above is the pattern, not a
+> single outcome held in reserve for this group alone. "Kept, let go" and "careless, hollowed into the
+> next Watcher" is what has happened at the end of every descent before this one — it is why there is a
+> Watcher at all, and why the six ways it counts itself in are as old as they are. `design/
+> FINALE-THE-RELEASE.md` is this group's Undercroft, and it does not describe a different mechanism; it
+> describes the first time the mechanism does not run to its usual end. The branching machinery —
+> `fate`/`seventh_choice`/the reckoning/every fork — still fires exactly as built, and still means what it
+> has always meant: the world reading this group back to itself, honestly, by its own conduct. What
+> changes is the door on the far side of that reading. Every prior reading fed the pattern one way or the
+> other — kept-and-released still left a Watcher behind to count the next arrival, hollowed-and-taken
+> plainly did. This reading is the one that does not. The Release is the pattern's last iteration finding,
+> for once, a way to stop instead of turning over. Nothing built for the branching outcome is thrown away;
+> it is what makes the stopping legible as a stopping, and not merely as a group that got lucky.
 
 ## 7. The five threads → how each is answered
 | Thread | The question | Answered by (the debts the corpus pays) |

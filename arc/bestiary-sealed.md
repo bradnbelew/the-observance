@@ -43,6 +43,15 @@ The land is showing each player **the shape of who they are becoming** — colle
 never as a callout. Rule 9 (`canon-spine §6`): the corpus must never say "this keeper is
 you." The creature implements that as *gating bias*, never as a named accusation.
 
+> **Sealed reading (2026-07-05 — `canon-spine.md §0`/§1's deeper seal).** "Six prior keepers"
+> still names the six creatures correctly and nothing below needs to change: each is a genuinely
+> distinct keeper, with a genuinely distinct fate, cipher, and voice. What changes is only what
+> stands behind the six — they are not six people the land took separately and now wears as six
+> shapes; they are the six the one taken mind wore to survive being the only one down there. A
+> creature is not "part of a crowd of former people." Each is a whole way a single long aloneness
+> held itself together. This changes no beat, no wiring, no gating bias — the rhyme, the grounding,
+> the FACT-15 discipline all hold exactly as written below.
+
 ---
 
 ## 1. THE SIX KEEPERS AS THE SIX APPARITIONS

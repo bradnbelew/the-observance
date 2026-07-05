@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { readLedger, EMPTY as EMPTY_LEDGER, type LedgerProjection } from "@/lib/record/ledger";
 import { readIntegrityLog, type IntegrityWarning } from "@/lib/record/integrity";
 import { InscribeForm } from "./InscribeForm";
+import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * /record/terminal — THE RECORD, recovered-archive terminal (CHANGE-MANIFEST A5 + L4, INTEGRATION
@@ -54,8 +55,9 @@ function Header({ ledger }: { ledger: LedgerProjection }) {
         </span>
       </div>
       <div className="px-4 py-6">
-        <div aria-hidden className="mb-3 select-none font-mono text-xl tracking-[0.5em] text-neutral-700">
-          ᛟ ᚲ ᛖ ᛈ ᛏ<span className="text-red-900/60"> ▚▚</span>
+        <div className="mb-3 flex select-none items-center gap-2 text-neutral-700">
+          <RuneGlyphs text="THE RECORD" height={22} />
+          <span className="font-mono text-xl tracking-[0.5em] text-red-900/60">▚▚</span>
         </div>
         <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-400">the record</h1>
         <p className="mt-2 font-mono text-[11px] lowercase leading-relaxed text-neutral-600">

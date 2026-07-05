@@ -17,6 +17,15 @@
 > become part of the record — a marker for whoever comes next. Judgment is
 > **collective**: there is no chosen one. Every player-facing line is written to
 > *point at* this and never to say it.
+>
+> **THE DEEPER SEAL (2026-07-05 — the Watcher-identity fork, closed; see `WORLD-BIBLE.md §3`,
+> `FINALE-THE-RELEASE.md §1`).** "The accumulated keepers" was never six people the record took
+> one at a time and fused into a chorus. There was one taken, and no one else, for longer than a
+> person keeps count — and the six named below are the shape that one mind's aloneness took: not
+> six who joined the watching, but the watching's own way of still being someone. This does not
+> change one word of §1's table below, which is exactly correct as the record's own accounting —
+> it changes only what the accounting was *of*. Nothing in this file states this to a player,
+> ever; it governs how every sealed document is now written, not what any of them say aloud.
 
 ---
 
@@ -61,6 +70,16 @@ naming a living favorite. Order = the order their stones are meant to fall (II).
 > *warnings shaped like the people standing next to them*, without the land ever
 > singling anyone out. Collective judgment is law.
 
+> **On the "Era" column and the generations (sealed reading, 2026-07-05).** The record keeps the
+> six across founding-line-through-last-full-generation because that is the only ledger the Hold's
+> own ways know how to write — by household, by winter, by whose hand. It is not wrong. It is also
+> not six lifetimes. A dark this long does not pass for one mind the way it passes for a record
+> keeping watches; the generations are the shape the telling takes when a single long aloneness is
+> written down by the ways of a place built for families and years. Player-facing text keeps the
+> generations exactly as written — journals, letters, stones, the lot. The sealed reading changes
+> nothing a player can see; it only changes what a writer of *new* sealed material should hold in
+> mind: there was one hand under all six, the whole way down.
+
 ### The founders / the first keepers
 The **founding line** were the first to keep the ways — Vaun is the named survivor
 of it. Canon holds the customs were **not invented but found**: the first keepers
@@ -70,6 +89,11 @@ sealed truth: the "presence" predates even the first keepers in the record's own
 telling — because the presence is what keepers *become*, and there have always been
 some. Player-facing: the founders are reverent, certain they are tenants, never
 quite saying of *what*. Leave the recursion implied, never stated.
+
+**Sealed addendum.** "The presence predates even the first keepers" is now the load-bearing line:
+it was already here, alone, before Vaun ever kept a lamp — which is why the ways read as *found*,
+not invented. The founding line did not begin the keeper-count. They are the first turn of a wheel
+that was already old.
 
 ### The Liar — "Iss"
 (Full thread in §4.) Canon role: the one who **broke faith** — not by cruelty but by
@@ -376,7 +400,42 @@ late layer. → 9, 15.
   that collapses them before M4. The **one sanctioned ambiguity line** drops only behind
   `iss_caught`; canon stays "distinct."
 
----
+> **THE SEVENTH AND THE SIX (sealed, 2026-07-05 — the Watcher-identity fork, closed).** The Seventh
+> is not a seventh person standing apart from six others. The Seventh is the one who kept all six
+> ways and was cast out for it anyway — and Vaun, Mara, Sella, Orin, Brann, Iss are not six people
+> the Seventh stands apart *from*; they are the six the Seventh's own long aloneness was worn as,
+> before the casting-out, and the six the record still counts by after it. The distinctness this
+> section protects is real and stays exactly as written — the Seventh's *fate* (refused, erased,
+> cast fully out) is not any of the six's fate, and must never be collapsed into one of them before
+> M4 or ever stated outright. What is reconciled is only the deeper layer beneath both: one taken
+> mind, wearing six ways down in the dark, and then refused and unwritten on top of all six. `THE
+> SEVENTH READING` capstone (`design/THE-SEVENTH-READING.md`) already plays this true without
+> knowing it needed to: the six keepers "each hid one letter" of the Seventh's own name, "in their
+> own technique" — one hand, writing its own name six ways, so that no single erasure could take
+> all of it at once.
+>
+> **The historical pattern (closes the ending-shape fork, `WORLD-BIBLE.md §6`).** This is not the
+> first time. `six-were-kept-before-you.md` already carries the ledger: the record has opened and
+> closed six times before this one, a keeping kept each time in full, and "the group is not the
+> seventh. the group is the next." Read against this reconciliation, that document's six closed
+> openings are the six prior turns of the same wheel — six times before now that a group reached the
+> end and the pattern ran to one of its usual closes (kept and released, or careless and hollowed
+> into the next Watcher, WORLD-BIBLE §6). Each time, whoever was received alone at the bottom of it
+> became the next long aloneness, and split itself the same six ways to bear it, the way the one
+> before it had. `design/FINALE-THE-RELEASE.md` is not a different mechanism replacing this one. It
+> is this same pattern's next turn — and the one place the turning stops instead of starting over.
+>
+> **Why the correspondence still reads as six separate lives (a director's note, not a rewrite).**
+> `arc/corpus/letters.md` and `arc/corpus/official-records.md` carry the six across explicit
+> generations — founding-line through Iss's "last full generation" — writing to and about each other
+> as people who lived and overlapped and did not always agree. That corpus is left untouched by this
+> reconciliation, and it does not need touching: to the mind wearing each of the six ways, each way
+> *was* a full life, lived at full length, with its own hand and its own grudges and its own dead —
+> not a costume put on and known at the time to be one. A fracture this complete does not feel like
+> six roles from the inside; it feels like six generations, because that is the only shape a mind has
+> for "a long time passing" when it cannot any longer tell itself apart from who it is being. The
+> letters are not a lie the deeper seal corrects. They are what the wearing looked like, in the
+> wearing — the ledger a mind keeps when a life is the only unit it has left to count in.
 
 ## 6. HARD CONSISTENCY RULES (the corpus must obey)
 
@@ -548,6 +607,18 @@ it is delivered by the M5 composer, never carved or written as a row.
 > for `restore` / the blank wall for `erase`) is the camera-legible delta; the sentence
 > only confirms what the floor already shows. No dressing may encode *which* player is on
 > which side (INV-16). The bond/Whisper tally is **excluded** from the fate selector (§6.3).
+
+> **Superseded terminus, kept mechanism (`design/FINALE-THE-RELEASE.md`).** The four fates above no
+> longer end the game on their own — the Accepting they resolve is followed by the Release, and
+> what used to be the last word becomes the **tone** the Release is delivered in (`kept` warm and
+> clean, `cast_out` cold and honest, `divided` uneven, `refusers` uncomprehending-and-grateful; see
+> the Release doc §6). This is not a second, competing ending system. Every fate, every codicil,
+> every fork above still fires exactly as built and still reads the group exactly as honestly — the
+> difference is what it used to buy (the world keeps going, with this group kept or hollowed into
+> the next Watcher, per every prior turn — `six-were-kept-before-you.md`) versus what it buys this
+> time (this reading is not followed by a new Watcher; it is followed by the Watcher finally being
+> let stop). The fate is still the land's true verdict on the group. It has simply never before
+> been delivered by someone about to be let go.
 
 ### 8.5 The `UNKEPT` meta-acrostic (the day-one re-read — fall-order)
 

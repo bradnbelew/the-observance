@@ -73,11 +73,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placeprologue" -> handlePlacePrologue(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
+            case "keeper" -> handleKeeper(sender, args);
             case "townsfolk" -> handleTownsfolk(sender, args);
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
         }
     }
 
@@ -1149,6 +1150,57 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
+     * {@code /observance keeper <spawn|despawn> [node]} — places the one group-scoped presiding-Keeper
+     * NPC {@link com.observance.watcher.signal.listener.KeeperNpcListener} watches for.
+     *
+     * <ul>
+     *   <li>{@code spawn [node]} — spawn (or relocate) the Keeper at the sender's location, standing at
+     *       a rite-side site ({@code the_threshold} / {@code keeper_altar} in sites.yml — the listener
+     *       ignores a click on him anywhere else). The optional {@code node} arg is stamped into his PDC
+     *       marker as an entry-node hint for the showrunner's dossier branch; omitted/blank lets the
+     *       showrunner decide purely from {@code arc_state.flags} + {@code punishment_state}. Uses
+     *       Citizens2 when present (pass-as-human), else a PDC-tagged armor-stand fallback. Does NOT
+     *       require a sites.yml entry to spawn — but he only OPENS when standing inside one.</li>
+     *   <li>{@code despawn} — remove the current Keeper body.</li>
+     * </ul>
+     */
+    private void handleKeeper(CommandSender sender, String[] args) {
+        var keeper = plugin.keeper();
+        if (keeper == null) {
+            sender.sendMessage("Observance: keeper subsystem unavailable.");
+            return;
+        }
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance keeper must be run by a player (needs a location).");
+            return;
+        }
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "spawn";
+        switch (op) {
+            case "spawn" -> {
+                Location loc = player.getLocation();
+                if (loc == null || loc.getWorld() == null) {
+                    sender.sendMessage("Observance: could not resolve your location.");
+                    return;
+                }
+                String node = args.length > 2 ? args[2] : "";
+                var body = keeper.spawn(loc, node);
+                if (body == null) {
+                    sender.sendMessage("Observance: could not spawn the Keeper here (world/chunk unavailable?).");
+                    return;
+                }
+                sender.sendMessage("Observance: the Keeper is here (" + keeper.backend() + ")"
+                        + (node.isBlank() ? "" : ", node=" + node)
+                        + ". Right-click him at a rite-side site to open him.");
+            }
+            case "despawn" -> {
+                keeper.despawn();
+                sender.sendMessage("Observance: the Keeper has stepped back.");
+            }
+            default -> sender.sendMessage("Usage: /observance keeper <spawn|despawn> [node]");
+        }
+    }
+
+    /**
      * Place the three reckoning markers in a short east-west row at the player's feet, each an
      * invulnerable, gravity-less armor stand named for its choice and tagged with the
      * {@code observance:wren_reckoning} PDC value the {@code WrenNpcListener} reads. A right-click on
@@ -1407,6 +1459,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(" wren:               " + (wren.isSpawned() ? "present" : "not spawned")
                     + " (" + wren.backend() + ")");
         }
+        var keeper = plugin.keeper();
+        if (keeper != null) {
+            sender.sendMessage(" keeper:             " + (keeper.isSpawned() ? "present" : "not spawned")
+                    + " (" + keeper.backend() + ")");
+        }
     }
 
     /**
@@ -1431,7 +1488,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "townsfolk", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "keeper", "townsfolk", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
@@ -1451,6 +1508,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if ("give".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("give");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("wren")) {
             for (String s : new String[]{"spawn", "despawn", "reckoning"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("keeper")) {
+            for (String s : new String[]{"spawn", "despawn"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("lens")) {

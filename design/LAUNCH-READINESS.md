@@ -159,11 +159,17 @@ conditional on a physical light-source structure that hasn't been placed as a si
 ready for whatever beat eventually reads it. All 4 surfaces verified green after the build.
 
 **Found, NOT fixed — needs your call, not a unilateral build:**
-- **The `keeper.ts` gap is bigger than previously stated.** Not just the TS dialogue resolver missing a
-  runner — `KeeperNpcListener.java` (the presiding-Keeper interaction producer) is also never registered,
-  and nothing anywhere tags an NPC entity with the `keeper_npc` PDC key it looks for. So today, right-
-  clicking the presiding Keeper NPC does literally nothing (no event fires at all), not just "no
-  personalized branch yet." Still correctly deferred per your prior call — just noting the full scope.
+- ✅ **CLOSED (2026-07-05 cohesion pass) — the plugin-side half of the `keeper.ts` gap.**
+  `KeeperNpcListener` is now registered in `ObservancePlugin.registerListeners()`, and a real body/tag
+  manager (`KeeperNpc.java`, mirrors `WrenNpc.java`) exists — `/observance keeper <spawn|despawn> [node]`
+  places him (Citizens2 when present, an armor-stand fallback otherwise) and stamps the `keeper_npc` PDC
+  key the listener reads. Right-clicking the presiding Keeper now genuinely fires (writes an `event_log`
+  row, type `keeper`/`npc.open`) — this was previously a complete no-op. **Still open, separately:**
+  whether a showrunner runner consumes that `npc.open` row and calls the already-pure, already-self-tested
+  `resolveKeeperDialogue` (`keeper.ts`) to post a personalized `KeeperNpcBeat` — I did not build or verify
+  that runner this pass, so don't assume the full personalized-dialogue path is proven end-to-end yet.
+  That's the one remaining leg, and it's a TS-side scoping decision, not a blocker to spawning/clicking the
+  Keeper working at all.
 - **Two Nether/End `progression_seed.sql` rows reference voice keys that don't exist**
   (`nether.forgeArrive`, `end.shrineArrive`, plus `nether.soulSand`/`end.outsideRecord` named in its own
   header). Harmless today (`active=false`, staged), but will speak nothing the moment you place those

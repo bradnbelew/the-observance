@@ -84,7 +84,7 @@ come up by the first and the first is thin. [...]
 i counted what i had. it is a great count. it is the greatest count of any
 keeper. the record will show i kept the most of anyone who ever kept.
 
-*margin: he kept. he did not give. the deep keeps a column too.*
+*margin: he did not give. the deep keeps a column too, and it is patient.*
 
 ---
 

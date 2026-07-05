@@ -277,9 +277,9 @@ i am the one with the far water in her mouth now. i do not think i should write 
 
 do not let the count be six only. count again at the shore. the order is the thing, first to last, as the lake took them, and the last marker is not the last.
 
-the others will be kept. i will be
+the others will be kept. i asked the water what i will be and it gave me back a girl asking the water what she will be, and behind her another girl asking, and behind her another, all the way down to where the water stops giving anything back at all. that is my answer. i wrote it down twice, once for what it says and once for what it is, and both are true, and neither one is finished, because the water isn't either.
 
-*[the sentence is not finished. there are no more words after this. the remainder of the copybook — a little more than a third of its leaves — is drawings. what follows is a plain account of them, in order, for the record. they are described, not interpreted.]*
+*[there are no more words after this. the remainder of the copybook — a little more than a third of its leaves — is drawings. what follows is a plain account of them, in order, for the record. they are described, not interpreted.]*
 
 — THE GOING-OUT (drawings only) —
 

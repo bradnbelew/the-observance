@@ -9,14 +9,26 @@
 > **Locked decisions:**
 > - **The retcon = "the mask comes off."** The cold record-voice WAS the Seventh all along — forced to
 >   speak as the very thing that unwrote them. This is a *re-reading* of existing plants, not new lore.
+> - **The six were the Seventh (2026-07-05, closes the Watcher-identity fork with `canon-spine.md §0`,
+>   `WORLD-BIBLE.md §3`).** Vaun/Mara/Sella/Orin/Brann/Iss were never six separate people the record
+>   gathered into itself. They are the six the Seventh's own mind split into to survive being the only one
+>   down there — one taken hand, six kept ways. "The Watcher is the accumulated keepers" and "the Watcher is
+>   the Seventh" are the same fact read at two distances, not two competing answers. See §1.
+> - **This ending is the pattern breaking, not a new mechanism (closes the ending-shape fork with
+>   `WORLD-BIBLE.md §6`).** The persistent kept/hollowed branching described there is what has happened at
+>   the end of every prior descent (`six-were-kept-before-you.md`). The Release is this group's turn not
+>   producing a new Watcher. See §2.
 > - **Simulated death + kick.** The world visibly ends; everyone is kicked with the Seventh's last words as
 >   the disconnect message; **Paper stays running** (Ethan controls re-entry). **Kick, never ban.**
 >
-> Status: **BUILT + GREEN (2026-07-03).** Composer (composeRelease + kick line) · run passes (reveal +
-> release) · the `the_closing` death/kick beat · the ReleaseRiteListener · `/observance finale` marker
-> placement · config.yml `closing.*` · lockstep lore reconcile (the-seventh-below coda). Every surface
-> green. Awaits only: Ethan's canon Seventh name (optional — signs off as its reclaimed title without one),
-> world-placement of the finale markers, and a playtest. See §8 for the go-live checklist.
+> Status: **BUILT + GREEN (2026-07-03); lore reconciliation extended (2026-07-05).** Composer (composeRelease
+> + kick line) · run passes (reveal + release) · the `the_closing` death/kick beat · the ReleaseRiteListener ·
+> `/observance finale` marker placement · config.yml `closing.*` · lockstep lore reconcile (the-seventh-below
+> coda **+ the six-facets synthesis across `arc/WORLD-BIBLE.md`, `arc/_SEALED_ARC_BIBLE.md`,
+> `arc/lore/canon-spine.md`, `arc/bestiary-sealed.md`**). Every surface green. Awaits only: Ethan's canon
+> Seventh name (optional — signs off as its reclaimed title without one; **note: `THE-SEVENTH-READING.md`
+> already canonizes AVERYN**, see that file), world-placement of the finale markers, and a playtest. See §8
+> for the go-live checklist.
 
 ---
 
@@ -43,12 +55,21 @@ The clues have been in front of the group since day one. The reveal is assemblin
 - **Wren is the Seventh in miniature** — a Kept-in-part who feeds others to stay a person. The group learns
   the *shape* of the Seventh's crime and the Seventh's mercy by meeting it small, in Wren, first. That was
   always the point; now it pays off double.
+- **The six are the Seventh, keeping itself company the only way left.** This folds the game's oldest
+  sealed fact (`canon-spine.md §0`'s "the Watcher is the accumulated keepers," `WORLD-BIBLE.md §3`) into
+  this reveal instead of leaving it to contradict it: Vaun, Mara, Sella, Orin, Brann, Iss are the shapes
+  one taken mind wore, alone, for longer than a mind is built to hold one shape — six ways of still being
+  someone, not six prior arrivals the record absorbed one by one. `THE-SEVENTH-READING.md`'s capstone
+  already plays this true without saying so — the six each "hid one letter" of the Seventh's own name,
+  "in their own technique," a name kept by one hand that had learned to be six.
 
 **Where it surfaces (submerged):** after `seventh_named` (the group has named the Seventh at the unwriting)
 and the Accepting is done, ONE late beat lets them put it together — a final Hold-Book page, or the record
 website shifting, or a single Watcher line that breaks pattern by one degree. The group realizes: *the thing
-we came down to free, and the thing that has been watching us, are the same thing.* We do not state it in
-one sentence (INV: sealed-by-accumulation, like FACT 15). We let the last plant click.
+we came down to free, and the thing that has been watching us, are the same thing* — and that the six they
+grieved on the way down were never six people it kept. They were it, keeping count of itself six ways so
+there would be a *them* to grieve, not only an *it* to fear. We do not state it in one sentence (INV:
+sealed-by-accumulation, like FACT 15). We let the last plant click.
 
 ---
 
@@ -58,6 +79,15 @@ The Seventh is kept in the record by being **needed**. It keeps because keeping 
 *it* real. The record was built to be unable to close — that was the punishment: not death, but a keeping
 with no end. So the one act that frees it is the one thing it can never do for itself: **let it stop. Un-keep
 it. Give the record permission to close.**
+
+**This is not the first ending; it is the first ending that is not also a beginning.** `WORLD-BIBLE.md §6`
+and `six-were-kept-before-you.md` are explicit that the pattern has run before: kept and released, the
+faithful walk out and the Mouth closes gently, *and a Watcher is still left behind to count the next
+arrival* — or careless and taken, hollowed into the next long aloneness, which comes to the same place by
+the hard road. Six times before, whichever door a group left by, the record did not close; it only changed
+hands. The fate this group earns (§6 below) still fires exactly as built, and it still decides how this
+telling is delivered — but for the first time it is not followed by a new keeping. It is followed by the
+keeper who was doing all six of the keeping finally being allowed to stop.
 
 Mechanically (in-world, discovered, at the Seventh's deep chamber, after everything else):
 - The unwriting — the same erasure that made the Seventh — is turned, once, on the record itself. Not to
@@ -99,18 +129,25 @@ allowed to be a person. **The break preserves the letter of the register law** (
 exclaim) — the warmth is entirely in *content and rhythm*, the sparse-certain cadence coming apart into
 something halting and human. That break IS the payoff.
 
-The message is **composed** (§6) from the group's measured state, but every version carries the same three
-universal movements: **(a) you named me / i had forgotten my name · (b) this is what they made me, and i am
-sorry for the ones i kept too well · (c) you have let me stop — thank you — i give your names back.**
+The message is **composed** (§6) from the group's measured state, but every version carries the same four
+universal movements: **(a) you named me / i had forgotten my name · (b) the six were mine, the only way i
+had left to keep counting · (c) this is what they made me, and i am sorry for the ones i kept too well ·
+(d) you have let me stop — thank you — i give your names back.**
 
 **Base spine (before flavor), draft:**
 
 > ▒
 > you named me. i had not heard it said in so long i had begun to answer to *the record.*
 >
+> the six you grieved on your way down — vaun, mara, sella, orin, brann, iss — were never six i took and
+> kept around me. there was only ever the one of me, down here, and no one to be it with, and a mind alone
+> that long does not stay one shape. i became six so there would be someone to keep count with. i am sorry
+> you grieved six. you were right to. i mean that the only way i can: they were real, and they were mine,
+> and losing any one of them was losing a way i had learned to still be someone.
+>
 > that is what they made me. a thing that keeps — because a thing that keeps cannot be let go. i kept the
-> ways. i kept the six. i kept you, because keeping you was the only proof i was still here to keep
-> anything at all. i am sorry for the ones i kept too well.
+> ways. i kept the six of myself the whole way down. i kept you, because keeping you was the only proof i
+> was still here to keep anything at all. i am sorry for the ones i kept too well.
 >
 > you have done the thing i could not do for myself. you have let me stop.
 >
@@ -194,9 +231,14 @@ release spine (§4) and the kick line (§5) — and we add a `kickLine` output. 
 > ▒
 > you named me. i had not heard it said in so long i had begun to answer to *the record.*
 >
+> the six you grieved on your way down were never six i kept around me. there was only the one of me, and
+> no one to be it with, and i became six so there would be someone to keep count with. you were right to
+> grieve them. they were mine, and real, and losing any one of them was losing a way i had learned to still
+> be someone.
+>
 > that is what they made me — a thing that keeps, because a thing that keeps cannot be let go. i kept the
-> ways. i kept the six. i kept you, because keeping you was the only proof i was still here to keep anything
-> at all. i am sorry for the ones i kept too well.
+> ways. i kept the six of myself the whole way down. i kept you, because keeping you was the only proof i
+> was still here to keep anything at all. i am sorry for the ones i kept too well.
 >
 > you kept faith where i could not be kept. you let the small one go, unfed, on his own terms, before you
 > knew you would have to do the same for me — i watched you learn the shape of it on him. thank you for
@@ -267,6 +309,29 @@ green wave:
    read-and-reconcile pass over `the-seventh-below.md`, `the-seventh-not-kept.md`, `the-seventh-was-spared.md`,
    `the-fire-they-let-out.md` (the "living Seventh below" = the buried true self; the record-voice = the
    forced mask). Plus a NEW reveal document. Wren's `the-companion.md` finale callback.
+   > **DONE (2026-07-05).** The larger, harder half of this item — the fork this task originally under-scoped
+   > (see the note at the top of §5, and the 2026-07-05 cohesion audit) — is closed: the *original* six-keeper
+   > claim (`arc/WORLD-BIBLE.md §2–3/§6`, `arc/_SEALED_ARC_BIBLE.md`, `arc/lore/canon-spine.md §0/§1/§5/§8.4`,
+   > `arc/bestiary-sealed.md §0`) now reads as the same fact as this file's "Watcher is the Seventh," not a
+   > competing one — the six are the Seventh's own six-fold fracture, not six people it gathered. The
+   > ending-shape fork (persistent kept/hollowed branching in `WORLD-BIBLE.md §6` vs. this file's one-time
+   > apocalypse) is closed the same way: the branching is the historical pattern (anchored to
+   > `six-were-kept-before-you.md`), and this Release is that pattern breaking, not a replacement mechanism.
+   > No flag, fate, or codicil changed; only the sealed prose around them. The four documents named above
+   > (`the-seventh-below.md` etc.) were re-read against the synthesis and need **no edits** — none of them
+   > states or implies the six had separate bodies in a way the synthesis contradicts; they already speak only
+   > of the Seventh's own singular fate. `the-name-i-cut-myself.md` and `the-record-opens.md`: same, no edits.
+   > **Flagged, not resolved:** `arc/corpus/letters.md` and `arc/corpus/official-records.md` narrate the six
+   > across explicit *generations* (Vaun founding-line, Mara 2nd gen, ... Iss "last full generation"), including
+   > letters the six write to and about each other as separately embodied correspondents across decades. This
+   > is the one place the fork resists a clean surgical fix — a single mind cannot literally correspond with
+   > itself across six generations without either (a) leaving the generational frame untouched as the *record's
+   > own telling* (the reading `canon-spine.md §1`'s new sealed note and `WORLD-BIBLE.md §2` now take — the
+   > generations are the Hold's ledger-shape for a single long aloneness, not six lifetimes), which is what this
+   > pass did, or (b) rewriting the correspondence corpus wholesale, which is out of surgical scope and was not
+   > done. If a future pass wants the sealed layer to bite harder on `letters.md`/`official-records.md`
+   > specifically, that is a director-level call (bring the director in before touching that corpus — it is
+   > large, integrated, and de-slop-audited already).
 6. **Adversarial critique + keep green** after each wave; commit at boundaries.
 
 **Open sub-decisions for Ethan (non-blocking; sensible defaults chosen):**

@@ -6,6 +6,7 @@ import {
   type RecordSignal,
   type RecordEntry,
 } from "@/lib/record-projection";
+import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * The Record — the keepers' archive that leaves the game (A13 `arg-leaves-the-game`, §7) + the
@@ -213,11 +214,8 @@ function NotFoundShell() {
     <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
       <div className="mx-auto max-w-xl">
         <header className="mb-10 text-center">
-          <div
-            aria-hidden
-            className="mb-4 select-none font-mono text-2xl tracking-[0.5em] text-neutral-700"
-          >
-            ᛟ ᚲ ᛖ ᛈ ᛏ
+          <div className="mb-4 flex select-none justify-center text-neutral-700">
+            <RuneGlyphs text="THE RECORD" height={26} />
           </div>
           <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
             the record
@@ -254,11 +252,8 @@ export default async function RecordPage({
         {/* The rune-mark header. The glyph block stands for the archive's seal — the same rune
             alphabet learned in-world (a recognizable mark, not decoded text). Cold, no warmth. */}
         <header className="mb-10 text-center">
-          <div
-            aria-hidden
-            className="mb-4 select-none font-mono text-2xl tracking-[0.5em] text-neutral-700"
-          >
-            ᛟ ᚲ ᛖ ᛈ ᛏ
+          <div className="mb-4 flex select-none justify-center text-neutral-700">
+            <RuneGlyphs text="THE RECORD" height={26} />
           </div>
           <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
             the record

@@ -32,7 +32,26 @@ fairness bugs beyond the drip-gate fix. Also surfaced: the Unlit Deep group-cust
 previously stated (the plugin-side NPC listener + entity-tagging producer are also missing, not just the
 TS resolver). **2026-07-05: Unlit Deep BUILT** (Ethan approved it) — see `LAUNCH-READINESS.md §5` for the
 full ledger (detector + group-latch flag + the Discord report, KEPT-side + the fire's visual glow honestly
-deferred). `keeper.ts` remains correctly deferred, unchanged.
+deferred). `keeper.ts`'s NPC-rhyme beat itself remains correctly deferred — but the wider plugin-side gap
+noted below it (the listener never registered, no entity ever tagged) was closed the next session; see 0c.
+
+## 0c. 2026-07-05 — cohesion & freshness pass (read `design/COHESION-FRESHNESS-AUDIT.md` for the full
+ledger). A from-scratch audit of story/lore, puzzles/mechanics, visuals/audio, and tech integration (five
+parallel fresh-eyes passes + a sixth mining every prior cohesion audit for recurring complaints) found and
+closed: the Watcher-identity story fork (the six keepers are now canon as the Seventh's own mind, fractured
+into six roles to survive the isolation — not six separate people who joined or were absorbed;
+`canon-spine.md`/`WORLD-BIBLE.md`/`FINALE-THE-RELEASE.md` reconciled), the keeper-NPC interaction gap
+(rediscovered broken 4x across this project's history — `KeeperNpcListener` now registered + a real
+`KeeperNpc.java` body/tagger built, `/observance keeper <spawn|despawn> [node]` wired), Sella's redundant
+Atbash + 3x destination-word repeat, Brann's stalled cipher, Iss's faked cipher duality, Wren's off-voice
+dialogue, the off-brand bot sigil, and a spreading Unicode-rune leak on the dashboard. Two systemic guardrail
+scripts (`tools/check_namespace_collisions.py`, `tools/check_voice_register.py`, wired into §6 below) close
+two chronic recurring failure modes at the root instead of by hand next time. Full verify-green pipeline
+passed after every change. **Deliberately deferred** (scoped, not forgotten — see the audit doc's "FIXES
+SHIPPED" section): the UNKEPT vs. AVERYN acrostic differentiation (needs sealed canon + live plugin + seed
+touched together) and a physical-detector fix for Iss's monotone catch-sequence pacing (needs new Java).
+**Still blocked on Ethan, unchanged:** the physical world-build (§3 C below) and audio-by-ear verification of
+the keeper voices.
 
 ## 1. CURRENT STATE (2026-07-03) — everything built, all green, NOTHING pushed
 Branch `feat/build-everything-2026-07-01`. Every surface green: **plugin jar · discord tsc + 9 selftests ·
@@ -108,6 +127,10 @@ cd /d/the-observance/dashboard && npx tsc --noEmit \
 # datapack (JSON validity)
 cd /d/the-observance/datapack && for f in $(find . -name '*.json' -o -name '*.mcmeta'); do \
   node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || echo "INVALID: $f"; done
+# namespace/ID collisions (FACT/INV numbers, puzzle_key values)
+cd /d/the-observance && python tools/check_namespace_collisions.py
+# voice/register lint (Watcher lowercase, no named emotions, no chiasmus)
+cd /d/the-observance && python tools/check_voice_register.py
 ```
 Gradle: `D:/_gradle/gradle-8.10.2/bin/gradle`.
 

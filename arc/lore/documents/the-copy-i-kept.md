@@ -36,17 +36,17 @@ kept where stone-fire and deep-water cannot reach. this is the hand that did it.
 i read the founders' line the way the younger keeper read it, not as a place to walk to
 but as a name to call, and i did the thing the line asks for: i made a second copy. page
 for page, in the script as it was cut, and i set it where fire and water do not reach. i
-am the Reader. it is the one rite my hands could keep. i could not keep the lamps and i
-could not keep the bow and i could not keep the markers, but a copy i can keep, because a
-copy is reading, and reading is the thing i did instead of all the rest.
+am the Reader. it is the one rite my hands could manage — not the lamps, not the bow, not
+the markers, only this: a copy is reading, and reading is the thing i did instead of all
+the rest.
 
 i copied the six in full. i copied them by name. i copied the seventh mark, which is not
-a name, which is the grey where a name is scraped away, and i copied the grey as it stood,
-because a copy keeps what is there and not what i would have it be.
+a name, which is the grey where a name is scraped away, and i set the grey down as it
+stood, true to the page and not to what i would have wished there instead.
 
 i did not keep the seventh. i want that set down plainly, in case the copy outlasts me and
 a later hand reads it and thinks the lampwright chose. i did not choose. i was not the hand
-that decides what is kept. i only read what was kept, and copied it true, and set it where
+that decides what is kept. i only read what was there, and copied it true, and set it where
 it would last.
 
 *(the last four lines, set apart in the same hand — the provenance the second copy carries
