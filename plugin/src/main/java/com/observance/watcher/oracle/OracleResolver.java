@@ -15,6 +15,7 @@ import com.observance.watcher.util.Safety;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +119,11 @@ public final class OracleResolver {
             }
         }
 
-        // 3. Fetch OPEN puzzles + match by exact whole-string set-membership.
+        // 3. Fetch OPEN puzzles + match by exact whole-string set-membership. Collect ALL matching
+        //    candidates, not just the first — a normalized answer may legitimately be shared by a
+        //    SEQUENCED pair (an already-solved upstream owner that stays open + its freshly-open
+        //    downstream consumer, e.g. the bound word on stone-iss-wall/bound-word, then again on
+        //    iss-bound-word-callback). Picking only the first would permanently shadow the second.
         SupabaseResult<List<PuzzleRow>> pr = supabase.fetchOpenPuzzles(200);
         if (!pr.ok() || pr.value() == null) {
             // Can't read the web → degrade silently (don't even log an attempt we couldn't evaluate).
@@ -128,7 +133,7 @@ public final class OracleResolver {
         // gated row (the M4 Iss chain, the Seventh deep) is invisible in-world until its upstream door
         // set the flag — identical to the Discord getOpenPuzzles gate (FlagGate is its proven twin).
         Map<String, Object> arcFlags = fetchArcFlags();
-        PuzzleRow matched = firstMatch(pr.value(), norm, boundPuzzleKey, arcFlags);
+        List<PuzzleRow> candidates = allMatches(pr.value(), norm, boundPuzzleKey, arcFlags);
 
         // 4. Resolve the keeper id (needed for both the attempt log and the solve guard).
         PlayerLookupRow keeper = lookupKeeper(mcUuid);
@@ -136,11 +141,32 @@ public final class OracleResolver {
         String discordId = keeper == null ? null : keeper.discordId;
 
         // 5. Log the attempt (matched bool only — NEVER which part). Best-effort, queued on failure.
-        logAttempt(matched == null ? null : matched.puzzleKey, playerId, mcUuid, discordId,
-                raw, norm, matched != null);
+        //    Attributed to the first candidate, mirroring the bot's resolve.ts (logAttempt uses
+        //    candidates[0] regardless of which candidate is ultimately picked below).
+        logAttempt(candidates.isEmpty() ? null : candidates.get(0).puzzleKey, playerId, mcUuid, discordId,
+                raw, norm, !candidates.isEmpty());
 
-        if (matched == null) {
+        if (candidates.isEmpty()) {
             return Result.MISS; // plausible but wrong → silence (contrast: a dead_end is HEARD)
+        }
+
+        if (playerId == null) {
+            // A solve must be a known keeper; without an id we cannot durably guard it → withhold.
+            return Result.UNAVAILABLE;
+        }
+
+        // 5b. Among the candidates, pick the first this keeper has NOT already solved — so an
+        //     already-done upstream owner never shadows its downstream re-submission (mirrors the
+        //     bot's pickCandidate in resolve.ts). If every candidate is already solved, `matched`
+        //     falls back to the first (the canonical owner) and alreadySolved stays true.
+        PuzzleRow matched = candidates.get(0);
+        boolean alreadySolved = true;
+        for (PuzzleRow c : candidates) {
+            if (!supabase.hasSolvedWorld(c.puzzleKey, playerId)) {
+                matched = c;
+                alreadySolved = false;
+                break;
+            }
         }
 
         // Per-puzzle attempt cap (on top of the global limiter): reaching it = withheld, never a hint.
@@ -161,16 +187,19 @@ public final class OracleResolver {
             }
         }
 
-        if (playerId == null) {
-            // A solve must be a known keeper; without an id we cannot durably guard it → withhold.
-            return Result.UNAVAILABLE;
+        // 6b. Every candidate already solved (the pick loop found none new) → silent, no re-fire —
+        //     matches the bot's step 7 (checked AFTER the cap, same order, so a rate-limited replay
+        //     still withholds rather than confirming "yes, you solved this").
+        if (alreadySolved) {
+            return Result.ALREADY_SOLVED;
         }
 
-        // 6. IDEMPOTENT solve guard BEFORE any reward. Only a genuinely-new solve proceeds.
+        // 7. IDEMPOTENT solve guard BEFORE any reward. Only a genuinely-new solve proceeds. (A DUPLICATE
+        //    here means the pick raced a concurrent solve between the read at 5b and this write.)
         SolveRow solveRow = new SolveRow(matched.puzzleKey, playerId, mcUuid, discordId, 1);
         SupabaseClient.SolveOutcome outcome = supabase.insertSolveIfNew(solveRow);
         switch (outcome) {
-            case DUPLICATE -> { return Result.ALREADY_SOLVED; }   // already solved → silent, no re-fire
+            case DUPLICATE -> { return Result.ALREADY_SOLVED; }   // lost the race → silent, no re-fire
             case FAILED -> { return Result.UNAVAILABLE; }         // couldn't guard → grant nothing
             case NEW -> { /* first solve — fall through to apply the outcome */ }
         }
@@ -187,16 +216,20 @@ public final class OracleResolver {
     /* ------------------------------------------------------------------ */
 
     /**
-     * First OPEN puzzle whose accepted_answers contains the normalized string (ORACLE.md §2), among
-     * the rows the storylet gate leaves open. When {@code boundPuzzleKey} is non-null, only that puzzle
-     * is considered (a focused answer-sign site) — which is how the world surface handles a plaintext
-     * shared by a sequenced pair (the M4 gate sign is bound to its own row), so it does not need the
-     * Discord side's unsolved-preference here. A row is skipped unless every key in its
-     * {@code requires_flags} is truthy in {@code arcFlags} (the SAME predicate as the bot, via
-     * {@link FlagGate}).
+     * ALL OPEN puzzles whose accepted_answers contain the normalized string (ORACLE.md §2), among the
+     * rows the storylet gate leaves open, in the plugin's natural fetch order (movement asc,
+     * created_at asc). When {@code boundPuzzleKey} is non-null, only that puzzle is considered (a
+     * focused answer-sign site). Usually 0 or 1 result; more than 1 only for a plaintext legitimately
+     * shared by a SEQUENCED pair (an already-solved upstream owner that stays open + its freshly-open
+     * downstream consumer) — the caller picks the first the keeper has NOT already solved (mirrors the
+     * bot's {@code pickCandidate} in resolve.ts; this world-surface path used to pick the first match
+     * unconditionally, which permanently shadowed a downstream row sharing an upstream's plaintext). A
+     * row is skipped unless every key in its {@code requires_flags} is truthy in {@code arcFlags} (the
+     * SAME predicate as the bot, via {@link FlagGate}).
      */
-    private PuzzleRow firstMatch(List<PuzzleRow> puzzles, String norm, String boundPuzzleKey,
+    private List<PuzzleRow> allMatches(List<PuzzleRow> puzzles, String norm, String boundPuzzleKey,
                                  Map<String, Object> arcFlags) {
+        List<PuzzleRow> out = new ArrayList<>();
         for (PuzzleRow p : puzzles) {
             if (p == null || p.acceptedAnswers == null) continue;
             if (!Boolean.TRUE.equals(p.active)) continue; // defensive: the query already filters
@@ -206,11 +239,12 @@ public final class OracleResolver {
             for (String a : p.acceptedAnswers) {
                 // accepted_answers are stored already-normalized; compare verbatim.
                 if (a != null && a.equals(norm)) {
-                    return p;
+                    out.add(p);
+                    break;
                 }
             }
         }
-        return null;
+        return out;
     }
 
     /**

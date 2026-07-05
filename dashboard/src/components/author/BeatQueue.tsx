@@ -1,4 +1,4 @@
-import { approveBeat, forceBeat, skipBeat } from "@/app/author/actions";
+import { approveBeat, skipBeat } from "@/app/author/actions";
 import type { Beat, BeatStatus } from "@/lib/database.types";
 
 const STATUS_STYLES: Record<BeatStatus, string> = {
@@ -80,15 +80,6 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
                           className="rounded-md border border-sky-700/60 bg-sky-900/30 px-2.5 py-1 text-xs text-sky-200 transition-colors hover:bg-sky-900/50"
                         >
                           Approve
-                        </button>
-                      </form>
-                      <form action={async (fd: FormData) => { await forceBeat(fd); }}>
-                        <input type="hidden" name="id" value={beat.id} />
-                        <button
-                          type="submit"
-                          className="rounded-md border border-emerald-700/60 bg-emerald-900/30 px-2.5 py-1 text-xs text-emerald-200 transition-colors hover:bg-emerald-900/50"
-                        >
-                          Force
                         </button>
                       </form>
                       <form action={async (fd: FormData) => { await skipBeat(fd); }}>

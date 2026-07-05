@@ -156,7 +156,10 @@ rites:
   # The Accepting — the terminal climax. When every player present on the `accepting_floor` site
   # crouches at once ("bow as one"), the plugin posts the opaque token below as a solve of the
   # `accepting-crouch` puzzle. The token MUST byte-match that row's accepted_answers in the seed —
-  # a build-time self-test (riteTokenSelfTest) enforces it, so the climax can never silently fail.
+  # enforced by discord/src/forge/specs.selftest.ts's "rite token" check (npm run specscheck), which
+  # reads this exact file and diffs the token against the seed. (2026-07-05 audit: this comment used to
+  # cite a Java `riteTokenSelfTest` that never existed; the real guard is the TS check above, verified
+  # passing today. Corrected so a future edit knows where the actual enforcement lives.)
   accepting:
     enabled: true
     token: "k7q2m9 x4r8p3 w1n6z5 t0j4h2 b8f1v7 c3d6s9"
@@ -445,6 +448,12 @@ closing:
   #        re-open it ("there will be nothing here to come back to"). false = they can rejoin
   #        immediately (rejoining proves it was authored theater, not a ban). NEVER a real ban.
   whitelist-after: false
+  # Registers the release-rite marker listener (right-click after the Accepting → record_released →
+  # the showrunner's release pass → the_closing). Default true. Distinct from `enabled` above: this
+  # gates only the release RITE itself, not the whole closing sequence (auto-kick/theater/whitelist
+  # still run once record_released is set some other way). Added 2026-07-05 audit — was read in code
+  # (ObservancePlugin.java) but undocumented here.
+  release-rite-enabled: true
 
 # ----------------------------------------------------------------------------
 #  CUSTOMS — the closed set of group conducts the engine DETECTS (INV-17: exactly
@@ -456,6 +465,10 @@ customs:
   # document + cipher + Iss-rehearsal ONLY, never a real custom. This toggle gates the lore fiction's
   # surfacing (the forged ordinance, the card, the parrot line); it NEVER enforces anything in-world
   # (INV-17: there is no eighth CUSTOM_KEY, no null-enforcement flag). Default on = the lie is in play.
+  # NOTE (2026-07-05 audit): this key is NOT read by the Java plugin (verified — no getBoolean call
+  # anywhere references it). If the lore-fiction surfacing is implemented, it lives in the Discord
+  # showrunner (a separate service with its own config), which does NOT read THIS file — editing this
+  # value has no effect on either codebase today. Treat as documentation-only until a real reader exists.
   false-law:
     enabled: true
 
@@ -489,6 +502,12 @@ restraint:
 #  Read by SacredAnimalBeat (mode:"spread") + DeathListener (pale key ignored).
 # ----------------------------------------------------------------------------
 herd:
+  # NOTE (2026-07-05 audit): NEITHER key below is read by the Java plugin (verified — SacredAnimalBeat
+  # never touches PDC-key-from-config or a pale cap, despite the header comment above claiming it does).
+  # If the slow-herd-conversion spread mechanic is implemented, it is not wired to these config values —
+  # an operator raising/lowering max-pale here changes nothing today. Treat as documentation-only /
+  # aspirational until SacredAnimalBeat actually reads them, or fix the header comment if this is
+  # intentionally TS-side.
   # PDC key marking a cosmetic "pale one" — DISTINCT from tracker.sacred-beast-pdc-key so killing a Pale
   # is NOT a violation (the precision guard, INV-13). Never glowing; babies are not auto-pale.
   pale-cosmetic-pdc-key: "observance_pale_cosmetic"
@@ -504,6 +523,10 @@ herd:
 #  The deterministic engine clamps to [min,max]; these are the only tuning inputs.
 # ----------------------------------------------------------------------------
 difficulty:
+  # NOTE (2026-07-05 audit): this block is NOT read anywhere in the Java plugin (verified). The
+  # "showrunner/reckoning" reader referenced above is the separate Discord/TS service, which does NOT
+  # read this file — it has (or should have) its own config for these bounds. Treat the values below as
+  # a shared SPEC for what both sides should agree on, not a live parameter this plugin consumes.
   enabled: true
   # The drip-interval cadence multiplier bounds. >1 = the deep "tightens" (slower drips, longer waits);
   # <1 = it is "patient" (faster). The engine picks within [min,max] from measured group skill
@@ -527,6 +550,9 @@ difficulty:
 #  /observance window <on|off> force-overrides this schedule for a live take.
 # ----------------------------------------------------------------------------
 event-window:
+  # NOTE (2026-07-05 audit): NOT read anywhere in the Java plugin (verified). If the showrunner honors
+  # a wall-clock window as described, it is the separate Discord/TS service reading its OWN config, not
+  # this file. Treat the values below as a shared SPEC, not a live plugin parameter.
   enabled: false               # false ⇒ always-open (no wall-clock gate); flip on to arm the window
   start: ""                    # e.g. "2026-07-01T02:00:00Z" — UTC ISO-8601; empty = unbounded-open
   end: ""                      # e.g. "2026-07-01T05:00:00Z" — UTC ISO-8601; empty = unbounded-open

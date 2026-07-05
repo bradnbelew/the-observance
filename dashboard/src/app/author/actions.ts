@@ -90,7 +90,7 @@ export async function rewindArc(formData: FormData): Promise<ActionResult> {
 }
 
 // ---------------------------------------------------------------------------
-// Beat queue — approve / force / skip.
+// Beat queue — approve / skip.
 // ---------------------------------------------------------------------------
 
 /**
@@ -98,9 +98,10 @@ export async function rewindArc(formData: FormData): Promise<ActionResult> {
  * `status = 'approved'` ONLY, so a `pending` beat sits untouched until approved
  * here — that IS the gate:
  *   - approve: open the gate; the beat fires on the plugin's next poll (seconds).
- *   - force:   same end state (status 'approved') — surfaced as a one-click
- *              "push it now" for staging/testing a beat immediately.
  *   - skip:    drop it without firing (status 'skipped').
+ * (2026-07-05 audit: a separate `forceBeat` action/button used to exist here, but it called this
+ * SAME function with the SAME "approved" status — a cosmetic duplicate, not a distinct capability.
+ * Removed rather than relabeled, since two buttons doing one thing is confusing either way.)
  */
 async function decideBeat(
   id: number,
@@ -128,12 +129,6 @@ async function decideBeat(
 }
 
 export async function approveBeat(formData: FormData): Promise<ActionResult> {
-  return decideBeat(Number(formData.get("id")), "approved");
-}
-
-export async function forceBeat(formData: FormData): Promise<ActionResult> {
-  // Gated model: the plugin fires 'approved' only, so "push it now" = approve it
-  // (it fires on the very next poll). Setting 'fired' would just drop the beat.
   return decideBeat(Number(formData.get("id")), "approved");
 }
 

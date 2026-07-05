@@ -450,6 +450,29 @@ public final class SupabaseClient {
     public enum SolveOutcome { NEW, DUPLICATE, FAILED }
 
     /**
+     * Read-only check: does {@code playerId} already have a {@code solves} row for
+     * {@code puzzleKey}? Used by {@link com.observance.watcher.oracle.OracleResolver} to pick the
+     * correct candidate when a normalized answer is legitimately shared by more than one open
+     * puzzle (a sequenced pair — an already-solved upstream owner + its freshly-open downstream
+     * consumer), so a keeper resubmitting the same phrase at the new gate isn't shadowed by the
+     * old one forever. Fails OPEN (returns {@code false}) on any read error or when unconfigured —
+     * worst case a genuinely-solved candidate is retried through {@link #insertSolveIfNew}, which
+     * safely no-ops on the real conflict (returns {@code DUPLICATE}), so failing open here never
+     * grants a duplicate reward. MUST be called from an async thread (it blocks on I/O).
+     */
+    public boolean hasSolvedWorld(String puzzleKey, String playerId) {
+        if (!config.isConfigured() || puzzleKey == null || puzzleKey.isBlank()
+                || playerId == null || playerId.isBlank()) {
+            return false;
+        }
+        String q = "select=id&puzzle_key=eq." + enc(puzzleKey.trim())
+                + "&player_id=eq." + enc(playerId.trim()) + "&limit=1";
+        SupabaseResult<List<PlayerLookupRow>> r = doRead("solves", q, LIST_PLAYER_LOOKUP, "hasSolvedWorld");
+        if (!r.ok() || r.value() == null) return false;
+        return !r.value().isEmpty();
+    }
+
+    /**
      * Enqueue a new {@code beat_queue} beat (the oracle is the producer). Defaults status to
      * 'approved' when unset so player-earned unlocks fire on the next poll without a human gate.
      * On failure the insert is queued (bounded). Never throws.

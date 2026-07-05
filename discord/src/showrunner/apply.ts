@@ -57,11 +57,20 @@ export async function applyDecision(decision: Decision, snapshot: Snapshot): Pro
   }
 
   // --- drips: post (AUTO) or stage (CONFIRM); mark dripped + advance cadence either way ---
+  // Each mark is persisted IMMEDIATELY after its post succeeds (not batched into the trailing
+  // writeState at the end of this function) — 2026-07-05 audit: the old batched-write shape left a
+  // window where a process crash between a successful Discord post and the final write would lose
+  // the in-memory mark, so the NEXT tick would re-decide the same puzzle as un-dripped and post it
+  // again (a double-post). Migration 0011's lease lock only stops two overlapping cron PROCESSES —
+  // it does not help a single process dying mid-tick after posting. Writing right after each success
+  // closes that narrower window; the lock still guarantees no other process is writing this row
+  // concurrently, so these extra writes are safe, not racy.
   for (const d of decision.drips) {
     if (d.staged) {
       state.pending_drips.push({ puzzle_key: d.puzzleKey, movement: d.movement, staged_iso: nowIso });
       state.dripped_keys.push(d.puzzleKey);
       state.last_drip_at_ms = snapshot.nowMs;
+      await writeState(state, nowIso);
       staged += 1;
       await logEvent('info', 'showrunner',
         `staged drip (CONFIRM): puzzle=${d.puzzleKey} — awaiting dashboard approval`);
@@ -70,6 +79,7 @@ export async function applyDecision(decision: Decision, snapshot: Snapshot): Pro
       if (ok) {
         state.dripped_keys.push(d.puzzleKey);
         state.last_drip_at_ms = snapshot.nowMs;
+        await writeState(state, nowIso);
         dripped += 1;
       } else {
         await logEvent('warn', 'showrunner', `drip post FAILED (discord): puzzle=${d.puzzleKey}`);
@@ -91,6 +101,9 @@ export async function applyDecision(decision: Decision, snapshot: Snapshot): Pro
     const posted = await postToTheRecord(line);
     if (posted) {
       state.prologue_acked = true; // one-shot guard: never re-post the ack.
+      // Persist the mark immediately (same reasoning as the drip loop above) — a crash between this
+      // post succeeding and the trailing writeState would otherwise re-post the one-shot ack next tick.
+      await writeState(state, nowIso);
       await logEvent('info', 'showrunner',
         `prologue ack posted (${pg.reportVoiceKey ?? 'recordOpened'})`);
     } else {

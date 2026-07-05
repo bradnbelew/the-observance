@@ -211,6 +211,33 @@ client.on('error', (err) => {
 });
 
 /**
+ * PROCESS-LEVEL BACKSTOP (2026-07-05 audit). Every handler above is already individually
+ * try/catch-wrapped (the fault-isolation design intent), so these should never fire in normal
+ * operation — but without them, ANY future `void somePromise()` call site whose promise rejects
+ * outside its own try/catch, or a third-party library callback that throws synchronously, crashes
+ * the whole Node process with no log line (Node's default behavior), taking down every surface
+ * (whisper, link, answer, the-record scan, voice tier) at once with zero record of why.
+ *
+ * unhandledRejection is logged but does NOT exit — a stray rejection is a bug to fix, not
+ * necessarily evidence of a corrupted process, and the bot staying up matters more here than
+ * crash-purity. uncaughtException DOES exit (Node's own guidance: continuing after a truly
+ * uncaught synchronous exception risks an undefined process state) — logged first on a
+ * best-effort basis, with a hard timeout so a stalled log write can never turn a crash into a
+ * silent hang. A process supervisor (Railway/Render) restarts the process cleanly on exit.
+ */
+process.on('unhandledRejection', (reason) => {
+  const message = reason instanceof Error ? reason.message : String(reason);
+  console.error('[the-watcher] unhandled rejection (bot stays up):', reason);
+  void logEvent('error', SOURCE, `unhandled rejection: ${message}`);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[the-watcher] uncaught exception — exiting for a clean restart:', err);
+  void logEvent('error', SOURCE, `uncaught exception: ${err.message}`).finally(() => process.exit(1));
+  setTimeout(() => process.exit(1), 3000).unref();
+});
+
+/**
  * Answer a stumble in-character. Whether or not the interaction was already
  * deferred or replied to, the player only ever hears voice.quiet().
  */

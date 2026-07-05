@@ -637,11 +637,12 @@ public final class StructureTemplates {
         // (cx,cy,cz+1) — a small carved word right beside the amethyst floor-stud. Placed AFTER the plinth so
         // the backing exists. crib: the referent is the amethyst at (cx,cy-1,cz), directly under this sign.
         pen.runeCrib(cx, cy, cz, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN, "MOON");
-        // Separate WAXED label sign on the watch-post — add a solid backing block behind it so it cannot
-        // pop off (the 5x5 platform has no wall at cx-2,cz-3).
+        // RESHAPE R0: label CUT — "count the black moons — do not sleep" was a posted instruction for a
+        // mechanic that now speaks for itself: BlackMoonTollListener tolls the bell for real on the actual
+        // black moon (a live world-fact, not a prompt), and the uneven tally + amethyst moon already read
+        // as "something is being counted, unevenly." The backing block is kept so the watch-post's approach
+        // wall exists (do not remove the structural block).
         pen.set(cx - 2, cy + 1, cz - 3, Material.COBBLED_DEEPSLATE);
-        pen.labelWallSign(cx - 2, cy + 1, cz - 2, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
-                new String[]{"brann's watch", "count the black", "moons — do not", "sleep"});
         return answer;
     }
 
@@ -1541,7 +1542,14 @@ public final class StructureTemplates {
             }
         }
 
-        /** Put a written book on an existing lectern (flavour; not an answer surface). */
+        /** Put a written book on an existing lectern (flavour; not an answer surface). Title is clamped to
+         *  a realistic tooltip width. Authored pages here use explicit {@code \n} for intentional
+         *  line/paragraph breaks (Minecraft's book client honors a literal newline as a hard break — e.g.
+         *  Mara's book sets off "[in the margin, her hand:]" from the main text this way), so the raw text
+         *  is kept AS-authored whenever it fits the real visible-page budget. Only a page that actually
+         *  exceeds that budget falls back to {@link com.observance.watcher.util.TextFit#paginate}, which
+         *  would otherwise flatten those intentional breaks — this closes the real future-overflow risk
+         *  without altering any currently-authored book's layout. */
         void putBook(int x, int y, int z, String title, String page) {
             if (world == null) return;
             try {
@@ -1549,9 +1557,16 @@ public final class StructureTemplates {
                 if (!(b.getState() instanceof Lectern lectern)) return;
                 ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
                 if (book.getItemMeta() instanceof BookMeta meta) {
-                    meta.setTitle(title == null ? "—" : title);
+                    meta.setTitle(com.observance.watcher.util.TextFit.clampLine(title == null ? "—" : title, 32));
                     meta.setAuthor("the kept");
-                    meta.addPage(page == null ? "" : page);
+                    String body = page == null ? "" : page;
+                    if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
+                        meta.addPage(body);
+                    } else {
+                        for (String real : com.observance.watcher.util.TextFit.paginate(body)) {
+                            meta.addPage(real);
+                        }
+                    }
                     book.setItemMeta(meta);
                 }
                 lectern.getInventory().setItem(0, book);
@@ -1593,8 +1608,11 @@ public final class StructureTemplates {
 
         private static String clamp(String[] lines, int i) {
             if (lines == null || i >= lines.length || lines[i] == null) return "";
-            String s = lines[i];
-            return s.length() > 100 ? s.substring(0, 100) : s;
+            // Route through TextFit's real vanilla sign-line limit (15 chars, matching the sign-edit
+            // screen itself) instead of a stale local 100-char safety ceiling — every authored line here
+            // happens to fit under 15 today, but a future longer line would have silently overflowed
+            // the sign with no warning under the old ceiling.
+            return com.observance.watcher.util.TextFit.clampLine(lines[i], com.observance.watcher.util.TextFit.SIGN_LINE_CHARS);
         }
     }
 }

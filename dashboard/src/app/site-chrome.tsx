@@ -14,6 +14,11 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   if (pathname?.startsWith("/record")) {
     return <>{children}</>;
   }
+  // The Author link is spoiler-mode navigation. Hiding it while ON /status (the spoiler-free view
+  // Ethan actually plays with live) isn't a security boundary (the route stays login-gated regardless)
+  // — it's a small immersion papercut fix (2026-07-05 audit): don't put a "go see the spoilers" link in
+  // view while glancing at the nav during unspoiled play.
+  const onSpoilerFreePage = pathname?.startsWith("/status");
   return (
     <>
       <header className="border-b border-neutral-800">
@@ -25,9 +30,11 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
             <Link href="/status" className="text-neutral-400 hover:text-white">
               Status
             </Link>
-            <Link href="/author" className="text-neutral-400 hover:text-white">
-              Author
-            </Link>
+            {onSpoilerFreePage ? null : (
+              <Link href="/author" className="text-neutral-400 hover:text-white">
+                Author
+              </Link>
+            )}
           </div>
         </nav>
       </header>
