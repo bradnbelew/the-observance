@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { readLedger, type LedgerProjection } from "@/lib/record/ledger";
+import { readLedger, EMPTY as EMPTY_LEDGER, type LedgerProjection } from "@/lib/record/ledger";
 import { readIntegrityLog, type IntegrityWarning } from "@/lib/record/integrity";
 import { InscribeForm } from "./InscribeForm";
 
@@ -195,7 +195,15 @@ function IntegrityLog({ warnings }: { warnings: IntegrityWarning[] }) {
 
 export default async function RecordTerminalPage() {
   // Both reads run server-side (service role, server-only). The browser never sees the client or key.
-  const [ledger, warnings] = await Promise.all([readLedger(), readIntegrityLog()]);
+  // readLedger/readIntegrityLog are already fail-soft internally; this outer guard is a second net so a
+  // future refactor of either can never turn into an unstyled error page on a public in-fiction surface.
+  let ledger: LedgerProjection = EMPTY_LEDGER;
+  let warnings: IntegrityWarning[] = [];
+  try {
+    [ledger, warnings] = await Promise.all([readLedger(), readIntegrityLog()]);
+  } catch {
+    // fall through to the sealed baseline — same degradation the two lib functions already do internally.
+  }
 
   return (
     <main className="min-h-screen bg-[#070809] px-4 py-12 text-neutral-400">

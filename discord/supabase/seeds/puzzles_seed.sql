@@ -1189,7 +1189,7 @@ values
 -- chest (the offering Vaun never made). answer_kind 'object': a container-content check
 -- the plugin performs; the token below is the opaque flag the producer posts on the real
 -- deposit (never the typed fallback phrase, which would leak). main_beat: opens Vaun's
--- cache (his Caesar stone becomes readable behind it). NEEDS PLUGIN PRODUCER (container watch).
+-- cache (his Caesar stone becomes readable behind it). PRODUCER: HoardSortedListener.java.
 ( 'vaun-hoard-sorted',
   'give the first of the deep back',
   array[
@@ -1216,7 +1216,7 @@ values
 -- reproduce Vaun's "all taken, none given" tally. answer_kind 'code' (a comparator lock
 -- the plugin reads); opaque token posted on the cleared pattern. next_clue → stone-vaun
 -- (points at the now-readable Caesar stone). Gated on vaun_cache_open (the cache must be
--- open first). NEEDS PLUGIN PRODUCER (comparator/bookshelf lock). active=false → lit at
+-- open first). PRODUCER: BookshelfTallyListener.java. active=false → lit at
 -- vaun_cache_open by the metapuzzle activation lane.
 ( 'vaun-bookshelf-tally',
   'count the door open',
@@ -1237,7 +1237,7 @@ values
 -- mara-lectern-lock (§3.1) — five lecterns turned to the pages Mara annotated (a
 -- comparator page-lock). answer_kind 'code'; opaque token on the cleared combination.
 -- next_clue → mara-walk-the-map (the alcove says "walk the rite you have only read").
--- NEEDS PLUGIN PRODUCER (lectern-page comparator lock).
+-- PRODUCER: LecternLockListener.java.
 ( 'mara-lectern-lock',
   'the rite read and never walked',
   array[
@@ -1264,7 +1264,7 @@ values
 -- mara-walk-the-map (§3.2) — the group physically travels to the marker row and bows
 -- together with the active roster (quorum = effectiveQuorum). answer_kind 'behavior';
 -- opaque token on the detected group-bow. main_beat: the record writes Mara whole.
--- Gated on mara_alcove_open. NEEDS PLUGIN PRODUCER (group-bow at marker site + window).
+-- Gated on mara_alcove_open. PRODUCER: GroupWalkListener.java.
 -- active=false → lit at mara_alcove_open by the metapuzzle activation lane.
 ( 'mara-walk-the-map',
   'what she read you walked',
@@ -1334,8 +1334,8 @@ values
 -- sella-shore-memorial (§4.3) — a scatter of blocks that forced-perspective-resolves,
 -- from one anchor block, into Sella's bird-over-water glyph. answer_kind 'behavior':
 -- stand-at-anchor + look-down detection; opaque token on the detected vantage. lore: a
--- wordless Sella beat (only the bird). Gated on sella_overlay_read. NEEDS PLUGIN PRODUCER
--- (stand-at-anchor + gaze detection). active=false → lit at sella_overlay_read.
+-- wordless Sella beat (only the bird). Gated on sella_overlay_read.
+-- PRODUCER: ShoreMemorialListener.java. active=false → lit at sella_overlay_read.
 ( 'sella-shore-memorial',
   'legible only from above',
   array[
@@ -1357,7 +1357,7 @@ values
 -- orin-bow-fall-order (§5.1) — bow (crouch) at the six markers in FALL-ORDER (Vaun, Mara,
 -- Sella, Orin, Brann, Iss). answer_kind 'behavior'; opaque token on the ordered-bow
 -- sequence. next_clue → orin-threshold (his threshold-stone becomes readable from the
--- crouch). NEEDS PLUGIN PRODUCER (ordered crouch-at-marker sequence).
+-- crouch). PRODUCER: OrderedBowListener.java.
 ( 'orin-bow-fall-order',
   'bow at the markers in fall order',
   array[
@@ -1404,8 +1404,8 @@ values
 -- orin-frame-dials (§5.3) — six item-frame rotation dials pointed to match the markers'
 -- fall-order facings (a physical combination lock). answer_kind 'code'; opaque token on
 -- the cleared 6x8 rotation state. lore: Orin's private offering (the one custom he DID
--- keep). Gated on orin_bowed (you must have walked the markers first). NEEDS PLUGIN
--- PRODUCER (item-frame rotation lock). active=false → lit at orin_bowed.
+-- keep). Gated on orin_bowed (you must have walked the markers first).
+-- PRODUCER: FrameDialsListener.java. active=false → lit at orin_bowed.
 ( 'orin-frame-dials',
   'the marker sequence lock',
   array[
@@ -1428,7 +1428,7 @@ values
 -- in-game black moon; the rhythm spells the word Brann most needs said. answer_kind
 -- 'phrase' (temporal-gated): typed, but the plugin only accepts it once the toll has been
 -- heard on a black moon (a temporal flag the producer sets). next_clue → stone-brann.
--- Typed. NEEDS PLUGIN PRODUCER (black-moon temporal gate + toll).
+-- Typed. PRODUCER: BlackMoonTollListener.java.
 ( 'brann-black-moon-toll',
   'the toll that rings in the dark',
   array[
@@ -1446,8 +1446,8 @@ values
 
 -- brann-silence-corridor (§6.2) — a calibrated-sculk corridor passable only in silence
 -- (sneak; no vibration). answer_kind 'behavior'; opaque token on reaching the far door
--- quietly. next_clue → stone-brann (the far door opens onto his watch-record). NEEDS
--- PLUGIN PRODUCER (sculk/silence traversal detection; optional voice-chat tie-in later).
+-- quietly. next_clue → stone-brann (the far door opens onto his watch-record).
+-- PRODUCER: SilenceCorridorListener.java (optional voice-chat tie-in later, not built).
 ( 'brann-silence-corridor',
   'the corridor that hears you',
   array[

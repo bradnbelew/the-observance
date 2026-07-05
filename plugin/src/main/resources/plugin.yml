@@ -44,10 +44,18 @@ commands:
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
       /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)
+      /observance site set <keeperId> - bind the sign you're looking at as a keeper's live answer-sign site
+      /observance placeworld - survey/place every configured site that isn't placed yet
       /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
       /observance placeregion [spacing] - stamp the starter spine (rosetta + six keeper stones) here
       /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
+      /observance placeprologue - stage the cold-open anomaly in the group's base
+      /observance lens give [player] - give the Lens (second-sight) item
       /observance wren <spawn|despawn|reckoning> - place the companion NPC (Wren) here, or the three reckoning-choice markers
+      /observance townsfolk <spawn|despawn> [id] - place/remove the surface townsfolk NPCs
+      /observance needle [player] - give the recovery-needle first-find aid
+      /observance finale - place the three finale-rite markers at the Seventh's chamber
+      /observance reading - auto-carve the six Seventh-Reading keeper fragments
     aliases: [obs]
     permission: observance.admin
 

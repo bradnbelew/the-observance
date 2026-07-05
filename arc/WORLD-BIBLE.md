@@ -48,6 +48,17 @@ Six named keepers, a community with relationships, contradictions, and a **tonal
 journals deteriorate as they're taken — B5). They were ordinary: a leader, a lampwright, a child, a mason,
 a watchman, and the one who broke it.
 
+> **CANON-AUTHORITY NOTE (2026-07-05 audit).** The *Their way* / *Their fate* columns below for **Vaun**,
+> **Sella**, and **Orin** conflict with `arc/lore/canon-spine.md` §1 and `arc/bestiary-sealed.md` §2.1/§2.3
+> — which agree with each other in fine detail AND match the already-shipped, playtested puzzle content
+> (`discord/supabase/seeds/{puzzles,hints}_seed.sql`: Vaun is the hoarder who gave nothing back — "the
+> offering vaun never made"; Orin is the one who would not bow — "orin would not bow," "bow where he would
+> not"). This is a real, pre-existing fork (this doc supersedes only `_SEALED_ARC_BIBLE.md`; canon-spine.md
+> was reconciled separately, against `arg-deepening.md`) — the two were never cross-checked against each
+> other. **For Vaun/Sella/Orin's way/fate, `canon-spine.md` §1 is authoritative — use it, not this table,
+> when authoring new content for those three.** Mara/Brann/Iss below are NOT in conflict and remain valid
+> as written; the rest of this document is unaffected.
+
 | Name | Who they were | Their way | Their fate | Their voice decays from → to |
 |---|---|---|---|---|
 | **Vaun** | the founder / first delve-warden; led them down to "save" them; carries the guilt | the Bow (honor the markers/dead) | last to be taken; kept the others' lamps to the end | resolute → pleading → a name repeated |

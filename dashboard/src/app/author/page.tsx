@@ -213,7 +213,7 @@ export default async function AuthorPage() {
         <h1 className="font-mono text-2xl text-neutral-100">Author</h1>
         <p className="max-w-prose text-sm text-neutral-400">
           Full control surface. Everything here is spoiler-rich — the arc, the
-          beat queue, named dossiers, the bond ledger. Open — no login required.
+          beat queue, named dossiers, the bond ledger. Admin login required.
         </p>
       </header>
 

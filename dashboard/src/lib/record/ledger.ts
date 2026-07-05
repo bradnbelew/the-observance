@@ -57,7 +57,8 @@ export interface LedgerProjection {
   sealed: boolean;
 }
 
-const EMPTY: LedgerProjection = {
+/** The sealed baseline — exported so callers (e.g. the terminal page) have a safe fallback too. */
+export const EMPTY: LedgerProjection = {
   names: [],
   totalKept: 0,
   threads: [],

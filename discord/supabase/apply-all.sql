@@ -1484,6 +1484,32 @@ values
   ),
   3, false, null ),
 
+-- seventh-name — THE SEVENTH READING capstone (design/THE-SEVENTH-READING.md). The six keepers each
+-- hid one letter of the Seventh's name in their OWN technique (Vaun caesar, Mara book, Sella atbash,
+-- Orin substitution, Brann rail-fence at night, Iss the catch/acrostic); read in fall-order they spell
+-- AVERYN. SAYING the name is the RESTORE act AND the release trigger: set_flags sets seventh_name (a
+-- STRING flag the finale composer reads) + seventh_choice='restore' + seventh_named + record_released
+-- (the showrunner's release pass then composes the mask-off farewell + fires the_closing). NON-cipher
+-- node (the cipher is the distributed six-fragment reading, not a single carved card) → NON_CIPHER_KEYS.
+-- Gated {seventh_named, bowed_as_one} in metapuzzle_seed §2 — only sayable at the very end, after the
+-- Accepting. The capstone integrity guard (seventh-reading.selftest) proves the six fragments spell this.
+( 'seventh-name',
+  'say the name the six kept',
+  array[
+    'averyn'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleSeventhName',
+    'set_flags', jsonb_build_object(
+      'seventh_name', 'averyn',
+      'seventh_choice', 'restore',
+      'seventh_named', true,
+      'record_released', true
+    )
+  ),
+  5, true, null ),
+
 -- fork-light (Fork B, A11) — the First Light fork at the Undercroft. A M3 puzzle CHOICE
 -- (two plaintexts): draw the M5 token from the eternal flame (light_kept) or bank it
 -- (light_taken → the room stays dark for the arc). set_flags ONLY — colors the M5 close,
@@ -1894,7 +1920,7 @@ values
 -- chest (the offering Vaun never made). answer_kind 'object': a container-content check
 -- the plugin performs; the token below is the opaque flag the producer posts on the real
 -- deposit (never the typed fallback phrase, which would leak). main_beat: opens Vaun's
--- cache (his Caesar stone becomes readable behind it). NEEDS PLUGIN PRODUCER (container watch).
+-- cache (his Caesar stone becomes readable behind it). PRODUCER: HoardSortedListener.java.
 ( 'vaun-hoard-sorted',
   'give the first of the deep back',
   array[
@@ -1921,7 +1947,7 @@ values
 -- reproduce Vaun's "all taken, none given" tally. answer_kind 'code' (a comparator lock
 -- the plugin reads); opaque token posted on the cleared pattern. next_clue → stone-vaun
 -- (points at the now-readable Caesar stone). Gated on vaun_cache_open (the cache must be
--- open first). NEEDS PLUGIN PRODUCER (comparator/bookshelf lock). active=false → lit at
+-- open first). PRODUCER: BookshelfTallyListener.java. active=false → lit at
 -- vaun_cache_open by the metapuzzle activation lane.
 ( 'vaun-bookshelf-tally',
   'count the door open',
@@ -1942,7 +1968,7 @@ values
 -- mara-lectern-lock (§3.1) — five lecterns turned to the pages Mara annotated (a
 -- comparator page-lock). answer_kind 'code'; opaque token on the cleared combination.
 -- next_clue → mara-walk-the-map (the alcove says "walk the rite you have only read").
--- NEEDS PLUGIN PRODUCER (lectern-page comparator lock).
+-- PRODUCER: LecternLockListener.java.
 ( 'mara-lectern-lock',
   'the rite read and never walked',
   array[
@@ -1969,7 +1995,7 @@ values
 -- mara-walk-the-map (§3.2) — the group physically travels to the marker row and bows
 -- together with the active roster (quorum = effectiveQuorum). answer_kind 'behavior';
 -- opaque token on the detected group-bow. main_beat: the record writes Mara whole.
--- Gated on mara_alcove_open. NEEDS PLUGIN PRODUCER (group-bow at marker site + window).
+-- Gated on mara_alcove_open. PRODUCER: GroupWalkListener.java.
 -- active=false → lit at mara_alcove_open by the metapuzzle activation lane.
 ( 'mara-walk-the-map',
   'what she read you walked',
@@ -2039,8 +2065,8 @@ values
 -- sella-shore-memorial (§4.3) — a scatter of blocks that forced-perspective-resolves,
 -- from one anchor block, into Sella's bird-over-water glyph. answer_kind 'behavior':
 -- stand-at-anchor + look-down detection; opaque token on the detected vantage. lore: a
--- wordless Sella beat (only the bird). Gated on sella_overlay_read. NEEDS PLUGIN PRODUCER
--- (stand-at-anchor + gaze detection). active=false → lit at sella_overlay_read.
+-- wordless Sella beat (only the bird). Gated on sella_overlay_read.
+-- PRODUCER: ShoreMemorialListener.java. active=false → lit at sella_overlay_read.
 ( 'sella-shore-memorial',
   'legible only from above',
   array[
@@ -2062,7 +2088,7 @@ values
 -- orin-bow-fall-order (§5.1) — bow (crouch) at the six markers in FALL-ORDER (Vaun, Mara,
 -- Sella, Orin, Brann, Iss). answer_kind 'behavior'; opaque token on the ordered-bow
 -- sequence. next_clue → orin-threshold (his threshold-stone becomes readable from the
--- crouch). NEEDS PLUGIN PRODUCER (ordered crouch-at-marker sequence).
+-- crouch). PRODUCER: OrderedBowListener.java.
 ( 'orin-bow-fall-order',
   'bow at the markers in fall order',
   array[
@@ -2109,8 +2135,8 @@ values
 -- orin-frame-dials (§5.3) — six item-frame rotation dials pointed to match the markers'
 -- fall-order facings (a physical combination lock). answer_kind 'code'; opaque token on
 -- the cleared 6x8 rotation state. lore: Orin's private offering (the one custom he DID
--- keep). Gated on orin_bowed (you must have walked the markers first). NEEDS PLUGIN
--- PRODUCER (item-frame rotation lock). active=false → lit at orin_bowed.
+-- keep). Gated on orin_bowed (you must have walked the markers first).
+-- PRODUCER: FrameDialsListener.java. active=false → lit at orin_bowed.
 ( 'orin-frame-dials',
   'the marker sequence lock',
   array[
@@ -2133,7 +2159,7 @@ values
 -- in-game black moon; the rhythm spells the word Brann most needs said. answer_kind
 -- 'phrase' (temporal-gated): typed, but the plugin only accepts it once the toll has been
 -- heard on a black moon (a temporal flag the producer sets). next_clue → stone-brann.
--- Typed. NEEDS PLUGIN PRODUCER (black-moon temporal gate + toll).
+-- Typed. PRODUCER: BlackMoonTollListener.java.
 ( 'brann-black-moon-toll',
   'the toll that rings in the dark',
   array[
@@ -2151,8 +2177,8 @@ values
 
 -- brann-silence-corridor (§6.2) — a calibrated-sculk corridor passable only in silence
 -- (sneak; no vibration). answer_kind 'behavior'; opaque token on reaching the far door
--- quietly. next_clue → stone-brann (the far door opens onto his watch-record). NEEDS
--- PLUGIN PRODUCER (sculk/silence traversal detection; optional voice-chat tie-in later).
+-- quietly. next_clue → stone-brann (the far door opens onto his watch-record).
+-- PRODUCER: SilenceCorridorListener.java (optional voice-chat tie-in later, not built).
 ( 'brann-silence-corridor',
   'the corridor that hears you',
   array[
@@ -2311,12 +2337,13 @@ values
   'code', 4, false, null ),
 
 -- spine-spoken-name (§8.3) — once a player SAYS the catch's truth aloud in voice chat, the
--- Observer Engine (Whisper) hears it and the Watcher quotes it back carved on a sign.
+-- Observer Engine (Whisper) hears it and the Watcher quotes it back (posted to #the-record).
 -- answer_kind 'spoken'; opaque token the Observer transcript scan posts on the REAL spoken
 -- phrase (grounding discipline — never fabricated; degrades to silence if the voice layer is
 -- absent). lore (a bonus "it knows" beat) — GATES NOTHING. Gated on iss_caught (the truth
--- must be known first). NEEDS PLUGIN PRODUCER (Observer voice scan). active=false → lit at
--- iss_caught.
+-- must be known first). PRODUCER (W5): discord/src/voice/spoken-name.ts — the voice tier
+-- detects "the one who turned away" in a transcript and submits this token via the oracle.
+-- active=false here → lit at iss_caught (metapuzzle_seed flips active=true + adds requires_flags).
 ( 'spine-spoken-name',
   'the watcher quotes you back',
   array[
@@ -2464,10 +2491,12 @@ commit;
 -- ============================================================
 
 -- The Observance — thread_tags.sql
--- Tags each of the 24 seeded puzzle nodes to a reconstruction thread (which question its PAYOFF
--- advances) and, where the node teaches/hinges on a way, a teaches_custom (a canon CUSTOM_KEYS
--- the_-prefixed key). Content + rationale: design/content/thread-tagging.md (deliberately lopsided
--- by content, not a 1:1 pattern — the_bow is taught 5×, two ways teach 0 nodes here, 10 nodes NULL).
+-- Tags each seeded puzzle node (the original 24 + the WEB-realization/backlog rows + the 20 diverse-
+-- expansion rows = 44 total) to a reconstruction thread (which question its PAYOFF advances) and, where
+-- the node teaches/hinges on a way, a teaches_custom (a canon CUSTOM_KEYS the_-prefixed key). Content +
+-- rationale: design/content/thread-tagging.md (deliberately lopsided by content, not a 1:1 pattern —
+-- the_bow is taught most; ALL seven ways are now taught by ≥1 node, the_sacred_beast via Sella's
+-- deep-bird memorial in the expansion block below; many nodes teach no way, NULL).
 --
 -- Additive + idempotent (each update is keyed + sets absolute values). Apply AFTER 0005_threads.sql
 -- (adds the columns + seeds the five threads) and puzzles_seed.sql (inserts the 24 rows). Run as
@@ -2560,6 +2589,53 @@ update public.puzzles set thread_key = 'place',    teaches_custom = null        
 update public.puzzles set thread_key = 'surface',  teaches_custom = 'the_dark_hours'  where puzzle_key = 'stone-brann-cipher';
 update public.puzzles set thread_key = 'human',    teaches_custom = null              where puzzle_key = 'base-docket-reread-auto';
 
+-- ===========================================================================
+-- THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md) — tags for the 20 expansion rows
+-- (the second puzzles_seed.sql insert). These were previously UNTAGGED (thread_key /
+-- teaches_custom silently NULL), so their solves did not cluster in the record's
+-- reconstruction (integrity.ts reads puzzles.thread_key). Tagged by CONTENT (which
+-- question the payoff advances + which way, if any, the solve turns on), lopsided by
+-- design (thread-tagging.md) — not a 1:1 pattern. NOTE: sella-shore-memorial teaches
+-- `the_sacred_beast` (Sella's kept deep-bird) — the ONE way previously taught by no node,
+-- now learned here. Every thread_key ∈ THREADS (FK), every non-null teaches_custom ∈
+-- CUSTOM_KEYS (threadTagSelfTest).
+-- ===========================================================================
+
+-- Vaun — the offering he never made (object/code; his personal, human failure)
+update public.puzzles set thread_key = 'human',    teaches_custom = 'the_offering'    where puzzle_key = 'vaun-hoard-sorted';
+update public.puzzles set thread_key = 'human',    teaches_custom = 'the_offering'    where puzzle_key = 'vaun-bookshelf-tally';
+
+-- Mara — read and never walked (the walk she could not make = the group's bow)
+update public.puzzles set thread_key = 'happened', teaches_custom = null              where puzzle_key = 'mara-lectern-lock';
+update public.puzzles set thread_key = 'happened', teaches_custom = 'the_bow'         where puzzle_key = 'mara-walk-the-map';
+
+-- Sella — the drowned child (the far water, the shore she drew, the deep-bird she kept)
+update public.puzzles set thread_key = 'surface',  teaches_custom = null              where puzzle_key = 'sella-reflection-bearing';
+update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'sella-overlay-lake';
+update public.puzzles set thread_key = 'human',    teaches_custom = 'the_sacred_beast' where puzzle_key = 'sella-shore-memorial';
+
+-- Orin — the mason who would not bow (his identity; the one offering he kept in secret)
+update public.puzzles set thread_key = 'who',      teaches_custom = 'the_bow'         where puzzle_key = 'orin-bow-fall-order';
+update public.puzzles set thread_key = 'who',      teaches_custom = null              where puzzle_key = 'orin-banner-heraldry';
+update public.puzzles set thread_key = 'who',      teaches_custom = 'the_offering'    where puzzle_key = 'orin-frame-dials';
+
+-- Brann — the watchman on the black moon (his night watch; passing his walk in silence)
+update public.puzzles set thread_key = 'surface',  teaches_custom = 'the_dark_hours'  where puzzle_key = 'brann-black-moon-toll';
+update public.puzzles set thread_key = 'surface',  teaches_custom = 'the_unspoken'    where puzzle_key = 'brann-silence-corridor';
+
+-- Iss — the liar (the deduction that catches him; his doctored record of the Seventh)
+update public.puzzles set thread_key = 'happened', teaches_custom = null              where puzzle_key = 'iss-which-is-true';
+update public.puzzles set thread_key = 'who',      teaches_custom = null              where puzzle_key = 'iss-nbt-falsified-entry';
+update public.puzzles set thread_key = 'happened', teaches_custom = 'the_deep_line'   where puzzle_key = 'iss-bound-word-callback';
+
+-- Cross-keeper / spine (the record kept elsewhere · the co-op threshold · it heard you ·
+-- the six marks · the one cold hearth)
+update public.puzzles set thread_key = 'surface',  teaches_custom = null              where puzzle_key = 'spine-recovered-archive';
+update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'spine-threshold-vault';
+update public.puzzles set thread_key = 'human',    teaches_custom = null              where puzzle_key = 'spine-spoken-name';
+update public.puzzles set thread_key = 'who',      teaches_custom = null              where puzzle_key = 'spine-unkept-acrostic';
+update public.puzzles set thread_key = 'place',    teaches_custom = null              where puzzle_key = 'spine-cold-hearth-shadow';
+
 commit;
 
 
@@ -2612,7 +2688,7 @@ values
   -- ========================================================================
   ( 'who-deep-market', 'who', 'the deep market', 'cardWhoDeepMarket',
     'stone_of_reckoning', 'explore',
-    '{}', null, null, 10 ),
+    '{}', 'undercroft-descent', null, 10 ),
 
   ( 'who-vaun-counted', 'who', 'the founder who counted', 'cardWhoVaunCounted',
     'stone_vaun', 'explore',
@@ -2621,6 +2697,13 @@ values
   ( 'who-mara-read', 'who', 'the lampwright who read', 'cardWhoMaraRead',
     'stone_mara', 'explore',
     array['who-vaun-counted','who-sella-token'], 'stone-mara', null, 30 ),
+
+  -- Mara's second clue (W9 completeness): the rite she annotated but never walked — revealed when the
+  -- group WALKS it (mara-walk-the-map), which also gives that expansion puzzle its archive payoff. Gives
+  -- Mara the >=3-clue web the design bar asks for (who-mara-read + this + the marker she read).
+  ( 'happened-mara-unwalked', 'happened', 'the rite she read but never walked', 'cardHappenedMaraUnwalked',
+    'stone_mara', 'explore',
+    array['who-mara-read'], 'mara-walk-the-map', null, 35 ),
 
   ( 'who-sella-token', 'who', 'the under-warden', 'cardWhoSellaToken',
     'the_far_water', 'explore',
@@ -2643,7 +2726,7 @@ values
   -- ========================================================================
   ( 'place-came-down', 'place', 'we came down', 'cardPlaceCameDown',
     'the_threshold', 'explore',
-    array['place-deeper-wrong'], null, null, 10 ),
+    array['place-deeper-wrong'], 'rosetta-ring', null, 10 ),
 
   ( 'place-seven-ways', 'place', 'the order is seven', 'cardPlaceSevenWays',
     'rune_rosetta', 'explore',
@@ -2659,7 +2742,7 @@ values
 
   ( 'place-cairn', 'place', 'the offering-cairn', 'cardPlaceCairn',
     'offering_cairn_01', 'explore',
-    array['who-vaun-counted','human-offering-ledger'], null, null, 50 ),
+    array['who-vaun-counted','human-offering-ledger'], 'stone-vaun', null, 50 ),
 
   ( 'place-undercroft-sealed', 'place', 'the sealed undercroft', 'cardPlaceUndercroftSealed',
     'unbroken_light', 'explore',
@@ -2719,15 +2802,15 @@ values
   -- ← CONTRADICTED on arrival at place-deep-line (Aro's lie; flips rumor → contradicted)
   ( 'surface-aro-lie', 'surface', 'step right over it', 'cardSurfaceAroLie',
     'first_report_lectern_01', 'rumor',
-    array['place-deep-line','surface-pell-truth'], null, null, 10 ),
+    array['place-deep-line','surface-pell-truth'], 'm1-record-opens', null, 10 ),
 
   ( 'surface-wenna-folk', 'surface', 'seven somethings', 'cardSurfaceWennaFolk',
     'first_report_lectern_01', 'rumor',
-    array['place-seven-ways','surface-seventh-marker'], null, null, 20 ),
+    array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 20 ),
 
   ( 'surface-pell-truth', 'surface', 'it does not chase', 'cardSurfacePellTruth',
     'first_report_lectern_01', 'explore',
-    array['surface-watcher-counts','surface-aro-lie'], null, null, 30 ),
+    array['surface-watcher-counts','surface-aro-lie'], 'm1-named-habit', null, 30 ),
 
   ( 'surface-iss-was-right', 'surface', 'right about the sky', 'cardSurfaceIssWasRight',
     'the_threshold', 'explore',
@@ -2767,11 +2850,11 @@ values
 
   ( 'human-ration-redivided', 'human', 'a head off the roll, still hungry', 'cardHumanRation',
     'stone_of_reckoning', 'explore',
-    array['human-names-over-heads','who-deep-market'], null, null, 30 ),
+    array['human-names-over-heads','who-deep-market'], 'undercroft-fog', null, 30 ),
 
   ( 'human-hand-as-lamp', 'human', 'entry five', 'cardHumanHandAsLamp',
     'kept_light_home_01', 'explore',
-    array['human-lamp-roll-counts-down','human-they-were-kept'], null, null, 40 ),
+    array['human-lamp-roll-counts-down','human-they-were-kept'], 'undercroft-fog', null, 40 ),
 
   ( 'human-names-over-heads', 'human', 'nine heads, two hundred fourteen names', 'cardHumanNamesOverHeads',
     'stone_of_reckoning', 'explore',
@@ -2798,15 +2881,15 @@ values
   -- ========================================================================
   ( 'gather-count-who', 'who', 'named in the same book', 'cardGatherCountWho',
     'unbroken_light', 'verified',
-    '{}', null, null, 100 ),
+    '{}', null, 'flag:count_done', 100 ),
 
   ( 'gather-count-happened', 'happened', 'the count predates you', 'cardGatherCountHappened',
     'unbroken_light', 'verified',
-    '{}', null, null, 100 ),
+    '{}', null, 'flag:count_done', 100 ),
 
   ( 'gather-unlight-surface', 'surface', 'the same hands, the last winter', 'cardGatherUnlightSurface',
     'unbroken_light', 'verified',
-    '{}', null, null, 100 ),
+    '{}', null, 'flag:unlight_done', 100 ),
 
   ( 'gather-dob-human', 'human', 'a witness, not a monster', 'cardGatherDobHuman',
     'unbroken_light', 'verified',
@@ -2869,7 +2952,25 @@ values
   -- hearth (the dead-shrine surface — where a warm liar's proof is dropped).
   ( 'kept-close', 'human', 'kept close', 'cardKeptClose',
     'the_cold_hearth', 'verified',
-    array['surface-watcher-counts','human-the-record-opens'], null, 'companion:revealed', 130 )
+    array['surface-watcher-counts','human-the-record-opens'], null, 'companion:revealed', 130 ),
+
+  -- ===== THE COUNT OF THE OPENINGS (W3c — six-were-kept-before-you.md) =====
+  -- The 6-prior-groups slow-burn, surfaced as three human-thread cards that ACCRETE across late solves:
+  -- the count that will not come out even (Brann, the counter) → the six openings + the struck seventh
+  -- (post-catch, once the record is understood to keep people) → "you are the next" (when the Seventh is
+  -- named). Each rhymes into the human spine (the open column that fills, the surplus that is kept) and,
+  -- via the struck seventh, cross-references Sella's uncounted seventh. Spoiler-safe: surface facts +
+  -- the induction frame the human thread already approaches — no fate, no key, no name, revealed only on
+  -- earned late solves. Bodies are Watcher-register (voice.archive.ts cardHumanCount* / cardHumanYouAreNext).
+  ( 'human-count-uneven', 'human', 'the count does not come out even', 'cardHumanCountUneven',
+    'first_report_lectern_01', 'explore',
+    array['human-names-over-heads','human-the-record-opens'], 'stone-brann', null, 200 ),
+  ( 'human-six-openings', 'human', 'six openings, one struck', 'cardHumanSixOpenings',
+    'first_report_lectern_01', 'explore',
+    array['human-count-uneven','human-the-record-opens','surface-seventh-marker'], 'no-wall-catch', null, 210 ),
+  ( 'human-you-are-the-next', 'human', 'you are the next', 'cardHumanYouAreNext',
+    'first_report_lectern_01', 'explore',
+    array['human-six-openings','human-the-record-opens','human-they-were-kept'], 'seventh-unwriting', null, 220 )
 
 on conflict (card_key) do nothing;
 
@@ -3100,6 +3201,11 @@ insert into public.hints (puzzle_key, tier, body) values
 -- seventh-choice — restore or erase (detected in-world; the whisper points at the two acts).
 ('seventh-choice', 2, 'this one is not read. it is chosen. at the unwriting there are two things a hand can do to the seal, and only one can be done.'),
 ('seventh-choice', 3, 'lay the deposit back and the seventh is restored; strike the seal and it is erased for good. there is no word to type — do the one your hands will stand behind. the record keeps whichever you choose.'),
+
+-- seventh-name — THE SEVENTH READING capstone (the six keepers each kept a letter of the name, in their
+-- own tongue; read in the order they fell). The whisper points at the READING, never the name itself.
+('seventh-name', 2, 'the seal is a name, and no one hand holds it. the six kept a letter of it each, and each could keep it only the one way they knew. go back to them. read each stone the way that stone taught you — vaun''s shift, mara''s shelf, sella''s water, orin''s marks, brann''s rails after dark. the first mark of what each left you is the letter they kept.'),
+('seventh-name', 3, 'read the six in the order they fell — vaun, mara, sella, orin, brann, iss — and take the first letter each gives. five will give you their letter true. the sixth is iss, and iss lies once more: read his straight and he tells you the last letter warm and wrong; read the first mark of each of his lines down, the way you read his wall, and he gives you the true one. say the six together, and the seal gives.'),
 
 -- fork-light — draw the kept light up the stair, or bank it and leave the room dark.
 ('fork-light', 2, 'the eternal flame can be carried, or left. neither is safe and neither is wrong. the leaf you take is permanent — the room does not relight.'),
@@ -3410,6 +3516,11 @@ begin
       where puzzle_key in ('seventh-unwriting', 'seventh-cause');
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
       where puzzle_key = 'seventh-choice';
+    -- seventh-name (THE SEVENTH READING capstone) — the name is only SAYABLE at the very end: after the
+    -- Seventh is named (the deep reached, seventh_named) AND the Accepting is made (bowed_as_one). Saying
+    -- it sets record_released → the release fires. Gated here so it never opens before the finale.
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true, 'bowed_as_one', true)
+      where puzzle_key = 'seventh-name';
 
     -- P1-C3 COLLISION FIX (audit): the phrase `the last marker is not the last` is an accepted
     -- answer on BOTH stone-sella (ungated active=true) and seventh-shrine. Both were open at once,
@@ -3688,13 +3799,16 @@ values
   ],
   'lore',
   jsonb_build_object(
-    'voice_key', 'nether.forgeArrive',
+    -- oracleLore speaks voice_args.fragment verbatim (the arrival text below). Was 'nether.forgeArrive'
+    -- (a phantom key the resolver doesn't map — it fell through to the lore fallback and worked anyway;
+    -- made explicit so a future outcome_type change can't silently drop the authored arrival line).
+    'voice_key', 'oracleLore',
     'set_flags', jsonb_build_object('nether_forge_found', true, 'whisper_budget_earned', true),
     'voice_args', jsonb_build_object(
       'fragment', 'a keeper came down to keep the fire and was kept by it. you do not make the fire. you do not own it. you carry it, and you do not let it die, and that is the whole of it. the kept light upstairs was a coal carried up from here.'
     )
   ),
-  3, false, null ),
+  3, true, null ),
 
 -- ───────────────────────────────────────────────────────────────────────────
 -- THE END LANE — the Seventh shrine / the one place outside the record (FACT 10b / D11)
@@ -3719,13 +3833,14 @@ values
   ],
   'lore',
   jsonb_build_object(
-    'voice_key', 'end.shrineArrive',
+    -- oracleLore speaks voice_args.fragment verbatim (was 'end.shrineArrive', a phantom key; see nether-forge).
+    'voice_key', 'oracleLore',
     'set_flags', jsonb_build_object('seventh_seen_out', true),
     'voice_args', jsonb_build_object(
       'fragment', 'the seventh kept every way and was not kept, and went out past the door that is not a threshold, to the one place the record does not reach, and cut the name themselves. exile is the other side of keeping. you are not cast out. you only came to look.'
     )
   ),
-  4, false, null )
+  4, true, null )
 
 on conflict (puzzle_key) do update set
   title            = excluded.title,

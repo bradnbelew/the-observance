@@ -1,5 +1,10 @@
 # ⚠️ SEALED — STORY SPOILERS — DO NOT READ IF YOU WANT TO PLAY UNSPOILED ⚠️
 
+> **SUPERSEDED (2026-07-05 audit note).** `arc/WORLD-BIBLE.md` explicitly supersedes this file (Setting C,
+> the Deep Hold rewrite), and `arc/lore/canon-spine.md` is the binding internal canon for keeper
+> names/voices/fates going forward. Kept here for history only — do not treat anything below as current
+> canon if it conflicts with either of those two.
+
 This is the authored arc for *The Observance*. Ethan intends to play as a participant.
 If that's you: **close this file.** The system is built so you never need to open it —
 the showrunner and the plugin read it, you don't.

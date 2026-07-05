@@ -33,6 +33,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -600,6 +601,8 @@ public final class SupabaseClient {
         synchronized (queueLock) {
             while (offlineQueue.size() >= config.offlineQueueMax() && !offlineQueue.isEmpty()) {
                 offlineQueue.pollFirst(); // drop oldest to bound memory
+                logFailure(description, "offline queue full (max " + config.offlineQueueMax()
+                        + ") — dropped the oldest queued write, data lost");
             }
             if (config.offlineQueueMax() > 0) {
                 offlineQueue.addLast(new QueuedWrite(description, attempt));
@@ -647,12 +650,14 @@ public final class SupabaseClient {
                     parsed = gson.fromJson(resp.body(), listType);
                 } catch (JsonSyntaxException jse) {
                     markFailure();
+                    logFailure(ctx, "parse-error (http " + code + ")");
                     return SupabaseResult.<List<T>>fail(code, "parse-error");
                 }
                 markSuccess();
                 return SupabaseResult.ok(code, parsed == null ? Collections.<T>emptyList() : parsed);
             }
             markFailure();
+            logFailure(ctx, "http-" + code);
             return SupabaseResult.<List<T>>fail(code, "http-" + code);
         }, SupabaseResult.fail(0, "exhausted"));
     }
@@ -681,6 +686,7 @@ public final class SupabaseClient {
                 return SupabaseResult.<Void>ok(code, null);
             }
             markFailure();
+            logFailure(ctx, "http-" + code);
             return SupabaseResult.<Void>fail(code, "http-" + code);
         }, SupabaseResult.fail(0, "exhausted"));
     }
@@ -715,12 +721,24 @@ public final class SupabaseClient {
                 if (i < attempts - 1) {
                     sleepBackoff(i);
                 } else {
-                    // Last attempt failed with an exception.
+                    // Last attempt failed with an exception — this call is truly lost; report it.
+                    logFailure(ctx, "exhausted after " + attempts + " attempt(s): "
+                            + t.getClass().getSimpleName()
+                            + (t.getMessage() == null ? "" : (": " + t.getMessage())));
                     return fallback;
                 }
             }
         }
         return fallback;
+    }
+
+    /** The one place every Supabase failure funnels through — so a bad write is never silent. */
+    private void logFailure(String ctx, String detail) {
+        try {
+            logger.log(Level.WARNING, "[supabase] " + ctx + ": " + detail);
+        } catch (Throwable ignored) {
+            // Logging must never itself throw into a caller that's already handling a failure.
+        }
     }
 
     @FunctionalInterface

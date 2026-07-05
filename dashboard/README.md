@@ -96,21 +96,30 @@ key). `.env.example` documents the same four.
 
 ## Applying the database migrations
 
-The schema lives in `supabase/migrations/`:
+The schema lives in `supabase/migrations/`, applied in filename order (all idempotent — safe to re-run):
 
 - `0001_init.sql` — tables, indexes, `updated_at` triggers, **RLS on every table**, the
   `authenticated` full-access policies, the grant lock-down, and the three spoiler-free
   views (`v_health`, `v_heatmap`, `v_compliance_counts`) granted to `anon`.
 - `0002_seed.sql` — idempotent seed of the control rows the app and plugin depend on (the
   `settings` keys and the single `arc_state` row). Safe to re-run.
+- `0003_lockdown.sql` — SECURITY corrective: closes the `authenticated_all` policy hole 0001 left open
+  (any signed-in user, not just `ADMIN_EMAILS`, could read/write the spoiler tables directly).
+- `0004_v_record.sql` — creates `v_record`, the public Record's one read surface (`/record/[slug]`).
+- `0005_reconcile_tracker_views.sql` — fixes plugin↔dashboard drift for dossiers/customs (Author page).
+- `0006_v_record_theories.sql` — extends `v_record` so a keeper's fate un-redacts by assembled THEORY,
+  not just stone-count.
+- `0007_v_archive.sql` — creates `v_archive`, the Recovery Archive's public read surface (`/record/archive`).
+- `0008_v_archive_flag_gate.sql` — generalizes `v_archive`'s reveal rule with a `flag:<name>` gate.
+- `0009_beat_queue_failed_status.sql` — allows the terminal `'failed'` beat status (cross-surface fix;
+  the discord lineage already had it, this lineage's `beat_queue` table didn't).
 
 Apply them **in order** to Braden's project, using either path:
 
 ### Option A — Supabase SQL editor (no tooling)
 
-1. Open Braden's project → **SQL Editor**.
-2. Paste the full contents of `supabase/migrations/0001_init.sql`, run it.
-3. Paste the full contents of `supabase/migrations/0002_seed.sql`, run it.
+Open Braden's project → **SQL Editor** → paste and run the full contents of each file above, in order
+(`0001` through `0009`).
 
 ### Option B — Supabase CLI
 
@@ -161,6 +170,10 @@ src/
     auth/
       login/                Magic-link sign-in (page + action)
       callback/route.ts     PKCE code -> session, redirect to /author
+    record/                 PUBLIC in-fiction surfaces (no admin gate; see lib/record/)
+      [slug]/page.tsx       The Record — gated un-redaction by stones-read / theory
+      archive/page.tsx      The Recovery Archive — thread cards, revealed by flag/solve
+      terminal/             The recovered-archive terminal (ledger + integrity log + inscribe form)
   components/
     status/                 HealthPanel, Heatmap, ComplianceCounts (view rows only)
     author/                 ArcControl, BeatQueue, WhisperBudgets, BondLedger,
@@ -169,8 +182,11 @@ src/
     auth.ts                 getUser() + isAdmin() (ADMIN_EMAILS allowlist)
     database.types.ts       Single source of truth for row/view types
     supabase/{server,client,admin}.ts
+    record/                 Public-surface read/write logic (service-role client; anon has zero
+                            grants on these tables — see oracle-client.ts's header comment):
+                            gate.ts, ledger.ts, integrity.ts, normalize.ts, oracle-client.ts, resolve.ts
   middleware.ts             Refreshes the Supabase session on every request
-supabase/migrations/        0001_init.sql, 0002_seed.sql
+supabase/migrations/        0001 through 0009 — see "Applying the database migrations" above
 ```
 
 ## Scripts
