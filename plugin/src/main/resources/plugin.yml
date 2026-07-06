@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.17'
+version: '0.3.18'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -41,7 +41,7 @@ commands:
     description: Admin/status command for The Observance plugin.
     usage: |
       /observance status        - show plugin health (db, queue, last beat, reckoning state)
-      /observance director [spacing] - one-command compact rehearsal: place, repair, coverage, and guided start
+      /observance director [world|lab] [spacing] - one-command rehearsal: place, repair, coverage, and guided start
       /observance audit         - scan placed sites for missing core anchors, empty lecterns, and obvious hardware problems
       /observance repair        - repair common placed-site failures found by audit
       /observance coverage      - report launch-lane coverage: main spine, side/lore, dimensions, scare, and ops

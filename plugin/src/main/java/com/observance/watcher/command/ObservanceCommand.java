@@ -105,7 +105,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1160,19 +1160,36 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
-     * {@code /observance director [spacing]} - one-command compact rehearsal startup. This intentionally
-     * mutates the current world like {@code prepworld}: use it in a rehearsal world or a designated test area.
+     * {@code /observance director [world|lab] [spacing]} - one-command rehearsal startup. World mode
+     * builds a compact playable course; lab mode builds the full floating proof surface.
      */
     private void handleDirectorStart(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Observance: /observance director must be run by a player (needs a location).");
             return;
         }
-        String spacing = args.length >= 2 ? args[1] : "18";
+        String mode = "world";
+        String spacing = "18";
+        if (args.length >= 2 && !args[1].isBlank()) {
+            String raw = args[1].toLowerCase(Locale.ROOT).trim();
+            if (raw.equals("lab") || raw.equals("full") || raw.equals("fullrun") || raw.equals("float")) {
+                mode = "lab";
+                if (args.length >= 3 && !args[2].isBlank()) spacing = args[2];
+            } else if (raw.equals("world") || raw.equals("compact") || raw.equals("prep")) {
+                mode = "world";
+                if (args.length >= 3 && !args[2].isBlank()) spacing = args[2];
+            } else {
+                spacing = args[1];
+            }
+        }
         sender.sendMessage("== Observance director startup ==");
-        sender.sendMessage("This runs compact placement, repair, coverage, and starts the guided rehearsal.");
+        sender.sendMessage("Mode: " + mode + ". This runs placement, repair, coverage, and starts the guided rehearsal.");
 
-        handlePrepWorld(sender, new String[]{"prepworld", spacing});
+        if (mode.equals("lab")) {
+            handleFullRun(sender, new String[]{"fullrun", spacing});
+        } else {
+            handlePrepWorld(sender, new String[]{"prepworld", spacing});
+        }
         sender.sendMessage("== Director check 1/4: first audit ==");
         handleAudit(sender);
         sender.sendMessage("== Director check 2/4: repair pass ==");
@@ -3284,6 +3301,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
+            for (String s : new String[]{"world", "lab"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {
             for (String s : visitSuggestions(args[1])) out.add(s);

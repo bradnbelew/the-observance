@@ -36,10 +36,10 @@ Launch placement can still use `site set` and `placeworld`, but the project must
 For compact real-world staging, use:
 
 ```mcfunction
-/obs director
+/obs director world
 ```
 
-This is now the fastest confidence path: compact placement, first audit, repair, second audit, coverage, and guided rehearsal start in one command.
+This is now the fastest confidence path: compact placement, first audit, repair, second audit, coverage, and guided rehearsal start in one command. For the floating proof surface instead, use `/obs director lab`.
 
 For focused staging/debugging, use the same pieces manually:
 

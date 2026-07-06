@@ -78,7 +78,8 @@ export function DirectorRunPanel({
             Minecraft
           </p>
           <CommandLine>/obs status</CommandLine>
-          <CommandLine>/obs director</CommandLine>
+          <CommandLine>/obs director world</CommandLine>
+          <CommandLine>/obs director lab</CommandLine>
           <CommandLine>/obs prepworld</CommandLine>
           <CommandLine>/obs coverage</CommandLine>
           <CommandLine>/obs rehearse start</CommandLine>
