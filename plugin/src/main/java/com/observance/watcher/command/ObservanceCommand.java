@@ -87,6 +87,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placelab" -> handlePlaceLab(sender, args);
             case "fullrun" -> handleFullRun(sender, args);
             case "prepworld" -> handlePrepWorld(sender, args);
+            case "runbook" -> handleRunbook(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
@@ -96,7 +97,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | runbook [setup|spine|side|scare|ops] | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1072,7 +1073,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  2) Solve one fixture from each family: bow, chest, bookshelf, lecterns, frames, pool, corridor, vault.");
         sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
         sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
-        sender.sendMessage("  5) Keep this world as rehearsal only; do real launch placement after the pass.");
+        sender.sendMessage("  5) Use /obs runbook spine for the in-world cheat sheet; keep this world as rehearsal only.");
     }
 
     /**
@@ -1147,7 +1148,83 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + "/5 Mara lecterns.");
         sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
-        sender.sendMessage("  Run /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
+        sender.sendMessage("  Run /obs runbook spine, then /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
+    }
+
+    /**
+     * {@code /observance runbook [page]} - the in-world director cheat sheet. It keeps the launch
+     * rehearsal order inside the jar so a tester does not have to alt-tab through design docs during a run.
+     */
+    private void handleRunbook(CommandSender sender, String[] args) {
+        String page = args.length > 1 ? args[1].toLowerCase(Locale.ROOT).trim() : "all";
+        if (page.isBlank()) page = "all";
+        sender.sendMessage("== Observance director runbook ==");
+        switch (page) {
+            case "setup" -> sendSetupRunbook(sender);
+            case "spine" -> sendSpineRunbook(sender);
+            case "side", "lore" -> sendSideRunbook(sender);
+            case "scare", "watcher" -> sendScareRunbook(sender);
+            case "ops", "dashboard" -> sendOpsRunbook(sender);
+            case "all" -> {
+                sendSetupRunbook(sender);
+                sendSpineRunbook(sender);
+                sendSideRunbook(sender);
+                sendScareRunbook(sender);
+                sendOpsRunbook(sender);
+                sender.sendMessage("Pages: /obs runbook setup | spine | side | scare | ops");
+            }
+            default -> {
+                sender.sendMessage("Usage: /obs runbook [setup|spine|side|scare|ops]");
+                sender.sendMessage("Tip: run /obs runbook spine during the playable pass.");
+            }
+        }
+    }
+
+    private void sendSetupRunbook(CommandSender sender) {
+        sender.sendMessage("[setup]");
+        sender.sendMessage("  1) Test lab: /obs fullrun  OR compact world: /obs prepworld");
+        sender.sendMessage("  2) Verify hardware: /obs audit -> /obs repair -> /obs audit");
+        sender.sendMessage("  3) Give tools if needed: /obs lens give <player> and /obs needle <player>");
+        sender.sendMessage("  4) Keep Watcher manual/muted with /obs sleep on; rearm with /obs sleep off.");
+    }
+
+    private void sendSpineRunbook(CommandSender sender) {
+        sender.sendMessage("[main spine]");
+        sender.sendMessage("  Prologue: open/read first lectern; confirm the first marker exists.");
+        sender.sendMessage("  Rosetta/keepers: inspect signs/lecterns; edit blank answer signs to submit tests.");
+        sender.sendMessage("  Vaun: use hoard chest and chiseled bookshelf fixtures.");
+        sender.sendMessage("  Mara: open all five page-lock lecterns; books must be written, not blank.");
+        sender.sendMessage("  Sella: test reflection/pool fixture and Lens visibility.");
+        sender.sendMessage("  Orin: test bow marker/frame-dial style fixtures.");
+        sender.sendMessage("  Brann/Iss: inspect kept-light/cold-hearth sites and deep markers.");
+        sender.sendMessage("  Wren: /obs wren spawn, right-click him, then /obs flag set companion_revealed for reckoning tests.");
+        sender.sendMessage("  Finale: touch reckoning/finale markers once; use /obs flag list to confirm branches.");
+    }
+
+    private void sendSideRunbook(CommandSender sender) {
+        sender.sendMessage("[side/lore lanes]");
+        sender.sendMessage("  Townsfolk: /obs townsfolk spawn, then right-click aro, wenna, coll, dob, old-pell.");
+        sender.sendMessage("  Keepers: /obs keeper spawn <node>, right-click, then despawn when done.");
+        sender.sendMessage("  Nether lane: stand in Nether, /obs site set nether_forge, then /obs placeworld.");
+        sender.sendMessage("  End lane: stand in End, /obs site set end_seventh_shrine, then /obs placeworld.");
+        sender.sendMessage("  Jump gates safely with /obs flag set <key>; inspect with /obs flag list.");
+        sender.sendMessage("  After any placement lane: /obs audit, /obs repair, /obs audit.");
+    }
+
+    private void sendScareRunbook(CommandSender sender) {
+        sender.sendMessage("[watcher scare pass]");
+        sender.sendMessage("  Manual presets: /obs test stalker, /obs test hunt, /obs test elsewhere.");
+        sender.sendMessage("  Focus checks: /obs test darkness, /obs test sound, /obs test mob, /obs test particles.");
+        sender.sendMessage("  Live ambience should now include close cave/heartbeat sounds, ash, darkness, dimming, wrong sky, and rare humanoid figures.");
+        sender.sendMessage("  If scare testing gets noisy: /obs sleep on. When ready again: /obs sleep off.");
+    }
+
+    private void sendOpsRunbook(CommandSender sender) {
+        sender.sendMessage("[ops/dashboard]");
+        sender.sendMessage("  Dashboard shows mode, pending approvals, armed beats, and failed beats.");
+        sender.sendMessage("  Pending approvals live in the beat queue; failed beats mean inspect dashboard/console.");
+        sender.sendMessage("  Vercel dashboard does not fix blocks. Empty lecterns are fixed by jar + /obs repair.");
+        sender.sendMessage("  Production placement: survey with /obs site set <siteId>, then /obs placeworld.");
     }
 
     private void placeDirectPrologue(Location origin) {
@@ -2766,8 +2843,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "audit", "repair", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "repair", "runbook", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("runbook")) {
+            for (String s : new String[]{"setup", "spine", "side", "scare", "ops"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
             if ("set".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("set");

@@ -46,9 +46,12 @@ Then use:
 ```mcfunction
 /obs audit
 /obs repair
+/obs runbook spine
 ```
 
 `audit` checks the placed site registry for the boring failures that ruin a run: unplaced core sites, unloaded worlds, missing books, empty lecterns, absent chest/bookshelf hardware, and air at core anchors. `repair` fixes the common placed-site failures: missing lectern books, answer signs, Vaun shelf/chest hardware, blank first marker, and blank code-built set-piece anchors. After repair, run `audit` again.
+
+`runbook` is the in-world director cheat sheet. Use `/obs runbook setup`, `/obs runbook spine`, `/obs runbook side`, `/obs runbook scare`, or `/obs runbook ops` while testing so the next interaction and the relevant skip commands are visible inside Minecraft instead of buried in docs.
 
 Real launch placement should become a curation pass:
 
@@ -113,6 +116,6 @@ A story lane is ready only when all three are true:
 
 - it appears in `/obs fullrun`,
 - it has a clear solve action,
-- it has a single-line operator test instruction.
+- it has a single-line operator test instruction in `/obs runbook`.
 
 If any of those are false, the lane is not cut forever, but it is not part of the launch confidence pass.
