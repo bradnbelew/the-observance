@@ -80,6 +80,7 @@ export function DirectorRunPanel({
           <CommandLine>/obs status</CommandLine>
           <CommandLine>/obs prepworld</CommandLine>
           <CommandLine>/obs audit</CommandLine>
+          <CommandLine>/obs repair</CommandLine>
           <CommandLine>/obs test hunt</CommandLine>
         </div>
       </div>

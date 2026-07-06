@@ -60,6 +60,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         switch (sub) {
             case "status" -> sendStatus(sender);
             case "audit" -> handleAudit(sender);
+            case "repair" -> handleRepair(sender);
             case "reload" -> {
                 boolean ok = plugin.reloadAll();
                 sender.sendMessage(ok ? "Observance: config + sites reloaded."
@@ -95,7 +96,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -2520,6 +2521,83 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(" Repair: /obs prepworld for a compact playable pass, or /obs site set <id> + /obs placeworld for curated placement.");
     }
 
+    private void handleRepair(CommandSender sender) {
+        if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
+            sender.sendMessage("Observance repair: no sites loaded. Run /obs reload or check sites.yml.");
+            return;
+        }
+        int repaired = 0;
+        int skipped = 0;
+        List<String> notes = new ArrayList<>();
+
+        for (Site site : plugin.sites().all()) {
+            if (site == null || !site.enabled() || !site.isPlaced()) {
+                skipped++;
+                continue;
+            }
+            Location loc = site.location();
+            if (loc == null || loc.getWorld() == null) {
+                skipped++;
+                continue;
+            }
+            boolean changed = repairPlacedSite(site, loc);
+            if (changed) {
+                repaired++;
+                addAuditIssue(notes, site.id() + " repaired");
+            }
+        }
+
+        sender.sendMessage("== Observance repair ==");
+        sender.sendMessage(" repaired: " + repaired);
+        sender.sendMessage(" skipped:  " + skipped + " (unplaced/unloaded/disabled)");
+        if (!notes.isEmpty()) {
+            sender.sendMessage(" Repairs:");
+            for (String note : notes) sender.sendMessage("  - " + note);
+            if (notes.size() >= 12) sender.sendMessage("  - ...showing first 12 repairs only.");
+        }
+        sender.sendMessage(" Next: run /obs audit again.");
+    }
+
+    private boolean repairPlacedSite(Site site, Location loc) {
+        String type = site.type();
+        Block block = loc.getBlock();
+        if ("report_lectern".equals(type) || "first_report_lectern_01".equals(site.id())) {
+            fillPrologueLecternBook(loc);
+            return true;
+        }
+        if ("mara_lectern".equals(type)) {
+            int index = trailingIndex(site.id(), 1);
+            int[] markedPages = {1, 2, 4, 4, 6};
+            int marked = markedPages[Math.max(0, Math.min(markedPages.length - 1, index - 1))];
+            placeReadableLectern(block, BlockFace.SOUTH);
+            fillMaraLockBook(block, index, marked);
+            return true;
+        }
+        if ("answer_sign".equals(type) && !hasSignNear(loc, Math.max(1, site.radius()))) {
+            placeAnswerSign(loc);
+            return true;
+        }
+        if ("vaun_bookshelf".equals(type) && block.getType() != Material.CHISELED_BOOKSHELF) {
+            block.setType(Material.CHISELED_BOOKSHELF, false);
+            return true;
+        }
+        if ("vaun_hoard_chest".equals(type)
+                && block.getType() != Material.CHEST
+                && block.getType() != Material.TRAPPED_CHEST
+                && block.getType() != Material.BARREL) {
+            placeChest(loc);
+            return true;
+        }
+        if (isTemplateLabSite(site.id()) && block.getType() == Material.AIR) {
+            return StructureTemplates.keeper(site.id(), loc) != null;
+        }
+        if ("first_marker_01".equals(site.id()) && block.getType() == Material.AIR) {
+            placeMarker(loc, Material.CHISELED_STONE_BRICKS, Material.CANDLE, true);
+            return true;
+        }
+        return false;
+    }
+
     private String auditPlacedSite(Site site, Location loc) {
         Block block = loc.getBlock();
         String type = site.type();
@@ -2586,6 +2664,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (issues != null && issue != null && issues.size() < 12) issues.add(issue);
     }
 
+    private static int trailingIndex(String id, int fallback) {
+        if (id == null || id.isBlank()) return fallback;
+        int end = id.length() - 1;
+        while (end >= 0 && Character.isDigit(id.charAt(end))) end--;
+        if (end == id.length() - 1) return fallback;
+        try {
+            return Integer.parseInt(id.substring(end + 1));
+        } catch (NumberFormatException ignored) {
+            return fallback;
+        }
+    }
+
     private void sendStatus(CommandSender sender) {
         var sb = plugin.supabase();
         boolean configured = sb != null && sb.isConfigured();
@@ -2632,7 +2722,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "audit", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "repair", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
