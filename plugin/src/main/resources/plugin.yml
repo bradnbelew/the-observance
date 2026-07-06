@@ -44,7 +44,7 @@ commands:
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
       /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)
-      /observance site set <keeperId> - bind the sign you're looking at as a keeper's live answer-sign site
+      /observance site set <siteId> - bind your current block as any configured story, puzzle, NPC, or keeper site
       /observance placeworld - survey/place every configured site that isn't placed yet
       /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
       /observance placeregion [spacing] - stamp the starter spine (rosetta + six keeper stones) here

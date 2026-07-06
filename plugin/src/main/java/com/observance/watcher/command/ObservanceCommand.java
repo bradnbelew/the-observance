@@ -78,7 +78,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <keeperId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
         }
     }
 
@@ -203,23 +203,36 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return sb.toString();
     }
 
+    private List<String> siteIdSuggestions(String prefix) {
+        String want = prefix == null ? "" : prefix.toLowerCase(Locale.ROOT);
+        List<String> ids = new ArrayList<>();
+        for (String[] row : KEEPER_SPINE) {
+            if (row[0].startsWith(want) && !ids.contains(row[0])) ids.add(row[0]);
+        }
+        if (plugin.sites() != null) {
+            for (Site site : plugin.sites().all()) {
+                if (site.id().startsWith(want) && !ids.contains(site.id())) ids.add(site.id());
+            }
+        }
+        Collections.sort(ids);
+        return ids;
+    }
+
     /**
-     * {@code /observance site set <keeperId>} — SURVEY. Records the sender's CURRENT location (the block
-     * they are standing on) as {@code keeperId}'s site anchor and persists it to {@code sites.yml} via
+     * {@code /observance site set <siteId>} — SURVEY. Records the sender's CURRENT location (the block
+     * they are standing on) as {@code siteId}'s site anchor and persists it to {@code sites.yml} via
      * {@link ObservancePlugin#registerRuntimeSite} (idempotent — re-surveying overwrites). This lets the
      * operator walk to a good, hidden, terrain-fitting spot pre-session and mark it, so {@link
      * #handlePlaceWorld} later stamps the set-piece exactly there instead of in a visible cluster.
      *
-     * <p>The saved anchor keeps the keeper's canonical {@code type}/{@code radius} (from {@link #KEEPER_SPINE},
-     * mirroring {@code sites.yml}) so the listeners that watch this site resolve it. Coords are the sender's
-     * block position; {@code placeworld} terrain-re-seats the set-piece on the surface at that X/Z, so an
-     * exact standing Y is fine. Validates {@code keeperId} against the known ids and lists them on bad input.
-     * Player-only (needs a location).
+     * <p>Keeper-spine ids use the canonical {@code type}/{@code radius} from {@link #KEEPER_SPINE}. Every
+     * other id must already exist in {@code sites.yml}; the survey preserves its configured type, radius,
+     * vertical radius, protection, enabled state, puzzle key, and beacon flag.
      */
     private void handleSite(CommandSender sender, String[] args) {
         String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
         if (!op.equals("set")) {
-            sender.sendMessage("Usage: /observance site set <keeperId>   (ids: " + keeperIdList() + ")");
+            sender.sendMessage("Usage: /observance site set <siteId>   (try tab-complete; keeper spine: " + keeperIdList() + ")");
             return;
         }
         if (!(sender instanceof Player player)) {
@@ -227,12 +240,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (args.length < 3 || args[2].isBlank()) {
-            sender.sendMessage("Usage: /observance site set <keeperId>   (ids: " + keeperIdList() + ")");
+            sender.sendMessage("Usage: /observance site set <siteId>   (try tab-complete; keeper spine: " + keeperIdList() + ")");
             return;
         }
-        String[] row = keeperRow(args[2]);
-        if (row == null) {
-            sender.sendMessage("Observance: unknown keeper '" + args[2].trim() + "'. Valid ids: " + keeperIdList());
+        String requestedId = args[2].trim().toLowerCase(Locale.ROOT);
+        String[] row = keeperRow(requestedId);
+        Site existing = plugin.sites() != null ? plugin.sites().get(requestedId) : null;
+        if (row == null && existing == null) {
+            sender.sendMessage("Observance: unknown site '" + requestedId
+                    + "'. Use tab-complete, or add the id to sites.yml first.");
             return;
         }
         Location loc = player.getLocation();
@@ -240,23 +256,32 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("Observance: could not resolve your location.");
             return;
         }
-        String siteId   = row[0];
-        String siteType = row[1];
-        int radius;
-        try { radius = Integer.parseInt(row[2]); } catch (NumberFormatException e) { radius = 8; }
+        String siteId = row != null ? row[0] : existing.id();
+        String siteType = row != null ? row[1] : existing.type();
+        int radius = existing != null ? existing.radius() : 8;
+        if (row != null) {
+            try { radius = Integer.parseInt(row[2]); } catch (NumberFormatException e) { radius = 8; }
+        }
+        int verticalRadius = existing != null ? existing.verticalRadius() : 6;
+        boolean protect = existing == null || existing.protect();
+        boolean enabled = existing == null || existing.enabled();
+        String puzzleKey = existing != null ? existing.puzzleKey() : null;
+        boolean beacon = existing != null && existing.beacon();
         String world = loc.getWorld().getName();
 
         // Record the sender's block position as the survey anchor. placeworld terrain-re-seats on the
         // surface at this X/Z, so the stored Y need only be in the right column.
         Site site = new Site(siteId, siteType, world,
                 (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
-                radius, 6, true, true, null);
+                radius, verticalRadius, protect, enabled, puzzleKey, beacon);
         plugin.registerRuntimeSite(site); // also persists to sites.yml (idempotent — re-survey overwrites)
 
         sender.sendMessage("Observance: surveyed '" + siteId + "' -> "
                 + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + " in " + world
                 + " (type " + siteType + ", r" + radius + ").");
-        sender.sendMessage("  Saved to sites.yml. Run /observance placeworld to stamp all keepers on their anchors.");
+        sender.sendMessage(row != null
+                ? "  Saved to sites.yml. Run /observance placeworld to stamp the large set-pieces."
+                : "  Saved to sites.yml. This smaller anchor is now live.");
     }
 
     /**
@@ -1494,9 +1519,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
             if ("set".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("set");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("set")) {
-            for (String[] row : KEEPER_SPINE) {
-                if (row[0].startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(row[0]);
-            }
+            out.addAll(siteIdSuggestions(args[2]));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sleep")) {
             out.add("on");
             out.add("off");

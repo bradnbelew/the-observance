@@ -83,11 +83,12 @@ async function main(): Promise<void> {
   await mkdir(resolve(PACK, 'assets/observance/font'), { recursive: true });
   await writeFile(resolve(PACK, 'assets/observance/font/runes.json'), JSON.stringify(provider, null, 2) + '\n');
 
-  // 3) the manifest. pack_format is version-coupled — 34 ≈ MC 1.21; tune to the server.
+  // 3) the manifest. Resource-pack format is pinned to the current launch server (MC 1.21.11).
   const mcmeta = {
     pack: {
-      pack_format: 34,
-      description: 'The Observance — the keepers’ alphabet, and the dark that keeps them.',
+      description: 'The Observance — the keepers’ alphabet, and the dark that keeps them. Target: 1.21.11 (format [75,0]).',
+      min_format: [75, 0],
+      max_format: [75, 0],
     },
   };
   await writeFile(resolve(PACK, 'pack.mcmeta'), JSON.stringify(mcmeta, null, 2) + '\n');
@@ -99,13 +100,20 @@ async function main(): Promise<void> {
     'drone_low': { sounds: [{ name: 'observance:drone_low', stream: true }] },
     'stone_breath': { sounds: [{ name: 'observance:stone_breath' }] },
     'cold_toll': { sounds: [{ name: 'observance:cold_toll', attenuation_distance: 24 }] },
+    'keeper_voice': { sounds: [{ name: 'observance:keeper_voice', attenuation_distance: 16 }] },
+    'keeper_voice.vaun': { sounds: [{ name: 'observance:keeper_vaun', attenuation_distance: 16 }] },
+    'keeper_voice.mara': { sounds: [{ name: 'observance:keeper_mara', attenuation_distance: 16 }] },
+    'keeper_voice.sella': { sounds: [{ name: 'observance:keeper_sella', attenuation_distance: 16 }] },
+    'keeper_voice.orin': { sounds: [{ name: 'observance:keeper_orin', attenuation_distance: 16 }] },
+    'keeper_voice.brann': { sounds: [{ name: 'observance:keeper_brann', attenuation_distance: 16 }] },
+    'keeper_voice.iss': { sounds: [{ name: 'observance:keeper_iss', attenuation_distance: 16 }] },
   };
   await mkdir(resolve(PACK, 'assets/observance/sounds'), { recursive: true });
   await writeFile(resolve(PACK, 'assets/observance/sounds.json'), JSON.stringify(sounds, null, 2) + '\n');
 
   console.log(
     `runepack: built ${CHARS.length} glyphs (${COLS}x${ROWS} atlas ${ATLAS_W}x${ATLAS_H}@4x), ` +
-      `font observance:runes, 4 sound events. → resourcepack/`,
+      `font observance:runes, ${Object.keys(sounds).length} sound events. -> resourcepack/`,
   );
 }
 
