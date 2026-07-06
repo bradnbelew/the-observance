@@ -59,6 +59,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         String sub = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "status";
         switch (sub) {
             case "status" -> sendStatus(sender);
+            case "audit" -> handleAudit(sender);
             case "reload" -> {
                 boolean ok = plugin.reloadAll();
                 sender.sendMessage(ok ? "Observance: config + sites reloaded."
@@ -94,7 +95,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -2455,6 +2456,136 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+    private void handleAudit(CommandSender sender) {
+        if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
+            sender.sendMessage("Observance audit: no sites loaded. Run /obs reload or check sites.yml.");
+            return;
+        }
+
+        int enabled = 0;
+        int placed = 0;
+        int unplaced = 0;
+        int ok = 0;
+        int failed = 0;
+        int coreMissing = 0;
+        List<String> issues = new ArrayList<>();
+
+        for (Site site : plugin.sites().all()) {
+            if (site == null || !site.enabled()) continue;
+            enabled++;
+            if (!site.isPlaced()) {
+                unplaced++;
+                if (isCoreAuditSite(site.id())) {
+                    coreMissing++;
+                    addAuditIssue(issues, "MISSING core site '" + site.id() + "' is not placed.");
+                }
+                continue;
+            }
+
+            Location loc = site.location();
+            if (loc == null || loc.getWorld() == null) {
+                failed++;
+                addAuditIssue(issues, "FAIL " + site.id() + ": world not loaded or location unresolved.");
+                continue;
+            }
+
+            placed++;
+            String issue = auditPlacedSite(site, loc);
+            if (issue == null) {
+                ok++;
+            } else {
+                failed++;
+                addAuditIssue(issues, issue);
+            }
+        }
+
+        sender.sendMessage("== Observance readiness audit ==");
+        sender.sendMessage(" enabled sites: " + enabled);
+        sender.sendMessage(" placed sites:  " + placed);
+        sender.sendMessage(" unplaced:      " + unplaced + " (" + coreMissing + " core)");
+        sender.sendMessage(" hardware ok:   " + ok);
+        sender.sendMessage(" failures:      " + failed);
+        if (issues.isEmpty()) {
+            sender.sendMessage(" Result: no obvious placement hardware problems found.");
+            sender.sendMessage(" Next: run /obs test stalker and /obs test hunt for scare checks.");
+            return;
+        }
+        sender.sendMessage(" Issues:");
+        for (String issue : issues) {
+            sender.sendMessage("  - " + issue);
+        }
+        if (issues.size() >= 12) {
+            sender.sendMessage("  - ...showing first 12 issues only.");
+        }
+        sender.sendMessage(" Repair: /obs prepworld for a compact playable pass, or /obs site set <id> + /obs placeworld for curated placement.");
+    }
+
+    private String auditPlacedSite(Site site, Location loc) {
+        Block block = loc.getBlock();
+        String type = site.type();
+        if ("report_lectern".equals(type) || "mara_lectern".equals(type)) {
+            if (block.getType() != Material.LECTERN) {
+                return "FAIL " + site.id() + ": expected a lectern, found " + block.getType() + ".";
+            }
+            if (!(block.getState() instanceof Lectern lectern)) {
+                return "FAIL " + site.id() + ": lectern state did not load.";
+            }
+            ItemStack book = lectern.getInventory().getItem(0);
+            if (book == null || book.getType() != Material.WRITTEN_BOOK) {
+                return "FAIL " + site.id() + ": lectern has no written book.";
+            }
+            return null;
+        }
+        if ("vaun_bookshelf".equals(type) && block.getType() != Material.CHISELED_BOOKSHELF) {
+            return "FAIL " + site.id() + ": expected chiseled bookshelf, found " + block.getType() + ".";
+        }
+        if ("vaun_hoard_chest".equals(type)
+                && block.getType() != Material.CHEST
+                && block.getType() != Material.TRAPPED_CHEST
+                && block.getType() != Material.BARREL) {
+            return "FAIL " + site.id() + ": expected chest/barrel hardware, found " + block.getType() + ".";
+        }
+        if ("answer_sign".equals(type) && !hasSignNear(loc, Math.max(1, site.radius()))) {
+            return "FAIL " + site.id() + ": no sign found inside answer radius.";
+        }
+        if (isCoreAuditSite(site.id()) && block.getType() == Material.AIR) {
+            return "FAIL " + site.id() + ": anchor block is air.";
+        }
+        return null;
+    }
+
+    private boolean hasSignNear(Location loc, int radius) {
+        if (loc == null || loc.getWorld() == null) return false;
+        org.bukkit.World world = loc.getWorld();
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        int r = Math.max(1, Math.min(8, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    Block b = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                    if (b.getState() instanceof Sign) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean isCoreAuditSite(String id) {
+        if (id == null) return false;
+        return switch (id) {
+            case "first_report_lectern_01", "first_marker_01", "rune_rosetta",
+                 "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
+                 "stone_of_reckoning", "the_cold_hearth", "unbroken_light", "the_threshold",
+                 "the_unwriting", "threshold_vault",
+                 "mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5" -> true;
+            default -> false;
+        };
+    }
+
+    private static void addAuditIssue(List<String> issues, String issue) {
+        if (issues != null && issue != null && issues.size() < 12) issues.add(issue);
+    }
+
     private void sendStatus(CommandSender sender) {
         var sb = plugin.supabase();
         boolean configured = sb != null && sb.isConfigured();
@@ -2501,7 +2632,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {

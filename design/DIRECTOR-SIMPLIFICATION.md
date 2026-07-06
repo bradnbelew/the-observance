@@ -41,6 +41,14 @@ For compact real-world staging, use:
 
 This places the prologue, surface spine, deep payoff sites, Mara page-lock lecterns, finale/readings, NPC row, and tester tools around the operator. It is the "I need to play this tonight" command. Use manual `site set` only to curate the final production geography or optional Nether/End lanes.
 
+Then use:
+
+```mcfunction
+/obs audit
+```
+
+This checks the placed site registry for the boring failures that ruin a run: unplaced core sites, unloaded worlds, missing books, empty lecterns, absent chest/bookshelf hardware, and air at core anchors.
+
 Real launch placement should become a curation pass:
 
 1. Run `fullrun` in a test world.

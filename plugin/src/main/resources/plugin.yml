@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.7'
+version: '0.3.8'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -41,6 +41,7 @@ commands:
     description: Admin/status command for The Observance plugin.
     usage: |
       /observance status        - show plugin health (db, queue, last beat, reckoning state)
+      /observance audit         - scan placed sites for missing core anchors, empty lecterns, and obvious hardware problems
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
       /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)
