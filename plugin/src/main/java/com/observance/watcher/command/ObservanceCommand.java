@@ -1105,25 +1105,39 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         String spacing = args.length >= 2 ? args[1] : "18";
         sender.sendMessage("== Observance full-run rehearsal ==");
-        sender.sendMessage("Step 1/5: building the complete floating placement lab...");
+        sender.sendMessage("Step 1/8: building the complete floating placement lab...");
         handlePlaceLab(sender, new String[]{"placelab", spacing});
 
-        sender.sendMessage("Step 2/5: carving the Seventh Reading into the keeper-stone lab cells...");
+        sender.sendMessage("Step 2/8: carving the Seventh Reading into the keeper-stone lab cells...");
         handleReadingCarvings(sender);
 
-        sender.sendMessage("Step 3/5: placing Wren reckoning and finale choice markers at your feet...");
+        sender.sendMessage("Step 3/8: placing Wren reckoning and finale choice markers at your feet...");
         placeReckoningMarkers(player, sender);
         handleFinaleMarkers(sender);
 
-        sender.sendMessage("Step 4/5: giving tester tools...");
+        sender.sendMessage("Step 4/8: giving tester tools...");
         handleLens(sender, new String[]{"lens", "give", player.getName()});
         handleNeedle(sender, new String[]{"needle", player.getName()});
 
-        sender.sendMessage("Step 5/5: ready. Use this order for the human test pass:");
+        sender.sendMessage("Step 5/8: staging side/lore NPCs...");
+        handleSidePass(sender, new String[]{"sidepass"});
+
+        sender.sendMessage("Step 6/8: staging the puzzle mechanics grid...");
+        handlePuzzlePass(sender, new String[]{"puzzlepass", spacing});
+
+        sender.sendMessage("Step 7/8: staging the Watcher dread route...");
+        handleDreadPass(sender, new String[]{"dreadpass", "stage", player.getName()});
+
+        sender.sendMessage("Step 8/8: repair + readiness checks...");
+        handleRepair(sender);
+        handleAudit(sender);
+        handleCoverage(sender);
+
+        sender.sendMessage("Observance: fullrun ready. Use this order for the human test pass:");
         sender.sendMessage("  1) Read/open every lab book and sign; lecterns should already contain books.");
         sender.sendMessage("  2) Solve one fixture from each family: bow, chest, bookshelf, lecterns, frames, pool, corridor, vault.");
-        sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
-        sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
+        sender.sendMessage("  3) Walk /obs visit scare, then run /obs dreadpass run when ready to fire the scare pass.");
+        sender.sendMessage("  4) Use /obs puzzlepass gates when you need to jump solved gates instead of replaying the whole chain.");
         sender.sendMessage("  5) Use /obs runbook puzzle, /obs coverage, /obs rehearse start, and /obs visit next; keep this world as rehearsal only.");
     }
 
@@ -1768,6 +1782,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
             Location answer = StructureTemplates.keeper(siteId, siteLoc);
             if (answer == null) continue;
+            ensureAuditAnchor(siteId, siteLoc);
 
             Site cfg = plugin.sites() == null ? null : plugin.sites().get(siteId);
             boolean beacon = cfg != null && cfg.beacon();
@@ -1831,6 +1846,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         String type = cfg.type();
         if (isTemplateLabSite(id)) {
             StructureTemplates.keeper(id, base);
+            ensureAuditAnchor(id, base);
             return;
         }
 
@@ -1929,8 +1945,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
                 book.setItemMeta(meta);
             }
-            lectern.getInventory().setItem(0, book);
-            lectern.update(true, false);
+            writeLecternBook(b, lectern, book);
         }
     }
 
@@ -1977,8 +1992,42 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
                 book.setItemMeta(meta);
             }
-            lectern.getInventory().setItem(0, book);
+            writeLecternBook(b, lectern, book);
+        }
+    }
+
+    private void writeLecternBook(Block block, Lectern lectern, ItemStack book) {
+        if (block == null || lectern == null || book == null) return;
+        try {
+            lectern.getSnapshotInventory().setItem(0, book.clone());
             lectern.update(true, false);
+        } catch (Throwable ignored) { }
+        if (block.getState() instanceof Lectern live) {
+            live.getInventory().setItem(0, book.clone());
+        }
+    }
+
+    private void ensureAuditAnchor(String siteId, Location loc) {
+        if (siteId == null || loc == null || loc.getWorld() == null) return;
+        if (!isCoreAuditSite(siteId)) return;
+        Block block = loc.getBlock();
+        if (block.getType() != Material.AIR && block.getType() != Material.CAVE_AIR
+                && block.getType() != Material.VOID_AIR) {
+            return;
+        }
+        Material anchor = switch (siteId) {
+            case "rune_rosetta", "stone_of_reckoning" -> Material.CHISELED_TUFF;
+            case "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss" -> Material.CHISELED_DEEPSLATE;
+            case "the_cold_hearth" -> Material.SOUL_CAMPFIRE;
+            case "unbroken_light" -> Material.SEA_LANTERN;
+            case "the_threshold", "threshold_vault" -> Material.REINFORCED_DEEPSLATE;
+            case "the_unwriting" -> Material.SCULK_SHRIEKER;
+            default -> Material.CHISELED_DEEPSLATE;
+        };
+        block.setType(anchor, false);
+        if (block.getBlockData() instanceof org.bukkit.block.data.Lightable lightable) {
+            lightable.setLit(true);
+            block.setBlockData(lightable, false);
         }
     }
 
@@ -3553,8 +3602,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             placeChest(loc);
             return true;
         }
-        if (isTemplateLabSite(site.id()) && block.getType() == Material.AIR) {
-            return StructureTemplates.keeper(site.id(), loc) != null;
+        if (isTemplateLabSite(site.id()) && (block.getType() == Material.AIR
+                || block.getType() == Material.CAVE_AIR
+                || block.getType() == Material.VOID_AIR)) {
+            boolean built = StructureTemplates.keeper(site.id(), loc) != null;
+            ensureAuditAnchor(site.id(), loc);
+            Material fixed = loc.getBlock().getType();
+            return built || (fixed != Material.AIR && fixed != Material.CAVE_AIR && fixed != Material.VOID_AIR);
         }
         if ("first_marker_01".equals(site.id()) && block.getType() == Material.AIR) {
             placeMarker(loc, Material.CHISELED_STONE_BRICKS, Material.CANDLE, true);
