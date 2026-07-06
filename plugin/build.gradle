@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.observance'
-version = '0.3.19'
+version = '0.3.20'
 description = 'The Observance — deterministic soft-pressure haunting engine (Phase 0)'
 
 java {

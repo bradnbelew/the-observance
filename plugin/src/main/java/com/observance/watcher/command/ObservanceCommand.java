@@ -95,6 +95,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "fullrun" -> handleFullRun(sender, args);
             case "prepworld" -> handlePrepWorld(sender, args);
             case "sidepass" -> handleSidePass(sender, args);
+            case "puzzlepass" -> handlePuzzlePass(sender, args);
             case "runbook" -> handleRunbook(sender, args);
             case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
@@ -106,7 +107,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | sidepass | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | sidepass | puzzlepass [gates] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -203,6 +204,39 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private static boolean isLaneSite(String siteId) {
         return "nether_forge".equals(siteId) || "end_seventh_shrine".equals(siteId);
     }
+
+    private static final String[][] PUZZLE_PASS_SITES = {
+            {"bow_marker_01", "bow_marker", "5", "4"},
+            {"offering_cairn_01", "offering_cairn", "5", "4"},
+            {"answer_sign_01", "answer_sign", "5", "4"},
+            {"vaun_hoard_chest", "vaun_hoard_chest", "3", "3"},
+            {"vaun_bookshelf", "vaun_bookshelf", "3", "3"},
+            {"mara_lectern_1", "mara_lectern", "2", "2"},
+            {"mara_lectern_2", "mara_lectern", "2", "2"},
+            {"mara_lectern_3", "mara_lectern", "2", "2"},
+            {"mara_lectern_4", "mara_lectern", "2", "2"},
+            {"mara_lectern_5", "mara_lectern", "2", "2"},
+            {"mara_map_marker", "mara_map_marker", "5", "4"},
+            {"sella_pool", "sella_pool", "5", "4"},
+            {"sella_anchor", "sella_anchor", "5", "4"},
+            {"orin_marker_1", "orin_marker", "4", "4"},
+            {"orin_marker_2", "orin_marker", "4", "4"},
+            {"orin_marker_3", "orin_marker", "4", "4"},
+            {"orin_marker_4", "orin_marker", "4", "4"},
+            {"orin_marker_5", "orin_marker", "4", "4"},
+            {"orin_marker_6", "orin_marker", "4", "4"},
+            {"orin_frame_dial_1", "orin_frame_dial", "3", "3"},
+            {"orin_frame_dial_2", "orin_frame_dial", "3", "3"},
+            {"orin_frame_dial_3", "orin_frame_dial", "3", "3"},
+            {"orin_frame_dial_4", "orin_frame_dial", "3", "3"},
+            {"orin_frame_dial_5", "orin_frame_dial", "3", "3"},
+            {"orin_frame_dial_6", "orin_frame_dial", "3", "3"},
+            {"brann_toll_tower", "brann_toll_tower", "5", "6"},
+            {"brann_corridor_start", "brann_corridor_start", "4", "4"},
+            {"brann_corridor_end", "brann_corridor_end", "4", "4"},
+            {"coop_plate", "coop_plate", "5", "4"},
+            {"threshold_vault", "coop_plate", "6", "6"},
+    };
 
     /** Look up a keeper row by its canonical siteId (case-insensitive; accepts the bare form too). */
     private static String[] keeperRow(String rawId) {
@@ -1082,7 +1116,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  2) Solve one fixture from each family: bow, chest, bookshelf, lecterns, frames, pool, corridor, vault.");
         sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
         sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
-        sender.sendMessage("  5) Use /obs coverage, /obs rehearse start, and /obs visit next; keep this world as rehearsal only.");
+        sender.sendMessage("  5) Use /obs runbook puzzle, /obs coverage, /obs rehearse start, and /obs visit next; keep this world as rehearsal only.");
     }
 
     /**
@@ -1190,6 +1224,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             handleFullRun(sender, new String[]{"fullrun", spacing});
         } else {
             handlePrepWorld(sender, new String[]{"prepworld", spacing});
+            sender.sendMessage("== Director placement add-on: puzzle mechanics grid ==");
+            handlePuzzlePass(sender, new String[]{"puzzlepass", spacing});
         }
         sender.sendMessage("== Director check 1/4: first audit ==");
         handleAudit(sender);
@@ -1222,6 +1258,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                             "Answer signs, Vaun chest/bookshelf, and core anchors must exist."
                     },
                     new String[]{"/obs audit", "/obs repair", "/obs audit"}),
+            new RehearsalStage("puzzles", "Prove puzzle mechanics", "puzzle",
+                    new String[]{
+                            "Stage the compact puzzle grid if you are not using the full lab.",
+                            "Test one detector from each family: bow, offering, sign, chest, shelf, lectern, frame, pool, corridor, vault.",
+                            "Use gates only for rehearsal shortcuts, not production."
+                    },
+                    new String[]{"/obs puzzlepass", "/obs puzzlepass gates", "/obs runbook puzzle"}),
             new RehearsalStage("spine", "Play the main story spine", "spine",
                     new String[]{
                             "Open the prologue report and check the first marker.",
@@ -1294,12 +1337,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("Jump: /obs rehearse <stageId>. Advance: /obs rehearse done.");
             }
             default -> {
-                int idx = rehearsalStageIndex(op);
+                int idx = rehearsalStageIndex(op.equals("puzzle") ? "puzzles" : op);
                 if (idx >= 0) {
                     rehearsalProgress.put(key, idx);
                     sendRehearsalStage(sender, idx);
                 } else {
-                    sender.sendMessage("Usage: /obs rehearse <start|status|done|next|back|reset|list|setup|hardware|spine|side|scare|ops>");
+                    sender.sendMessage("Usage: /obs rehearse <start|status|done|next|back|reset|list|setup|hardware|puzzles|spine|side|scare|ops>");
                 }
             }
         }
@@ -1349,6 +1392,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     new String[]{"mara_lectern_1", "mara_lectern_2", "mara_lectern_3",
                             "mara_lectern_4", "mara_lectern_5"},
                     "Open all five lecterns; every lectern must hold a written book."),
+            new CoverageLane("mechanics", "Puzzle mechanic fixtures", "puzzle", false,
+                    puzzlePassSiteIds(),
+                    "Run /obs puzzlepass, then test one detector from each family."),
             new CoverageLane("deep", "Deep payoff and finale spine", "spine", false,
                     new String[]{"stone_of_reckoning", "the_cold_hearth", "unbroken_light",
                             "the_threshold", "the_unwriting", "threshold_vault"},
@@ -1439,6 +1485,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                                 String[] siteIds, String testInstruction) { }
 
     private record CoverageState(boolean ready, int ok, int total, String firstIssue) { }
+
+    private static String[] puzzlePassSiteIds() {
+        String[] ids = new String[PUZZLE_PASS_SITES.length];
+        for (int i = 0; i < PUZZLE_PASS_SITES.length; i++) ids[i] = PUZZLE_PASS_SITES[i][0];
+        return ids;
+    }
 
     private static final String[] VISIT_ROUTE = {
             "first_report_lectern_01", "first_marker_01",
@@ -1569,19 +1621,21 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         switch (page) {
             case "setup" -> sendSetupRunbook(sender);
             case "spine" -> sendSpineRunbook(sender);
+            case "puzzle", "puzzles", "mechanics" -> sendPuzzleRunbook(sender);
             case "side", "lore" -> sendSideRunbook(sender);
             case "scare", "watcher" -> sendScareRunbook(sender);
             case "ops", "dashboard" -> sendOpsRunbook(sender);
             case "all" -> {
                 sendSetupRunbook(sender);
                 sendSpineRunbook(sender);
+                sendPuzzleRunbook(sender);
                 sendSideRunbook(sender);
                 sendScareRunbook(sender);
                 sendOpsRunbook(sender);
-                sender.sendMessage("Pages: /obs runbook setup | spine | side | scare | ops");
+                sender.sendMessage("Pages: /obs runbook setup | spine | puzzle | side | scare | ops");
             }
             default -> {
-                sender.sendMessage("Usage: /obs runbook [setup|spine|side|scare|ops]");
+                sender.sendMessage("Usage: /obs runbook [setup|spine|puzzle|side|scare|ops]");
                 sender.sendMessage("Tip: run /obs runbook spine during the playable pass.");
             }
         }
@@ -1589,10 +1643,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void sendSetupRunbook(CommandSender sender) {
         sender.sendMessage("[setup]");
-        sender.sendMessage("  1) Test lab: /obs fullrun  OR compact world: /obs prepworld");
+        sender.sendMessage("  1) Test lab: /obs fullrun  OR compact world: /obs director world");
         sender.sendMessage("  2) Verify hardware: /obs audit -> /obs repair -> /obs audit");
         sender.sendMessage("  3) Give tools if needed: /obs lens give <player> and /obs needle <player>");
-        sender.sendMessage("  4) Keep Watcher manual/muted with /obs sleep on; rearm with /obs sleep off.");
+        sender.sendMessage("  4) Focused mechanic grid: /obs puzzlepass; side/lore row: /obs sidepass.");
+        sender.sendMessage("  5) Keep Watcher manual/muted with /obs sleep on; rearm with /obs sleep off.");
     }
 
     private void sendSpineRunbook(CommandSender sender) {
@@ -1606,6 +1661,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  Brann/Iss: inspect kept-light/cold-hearth sites and deep markers.");
         sender.sendMessage("  Wren: /obs wren spawn, right-click him, then /obs flag set companion_revealed for reckoning tests.");
         sender.sendMessage("  Finale: touch reckoning/finale markers once; use /obs flag list to confirm branches.");
+    }
+
+    private void sendPuzzleRunbook(CommandSender sender) {
+        sender.sendMessage("[puzzle mechanics]");
+        sender.sendMessage("  Stage: /obs puzzlepass. Shortcut gates, only in rehearsal: /obs puzzlepass gates.");
+        sender.sendMessage("  Early customs: crouch at bow_marker_01; drop deepslate/cobbled deepslate at offering_cairn_01; type a known answer on answer_sign_01.");
+        sender.sendMessage("  Vaun: put deepslate + cobbled deepslate in vaun_hoard_chest and close it; fill all six vaun_bookshelf slots.");
+        sender.sendMessage("  Mara: turn lecterns 1-5 to pages 1, 2, 4, 4, 6; then bow together at mara_map_marker.");
+        sender.sendMessage("  Sella: stand at sella_pool and look down into water; after sella_overlay_read, gaze from sella_anchor.");
+        sender.sendMessage("  Orin/Brann: bow orin_marker_1..6 in order; set frames to rotation 0; sneak from brann_corridor_start to brann_corridor_end.");
+        sender.sendMessage("  Vault: after deep_gate_open, stand at threshold_vault and enter v8k3 mq2n x6w1 t4d9 c7s5 on the vault sign.");
     }
 
     private void sendSideRunbook(CommandSender sender) {
@@ -2808,6 +2874,137 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("Then run /obs coverage; side/lore should show all NPC bodies present.");
     }
 
+    /**
+     * {@code /observance puzzlepass [gates] [spacing]} - compact mechanical proof surface. It stages
+     * the detector families that are easy to forget during a full ARG rehearsal, without needing the
+     * operator to hand-place each individual site.
+     */
+    private void handlePuzzlePass(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance puzzlepass must be run by a player (needs a location).");
+            return;
+        }
+        Location origin = player.getLocation();
+        if (origin == null || origin.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+
+        int spacing = 12;
+        boolean setGates = false;
+        for (int i = 1; i < args.length; i++) {
+            String raw = args[i] == null ? "" : args[i].trim().toLowerCase(Locale.ROOT);
+            if (raw.isBlank()) continue;
+            if (raw.equals("gates") || raw.equals("gate") || raw.equals("flags")) {
+                setGates = true;
+                continue;
+            }
+            try {
+                spacing = Math.max(9, Math.min(18, Integer.parseInt(raw)));
+            } catch (NumberFormatException ignored) { /* keep default */ }
+        }
+
+        org.bukkit.World world = origin.getWorld();
+        String worldName = world.getName();
+        int cols = 6;
+        int platformRadius = 5;
+        int placed = 0;
+        int skipped = 0;
+
+        sender.sendMessage("== Observance puzzle mechanic pass ==");
+        for (int i = 0; i < PUZZLE_PASS_SITES.length; i++) {
+            String[] row = PUZZLE_PASS_SITES[i];
+            String id = row[0];
+            String fallbackType = row[1];
+            int fallbackRadius = parseSmallInt(row[2], 4);
+            int fallbackVertical = parseSmallInt(row[3], 4);
+
+            Site cfg = plugin.sites() == null ? null : plugin.sites().get(id);
+            String type = cfg == null ? fallbackType : cfg.type();
+            int radius = cfg == null ? fallbackRadius : cfg.radius();
+            int vertical = cfg == null ? fallbackVertical : cfg.verticalRadius();
+            boolean protect = cfg == null || cfg.protect();
+            String puzzleKey = cfg == null ? null : cfg.puzzleKey();
+            boolean beacon = cfg != null && cfg.beacon();
+
+            int col = i % cols;
+            int gridRow = i / cols;
+            Location base = new Location(world,
+                    origin.getBlockX() + (col * spacing),
+                    origin.getBlockY(),
+                    origin.getBlockZ() + (gridRow * spacing));
+            try {
+                base.getChunk().load(true);
+                clearLabCell(base, platformRadius, 8);
+                buildLabPlatform(base, platformRadius);
+                labelLabCell(base, id, type);
+
+                Site live = new Site(id, type, worldName,
+                        (double) base.getBlockX(), (double) base.getBlockY(), (double) base.getBlockZ(),
+                        radius, vertical, protect, true, puzzleKey, beacon);
+                buildLabFixture(live, base);
+                plugin.registerRuntimeSite(live);
+                repairPlacedSite(live, base);
+                if (beacon) StructureTemplates.keptLightBeacon(base, beaconTint(id));
+                placed++;
+            } catch (Throwable t) {
+                skipped++;
+                sender.sendMessage("  [!] puzzle fixture skipped " + id + " (" + t.getClass().getSimpleName() + ")");
+            }
+        }
+
+        sender.sendMessage("Puzzlepass placed " + placed + "/" + PUZZLE_PASS_SITES.length
+                + " fixtures" + (skipped > 0 ? " (" + skipped + " skipped)" : "") + ".");
+        sender.sendMessage("Next: /obs runbook puzzle, then /obs coverage.");
+        sender.sendMessage("Optional rehearsal shortcut: /obs puzzlepass gates.");
+        sendPuzzlePassChecklist(sender);
+        if (setGates) setPuzzlePassGates(sender);
+    }
+
+    private void sendPuzzlePassChecklist(CommandSender sender) {
+        sender.sendMessage("Checklist:");
+        sender.sendMessage("  1) bow/offering/sign: crouch at bow_marker_01; drop deepslate+cobbled deepslate at offering_cairn_01; type a known answer on answer_sign_01.");
+        sender.sendMessage("  2) Vaun: put deepslate+cobbled deepslate in vaun_hoard_chest and close it; fill all six vaun_bookshelf slots.");
+        sender.sendMessage("  3) Mara/Sella: lectern pages 1,2,4,4,6; bow at mara_map_marker; look down into sella_pool and from sella_anchor.");
+        sender.sendMessage("  4) Orin/Brann: bow orin_marker_1..6; right-click a frame after all six are rotation 0; sneak start-to-end through Brann corridor.");
+        sender.sendMessage("  5) Vault: after deep_gate_open, stand at threshold_vault and enter: v8k3 mq2n x6w1 t4d9 c7s5");
+    }
+
+    private void setPuzzlePassGates(CommandSender sender) {
+        var sb = plugin.supabase();
+        if (sb == null) {
+            sender.sendMessage("Puzzlepass gates: supabase unavailable.");
+            return;
+        }
+        String[] gates = {
+                "vaun_cache_open",
+                "mara_alcove_open",
+                "sella_overlay_read",
+                "orin_bowed",
+                "brann_toll_heard",
+                "iss_key_turned",
+                "deep_gate_open",
+                "threshold_open",
+                "seventh_named",
+                "bowed_as_one"
+        };
+        JsonObject flags = new JsonObject();
+        for (String gate : gates) flags.addProperty(gate, true);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            sb.mergeArcFlags(flags);
+            Bukkit.getScheduler().runTask(plugin, () ->
+                    sender.sendMessage("Puzzlepass gates set for rehearsal: vaun/mara/sella/orin/brann/deep/vault/finale."));
+        });
+    }
+
+    private static int parseSmallInt(String raw, int fallback) {
+        try {
+            return Integer.parseInt(raw);
+        } catch (Exception ignored) {
+            return fallback;
+        }
+    }
+
     /** Place or remove the group-scoped Keeper NPC used by the Keeper interaction listener. */
     private void handleKeeper(CommandSender sender, String[] args) {
         var keeper = plugin.keeper();
@@ -3356,7 +3553,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "sidepass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "sidepass", "puzzlepass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
@@ -3366,11 +3563,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {
             for (String s : visitSuggestions(args[1])) out.add(s);
         } else if (args.length == 2 && args[0].equalsIgnoreCase("runbook")) {
-            for (String s : new String[]{"setup", "spine", "side", "scare", "ops"}) {
+            for (String s : new String[]{"setup", "spine", "puzzle", "side", "scare", "ops"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("rehearse")) {
-            for (String s : new String[]{"start", "status", "done", "next", "back", "reset", "list", "setup", "hardware", "spine", "side", "scare", "ops"}) {
+            for (String s : new String[]{"start", "status", "done", "next", "back", "reset", "list", "setup", "hardware", "puzzle", "puzzles", "spine", "side", "scare", "ops"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("puzzlepass")) {
+            for (String s : new String[]{"gates", "12", "14", "18"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
