@@ -49,6 +49,7 @@ commands:
       /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
       /observance placeregion [spacing] - stamp the starter spine (rosetta + six keeper stones) here
       /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
+      /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance placeprologue - stage the cold-open anomaly in the group's base
       /observance lens give [player] - give the Lens (second-sight) item
       /observance wren <spawn|despawn|reckoning> - place the companion NPC (Wren) here, or the three reckoning-choice markers

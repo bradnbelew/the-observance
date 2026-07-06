@@ -8,11 +8,22 @@ import com.observance.watcher.util.Safety;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Rotation;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Lectern;
+import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.sign.Side;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,6 +81,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placeroom" -> handlePlaceRoom(sender, args);
             case "placeregion" -> handlePlaceRegion(sender, args);
             case "placedeep" -> handlePlaceDeep(sender, args);
+            case "placelab" -> handlePlaceLab(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
@@ -78,7 +90,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelab | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
         }
     }
 
@@ -884,6 +896,393 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+    private void handlePlaceLab(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance placelab must be run by a player (needs a location).");
+            return;
+        }
+        if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
+            sender.sendMessage("Observance: no sites loaded; reload first.");
+            return;
+        }
+
+        int spacing = 18;
+        if (args.length >= 2) {
+            try {
+                spacing = Math.max(14, Math.min(36, Integer.parseInt(args[1].trim())));
+            } catch (NumberFormatException ignored) { /* keep default */ }
+        }
+
+        Location origin = player.getLocation();
+        if (origin == null || origin.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+        org.bukkit.World world = origin.getWorld();
+        String worldName = world.getName();
+        int cols = 8;
+        int platformRadius = 7;
+        int placed = 0;
+        int skipped = 0;
+
+        for (Site cfg : plugin.sites().all()) {
+            if (cfg == null || !cfg.enabled()) {
+                skipped++;
+                continue;
+            }
+            int col = placed % cols;
+            int row = placed / cols;
+            Location base = new Location(world,
+                    origin.getBlockX() + (col * spacing),
+                    origin.getBlockY(),
+                    origin.getBlockZ() + (row * spacing));
+
+            try {
+                base.getChunk().load(true);
+                clearLabCell(base, platformRadius, 9);
+                buildLabPlatform(base, platformRadius);
+                labelLabCell(base, cfg.id(), cfg.type());
+                buildLabFixture(cfg, base);
+
+                Site labSite = new Site(cfg.id(), cfg.type(), worldName,
+                        (double) base.getBlockX(), (double) base.getBlockY(), (double) base.getBlockZ(),
+                        cfg.radius(), cfg.verticalRadius(), cfg.protect(), true,
+                        cfg.puzzleKey(), cfg.beacon());
+                plugin.registerRuntimeSite(labSite);
+                if (cfg.beacon()) {
+                    StructureTemplates.keptLightBeacon(base, beaconTint(cfg.id()));
+                }
+                placed++;
+            } catch (Throwable t) {
+                skipped++;
+                sender.sendMessage("  [!] lab skipped " + cfg.id() + " (" + t.getClass().getSimpleName() + ")");
+            }
+        }
+
+        Location npc = new Location(world, origin.getBlockX(), origin.getBlockY(), origin.getBlockZ() - spacing);
+        buildLabPlatform(npc, 7);
+        labelLabCell(npc, "npc row", "townsfolk/wren/keeper");
+        if (plugin.townsfolk() != null) {
+            plugin.townsfolk().spawnAll(npc.clone().add(-3, 1, 0));
+        }
+        if (plugin.wren() != null) {
+            plugin.wren().spawn(npc.clone().add(3, 1, 0));
+        }
+        if (plugin.keeper() != null) {
+            plugin.keeper().spawn(npc.clone().add(6, 1, 0), "lab");
+        }
+
+        sender.sendMessage("Observance: placelab complete - " + placed
+                + " enabled sites placed in a floating grid, " + skipped + " skipped/disabled.");
+        sender.sendMessage("  Origin " + origin.getBlockX() + "," + origin.getBlockY() + ","
+                + origin.getBlockZ() + " in " + worldName + "; spacing=" + spacing + ".");
+        sender.sendMessage("  This is a test lab. Reset world/plugin data before the real launch placement.");
+    }
+
+    private void clearLabCell(Location base, int radius, int height) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                for (int dy = 0; dy <= height; dy++) {
+                    world.getBlockAt(bx + dx, by + dy, bz + dz).setType(Material.AIR, false);
+                }
+            }
+        }
+    }
+
+    private void buildLabPlatform(Location base, int radius) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                boolean rim = Math.abs(dx) == radius || Math.abs(dz) == radius;
+                world.getBlockAt(bx + dx, by - 1, bz + dz)
+                        .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.SMOOTH_STONE, false);
+            }
+        }
+        world.getBlockAt(bx, by - 1, bz).setType(Material.CHISELED_DEEPSLATE, false);
+    }
+
+    private void labelLabCell(Location base, String id, String type) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        Block signBlock = world.getBlockAt(base.getBlockX() - 6, base.getBlockY(), base.getBlockZ() - 6);
+        signBlock.setType(Material.OAK_SIGN, false);
+        if (signBlock.getBlockData() instanceof Rotatable r) {
+            r.setRotation(BlockFace.SOUTH);
+            signBlock.setBlockData(r, false);
+        }
+        setSignLines(signBlock, true, new String[]{
+                "LAB",
+                id,
+                type == null ? "" : type,
+                "anchor: center"
+        });
+    }
+
+    private void buildLabFixture(Site cfg, Location base) {
+        String id = cfg.id();
+        String type = cfg.type();
+        if (isTemplateLabSite(id)) {
+            StructureTemplates.keeper(id, base);
+            return;
+        }
+
+        if ("first_report_lectern_01".equals(id) || "report_lectern".equals(type)) {
+            placeLabLectern(base, id, 4);
+        } else if ("mara_lectern".equals(type)) {
+            placeLabLectern(base, id, 10);
+        } else if ("answer_sign".equals(type)) {
+            placeAnswerSign(base);
+        } else if ("kept_light".equals(type)) {
+            placeKeptLight(base);
+        } else if ("offering_cairn".equals(type)) {
+            placeMarker(base, Material.COBBLESTONE, Material.CANDLE, true);
+        } else if ("bow_marker".equals(type) || "orin_marker".equals(type) || "mara_map_marker".equals(type)) {
+            placeMarker(base, Material.CHISELED_STONE_BRICKS, Material.CANDLE, false);
+        } else if ("sella_pool".equals(type)) {
+            placeSellaPool(base);
+        } else if ("sella_anchor".equals(type)) {
+            placeSellaAnchor(base);
+        } else if ("vaun_hoard_chest".equals(type)) {
+            placeChest(base);
+        } else if ("vaun_bookshelf".equals(type)) {
+            base.getBlock().setType(Material.CHISELED_BOOKSHELF, false);
+        } else if ("orin_frame_dial".equals(type)) {
+            placeFrameDial(base);
+        } else if ("brann_corridor_start".equals(type) || "brann_corridor_end".equals(type)) {
+            placeCorridorMarker(base, "brann_corridor_end".equals(type));
+        } else if ("brann_toll_tower".equals(type)) {
+            placeTollTower(base);
+        } else if ("keeper_altar".equals(type)) {
+            placeMarker(base, Material.POLISHED_DEEPSLATE, Material.SOUL_LANTERN, true);
+        } else if ("coop_plate".equals(type)) {
+            placeCoopPlate(base, id);
+        } else if ("carve_anchor".equals(type)) {
+            placeCarveWall(base);
+        } else if ("soul_gallery".equals(id)) {
+            placeSoulGallery(base);
+        } else if ("herd_anchor".equals(id)) {
+            placeHerdAnchor(base);
+        } else if ("the_far_water".equals(id)) {
+            placeFarWater(base);
+        } else {
+            placeMarker(base, Material.CHISELED_DEEPSLATE, Material.AIR, false);
+        }
+    }
+
+    private boolean isTemplateLabSite(String id) {
+        return keeperRow(id) != null;
+    }
+
+    private void placeMarker(Location base, Material body, Material top, boolean lit) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        world.getBlockAt(x, y, z).setType(body, false);
+        world.getBlockAt(x, y + 1, z).setType(Material.CHISELED_DEEPSLATE, false);
+        if (top != null && top != Material.AIR) {
+            Block b = world.getBlockAt(x, y + 2, z);
+            b.setType(top, false);
+            if (lit && b.getBlockData() instanceof org.bukkit.block.data.type.Lightable l) {
+                l.setLit(true);
+                b.setBlockData(l, false);
+            }
+        }
+    }
+
+    private void placeLabLectern(Location base, String title, int pages) {
+        Block b = base.getBlock();
+        b.setType(Material.LECTERN, false);
+        if (b.getBlockData() instanceof Directional d) {
+            d.setFacing(BlockFace.SOUTH);
+            b.setBlockData(d, false);
+        }
+        if (b.getState() instanceof Lectern lectern) {
+            ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+            if (book.getItemMeta() instanceof BookMeta meta) {
+                meta.setTitle(com.observance.watcher.util.TextFit.clampLine(title, 32));
+                meta.setAuthor("the lab");
+                for (int i = 1; i <= Math.max(1, pages); i++) {
+                    meta.addPage("page " + i + "\n\n" + title + "\n\nturn me for page-lock testing.");
+                }
+                book.setItemMeta(meta);
+            }
+            lectern.getInventory().setItem(0, book);
+            lectern.update(true, false);
+        }
+    }
+
+    private void placeAnswerSign(Location base) {
+        Block b = base.getBlock();
+        b.setType(Material.OAK_SIGN, false);
+        if (b.getBlockData() instanceof Rotatable r) {
+            r.setRotation(BlockFace.SOUTH);
+            b.setBlockData(r, false);
+        }
+        setSignLines(b, false, new String[]{"", "", "", ""});
+    }
+
+    private void placeKeptLight(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        Block fire = world.getBlockAt(x, y, z);
+        fire.setType(Material.CAMPFIRE, false);
+        if (fire.getBlockData() instanceof org.bukkit.block.data.type.Campfire c) {
+            c.setLit(true);
+            fire.setBlockData(c, false);
+        }
+        world.getBlockAt(x + 1, y, z).setType(Material.LANTERN, false);
+    }
+
+    private void placeSellaPool(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                world.getBlockAt(x + dx, y - 1, z + dz).setType(Material.PRISMARINE_BRICKS, false);
+                world.getBlockAt(x + dx, y, z + dz).setType(Material.WATER, false);
+            }
+        }
+        world.getBlockAt(x, y, z - 2).setType(Material.DARK_PRISMARINE, false);
+    }
+
+    private void placeSellaAnchor(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        world.getBlockAt(x, y, z).setType(Material.DARK_PRISMARINE, false);
+        world.getBlockAt(x, y - 1, z + 1).setType(Material.WATER, false);
+        world.getBlockAt(x, y - 1, z + 2).setType(Material.WATER, false);
+    }
+
+    private void placeChest(Location base) {
+        Block b = base.getBlock();
+        b.setType(Material.CHEST, false);
+        if (b.getBlockData() instanceof Directional d) {
+            d.setFacing(BlockFace.SOUTH);
+            b.setBlockData(d, false);
+        }
+    }
+
+    private void placeFrameDial(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        world.getBlockAt(x, y, z).setType(Material.CHISELED_DEEPSLATE, false);
+        for (ItemFrame f : world.getNearbyEntitiesByType(ItemFrame.class, base, 3.0)) {
+            f.remove();
+        }
+        Location frameLoc = new Location(world, x + 0.5, y + 1.5, z + 1.0);
+        ItemFrame frame = world.spawn(frameLoc, ItemFrame.class);
+        frame.setFacingDirection(BlockFace.SOUTH, true);
+        frame.setItem(new ItemStack(Material.ARROW));
+        frame.setRotation(Rotation.NONE);
+    }
+
+    private void placeCorridorMarker(Location base, boolean end) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dz = -3; dz <= 3; dz++) {
+            world.getBlockAt(x, y - 1, z + dz).setType(Material.SCULK, false);
+        }
+        world.getBlockAt(x, y, z).setType(end ? Material.REDSTONE_LAMP : Material.SCULK_SENSOR, false);
+        Block sign = world.getBlockAt(x + 1, y, z);
+        sign.setType(Material.OAK_SIGN, false);
+        if (sign.getBlockData() instanceof Rotatable r) {
+            r.setRotation(BlockFace.SOUTH);
+            sign.setBlockData(r, false);
+        }
+        setSignLines(sign, true, new String[]{end ? "END" : "START", "sneak only", "", ""});
+    }
+
+    private void placeTollTower(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dy = 0; dy <= 4; dy++) world.getBlockAt(x, y + dy, z).setType(Material.DEEPSLATE_BRICKS, false);
+        world.getBlockAt(x, y + 5, z).setType(Material.BELL, false);
+        world.getBlockAt(x + 1, y, z).setType(Material.CAMPFIRE, false);
+    }
+
+    private void placeCoopPlate(Location base, String id) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        world.getBlockAt(x, y - 1, z).setType(Material.CHISELED_DEEPSLATE, false);
+        world.getBlockAt(x, y, z).setType(Material.STONE_PRESSURE_PLATE, false);
+        world.getBlockAt(x + 1, y, z).setType(Material.CHISELED_TUFF, false);
+        if (id != null && id.contains("vault")) {
+            Block sign = world.getBlockAt(x, y, z + 2);
+            sign.setType(Material.OAK_SIGN, false);
+            if (sign.getBlockData() instanceof Rotatable r) {
+                r.setRotation(BlockFace.SOUTH);
+                sign.setBlockData(r, false);
+            }
+            setSignLines(sign, false, new String[]{"", "", "", ""});
+        }
+    }
+
+    private void placeCarveWall(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = 0; dy <= 2; dy++) {
+                world.getBlockAt(x + dx, y + dy, z).setType(Material.POLISHED_DEEPSLATE, false);
+            }
+        }
+    }
+
+    private void placeSoulGallery(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) world.getBlockAt(x + dx, y - 1, z + dz).setType(Material.SOUL_SAND, false);
+        }
+        world.getBlockAt(x, y, z).setType(Material.SOUL_FIRE, false);
+    }
+
+    private void placeHerdAnchor(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        world.getBlockAt(x, y, z).setType(Material.HAY_BLOCK, false);
+        world.getBlockAt(x + 1, y, z).setType(Material.MOSS_BLOCK, false);
+        world.getBlockAt(x - 1, y, z).setType(Material.MOSS_BLOCK, false);
+    }
+
+    private void placeFarWater(Location base) {
+        placeSellaPool(base);
+        org.bukkit.World world = base.getWorld();
+        if (world != null) {
+            world.getBlockAt(base.getBlockX() + 2, base.getBlockY(), base.getBlockZ()).setType(Material.SEAGRASS, false);
+        }
+    }
+
+    private void setSignLines(Block b, boolean waxed, String[] lines) {
+        if (b == null) return;
+        try {
+            if (b.getState() instanceof Sign sign) {
+                var front = sign.getSide(Side.FRONT);
+                for (int i = 0; i < 4; i++) {
+                    String line = (lines != null && i < lines.length && lines[i] != null) ? lines[i] : "";
+                    front.setLine(i, com.observance.watcher.util.TextFit.clampLine(line,
+                            com.observance.watcher.util.TextFit.SIGN_LINE_CHARS));
+                }
+                try { sign.setWaxed(waxed); } catch (Throwable ignored) { }
+                sign.update(true, false);
+            }
+        } catch (Throwable ignored) { }
+    }
+
     /**
      * {@code /observance placeprologue} — stages the COLD-START PROLOGUE anomaly in the group's OWN base
      * (cold-start-prologue §1.1–1.2 / §7 item 6): the first-report lectern + a lit marker that "wasn't
@@ -1513,7 +1912,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placeprologue", "lens", "wren", "keeper", "townsfolk", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelab", "placeprologue", "lens", "wren", "keeper", "townsfolk", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
