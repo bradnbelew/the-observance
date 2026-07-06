@@ -79,6 +79,7 @@ export function DirectorRunPanel({
           </p>
           <CommandLine>/obs status</CommandLine>
           <CommandLine>/obs prepworld</CommandLine>
+          <CommandLine>/obs coverage</CommandLine>
           <CommandLine>/obs rehearse start</CommandLine>
           <CommandLine>/obs runbook spine</CommandLine>
           <CommandLine>/obs audit</CommandLine>

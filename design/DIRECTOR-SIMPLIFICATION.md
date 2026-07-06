@@ -46,6 +46,7 @@ Then use:
 ```mcfunction
 /obs audit
 /obs repair
+/obs coverage
 /obs rehearse start
 /obs runbook spine
 ```
@@ -55,6 +56,8 @@ Then use:
 `runbook` is the in-world director cheat sheet. Use `/obs runbook setup`, `/obs runbook spine`, `/obs runbook side`, `/obs runbook scare`, or `/obs runbook ops` while testing so the next interaction and the relevant skip commands are visible inside Minecraft instead of buried in docs.
 
 `rehearse` is the guided test-pass tracker. Use `/obs rehearse start`, then `/obs rehearse done` after each stage. It walks the operator through setup, hardware repair, main spine, side/lore lanes, Watcher scare checks, and dashboard/production-placement checks.
+
+`coverage` is the launch-lane preflight. It reports whether the prologue, surface spine, Mara books, deep payoff, NPC side/lore surfaces, Watcher scare lane, and optional Nether/End lanes are ready, missing, or need repair.
 
 Real launch placement should become a curation pass:
 

@@ -64,6 +64,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "status" -> sendStatus(sender);
             case "audit" -> handleAudit(sender);
             case "repair" -> handleRepair(sender);
+            case "coverage" -> handleCoverage(sender);
             case "reload" -> {
                 boolean ok = plugin.reloadAll();
                 sender.sendMessage(ok ? "Observance: config + sites reloaded."
@@ -101,7 +102,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | coverage | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1077,7 +1078,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  2) Solve one fixture from each family: bow, chest, bookshelf, lecterns, frames, pool, corridor, vault.");
         sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
         sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
-        sender.sendMessage("  5) Use /obs rehearse start for guided progress; keep this world as rehearsal only.");
+        sender.sendMessage("  5) Use /obs coverage, then /obs rehearse start; keep this world as rehearsal only.");
     }
 
     /**
@@ -1152,7 +1153,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + "/5 Mara lecterns.");
         sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
-        sender.sendMessage("  Run /obs rehearse start, then /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
+        sender.sendMessage("  Run /obs coverage and /obs rehearse start, then /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
     }
 
     private static final RehearsalStage[] REHEARSAL_STAGES = {
@@ -1284,6 +1285,105 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private record RehearsalStage(String id, String title, String runbookPage,
                                   String[] checks, String[] commands) { }
+
+    private static final CoverageLane[] COVERAGE_LANES = {
+            new CoverageLane("prologue", "Prologue and first marker", "setup", false,
+                    new String[]{"first_report_lectern_01", "first_marker_01"},
+                    "Open first report, confirm marker exists."),
+            new CoverageLane("surface", "Rosetta and six keeper stones", "spine", false,
+                    new String[]{"rune_rosetta", "stone_vaun", "stone_mara", "stone_sella",
+                            "stone_orin", "stone_brann", "stone_iss"},
+                    "Read/touch each keeper site; submit at one blank answer surface."),
+            new CoverageLane("mara", "Mara page-lock lecterns", "spine", false,
+                    new String[]{"mara_lectern_1", "mara_lectern_2", "mara_lectern_3",
+                            "mara_lectern_4", "mara_lectern_5"},
+                    "Open all five lecterns; every lectern must hold a written book."),
+            new CoverageLane("deep", "Deep payoff and finale spine", "spine", false,
+                    new String[]{"stone_of_reckoning", "the_cold_hearth", "unbroken_light",
+                            "the_threshold", "the_unwriting", "threshold_vault"},
+                    "Walk reckoning, cold hearth, Accepting floor, threshold, unwriting, vault."),
+            new CoverageLane("dimensions", "Nether and End side lanes", "side", true,
+                    new String[]{"nether_forge", "end_seventh_shrine"},
+                    "Optional for first pass; survey in the real Nether/End before placeworld."),
+    };
+
+    /**
+     * {@code /observance coverage} - readiness by launch lane, not by raw site list. This is the
+     * director-facing answer to "what parts of the ARG are actually testable right now?"
+     */
+    private void handleCoverage(CommandSender sender) {
+        sender.sendMessage("== Observance rehearsal coverage ==");
+        int requiredReady = 0;
+        int requiredTotal = 0;
+        for (CoverageLane lane : COVERAGE_LANES) {
+            CoverageState state = coverageState(lane);
+            if (!lane.optional) {
+                requiredTotal++;
+                if (state.ready) requiredReady++;
+            }
+            String prefix = state.ready ? "[OK]" : lane.optional ? "[OPT]" : "[MISS]";
+            sender.sendMessage(prefix + " " + lane.title + " - " + state.ok + "/" + state.total + " ready");
+            if (state.firstIssue != null) sender.sendMessage("  first issue: " + state.firstIssue);
+            sender.sendMessage("  test: " + lane.testInstruction);
+            sender.sendMessage("  help: /obs runbook " + lane.runbookPage);
+        }
+
+        boolean npcReady = plugin.townsfolk() != null && plugin.wren() != null && plugin.keeper() != null;
+        if (npcReady) requiredReady++;
+        requiredTotal++;
+        sender.sendMessage((npcReady ? "[OK] " : "[MISS] ") + "NPC side/lore surfaces - "
+                + "townsfolk=" + (plugin.townsfolk() != null)
+                + ", wren=" + (plugin.wren() != null)
+                + ", keeper=" + (plugin.keeper() != null));
+        sender.sendMessage("  test: /obs townsfolk spawn, /obs wren spawn, /obs keeper spawn lab");
+        sender.sendMessage("  help: /obs runbook side");
+
+        boolean scareReady = plugin.config() != null && plugin.config().dramaEnabled();
+        if (scareReady) requiredReady++;
+        requiredTotal++;
+        sender.sendMessage((scareReady ? "[OK] " : "[MISS] ") + "Watcher scare lane - drama enabled=" + scareReady);
+        sender.sendMessage("  test: /obs test stalker, /obs test hunt, /obs test elsewhere");
+        sender.sendMessage("  help: /obs runbook scare");
+
+        sender.sendMessage("Required launch lanes ready: " + requiredReady + "/" + requiredTotal + ".");
+        if (requiredReady == requiredTotal) {
+            sender.sendMessage("Next: /obs rehearse start, then advance with /obs rehearse done.");
+        } else {
+            sender.sendMessage("Next: /obs prepworld or /obs fullrun, then /obs audit -> /obs repair -> /obs coverage.");
+        }
+    }
+
+    private CoverageState coverageState(CoverageLane lane) {
+        int total = lane.siteIds.length;
+        int ok = 0;
+        String firstIssue = null;
+        for (String siteId : lane.siteIds) {
+            String issue = coverageIssue(siteId);
+            if (issue == null) {
+                ok++;
+            } else if (firstIssue == null) {
+                firstIssue = issue;
+            }
+        }
+        return new CoverageState(ok == total, ok, total, firstIssue);
+    }
+
+    private String coverageIssue(String siteId) {
+        if (plugin.sites() == null) return siteId + ": sites config unavailable.";
+        Site site = plugin.sites().get(siteId);
+        if (site == null) return siteId + ": missing from sites.yml.";
+        if (!site.enabled()) return siteId + ": disabled.";
+        if (!site.isPlaced()) return siteId + ": unplaced.";
+        Location loc = site.location();
+        if (loc == null || loc.getWorld() == null) return siteId + ": world not loaded.";
+        String hardware = auditPlacedSite(site, loc);
+        return hardware == null ? null : hardware;
+    }
+
+    private record CoverageLane(String id, String title, String runbookPage, boolean optional,
+                                String[] siteIds, String testInstruction) { }
+
+    private record CoverageState(boolean ready, int ok, int total, String firstIssue) { }
 
     /**
      * {@code /observance runbook [page]} - the in-world director cheat sheet. It keeps the launch
@@ -2977,7 +3077,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "audit", "repair", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "repair", "coverage", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("runbook")) {
