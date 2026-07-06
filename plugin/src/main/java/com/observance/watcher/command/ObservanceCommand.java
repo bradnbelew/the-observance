@@ -87,10 +87,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "wren" -> handleWren(sender, args);
             case "keeper" -> handleKeeper(sender, args);
             case "townsfolk" -> handleTownsfolk(sender, args);
+            case "test" -> handleTest(sender, args);
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelab | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelab | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1486,6 +1487,203 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * the sender (must be a player). Refreshes the recipient's gated-rune visibility immediately so a
      * rune placed before they held the Lens appears the moment it lands in an empty hand.
      */
+    /**
+     * {@code /observance test <menu|preset> [player]} - director controls for forcing late-game
+     * hauntings and story beats during staging. These call the real beat engine with a temporary
+     * local site, so the test catches resource-pack, visibility, and reveal-discipline problems.
+     */
+    private void handleTest(CommandSender sender, String[] args) {
+        String preset = args.length > 1 ? args[1].trim().toLowerCase(Locale.ROOT) : "menu";
+        if (preset.isBlank() || preset.equals("menu") || preset.equals("help")) {
+            sendTestMenu(sender);
+            return;
+        }
+
+        Player target = testTarget(sender, args);
+        if (target == null) return;
+        Location anchor = testAnchor(sender, target);
+        if (anchor == null || anchor.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve a test location.");
+            return;
+        }
+
+        if (preset.equals("needle")) {
+            handleNeedle(sender, target.equals(sender) ? new String[]{"needle"} : new String[]{"needle", target.getName()});
+            return;
+        }
+
+        String beatType;
+        com.observance.watcher.beats.BeatCategory category = com.observance.watcher.beats.BeatCategory.AMBIENT;
+        String payload;
+        switch (preset) {
+            case "whisper" -> {
+                beatType = "private_message";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"mode\":\"actionbar\",\"text\":\"the record notices where you stand\"}";
+            }
+            case "title" -> {
+                beatType = "private_message";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"mode\":\"title\",\"title\":\"THE OBSERVANCE\",\"subtitle\":\"something is listening\",\"fade_in\":10,\"stay\":45,\"fade_out\":20}";
+            }
+            case "sound" -> {
+                beatType = "private_sound";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"named_sound\":\"observance:whisper\",\"volume\":0.7,\"pitch\":0.85,\"behind\":true,\"offset\":4.0}";
+            }
+            case "voice" -> {
+                beatType = "spatial_voice";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"named_sound\":\"observance:keeper_voice\",\"volume\":0.75,\"pitch\":1.0,\"behind\":true,\"offset\":5.0}";
+            }
+            case "dark", "darkness" -> {
+                beatType = "private_darkness";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"seconds\":4,\"amplifier\":0}";
+            }
+            case "name", "wall" -> {
+                prepareWallTest(anchor);
+                beatType = "name_on_wall";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"distance\":3,\"seconds\":8,\"look_away_despawn\":true,\"rune_font\":true,\"text\":\"%name%\",\"color\":\"#8a1c1c\",\"billboard\":true,\"glow\":false}";
+            }
+            case "reflection", "water" -> {
+                prepareReflectionTest(anchor);
+                beatType = "reflection";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"text\":\"FAR WATER\",\"rune_font\":true,\"seconds\":12,\"look_watch\":false,\"search_radius\":6}";
+            }
+            case "mob", "watcher" -> {
+                beatType = "named_mob";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"entity\":\"WARDEN\",\"name\":\"the watcher\",\"distance\":12,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":0,\"retreating\":false}";
+            }
+            case "torch" -> {
+                prepareTorchTest(anchor);
+                beatType = "torch_gutter";
+                payload = "{\"radius\":6,\"max_torches\":3,\"relight_seconds\":30,\"permanent\":false}";
+            }
+            case "decay" -> {
+                prepareWallTest(anchor);
+                beatType = "decay_creep";
+                payload = "{\"radius\":4,\"count\":3,\"material\":\"COBWEB\",\"needs_support\":true}";
+            }
+            case "drift" -> {
+                prepareWallTest(anchor);
+                beatType = "world_drift";
+                payload = "{\"radius\":4,\"count\":3,\"vein_material\":\"SCULK_VEIN\",\"floor_material\":\"MOSS_CARPET\"}";
+            }
+            case "particles", "particle" -> {
+                beatType = "private_particle";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"particle\":\"SMOKE\",\"count\":18,\"spread\":0.45,\"speed\":0.0,\"height\":1.0,\"near_player\":true}";
+            }
+            case "toast" -> {
+                beatType = "advancement_toast";
+                category = com.observance.watcher.beats.BeatCategory.DIRECTED;
+                payload = "{\"advancement\":\"observance:record_notes_you\",\"fallback_title\":\"The record notes you\",\"fallback_subtitle\":\"This is only a test.\"}";
+            }
+            case "sign" -> {
+                prepareWallTest(anchor);
+                beatType = "sign_write";
+                payload = "{\"lines\":[\"THE RECORD\",\"LEAVES MARKS\",\"WHERE YOU\",\"LOOK AWAY\"],\"side\":\"front\",\"place_if_missing\":true,\"material\":\"OAK_WALL_SIGN\",\"glowing\":false}";
+            }
+            default -> {
+                sender.sendMessage("Observance: unknown test preset '" + preset + "'.");
+                sendTestMenu(sender);
+                return;
+            }
+        }
+
+        com.observance.watcher.beats.BeatEngine engine = plugin.beatEngine();
+        if (engine == null) {
+            sender.sendMessage("Observance: beat engine unavailable.");
+            return;
+        }
+        com.observance.watcher.beats.Beat beat = engine.library().get(beatType);
+        if (beat == null) {
+            sender.sendMessage("Observance: beat '" + beatType + "' is not registered.");
+            return;
+        }
+        Site testSite = new Site("test_" + preset, "test", anchor.getWorld().getName(),
+                (double) anchor.getBlockX(), (double) anchor.getBlockY(), (double) anchor.getBlockZ(),
+                8.0, 8.0, false, true, null);
+        com.observance.watcher.beats.BeatRequest req = new com.observance.watcher.beats.BeatRequest(
+                "admin-test-" + preset + "-" + System.nanoTime(), beatType, category,
+                target, testSite, com.observance.watcher.beats.BeatPayload.parse(payload));
+        com.observance.watcher.beats.BeatResult r = safety.call("command.test." + preset,
+                () -> beat.enact(engine.context(), req), com.observance.watcher.beats.BeatResult.failed("threw"));
+
+        sender.sendMessage("Observance test: " + preset + " -> " + target.getName() + " -> " + describe(r));
+        if (preset.equals("reflection") || preset.equals("torch") || preset.equals("decay") || preset.equals("drift")
+                || preset.equals("sign")) {
+            sender.sendMessage("  Step back or look away for a few seconds if the change is reveal-disciplined.");
+        }
+    }
+
+    private void sendTestMenu(CommandSender sender) {
+        sender.sendMessage("== Observance test presets ==");
+        sender.sendMessage("/obs test whisper [player]    - private actionbar text");
+        sender.sendMessage("/obs test title [player]      - title/subtitle pressure");
+        sender.sendMessage("/obs test sound [player]      - resource-pack whisper");
+        sender.sendMessage("/obs test voice [player]      - spatial Keeper voice");
+        sender.sendMessage("/obs test darkness [player]   - short darkness effect");
+        sender.sendMessage("/obs test name [player]       - name appears on a wall");
+        sender.sendMessage("/obs test reflection [player] - water-rune reflection");
+        sender.sendMessage("/obs test mob [player]        - watcher body behind/near player");
+        sender.sendMessage("/obs test torch [player]      - nearby torches gutter");
+        sender.sendMessage("/obs test decay [player]      - cobweb creep on support blocks");
+        sender.sendMessage("/obs test drift [player]      - sculk/moss world drift");
+        sender.sendMessage("/obs test particles [player]  - private smoke particles");
+        sender.sendMessage("/obs test toast [player]      - story advancement toast");
+        sender.sendMessage("/obs test sign [player]       - forced sign writing");
+        sender.sendMessage("/obs test needle [player]     - recovery needle to kept light");
+    }
+
+    private Player testTarget(CommandSender sender, String[] args) {
+        if (args.length >= 3 && !args[2].isBlank()) {
+            Player p = Bukkit.getPlayerExact(args[2].trim());
+            if (p == null) {
+                sender.sendMessage("Observance: player '" + args[2].trim() + "' not found / offline.");
+            }
+            return p;
+        }
+        if (sender instanceof Player p) return p;
+        sender.sendMessage("Observance: console must name a player.");
+        return null;
+    }
+
+    private Location testAnchor(CommandSender sender, Player target) {
+        if (sender instanceof Player p && p.getWorld() != null) return p.getLocation();
+        return target.getLocation();
+    }
+
+    private void prepareReflectionTest(Location anchor) {
+        Location base = anchor.clone().add(0, -1, 0);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                base.clone().add(dx, 0, dz).getBlock().setType(Material.WATER, false);
+            }
+        }
+    }
+
+    private void prepareTorchTest(Location anchor) {
+        Location base = anchor.clone().add(0, -1, 0);
+        for (int i = -1; i <= 1; i++) {
+            base.clone().add(i * 2, 0, 2).getBlock().setType(Material.STONE, false);
+            base.clone().add(i * 2, 1, 2).getBlock().setType(Material.TORCH, false);
+        }
+    }
+
+    private void prepareWallTest(Location anchor) {
+        Location base = anchor.clone().add(0, -1, 3);
+        for (int x = -2; x <= 2; x++) {
+            for (int y = 0; y <= 3; y++) {
+                base.clone().add(x, y, 0).getBlock().setType(Material.SMOOTH_STONE, false);
+            }
+        }
+    }
+
     private void handleLens(CommandSender sender, String[] args) {
         String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "give";
         if (!op.equals("give")) {
@@ -1821,6 +2019,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "spawn";
         String id = args.length > 2 && !args[2].isBlank() ? args[2].trim().toLowerCase(Locale.ROOT) : null;
+        if (id == null && com.observance.watcher.npc.TownsfolkNpc.byId(op) != null) {
+            id = op;
+            op = "spawn";
+        }
         switch (op) {
             case "spawn" -> {
                 Location loc = player.getLocation();
@@ -1912,7 +2114,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelab", "placeprologue", "lens", "wren", "keeper", "townsfolk", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelab", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
@@ -1935,6 +2137,24 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("keeper")) {
             for (String s : new String[]{"spawn", "despawn"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("townsfolk")) {
+            for (String s : new String[]{"spawn", "despawn", "aro", "wenna", "coll", "dob", "old-pell"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("townsfolk")) {
+            for (String s : new String[]{"aro", "wenna", "coll", "dob", "old-pell"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("test")) {
+            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("test")) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.getName().toLowerCase(Locale.ROOT).startsWith(args[2].toLowerCase(Locale.ROOT))) {
+                    out.add(p.getName());
+                }
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("lens")) {
             for (Player p : Bukkit.getOnlinePlayers()) {

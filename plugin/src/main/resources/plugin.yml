@@ -54,6 +54,7 @@ commands:
       /observance lens give [player] - give the Lens (second-sight) item
       /observance wren <spawn|despawn|reckoning> - place the companion NPC (Wren) here, or the three reckoning-choice markers
       /observance townsfolk <spawn|despawn> [id] - place/remove the surface townsfolk NPCs
+      /observance test <menu|preset> [player] - force hauntings, story beats, resource-pack checks, and late-game test effects
       /observance needle [player] - give the recovery-needle first-find aid
       /observance finale - place the three finale-rite markers at the Seventh's chamber
       /observance reading - auto-carve the six Seventh-Reading keeper fragments
