@@ -78,6 +78,8 @@ Use:
 
 These queue stronger scare sequences: darkness, close hostile sound, warning text, silent humanoid figures, and a client-only wrong-sky/wrong-weather "elsewhere" shift. They are still safe: no griefing, no trap, no real kill requirement, no real teleport.
 
+Live ambient haunting now favors the same safe scare palette under the existing drama budget: cave/heartbeat-style private sounds, ash/smoke particles, darkness, wrong-sky time/weather shifts, light-dimming, and a very rare no-AI humanoid apparition only at high attention. The world stays restrained, but the Watcher is no longer just soft ambience.
+
 ### 4. Lectern Books Are Server-Side
 
 Vercel/dashboard deploys do not fill Minecraft lecterns. Empty lecterns are fixed by the plugin jar and in-world placement commands.

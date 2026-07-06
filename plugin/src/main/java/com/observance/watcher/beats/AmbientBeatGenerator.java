@@ -94,7 +94,9 @@ public final class AmbientBeatGenerator {
                 site,
                 BeatPayload.empty());
 
-        Beat beat = library.pickAmbient(ctx, req);
+        AmbientChoice choice = pickScaryAmbient(tier, req);
+        Beat beat = choice == null ? library.pickAmbient(ctx, req) : library.get(choice.beatType);
+        BeatPayload payload = choice == null ? req.payload() : BeatPayload.parse(choice.payload);
         if (beat == null) return; // nothing can fire here right now — stay quiet
 
         // Reserve budget keyed to the focus player.
@@ -103,9 +105,9 @@ public final class AmbientBeatGenerator {
             return; // cooldowns/window say not now
         }
 
-        // Re-wrap the request under the chosen beat's identity (same payload).
+        // Re-wrap the request under the chosen beat's identity and safe synthesized payload.
         BeatRequest enactReq = new BeatRequest(req.beatId(), beat.name(),
-                BeatCategory.AMBIENT, focus, site, req.payload());
+                BeatCategory.AMBIENT, focus, site, payload);
 
         BeatResult result = ctx.safety().call("beat.ambient.enact." + beat.name(),
                 () -> beat.enact(ctx, enactReq), BeatResult.failed("threw"));
@@ -127,6 +129,64 @@ public final class AmbientBeatGenerator {
      * signals, read cheaply from Bukkit on main: alone, deep, in the dark, at night. Capped so it ramps
      * over several considerations rather than spiking instantly.
      */
+    private AmbientChoice pickScaryAmbient(Attention.Tier tier, BeatRequest baseReq) {
+        AmbientChoice[] choices = scaryChoices(tier);
+        int total = 0;
+        for (AmbientChoice c : choices) {
+            if (c.weight <= 0) continue;
+            Beat beat = library.get(c.beatType);
+            if (beat == null) continue;
+            BeatRequest probe = new BeatRequest(baseReq.beatId(), c.beatType, BeatCategory.AMBIENT,
+                    baseReq.targetPlayer(), baseReq.site(), BeatPayload.parse(c.payload));
+            boolean ok = ctx.safety().call("beat.ambient.canEnact." + c.beatType,
+                    () -> beat.canEnact(ctx, probe), Boolean.FALSE);
+            if (Boolean.TRUE.equals(ok)) total += c.weight;
+        }
+        if (total <= 0) return null;
+
+        int r = ThreadLocalRandom.current().nextInt(total);
+        for (AmbientChoice c : choices) {
+            if (c.weight <= 0) continue;
+            Beat beat = library.get(c.beatType);
+            if (beat == null) continue;
+            BeatRequest probe = new BeatRequest(baseReq.beatId(), c.beatType, BeatCategory.AMBIENT,
+                    baseReq.targetPlayer(), baseReq.site(), BeatPayload.parse(c.payload));
+            boolean ok = ctx.safety().call("beat.ambient.canEnact." + c.beatType,
+                    () -> beat.canEnact(ctx, probe), Boolean.FALSE);
+            if (!Boolean.TRUE.equals(ok)) continue;
+            r -= c.weight;
+            if (r < 0) return c;
+        }
+        return null;
+    }
+
+    private static AmbientChoice[] scaryChoices(Attention.Tier tier) {
+        boolean dread = tier == Attention.Tier.DREAD;
+        boolean unease = tier == Attention.Tier.UNEASE;
+        return new AmbientChoice[]{
+                new AmbientChoice("private_sound",
+                        "{\"sound\":\"AMBIENT_CAVE\",\"volume\":0.9,\"pitch\":0.55,\"behind\":true,\"offset\":3.0}",
+                        4),
+                new AmbientChoice("private_particle",
+                        "{\"particle\":\"ASH\",\"count\":45,\"spread\":0.8,\"speed\":0.0,\"height\":1.0,\"near_player\":true,\"offset\":2.0}",
+                        3),
+                new AmbientChoice("private_darkness",
+                        "{\"effect\":\"DARKNESS\",\"seconds\":" + (dread ? 7 : 4) + ",\"amplifier\":0}",
+                        unease || dread ? 3 : 1),
+                new AmbientChoice("private_time_shift",
+                        "{\"mode\":\"both\",\"time\":18000,\"weather\":\"DOWNFALL\",\"seconds\":" + (dread ? 12 : 8) + "}",
+                        unease || dread ? 2 : 1),
+                new AmbientChoice("proximity_dim",
+                        "{\"seconds\":" + (dread ? 8 : 5) + "}",
+                        2),
+                new AmbientChoice("named_mob",
+                        "{\"entity\":\"WITHER_SKELETON\",\"fallback_entity\":\"STRAY\",\"name\":\"\",\"distance\":8,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":14,\"name_visible\":false}",
+                        dread ? 1 : 0)
+        };
+    }
+
+    private record AmbientChoice(String beatType, String payload, int weight) { }
+
     private double situationDelta(Player p, List<? extends Player> online) {
         var loc = p.getLocation();
         if (loc == null || loc.getWorld() == null) return 0.0;
