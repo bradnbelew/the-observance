@@ -27,9 +27,11 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * {@code /observance} admin command. Read-only status + safe controls (reload, local sleep
@@ -39,6 +41,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private final ObservancePlugin plugin;
     private final Safety safety;
+    private final Map<String, Integer> rehearsalProgress = new HashMap<>();
 
     public ObservanceCommand(ObservancePlugin plugin, Safety safety) {
         this.plugin = plugin;
@@ -88,6 +91,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "fullrun" -> handleFullRun(sender, args);
             case "prepworld" -> handlePrepWorld(sender, args);
             case "runbook" -> handleRunbook(sender, args);
+            case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
@@ -97,7 +101,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | runbook [setup|spine|side|scare|ops] | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1073,7 +1077,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  2) Solve one fixture from each family: bow, chest, bookshelf, lecterns, frames, pool, corridor, vault.");
         sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
         sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
-        sender.sendMessage("  5) Use /obs runbook spine for the in-world cheat sheet; keep this world as rehearsal only.");
+        sender.sendMessage("  5) Use /obs rehearse start for guided progress; keep this world as rehearsal only.");
     }
 
     /**
@@ -1148,8 +1152,138 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + "/5 Mara lecterns.");
         sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
-        sender.sendMessage("  Run /obs runbook spine, then /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
+        sender.sendMessage("  Run /obs rehearse start, then /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
     }
+
+    private static final RehearsalStage[] REHEARSAL_STAGES = {
+            new RehearsalStage("setup", "Build the rehearsal world", "setup",
+                    new String[]{
+                            "Choose one path: compact playable world or floating lab.",
+                            "Confirm the tester has the Lens and kept needle.",
+                            "Keep this save/test area separate from final production placement."
+                    },
+                    new String[]{"/obs prepworld", "/obs fullrun", "/obs lens give <player>", "/obs needle <player>"}),
+            new RehearsalStage("hardware", "Catch and repair boring blockers", "setup",
+                    new String[]{
+                            "Run audit before and after repair.",
+                            "Lecterns must contain written books.",
+                            "Answer signs, Vaun chest/bookshelf, and core anchors must exist."
+                    },
+                    new String[]{"/obs audit", "/obs repair", "/obs audit"}),
+            new RehearsalStage("spine", "Play the main story spine", "spine",
+                    new String[]{
+                            "Open the prologue report and check the first marker.",
+                            "Touch/read each keeper site and test one answer surface.",
+                            "Walk Mara lecterns, deep payoff sites, Wren, and finale markers."
+                    },
+                    new String[]{"/obs runbook spine", "/obs flag list", "/obs flag set companion_revealed"}),
+            new RehearsalStage("side", "Prove side-story and lore surfaces", "side",
+                    new String[]{
+                            "Right-click all five townsfolk.",
+                            "Spawn/interact with Wren and a Keeper node.",
+                            "If time allows, survey the Nether and End side lanes in their real dimensions."
+                    },
+                    new String[]{"/obs townsfolk spawn", "/obs wren spawn", "/obs keeper spawn lab", "/obs runbook side"}),
+            new RehearsalStage("scare", "Run the Watcher scare pass", "scare",
+                    new String[]{
+                            "Fire the humanlike/danger presets on a real tester.",
+                            "Listen for close sounds and watch for darkness, ash, wrong sky, dimming, and figures.",
+                            "Mute with sleep if the test space gets too noisy."
+                    },
+                    new String[]{"/obs test stalker", "/obs test hunt", "/obs test elsewhere", "/obs sleep on", "/obs sleep off"}),
+            new RehearsalStage("ops", "Check dashboard and final placement path", "ops",
+                    new String[]{
+                            "Dashboard should show mode, pending approvals, armed beats, and failed beats.",
+                            "Use manual mode when approving beats by hand.",
+                            "For production geography, survey anchors with site set before placeworld."
+                    },
+                    new String[]{"/obs status", "/obs runbook ops", "/obs site set <siteId>", "/obs placeworld"})
+    };
+
+    /**
+     * {@code /observance rehearse <start|status|done|next|back|reset|list|stage>} - per-operator,
+     * in-memory guided progress for a live test pass. It intentionally does not auto-run destructive
+     * placement commands; it tells the director what to do next and lets them confirm each stage.
+     */
+    private void handleRehearse(CommandSender sender, String[] args) {
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT).trim() : "status";
+        if (op.isBlank()) op = "status";
+        String key = rehearsalKey(sender);
+        switch (op) {
+            case "start", "reset" -> {
+                rehearsalProgress.put(key, 0);
+                sender.sendMessage("Observance rehearsal: started at stage 1/" + REHEARSAL_STAGES.length + ".");
+                sendRehearsalStage(sender, 0);
+            }
+            case "status" -> sendRehearsalStage(sender, rehearsalProgress.getOrDefault(key, 0));
+            case "done", "next" -> {
+                int current = rehearsalProgress.getOrDefault(key, 0);
+                int next = Math.min(REHEARSAL_STAGES.length - 1, current + 1);
+                rehearsalProgress.put(key, next);
+                if (current >= REHEARSAL_STAGES.length - 1) {
+                    sender.sendMessage("Observance rehearsal: final stage already reached. Run /obs audit one more time before launch.");
+                } else {
+                    sender.sendMessage("Observance rehearsal: advanced to stage " + (next + 1) + "/" + REHEARSAL_STAGES.length + ".");
+                }
+                sendRehearsalStage(sender, next);
+            }
+            case "back" -> {
+                int current = rehearsalProgress.getOrDefault(key, 0);
+                int prev = Math.max(0, current - 1);
+                rehearsalProgress.put(key, prev);
+                sendRehearsalStage(sender, prev);
+            }
+            case "list" -> {
+                sender.sendMessage("== Observance rehearsal stages ==");
+                for (int i = 0; i < REHEARSAL_STAGES.length; i++) {
+                    RehearsalStage stage = REHEARSAL_STAGES[i];
+                    sender.sendMessage(" " + (i + 1) + ") " + stage.id + " - " + stage.title);
+                }
+                sender.sendMessage("Jump: /obs rehearse <stageId>. Advance: /obs rehearse done.");
+            }
+            default -> {
+                int idx = rehearsalStageIndex(op);
+                if (idx >= 0) {
+                    rehearsalProgress.put(key, idx);
+                    sendRehearsalStage(sender, idx);
+                } else {
+                    sender.sendMessage("Usage: /obs rehearse <start|status|done|next|back|reset|list|setup|hardware|spine|side|scare|ops>");
+                }
+            }
+        }
+    }
+
+    private String rehearsalKey(CommandSender sender) {
+        if (sender instanceof Player player) {
+            UUID id = player.getUniqueId();
+            return id == null ? "player:" + player.getName().toLowerCase(Locale.ROOT) : "player:" + id;
+        }
+        return "sender:" + sender.getName().toLowerCase(Locale.ROOT);
+    }
+
+    private int rehearsalStageIndex(String id) {
+        for (int i = 0; i < REHEARSAL_STAGES.length; i++) {
+            if (REHEARSAL_STAGES[i].id.equals(id)) return i;
+        }
+        return -1;
+    }
+
+    private void sendRehearsalStage(CommandSender sender, int rawIndex) {
+        int index = Math.max(0, Math.min(REHEARSAL_STAGES.length - 1, rawIndex));
+        RehearsalStage stage = REHEARSAL_STAGES[index];
+        sender.sendMessage("== Rehearsal " + (index + 1) + "/" + REHEARSAL_STAGES.length + ": " + stage.title + " ==");
+        sender.sendMessage(" Runbook: /obs runbook " + stage.runbookPage);
+        sender.sendMessage(" Checks:");
+        for (String check : stage.checks) sender.sendMessage("  - " + check);
+        sender.sendMessage(" Commands:");
+        for (String command : stage.commands) sender.sendMessage("  " + command);
+        sender.sendMessage(index >= REHEARSAL_STAGES.length - 1
+                ? " Finish: /obs audit, then inspect dashboard failed beats."
+                : " Advance when satisfied: /obs rehearse done");
+    }
+
+    private record RehearsalStage(String id, String title, String runbookPage,
+                                  String[] checks, String[] commands) { }
 
     /**
      * {@code /observance runbook [page]} - the in-world director cheat sheet. It keeps the launch
@@ -2843,11 +2977,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "audit", "repair", "runbook", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "repair", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("runbook")) {
             for (String s : new String[]{"setup", "spine", "side", "scare", "ops"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("rehearse")) {
+            for (String s : new String[]{"start", "status", "done", "next", "back", "reset", "list", "setup", "hardware", "spine", "side", "scare", "ops"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {

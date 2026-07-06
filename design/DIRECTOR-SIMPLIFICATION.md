@@ -46,12 +46,15 @@ Then use:
 ```mcfunction
 /obs audit
 /obs repair
+/obs rehearse start
 /obs runbook spine
 ```
 
 `audit` checks the placed site registry for the boring failures that ruin a run: unplaced core sites, unloaded worlds, missing books, empty lecterns, absent chest/bookshelf hardware, and air at core anchors. `repair` fixes the common placed-site failures: missing lectern books, answer signs, Vaun shelf/chest hardware, blank first marker, and blank code-built set-piece anchors. After repair, run `audit` again.
 
 `runbook` is the in-world director cheat sheet. Use `/obs runbook setup`, `/obs runbook spine`, `/obs runbook side`, `/obs runbook scare`, or `/obs runbook ops` while testing so the next interaction and the relevant skip commands are visible inside Minecraft instead of buried in docs.
+
+`rehearse` is the guided test-pass tracker. Use `/obs rehearse start`, then `/obs rehearse done` after each stage. It walks the operator through setup, hardware repair, main spine, side/lore lanes, Watcher scare checks, and dashboard/production-placement checks.
 
 Real launch placement should become a curation pass:
 
