@@ -48,6 +48,7 @@ Then use:
 /obs repair
 /obs coverage
 /obs rehearse start
+/obs visit next
 /obs runbook spine
 ```
 
@@ -58,6 +59,8 @@ Then use:
 `rehearse` is the guided test-pass tracker. Use `/obs rehearse start`, then `/obs rehearse done` after each stage. It walks the operator through setup, hardware repair, main spine, side/lore lanes, Watcher scare checks, and dashboard/production-placement checks.
 
 `coverage` is the launch-lane preflight. It reports whether the prologue, surface spine, Mara books, deep payoff, NPC side/lore surfaces, Watcher scare lane, and optional Nether/End lanes are ready, missing, or need repair.
+
+`visit` is the site navigator for rehearsal. Use `/obs visit next` and `/obs visit back` to jump through placed launch sites in order, or jump straight to `/obs visit prologue`, `/obs visit surface`, `/obs visit mara`, `/obs visit deep`, `/obs visit dimensions`, or any specific site id.
 
 Real launch placement should become a curation pass:
 

@@ -81,6 +81,7 @@ export function DirectorRunPanel({
           <CommandLine>/obs prepworld</CommandLine>
           <CommandLine>/obs coverage</CommandLine>
           <CommandLine>/obs rehearse start</CommandLine>
+          <CommandLine>/obs visit next</CommandLine>
           <CommandLine>/obs runbook spine</CommandLine>
           <CommandLine>/obs audit</CommandLine>
           <CommandLine>/obs repair</CommandLine>

@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.14'
+version: '0.3.15'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -44,6 +44,7 @@ commands:
       /observance audit         - scan placed sites for missing core anchors, empty lecterns, and obvious hardware problems
       /observance repair        - repair common placed-site failures found by audit
       /observance coverage      - report launch-lane coverage: main spine, side/lore, dimensions, scare, and ops
+      /observance visit <next|back|list|siteId|lane> - teleport through placed rehearsal sites for fast testing
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
       /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)

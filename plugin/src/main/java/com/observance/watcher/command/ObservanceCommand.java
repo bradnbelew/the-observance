@@ -42,6 +42,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private final ObservancePlugin plugin;
     private final Safety safety;
     private final Map<String, Integer> rehearsalProgress = new HashMap<>();
+    private final Map<String, Integer> visitProgress = new HashMap<>();
 
     public ObservanceCommand(ObservancePlugin plugin, Safety safety) {
         this.plugin = plugin;
@@ -65,6 +66,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "audit" -> handleAudit(sender);
             case "repair" -> handleRepair(sender);
             case "coverage" -> handleCoverage(sender);
+            case "visit" -> handleVisit(sender, args);
             case "reload" -> {
                 boolean ok = plugin.reloadAll();
                 sender.sendMessage(ok ? "Observance: config + sites reloaded."
@@ -102,7 +104,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | coverage | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1078,7 +1080,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  2) Solve one fixture from each family: bow, chest, bookshelf, lecterns, frames, pool, corridor, vault.");
         sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
         sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
-        sender.sendMessage("  5) Use /obs coverage, then /obs rehearse start; keep this world as rehearsal only.");
+        sender.sendMessage("  5) Use /obs coverage, /obs rehearse start, and /obs visit next; keep this world as rehearsal only.");
     }
 
     /**
@@ -1153,7 +1155,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + "/5 Mara lecterns.");
         sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
-        sender.sendMessage("  Run /obs coverage and /obs rehearse start, then /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
+        sender.sendMessage("  Run /obs coverage, /obs rehearse start, and /obs visit next for the walk-through pass.");
     }
 
     private static final RehearsalStage[] REHEARSAL_STAGES = {
@@ -1384,6 +1386,124 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                                 String[] siteIds, String testInstruction) { }
 
     private record CoverageState(boolean ready, int ok, int total, String firstIssue) { }
+
+    private static final String[] VISIT_ROUTE = {
+            "first_report_lectern_01", "first_marker_01",
+            "rune_rosetta", "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
+            "mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5",
+            "stone_of_reckoning", "the_cold_hearth", "unbroken_light", "the_threshold", "the_unwriting", "threshold_vault",
+            "nether_forge", "end_seventh_shrine"
+    };
+
+    /**
+     * {@code /observance visit <next|back|list|siteId|lane>} - admin rehearsal teleport between placed
+     * story sites. This cuts down the operator burden when verifying large-world placement.
+     */
+    private void handleVisit(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /obs visit must be run by a player (needs teleport target).");
+            return;
+        }
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT).trim() : "next";
+        if (op.isBlank()) op = "next";
+
+        if (op.equals("list")) {
+            sender.sendMessage("== Observance visit route ==");
+            for (int i = 0; i < VISIT_ROUTE.length; i++) {
+                sender.sendMessage(" " + (i + 1) + ") " + VISIT_ROUTE[i] + visitSuffix(VISIT_ROUTE[i]));
+            }
+            sender.sendMessage("Lanes: prologue | surface | mara | deep | dimensions. Step: /obs visit next");
+            return;
+        }
+
+        String key = rehearsalKey(sender);
+        int targetIndex;
+        if (op.equals("next")) {
+            targetIndex = nextPlacedVisitIndex(visitProgress.getOrDefault(key, -1), 1);
+        } else if (op.equals("back") || op.equals("prev") || op.equals("previous")) {
+            targetIndex = nextPlacedVisitIndex(visitProgress.getOrDefault(key, 0), -1);
+        } else {
+            targetIndex = visitIndexFor(op);
+            if (targetIndex < 0) {
+                sender.sendMessage("Usage: /obs visit <next|back|list|siteId|prologue|surface|mara|deep|dimensions>");
+                return;
+            }
+        }
+
+        if (targetIndex < 0 || targetIndex >= VISIT_ROUTE.length) {
+            sender.sendMessage("Observance: no placed visit targets found. Run /obs prepworld or /obs fullrun, then /obs coverage.");
+            return;
+        }
+        String siteId = VISIT_ROUTE[targetIndex];
+        if (!teleportToSite(player, siteId)) {
+            sender.sendMessage("Observance: '" + siteId + "' is not placed or its world is not loaded.");
+            sender.sendMessage("Next: /obs coverage, then /obs prepworld or /obs site set " + siteId + ".");
+            return;
+        }
+        visitProgress.put(key, targetIndex);
+        sender.sendMessage("Observance visit " + (targetIndex + 1) + "/" + VISIT_ROUTE.length + ": " + siteId);
+        sender.sendMessage("  Continue: /obs visit next   Back: /obs visit back   Context: /obs coverage");
+    }
+
+    private int nextPlacedVisitIndex(int current, int dir) {
+        if (plugin.sites() == null || VISIT_ROUTE.length == 0) return -1;
+        int step = dir < 0 ? -1 : 1;
+        int start = Math.max(-1, Math.min(VISIT_ROUTE.length, current));
+        for (int i = start + step; i >= 0 && i < VISIT_ROUTE.length; i += step) {
+            Site site = plugin.sites().get(VISIT_ROUTE[i]);
+            if (site != null && site.enabled() && site.isPlaced() && site.location() != null) return i;
+        }
+        return -1;
+    }
+
+    private int visitIndexFor(String raw) {
+        String id = raw == null ? "" : raw.toLowerCase(Locale.ROOT).trim();
+        String first = switch (id) {
+            case "prologue", "start", "setup" -> "first_report_lectern_01";
+            case "surface", "keepers", "spine" -> "rune_rosetta";
+            case "mara", "lecterns" -> "mara_lectern_1";
+            case "deep", "payoff", "finale" -> "stone_of_reckoning";
+            case "dimensions", "dimension", "nether", "end" -> "nether_forge";
+            default -> id;
+        };
+        for (int i = 0; i < VISIT_ROUTE.length; i++) {
+            if (VISIT_ROUTE[i].equals(first)) return i;
+        }
+        return -1;
+    }
+
+    private boolean teleportToSite(Player player, String siteId) {
+        if (plugin.sites() == null) return false;
+        Site site = plugin.sites().get(siteId);
+        if (site == null || !site.enabled()) return false;
+        Location loc = site.location();
+        if (loc == null || loc.getWorld() == null) return false;
+        Location dest = loc.clone().add(0.5, 1.2, 0.5);
+        dest.setYaw(player.getLocation().getYaw());
+        dest.setPitch(player.getLocation().getPitch());
+        return player.teleport(dest);
+    }
+
+    private String visitSuffix(String siteId) {
+        if (plugin.sites() == null) return " [no sites]";
+        Site site = plugin.sites().get(siteId);
+        if (site == null) return " [missing]";
+        if (!site.enabled()) return " [disabled]";
+        if (!site.isPlaced()) return " [unplaced]";
+        return site.location() == null ? " [world unloaded]" : " [placed]";
+    }
+
+    private List<String> visitSuggestions(String prefix) {
+        String want = prefix == null ? "" : prefix.toLowerCase(Locale.ROOT);
+        List<String> out = new ArrayList<>();
+        for (String s : new String[]{"next", "back", "list", "prologue", "surface", "mara", "deep", "dimensions"}) {
+            if (s.startsWith(want)) out.add(s);
+        }
+        for (String siteId : VISIT_ROUTE) {
+            if (siteId.startsWith(want) && !out.contains(siteId)) out.add(siteId);
+        }
+        return out;
+    }
 
     /**
      * {@code /observance runbook [page]} - the in-world director cheat sheet. It keeps the launch
@@ -3077,9 +3197,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "audit", "repair", "coverage", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {
+            for (String s : visitSuggestions(args[1])) out.add(s);
         } else if (args.length == 2 && args[0].equalsIgnoreCase("runbook")) {
             for (String s : new String[]{"setup", "spine", "side", "scare", "ops"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
