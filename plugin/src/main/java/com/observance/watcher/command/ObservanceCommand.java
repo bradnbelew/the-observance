@@ -1811,6 +1811,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             handleHuntTest(sender, target, anchor);
             return;
         }
+        if (preset.equals("elsewhere") || preset.equals("void") || preset.equals("dimension")) {
+            handleElsewhereTest(sender, target, anchor);
+            return;
+        }
 
         String beatType;
         com.observance.watcher.beats.BeatCategory category = com.observance.watcher.beats.BeatCategory.AMBIENT;
@@ -1933,6 +1937,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("/obs test mob [player]        - watcher body behind/near player");
         sender.sendMessage("/obs test stalker [player]    - humanlike danger scare sequence");
         sender.sendMessage("/obs test hunt [player]       - multi-figure pursuit scare sequence");
+        sender.sendMessage("/obs test elsewhere [player]  - wrong-place sky/fog scare sequence");
         sender.sendMessage("/obs test torch [player]      - nearby torches gutter");
         sender.sendMessage("/obs test decay [player]      - cobweb creep on support blocks");
         sender.sendMessage("/obs test drift [player]      - sculk/moss world drift");
@@ -2019,6 +2024,45 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage("Observance test: hunt -> " + target.getName()
                 + " -> darkness, hostile close sounds, and two silent figures queued.");
+    }
+
+    private void handleElsewhereTest(CommandSender sender, Player target, Location anchor) {
+        com.observance.watcher.beats.BeatEngine engine = plugin.beatEngine();
+        if (engine == null || engine.context() == null || engine.library() == null) {
+            sender.sendMessage("Observance: beat engine unavailable.");
+            return;
+        }
+        Site testSite = new Site("test_elsewhere", "test", anchor.getWorld().getName(),
+                (double) anchor.getBlockX(), (double) anchor.getBlockY(), (double) anchor.getBlockZ(),
+                16, 10, false, true, null);
+        runTestBeat(engine, target, testSite, "elsewhere-sky", "private_time_shift",
+                com.observance.watcher.beats.BeatCategory.DIRECTED,
+                "{\"mode\":\"both\",\"time\":18000,\"weather\":\"DOWNFALL\",\"seconds\":16}");
+        runTestBeat(engine, target, testSite, "elsewhere-dark", "private_darkness",
+                com.observance.watcher.beats.BeatCategory.DIRECTED,
+                "{\"effect\":\"DARKNESS\",\"seconds\":9,\"amplifier\":0}");
+        runTestBeat(engine, target, testSite, "elsewhere-smoke", "private_particle",
+                com.observance.watcher.beats.BeatCategory.DIRECTED,
+                "{\"particle\":\"ASH\",\"count\":80,\"spread\":1.1,\"speed\":0.01,\"height\":1.0,\"near_player\":true,\"offset\":1.5}");
+        runTestBeat(engine, target, testSite, "elsewhere-sound", "private_sound",
+                com.observance.watcher.beats.BeatCategory.DIRECTED,
+                "{\"sound\":\"AMBIENT_CAVE\",\"volume\":1.4,\"pitch\":0.45,\"behind\":true,\"offset\":2.0}");
+        if (plugin.scheduler() != null) {
+            plugin.scheduler().runLaterSafe("command.test.elsewhere.title", 18L,
+                    () -> runTestBeat(engine, target, testSite, "elsewhere-title", "private_message",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"mode\":\"title\",\"title\":\"THIS IS NOT HERE\",\"subtitle\":\"the sky is wearing the wrong room\",\"fade_in\":0,\"stay\":38,\"fade_out\":20}"));
+            plugin.scheduler().runLaterSafe("command.test.elsewhere-figure", 40L,
+                    () -> runTestBeat(engine, target, testSite, "elsewhere-figure", "named_mob",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"entity\":\"WITHER_SKELETON\",\"fallback_entity\":\"STRAY\",\"name\":\"\",\"distance\":7,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":16,\"name_visible\":false,\"retreating\":true}"));
+            plugin.scheduler().runLaterSafe("command.test.elsewhere-close", 58L,
+                    () -> runTestBeat(engine, target, testSite, "elsewhere-close", "private_sound",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"sound\":\"ENTITY_ENDERMAN_TELEPORT\",\"volume\":1.2,\"pitch\":0.55,\"behind\":true,\"offset\":1.0}"));
+        }
+        sender.sendMessage("Observance test: elsewhere -> " + target.getName()
+                + " -> wrong sky/weather, fog, ash, close sound, and a retreating figure queued.");
     }
 
     private void runTestBeat(
@@ -2755,7 +2799,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("test")) {
-            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "stalker", "hunt", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
+            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "stalker", "hunt", "elsewhere", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("test")) {

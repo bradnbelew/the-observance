@@ -73,9 +73,10 @@ Use:
 ```mcfunction
 /obs test stalker
 /obs test hunt
+/obs test elsewhere
 ```
 
-These queue stronger scare sequences: darkness, close hostile sound, warning text, and silent humanoid figures. They are still safe: no griefing, no trap, no real kill requirement.
+These queue stronger scare sequences: darkness, close hostile sound, warning text, silent humanoid figures, and a client-only wrong-sky/wrong-weather "elsewhere" shift. They are still safe: no griefing, no trap, no real kill requirement, no real teleport.
 
 ### 4. Lectern Books Are Server-Side
 
