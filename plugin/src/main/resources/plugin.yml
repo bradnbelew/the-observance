@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.20'
+version: '0.3.21'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -44,7 +44,7 @@ commands:
       /observance director [world|lab] [spacing] - one-command rehearsal: place, repair, coverage, and guided start
       /observance audit         - scan placed sites for missing core anchors, empty lecterns, and obvious hardware problems
       /observance repair        - repair common placed-site failures found by audit
-      /observance coverage      - report launch-lane coverage: main spine, side/lore, dimensions, scare, and ops
+      /observance coverage      - report launch-lane coverage: main spine, puzzle mechanics, side/lore, dimensions, scare, and ops
       /observance visit <next|back|list|siteId|lane> - teleport through placed rehearsal sites for fast testing
       /observance reload        - reload config.yml + sites.yml
       /observance sleep <on|off>- toggle the local watcher-sleep override
@@ -60,6 +60,7 @@ commands:
       /observance prepworld [spacing] - compact real-world bootstrap: prologue, surface/deep spine, lecterns, NPCs, finale/readings, tools
       /observance sidepass - stage all side/lore NPC bodies nearby and print the right-click checklist
       /observance puzzlepass [gates] [spacing] - stage a compact puzzle-mechanic proof grid and optional rehearsal gate flags
+      /observance dreadpass [stage|run] [player] - stage the Watcher dread route or run the full scare route
       /observance runbook [setup|spine|puzzle|side|scare|ops] - in-world director cheat sheet for each test lane
       /observance rehearse <start|status|done|next|back|reset|list> - guided in-world rehearsal checklist
       /observance placeprologue - stage the cold-open anomaly in the group's base

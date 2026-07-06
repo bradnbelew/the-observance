@@ -52,6 +52,7 @@ For focused staging/debugging, use the same pieces manually:
 /obs visit next
 /obs puzzlepass
 /obs sidepass
+/obs dreadpass run
 /obs runbook spine
 ```
 
@@ -63,7 +64,7 @@ For focused staging/debugging, use the same pieces manually:
 
 `rehearse` is the guided test-pass tracker. Use `/obs rehearse start`, then `/obs rehearse done` after each stage. It walks the operator through setup, hardware repair, main spine, side/lore lanes, Watcher scare checks, and dashboard/production-placement checks.
 
-`coverage` is the launch-lane preflight. It reports whether the prologue, surface spine, Mara books, puzzle mechanic grid, deep payoff, NPC side/lore surfaces, Watcher scare lane, and optional Nether/End lanes are ready, missing, or need repair.
+`coverage` is the launch-lane preflight. It reports whether the prologue, surface spine, Mara books, puzzle mechanic grid, deep payoff, NPC side/lore surfaces, Watcher scare lane, and optional Nether/End lanes are ready, missing, or need repair. The Watcher scare lane is not ready unless drama is enabled and the dread route has been staged.
 
 `visit` is the site navigator for rehearsal. Use `/obs visit next` and `/obs visit back` to jump through placed launch sites in order, or jump straight to `/obs visit prologue`, `/obs visit surface`, `/obs visit mara`, `/obs visit deep`, `/obs visit dimensions`, or any specific site id.
 
@@ -92,13 +93,14 @@ Soft ambience is not enough. The scary layer should bias toward:
 Use:
 
 ```mcfunction
+/obs dreadpass run
 /obs test gauntlet
 /obs test stalker
 /obs test hunt
 /obs test elsewhere
 ```
 
-`gauntlet` is the default Watcher scare rehearsal: wrong sky/weather and ash first, then a stalking figure, then a pursuit beat, then a final close heartbeat/message. The focused commands queue individual scare sequences: darkness, close hostile sound, warning text, silent humanoid figures, and a client-only wrong-sky/wrong-weather "elsewhere" shift. They are still safe: no griefing, no trap, no real kill requirement, no real teleport.
+`dreadpass run` is the default Watcher scare rehearsal: it stages a short dark route with sculk, dead light, wrong signs, and visit anchors, then fires the gauntlet through it. `gauntlet` is the lower-level timed beat chain: wrong sky/weather and ash first, then a stalking figure, then a pursuit beat, then a final close heartbeat/message. The focused commands queue individual scare sequences: darkness, close hostile sound, warning text, silent humanoid figures, and a client-only wrong-sky/wrong-weather "elsewhere" shift. They are still safe: no griefing, no trap, no real kill requirement, no real teleport.
 
 Live ambient haunting now favors the same safe scare palette under the existing drama budget: cave/heartbeat-style private sounds, ash/smoke particles, darkness, wrong-sky time/weather shifts, light-dimming, and a very rare no-AI humanoid apparition only at high attention. The world stays restrained, but the Watcher is no longer just soft ambience.
 

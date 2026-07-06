@@ -87,6 +87,7 @@ export function DirectorRunPanel({
           <CommandLine>/obs puzzlepass</CommandLine>
           <CommandLine>/obs puzzlepass gates</CommandLine>
           <CommandLine>/obs sidepass</CommandLine>
+          <CommandLine>/obs dreadpass run</CommandLine>
           <CommandLine>/obs runbook spine</CommandLine>
           <CommandLine>/obs audit</CommandLine>
           <CommandLine>/obs repair</CommandLine>

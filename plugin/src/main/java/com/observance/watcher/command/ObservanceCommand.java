@@ -96,6 +96,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "prepworld" -> handlePrepWorld(sender, args);
             case "sidepass" -> handleSidePass(sender, args);
             case "puzzlepass" -> handlePuzzlePass(sender, args);
+            case "dreadpass" -> handleDreadPass(sender, args);
             case "runbook" -> handleRunbook(sender, args);
             case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
@@ -107,7 +108,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | sidepass | puzzlepass [gates] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -236,6 +237,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             {"brann_corridor_end", "brann_corridor_end", "4", "4"},
             {"coop_plate", "coop_plate", "5", "4"},
             {"threshold_vault", "coop_plate", "6", "6"},
+    };
+
+    private static final String[][] DREAD_PASS_SITES = {
+            {"dread_route_start", "dread_route"},
+            {"dread_route_elsewhere", "dread_route"},
+            {"dread_route_figure", "dread_route"},
+            {"dread_route_exit", "dread_route"},
     };
 
     /** Look up a keeper row by its canonical siteId (case-insensitive; accepts the bare form too). */
@@ -1222,10 +1230,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         if (mode.equals("lab")) {
             handleFullRun(sender, new String[]{"fullrun", spacing});
+            sender.sendMessage("== Director placement add-on: dread route ==");
+            handleDreadPass(sender, new String[]{"dreadpass", "stage"});
         } else {
             handlePrepWorld(sender, new String[]{"prepworld", spacing});
             sender.sendMessage("== Director placement add-on: puzzle mechanics grid ==");
             handlePuzzlePass(sender, new String[]{"puzzlepass", spacing});
+            sender.sendMessage("== Director placement add-on: dread route ==");
+            handleDreadPass(sender, new String[]{"dreadpass", "stage"});
         }
         sender.sendMessage("== Director check 1/4: first audit ==");
         handleAudit(sender);
@@ -1240,7 +1252,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         visitProgress.put(rehearsalKey(sender), -1);
         sender.sendMessage("Director startup ready for " + player.getName() + ".");
         sender.sendMessage("Next: /obs visit next, then /obs rehearse done after each tested stage.");
-        sender.sendMessage("Scare pass when ready: /obs test gauntlet");
+        sender.sendMessage("Scare pass when ready: /obs dreadpass run");
     }
 
     private static final RehearsalStage[] REHEARSAL_STAGES = {
@@ -1281,11 +1293,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     new String[]{"/obs sidepass", "/obs runbook side", "/obs flag list"}),
             new RehearsalStage("scare", "Run the Watcher scare pass", "scare",
                     new String[]{
-                            "Fire the humanlike/danger presets on a real tester.",
+                            "Walk the staged dread route and fire the humanlike/danger sequence on a real tester.",
                             "Listen for close sounds and watch for darkness, ash, wrong sky, dimming, and figures.",
                             "Mute with sleep if the test space gets too noisy."
                     },
-                    new String[]{"/obs test stalker", "/obs test hunt", "/obs test elsewhere", "/obs sleep on", "/obs sleep off"}),
+                    new String[]{"/obs dreadpass run", "/obs test stalker", "/obs test hunt", "/obs test elsewhere", "/obs sleep on", "/obs sleep off"}),
             new RehearsalStage("ops", "Check dashboard and final placement path", "ops",
                     new String[]{
                             "Dashboard should show mode, pending approvals, armed beats, and failed beats.",
@@ -1439,11 +1451,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  test: /obs sidepass, then right-click each NPC body");
         sender.sendMessage("  help: /obs runbook side");
 
-        boolean scareReady = plugin.config() != null && plugin.config().dramaEnabled();
+        CoverageState dreadRoute = coverageState(new CoverageLane("dread", "Dread scare route", "scare", false,
+                dreadPassSiteIds(), "Run /obs dreadpass stage, then /obs dreadpass run when ready."));
+        boolean dramaReady = plugin.config() != null && plugin.config().dramaEnabled();
+        boolean scareReady = dramaReady && dreadRoute.ready;
         if (scareReady) requiredReady++;
         requiredTotal++;
-        sender.sendMessage((scareReady ? "[OK] " : "[MISS] ") + "Watcher scare lane - drama enabled=" + scareReady);
-        sender.sendMessage("  test: /obs test gauntlet, or focused checks: stalker, hunt, elsewhere");
+        sender.sendMessage((scareReady ? "[OK] " : "[MISS] ") + "Watcher scare lane - drama enabled="
+                + dramaReady + ", dread route=" + dreadRoute.ok + "/" + dreadRoute.total);
+        if (dreadRoute.firstIssue != null) sender.sendMessage("  first issue: " + dreadRoute.firstIssue);
+        sender.sendMessage("  test: /obs dreadpass run, or focused checks: stalker, hunt, elsewhere");
         sender.sendMessage("  help: /obs runbook scare");
 
         sender.sendMessage("Required launch lanes ready: " + requiredReady + "/" + requiredTotal + ".");
@@ -1492,11 +1509,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return ids;
     }
 
+    private static String[] dreadPassSiteIds() {
+        String[] ids = new String[DREAD_PASS_SITES.length];
+        for (int i = 0; i < DREAD_PASS_SITES.length; i++) ids[i] = DREAD_PASS_SITES[i][0];
+        return ids;
+    }
+
     private static final String[] VISIT_ROUTE = {
             "first_report_lectern_01", "first_marker_01",
             "rune_rosetta", "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
             "mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5",
             "stone_of_reckoning", "the_cold_hearth", "unbroken_light", "the_threshold", "the_unwriting", "threshold_vault",
+            "dread_route_start", "dread_route_elsewhere", "dread_route_figure", "dread_route_exit",
             "nether_forge", "end_seventh_shrine"
     };
 
@@ -1517,7 +1541,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             for (int i = 0; i < VISIT_ROUTE.length; i++) {
                 sender.sendMessage(" " + (i + 1) + ") " + VISIT_ROUTE[i] + visitSuffix(VISIT_ROUTE[i]));
             }
-            sender.sendMessage("Lanes: prologue | surface | mara | deep | dimensions. Step: /obs visit next");
+            sender.sendMessage("Lanes: prologue | surface | mara | deep | scare | dimensions. Step: /obs visit next");
             return;
         }
 
@@ -1530,7 +1554,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else {
             targetIndex = visitIndexFor(op);
             if (targetIndex < 0) {
-                sender.sendMessage("Usage: /obs visit <next|back|list|siteId|prologue|surface|mara|deep|dimensions>");
+                sender.sendMessage("Usage: /obs visit <next|back|list|siteId|prologue|surface|mara|deep|scare|dimensions>");
                 return;
             }
         }
@@ -1568,6 +1592,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "surface", "keepers", "spine" -> "rune_rosetta";
             case "mara", "lecterns" -> "mara_lectern_1";
             case "deep", "payoff", "finale" -> "stone_of_reckoning";
+            case "scare", "dread", "watcher" -> "dread_route_start";
             case "dimensions", "dimension", "nether", "end" -> "nether_forge";
             default -> id;
         };
@@ -1601,7 +1626,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private List<String> visitSuggestions(String prefix) {
         String want = prefix == null ? "" : prefix.toLowerCase(Locale.ROOT);
         List<String> out = new ArrayList<>();
-        for (String s : new String[]{"next", "back", "list", "prologue", "surface", "mara", "deep", "dimensions"}) {
+        for (String s : new String[]{"next", "back", "list", "prologue", "surface", "mara", "deep", "scare", "dread", "dimensions"}) {
             if (s.startsWith(want)) out.add(s);
         }
         for (String siteId : VISIT_ROUTE) {
@@ -1687,7 +1712,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void sendScareRunbook(CommandSender sender) {
         sender.sendMessage("[watcher scare pass]");
-        sender.sendMessage("  Full rehearsal: /obs test gauntlet.");
+        sender.sendMessage("  Full rehearsal: /obs dreadpass run.");
+        sender.sendMessage("  Stage only: /obs dreadpass stage. Then walk /obs visit scare.");
         sender.sendMessage("  Focus presets: /obs test stalker, /obs test hunt, /obs test elsewhere.");
         sender.sendMessage("  Focus checks: /obs test darkness, /obs test sound, /obs test mob, /obs test particles.");
         sender.sendMessage("  Live ambience should now include close cave/heartbeat sounds, ash, darkness, dimming, wrong sky, and rare humanoid figures.");
@@ -2670,6 +2696,114 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         });
     }
 
+    /**
+     * {@code /observance dreadpass [stage|run] [player]} - builds the scary rehearsal route and,
+     * optionally, fires the full Watcher scare sequence through it. The route is a physical proof
+     * surface: dark corridor, sculk floor, wrong signs, dead light, and named visit anchors.
+     */
+    private void handleDreadPass(CommandSender sender, String[] args) {
+        boolean run = false;
+        Player namedTarget = null;
+        for (int i = 1; i < args.length; i++) {
+            String raw = args[i] == null ? "" : args[i].trim();
+            if (raw.isBlank()) continue;
+            String lower = raw.toLowerCase(Locale.ROOT);
+            if (lower.equals("run") || lower.equals("fire") || lower.equals("start") || lower.equals("gauntlet")) {
+                run = true;
+            } else if (lower.equals("stage") || lower.equals("build") || lower.equals("place")) {
+                run = false;
+            } else {
+                Player p = Bukkit.getPlayerExact(raw);
+                if (p != null) namedTarget = p;
+            }
+        }
+
+        Player anchorPlayer = sender instanceof Player self ? self : namedTarget;
+        if (anchorPlayer == null) {
+            sender.sendMessage("Observance: /observance dreadpass needs an in-game operator or an online player.");
+            return;
+        }
+        Player target = namedTarget == null ? anchorPlayer : namedTarget;
+        Location origin = anchorPlayer.getLocation();
+        if (origin == null || origin.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve the dreadpass location.");
+            return;
+        }
+
+        int sites = buildDreadRoute(origin);
+        sender.sendMessage("== Observance dread pass ==");
+        sender.sendMessage("Dread route staged with " + sites + "/" + DREAD_PASS_SITES.length + " anchors.");
+        sender.sendMessage("Walk it: /obs visit scare, then /obs visit next through the dread anchors.");
+        sender.sendMessage("Run scare: /obs dreadpass run" + (target.equals(anchorPlayer) ? "" : " " + target.getName()) + ".");
+        sender.sendMessage("Expected: wrong sky, ash, darkness, close sound, a retreating figure, then pursuit.");
+        if (run) handleScareGauntlet(sender, target);
+    }
+
+    private int buildDreadRoute(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        String worldName = world.getName();
+        int bx = origin.getBlockX();
+        int by = origin.getBlockY();
+        int bz = origin.getBlockZ() + 8;
+
+        for (int dz = 0; dz <= 30; dz++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                int x = bx + dx;
+                int z = bz + dz;
+                boolean wall = Math.abs(dx) == 2;
+                Material floor = (dz % 5 == 0) ? Material.SCULK : Material.POLISHED_DEEPSLATE;
+                world.getBlockAt(x, by - 1, z).setType(floor, false);
+                for (int dy = 0; dy <= 3; dy++) {
+                    Block b = world.getBlockAt(x, by + dy, z);
+                    if (wall) {
+                        b.setType(dy == 3 ? Material.BLACKSTONE : Material.DEEPSLATE_BRICKS, false);
+                    } else {
+                        b.setType(Material.AIR, false);
+                    }
+                }
+            }
+            if (dz % 6 == 0) {
+                world.getBlockAt(bx - 1, by, bz + dz).setType(Material.SOUL_TORCH, false);
+                world.getBlockAt(bx + 1, by, bz + dz).setType(Material.COBWEB, false);
+            }
+        }
+
+        Location start = new Location(world, bx, by, bz + 1);
+        Location elsewhere = new Location(world, bx, by, bz + 10);
+        Location figure = new Location(world, bx, by, bz + 20);
+        Location exit = new Location(world, bx, by, bz + 29);
+        placeDreadLabel(start.clone().add(0, 0, -1), new String[]{"DREAD ROUTE", "walk slowly", "sound on", ""});
+        placeDreadLabel(elsewhere.clone().add(0, 0, -1), new String[]{"ELSEWHERE", "the sky lies", "do not stop", ""});
+        placeDreadLabel(figure.clone().add(0, 0, -1), new String[]{"FIGURE", "look back once", "then move", ""});
+        placeDreadLabel(exit.clone().add(0, 0, -1), new String[]{"EXIT", "count who left", "", ""});
+        world.getBlockAt(elsewhere.getBlockX(), elsewhere.getBlockY(), elsewhere.getBlockZ()).setType(Material.SCULK_SENSOR, false);
+        world.getBlockAt(figure.getBlockX(), figure.getBlockY(), figure.getBlockZ()).setType(Material.REDSTONE_TORCH, false);
+        world.getBlockAt(exit.getBlockX(), exit.getBlockY(), exit.getBlockZ()).setType(Material.SOUL_LANTERN, false);
+
+        Location[] anchors = {start, elsewhere, figure, exit};
+        int placed = 0;
+        for (int i = 0; i < DREAD_PASS_SITES.length; i++) {
+            Location loc = anchors[i];
+            plugin.registerRuntimeSite(new Site(DREAD_PASS_SITES[i][0], DREAD_PASS_SITES[i][1], worldName,
+                    (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
+                    5, 4, false, true, null));
+            placed++;
+        }
+        return placed;
+    }
+
+    private void placeDreadLabel(Location loc, String[] lines) {
+        if (loc == null || loc.getWorld() == null) return;
+        Block sign = loc.getBlock();
+        sign.setType(Material.OAK_SIGN, false);
+        if (sign.getBlockData() instanceof Rotatable r) {
+            r.setRotation(BlockFace.SOUTH);
+            sign.setBlockData(r, false);
+        }
+        setSignLines(sign, true, lines);
+    }
+
     private void runTestBeat(
             com.observance.watcher.beats.BeatEngine engine,
             Player target,
@@ -3553,7 +3687,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "sidepass", "puzzlepass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "sidepass", "puzzlepass", "dreadpass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
@@ -3573,6 +3707,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("puzzlepass")) {
             for (String s : new String[]{"gates", "12", "14", "18"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("dreadpass")) {
+            for (String s : new String[]{"stage", "run"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("dreadpass")) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.getName().toLowerCase(Locale.ROOT).startsWith(args[2].toLowerCase(Locale.ROOT))) {
+                    out.add(p.getName());
+                }
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
             if ("set".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("set");
