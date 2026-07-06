@@ -1660,9 +1660,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void prepareReflectionTest(Location anchor) {
         Location base = anchor.clone().add(0, -1, 0);
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                base.clone().add(dx, 0, dz).getBlock().setType(Material.WATER, false);
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                base.clone().add(dx, -1, dz).getBlock().setType(Material.SMOOTH_STONE, false);
+                boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                base.clone().add(dx, 0, dz).getBlock().setType(rim ? Material.POLISHED_DEEPSLATE : Material.WATER, false);
+                base.clone().add(dx, 1, dz).getBlock().setType(Material.AIR, false);
             }
         }
     }
