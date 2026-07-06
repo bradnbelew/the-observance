@@ -96,8 +96,14 @@ public final class NameOnWallBeat extends AbstractBeat {
         final TextColor color = colorOf(p.string("color", null));
 
         // The carved text: "%name%" (default) becomes the target's own display name — the whole point.
+        // The rune font only maps A-Z and 0-9, so normalize before applying it or mixed-case names
+        // appear as partial marks instead of a full personalized scare.
         String rawText = p.string("text", "%name%");
-        final String shown = clamp(rawText.replace("%name%", pl.getName()));
+        String shownText = clamp(rawText.replace("%name%", pl.getName()));
+        if (runeFont) {
+            shownText = shownText.toUpperCase(java.util.Locale.ROOT);
+        }
+        final String shown = shownText;
 
         Component label = Component.text(shown).color(color);
         if (runeFont) {
