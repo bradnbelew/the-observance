@@ -36,14 +36,15 @@ Launch placement can still use `site set` and `placeworld`, but the project must
 For compact real-world staging, use:
 
 ```mcfunction
-/obs prepworld
+/obs director
 ```
 
-This places the prologue, surface spine, deep payoff sites, Mara page-lock lecterns, finale/readings, NPC row, and tester tools around the operator. It is the "I need to play this tonight" command. Use manual `site set` only to curate the final production geography or optional Nether/End lanes.
+This is now the fastest confidence path: compact placement, first audit, repair, second audit, coverage, and guided rehearsal start in one command.
 
-Then use:
+For focused staging/debugging, use the same pieces manually:
 
 ```mcfunction
+/obs prepworld
 /obs audit
 /obs repair
 /obs coverage
@@ -51,6 +52,8 @@ Then use:
 /obs visit next
 /obs runbook spine
 ```
+
+`prepworld` places the prologue, surface spine, deep payoff sites, Mara page-lock lecterns, finale/readings, NPC row, and tester tools around the operator. It is the manual version of the compact staging path. Use manual `site set` only to curate the final production geography or optional Nether/End lanes.
 
 `audit` checks the placed site registry for the boring failures that ruin a run: unplaced core sites, unloaded worlds, missing books, empty lecterns, absent chest/bookshelf hardware, and air at core anchors. `repair` fixes the common placed-site failures: missing lectern books, answer signs, Vaun shelf/chest hardware, blank first marker, and blank code-built set-piece anchors. After repair, run `audit` again.
 

@@ -67,6 +67,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "repair" -> handleRepair(sender);
             case "coverage" -> handleCoverage(sender);
             case "visit" -> handleVisit(sender, args);
+            case "director" -> handleDirectorStart(sender, args);
             case "reload" -> {
                 boolean ok = plugin.reloadAll();
                 sender.sendMessage(ok ? "Observance: config + sites reloaded."
@@ -104,7 +105,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1156,6 +1157,36 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
         sender.sendMessage("  Run /obs coverage, /obs rehearse start, and /obs visit next for the walk-through pass.");
+    }
+
+    /**
+     * {@code /observance director [spacing]} - one-command compact rehearsal startup. This intentionally
+     * mutates the current world like {@code prepworld}: use it in a rehearsal world or a designated test area.
+     */
+    private void handleDirectorStart(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance director must be run by a player (needs a location).");
+            return;
+        }
+        String spacing = args.length >= 2 ? args[1] : "18";
+        sender.sendMessage("== Observance director startup ==");
+        sender.sendMessage("This runs compact placement, repair, coverage, and starts the guided rehearsal.");
+
+        handlePrepWorld(sender, new String[]{"prepworld", spacing});
+        sender.sendMessage("== Director check 1/4: first audit ==");
+        handleAudit(sender);
+        sender.sendMessage("== Director check 2/4: repair pass ==");
+        handleRepair(sender);
+        sender.sendMessage("== Director check 3/4: second audit ==");
+        handleAudit(sender);
+        sender.sendMessage("== Director check 4/4: coverage ==");
+        handleCoverage(sender);
+        handleRehearse(sender, new String[]{"rehearse", "start"});
+
+        visitProgress.put(rehearsalKey(sender), -1);
+        sender.sendMessage("Director startup ready for " + player.getName() + ".");
+        sender.sendMessage("Next: /obs visit next, then /obs rehearse done after each tested stage.");
+        sender.sendMessage("Scare pass when ready: /obs test gauntlet");
     }
 
     private static final RehearsalStage[] REHEARSAL_STAGES = {
@@ -3251,7 +3282,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {
