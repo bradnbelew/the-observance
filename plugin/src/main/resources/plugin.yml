@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.6'
+version: '0.3.7'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -52,6 +52,7 @@ commands:
       /observance placelecterns [spacing] - stamp the five Mara page-lock lecterns here with books already loaded
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance fullrun [spacing] - one-command rehearsal: full lab, reading, finale markers, test tools, and scare-check instructions
+      /observance prepworld [spacing] - compact real-world bootstrap: prologue, surface/deep spine, lecterns, NPCs, finale/readings, tools
       /observance placeprologue - stage the cold-open anomaly in the group's base
       /observance lens give [player] - give the Lens (second-sight) item
       /observance wren <spawn|despawn|reckoning> - place the companion NPC (Wren) here, or the three reckoning-choice markers

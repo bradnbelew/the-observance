@@ -33,6 +33,14 @@ The old commands still exist for focused work, but the director pass starts with
 
 Launch placement can still use `site set` and `placeworld`, but the project must remain testable without surveying the whole world. The rehearsal lab is the proof surface.
 
+For compact real-world staging, use:
+
+```mcfunction
+/obs prepworld
+```
+
+This places the prologue, surface spine, deep payoff sites, Mara page-lock lecterns, finale/readings, NPC row, and tester tools around the operator. It is the "I need to play this tonight" command. Use manual `site set` only to curate the final production geography or optional Nether/End lanes.
+
 Real launch placement should become a curation pass:
 
 1. Run `fullrun` in a test world.
@@ -55,9 +63,10 @@ Use:
 
 ```mcfunction
 /obs test stalker
+/obs test hunt
 ```
 
-This queues the first stronger scare sequence: darkness, a close heartbeat, warning text, then a tall silent humanoid figure. It is still safe: no griefing, no trap, no real kill requirement.
+These queue stronger scare sequences: darkness, close hostile sound, warning text, and silent humanoid figures. They are still safe: no griefing, no trap, no real kill requirement.
 
 ### 4. Lectern Books Are Server-Side
 

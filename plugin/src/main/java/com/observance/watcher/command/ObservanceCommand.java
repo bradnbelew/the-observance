@@ -84,6 +84,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placelecterns" -> handlePlaceLecterns(sender, args);
             case "placelab" -> handlePlaceLab(sender, args);
             case "fullrun" -> handleFullRun(sender, args);
+            case "prepworld" -> handlePrepWorld(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
@@ -93,7 +94,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -923,6 +924,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             } catch (NumberFormatException ignored) { /* keep default */ }
         }
 
+        int placed = placeMaraLecternsAt(centre, spacing);
+
+        sender.sendMessage("Observance: placed " + placed + "/5 Mara page-lock lecterns with books.");
+        sender.sendMessage("  Test pages: lecterns 1-5 should be turned to 1, 2, 4, 4, 6.");
+        sender.sendMessage("  Sites were persisted to sites.yml; re-run /observance reload after server restart.");
+    }
+
+    private int placeMaraLecternsAt(Location centre, int spacing) {
+        if (centre == null || centre.getWorld() == null) return 0;
         org.bukkit.World world = centre.getWorld();
         String worldName = world.getName();
         int[] markedPages = {1, 2, 4, 4, 6};
@@ -942,10 +952,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             plugin.registerRuntimeSite(site);
             placed++;
         }
-
-        sender.sendMessage("Observance: placed " + placed + "/5 Mara page-lock lecterns with books.");
-        sender.sendMessage("  Test pages: lecterns 1-5 should be turned to 1, 2, 4, 4, 6.");
-        sender.sendMessage("  Sites were persisted to sites.yml; re-run /observance reload after server restart.");
+        return placed;
     }
 
     private void handlePlaceLab(CommandSender sender, String[] args) {
@@ -1064,6 +1071,135 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  3) Run /obs test stalker to check the stronger Watcher scare.");
         sender.sendMessage("  4) Use /obs flag set <key> when you need to jump a gate instead of replaying the whole chain.");
         sender.sendMessage("  5) Keep this world as rehearsal only; do real launch placement after the pass.");
+    }
+
+    /**
+     * {@code /observance prepworld [spacing]} - compact playable-world bootstrap. Unlike fullrun, this
+     * places the main spine into the current real world instead of a floating lab, so a tester can walk
+     * the ARG without surveying every individual site by hand first.
+     */
+    private void handlePrepWorld(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance prepworld must be run by a player (needs a location).");
+            return;
+        }
+        Location origin = player.getLocation();
+        if (origin == null || origin.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+
+        int spacing = 18;
+        if (args.length >= 2) {
+            try {
+                spacing = Math.max(14, Math.min(32, Integer.parseInt(args[1].trim())));
+            } catch (NumberFormatException ignored) { /* keep default */ }
+        }
+
+        sender.sendMessage("== Observance prepworld ==");
+        sender.sendMessage("Step 1/7: staging the prologue lectern and first marker...");
+        placeDirectPrologue(origin);
+
+        sender.sendMessage("Step 2/7: placing the surface spine...");
+        String[][] surface = {
+                {"rune_rosetta", "structure", "6"},
+                {"stone_vaun", "keeper_stone", "8"},
+                {"stone_mara", "keeper_stone", "8"},
+                {"stone_sella", "keeper_stone", "8"},
+                {"stone_orin", "keeper_stone", "8"},
+                {"stone_brann", "keeper_stone", "8"},
+                {"stone_iss", "keeper_stone", "8"},
+        };
+        int surfacePlaced = placeCompactSpine(origin.clone().add(0, 0, spacing), surface, spacing);
+
+        sender.sendMessage("Step 3/7: placing the deep payoff sites...");
+        String[][] deep = {
+                {"stone_of_reckoning", "structure", "6"},
+                {"the_cold_hearth", "marker", "6"},
+                {"unbroken_light", "accepting_floor", "10"},
+                {"the_threshold", "the_threshold", "6"},
+                {"the_unwriting", "seventh_shrine", "6"},
+                {"threshold_vault", "coop_plate", "6"},
+        };
+        int deepPlaced = placeCompactSpine(origin.clone().add(0, 0, -spacing), deep, spacing);
+
+        sender.sendMessage("Step 4/7: placing Mara page-lock lecterns with books...");
+        int lecternsPlaced = placeMaraLecternsAt(origin.clone().add(spacing, 0, spacing * 2), 3);
+
+        sender.sendMessage("Step 5/7: carving reading/finale markers...");
+        handleReadingCarvings(sender);
+        handleFinaleMarkers(sender);
+
+        sender.sendMessage("Step 6/7: spawning NPC row where possible...");
+        Location npc = origin.clone().add(-spacing, 1, -spacing);
+        if (plugin.townsfolk() != null) plugin.townsfolk().spawnAll(npc);
+        if (plugin.wren() != null) plugin.wren().spawn(npc.clone().add(5, 0, 0));
+        if (plugin.keeper() != null) plugin.keeper().spawn(npc.clone().add(9, 0, 0), "prepworld");
+
+        sender.sendMessage("Step 7/7: giving tester tools...");
+        handleLens(sender, new String[]{"lens", "give", player.getName()});
+        handleNeedle(sender, new String[]{"needle", player.getName()});
+
+        sender.sendMessage("Observance: prepworld complete - prologue staged, " + surfacePlaced
+                + "/7 surface sites, " + deepPlaced + "/6 deep sites, " + lecternsPlaced
+                + "/5 Mara lecterns.");
+        sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
+        sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
+        sender.sendMessage("  Run /obs test stalker or /obs test hunt for the stronger Watcher scare pass.");
+    }
+
+    private void placeDirectPrologue(Location origin) {
+        if (origin == null || origin.getWorld() == null) return;
+        org.bukkit.World world = origin.getWorld();
+        String worldName = world.getName();
+        int lx = origin.getBlockX();
+        int lz = origin.getBlockZ();
+        int ly = world.getHighestBlockYAt(lx, lz, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location lecternLoc = new Location(world, lx, ly, lz);
+        fillPrologueLecternBook(lecternLoc);
+        plugin.registerRuntimeSite(new Site("first_report_lectern_01", "report_lectern", worldName,
+                lecternLoc.getX(), lecternLoc.getY(), lecternLoc.getZ(), 4, 4, true, true, null));
+
+        int mx = lx + 2;
+        int mz = lz;
+        int my = world.getHighestBlockYAt(mx, mz, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location markerLoc = new Location(world, mx, my, mz);
+        placeMarker(markerLoc, Material.CHISELED_STONE_BRICKS, Material.CANDLE, true);
+        plugin.registerRuntimeSite(new Site("first_marker_01", "structure", worldName,
+                markerLoc.getX(), markerLoc.getY(), markerLoc.getZ(), 6, 4, true, true, null));
+    }
+
+    private int placeCompactSpine(Location origin, String[][] rows, int spacing) {
+        if (origin == null || origin.getWorld() == null || rows == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        String worldName = world.getName();
+        int placed = 0;
+        int[] zOffsets = {0, 5, -6, 9, -4, 7, -8};
+        for (int i = 0; i < rows.length; i++) {
+            String siteId = rows[i][0];
+            String siteType = rows[i][1];
+            int radius;
+            try { radius = Integer.parseInt(rows[i][2]); } catch (NumberFormatException e) { radius = 8; }
+
+            int sx = origin.getBlockX() + (i * spacing);
+            int sz = origin.getBlockZ() + zOffsets[i % zOffsets.length];
+            int sy = world.getHighestBlockYAt(sx, sz, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+            Location siteLoc = new Location(world, sx, sy, sz);
+
+            Location answer = StructureTemplates.keeper(siteId, siteLoc);
+            if (answer == null) continue;
+
+            Site cfg = plugin.sites() == null ? null : plugin.sites().get(siteId);
+            boolean beacon = cfg != null && cfg.beacon();
+            String puzzleKey = cfg == null ? null : cfg.puzzleKey();
+            Site site = new Site(siteId, siteType, worldName,
+                    siteLoc.getX(), siteLoc.getY(), siteLoc.getZ(),
+                    radius, 6, true, true, puzzleKey, beacon);
+            plugin.registerRuntimeSite(site);
+            if (beacon) StructureTemplates.keptLightBeacon(siteLoc, beaconTint(siteId));
+            placed++;
+        }
+        return placed;
     }
 
     private void clearLabCell(Location base, int radius, int height) {
@@ -1669,6 +1805,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             handleStalkerTest(sender, target, anchor);
             return;
         }
+        if (preset.equals("hunt") || preset.equals("hunted") || preset.equals("ambush")) {
+            handleHuntTest(sender, target, anchor);
+            return;
+        }
 
         String beatType;
         com.observance.watcher.beats.BeatCategory category = com.observance.watcher.beats.BeatCategory.AMBIENT;
@@ -1790,6 +1930,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("/obs test reflection [player] - water-rune reflection");
         sender.sendMessage("/obs test mob [player]        - watcher body behind/near player");
         sender.sendMessage("/obs test stalker [player]    - humanlike danger scare sequence");
+        sender.sendMessage("/obs test hunt [player]       - multi-figure pursuit scare sequence");
         sender.sendMessage("/obs test torch [player]      - nearby torches gutter");
         sender.sendMessage("/obs test decay [player]      - cobweb creep on support blocks");
         sender.sendMessage("/obs test drift [player]      - sculk/moss world drift");
@@ -1839,6 +1980,43 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage("Observance test: stalker -> " + target.getName()
                 + " -> darkness, close sound, warning title, and a tall silent figure queued.");
+    }
+
+    private void handleHuntTest(CommandSender sender, Player target, Location anchor) {
+        com.observance.watcher.beats.BeatEngine engine = plugin.beatEngine();
+        if (engine == null || engine.context() == null || engine.library() == null) {
+            sender.sendMessage("Observance: beat engine unavailable.");
+            return;
+        }
+        Site testSite = new Site("test_hunt", "test", anchor.getWorld().getName(),
+                (double) anchor.getBlockX(), (double) anchor.getBlockY(), (double) anchor.getBlockZ(),
+                16, 10, false, true, null);
+        runTestBeat(engine, target, testSite, "hunt-dark", "private_darkness",
+                com.observance.watcher.beats.BeatCategory.DIRECTED,
+                "{\"effect\":\"DARKNESS\",\"seconds\":10,\"amplifier\":0}");
+        runTestBeat(engine, target, testSite, "hunt-breath", "private_sound",
+                com.observance.watcher.beats.BeatCategory.DIRECTED,
+                "{\"sound\":\"ENTITY_ENDERMAN_STARE\",\"volume\":1.1,\"pitch\":0.65,\"behind\":true,\"offset\":2.0}");
+        if (plugin.scheduler() != null) {
+            plugin.scheduler().runLaterSafe("command.test.hunt.title", 18L,
+                    () -> runTestBeat(engine, target, testSite, "hunt-title", "private_message",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"mode\":\"title\",\"title\":\"RUN\",\"subtitle\":\"do not look for the first one\",\"fade_in\":0,\"stay\":30,\"fade_out\":15}"));
+            plugin.scheduler().runLaterSafe("command.test.hunt-figure-a", 25L,
+                    () -> runTestBeat(engine, target, testSite, "hunt-figure-a", "named_mob",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"entity\":\"WITHER_SKELETON\",\"fallback_entity\":\"STRAY\",\"name\":\"\",\"distance\":6,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":18,\"name_visible\":false}"));
+            plugin.scheduler().runLaterSafe("command.test.hunt-figure-b", 45L,
+                    () -> runTestBeat(engine, target, testSite, "hunt-figure-b", "named_mob",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"entity\":\"STRAY\",\"fallback_entity\":\"ZOMBIE\",\"name\":\"\",\"distance\":9,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":18,\"name_visible\":false}"));
+            plugin.scheduler().runLaterSafe("command.test.hunt-close", 60L,
+                    () -> runTestBeat(engine, target, testSite, "hunt-close", "private_sound",
+                            com.observance.watcher.beats.BeatCategory.DIRECTED,
+                            "{\"sound\":\"ENTITY_WARDEN_HEARTBEAT\",\"volume\":1.6,\"pitch\":0.5,\"behind\":true,\"offset\":1.5}"));
+        }
+        sender.sendMessage("Observance test: hunt -> " + target.getName()
+                + " -> darkness, hostile close sounds, and two silent figures queued.");
     }
 
     private void runTestBeat(
@@ -2323,7 +2501,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
@@ -2356,7 +2534,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("test")) {
-            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "stalker", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
+            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "stalker", "hunt", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("test")) {
