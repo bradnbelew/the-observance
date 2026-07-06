@@ -40,7 +40,7 @@ public final class Tier0SelectorSelfTest {
         long blocksMined, oresMined, deaths, mobKills, soloMiningSeconds, sessionPlaySeconds;
         double hoardedScore, distanceFromGroup = -1.0, soloMiningRatio;
         int deepestY = 0;
-        long forbiddenWordHits, chatMessages;
+        long forbiddenWordHits, lecternReads, chatMessages;
         double chatSentiment;
 
         B solo(double ratio, long secs) { this.soloMiningRatio = ratio; this.soloMiningSeconds = secs; return this; }
@@ -56,7 +56,7 @@ public final class Tier0SelectorSelfTest {
                     blocksMined, oresMined, deaths, mobKills,
                     soloMiningSeconds, sessionPlaySeconds,
                     hoardedScore, distanceFromGroup, soloMiningRatio,
-                    deepestY, forbiddenWordHits, chatSentiment, chatMessages,
+                    deepestY, forbiddenWordHits, lecternReads, chatSentiment, chatMessages,
                     null, 0, 0, 0, 0L,
                     false, false,
                     null);
