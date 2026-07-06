@@ -1088,7 +1088,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (top != null && top != Material.AIR) {
             Block b = world.getBlockAt(x, y + 2, z);
             b.setType(top, false);
-            if (lit && b.getBlockData() instanceof org.bukkit.block.data.type.Lightable l) {
+            if (lit && b.getBlockData() instanceof org.bukkit.block.data.Lightable l) {
                 l.setLit(true);
                 b.setBlockData(l, false);
             }
@@ -1607,7 +1607,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         Site testSite = new Site("test_" + preset, "test", anchor.getWorld().getName(),
                 (double) anchor.getBlockX(), (double) anchor.getBlockY(), (double) anchor.getBlockZ(),
-                8.0, 8.0, false, true, null);
+                8, 8, false, true, null);
         com.observance.watcher.beats.BeatRequest req = new com.observance.watcher.beats.BeatRequest(
                 "admin-test-" + preset + "-" + System.nanoTime(), beatType, category,
                 target, testSite, com.observance.watcher.beats.BeatPayload.parse(payload));
