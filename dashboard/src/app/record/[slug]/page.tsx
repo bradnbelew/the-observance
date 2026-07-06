@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
   project,
@@ -292,12 +293,12 @@ export default async function RecordPage({
           {archiveHasContent && (
             <>
               <br />
-              <a
+              <Link
                 href="/record/archive"
                 className="mt-2 inline-block text-neutral-600 underline decoration-neutral-800 underline-offset-4 hover:text-neutral-500"
               >
                 the record is kept in more than one place.
-              </a>
+              </Link>
             </>
           )}
         </footer>

@@ -6,6 +6,7 @@ const STATUS_STYLES: Record<BeatStatus, string> = {
   approved: "border-sky-500/40 bg-sky-500/10 text-sky-300",
   fired: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300",
   skipped: "border-neutral-600/40 bg-neutral-600/10 text-neutral-400",
+  failed: "border-red-500/40 bg-red-500/10 text-red-300",
 };
 
 function StatusPill({ status }: { status: BeatStatus }) {
@@ -24,6 +25,10 @@ function StatusPill({ status }: { status: BeatStatus }) {
  * each post to a server action setting status + decided_at.
  */
 export function BeatQueue({ beats }: { beats: Beat[] }) {
+  const pendingCount = beats.filter((beat) => beat.status === "pending").length;
+  const approvedCount = beats.filter((beat) => beat.status === "approved").length;
+  const failedCount = beats.filter((beat) => beat.status === "failed").length;
+
   return (
     <section className="rounded-lg border border-neutral-800 bg-slate-850 p-5">
       <div className="flex items-center justify-between">
@@ -31,6 +36,21 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
         <span className="font-mono text-xs text-neutral-500">
           {beats.length} {beats.length === 1 ? "beat" : "beats"}
         </span>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2">
+          <p className="font-mono text-xl text-amber-200">{pendingCount}</p>
+          <p className="text-xs text-amber-100/70">needs approval</p>
+        </div>
+        <div className="rounded-md border border-sky-500/30 bg-sky-500/10 px-3 py-2">
+          <p className="font-mono text-xl text-sky-200">{approvedCount}</p>
+          <p className="text-xs text-sky-100/70">ready to fire</p>
+        </div>
+        <div className="rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2">
+          <p className="font-mono text-xl text-red-200">{failedCount}</p>
+          <p className="text-xs text-red-100/70">failed</p>
+        </div>
       </div>
 
       {beats.length === 0 ? (

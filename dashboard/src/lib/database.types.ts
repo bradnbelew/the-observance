@@ -19,7 +19,7 @@ export type Json =
 
 // String-literal unions for the CHECK-constrained text columns.
 // (Postgres CHECK constraints, not enums — kept in sync with 0001_init.sql.)
-export type BeatStatus = "pending" | "approved" | "skipped" | "fired";
+export type BeatStatus = "pending" | "approved" | "skipped" | "fired" | "failed";
 export type EventLevel = "info" | "warn" | "error";
 
 export interface Database {

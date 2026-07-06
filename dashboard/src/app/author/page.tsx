@@ -31,8 +31,9 @@ export const dynamic = "force-dynamic";
 const BEAT_ORDER: Record<Beat["status"], number> = {
   pending: 0,
   approved: 1,
-  fired: 2,
-  skipped: 3,
+  failed: 2,
+  fired: 3,
+  skipped: 4,
 };
 
 export default async function AuthorPage() {
@@ -124,6 +125,9 @@ export default async function AuthorPage() {
 
   const watcherAsleep =
     settings.find((s) => s.key === "watcher_sleep")?.value === true;
+  const pendingBeats = beats.filter((beat) => beat.status === "pending").length;
+  const approvedBeats = beats.filter((beat) => beat.status === "approved").length;
+  const failedBeats = beats.filter((beat) => beat.status === "failed").length;
 
   // ---------------------------------------------------------------------------
   // Ending-selector inputs (A2 `divergent-fates`, INV-11). A spoiler-rich, live,
@@ -216,6 +220,41 @@ export default async function AuthorPage() {
           beat queue, named dossiers, the bond ledger. Admin login required.
         </p>
       </header>
+
+      <section className="grid gap-3 sm:grid-cols-4">
+        <div className="rounded-md border border-neutral-800 bg-slate-850 p-4">
+          <p className="font-mono text-xs uppercase tracking-wide text-neutral-500">
+            Mode
+          </p>
+          <p className="mt-2 font-mono text-xl text-neutral-100">
+            {watcherAsleep ? "Manual" : "Auto"}
+          </p>
+        </div>
+        <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-4">
+          <p className="font-mono text-xs uppercase tracking-wide text-amber-200/70">
+            Approvals
+          </p>
+          <p className="mt-2 font-mono text-xl text-amber-100">
+            {pendingBeats}
+          </p>
+        </div>
+        <div className="rounded-md border border-sky-500/30 bg-sky-500/10 p-4">
+          <p className="font-mono text-xs uppercase tracking-wide text-sky-200/70">
+            Armed
+          </p>
+          <p className="mt-2 font-mono text-xl text-sky-100">
+            {approvedBeats}
+          </p>
+        </div>
+        <div className="rounded-md border border-red-500/30 bg-red-500/10 p-4">
+          <p className="font-mono text-xs uppercase tracking-wide text-red-200/70">
+            Failed
+          </p>
+          <p className="mt-2 font-mono text-xl text-red-100">
+            {failedBeats}
+          </p>
+        </div>
+      </section>
 
       <ArcControl arc={arc} />
 
