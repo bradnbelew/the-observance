@@ -219,6 +219,49 @@ export async function getHint(
   return data ?? null;
 }
 
+export interface HintedPuzzleChoice {
+  puzzleKey: string;
+  title: string | null;
+}
+
+/**
+ * Autocomplete source for /whisper. Only suggest puzzle keys that have authored hint bodies, so the
+ * safety rail never offers a mark the Watcher cannot actually speak about. The search is deliberately
+ * forgiving for typed spaces: "stone mara" matches "stone-mara".
+ */
+export async function searchHintedPuzzles(
+  query: string,
+  limit = 25,
+): Promise<HintedPuzzleChoice[]> {
+  const cleaned = query.trim().toLowerCase().replace(/[^a-z0-9]+/g, '%').slice(0, 64);
+  let q = supabase
+    .from('hints')
+    .select('puzzle_key')
+    .order('puzzle_key', { ascending: true })
+    .limit(200);
+  if (cleaned) q = q.ilike('puzzle_key', `%${cleaned}%`);
+  const { data, error } = await q.returns<Array<{ puzzle_key: string }>>();
+  if (error || !data) return [];
+
+  const keys: string[] = [];
+  const seen = new Set<string>();
+  for (const row of data) {
+    if (!row.puzzle_key || seen.has(row.puzzle_key)) continue;
+    seen.add(row.puzzle_key);
+    keys.push(row.puzzle_key);
+    if (keys.length >= limit) break;
+  }
+  if (keys.length === 0) return [];
+
+  const { data: puzzles } = await supabase
+    .from('puzzles')
+    .select('puzzle_key, title')
+    .in('puzzle_key', keys)
+    .returns<Array<{ puzzle_key: string; title: string | null }>>();
+  const titles = new Map((puzzles ?? []).map((p) => [p.puzzle_key, p.title]));
+  return keys.map((puzzleKey) => ({ puzzleKey, title: titles.get(puzzleKey) ?? null }));
+}
+
 /**
  * Enqueue a new story beat. The `status` decides whether it fires immediately or
  * waits on the dashboard approval gate:

@@ -21,12 +21,12 @@ import {
 } from 'discord.js';
 import { config } from '../config.js';
 import { ensurePrologueIgnited, getPlayerByDiscordId, insertObservation, logEvent } from '../db/repo.js';
-import { readSetting } from '../showrunner/state.js';
+import { readSetting, readState, writeState } from '../showrunner/state.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
 import { startVoiceCapture } from '../voice/receiver.js';
 import { maybeCloseCoopGate } from '../showrunner/coop-gate.js';
-import { handleWhisper } from './commands/whisper.js';
+import { handleWhisper, handleWhisperAutocomplete } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
 import { handleAnswer } from './commands/answer.js';
 import { resolveAnswer } from '../oracle/resolve.js';
@@ -72,6 +72,18 @@ client.once('ready', (c) => {
 });
 
 client.on('interactionCreate', async (interaction: Interaction) => {
+  if (interaction.isAutocomplete()) {
+    try {
+      if (interaction.commandName === 'whisper') await handleWhisperAutocomplete(interaction);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[the-watcher] ${interaction.commandName} autocomplete stumbled:`, err);
+      void logEvent('warn', SOURCE, `${interaction.commandName} autocomplete failed: ${message}`);
+      try { await interaction.respond([]); } catch { /* token may have lapsed */ }
+    }
+    return;
+  }
+
   if (!interaction.isChatInputCommand()) return;
 
   try {
@@ -143,6 +155,7 @@ client.on('messageCreate', async (message: Message) => {
         prologueIgnited = true; // either we set it, or it was already set — stop checking.
         if (fired) {
           void logEvent('info', SOURCE, `prologue ignited by ${player.name} in #the-record`);
+          await postImmediateIgnitionAck(message);
         }
       } catch (err) {
         // leave the latch unset so a later message retries; never speak an error.
@@ -204,6 +217,22 @@ client.on('messageCreate', async (message: Message) => {
     // a stumble is silence too — never speak an error into the channel.
   }
 });
+
+/**
+ * Close the "first post feels dead" gap. The showrunner still owns the richer scheduled prologue
+ * path, but a Discord ignition should have an immediate in-channel receipt; otherwise the first
+ * supernatural handshake can look like an offline bot until the next scheduled tick. This writes the
+ * same one-shot latch the showrunner uses, so a successful immediate ack is never repeated later.
+ */
+async function postImmediateIgnitionAck(message: Message): Promise<void> {
+  const nowIso = new Date().toISOString();
+  const state = await readState();
+  if (state.prologue_acked === true) return;
+  await message.reply({ content: voice.recordOpened() });
+  state.prologue_acked = true;
+  await writeState(state, nowIso);
+  await logEvent('info', SOURCE, 'prologue ack posted immediately from #the-record ignition');
+}
 
 client.on('error', (err) => {
   console.error('[the-watcher] client error:', err);

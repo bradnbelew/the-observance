@@ -12,19 +12,21 @@ import org.bukkit.entity.Player;
 import java.util.Locale;
 
 /**
- * SENSORY — a word lands only for ONE player: a fading title/subtitle, or an action-bar line above
- * the hotbar (transient, deniable). The shortest, most personal beat. All text is authored.
+ * SENSORY — a word lands only for ONE player: normally an action-bar line above the hotbar
+ * (transient, deniable), with explicit title/subtitle reserved for deliberately-authored boundary breaks.
+ * The shortest, most personal beat. All text is authored.
  *
  * <p>Payload:
  * <pre>{@code
- * { "mode":"title", "title":"...", "subtitle":"...", "fade_in":10, "stay":40, "fade_out":20 }
- * // mode: "title" | "actionbar"
+ * { "mode":"actionbar", "text":"..." }
+ * { "mode":"title", "boundary_break":true, "title":"...", "subtitle":"...", "fade_in":10, "stay":40, "fade_out":20 }
+ * // mode: "actionbar" | "title"; omitted defaults to actionbar.
  * }</pre>
  */
 public final class PrivateMessageBeat extends AbstractBeat {
 
     @Override public String name() { return "private_message"; }
-    @Override public String description() { return "A title/subtitle or action-bar word appears for one player."; }
+    @Override public String description() { return "A private action-bar word appears for one player; explicit title mode is reserved for boundary breaks."; }
     @Override public BeatCategory category() { return BeatCategory.AMBIENT; }
 
     @Override
@@ -39,13 +41,13 @@ public final class PrivateMessageBeat extends AbstractBeat {
         Player pl = target(req);
         if (pl == null) return BeatResult.skipped("no-target");
         BeatPayload p = req.payload();
-        String mode = p.string("mode", "title").trim().toLowerCase(Locale.ROOT);
+        String mode = p.string("mode", "actionbar").trim().toLowerCase(Locale.ROOT);
 
-        if (mode.equals("actionbar")) {
-            String text = p.string("actionbar", p.string("text", ""));
+        if (mode.equals("actionbar") || !p.bool("boundary_break", false)) {
+            String text = p.string("actionbar", p.string("text", p.string("title", p.string("subtitle", ""))));
             if (text.isBlank()) return BeatResult.skipped("empty");
             PerPlayer.actionBar(pl, clamp(text));
-            return BeatResult.fired("actionbar");
+            return BeatResult.fired(mode.equals("actionbar") ? "actionbar" : "title-demoted-actionbar");
         }
 
         String title = p.string("title", p.string("text", ""));

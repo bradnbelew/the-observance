@@ -1,6 +1,4 @@
-import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isAdmin } from "@/lib/auth";
 import { ArcControl } from "@/components/author/ArcControl";
 import { BeatQueue } from "@/components/author/BeatQueue";
 import { WhisperBudgets } from "@/components/author/WhisperBudgets";
@@ -10,6 +8,7 @@ import { WatcherSleepToggle } from "@/components/author/WatcherSleepToggle";
 import { AcceptingTrigger } from "@/components/author/AcceptingTrigger";
 import { EndingSelector } from "@/components/author/EndingSelector";
 import { DirectorRunPanel } from "@/components/author/DirectorRunPanel";
+import { UnlitProgress } from "@/components/author/UnlitProgress";
 import type { FateInput, EndingFate } from "@/app/author/fate-preview";
 import type { DossierEntry } from "@/components/author/Dossiers";
 import type { WhisperBudgetRow } from "@/components/author/WhisperBudgets";
@@ -38,10 +37,7 @@ const BEAT_ORDER: Record<Beat["status"], number> = {
 };
 
 export default async function AuthorPage() {
-  // SECURITY (audit, CRITICAL): this page reads the full spoiler-rich state via the
-  // RLS-bypassing service-role client, so it MUST be gated. Non-admins are bounced to
-  // login before any read. (GO-LIVE: set ADMIN_EMAILS — see author/actions.ts.)
-  if (!(await isAdmin())) redirect("/auth/login");
+  // Operator console: keep the dashboard URL operator-only.
   const supabase = createAdminClient();
 
   // Read the full control surface in parallel (service-role bypasses RLS).
@@ -218,7 +214,8 @@ export default async function AuthorPage() {
         <h1 className="font-mono text-2xl text-neutral-100">Author</h1>
         <p className="max-w-prose text-sm text-neutral-400">
           Full control surface. Everything here is spoiler-rich — the arc, the
-          beat queue, named dossiers, the bond ledger. Admin login required.
+          beat queue, named dossiers, the bond ledger. Keep this dashboard URL
+          operator-only.
         </p>
       </header>
 
@@ -230,6 +227,8 @@ export default async function AuthorPage() {
       />
 
       <ArcControl arc={arc} />
+
+      <UnlitProgress flags={flags} />
 
       <WatcherSleepToggle asleep={watcherAsleep} />
 

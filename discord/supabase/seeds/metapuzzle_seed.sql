@@ -143,6 +143,44 @@ begin
       where puzzle_key = 'threshold-coordinate';
     update public.puzzles set requires_flags = jsonb_build_object('true_coord_known', true)
       where puzzle_key = 'true-walk-arrive';
+    update public.puzzles set requires_flags = jsonb_build_object('descent_read', true)
+      where puzzle_key = 'undercroft-descent';
+    update public.puzzles set requires_flags = jsonb_build_object('mara_read', true)
+      where puzzle_key = 'mara-lectern-lock';
+    update public.puzzles set requires_flags = jsonb_build_object('iss_key_turned', true)
+      where puzzle_key = 'iss-doubt';
+    update public.puzzles set requires_flags = jsonb_build_object('iss_key_turned', true)
+      where puzzle_key = 'iss-warm';
+    update public.puzzles set requires_flags = jsonb_build_object('iss_trusted', true)
+      where puzzle_key in ('iss-dead-shrine', 'prophet-wall-comfort', 'prophet-wall-name', 'spine-cold-hearth-shadow');
+    update public.puzzles set requires_flags = jsonb_build_object('rosetta_known', true)
+      where puzzle_key in ('forged-eighth', 'record-url');
+    update public.puzzles set requires_flags = jsonb_build_object('descent_read', true)
+      where puzzle_key in ('m2-rhyme', 'difficulty-mara');
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
+      where puzzle_key = 'name-where';
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
+      where puzzle_key = 'spine-recovered-archive';
+    update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true)
+      where puzzle_key in ('undercroft-fog', 'fork-light', 'pressure-glyph-walk');
+    update public.puzzles set requires_flags = jsonb_build_object('orin_stone_read', true)
+      where puzzle_key in ('orin-threshold', 'orin-bow-fall-order');
+    update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
+      where puzzle_key in ('atonement-refrain', 'fork-name', 'haunting-biography');
+    -- The Accepting rite now needs recovered evidence from the Unlit, not just
+    -- the on-ramp flag. These four houses can be found in any order and are
+    -- deliberately fewer than the full eight-house archive so the pillar is
+    -- required without becoming a brittle checklist.
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'accepting_onramp_open', true,
+      'unlit_seen_lamp', true,
+      'unlit_seen_well', true,
+      'unlit_seen_watch', true,
+      'unlit_seen_base', true
+    )
+      where puzzle_key = 'rite-tokens';
+    update public.puzzles set requires_flags = jsonb_build_object('tokens_laid', true)
+      where puzzle_key = 'accepting-crouch';
 
     -- M3→IV the Seventh deep — opens only post-iss_caught AND seventh_suspected (the deep
     -- below the dead-shrine; WEB-MASTER §0.4 temporal layering). The choice waits on the name.
@@ -201,6 +239,8 @@ begin
       where puzzle_key = 'orin-frame-dials';
     update public.puzzles set requires_flags = jsonb_build_object('iss_key_turned', true)
       where puzzle_key = 'iss-which-is-true';
+    update public.puzzles set requires_flags = jsonb_build_object('iss_doubted', true)
+      where puzzle_key = 'no-wall-catch';
     update public.puzzles set requires_flags = jsonb_build_object('bound_word_known', true)
       where puzzle_key = 'iss-bound-word-callback';
     update public.puzzles set requires_flags = jsonb_build_object('deep_gate_open', true)
@@ -226,7 +266,7 @@ begin
     -- dark AND base-docket-reread-auto (ships active=true) would keep its default empty
     -- requires_flags and LEAK its four M4 docket answers from minute one. Aborting the whole
     -- seed batch is strictly safer than half-applying it. The fix is to apply 0006 first (the
-    -- db:seed runner and apply-tonight.sql both do); then re-run. Never downgrade this to a notice.
+    -- db:seed/apply-all do); then re-run. Never downgrade this to a notice.
     raise exception 'metapuzzle_seed: puzzles.requires_flags absent — apply migration 0006_requires_flags BEFORE the seeds (use `npm run db:seed` or supabase/apply-all.sql, which enforce the order). Aborting to avoid leaking the M4 docket answers.';
   end if;
 end $$;

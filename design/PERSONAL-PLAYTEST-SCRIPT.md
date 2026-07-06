@@ -3,23 +3,16 @@
 > Use this when Ethan does the solo/personal pre-launch playtest. The goal is not to prove every puzzle
 > by brute force. The goal is to verify that the first hour feels haunted, the clue chain is retrace-fair,
 > side stories are findable, and manual media slots are ready to receive real files.
+>
+> Evidence format lives in `design/LIVE-REHEARSAL-EVIDENCE.md`. Use this script for the route; use the
+> evidence packet for screenshots, clips, blockers, and KEEP/RESHAPE/REPLACE/CUT calls.
 
 ## Before You Start
 
 Run the checks:
 
 ```powershell
-python tools\check_experience_coherence.py
-python tools\check_namespace_collisions.py
-python tools\check_voice_register.py
-```
-
-From `discord/`:
-
-```powershell
-npm run -s seedcheck
-npm run -s specscheck
-npm run -s showrunner:test:scenario
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\audit_all.ps1
 ```
 
 From `plugin/`:
@@ -47,6 +40,10 @@ Keep notes in four columns:
 - **fix:** prose, placement, pacing, or code change
 
 If something is merely hard, keep it. If something is unclear after retracing, fix it.
+
+Also capture the required evidence packet: approach/focal/answer/exit screenshots for major sites,
+NPC line -> physical proof shots, at least six side-path proofs, one clip per scare family, and the
+first-hour uncut clip.
 
 ## Pass 1 - The First Hour
 

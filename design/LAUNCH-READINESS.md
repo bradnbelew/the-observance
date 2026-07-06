@@ -1,8 +1,9 @@
 # THE OBSERVANCE — LAUNCH READINESS (2026-07-03)
 
 The state after the "build everything left + full first-contact→finale pass" push. Branch
-`feat/build-everything-2026-07-01`, all committed, **every surface green** (plugin jar · discord tsc +
-9 selftests · dashboard tsc + 2 selftests · datapack JSON). Nothing pushed.
+`feat/build-everything-2026-07-01`, all committed, **every surface green** under the one-button root
+audit: story/data, showrunner runtime checks, dashboard selftests/build, plugin source/jar, operator docs,
+rehearsal wiring, datapack/resourcepack JSON. Nothing pushed.
 
 The experience is **code-complete and launch-ready** end to end — from the first thing a player
 experiences to the finale close — barring the MANUAL items below (real media + ops that are yours to
@@ -54,15 +55,19 @@ make/apply, which the code already degrades around safely).
       stage the kick by hand. Tune `closing.theater-seconds` (default 8) to taste.
 
 **Apply / deploy**
-- [ ] Apply the Supabase migrations to the live DB (both lineages, in order). Newest this push:
-      `discord/0009_observations`, `dashboard/0009_beat_queue_failed_status` (idempotent), and the earlier
-      `dashboard/0007_v_archive` + `0008_v_archive_flag_gate` (you said 0007/0008 are already in).
-- [ ] Re-seed so the gated rows are lit (progression/metapuzzle) — the Nether/End lanes are `active=true`.
+- [ ] Regenerate and apply `discord/supabase/apply-all.sql` to the live DB. It contains both lineages,
+      Discord migrations through 0011, dashboard migrations through 0009, all seeds, and schema repair.
+- [ ] Run `npm run audit` from `discord/` before launch; it checks seed normalization, web/side-quest
+      consistency, experience coherence, namespace collisions, voice register, SQL bundle order, forge
+      specs, and resolver behavior.
 - [ ] `npm run archive:materialize` in `discord/` (or let the cron self-populate the archive bodies).
 - [ ] Host the resourcepack (`observance-resourcepack.zip`) and set `config.yml resource-pack.url`+`sha1`.
       **The rune font ships in the pack** — the rosetta cribs + all rune beats only render once it's live.
 - [ ] Survey + `placeworld` the sites, incl. the two new coop/lane sites: `coop_plate` (the three-hands
       gate) and the Nether/End lane sites (from their own dimensions). An unplaced site = a safe no-op.
+- [ ] Build the Unlit duplicate world (`observance_unlit`) and follow `design/UNLIT-PREARG-STARTUP.md`.
+      Required pre-playtest proof: `/obs unlit audit`, `/obs unlit ready`, and the Unlit rehearsal packet.
+      The ending gate now requires the lamp, well, watch, and base discoveries before `rite-tokens`.
 - [ ] Stage the cold open in the group's base before session zero: `/observance placeprologue`.
 
 **Turn on the optional tiers (each OFF by default; all degrade to silence)**
@@ -109,22 +114,18 @@ half-ready code). Ethan's decisions on the earlier open items are recorded here.
 ## 4. Director coherence guardrails (built)
 
 `m4-three-hands` slipped because player-facing continuity was being verified by large manual audits instead
-of one repeatable check. The current launch branch now has a director-level check:
+of one repeatable check. The current launch branch now has a director-level check, and it is part of
+`npm run audit` from `discord/`:
 
 ```powershell
-python tools\check_experience_coherence.py
+npm run audit
 ```
 
-It verifies that Recovery Archive cards resolve to real voice bodies, card references point at real cards,
-archive anchors point at real `sites.yml` ids, revealed-by-solve values point at real puzzle keys, side
-quests use real thread lanes, and the experience manifest exists with the major lanes represented.
-
-Keep running it beside:
-
-```powershell
-python tools\check_namespace_collisions.py
-python tools\check_voice_register.py
-```
+The audit includes `check_experience_coherence.py`, `check_namespace_collisions.py`, and
+`check_voice_register.py`. Together they verify that Recovery Archive cards resolve to real voice bodies,
+card references point at real cards, archive anchors point at real `sites.yml` ids, revealed-by-solve
+values point at real puzzle keys, side quests use real thread lanes, the experience manifest includes
+the major lanes, FACT/INV/puzzle namespaces do not collide, and Watcher/Keeper voice stays in register.
 
 This does not replace the lower-level producer/token checks in the TS/Java pipeline. It closes the recurring
 director problem: a player-facing thread exists in one file but silently dangles in another.

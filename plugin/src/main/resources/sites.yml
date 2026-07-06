@@ -73,8 +73,10 @@ sites:
   #  radius. The AnswerSignListener reads the typed lines, normalizes them (the
   #  exact ORACLE.md §2 algorithm — identical to the Discord surface), and matches
   #  against the OPEN `puzzles` rows. On a genuinely-new solve it records the solve
-  #  and enqueues the authored reward beat (status 'approved' → fires next poll);
-  #  on a miss the sign simply blanks, no error, no hint.
+  #  and enqueues the authored reward beat (status 'approved' -> fires next poll).
+  #  On a non-empty miss/withhold/duplicate the sign blanks with one low-information
+  #  receipt ("the sign clears.") so the slot feels heard without leaking correctness.
+  #  Coordinate-shaped submissions receive the narrow nudge "a place is not an answer."
   #
   #  Site types treated as answer slots: `answer_sign` (preferred) and `keeper_stone`.
   #  Optional `puzzle-key:` BINDS a site to ONE puzzle (a focused gate). OMIT it (the
@@ -236,13 +238,13 @@ sites:
   # Named anchors the lore points at: Sella's far water, Orin's threshold lintel, and the
   # cold hearth (= Iss's dead-shrine grave, the false-way-up's end).
   the_far_water:
-    type: "marker"
+    type: "far_water"
     world: "world"
     x: null
     y: null
     z: null
-    radius: 8
-    protect: false
+    radius: 12
+    protect: true
     enabled: true
 
   # Orin's threshold lintel. Type is `the_threshold` (NOT a bare `marker`) because the presiding
@@ -342,6 +344,238 @@ sites:
     z: null
     radius: 6
     protect: true
+    enabled: true
+
+  # --- Dialogue-world proof anchors ----------------------------------------
+  # These exist because NPCs point at them directly. If Aro/Coll/Wenna talk about
+  # the Stair, the painted line, the third lamp, bird coops, the warm-town lie, or the dead-stall, these sites
+  # must either be staged by `/observance descentproof` / `/observance prepworld`
+  # or deliberately rewritten/cut before launch.
+
+  lampworks_stair:
+    type: "lampworks_stair"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 10
+    vertical-radius: 8
+    protect: true
+    enabled: true
+
+  third_lamp_stand:
+    type: "lamp_stand"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  painted_line:
+    type: "painted_line"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  dead_stall:
+    type: "dead_stall"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  deep_bird_coops:
+    type: "bird_coops"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  school_stand:
+    type: "school_stand"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 7
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  markers_row:
+    type: "markers_row"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 9
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  cistern_7:
+    type: "cistern_7"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 6
+    protect: true
+    enabled: true
+
+  watch_floor:
+    type: "watch_floor"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 6
+    protect: true
+    enabled: true
+
+  set_apart_shelf:
+    type: "set_apart_shelf"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  undercroft_seal:
+    type: "undercroft_seal"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 6
+    protect: true
+    enabled: true
+
+  forgotten_mouth:
+    type: "forgotten_mouth"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 9
+    vertical-radius: 7
+    protect: true
+    enabled: true
+
+  deep_market:
+    type: "deep_market"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 10
+    vertical-radius: 6
+    protect: true
+    enabled: true
+
+  ration_table:
+    type: "ration_table"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 7
+    vertical-radius: 5
+    protect: true
+    enabled: true
+
+  third_bay_breach:
+    type: "third_bay_breach"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 7
+    protect: true
+    enabled: true
+
+  warm_town_collapse:
+    type: "warm_town_collapse"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 8
+    vertical-radius: 6
+    protect: true
+    enabled: true
+
+  # --- Watcher dread-route rehearsal anchors -------------------------------
+  # `/observance dreadpass stage` overwrites these with live route coordinates.
+  # Keeping them in sites.yml makes `/observance coverage` and `/observance visit`
+  # honest even before staging: missing/unplaced is a clear operator state, not a
+  # silent command-only id.
+
+  dread_route_start:
+    type: "dread_route"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: false
+    enabled: true
+
+  dread_route_elsewhere:
+    type: "dread_route"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: false
+    enabled: true
+
+  dread_route_figure:
+    type: "dread_route"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: false
+    enabled: true
+
+  dread_route_exit:
+    type: "dread_route"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: false
     enabled: true
 
   # The M1 teaching-stone — the one coordinated layout that carries the prologue marker glyph, the six
@@ -826,5 +1060,129 @@ sites:
     z: null
     radius: 8
     vertical-radius: 6
+    protect: true
+    enabled: true
+
+  # --- The Unlit village expedition pillar. These are placed by standing at each authored anchor
+  #     and running /observance unlit site <entry|spawn|exit|house>. Coordinates are placeholders
+  #     until the curated mirror village exists in observance_unlit.
+  unlit_entry:
+    type: "unlit_entry"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 4
+    vertical-radius: 4
+    protect: true
+    enabled: true
+  unlit_spawn_mirror:
+    type: "unlit_spawn"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: true
+    enabled: true
+  unlit_exit:
+    type: "unlit_exit"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
+    protect: true
+    enabled: true
+  unlit_house_lamp:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_cairn:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_coop:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_well:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_watch:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_warm:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_threshold:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_house_base:
+    type: "unlit_house"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 6
+    vertical-radius: 5
+    protect: true
+    enabled: true
+  unlit_safe_01:
+    type: "unlit_safe"
+    world: "observance_unlit"
+    x: null
+    y: null
+    z: null
+    radius: 5
+    vertical-radius: 4
     protect: true
     enabled: true

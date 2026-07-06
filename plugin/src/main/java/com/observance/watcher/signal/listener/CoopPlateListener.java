@@ -7,7 +7,10 @@ import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -78,7 +81,7 @@ public final class CoopPlateListener implements Listener {
         this.scheduler = scheduler;
         this.safety = safety;
         this.enabled = enabled;
-        this.windowMs = Math.max(5_000L, windowMs);
+        this.windowMs = Math.max(60_000L, windowMs);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -107,7 +110,12 @@ public final class CoopPlateListener implements Listener {
             String siteId = site.id();
             if (foot) lastFootMsBySite.put(siteId, now); else lastCarveMsBySite.put(siteId, now);
 
-            if (bothFresh(siteId, now)) tryPublish(now);
+            if (bothFresh(siteId, now)) {
+                sendLegFeedback(p, siteId, "the square waits on the word.", 0.55f);
+                tryPublish(now);
+            } else {
+                sendLegFeedback(p, siteId, foot ? "one hand stands." : "one hand marks.", foot ? 0.45f : 0.5f);
+            }
         });
     }
 
@@ -128,6 +136,21 @@ public final class CoopPlateListener implements Listener {
         flags.addProperty(READY_FLAG, now);
         safety.info("coop.plate", "world legs held (foot + carve) — the threshold waits on the word");
         scheduler.runAsyncSafe("coop.plate.publish", () -> supabase.mergeArcFlags(flags));
+    }
+
+    private void sendLegFeedback(Player p, String siteId, String text, float pitch) {
+        if (p == null || text == null || text.isBlank()) return;
+        if (!rateLimiter.tryCooldown("coop:plate:feedback:" + siteId + ":" + p.getUniqueId(), 1_500L)) return;
+        try {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.14f, pitch);
+        } catch (Throwable ignored) {
+            // atmospheric only
+        }
+        try {
+            p.sendActionBar(Component.text(text, NamedTextColor.DARK_GRAY));
+        } catch (Throwable ignored) {
+            // older clients or proxy shims may not support action bars
+        }
     }
 
     /** The placed coop_plate the block sits inside, or null (mirrors AcceptingRiteListener). */

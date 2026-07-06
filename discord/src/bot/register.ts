@@ -24,7 +24,8 @@ export const whisperCommand = new SlashCommandBuilder()
     opt
       .setName('puzzle')
       .setDescription('the mark you are working — the puzzle you ask after.')
-      .setRequired(true),
+      .setRequired(true)
+      .setAutocomplete(true),
   );
 
 /** /link <name> — bind your discord voice to your name in the world. */

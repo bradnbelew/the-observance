@@ -45,8 +45,8 @@ into six roles to survive the isolation — not six separate people who joined o
 `KeeperNpc.java` body/tagger built, `/observance keeper <spawn|despawn> [node]` wired), Sella's redundant
 Atbash + 3x destination-word repeat, Brann's stalled cipher, Iss's faked cipher duality, Wren's off-voice
 dialogue, the off-brand bot sigil, and a spreading Unicode-rune leak on the dashboard. Two systemic guardrail
-scripts (`tools/check_namespace_collisions.py`, `tools/check_voice_register.py`, wired into §6 below) close
-two chronic recurring failure modes at the root instead of by hand next time. Full verify-green pipeline
+scripts (`tools/check_namespace_collisions.py`, `tools/check_voice_register.py`, wired into `npm run audit`)
+close two chronic recurring failure modes at the root instead of by hand next time. Full verify-green pipeline
 passed after every change. **Deliberately deferred** (scoped, not forgotten — see the audit doc's "FIXES
 SHIPPED" section): the UNKEPT vs. AVERYN acrostic differentiation (needs sealed canon + live plugin + seed
 touched together) and a physical-detector fix for Iss's monotone catch-sequence pacing (needs new Java).
@@ -54,8 +54,9 @@ touched together) and a physical-detector fix for Iss's monotone catch-sequence 
 the keeper voices.
 
 ## 1. CURRENT STATE (2026-07-03) — everything built, all green, NOTHING pushed
-Branch `feat/build-everything-2026-07-01`. Every surface green: **plugin jar · discord tsc + 9 selftests ·
-dashboard tsc + 2 selftests · datapack JSON.** The full player journey is **code-complete end to end**:
+Branch `feat/build-everything-2026-07-01`. Every surface green: **one-button root audit · Discord
+story/data/runtime checks · dashboard selftests/build · plugin jar · datapack/resourcepack JSON.** The
+full player journey is **code-complete end to end**:
 first contact → pure-haunt → earned literacy (the rosetta now TEACHES the alphabet via rune↔plaintext
 cribs) → the keeper field + townsfolk → the deep/Seventh lane → the Accepting → **the fate now actually
 posts** (the fate sentinel) → **the reckoning is now felt** (the sharp echoes cease / turn to sorrow) →
@@ -86,8 +87,8 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
    those areas.
 
 ## 3. WHAT'S LEFT (nothing is a code blocker; the spine plays with C alone)
-- **C — OPS (Ethan; required to run):** apply migrations (incl. `discord/0009_observations`,
-  `dashboard/0009_beat_queue_failed_status`; re-seed); host the resourcepack + set `config.yml` url/sha1
+- **C — OPS (Ethan; required to run):** regenerate and apply `discord/supabase/apply-all.sql`;
+  host the resourcepack + set `config.yml` url/sha1
   (**the rune font ships there — the rosetta cribs need it**); `placeworld` the sites incl. the new
   `coop_plate` + the Nether/End lane spots; stage the cold open (`/observance placeprologue`); rotate creds.
 - **B — MEDIA (Ethan; optional enrichment):** the found-footage clip + recovered Drive folder + a
@@ -122,24 +123,16 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
 ```
 # plugin (Java)
 cd /d/the-observance/plugin && "D:/_gradle/gradle-8.10.2/bin/gradle" --offline jar -q ; echo "PLUGIN=$?"
-# discord (TS + SQL) — the full gauntlet
+# discord (TS + SQL + player-facing story/data + showrunner runtime guardrails)
 cd /d/the-observance/discord && npx tsc --noEmit \
-  && for s in seedcheck gatecheck specscheck showrunner:test showrunner:test:autonomy \
-       showrunner:test:archive showrunner:test:scenario showrunner:test:customs showrunner:test:prologue \
-       showrunner:test:herd; \
-     do npm run -s "$s"; done
+  && npm run -s audit \
+  && npm run -s runtimecheck
 # dashboard
 cd /d/the-observance/dashboard && npx tsc --noEmit \
-  && npx tsx src/lib/record-projection.selftest.ts && npx tsx src/lib/archive-projection.selftest.ts
+  && npm run -s selftest
 # datapack (JSON validity)
 cd /d/the-observance/datapack && for f in $(find . -name '*.json' -o -name '*.mcmeta'); do \
   node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || echo "INVALID: $f"; done
-# namespace/ID collisions (FACT/INV numbers, puzzle_key values)
-cd /d/the-observance && python tools/check_namespace_collisions.py
-# voice/register lint (Watcher lowercase, no named emotions, no chiasmus)
-cd /d/the-observance && python tools/check_voice_register.py
-# player-facing continuity (archive bodies, card refs, site anchors, puzzle gates, manifest lanes)
-cd /d/the-observance && python tools/check_experience_coherence.py
 ```
 Gradle: `D:/_gradle/gradle-8.10.2/bin/gradle`.
 

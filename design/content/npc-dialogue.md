@@ -216,7 +216,7 @@ player who listens learns it before they break it:
 greet → (skin) → menu
 menu  → rumor[cycle] → menu
 menu  → truth[bow|light alternating] → menu  (set told_truth_or_lie once)
-menu  → crust_quest (npc_quests: offered→active; on Deep-Market dead-stall offering detected
+menu  → crust_quest (npc_quests: offered→active; on dead_stall bread/crust offering detected
          → done; fire wenna.quest.done; mark the_offering deciphered for the player) → menu
 menu  → bye → close
 ```
@@ -264,7 +264,7 @@ greet → (skin) → menu
 menu  → shop  → (hand off to the vanilla/Citizens shop trade) → menu
 menu  → rumor[cycle] → menu
 menu  → truth[line|twolamps alt] → menu
-menu  → oil_run_quest (offered→active; on third-stand light detected → done; mark
+menu  → oil_run_quest (offered→active; on third_lamp_stand light placement/touch detected → done; mark
          the_kept_light deciphered) → menu
 menu  → bye → close
 ```
@@ -646,10 +646,11 @@ voice_key_proposal:   # the HUMAN twin of voice.ts; integrated, never inlined at
   dialogue handler resolves `node_key` → text, mirroring how `resolveAnswer` → `voice.ts`.
   Do NOT add these to the `voice` object — the separation law depends on the two files not
   sharing a register.
-- **No new measurement:** the conduct skin reads `punishment_state` (toll_tier/deciphered)
+- **No new abstract measurement:** the conduct skin reads `punishment_state` (toll_tier/deciphered)
   and `arc_state.flags.iss_caught` — both already seeded by 0005 + the shipped puzzles seed.
-  The trees add no signal listeners.
-- **Quests:** `wenna.crust_quest` and `coll.oil_run_quest` are the only `npc_quests` rows in
+  The two errands do add physical action hooks once active: bread/crust dropped at `dead_stall`,
+  and light placed/touched at `third_lamp_stand`.
+- **Quests:** `wenna_crust` and `coll_lamp` are the only `npc_quests` quest keys in
   this pass; both double as discover-by-punishment human-teacher paths (set
   `punishment_state.deciphered=true` for `the_offering` / `the_kept_light` on completion via
   `teaching_site_id`). They GATE NOTHING (breadth invariant; side_quests.gates_progress=false).
@@ -661,5 +662,5 @@ voice_key_proposal:   # the HUMAN twin of voice.ts; integrated, never inlined at
   `npc_quests` definitions. Any quest seed must be `begin/commit` + `on conflict (player_id,
   quest_key) do nothing`, clearly marked DRAFT — but quest ROWS are per-player and created at
   offer-time by the handler, so there is no static quest seed to write here, only the two
-  quest_key definitions (`crust_quest`, `oil_run_quest`) and their completion hooks.
+  quest_key definitions (`wenna_crust`, `coll_lamp`) and their completion hooks.
 ```

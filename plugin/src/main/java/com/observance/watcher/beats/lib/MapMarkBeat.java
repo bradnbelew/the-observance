@@ -130,7 +130,8 @@ public final class MapMarkBeat extends AbstractBeat {
     private static MapCursor.Type cursorType(String name) {
         if (name == null || name.isBlank()) return null;
         try {
-            return MapCursor.Type.valueOf(name.trim().toUpperCase(java.util.Locale.ROOT));
+            Object value = MapCursor.Type.class.getField(name.trim().toUpperCase(java.util.Locale.ROOT)).get(null);
+            return value instanceof MapCursor.Type type ? type : MapCursor.Type.RED_X;
         } catch (Throwable t) {
             return MapCursor.Type.RED_X;
         }

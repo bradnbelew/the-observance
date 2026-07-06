@@ -248,6 +248,43 @@ public final class StructureTemplates {
     private static Location rosetta(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: this is now a full underground learning chamber, not a 7x7 pad.
+        // The dense original ring below remains the functional core; this outer shell gives it scale,
+        // approach, group space, and a darker onward route.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -8; dz <= 8; dz++) {
+                int m = Math.max(Math.abs(dx), Math.abs(dz));
+                boolean rim = m == 8 || (Math.abs(dx) == 7 && Math.abs(dz) >= 5)
+                        || (Math.abs(dz) == 7 && Math.abs(dx) >= 5);
+                Material floor = rim ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((Math.abs(dx) <= 4 && Math.abs(dz) <= 4) ? Material.DEEPSLATE_BRICKS : Material.DEEPSLATE_TILES);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 3; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 3 ? Material.BLACKSTONE
+                                        : (dy == 1 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.DEEPSLATE_BRICKS));
+                    }
+                }
+            }
+        }
+        for (int[] rib : new int[][]{{-8, 0}, {8, 0}, {0, -8}, {0, 8}, {-6, -6}, {6, -6}, {-6, 6}, {6, 6}}) {
+            int px = cx + rib[0], pz = cz + rib[1];
+            for (int dy = 0; dy <= 5; dy++) {
+                pen.set(px, cy + dy, pz, dy == 5 ? Material.CHISELED_POLISHED_BLACKSTONE : Material.POLISHED_BASALT);
+            }
+            pen.hangingLantern(px, cy + 4, pz, true);
+        }
+        for (int dz = -10; dz <= -8; dz++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                pen.set(cx + dx, cy - 1, cz + dz, Material.POLISHED_DEEPSLATE);
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            pen.set(cx + dx, cy - 1, cz + 8, Material.POLISHED_DEEPSLATE);
+        }
+
         // 7x7 dais: deepslate-brick floor with sculk-vein veining, a chiseled rim.
         for (int dx = -3; dx <= 3; dx++) {
             for (int dz = -3; dz <= 3; dz++) {
@@ -323,6 +360,35 @@ public final class StructureTemplates {
     private static Location vaun(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: treasury chamber around the original hoard core.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -6; dz <= 7; dz++) {
+                boolean rim = Math.abs(dx) == 8 || dz == -6 || dz == 7;
+                boolean aisle = Math.abs(dx) <= 2 && dz >= 0;
+                Material floor = rim ? Material.POLISHED_TUFF
+                        : aisle ? Material.TUFF_BRICKS
+                        : ((dx + dz) % 3 == 0 ? Material.TUFF : Material.TUFF_BRICKS);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        Material wall = dy == 4 ? Material.TUFF_BRICKS
+                                : ((Math.abs(dx) + dz + dy) % 4 == 0 ? Material.OXIDIZED_COPPER : Material.POLISHED_TUFF);
+                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                    }
+                }
+            }
+        }
+        for (int x = -6; x <= 6; x += 3) {
+            pen.set(cx + x, cy, cz - 5, Material.BARREL);
+            pen.set(cx + x, cy + 1, cz - 5, Material.BARREL);
+            pen.set(cx + x, cy + 2, cz - 5, Material.POLISHED_TUFF);
+        }
+        for (int x = -5; x <= 5; x += 5) {
+            pen.set(cx + x, cy + 4, cz + 3, Material.SPRUCE_PLANKS);
+            pen.hangingLantern(cx + x, cy + 3, cz + 3, false);
+        }
+
         // A cramped 5x5 alcove floor: tuff bricks, copper-oxide corners (wealth gone green).
         pen.floor(cx, cy - 1, cz, 2, Material.TUFF_BRICKS);
         pen.set(cx - 2, cy - 1, cz - 2, Material.OXIDIZED_COPPER);
@@ -389,6 +455,32 @@ public final class StructureTemplates {
     private static Location mara(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: reading hall around the original study core.
+        for (int dx = -7; dx <= 7; dx++) {
+            for (int dz = -7; dz <= 6; dz++) {
+                boolean rim = Math.abs(dx) == 7 || dz == -7 || dz == 6;
+                boolean readingAisle = Math.abs(dx) <= 2 && dz >= -1;
+                Material floor = readingAisle ? Material.DEEPSLATE_TILES
+                        : ((dx + dz) % 4 == 0 ? Material.DARK_OAK_PLANKS : Material.POLISHED_DEEPSLATE);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        Material wall = (dy == 1 && Math.abs(dx) == 7 && dz % 2 == 0)
+                                ? Material.CHISELED_BOOKSHELF
+                                : (dy == 4 ? Material.DARK_OAK_PLANKS : Material.DEEPSLATE_TILES);
+                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                    }
+                }
+            }
+        }
+        for (int z = -5; z <= 3; z += 4) {
+            pen.set(cx - 5, cy + 4, cz + z, Material.DARK_OAK_PLANKS);
+            pen.set(cx + 5, cy + 4, cz + z, Material.DARK_OAK_PLANKS);
+            pen.hangingLantern(cx - 5, cy + 3, cz + z, false);
+            pen.hangingLantern(cx + 5, cy + 3, cz + z, false);
+        }
+
         // 5x5 study floor: deepslate tile, dark oak trim.
         pen.floor(cx, cy - 1, cz, 2, Material.DEEPSLATE_TILES);
         // Bookshelf back wall (chiseled bookshelves), with two deliberately EMPTY gaps.
@@ -450,6 +542,31 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location sella(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: drowned cistern chamber around the original reflecting pool.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -8; dz <= 8; dz++) {
+                boolean rim = Math.abs(dx) == 8 || Math.abs(dz) == 8;
+                boolean channel = Math.abs(dx) <= 2 || Math.abs(dz) <= 2;
+                Material floor = channel ? Material.PRISMARINE_BRICKS
+                        : ((Math.abs(dx) + Math.abs(dz)) % 3 == 0 ? Material.DARK_PRISMARINE : Material.PRISMARINE);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        Material wall = dy == 4 ? Material.DARK_PRISMARINE
+                                : ((dx + dz + dy) % 4 == 0 ? Material.SEA_LANTERN : Material.PRISMARINE_BRICKS);
+                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                    }
+                }
+            }
+        }
+        for (int z = -6; z <= 6; z += 6) {
+            pen.water(cx - 5, cy, cz + z);
+            pen.water(cx + 5, cy, cz + z);
+            pen.set(cx - 5, cy - 1, cz + z, Material.SEA_LANTERN);
+            pen.set(cx + 5, cy - 1, cz + z, Material.SEA_LANTERN);
+        }
 
         // 5x5 prismarine surround with a recessed 3x3 reflecting pool at the centre.
         for (int dx = -2; dx <= 2; dx++) {
@@ -529,6 +646,30 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location orin(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: mason vestibule and forced-bow sightline around the old lintel.
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -7; dz <= 7; dz++) {
+                boolean rim = Math.abs(dx) == 6 || dz == -7 || dz == 7;
+                boolean centerRun = Math.abs(dx) <= 1;
+                Material floor = centerRun ? Material.POLISHED_DEEPSLATE
+                        : ((Math.abs(dx) + dz) % 3 == 0 ? Material.STONE_BRICKS : Material.DEEPSLATE_BRICKS);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        Material wall = dy == 4 ? Material.CHISELED_DEEPSLATE
+                                : (dy == 1 && dz == 7 && Math.abs(dx) % 3 == 0
+                                ? Material.CHISELED_STONE_BRICKS : Material.DEEPSLATE_BRICKS);
+                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                    }
+                }
+            }
+        }
+        for (int z = -6; z <= 6; z += 3) {
+            pen.set(cx - 4, cy, cz + z, Material.IRON_BARS);
+            pen.set(cx + 4, cy, cz + z, Material.IRON_BARS);
+        }
 
         // A short cold corridor of deepslate/stone brick — 3 wide, walls 3 tall.
         for (int dz = -1; dz <= 2; dz++) {
@@ -671,6 +812,29 @@ public final class StructureTemplates {
     private static Location brann(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: black-moon watch chamber around the original watch platform.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -7; dz <= 7; dz++) {
+                boolean rim = Math.abs(dx) == 8 || Math.abs(dz) == 7;
+                boolean platform = Math.abs(dx) <= 4 && Math.abs(dz) <= 4;
+                Material floor = platform ? Material.BLACK_CONCRETE
+                        : ((Math.abs(dx) + Math.abs(dz)) % 2 == 0 ? Material.COBBLED_DEEPSLATE : Material.DEEPSLATE_TILES);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 5; dy++) {
+                        Material wall = dy == 5 ? Material.BLACKSTONE
+                                : (dy == 2 && (dx + dz) % 5 == 0 ? Material.AMETHYST_BLOCK : Material.COBBLED_DEEPSLATE);
+                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                    }
+                }
+            }
+        }
+        for (int x = -6; x <= 6; x += 6) {
+            pen.set(cx + x, cy + 5, cz, Material.DEEPSLATE_TILES);
+            pen.hangingLantern(cx + x, cy + 4, cz, true);
+        }
+
         // Raised 5x5 watch platform: black concrete floor (a piece of night sky) w/ deepslate rim.
         for (int dx = -2; dx <= 2; dx++) {
             for (int dz = -2; dz <= 2; dz++) {
@@ -734,6 +898,31 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location iss(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: false-warmth parlor around the original hearth.
+        for (int dx = -7; dx <= 7; dx++) {
+            for (int dz = -6; dz <= 7; dz++) {
+                boolean rim = Math.abs(dx) == 7 || dz == -6 || dz == 7;
+                boolean warmSide = dz <= -1;
+                Material floor = warmSide
+                        ? ((dx + dz) % 3 == 0 ? Material.PACKED_MUD : Material.BRICKS)
+                        : ((dx + dz) % 2 == 0 ? Material.BLACKSTONE : Material.POLISHED_BLACKSTONE_BRICKS);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        Material wall = warmSide
+                                ? (dy == 4 ? Material.BRICKS : Material.PACKED_MUD)
+                                : (dy == 4 ? Material.POLISHED_BLACKSTONE_BRICKS : Material.BLACKSTONE);
+                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                    }
+                }
+            }
+        }
+        pen.set(cx - 5, cy + 4, cz - 3, Material.BRICKS);
+        pen.set(cx + 5, cy + 4, cz - 3, Material.BRICKS);
+        pen.hangingLantern(cx - 5, cy + 3, cz - 3, false);
+        pen.hangingLantern(cx + 5, cy + 3, cz - 3, false);
 
         // 5x5 room floor: warm bricks at the hearth, curdling to cold blackstone at the far edge.
         for (int dx = -2; dx <= 2; dx++) {
@@ -815,6 +1004,35 @@ public final class StructureTemplates {
     private static Location reckoning(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: a long ledger hall around the low table. This lets a group stand
+        // back and read the count wall before approaching the answer surface.
+        for (int dx = -7; dx <= 7; dx++) {
+            for (int dz = -5; dz <= 9; dz++) {
+                boolean rim = Math.abs(dx) == 7 || dz == -5 || dz == 9;
+                Material floor = rim ? Material.CHISELED_TUFF
+                        : ((dz >= 5) ? Material.POLISHED_TUFF : Material.POLISHED_DEEPSLATE);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 4 ? Material.BLACKSTONE
+                                        : (dy == 2 ? Material.POLISHED_BASALT : Material.DEEPSLATE_TILES));
+                    }
+                }
+            }
+        }
+        for (int dx = -4; dx <= 4; dx++) {
+            pen.set(cx + dx, cy, cz + 7, dx == 0 ? Material.CHISELED_DEEPSLATE : Material.CHISELED_TUFF);
+            pen.set(cx + dx, cy + 1, cz + 7, Material.WEATHERED_CUT_COPPER);
+            pen.set(cx + dx, cy + 2, cz + 7, dx == 4 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.POLISHED_DEEPSLATE);
+        }
+        for (int i = 0; i < 7; i++) {
+            int x = cx - 3 + i;
+            pen.set(x, cy, cz + 6, i == 6 ? Material.GRAY_CANDLE : Material.AMETHYST_BLOCK);
+            if (i != 6) pen.clusterOn(x, cy + 1, cz + 6, BlockFace.UP);
+        }
+
         // 7x7 squared floor: polished-deepslate field with a chiseled rim (a workman's exact square).
         for (int dx = -3; dx <= 3; dx++) {
             for (int dz = -3; dz <= 3; dz++) {
@@ -871,6 +1089,32 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location coldHearth(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: make the cold hearth a room players enter, not a 5x5 hearth prop.
+        // The old composition remains as the central dead-domestic focal point.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                boolean rim = Math.abs(dx) == 8 || Math.abs(dz) == 6;
+                Material floor = dz <= -2 ? Material.BRICKS
+                        : (dz <= 1 ? Material.POLISHED_BLACKSTONE_BRICKS : Material.BLACKSTONE);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, rim ? Material.CRACKED_DEEPSLATE_BRICKS : floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 3; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 3 ? Material.BLACKSTONE
+                                        : (dz <= -3 ? Material.BRICKS : Material.POLISHED_BLACKSTONE_BRICKS));
+                    }
+                }
+            }
+        }
+        for (int x = cx - 2; x <= cx + 2; x++) {
+            for (int dy = 0; dy <= 3; dy++) {
+                pen.set(x, cy + dy, cz + 6, dy == 0 ? Material.HANGING_ROOTS : Material.OAK_LEAVES);
+            }
+        }
+        pen.candle(cx - 6, cy, cz - 4, Material.GRAY_CANDLE, false);
+        pen.candle(cx + 6, cy, cz - 4, Material.GRAY_CANDLE, false);
 
         // 5x5 room floor: brick at the hearth (warm, but cooling) curdling to cold blackstone at the front.
         for (int dx = -2; dx <= 2; dx++) {
@@ -937,6 +1181,42 @@ public final class StructureTemplates {
     private static Location unbrokenLight(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: a full underground climax chamber around the functional 11x11 floor.
+        // The original ring remains centered for the Accepting listener; this shell makes it a real reveal.
+        for (int dx = -15; dx <= 15; dx++) {
+            for (int dz = -15; dz <= 15; dz++) {
+                int m = Math.max(Math.abs(dx), Math.abs(dz));
+                boolean outer = m == 15 || (Math.abs(dx) >= 13 && Math.abs(dz) >= 11)
+                        || (Math.abs(dz) >= 13 && Math.abs(dx) >= 11);
+                Material floor = outer ? Material.DEEPSLATE_BRICKS
+                        : (m <= 5 ? Material.POLISHED_BLACKSTONE : Material.POLISHED_DEEPSLATE);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (outer) {
+                    for (int dy = 0; dy <= 7; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 7 ? Material.BLACKSTONE
+                                        : (dy % 3 == 0 ? Material.POLISHED_BASALT : Material.DEEPSLATE_TILES));
+                    }
+                }
+            }
+        }
+        for (int[] rib : new int[][]{{-12, -12}, {0, -15}, {12, -12}, {15, 0}, {12, 12}, {0, 15}, {-12, 12}, {-15, 0}}) {
+            int px = cx + rib[0], pz = cz + rib[1];
+            for (int dy = 0; dy <= 9; dy++) {
+                pen.set(px, cy + dy, pz, dy == 9 ? Material.CHISELED_DEEPSLATE : Material.POLISHED_BASALT);
+            }
+            if (!(rib[0] == -15 && rib[1] == 0)) pen.hangingLantern(px, cy + 6, pz, true);
+        }
+        for (int dz = -22; dz <= -16; dz++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                pen.set(cx + dx, cy - 1, cz + dz, Material.POLISHED_DEEPSLATE);
+                if (Math.abs(dx) == 2) {
+                    for (int dy = 0; dy <= 4; dy++) pen.set(cx + dx, cy + dy, cz + dz, Material.DEEPSLATE_BRICKS);
+                }
+            }
+        }
+
         // A wide 11x11 dark floor: polished blackstone field, deepslate-brick rim (the gather-room; big
         // enough for the Accepting quorum to stand and bow together — the emptiness IS the design).
         for (int dx = -5; dx <= 5; dx++) {
@@ -994,6 +1274,26 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location threshold(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: widen this into a lintel room with an approach and landing beyond.
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -6; dz <= 8; dz++) {
+                boolean rim = Math.abs(dx) == 6 || dz == -6 || dz == 8;
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.POLISHED_DEEPSLATE);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 4 ? Material.BLACKSTONE
+                                        : (dy == 2 ? Material.POLISHED_BASALT : Material.DEEPSLATE_BRICKS));
+                    }
+                }
+            }
+        }
+        for (int dx = -4; dx <= 4; dx++) {
+            pen.set(cx + dx, cy, cz, Material.CHISELED_DEEPSLATE);
+            pen.set(cx + dx, cy + 1, cz, Material.POLISHED_BLACKSTONE_BRICKS);
+        }
 
         // A short sealed corridor of deepslate brick — 3 wide, to the low lintel.
         for (int dz = -1; dz <= 3; dz++) {
@@ -1058,6 +1358,33 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location unwriting(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: wall-scale Seventh chamber. The original scrape/clean-hand focal
+        // remains below, but the chamber now has real breadth, height, and an approach groove.
+        for (int dx = -12; dx <= 12; dx++) {
+            for (int dz = -8; dz <= 8; dz++) {
+                boolean rim = Math.abs(dx) == 12 || Math.abs(dz) == 8;
+                Material floor = rim ? Material.BLACKSTONE
+                        : ((Math.abs(dx) <= 2 || dz <= -3) ? Material.POLISHED_DEEPSLATE : Material.DEEPSLATE_TILES);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 7; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 7 ? Material.BLACKSTONE
+                                        : (dy == 3 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.DEEPSLATE_BRICKS));
+                    }
+                }
+            }
+        }
+        for (int dx = -7; dx <= 7; dx++) {
+            pen.set(cx + dx, cy, cz - 7, dx == 0 ? Material.CALCITE : Material.CHISELED_DEEPSLATE);
+            pen.set(cx + dx, cy + 1, cz - 7, Math.abs(dx) == 6 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.POLISHED_BLACKSTONE);
+            if (dx != 2) {
+                pen.set(cx + dx, cy + 2, cz - 7, Material.DEEPSLATE_TILES);
+                pen.set(cx + dx, cy + 3, cz - 7, Material.BLACKSTONE);
+            }
+        }
 
         // 5x7 chamber floor: cobbled/cracked deepslate — the effacement underfoot, older than the keepers'.
         for (int dx = -2; dx <= 2; dx++) {
@@ -1129,6 +1456,32 @@ public final class StructureTemplates {
     private static Location thresholdVault(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
 
+        // Post-Unlit visual overhaul: larger asymmetric co-op vault around the original lock core.
+        // Side niches give per-player fragments a real place to be read from.
+        for (int dx = -11; dx <= 11; dx++) {
+            for (int dz = -7; dz <= 7; dz++) {
+                boolean rim = Math.abs(dx) == 11 || Math.abs(dz) == 7;
+                Material floor = rim ? Material.CHISELED_TUFF
+                        : ((Math.abs(dx) >= 7 && Math.abs(dz) <= 3) ? Material.CUT_COPPER : Material.POLISHED_TUFF);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.COBBLED_DEEPSLATE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 5; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 5 ? Material.CHISELED_TUFF
+                                        : (dy == 2 ? Material.WEATHERED_CUT_COPPER : Material.POLISHED_TUFF));
+                    }
+                }
+            }
+        }
+        for (int[] niche : new int[][]{{-9, -4}, {-9, 0}, {-9, 4}, {9, -4}, {9, 0}, {9, 4}}) {
+            int px = cx + niche[0], pz = cz + niche[1];
+            pen.set(px, cy, pz, Material.CHISELED_TUFF);
+            pen.set(px, cy + 1, pz, Material.POLISHED_TUFF);
+            pen.set(px, cy + 2, pz, Material.COPPER_GRATE);
+            pen.hangingLantern(px, cy + 3, pz, false);
+        }
+
         // 7x7 vault chamber: polished-tuff floor, chiseled-tuff rim (a made room, squared and sealed).
         for (int dx = -3; dx <= 3; dx++) {
             for (int dz = -3; dz <= 3; dz++) {
@@ -1199,6 +1552,29 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location netherForge(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: a forge pocket with approach apron and blocked fire-source recess.
+        // The existing slab/remains remain as the functional answer core.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -6; dz <= 6; dz++) {
+                boolean rim = Math.abs(dx) == 8 || Math.abs(dz) == 6;
+                Material floor = rim ? Material.BASALT
+                        : ((dz <= -2) ? Material.POLISHED_BASALT : Material.POLISHED_BLACKSTONE);
+                pen.set(cx + dx, cy - 2, cz + dz, Material.BLACKSTONE);
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 4 ? Material.BLACKSTONE
+                                        : (dy == 1 ? Material.CRACKED_POLISHED_BLACKSTONE_BRICKS : Material.POLISHED_BLACKSTONE_BRICKS));
+                    }
+                }
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            pen.set(cx + dx, cy - 1, cz + 6, Material.SOUL_SAND);
+            pen.setIfAir(cx + dx, cy, cz + 6, Material.SOUL_FIRE);
+        }
 
         // 5x5 pocket floor: polished-blackstone field with a basalt rim (a ruined room carved into the
         // fire-deep, not a bright build on the surface). The builder seats its own floor so it is terrain-
@@ -1279,6 +1655,32 @@ public final class StructureTemplates {
      * ============================================================================================== */
     private static Location endShrine(Pen pen, Location base) {
         int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+
+        // Post-Unlit visual overhaul: void-edge approach and elongated shrine body. The original 5x5
+        // carving stays at the focal end so the answer surface remains stable.
+        for (int dz = -12; dz <= -3; dz++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                pen.set(cx + dx, cy - 1, cz + dz, Material.END_STONE_BRICKS);
+            }
+            if (dz % 3 == 0) {
+                pen.set(cx - 2, cy - 1, cz + dz, Material.PURPUR_BLOCK);
+                pen.set(cx + 2, cy - 1, cz + dz, Material.PURPUR_BLOCK);
+            }
+        }
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -2; dz <= 8; dz++) {
+                boolean rim = Math.abs(dx) == 6 || dz == 8;
+                pen.set(cx + dx, cy - 2, cz + dz, Material.END_STONE);
+                pen.set(cx + dx, cy - 1, cz + dz, rim ? Material.PURPUR_BLOCK : Material.END_STONE_BRICKS);
+                if (rim) {
+                    for (int dy = 0; dy <= 3; dy++) {
+                        pen.set(cx + dx, cy + dy, cz + dz,
+                                dy == 3 ? Material.OBSIDIAN
+                                        : (dy == 1 ? Material.PURPUR_PILLAR : Material.END_STONE_BRICKS));
+                    }
+                }
+            }
+        }
 
         // 5x5 shrine floor: end-stone-brick field, purpur rim (the exile-stone; a made place with no count).
         // The builder seats its own floor so it stands over the End's void-adjacent ground — additive, it

@@ -3,6 +3,12 @@
 > **The "resume entrypoint" role below is now held by `NEXT-SESSION.md`** (read that first) — kept for
 > history as the original build skeleton.
 
+> **CURRENT STATUS OVERRIDE (2026-07-06):** this file is a historical build skeleton, not the launch
+> truth. Do **not** use the migration table, plugin status, audio status, world status, ignition
+> stopgap notes, or Phase A checklist below as current instructions. Current operational truth lives in
+> `design/RUNBOOK.md`, `design/LAUNCH-READINESS.md`, and the green/red output of `tools/audit_all.ps1`
+> plus `tools/check_world_build_readiness.ps1 -Launch`.
+
 > **THE RESUME ENTRYPOINT.** If the session opens with "pick up where we left off on the Minecraft
 > ARG," read this doc start-to-finish — it is the **complete** build/fix/expand guide for the whole
 > thing (code · plugin · datapacks · resource pack · ciphers/puzzles · structures/world · story/lore ·
@@ -165,8 +171,8 @@ re-run safely after any fold.
 ---
 
 ## 5. EXTERNAL DEPENDENCIES / DECISIONS THE OWNER OWNS
-- Apply migrations + re-seed (only Ethan can reach the Supabase project). Order: 0006 → 0007 →
-  re-run seeds → (later Phase D) 0008.
+- Regenerate/apply `discord/supabase/apply-all.sql` (only Ethan can reach the Supabase project).
+  It now owns both migration lineages, all seeds, and schema repair in checked order.
 - A **host** for the bot/showrunner/Observer (must be always-on for between-session + voice).
 - **Seed selection** — choose one Paper 1.21.x + find a world seed with good ancient-city /
   trial-chamber / village placement; commit the seed (D5 version pin is load-bearing).

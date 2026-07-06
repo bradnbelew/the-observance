@@ -36,13 +36,13 @@ FIX: make ONE literacy door bulletproof and explicitly signposted (a teaching-st
 The load-bearing mystery beat (the Liar) hinges on the group realizing each stone uses a different cipher AND that Iss's name-as-Vigenère-key, applied to a DIFFERENT stone, produces "the one who turned away." This is a leap even experienced ARG players miss. The warm misreading (`iss-warm` → a grave) is the path of least resistance; the group will happily walk to the dead-shrine, get `oracleDeadEnd`, and never doubt Iss. The catch — the emotional core of M4 — is reachable only by an insight the design assumes and never seeds.
 FIX: have the cold-hearth dead-end itself plant the doubt ("the road was read true and still went nowhere — whose road was it?") so the grave PUSHES them back to re-test Iss's key, instead of relying on unprompted genius.
 
-### 7. [SIMPLIFY] `m4-three-hands` coop gate — "three distinct acts in one ~20s window" (plate + carve + Discord post) across in-game and Discord simultaneously is a coordination nightmare for a casual voice-chat group
+### 7. [FIXED] `m4-three-hands` coop gate — the tight cross-surface timing puzzle is now a forgiving held rite
 Three people must, within 20 seconds, stand on a plate, carve a sign, AND post in Discord. For a group playing irregularly with one person tabbed out, this is a janky scramble that will fail repeatedly and read as a broken trigger, not a ritual. The "even 1 person with a 2nd device, slowly" fallback is a confession that the timing is too tight.
-FIX: widen the window to ~2 minutes and make the three acts latch independently (each sets a leg, gate fires when all three legs held) so it feels like a coordinated rite, not a QTE.
+FIXED: the plugin/Discord window is now 180 seconds, the two world legs give per-leg receipts ("one hand stands.", "one hand marks.", "the square waits on the word."), and the hints now teach a held square instead of a "same short breath" QTE.
 
-### 8. [FIX] The Accepting group-bow (`AcceptingRiteListener`) requires EVERY present player sneaking at once on the finale floor — with no in-world instruction telling them to crouch together
+### 8. [FIXED] The Accepting group-bow (`AcceptingRiteListener`) requires EVERY present player sneaking at once on the finale floor — the listener now gives literal bow coordination feedback
 The climax detector fires on synchronized sneak by all present players inside the radius. The Keeper's letter says "bow as one" but a friend group reads "bow" as flavor, not a literal simultaneous-shift mechanic. They will stand on the floor, nothing happens, and the run ends in confusion at the most important moment. The `readyGate` is also unwired (defaults always-ready) and `readActiveRoster` unwired (GAP) — so quorum behavior is untested.
-FIX: have the Keeper/summons line explicitly instruct the literal act ("when all of you crouch at once, in this light") and show a per-player "you are bowed / waiting on N" feedback so the group can self-coordinate.
+FIXED: `AcceptingRiteListener` now shows per-player progress ("you are bowed. waiting on N.", "the light waits for your bow."), not-enough-roster feedback, and "not the hour." for early attempts while preserving the opaque token solve.
 
 ---
 
@@ -60,9 +60,9 @@ FIX: cut the dead-lead side-quests to at most 1-2, and make every dead-end carry
 Every Watcher line is deliberately affectless: "the count began before you knew there was a record to note it." This is artful but for a friend group whose attention competes with cracking jokes in voice chat, an entity that never escalates, never addresses them, never threatens, gives them little to react TO. The Set-A NPCs (Aro, Wenna, Dob) are the counterweight but are all `[GAP — GO-LIVE]` (no in-game bodies). So at launch the group meets ONLY the flat voice.
 FIX: ship at least Aro + Dob's in-game bodies for launch — the human-voice contrast is what makes the cold voice land; without it the tone reads as "the bot is just logging stuff."
 
-### 12. [FIX] INV-14 ("the WORD answers, never the coordinate") fights player instinct everywhere — the group WILL type coordinates and get blanked with no error
+### 12. [FIXED] INV-14 ("the WORD answers, never the coordinate") fights player instinct everywhere — coordinate-shaped sign submissions now get a narrow course-correction
 Multiple rows (`threshold-coordinate`, `true-walk-arrive`, the Nether/End on-site words) accept the destination word but explicitly reject the signed coordinate the player just decoded. A group that solves a coordinate clue will naturally answer with the coordinate, get a silent blank (no error, no hint), and conclude they solved it wrong. The design's own anti-frustration rule (blank-on-miss, no hint) compounds this into pure stall.
-FIX: when a miss normalizes to a coordinate-shaped string near a coord-bearing site, fire a one-line nudge ("a place is not an answer — go there") instead of a silent blank.
+FIXED: `AnswerSignListener` now treats coordinate-shaped submissions as a heard attempt but returns the diegetic action-bar nudge "a place is not an answer." instead of a silent blank.
 
 ---
 
@@ -72,9 +72,9 @@ FIX: when a miss normalizes to a coordinate-shaped string near a coord-bearing s
 `§III.3` asks the group to notice six separate maker's-mark glyphs (one per stone, across the map), recall the ORDER the keepers died (from a separate lore doc), and read the glyphs in that order to spell UNKEPT — with ring-order deliberately yielding nonsense as a "self-correcting lock." This is a setter's puzzle, not a player's. It will be discovered by zero groups unspoiled. It gates nothing (good) but the authoring + glyph-carving cost (GAP) buys nothing.
 FIX: cut to a single optional Whisper-revealed lore card, or have the cold Iss/Keeper simply STATE the word at the catch (already half-planned) and drop the glyph-assembly entirely.
 
-### 14. [FIX] The A→B room-swap (`undercroft-fog`, RoomSwapBeat) is "horror by omission" — fires only when no player is looking — and a casual group will read the changed room as a render/chunk bug, not dread
+### 14. [FIXED] The A→B room-swap (`undercroft-fog`, RoomSwapBeat) now has a private re-entry receipt instead of pure "horror by omission"
 The midpoint gut-punch is: leave an ordinary altar room, return to find it rebuilt wrong. For a Minecraft group, "blocks changed when I wasn't looking" is indistinguishable from a known engine artifact (chunk reload, lighting glitch, someone griefing). The intended chill ("they did not depart, they were kept") requires the group to TRUST that the change was authored. Their reflex is `/back`, "did the server crash?", "did someone edit this?".
-FIX: pin a Watcher line to the swap ("the room is not the room you left — read it again") so the change is claimed as intentional the instant they notice it.
+FIXED: the swap already uses the sealed-door + teleport-on-reentry model, and `RoomSwapReentryListener` now gives the re-entering player a private low-info receipt ("the room returns wrong.") as the transition lands. The rehearsal guard fails if that acknowledgement is removed.
 
 ### 15. [FIX] The future-dated grave (`future-dated-grave`/`grave.ts`) opens "from the inside" on the Accepting instant — but `grave.run.ts` is unbuilt, so this signature payoff silently never fires
 `§V.4.1` is one of the best "oh THAT'S what that was for" payoffs (the death-date was an appointment; the hole is a deposit slot). The pure policy exists; the I/O wrapper that actually opens the grave does not (GAP #15-ish / register #1's grave columns). The group reaches the finale, the grave they saw in M2 does nothing, and the payoff they were primed for is a dud — worse than never planting it.
@@ -84,21 +84,21 @@ FIX: build `grave.run.ts` + the `arc_state` instant binding as part of the final
 `§III.7` / `§V.4.3` make the website un-redact six entries "in lockstep with stones actually read," with the Iss-card carrying a stego rune-layer that is a SECOND door to the Vigenère key. A friend group in a Minecraft session does not babysit a webpage. The stego second-door (GAP #27, unbuilt anyway) will never be found. The site is a beautiful artifact almost no one will witness mid-run.
 FIX: have the Watcher Discord-post a direct link at the two moments it matters (ignition, finale) so the site is pushed to them, not waited-on; cut the stego second-door as a player feature (keep as video-only flavor).
 
-### 17. [FIX] The Unspoken word (`config.yml tracker.forbidden-words`) is empty (`[]`) and the value "lives ONLY on the server config" — at launch, the forbidden-word custom does nothing and the group never learns it exists
+### 17. [FIXED] The Unspoken word (`config.yml tracker.forbidden-words`) was empty (`[]`) — the forbidden-word custom now has a live, taught word
 `The Unspoken` is sold as an always-on cheap ambient beat (say the word → lights flicker). But the word is unset (GAP #13), and even when set, nothing teaches the group there IS a forbidden word until they accidentally say it — which, being a deliberately obscure lore word, they may never do in normal chat. A custom no one triggers is a custom that does not exist.
-FIX: set the word to something plausibly utterable, and seed ONE in-world hint (Wenna's folk-charm "we don't say its name") so the group has a reason to test it.
+FIXED: `tracker.forbidden-words` now ships with `unkept`, the word the keeper-field eventually teaches; Wenna's folk-charm already warns against saying the cold's name, and the rehearsal guard now fails if the list goes empty again.
 
-### 18. [SIMPLIFY] The forks (Sacred Beast / First Light / Spoken Name) are irreversible choices made with no awareness they ARE choices — the group will trip them as accidents and the ending tint will feel arbitrary
+### 18. [FIXED] The forks (Sacred Beast / First Light / Spoken Name) now give immediate/permanent-choice acknowledgement instead of silent ending tint
 `§V.7`: killing the one glowing Beast, banking vs carrying the First Light, speaking vs not-speaking the name — each silently sets a permanent ending colorant. The group will kill a glowing animal because it's a glowing animal (loot reflex), with zero sense they just closed a boon for the whole run. At the finale the tinted clause ("the herd keeps the death-spot in its facing") reads as a non-sequitur because they never connected the act to the consequence.
-FIX: give each fork a quiet but legible in-the-moment acknowledgment (the BUILT `forkLightKept/Taken` lines do this — ensure the Beast and Name forks get the same immediate feedback) so the close confirms a choice they remember making.
+FIXED: First Light and Spoken Name are explicitly authored as permanent choices in their tier-2/tier-3 hint text, and the Sacred Beast fork now gives the killer a private in-world receipt ("the warning is silenced.") the instant the one glowing fork-arming beast dies. The rehearsal guard now fails if that Beast acknowledgement is removed.
 
 ---
 
 ## TIER 4 — friction that erodes trust
 
-### 19. [FIX] Blank-on-miss with no error and no hint (every `keeper_stone` sign) — for a debugger group this reads as "the sign is broken," not "wrong answer"
+### 19. [FIXED] Blank-on-miss with no error and no hint (every `keeper_stone` sign) — answer signs now acknowledge heard attempts without leaking correctness
 The universal answer-verb is "edit a sign; on a miss the sign blanks, no error, no hint." A group that reflexively debugs will edit a sign, see it blank, and assume the input didn't register / the plugin choked — especially after a correct-feeling decode. Silence is indistinguishable from failure.
-FIX: on a normalized non-empty miss, blank the sign but fire a single deniable particle/sound so the group knows the attempt was HEARD and simply rejected.
+FIXED: on a normalized non-empty submission, the sign still blanks but fires the same deniable bass/action-bar receipt for wrong, withheld, duplicate, and solve paths; the reward beat remains the only solve tell.
 
 ### 20. [SIMPLIFY] Five divergent endings (KEPT/CAST_OUT/DIVIDED/REFUSERS/INHERITORS) decided by an active-only honored/violated tally the group never sees accumulating — the ending will feel random
 `decideFate` reads `honoredActive`/`violatedActive`/`leftAtActive` etc. The group has no running sense of their "record" (the compliance tally is a director-only dashboard number, deliberately hidden). So whichever of five endings they get arrives with no felt causality — DIVIDED (the default) especially will read as "the game couldn't decide." For a group, an ending they can't trace back to their behavior is unsatisfying.

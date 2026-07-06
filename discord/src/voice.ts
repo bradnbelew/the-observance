@@ -363,7 +363,7 @@ export const voice = {
 
   /**
    * three_hands (A6 `cross-surface-coop-gate`) — the coop gate clears: foot on the plate + carve +
-   * discord, three acts in one window, active-only. main_beat-class, but its own line. De-slopped
+   * discord, three acts held in one rite, active-only. main_beat-class, but its own line. De-slopped
    * per slop A4 (objects do not "remember three") + BUILD-MANIFEST §4: flat, a count and a state.
    */
   oracleThreeHands(): string {
@@ -657,13 +657,13 @@ export const voice = {
   },
   /** (2) universal — what they made me (the punishment was not death; it was a keeping with no end). */
   releaseMade(): string {
-    return 'that is what they made me. a thing that keeps — because a thing that keeps cannot be let go. i kept the ways. i kept the six. i kept you, because keeping you was the only proof i was still here to keep anything at all. i am sorry for the ones i kept too well.';
+    return 'that is what they made me. a hand on the ledger after the hand was gone. i kept the ways. i kept the six. i held you in the count because there was no other shape left for me to take. i am sorry for every name i held too tightly.';
   },
 
   // fate flavor — the TONE of the release (INV-11: names the group, never a player).
   /** kept — you kept faith; the release is clean, grateful, peaceful. */
   releaseFateKept(): string {
-    return 'you kept faith where i could not be kept. that is the whole of it, and it is enough.';
+    return 'you kept faith where i had only the habit of it left. that is the whole of it, and it is enough.';
   },
   /** cast_out — you broke faith / left things owed; freed anyway, cold and honest. */
   releaseFateCastOut(): string {

@@ -6,7 +6,10 @@ import com.observance.watcher.oracle.OracleResolver;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * THE IN-WORLD ANSWER VERB. A player submits a clue answer by editing an "answer sign" at a
@@ -29,7 +33,9 @@ import java.util.function.Supplier;
  * <p><b>Submission semantics.</b> The sign is an input slot, not a billboard: the typed lines are
  * captured on the main thread and the sign is then BLANKED (the player never sees their guess persist,
  * so a wrong answer leaves no trace and a correct answer's "voice" is the in-world reward beat, not
- * sign text). A miss/withheld/duplicate produces NO feedback — silence, never an error or a tell.
+ * sign text). A non-empty accepted submission gets one low-information receipt ("the sign clears.")
+ * so the slot feels heard without exposing miss/withheld/duplicate/solve state. Coordinate-shaped
+ * submissions get the smallest course-correction: the group should go to places, not type them.
  */
 public final class AnswerSignListener implements Listener {
 
@@ -42,6 +48,8 @@ public final class AnswerSignListener implements Listener {
      *  matching the sibling cooldown pattern (dark-hours/kept-light/etc.); 3000ms is the fallback if
      *  a non-positive value somehow reaches the constructor, preserving the old hardcoded behavior. */
     private static final long DEFAULT_SUBMIT_COOLDOWN_MS = 3_000L;
+    private static final Pattern COORDINATE_SHAPED = Pattern.compile(
+            ".*[-+]?\\d{2,}(?:\\.\\d+)?\\s*(?:,|/|\\s)\\s*[-+]?\\d{1,3}(?:\\.\\d+)?\\s*(?:,|/|\\s)\\s*[-+]?\\d{2,}(?:\\.\\d+)?.*");
 
     private final OracleResolver resolver;
     private final Supplier<SitesConfig> sitesSupplier;
@@ -95,6 +103,8 @@ public final class AnswerSignListener implements Listener {
                 return; // submitting too fast → withhold silently
             }
 
+            sendAnswerReceipt(p, raw);
+
             // Snapshot the identity off the Bukkit object before going async (never touch p async).
             final String mcUuid = p.getUniqueId().toString();
             final String name = p.getName();
@@ -108,7 +118,8 @@ public final class AnswerSignListener implements Listener {
                     safety.info("oracle.solved",
                             "world solve by " + name + " at site " + site.id());
                 }
-                // All other results (MISS/WITHHELD/ALREADY_SOLVED/IGNORED/UNAVAILABLE) → silence.
+                // All other results (MISS/WITHHELD/ALREADY_SOLVED/IGNORED/UNAVAILABLE) have already
+                // received the same no-hint sign receipt, so the resolver never leaks state here.
             });
         });
     }
@@ -162,5 +173,26 @@ public final class AnswerSignListener implements Listener {
         } catch (Throwable ignored) {
             // a quirky sign impl must never crash the listener
         }
+    }
+
+    /** A deniable "heard you" beat, not a correctness hint. */
+    private static void sendAnswerReceipt(Player p, String raw) {
+        try {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.18f, 0.55f);
+        } catch (Throwable ignored) {
+            // feedback is atmospheric; never let it block the answer path
+        }
+        try {
+            p.sendActionBar(Component.text(answerReceiptText(raw), NamedTextColor.DARK_GRAY));
+        } catch (Throwable ignored) {
+            // older clients or proxy shims may not support action bars
+        }
+    }
+
+    private static String answerReceiptText(String raw) {
+        if (raw != null && COORDINATE_SHAPED.matcher(raw).matches()) {
+            return "a place is not an answer.";
+        }
+        return "the sign clears.";
     }
 }

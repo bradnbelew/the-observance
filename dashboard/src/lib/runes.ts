@@ -4,9 +4,9 @@
  * This is a deliberate, geometry-only PORT of `discord/src/forge/runes.ts` (the single source of
  * truth for the game's own invented rune alphabet — the one also baked into the Minecraft resource
  * pack font at resourcepack/assets/observance/font/runes.json). The dashboard has no shared package
- * with `discord/`, so rather than link the fake Unicode Elder Futhark that was previously hard-coded
- * in the record pages (a "false affordance": a player who learns the REAL in-game glyphs cannot read
- * that decorative stand-in), we mirror the exact same stroke table here so the web header marks are
+ * with `discord/`, so rather than link a fake Unicode Elder Futhark wordmark previously hard-coded in
+ * the record pages (a "false affordance": a player who learns the REAL in-game glyphs cannot read that
+ * decorative stand-in), we mirror the exact same stroke table here so the web header marks are
  * carved from the identical alphabet as the in-world runes and the Discord clue cards.
  *
  * Keep this file's LETTER_BRANCHES / geometry constants byte-identical to the canonical copy in

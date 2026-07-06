@@ -9,9 +9,9 @@
 > is the longevity.
 >
 > **What this is NOT.** None of these is a spine node, a cipher gate, or a Recovery-Archive thread
-> beat the arc waits on. Removing all 18 must leave the main reconstruction unbroken. Several are
-> **deliberate dead leads** (a rumor the world contradicts on arrival) so the map is not
-> speedrunnable — a group that trusts every rumor wastes feet, which is the point.
+> beat the arc waits on. Removing all 18 must leave the main reconstruction unbroken. Only one is a
+> blunt false lead; the rest may disappoint a hope, but must still teach a rule, expose a character,
+> or point forward. Optional play spends trust, so no long walk is allowed to be merely empty.
 >
 > **Grounding.** Every place sits in the bible's geography (`arc/WORLD-BIBLE.md` §1) and reuses the
 > corpus's exact nouns: the **Mouth/Threshold**, the **Warrens** (mark 4), the **Lamp-works** (mark 9,
@@ -45,8 +45,8 @@
    2. WALK         someone physically goes there (1–3k blocks). pooling the rumor does not move feet.
    3. ARRIVE       a small authored TABLEAU + 1–2 fragments. the rumor flips:
                      → VERIFIED    (card_kind 'verified')   the rumor was true. it pays.
-                     → CONTRADICTED (card_kind 'contradicted') the rumor was a lead that died. it
-                                    STILL pays atmosphere — a dead lead is not an empty room.
+                     → CONTRADICTED (card_kind 'contradicted') the rumor was false, but the site
+                                    still pays proof, a rule, a character turn, or a breadcrumb.
    4. PAY          lore / atmosphere / an item / time. NEVER a spine unlock. the way goes on without it.
 ```
 
@@ -57,11 +57,11 @@
   five spine ciphers; a one-off local device described per destination). The keyed ones are the
   deepest pay and the rarest.
 
-**The dead-lead budget.** Of the 18, **five are deliberate side-tracks** (D03, D06, D09, D12, D17) —
-the rumor is wrong or the place is a grave/empty, and arriving contradicts it. They pay atmosphere
-and a true negative ("there is nothing kept here") but no item and no thread advance beyond a
-contradicted card. This is the anti-speedrun tax: a group cannot tell a live lead from a dead one
-without walking, so trusting every rumor costs the most feet.
+**The dead-lead budget.** Of the 18, **one is a blunt false lead** (D03). D06, D09, D12, and D17
+may contradict the *hope* inside a rumor, but each must still pay concrete evidence, a lore rule, a
+character turn, or a forward breadcrumb. The speedrun resistance is uncertainty, not contempt: a group
+cannot tell every live lead from every cold proof without walking, but a careful walk must always
+make the ARG feel more real.
 
 ---
 
@@ -118,7 +118,7 @@ thread_card under **who**. Optional: a player who leaves an offering earns a fon
 
 ---
 
-### D03 — Aro's "warm town" (the dead lead) · tier: rumored · thread: place · ~20 min · **SIDE-TRACK**
+### D03 — Aro's "warm town" (the false lead) · tier: rumored · thread: place · ~20 min · **CONTRADICTION**
 
 **Rumor (Aro, `rumor`/`lie` — confident, specific, wrong):**
 > "Way I heard it, there's a whole town down there. Lamps still burning, people living fat off the
@@ -135,8 +135,9 @@ flatly.
 
 **Pays:** atmosphere (the wrong-scaled deep; the "people just stayed and it's nice" lie that the
 whole horror inverts) + the lesson that **Aro lies** (corroborated later when the painted line / black
-moon / unspoken all contradict him). A **contradicted** card under **place**. No item. ~20 min of feet
-spent on nothing — the anti-speedrun tax.
+moon / unspoken all contradict him) + the first hard Deep-Line warning. A **contradicted** card under
+**place**. No item, but the site must leave a concrete warning players can use; this is not a prank
+walk.
 
 **Voice keys (proposed):**
 - `voice.dest.warmTown.find` →
@@ -269,12 +270,13 @@ texture. A thread_card under **place**. **Item:** a jar of the good oil (flavor;
 
 ---
 
-### D09 — Iss's third bay (below the Line) · tier: rumored · thread: happened · ~22 min · **SIDE-TRACK (the old sin)**
+### D09 — Iss's third bay (below the Line) · tier: rumored · thread: happened · ~22 min · **DANGEROUS PROOF**
 
 > **Note:** crossing the Deep Line is the_deep_line transgression (Iss's sin) — this destination
 > *rumors you toward breaking a way*. Arriving pays the HAPPENED thread but **the world contradicts
 > the rumor that there is anything down there worth the crossing** — there is a grave, not a road.
-> The toll for crossing is the punishment-state loop (separate system), not this card.
+> The toll for crossing is the punishment-state loop (separate system), not this card. The arrival
+> must still make the line matter: players learn why Coll refuses it and why Dob panics there.
 
 **Rumor (Aro, `lie` — the dangerous one):**
 > "The painted line halfway down the big stair? Step right over it, friend. That's the locals keeping
@@ -290,8 +292,9 @@ The R06 margin is cut by the breach: *he opened the line looking for home and le
 other side.* **There is no road down to anything good.** Aro sent them to the wound the Hold died of.
 
 **Pays:** the HAPPENED thread (Iss's Break, the official face) + the lesson that the painted line is
-real and Aro's "cross it" is the lie that kills. A **contradicted** card under **happened** (the rumor
-of a way down is false; what's down is a grave). No item. Crossing risks the_deep_line toll. ~22 min.
+real and Aro's "cross it" is the lie that kills + a return reason to re-read Coll/Dob/Pell. The rumor
+of a good way down is false, but the proof is launch-grade: this is the wound that makes the rest of
+the Hold make sense. Crossing risks the_deep_line toll. ~22 min.
 
 **Voice keys (proposed):**
 - `voice.dest.thirdBay.find` →
@@ -356,7 +359,7 @@ is not cold like an object). A **verified** card under **surface**. No item (you
 
 ---
 
-### D12 — Brann's watch-floor (the un-turning watches) · tier: rumored · thread: surface · ~16 min · **SIDE-TRACK (sleepless loop)**
+### D12 — Brann's watch-floor (the un-turning watches) · tier: rumored · thread: surface · ~16 min · **VERIFIED DREAD**
 
 **Rumor (Pell, `truth` — the hard one):**
 > "There was a watchman never slept. Had the night-watch by his own asking and kept it past the
@@ -372,8 +375,8 @@ new is written while you watch; it only ever ends on the one word, and you canno
 The dread is that it already wrote the ending.
 
 **Pays:** the_dark_hours taught (Brann broke when he finally slept; the Sleepless); the tonal-decay
-SURFACE atmosphere. A **contradicted** card under **surface** (the log does not write live — it is
-finished). No item. ~16 min.
+SURFACE atmosphere. The rumor's live-writing flourish is false, but the find is verified dread: the
+log is finished and already contains the ending. No item. ~16 min.
 
 **Voice keys (proposed):**
 - `voice.dest.watchFloor.find` →
@@ -474,7 +477,7 @@ induction). A thread_card under **surface**. No item. Short — it's topside, ne
 
 ---
 
-### D17 — the "way up" (the forgotten Mouth) · tier: rumored · thread: place · ~25 min · **SIDE-TRACK (Iss's hope)**
+### D17 — the "way up" (the forgotten Mouth) · tier: rumored · thread: place · ~25 min · **COLD PROOF**
 
 **Rumor (Iss's L08/L15 draft, if found, or Aro embellishing):**
 > *there is a Mouth at the top of the Stair and it is not sealed, only forgotten. i can find it again.
@@ -492,9 +495,9 @@ A live surface seen from inside the wound that letting it in made. Stepping out 
 nothing) — and the topside is just ordinary, healed, and indifferent.
 
 **Pays:** the PLACE thread + FACT (Iss right about the surface, wrong about the way); the bleakest,
-strangest pay — a true rumor that costs you the walk to learn it does not matter. A **verified-but-
-hollow** card under **place** (verified: the Mouth is real; the contradiction is that it saves no one).
-No item. ~25 min.
+strangest pay — a true rumor whose cost teaches why "up" is not salvation. A return-mark points
+toward the true Threshold walk, so the destination closes a false hope while handing the group a
+usable orientation. No item. ~25 min.
 
 **Voice keys (proposed):**
 - `voice.dest.wayUp.find` →
@@ -544,7 +547,7 @@ binds_to_tables:
   - public.side_quests           # the DRAFT INSERT at the foot
   - public.thread_cards          # each destination also lands a rumor->verified/contradicted card (authored in task #6's thread-card seed; cross-referenced here, not duplicated)
 breadth_invariant: every quest_key has gates_progress=false; removing all 18 leaves the spine intact
-dead_lead_budget: 5 deliberate side-tracks (D03 warm-town lie, D06 far-water grave, D09 third-bay grave, D12 watch-log finished, D17 way-up-that-saves-no-one) — pay atmosphere, contradict the rumor, no item/advance; the anti-speedrun tax
+dead_lead_budget: 1 blunt false lead (D03 warm-town lie); D06/D09/D12/D17 may contradict a hope, but each must pay proof, a rule, character, or a forward breadcrumb
 
 reference_check:   # every reference resolves to a closed-registry member (a non-resolving ref is a bug)
   threads_used: [who, place, happened, surface, human]      # all in forge/canon.ts THREADS
@@ -635,7 +638,7 @@ values
   ('dest-empty-cairn',     'who',      null,
    'the_offering taught by example (Vaun/Orin); soft-offer Watcher line; card under who',        'ambient', 10),
   ('dest-warm-town',       'place',    null,
-   'DEAD LEAD: Aro''s warm-town lie; wrong-scaled deep collapse; contradicted card under place',  'rumored', 20),
+   'FALSE LEAD WITH TEETH: Aro''s warm-town lie; wrong-scaled deep collapse; drops Deep-Line warning + Aro-trust break; contradicted card under place',  'rumored', 20),
   ('dest-school-stand',    'human',    null,
    'the_kept_light + seventh-seed; domestic were-they-human detail; card under human',            'ambient', 9),
   ('dest-bird-coops',      'surface',  null,
@@ -647,13 +650,13 @@ values
   ('dest-cistern-7',       'place',    null,
    'the lamp-in-water-lies spook; the_kept_light texture; ITEM good-oil jar; card under place',   'rumored', 15),
   ('dest-third-bay',       'happened', null,
-   'SIDE-TRACK: Iss''s breach (R06); the_deep_line context; grave not a road; contradicted, happened','rumored',22),
+   'DANGEROUS PROOF: Iss''s breach (R06); the_deep_line context; grave not a road; proves crossing has cost and points back to Coll/Dob warnings; happened','rumored',22),
   ('dest-dead-shrine',     'who',      null,
    'the seventh''s place (L14), kept distinct from Iss; FACT10; card under who',                  'ambient', 24),
   ('dest-set-apart',       'surface',  null,
    'KEYED (digit cross-count): R11 entry-5 the warm cold-lamp; verified card under surface',      'keyed',   18),
   ('dest-watch-floor',     'surface',  null,
-   'SIDE-TRACK: Brann''s self-finished watch-log (R12); the_dark_hours; contradicted, surface',   'rumored', 16),
+   'VERIFIED DREAD: Brann''s self-finished watch-log (R12); the_dark_hours; proves the watch ended and the live-writing rumor is bait; surface',   'rumored', 16),
   ('dest-deep-market',     'place',    null,
    'the warmth they grieve (R04, 18 stalls); ITEM chore-token; card under place',                 'ambient', 12),
   ('dest-ration-table',    'human',    null,
@@ -663,7 +666,7 @@ values
   ('dest-pell-mark',       'surface',  null,
    'topside: the human record (Pell) mirroring the Watcher; card under surface',                  'ambient', 7),
   ('dest-way-up',          'place',    null,
-   'SIDE-TRACK: Iss''s forgotten Mouth — real but saves no one; verified-but-hollow, place',      'rumored', 25),
+   'COLD PROOF: Iss''s forgotten Mouth — real but saves no one; return-mark points toward the true threshold walk; verified card under place',      'rumored', 25),
   ('dest-gutter-lamps',    'human',    null,
    'keeping the rite knowing it failed (the three dark levels); the_kept_light; card under human','ambient', 11)
 on conflict (quest_key) do nothing;
@@ -677,9 +680,9 @@ commit;
 >   (Set-B); Pell's *spoken* lines remain Set-A in `npc-and-watcher-voice.md`. The engine reads these
 >   by key — never hardcode the English at a call site (INV-1, the voice rule).
 > - The matching `thread_cards` rows (one rumor card → flips to verified/contradicted on arrival,
->   `anchor_site_id` = each destination's sites.yml id) are authored in the thread-card seed (task #6);
->   keep the `card_kind` of the five side-tracks (D03/D06*/D09/D12/D17) as `contradicted` on arrival.
->   (*D06 verifies — the rumor was true and worse; only its *hope* is contradicted.)
+>   `anchor_site_id` = each destination's sites.yml id) are authored in the thread-card seed (task #6).
+>   Keep blunt contradiction rare: D03 may flip to contradicted; D06/D09/D12/D17 may contradict a hope,
+>   but must still verify evidence or hand forward a breadcrumb.
 > - Each destination needs a `sites.yml` id (placeholder coords ok at author-time; the
 >   `siteCoverageSelfTest` only requires existence + enabled). Distribute so no two are within ~1k
 >   blocks (LONGEVITY.md §2), the far-west cluster (D06 far water, D10 dead shrine) furthest out.

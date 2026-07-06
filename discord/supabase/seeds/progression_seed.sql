@@ -91,7 +91,8 @@ values
       'fragment', 'a keeper came down to keep the fire and was kept by it. you do not make the fire. you do not own it. you carry it, and you do not let it die, and that is the whole of it. the kept light upstairs was a coal carried up from here.'
     )
   ),
-  3, true, null ),
+  -- max_attempts:6 - "lent" is intentionally readable on-site, not guessable from chat.
+  3, true, 6 ),
 
 -- ───────────────────────────────────────────────────────────────────────────
 -- THE END LANE — the Seventh shrine / the one place outside the record (FACT 10b / D11)

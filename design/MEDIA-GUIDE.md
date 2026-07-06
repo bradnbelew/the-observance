@@ -13,7 +13,7 @@
 | # | Asset | Priority | Status |
 |---|---|---|---|
 | A1 | Rune font (`runes.png` + `runes.json`) | **Required** | ✅ **done, in repo** |
-| A2 | 11 sound files (`.ogg`) | **Required-ish** (degrades to silence) | ⚠️ **present but UNVERIFIED quality** — listen + replace if placeholder |
+| A2 | 11 sound files (`.ogg`) | **Required-ish** (degrades to silence) | ✅ **format verified by audit** — still do a human listening pass for taste |
 | — | *Package + host the resource pack* | **Required** | ops, not media (see §Ops) |
 | B1 | Found-footage "recovered recording" video | Hero artifact (enrichment) | ❌ **you produce** |
 | B2 | `the-hold.zip` — the downloadable lure vignette | Hero artifact (enrichment) | ❌ **you produce** |
@@ -39,10 +39,11 @@ optional; **this section is the one that actually gates the experience.**
   runes render as the vanilla `illageralt` fallback (still legible, but not the authored look).
 - **Status:** built and in-repo. Nothing to make. Just make sure it ships in the hosted pack.
 
-### A2 — The audio (11 `.ogg` files) ⚠️ PRESENT, VERIFY QUALITY
-- **Location:** `resourcepack/assets/observance/sounds/`. All 11 are present and are **valid Ogg files**
-  (12–54 KB each) — but they were added in an early "Wave 1" batch and I **cannot vouch that they are your
-  final sound design vs. earlier placeholder audio.** Listen to each and replace any you don't love.
+### A2 — The audio (11 `.ogg` files) ✅ FORMAT VERIFIED, LISTEN FOR TASTE
+- **Location:** `resourcepack/assets/observance/sounds/`. All 11 are present and the full audit now verifies
+  they are Vorbis `.ogg`, mono, non-trivial, and duration-checked. That proves they will spatialize correctly
+  in Minecraft; it does **not** prove they are the final sound design. Listen to each and replace any you
+  don't love.
 - **HARD FORMAT RULE (from `resourcepack/README.md`):** these MUST be **MONO** `.ogg`. A stereo file will
   **not attenuate with distance and will not spatialize** — which breaks the whole "a whisper only you hear,
   positioned behind you" effect. If you re-make them, export mono.
@@ -105,11 +106,11 @@ that points at it** (or the trail dead-ends / a link 404s).
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
   download on the record website's lure page (`/record/the-record-keeps`).
-- **Where it wires:** `dashboard/public/the-hold/the-hold.zip`. The lure page already links it
+- **Where it wires:** `dashboard/public/the-hold/the-hold.zip`. The lure page withholds the download link until this file exists
   (`the-hold.zip`, with the README "lie": *"a small offline map. single player. no mods. ~fifteen minutes.
   it does not connect to anything. play it through and it will tell you where the rest is kept."*).
   **The file is NOT in the repo yet — until it's hosted, do NOT plant the in-world clue to the lure slug
-  or the download 404s.**
+  or the group sees a withheld artifact instead of a playable map.**
 - **Full build spec already written:** `design/prologue/PROLOGUE-VIGNETTE.md` — beat-by-beat, room-by-room,
   all vanilla blocks, gamerules locked, datapack-tick logic (no visible command-block clocks). It carries
   the dead-uploader (Mara, "m.kept"), the number **6** on a page, a closing rune string, and the
@@ -175,7 +176,8 @@ Lower priority; make these only if you're having fun. None is wired, so each wou
 
 ### One-paragraph priority read
 Get the **resource pack packaged + hosted** (A1+A2 + ops) — that's the only thing that changes whether the
-game looks right. **Listen to the 11 OGGs and replace any placeholder-grade ones (mono only).** Then the
+game looks right. The audit now blocks broken/stereo/tiny audio; **listen to the 11 OGGs and replace any
+placeholder-grade ones (mono only).** Then the
 three hero artifacts (B1 found-footage, B2 the-hold.zip, B3 spectrogram/Drive) are pure enrichment you can
 add on your own schedule — each degrades safely, and I wire your real version in the moment you hand it over.
 Decide the **found-footage slot** (cold-open vehicle vs. mid-game artifact) before you shoot B1, because that

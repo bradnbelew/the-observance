@@ -32,7 +32,7 @@ let cache: string | null = null;
 
 /**
  * A minimal engraved-ring placeholder used when no sigil.svg is present.
- * Two concentric ash rings + a dashed keeper-ring + a soul-blue keystone dot,
+ * Two concentric ash rings + a dashed keeper-ring + a gilt keystone dot,
  * echoing the real sigil's silhouette without depending on the file.
  */
 function ringPlaceholder(): string {

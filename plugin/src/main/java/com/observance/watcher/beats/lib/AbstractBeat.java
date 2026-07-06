@@ -121,16 +121,11 @@ public abstract class AbstractBeat implements Beat {
                     ? org.bukkit.NamespacedKey.fromString(keyish)
                     : org.bukkit.NamespacedKey.minecraft(keyish.replace('_', '.'));
             if (nk != null) {
-                org.bukkit.Sound s = org.bukkit.Registry.SOUNDS.get(nk);
+                org.bukkit.Sound s = org.bukkit.Registry.SOUND_EVENT.get(nk);
                 if (s != null) return s;
             }
         } catch (Throwable ignored) { }
-        // Fallback: legacy constant-name lookup.
-        try {
-            return org.bukkit.Sound.valueOf(raw.toUpperCase(Locale.ROOT));
-        } catch (Throwable t) {
-            return null;
-        }
+        return null;
     }
 
     /** Parse a Particle enum by name, or a default. Never throws. */

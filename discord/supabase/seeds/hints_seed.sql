@@ -157,9 +157,9 @@ insert into public.hints (puzzle_key, tier, body) values
 ('bound-word', 2, 'the catch re-cut iss''s stone. read it now with his own name laid over it, and it yields a single bound word — the word another gate is waiting to be given.'),
 ('bound-word', 3, 'the catch re-cut his stone; the key is still the man. lay his own name over the fresh marks, letter against letter, and read the single word that comes. that word is the bound word — carry what you read to the gate that waits on it.'),
 
--- m4-three-hands — the cross-surface co-op gate (three acts in one window; not typed).
-('m4-three-hands', 2, 'this gate does not open to a word. it opens to three things done at once — a foot, a carve, a word posted here — inside the same short breath.'),
-('m4-three-hands', 3, 'one of you stands on the plate, one cuts the mark, one posts here, and all three within the same window. no single hand clears it. do the three together and the threshold opens.'),
+-- m4-three-hands — the cross-surface co-op gate (three acts held together; not typed).
+('m4-three-hands', 2, 'this gate does not open to a word alone. it opens to three things held together — a foot, a carve, a word posted here — while the square is awake.'),
+('m4-three-hands', 3, 'one of you stands on the plate, one cuts the mark, one posts here, and the square must still be awake when the word is spoken. no single hand clears it. hold the three together and the threshold opens.'),
 
 -- threshold-coordinate — the threshold carving yields the TRUE coordinate (a road, not an answer).
 ('threshold-coordinate', 2, 'the opened threshold is carved with a mark that points. it is not an answer to type — it is a direction to walk. follow where it sends you.'),
@@ -267,6 +267,44 @@ insert into public.hints (puzzle_key, tier, body) values
 -- spine-cold-hearth-shadow — the one fire let go out.
 ('spine-cold-hearth-shadow', 2, 'every home in the hold keeps one fire, always. count them if you like — they all burn. all but this one. do not look for a broken custom. look for the absence of a fire.'),
 ('spine-cold-hearth-shadow', 3, 'this is the false walk — a warm man''s word led you here, and here is a hearth gone cold all through, the only fire in the hold let go out. it answers nothing. it asks: why was this one home not kept.')
+
+,
+
+-- MISSING-RESCUE FLOOR (puzzlefairness). These are live lore/dead-end/payoff rows that
+-- can still stall, mislead, or feel ignored if the group cannot ask the Watcher for the
+-- second and third rail. Kept in one late block so the launch audit has a clear owner.
+-- m1-record-opens - the buried base lectern line; lore acknowledgement, not a gate.
+('m1-record-opens', 2, 'the first record is not hidden far from you. read the report as if it already knows who stands before it; the line about the living is the one that answers.'),
+('m1-record-opens', 3, 'on the base lectern, say the sentence that names what the record does: the record counts the living by name. it is the opening truth, not a door.'),
+-- m1-named-habit - the report naming a player habit before the rules are known.
+('m1-named-habit', 2, 'when the report names something you do before the rite names it, do not treat that as flavor. it is the dread. the record was measuring before it explained the law.'),
+('m1-named-habit', 3, 'answer what happened to you: it named my habit before i knew it was a custom. this keeps no road; it only proves the record was already watching.'),
+-- iss-warm - the warm misreading, with the cold acrostic rescue.
+('iss-warm', 3, 'read the warm lines two ways. across, they comfort you and send you to the cold hearth. down the first letter of each warm line, they confess the colder thing: no wall.'),
+-- m2-rhyme - the keeper fates rhyme with the customs they broke.
+('m2-rhyme', 2, 'set two keeper stones beside one another in your head. the words change, but the shape does not: each fate answers the custom that keeper broke.'),
+('m2-rhyme', 3, 'vaun kept and was counted, mara read and did not walk, sella reflected and drowned, orin would not bow, brann watched the fire, iss made comfort into a wall. the stones are warnings shaped like you.'),
+-- iss-dead-shrine - the false road that works and still saves no one.
+('iss-dead-shrine', 2, 'iss did not send you nowhere. that is why the lie holds. the place is real, the hearth is cold, and the fact that it opens nothing is the answer.'),
+('iss-dead-shrine', 3, 'stand at the cold hearth and name what it is: the dead shrine, a place that keeps no road on. west and down was true, and that is why the truth is dangerous.'),
+-- name-where - the place-filing reread; true, terminal, and personal.
+('name-where', 2, 'the new carving is not about strangers who came before you. it files the living by place. read the name and the ground beside it together.'),
+('name-where', 3, 'say the shape of the reread: the record files the living by place, not only by name. before you was never about strangers. it opens nothing because the proof is you.'),
+-- record-url - the off-world Record path, decoded from the founder line.
+('record-url', 2, 'the record says it is kept in more than one place. do not look for a second chest. look for the path the line itself gives you.'),
+('record-url', 3, 'the founder line points outside the first record. the path is the record keeps; it is a place to read, not a gate through the stones.'),
+-- difficulty-mara - the fairness plant; the land''s grip changes with the living.
+('difficulty-mara', 2, 'mara left this as a sentence, not a mechanism. read the cruelty she names: the land counts the quick more closely and opens around stumbling hands.'),
+('difficulty-mara', 3, 'the line is the point. the record keeps a closer count of the quick; it closes on those who run ahead and opens for those who stumble. this colors the rite; it does not unlock one.'),
+-- reckoning-rosetta - the digit-literacy stone; counts become marks, marks become roads.
+('reckoning-rosetta', 2, 'you learned the letters from the ring. this stone teaches the other marks: low bar, ticks, breaks. they are counts before they are words.'),
+('reckoning-rosetta', 3, 'read the counting marks as digits, not sounds. the low bar marks a minus and the double tick marks a break. once you can count it, later roads stop pretending to be gibberish.'),
+-- nether-forge - the deep fire-source payoff; the slab word is the answer.
+('nether-forge', 2, 'below the below, the fire is not owned. the slab does not ask for a coordinate. it names the condition of the fire itself.'),
+('nether-forge', 3, 'read the word cut at the forge: lent. the fire is lent; you do not own it, you carry it. the kept light upstairs came from here.'),
+-- end-seventh-out - the End payoff; the Seventh''s own words outside the record.
+('end-seventh-out', 2, 'this is outside the record, so do not ask the record to explain it first. read the shrine in its own voice: the seventh kept the ways and still went out.'),
+('end-seventh-out', 3, 'the End shrine says the part the Hold could not keep: the keeping was never the price. you only came to look. exile is the other side of keeping.')
 
 on conflict (puzzle_key, tier) do update set body = excluded.body;
 

@@ -16,11 +16,10 @@
  * editor). The order is a code artifact here, not tribal knowledge in a comment — so it cannot drift
  * from what actually gets applied, and there is no "apply the loose files in Finder order" path left.
  *
- * SCOPE. The discord lineage EXTENDS the dashboard base (dashboard/supabase/migrations 0001–0003 +
- * 0004_v_record). Those base tables (players, arc_state, solves' FK targets, event_log, …) are
- * assumed already applied on the live project — this file does not recreate them (see the discord
- * migrations' own headers). apply-all.sql is idempotent + additive end-to-end (every step is
- * `create … if not exists` / `add column if not exists` / `on conflict` upsert), so it is safe to
+ * SCOPE. This is the full launch database path: dashboard base + lockdown, Discord/oracle schema,
+ * public Record/Archive views, seeds, and plugin<->DB repair. Nothing lives in a "paste this extra
+ * migration after" appendix anymore. apply-all.sql is idempotent + additive end-to-end (every step
+ * is `create … if not exists` / `add column if not exists` / `on conflict` upsert), so it is safe to
  * re-run; re-running is in fact the canonical way to re-seed after an authored edit.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -30,47 +29,63 @@ import { dirname, resolve, relative } from 'node:path';
 const here = dirname(fileURLToPath(import.meta.url));
 // src/db -> ../../supabase
 const SUPA = resolve(here, '../../supabase');
+const REPO = resolve(here, '../../..');
 
 /**
- * THE ENFORCED ORDER. Migrations first (0006 + 0007 MUST precede the seeds), then the seeds in a
- * dependency-correct sequence (puzzles_seed inserts the rows every later seed UPDATEs/references;
- * metapuzzle + progression run last as they gate the back half and depend on 0006's column), then
- * schema-repair (plugin<->DB column/index reconciliation) last. Mirrors apply-tonight.sql's proven
- * ordering and additionally pins 0003/0004/0007 which that hand-assembled snapshot omitted.
+ * THE ENFORCED ORDER. Dashboard 0001-0003 create/seed/lock down the base tables that Discord extends.
+ * Discord migrations then create solves, threads, observations, rate-limits, and showrunner locking.
+ * Dashboard public views come after their Discord dependencies (v_record needs solves; v_archive needs
+ * thread_cards). Seeds follow only after every schema column/gate exists. schema-repair stays last as
+ * plugin<->DB column/index reconciliation.
  */
 const ORDER: readonly string[] = [
-  // ---- migrations (0006 = requires_flags, 0007 = answer_kind — BOTH before the seeds) ----
-  'migrations/0003_discord.sql',
-  'migrations/0004_oracle.sql',
-  'migrations/0005_threads.sql',
-  'migrations/0006_requires_flags.sql',
-  'migrations/0007_answer_kind.sql',
-  'migrations/0008_requires_quorum.sql',
-  // ---- seeds (puzzles_seed FIRST; metapuzzle + progression LAST — they gate on 0006's column) ----
-  'seeds/puzzles_seed.sql',
-  'seeds/seventh_seed.sql',
-  'seeds/thread_tags.sql',
-  'seeds/thread_cards.sql',
-  'seeds/side_quests.sql',
-  'seeds/hints_seed.sql',
-  'seeds/metapuzzle_seed.sql',
-  'seeds/progression_seed.sql',
+  // ---- dashboard base + security lockdown ----
+  'dashboard/supabase/migrations/0001_init.sql',
+  'dashboard/supabase/migrations/0002_seed.sql',
+  'dashboard/supabase/migrations/0003_lockdown.sql',
+  // ---- Discord/oracle migrations (0006/0007/0008 MUST precede the seeds) ----
+  'discord/supabase/migrations/0003_discord.sql',
+  'discord/supabase/migrations/0004_oracle.sql',
+  'discord/supabase/migrations/0005_threads.sql',
+  'discord/supabase/migrations/0006_requires_flags.sql',
+  'discord/supabase/migrations/0007_answer_kind.sql',
+  'discord/supabase/migrations/0008_requires_quorum.sql',
+  'discord/supabase/migrations/0009_observations.sql',
+  'discord/supabase/migrations/0010_answer_attempts_web_rate_limit.sql',
+  'discord/supabase/migrations/0011_showrunner_lock.sql',
+  // ---- dashboard public/admin views that depend on the Discord schema ----
+  'dashboard/supabase/migrations/0004_v_record.sql',
+  'dashboard/supabase/migrations/0005_reconcile_tracker_views.sql',
+  'dashboard/supabase/migrations/0006_v_record_theories.sql',
+  'dashboard/supabase/migrations/0007_v_archive.sql',
+  'dashboard/supabase/migrations/0008_v_archive_flag_gate.sql',
+  'dashboard/supabase/migrations/0009_beat_queue_failed_status.sql',
+  // ---- seeds (puzzles_seed FIRST; metapuzzle + progression LAST — they gate on 0006/0008 columns) ----
+  'discord/supabase/seeds/puzzles_seed.sql',
+  'discord/supabase/seeds/seventh_seed.sql',
+  'discord/supabase/seeds/thread_tags.sql',
+  'discord/supabase/seeds/thread_cards.sql',
+  'discord/supabase/seeds/side_quests.sql',
+  'discord/supabase/seeds/hints_seed.sql',
+  'discord/supabase/seeds/metapuzzle_seed.sql',
+  'discord/supabase/seeds/progression_seed.sql',
   // ---- plugin<->DB schema reconciliation (adds columns/indexes the plugin upserts need) ----
-  'schema-repair.sql',
+  'discord/supabase/schema-repair.sql',
 ];
 
 const HEADER = `-- ============================================================================
 -- THE OBSERVANCE — apply-all.sql  (GENERATED by \`npm run db:seed\` — do not hand-edit)
 -- ============================================================================
 -- Apply this ONE file (Supabase SQL editor, or: psql "$DATABASE_URL" -f apply-all.sql).
--- It is the ONLY safe apply path: the files are concatenated in the ENFORCED order below,
--- with migration 0006 (puzzles.requires_flags) and 0007 (puzzles.answer_kind) BEFORE every
--- seed. Applying the loose files in filename order instead would (a) trip the fail-loud guards
--- in metapuzzle_seed / progression_seed and abort, or — worse, if forced — (b) leave
--- base-docket-reread-auto (active=true) ungated and leak its four M4 docket answers.
+-- It is the ONLY safe apply path: dashboard base + lockdown, Discord/oracle schema, public
+-- Record/Archive views, seeds, and schema repair are concatenated in the ENFORCED order below.
+-- Migration 0006 (puzzles.requires_flags), 0007 (puzzles.answer_kind), and 0008
+-- (puzzles.requires_quorum) land BEFORE every seed. Applying the loose files in filename order
+-- instead would (a) trip the fail-loud guards in metapuzzle_seed / progression_seed and abort, or
+-- worse, if forced, (b) leave late-game answers ungated.
 --
--- Assumes the dashboard base (dashboard/supabase/migrations 0001-0003 + 0004_v_record) is
--- already applied on the live project. Idempotent + additive — safe to re-run.
+-- Idempotent + additive — safe to re-run. Do not paste extra migrations after this file; if a
+-- migration matters for launch, add it to src/db/build-apply-all.ts and regenerate this bundle.
 --
 -- Ordered contents:
 ${ORDER.map((p, i) => `--   ${String(i + 1).padStart(2, '0')}. ${p}`).join('\n')}
@@ -80,7 +95,7 @@ ${ORDER.map((p, i) => `--   ${String(i + 1).padStart(2, '0')}. ${p}`).join('\n')
 
 const parts: string[] = [HEADER];
 for (const rel of ORDER) {
-  const abs = resolve(SUPA, rel);
+  const abs = resolve(REPO, rel);
   let body: string;
   try {
     body = readFileSync(abs, 'utf8');
@@ -100,6 +115,6 @@ const OUT = resolve(SUPA, 'apply-all.sql');
 writeFileSync(OUT, parts.join(''), 'utf8');
 console.log(
   `db:seed OK — wrote ${relative(resolve(here, '../..'), OUT)} in enforced order ` +
-    `(${ORDER.length} files; 0006 + 0007 before seeds; schema-repair last).`,
+    `(${ORDER.length} files; dashboard base, Discord schema, views, seeds, schema-repair).`,
 );
 console.log('Apply it as service_role:  psql "$DATABASE_URL" -f supabase/apply-all.sql');

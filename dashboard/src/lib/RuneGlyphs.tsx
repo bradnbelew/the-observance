@@ -4,9 +4,9 @@ import { glyphLines, runesWidth, GLYPH_W, GLYPH_H, GLYPH_GAP } from "./runes";
  * RuneGlyphs — renders text carved in THE KEEPERS' ALPHABET (the game's real, invented rune
  * substitution script; see dashboard/src/lib/runes.ts + discord/src/forge/runes.ts), as inline SVG.
  *
- * Replaces the fake Unicode Elder Futhark (`ᛟ ᚲ ᛖ ᛈ ᛏ`) previously hard-coded on the record pages —
- * that string used a real-world rune alphabet that has nothing to do with this game's own cipher, so
- * a player who had actually learned the in-game glyphs from clues could never read it. This component
+ * Replaces the fake Unicode Elder Futhark wordmark previously hard-coded on the record pages. That
+ * string used a real-world rune alphabet that has nothing to do with this game's own cipher, so a
+ * player who had actually learned the in-game glyphs from clues could never read it. This component
  * carves whatever text is passed in using the SAME bijective letter->glyph table baked into the
  * Minecraft resource pack font and the Discord clue cards, so the mark is decodable and consistent
  * with the rest of the ARG's glyph logic.

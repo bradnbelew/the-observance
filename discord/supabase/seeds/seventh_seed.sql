@@ -44,16 +44,16 @@ values
    'rumored', 15),
 
   -- The forged eighth ordinance — the Covering of the Hands (FACT 7b), found as one more
-  -- law among the true seven. A diligent group obeys it and NOTHING pays (the proof of the
-  -- lie). SIDE-TRACK: real document, hollow law; contradicted at the M4 record correction.
+  -- law among the true seven. It pays by becoming a testable false law: the silence when
+  -- obeyed and the catch when broken prove Iss's doctrine was authored, not sacred.
   ('dest-covering-law',    'surface',  'forged-eighth',
-   'SIDE-TRACK: the forged eighth (FACT7b); obey it and nothing pays; the_-prefixed nothing (fiction, INV-17); contradicted card under surface',
+   'FALSE-LAW PROOF: the forged eighth (FACT7b); obeying it gives silence, breaking it names the lie; the_-prefixed nothing (fiction, INV-17); contradicted card under surface',
    'rumored', 14),
 
-  -- The prophet''s wall — Iss with a pulpit (B2). A WIDE set of warm promises that each
-  -- decode true and open nothing; the hidden columnar name is his own. DEAD LEAD by design.
+  -- The prophet''s wall — Iss with a pulpit (B2). This is the second and final launch-budget
+  -- false lead: warm promises decode cleanly but open no road; the hidden columnar name is his own.
   ('dest-prophet-wall',    'happened', null,
-   'DEAD LEAD: Iss''s pulpit; warm promises that open nothing; hidden columnar name = Iss; contradicted card under happened',
+   'DEAD LEAD WITH TEETH: Iss''s pulpit; warm promises decode cleanly but open no road; hidden columnar name = Iss; contradicted card under happened',
    'rumored', 16),
 
   -- The true Threshold walk — the coordinate the Threshold carving yields AFTER the gate

@@ -79,6 +79,26 @@ export const archive: Record<string, string> = {
   cardGatherRehearsalHuman:
     'all of you, bent at once, in the one light. you bend, and the deep answers a little, and stops. it is not one of you that bends. it is the gathering, or it is no one. the record keeps no chosen. it keeps the kept.',
 
+  // ===== the unlit village card faces =====
+  cardPlaceUnlitWellMouth:
+    'the village has a mouth it keeps covered in daylight. go to the old well, look down, and read what the water will not give back. do not bring a torch for this. the way is opened by looking where home looks into itself.',
+  cardPlaceUnlitMirror:
+    'the copy is not below the village and not beside it. it is the village, filed where the lamps are not. every threshold is kept. every window is kept. the warmth is removed and the shape remains.',
+  cardHumanColdLampLedger:
+    'the lamp account is copied here with no flame beside it. one column records oil. one column records names. one column is left for the light borrowed and not returned. the hand that wrote it knew the difference.',
+  cardPlaceUnlitCairnBowl:
+    'the bowl accepts stone, ore, water, bread, name, silence. it does not accept light. light is not the first thing of the deep. light is what the deep lends to see whether you spend it.',
+  cardHappenedBirdsSilent:
+    'the perch is whole. the seed cup is full. no feather lies under it. the deep-bird was not killed here and did not sing here. there are rooms where a custom can be kept and still make no sound.',
+  cardSurfaceWellBelowCopy:
+    'the well gives the room back upside down and leaves out the lamp. in the water the house has a door where the wall has none. the copy is most honest where it is reflected.',
+  cardSurfaceWatchWithoutSleep:
+    'a watch is marked on the wall without a night attached to it. no moon, no bell, no bed, no relief. only the line: do not sleep where the dark can count your breathing.',
+  cardHappenedWarmRoadFalse:
+    'the warm way in the copy is too bright to be mercy. it has no smoke, no ash, no hand held near it for heat. it is the lie of morning with the sun removed.',
+  cardHappenedThresholdUnderCopy:
+    'the copied threshold keeps the old command and takes away the road. bow under it and the dark gives a little room. stand tall and the house stays only a house.',
+
   // ===== thread: who =====
   cardWhoDeepMarket:
     'eighteen stalls at the fourteenth mark. bread at four of them, salt, oil-jars, mending, tally-sticks, the lectern-shelf. a girl minds your lamp for a chore-token while you eat. one stall sells nothing and is kept lit for the dead.',
@@ -195,9 +215,8 @@ export const archive: Record<string, string> = {
     'six were named in full, in the old book. you are read into the same book, by the same hand.',
   'gather.count.kindness':
     'you were not told the laws before you kept or broke them. you were observed. that was the kindness, and the whole of the kindness.',
-  // in-world beat text (1.2 title / 1.3 action-bar)
-  'gather.count.title': 'the count begins',
-  'gather.count.subtitle': 'stand where you can be seen',
+  // in-world beat text (1.2 actionbar / 1.3 actionbar)
+  'gather.count.begin_actionbar': 'the count begins. stand where you can be seen.',
   'gather.count.actionbar': 'counted: {scene_n_plus_one}.  present: {scene_n}.',
 
   // -- EVENT 2: THE UN-LIGHTING (#the-record) --
@@ -211,9 +230,8 @@ export const archive: Record<string, string> = {
     'there is one light left, and it is the kept light, and it is decided now whose hand it stays in.',
   'gather.unlight.hold':
     'stand still. it is decided by what was already done. it was always decided by what was already done.',
-  // in-world beat text (2.1 title / 2.3 boss_bar)
-  'gather.unlight.title': 'the lights are taken in',
-  'gather.unlight.subtitle': 'one. and the next.',
+  // in-world beat text (2.1 actionbar / 2.3 boss_bar)
+  'gather.unlight.actionbar': 'the lights are taken in. one. and the next.',
   'gather.unlight.bossbar': 'one light is left. it is the kept light.',
 
   // -- EVENT 3: DOB (#the-record; cold register, party is breaking the ways) --
@@ -237,9 +255,8 @@ export const archive: Record<string, string> = {
     'it is not one of you that bends. it is the gathering, or it is no one. the record keeps no chosen. it keeps the kept.',
   'gather.rehearsal.withdraw':
     'the answer is drawn back now. keep what you learned of the shape. when the hour comes, bend together, and do not look to see who bent first.',
-  // in-world beat text (4.1 title)
-  'gather.rehearsal.title': 'bend, all of you, as one',
-  'gather.rehearsal.subtitle': 'this is not the hour. this is the learning of it.',
+  // in-world beat text (4.1 actionbar)
+  'gather.rehearsal.actionbar': 'bend, all of you, as one. this is not the hour.',
 
   // -- thread_card bodies (read into thread_cards.body_voice_key; gather §6) --
   'gather.thread.count_who':
@@ -320,7 +337,7 @@ export const archive: Record<string, string> = {
   'voice.dest.farWater.mirror':
     'the stone reads only one way and only here, faced to the water that un-folds it. it says she has the far water in her mouth. she had it all first. the last marker is not the last.',
   'voice.dest.markers.find':
-    'six stones are set and bowed-at, the dust before them worn. there is a seventh place and no stone in it, and no bow-mark before it, and it is the one nearest the dark. the count does not come out even. it never has. the surplus is being kept.',
+    'six stones are set and bowed-at, the dust before them worn. there is a seventh place and no stone in it, and no bow-mark before it, and it is the one nearest the dark. the missing place is doing arithmetic of its own. the surplus is being kept.',
   'voice.dest.cistern.find':
     'the deepest water is still and black and the arch above it is pointed in a lime that will not slake. two jars of the good oil stand by the rim where a long walk left them. the water gives your lamp back to you, and held a moment, the lamp in the water is out while the one in your hand is lit. one of them is lying.',
   'voice.dest.thirdBay.find':
@@ -361,7 +378,7 @@ export const archive: Record<string, string> = {
   // happened-three-hands → the cold square Mara typed into the dark, read at the catch as the
   // rite instruction (A6). De-slopped per slop A4 (objects do not remember): a count and a state.
   cardHappenedThreeHands:
-    'the cold square in the floor is not a grave and not a mark. it is a count. three hands at once, in the one window: a foot on the plate, a name cut in the stone, a word said where it can be heard. the threshold does not open for one, and it does not open in turn. the count is three. then it is open.',
+    'the cold square in the floor is not a grave and not a mark. it is a count. three hands held in the same rite: a foot on the plate, a name cut in the stone, a word said where it can be heard. the threshold does not open for one, and it does not open in turn. the count is three. then it is open.',
 
   // happened-the-fate → the ending the floor shows (A2). Event-written at the rite (verified).
   // The neutral close the M5 composer emits; names no player, reads the group enum only (INV-11/16).
@@ -695,9 +712,9 @@ export const npcLines: Record<string, string> = {
   'wren.reckoning.condemn':
     'that’s — fair. write it. write me as what i did, a man who traded you to save himself. at least it’s true. the record can have that one true. stay cl—',
   'wren.reckoning.understand':
-    'you’re not going to make it simple. scared and selfish, both, all of it, none of it crossed out. that’s the hardest one to write and you wrote it anyway. i don’t get to be a hero or a monster. i just get to be true. i can hold that. i think that’s the only thing i can hold.',
+    'you’re not going to make it simple. scared and selfish, both, all of it, none of it crossed out. that’s the hardest one to write and you wrote it anyway. you didn’t give me a clean name. you gave me a true one. i can hold that. i think that’s the only thing i can hold.',
   'wren.reckoning.free':
-    'oh. you’re not going to keep me either. neither one. you’re just going to — let go. i forgot that was a thing you could do to a person. it ends me, you know that, unfed i don’t hold together. but it ends me let go, not taken. thank you. i’m sorry. i wasn’t only lying.',
+    'oh. you’re not going to keep me close. you’re not going to keep me at all. you’re opening your hands. i don’t know how to stand in that. unfed, i come apart; held, i stay a thing that feeds. this is the third shape, then. not close. not taken. let out. thank you. i wasn’t only lying.',
 
   // async / dynamic-roster — a late joiner gets a Wren line (the reveal is one group
   // event, quorum-free; §7 invariants).

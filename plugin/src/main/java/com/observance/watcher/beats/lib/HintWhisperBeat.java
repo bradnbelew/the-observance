@@ -22,8 +22,8 @@ import java.util.Locale;
 /**
  * IN-WORLD HINT DELIVERY (findability). A hint currently only reaches Discord; this beat lands it IN
  * THE WORLD, privately, for one stuck player — a Watcher-register whisper. It carries the hint BODY
- * text from the payload as a per-player title/subtitle/action-bar AND/OR a short-lived per-player
- * {@link TextDisplay} floating in front of them, revealed to that one client (via
+ * text from the payload primarily as a short-lived per-player {@link TextDisplay} floating in front of
+ * them, revealed to that one client (via
  * {@link PerPlayer#showEntityTo}). No one standing next to them sees or hears it — the help arrives as
  * a private nudge, in the watcher's own register, not a server announcement.
  *
@@ -34,14 +34,14 @@ import java.util.Locale;
  * <p><b>Reveal-safe + behaviour-safe</b> like {@link NameOnWallBeat}: the optional display is spawned
  * invisible-to-everyone then revealed to the one target, non-persistent (no orphans), PDC-tagged, and
  * every follow-up re-resolves the player by UUID and validity-checks the display. A logout mid-whisper
- * simply removes it. The text half (title/action-bar) is inherently transient and per-player.
+ * simply removes it. The optional text half (action-bar/title) is inherently transient and per-player.
  *
  * <p>Payload:
  * <pre>{@code
  * {
  *   "body": "Try the lectern beneath the stair.",  // REQUIRED — the hint text (from findability/showrunner)
  *   "tier": 2,                                       // optional hint strength 1..3 (colours + framing; audit)
- *   "mode": "both",         // "title" | "actionbar" | "display" | "both" (title+display). Default "both".
+ *   "mode": "display",      // "display" | "actionbar" | "title" | "both" (title+display). Default "display".
  *   "prefix": "…a whisper…",// optional subtitle/lead line under a title (default a soft ellipsis)
  *   "seconds": 6,           // display auto-despawn + title stay window (clamped 2..15)
  *   "distance": 3,          // blocks in front for the display (clamped 2..8)
@@ -69,13 +69,13 @@ public final class HintWhisperBeat extends AbstractBeat {
     }
 
     @Override public String name() { return "hint_whisper"; }
-    @Override public String description() { return "Delivers a private in-world hint (title/action-bar and/or a floating rune) to one stuck player."; }
+    @Override public String description() { return "Delivers a private in-world hint as a floating note by default; explicit title/action-bar modes remain available."; }
     @Override public BeatCategory category() { return BeatCategory.DIRECTED; }
 
     @Override
     public boolean canEnact(BeatContext ctx, BeatRequest req) {
         // Needs an online target and a non-blank hint body. The display half additionally needs a
-        // placement, but canEnact stays permissive: a display-less title still delivers the hint.
+        // placement, but canEnact stays permissive: explicit text modes can still deliver the hint.
         if (!req.hasTarget()) return false;
         String body = req.payload().string("body", "");
         return body != null && !body.isBlank();
@@ -91,15 +91,16 @@ public final class HintWhisperBeat extends AbstractBeat {
         if (rawBody.isBlank()) return BeatResult.skipped("empty");
 
         final int tier = Math.max(1, Math.min(3, p.integer("tier", 2)));
-        final String mode = p.string("mode", "both").trim().toLowerCase(Locale.ROOT);
+        final String mode = p.string("mode", "display").trim().toLowerCase(Locale.ROOT);
         final int seconds = Math.max(2, Math.min(15, p.integer("seconds", 6)));
         final TextColor color = p.has("color")
                 ? NameOnWallBeat.colorOf(p.string("color", null))
                 : tierColor(tier);
         final String body = clamp(rawBody.replace("%name%", pl.getName()));
 
-        boolean wantTitle = mode.equals("title") || mode.equals("both") || mode.equals("actionbar");
-        boolean wantDisplay = mode.equals("display") || mode.equals("both");
+        boolean boundaryBreak = p.bool("boundary_break", false);
+        boolean wantTitle = mode.equals("actionbar") || ((mode.equals("title") || mode.equals("both")) && boundaryBreak);
+        boolean wantDisplay = mode.equals("display") || mode.equals("both") || (mode.equals("title") && !boundaryBreak);
 
         boolean deliveredText = false;
         boolean deliveredDisplay = false;

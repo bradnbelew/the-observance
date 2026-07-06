@@ -4,12 +4,12 @@ import { cookies } from "next/headers";
 import type { Database } from "@/lib/database.types";
 
 /**
- * Server-side Supabase client bound to the request's auth cookies (anon key,
- * RLS-enforced, runs as the signed-in user).
+ * Server-side Supabase client using the anon key. Public/status surfaces read
+ * only RLS-approved views through this client.
  *
- * Use in Server Components, Route Handlers, and Server Actions for reads and
- * for resolving the current session. For privileged writes that must bypass
- * RLS, use the service-role client in `./admin`.
+ * Use in Server Components, Route Handlers, and Server Actions for public reads.
+ * For privileged Author-mode reads/writes that must bypass RLS, use the
+ * service-role client in `./admin`.
  *
  * Note: `cookies()` is async in Next.js 15, so this helper is async.
  */
@@ -30,8 +30,8 @@ export async function createClient() {
               cookieStore.set(name, value, options),
             );
           } catch {
-            // `setAll` was called from a Server Component. This can be ignored
-            // when middleware is refreshing sessions (see src/middleware.ts).
+            // `setAll` was called from a Server Component. Public dashboard reads
+            // do not rely on cookie mutation.
           }
         },
       },

@@ -2,8 +2,9 @@
 -- The TRAVEL longevity layer (LONGEVITY.md §2 / design/content/travel-destinations.md): 18
 -- rumor→verify destinations out in the Hold/world, NONE at spawn, that pay lore/atmosphere/items/
 -- time and GATE NOTHING. A pooling ARG group shares each rumor in a second but cannot pool the
--- 1–3k-block walk; that walk is the longevity. Five are deliberate dead leads (the anti-speedrun
--- tax): the rumor is wrong or the place is a grave, and arriving contradicts it.
+-- 1–3k-block walk; that walk is the longevity. Launch rule: there is only one blunt false-lead
+-- walk in this set (Aro's warm-town lie). Any contradicted/hollow destination must still teach a
+-- rule, expose a character, or point forward; optional content spends player trust.
 --
 -- BREADTH INVARIANT (migration 0005): every row has gates_progress = false (satisfied by omission —
 -- the column defaults false and carries a CHECK (gates_progress = false)). Removing all 18 must leave
@@ -27,7 +28,7 @@ values
   ('dest-empty-cairn',     'who',      null,
    'the_offering taught by example (Vaun/Orin); soft-offer Watcher line; card under who',        'ambient', 10),
   ('dest-warm-town',       'place',    null,
-   'DEAD LEAD: Aro''s warm-town lie; wrong-scaled deep collapse; contradicted card under place',  'rumored', 20),
+   'FALSE LEAD WITH TEETH: Aro''s warm-town lie; wrong-scaled deep collapse; drops Deep-Line warning + Aro-trust break; contradicted card under place',  'rumored', 20),
   ('dest-school-stand',    'human',    null,
    'the_kept_light + seventh-seed; domestic were-they-human detail; card under human',            'ambient', 9),
   ('dest-bird-coops',      'surface',  null,
@@ -39,13 +40,13 @@ values
   ('dest-cistern-7',       'place',    null,
    'the lamp-in-water-lies spook; the_kept_light texture; ITEM good-oil jar; card under place',   'rumored', 15),
   ('dest-third-bay',       'happened', null,
-   'SIDE-TRACK: Iss''s breach (R06); the_deep_line context; grave not a road; contradicted, happened','rumored',22),
+   'DANGEROUS PROOF: Iss''s breach (R06); the_deep_line context; grave not a road; proves crossing has cost and points back to Coll/Dob warnings; happened','rumored',22),
   ('dest-dead-shrine',     'who',      null,
    'the seventh''s place (L14), kept distinct from Iss; FACT10; card under who',                  'ambient', 24),
   ('dest-set-apart',       'surface',  null,
    'KEYED (digit cross-count): R11 entry-5 the warm cold-lamp; verified card under surface',      'keyed',   18),
   ('dest-watch-floor',     'surface',  null,
-   'SIDE-TRACK: Brann''s self-finished watch-log (R12); the_dark_hours; contradicted, surface',   'rumored', 16),
+   'VERIFIED DREAD: Brann''s self-finished watch-log (R12); the_dark_hours; proves the watch ended and the live-writing rumor is bait; surface',   'rumored', 16),
   ('dest-deep-market',     'place',    null,
    'the warmth they grieve (R04, 18 stalls); ITEM chore-token; card under place',                 'ambient', 12),
   ('dest-ration-table',    'human',    null,
@@ -55,7 +56,7 @@ values
   ('dest-pell-mark',       'surface',  null,
    'topside: the human record (Pell) mirroring the Watcher; card under surface',                  'ambient', 7),
   ('dest-way-up',          'place',    null,
-   'SIDE-TRACK: Iss''s forgotten Mouth — real but saves no one; verified-but-hollow, place',      'rumored', 25),
+   'COLD PROOF: Iss''s forgotten Mouth — real but saves no one; return-mark points toward the true threshold walk; verified card under place',      'rumored', 25),
   ('dest-gutter-lamps',    'human',    null,
    'keeping the rite knowing it failed (the three dark levels); the_kept_light; card under human','ambient', 11),
 

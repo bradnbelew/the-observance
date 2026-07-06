@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -48,10 +50,15 @@ import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /** The lure slug — the founder margin decodes to this (kept-in-more-than-one-place, ledger #11). */
 const LURE_SLUG = "the-record-keeps";
+const HOLD_ZIP_PUBLIC_PATH = "/the-hold/the-hold.zip";
 /** Slugs that render the base archive. (Bare `/record` does NOT hit this route — the dynamic `[slug]`
  *  segment needs a slug; the plain Record is reached at `/record/the-record`. The empty-string entry is
  *  harmless defense only.) */
 const BASE_SLUGS = new Set(["", "the-record"]);
+
+function holdZipAvailable(): boolean {
+  return existsSync(join(process.cwd(), "public", "the-hold", "the-hold.zip"));
+}
 
 type RecordSlug = "base" | "lure" | "unknown";
 
@@ -152,7 +159,7 @@ function ArchiveLine({ entry, index }: { entry: RecordEntry; index: number }) {
  * download href is the GO-LIVE vignette asset (see PROLOGUE-VIGNETTE.md). Quotes the-copy-i-kept.md +
  * is backed by six-were-kept-before-you.md (the canon homes; LORE owns the wording).
  */
-function Downloads() {
+function Downloads({ hasHoldZip }: { hasHoldZip: boolean }) {
   return (
     <section className="mt-12 border-t border-neutral-900 pt-8 font-mono text-sm text-neutral-400">
       {/* the one legible recovered-file entry — the map description (flat, found, no marketing). */}
@@ -162,16 +169,27 @@ function Downloads() {
       </p>
 
       {/* the file name as an archive row — a filename, never a button/CTA. */}
-      <p className="mt-4">
-        <a
-          href="/the-hold/the-hold.zip"
-          download
-          rel="noopener"
-          className="text-neutral-300 underline decoration-neutral-700 underline-offset-4 hover:text-neutral-200"
-        >
-          the-hold.zip
-        </a>
+      <p className="mt-4 font-mono">
+        {hasHoldZip ? (
+          <a
+            href={HOLD_ZIP_PUBLIC_PATH}
+            download
+            rel="noopener"
+            className="text-neutral-300 underline decoration-neutral-700 underline-offset-4 hover:text-neutral-200"
+          >
+            the-hold.zip
+          </a>
+        ) : (
+          <span className="text-neutral-700 line-through decoration-neutral-800" title="not recovered">
+            the-hold.zip
+          </span>
+        )}
       </p>
+      {!hasHoldZip && (
+        <p className="mt-1 text-xs lowercase tracking-wide text-neutral-700">
+          file not yet recovered.
+        </p>
+      )}
 
       {/* the README "lie" — technically true; the load-bearing line is "it does not connect to anything"
           (ledger #25: the map connects to nothing; the server does). */}
@@ -242,6 +260,7 @@ export default async function RecordPage({
 
   const signal = await readSignal();
   const rec = project(signal);
+  const hasHoldZip = holdZipAvailable();
   // Discoverability for the deeper layer (/record/archive), gated on the ALREADY-READ coarse signal (no
   // second DB round-trip): at least one stone read ⇒ the recovery archive has something to show. The link
   // is cold + in-register — a kept filename, never a CTA. Never shown on the sealed baseline.
@@ -283,7 +302,7 @@ export default async function RecordPage({
 
         {/* The lure slug appends the downloads block (the recovered file + the static `kept: 6`). The
             base slug renders the archive alone. The block reads no new data (A14). */}
-        {which === "lure" && <Downloads />}
+        {which === "lure" && <Downloads hasHoldZip={hasHoldZip} />}
 
         {/* The standing footer — a count, then the iceberg. */}
         <footer className="mt-8 text-center font-mono text-xs lowercase tracking-wide text-neutral-700">

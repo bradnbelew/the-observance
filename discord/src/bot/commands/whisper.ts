@@ -18,13 +18,14 @@
  * The toll IS the cost. There is no casting, no "chosen" — judgment is by conduct.
  * Every player-facing string comes from voice.ts; this file writes no English.
  */
-import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
+import { MessageFlags, type AutocompleteInteraction, type ChatInputCommandInteraction } from 'discord.js';
 import {
   getPlayerByDiscordId,
   getArcAct,
   getBudget,
   countWhispersForPuzzle,
   getHint,
+  searchHintedPuzzles,
   spendWhisper,
   recordWhisperEvent,
   enqueueBeat,
@@ -34,10 +35,21 @@ import { voice } from '../../voice.js';
 
 const SOURCE = 'the-watcher/whisper';
 
+export async function handleWhisperAutocomplete(
+  interaction: AutocompleteInteraction,
+): Promise<void> {
+  const focused = interaction.options.getFocused();
+  const choices = await searchHintedPuzzles(typeof focused === 'string' ? focused : '');
+  await interaction.respond(choices.map((choice) => ({
+    name: choice.title ? `${choice.title} (${choice.puzzleKey})`.slice(0, 100) : choice.puzzleKey,
+    value: choice.puzzleKey,
+  })));
+}
+
 export async function handleWhisper(
   interaction: ChatInputCommandInteraction,
 ): Promise<void> {
-  const puzzleKey = interaction.options.getString('puzzle', true).trim();
+  const puzzleKey = normalizePuzzleRef(interaction.options.getString('puzzle', true));
 
   // CRITICAL (audit): defer ephemeral immediately — the budget/hint lookups are several Supabase
   // round-trips that can blow Discord's 3s window. All whisper replies are ephemeral, so editReply.
@@ -108,4 +120,14 @@ async function speak(
 ): Promise<void> {
   // handleWhisper defers ephemeral up front, so every result path edits that deferred reply.
   await interaction.editReply({ content });
+}
+
+function normalizePuzzleRef(raw: string): string {
+  return raw
+    .trim()
+    .toLowerCase()
+    .normalize('NFKC')
+    .replace(/['']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }

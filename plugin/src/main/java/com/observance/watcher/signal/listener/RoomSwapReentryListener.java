@@ -3,7 +3,10 @@ package com.observance.watcher.signal.listener;
 import com.observance.watcher.beats.lib.RoomSwapBeat;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -81,11 +84,26 @@ public final class RoomSwapReentryListener implements Listener {
             final Location target = dest;
             try {
                 p.teleport(target);
+                sendReentryFeedback(p);
                 safety.info("room_swap.reentry", p.getName() + " re-entered the swapped room");
             } catch (Throwable ignored) {
                 // Teleport hiccup → no-op; the door stays sealed, no jank.
             }
         });
+    }
+
+    private void sendReentryFeedback(Player p) {
+        if (p == null) return;
+        try {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.16f, 0.42f);
+        } catch (Throwable ignored) {
+            // atmospheric only
+        }
+        try {
+            p.sendActionBar(Component.text("the room returns wrong.", NamedTextColor.DARK_GRAY));
+        } catch (Throwable ignored) {
+            // older clients or proxy shims may not support action bars
+        }
     }
 
     /* ------------------------------------------------------------------ */

@@ -67,9 +67,9 @@ the puzzle seed + flag-graph + tiered hints + thread cards (applied live) · the
 ---
 
 ## THE ORDER TO CLOSE IT (proof, not compilation, is the bar)
-1. **ETHAN — DB consistency check.** Confirm the live DB has `puzzles.answer_kind` and the diverse rows.
-   *(Likely already fine: you ran `apply-all.sql`, which includes 0007 in order — the risk was only if
-   `apply-tonight.sql`, which omits 0007, had been used.)*
+1. **ETHAN — DB consistency check.** Regenerate/apply `discord/supabase/apply-all.sql`, then confirm the
+   live DB has `puzzles.answer_kind` and the diverse rows. The generated bundle now owns both lineages
+   and is checked by `npm run audit`; do not use `apply-tonight.sql`.
 2. **ETHAN — stand up the bot + cron host** (Render instructions delivered) **and deploy the website**
    (Vercel). This single move **un-darkens half the game.**
 3. **ETHAN — host the resourcepack + datapack** on the server, then run `/observance placeregion` + `placedeep` (0.2.2).

@@ -6,8 +6,11 @@ import com.observance.watcher.oracle.OracleResolver;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,8 +46,10 @@ import java.util.function.Supplier;
  *   <li>resolves ASYNC (network) — the toggling player is the nominal solver; the solve is shared.</li>
  * </ul>
  *
- * <p>Pure: never cancels the event, never mutates the world, never messages players. Body in Safety.
- * Sites resolved live via a {@link Supplier} so a config reload is picked up without re-registering.
+ * <p>Pure: never cancels the event and never mutates the world. It gives only low-information
+ * action-bar coordination receipts so the group can perform the literal bow without turning the
+ * finale into a UI puzzle. Body in Safety. Sites resolved live via a {@link Supplier} so a config
+ * reload is picked up without re-registering.
  *
  * <p><b>Cross-surface simultaneity (WEB-MASTER §1.M4):</b> the Accepting is the LAST hinge of the single
  * Iss IV→V chain — it must not be reachable before the three-hands coop gate has opened the Threshold and
@@ -164,19 +169,31 @@ public final class AcceptingRiteListener implements Listener {
             // never blocks the bow. effectiveQuorum = min(configQuorum, activeRosterSize). Read live, never
             // below 1 (a solo active keeper can still bow), and never above the configured cast size.
             int effectiveQuorum = effectiveQuorum();
-            if (present.size() < effectiveQuorum) return;    // not the whole present (active) group yet
+            if (present.size() < effectiveQuorum) {
+                sendRiteFeedback(present, "the floor waits for " + (effectiveQuorum - present.size()) + " more.");
+                return;                                      // not the whole present (active) group yet
+            }
+            int bowed = 0;
             for (Player p : present) {
                 boolean sneaking = p.equals(toggler) || p.isSneaking();
-                if (!sneaking) return;                       // someone present is NOT bowing → not yet
+                if (sneaking) bowed++;
+            }
+            if (bowed < present.size()) {
+                sendBowProgress(present, toggler, present.size() - bowed);
+                return;                                      // someone present is NOT bowing -> not yet
             }
 
             // Cross-surface precondition: the Threshold must already be open (the three-hands coop gate +
             // the true walk preceded this). Fail-CLOSED — an unwired/unknown gate withholds the finale,
             // silently (no tell), exactly like a miss. The bow is reusable, so a true-later flip re-arms.
-            if (!isReady()) return;
+            if (!isReady()) {
+                sendRiteFeedback(present, "not the hour.");
+                return;
+            }
 
             // All present are bowing as one. Fire ONCE per cooldown window for this site.
             if (!rateLimiter.tryCooldown("accepting:" + floor.id(), cooldownMs)) return;
+            sendRiteFeedback(present, "the floor answers.");
 
             final String mc = toggler.getUniqueId().toString();
             final String name = toggler.getName();
@@ -189,6 +206,35 @@ public final class AcceptingRiteListener implements Listener {
     }
 
     /* ----------------------------- helpers ---------------------------- */
+
+    private void sendBowProgress(List<Player> present, Player toggler, int missing) {
+        String bowedText = "you are bowed. waiting on " + missing + ".";
+        for (Player p : present) {
+            boolean bowed = p.equals(toggler) || p.isSneaking();
+            sendRiteFeedback(p, bowed ? bowedText : "the light waits for your bow.");
+        }
+    }
+
+    private void sendRiteFeedback(List<Player> players, String text) {
+        for (Player p : players) {
+            sendRiteFeedback(p, text);
+        }
+    }
+
+    private void sendRiteFeedback(Player p, String text) {
+        if (p == null || text == null || text.isBlank()) return;
+        if (!rateLimiter.tryCooldown("accepting.feedback:" + p.getUniqueId(), 1_000L)) return;
+        try {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.12f, 0.45f);
+        } catch (Throwable ignored) {
+            // atmospheric only
+        }
+        try {
+            p.sendActionBar(Component.text(text, NamedTextColor.DARK_GRAY));
+        } catch (Throwable ignored) {
+            // older clients or proxy shims may not support action bars
+        }
+    }
 
     /**
      * The active-only quorum (INV-19): {@code min(configQuorum, activeRosterSize)}, floored at 1. When the

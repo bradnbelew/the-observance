@@ -2,8 +2,8 @@
 -- + the four gather-event cards — design/content/gather-events.md §6, realized in the 0005 schema)
 -- discord/supabase/seeds/thread_cards.sql
 --
--- 42 place-anchored CARDS that cluster under the five reconstruction threads
--- (who / place / happened / surface / human). 37 come from the Recovery Archive
+-- 45 place-anchored CARDS that cluster under the five reconstruction threads
+-- (who / place / happened / surface / human). 40 come from the Recovery Archive
 -- (thread-archive.md) and 5 from the group gather-events (gather-events.md §6).
 -- Each card is one FIND in the world — a torn record, a journal leaf, a carved stone,
 -- a thing seen on a summons night — its in-character body fetched at render time by
@@ -17,7 +17,8 @@
 --   * every thread_key ∈ public.threads {who,place,happened,surface,human} (FK, 0005 §1).
 --   * every anchor_site_id is an ENABLED site in plugin/.../sites.yml (free-text in 0005,
 --     but kept real so a beat can target it): stone_of_reckoning, stone_vaun, stone_mara,
---     stone_orin, stone_brann, stone_iss, the_far_water, the_threshold, rune_rosetta,
+--     stone_orin, stone_brann, stone_iss, the_far_water, school_stand, markers_row, cistern_7,
+--     watch_floor, set_apart_shelf, undercroft_seal, forgotten_mouth, the_threshold, rune_rosetta,
 --     unbroken_light, offering_cairn_01, the_cold_hearth, kept_light_home_01,
 --     first_report_lectern_01. (Disabled keeper_stone_01/02 are NOT used.)
 --   * every revealed_by_solve is a real puzzle_key in puzzles_seed.sql; NULL where the
@@ -42,7 +43,7 @@ values
   -- THREAD: who — who they were  (amber)
   -- ========================================================================
   ( 'who-deep-market', 'who', 'the deep market', 'cardWhoDeepMarket',
-    'stone_of_reckoning', 'explore',
+    'deep_market', 'explore',
     '{}', 'undercroft-descent', null, 10 ),
 
   ( 'who-vaun-counted', 'who', 'the founder who counted', 'cardWhoVaunCounted',
@@ -91,9 +92,17 @@ values
     'unbroken_light', 'explore',
     array['place-came-down','human-galleries-unruled'], 'undercroft-descent', null, 30 ),
 
+  ( 'place-cistern-seven', 'place', 'cistern seven', 'voice.dest.cistern.find',
+    'cistern_7', 'verified',
+    array['place-deeper-wrong','happened-going-out'], null, null, 35 ),
+
   ( 'place-deep-line', 'place', 'the deep line', 'cardPlaceDeepLine',
-    'stone_iss', 'explore',
+    'third_bay_breach', 'explore',
     array['happened-the-break','surface-iss-was-right'], 'stone-iss-wall', null, 40 ),
+
+  ( 'place-way-up', 'place', 'the way up', 'voice.dest.wayUp.find',
+    'forgotten_mouth', 'verified',
+    array['surface-iss-was-right','place-deep-line'], null, null, 45 ),
 
   ( 'place-cairn', 'place', 'the offering-cairn', 'cardPlaceCairn',
     'offering_cairn_01', 'explore',
@@ -146,6 +155,14 @@ values
     'unbroken_light', 'explore',
     array['who-orin-mason','place-undercroft-sealed','human-they-were-kept'], 'orin-threshold', null, 80 ),
 
+  ( 'happened-undercroft-seal', 'happened', 'sealed from the wrong side', 'voice.dest.undercroftSeal.find',
+    'undercroft_seal', 'verified',
+    array['happened-orin-sealed','who-orin-mason'], null, null, 83 ),
+
+  ( 'happened-markers-row', 'happened', 'six stones and one hollow', 'voice.dest.markers.find',
+    'markers_row', 'verified',
+    array['place-seven-ways','surface-seventh-marker'], null, null, 85 ),
+
   ( 'happened-going-out', 'happened', 'the going-out', 'cardHappenedGoingOut',
     'kept_light_home_01', 'explore',
     array['human-lamp-roll-counts-down','human-they-were-kept'], 'undercroft-fog', null, 90 ),
@@ -190,6 +207,14 @@ values
     'the_far_water', 'explore',
     array['who-sella-token','surface-wenna-folk','human-names-over-heads','happened-no-wall'], 'seventh-shrine', 'reopened:no-wall-catch', 70 ),
 
+  ( 'surface-watch-floor', 'surface', 'the watch-floor', 'voice.dest.watchFloor.find',
+    'watch_floor', 'verified',
+    array['who-brann-watch','surface-watcher-counts'], null, null, 75 ),
+
+  ( 'surface-set-apart', 'surface', 'entry five', 'voice.dest.setApart.find',
+    'set_apart_shelf', 'verified',
+    array['surface-watch-floor','who-brann-watch'], null, null, 78 ),
+
   -- ========================================================================
   -- THREAD: human — were they human?  (black)
   --   Never resolved by a single card; the thread answers only when the
@@ -203,8 +228,12 @@ values
     'kept_light_home_01', 'explore',
     array['happened-going-out','human-they-were-kept'], 'undercroft-fog', null, 20 ),
 
+  ( 'human-school-stand', 'human', 'a school-stand', 'voice.dest.school.find',
+    'school_stand', 'verified',
+    array['human-lamp-roll-counts-down','surface-seventh-marker'], null, null, 25 ),
+
   ( 'human-ration-redivided', 'human', 'a head off the roll, still hungry', 'cardHumanRation',
-    'stone_of_reckoning', 'explore',
+    'ration_table', 'explore',
     array['human-names-over-heads','who-deep-market'], 'undercroft-fog', null, 30 ),
 
   ( 'human-hand-as-lamp', 'human', 'entry five', 'cardHumanHandAsLamp',
@@ -284,7 +313,7 @@ values
   -- the three-hands gate — the cold square Mara typed into the dark, read as the rite
   -- instruction at the catch (happened). Anchored at the Undercroft plate. Solve-gated on
   -- the gate clearing. References the catch + the bound word's home.
-  ( 'happened-three-hands', 'happened', 'three hands at once', 'cardHappenedThreeHands',
+  ( 'happened-three-hands', 'happened', 'three hands held', 'cardHappenedThreeHands',
     'coop_plate', 'explore',
     array['happened-no-wall','place-deep-line'], 'm4-three-hands', null, 100 ),
 
@@ -328,12 +357,47 @@ values
   -- via the struck seventh, cross-references Sella's uncounted seventh. Spoiler-safe: surface facts +
   -- the induction frame the human thread already approaches — no fate, no key, no name, revealed only on
   -- earned late solves. Bodies are Watcher-register (voice.archive.ts cardHumanCount* / cardHumanYouAreNext).
-  ( 'human-count-uneven', 'human', 'the count does not come out even', 'cardHumanCountUneven',
+  ( 'human-count-uneven', 'human', 'the surplus at the table', 'cardHumanCountUneven',
     'first_report_lectern_01', 'explore',
     array['human-names-over-heads','human-the-record-opens'], 'stone-brann', null, 200 ),
   ( 'human-six-openings', 'human', 'six openings, one struck', 'cardHumanSixOpenings',
     'first_report_lectern_01', 'explore',
     array['human-count-uneven','human-the-record-opens','surface-seventh-marker'], 'no-wall-catch', null, 210 ),
+
+  -- ===== THE UNLIT VILLAGE (new pillar) =====
+  -- On-ramp card: revealed before entry, once the undercroft/kept-light beat has made the
+  -- village-copy logic fair. It points to the physical `unlit_entry` anchor in the real village well.
+  ( 'place-unlit-well-mouth', 'place', 'the old well mouth', 'cardPlaceUnlitWellMouth',
+    'unlit_entry', 'explore',
+    array['place-deeper-wrong','place-undercroft-sealed'], 'undercroft-fog', null, 225 ),
+
+  -- Flag-gated by house discovery, not by expedition number. The group can reach the houses in any
+  -- order; the archive simply files what they actually found in the mirrored village.
+  ( 'place-unlit-mirror', 'place', 'the village laid over itself', 'cardPlaceUnlitMirror',
+    'unlit_house_base', 'verified',
+    array['place-came-down','surface-record-elsewhere'], null, 'flag:unlit_seen_base', 230 ),
+  ( 'human-cold-lamp-ledger', 'human', 'the lamp account copied cold', 'cardHumanColdLampLedger',
+    'unlit_house_lamp', 'verified',
+    array['human-lamp-roll-counts-down','happened-going-out'], null, 'flag:unlit_seen_lamp', 240 ),
+  ( 'place-unlit-cairn-bowl', 'place', 'the bowl that will not take light', 'cardPlaceUnlitCairnBowl',
+    'unlit_house_cairn', 'verified',
+    array['place-cairn','human-offering-ledger'], null, 'flag:unlit_seen_cairn', 240 ),
+  ( 'happened-birds-silent', 'happened', 'the birds did not call', 'cardHappenedBirdsSilent',
+    'unlit_house_coop', 'verified',
+    array['place-deep-line','surface-watcher-counts'], null, 'flag:unlit_seen_coop', 130 ),
+  ( 'surface-well-below-copy', 'surface', 'the well reads upward', 'cardSurfaceWellBelowCopy',
+    'unlit_house_well', 'verified',
+    array['who-sella-token','place-cistern-seven'], null, 'flag:unlit_seen_well', 130 ),
+  ( 'surface-watch-without-sleep', 'surface', 'a watch kept without a night', 'cardSurfaceWatchWithoutSleep',
+    'unlit_house_watch', 'verified',
+    array['who-brann-watch','surface-watch-floor'], null, 'flag:unlit_seen_watch', 130 ),
+  ( 'happened-warm-road-false', 'happened', 'the warm road was too bright', 'cardHappenedWarmRoadFalse',
+    'unlit_house_warm', 'verified',
+    array['happened-ways-are-wall','place-way-up'], null, 'flag:unlit_seen_warm', 135 ),
+  ( 'happened-threshold-under-copy', 'happened', 'the copied threshold bowed back', 'cardHappenedThresholdUnderCopy',
+    'unlit_house_threshold', 'verified',
+    array['place-came-down','place-undercroft-sealed'], null, 'flag:unlit_seen_threshold', 140 ),
+
   ( 'human-you-are-the-next', 'human', 'you are the next', 'cardHumanYouAreNext',
     'first_report_lectern_01', 'explore',
     array['human-six-openings','human-the-record-opens','human-they-were-kept'], 'seventh-unwriting', null, 220 )

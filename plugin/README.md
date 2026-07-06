@@ -8,9 +8,23 @@ Phase 0** — every decision is a deterministic gate. The owner's hard rule is h
 
 ---
 
-## 1. Build
+## 1. Build + source check
 
-The wrapper jar/scripts are intentionally not committed — generate them once, then build:
+The deployable jar can be packaged without Gradle from the repo root:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1
+```
+
+That compiles every plugin Java source file with JDK 21 against the local Gradle dependency cache, copies
+`src/main/resources`, and writes `plugin/build/libs/observance-0.3.22.jar`. Verify the deployable jar with:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_jar.ps1
+```
+
+The Gradle path is still valid if a machine has Gradle 8.10+ available. This repo currently has
+`gradle/wrapper/gradle-wrapper.properties` but not the wrapper jar/scripts, so materialize them once:
 
 ```bash
 cd D:/the-observance/plugin
@@ -22,14 +36,23 @@ gradle wrapper
 ./gradlew build        # Windows: gradlew.bat build
 ```
 
-The shaded jar lands in `build/libs/observance-0.2.2.jar`. Copy that into the server's `plugins/`.
+Either path lands the deployable jar in `build/libs/observance-0.3.22.jar`. Copy that into the server's
+`plugins/`.
+
+For a source-only compile check without writing the jar:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_compile.ps1
+```
+
+The full pre-session repo audit is:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_all.ps1
+```
 
 Notes:
-- `paper-api` and `gson` are `compileOnly` (Paper provides both at runtime). The `shadow` plugin is
-  applied but only *relocates* Gson if you flip its dependency to `implementation` — by default the
-  produced jar carries no third-party classes.
-- If you cannot fetch the shadow plugin offline, comment out the `id 'com.github.johnrengelman.shadow'`
-  line in `build.gradle`; the plugin compiles against Paper's bundled Gson regardless.
+- `paper-api`, `gson`, and WorldEdit are `compileOnly` (Paper/optional plugins provide them at runtime).
 - Target/sources are Java 21. Use a JDK 21 toolchain.
 
 ---
@@ -50,9 +73,9 @@ supabase:
 ```
 
 Resolution order at runtime (first non-empty wins): **environment variable** named by
-`service-key-env`, then the `service-key` config value. **Set the env var on the host** — on
-PebbleHost set `OBSERVANCE_SUPABASE_KEY` in the panel's *Startup / Variables* (or export it in the
-start script) with the **service-role** key. The key is sent as both `apikey` and
+`service-key-env`, then the `service-key` config value. **Set the env var on the server host** —
+for example in the panel's environment/startup variables, or in the start script, set
+`OBSERVANCE_SUPABASE_KEY` to the **service-role** key. The key is sent as both `apikey` and
 `Authorization: Bearer …`, is held privately, and is **never logged**.
 
 If the key/url are absent the plugin runs fine — it just degrades to "offline": reads return empty,
@@ -149,6 +172,9 @@ sites:
 - `bow_marker` — The Bow (crouch near it). `offering_cairn` — The Offering (drop after first ore).
   `kept_light` — a home zone scanned for a burning light after dark. `report_lectern` — where the
   first record appears. `keeper_stone` — reserved (Phase 1), shipped `enabled: false`.
+- `answer_sign` / `keeper_stone` sites are in-world answer slots: the sign blanks after a non-empty
+  submission, gives the same tiny "heard" receipt for wrong/withheld/duplicate attempts, and only the
+  authored reward beat distinguishes a real solve.
 - A site is "placed" only with real x/y/z **and** `enabled: true`. Unplaced customs no-op; no errors.
 - After editing, run `/observance reload` (no restart needed). The Bow/Offering customs and the
   protection snapshot pick up the new coords immediately.
@@ -161,8 +187,12 @@ sites:
 
 - `status` — Supabase configured?, last-call ok?, queued-write count, local sleep, placed sites,
   drama enabled.
+- `preflight` — run the in-world readiness bundle before players join.
+- `site todo|next|set <siteId>` — survey launch-required anchors into `sites.yml`.
 - `reload` — reloads `config.yml` + `sites.yml` and rebuilds the dependent subsystems.
 - `sleep <on|off>` — toggle the local mute.
+
+For the complete current operator command list, use `design/RUNBOOK.md`. It is the single launch guide.
 
 ---
 
@@ -180,4 +210,4 @@ sites:
   double-fires within a run and across restarts.
 - **No pop-in:** reveal discipline + placement validation on every world beat.
 
-See `TODO-GOLIVE.md` for the operator-only steps that remain.
+See `design/RUNBOOK.md` for the operator flow and `design/LAUNCH-READINESS.md` for remaining manual launch work.

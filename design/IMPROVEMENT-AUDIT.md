@@ -72,13 +72,10 @@
    per-player fog**. The asymmetric co-op vault and the name-on-the-wall scare both depend on these
    and cannot be built until they land. (`util/PerPlayer.java`.)
 
-10. **[P1] The back half is one wrong seed-apply from either dark or leaking.** The 9 M4/Seventh rows
-    only activate if `0006` lands *before* the guarded activation UPDATEs and the seeds are then
-    re-run — but there is **no `db:migrate`/`db:seed` runner** enforcing order. Apply the per-file
-    seeds once in filename order and the guards no-op: the staged rows stay dark forever **and**
-    `base-docket-reread-auto` ships open, leaking its four M4 docket answers from minute one. Only the
-    hand-assembled `apply-tonight.sql` orders it safely, and nothing forces its use.
-    (`0006:16`, `metapuzzle_seed.sql:124`, `progression_seed.sql:211`.)
+10. **[RESOLVED] The back half used to be one wrong seed-apply from either dark or leaking.**
+    `npm run db:seed` now regenerates `discord/supabase/apply-all.sql`, which owns both database
+    lineages, places 0006/0007/0008 before every seed, includes the later launch migrations, and ends
+    with schema repair. `npm run audit` runs `db:bundlecheck`, so drift fails loudly.
 
 ---
 
@@ -145,11 +142,11 @@
 
 ## AREA 2 — THE DB + SCHEMA
 
-Two Supabase lineages that **do not share history**: `dashboard/supabase/migrations` (0001–0003 =
-canonical base) and `discord/supabase/migrations` (0003–0006 = ALTER/extend). They are complementary,
-but nothing in the discord dir recreates the base tables, so `apply-tonight.sql` silently assumes
-0001–0004 already ran on live project `fdnmhbpxnodrnbrzrlqq`. Applying discord migrations to a fresh DB
-fails.
+Two Supabase lineages that **do not share history**: `dashboard/supabase/migrations` is the canonical
+base and public view lineage; `discord/supabase/migrations` extends it with the oracle, threads,
+observations, rate limits, and showrunner lock. The launch path is now the generated
+`discord/supabase/apply-all.sql` bundle, not loose per-folder application. It includes both lineages
+in dependency order and is checked by `npm run audit`.
 
 ### What could break (confirmed 400s the plugin will throw against the live schema)
 - **[P0-D1] `event_log` inserts 400 on every call.** `EventLogRow.java` serializes `type, context,
@@ -194,17 +191,16 @@ fails.
   expose no names/labels. `0003_lockdown.sql` closed a real hole (0001 had granted `authenticated for
   all using(true)` on all base tables). **Confirm 0003 is applied to Braden's project before go-live —
   the whole spoiler-safety argument rests on it.**
-- Seeds are idempotent (`on conflict` upserts); `apply-tonight.sql` ordering runs 0006 before the
-  guarded activation UPDATEs, so the historical "guards no-op" bug is resolved.
+- Seeds are idempotent (`on conflict` upserts); `apply-all.sql` ordering runs the flag/kind/quorum
+  migrations before the guarded activation UPDATEs, so the historical "guards no-op" bug is resolved.
 
 ### Concrete improvements
 - Fix `EventLogRow` → `{level,source,message}` (or ALTER the table). Re-key `upsertBase` off
   `owner_uuid` (+ unique index) or make `bases.id` text. Change `SettingsRow.value` → `JsonElement`.
 - Add a read-side mapping (a view, or update the dashboard columns) so plugin dossiers show up.
-- Create `world_paste_ledger` before enabling FAWE. Note in RUNBOOK that 0001–0004 are prerequisites.
-- There is **no `answer_kind` column and no `0007` migration** anywhere (grep clean) — PUZZLES.md's
-  diverse-answer system has no DB substrate yet. Non-typed answers (coords/behavior/spoken) cannot be
-  authored until this lands (see Area 5).
+- Create `world_paste_ledger` before enabling FAWE.
+- The historical `answer_kind` gap is closed by `discord/supabase/migrations/0007_answer_kind.sql`,
+  and the launch bundle checks that it lands before the seeds.
 
 ---
 
@@ -302,14 +298,8 @@ fails.
   territory-arrival producer for the finale (`TerritoryListener` tracks compliance, not puzzle
   arrival). If the finale answer is a typed phrase it works; if it's "arrive at XYZ," the spine's last
   hop may not be solvable in-world yet. Verify the finale puzzle's `answer_kind` assumption.
-- **[P0-C6] Seed re-run ordering is a live footgun** (top-10 #10). The activation UPDATEs
-  (`metapuzzle_seed.sql:124-166`; Nether/End gates `progression_seed.sql:211-226`) are wrapped in
-  `if column requires_flags exists … else raise notice` guards. If an operator applies the per-file
-  seeds once in filename order (before/without `0006`), the guards silently no-op → the 9 staged rows
-  stay unreachable **and** `base-docket-reread-auto` ships `active=true` with empty `requires_flags`,
-  **leaking all four M4 docket answers from minute one.** There is no `db:migrate`/`db:seed` script in
-  `package.json` (only `seedcheck`) and no ordering manifest; only the hand-assembled `apply-tonight.sql`
-  orders it correctly, and nothing enforces its use. Highest-risk operational item.
+- **[RESOLVED P0-C6] Seed re-run ordering is now enforced.** The generated `apply-all.sql` bundle is the
+  launch path, and `npm run audit` verifies its ordered file markers before a session.
 - **[P1-C7] `companion-reveal` is a dangling `requires_flags` on a non-existent row.**
   `metapuzzle_seed.sql:233` sets `requires_flags={iss_caught}` on `puzzle_key='companion-reveal'`, but
   no such row exists in any seed — the UPDATE matches 0 rows (silently wrong the day a producer lands,

@@ -49,6 +49,7 @@ public final class ResourcePackPusher implements Listener {
 
     private final String url;          // the hosted pack URL; blank → inert (go-live residue)
     private final byte[] sha1;         // 20-byte SHA-1, or null when unparseable/absent
+    private final java.util.UUID packId; // stable pack-stack id, derived from URL
     private final boolean required;    // Paper "required" flag (kick-on-decline is a SERVER policy, not ours)
     private final String prompt;       // one-line prompt text shown in the accept dialog (nullable)
     private final long delayTicks;     // delay after join before pushing (let the client finish spawning)
@@ -62,6 +63,10 @@ public final class ResourcePackPusher implements Listener {
         this.safety = safety;
         this.url = url == null ? "" : url.trim();
         this.sha1 = parseSha1(sha1Hex);
+        this.packId = this.url.isBlank()
+                ? null
+                : java.util.UUID.nameUUIDFromBytes(("observance-resource-pack:" + this.url)
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8));
         this.required = required;
         this.prompt = (prompt == null || prompt.isBlank()) ? null : prompt;
         this.delayTicks = Math.max(0L, delayTicks);
@@ -94,29 +99,18 @@ public final class ResourcePackPusher implements Listener {
         });
     }
 
-    /** Hand the pack to one player. MAIN thread. Tries the richest setResourcePack overload available,
-     *  degrading across Paper API versions so the call compiles and runs on 1.21.x. Never throws. */
+    /** Hand the pack to one player. MAIN thread. Uses Paper's modern pack-stack API when a hash exists,
+     *  with a URL-only legacy fallback for intentionally hashless local testing. Never throws. */
     private void push(Player p) {
-        // Most expressive overload (url, hash, required, prompt). Falls back through narrower ones so
-        // the pusher works whether or not the running Paper exposes the prompt/required parameters.
         try {
-            if (sha1 != null && prompt != null) {
-                p.setResourcePack(url, sha1, net.kyori.adventure.text.Component.text(prompt), required);
+            if (sha1 != null && packId != null) {
+                p.addResourcePack(packId, url, sha1, prompt, required);
                 return;
             }
-        } catch (Throwable ignored) { /* fall through to a narrower overload */ }
-        try {
-            if (sha1 != null) {
-                p.setResourcePack(url, sha1, required);
-                return;
-            }
-        } catch (Throwable ignored) { /* fall through */ }
-        try {
-            if (sha1 != null) {
-                p.setResourcePack(url, sha1);
-                return;
-            }
-        } catch (Throwable ignored) { /* fall through */ }
+        } catch (Throwable t) {
+            safety.warn("pack.push", "modern resource-pack push failed for " + p.getName()
+                    + " (" + t.getClass().getSimpleName() + "); trying URL-only fallback.");
+        }
         // Last resort: URL only. The integrity hash is strongly preferred (without it the client
         // re-downloads every join and can't verify the bytes), so warn if we land here.
         safety.warn("pack.push", "pushing pack to " + p.getName() + " WITHOUT a sha1 hash "

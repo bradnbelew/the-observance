@@ -15,7 +15,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     return <>{children}</>;
   }
   // The Author link is spoiler-mode navigation. Hiding it while ON /status (the spoiler-free view
-  // Ethan actually plays with live) isn't a security boundary (the route stays login-gated regardless)
+  // Ethan actually plays with live) is an immersion guard, not a security boundary.
   // — it's a small immersion papercut fix (2026-07-05 audit): don't put a "go see the spoilers" link in
   // view while glancing at the nav during unspoiled play.
   const onSpoilerFreePage = pathname?.startsWith("/status");

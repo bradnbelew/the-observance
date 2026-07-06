@@ -288,9 +288,9 @@ fall-order walk (`orin-bow-fall-order`) as-is, or vice versa for AVERYN.
 
 **Systemic guardrails (§5) — ADDED.** `tools/check_namespace_collisions.py` and `tools/check_voice_register.py`
 now run clean against the live repo (0 collisions across 21 FACT/10 INV/72 puzzle_key ids; 0 register
-violations across 96 Watcher/Keeper voice lines) and are wired into `NEXT-SESSION.md §6`'s verify-green
-pipeline, so the two chronic recurring failure modes this project's own history kept re-discovering by hand
-now fail a build instead of waiting for the next manual audit.
+violations across 98 Watcher/Keeper voice lines) and are wired into `npm run audit`, so the two chronic
+recurring failure modes this project's own history kept re-discovering by hand now fail a build instead of
+waiting for the next manual audit.
 
 **Deliberately deferred, not forgotten:** the UNKEPT/AVERYN acrostic differentiation (above) and the Iss
 pacing physical-detector (above) are the two remaining items from this pass — both scoped, both low-risk to

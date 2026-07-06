@@ -29,8 +29,10 @@ Live keys:
 
 Launch rule:
 
-- host the resource pack zip
-- set URL and SHA1
+- run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_assets.ps1`
+- host `observance-resourcepack.zip`
+- set `resource-pack.url` to the hosted HTTPS URL
+- set `resource-pack.sha1` to the lowercase SHA1 printed by `tools/package_assets.ps1` or `tools/check_assets.ps1`
 - keep `required: false` until the URL is tested with a real client
 - the rune font and rune-heavy beats depend on this
 
@@ -46,6 +48,9 @@ Live keys:
 
 Launch rule:
 
+- regenerate/apply `discord/supabase/apply-all.sql`; do not paste loose migrations
+- run `npm run audit` from `discord/` before launch so the story/data checks and `db:bundlecheck` verify
+  the SQL bundle order
 - never commit a service key
 - prefer the env var
 - rotate previously exposed service-role credentials before launch
@@ -87,6 +92,31 @@ Launch rule:
 - these are detection controls, not story text
 - keep forbidden words empty unless you are intentionally enabling the Unspoken detector
 - violations should take warmth and certainty, not progress
+
+### The Unlit Village
+
+Live keys:
+
+- `unlit.enabled`
+- `unlit.world`
+- `unlit.buildmode`
+- `unlit.force-night`
+- `unlit.disable-regular-mob-spawns`
+- `unlit.light-budget`
+- `unlit.light-radius`
+- `unlit.darkness-*`
+- `unlit.figure-*`
+- `unlit.border-radius`
+
+Launch rule:
+
+- create/import the duplicate world as `observance_unlit`
+- use `design/UNLIT-PREARG-STARTUP.md` for the setup sequence
+- keep `light-budget: 7` unless playtest proves groups still cannot reach one or two houses per run
+- keep `buildmode: false` before friends test it
+- run `/obs unlit border 138` and `/obs unlit darken all 138` for the current 275-wide worldborder plan
+- run `/obs unlit audit` and `/obs unlit ready` before handoff
+- re-apply `discord/supabase/apply-all.sql` so the `rite-tokens` gate requires the required Unlit evidence
 
 ### Physical Puzzle Producers
 
@@ -147,7 +177,7 @@ Director rule:
 
 1. Apply migrations and reseed Supabase.
 2. Run `npm run archive:materialize` or confirm cron materializes archive bodies.
-3. Host resource pack and set URL/SHA1.
+3. Package resource pack, host it, and set URL/SHA1.
 4. Survey and place all required sites.
 5. Spawn townsfolk.
 6. Stage cold open with `/observance placeprologue`.
@@ -163,30 +193,27 @@ Director rule:
 From the repo root:
 
 ```powershell
-python tools\check_experience_coherence.py
-python tools\check_namespace_collisions.py
-python tools\check_voice_register.py
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_all.ps1
 ```
 
 From `discord/`:
 
 ```powershell
+npm run -s audit
 npx tsc --noEmit
-npm run -s seedcheck
-npm run -s gatecheck
-npm run -s specscheck
-npm run -s showrunner:test
-npm run -s showrunner:test:autonomy
-npm run -s showrunner:test:archive
-npm run -s showrunner:test:scenario
-npm run -s showrunner:test:customs
-npm run -s showrunner:test:prologue
-npm run -s showrunner:test:herd
+npm run -s runtimecheck
 ```
 
-From `plugin/`:
+From `dashboard/`:
 
 ```powershell
-gradle jar
+npm run -s selftest
+```
+
+Plugin package/check:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_jar.ps1
 ```
 

@@ -209,18 +209,20 @@ in [PUZZLE-DESIGNS.md](PUZZLE-DESIGNS.md). Here is each as a *quest*: entry, pay
   flags flip). Honest: not a puzzle.
 - **Thread** spine (M1→M5). **Grounding:** the number is derived from real progress, never faked.
 
-### 5.4 SQ-HERRING — the dead-ends that talk back + the false prophet **[reactive drama]**
+### 5.4 SQ-HERRING — rare contradictions with teeth + the false prophet **[reactive drama]**
 > Source: `dead-ends-with-teeth.md` (bestiary *lore* salvaged from the CUT
 > `backlog-modeled-mob-and-voice.md`, OVERHAUL §5).
 - **Entry.** A cipher/thread that decodes to a **taunt** — the Watcher acknowledging you solved a
-  thing that meant nothing — plus a false-prophet voice (a Wenna-style folk-charm rumor that is
-  confidently wrong, Aro's lie made into a thread). These self-acknowledge (OVERHAUL §5 KEEP: a dead
-  lead arrives and flips to a "contradicted" card — honest, not inert).
-- **Pays.** Atmosphere + the anti-speedrun tax + character (Aro the liar-broker, `npc-and-watcher-
-  voice.md` A1). **[reactive drama]** — honest red-herrings that never block (D8: wrong attempts
-  still produce content).
-- **Thread** any (`place` / `happened`). **Existing seed hook:** the five deliberate dead leads in
-  `side_quests.sql` (`dest-warm-town` = Aro's lie, already built).
+  false promise — plus a false-prophet voice (a Wenna-style folk-charm rumor that is confidently
+  wrong, Aro's lie made into a thread). These self-acknowledge (OVERHAUL §5 KEEP: a contradiction
+  arrives and flips to a "contradicted" card — honest, not inert).
+- **Pays.** Atmosphere + character (Aro the liar-broker, `npc-and-watcher-voice.md` A1) + a usable
+  proof, warning, or breadcrumb. **[reactive drama]** — honest red-herrings that never block (D8:
+  wrong attempts still produce content).
+- **Thread** any (`place` / `happened`). **Existing seed hook:** the launch budget is two blunt
+  false/dead leads total. Current source seeds spend that budget on `dest-warm-town` (Aro's
+  warm-town lie) and `dest-prophet-wall` (Iss's false promise), and both must pay proof/warning/
+  character consequence rather than a dead walk.
 
 ### 5.5 SQ-BIRD — the deep-bird vigil **[real puzzle + flavor]**
 > Source: `herd-conversion.md` (~80% built: `paceHerd`, `SacredAnimalBeat`, FACT 15/INV-12/INV-13).

@@ -113,14 +113,12 @@ director spaces them ~3–5 s apart so the count *builds*):
     "beat": "private_sound", "scene": "site", "radius": 16, "min": 3,
     "beat_payload": { "sound": "BLOCK_BELL_RESONATE", "volume": 0.5, "pitch": 0.6 } } }
 
-// 1.2 — the count rises: a title, identical to all, "the count begins".
+// 1.2 — the count rises: an actionbar, identical to all, "the count begins".
 { "type": "group",
   "payload": {
     "beat": "private_message", "scene": "site", "radius": 16, "min": 3,
-    "beat_payload": { "mode": "title",
-      "title": "the count begins",
-      "subtitle": "stand where you can be seen",
-      "fade_in": 20, "stay": 70, "fade_out": 30 } } }
+    "beat_payload": { "mode": "actionbar",
+      "actionbar": "the count begins. stand where you can be seen." } } }
 
 // 1.3 — THE WRONG NUMBER. action-bar, same to everyone: the tally is players+1.
 //        The director computes {scene_n} from the convened count and writes n+1 into
@@ -187,14 +185,12 @@ travel is the point. The group fan is used only for the shared *word* and the sh
 darkness pulse.
 
 ```jsonc
-// 2.1 — the shared word: a title to all, "the lights are taken in".
+// 2.1 — the shared word: an actionbar to all, "the lights are taken in".
 { "type": "group",
   "payload": {
     "beat": "private_message", "scene": "site", "radius": 16, "min": 3,
-    "beat_payload": { "mode": "title",
-      "title": "the lights are taken in",
-      "subtitle": "one. and the next.",
-      "fade_in": 20, "stay": 60, "fade_out": 30 } } }
+    "beat_payload": { "mode": "actionbar",
+      "actionbar": "the lights are taken in. one. and the next." } } }
 
 // 2.2 .. 2.(N+1) — THE CASCADE. One torch_gutter per convened player, target-scoped,
 //        each delayed ~1.5 s after the last (director schedules; the order is the line).
@@ -368,15 +364,13 @@ real Accepting.
 **Beat sequence:**
 
 ```jsonc
-// 4.1 — the prompt: a title to all, telling them the shape of the thing (not a command to
+// 4.1 — the prompt: an actionbar to all, telling them the shape of the thing (not a command to
 //        the engine — a fiction-prompt the players choose to obey, like the real bow).
 { "type": "group",
   "payload": {
     "beat": "private_message", "scene": "site", "radius": 12, "min": 3,
-    "beat_payload": { "mode": "title",
-      "title": "bend, all of you, as one",
-      "subtitle": "this is not the hour. this is the learning of it.",
-      "fade_in": 20, "stay": 80, "fade_out": 30 } } }
+    "beat_payload": { "mode": "actionbar",
+      "actionbar": "bend, all of you, as one. this is not the hour." } } }
 
 // 4.2 — the PARTIAL acknowledgement: when (some of) the group crouches, a soft particle
 //        rises at the altar for each — but THIN, incomplete (low count), the world half-answering.
@@ -479,9 +473,8 @@ export const gather = {
   'gather.count.same_book':  'six were named in full, in the old book. you are read into the same book, by the same hand.',                // reuse B3 (condensed)
   'gather.count.kindness':   'you were not told the laws before you kept or broke them. you were observed. that was the kindness, and the whole of the kindness.', // reuse B3
 
-  // in-world beat text (1.2 title / 1.3 action-bar)
-  'gather.count.title':      'the count begins',
-  'gather.count.subtitle':   'stand where you can be seen',
+  // in-world beat text (1.2 actionbar / 1.3 actionbar)
+  'gather.count.begin_actionbar': 'the count begins. stand where you can be seen.',
   'gather.count.actionbar':  'counted: {scene_n_plus_one}.  present: {scene_n}.',
 
   // -- EVENT 2: THE UN-LIGHTING (#the-record) --
@@ -491,9 +484,8 @@ export const gather = {
   'gather.unlight.one_left':      'there is one light left, and it is the kept light, and it is decided now whose hand it stays in.',           // reuse B3
   'gather.unlight.hold':          'stand still. it is decided by what was already done. it was always decided by what was already done.',       // reuse B3 (the holding)
 
-  // in-world beat text (2.1 title / 2.3 boss_bar)
-  'gather.unlight.title':     'the lights are taken in',
-  'gather.unlight.subtitle':  'one. and the next.',
+  // in-world beat text (2.1 actionbar / 2.3 boss_bar)
+  'gather.unlight.actionbar': 'the lights are taken in. one. and the next.',
   'gather.unlight.bossbar':   'one light is left. it is the kept light.',
 
   // -- EVENT 3: DOB (#the-record; cold register, party is breaking the ways) --
@@ -511,9 +503,8 @@ export const gather = {
   'gather.rehearsal.together':  'it is not one of you that bends. it is the gathering, or it is no one. the record keeps no chosen. it keeps the kept.',
   'gather.rehearsal.withdraw':  'the answer is drawn back now. keep what you learned of the shape. when the hour comes, bend together, and do not look to see who bent first.',
 
-  // in-world beat text (4.1 title)
-  'gather.rehearsal.title':     'bend, all of you, as one',
-  'gather.rehearsal.subtitle':  'this is not the hour. this is the learning of it.',
+  // in-world beat text (4.1 actionbar)
+  'gather.rehearsal.actionbar': 'bend, all of you, as one. this is not the hour.',
 
   // -- thread_card bodies (read into thread_cards.body_voice_key; §6) --
   'gather.thread.count_who':         'the six were named in this book, by name, against this same column. you were read into it tonight, by the same hand.',
@@ -549,7 +540,7 @@ built_on_primitive:
 delegate_beats_used:                                # all verified against plugin/.../beats/lib/*
   - private_sound        # {sound|named_sound, volume, pitch, behind, offset}
   - private_particle     # {particle, count, spread, speed, height, near_player}
-  - private_message      # {mode: title|actionbar, title, subtitle, fade_in/stay/fade_out, actionbar}
+  - private_message      # {mode: actionbar|title, actionbar; title only for rare boundary breaks}
   - private_darkness     # {effect: DARKNESS|BLINDNESS, seconds<=15, amplifier<=2}  reversible
   - torch_gutter         # {radius, max_torches, relight_seconds, permanent:false}  reversible
   - named_mob            # {entity, fallback_entity:WARDEN, name, no_ai_drift, silent, invulnerable, despawn_seconds}  WARDEN-fallback, never ZOMBIE
@@ -560,7 +551,7 @@ events:
     hook: the roll-call counts one too many — the Watcher counts ITSELF among the Kept
     trigger: flags.summoned AND convened(altar,16,min>=3)
     fires_once_flag: count_done
-    beats: [private_sound, private_message(title), private_message(actionbar:+1), private_sound(behind)]
+    beats: [private_sound, private_message(actionbar:begin), private_message(actionbar:+1), private_sound(behind)]
     advances: [who, happened]
     guardrails: [min>=3, once_per_summons, deniable_transient_actionbar, sound+word_only_no_mob]
   - id: 2
@@ -568,7 +559,7 @@ events:
     hook: lamps go out one at a time, down the line; one kept light left
     trigger: flags.count_done (same night)
     fires_once_flag: unlight_done
-    beats: [private_message(title), "torch_gutter x N (per-player cascade, staggered, permanent:false)", boss_bar, private_darkness]
+    beats: [private_message(actionbar), "torch_gutter x N (per-player cascade, staggered, permanent:false)", boss_bar, private_darkness]
     advances: [surface]
     guardrails: [reversible_relight_90s, darkness_capped_4s, torch_only_context_gate, bounded_to_convened, min>=3_on_shared_pulse]
   - id: 3
@@ -586,7 +577,7 @@ events:
     hook: a partial group-bow that previews the climax — and never resolves it
     trigger: flags.tokens_laid AND convened(altar,12,min>=3) AND NOT flags.rehearsed
     fires_once_flag: rehearsed
-    beats: [private_message(title), private_particle(thin SOUL_FIRE_FLAME), private_sound(withdraw)]
+    beats: [private_message(actionbar), private_particle(thin SOUL_FIRE_FLAME), private_sound(withdraw)]
     advances: [human]
     HARD_GUARDRAIL: >
       MUST NOT post the opaque accepting-crouch token, MUST NOT set flags.bowed_as_one,
@@ -594,7 +585,7 @@ events:
     guardrails: [no_climax_resolution, once, min>=3, no_mob_no_darkness_no_block_change]
 voice_keys_proposed:                                # added to voice.ts `gather` block at integration; B-register
   discord_record: [gather.count.*, gather.unlight.*, gather.dob.*, gather.rehearsal.*]
-  in_world_beat_text: [gather.*.title, gather.*.subtitle, gather.*.actionbar, gather.*.bossbar]
+  in_world_beat_text: [gather.*.actionbar, gather.*.bossbar]
   thread_card_bodies: [gather.thread.count_who, gather.thread.count_happened, gather.thread.unlight_surface, gather.thread.dob_human, gather.thread.rehearsal_human]
 canon_refs_used:
   threads: [who, place(unused), happened, surface, human]

@@ -25,6 +25,7 @@ import com.observance.watcher.signal.listener.IgnitionListener;
 import com.observance.watcher.signal.listener.LecternReadListener;
 import com.observance.watcher.signal.listener.TerritoryListener;
 import com.observance.watcher.signal.listener.UnlitDeepListener;
+import com.observance.watcher.signal.listener.UnlitVillageListener;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Reveal;
 import com.observance.watcher.util.Safety;
@@ -88,6 +89,7 @@ public final class ObservancePlugin extends JavaPlugin {
     //     sign. Held so its per-player refresh loop can be started on enable and torn down on reload/disable
     //     (it spawns display entities that must be cleaned up). ---
     private com.observance.watcher.signal.listener.ThresholdVaultListener thresholdVault;
+    private UnlitVillageListener unlitVillage;
 
     // --- signal tracker (the dossier) ---
     private TrackerConfig trackerConfig;
@@ -247,6 +249,10 @@ public final class ObservancePlugin extends JavaPlugin {
         if (thresholdVault != null) {
             thresholdVault.stop();
         }
+        if (unlitVillage != null) {
+            unlitVillage.stop();
+            unlitVillage = null;
+        }
 
         // Cancel our scheduled tasks; flush whatever offline writes we can (best effort, bounded).
         for (BukkitTask t : scheduledTasks) {
@@ -343,6 +349,10 @@ public final class ObservancePlugin extends JavaPlugin {
             this.tier0Selector = buildTier0Selector();
             // Re-register listeners so they point at the new tracker instance.
             org.bukkit.event.HandlerList.unregisterAll(this);
+            if (unlitVillage != null) {
+                unlitVillage.stop();
+                unlitVillage = null;
+            }
             registerListeners();
 
             // Rebuild the poller against the new config/client; restart schedulers.
@@ -428,6 +438,11 @@ public final class ObservancePlugin extends JavaPlugin {
         // tally: an explicit flame act at/below the deep line on a taboo moon phase breaks it for all.
         // Config-gated (customs.unlit-deep.enabled + restraint.enabled) — a clean no-op when off.
         pm.registerEvents(new UnlitDeepListener(signalTracker, supabase, rateLimiter, scheduler, safety), this);
+        if (unlitVillage != null) { unlitVillage.stop(); unlitVillage = null; }
+        this.unlitVillage = new UnlitVillageListener(
+                this, this::sites, supabase, rateLimiter, scheduler, safety, "observance");
+        pm.registerEvents(unlitVillage, this);
+        unlitVillage.start();
 
         // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.
@@ -653,6 +668,10 @@ public final class ObservancePlugin extends JavaPlugin {
             pm.registerEvents(new com.observance.watcher.signal.listener.BlackMoonTollListener(
                     supabase, this::sites, rateLimiter, scheduler, safety,
                     cfg.getIntegerList("puzzles.brann-black-moon-toll.black-moon-phases")), this);
+        }
+        if (cfg.getBoolean("puzzles.painted-line.enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.PaintedLineListener(
+                    supabase, this::sites, rateLimiter, scheduler, safety), this);
         }
 
         // --- THE THREE-HANDS COOP GATE (the IV→V hinge, m4-three-hands) ---

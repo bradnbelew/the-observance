@@ -55,3 +55,19 @@ Normal-server **spawn** (no Observance structures). The Hold is **found by desce
 2. Export each as a `.schem`; place the files; **fill the real x/y/z into `sites.yml`** (until then the plugin silently skips the unplaced site — no errors).
 3. Set up the Undercroft fog **datapack** (dimension_type effects) + Multiverse world.
 4. Carve the rune signs/lecterns in the `observance:runes` font (resource pack must be live first).
+5. Run **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`**
+   from the repo root. Launch mode fails until every load-bearing site has real coordinates.
+
+## VISUAL RESCUE GATE
+
+`design/VISUAL-RESCUE.md` is now part of the build spec. A site is not launch-ready just because
+it is placed, protected, and covered by `/obs coverage`.
+
+Before a site moves from rehearsal into the real world:
+
+1. Visit it in-game.
+2. Judge its approach silhouette, palette, focal object, lighting, and player movement.
+3. Mark it `KEEP`, `RESHAPE`, `REPLACE`, or `CUT`.
+4. Only `KEEP` sites advance into live placement.
+
+This is the guard against small, messy, test-prop structures becoming the final ARG.

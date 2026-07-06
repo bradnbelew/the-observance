@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * OBSERVER TIER-0 delivery — "it knows you" with NO chat/voice/LLM (BUILD-PLAN §13 / CHANGE-MANIFEST
  * A2). An AMBIENT beat that reads ONE player's real {@link SignalSnapshot} from the signal tracker,
  * runs the {@link Tier0Selector} to derive a GROUNDED observation, and speaks a Watcher-register
- * IMPLICATION line to that player alone (a fading title or an action-bar line).
+ * IMPLICATION line to that player alone (normally an action-bar line; title mode must be explicit).
  *
  * <h2>Why this is safe + rare</h2>
  * <ul>
@@ -33,12 +33,14 @@ import java.util.concurrent.ThreadLocalRandom;
  *       of that it applies a per-observation per-player cooldown (via the shared RateLimiter) so the same
  *       implication is not repeated to the same player within {@code tier0.per-observation-cooldown-minutes}.
  *       Rare = uncanny; frequent = creepy spam.</li>
- *   <li><b>Fault-isolated + per-player:</b> pure {@code PerPlayer} title/action-bar; never touches the
+ *   <li><b>Fault-isolated + per-player:</b> pure {@code PerPlayer} action-bar/title; never touches the
  *       world or other players; a failure degrades to a skip.</li>
  * </ul>
  *
- * <p>Payload (all optional): {@code {"mode":"title"|"actionbar", "prefix":"…"}}. The line itself is
- * chosen by Tier-0 from config; the payload only tunes presentation.
+ * <p>Payload (all optional): {@code {"mode":"actionbar"|"title", "boundary_break":true, "prefix":"..."}}.
+ * Omitted mode defaults to actionbar, and title mode is demoted unless {@code boundary_break} is true, so
+ * ambient observations do not become accidental full-screen scares. The line itself is chosen by Tier-0
+ * from config; the payload only tunes presentation.
  */
 public final class ComposureBeat extends AbstractBeat {
 
@@ -88,8 +90,8 @@ public final class ComposureBeat extends AbstractBeat {
         if (line == null || line.isBlank()) return BeatResult.skipped("empty-line");
 
         BeatPayload p = req.payload();
-        String mode = p.string("mode", "title").trim().toLowerCase(Locale.ROOT);
-        if (mode.equals("actionbar")) {
+        String mode = p.string("mode", "actionbar").trim().toLowerCase(Locale.ROOT);
+        if (mode.equals("actionbar") || !p.bool("boundary_break", false)) {
             PerPlayer.actionBar(pl, line);
         } else {
             // A soft, empty-ish lead line above the implication (the Watcher does not shout).

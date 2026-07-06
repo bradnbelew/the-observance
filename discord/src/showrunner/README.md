@@ -41,6 +41,8 @@ to migrate.
 
 ## Run
 ```
+npm run runtimecheck             # storylet gate + every pure showrunner runtime self-test
+npm run showrunner:test:all      # every pure showrunner runtime self-test, without gatecheck
 npm run showrunner:test          # pure drip/gift decision unit tests (no DB/network)
 npm run showrunner:test:customs  # pure customs-ladder unit tests (no DB/network)
 npm run showrunner:dry           # read-only: print what the next tick WOULD do (now incl. a customs preview)

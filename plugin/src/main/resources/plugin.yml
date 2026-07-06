@@ -43,6 +43,9 @@ commands:
       /observance status        - show plugin health (db, queue, last beat, reckoning state)
       /observance director [world|lab] [spacing] - one-command rehearsal: place, repair, coverage, and guided start
       /observance audit         - scan placed sites for missing core anchors, empty lecterns, and obvious hardware problems
+      /observance visualaudit   - scan placed story sites for obvious test-prop visual failures
+      /observance dialogueaudit - list NPC dialogue claims that must have world/mechanic proof
+      /observance preflight     - run audit, visualaudit, dialogueaudit, and coverage together
       /observance repair        - repair common placed-site failures found by audit
       /observance coverage      - report launch-lane coverage: main spine, puzzle mechanics, side/lore, dimensions, scare, and ops
       /observance visit <next|back|list|siteId|lane> - teleport through placed rehearsal sites for fast testing
@@ -58,9 +61,11 @@ commands:
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance fullrun [spacing] - one-command rehearsal: full lab, side/lore, puzzle grid, dread route, repair, audit, coverage
       /observance prepworld [spacing] - compact real-world bootstrap: prologue, surface/deep spine, lecterns, NPCs, finale/readings, tools
+      /observance descentproof [spacing] - stage the Lamp-works stair, third lamp, painted line, and dead-stall around you
       /observance sidepass - stage all side/lore NPC bodies nearby and print the right-click checklist
       /observance puzzlepass [gates] [spacing] - stage a compact puzzle-mechanic proof grid and optional rehearsal gate flags
       /observance dreadpass [stage|run] [player] - stage the Watcher dread route or run the full scare route
+      /observance unlit <site|clue|pass|audit|darken|border|buildmode|ready> - mark, stamp, test, darken, edit, audit, fence, and hand off the Unlit expedition
       /observance runbook [setup|spine|puzzle|side|scare|ops] - in-world director cheat sheet for each test lane
       /observance rehearse <start|status|done|next|back|reset|list> - guided in-world rehearsal checklist
       /observance placeprologue - stage the cold-open anomaly in the group's base
@@ -76,5 +81,5 @@ commands:
 
 permissions:
   observance.admin:
-    description: Allows use of the /observance admin command.
+    description: Allows use of the Observance operator command family.
     default: op

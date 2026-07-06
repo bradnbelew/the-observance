@@ -24,7 +24,7 @@ import { overrideEndingFate } from "@/app/author/actions";
  *   - NEVER PUNISH AN ABSENT MEMBER: the active-roster size is shown so the director can confirm the
  *     fate was computed over active players only (the counts the page passes are active-only).
  *   - The override lands as a PENDING beat through the same approval gate as everything else; the
- *     server action re-checks isAdmin and re-validates the fate enum. The preview is never a write.
+ *     server action re-validates the fate enum. The preview is never a write.
  *
  * The pure preview logic is a verbatim mirror of `decideFate` (fate-preview.ts, self-tested), kept
  * client-local so the surface is fully self-contained and renders with no round-trip.

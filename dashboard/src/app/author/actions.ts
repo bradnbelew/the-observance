@@ -2,39 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isAdmin } from "@/lib/auth";
 import { coerceFate } from "@/app/author/fate-preview";
 import type { BeatStatus, Json } from "@/lib/database.types";
 
 /**
  * Server actions — the dashboard's write surface.
  *
- * EVERY action re-checks isAdmin() before touching the service-role client, so
- * authorization never relies on the page-level gate alone. The admin client
- * bypasses RLS; isAdmin() (ADMIN_EMAILS allowlist) is the only thing standing
- * between a request and a privileged write, so it must be the first line.
+ * Author mode is an operator console: actions use the server-only service-role
+ * client directly, with no Supabase magic-link gate.
  *
  * Each action revalidates /author so the server-rendered control surface
  * reflects the new state on the next paint.
  */
 
 export type ActionResult = { ok: boolean; error?: string };
-
-const FORBIDDEN: ActionResult = {
-  ok: false,
-  error: "Not authorized.",
-};
-
-// SECURITY (audit, CRITICAL): every privileged write (advance arc, approve/force/skip
-// beats, trigger the Accepting climax, watcher-sleep, whisper budgets) runs on the
-// RLS-bypassing service-role client, so this guard is the ONLY thing between an
-// unauthenticated visitor and driving the Watcher. It is gated behind the ADMIN_EMAILS
-// allowlist. GO-LIVE: set ADMIN_EMAILS to the director's email(s) or the console is
-// (correctly) locked. For local-only dev you may temporarily `return true`, but the
-// committed default MUST stay closed.
-async function guard(): Promise<boolean> {
-  return await isAdmin();
-}
 
 function refresh() {
   revalidatePath("/author");
@@ -50,8 +31,6 @@ function refresh() {
  * constraint), so we always target it.
  */
 export async function setArcAct(act: number): Promise<ActionResult> {
-  if (!(await guard())) return FORBIDDEN;
-
   const next = Math.max(1, Math.min(3, Math.trunc(act)));
   const supabase = createAdminClient();
 
@@ -107,8 +86,6 @@ async function decideBeat(
   id: number,
   status: Extract<BeatStatus, "approved" | "fired" | "skipped">,
 ): Promise<ActionResult> {
-  if (!(await guard())) return FORBIDDEN;
-
   const supabase = createAdminClient();
 
   const { error } = await supabase
@@ -147,8 +124,6 @@ export async function skipBeat(formData: FormData): Promise<ActionResult> {
 export async function updateWhisperBudget(
   formData: FormData,
 ): Promise<ActionResult> {
-  if (!(await guard())) return FORBIDDEN;
-
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id)) return { ok: false, error: "Bad budget id." };
 
@@ -194,8 +169,6 @@ export async function updateWhisperBudget(
 export async function setWatcherSleep(
   asleep: boolean,
 ): Promise<ActionResult> {
-  if (!(await guard())) return FORBIDDEN;
-
   const supabase = createAdminClient();
 
   const value: Json = asleep;
@@ -242,8 +215,6 @@ export async function toggleWatcherSleep(
 export async function triggerAccepting(
   formData: FormData,
 ): Promise<ActionResult> {
-  if (!(await guard())) return FORBIDDEN;
-
   if (String(formData.get("confirm")) !== "ACCEPTING") {
     return { ok: false, error: "Confirmation phrase did not match." };
   }
@@ -288,8 +259,6 @@ export async function triggerAccepting(
 export async function overrideEndingFate(
   formData: FormData,
 ): Promise<ActionResult> {
-  if (!(await guard())) return FORBIDDEN;
-
   if (String(formData.get("confirm")) !== "FATE") {
     return { ok: false, error: "Confirmation phrase did not match." };
   }

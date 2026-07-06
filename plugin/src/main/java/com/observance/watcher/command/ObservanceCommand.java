@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Lectern;
@@ -28,9 +29,11 @@ import org.bukkit.inventory.meta.BookMeta;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -64,6 +67,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         switch (sub) {
             case "status" -> sendStatus(sender);
             case "audit" -> handleAudit(sender);
+            case "visualaudit" -> handleVisualAudit(sender);
+            case "preflight" -> handlePreflight(sender);
+            case "dialogueaudit" -> handleDialogueAudit(sender);
             case "repair" -> handleRepair(sender);
             case "coverage" -> handleCoverage(sender);
             case "visit" -> handleVisit(sender, args);
@@ -94,9 +100,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placelab" -> handlePlaceLab(sender, args);
             case "fullrun" -> handleFullRun(sender, args);
             case "prepworld" -> handlePrepWorld(sender, args);
+            case "descentproof" -> handleDescentProof(sender, args);
             case "sidepass" -> handleSidePass(sender, args);
             case "puzzlepass" -> handlePuzzlePass(sender, args);
             case "dreadpass" -> handleDreadPass(sender, args);
+            case "unlit" -> handleUnlit(sender, args);
             case "runbook" -> handleRunbook(sender, args);
             case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
@@ -108,7 +116,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -195,6 +203,86 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     };
 
     /**
+     * Survey-only story fixtures that placeworld stamps after the terrain-scattered spine. These never
+     * auto-scatter: a false lead or dialogue proof has to live exactly where the director surveyed it.
+     */
+    private static final String[] PLACEWORLD_SURVEY_FIXTURES = {
+            "first_report_lectern_01",
+            "bow_marker_01",
+            "offering_cairn_01",
+            "kept_light_home_01",
+            "the_far_water",
+            "school_stand",
+            "markers_row",
+            "cistern_7",
+            "watch_floor",
+            "set_apart_shelf",
+            "undercroft_seal",
+            "forgotten_mouth",
+            "keeper_altar",
+            "coop_plate",
+            "lampworks_stair",
+            "third_lamp_stand",
+            "painted_line",
+            "dead_stall",
+            "deep_bird_coops",
+            "deep_market",
+            "ration_table",
+            "third_bay_breach",
+            "warm_town_collapse",
+            "dread_route_start",
+            "dread_route_elsewhere",
+            "dread_route_figure",
+            "dread_route_exit"
+    };
+
+    /** The launch blocker list shared with tools/check_world_build_readiness.ps1 -Launch. */
+    private static final String[] LAUNCH_REQUIRED_SITES = {
+            "first_report_lectern_01",
+            "rune_rosetta",
+            "stone_vaun",
+            "stone_mara",
+            "stone_sella",
+            "stone_orin",
+            "stone_brann",
+            "stone_iss",
+            "stone_of_reckoning",
+            "bow_marker_01",
+            "offering_cairn_01",
+            "kept_light_home_01",
+            "the_far_water",
+            "school_stand",
+            "markers_row",
+            "cistern_7",
+            "watch_floor",
+            "set_apart_shelf",
+            "undercroft_seal",
+            "forgotten_mouth",
+            "the_cold_hearth",
+            "unbroken_light",
+            "the_threshold",
+            "the_unwriting",
+            "keeper_altar",
+            "coop_plate",
+            "threshold_vault",
+            "lampworks_stair",
+            "third_lamp_stand",
+            "painted_line",
+            "dead_stall",
+            "deep_bird_coops",
+            "deep_market",
+            "ration_table",
+            "third_bay_breach",
+            "warm_town_collapse",
+            "dread_route_start",
+            "dread_route_elsewhere",
+            "dread_route_figure",
+            "dread_route_exit",
+            "nether_forge",
+            "end_seventh_shrine"
+    };
+
+    /**
      * The cross-dimension DEEPENING-LANE site ids — the two lanes that live in the real Nether/End rather
      * than the overworld the surface/deep spines scatter across. These are SURVEY-ONLY in {@code placeworld}:
      * they are stamped ONLY at a surveyed anchor whose world matches the dimension the operator is standing
@@ -204,6 +292,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      */
     private static boolean isLaneSite(String siteId) {
         return "nether_forge".equals(siteId) || "end_seventh_shrine".equals(siteId);
+    }
+
+    private static boolean isPlaceWorldSurveyFixture(String siteId) {
+        if (siteId == null) return false;
+        for (String fixture : PLACEWORLD_SURVEY_FIXTURES) {
+            if (fixture.equals(siteId)) return true;
+        }
+        return false;
     }
 
     private static final String[][] PUZZLE_PASS_SITES = {
@@ -301,8 +397,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      */
     private void handleSite(CommandSender sender, String[] args) {
         String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
+        if (op.equals("todo") || op.equals("launch") || op.equals("list")) {
+            handleSiteTodo(sender);
+            return;
+        }
+        if (op.equals("next")) {
+            handleSiteNext(sender);
+            return;
+        }
+        if (op.equals("plan")) {
+            handleSitePlan(sender, args);
+            return;
+        }
         if (!op.equals("set")) {
-            sender.sendMessage("Usage: /observance site set <siteId>   (try tab-complete; keeper spine: " + keeperIdList() + ")");
+            sender.sendMessage("Usage: /observance site <todo|next|plan|launch|list|set> [siteId]   (keeper spine: " + keeperIdList() + ")");
             return;
         }
         if (!(sender instanceof Player player)) {
@@ -351,7 +459,1045 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + " (type " + siteType + ", r" + radius + ").");
         sender.sendMessage(row != null
                 ? "  Saved to sites.yml. Run /observance placeworld to stamp the large set-pieces."
-                : "  Saved to sites.yml. This smaller anchor is now live.");
+                : (isPlaceWorldSurveyFixture(siteId)
+                    ? "  Saved to sites.yml. Run /observance placeworld to stamp this surveyed fixture."
+                    : "  Saved to sites.yml. This smaller anchor is now live."));
+        sendLaunchRemaining(sender);
+    }
+
+    private void handleUnlit(CommandSender sender, String[] args) {
+        String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "audit";
+        switch (op) {
+            case "site" -> {
+                if (args.length < 3 || args[2].isBlank()) {
+                    sender.sendMessage("Usage: /observance unlit site <entry|spawn|exit|lamp|cairn|coop|well|watch|warm|threshold|base|siteId>");
+                    return;
+                }
+                String siteId = unlitSiteId(args[2]);
+                handleSite(sender, new String[]{"site", "set", siteId});
+            }
+            case "audit" -> handleUnlitAudit(sender);
+            case "border" -> handleUnlitBorder(sender, args);
+            case "darken", "scrub" -> handleUnlitDarken(sender, args);
+            case "buildmode", "build" -> handleUnlitBuildMode(sender, args);
+            case "clue" -> handleUnlitClue(sender, args);
+            case "pass" -> handleUnlitPass(sender, args);
+            case "ready", "playtest" -> handleUnlitReady(sender);
+            default -> sender.sendMessage("Usage: /observance unlit <site|clue|pass|audit|darken|border|buildmode|ready>");
+        }
+    }
+
+    private void handleUnlitBuildMode(CommandSender sender, String[] args) {
+        String mode = args.length > 2 ? args[2].toLowerCase(Locale.ROOT).trim() : "status";
+        Boolean set = switch (mode) {
+            case "on", "true", "enable", "enabled" -> Boolean.TRUE;
+            case "off", "false", "disable", "disabled" -> Boolean.FALSE;
+            case "status", "" -> null;
+            default -> {
+                sender.sendMessage("Usage: /obs unlit buildmode <on|off|status>");
+                yield null;
+            }
+        };
+        if (!mode.equals("status") && !mode.isBlank() && set == null) return;
+
+        if (set != null) {
+            plugin.getConfig().set("unlit.buildmode", set);
+            plugin.saveConfig();
+        }
+
+        boolean enabled = plugin.getConfig().getBoolean("unlit.buildmode", false);
+        sender.sendMessage("Observance: Unlit buildmode is " + (enabled ? "ON" : "OFF") + ".");
+        sender.sendMessage(enabled
+                ? "  Ops/admins can edit blocks, inventories, and containers inside the Unlit world. Turn it off before playtest."
+                : "  Player expedition restrictions are live.");
+    }
+
+    private void handleUnlitClue(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance unlit clue must be run by a player inside the mirrored village.");
+            return;
+        }
+        if (args.length < 3 || args[2].isBlank()) {
+            sender.sendMessage("Usage: /observance unlit clue <lamp|cairn|coop|well|watch|warm|threshold|base>");
+            return;
+        }
+        String siteId = unlitSiteId(args[2]);
+        if (!siteId.startsWith("unlit_house_")) {
+            sender.sendMessage("Observance: clue fixtures are for Unlit houses only. Use /obs unlit site for entry/spawn/exit.");
+            return;
+        }
+        handleSite(sender, new String[]{"site", "set", siteId});
+        String note = stampUnlitClue(player.getLocation(), siteId);
+        sender.sendMessage("Observance: stamped " + unlitShortId(siteId) + " clue fixture. " + note);
+    }
+
+    private void handleUnlitPass(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance unlit pass must be run by a player at the test rig origin.");
+            return;
+        }
+        String variant = args.length > 2 ? args[2].toLowerCase(Locale.ROOT).trim() : "light";
+        if (variant.isBlank()) variant = "light";
+        Location base = player.getLocation().getBlock().getLocation();
+        if (base.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your world.");
+            return;
+        }
+        String unlitWorld = plugin.getConfig().getString("unlit.world", "observance_unlit");
+        if (!base.getWorld().getName().equals(unlitWorld)) {
+            sender.sendMessage("Note: this pass is best staged inside " + unlitWorld
+                    + "; the Unlit runtime only pressures players in that world.");
+        }
+
+        switch (variant) {
+            case "light", "dark", "damage" -> {
+                buildUnlitPassLane(base, 14);
+                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
+                registerUnlitSite(base.clone().add(6, 0, 0), "unlit_safe_01", "unlit_safe", 4, 4);
+                registerUnlitSite(base.clone().add(14, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
+                setBlock(base.clone().add(6, 0, 1), Material.SOUL_LANTERN);
+                placeStandingSign(base.clone().add(1, 0, 1), BlockFace.SOUTH,
+                        new String[]{"light pass", "spend lamp", "cross dark", "exit ahead"});
+                sender.sendMessage("Unlit pass staged: light/dark pressure lane with one authored safe pocket.");
+            }
+            case "stalker", "figure" -> {
+                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
+                registerUnlitSite(base.clone().add(8, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
+                sender.sendMessage("Unlit pass staged without blocks/signs: enter at this spawn, stand in the dark, watch the figure stalk and vanish.");
+            }
+            case "extinguish", "breaklight" -> {
+                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
+                registerUnlitSite(base.clone().add(8, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
+                sender.sendMessage("Unlit pass staged without blocks/signs: enter here, place one borrowed lantern nearby, then stand outside safety until the figure breaks it.");
+            }
+            case "house", "clue" -> {
+                Location lamp = base.clone();
+                Location coop = base.clone().add(7, 0, 0);
+                Location threshold = base.clone().add(14, 0, 0);
+                registerUnlitSite(lamp, "unlit_house_lamp", "unlit_house", 6, 5);
+                registerUnlitSite(coop, "unlit_house_coop", "unlit_house", 6, 5);
+                registerUnlitSite(threshold, "unlit_house_threshold", "unlit_house", 6, 5);
+                stampUnlitClue(lamp, "unlit_house_lamp");
+                stampUnlitClue(coop, "unlit_house_coop");
+                stampUnlitClue(threshold, "unlit_house_threshold");
+                sender.sendMessage("Unlit pass staged: three different house clue fixtures, all non-linear.");
+            }
+            case "extract", "retreat" -> {
+                buildUnlitPassLane(base, 10);
+                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
+                registerUnlitSite(base.clone().add(10, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
+                setBlock(base.clone().add(10, 0, 0), Material.REINFORCED_DEEPSLATE);
+                placeStandingSign(base.clone().add(9, 0, 1), BlockFace.SOUTH,
+                        new String[]{"exit pass", "walk here", "or use shard", "inventory back"});
+                sender.sendMessage("Unlit pass staged: retreat/extraction and inventory-restore proof.");
+            }
+            default -> sender.sendMessage("Usage: /obs unlit pass <light|stalker|extinguish|house|extract>");
+        }
+    }
+
+    private void handleUnlitAudit(CommandSender sender) {
+        sender.sendMessage("== Unlit village readiness ==");
+        String[] required = unlitRequiredSites();
+        int placed = 0;
+        int proven = 0;
+        for (String id : required) {
+            Site site = plugin.sites() == null ? null : plugin.sites().get(id);
+            Location loc = site == null ? null : site.location();
+            if (site != null && site.isPlaced() && loc != null) {
+                placed++;
+                String issue = unlitFixtureIssue(id, loc);
+                if (issue == null) {
+                    proven++;
+                    sender.sendMessage(" OK   " + id + " @ " + site.worldName());
+                } else {
+                    sender.sendMessage(" WARN " + id + " @ " + site.worldName() + " - " + issue);
+                }
+            } else if (site != null) {
+                sender.sendMessage(" TODO " + id + " (" + site.type() + ") - run /obs unlit site " + unlitShortId(id));
+            } else {
+                sender.sendMessage(" MISS " + id + " - add placeholder to sites.yml");
+            }
+        }
+        boolean enabled = plugin.getConfig().getBoolean("unlit.enabled", true);
+        boolean buildmode = plugin.getConfig().getBoolean("unlit.buildmode", false);
+        String world = plugin.getConfig().getString("unlit.world", "observance_unlit");
+        org.bukkit.World loaded = Bukkit.getWorld(world);
+        sender.sendMessage(" config enabled: " + enabled + "; buildmode: " + (buildmode ? "ON" : "OFF")
+                + "; world: " + world + " (" + (loaded == null ? "not loaded" : "loaded") + ")");
+        String borderIssue = unlitBorderIssue(loaded);
+        sender.sendMessage(borderIssue == null
+                ? " border: OK"
+                : " border: TODO - " + borderIssue);
+        String strayLightIssue = unlitStrayLightIssue(loaded);
+        sender.sendMessage(strayLightIssue == null
+                ? " stray light: OK"
+                : " stray light: WARN - " + strayLightIssue);
+        sender.sendMessage(" placed: " + placed + "/" + required.length
+                + "; fixture proof: " + proven + "/" + required.length
+                + ". House order is intentionally non-linear.");
+    }
+
+    private void handleUnlitDarken(CommandSender sender, String[] args) {
+        int radius = 10;
+        boolean fullBorder = args.length >= 3
+                && (args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("border"));
+        int radiusArg = fullBorder ? 3 : 2;
+        if (args.length >= 3) {
+            try {
+                if (fullBorder) {
+                    radius = plugin.getConfig().getInt("unlit.border-radius", 96);
+                    if (args.length >= 4) radius = Integer.parseInt(args[3].trim());
+                    radius = Math.max(16, Math.min(256, radius));
+                } else if (args.length > radiusArg) {
+                    radius = Math.max(4, Math.min(32, Integer.parseInt(args[2].trim())));
+                }
+            } catch (NumberFormatException ignored) {
+                sender.sendMessage("Observance: darken radius must be a number.");
+                return;
+            }
+        }
+
+        String configuredWorld = plugin.getConfig().getString("unlit.world", "observance_unlit");
+        World world = Bukkit.getWorld(configuredWorld);
+        if (world == null) {
+            sender.sendMessage("Observance: load " + configuredWorld + " before running /obs unlit darken.");
+            return;
+        }
+
+        Set<String> touched = new HashSet<>();
+        int changed = 0;
+        int anchors = 0;
+        if (fullBorder) {
+            Site spawn = plugin.sites() == null ? null : plugin.sites().get("unlit_spawn_mirror");
+            Location center = spawn == null ? null : spawn.location();
+            if (center == null || center.getWorld() == null || !center.getWorld().getName().equals(world.getName())) {
+                sender.sendMessage("Observance: place unlit_spawn_mirror in " + configuredWorld
+                        + " before running /obs unlit darken all.");
+                return;
+            }
+            changed = darkenUnlitStrayLightsInBorder(center, radius, touched);
+            sender.sendMessage("Observance: Unlit full darken scrub checked the border area at radius " + radius
+                    + " and removed/dimmed " + changed + " unauthorized light source(s).");
+        } else {
+            for (String id : unlitRequiredSites()) {
+                Site site = plugin.sites() == null ? null : plugin.sites().get(id);
+                Location loc = site == null ? null : site.location();
+                if (site == null || !site.isPlaced() || loc == null || loc.getWorld() == null) continue;
+                if (!loc.getWorld().getName().equals(world.getName())) continue;
+                anchors++;
+                changed += darkenUnlitStrayLightsNear(loc, radius, touched);
+            }
+            sender.sendMessage("Observance: Unlit anchor darken scrub checked " + anchors
+                    + " anchors at radius " + radius + " and removed/dimmed " + changed
+                    + " unauthorized light source(s).");
+        }
+        sender.sendMessage("  Run /obs unlit audit next; authored safe zones inside unlit_safe sites are left alone.");
+    }
+
+    private void handleUnlitBorder(CommandSender sender, String[] args) {
+        int radius = plugin.getConfig().getInt("unlit.border-radius", 96);
+        if (args.length >= 3) {
+            try {
+                radius = Math.max(16, Math.min(512, Integer.parseInt(args[2].trim())));
+            } catch (NumberFormatException ignored) {
+                sender.sendMessage("Observance: border radius must be a number.");
+                return;
+            }
+        }
+
+        Location center = null;
+        Site spawn = plugin.sites() == null ? null : plugin.sites().get("unlit_spawn_mirror");
+        if (spawn != null) center = spawn.location();
+        if (center == null && sender instanceof Player player) center = player.getLocation();
+        if (center == null || center.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve an Unlit border center. Place unlit_spawn_mirror first.");
+            return;
+        }
+
+        org.bukkit.WorldBorder border = center.getWorld().getWorldBorder();
+        border.setCenter(center);
+        border.setSize(radius * 2.0);
+        sender.sendMessage("Observance: Unlit border set to radius " + radius + " around "
+                + center.getBlockX() + "," + center.getBlockZ() + " in " + center.getWorld().getName() + ".");
+    }
+
+    private void handleUnlitReady(CommandSender sender) {
+        handleUnlitAudit(sender);
+        sender.sendMessage("== Unlit playtest handoff ==");
+        sender.sendMessage("  1) Run /obs unlit buildmode off before any player-facing test.");
+        sender.sendMessage("  2) Confirm /obs unlit darken all has been run and audit says stray light: OK.");
+        sender.sendMessage("  3) Fill a live rehearsal packet: tools\\new_rehearsal_packet.ps1");
+        sender.sendMessage("  4) Include Unlit clip + house screenshots: approach, borrowed lantern route, light radius, clue readable, exit, failed-cheese.");
+        sender.sendMessage("  5) Include proof that the figure breaks an exposed borrowed lantern and retreat remains readable.");
+        sender.sendMessage("  6) Run: tools\\check_unlit_playtest_ready.ps1 -PacketDir rehearsals\\<date>");
+        sender.sendMessage("  Finish line: when it prints 'unlit playtest readiness: OK', stop building and let Nano playtest.");
+    }
+
+    private static String unlitSiteId(String raw) {
+        String id = raw == null ? "" : raw.trim().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_\\-]", "_");
+        return switch (id) {
+            case "entry" -> "unlit_entry";
+            case "spawn", "mirror" -> "unlit_spawn_mirror";
+            case "exit", "retreat" -> "unlit_exit";
+            case "lamp" -> "unlit_house_lamp";
+            case "cairn" -> "unlit_house_cairn";
+            case "coop", "bird", "birds" -> "unlit_house_coop";
+            case "well", "reflection" -> "unlit_house_well";
+            case "watch", "hours" -> "unlit_house_watch";
+            case "warm", "iss" -> "unlit_house_warm";
+            case "threshold", "bow" -> "unlit_house_threshold";
+            case "base", "record" -> "unlit_house_base";
+            default -> id.startsWith("unlit_") ? id : "unlit_house_" + id;
+        };
+    }
+
+    private static String unlitShortId(String siteId) {
+        if (siteId == null) return "";
+        if (siteId.equals("unlit_entry")) return "entry";
+        if (siteId.equals("unlit_spawn_mirror")) return "spawn";
+        if (siteId.equals("unlit_exit")) return "exit";
+        if (siteId.startsWith("unlit_house_")) return siteId.substring("unlit_house_".length());
+        return siteId;
+    }
+
+    private static String[] unlitRequiredSites() {
+        return new String[]{
+                "unlit_entry",
+                "unlit_spawn_mirror",
+                "unlit_exit",
+                "unlit_house_lamp",
+                "unlit_house_cairn",
+                "unlit_house_coop",
+                "unlit_house_well",
+                "unlit_house_watch",
+                "unlit_house_warm",
+                "unlit_house_threshold",
+                "unlit_house_base"
+        };
+    }
+
+    private String unlitFixtureIssue(String siteId, Location loc) {
+        if (siteId == null || loc == null || loc.getWorld() == null) return "location is not resolved";
+        if (!siteId.startsWith("unlit_house_")) return null;
+        int radius = 4;
+        String house = unlitShortId(siteId);
+        boolean sign = hasSignNear(loc, radius);
+        return switch (house) {
+            case "lamp" -> (!hasMaterialNear(loc, radius, Material.LECTERN)
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CANDLE)
+                    || !sign)
+                    ? "expected ledger lectern, black candle, and short fixture sign" : null;
+            case "cairn" -> (!hasMaterialNear(loc, radius, Material.CAULDRON)
+                    || !hasMaterialNear(loc, radius, Material.COBBLED_DEEPSLATE)
+                    || !hasMaterialNear(loc, radius, Material.POLISHED_DEEPSLATE)
+                    || !sign)
+                    ? "expected offering bowl, deepslate stones, and non-light return sign" : null;
+            case "coop" -> (!hasMaterialNear(loc, radius, Material.HAY_BLOCK)
+                    || !hasMaterialNear(loc, radius, Material.IRON_BARS)
+                    || !hasMaterialNear(loc, radius, Material.OAK_FENCE)
+                    || !sign)
+                    ? "expected silent perch, cage bars, hay, and absence clue sign" : null;
+            case "well" -> (!hasMaterialNear(loc, radius, Material.WATER_CAULDRON)
+                    || !hasMaterialNear(loc, radius, Material.DARK_PRISMARINE)
+                    || !hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
+                    || !sign)
+                    ? "expected water/reflection bowl, dark prismarine, blackstone, and below-reading sign" : null;
+            case "watch" -> (!hasMaterialNear(loc, radius, Material.BELL)
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
+                    || !sign)
+                    ? "expected bell, dark watch marks, and no-sleep sign" : null;
+            case "warm" -> (!hasMaterialNear(loc, radius, Material.CAMPFIRE)
+                    || !hasMaterialNear(loc, radius, Material.RED_WOOL)
+                    || !hasMaterialNear(loc, radius, Material.BLUE_ICE)
+                    || !sign)
+                    ? "expected unlit campfire, false warmth/cold contrast, and turn-back sign" : null;
+            case "threshold" -> (!hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
+                    || !hasMaterialNear(loc, radius, Material.DEEPSLATE_BRICK_SLAB)
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
+                    || !sign)
+                    ? "expected low lintel, black threshold marks, and bow-low sign" : null;
+            case "base" -> (!hasMaterialNear(loc, radius, Material.BARREL)
+                    || !hasMaterialNear(loc, radius, Material.LECTERN)
+                    || !sign)
+                    ? "expected copied-base barrel, docket lectern, and wrong-sky sign" : null;
+            default -> "unknown Unlit house id";
+        };
+    }
+
+    private String unlitBorderIssue(org.bukkit.World world) {
+        if (world == null) return "load observance_unlit, then run /obs unlit border";
+        Site spawn = plugin.sites() == null ? null : plugin.sites().get("unlit_spawn_mirror");
+        Location center = spawn == null ? null : spawn.location();
+        if (center == null || center.getWorld() == null) return "place unlit_spawn_mirror, then run /obs unlit border";
+        org.bukkit.WorldBorder border = world.getWorldBorder();
+        Location actual = border.getCenter();
+        double expectedSize = plugin.getConfig().getInt("unlit.border-radius", 96) * 2.0;
+        double dx = actual.getX() - center.getX();
+        double dz = actual.getZ() - center.getZ();
+        if (!actual.getWorld().equals(center.getWorld())
+                || (dx * dx) + (dz * dz) > 4.0
+                || Math.abs(border.getSize() - expectedSize) > 1.0) {
+            return "run /obs unlit border after final spawn placement";
+        }
+        return null;
+    }
+
+    private String unlitStrayLightIssue(World world) {
+        if (world == null) return null;
+        UnlitLightScan scan = scanUnlitStrayLights(world);
+        if (scan.count == 0) return null;
+        return scan.count + " unauthorized light source(s) inside the Unlit border/anchor scan; first "
+                + scan.firstType + " at " + scan.firstX + "," + scan.firstY + "," + scan.firstZ
+                + ". Run /obs unlit darken all, then audit again.";
+    }
+
+    private UnlitLightScan scanUnlitStrayLights(World world) {
+        UnlitLightScan scan = new UnlitLightScan();
+        Set<String> seen = new HashSet<>();
+        Site spawn = plugin.sites() == null ? null : plugin.sites().get("unlit_spawn_mirror");
+        Location center = spawn == null ? null : spawn.location();
+        if (center != null && center.getWorld() != null && center.getWorld().getName().equals(world.getName())) {
+            int radius = Math.max(16, Math.min(256, plugin.getConfig().getInt("unlit.border-radius", 96)));
+            scanUnlitStrayLightsInBorder(center, radius, seen, scan);
+            return scan;
+        }
+        for (String id : unlitRequiredSites()) {
+            Site site = plugin.sites() == null ? null : plugin.sites().get(id);
+            Location loc = site == null ? null : site.location();
+            if (site == null || !site.isPlaced() || loc == null || loc.getWorld() == null) continue;
+            if (!loc.getWorld().getName().equals(world.getName())) continue;
+            scanUnlitStrayLightsNear(loc, 10, seen, scan);
+        }
+        return scan;
+    }
+
+    private void scanUnlitStrayLightsInBorder(Location center, int radius, Set<String> seen, UnlitLightScan scan) {
+        if (center == null || center.getWorld() == null || scan == null) return;
+        World world = center.getWorld();
+        int r = Math.max(16, Math.min(256, radius));
+        int cx = center.getBlockX(), cy = center.getBlockY(), cz = center.getBlockZ();
+        int minY = Math.max(world.getMinHeight(), cy - 32);
+        int maxY = Math.min(world.getMaxHeight() - 1, cy + 56);
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dz = -r; dz <= r; dz++) {
+                for (int y = minY; y <= maxY; y++) {
+                    Block block = world.getBlockAt(cx + dx, y, cz + dz);
+                    String key = blockKey(block);
+                    if (!seen.add(key)) continue;
+                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (!isUnauthorizedUnlitLight(block)) continue;
+                    scan.count++;
+                    if (scan.firstType == null) {
+                        scan.firstType = block.getType().name();
+                        scan.firstX = block.getX();
+                        scan.firstY = block.getY();
+                        scan.firstZ = block.getZ();
+                    }
+                }
+            }
+        }
+    }
+
+    private void scanUnlitStrayLightsNear(Location loc, int radius, Set<String> seen, UnlitLightScan scan) {
+        if (loc == null || loc.getWorld() == null || scan == null) return;
+        World world = loc.getWorld();
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        int r = Math.max(4, Math.min(32, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -4; dy <= 8; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    Block block = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                    String key = blockKey(block);
+                    if (!seen.add(key)) continue;
+                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (!isUnauthorizedUnlitLight(block)) continue;
+                    scan.count++;
+                    if (scan.firstType == null) {
+                        scan.firstType = block.getType().name();
+                        scan.firstX = block.getX();
+                        scan.firstY = block.getY();
+                        scan.firstZ = block.getZ();
+                    }
+                }
+            }
+        }
+    }
+
+    private int darkenUnlitStrayLightsNear(Location loc, int radius, Set<String> seen) {
+        if (loc == null || loc.getWorld() == null) return 0;
+        World world = loc.getWorld();
+        int changed = 0;
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        int r = Math.max(4, Math.min(32, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -4; dy <= 8; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    Block block = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                    String key = blockKey(block);
+                    if (!seen.add(key)) continue;
+                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (!isUnauthorizedUnlitLight(block)) continue;
+                    darkenUnlitLightBlock(block);
+                    changed++;
+                }
+            }
+        }
+        return changed;
+    }
+
+    private int darkenUnlitStrayLightsInBorder(Location center, int radius, Set<String> seen) {
+        if (center == null || center.getWorld() == null) return 0;
+        World world = center.getWorld();
+        int changed = 0;
+        int r = Math.max(16, Math.min(256, radius));
+        int cx = center.getBlockX(), cy = center.getBlockY(), cz = center.getBlockZ();
+        int minY = Math.max(world.getMinHeight(), cy - 32);
+        int maxY = Math.min(world.getMaxHeight() - 1, cy + 56);
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dz = -r; dz <= r; dz++) {
+                for (int y = minY; y <= maxY; y++) {
+                    Block block = world.getBlockAt(cx + dx, y, cz + dz);
+                    String key = blockKey(block);
+                    if (!seen.add(key)) continue;
+                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (!isUnauthorizedUnlitLight(block)) continue;
+                    darkenUnlitLightBlock(block);
+                    changed++;
+                }
+            }
+        }
+        return changed;
+    }
+
+    private boolean isInsideUnlitSafe(Location loc) {
+        if (loc == null || loc.getWorld() == null || plugin.sites() == null) return false;
+        for (Site site : plugin.sites().placed()) {
+            if (!"unlit_safe".equals(site.type())) continue;
+            if (site.contains(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ())) return true;
+        }
+        return false;
+    }
+
+    private boolean isUnauthorizedUnlitLight(Block block) {
+        if (block == null || block.getType() == Material.AIR) return false;
+        Material material = block.getType();
+        String name = material.name();
+        try {
+            org.bukkit.block.data.BlockData data = block.getBlockData();
+            if (data instanceof org.bukkit.block.data.Lightable lightable
+                    && (name.contains("CANDLE") || name.contains("CAMPFIRE"))) {
+                return lightable.isLit();
+            }
+        } catch (Throwable ignored) { }
+
+        return material == Material.LIGHT
+                || material == Material.GLOWSTONE
+                || material == Material.SEA_LANTERN
+                || material == Material.SHROOMLIGHT
+                || material == Material.END_ROD
+                || material == Material.JACK_O_LANTERN
+                || name.contains("FROGLIGHT")
+                || name.contains("TORCH")
+                || name.contains("LANTERN");
+    }
+
+    private void darkenUnlitLightBlock(Block block) {
+        if (block == null) return;
+        Material material = block.getType();
+        String name = material.name();
+        try {
+            org.bukkit.block.data.BlockData data = block.getBlockData();
+            if (data instanceof org.bukkit.block.data.Lightable lightable
+                    && (name.contains("CANDLE") || name.contains("CAMPFIRE"))) {
+                lightable.setLit(false);
+                block.setBlockData(lightable, false);
+                return;
+            }
+        } catch (Throwable ignored) { }
+
+        if (material == Material.GLOWSTONE
+                || material == Material.SEA_LANTERN
+                || material == Material.SHROOMLIGHT
+                || material == Material.JACK_O_LANTERN
+                || name.contains("FROGLIGHT")) {
+            block.setType(Material.BLACKSTONE, false);
+        } else {
+            block.setType(Material.AIR, false);
+        }
+    }
+
+    private static String blockKey(Block block) {
+        return block.getWorld().getName() + ":" + block.getX() + ":" + block.getY() + ":" + block.getZ();
+    }
+
+    private static final class UnlitLightScan {
+        int count;
+        String firstType;
+        int firstX;
+        int firstY;
+        int firstZ;
+    }
+
+    private String stampUnlitClue(Location loc, String siteId) {
+        if (loc == null || loc.getWorld() == null) return "No world location resolved.";
+        Location base = loc.getBlock().getLocation();
+        BlockFace facing = cardinalFacing(loc.getYaw());
+        String house = unlitShortId(siteId);
+        switch (house) {
+            case "lamp" -> {
+                setBlock(base, Material.LECTERN);
+                faceDirectional(base, facing);
+                fillWrittenLecternBook(base.getBlock(), "borrowed lantern", "the record", List.of(
+                        "oil is counted here.",
+                        "names are counted here.",
+                        "borrowed lanterns are counted last.",
+                        "what burns in the copy is never returned."
+                ));
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CANDLE);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"lamp account", "oil / names", "borrowed lamp", "not returned"});
+                return "Reads as a ledger, not a plain answer.";
+            }
+            case "cairn" -> {
+                setBlock(base, Material.CAULDRON);
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.COBBLED_DEEPSLATE);
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.COBBLED_DEEPSLATE);
+                setBlock(offsetFrom(base, facing, 0, -1, 0), Material.POLISHED_DEEPSLATE);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"first thing", "goes back", "not light", "not yours"});
+                return "Use as an offering bowl; no expedition order implied.";
+            }
+            case "coop" -> {
+                setBlock(base, Material.HAY_BLOCK);
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.IRON_BARS);
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.IRON_BARS);
+                setBlock(base.clone().add(0, 1, 0), Material.OAK_FENCE);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"perch whole", "seed full", "no call", "no feather"});
+                return "Sacred-beast clue; absence is the point.";
+            }
+            case "well" -> {
+                setBlock(base, Material.WATER_CAULDRON);
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.DARK_PRISMARINE);
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.DARK_PRISMARINE);
+                setBlock(offsetFrom(base, facing, 0, -1, 0), Material.POLISHED_BLACKSTONE);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"read below", "not above", "water keeps", "one copy"});
+                return "Reflection clue; pair with a hidden/reflection mark if desired.";
+            }
+            case "watch" -> {
+                setBlock(base, Material.BELL);
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"no moon", "no bed", "no relief", "keep watch"});
+                return "Dark-hours clue with a timed/watch verb.";
+            }
+            case "warm" -> {
+                setBlock(base, Material.CAMPFIRE);
+                try {
+                    org.bukkit.block.data.BlockData data = base.getBlock().getBlockData();
+                    if (data instanceof org.bukkit.block.data.Lightable lit) {
+                        lit.setLit(false);
+                        base.getBlock().setBlockData(lit, false);
+                    }
+                } catch (Throwable ignored) { }
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.RED_WOOL);
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLUE_ICE);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"warm road", "is the lie", "too bright", "turn back"});
+                return "False-warmth clue; deliberately different from lamp safety.";
+            }
+            case "threshold" -> {
+                setBlock(base, Material.POLISHED_BLACKSTONE);
+                setBlock(base.clone().add(0, 1, 0), Material.DEEPSLATE_BRICK_SLAB);
+                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"under", "not through", "bow low", "get room"});
+                return "Threshold/bow clue; extraction-like verb without requiring order.";
+            }
+            case "base" -> {
+                setBlock(base, Material.BARREL);
+                Location lectern = offsetFrom(base, facing, 1, 0, 0);
+                setBlock(lectern, Material.LECTERN);
+                faceDirectional(lectern, facing);
+                fillWrittenLecternBook(lectern.getBlock(), "copy docket", "the record", List.of(
+                        "the copy keeps the player-made marks.",
+                        "a fence turned, a stair repaired, a door left open.",
+                        "the village remembers the surface without carrying its warmth."
+                ));
+                placeUnlitFixtureSign(base, facing,
+                        new String[]{"same village", "wrong heat", "same marks", "wrong sky"});
+                return "Surface-copy clue; anchors the mirror-village premise.";
+            }
+            default -> {
+                placeStandingSign(base, facing,
+                        new String[]{"unlit house", house, "author clue", "place by hand"});
+                return "Unknown house id; stamped a neutral marker.";
+            }
+        }
+    }
+
+    private void placeUnlitFixtureSign(Location base, BlockFace facing, String[] lines) {
+        placeStandingSign(offsetFrom(base, facing, 0, 1, 0), facing, lines);
+    }
+
+    private static Location offsetFrom(Location base, BlockFace facing, int right, int forward, int up) {
+        Location loc = base.clone();
+        BlockFace f = cardinalOnly(facing);
+        BlockFace r = rightOf(f);
+        loc.add(r.getModX() * right + f.getModX() * forward,
+                up,
+                r.getModZ() * right + f.getModZ() * forward);
+        return loc;
+    }
+
+    private static BlockFace cardinalFacing(float yaw) {
+        float wrapped = ((yaw % 360f) + 360f) % 360f;
+        if (wrapped >= 45f && wrapped < 135f) return BlockFace.WEST;
+        if (wrapped >= 135f && wrapped < 225f) return BlockFace.NORTH;
+        if (wrapped >= 225f && wrapped < 315f) return BlockFace.EAST;
+        return BlockFace.SOUTH;
+    }
+
+    private static BlockFace cardinalOnly(BlockFace facing) {
+        return switch (facing) {
+            case NORTH, SOUTH, EAST, WEST -> facing;
+            default -> BlockFace.SOUTH;
+        };
+    }
+
+    private static BlockFace rightOf(BlockFace facing) {
+        return switch (cardinalOnly(facing)) {
+            case NORTH -> BlockFace.EAST;
+            case EAST -> BlockFace.SOUTH;
+            case SOUTH -> BlockFace.WEST;
+            case WEST -> BlockFace.NORTH;
+            default -> BlockFace.WEST;
+        };
+    }
+
+    private static void faceDirectional(Location loc, BlockFace facing) {
+        if (loc == null || loc.getWorld() == null) return;
+        Block block = loc.getBlock();
+        if (block.getBlockData() instanceof Directional d) {
+            d.setFacing(cardinalOnly(facing));
+            block.setBlockData(d, false);
+        }
+    }
+
+    private static void setBlock(Location loc, Material material) {
+        if (loc == null || loc.getWorld() == null || material == null) return;
+        loc.getBlock().setType(material, false);
+    }
+
+    private void registerUnlitSite(Location loc, String siteId, String type, int radius, int verticalRadius) {
+        if (loc == null || loc.getWorld() == null) return;
+        Site site = new Site(siteId, type, loc.getWorld().getName(),
+                (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
+                radius, verticalRadius, true, true);
+        plugin.registerRuntimeSite(site);
+    }
+
+    private void buildUnlitPassLane(Location base, int length) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX();
+        int by = base.getBlockY();
+        int bz = base.getBlockZ();
+        for (int x = 0; x <= length; x++) {
+            for (int z = -1; z <= 1; z++) {
+                world.getBlockAt(bx + x, by - 1, bz + z).setType(Material.POLISHED_BLACKSTONE, false);
+                if (Math.abs(z) == 1 && x % 4 == 0) {
+                    world.getBlockAt(bx + x, by, bz + z).setType(Material.BLACKSTONE_WALL, false);
+                }
+            }
+        }
+    }
+
+    private void handleSiteTodo(CommandSender sender) {
+        sender.sendMessage("== Observance launch-required sites ==");
+        if (plugin.sites() == null) {
+            sender.sendMessage("Observance: sites config unavailable. Run /obs reload or check sites.yml.");
+            return;
+        }
+        int placed = 0;
+        List<String> missing = new ArrayList<>();
+        for (String id : LAUNCH_REQUIRED_SITES) {
+            String issue = launchSiteIssue(id);
+            if (issue == null) {
+                placed++;
+            } else {
+                missing.add(issue);
+            }
+        }
+        sender.sendMessage("Placed: " + placed + "/" + LAUNCH_REQUIRED_SITES.length
+                + " launch-required sites.");
+        if (missing.isEmpty()) {
+            sender.sendMessage("[OK] Launch coordinates are complete. Next: /obs preflight, then live rehearsal packet.");
+            return;
+        }
+        int shown = Math.min(12, missing.size());
+        for (int i = 0; i < shown; i++) {
+            sender.sendMessage("  - " + missing.get(i));
+        }
+        if (missing.size() > shown) {
+            sender.sendMessage("  ... " + (missing.size() - shown) + " more. Use /obs site next for the next survey target.");
+        }
+        sender.sendMessage("Next: stand at the intended site and run /obs site set " + nextLaunchMissingId() + ".");
+    }
+
+    private void handleSiteNext(CommandSender sender) {
+        String id = nextLaunchMissingId();
+        if (id == null) {
+            sender.sendMessage("[OK] Every launch-required site is placed. Run /obs preflight and the rehearsal packet.");
+            return;
+        }
+        sender.sendMessage("Next launch site to survey: " + id + ".");
+        sender.sendMessage("Stand at its real anchor and run: /obs site set " + id);
+        sendPlacementBrief(sender, id, false);
+        if (isLaneSite(id)) {
+            sender.sendMessage("  Dimension lane: do this while standing in the correct Nether/End world, then run /obs placeworld there.");
+        } else if (keeperRow(id) != null) {
+            sender.sendMessage("  Spine set-piece: after surveying, run /obs placeworld from the build world.");
+        } else if (isPlaceWorldSurveyFixture(id)) {
+            sender.sendMessage("  Surveyed fixture: after surveying, run /obs placeworld from the same world to build it.");
+        }
+    }
+
+    private void handleSitePlan(CommandSender sender, String[] args) {
+        String raw = args.length > 2 ? args[2].toLowerCase(Locale.ROOT).trim() : "next";
+        if (raw.isBlank() || raw.equals("next")) {
+            String next = nextLaunchMissingId();
+            if (next == null) {
+                sender.sendMessage("[OK] Every launch-required site is placed. Use /obs site plan all for the full route brief.");
+                return;
+            }
+            sender.sendMessage("Next placement plan: " + next);
+            sendPlacementBrief(sender, next, true);
+            return;
+        }
+        if (raw.equals("all")) {
+            sender.sendMessage("== Observance launch placement plan ==");
+            for (String id : LAUNCH_REQUIRED_SITES) {
+                PlacementBrief brief = placementBrief(id);
+                String status = launchSiteIssue(id) == null ? "[placed]" : "[todo]";
+                sender.sendMessage(status + " " + id + " - " + brief.intent);
+            }
+            sender.sendMessage("Use /obs site plan <siteId> for placement rule + proof shots.");
+            return;
+        }
+        if (!isLaunchRequiredSite(raw)) {
+            sender.sendMessage("Observance: '" + raw + "' is not in the launch-required placement plan.");
+            sender.sendMessage("Try /obs site plan next, /obs site plan all, or a launch site id.");
+            return;
+        }
+        sendPlacementBrief(sender, raw, true);
+    }
+
+    private void sendPlacementBrief(CommandSender sender, String id, boolean includeStatus) {
+        PlacementBrief brief = placementBrief(id);
+        if (includeStatus) {
+            String issue = launchSiteIssue(id);
+            sender.sendMessage("== " + id + " ==");
+            sender.sendMessage("Status: " + (issue == null ? "placed" : issue));
+        }
+        sender.sendMessage("  Intent: " + brief.intent);
+        sender.sendMessage("  Place: " + brief.placeRule);
+        sender.sendMessage("  Proof: " + brief.proof);
+    }
+
+    private record PlacementBrief(String intent, String placeRule, String proof) { }
+
+    private PlacementBrief placementBrief(String id) {
+        return switch (id) {
+            case "first_report_lectern_01" -> new PlacementBrief(
+                    "cold-open record handoff; the first readable lie/truth surface",
+                    "near the first believable player disturbance, not in a spawn plaza",
+                    "approach shows the report as found, focal shot shows the lectern/book, exit points toward first_marker_01");
+            case "rune_rosetta" -> new PlacementBrief(
+                    "alphabet literacy; the first place that says this world has rules",
+                    "visible after the first marker but not on a straight road; give it a silhouette",
+                    "approach, full rune ring, blank answer surface, and return view toward keeper scatter");
+            case "stone_vaun" -> keeperPlacementBrief("Vaun", "hoarding/counting", "near storage, ore, or a pinched resource route");
+            case "stone_mara" -> keeperPlacementBrief("Mara", "reading/deferral", "near shelves, ruins, map clutter, or a place players already inspect");
+            case "stone_sella" -> keeperPlacementBrief("Sella", "water/mirror/wandering", "near water with a safe approach and an uneasy sightline");
+            case "stone_orin" -> keeperPlacementBrief("Orin", "bow/refusal/smallness", "near a low threshold, crouchable marker, or compressed passage");
+            case "stone_brann" -> keeperPlacementBrief("Brann", "watching/sleep/light", "near a high watch angle or dark route, away from cozy beds");
+            case "stone_iss" -> keeperPlacementBrief("Iss", "warm lie/catch", "near warmth that later feels suspicious, not beside the real payoff");
+            case "stone_of_reckoning" -> new PlacementBrief(
+                    "digit literacy and count logic; the number language becomes physical",
+                    "place where players can circle it and compare marks without mobs interrupting",
+                    "wide shot of count geometry, focal shot of digit key, answer/action surface, exit toward deep route");
+            case "bow_marker_01" -> new PlacementBrief(
+                    "teaches bowing as a custom before it is demanded",
+                    "at a threshold players naturally slow at; leave room for multiple bodies",
+                    "show standing approach, crouch position, marker detail, and resulting cue/state");
+            case "offering_cairn_01" -> new PlacementBrief(
+                    "teaches giving back through a drop action",
+                    "near a route players revisit with inventory, not hidden in clutter",
+                    "show cairn silhouette, dropped item position, accepted state, and route away");
+            case "kept_light_home_01" -> new PlacementBrief(
+                    "the one kept-light home proof; warm light as evidence, not decoration",
+                    "domestic or civic remnant where a kept lamp feels wrong but plausible",
+                    "show warm/cold contrast, lamp focal shot, nearby record surface, and exit darkness");
+            case "the_far_water" -> new PlacementBrief(
+                    "Sella mirror/count side proof",
+                    "on a real shoreline or pool edge where looking into water is natural",
+                    "mirror water, copybook shelf, six stones plus grey seventh, and return path");
+            case "school_stand" -> new PlacementBrief(
+                    "child-scale rule copying; the human thread gets a physical classroom scar",
+                    "small civic remnant, not a full schoolhouse; the slate must face approach",
+                    "slate, copy-line, six stones, grey seventh marker, and exit shot");
+            case "markers_row" -> new PlacementBrief(
+                    "bow-count contradiction; six marks and the missing seventh",
+                    "linear path where players can count while walking, with space to crouch",
+                    "full row, worn bow marks, hollow seventh, and view back along the row");
+            case "cistern_7" -> new PlacementBrief(
+                    "light fouled by water; Cistern 7 as a false-good utility place",
+                    "low wet chamber or reservoir edge; black water must be visible on approach",
+                    "black water, pale arch, good-oil jars, lying-lamp reflection, and exit");
+            case "watch_floor" -> new PlacementBrief(
+                    "Brann's dark-hours proof; a place for not sleeping",
+                    "dark overlook or room with a central log; avoid cozy shelter language",
+                    "watch log, black-moon warning, finished kept line, and night approach");
+            case "set_apart_shelf" -> new PlacementBrief(
+                    "entry five: a warm lamp counted with cold ones",
+                    "near archive/storage, after watch-floor logic, where a shelf can be inspected slowly",
+                    "cold shelf, warm entry-five lamp, redacted count sign, and approach/exit shots");
+            case "undercroft_seal" -> new PlacementBrief(
+                    "Orin's seal and the low line; bowing matters as reading posture",
+                    "at a sealed or blocked route where the low sign is truly low to the body",
+                    "standing seal line, low bow-to-read text, door face, and route consequence");
+            case "forgotten_mouth" -> new PlacementBrief(
+                    "the rumored true way up; surface healing seen from below",
+                    "at an upward opening that can be believed as a route, not a random skylight",
+                    "mouth silhouette, healed surface, last draft/return mark, and exit cue");
+            case "the_cold_hearth" -> new PlacementBrief(
+                    "Iss's false-warm dead shrine; warmth becomes suspect",
+                    "where a hearth would be comforting if it were not wrong",
+                    "dead hearth, false warmth clue, answer surface, and route back to catch");
+            case "unbroken_light" -> new PlacementBrief(
+                    "the accepting floor and one fire; main ritual gravity",
+                    "largest controlled deep chamber; should feel staged before it becomes a mechanic",
+                    "approach scale, central light, action floor, and group standing positions");
+            case "the_threshold" -> new PlacementBrief(
+                    "grave/threshold that opens from inside; future appointment made spatial",
+                    "quiet threshold with room for a grave marker and a clear before/after view",
+                    "closed threshold, carved/date surface, opened state, and exit");
+            case "the_unwriting" -> new PlacementBrief(
+                    "Seventh/unwriting chamber; absence made spatial",
+                    "isolated from ordinary route clutter; the missing count must be the first read",
+                    "approach emptiness, focal mark, choice surface, and return view");
+            case "keeper_altar" -> new PlacementBrief(
+                    "presiding keeper surface; social lore becomes embodied",
+                    "near but not inside the main route, where an NPC can face players cleanly",
+                    "altar silhouette, keeper body sightline, interaction range, and exit");
+            case "coop_plate" -> new PlacementBrief(
+                    "co-op plate / three-hands gate; group presence becomes required",
+                    "flat enough for bodies, framed enough to read as a threshold",
+                    "all body positions, plate glyphs, solved/open state, and route forward");
+            case "threshold_vault" -> new PlacementBrief(
+                    "vault payoff; answer becomes a room, not a sign",
+                    "behind the co-op gate with a strong threshold and no accidental access",
+                    "door/plate, vault face, input surface, opened/interior view");
+            case "lampworks_stair" -> new PlacementBrief(
+                    "the big Stair and lamp-house route promised by NPC dialogue",
+                    "actual descent with a readable top, middle, and lower landing",
+                    "top approach, third lamp sightline, painted line below, and return up-stair");
+            case "third_lamp_stand" -> new PlacementBrief(
+                    "Coll's third-lamp errand; light action must have a body",
+                    "on the Lamp-works route where 'third' can be counted",
+                    "three-lamp sequence, target stand, action state, and route to line");
+            case "painted_line" -> new PlacementBrief(
+                    "the crossing that sets painted_line_crossed",
+                    "across the actual descent path, impossible to miss but possible to hesitate at",
+                    "line from approach, feet-on-line action, cue/result, and what lies beyond");
+            case "dead_stall" -> new PlacementBrief(
+                    "Wenna's dead-stall offering; food grief becomes an action",
+                    "near market/lampworks remnants, with a clear drop spot",
+                    "stall silhouette, offering position, accepted state, and return line");
+            case "deep_bird_coops" -> new PlacementBrief(
+                    "Aro's bird/coops rumor; visible cages instead of empty air",
+                    "off the descent route where the old-bird story can feel discoverable",
+                    "empty cages, bars, entry sign, and exit back to main route");
+            case "deep_market" -> new PlacementBrief(
+                    "inhabited market proof before the warm-town contradiction",
+                    "a wider civic pocket; must read as a real used place, not a signpost",
+                    "18-stall read, central board, ration/route adjacency, and warm-town exit");
+            case "ration_table" -> new PlacementBrief(
+                    "human ration grief; a count with a body missing from it",
+                    "inside or beside market route, not isolated as a puzzle pad",
+                    "half-loaf/no-head setting, child line, table detail, and exit");
+            case "third_bay_breach" -> new PlacementBrief(
+                    "Deep Line taboo and downward break",
+                    "on a route where 'do not cross' can be physically disobeyed",
+                    "broken line, cold lamp, downward breach, and no-road warning");
+            case "warm_town_collapse" -> new PlacementBrief(
+                    "the one blunt false lead with teeth; Aro's warm town collapses",
+                    "east of Deep Market or wherever the clue honestly points; not a random ruin",
+                    "approach promise, collapsed gallery, dead lamp/notice, and belief-change exit");
+            case "dread_route_start" -> dreadPlacementBrief("start gate", "clear beginning without an admin label");
+            case "dread_route_elsewhere" -> dreadPlacementBrief("wrong room / elsewhere pressure", "a room that feels displaced, not just dark");
+            case "dread_route_figure" -> dreadPlacementBrief("figure niche", "one controlled sightline for a rare humanoid presence");
+            case "dread_route_exit" -> dreadPlacementBrief("exit threshold", "release point with aftertaste, not a teleport pad");
+            case "nether_forge" -> new PlacementBrief(
+                    "Nether fire-pocket deepening lane",
+                    "survey in the real Nether, in a pocket that feels found and dangerous",
+                    "approach, forge focal, answer/sign surface, and route back");
+            case "end_seventh_shrine" -> new PlacementBrief(
+                    "End exile-shrine; the far side of being cast out",
+                    "survey in the End with a clean horizon and strong isolation",
+                    "approach emptiness, shrine focal, answer/sign surface, and return");
+            default -> new PlacementBrief(
+                    "launch-required site",
+                    "place where the clue honestly points and the structure can be read from approach",
+                    "approach, focal object, action/answer surface, and exit/return");
+        };
+    }
+
+    private PlacementBrief keeperPlacementBrief(String keeper, String motif, String placeRule) {
+        return new PlacementBrief(
+                keeper + " keeper stone; " + motif + " becomes a readable place",
+                placeRule + "; scatter away from other stones so it is found, not farmed",
+                "approach silhouette, keeper-specific focal object, answer surface, and route away");
+    }
+
+    private PlacementBrief dreadPlacementBrief(String role, String placeRule) {
+        return new PlacementBrief(
+                "dread route " + role + "; scary because of space and timing, not text",
+                placeRule + "; keep signs diegetic or absent",
+                "approach, focal pressure object, player action/body position, and exit/aftertaste");
+    }
+
+    private String nextLaunchMissingId() {
+        if (plugin.sites() == null) return LAUNCH_REQUIRED_SITES[0];
+        for (String id : LAUNCH_REQUIRED_SITES) {
+            if (launchSiteIssue(id) != null) return id;
+        }
+        return null;
+    }
+
+    private String launchSiteIssue(String id) {
+        if (plugin.sites() == null) return id + ": sites config unavailable";
+        Site site = plugin.sites().get(id);
+        if (site == null) return id + ": missing from sites.yml";
+        if (!site.enabled()) return id + ": disabled";
+        if (!site.isPlaced()) return id + ": unplaced";
+        Location loc = site.location();
+        if (loc == null || loc.getWorld() == null) return id + ": world not loaded (" + site.worldName() + ")";
+        return null;
+    }
+
+    private void sendLaunchRemaining(CommandSender sender) {
+        if (plugin.sites() == null) return;
+        int remaining = 0;
+        for (String id : LAUNCH_REQUIRED_SITES) {
+            if (launchSiteIssue(id) != null) remaining++;
+        }
+        sender.sendMessage("  Launch-required placement remaining: " + remaining + "/" + LAUNCH_REQUIRED_SITES.length
+                + (remaining == 0 ? ". Run /obs preflight." : ". Next: /obs site next."));
     }
 
     /**
@@ -482,12 +1628,62 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + " occupied, " + failed + " failed, " + skippedLanes + " lane(s) skipped ("
                 + surveyed + " surveyed / " + auto + " auto-scattered) of "
                 + KEEPER_SPINE.length + " keepers.");
+        int fixturePlaced = placeSurveyedFixtures(world, worldName, sender);
+        if (fixturePlaced > 0) {
+            sender.sendMessage("  Surveyed fixtures stamped: " + fixturePlaced + "/" + PLACEWORLD_SURVEY_FIXTURES.length + ".");
+        }
         sender.sendMessage("  Scatter is deterministic (same base = same auto anchors). Re-run is idempotent. "
                 + "Survey a spot with /observance site set <keeperId> to override an auto anchor.");
         if (skippedLanes > 0) {
             sender.sendMessage("  Nether/End lanes are survey-only: stand IN the Nether/End, `site set` the lane, "
                     + "then run placeworld FROM that dimension to stamp it there.");
         }
+    }
+
+    private int placeSurveyedFixtures(org.bukkit.World world, String worldName, CommandSender sender) {
+        if (world == null || plugin.sites() == null) return 0;
+        int placed = 0;
+        int skipped = 0;
+        for (String siteId : PLACEWORLD_SURVEY_FIXTURES) {
+            Site cfg = plugin.sites().get(siteId);
+            if (cfg == null || !cfg.enabled() || !cfg.isPlaced() || cfg.location() == null) {
+                skipped++;
+                continue;
+            }
+            if (!worldName.equals(cfg.worldName())) {
+                skipped++;
+                continue;
+            }
+
+            Location configured = cfg.location();
+            int ax = configured.getBlockX();
+            int az = configured.getBlockZ();
+            int ay = world.getHighestBlockYAt(ax, az, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+            Location base = new Location(world, ax, ay, az);
+            try {
+                buildLabFixture(cfg, base);
+                Site live = new Site(cfg.id(), cfg.type(), worldName,
+                        (double) ax, (double) ay, (double) az,
+                        cfg.radius(), cfg.verticalRadius(), cfg.protect(), true,
+                        cfg.puzzleKey(), cfg.beacon());
+                plugin.registerRuntimeSite(live);
+                repairPlacedSite(live, base);
+                if (cfg.beacon()) StructureTemplates.keptLightBeacon(base, beaconTint(cfg.id()));
+                placed++;
+                if (sender != null) {
+                    sender.sendMessage("  " + siteId + ": surveyed fixture -> stamped @ " + ax + "," + ay + "," + az + ".");
+                }
+            } catch (Throwable t) {
+                skipped++;
+                if (sender != null) {
+                    sender.sendMessage("  " + siteId + ": surveyed fixture -> FAILED (" + t.getClass().getSimpleName() + ").");
+                }
+            }
+        }
+        if (sender != null && placed == 0 && skipped > 0) {
+            sender.sendMessage("  Surveyed fixtures: none stamped in this world yet.");
+        }
+        return placed;
     }
 
     /**
@@ -1019,10 +2215,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        int spacing = 18;
+        int spacing = 36;
         if (args.length >= 2) {
             try {
-                spacing = Math.max(14, Math.min(36, Integer.parseInt(args[1].trim())));
+                spacing = Math.max(28, Math.min(56, Integer.parseInt(args[1].trim())));
             } catch (NumberFormatException ignored) { /* keep default */ }
         }
 
@@ -1034,7 +2230,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = origin.getWorld();
         String worldName = world.getName();
         int cols = 8;
-        int platformRadius = 7;
+        int platformRadius = 18;
         int placed = 0;
         int skipped = 0;
 
@@ -1103,7 +2299,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("Observance: /observance fullrun must be run by a player (needs a location).");
             return;
         }
-        String spacing = args.length >= 2 ? args[1] : "18";
+        String spacing = args.length >= 2 ? args[1] : "36";
         sender.sendMessage("== Observance full-run rehearsal ==");
         sender.sendMessage("Step 1/8: building the complete floating placement lab...");
         handlePlaceLab(sender, new String[]{"placelab", spacing});
@@ -1157,10 +2353,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        int spacing = 18;
+        int spacing = 40;
         if (args.length >= 2) {
             try {
-                spacing = Math.max(14, Math.min(32, Integer.parseInt(args[1].trim())));
+                spacing = Math.max(32, Math.min(64, Integer.parseInt(args[1].trim())));
             } catch (NumberFormatException ignored) { /* keep default */ }
         }
 
@@ -1191,29 +2387,1055 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         };
         int deepPlaced = placeCompactSpine(origin.clone().add(0, 0, -spacing), deep, spacing);
 
-        sender.sendMessage("Step 4/7: placing Mara page-lock lecterns with books...");
+        sender.sendMessage("Step 4/9: placing the Lamp-works/Stair dialogue proof chain...");
+        int descentProofPlaced = placeDescentProofChain(origin.clone().add(spacing * 2, 0, spacing), spacing);
+
+        sender.sendMessage("Step 5/9: placing side-destination proofs, count/light/watch sites, and far-water mirror...");
+        int sideDestinationProofPlaced = placeSchoolStandProof(origin.clone().add(-spacing * 2, 0, spacing + 54));
+        sideDestinationProofPlaced += placeFarWaterProof(origin.clone().add(-spacing * 2, 0, spacing + 36));
+        sideDestinationProofPlaced += placeMarkersRowProof(origin.clone().add(-spacing * 2, 0, spacing + 72));
+        sideDestinationProofPlaced += placeCisternProof(origin.clone().add(-spacing * 2, 0, spacing + 90));
+        sideDestinationProofPlaced += placeWatchFloorProof(origin.clone().add(-spacing * 2, 0, spacing + 108));
+        sideDestinationProofPlaced += placeSetApartProof(origin.clone().add(-spacing * 2, 0, spacing + 126));
+        sideDestinationProofPlaced += placeUndercroftSealProof(origin.clone().add(-spacing * 2, 0, spacing + 144));
+        sideDestinationProofPlaced += placeForgottenMouthProof(origin.clone().add(-spacing * 2, 0, spacing + 162));
+        sideDestinationProofPlaced += placeDeepMarketProof(origin.clone().add(-spacing * 2, 0, spacing));
+        sideDestinationProofPlaced += placeRationTableProof(origin.clone().add(-spacing * 2, 0, spacing - 18));
+        sideDestinationProofPlaced += placeThirdBayProof(origin.clone().add(-spacing * 2, 0, spacing - 36));
+        sideDestinationProofPlaced += placeWarmTownProof(origin.clone().add(-spacing * 2, 0, spacing + 18));
+
+        sender.sendMessage("Step 6/9: placing Mara page-lock lecterns with books...");
         int lecternsPlaced = placeMaraLecternsAt(origin.clone().add(spacing, 0, spacing * 2), 3);
 
-        sender.sendMessage("Step 5/7: carving reading/finale markers...");
+        sender.sendMessage("Step 7/9: carving reading/finale markers...");
         handleReadingCarvings(sender);
         handleFinaleMarkers(sender);
 
-        sender.sendMessage("Step 6/7: spawning NPC row where possible...");
+        sender.sendMessage("Step 8/9: spawning NPC row where possible...");
         Location npc = origin.clone().add(-spacing, 1, -spacing);
         if (plugin.townsfolk() != null) plugin.townsfolk().spawnAll(npc);
         if (plugin.wren() != null) plugin.wren().spawn(npc.clone().add(5, 0, 0));
         if (plugin.keeper() != null) plugin.keeper().spawn(npc.clone().add(9, 0, 0), "prepworld");
 
-        sender.sendMessage("Step 7/7: giving tester tools...");
+        sender.sendMessage("Step 9/9: giving tester tools...");
         handleLens(sender, new String[]{"lens", "give", player.getName()});
         handleNeedle(sender, new String[]{"needle", player.getName()});
 
         sender.sendMessage("Observance: prepworld complete - prologue staged, " + surfacePlaced
-                + "/7 surface sites, " + deepPlaced + "/6 deep sites, " + lecternsPlaced
-                + "/5 Mara lecterns.");
-        sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> Mara lecterns -> deep sites -> finale.");
+                + "/7 surface sites, " + deepPlaced + "/6 deep sites, " + descentProofPlaced
+                + "/5 dialogue-proof sites, " + sideDestinationProofPlaced + "/12 side-destination proofs, "
+                + lecternsPlaced + "/5 Mara lecterns.");
+        sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> school stand/far water/count-light-watch -> Lamp-works/Stair line -> warm-town collapse -> Mara lecterns -> deep sites -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
         sender.sendMessage("  Run /obs coverage, /obs rehearse start, and /obs visit next for the walk-through pass.");
+    }
+
+    private void handleDescentProof(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance descentproof must be run by a player (needs a location).");
+            return;
+        }
+        Location origin = player.getLocation();
+        if (origin == null || origin.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+        int spacing = 18;
+        if (args.length >= 2) {
+            try {
+                spacing = Math.max(12, Math.min(28, Integer.parseInt(args[1].trim())));
+            } catch (NumberFormatException ignored) { /* keep default */ }
+        }
+        int placed = placeDescentProofChain(origin, spacing);
+        sender.sendMessage("Observance: descent proof chain staged - " + placed
+                + "/5 sites registered: Lamp-works stair, third lamp, painted line, dead-stall, bird coops.");
+        sender.sendMessage("  Cross the painted line once, then /obs flag list should show painted_line_crossed.");
+        sender.sendMessage("  Visit the coops once: Aro's bird rumor should now point at visible empty cages, not empty air.");
+    }
+
+    private int placeDescentProofChain(Location origin, int spacing) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        String worldName = world.getName();
+        int bx = origin.getBlockX();
+        int bz = origin.getBlockZ();
+        int by = world.getHighestBlockYAt(bx, bz, org.bukkit.HeightMap.OCEAN_FLOOR) + 5;
+
+        Location stair = new Location(world, bx, by, bz);
+        buildLampworksStair(stair);
+
+        Location thirdLamp = new Location(world, bx - 4, by - 4, bz + 18);
+        Location line = new Location(world, bx, by - 7, bz + 24);
+        Location deadStall = new Location(world, bx + Math.max(10, spacing / 2), by - 8, bz + 30);
+        Location birdCoops = new Location(world, bx - Math.max(10, spacing / 2), by - 3, bz + 10);
+        placePaintedLineFixture(line);
+        buildDeadStall(deadStall);
+        buildBirdCoops(birdCoops);
+
+        int placed = 0;
+        placed += registerRouteProofSite("lampworks_stair", "lampworks_stair", worldName, stair, 14, 12);
+        placed += registerRouteProofSite("third_lamp_stand", "lamp_stand", worldName, thirdLamp, 4, 5);
+        placed += registerRouteProofSite("painted_line", "painted_line", worldName, line, 4, 5);
+        placed += registerRouteProofSite("dead_stall", "dead_stall", worldName, deadStall, 5, 5);
+        placed += registerRouteProofSite("deep_bird_coops", "bird_coops", worldName, birdCoops, 6, 5);
+        return placed;
+    }
+
+    private int registerRouteProofSite(String id, String type, String worldName, Location loc, int radius, int vertical) {
+        if (id == null || loc == null || loc.getWorld() == null) return 0;
+        plugin.registerRuntimeSite(new Site(id, type, worldName,
+                loc.getX(), loc.getY(), loc.getZ(), radius, vertical, true, true, null));
+        return 1;
+    }
+
+    private int placeFarWaterProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        placeFarWater(loc);
+        plugin.registerRuntimeSite(new Site("the_far_water", "far_water", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 12, 6, true, true, null));
+        return 1;
+    }
+
+    private int placeSchoolStandProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildSchoolStand(loc);
+        plugin.registerRuntimeSite(new Site("school_stand", "school_stand", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 10, 6, true, true, null));
+        return 1;
+    }
+
+    private int placeMarkersRowProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildMarkersRow(loc);
+        plugin.registerRuntimeSite(new Site("markers_row", "markers_row", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 12, 6, true, true, null));
+        return 1;
+    }
+
+    private int placeCisternProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildCisternSeven(loc);
+        plugin.registerRuntimeSite(new Site("cistern_7", "cistern_7", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 11, 6, true, true, null));
+        return 1;
+    }
+
+    private int placeWatchFloorProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildWatchFloor(loc);
+        plugin.registerRuntimeSite(new Site("watch_floor", "watch_floor", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
+        return 1;
+    }
+
+    private int placeSetApartProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildSetApartShelf(loc);
+        plugin.registerRuntimeSite(new Site("set_apart_shelf", "set_apart_shelf", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 11, 6, true, true, null));
+        return 1;
+    }
+
+    private int placeUndercroftSealProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildUndercroftSeal(loc);
+        plugin.registerRuntimeSite(new Site("undercroft_seal", "undercroft_seal", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
+        return 1;
+    }
+
+    private int placeForgottenMouthProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildForgottenMouth(loc);
+        plugin.registerRuntimeSite(new Site("forgotten_mouth", "forgotten_mouth", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
+        return 1;
+    }
+
+    private int placeWarmTownProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildWarmTownCollapse(loc);
+        plugin.registerRuntimeSite(new Site("warm_town_collapse", "warm_town_collapse", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
+        return 1;
+    }
+
+    private int placeDeepMarketProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildDeepMarket(loc);
+        plugin.registerRuntimeSite(new Site("deep_market", "deep_market", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 13, 7, true, true, null));
+        return 1;
+    }
+
+    private int placeRationTableProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildRationTable(loc);
+        plugin.registerRuntimeSite(new Site("ration_table", "ration_table", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 10, 6, true, true, null));
+        return 1;
+    }
+
+    private int placeThirdBayProof(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        org.bukkit.World world = origin.getWorld();
+        int x = origin.getBlockX();
+        int z = origin.getBlockZ();
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        Location loc = new Location(world, x, y, z);
+        buildThirdBayBreach(loc);
+        plugin.registerRuntimeSite(new Site("third_bay_breach", "third_bay_breach", world.getName(),
+                loc.getX(), loc.getY(), loc.getZ(), 12, 7, true, true, null));
+        return 1;
+    }
+
+    private void buildLampworksStair(Location start) {
+        org.bukkit.World world = start.getWorld();
+        if (world == null) return;
+        int bx = start.getBlockX();
+        int by = start.getBlockY();
+        int bz = start.getBlockZ();
+
+        placeRouteLanding(world, bx, by, bz - 3, 5, 4);
+        for (int i = 0; i <= 36; i++) {
+            int y = by - (i / 3);
+            int z = bz + i;
+            for (int dx = -3; dx <= 3; dx++) {
+                Material tread = (i == 24) ? Material.BLACK_CONCRETE : Material.POLISHED_DEEPSLATE_STAIRS;
+                placeStairTread(world.getBlockAt(bx + dx, y, z), tread);
+                world.getBlockAt(bx + dx, y - 1, z).setType(Material.DEEPSLATE_BRICKS, false);
+                if (dx == -3 || dx == 3 || (dx == 0 && i % 3 == 0)) {
+                    supportToGround(world, bx + dx, y - 1, z, supportMaterial(i + dx));
+                }
+            }
+            world.getBlockAt(bx - 4, y, z).setType(Material.DEEPSLATE_BRICK_WALL, false);
+            world.getBlockAt(bx + 4, y, z).setType(Material.DEEPSLATE_BRICK_WALL, false);
+            if (i % 3 == 0) {
+                supportToGround(world, bx - 4, y, z, Material.POLISHED_BLACKSTONE_BRICK_WALL);
+                supportToGround(world, bx + 4, y, z, Material.POLISHED_BLACKSTONE_BRICK_WALL);
+            }
+            if (i == 4 || i == 10 || i == 18 || i == 24 || i == 30 || i == 36) {
+                placeRouteRib(world, bx, y, z);
+            }
+        }
+        placeRouteLanding(world, bx, by - 12, bz + 38, 5, 5);
+
+        placeLampStand(new Location(world, bx - 4, by, bz + 3), 1, true);
+        placeLampStand(new Location(world, bx + 4, by - 2, bz + 9), 2, true);
+        placeLampStand(new Location(world, bx - 4, by - 4, bz + 18), 3, false);
+        placeLampStand(new Location(world, bx + 4, by - 7, bz + 27), 4, true);
+        placeLampStand(new Location(world, bx - 4, by - 10, bz + 33), 5, true);
+
+        placeStandingSign(new Location(world, bx + 5, by + 1, bz + 2), BlockFace.WEST,
+                new String[]{"lamp-works", "upper stair", "oil counted", ""});
+        placeStandingSign(new Location(world, bx + 5, by - 7, bz + 24), BlockFace.WEST,
+                new String[]{"", "do not", "count below", ""});
+    }
+
+    private void placeStairTread(Block block, Material material) {
+        if (block == null) return;
+        block.setType(material, false);
+        if (material.name().endsWith("_STAIRS") && block.getBlockData() instanceof Directional d) {
+            d.setFacing(BlockFace.SOUTH);
+            block.setBlockData(d, false);
+        }
+    }
+
+    private void placeLampStand(Location loc, int number, boolean lit) {
+        if (loc == null || loc.getWorld() == null) return;
+        org.bukkit.World world = loc.getWorld();
+        int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+        supportToGround(world, x, y, z, Material.CUT_COPPER);
+        world.getBlockAt(x, y, z).setType(Material.CUT_COPPER, false);
+        world.getBlockAt(x, y + 1, z).setType(Material.IRON_BARS, false);
+        Block lamp = world.getBlockAt(x, y + 2, z);
+        lamp.setType(lit ? Material.LANTERN : materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
+        if (!lit && lamp.getBlockData() instanceof org.bukkit.block.data.Lightable light) {
+            light.setLit(false);
+            lamp.setBlockData(light, false);
+        }
+        placeStandingSign(new Location(world, x, y, z - 1), BlockFace.SOUTH,
+                new String[]{"stand " + number, lit ? "kept" : "dry cup", lit ? "" : "no oil", ""});
+    }
+
+    private void buildDeadStall(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        // Larger market alcove around the offering counter, so Wenna's errand points at a real place.
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dz = -3; dz <= 4; dz++) {
+                boolean rim = Math.abs(dx) == 5 || dz == -3 || dz == 4;
+                world.getBlockAt(bx + dx, by - 2, bz + dz).setType(Material.COBBLED_DEEPSLATE, false);
+                world.getBlockAt(bx + dx, by - 1, bz + dz)
+                        .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.DEEPSLATE_TILES, false);
+                if (rim) {
+                    for (int dy = 0; dy <= 3; dy++) {
+                        world.getBlockAt(bx + dx, by + dy, bz + dz)
+                                .setType(dy == 3 ? Material.BLACKSTONE : Material.DEEPSLATE_BRICKS, false);
+                    }
+                }
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -1; dz <= 2; dz++) {
+                boolean edge = Math.abs(dx) == 2 || dz == -1 || dz == 2;
+                world.getBlockAt(bx + dx, by - 1, bz + dz)
+                        .setType(edge ? Material.POLISHED_BLACKSTONE_BRICKS : Material.DEEPSLATE_TILES, false);
+                if (edge && (dx == -2 || dx == 2) && (dz == -1 || dz == 2)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+        for (int dx : new int[]{-2, 2}) {
+            for (int dz : new int[]{-1, 2}) {
+                world.getBlockAt(bx + dx, by, bz + dz).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+                world.getBlockAt(bx + dx, by + 1, bz + dz).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+                world.getBlockAt(bx + dx, by + 2, bz + dz).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -1; dz <= 2; dz++) {
+                boolean lip = Math.abs(dx) == 2 || dz == -1 || dz == 2;
+                world.getBlockAt(bx + dx, by + 3, bz + dz)
+                        .setType(lip ? Material.DARK_OAK_SLAB : Material.SPRUCE_SLAB, false);
+            }
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            world.getBlockAt(bx + dx, by, bz + 2).setType(Material.BARREL, false);
+            world.getBlockAt(bx + dx, by + 1, bz + 2).setType(Material.CHISELED_BOOKSHELF, false);
+        }
+        world.getBlockAt(bx - 2, by, bz).setType(Material.SOUL_LANTERN, false);
+        world.getBlockAt(bx + 2, by, bz).setType(Material.CANDLE, false);
+        world.getBlockAt(bx, by, bz).setType(Material.CAKE, false);
+        placeStandingSign(new Location(world, bx, by, bz - 1), BlockFace.SOUTH,
+                new String[]{"dead-stall", "leave a crust", "take nothing", ""});
+    }
+
+    private void buildBirdCoops(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        // Larger coop room: empty cages should be visible from the approach, not just a three-block prop row.
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -3; dz <= 5; dz++) {
+                boolean rim = Math.abs(dx) == 6 || dz == -3 || dz == 5;
+                world.getBlockAt(bx + dx, by - 2, bz + dz).setType(Material.COBBLED_DEEPSLATE, false);
+                world.getBlockAt(bx + dx, by - 1, bz + dz)
+                        .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.DEEPSLATE_TILES, false);
+                if (rim) {
+                    for (int dy = 0; dy <= 4; dy++) {
+                        world.getBlockAt(bx + dx, by + dy, bz + dz)
+                                .setType(dy == 4 ? Material.BLACKSTONE
+                                        : (dy == 1 ? Material.IRON_BARS : Material.DEEPSLATE_BRICKS), false);
+                    }
+                }
+            }
+        }
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -1; dz <= 2; dz++) {
+                boolean edge = Math.abs(dx) == 3 || dz == -1 || dz == 2;
+                world.getBlockAt(bx + dx, by - 1, bz + dz)
+                        .setType(edge ? Material.POLISHED_BLACKSTONE_BRICKS : Material.DEEPSLATE_TILES, false);
+                if (edge && (dx == -3 || dx == 3 || dz == -1 || dz == 2)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+        for (int i = 0; i < 3; i++) {
+            int x = bx - 2 + (i * 2);
+            world.getBlockAt(x, by, bz).setType(Material.IRON_BARS, false);
+            world.getBlockAt(x, by + 1, bz).setType(Material.IRON_BARS, false);
+            world.getBlockAt(x, by + 2, bz).setType(Material.IRON_BARS, false);
+            world.getBlockAt(x, by, bz + 1).setType(Material.DARK_OAK_FENCE, false);
+            world.getBlockAt(x, by + 1, bz + 1).setType(Material.IRON_BARS, false);
+            world.getBlockAt(x, by, bz + 2).setType(i == 2 ? Material.BARREL : Material.HAY_BLOCK, false);
+        }
+        world.getBlockAt(bx + 3, by, bz).setType(Material.SOUL_LANTERN, false);
+        world.getBlockAt(bx, by, bz + 1).setType(Material.BROWN_CARPET, false);
+        world.getBlockAt(bx - 4, by, bz + 3).setType(Material.BONE_BLOCK, false);
+        world.getBlockAt(bx - 3, by, bz + 3).setType(Material.WHITE_CARPET, false);
+        world.getBlockAt(bx + 4, by, bz + 3).setType(Material.CALCITE, false);
+        placeStandingSign(new Location(world, bx, by, bz - 1), BlockFace.SOUTH,
+                new String[]{"third coop", "door open", "husk left", ""});
+    }
+
+    private void buildSchoolStand(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 8, 6, 6, 5,
+                Material.DEEPSLATE_TILES, Material.SMOOTH_BASALT,
+                Material.POLISHED_BLACKSTONE_BRICKS, Material.BLACKSTONE, Material.LANTERN);
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean edge = Math.abs(dx) == 4 || Math.abs(dz) == 3;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((dx + dz) % 4 == 0 ? Material.SMOOTH_BASALT : Material.DEEPSLATE_TILES);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 4 || Math.abs(dz) == 3)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+
+        for (int dx = -3; dx <= 3; dx++) {
+            world.getBlockAt(bx + dx, by, bz + 3).setType(Material.BLACK_CONCRETE, false);
+            world.getBlockAt(bx + dx, by + 1, bz + 3).setType(Material.BLACK_CONCRETE, false);
+            if (Math.abs(dx) == 3) {
+                world.getBlockAt(bx + dx, by + 2, bz + 3).setType(Material.DEEPSLATE_BRICK_WALL, false);
+            }
+        }
+        world.getBlockAt(bx - 3, by + 2, bz + 3).setType(Material.LANTERN, false);
+
+        for (int dx = -3; dx <= 2; dx++) {
+            world.getBlockAt(bx + dx, by, bz + 1).setType(Material.COBBLESTONE, false);
+        }
+        world.getBlockAt(bx + 3, by, bz + 1).setType(Material.GRAY_CONCRETE, false);
+        world.getBlockAt(bx + 3, by + 1, bz + 1).setType(Material.GRAY_CANDLE, false);
+
+        for (int dx = -2; dx <= 2; dx++) {
+            world.getBlockAt(bx + dx, by, bz - 1).setType(Material.DARK_OAK_SLAB, false);
+            world.getBlockAt(bx + dx, by, bz - 2).setType(Material.DARK_OAK_SLAB, false);
+        }
+        world.getBlockAt(bx - 3, by, bz - 2).setType(Material.CHISELED_BOOKSHELF, false);
+        world.getBlockAt(bx + 3, by, bz - 2).setType(Material.BARREL, false);
+        world.getBlockAt(bx, by + 1, bz + 3).setType(Material.WHITE_CARPET, false);
+
+        placeStandingSign(new Location(world, bx - 4, by, bz), BlockFace.EAST,
+                new String[]{"school-stand", "six stones", "one grey", ""});
+        placeStandingSign(new Location(world, bx + 4, by, bz), BlockFace.WEST,
+                new String[]{"keep your", "light", "keep your", "light"});
+    }
+
+    private void buildMarkersRow(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 10, 4, 4, 5,
+                Material.DEEPSLATE_TILES, Material.CRACKED_DEEPSLATE_BRICKS,
+                Material.POLISHED_BLACKSTONE_BRICKS, Material.BLACKSTONE, Material.SOUL_LANTERN);
+        for (int dx = -7; dx <= 7; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean edge = Math.abs(dx) == 7 || Math.abs(dz) == 2;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : (dz == 0 ? Material.DEEPSLATE_TILES : Material.CRACKED_DEEPSLATE_BRICKS);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 7 || Math.abs(dz) == 2)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+        for (int i = 0; i < 6; i++) {
+            int x = bx - 6 + (i * 2);
+            world.getBlockAt(x, by, bz).setType(Material.CHISELED_DEEPSLATE, false);
+            world.getBlockAt(x, by + 1, bz).setType(Material.COBBLED_DEEPSLATE_WALL, false);
+            world.getBlockAt(x, by, bz - 1).setType(Material.BROWN_CARPET, false);
+        }
+        world.getBlockAt(bx + 7, by - 1, bz).setType(Material.SOUL_SAND, false);
+        world.getBlockAt(bx + 7, by, bz).setType(Material.GRAY_CONCRETE, false);
+        world.getBlockAt(bx + 7, by, bz - 1).setType(Material.AIR, false);
+        world.getBlockAt(bx + 7, by + 1, bz).setType(Material.GRAY_CANDLE, false);
+        placeStandingSign(new Location(world, bx - 7, by, bz + 2), BlockFace.SOUTH,
+                new String[]{"the markers", "bow at each", "not all one", "winter"});
+        placeStandingSign(new Location(world, bx + 4, by, bz + 2), BlockFace.WEST,
+                new String[]{"six set", "one hollow", "count again", ""});
+    }
+
+    private void buildCisternSeven(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 9, 9, 9, 5,
+                Material.PRISMARINE_BRICKS, Material.DARK_PRISMARINE,
+                Material.PRISMARINE, Material.POLISHED_BLACKSTONE_BRICKS, Material.SEA_LANTERN);
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dz = -5; dz <= 5; dz++) {
+                int dist = Math.abs(dx) + Math.abs(dz);
+                boolean rim = dist >= 6 || Math.abs(dx) == 5 || Math.abs(dz) == 5;
+                boolean water = Math.abs(dx) <= 2 && Math.abs(dz) <= 2;
+                Material floor = water ? Material.DARK_PRISMARINE : (rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.PRISMARINE_BRICKS);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (water) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.WATER, false);
+                } else if (!rim) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.DARK_PRISMARINE, false);
+                }
+                if (rim && (Math.abs(dx) == 5 || Math.abs(dz) == 5)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+        for (int dx = -3; dx <= 3; dx++) {
+            world.getBlockAt(bx + dx, by + 2, bz - 5).setType(Material.END_STONE_BRICKS, false);
+            if (Math.abs(dx) == 3) {
+                world.getBlockAt(bx + dx, by + 1, bz - 5).setType(Material.END_STONE_BRICKS, false);
+                world.getBlockAt(bx + dx, by, bz - 5).setType(Material.END_STONE_BRICKS, false);
+            }
+        }
+        world.getBlockAt(bx - 4, by, bz + 3).setType(Material.BARREL, false);
+        world.getBlockAt(bx - 3, by, bz + 3).setType(Material.BARREL, false);
+        world.getBlockAt(bx + 3, by, bz + 3).setType(Material.LANTERN, false);
+        world.getBlockAt(bx + 3, by - 1, bz + 1).setType(materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
+        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.EAST,
+                new String[]{"cistern 7", "good oil", "two jars", ""});
+        placeStandingSign(new Location(world, bx + 5, by, bz - 2), BlockFace.WEST,
+                new String[]{"the water", "gives light", "back wrong", ""});
+    }
+
+    private void buildWatchFloor(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 9, 7, 7, 6,
+                Material.BLACKSTONE, Material.DEEPSLATE_TILES,
+                Material.COBBLED_DEEPSLATE, Material.BLACK_CONCRETE, Material.SOUL_LANTERN);
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                boolean edge = Math.abs(dx) == 5 || Math.abs(dz) == 4;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((dx + dz) % 3 == 0 ? Material.BLACKSTONE : Material.DEEPSLATE_TILES);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 5 || Math.abs(dz) == 4)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+        Block lectern = world.getBlockAt(bx, by, bz);
+        lectern.setType(Material.LECTERN, false);
+        if (lectern.getBlockData() instanceof Directional d) {
+            d.setFacing(BlockFace.SOUTH);
+            lectern.setBlockData(d, false);
+        }
+        for (int dx : new int[]{-4, 4}) {
+            for (int dz : new int[]{-3, 3}) {
+                world.getBlockAt(bx + dx, by, bz + dz).setType(Material.DEEPSLATE_BRICK_WALL, false);
+                world.getBlockAt(bx + dx, by + 1, bz + dz).setType(Material.SOUL_LANTERN, false);
+            }
+        }
+        world.getBlockAt(bx - 2, by, bz).setType(Material.CHISELED_BOOKSHELF, false);
+        world.getBlockAt(bx + 2, by, bz).setType(Material.DAYLIGHT_DETECTOR, false);
+        world.getBlockAt(bx, by, bz + 2).setType(Material.BLACK_CANDLE, false);
+        placeStandingSign(new Location(world, bx - 4, by, bz - 4), BlockFace.SOUTH,
+                new String[]{"watch floor", "black moon", "do not sleep", ""});
+        placeStandingSign(new Location(world, bx + 4, by, bz - 4), BlockFace.SOUTH,
+                new String[]{"the log", "does not", "write now", "kept"});
+    }
+
+    private void buildSetApartShelf(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 9, 6, 7, 5,
+                Material.POLISHED_DEEPSLATE, Material.OXIDIZED_COPPER,
+                Material.CUT_COPPER, Material.WEATHERED_CUT_COPPER, Material.LANTERN);
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dz = -3; dz <= 4; dz++) {
+                boolean edge = Math.abs(dx) == 5 || dz == -3 || dz == 4;
+                Material floor = edge ? Material.CUT_COPPER
+                        : ((dx + dz) % 3 == 0 ? Material.OXIDIZED_COPPER : Material.POLISHED_DEEPSLATE);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 5 || dz == 4)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.CUT_COPPER);
+                }
+            }
+        }
+
+        for (int i = 0; i < 5; i++) {
+            int x = bx - 4 + (i * 2);
+            world.getBlockAt(x, by, bz).setType(Material.BARREL, false);
+            world.getBlockAt(x, by + 1, bz).setType(i == 4 ? Material.LANTERN : Material.SOUL_LANTERN, false);
+            world.getBlockAt(x, by, bz + 1).setType(i == 4
+                    ? materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB")
+                    : Material.CHISELED_BOOKSHELF, false);
+        }
+        world.getBlockAt(bx, by, bz - 1).setType(Material.REDSTONE_LAMP, false);
+        world.getBlockAt(bx + 4, by, bz + 3).setType(Material.BLACK_CANDLE, false);
+        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+                new String[]{"set apart", "entry 5", "warm lamp", ""});
+        placeStandingSign(new Location(world, bx + 5, by, bz + 2), BlockFace.WEST,
+                new String[]{"do not price", "do not count", "with cold", ""});
+    }
+
+    private void buildUndercroftSeal(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 9, 6, 7, 6,
+                Material.DEEPSLATE_TILES, Material.CRACKED_DEEPSLATE_BRICKS,
+                Material.POLISHED_BLACKSTONE_BRICKS, Material.REINFORCED_DEEPSLATE, Material.SOUL_LANTERN);
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dz = -3; dz <= 4; dz++) {
+                boolean edge = Math.abs(dx) == 5 || dz == -3 || dz == 4;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((Math.abs(dx) + Math.abs(dz)) % 3 == 0 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.DEEPSLATE_TILES);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 5 || dz == 4)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dy = 0; dy <= 4; dy++) {
+                boolean frame = Math.abs(dx) == 3 || dy == 4;
+                Material mat = frame ? Material.POLISHED_DEEPSLATE : Material.CHISELED_DEEPSLATE;
+                world.getBlockAt(bx + dx, by + dy, bz + 2).setType(mat, false);
+            }
+        }
+        world.getBlockAt(bx, by, bz + 1).setType(Material.IRON_BARS, false);
+        world.getBlockAt(bx - 1, by, bz + 1).setType(Material.BLACKSTONE, false);
+        world.getBlockAt(bx + 1, by, bz + 1).setType(Material.BLACKSTONE, false);
+        world.getBlockAt(bx, by + 1, bz - 1).setType(Material.SOUL_LANTERN, false);
+        world.getBlockAt(bx - 4, by, bz).setType(Material.GRAY_CARPET, false);
+        world.getBlockAt(bx - 3, by, bz).setType(Material.GRAY_CARPET, false);
+        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+                new String[]{"seal entered", "mason last", "rest cut low", ""});
+        placeStandingSign(new Location(world, bx + 4, by - 1, bz), BlockFace.WEST,
+                new String[]{"bow to read", "not small", "i --", ""});
+    }
+
+    private void buildForgottenMouth(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 8, 8, 9, 6,
+                Material.POLISHED_BLACKSTONE, Material.GRASS_BLOCK,
+                Material.BLACKSTONE, Material.DEEPSLATE_BRICKS, Material.SEA_LANTERN);
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -5; dz <= 5; dz++) {
+                boolean edge = Math.abs(dx) == 4 || Math.abs(dz) == 5;
+                Material floor = edge ? Material.DEEPSLATE_BRICKS
+                        : (dz >= 2 ? Material.GRASS_BLOCK : Material.POLISHED_BLACKSTONE);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 4 || Math.abs(dz) == 5)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.DEEPSLATE_BRICKS);
+                }
+            }
+        }
+
+        for (int dz = -4; dz <= 1; dz++) {
+            for (int dx : new int[]{-2, 2}) {
+                int height = dz < -1 ? 4 : 3;
+                for (int dy = 0; dy <= height; dy++) {
+                    world.getBlockAt(bx + dx, by + dy, bz + dz).setType(Material.BLACKSTONE, false);
+                }
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            world.getBlockAt(bx + dx, by + 4, bz - 4).setType(Material.CHISELED_DEEPSLATE, false);
+        }
+        world.getBlockAt(bx, by, bz - 5).setType(Material.SEA_LANTERN, false);
+        world.getBlockAt(bx, by, bz + 4).setType(Material.GLOWSTONE, false);
+        world.getBlockAt(bx - 1, by, bz + 3).setType(Material.OAK_LEAVES, false);
+        world.getBlockAt(bx + 1, by, bz + 3).setType(Material.OAK_LEAVES, false);
+        world.getBlockAt(bx, by, bz + 5).setType(Material.LANTERN, false);
+        placeStandingSign(new Location(world, bx - 3, by, bz - 5), BlockFace.SOUTH,
+                new String[]{"way up", "real", "cost the line", ""});
+        placeStandingSign(new Location(world, bx + 3, by, bz + 4), BlockFace.WEST,
+                new String[]{"return mark", "last draft", "surface heals", ""});
+    }
+
+    private void buildDeepMarket(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 11, 8, 9, 6,
+                Material.DEEPSLATE_TILES, Material.SMOOTH_BASALT,
+                Material.POLISHED_BLACKSTONE_BRICKS, Material.BLACKSTONE, Material.LANTERN);
+        for (int dx = -7; dx <= 7; dx++) {
+            for (int dz = -5; dz <= 6; dz++) {
+                boolean edge = Math.abs(dx) == 7 || dz == -5 || dz == 6;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((dx + dz) % 5 == 0 ? Material.SMOOTH_BASALT : Material.DEEPSLATE_TILES);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && ((Math.abs(dx) == 7 && dz % 3 == 0) || (Math.abs(dz) == 5 && dx % 3 == 0))) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+
+        int stall = 0;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 6; col++) {
+                stall++;
+                int sx = bx - 5 + (col * 2);
+                int sz = bz - 3 + (row * 3);
+                buildMarketStall(world, sx, by, sz, stall);
+            }
+        }
+
+        Block lectern = world.getBlockAt(bx + 5, by, bz + 5);
+        lectern.setType(Material.LECTERN, false);
+        if (lectern.getBlockData() instanceof Directional d) {
+            d.setFacing(BlockFace.WEST);
+            lectern.setBlockData(d, false);
+        }
+        world.getBlockAt(bx + 4, by, bz + 5).setType(Material.CHISELED_BOOKSHELF, false);
+        world.getBlockAt(bx + 6, by, bz + 5).setType(Material.CHISELED_BOOKSHELF, false);
+        world.getBlockAt(bx + 5, by + 1, bz + 5).setType(Material.LANTERN, false);
+
+        placeStandingSign(new Location(world, bx, by, bz - 6), BlockFace.SOUTH,
+                new String[]{"18 stalls", "bread 4 salt", "oil mending", "lectern shelf"});
+        placeStandingSign(new Location(world, bx - 6, by, bz + 5), BlockFace.EAST,
+                new String[]{"lamp minded", "for a token", "while you eat", ""});
+    }
+
+    private void buildMarketStall(org.bukkit.World world, int x, int y, int z, int stall) {
+        Material counter = stall % 6 == 0 ? Material.CHISELED_BOOKSHELF : Material.BARREL;
+        Material marker = switch (stall % 6) {
+            case 1, 2, 3, 4 -> Material.HAY_BLOCK;
+            case 5 -> Material.CAULDRON;
+            default -> Material.ANVIL;
+        };
+        world.getBlockAt(x, y, z).setType(counter, false);
+        world.getBlockAt(x + 1, y, z).setType(marker, false);
+        world.getBlockAt(x, y + 1, z).setType(stall % 4 == 0 ? Material.CANDLE : Material.SOUL_LANTERN, false);
+        if (stall == 4 || stall == 9 || stall == 14 || stall == 18) {
+            world.getBlockAt(x - 1, y, z).setType(Material.DARK_OAK_FENCE, false);
+        }
+    }
+
+    private void buildRationTable(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 8, 5, 6, 5,
+                Material.DEEPSLATE_TILES, Material.CRACKED_DEEPSLATE_BRICKS,
+                Material.POLISHED_BLACKSTONE_BRICKS, Material.DEEPSLATE_BRICKS, Material.LANTERN);
+        for (int dx = -4; dx <= 4; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean edge = Math.abs(dx) == 4 || Math.abs(dz) == 3;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((dx + dz) % 3 == 0 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.DEEPSLATE_TILES);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 4 || Math.abs(dz) == 3)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+
+        for (int dx = -2; dx <= 2; dx++) {
+            world.getBlockAt(bx + dx, by, bz).setType(Material.DARK_OAK_SLAB, false);
+            world.getBlockAt(bx + dx, by - 1, bz).setType(Material.DARK_OAK_PLANKS, false);
+        }
+        world.getBlockAt(bx - 2, by, bz - 1).setType(Material.BARREL, false);
+        world.getBlockAt(bx - 1, by, bz - 1).setType(Material.CAKE, false);
+        world.getBlockAt(bx, by, bz - 1).setType(Material.CAKE, false);
+        world.getBlockAt(bx + 1, by, bz - 1).setType(Material.CANDLE, false);
+        world.getBlockAt(bx + 2, by, bz - 1).setType(Material.AIR, false);
+
+        Block sheet = world.getBlockAt(bx, by + 1, bz);
+        sheet.setType(Material.OAK_SIGN, false);
+        if (sheet.getBlockData() instanceof Rotatable r) {
+            r.setRotation(BlockFace.SOUTH);
+            sheet.setBlockData(r, false);
+        }
+        setSignLines(sheet, true, new String[]{"3 heads", "1 1/2 loaves", "hand over", "no head"});
+
+        placeStandingSign(new Location(world, bx - 3, by, bz + 2), BlockFace.EAST,
+                new String[]{"child line", "not a tally", "drawn through", "the form"});
+        placeStandingSign(new Location(world, bx + 3, by, bz + 2), BlockFace.WEST,
+                new String[]{"R14", "filled correct", "still hungry", ""});
+        world.getBlockAt(bx, by + 2, bz - 2).setType(Material.LANTERN, false);
+    }
+
+    private void buildThirdBayBreach(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 10, 5, 5, 6,
+                Material.DEEPSLATE_TILES, Material.BLACK_CONCRETE,
+                Material.POLISHED_BLACKSTONE_BRICKS, Material.BLACKSTONE, Material.SOUL_LANTERN);
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean edge = Math.abs(dx) == 6 || Math.abs(dz) == 3;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : (dz == 0 ? Material.BLACK_CONCRETE : Material.DEEPSLATE_TILES);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 6 || Math.abs(dz) == 3)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+
+        for (int dx = -6; dx <= 6; dx++) {
+            Material line = Math.abs(dx) <= 1 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.BLACK_CONCRETE;
+            world.getBlockAt(bx + dx, by, bz).setType(line, false);
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(Material.SCULK, false);
+                world.getBlockAt(bx + dx, by - 2, bz + dz).setType(Material.AIR, false);
+                world.getBlockAt(bx + dx, by - 3, bz + dz).setType(Material.AIR, false);
+            }
+        }
+
+        for (int dx : new int[]{-3, 3}) {
+            for (int dy = 0; dy <= 3; dy++) {
+                world.getBlockAt(bx + dx, by + dy, bz).setType(dy == 3 ? Material.BLACKSTONE : Material.DEEPSLATE_BRICKS, false);
+            }
+        }
+        world.getBlockAt(bx, by - 1, bz).setType(Material.SCULK_SENSOR, false);
+        world.getBlockAt(bx, by, bz + 2).setType(Material.IRON_BARS, false);
+        Block coldLamp = world.getBlockAt(bx, by - 1, bz - 2);
+        coldLamp.setType(materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
+        if (coldLamp.getBlockData() instanceof org.bukkit.block.data.Lightable light) {
+            light.setLit(false);
+            coldLamp.setBlockData(light, false);
+        }
+        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+                new String[]{"mark 33", "third bay", "line broken", ""});
+        placeStandingSign(new Location(world, bx + 5, by, bz + 2), BlockFace.WEST,
+                new String[]{"not a road", "down is colder", "lamp set apart", ""});
+    }
+
+    private void buildWarmTownCollapse(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        buildProofChamber(world, bx, by, bz, 9, 5, 7, 6,
+                Material.CRACKED_DEEPSLATE_BRICKS, Material.GRAVEL,
+                Material.DEEPSLATE_BRICKS, Material.BLACKSTONE, Material.SOUL_LANTERN);
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dz = -2; dz <= 5; dz++) {
+                boolean edge = Math.abs(dx) == 5 || dz == -2 || dz == 5;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((dx + dz) % 4 == 0 ? Material.GRAVEL : Material.CRACKED_DEEPSLATE_BRICKS);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (edge && (Math.abs(dx) == 5 || dz == 5)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
+        }
+
+        for (int dx : new int[]{-5, 5}) {
+            for (int dy = 0; dy <= 5; dy++) {
+                Material pillar = dy >= 4 ? Material.BLACKSTONE : Material.DEEPSLATE_BRICKS;
+                world.getBlockAt(bx + dx, by + dy, bz + 1).setType(pillar, false);
+            }
+        }
+
+        for (int dx = -5; dx <= 5; dx++) {
+            int height = 2 + Math.floorMod(dx * 3, 4);
+            for (int dy = 0; dy <= height; dy++) {
+                Material rubble = (dy == height && Math.abs(dx) % 2 == 0)
+                        ? Material.GRAVEL
+                        : (dy % 2 == 0 ? Material.COBBLED_DEEPSLATE : Material.DEEPSLATE);
+                world.getBlockAt(bx + dx, by + dy, bz + 5).setType(rubble, false);
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            world.getBlockAt(bx - 1 + i, by, bz + 3).setType(i % 2 == 0 ? Material.GRAVEL : Material.COBBLED_DEEPSLATE, false);
+            world.getBlockAt(bx + 2 - i, by + 1, bz + 4).setType(Material.COBWEB, false);
+        }
+
+        world.getBlockAt(bx - 3, by, bz).setType(Material.BARREL, false);
+        world.getBlockAt(bx - 2, by, bz).setType(Material.BARREL, false);
+        world.getBlockAt(bx - 3, by + 1, bz).setType(Material.DARK_OAK_SLAB, false);
+        world.getBlockAt(bx - 1, by, bz + 1).setType(Material.DARK_OAK_FENCE, false);
+        world.getBlockAt(bx - 2, by, bz + 1).setType(Material.HAY_BLOCK, false);
+
+        Block deadLamp = world.getBlockAt(bx + 3, by + 1, bz + 1);
+        deadLamp.setType(materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
+        if (deadLamp.getBlockData() instanceof org.bukkit.block.data.Lightable light) {
+            light.setLit(false);
+            deadLamp.setBlockData(light, false);
+        }
+        world.getBlockAt(bx + 3, by, bz + 1).setType(Material.IRON_BARS, false);
+        world.getBlockAt(bx + 4, by, bz + 2).setType(Material.BLACK_CANDLE, false);
+        placeStandingSign(new Location(world, bx, by, bz + 2), BlockFace.SOUTH,
+                new String[]{"WARDEN-3", "east closed", "no town", "hands return"});
+        placeStandingSign(new Location(world, bx - 4, by, bz - 1), BlockFace.SOUTH,
+                new String[]{"market east", "no bread", "lamp out", ""});
+    }
+
+    private void placePaintedLineFixture(Location base) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        for (int dx = -5; dx <= 5; dx++) {
+            world.getBlockAt(bx + dx, by - 1, bz).setType(Material.DEEPSLATE_BRICKS, false);
+            world.getBlockAt(bx + dx, by, bz).setType(Material.BLACK_CONCRETE, false);
+            if (Math.abs(dx) == 5 || dx == 0) {
+                supportToGround(world, bx + dx, by - 1, bz, Material.DEEPSLATE_BRICKS);
+            }
+        }
+        for (int dz = -1; dz <= 1; dz += 2) {
+            for (int dx = -5; dx <= 5; dx++) {
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(Material.CRACKED_DEEPSLATE_BRICKS, false);
+            }
+        }
+        placeStandingSign(new Location(world, bx + 6, by, bz), BlockFace.WEST,
+                new String[]{"", "the line", "is counted", ""});
+    }
+
+    private void placeRouteLanding(org.bukkit.World world, int cx, int y, int z, int halfWidth, int depth) {
+        for (int dx = -halfWidth; dx <= halfWidth; dx++) {
+            for (int dz = 0; dz < depth; dz++) {
+                boolean edge = Math.abs(dx) == halfWidth || dz == 0 || dz == depth - 1;
+                Material floor = edge ? Material.POLISHED_BLACKSTONE_BRICKS : Material.DEEPSLATE_TILES;
+                world.getBlockAt(cx + dx, y, z + dz).setType(floor, false);
+                world.getBlockAt(cx + dx, y - 1, z + dz).setType(Material.DEEPSLATE_BRICKS, false);
+                if (edge && (dx == -halfWidth || dx == halfWidth || dz == 0 || dz == depth - 1)) {
+                    supportToGround(world, cx + dx, y - 1, z + dz, floor);
+                }
+            }
+        }
+        for (int dx = -halfWidth; dx <= halfWidth; dx++) {
+            world.getBlockAt(cx + dx, y + 1, z).setType(Material.IRON_BARS, false);
+        }
+    }
+
+    private void placeRouteRib(org.bukkit.World world, int cx, int y, int z) {
+        for (int dx : new int[]{-3, 3}) {
+            world.getBlockAt(cx + dx, y + 1, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+            world.getBlockAt(cx + dx, y + 2, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+            world.getBlockAt(cx + dx, y + 3, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            world.getBlockAt(cx + dx, y + 3, z).setType(Material.IRON_CHAIN, false);
+        }
+    }
+
+    private void supportToGround(org.bukkit.World world, int x, int topY, int z, Material material) {
+        if (world == null || material == null) return;
+        int groundY = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR);
+        int minY = Math.max(world.getMinHeight() + 1, topY - 14);
+        int startY = Math.max(groundY + 1, minY);
+        for (int y = startY; y < topY; y++) {
+            Block block = world.getBlockAt(x, y, z);
+            if (block.getType().isAir() || y >= topY - 2) {
+                block.setType(material, false);
+            }
+        }
+    }
+
+    private void buildProofChamber(org.bukkit.World world, int bx, int by, int bz,
+                                   int halfX, int backZ, int frontZ, int height,
+                                   Material floorA, Material floorB, Material wall, Material trim,
+                                   Material accentLight) {
+        if (world == null) return;
+        int topY = by + Math.max(4, height);
+        for (int dx = -halfX; dx <= halfX; dx++) {
+            for (int dz = -backZ; dz <= frontZ; dz++) {
+                boolean rim = Math.abs(dx) == halfX || dz == -backZ || dz == frontZ;
+                boolean axis = Math.abs(dx) <= 2 || dz == 0;
+                Material floor = rim ? trim : (axis ? floorA : (((dx + dz) & 1) == 0 ? floorA : floorB));
+                world.getBlockAt(bx + dx, by - 2, bz + dz).setType(Material.DEEPSLATE, false);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (rim) {
+                    for (int dy = 0; dy <= height; dy++) {
+                        Material mat = dy == height ? trim
+                                : ((dy == 1 && Math.floorMod(dx + dz, 5) == 0) ? floorB : wall);
+                        world.getBlockAt(bx + dx, by + dy, bz + dz).setType(mat, false);
+                    }
+                    if ((Math.abs(dx) == halfX && Math.floorMod(dz, 4) == 0)
+                            || ((dz == -backZ || dz == frontZ) && Math.floorMod(dx, 4) == 0)) {
+                        supportToGround(world, bx + dx, by - 1, bz + dz, trim);
+                    }
+                } else {
+                    for (int dy = 0; dy < height; dy++) {
+                        world.getBlockAt(bx + dx, by + dy, bz + dz).setType(Material.AIR, false);
+                    }
+                    world.getBlockAt(bx + dx, topY, bz + dz).setType(trim, false);
+                }
+            }
+        }
+        if (accentLight != null && accentLight != Material.AIR) {
+            for (int dx : new int[]{-Math.max(3, halfX - 3), Math.max(3, halfX - 3)}) {
+                for (int dz : new int[]{-Math.max(3, backZ - 2), Math.max(3, frontZ - 2)}) {
+                    world.getBlockAt(bx + dx, topY - 1, bz + dz).setType(accentLight, false);
+                }
+            }
+        }
+    }
+
+    private Material supportMaterial(int seed) {
+        int choice = Math.floorMod(seed, 4);
+        if (choice == 0) return Material.DEEPSLATE_BRICKS;
+        if (choice == 1) return Material.CRACKED_DEEPSLATE_BRICKS;
+        if (choice == 2) return Material.POLISHED_BLACKSTONE_BRICKS;
+        return Material.POLISHED_DEEPSLATE;
+    }
+
+    private Material materialOr(Material fallback, String... names) {
+        if (names != null) {
+            for (String name : names) {
+                try {
+                    Material material = Material.matchMaterial(name);
+                    if (material != null) return material;
+                } catch (Throwable ignored) { }
+            }
+        }
+        return fallback;
+    }
+
+    private void placeStandingSign(Location loc, BlockFace rotation, String[] lines) {
+        if (loc == null || loc.getWorld() == null) return;
+        Block block = loc.getBlock();
+        block.setType(Material.SPRUCE_SIGN, false);
+        if (block.getBlockData() instanceof Rotatable r) {
+            r.setRotation(rotation == null ? BlockFace.SOUTH : rotation);
+            block.setBlockData(r, false);
+        }
+        setSignLines(block, true, lines);
     }
 
     /**
@@ -1414,6 +3636,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     new String[]{"rune_rosetta", "stone_vaun", "stone_mara", "stone_sella",
                             "stone_orin", "stone_brann", "stone_iss"},
                     "Read/touch each keeper site; submit at one blank answer surface."),
+            new CoverageLane("dialogue_route", "Lamp-works/Stair dialogue proof", "side", false,
+                    new String[]{"lampworks_stair", "third_lamp_stand", "painted_line", "dead_stall", "deep_bird_coops"},
+                    "Run /obs descentproof; cross painted_line and confirm painted_line_crossed; inspect the empty bird coops."),
+            new CoverageLane("side_destinations", "Side destination proof", "side", false,
+                    new String[]{"school_stand", "the_far_water", "markers_row", "cistern_7", "watch_floor",
+                            "set_apart_shelf", "undercroft_seal", "forgotten_mouth",
+                            "deep_market", "ration_table", "third_bay_breach", "warm_town_collapse"},
+                    "Inspect school, far water, marker row, Cistern 7, watch-floor, set-apart shelf, seal, way-up, market/ration/third bay/warm collapse."),
             new CoverageLane("mara", "Mara page-lock lecterns", "spine", false,
                     new String[]{"mara_lectern_1", "mara_lectern_2", "mara_lectern_3",
                             "mara_lectern_4", "mara_lectern_5"},
@@ -1477,6 +3707,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  test: /obs dreadpass run, or focused checks: stalker, hunt, elsewhere");
         sender.sendMessage("  help: /obs runbook scare");
 
+        CoverageState unlit = coverageState(new CoverageLane("unlit", "Unlit expansion village", "unlit", true,
+                unlitRequiredSites(), "Place/paste observance_unlit, run /obs unlit clue <house>, then /obs unlit audit."));
+        sender.sendMessage((unlit.ready ? "[OK] " : "[EXP] ") + "Unlit expansion lane - "
+                + unlit.ok + "/" + unlit.total + " ready");
+        if (unlit.firstIssue != null) sender.sendMessage("  first issue: " + unlit.firstIssue);
+        sender.sendMessage("  test: /obs unlit pass light|stalker|extinguish|house|extract");
+        sender.sendMessage("  help: /obs runbook unlit");
+
         sender.sendMessage("Required launch lanes ready: " + requiredReady + "/" + requiredTotal + ".");
         if (requiredReady == requiredTotal) {
             sender.sendMessage("Next: /obs rehearse start, then advance with /obs rehearse done.");
@@ -1532,7 +3770,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private static final String[] VISIT_ROUTE = {
             "first_report_lectern_01", "first_marker_01",
             "rune_rosetta", "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
+            "school_stand", "the_far_water", "markers_row", "cistern_7", "watch_floor", "set_apart_shelf", "undercroft_seal", "forgotten_mouth", "lampworks_stair", "third_lamp_stand", "painted_line", "dead_stall", "deep_bird_coops", "deep_market", "ration_table", "third_bay_breach", "warm_town_collapse",
             "mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5",
+            "bow_marker_01", "offering_cairn_01", "answer_sign_01",
+            "vaun_hoard_chest", "vaun_bookshelf", "mara_map_marker",
+            "sella_pool", "sella_anchor",
+            "orin_marker_1", "orin_marker_2", "orin_marker_3", "orin_marker_4", "orin_marker_5", "orin_marker_6",
+            "orin_frame_dial_1", "orin_frame_dial_2", "orin_frame_dial_3",
+            "orin_frame_dial_4", "orin_frame_dial_5", "orin_frame_dial_6",
+            "brann_toll_tower", "brann_corridor_start", "brann_corridor_end", "coop_plate",
             "stone_of_reckoning", "the_cold_hearth", "unbroken_light", "the_threshold", "the_unwriting", "threshold_vault",
             "dread_route_start", "dread_route_elsewhere", "dread_route_figure", "dread_route_exit",
             "nether_forge", "end_seventh_shrine"
@@ -1555,7 +3801,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             for (int i = 0; i < VISIT_ROUTE.length; i++) {
                 sender.sendMessage(" " + (i + 1) + ") " + VISIT_ROUTE[i] + visitSuffix(VISIT_ROUTE[i]));
             }
-            sender.sendMessage("Lanes: prologue | surface | mara | deep | scare | dimensions. Step: /obs visit next");
+            sender.sendMessage("Lanes: prologue | surface | mara | puzzle | deep | scare | dimensions. Step: /obs visit next");
             return;
         }
 
@@ -1568,7 +3814,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else {
             targetIndex = visitIndexFor(op);
             if (targetIndex < 0) {
-                sender.sendMessage("Usage: /obs visit <next|back|list|siteId|prologue|surface|mara|deep|scare|dimensions>");
+                sender.sendMessage("Usage: /obs visit <next|back|list|siteId|prologue|surface|mara|puzzle|deep|scare|dimensions>");
                 return;
             }
         }
@@ -1605,6 +3851,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "prologue", "start", "setup" -> "first_report_lectern_01";
             case "surface", "keepers", "spine" -> "rune_rosetta";
             case "mara", "lecterns" -> "mara_lectern_1";
+            case "puzzle", "puzzles", "mechanic", "mechanics" -> "bow_marker_01";
             case "deep", "payoff", "finale" -> "stone_of_reckoning";
             case "scare", "dread", "watcher" -> "dread_route_start";
             case "dimensions", "dimension", "nether", "end" -> "nether_forge";
@@ -1640,7 +3887,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private List<String> visitSuggestions(String prefix) {
         String want = prefix == null ? "" : prefix.toLowerCase(Locale.ROOT);
         List<String> out = new ArrayList<>();
-        for (String s : new String[]{"next", "back", "list", "prologue", "surface", "mara", "deep", "scare", "dread", "dimensions"}) {
+        for (String s : new String[]{"next", "back", "list", "prologue", "surface", "mara", "puzzle", "mechanics", "deep", "scare", "dread", "dimensions"}) {
             if (s.startsWith(want)) out.add(s);
         }
         for (String siteId : VISIT_ROUTE) {
@@ -1663,6 +3910,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "puzzle", "puzzles", "mechanics" -> sendPuzzleRunbook(sender);
             case "side", "lore" -> sendSideRunbook(sender);
             case "scare", "watcher" -> sendScareRunbook(sender);
+            case "unlit", "village" -> sendUnlitRunbook(sender);
             case "ops", "dashboard" -> sendOpsRunbook(sender);
             case "all" -> {
                 sendSetupRunbook(sender);
@@ -1670,11 +3918,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 sendPuzzleRunbook(sender);
                 sendSideRunbook(sender);
                 sendScareRunbook(sender);
+                sendUnlitRunbook(sender);
                 sendOpsRunbook(sender);
-                sender.sendMessage("Pages: /obs runbook setup | spine | puzzle | side | scare | ops");
+                sender.sendMessage("Pages: /obs runbook setup | spine | puzzle | side | scare | unlit | ops");
             }
             default -> {
-                sender.sendMessage("Usage: /obs runbook [setup|spine|puzzle|side|scare|ops]");
+                sender.sendMessage("Usage: /obs runbook [setup|spine|puzzle|side|scare|unlit|ops]");
                 sender.sendMessage("Tip: run /obs runbook spine during the playable pass.");
             }
         }
@@ -1685,8 +3934,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  1) Test lab: /obs fullrun  OR compact world: /obs director world");
         sender.sendMessage("  2) Verify hardware: /obs audit -> /obs repair -> /obs audit");
         sender.sendMessage("  3) Give tools if needed: /obs lens give <player> and /obs needle <player>");
-        sender.sendMessage("  4) Focused mechanic grid: /obs puzzlepass; side/lore row: /obs sidepass.");
-        sender.sendMessage("  5) Keep Watcher manual/muted with /obs sleep on; rearm with /obs sleep off.");
+        sender.sendMessage("  4) Route proof: /obs descentproof; cross the painted line, then /obs flag list.");
+        sender.sendMessage("  5) Focused mechanic grid: /obs puzzlepass; side/lore row: /obs sidepass.");
+        sender.sendMessage("  6) Keep Watcher manual/muted with /obs sleep on; rearm with /obs sleep off.");
     }
 
     private void sendSpineRunbook(CommandSender sender) {
@@ -1716,6 +3966,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void sendSideRunbook(CommandSender sender) {
         sender.sendMessage("[side/lore lanes]");
         sender.sendMessage("  Fast pass: /obs sidepass, then right-click aro, wenna, coll, dob, old-pell, Wren, and the Keeper.");
+        sender.sendMessage("  Dialogue proof: /obs descentproof, then verify Aro/Coll/Wenna lines point to real places.");
+        sender.sendMessage("  School proof: inspect school_stand; the slate, copy-line, and grey seventh must read without narration.");
+        sender.sendMessage("  Far-water proof: inspect the_far_water; Sella's mirror/count evidence must read from water, stones, and the seventh marker.");
+        sender.sendMessage("  Count/light/watch proof: inspect markers_row, cistern_7, and watch_floor; each must teach a custom through a place, not a paragraph.");
+        sender.sendMessage("  Entry/seal/way-up proof: inspect set_apart_shelf, undercroft_seal, and forgotten_mouth; the line, low read, and return mark must be physically legible.");
+        sender.sendMessage("  Bird proof: inspect deep_bird_coops; Aro's old-bird/coops rumor must resolve to visible empty cages.");
+        sender.sendMessage("  Market proof: inspect deep_market before warm_town_collapse; the market must feel inhabited, not like a signpost.");
+        sender.sendMessage("  Ration proof: inspect ration_table; the half-loaf and crossed child line must be readable without explanation.");
+        sender.sendMessage("  Third-bay proof: inspect third_bay_breach; the Deep Line must be visibly broken downward, not just named.");
+        sender.sendMessage("  Warm-town proof: survey deep_market + warm_town_collapse, /obs placeworld, then confirm the lie has a visible collapse.");
+        sender.sendMessage("  Quest proof: drop bread at dead_stall; place/touch light at third_lamp_stand; return for done lines.");
         sender.sendMessage("  Focused town test: /obs townsfolk spawn, then right-click each townsperson.");
         sender.sendMessage("  Focused keeper test: /obs keeper spawn <node>, right-click, then despawn when done.");
         sender.sendMessage("  Nether lane: stand in Nether, /obs site set nether_forge, then /obs placeworld.");
@@ -1730,8 +3991,21 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  Stage only: /obs dreadpass stage. Then walk /obs visit scare.");
         sender.sendMessage("  Focus presets: /obs test stalker, /obs test hunt, /obs test elsewhere.");
         sender.sendMessage("  Focus checks: /obs test darkness, /obs test sound, /obs test mob, /obs test particles.");
-        sender.sendMessage("  Live ambience should now include close cave/heartbeat sounds, ash, darkness, dimming, wrong sky, and rare humanoid figures.");
+        sender.sendMessage("  Live scares should avoid full-screen commands; use sound, ash, darkness, actionbar whispers, world marks, and rare humanoid figures.");
         sender.sendMessage("  If scare testing gets noisy: /obs sleep on. When ready again: /obs sleep off.");
+    }
+
+    private void sendUnlitRunbook(CommandSender sender) {
+        sender.sendMessage("[unlit expansion]");
+        sender.sendMessage("  1) Build/paste the dark village in observance_unlit.");
+        sender.sendMessage("  2) Survey entry/spawn/exit: /obs unlit site entry, /obs unlit site spawn, /obs unlit site exit.");
+        sender.sendMessage("  3) Stand in each chosen house and run /obs unlit clue lamp|cairn|coop|well|watch|warm|threshold|base.");
+        sender.sendMessage("  4) For edits: /obs unlit buildmode on. Before tests: /obs unlit buildmode off.");
+        sender.sendMessage("  5) Remove inherited village light: /obs unlit darken all [radius].");
+        sender.sendMessage("  6) Fence it: /obs unlit border [radius]. Then verify: /obs unlit audit.");
+        sender.sendMessage("  7) Rehearse pieces: /obs unlit pass light, stalker, extinguish, house, extract.");
+        sender.sendMessage("  8) Handoff check: /obs unlit ready, then tools\\check_unlit_playtest_ready.ps1 -PacketDir rehearsals\\<date>.");
+        sender.sendMessage("  Rule: houses are non-linear. Do not write clue text that assumes expedition numbers.");
     }
 
     private void sendOpsRunbook(CommandSender sender) {
@@ -1862,6 +4136,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             placeMarker(base, Material.COBBLESTONE, Material.CANDLE, true);
         } else if ("bow_marker".equals(type) || "orin_marker".equals(type) || "mara_map_marker".equals(type)) {
             placeMarker(base, Material.CHISELED_STONE_BRICKS, Material.CANDLE, false);
+        } else if ("far_water".equals(type) || "the_far_water".equals(id)) {
+            placeFarWater(base);
         } else if ("sella_pool".equals(type)) {
             placeSellaPool(base);
         } else if ("sella_anchor".equals(type)) {
@@ -1880,14 +4156,46 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             placeMarker(base, Material.POLISHED_DEEPSLATE, Material.SOUL_LANTERN, true);
         } else if ("coop_plate".equals(type)) {
             placeCoopPlate(base, id);
+        } else if ("lampworks_stair".equals(type)) {
+            buildLampworksStair(base);
+        } else if ("lamp_stand".equals(type)) {
+            placeLampStand(base, 3, false);
+        } else if ("painted_line".equals(type)) {
+            placePaintedLineFixture(base);
+        } else if ("dead_stall".equals(type)) {
+            buildDeadStall(base);
+        } else if ("bird_coops".equals(type)) {
+            buildBirdCoops(base);
+        } else if ("school_stand".equals(type)) {
+            buildSchoolStand(base);
+        } else if ("markers_row".equals(type)) {
+            buildMarkersRow(base);
+        } else if ("cistern_7".equals(type)) {
+            buildCisternSeven(base);
+        } else if ("watch_floor".equals(type)) {
+            buildWatchFloor(base);
+        } else if ("set_apart_shelf".equals(type)) {
+            buildSetApartShelf(base);
+        } else if ("undercroft_seal".equals(type)) {
+            buildUndercroftSeal(base);
+        } else if ("forgotten_mouth".equals(type)) {
+            buildForgottenMouth(base);
+        } else if ("deep_market".equals(type)) {
+            buildDeepMarket(base);
+        } else if ("ration_table".equals(type)) {
+            buildRationTable(base);
+        } else if ("third_bay_breach".equals(type)) {
+            buildThirdBayBreach(base);
+        } else if ("warm_town_collapse".equals(type)) {
+            buildWarmTownCollapse(base);
+        } else if ("dread_route".equals(type)) {
+            placeDreadRouteAnchor(base, id);
         } else if ("carve_anchor".equals(type)) {
             placeCarveWall(base);
         } else if ("soul_gallery".equals(id)) {
             placeSoulGallery(base);
         } else if ("herd_anchor".equals(id)) {
             placeHerdAnchor(base);
-        } else if ("the_far_water".equals(id)) {
-            placeFarWater(base);
         } else {
             placeMarker(base, Material.CHISELED_DEEPSLATE, Material.AIR, false);
         }
@@ -1911,6 +4219,66 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 b.setBlockData(l, false);
             }
         }
+    }
+
+    private void placeDreadRouteAnchor(Location base, String id) {
+        org.bukkit.World world = base.getWorld();
+        if (world == null) return;
+        int bx = base.getBlockX();
+        int by = base.getBlockY();
+        int bz = base.getBlockZ();
+
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean rim = Math.abs(dx) == 3 || Math.abs(dz) == 2;
+                Material floor = rim ? Material.POLISHED_BLACKSTONE_BRICKS
+                        : ((dx == 0 || dz == 0) ? Material.SCULK : Material.POLISHED_DEEPSLATE);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (rim && (dx + dz) % 2 == 0) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.DEEPSLATE_BRICK_WALL, false);
+                }
+            }
+        }
+
+        for (int dx : new int[]{-3, 3}) {
+            for (int dy = 0; dy <= 3; dy++) {
+                Material material = dy == 3 ? Material.BLACKSTONE
+                        : (dy == 1 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.DEEPSLATE_BRICKS);
+                world.getBlockAt(bx + dx, by + dy, bz).setType(material, false);
+            }
+            supportToGround(world, bx + dx, by - 1, bz, Material.POLISHED_BLACKSTONE_BRICKS);
+        }
+        placeDreadRib(world, bx, by, bz);
+        world.getBlockAt(bx, by, bz).setType(Material.SCULK_SENSOR, false);
+        world.getBlockAt(bx - 1, by, bz + 1).setType(Material.COBWEB, false);
+        world.getBlockAt(bx + 1, by, bz - 1).setType(Material.SOUL_TORCH, false);
+        world.getBlockAt(bx, by + 3, bz).setType(Material.SOUL_LANTERN, false);
+
+        if (id != null && id.contains("figure")) {
+            world.getBlockAt(bx - 2, by, bz).setType(Material.REDSTONE_TORCH, false);
+            world.getBlockAt(bx - 3, by + 1, bz).setType(Material.BLACKSTONE, false);
+        } else if (id != null && id.contains("elsewhere")) {
+            world.getBlockAt(bx, by - 1, bz).setType(Material.SCULK, false);
+            world.getBlockAt(bx, by + 1, bz).setType(Material.IRON_CHAIN, false);
+        } else if (id != null && id.contains("exit")) {
+            world.getBlockAt(bx, by, bz + 1).setType(Material.SOUL_LANTERN, false);
+            world.getBlockAt(bx - 1, by, bz).setType(Material.BLACK_CANDLE, false);
+        }
+
+        placeDreadLabel(base.clone().add(0, 0, -3), dreadAnchorLines(id));
+    }
+
+    private String[] dreadAnchorLines(String id) {
+        if (id != null && id.contains("elsewhere")) {
+            return new String[]{"the sky", "keeps the", "wrong room", ""};
+        }
+        if (id != null && id.contains("figure")) {
+            return new String[]{"the place", "behind you", "is occupied", ""};
+        }
+        if (id != null && id.contains("exit")) {
+            return new String[]{"count who", "left with", "their shadow", ""};
+        }
+        return new String[]{"the way is", "already", "listening", ""};
     }
 
     private void placeLabLectern(Location base, String title, int pages) {
@@ -2175,11 +4543,47 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void placeFarWater(Location base) {
-        placeSellaPool(base);
+        if (base == null || base.getWorld() == null) return;
         org.bukkit.World world = base.getWorld();
-        if (world != null) {
-            world.getBlockAt(base.getBlockX() + 2, base.getBlockY(), base.getBlockZ()).setType(Material.SEAGRASS, false);
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+
+        for (int dx = -6; dx <= 6; dx++) {
+            for (int dz = -4; dz <= 5; dz++) {
+                boolean shore = Math.abs(dx) == 6 || dz == -4 || dz == 5;
+                boolean still = Math.abs(dx) <= 3 && dz >= -2 && dz <= 2;
+                Material floor = still ? Material.DARK_PRISMARINE
+                        : (shore ? Material.POLISHED_BLACKSTONE_BRICKS : Material.PRISMARINE_BRICKS);
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                if (still) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.WATER, false);
+                } else if (!shore) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.SEAGRASS, false);
+                }
+                if (shore && (Math.abs(dx) == 6 || dz == 5)) {
+                    supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
+                }
+            }
         }
+
+        for (int dx = -3; dx <= 3; dx++) {
+            Material marker = dx == 3 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.CHISELED_DEEPSLATE;
+            world.getBlockAt(bx + dx, by, bz + 4).setType(marker, false);
+            if (dx == 3) world.getBlockAt(bx + dx, by + 1, bz + 4).setType(Material.GRAY_CANDLE, false);
+        }
+
+        for (int dy = 0; dy <= 3; dy++) {
+            world.getBlockAt(bx - 5, by + dy, bz - 2).setType(dy == 3 ? Material.SEA_LANTERN : Material.DARK_PRISMARINE, false);
+            world.getBlockAt(bx + 5, by + dy, bz + 3).setType(dy == 3 ? Material.SEA_LANTERN : Material.DARK_PRISMARINE, false);
+        }
+        world.getBlockAt(bx, by + 1, bz - 3).setType(Material.IRON_CHAIN, false);
+        world.getBlockAt(bx, by, bz - 3).setType(Material.SOUL_LANTERN, false);
+        world.getBlockAt(bx - 2, by, bz - 3).setType(Material.CHISELED_BOOKSHELF, false);
+        world.getBlockAt(bx + 2, by, bz - 3).setType(Material.LECTERN, false);
+
+        placeStandingSign(new Location(world, bx - 4, by, bz + 4), BlockFace.SOUTH,
+                new String[]{"six stones", "and one grey", "count again", ""});
+        placeStandingSign(new Location(world, bx + 4, by, bz - 3), BlockFace.WEST,
+                new String[]{"face water", "read still", "not straight", ""});
     }
 
     private void setSignLines(Block b, boolean waxed, String[] lines) {
@@ -2459,7 +4863,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "title" -> {
                 beatType = "private_message";
                 category = com.observance.watcher.beats.BeatCategory.DIRECTED;
-                payload = "{\"mode\":\"title\",\"title\":\"THE OBSERVANCE\",\"subtitle\":\"something is listening\",\"fade_in\":10,\"stay\":45,\"fade_out\":20}";
+                payload = "{\"mode\":\"actionbar\",\"text\":\"something is listening\"}";
             }
             case "sound" -> {
                 beatType = "private_sound";
@@ -2559,7 +4963,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void sendTestMenu(CommandSender sender) {
         sender.sendMessage("== Observance test presets ==");
         sender.sendMessage("/obs test whisper [player]    - private actionbar text");
-        sender.sendMessage("/obs test title [player]      - title/subtitle pressure");
+        sender.sendMessage("/obs test title [player]      - quiet perception text (actionbar)");
         sender.sendMessage("/obs test sound [player]      - resource-pack whisper");
         sender.sendMessage("/obs test voice [player]      - spatial Keeper voice");
         sender.sendMessage("/obs test darkness [player]   - short darkness effect");
@@ -2608,17 +5012,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 com.observance.watcher.beats.BeatCategory.DIRECTED,
                 "{\"sound\":\"ENTITY_WARDEN_HEARTBEAT\",\"volume\":1.4,\"pitch\":0.55,\"behind\":true,\"offset\":2.5}");
         if (plugin.scheduler() != null) {
-            plugin.scheduler().runLaterSafe("command.test.stalker.title", 20L,
-                    () -> runTestBeat(engine, target, testSite, "stalker-title", "private_message",
+            plugin.scheduler().runLaterSafe("command.test.stalker.pressure", 20L,
+                    () -> runTestBeat(engine, target, testSite, "stalker-pressure", "private_message",
                             com.observance.watcher.beats.BeatCategory.DIRECTED,
-                            "{\"mode\":\"title\",\"title\":\"DON'T TURN\",\"subtitle\":\"someone is standing where you were\",\"fade_in\":0,\"stay\":35,\"fade_out\":20}"));
+                            "{\"mode\":\"actionbar\",\"text\":\"someone is standing where you were\"}"));
             plugin.scheduler().runLaterSafe("command.test.stalker.figure", 35L,
                     () -> runTestBeat(engine, target, testSite, "stalker-figure", "named_mob",
                             com.observance.watcher.beats.BeatCategory.DIRECTED,
                             "{\"entity\":\"WITHER_SKELETON\",\"fallback_entity\":\"STRAY\",\"name\":\"\",\"distance\":8,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":20,\"name_visible\":false}"));
         }
         sender.sendMessage("Observance test: stalker -> " + target.getName()
-                + " -> darkness, close sound, warning title, and a tall silent figure queued.");
+                + " -> darkness, close sound, quiet pressure text, and a tall silent figure queued.");
     }
 
     private void handleHuntTest(CommandSender sender, Player target, Location anchor) {
@@ -2637,10 +5041,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 com.observance.watcher.beats.BeatCategory.DIRECTED,
                 "{\"sound\":\"ENTITY_ENDERMAN_STARE\",\"volume\":1.1,\"pitch\":0.65,\"behind\":true,\"offset\":2.0}");
         if (plugin.scheduler() != null) {
-            plugin.scheduler().runLaterSafe("command.test.hunt.title", 18L,
-                    () -> runTestBeat(engine, target, testSite, "hunt-title", "private_message",
+            plugin.scheduler().runLaterSafe("command.test.hunt.pressure", 18L,
+                    () -> runTestBeat(engine, target, testSite, "hunt-pressure", "private_message",
                             com.observance.watcher.beats.BeatCategory.DIRECTED,
-                            "{\"mode\":\"title\",\"title\":\"RUN\",\"subtitle\":\"do not look for the first one\",\"fade_in\":0,\"stay\":30,\"fade_out\":15}"));
+                            "{\"mode\":\"actionbar\",\"text\":\"do not look for the first one\"}"));
             plugin.scheduler().runLaterSafe("command.test.hunt-figure-a", 25L,
                     () -> runTestBeat(engine, target, testSite, "hunt-figure-a", "named_mob",
                             com.observance.watcher.beats.BeatCategory.DIRECTED,
@@ -2680,10 +5084,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 com.observance.watcher.beats.BeatCategory.DIRECTED,
                 "{\"sound\":\"AMBIENT_CAVE\",\"volume\":1.4,\"pitch\":0.45,\"behind\":true,\"offset\":2.0}");
         if (plugin.scheduler() != null) {
-            plugin.scheduler().runLaterSafe("command.test.elsewhere.title", 18L,
-                    () -> runTestBeat(engine, target, testSite, "elsewhere-title", "private_message",
+            plugin.scheduler().runLaterSafe("command.test.elsewhere.pressure", 18L,
+                    () -> runTestBeat(engine, target, testSite, "elsewhere-pressure", "private_message",
                             com.observance.watcher.beats.BeatCategory.DIRECTED,
-                            "{\"mode\":\"title\",\"title\":\"THIS IS NOT HERE\",\"subtitle\":\"the sky is wearing the wrong room\",\"fade_in\":0,\"stay\":38,\"fade_out\":20}"));
+                            "{\"mode\":\"actionbar\",\"text\":\"the sky is wearing the wrong room\"}"));
             plugin.scheduler().runLaterSafe("command.test.elsewhere-figure", 40L,
                     () -> runTestBeat(engine, target, testSite, "elsewhere-figure", "named_mob",
                             com.observance.watcher.beats.BeatCategory.DIRECTED,
@@ -2797,35 +5201,50 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int bz = origin.getBlockZ() + 8;
 
         for (int dz = 0; dz <= 30; dz++) {
-            for (int dx = -2; dx <= 2; dx++) {
+            boolean narrow = dz >= 13 && dz <= 18;
+            for (int dx = -3; dx <= 3; dx++) {
                 int x = bx + dx;
                 int z = bz + dz;
-                boolean wall = Math.abs(dx) == 2;
-                Material floor = (dz % 5 == 0) ? Material.SCULK : Material.POLISHED_DEEPSLATE;
-                world.getBlockAt(x, by - 1, z).setType(floor, false);
+                boolean passage = Math.abs(dx) <= (narrow ? 1 : 2);
+                boolean wall = !passage || Math.abs(dx) == (narrow ? 1 : 2);
+                Material floor = (dz % 7 == 0 || (dz >= 18 && dx == 0))
+                        ? Material.SCULK : ((dz % 5 == 0) ? Material.DEEPSLATE_TILES : Material.POLISHED_DEEPSLATE);
+                if (passage) {
+                    world.getBlockAt(x, by - 1, z).setType(floor, false);
+                    if (Math.abs(dx) == (narrow ? 1 : 2) || (dx == 0 && dz % 4 == 0)) {
+                        supportToGround(world, x, by - 1, z, Material.DEEPSLATE_BRICKS);
+                    }
+                }
                 for (int dy = 0; dy <= 3; dy++) {
                     Block b = world.getBlockAt(x, by + dy, z);
                     if (wall) {
-                        b.setType(dy == 3 ? Material.BLACKSTONE : Material.DEEPSLATE_BRICKS, false);
+                        b.setType(dy == 3 ? Material.BLACKSTONE : dreadWallMaterial(dz, dy), false);
                     } else {
                         b.setType(Material.AIR, false);
                     }
                 }
+            }
+            if (dz % 5 == 0) {
+                placeDreadRib(world, bx, by, bz + dz);
             }
             if (dz % 6 == 0) {
                 world.getBlockAt(bx - 1, by, bz + dz).setType(Material.SOUL_TORCH, false);
                 world.getBlockAt(bx + 1, by, bz + dz).setType(Material.COBWEB, false);
             }
         }
+        placeDreadGate(world, bx, by, bz);
+        placeDreadElsewhereRoom(world, bx, by, bz + 10);
+        placeDreadFigureNiche(world, bx, by, bz + 20);
+        placeDreadGate(world, bx, by, bz + 29);
 
         Location start = new Location(world, bx, by, bz + 1);
         Location elsewhere = new Location(world, bx, by, bz + 10);
         Location figure = new Location(world, bx, by, bz + 20);
         Location exit = new Location(world, bx, by, bz + 29);
-        placeDreadLabel(start.clone().add(0, 0, -1), new String[]{"DREAD ROUTE", "walk slowly", "sound on", ""});
-        placeDreadLabel(elsewhere.clone().add(0, 0, -1), new String[]{"ELSEWHERE", "the sky lies", "do not stop", ""});
-        placeDreadLabel(figure.clone().add(0, 0, -1), new String[]{"FIGURE", "look back once", "then move", ""});
-        placeDreadLabel(exit.clone().add(0, 0, -1), new String[]{"EXIT", "count who left", "", ""});
+        placeDreadLabel(start.clone().add(0, 0, -1), new String[]{"the way is", "already", "listening", ""});
+        placeDreadLabel(elsewhere.clone().add(0, 0, -1), new String[]{"the sky", "keeps the", "wrong room", ""});
+        placeDreadLabel(figure.clone().add(0, 0, -1), new String[]{"the place", "behind you", "is occupied", ""});
+        placeDreadLabel(exit.clone().add(0, 0, -1), new String[]{"count who", "left with", "their shadow", ""});
         world.getBlockAt(elsewhere.getBlockX(), elsewhere.getBlockY(), elsewhere.getBlockZ()).setType(Material.SCULK_SENSOR, false);
         world.getBlockAt(figure.getBlockX(), figure.getBlockY(), figure.getBlockZ()).setType(Material.REDSTONE_TORCH, false);
         world.getBlockAt(exit.getBlockX(), exit.getBlockY(), exit.getBlockZ()).setType(Material.SOUL_LANTERN, false);
@@ -2842,10 +5261,71 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return placed;
     }
 
+    private Material dreadWallMaterial(int dz, int dy) {
+        if (dy == 0 && dz % 7 == 0) return Material.SCULK;
+        if ((dz + dy) % 5 == 0) return Material.CRACKED_DEEPSLATE_BRICKS;
+        if ((dz + dy) % 3 == 0) return Material.DEEPSLATE_TILES;
+        return Material.DEEPSLATE_BRICKS;
+    }
+
+    private void placeDreadRib(org.bukkit.World world, int bx, int by, int z) {
+        for (int x = bx - 4; x <= bx + 4; x++) {
+            world.getBlockAt(x, by + 3, z).setType(Material.BLACKSTONE, false);
+        }
+        for (int x = bx - 2; x <= bx + 2; x++) {
+            world.getBlockAt(x, by + 2, z).setType(Material.IRON_CHAIN, false);
+        }
+        world.getBlockAt(bx - 4, by, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+        world.getBlockAt(bx + 4, by, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+    }
+
+    private void placeDreadGate(org.bukkit.World world, int bx, int by, int z) {
+        for (int dx = -3; dx <= 3; dx++) {
+            world.getBlockAt(bx + dx, by - 1, z).setType(Material.POLISHED_BLACKSTONE_BRICKS, false);
+            world.getBlockAt(bx + dx, by + 4, z).setType(Material.BLACKSTONE, false);
+        }
+        for (int dx : new int[]{-3, 3}) {
+            for (int dy = 0; dy <= 4; dy++) {
+                world.getBlockAt(bx + dx, by + dy, z).setType(Material.POLISHED_BLACKSTONE_BRICKS, false);
+            }
+            supportToGround(world, bx + dx, by - 1, z, Material.POLISHED_BLACKSTONE_BRICKS);
+        }
+    }
+
+    private void placeDreadElsewhereRoom(org.bukkit.World world, int bx, int by, int z) {
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean rim = Math.abs(dx) == 3 || Math.abs(dz) == 2;
+                world.getBlockAt(bx + dx, by - 1, z + dz)
+                        .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.SCULK, false);
+                if (rim) {
+                    world.getBlockAt(bx + dx, by, z + dz).setType(Material.DEEPSLATE_BRICKS, false);
+                    world.getBlockAt(bx + dx, by + 1, z + dz).setType(Material.CRACKED_DEEPSLATE_BRICKS, false);
+                } else {
+                    world.getBlockAt(bx + dx, by, z + dz).setType(Material.AIR, false);
+                    world.getBlockAt(bx + dx, by + 1, z + dz).setType(Material.AIR, false);
+                }
+            }
+        }
+        world.getBlockAt(bx, by + 2, z).setType(Material.IRON_CHAIN, false);
+        world.getBlockAt(bx, by + 3, z).setType(Material.SOUL_LANTERN, false);
+    }
+
+    private void placeDreadFigureNiche(org.bukkit.World world, int bx, int by, int z) {
+        for (int dx = -3; dx <= -1; dx++) {
+            world.getBlockAt(bx + dx, by - 1, z).setType(dx == -3 ? Material.BLACKSTONE : Material.SCULK, false);
+            world.getBlockAt(bx + dx, by, z).setType(Material.AIR, false);
+            world.getBlockAt(bx + dx, by + 1, z).setType(Material.AIR, false);
+        }
+        world.getBlockAt(bx - 4, by, z).setType(Material.BLACKSTONE, false);
+        world.getBlockAt(bx - 4, by + 1, z).setType(Material.BLACKSTONE, false);
+        world.getBlockAt(bx - 3, by, z).setType(Material.REDSTONE_TORCH, false);
+    }
+
     private void placeDreadLabel(Location loc, String[] lines) {
         if (loc == null || loc.getWorld() == null) return;
         Block sign = loc.getBlock();
-        sign.setType(Material.OAK_SIGN, false);
+        sign.setType(Material.DARK_OAK_SIGN, false);
         if (sign.getBlockData() instanceof Rotatable r) {
             r.setRotation(BlockFace.SOUTH);
             sign.setBlockData(r, false);
@@ -3052,6 +5532,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("Keeper: unavailable.");
         }
 
+        int sideProofPlaced = placeSchoolStandProof(origin.clone().add(-24, 0, 72));
+        sideProofPlaced += placeFarWaterProof(origin.clone().add(-24, 0, 54));
+        sideProofPlaced += placeMarkersRowProof(origin.clone().add(-24, 0, 90));
+        sideProofPlaced += placeCisternProof(origin.clone().add(-24, 0, 108));
+        sideProofPlaced += placeWatchFloorProof(origin.clone().add(-24, 0, 126));
+        sideProofPlaced += placeSetApartProof(origin.clone().add(-24, 0, 144));
+        sideProofPlaced += placeUndercroftSealProof(origin.clone().add(-24, 0, 162));
+        sideProofPlaced += placeForgottenMouthProof(origin.clone().add(-24, 0, 180));
+        sideProofPlaced += placeDeepMarketProof(origin.clone().add(-24, 0, 18));
+        sideProofPlaced += placeRationTableProof(origin.clone().add(-24, 0, 0));
+        sideProofPlaced += placeThirdBayProof(origin.clone().add(-24, 0, -18));
+        sideProofPlaced += placeWarmTownProof(origin.clone().add(-24, 0, 36));
+        sender.sendMessage("Side-destination proof: " + sideProofPlaced
+                + "/12 staged. School stand, far water, marker row, Cistern 7, watch-floor, set-apart shelf, undercroft seal, way-up, market, ration table, third bay, and Aro's warm-town lie should resolve to visible places.");
         sender.sendMessage("Checklist: right-click all five townsfolk, Wren, then the Keeper; watch chat/dialogue.");
         sender.sendMessage("Gates: /obs flag list, or /obs flag set companion_revealed for reckoning tests.");
         sender.sendMessage("Then run /obs coverage; side/lore should show all NPC bodies present.");
@@ -3535,6 +6029,454 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(" Repair: /obs prepworld for a compact playable pass, or /obs site set <id> + /obs placeworld for curated placement.");
     }
 
+    private void handlePreflight(CommandSender sender) {
+        sender.sendMessage("== Observance preflight ==");
+        handleAudit(sender);
+        handleVisualAudit(sender);
+        handleDialogueAudit(sender);
+        handleCoverage(sender);
+        sender.sendMessage("Preflight rule: hardware green is not enough; visualaudit must not report REPLACE issues, and NPC claims must have world/mechanic proof before live placement.");
+    }
+
+    private void handleDialogueAudit(CommandSender sender) {
+        sender.sendMessage("== Observance dialogue-world audit ==");
+        sender.sendMessage("Rule: NPC factual claims are contracts. Places, routes, marks, rules, and consequences must exist in-world.");
+        sender.sendMessage("For each risky NPC line, prove:");
+        sender.sendMessage("  1) the route/landmark is physically findable from where the player hears it;");
+        sender.sendMessage("  2) the named object or mark exists with a clear visual identity;");
+        sender.sendMessage("  3) doing the implied action matters through a flag, beat, puzzle, scare, reward, or rewrite;");
+        sender.sendMessage("  4) side hints lead to payoff, not flavor that players can safely ignore.");
+        sender.sendMessage("High-risk current checks: school stand, far water, marker row, Cistern 7, watch-floor, set-apart entry 5, undercroft seal, forgotten way-up, the big Stair, painted line, lamp-house/Lamp-works, third lamp stand, dead-stall, bird coops, Deep Market, ration table, third bay, warm-town lie, bowing stones, and black-moon sleep rule.");
+        sender.sendMessage("Example: if an NPC says to cross a painted line down the stairs, there must be stairs, a visible line, and a consequence for crossing it.");
+        sender.sendMessage("Tool: /obs descentproof stages the Stair proof chain plus empty bird coops; /obs prepworld or sidepass stages side-destination proof sites.");
+        sender.sendMessage("Doc: design/DIALOGUE-WORLD-AUDIT.md");
+    }
+
+    private void handleVisualAudit(CommandSender sender) {
+        if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
+            sender.sendMessage("Observance visualaudit: no sites loaded. Run /obs reload or check sites.yml.");
+            return;
+        }
+
+        int checked = 0;
+        int passed = 0;
+        int reshape = 0;
+        int replace = 0;
+        int skipped = 0;
+        List<String> issues = new ArrayList<>();
+
+        for (Site site : plugin.sites().all()) {
+            if (site == null || !site.enabled() || !site.isPlaced()) {
+                skipped++;
+                continue;
+            }
+            if (!isVisualAuditSite(site)) {
+                skipped++;
+                continue;
+            }
+            Location loc = site.location();
+            if (loc == null || loc.getWorld() == null) {
+                skipped++;
+                continue;
+            }
+            checked++;
+            String issue = visualIssue(site, loc);
+            if (issue == null) {
+                passed++;
+            } else {
+                if (issue.startsWith("REPLACE")) replace++;
+                else reshape++;
+                addAuditIssue(issues, issue);
+            }
+        }
+
+        sender.sendMessage("== Observance visual audit ==");
+        sender.sendMessage(" checked:  " + checked);
+        sender.sendMessage(" keep:     " + passed);
+        sender.sendMessage(" reshape:  " + reshape);
+        sender.sendMessage(" replace:  " + replace);
+        sender.sendMessage(" skipped:  " + skipped + " (minor hardware/unplaced/disabled)");
+        if (issues.isEmpty()) {
+            sender.sendMessage(" Result: no obvious test-prop visual failures found.");
+            sender.sendMessage(" Next: still do a human screenshot pass using design/VISUAL-RESCUE.md.");
+            return;
+        }
+        sender.sendMessage(" Visual issues:");
+        for (String issue : issues) sender.sendMessage("  - " + issue);
+        if (issues.size() >= 12) sender.sendMessage("  - ...showing first 12 visual issues only.");
+        sender.sendMessage(" Rule: REPLACE means the physical form is too weak for launch; RESHAPE means rebuild/scale/light before live placement.");
+    }
+
+    private String visualIssue(Site site, Location loc) {
+        VisualScan scan = scanVisualSite(loc, isMajorVisualSite(site) ? 6 : 4, isMajorVisualSite(site) ? 5 : 3);
+        boolean major = isMajorVisualSite(site);
+        List<String> notes = new ArrayList<>();
+        if (scan.nonAir < (major ? 24 : 8)) notes.add("too little built form");
+        if (scan.footprint < (major ? 10 : 4)) notes.add("tiny footprint");
+        if (scan.maxDy < (major ? 3 : 1)) notes.add("flat/no silhouette");
+        if (scan.materials < (major ? 4 : 2)) notes.add("low material variety");
+        if (major && needsDeepHoldPalette(site) && scan.deepHoldMaterials == 0) notes.add("no Deep Hold palette anchor");
+        if (major && scan.paletteClashes > Math.max(4, scan.nonAir / 5)) notes.add("palette feels non-cohesive");
+        if (major && scan.signs > 4) notes.add("too many signs / reads like labels");
+        if (needsVisualLight(site) && !scan.hasLight) notes.add("no intentional light");
+        if (needsAnswerSurface(site) && scan.signs == 0) notes.add("no answer surface");
+        if (needsFocalObject(site) && scan.focalObjects < 1) notes.add("no focal object to inspect");
+        if (needsRouteShape(site) && Math.max(scan.spanX, scan.spanZ) < 6) notes.add("no route shape / approach vector");
+        if (needsGatherableBodySpace(site) && scan.bodySpace < 6) notes.add("no gatherable body space");
+        if ("painted_line".equals(site.type()) && scan.lineBlocks < 3) notes.add("painted line is not visibly crossable");
+        if ("dread_route".equals(site.type()) && (Math.max(scan.spanX, scan.spanZ) < 5 || scan.bodySpace < 4)) {
+            notes.add("dread beat has no sightline or exit space");
+        }
+        if (scan.operatorLabels > 0) notes.add("operator/test labels visible");
+        if (notes.isEmpty()) return null;
+        String severity = (major && (scan.nonAir < 12 || scan.footprint < 6 || scan.operatorLabels > 0
+                || (needsAnswerSurface(site) && scan.signs == 0)
+                || (needsGatherableBodySpace(site) && scan.bodySpace < 3)
+                || ("painted_line".equals(site.type()) && scan.lineBlocks < 2)))
+                ? "REPLACE " : "RESHAPE ";
+        return severity + site.id() + ": " + String.join("; ", notes) + ".";
+    }
+
+    private VisualScan scanVisualSite(Location loc, int radius, int vertical) {
+        org.bukkit.World world = loc.getWorld();
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        int r = Math.max(2, Math.min(8, radius));
+        int v = Math.max(2, Math.min(6, vertical));
+        Set<Material> materials = new HashSet<>();
+        Set<String> footprint = new HashSet<>();
+        int nonAir = 0;
+        int maxDy = 0;
+        boolean hasLight = false;
+        int signs = 0;
+        int operatorLabels = 0;
+        int deepHoldMaterials = 0;
+        int paletteClashes = 0;
+        int focalObjects = 0;
+        int lineBlocks = 0;
+        int bodySpace = 0;
+        int minDx = Integer.MAX_VALUE;
+        int maxDx = Integer.MIN_VALUE;
+        int minDz = Integer.MAX_VALUE;
+        int maxDz = Integer.MIN_VALUE;
+
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dz = -r; dz <= r; dz++) {
+                if ((dx * dx) + (dz * dz) > r * r) continue;
+                Block floor = world.getBlockAt(bx + dx, by - 1, bz + dz);
+                Block feet = world.getBlockAt(bx + dx, by, bz + dz);
+                Block head = world.getBlockAt(bx + dx, by + 1, bz + dz);
+                if (floor.getType().isSolid() && feet.getType().isAir() && head.getType().isAir()) {
+                    bodySpace++;
+                }
+                for (int dy = -1; dy <= v; dy++) {
+                    Block b = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                    Material type = b.getType();
+                    if (type.isAir()) continue;
+                    nonAir++;
+                    maxDy = Math.max(maxDy, dy);
+                    minDx = Math.min(minDx, dx);
+                    maxDx = Math.max(maxDx, dx);
+                    minDz = Math.min(minDz, dz);
+                    maxDz = Math.max(maxDz, dz);
+                    materials.add(type);
+                    footprint.add(dx + "," + dz);
+                    if (isDeepHoldPalette(type)) deepHoldMaterials++;
+                    if (isPaletteClash(type)) paletteClashes++;
+                    if (isVisualLight(type)) hasLight = true;
+                    if (isFocalObject(type)) focalObjects++;
+                    if (isLineMaterial(type) && Math.abs(dy) <= 1) lineBlocks++;
+                    if (b.getState() instanceof Sign sign) {
+                        signs++;
+                        focalObjects++;
+                        if (hasOperatorLabel(sign)) operatorLabels++;
+                    }
+                }
+            }
+        }
+        int spanX = nonAir == 0 ? 0 : (maxDx - minDx + 1);
+        int spanZ = nonAir == 0 ? 0 : (maxDz - minDz + 1);
+        return new VisualScan(nonAir, footprint.size(), materials.size(), maxDy,
+                hasLight, signs, operatorLabels, deepHoldMaterials, paletteClashes,
+                spanX, spanZ, bodySpace, focalObjects, lineBlocks);
+    }
+
+    private record VisualScan(int nonAir, int footprint, int materials, int maxDy,
+                              boolean hasLight, int signs, int operatorLabels,
+                              int deepHoldMaterials, int paletteClashes,
+                              int spanX, int spanZ, int bodySpace, int focalObjects,
+                              int lineBlocks) { }
+
+    private static boolean isVisualAuditSite(Site site) {
+        if (site == null) return false;
+        String id = site.id();
+        String type = site.type();
+        return isCoreAuditSite(id)
+                || isLaunchRequiredSite(id)
+                || "dread_route".equals(type)
+                || "answer_sign".equals(type)
+                || "keeper_stone".equals(type)
+                || "structure".equals(type)
+                || "marker".equals(type)
+                || "accepting_floor".equals(type)
+                || "seventh_shrine".equals(type)
+                || "the_threshold".equals(type)
+                || "keeper_altar".equals(type)
+                || "coop_plate".equals(type)
+                || "lampworks_stair".equals(type)
+                || "lamp_stand".equals(type)
+                || "painted_line".equals(type)
+                || "dead_stall".equals(type)
+                || "far_water".equals(type)
+                || "bird_coops".equals(type)
+                || "school_stand".equals(type)
+                || "markers_row".equals(type)
+                || "cistern_7".equals(type)
+                || "watch_floor".equals(type)
+                || "set_apart_shelf".equals(type)
+                || "undercroft_seal".equals(type)
+                || "forgotten_mouth".equals(type)
+                || "deep_market".equals(type)
+                || "ration_table".equals(type)
+                || "third_bay_breach".equals(type)
+                || "warm_town_collapse".equals(type);
+    }
+
+    private static boolean isMajorVisualSite(Site site) {
+        if (site == null || site.id() == null) return false;
+        String id = site.id();
+        String type = site.type();
+        return isLaunchRequiredSite(id)
+                || id.startsWith("stone_")
+                || id.equals("rune_rosetta")
+                || id.equals("stone_of_reckoning")
+                || id.equals("the_threshold")
+                || id.equals("the_cold_hearth")
+                || id.equals("unbroken_light")
+                || id.equals("the_unwriting")
+                || id.equals("threshold_vault")
+                || id.equals("nether_forge")
+                || id.equals("end_seventh_shrine")
+                || id.equals("lampworks_stair")
+                || id.equals("dead_stall")
+                || id.equals("the_far_water")
+                || id.equals("school_stand")
+                || id.equals("markers_row")
+                || id.equals("cistern_7")
+                || id.equals("watch_floor")
+                || id.equals("set_apart_shelf")
+                || id.equals("undercroft_seal")
+                || id.equals("forgotten_mouth")
+                || id.equals("deep_bird_coops")
+                || id.equals("deep_market")
+                || id.equals("ration_table")
+                || id.equals("third_bay_breach")
+                || id.equals("warm_town_collapse")
+                || "dread_route".equals(type)
+                || "accepting_floor".equals(type)
+                || "seventh_shrine".equals(type)
+                || "lampworks_stair".equals(type)
+                || "dead_stall".equals(type)
+                || "far_water".equals(type)
+                || "bird_coops".equals(type)
+                || "school_stand".equals(type)
+                || "markers_row".equals(type)
+                || "cistern_7".equals(type)
+                || "watch_floor".equals(type)
+                || "set_apart_shelf".equals(type)
+                || "undercroft_seal".equals(type)
+                || "forgotten_mouth".equals(type)
+                || "deep_market".equals(type)
+                || "ration_table".equals(type)
+                || "third_bay_breach".equals(type)
+                || "warm_town_collapse".equals(type);
+    }
+
+    private static boolean needsAnswerSurface(Site site) {
+        if (site == null) return false;
+        String type = site.type();
+        return "answer_sign".equals(type) || "keeper_stone".equals(type);
+    }
+
+    private static boolean needsVisualLight(Site site) {
+        if (site == null) return false;
+        String type = site.type();
+        return isMajorVisualSite(site)
+                || "report_lectern".equals(type)
+                || "mara_lectern".equals(type)
+                || "dread_route".equals(type)
+                || "lampworks_stair".equals(type)
+                || "lamp_stand".equals(type)
+                || "dead_stall".equals(type)
+                || "far_water".equals(type)
+                || "bird_coops".equals(type)
+                || "school_stand".equals(type)
+                || "markers_row".equals(type)
+                || "cistern_7".equals(type)
+                || "watch_floor".equals(type)
+                || "set_apart_shelf".equals(type)
+                || "undercroft_seal".equals(type)
+                || "forgotten_mouth".equals(type)
+                || "deep_market".equals(type)
+                || "ration_table".equals(type)
+                || "third_bay_breach".equals(type)
+                || "warm_town_collapse".equals(type);
+    }
+
+    private static boolean needsDeepHoldPalette(Site site) {
+        if (site == null) return false;
+        String id = site.id();
+        String type = site.type();
+        if ("first_report_lectern_01".equals(id)
+                || "first_marker_01".equals(id)
+                || "report_lectern".equals(type)
+                || "mara_lectern".equals(type)) {
+            return false;
+        }
+        return isMajorVisualSite(site);
+    }
+
+    private static boolean needsFocalObject(Site site) {
+        if (site == null) return false;
+        String type = site.type();
+        return isMajorVisualSite(site)
+                || "report_lectern".equals(type)
+                || "mara_lectern".equals(type)
+                || "vaun_hoard_chest".equals(type)
+                || "vaun_bookshelf".equals(type);
+    }
+
+    private static boolean needsRouteShape(Site site) {
+        if (site == null) return false;
+        String type = site.type();
+        return "lampworks_stair".equals(type)
+                || "forgotten_mouth".equals(type)
+                || "deep_market".equals(type)
+                || "third_bay_breach".equals(type)
+                || "warm_town_collapse".equals(type)
+                || "dread_route".equals(type);
+    }
+
+    private static boolean needsGatherableBodySpace(Site site) {
+        if (site == null) return false;
+        String type = site.type();
+        return "accepting_floor".equals(type)
+                || "keeper_altar".equals(type)
+                || "coop_plate".equals(type)
+                || "the_threshold".equals(type)
+                || "seventh_shrine".equals(type)
+                || "dread_route".equals(type);
+    }
+
+    private static boolean isVisualLight(Material type) {
+        if (type == null) return false;
+        String n = type.name();
+        return n.contains("TORCH")
+                || n.contains("LANTERN")
+                || n.contains("CANDLE")
+                || n.contains("CAMPFIRE")
+                || n.contains("FIRE")
+                || n.contains("GLOWSTONE")
+                || n.contains("SEA_LANTERN")
+                || n.contains("SHROOMLIGHT")
+                || n.contains("FROGLIGHT")
+                || n.equals("BEACON")
+                || n.equals("END_ROD")
+                || n.equals("LIGHT");
+    }
+
+    private static boolean isFocalObject(Material type) {
+        if (type == null) return false;
+        String n = type.name();
+        return n.contains("SIGN")
+                || n.contains("LECTERN")
+                || n.contains("BOOKSHELF")
+                || n.contains("CHEST")
+                || n.contains("BARREL")
+                || n.contains("CAULDRON")
+                || n.contains("BELL")
+                || n.contains("CANDLE")
+                || n.contains("LANTERN")
+                || n.contains("CAMPFIRE")
+                || n.contains("CHAIN")
+                || n.contains("BARS")
+                || n.contains("SKULL")
+                || n.contains("HEAD")
+                || n.equals("LODESTONE")
+                || n.equals("RESPAWN_ANCHOR")
+                || n.equals("BEACON")
+                || n.equals("CHISELED_BOOKSHELF")
+                || n.equals("CALIBRATED_SCULK_SENSOR");
+    }
+
+    private static boolean isLineMaterial(Material type) {
+        if (type == null) return false;
+        String n = type.name();
+        return n.equals("BLACK_CONCRETE")
+                || n.equals("BLACK_CARPET")
+                || n.equals("BLACKSTONE")
+                || n.equals("POLISHED_BLACKSTONE")
+                || n.equals("POLISHED_BLACKSTONE_SLAB")
+                || n.equals("POLISHED_BLACKSTONE_PRESSURE_PLATE")
+                || n.equals("DEEPSLATE_TILE_SLAB")
+                || n.equals("DEEPSLATE_BRICK_SLAB");
+    }
+
+    private static boolean isDeepHoldPalette(Material type) {
+        if (type == null) return false;
+        String n = type.name();
+        return n.contains("DEEPSLATE")
+                || n.contains("BLACKSTONE")
+                || n.contains("BASALT")
+                || n.contains("TUFF")
+                || n.contains("COPPER")
+                || n.contains("SCULK")
+                || n.contains("SOUL")
+                || n.contains("PRISMARINE")
+                || n.contains("END_STONE")
+                || n.equals("OBSIDIAN")
+                || n.equals("CRYING_OBSIDIAN")
+                || n.equals("BEDROCK");
+    }
+
+    private static boolean isPaletteClash(Material type) {
+        if (type == null) return false;
+        String n = type.name();
+        if (n.contains("REDSTONE")) return false;
+        if (n.equals("BLACK_CONCRETE") || n.equals("GRAY_CONCRETE") || n.equals("LIGHT_GRAY_CONCRETE")
+                || n.equals("BROWN_CARPET") || n.equals("GRAY_CARPET") || n.equals("BLACK_CANDLE")) return false;
+        if (n.equals("GRASS_BLOCK") || n.equals("OAK_LEAVES") || n.equals("HAY_BLOCK")
+                || n.equals("CAKE") || n.equals("WATER")) return false;
+        return n.contains("WOOL")
+                || n.contains("TERRACOTTA")
+                || n.contains("GLAZED")
+                || (n.contains("CONCRETE") && !n.contains("BLACK") && !n.contains("GRAY") && !n.contains("BROWN"))
+                || n.equals("DIAMOND_BLOCK")
+                || n.equals("GOLD_BLOCK")
+                || n.equals("EMERALD_BLOCK")
+                || n.equals("LAPIS_BLOCK")
+                || n.equals("NETHERITE_BLOCK");
+    }
+
+    private static boolean hasOperatorLabel(Sign sign) {
+        if (sign == null) return false;
+        for (int i = 0; i < 4; i++) {
+            String line = sign.getLine(i);
+            if (line == null) continue;
+            String s = line.toLowerCase(Locale.ROOT);
+            if (s.contains("dread route")
+                    || s.contains("walk slowly")
+                    || s.contains("sound on")
+                    || s.equals("figure")
+                    || s.equals("exit")
+                    || s.contains("look back once")
+                    || s.contains("then move")
+                    || s.contains("test")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void handleRepair(CommandSender sender) {
         if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
             sender.sendMessage("Observance repair: no sites loaded. Run /obs reload or check sites.yml.");
@@ -3587,8 +6529,76 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             fillMaraLockBook(block, index, marked);
             return true;
         }
-        if ("answer_sign".equals(type) && !hasSignNear(loc, Math.max(1, site.radius()))) {
+        if (needsAnswerSurface(site) && !hasSignNear(loc, Math.max(1, site.radius()))) {
             placeAnswerSign(loc);
+            return true;
+        }
+        if ("lampworks_stair".equals(type)) {
+            buildLampworksStair(loc);
+            return true;
+        }
+        if ("lamp_stand".equals(type)) {
+            placeLampStand(loc, 3, false);
+            return true;
+        }
+        if ("painted_line".equals(type)) {
+            placePaintedLineFixture(loc);
+            return true;
+        }
+        if ("dead_stall".equals(type)) {
+            buildDeadStall(loc);
+            return true;
+        }
+        if ("far_water".equals(type)) {
+            placeFarWater(loc);
+            return true;
+        }
+        if ("bird_coops".equals(type)) {
+            buildBirdCoops(loc);
+            return true;
+        }
+        if ("school_stand".equals(type)) {
+            buildSchoolStand(loc);
+            return true;
+        }
+        if ("markers_row".equals(type)) {
+            buildMarkersRow(loc);
+            return true;
+        }
+        if ("cistern_7".equals(type)) {
+            buildCisternSeven(loc);
+            return true;
+        }
+        if ("watch_floor".equals(type)) {
+            buildWatchFloor(loc);
+            return true;
+        }
+        if ("set_apart_shelf".equals(type)) {
+            buildSetApartShelf(loc);
+            return true;
+        }
+        if ("undercroft_seal".equals(type)) {
+            buildUndercroftSeal(loc);
+            return true;
+        }
+        if ("forgotten_mouth".equals(type)) {
+            buildForgottenMouth(loc);
+            return true;
+        }
+        if ("deep_market".equals(type)) {
+            buildDeepMarket(loc);
+            return true;
+        }
+        if ("ration_table".equals(type)) {
+            buildRationTable(loc);
+            return true;
+        }
+        if ("third_bay_breach".equals(type)) {
+            buildThirdBayBreach(loc);
+            return true;
+        }
+        if ("warm_town_collapse".equals(type)) {
+            buildWarmTownCollapse(loc);
             return true;
         }
         if ("vaun_bookshelf".equals(type) && block.getType() != Material.CHISELED_BOOKSHELF) {
@@ -3642,13 +6652,112 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 && block.getType() != Material.BARREL) {
             return "FAIL " + site.id() + ": expected chest/barrel hardware, found " + block.getType() + ".";
         }
-        if ("answer_sign".equals(type) && !hasSignNear(loc, Math.max(1, site.radius()))) {
-            return "FAIL " + site.id() + ": no sign found inside answer radius.";
+        if (needsAnswerSurface(site) && !hasSignNear(loc, Math.max(1, site.radius()))) {
+            return "FAIL " + site.id() + ": no editable answer sign found inside answer radius.";
+        }
+        if ("painted_line".equals(type) && block.getType() != Material.BLACK_CONCRETE) {
+            return "FAIL " + site.id() + ": expected black line block, found " + block.getType() + ".";
+        }
+        if ("bird_coops".equals(type) && !hasMaterialNear(loc, Math.max(2, site.radius()), Material.IRON_BARS)) {
+            return "FAIL " + site.id() + ": expected visible cage bars inside coops radius.";
+        }
+        if ("far_water".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.DARK_PRISMARINE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SEA_LANTERN)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected far-water mirror pool, count stones, copybook shelf, and shoreline signs inside radius.";
+        }
+        if ("school_stand".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected school slate, copybook shelf, six stones, grey seventh marker, and copy-line signs inside radius.";
+        }
+        if ("markers_row".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_DEEPSLATE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BROWN_CARPET)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected six bow-stones, worn bow marks, grey seventh hollow, and marker-row signs inside radius.";
+        }
+        if ("cistern_7".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.DARK_PRISMARINE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.END_STONE_BRICKS)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected black water, pale arch, good-oil jars, and cistern warning signs inside radius.";
+        }
+        if ("watch_floor".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SOUL_LANTERN)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CANDLE)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected watch-log lectern, black-moon lights, finished-log signs, and dark-hours proof inside radius.";
+        }
+        if ("set_apart_shelf".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LANTERN)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected entry-5 shelf, cold/warm lamp contrast, redacted count, and set-apart signs inside radius.";
+        }
+        if ("undercroft_seal".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_DEEPSLATE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.POLISHED_DEEPSLATE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SOUL_LANTERN)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected sealed door, mason line, low bow-to-read line, and undercroft warning signs inside radius.";
+        }
+        if ("forgotten_mouth".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRASS_BLOCK)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GLOWSTONE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SEA_LANTERN)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected true way-up mouth, healed surface, return mark, and way-up signs inside radius.";
+        }
+        if ("deep_market".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected market stalls, lectern-shelf books, and market board inside radius.";
+        }
+        if ("ration_table".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CAKE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected ration table, half-loaf marker, and R14/child-line signs inside radius.";
+        }
+        if ("third_bay_breach".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SCULK)
+                || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected broken Deep Line, downward breach, and third-bay warning signs inside radius.";
+        }
+        if ("warm_town_collapse".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAVEL) || !hasSignNear(loc, Math.max(3, site.radius())))) {
+            return "FAIL " + site.id() + ": expected collapse rubble and WARDEN-3 notice inside warm-town radius.";
         }
         if (isCoreAuditSite(site.id()) && block.getType() == Material.AIR) {
             return "FAIL " + site.id() + ": anchor block is air.";
         }
         return null;
+    }
+
+    private boolean hasMaterialNear(Location loc, int radius, Material material) {
+        if (loc == null || loc.getWorld() == null || material == null) return false;
+        org.bukkit.World world = loc.getWorld();
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        int r = Math.max(1, Math.min(8, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -2; dy <= 4; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (world.getBlockAt(bx + dx, by + dy, bz + dz).getType() == material) return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean hasSignNear(Location loc, int radius) {
@@ -3674,9 +6783,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                  "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
                  "stone_of_reckoning", "the_cold_hearth", "unbroken_light", "the_threshold",
                  "the_unwriting", "threshold_vault",
+                 "lampworks_stair", "third_lamp_stand", "painted_line", "dead_stall", "the_far_water", "school_stand", "markers_row", "cistern_7", "watch_floor", "set_apart_shelf", "undercroft_seal", "forgotten_mouth", "deep_bird_coops", "deep_market", "ration_table", "third_bay_breach", "warm_town_collapse",
                  "mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5" -> true;
             default -> false;
         };
+    }
+
+    private static boolean isLaunchRequiredSite(String id) {
+        if (id == null) return false;
+        for (String required : LAUNCH_REQUIRED_SITES) {
+            if (required.equals(id)) return true;
+        }
+        return false;
     }
 
     private static void addAuditIssue(List<String> issues, String issue) {
@@ -3741,7 +6859,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "sidepass", "puzzlepass", "dreadpass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "director", "audit", "visualaudit", "dialogueaudit", "preflight", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "unlit", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "descentproof", "sidepass", "puzzlepass", "dreadpass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
@@ -3751,7 +6869,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {
             for (String s : visitSuggestions(args[1])) out.add(s);
         } else if (args.length == 2 && args[0].equalsIgnoreCase("runbook")) {
-            for (String s : new String[]{"setup", "spine", "puzzle", "side", "scare", "ops"}) {
+            for (String s : new String[]{"setup", "spine", "puzzle", "side", "scare", "unlit", "ops"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("rehearse")) {
@@ -3772,9 +6890,46 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     out.add(p.getName());
                 }
             }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("unlit")) {
+            for (String s : new String[]{"site", "clue", "pass", "audit", "darken", "border", "buildmode", "ready"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit")
+                && (args[1].equalsIgnoreCase("site") || args[1].equalsIgnoreCase("clue"))) {
+            for (String s : new String[]{"entry", "spawn", "exit", "lamp", "cairn", "coop", "well", "watch", "warm", "threshold", "base"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit") && args[1].equalsIgnoreCase("border")) {
+            for (String s : new String[]{"64", "96", "128"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit") && args[1].equalsIgnoreCase("buildmode")) {
+            for (String s : new String[]{"on", "off", "status"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit") && args[1].equalsIgnoreCase("darken")) {
+            for (String s : new String[]{"all", "border", "8", "10", "16", "24", "32"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("unlit") && args[1].equalsIgnoreCase("darken")
+                && (args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("border"))) {
+            for (String s : new String[]{"64", "96", "128", "160"}) {
+                if (s.startsWith(args[3].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit") && args[1].equalsIgnoreCase("pass")) {
+            for (String s : new String[]{"light", "stalker", "extinguish", "house", "extract"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
-            if ("set".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("set");
+            for (String s : new String[]{"todo", "next", "plan", "launch", "list", "set"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("set")) {
+            out.addAll(siteIdSuggestions(args[2]));
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("plan")) {
+            for (String s : new String[]{"next", "all"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
             out.addAll(siteIdSuggestions(args[2]));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sleep")) {
             out.add("on");

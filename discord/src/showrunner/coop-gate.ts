@@ -1,7 +1,7 @@
 /**
  * coop-gate.ts — the Discord closer for the three-hands coop gate (m4-three-hands; design/PUZZLE-DESIGNS §A6).
  *
- * The IV→V hinge is the one CROSS-SURFACE coop gate: three acts in one window — a foot on the plate + a
+ * The IV→V hinge is the one CROSS-SURFACE coop gate: three acts in one held ritual — a foot on the plate + a
  * carve at the mark (both in-world, owned by the plugin's CoopPlateListener) + the convergence WORD posted
  * in #the-record (owned here). The plugin publishes `coop_world_ready_at` (epoch ms) when both world legs
  * are fresh together; this module is the SOLE closer — when the convergence word is posted while that marker
@@ -32,7 +32,7 @@ export const M4_TOKEN = 'h3n8k1 q5m2x7 w9j4p6 t1b6f0 c8d3s5 v2z7r4';
 /** The plugin's ready marker (kept in sync with CoopPlateListener.READY_FLAG). */
 const READY_FLAG = 'coop_world_ready_at';
 /** How fresh the world-legs marker must be for the word to close the gate. Match the plugin window-seconds. */
-const COOP_WINDOW_MS = 90_000;
+const COOP_WINDOW_MS = 180_000;
 
 /** Pre-normalized needle so the constant isn't re-normalized on every post. */
 const WORD_NEEDLE = normalizeAnswer(CONVERGENCE_WORD);

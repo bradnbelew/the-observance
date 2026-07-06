@@ -22,18 +22,18 @@ import java.util.function.Supplier;
 /**
  * IgnitionListener — the in-world trigger for {@code prologue_ignited}.
  *
- * <p>Right now the arc can only be ignited via {@code /observance flag set prologue_ignited true}.
- * This listener adds two real in-world triggers so players can fire it themselves:
+ * <p>The arc can be ignited via {@code /observance flag set prologue_ignited true} or by either of
+ * these real in-world triggers:
  *
  * <ol>
  *   <li><b>Lectern read</b> — a player RIGHT-clicks (opens) the lectern at any
  *       {@code report_lectern} site (specifically {@code first_report_lectern_01}, but ALL placed
  *       {@code report_lectern} sites qualify so future lecterns work without code changes).</li>
- *   <li><b>Rosetta touch</b> — a player RIGHT-clicks the carved stone at any site whose id is
+ *   <li><b>Rosetta touch</b> — a player SNEAK-RIGHT-clicks near the carved stone at any site whose id is
  *       {@code rune_rosetta} or {@code stone_of_reckoning} (the two literacy gates). These are type
  *       {@code structure} in sites.yml; the trigger is proximity-based (within the site's radius)
- *       rather than block-face-exact, so the player just has to interact with ANY block while
- *       standing near the stone — a natural "examine the stone" gesture.</li>
+ *       rather than block-face-exact, but it requires sneaking so a normal torch/chest/sign click
+ *       near the stone cannot start the arc early.</li>
  * </ol>
  *
  * <p>The flag is set <b>idempotently</b>: once {@code prologue_ignited} is true in

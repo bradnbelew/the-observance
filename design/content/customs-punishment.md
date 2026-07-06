@@ -275,6 +275,10 @@ a message containing a **forbidden word** (the `forbidden-words` set; the Dark's
 forms). The cleanest possible signal: it is on the chat path, instant, per-message. **Honorless** —
 you cannot un-say a name; the only "honor" is to stop.
 
+**Live word.** The current launch config sets the forbidden word to `unkept`. This is deliberately
+not a random secret string: Wenna warns against saying the cold's name, and the keeper-field later
+teaches `unkept`, so the custom can be discovered and triggered without requiring director trivia.
+
 **(b) The toll — quiet, withdrawn (the dark leans in).** Designed as **relief, not boon**
 (INTEGRATION §3.2): the cleared state is the leaning-in simply ceasing.
 - **Stage A (deniable, no text):** the moment after the word is sent, a single **cold pulse +
@@ -313,6 +317,10 @@ keptUnspoken():  'the word stays shut. what was not said cannot turn its face to
 (`observance_sacred_beast`). The death of a **tagged** deep-bird (a pale canary-mob, PDC-flagged) by
 the player's hand or neglect — the `SacredAnimalBeat` / `haunted-herd` layer. Losing the bird = losing
 the early-warning before the air turns.
+
+**Immediate fork receipt.** The one glowing, fork-arming deep-bird gives the killer a private, low-info
+receipt when it dies: `the warning is silenced.` This keeps the choice memorable without spelling out
+an ending flag or breaking into a title scare.
 
 **(b) The toll — warning, withdrawn (you go dark unwarned).**
 - **Stage A (deniable, no text):** when the bird dies, the ambient bird-song that has been faintly

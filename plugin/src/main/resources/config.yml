@@ -83,6 +83,33 @@ rate-limit:
   oracle-burst: 3                       # token bucket: allow N quick tries then throttle
   oracle-refill-seconds: 30             # refill one token every N seconds
 
+# ----------------------------------------------------------------------------
+#  THE UNLIT VILLAGE  (mirrored-spawn expedition pillar)
+# ----------------------------------------------------------------------------
+unlit:
+  enabled: true
+  world: "observance_unlit"
+  buildmode: false
+  force-night: true
+  night-time: 18000
+  disable-regular-mob-spawns: true
+  light-budget: 7
+  light-radius: 6
+  light-lifetime-seconds: 180
+  authored-light-threshold: 8
+  safe-darkness-effect-seconds: 4
+  safe-darkness-effect-amplifier: 0
+  darkness-effect-seconds: 7
+  darkness-effect-amplifier: 1
+  darkness-grace-seconds: 8
+  darkness-damage-seconds: 22
+  darkness-damage: 1.0
+  figure-cooldown-seconds: 10
+  figure-visible-ticks: 48
+  figure-swoop-chance: 0.65
+  figure-swoop-damage: 1.0
+  border-radius: 138
+
 # Anti-grief: placed markers/structures resist being broken (or are restored).
 protection:
   restore-broken-markers: true
@@ -109,8 +136,9 @@ tracker:
 
   # The Unspoken — forbidden words. Chat containing any of these is a tracked
   # violation + a hit counter. Matched case-insensitively on word boundaries.
-  # Authored per-arc; left EMPTY here so the committed config ships no story text.
-  forbidden-words: []
+  # "unkept" is deliberately live: Wenna's folk-charm warns against the cold's name,
+  # and the keeper-field eventually teaches the word, so this custom can actually fire.
+  forbidden-words: ["unkept"]
 
   # Which broken blocks count as "ore" (first-ore-of-session + ore tallies).
   # Empty/omitted ⇒ a sensible vanilla default set is used.
@@ -211,14 +239,14 @@ puzzles:
     puzzle-key: "orin-bow-fall-order"
 
   # The three-hands coop gate (the IV->V hinge). CoopPlateListener owns the two WORLD legs — a foot on the
-  # coop_plate + a carve (left-click) at the mark — and writes coop_world_ready_at when both fall within the
-  # window. The Discord side (coop-gate.ts) closes it when the convergence word is posted while the marker is
+  # coop_plate + a carve (left-click) at the mark — and writes coop_world_ready_at when both are held within
+  # a forgiving ritual window. The Discord side (coop-gate.ts) closes it when the convergence word is posted while the marker is
   # fresh. NOTE: no token here — the plugin does not post it; the Discord closer holds the opaque token
   # (byte-matching the seed's m4-three-hands accepted_answers). Keep window-seconds in sync with the discord
   # twin (COOP_WINDOW_MS). Unplaced coop_plate site → no-op (go-live safe).
   m4-three-hands:
     enabled: true
-    window-seconds: 90
+    window-seconds: 180
 
   # Mara — the active roster reaches the `mara_map_marker` site together and bows
   # (walk the rite she only read). Group-scoped, active-only quorum (like the
@@ -376,11 +404,18 @@ puzzles:
     # the arc's canonical black moon per DarkHoursListener). Empty ⇒ [0].
     black-moon-phases: [0]
 
+  # The painted line is a dialogue promise, not scenery. PaintedLineListener quietly
+  # records the first crossing of a placed `painted_line` site into arc_state.flags
+  # (`painted_line_crossed`, plus by/at metadata) and plays only a private pressure cue.
+  painted-line:
+    enabled: true
+
 # ----------------------------------------------------------------------------
 #  OBSERVER TIER-0 (BUILD-PLAN §13 / CHANGE-MANIFEST A2) — the "it knows you" that
 #  needs NO chat, voice, or LLM. It profiles REAL in-world behavior (from the signal
 #  tracker) and, when something is CLEARLY true of a player, speaks ONE grounded
-#  implication line to that player alone (a private title / action-bar). This is the
+#  implication line to that player alone (private action-bar by default; title only
+#  when an authored payload explicitly asks for it). This is the
 #  cheapest, always-works, ethically-cleanest tier: behavior-only, consent-clean.
 #
 #  GROUNDING: a line is spoken ONLY when the player's measured signals clear the

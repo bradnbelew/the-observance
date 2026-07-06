@@ -135,7 +135,7 @@ values
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
     'next_puzzle_key', 'undercroft-descent',
-    'set_flags', jsonb_build_object('mara_read', true)
+    'set_flags', jsonb_build_object('mara_read', true, 'descent_read', true)
   ),
   2, true, null ),
 
@@ -175,9 +175,12 @@ values
   'next_clue',
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
-    'next_puzzle_key', 'orin-threshold'
+    'next_puzzle_key', 'orin-threshold',
+    'set_flags', jsonb_build_object('orin_stone_read', true)
   ),
-  2, true, null ),
+  -- max_attempts:8 - includes a short fallback answer ("threshold"), so cap the
+  -- per-minute per-player tries without changing the normal solve path.
+  2, true, 8 ),
 
 -- stone-brann — NOW the carved FRAMING for the rail-fence cipher (puzzle-variety audit
 -- fix). Previously shipped as pure inert lore, explicitly commented "do not forge it"
@@ -195,8 +198,7 @@ values
     'one fire was never doused',
     'do not close your eyes here',
     'the one fire that will not be doused',
-    'nine lit i counted nine',
-    'count the fires before you sleep'
+    'nine lit i counted nine'
   ],
   'lore',
   jsonb_build_object(
@@ -255,7 +257,8 @@ values
     'next_puzzle_key', 'iss-dead-shrine',
     'set_flags', jsonb_build_object('iss_trusted', true)
   ),
-  2, true, null ),
+  -- max_attempts:6 - the cold acrostic accepts "no wall"; protect the short form.
+  2, true, 6 ),
 
 -- m2-rhyme — read any two keeper stones side by side; the fates rhyme. TRUE,
 -- emotionally load-bearing, opens NO door (recolors what you have). Collective.
@@ -403,7 +406,8 @@ values
     'voice_key', 'oracleSideQuest',
     'set_flags', jsonb_build_object('seventh_found', true, 'whisper_budget_earned', true)
   ),
-  3, true, null ),
+  -- max_attempts:8 - this side branch accepts "seven"/"7"; cap guessing pressure.
+  3, true, 8 ),
 
 -- ===========================================================================
 -- MOVEMENT IV — The Reckoning (atonement; the biography)
@@ -463,7 +467,7 @@ values
   'main_beat',
   jsonb_build_object(
     'voice_key', 'oracleMainBeat',
-    'set_flags', jsonb_build_object('atonement_made', true),
+    'set_flags', jsonb_build_object('atonement_made', true, 'accepting_onramp_open', true),
     'next_puzzle_key', 'rite-tokens',
     'beat', jsonb_build_object(
       'type', 'unlock',
@@ -672,7 +676,7 @@ values
 -- the seam of the forgery showing. teaches_custom NULL (it is fiction, not a way; INV-17).
 -- thread_key 'surface'. The anonymous lie credits no "me" (slop B4). Counted in the
 -- founders' RING, never fall-order (the two sixes, §0.3). dead_end: a diligent group can
--- "obey" it and nothing pays — the proof of the lie is the reliable absence of a toll.
+-- "obey" it and get silence; the proof of the lie is the reliable absence of a toll.
 ( 'forged-eighth',
   'the covering of the hands',
   array[
@@ -682,14 +686,14 @@ values
     'the founders set the ways and did not finish the count'
   ],
   'dead_end',
-  -- 'known' kind — a true reading of a real carving that opens nothing (it is a forgery;
+  -- 'known' kind — a true reading of a real carving that opens no way (it is a forgery;
   -- the land never measures it). The M4 record correction (archiveEighthCorrection) names
   -- it added-not-found; until then the Watcher only flatly declines to enforce it.
   jsonb_build_object('voice_key', 'oracleDeadEnd', 'voice_args', jsonb_build_object('kind', 'known')),
   2, true, null ),
 
 -- prophet-wall-comfort — Iss with a pulpit (B2). A WIDE, not tall set of warm promises,
--- each a true-but-empty substitution solve that opens nothing. dead_end 'prophet' kind.
+-- each a true-but-empty substitution solve that opens no road. dead_end 'prophet' kind.
 -- Independent rung (no next_puzzle_key — never a countable ladder). Re-reads cold at the
 -- catch (the hidden columnar name below is Iss's). Lives in Iss's field, M2.
 ( 'prophet-wall-comfort',
@@ -851,7 +855,8 @@ values
       'record_released', true
     )
   ),
-  5, true, null ),
+  -- max_attempts:8 - a single name should be solved by the six fragments, not guessed.
+  5, true, 8 ),
 
 -- fork-light (Fork B, A11) — the First Light fork at the Undercroft. A M3 puzzle CHOICE
 -- (two plaintexts): draw the M5 token from the eternal flame (light_kept) or bank it
@@ -918,14 +923,14 @@ values
   4, false, 6 ),
 
 -- m4-three-hands — THE cross-surface co-op gate (A6). THREE distinct ACTS, not three
--- distinct people (active-only): foot on the plate + a carve + a Discord post inside the
--- same ~20s window. The AND-join lives ONCE in resolve.ts (applyOutcome of this puzzle);
--- the CoopPlateListener posts an opaque conjunction token when its leg fires. The token
--- below is what the AND-join posts on a CLEARED gate (all three legs in-window) — opaque,
+-- distinct people (active-only): foot on the plate + a carve + a Discord post while the
+-- square is awake. CoopPlateListener publishes the held world-legs marker; the Discord
+-- closer posts the opaque conjunction token when the word arrives in the forgiving window.
+-- The token below is what the closer posts on a CLEARED gate — opaque,
 -- wordless, plugin-only (no-leaked-sentinel). Clearing opens the Threshold (threshold_open),
 -- whose carving yields the TRUE coordinate (NOT yielded here — sequenced, §0.4). main_beat.
 ( 'm4-three-hands',
-  'three hands at once',
+  'three hands held',
   array[
     'h3n8k1 q5m2x7 w9j4p6 t1b6f0 c8d3s5 v2z7r4'
   ],
@@ -992,7 +997,7 @@ values
   'main_beat',
   jsonb_build_object(
     'voice_key', 'oracleMainBeat',
-    'set_flags', jsonb_build_object('true_destination_reached', true),
+    'set_flags', jsonb_build_object('true_destination_reached', true, 'accepting_onramp_open', true),
     'next_puzzle_key', 'rite-tokens',
     'beat', jsonb_build_object(
       'type', 'unlock',
@@ -1179,7 +1184,7 @@ values
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
     'next_puzzle_key', 'undercroft-descent',
-    'set_flags', jsonb_build_object('brann_read', true),
+    'set_flags', jsonb_build_object('brann_read', true, 'descent_read', true),
     'beat', jsonb_build_object(
       'type', 'unlock',
       'mc_uuid', '{solver}',
@@ -1582,7 +1587,8 @@ values
     'next_puzzle_key', 'stone-brann',
     'set_flags', jsonb_build_object('brann_toll_heard', true)
   ),
-  'phrase', 2, true, null ),
+  -- max_attempts:6 - "awake" is a short temporal answer; cap brute force after the toll.
+  'phrase', 2, true, 6 ),
 
 -- brann-silence-corridor (§6.2) — a calibrated-sculk corridor passable only in silence
 -- (sneak; no vibration). answer_kind 'behavior'; opaque token on reaching the far door
@@ -1625,7 +1631,6 @@ values
   'the warm account against the land',
   array[
     'the ways are not a wall',
-    'no wall was ever built here',
     'he lied about the wall'
   ],
   'next_clue',

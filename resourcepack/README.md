@@ -54,7 +54,9 @@ ever plays in practice. Wiring a per-keeper selector is a real, undecided featur
 1. **Audio:** done — all 10 `.ogg` files named in `sounds.json` are already present under `assets/observance/sounds/`.
 2. **pack_format:** `pack.mcmeta` ships format `[75,0]` via `min_format`/`max_format` — correct for the pinned server **MC 1.21.11** (resource-pack format 75.0). No change needed unless the server version moves.
 3. **ascent/height:** `runes.json` ships `ascent 13 / height 16`. Tune in-game for sign/book legibility.
-4. **Zip + host** the pack and point Paper's `setResourcePack(url, sha1)` at it (auto-push, one click).
+4. **Zip + host** the pack: run `tools/package_assets.ps1`, upload `observance-resourcepack.zip`, and
+   paste the printed SHA1 into `plugin/src/main/resources/config.yml` / live `plugins/Observance/config.yml`.
+   The plugin uses Paper's pack-stack push (`addResourcePack`) on join.
 5. *(Optional)* drop in block/entity reskins (the Watcher husk, carved structure blocks) under
    `assets/minecraft/textures/` — cosmetic, no code.
 

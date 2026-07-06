@@ -4,7 +4,10 @@ import com.observance.watcher.signal.PlayerSignals;
 import com.observance.watcher.signal.SignalTracker;
 import com.observance.watcher.signal.TrackerConfig;
 import com.observance.watcher.util.Safety;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,10 +41,11 @@ import org.bukkit.plugin.Plugin;
  *       the sacred check even if a stale {@code sacred_beast} tag is somehow also present.</li>
  * </ul>
  *
- * PURE TRACKING: no world effects, no DB writes. All Bukkit reads on the MAIN thread; persistence is
- * deferred to the tracker's async flush. The {@code sacred_beast_broken} arc-flag itself is set
- * first-writer-wins by the showrunner/oracle from this measured conduct — never written from here. Body
- * fully wrapped in Safety.
+ * TRACKING-FIRST: no DB writes. All Bukkit reads on the MAIN thread; persistence is deferred to the
+ * tracker's async flush. The {@code sacred_beast_broken} arc-flag itself is set first-writer-wins by the
+ * showrunner/oracle from this measured conduct — never written from here. The only player-facing effect is
+ * a small private acknowledgement when the one glowing fork-arming beast dies, so the irreversible choice is
+ * remembered without becoming a UI tutorial. Body fully wrapped in Safety.
  */
 public final class DeathListener implements Listener {
 
@@ -139,6 +143,7 @@ public final class DeathListener implements Listener {
                 // this kill was the fork-arming one, which it promotes to `sacred_beast_broken`
                 // first-writer-wins (set-once, downstream). A non-arming sacred kill is a plain violation.
                 if (isForkArming(dead)) {
+                    sendForkFeedback(killer);
                     safety.info("signal.sacred_beast.fork_arm",
                             killer.getName() + " killed the kept one — fork A armed");
                 } else {
@@ -146,6 +151,20 @@ public final class DeathListener implements Listener {
                 }
             }
         });
+    }
+
+    private void sendForkFeedback(Player killer) {
+        if (killer == null) return;
+        try {
+            killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.18f, 0.35f);
+        } catch (Throwable ignored) {
+            // atmospheric only
+        }
+        try {
+            killer.sendActionBar(Component.text("the warning is silenced.", NamedTextColor.DARK_GRAY));
+        } catch (Throwable ignored) {
+            // older clients or proxy shims may not support action bars
+        }
     }
 
     private boolean isSacredBeast(LivingEntity entity) {

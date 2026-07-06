@@ -14,13 +14,22 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Lightable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
@@ -292,15 +301,13 @@ public final class TownsfolkNpcListener implements Listener {
 
     /**
      * One tracked quest, wiring an OFFER line to its opaque {@code questKey} and the {@code sites.yml}
-     * site id whose proximity COMPLETES it. Both quests complete on arrival at a DEEP site:
+     * site id whose physical action COMPLETES it. These are no longer "arrive nearby" errands:
      * <ul>
-     *   <li>{@code wenna_crust} — the dead-stall kept lit for the dead → {@code stone_of_reckoning}
-     *       (the deep-market reckoning structure).</li>
-     *   <li>{@code coll_lamp} — "light the lamp" / the kept light → {@code unbroken_light} (the one
-     *       fire below that never went out — the kept light).</li>
+     *   <li>{@code wenna_crust} — drop bread/crust at {@code dead_stall}.</li>
+     *   <li>{@code coll_lamp} — place a light at {@code third_lamp_stand}.</li>
      * </ul>
      */
-    private record Quest(String questKey, String offerKey, String doneKey, String siteId) { }
+    private record Quest(String questKey, String offerKey, String doneKey, String siteId, boolean proximityComplete) { }
 
     /** ~24-block completion radius (squared) around the quest's target site. */
     private static final double COMPLETE_RADIUS = 24.0;
@@ -309,14 +316,19 @@ public final class TownsfolkNpcListener implements Listener {
     /** Offer-key → quest, so an offer line spoken can arm its quest cheaply. */
     private static final Map<String, Quest> QUESTS_BY_OFFER = Map.of(
             "wenna.quest.offer", new Quest("wenna_crust", "wenna.quest.offer",
-                    "wenna.quest.done", "stone_of_reckoning"),
+                    "wenna.quest.done", "dead_stall", false),
             "coll.quest.offer", new Quest("coll_lamp", "coll.quest.offer",
-                    "coll.quest.done", "unbroken_light"));
+                    "coll.quest.done", "third_lamp_stand", false));
 
     /** Townsperson-id → its quest (so a click can find whether that npc has a payoff owed). */
     private static final Map<String, Quest> QUESTS_BY_NPC = Map.of(
             "wenna", QUESTS_BY_OFFER.get("wenna.quest.offer"),
             "coll", QUESTS_BY_OFFER.get("coll.quest.offer"));
+
+    /** Quest-key → quest, for physical action handlers. */
+    private static final Map<String, Quest> QUESTS_BY_KEY = Map.of(
+            "wenna_crust", QUESTS_BY_OFFER.get("wenna.quest.offer"),
+            "coll_lamp", QUESTS_BY_OFFER.get("coll.quest.offer"));
 
     /**
      * Per-player quest state, mirroring the {@link #cursors} ConcurrentHashMap idiom so the proximity
@@ -502,6 +514,7 @@ public final class TownsfolkNpcListener implements Listener {
                 Location loc = p.getLocation();
                 if (loc == null || loc.getWorld() == null) continue;
                 for (Quest q : QUESTS_BY_NPC.values()) {
+                    if (!q.proximityComplete()) continue;
                     String stKey = questStateKey(p.getUniqueId(), q);
                     if (questStates.get(stKey) != QuestState.ACTIVE) continue;   // only live errands
                     Site site = sites.get(q.siteId());
@@ -517,6 +530,59 @@ public final class TownsfolkNpcListener implements Listener {
         });
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onCrustDrop(PlayerDropItemEvent event) {
+        safety.run("townsfolk.quest.crustDrop", () -> {
+            Player player = event.getPlayer();
+            if (player == null) return;
+            Item dropped = event.getItemDrop();
+            ItemStack stack = dropped == null ? null : dropped.getItemStack();
+            if (!isCrust(stack)) return;
+            Location loc = dropped.getLocation();
+            if (isAtQuestSite("dead_stall", loc)) {
+                completeQuestByKey(player, "wenna_crust", "crust at dead-stall");
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onThirdLampLit(BlockPlaceEvent event) {
+        safety.run("townsfolk.quest.thirdLamp", () -> {
+            Player player = event.getPlayer();
+            Block block = event.getBlockPlaced();
+            if (player == null || block == null) return;
+            if (!isLightMaterial(block.getType())) return;
+            if (isAtQuestSite("third_lamp_stand", block.getLocation())) {
+                if (block.getBlockData() instanceof Lightable lightable) {
+                    lightable.setLit(true);
+                    block.setBlockData(lightable, false);
+                }
+                completeQuestByKey(player, "coll_lamp", "third lamp lit");
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onThirdLampInteract(PlayerInteractEvent event) {
+        safety.run("townsfolk.quest.thirdLampInteract", () -> {
+            if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+            Player player = event.getPlayer();
+            Block block = event.getClickedBlock();
+            if (player == null || block == null) return;
+            if (!isAtQuestSite("third_lamp_stand", block.getLocation())) return;
+
+            ItemStack hand = event.getItem();
+            boolean holdingLight = hand != null && isLightMaterial(hand.getType());
+            boolean touchingLight = isLightMaterial(block.getType());
+            if (!holdingLight && !touchingLight) return;
+            if (block.getBlockData() instanceof Lightable lightable) {
+                lightable.setLit(true);
+                block.setBlockData(lightable, false);
+            }
+            completeQuestByKey(player, "coll_lamp", "third lamp touched");
+        });
+    }
+
     /**
      * Fire a quest's completion ONCE: flip in-memory ACTIVE→DONE (the flip itself is the idempotency
      * guard — a second arrival finds DONE and skips), durably record it, and give an understated, cold
@@ -524,7 +590,7 @@ public final class TownsfolkNpcListener implements Listener {
      * lore-agnostic ("the world remembers"); the townsperson's own {@code quest.done} words wait for the
      * return visit.
      */
-    private void completeQuest(Player p, Quest q, String stKey) {
+    private boolean completeQuest(Player p, Quest q, String stKey) {
         // Atomic single-fire: only the transition ACTIVE→DONE proceeds.
         if (questStates.replace(stKey, QuestState.ACTIVE, QuestState.DONE)) {
             upsertQuestAsync(p.getUniqueId(), q.questKey(), "done");
@@ -535,7 +601,59 @@ public final class TownsfolkNpcListener implements Listener {
             } catch (Throwable ignored) {
                 // Cosmetic only — never let an acknowledgement quirk undo the recorded completion.
             }
+            return true;
         }
+        return false;
+    }
+
+    private void completeQuestByKey(Player p, String questKey, String reason) {
+        if (p == null || questKey == null) return;
+        Quest q = QUESTS_BY_KEY.get(questKey);
+        if (q == null) return;
+        String stKey = questStateKey(p.getUniqueId(), q);
+        QuestState state = questStates.getOrDefault(stKey, QuestState.NOT_OFFERED);
+        if (state == QuestState.NOT_OFFERED) {
+            lazyLoadQuests(p);
+            return;
+        }
+        if (completeQuest(p, q, stKey)) {
+            safety.info("townsfolk.quest", q.questKey() + " completed by " + p.getName() + " (" + reason + ")");
+        }
+    }
+
+    private boolean isAtQuestSite(String siteId, Location loc) {
+        if (siteId == null || loc == null || loc.getWorld() == null) return false;
+        SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
+        if (sites == null) return false;
+        Site site = sites.get(siteId);
+        if (site == null || !site.enabled() || !site.isPlaced()) return false;
+        Location center = site.location();
+        if (center == null || center.getWorld() == null || !center.getWorld().equals(loc.getWorld())) return false;
+        return site.contains(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ());
+    }
+
+    private static boolean isCrust(ItemStack stack) {
+        if (stack == null) return false;
+        Material type = stack.getType();
+        return type == Material.BREAD
+                || type == Material.WHEAT
+                || type == Material.COOKIE;
+    }
+
+    private static boolean isLightMaterial(Material type) {
+        if (type == null) return false;
+        String n = type.name();
+        return n.contains("TORCH")
+                || n.contains("LANTERN")
+                || n.contains("CANDLE")
+                || n.contains("CAMPFIRE")
+                || n.contains("FIRE")
+                || n.contains("GLOWSTONE")
+                || n.contains("SHROOMLIGHT")
+                || n.contains("FROGLIGHT")
+                || n.contains("COPPER_BULB")
+                || n.equals("END_ROD")
+                || n.equals("LIGHT");
     }
 
     /**
