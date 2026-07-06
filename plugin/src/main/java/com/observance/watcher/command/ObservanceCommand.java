@@ -1102,6 +1102,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             d.setFacing(BlockFace.SOUTH);
             b.setBlockData(d, false);
         }
+        b.getState().update(true, false);
+        fillLabLecternBook(b, title, pages);
+        if (plugin.scheduler() != null) {
+            plugin.scheduler().runLaterSafe("command.placelab.lectern.book", 1L,
+                    () -> fillLabLecternBook(b, title, pages));
+        }
+    }
+
+    private void fillLabLecternBook(Block b, String title, int pages) {
+        if (b == null || b.getType() != Material.LECTERN) return;
         if (b.getState() instanceof Lectern lectern) {
             ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
             if (book.getItemMeta() instanceof BookMeta meta) {
