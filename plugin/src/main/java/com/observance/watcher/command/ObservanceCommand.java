@@ -81,6 +81,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placeroom" -> handlePlaceRoom(sender, args);
             case "placeregion" -> handlePlaceRegion(sender, args);
             case "placedeep" -> handlePlaceDeep(sender, args);
+            case "placelecterns" -> handlePlaceLecterns(sender, args);
             case "placelab" -> handlePlaceLab(sender, args);
             case "fullrun" -> handleFullRun(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
@@ -92,7 +93,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelab | fullrun | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -898,6 +899,55 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
+    /**
+     * {@code /observance placelecterns [spacing]} - stamps the five Mara page-lock lecterns as a
+     * compact, readable test rig. This is the real-world counterpart to the lab fixture: it creates
+     * actual lectern blocks, writes turnable books into them, registers the five mara_lectern sites,
+     * and persists those coordinates to sites.yml so LecternLockListener can read the open pages.
+     */
+    private void handlePlaceLecterns(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance placelecterns must be run by a player (needs a location).");
+            return;
+        }
+        Location centre = player.getLocation();
+        if (centre == null || centre.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+
+        int spacing = 3;
+        if (args.length >= 2) {
+            try {
+                spacing = Math.max(3, Math.min(8, Integer.parseInt(args[1].trim())));
+            } catch (NumberFormatException ignored) { /* keep default */ }
+        }
+
+        org.bukkit.World world = centre.getWorld();
+        String worldName = world.getName();
+        int[] markedPages = {1, 2, 4, 4, 6};
+        int startX = centre.getBlockX() - (2 * spacing);
+        int z = centre.getBlockZ();
+        int placed = 0;
+
+        for (int i = 1; i <= 5; i++) {
+            int x = startX + ((i - 1) * spacing);
+            int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+            Block b = world.getBlockAt(x, y, z);
+            placeReadableLectern(b, BlockFace.SOUTH);
+            fillMaraLockBook(b, i, markedPages[i - 1]);
+
+            Site site = new Site("mara_lectern_" + i, "mara_lectern", worldName,
+                    (double) x, (double) y, (double) z, 2, 2, true, true, null);
+            plugin.registerRuntimeSite(site);
+            placed++;
+        }
+
+        sender.sendMessage("Observance: placed " + placed + "/5 Mara page-lock lecterns with books.");
+        sender.sendMessage("  Test pages: lecterns 1-5 should be turned to 1, 2, 4, 4, 6.");
+        sender.sendMessage("  Sites were persisted to sites.yml; re-run /observance reload after server restart.");
+    }
+
     private void handlePlaceLab(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Observance: /observance placelab must be run by a player (needs a location).");
@@ -1133,17 +1183,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void placeLabLectern(Location base, String title, int pages) {
         Block b = base.getBlock();
-        b.setType(Material.LECTERN, false);
-        if (b.getBlockData() instanceof Directional d) {
-            d.setFacing(BlockFace.SOUTH);
-            b.setBlockData(d, false);
-        }
-        b.getState().update(true, false);
+        placeReadableLectern(b, BlockFace.SOUTH);
         fillLabLecternBook(b, title, pages);
         if (plugin.scheduler() != null) {
             plugin.scheduler().runLaterSafe("command.placelab.lectern.book", 1L,
                     () -> fillLabLecternBook(b, title, pages));
         }
+    }
+
+    private void placeReadableLectern(Block b, BlockFace facing) {
+        if (b == null) return;
+        b.setType(Material.LECTERN, false);
+        if (b.getBlockData() instanceof Directional d) {
+            d.setFacing(facing == null ? BlockFace.SOUTH : facing);
+            b.setBlockData(d, false);
+        }
+        b.getState().update(true, false);
     }
 
     private void fillLabLecternBook(Block b, String title, int pages) {
@@ -1155,6 +1210,54 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 meta.setAuthor("the lab");
                 for (int i = 1; i <= Math.max(1, pages); i++) {
                     meta.addPage("page " + i + "\n\n" + title + "\n\nturn me for page-lock testing.");
+                }
+                book.setItemMeta(meta);
+            }
+            lectern.getInventory().setItem(0, book);
+            lectern.update(true, false);
+        }
+    }
+
+    private void fillMaraLockBook(Block b, int index, int markedPage) {
+        List<String> pages = new ArrayList<>();
+        for (int page = 1; page <= 10; page++) {
+            boolean marked = page == markedPage;
+            pages.add((marked ? "[a pressed-dark margin]\n\n" : "")
+                    + "Mara shelf " + index + "\npage " + page + "\n\n"
+                    + (marked
+                    ? "this is the page her hand left open."
+                    : "the line continues elsewhere, but not here."));
+        }
+        fillWrittenLecternBook(b, "mara shelf " + index, "mara", pages);
+    }
+
+    private void fillPrologueLecternBook(Location loc) {
+        if (loc == null || loc.getWorld() == null) return;
+        Block b = loc.getBlock();
+        placeReadableLectern(b, BlockFace.SOUTH);
+        fillWrittenLecternBook(b, "the record opens", "the record", List.of(
+                "the record opens.\n\nit was opened before. it is opened again, as it is opened for any who come and stay.",
+                "so the count begins. the living are written here, each by the name they answer to, and against each name a column is left open.",
+                "nothing is owed yet. but the column is open, and an open column is a thing that fills."));
+    }
+
+    private void fillWrittenLecternBook(Block b, String title, String author, List<String> pages) {
+        if (b == null || b.getType() != Material.LECTERN) return;
+        if (b.getState() instanceof Lectern lectern) {
+            ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+            if (book.getItemMeta() instanceof BookMeta meta) {
+                meta.setTitle(com.observance.watcher.util.TextFit.clampLine(title == null ? "record" : title, 32));
+                meta.setAuthor(com.observance.watcher.util.TextFit.clampLine(author == null ? "the record" : author, 32));
+                List<String> realPages = pages == null || pages.isEmpty() ? List.of("") : pages;
+                for (String page : realPages) {
+                    String body = page == null ? "" : page;
+                    if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
+                        meta.addPage(body);
+                    } else {
+                        for (String real : com.observance.watcher.util.TextFit.paginate(body)) {
+                            meta.addPage(real);
+                        }
+                    }
                 }
                 book.setItemMeta(meta);
             }
@@ -1427,6 +1530,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         com.observance.watcher.beats.BeatResult rLectern = enactDirected(ctx, lib,
                 "lectern_fill", "prologue-lectern", lecternSite,
                 com.observance.watcher.beats.BeatPayload.parse(lecternPayload));
+        fillPrologueLecternBook(lecternLoc);
+        if (plugin.scheduler() != null) {
+            plugin.scheduler().runLaterSafe("command.placeprologue.lectern.book", 1L,
+                    () -> fillPrologueLecternBook(lecternLoc));
+        }
 
         // 4b) The lit marker — one carved stone + one candle "that wasn't there." SmallStructureBeat
         //     footprint-checks + places out of sight; require_floor so it never floats.
@@ -2215,7 +2323,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelab", "fullrun", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {

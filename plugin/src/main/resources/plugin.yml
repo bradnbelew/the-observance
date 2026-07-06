@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.5'
+version: '0.3.6'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -49,6 +49,7 @@ commands:
       /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
       /observance placeregion [spacing] - stamp the starter spine (rosetta + six keeper stones) here
       /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
+      /observance placelecterns [spacing] - stamp the five Mara page-lock lecterns here with books already loaded
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance fullrun [spacing] - one-command rehearsal: full lab, reading, finale markers, test tools, and scare-check instructions
       /observance placeprologue - stage the cold-open anomaly in the group's base

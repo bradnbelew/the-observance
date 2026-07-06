@@ -59,6 +59,18 @@ Use:
 
 This queues the first stronger scare sequence: darkness, a close heartbeat, warning text, then a tall silent humanoid figure. It is still safe: no griefing, no trap, no real kill requirement.
 
+### 4. Lectern Books Are Server-Side
+
+Vercel/dashboard deploys do not fill Minecraft lecterns. Empty lecterns are fixed by the plugin jar and in-world placement commands.
+
+Use:
+
+```mcfunction
+/obs placelecterns
+```
+
+This stamps the five Mara page-lock lecterns with written books already loaded and persists their sites. For the prologue, `/obs placeprologue` now force-fills the first-report book during manual staging so test runs do not get stuck waiting for an unwitnessed beat retry.
+
 ## What To Cut Or Delay
 
 Delay anything that requires manual world dressing before it can be tested. Side stories are allowed to exist, but they should not block the first full ARG rehearsal.
