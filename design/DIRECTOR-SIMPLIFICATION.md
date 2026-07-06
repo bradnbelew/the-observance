@@ -83,12 +83,13 @@ Soft ambience is not enough. The scary layer should bias toward:
 Use:
 
 ```mcfunction
+/obs test gauntlet
 /obs test stalker
 /obs test hunt
 /obs test elsewhere
 ```
 
-These queue stronger scare sequences: darkness, close hostile sound, warning text, silent humanoid figures, and a client-only wrong-sky/wrong-weather "elsewhere" shift. They are still safe: no griefing, no trap, no real kill requirement, no real teleport.
+`gauntlet` is the default Watcher scare rehearsal: wrong sky/weather and ash first, then a stalking figure, then a pursuit beat, then a final close heartbeat/message. The focused commands queue individual scare sequences: darkness, close hostile sound, warning text, silent humanoid figures, and a client-only wrong-sky/wrong-weather "elsewhere" shift. They are still safe: no griefing, no trap, no real kill requirement, no real teleport.
 
 Live ambient haunting now favors the same safe scare palette under the existing drama budget: cave/heartbeat-style private sounds, ash/smoke particles, darkness, wrong-sky time/weather shifts, light-dimming, and a very rare no-AI humanoid apparition only at high attention. The world stays restrained, but the Watcher is no longer just soft ambience.
 

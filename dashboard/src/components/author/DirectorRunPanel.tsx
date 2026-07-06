@@ -85,8 +85,7 @@ export function DirectorRunPanel({
           <CommandLine>/obs runbook spine</CommandLine>
           <CommandLine>/obs audit</CommandLine>
           <CommandLine>/obs repair</CommandLine>
-          <CommandLine>/obs test elsewhere</CommandLine>
-          <CommandLine>/obs test hunt</CommandLine>
+          <CommandLine>/obs test gauntlet</CommandLine>
         </div>
       </div>
     </section>

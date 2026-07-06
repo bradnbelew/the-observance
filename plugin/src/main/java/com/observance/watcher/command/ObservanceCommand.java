@@ -1344,7 +1344,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (scareReady) requiredReady++;
         requiredTotal++;
         sender.sendMessage((scareReady ? "[OK] " : "[MISS] ") + "Watcher scare lane - drama enabled=" + scareReady);
-        sender.sendMessage("  test: /obs test stalker, /obs test hunt, /obs test elsewhere");
+        sender.sendMessage("  test: /obs test gauntlet, or focused checks: stalker, hunt, elsewhere");
         sender.sendMessage("  help: /obs runbook scare");
 
         sender.sendMessage("Required launch lanes ready: " + requiredReady + "/" + requiredTotal + ".");
@@ -1567,7 +1567,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void sendScareRunbook(CommandSender sender) {
         sender.sendMessage("[watcher scare pass]");
-        sender.sendMessage("  Manual presets: /obs test stalker, /obs test hunt, /obs test elsewhere.");
+        sender.sendMessage("  Full rehearsal: /obs test gauntlet.");
+        sender.sendMessage("  Focus presets: /obs test stalker, /obs test hunt, /obs test elsewhere.");
         sender.sendMessage("  Focus checks: /obs test darkness, /obs test sound, /obs test mob, /obs test particles.");
         sender.sendMessage("  Live ambience should now include close cave/heartbeat sounds, ash, darkness, dimming, wrong sky, and rare humanoid figures.");
         sender.sendMessage("  If scare testing gets noisy: /obs sleep on. When ready again: /obs sleep off.");
@@ -2246,6 +2247,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             handleElsewhereTest(sender, target, anchor);
             return;
         }
+        if (preset.equals("gauntlet") || preset.equals("nightmare") || preset.equals("scarepass")) {
+            handleScareGauntlet(sender, target);
+            return;
+        }
 
         String beatType;
         com.observance.watcher.beats.BeatCategory category = com.observance.watcher.beats.BeatCategory.AMBIENT;
@@ -2369,6 +2374,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("/obs test stalker [player]    - humanlike danger scare sequence");
         sender.sendMessage("/obs test hunt [player]       - multi-figure pursuit scare sequence");
         sender.sendMessage("/obs test elsewhere [player]  - wrong-place sky/fog scare sequence");
+        sender.sendMessage("/obs test gauntlet [player]   - timed Watcher scare rehearsal");
         sender.sendMessage("/obs test torch [player]      - nearby torches gutter");
         sender.sendMessage("/obs test decay [player]      - cobweb creep on support blocks");
         sender.sendMessage("/obs test drift [player]      - sculk/moss world drift");
@@ -2494,6 +2500,54 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage("Observance test: elsewhere -> " + target.getName()
                 + " -> wrong sky/weather, fog, ash, close sound, and a retreating figure queued.");
+    }
+
+    private void handleScareGauntlet(CommandSender sender, Player target) {
+        if (target == null || !target.isOnline()) {
+            sender.sendMessage("Observance: target player is not online.");
+            return;
+        }
+        com.observance.watcher.beats.BeatEngine engine = plugin.beatEngine();
+        if (engine == null || engine.context() == null || engine.library() == null) {
+            sender.sendMessage("Observance: beat engine unavailable.");
+            return;
+        }
+        sender.sendMessage("Observance test: gauntlet -> " + target.getName()
+                + " -> elsewhere, stalking figure, and pursuit beats queued.");
+
+        Location start = testAnchor(sender, target);
+        if (start == null || start.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve a test location.");
+            return;
+        }
+        handleElsewhereTest(sender, target, start);
+
+        if (plugin.scheduler() == null) {
+            handleStalkerTest(sender, target, start);
+            handleHuntTest(sender, target, start);
+            return;
+        }
+
+        plugin.scheduler().runLaterSafe("command.test.gauntlet.stalker", 90L, () -> {
+            if (target.isOnline()) handleStalkerTest(sender, target, target.getLocation());
+        });
+        plugin.scheduler().runLaterSafe("command.test.gauntlet.hunt", 170L, () -> {
+            if (target.isOnline()) handleHuntTest(sender, target, target.getLocation());
+        });
+        plugin.scheduler().runLaterSafe("command.test.gauntlet.after", 245L, () -> {
+            if (!target.isOnline()) return;
+            Location now = target.getLocation();
+            if (now == null || now.getWorld() == null) return;
+            Site site = new Site("test_gauntlet_after", "test", now.getWorld().getName(),
+                    (double) now.getBlockX(), (double) now.getBlockY(), (double) now.getBlockZ(),
+                    12, 8, false, true, null);
+            runTestBeat(engine, target, site, "gauntlet-after", "private_message",
+                    com.observance.watcher.beats.BeatCategory.DIRECTED,
+                    "{\"mode\":\"actionbar\",\"text\":\"it learned the route you took\"}");
+            runTestBeat(engine, target, site, "gauntlet-last-sound", "private_sound",
+                    com.observance.watcher.beats.BeatCategory.DIRECTED,
+                    "{\"sound\":\"ENTITY_WARDEN_HEARTBEAT\",\"volume\":1.1,\"pitch\":0.45,\"behind\":true,\"offset\":1.0}");
+        });
     }
 
     private void runTestBeat(
@@ -3240,7 +3294,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("test")) {
-            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "stalker", "hunt", "elsewhere", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
+            for (String s : new String[]{"menu", "whisper", "title", "sound", "voice", "darkness", "name", "reflection", "mob", "stalker", "hunt", "elsewhere", "gauntlet", "nightmare", "torch", "decay", "drift", "particles", "toast", "sign", "needle"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("test")) {
