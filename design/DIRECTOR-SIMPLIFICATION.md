@@ -50,6 +50,7 @@ For focused staging/debugging, use the same pieces manually:
 /obs coverage
 /obs rehearse start
 /obs visit next
+/obs sidepass
 /obs runbook spine
 ```
 
@@ -64,6 +65,8 @@ For focused staging/debugging, use the same pieces manually:
 `coverage` is the launch-lane preflight. It reports whether the prologue, surface spine, Mara books, deep payoff, NPC side/lore surfaces, Watcher scare lane, and optional Nether/End lanes are ready, missing, or need repair.
 
 `visit` is the site navigator for rehearsal. Use `/obs visit next` and `/obs visit back` to jump through placed launch sites in order, or jump straight to `/obs visit prologue`, `/obs visit surface`, `/obs visit mara`, `/obs visit deep`, `/obs visit dimensions`, or any specific site id.
+
+`sidepass` is the focused side/lore confidence pass. It stages all five townsfolk, Wren, and the Keeper near the operator, then prints the exact right-click checklist. After running it, `/obs coverage` reports whether those NPC bodies are actually spawned and ready to test, not just whether their subsystems loaded.
 
 Real launch placement should become a curation pass:
 

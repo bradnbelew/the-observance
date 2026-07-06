@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.18'
+version: '0.3.19'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -58,6 +58,7 @@ commands:
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance fullrun [spacing] - one-command rehearsal: full lab, reading, finale markers, test tools, and scare-check instructions
       /observance prepworld [spacing] - compact real-world bootstrap: prologue, surface/deep spine, lecterns, NPCs, finale/readings, tools
+      /observance sidepass - stage all side/lore NPC bodies nearby and print the right-click checklist
       /observance runbook [setup|spine|side|scare|ops] - in-world director cheat sheet for each test lane
       /observance rehearse <start|status|done|next|back|reset|list> - guided in-world rehearsal checklist
       /observance placeprologue - stage the cold-open anomaly in the group's base

@@ -94,6 +94,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "placelab" -> handlePlaceLab(sender, args);
             case "fullrun" -> handleFullRun(sender, args);
             case "prepworld" -> handlePrepWorld(sender, args);
+            case "sidepass" -> handleSidePass(sender, args);
             case "runbook" -> handleRunbook(sender, args);
             case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
@@ -105,7 +106,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|scare|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site set <siteId> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | sidepass | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -1231,10 +1232,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             new RehearsalStage("side", "Prove side-story and lore surfaces", "side",
                     new String[]{
                             "Right-click all five townsfolk.",
-                            "Spawn/interact with Wren and a Keeper node.",
+                            "Stage and interact with Wren and a Keeper node.",
                             "If time allows, survey the Nether and End side lanes in their real dimensions."
                     },
-                    new String[]{"/obs townsfolk spawn", "/obs wren spawn", "/obs keeper spawn lab", "/obs runbook side"}),
+                    new String[]{"/obs sidepass", "/obs runbook side", "/obs flag list"}),
             new RehearsalStage("scare", "Run the Watcher scare pass", "scare",
                     new String[]{
                             "Fire the humanlike/danger presets on a real tester.",
@@ -1378,14 +1379,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("  help: /obs runbook " + lane.runbookPage);
         }
 
-        boolean npcReady = plugin.townsfolk() != null && plugin.wren() != null && plugin.keeper() != null;
+        int townsfolkTotal = com.observance.watcher.npc.TownsfolkNpc.TOWNSFOLK.size();
+        int townsfolkSpawned = plugin.townsfolk() == null ? 0 : plugin.townsfolk().spawnedCount();
+        boolean wrenSpawned = plugin.wren() != null && plugin.wren().isSpawned();
+        boolean keeperSpawned = plugin.keeper() != null && plugin.keeper().isSpawned();
+        boolean npcReady = townsfolkSpawned >= townsfolkTotal && wrenSpawned && keeperSpawned;
         if (npcReady) requiredReady++;
         requiredTotal++;
         sender.sendMessage((npcReady ? "[OK] " : "[MISS] ") + "NPC side/lore surfaces - "
-                + "townsfolk=" + (plugin.townsfolk() != null)
-                + ", wren=" + (plugin.wren() != null)
-                + ", keeper=" + (plugin.keeper() != null));
-        sender.sendMessage("  test: /obs townsfolk spawn, /obs wren spawn, /obs keeper spawn lab");
+                + "townsfolk=" + townsfolkSpawned + "/" + townsfolkTotal
+                + ", wren=" + wrenSpawned
+                + ", keeper=" + keeperSpawned);
+        sender.sendMessage("  test: /obs sidepass, then right-click each NPC body");
         sender.sendMessage("  help: /obs runbook side");
 
         boolean scareReady = plugin.config() != null && plugin.config().dramaEnabled();
@@ -1605,8 +1610,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void sendSideRunbook(CommandSender sender) {
         sender.sendMessage("[side/lore lanes]");
-        sender.sendMessage("  Townsfolk: /obs townsfolk spawn, then right-click aro, wenna, coll, dob, old-pell.");
-        sender.sendMessage("  Keepers: /obs keeper spawn <node>, right-click, then despawn when done.");
+        sender.sendMessage("  Fast pass: /obs sidepass, then right-click aro, wenna, coll, dob, old-pell, Wren, and the Keeper.");
+        sender.sendMessage("  Focused town test: /obs townsfolk spawn, then right-click each townsperson.");
+        sender.sendMessage("  Focused keeper test: /obs keeper spawn <node>, right-click, then despawn when done.");
         sender.sendMessage("  Nether lane: stand in Nether, /obs site set nether_forge, then /obs placeworld.");
         sender.sendMessage("  End lane: stand in End, /obs site set end_seventh_shrine, then /obs placeworld.");
         sender.sendMessage("  Jump gates safely with /obs flag set <key>; inspect with /obs flag list.");
@@ -2752,6 +2758,57 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      *   <li>{@code despawn} — remove the current Keeper body.</li>
      * </ul>
      */
+    /**
+     * {@code /observance sidepass} - focused side/lore staging. It places every human-facing NPC surface
+     * near the operator and prints the exact right-click checklist, so this lane can be rehearsed as one
+     * concrete pass instead of three separate commands.
+     */
+    private void handleSidePass(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance sidepass must be run by a player (needs a location).");
+            return;
+        }
+        Location origin = player.getLocation();
+        if (origin == null || origin.getWorld() == null) {
+            sender.sendMessage("Observance: could not resolve your location.");
+            return;
+        }
+
+        Location row = origin.clone().add(0, 1, 4);
+        int townsfolkTotal = com.observance.watcher.npc.TownsfolkNpc.TOWNSFOLK.size();
+        sender.sendMessage("== Observance side/lore pass ==");
+
+        if (plugin.townsfolk() != null) {
+            int placed = plugin.townsfolk().spawnAll(row);
+            sender.sendMessage("Townsfolk: " + placed + "/" + townsfolkTotal + " placed ("
+                    + plugin.townsfolk().backend() + ").");
+            sender.sendMessage("  Right-click: aro, wenna, coll, dob, old-pell.");
+        } else {
+            sender.sendMessage("Townsfolk: unavailable.");
+        }
+
+        if (plugin.wren() != null) {
+            var body = plugin.wren().spawn(row.clone().add(12, 0, 0));
+            sender.sendMessage("Wren: " + (body == null ? "not spawned" : "placed")
+                    + " (" + plugin.wren().backend() + "). Right-click him several times.");
+        } else {
+            sender.sendMessage("Wren: unavailable.");
+        }
+
+        if (plugin.keeper() != null) {
+            var body = plugin.keeper().spawn(row.clone().add(15, 0, 0), "sidepass");
+            sender.sendMessage("Keeper: " + (body == null ? "not spawned" : "placed")
+                    + " (" + plugin.keeper().backend() + "). Right-click to test the keeper lane.");
+        } else {
+            sender.sendMessage("Keeper: unavailable.");
+        }
+
+        sender.sendMessage("Checklist: right-click all five townsfolk, Wren, then the Keeper; watch chat/dialogue.");
+        sender.sendMessage("Gates: /obs flag list, or /obs flag set companion_revealed for reckoning tests.");
+        sender.sendMessage("Then run /obs coverage; side/lore should show all NPC bodies present.");
+    }
+
+    /** Place or remove the group-scoped Keeper NPC used by the Keeper interaction listener. */
     private void handleKeeper(CommandSender sender, String[] args) {
         var keeper = plugin.keeper();
         if (keeper == null) {
@@ -3299,7 +3356,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "director", "audit", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placelab", "fullrun", "prepworld", "sidepass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
