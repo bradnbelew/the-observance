@@ -2250,8 +2250,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 base.getChunk().load(true);
                 clearLabCell(base, platformRadius, 9);
                 buildLabPlatform(base, platformRadius);
-                labelLabCell(base, cfg.id(), cfg.type());
                 buildLabFixture(cfg, base);
+                labelLabCell(base, cfg.id(), cfg.type());
 
                 Site labSite = new Site(cfg.id(), cfg.type(), worldName,
                         (double) base.getBlockX(), (double) base.getBlockY(), (double) base.getBlockZ(),
@@ -4209,6 +4209,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                world.getBlockAt(x + dx, y - 1, z + dz)
+                        .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.DEEPSLATE_TILES, false);
+            }
+        }
+        world.getBlockAt(x - 1, y, z + 1).setType(Material.GRAY_CARPET, false);
+        world.getBlockAt(x + 1, y, z + 1).setType(Material.GRAY_CARPET, false);
         world.getBlockAt(x, y, z).setType(body, false);
         world.getBlockAt(x, y + 1, z).setType(Material.CHISELED_DEEPSLATE, false);
         if (top != null && top != Material.AIR) {
@@ -4400,6 +4409,21 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void placeAnswerSign(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world != null) {
+            int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                    world.getBlockAt(x + dx, y - 1, z + dz)
+                            .setType(rim ? Material.POLISHED_DEEPSLATE : Material.DEEPSLATE_TILES, false);
+                }
+            }
+            for (int dx = -1; dx <= 1; dx++) {
+                world.getBlockAt(x + dx, y, z + 2).setType(Material.CHISELED_DEEPSLATE, false);
+                world.getBlockAt(x + dx, y + 1, z + 2).setType(Material.POLISHED_DEEPSLATE, false);
+            }
+        }
         Block b = base.getBlock();
         b.setType(Material.OAK_SIGN, false);
         if (b.getBlockData() instanceof Rotatable r) {
@@ -4413,6 +4437,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean rim = Math.abs(dx) == 3 || Math.abs(dz) == 3;
+                world.getBlockAt(x + dx, y - 1, z + dz)
+                        .setType(rim ? Material.BRICKS : Material.PACKED_MUD, false);
+            }
+        }
         Block fire = world.getBlockAt(x, y, z);
         fire.setType(Material.CAMPFIRE, false);
         if (fire.getBlockData() instanceof org.bukkit.block.data.type.Campfire c) {
@@ -4420,12 +4451,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             fire.setBlockData(c, false);
         }
         world.getBlockAt(x + 1, y, z).setType(Material.LANTERN, false);
+        world.getBlockAt(x - 1, y, z).setType(Material.DARK_OAK_STAIRS, false);
+        world.getBlockAt(x, y, z + 2).setType(Material.BARREL, false);
     }
 
     private void placeSellaPool(Location base) {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean water = Math.abs(dx) <= 1 && Math.abs(dz) <= 1;
+                Material floor = water ? Material.PRISMARINE_BRICKS
+                        : (Math.abs(dx) == 3 || Math.abs(dz) == 3 ? Material.DARK_PRISMARINE : Material.PRISMARINE);
+                world.getBlockAt(x + dx, y - 1, z + dz).setType(floor, false);
+                if (!water) world.getBlockAt(x + dx, y, z + dz).setType(Material.AIR, false);
+            }
+        }
         for (int dx = -1; dx <= 1; dx++) {
             for (int dz = -1; dz <= 1; dz++) {
                 world.getBlockAt(x + dx, y - 1, z + dz).setType(Material.PRISMARINE_BRICKS, false);
@@ -4433,18 +4475,41 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         world.getBlockAt(x, y, z - 2).setType(Material.DARK_PRISMARINE, false);
+        world.getBlockAt(x, y + 1, z - 2).setType(Material.BLUE_CANDLE, false);
     }
 
     private void placeSellaAnchor(Location base) {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -1; dz <= 3; dz++) {
+                boolean edge = Math.abs(dx) == 2 || dz == -1 || dz == 3;
+                world.getBlockAt(x + dx, y - 1, z + dz)
+                        .setType(edge ? Material.DARK_PRISMARINE : Material.PRISMARINE_BRICKS, false);
+            }
+        }
         world.getBlockAt(x, y, z).setType(Material.DARK_PRISMARINE, false);
         world.getBlockAt(x, y - 1, z + 1).setType(Material.WATER, false);
         world.getBlockAt(x, y - 1, z + 2).setType(Material.WATER, false);
+        world.getBlockAt(x - 1, y, z).setType(Material.WHITE_CARPET, false);
+        world.getBlockAt(x + 1, y, z).setType(Material.GRAY_CANDLE, false);
     }
 
     private void placeChest(Location base) {
+        org.bukkit.World world = base.getWorld();
+        if (world != null) {
+            int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+            for (int dx = -2; dx <= 2; dx++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    boolean rim = Math.abs(dx) == 2 || Math.abs(dz) == 2;
+                    world.getBlockAt(x + dx, y - 1, z + dz)
+                            .setType(rim ? Material.POLISHED_TUFF : Material.TUFF_BRICKS, false);
+                }
+            }
+            world.getBlockAt(x - 1, y, z + 1).setType(Material.BARREL, false);
+            world.getBlockAt(x + 1, y, z + 1).setType(Material.TRAPPED_CHEST, false);
+        }
         Block b = base.getBlock();
         b.setType(Material.CHEST, false);
         if (b.getBlockData() instanceof Directional d) {
@@ -4457,6 +4522,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -1; dz <= 2; dz++) {
+                world.getBlockAt(x + dx, y - 1, z + dz)
+                        .setType(Math.abs(dx) == 2 || dz == 2 ? Material.POLISHED_DEEPSLATE : Material.DEEPSLATE_TILES, false);
+            }
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            world.getBlockAt(x + dx, y, z).setType(Material.CHISELED_DEEPSLATE, false);
+            world.getBlockAt(x + dx, y + 1, z).setType(Material.POLISHED_DEEPSLATE, false);
+        }
         world.getBlockAt(x, y, z).setType(Material.CHISELED_DEEPSLATE, false);
         for (ItemFrame f : world.getNearbyEntitiesByType(ItemFrame.class, base, 3.0)) {
             f.remove();
@@ -4472,6 +4547,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -4; dz <= 4; dz++) {
+                boolean wall = Math.abs(dx) == 2;
+                world.getBlockAt(x + dx, y - 1, z + dz).setType(Material.SCULK, false);
+                if (wall) {
+                    world.getBlockAt(x + dx, y, z + dz).setType(Material.DEEPSLATE_BRICKS, false);
+                    world.getBlockAt(x + dx, y + 1, z + dz).setType(Material.DEEPSLATE_BRICKS, false);
+                }
+            }
+        }
         for (int dz = -3; dz <= 3; dz++) {
             world.getBlockAt(x, y - 1, z + dz).setType(Material.SCULK, false);
         }
@@ -4489,15 +4574,35 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean rim = Math.abs(dx) == 3 || Math.abs(dz) == 3;
+                world.getBlockAt(x + dx, y - 1, z + dz)
+                        .setType(rim ? Material.COBBLED_DEEPSLATE : Material.BLACK_CONCRETE, false);
+            }
+        }
         for (int dy = 0; dy <= 4; dy++) world.getBlockAt(x, y + dy, z).setType(Material.DEEPSLATE_BRICKS, false);
         world.getBlockAt(x, y + 5, z).setType(Material.BELL, false);
         world.getBlockAt(x + 1, y, z).setType(Material.CAMPFIRE, false);
+        world.getBlockAt(x - 1, y, z).setType(Material.DAYLIGHT_DETECTOR, false);
     }
 
     private void placeCoopPlate(Location base, String id) {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -3; dx <= 3; dx++) {
+            for (int dz = -3; dz <= 3; dz++) {
+                boolean rim = Math.abs(dx) == 3 || Math.abs(dz) == 3;
+                world.getBlockAt(x + dx, y - 1, z + dz)
+                        .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS : Material.POLISHED_DEEPSLATE, false);
+            }
+        }
+        for (int dx : new int[]{-2, 2}) {
+            for (int dz : new int[]{-2, 2}) {
+                world.getBlockAt(x + dx, y, z + dz).setType(Material.CHISELED_TUFF, false);
+            }
+        }
         world.getBlockAt(x, y - 1, z).setType(Material.CHISELED_DEEPSLATE, false);
         world.getBlockAt(x, y, z).setType(Material.STONE_PRESSURE_PLATE, false);
         world.getBlockAt(x + 1, y, z).setType(Material.CHISELED_TUFF, false);
@@ -4516,6 +4621,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -3; dx <= 3; dx++) {
+            world.getBlockAt(x + dx, y - 1, z - 1).setType(Material.DEEPSLATE_TILES, false);
+            world.getBlockAt(x + dx, y - 1, z).setType(Material.POLISHED_DEEPSLATE, false);
+        }
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = 0; dy <= 2; dy++) {
                 world.getBlockAt(x + dx, y + dy, z).setType(Material.POLISHED_DEEPSLATE, false);

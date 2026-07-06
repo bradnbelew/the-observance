@@ -413,8 +413,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 7
-    vertical-radius: 5
+    radius: 10
+    vertical-radius: 6
     protect: true
     enabled: true
 
@@ -424,8 +424,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 9
-    vertical-radius: 5
+    radius: 12
+    vertical-radius: 6
     protect: true
     enabled: true
 
@@ -435,7 +435,7 @@ sites:
     x: null
     y: null
     z: null
-    radius: 8
+    radius: 11
     vertical-radius: 6
     protect: true
     enabled: true
@@ -446,8 +446,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 8
-    vertical-radius: 6
+    radius: 11
+    vertical-radius: 7
     protect: true
     enabled: true
 
@@ -457,8 +457,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 8
-    vertical-radius: 5
+    radius: 11
+    vertical-radius: 6
     protect: true
     enabled: true
 
@@ -468,8 +468,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 8
-    vertical-radius: 6
+    radius: 11
+    vertical-radius: 7
     protect: true
     enabled: true
 
@@ -479,7 +479,7 @@ sites:
     x: null
     y: null
     z: null
-    radius: 9
+    radius: 11
     vertical-radius: 7
     protect: true
     enabled: true
@@ -490,8 +490,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 10
-    vertical-radius: 6
+    radius: 13
+    vertical-radius: 7
     protect: true
     enabled: true
 
@@ -501,8 +501,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 7
-    vertical-radius: 5
+    radius: 10
+    vertical-radius: 6
     protect: true
     enabled: true
 
@@ -512,7 +512,7 @@ sites:
     x: null
     y: null
     z: null
-    radius: 8
+    radius: 12
     vertical-radius: 7
     protect: true
     enabled: true
@@ -523,8 +523,8 @@ sites:
     x: null
     y: null
     z: null
-    radius: 8
-    vertical-radius: 6
+    radius: 11
+    vertical-radius: 7
     protect: true
     enabled: true
 

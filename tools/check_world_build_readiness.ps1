@@ -10,8 +10,9 @@ $runbookFile = Join-Path $RepoRoot "design\RUNBOOK.md"
 $structuresFile = Join-Path $RepoRoot "design\structures.md"
 $evidenceFile = Join-Path $RepoRoot "design\LIVE-REHEARSAL-EVIDENCE.md"
 $commandFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\command\ObservanceCommand.java"
+$structureTemplateFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\structure\StructureTemplates.java"
 
-foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $evidenceFile, $commandFile)) {
+foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $evidenceFile, $commandFile, $structureTemplateFile)) {
   if (-not (Test-Path $file)) {
     throw "world build readiness: missing required file: $file"
   }
@@ -22,6 +23,7 @@ $runbook = Get-Content -LiteralPath $runbookFile -Raw
 $structures = Get-Content -LiteralPath $structuresFile -Raw
 $evidence = Get-Content -LiteralPath $evidenceFile -Raw
 $commandSource = Get-Content -LiteralPath $commandFile -Raw
+$structureTemplateSource = Get-Content -LiteralPath $structureTemplateFile -Raw
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -41,6 +43,14 @@ function RequireText([string]$Label, [string]$Text, [string]$Needle) {
   if ($Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Fail "$Label missing expected launch-readiness text: $Needle"
   }
+}
+
+function SourceSlice([string]$Text, [string]$StartNeedle, [string]$NextNeedle) {
+  $start = $Text.IndexOf($StartNeedle, [System.StringComparison]::Ordinal)
+  if ($start -lt 0) { return "" }
+  $next = $Text.IndexOf($NextNeedle, $start + $StartNeedle.Length, [System.StringComparison]::Ordinal)
+  if ($next -lt 0) { return $Text.Substring($start) }
+  return $Text.Substring($start, $next - $start)
 }
 
 $sites = [ordered]@{}
@@ -222,6 +232,38 @@ RequireText "RUNBOOK.md" $runbook "tools\new_launch_placement_packet.ps1"
 RequireText "RUNBOOK.md" $runbook "coords-capture.csv"
 RequireText "structures.md" $structures "tools\check_world_build_readiness.ps1 -Launch"
 RequireText "LIVE-REHEARSAL-EVIDENCE.md" $evidence "launch-required site coordinates"
+
+$visualTemplateMarkers = [regex]::Matches($structureTemplateSource, "Post-Unlit visual overhaul").Count
+if ($visualTemplateMarkers -lt 15) {
+  Fail "StructureTemplates.java expected at least 15 Post-Unlit visual overhaul template chambers; found $visualTemplateMarkers"
+}
+
+$requiredProofBuilders = @(
+  "buildSchoolStand",
+  "buildMarkersRow",
+  "buildCisternSeven",
+  "buildWatchFloor",
+  "buildSetApartShelf",
+  "buildUndercroftSeal",
+  "buildForgottenMouth",
+  "buildDeepMarket",
+  "buildRationTable",
+  "buildThirdBayBreach",
+  "buildWarmTownCollapse"
+)
+foreach ($builder in $requiredProofBuilders) {
+  $slice = SourceSlice $commandSource ("private void $builder") "`r`n    private "
+  if ([string]::IsNullOrWhiteSpace($slice)) {
+    Fail "ObservanceCommand.java missing side-proof builder '$builder'"
+  } elseif ($slice.IndexOf("buildProofChamber", [System.StringComparison]::Ordinal) -lt 0) {
+    Fail "side-proof builder '$builder' must call buildProofChamber so visual rooms do not regress to tiny platforms"
+  }
+}
+
+RequireText "ObservanceCommand.java" $commandSource "private void buildProofChamber"
+RequireText "ObservanceCommand.java" $commandSource 'String spacing = args.length >= 2 ? args[1] : "36"'
+RequireText "ObservanceCommand.java" $commandSource "int platformRadius = 18"
+RequireText "ObservanceCommand.java" $commandSource "spacing = Math.max(32, Math.min(64"
 
 if ($failures.Count -gt 0) {
   Write-Host "world build readiness check: FAILED"
