@@ -9,6 +9,7 @@ import { Dossiers } from "@/components/author/Dossiers";
 import { WatcherSleepToggle } from "@/components/author/WatcherSleepToggle";
 import { AcceptingTrigger } from "@/components/author/AcceptingTrigger";
 import { EndingSelector } from "@/components/author/EndingSelector";
+import { DirectorRunPanel } from "@/components/author/DirectorRunPanel";
 import type { FateInput, EndingFate } from "@/app/author/fate-preview";
 import type { DossierEntry } from "@/components/author/Dossiers";
 import type { WhisperBudgetRow } from "@/components/author/WhisperBudgets";
@@ -221,40 +222,12 @@ export default async function AuthorPage() {
         </p>
       </header>
 
-      <section className="grid gap-3 sm:grid-cols-4">
-        <div className="rounded-md border border-neutral-800 bg-slate-850 p-4">
-          <p className="font-mono text-xs uppercase tracking-wide text-neutral-500">
-            Mode
-          </p>
-          <p className="mt-2 font-mono text-xl text-neutral-100">
-            {watcherAsleep ? "Manual" : "Auto"}
-          </p>
-        </div>
-        <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-4">
-          <p className="font-mono text-xs uppercase tracking-wide text-amber-200/70">
-            Approvals
-          </p>
-          <p className="mt-2 font-mono text-xl text-amber-100">
-            {pendingBeats}
-          </p>
-        </div>
-        <div className="rounded-md border border-sky-500/30 bg-sky-500/10 p-4">
-          <p className="font-mono text-xs uppercase tracking-wide text-sky-200/70">
-            Armed
-          </p>
-          <p className="mt-2 font-mono text-xl text-sky-100">
-            {approvedBeats}
-          </p>
-        </div>
-        <div className="rounded-md border border-red-500/30 bg-red-500/10 p-4">
-          <p className="font-mono text-xs uppercase tracking-wide text-red-200/70">
-            Failed
-          </p>
-          <p className="mt-2 font-mono text-xl text-red-100">
-            {failedBeats}
-          </p>
-        </div>
-      </section>
+      <DirectorRunPanel
+        watcherAsleep={watcherAsleep}
+        pendingBeats={pendingBeats}
+        approvedBeats={approvedBeats}
+        failedBeats={failedBeats}
+      />
 
       <ArcControl arc={arc} />
 
