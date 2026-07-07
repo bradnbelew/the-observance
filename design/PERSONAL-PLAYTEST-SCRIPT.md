@@ -18,12 +18,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\audit_all.ps1
 From `plugin/`:
 
 ```powershell
-D:\_gradle\gradle-8.10.2\bin\gradle --offline jar -q
+.\gradlew.bat test build
 ```
 
 Manual setup required for this playtest:
 
 - resource pack URL/SHA1 set or intentionally skipped if testing without custom runes
+- launch blocker gate reviewed with `tools\check_launch_manual_blockers.ps1`
 - townsfolk spawned
 - cold open staged
 - keeper/deep sites placed enough for the route you are testing
@@ -43,7 +44,8 @@ If something is merely hard, keep it. If something is unclear after retracing, f
 
 Also capture the required evidence packet: approach/focal/answer/exit screenshots for major sites,
 NPC line -> physical proof shots, at least six side-path proofs, one clip per scare family, and the
-first-hour uncut clip.
+first-hour uncut clip. Fill the `Director Cut Scorecard` last, after watching the evidence back cold.
+Any score below 4 becomes a fix, not a note for later.
 
 ## Pass 1 - The First Hour
 
@@ -198,4 +200,5 @@ Stop and fix before inviting others if:
 - a side destination feels empty after the walk
 - Wren sounds temporary
 - the final name feels like password entry
+- any Director Cut Scorecard axis is below 4
 

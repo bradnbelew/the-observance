@@ -39,6 +39,7 @@ if (-not (Test-Path $packetFull)) {
 
 $notesFile = Join-Path $packetFull "00-notes.md"
 $fixesFile = Join-Path $packetFull "fixes.md"
+$attestationsFile = Join-Path $packetFull "launch-attestations.md"
 $screenshotsDir = Join-Path $packetFull "screenshots"
 $clipsDir = Join-Path $packetFull "clips"
 
@@ -47,7 +48,26 @@ function Fail([string] $message) {
   $script:failures.Add($message)
 }
 
-foreach ($path in @($notesFile, $fixesFile, $screenshotsDir, $clipsDir)) {
+function PluginJarPath([string] $Root) {
+  $buildFile = Join-Path $Root "plugin\build.gradle"
+  if (-not (Test-Path $buildFile)) {
+    return Join-Path $Root "plugin\build\libs\observance-UNKNOWN.jar"
+  }
+  $buildText = Get-Content -LiteralPath $buildFile -Raw
+  $versionMatch = [regex]::Match($buildText, "(?m)^version\s*=\s*'([^']+)'")
+  $version = if ($versionMatch.Success) { $versionMatch.Groups[1].Value } else { "UNKNOWN" }
+  return Join-Path $Root "plugin\build\libs\observance-$version.jar"
+}
+
+function ExpectedSha1([string] $Path, [string] $Label) {
+  if (-not (Test-Path $Path)) {
+    Fail "$Label missing; package it before final rehearsal evidence can be validated: $Path"
+    return $null
+  }
+  return (Get-FileHash -LiteralPath $Path -Algorithm SHA1).Hash.ToLowerInvariant()
+}
+
+foreach ($path in @($notesFile, $fixesFile, $attestationsFile, $screenshotsDir, $clipsDir)) {
   if (-not (Test-Path $path)) {
     Fail "missing required packet path: $path"
   }
@@ -56,6 +76,7 @@ foreach ($path in @($notesFile, $fixesFile, $screenshotsDir, $clipsDir)) {
 if ($failures.Count -eq 0) {
   $notes = Get-Content -LiteralPath $notesFile -Raw
   $fixes = Get-Content -LiteralPath $fixesFile -Raw
+  $attestations = Get-Content -LiteralPath $attestationsFile -Raw
 
   if (-not $AllowOpenItems) {
     if ([regex]::IsMatch($notes, '^\s*-\s+\[\s\]', [System.Text.RegularExpressions.RegexOptions]::Multiline)) {
@@ -67,11 +88,114 @@ if ($failures.Count -eq 0) {
     if ([regex]::IsMatch($fixes, '\[\s\]')) {
       Fail "fixes.md still contains unresolved checklist items"
     }
+    if ([regex]::IsMatch($attestations, '^\s*-\s+\[\s\]', [System.Text.RegularExpressions.RegexOptions]::Multiline)) {
+      Fail "launch-attestations.md still contains unchecked live attestations"
+    }
   }
 
-  foreach ($required in @("Evidence Lanes", "First-Hour Pacing", "Major Site Visual Shots", "Side Path Value Matrix", "NPC/World Contracts", "Puzzle Fairness Matrix", "Scare Review", "Unlit Expedition Proof", "Stop/Launch Decision")) {
+  foreach ($required in @("Evidence Lanes", "First-Hour Pacing", "Major Site Visual Shots", "Side Path Value Matrix", "NPC/World Contracts", "Puzzle Fairness Matrix", "Scare Review", "Unlit Expedition Proof", "Director Cut Scorecard", "Stop/Launch Decision")) {
     if ($notes.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Fail "00-notes.md missing section: $required"
+    }
+  }
+
+  foreach ($required in @(
+    "Supabase Live Status",
+    "Server Load",
+    "Real Client Rendering",
+    "Live Command Audits",
+    "External Media",
+    "Session Zero And Capture Consent",
+    "Credential Rotation",
+    "Operator Verdict"
+  )) {
+    if ($attestations.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "launch-attestations.md missing section: $required"
+    }
+  }
+
+  foreach ($required in @(
+    "/observance status",
+    "supabase configured: true",
+    "last db call ok: true",
+    "queued writes: 0",
+    "Paper 1.21.11",
+    "Plugin jar SHA1",
+    "Hosted resource pack SHA1",
+    "pack readiness",
+    "Custom rune font glyphs",
+    "/observance preflight",
+    "/observance visualaudit",
+    "/observance dialogueaudit",
+    "/obs unlit audit",
+    "/obs unlit ready",
+    "SESSION-ZERO.md",
+    "observer_capture",
+    "voice_capture",
+    "observer_opt_out",
+    "service-role credentials",
+    "Discord bot credentials",
+    "decision:"
+  )) {
+    if ($attestations.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "launch-attestations.md missing required live attestation text: $required"
+    }
+  }
+
+  if (-not $AllowOpenItems) {
+    $expectedPluginJarSha1 = ExpectedSha1 (PluginJarPath $repoFull) "plugin jar"
+    $expectedResourcepackSha1 = ExpectedSha1 (Join-Path $repoFull "observance-resourcepack.zip") "resource pack zip"
+    if ($expectedPluginJarSha1 -and $attestations.IndexOf($expectedPluginJarSha1, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "launch-attestations.md must include the current plugin jar SHA1: $expectedPluginJarSha1"
+    }
+    if ($expectedResourcepackSha1 -and $attestations.IndexOf($expectedResourcepackSha1, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "launch-attestations.md must include the current resource pack SHA1: $expectedResourcepackSha1"
+    }
+
+    foreach ($section in @(
+      "Supabase Live Status",
+      "Server Load",
+      "Real Client Rendering",
+      "Live Command Audits",
+      "External Media",
+      "Session Zero And Capture Consent",
+      "Credential Rotation"
+    )) {
+      $sectionMatch = [regex]::Match($attestations, '(?is)##\s+' + [regex]::Escape($section) + '(?<body>.*?)(?=##\s+|\z)')
+      if (-not $sectionMatch.Success) {
+        Fail "launch-attestations.md missing section body: $section"
+        continue
+      }
+      $body = $sectionMatch.Groups["body"].Value
+      $evidenceMatch = [regex]::Match($body, '(?im)^\s*evidence:\s*(?<value>.*?)\s*$')
+      if (-not $evidenceMatch.Success) {
+        Fail "launch-attestations.md section '$section' missing evidence field"
+        continue
+      }
+      $evidence = $evidenceMatch.Groups["value"].Value.Trim()
+      if ([string]::IsNullOrWhiteSpace($evidence) -or
+          $evidence -match '^audit-placeholder$' -or
+          $evidence -match '^todo$' -or
+          $evidence -match '^n/a$') {
+        Fail "launch-attestations.md section '$section' needs concrete evidence"
+      }
+    }
+
+    $verdictMatch = [regex]::Match($attestations, '(?is)##\s+Operator Verdict(?<body>.*?)(?=##\s+|\z)')
+    if (-not $verdictMatch.Success) {
+      Fail "launch-attestations.md missing Operator Verdict body"
+    } else {
+      $verdictBody = $verdictMatch.Groups["body"].Value
+      $decisionMatch = [regex]::Match($verdictBody, '(?im)^\s*decision:\s*(?<value>.+?)\s*$')
+      if (-not $decisionMatch.Success) {
+        Fail "launch-attestations.md missing decision line"
+      } elseif ($decisionMatch.Groups["value"].Value.Trim() -ne "LAUNCH") {
+        Fail "launch-attestations.md Operator Verdict decision must be LAUNCH for final packet"
+      }
+      $reasonMatch = [regex]::Match($verdictBody, '(?im)^\s*reason:\s*(?<value>.*?)\s*$')
+      if (-not $reasonMatch.Success -or [string]::IsNullOrWhiteSpace($reasonMatch.Groups["value"].Value.Trim())) {
+        Fail "launch-attestations.md Operator Verdict needs a concrete reason"
+      }
     }
   }
 
@@ -423,6 +547,51 @@ if ($failures.Count -eq 0) {
       $value = $fieldMatch.Groups["value"].Value.Trim()
       if (-not $AllowOpenItems -and [string]::IsNullOrWhiteSpace($value)) {
         Fail "Unlit house '$house' needs concrete proof for: $field"
+      }
+    }
+  }
+
+  $directorSectionMatch = [regex]::Match($notes, '(?is)##\s+Director Cut Scorecard(?<body>.*?)(?=##\s+Stop/Launch Decision|\z)')
+  $directorSection = if ($directorSectionMatch.Success) { $directorSectionMatch.Groups["body"].Value } else { "" }
+  foreach ($axis in @(
+    "haunted place, not puzzle course",
+    "NPCs have separate jobs",
+    "side paths change belief",
+    "manual builds require body verbs",
+    "operator stays invisible",
+    "finale restores a person, not a password"
+  )) {
+    $pattern = '(?is)^\s*-\s+\[[xX ]\]\s+' + [regex]::Escape($axis) + '\s*(?<block>.*?)(?=^\s*-\s+\[[xX ]\]\s+|\z)'
+    $match = [regex]::Match($directorSection, $pattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
+    if (-not $match.Success) {
+      Fail "Director Cut Scorecard missing '$axis'"
+      continue
+    }
+    $block = $match.Groups["block"].Value
+    $scoreMatch = [regex]::Match($block, '(?im)^\s*score:\s*(?<score>.+?)\s*$')
+    if (-not $scoreMatch.Success) {
+      Fail "Director Cut Scorecard axis '$axis' missing score"
+    } elseif (-not $AllowOpenItems) {
+      $scoreText = $scoreMatch.Groups["score"].Value.Trim()
+      $digitMatch = [regex]::Match($scoreText, '\b(?<score>[1-5])\b')
+      if (-not $digitMatch.Success) {
+        Fail "Director Cut Scorecard axis '$axis' needs a numeric score 4 or 5 for launch"
+      } else {
+        $score = [int]$digitMatch.Groups["score"].Value
+        if ($score -lt 4) {
+          Fail "Director Cut Scorecard axis '$axis' scored $score; launch requires 4 or 5"
+        }
+      }
+    }
+    foreach ($field in @("evidence", "failure if under 4", "fix")) {
+      $fieldMatch = [regex]::Match($block, '(?im)^\s*' + [regex]::Escape($field) + ':\s*(?<value>.*?)\s*$')
+      if (-not $fieldMatch.Success) {
+        Fail "Director Cut Scorecard axis '$axis' missing field: $field"
+        continue
+      }
+      $value = $fieldMatch.Groups["value"].Value.Trim()
+      if (-not $AllowOpenItems -and [string]::IsNullOrWhiteSpace($value)) {
+        Fail "Director Cut Scorecard axis '$axis' needs concrete $field"
       }
     }
   }

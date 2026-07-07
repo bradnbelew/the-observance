@@ -7,6 +7,15 @@
 > green** — the next session is **playtest-driven tuning + wiring Ethan's real media as it arrives**, not
 > a from-scratch build. Do not re-plan; verify, refine, and finish the launch.
 
+> **CURRENT STATUS OVERRIDE (2026-07-06):** this handoff contains historical "complete and green" language
+> from an earlier repo-only pass. The current launch verdict is **not launch-ready** until
+> `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`
+> passes and the live Paper server/client attestations in `design/RUNBOOK.md` are completed. Known blockers
+> include the hosted resource-pack URL/SHA1, 42 launch-required placeholder site coordinates, coordinate
+> proof capture, completed live rehearsal packet, and in-client verification of books/signs/lore/runes/sounds.
+> Use `design/CURRENT-READINESS-VERDICT.md` for the current verdict and `design/MANUAL-LAUNCH-PLAN.md` as
+> the ordered handoff for closing those blockers.
+
 ---
 
 ## 0. THE VIBE — the test every decision must pass (Ethan's ideals, non-negotiable)
@@ -53,7 +62,7 @@ touched together) and a physical-detector fix for Iss's monotone catch-sequence 
 **Still blocked on Ethan, unchanged:** the physical world-build (§3 C below) and audio-by-ear verification of
 the keeper voices.
 
-## 1. CURRENT STATE (2026-07-03) — everything built, all green, NOTHING pushed
+## 1. HISTORICAL STATE (2026-07-03) - repo build was green, live launch was still pending
 Branch `feat/build-everything-2026-07-01`. Every surface green: **one-button root audit · Discord
 story/data/runtime checks · dashboard selftests/build · plugin jar · datapack/resourcepack JSON.** The
 full player journey is **code-complete end to end**:
@@ -65,7 +74,7 @@ the keeper-record Hold-Book writes each living player in.
 **Shipped since the wave program:** W3 field · W4/W4.2 Observer (Tier-0 behavior + Tier-1 grounded echo +
 Tier-2 LLM archivist) · W5 voice tier ("it heard you SAY it") + the spoken-name loop · W6/W7 leave-the-game
 surfaces (record site + lure + archive) + found-footage wiring · **W8 cohesion+hardening audit** (fixed the
-real blocker: the missing `CoopPlateListener`/`m4-three-hands` producer; the `beat_queue` `failed`-status
+real blocker: the formerly missing `CoopPlateListener`/`m4-three-hands` producer is now guarded; the `beat_queue` `failed`-status
 deploy hazard) · **W9 journey pass** (fixed the two finale blockers: the ending never posted; the reckoning
 had no consequence) · **A3 keeper-record wired** (the last orphan).
 
@@ -86,16 +95,18 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
    specs + adjacency rules) + **`design/CONTENT-GUIDELINE.md`** (Ethan's artifact field guide) when touching
    those areas.
 
-## 3. WHAT'S LEFT (nothing is a code blocker; the spine plays with C alone)
+## 3. WHAT'S LEFT (no known code blocker; live ops still gate launch)
 - **C — OPS (Ethan; required to run):** regenerate and apply `discord/supabase/apply-all.sql`;
   host the resourcepack + set `config.yml` url/sha1
   (**the rune font ships there — the rosetta cribs need it**); `placeworld` the sites incl. the new
-  `coop_plate` + the Nether/End lane spots; stage the cold open (`/observance placeprologue`); rotate creds.
+  `coop_plate` + the Nether/End lane spots; replace all 42 launch-required placeholder site coordinates;
+  fill and validate the coordinate proof CSV; complete the live rehearsal packet; stage the cold open
+  (`/observance placeprologue`); rotate creds.
 - **B — MEDIA (Ethan; optional enrichment):** the found-footage clip + recovered Drive folder + a
   waveform/spectrogram image (feeds `spine-recovered-archive`), and `dashboard/public/the-hold/the-hold.zip`
   (the lure's offline map — don't plant the lure clue until it's hosted). **Wire these when they arrive.**
 - **Optional tiers (off by default):** `ANTHROPIC_API_KEY` in the **Render** cron env (Observer Tier-2);
-  the voice env + `voice_capture`; `observer_capture`. Flip when ready.
+  the voice env + `voice_capture`; `observer_capture`. Flip only after session-zero consent is handled.
 - **Deferred enhancements (flagged in LAUNCH-READINESS §3, NOT half-shipped):** `keeper.ts` NPC-rhyme beat
   (low value — keeper-record already delivers the rhyme); REFUSERS ending (Ethan decided OUT); more
   six-prior-groups / diverse-puzzle archive cards (pure content); a producer-coverage build guardrail.
@@ -121,23 +132,18 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
 
 ## 6. VERIFY-GREEN (baseline before + after every change)
 ```
-# plugin (Java)
-cd /d/the-observance/plugin && "D:/_gradle/gradle-8.10.2/bin/gradle" --offline jar -q ; echo "PLUGIN=$?"
-# discord (TS + SQL + player-facing story/data + showrunner runtime guardrails)
-cd /d/the-observance/discord && npx tsc --noEmit \
-  && npm run -s audit \
-  && npm run -s runtimecheck
-# dashboard
-cd /d/the-observance/dashboard && npx tsc --noEmit \
-  && npm run -s selftest
-# datapack (JSON validity)
-cd /d/the-observance/datapack && for f in $(find . -name '*.json' -o -name '*.mcmeta'); do \
-  node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || echo "INVALID: $f"; done
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\audit_all.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>
+cd plugin
+.\gradlew.bat test build
 ```
-Gradle: `D:/_gradle/gradle-8.10.2/bin/gradle`.
+The first command verifies repo automation. The second is the launch go/no-go gate and is expected to fail
+until the manual blockers are closed. The Gradle wrapper is checked in so a local Gradle install is not
+required.
 
 ---
-**TL;DR:** You're the director; the vibe (§0) is the test; the build is DONE + green (§1). Next session =
-**verify live, wire Ethan's media, and tune from a playtest** — not a rebuild. Read LAUNCH-READINESS first,
-run the pipeline (§5), keep green (§6), commit at boundaries. Make it a mysterious world you're haunted into
-decoding — top-1% quality, nothing half-ready.
+**TL;DR:** You're the director; the vibe (§0) is the test; the repo automation is green, but launch is blocked
+until the manual go/no-go gate passes. Next session = **verify live, close the manual blockers, wire Ethan's
+media, and tune from a playtest** — not a rebuild. Read LAUNCH-READINESS first, run the pipeline (§5), keep
+green (§6), commit at boundaries. Make it a mysterious world you're haunted into decoding — top-1% quality,
+nothing half-ready.

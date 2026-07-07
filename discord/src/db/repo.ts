@@ -42,7 +42,7 @@ export async function getPlayerByDiscordId(
 ): Promise<Player | null> {
   const { data, error } = await supabase
     .from('players')
-    .select('id, mc_uuid, name, discord_id')
+    .select('id, mc_uuid, name, discord_id, observer_opt_out')
     .eq('discord_id', discordId)
     .maybeSingle<Player>();
 
@@ -733,10 +733,9 @@ export interface UnusedObservation {
 }
 
 /**
- * Voice-capture consent floor: true iff the player is opted OUT (or can't be confirmed opted-in). Used
- * to gate voice capture BEFORE any audio is transcribed — stricter than chat, which only enforces opt-out
- * at echo time. On any doubt (missing row / error) this returns true (skip), so a DB blip disables voice
- * capture rather than recording someone who may not have consented.
+ * Observer consent floor: true iff the player is opted OUT (or can't be confirmed opted-in). Used
+ * to gate voice/chat capture BEFORE storage. On any doubt (missing row / error) this returns true
+ * (skip), so a DB blip disables capture rather than recording someone who may not have consented.
  */
 export async function observerOptedOut(mcUuid: string): Promise<boolean> {
   try {
@@ -746,7 +745,7 @@ export async function observerOptedOut(mcUuid: string): Promise<boolean> {
       .eq('mc_uuid', mcUuid)
       .maybeSingle();
     if (error || !data) return true; // unknown → treat as opted out (privacy-safe)
-    return (data as { observer_opt_out?: unknown }).observer_opt_out === true;
+    return (data as { observer_opt_out?: unknown }).observer_opt_out !== false;
   } catch {
     return true;
   }

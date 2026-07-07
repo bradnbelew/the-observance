@@ -5,6 +5,7 @@
 > Also run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`
 > after staging the world. That gate proves launch-required site coordinates are real; this packet proves
 > those placed sites are good.
+> The ordered human launch handoff lives in `design/MANUAL-LAUNCH-PLAN.md`.
 
 ## Output
 
@@ -17,6 +18,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_rehearsal_packet.p
 ```text
 rehearsals/YYYY-MM-DD/
   00-notes.md
+  launch-attestations.md
   screenshots/
   clips/
   fixes.md
@@ -37,7 +39,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_unlit_playtest_r
 When that prints `unlit playtest readiness: OK`, stop building and let Nano playtest.
 
 The validator is intentionally strict: it expects completed checkboxes, named screenshots for every major
-site, and named clips for the first hour, scare families, Unlit expedition, Record/web jump, and finale.
+site, named clips for the first hour, scare families, Unlit expedition, Record/web jump, and finale, plus
+`launch-attestations.md` evidence for live-only checks such as Supabase status, exact plugin/resource-pack
+SHA1 values, real-client rendering, session-zero consent, and credential rotation.
 
 `00-notes.md` should be short and blunt. For every stop, write:
 
@@ -62,6 +66,7 @@ Capture these before inviting the group:
 | Unlit | One route clip plus house screenshots for entry, spawn, exit, light use, figure behavior, clue reading, extraction, and anti-cheese | It reads as the dark copy of home, not combat, not a maze, not a numbered checklist. |
 | Record/web | Clip from in-world clue to `/record/...` page | The jump feels like discovery, not opening a wiki. |
 | Finale | Clip or rehearsal notes for Accepting, Seventh choice, release/kick | The ending feels staged and earned, not password entry. |
+| Director cut | Filled `Director Cut Scorecard` in `00-notes.md` | Every axis scores 4 or 5: haunted place, distinct NPCs, valuable side paths, embodied builds, invisible operator, restored-person finale. |
 
 ## Blockers
 
@@ -78,6 +83,7 @@ Stop and fix before launch if any of these happen:
 - Wren sounds like an exposition dispenser or a temporary placeholder.
 - The Record website feels like documentation instead of a place.
 - The final name is experienced as a password rather than a restoration.
+- Any Director Cut Scorecard axis scores below 4.
 
 ## First-Hour Pacing
 

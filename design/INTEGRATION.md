@@ -1,4 +1,4 @@
-# THE OBSERVANCE — MINECRAFT INTEGRATION CATALOG
+﻿# THE OBSERVANCE — MINECRAFT INTEGRATION CATALOG
 
 > Canonical (replaces the old drifted integration plan). Companion to [OVERHAUL.md](OVERHAUL.md)
 > and [PUZZLES.md](PUZZLES.md). The full menu of what can be built into the world, by **layer**
@@ -16,9 +16,9 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
 
 - ◑ **Rune/glyph font** (`runes.png` + `runes.json`) — the carved-clue look. 🧩🔗🌌 *(built; needs PUA
   codepoint fix so it can't collide with vanilla text).*
-- ⬜ **Custom sounds (THE missing layer)** — mono OGG Vorbis for the 4 declared events + more:
-  whispers, drones, the cold toll, stone-breath, keeper voices, stings, the black-moon bell. 👻🌌🧑
-  **P0 — without these every sound beat plays silence.** Source CC0 + ElevenLabs TTS → `ffmpeg -ac 1`.
+- ✅ **Custom sounds** — the resource pack now ships 11 checked mono OGG/Vorbis assets: four ambience
+  events, generic `keeper_voice`, and six named keeper clips. `tools/check_media_readiness.ps1` guards
+  the manifest/files. 👻🌌🧑
 - ⬜ **`custom_model_data` relics** (1.21.4 `item_model` + `range_dispatch`) — "letters from the deep,"
   map fragments, keeper tokens, **the Lens/reading-glass**, the record-ledger book. Render
   **dormant→warm→cold** as the plugin sets the component (story + item move in lockstep). 🔗🗺️🧑
@@ -29,15 +29,15 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
   bank dread without announcing themselves. 🌌
 - ✅ **`minecraft:illageralt` fallback** — the no-pack degrade path (real SGA cipher, decodable). 🧩
 
-## LAYER 2 — DATAPACK (server-side, no-install) — *none exists yet; whole layer is ⬜*
+## LAYER 2 — DATAPACK (server-side, no-install) — *core atmosphere/reward pack built; live load still needs proof*
 
-- ⬜ **The Undercroft dimension** — `dimension_type` with `the_nether` fog, `has_skylight:false`,
-  `ambient_light:0.0` = sealed pitch-dark with thick near-fog. 👻🌌 **P0 atmosphere.**
+- ✅ **The Undercroft dimension datapack** — `observance:undercroft` dimension/fog metadata exists and is
+  packaged; live entry/build placement still needs server verification. 👻🌌
 - ⬜ **Custom biomes** — cold near-black `fog_color`; **`mood_sound` = `observance:whisper`** so the
   *vanilla engine self-generates* the cave-whisper scare with zero plugin tick. 👻🌌 (≤3 biomes —
   MC-211878 drops fog past ~12.)
-- ⬜ **Hidden advancements** — diegetic toasts ("the record notes you" / "receives you"); the seed
-  already references `observance:the_ring_is_whole` etc. 📖🔗
+- ✅ **Hidden advancements / reward toasts** — reward-toast datapack assets are packaged and guarded;
+  live client proof remains part of rehearsal. 📖🔗
 - ⬜ **Functions / predicates** — scripted micro-sequences (tellraw/particle/sound/structure-load)
   with no plugin code; cheap scares + lore reveals. 👻🗺️
 - ⬜ **Custom recipes / loot** — craft a keeper-token or the Lens; "recovered" loot in structures. 🧩🗺️
@@ -58,13 +58,14 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
   (A11) for load-bearing precision puzzles (never leave a comparator-read bookshelf lock to raw
   generation). Veterans recognize raw vanilla → always apply the dresser pass. 🗺️🌌
 
-## LAYER 3 — PLUGIN (Paper — the reactive engine) — *core built, signature features TODO*
+## LAYER 3 — PLUGIN (Paper — the reactive engine) — *core built; signature features need live proof*
 
 - ✅ **Flag/storylet gate engine** (0006 + FlagGate twin) — the progression spine. 🧩📖
 - ✅ **Beat library (23 types)** + queue/poller + reveal discipline + drama budget. 👻🌌
-- ◑ **Per-player illusion primitives** — `fakeBlock`/`isHiddenFrom` built; **ADD `showEntity`
-  (per-player entity visibility), per-player packet light (dims when watched), per-player fog.** 👻🧩🌌
-  *The "it knows ME" feel + the asymmetric co-op vault depend on these.*
+- ✅ **Per-player illusion primitives** — `fakeBlock`, `isHiddenFrom`, `showEntity`/`hideEntity`,
+  display-entity reveals, and client-only light dimming are built. Remaining optional depth:
+  per-player fog polish. 👻🧩🌌
+  *The "it knows ME" feel and the asymmetric co-op vault now have a real runtime floor.*
 - ⬜ **Display + Interaction entities — the illusion backbone.** `text_display` / `block_display` /
   `item_display` (packet, per-player, transform-animated) for floating runes, block-built faces /
   figures, glitch-corruption text, "the thing in the trees" one player sees. **Interaction entities**
@@ -75,8 +76,9 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
   damage, alone-vs-grouped, hoarding one item, revisiting one block. The Watcher speaks in
   *implication* grounded in this signal with zero chat/voice/LLM. Extends the existing Attention
   layer. "Behavior-heard" variant of PUZZLES §1 voice-heard. 👻🧑
-- ⬜ **Asymmetric co-op controller** — partitions clue-fragments over the **active roster** at
-  solve-time (dynamic-N), shows each player their piece via `showEntity`. 🧩🌌
+- ✅ **Asymmetric co-op controller** — `ThresholdVaultListener` partitions clue-fragments over the active
+  roster, shows each player their piece via per-player `TextDisplay`, gates on `deep_gate_open`, and posts
+  the opaque solve token. Needs live rehearsal, not first implementation. 🧩🌌
 - ⬜ **The Observer Engine** — in-game chat (`ChatListener` ✅) + Discord text + Discord **voice
   (Whisper)** → LLM archivist extracts **grounded** observations → sparse, precise weaponization
   (quote real words/plans back). 👻🧑📖 *(needs the bot hosted always-on; build after the loop runs.)*
@@ -88,8 +90,9 @@ Legend — serves: 📖story 🧩puzzle 👻scare 🗺️lore 🧑character 🔗
   coords-arrival (extends `CustomComplianceListener`/`TerritoryListener`). 🧩 (PUZZLES §4)
 - ⬜ **A3 Minecraft-native listeners** — sculk-corridor silence detector, villager-trade oracle
   watcher, item-frame dial reader, bookshelf-register comparator reader, NBT item inspector. 🧩
-- ⬜ **The missing flag producers** — Ignition/CoopPlate/SeventhChoice/UnlitDeep (the arc can't start
-  without Ignition; `/obs flag` ✅ proves gating meanwhile). 🧩📖
+- ✅ **Flag producers** — ignition, Wren/reckoning, co-op, Seventh choice, and Unlit producers are
+  implemented and guarded by compile/contract checks. `/obs flag` remains a recovery/admin path, not the
+  normal spine. 🧩📖
 - ⬜ **Desire-paths** — read `heatmap_cells` (✅ tracked) → place a worn path / the future-dated grave
   on a player's most-walked route. 👻🗺️ ([backlog](ideas/backlog-desire-paths.md))
 - ◑ **NPC framework — D4 hybrid (resolved 2026-06-30).** Citizens2 for human-passing NPCs (the

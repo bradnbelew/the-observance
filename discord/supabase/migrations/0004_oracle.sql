@@ -58,7 +58,7 @@ end $$;
 
 alter table public.beat_queue
   add constraint beat_queue_status_check
-  check (status in ('pending','approved','skipped','fired','failed'));
+  check (status in ('pending','approved','firing','skipped','fired','failed'));
 
 -- APPROVAL GATE: the plugin poller fires `status=eq.approved` ONLY, ordered by
 -- priority desc, created_at asc — so `pending` beats wait for a human to approve

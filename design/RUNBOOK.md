@@ -1,7 +1,8 @@
 # THE OBSERVANCE — OPERATOR'S RUNBOOK (running it with your friends)
 
 > The single guide for setting up and running a real session. Supersedes GO-LIVE-TONIGHT.md.
-> Honest status of every system is in §6. Server = Paper **1.21.11** on Crafty (brother's PC).
+> Current go/no-go status is in `design/CURRENT-READINESS-VERDICT.md`; honest system detail is in §6.
+> Server = Paper **1.21.11** on Crafty (brother's PC).
 
 ---
 
@@ -19,20 +20,38 @@
 
 - From the repo root, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_all.ps1`**. This is the one-button
-  prep check: Discord/data story audit, dashboard build, Java 21 plugin source/jar checks, and asset
-  checks. Do not start a live session if this is red.
+  prep check: Discord/data story audit, dashboard build, Java 21 plugin source/jar checks, plugin DB
+  contract checks, Minecraft text-surface fit, Record/web artifact withholding, Record terminal hint
+  escalation, rune-font cohesion, and asset checks. Do not start a live session if this is red.
 - For the final live server, also run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`**.
   This is the launch-required site coordinates gate: it fails until every load-bearing site has real
   coordinates instead of authoring placeholders.
+- For the final no-excuses go/no-go gate, run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`**.
+  This combines the repo-verifiable manual blockers: hosted resource-pack URL/SHA1, launch site
+  coordinates, coordinate proof quality, and the completed live rehearsal packet. It also prints the
+  remaining manual attestations that only the live Paper server/client can prove.
+- Use **`design/MANUAL-LAUNCH-PLAN.md`** as the ordered human checklist. It is the source for what each
+  manual task is, why it matters, where it belongs, how to do it, when to do it, how players should find it,
+  and what evidence proves it. The rehearsal packet's `launch-attestations.md` is where those live-only
+  proofs are recorded.
 - If you only need the Discord/data half, run **`npm run audit`** from `discord/`.
 - If you only need the plugin source half, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_compile.ps1`**.
-- If you changed plugin Java/resources, run
+- For final deploy packaging, run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_launch_bundle.ps1`**. It rebuilds the
+  plugin jar, datapack zip, resource-pack zip, validates them, and refreshes the deploy manifest.
+- If you changed only plugin Java/resources and need a partial package, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1`** before uploading
   `plugin/build/libs/observance-0.3.22.jar`.
-- If you change anything under `datapack/` or `resourcepack/`, run
+- If you changed only `datapack/` or `resourcepack/` and need a partial package, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_assets.ps1`** before the audit.
+- Those package commands refresh **`observance-deploy-manifest.json`**. Use that manifest as the deploy
+  receipt for the exact plugin jar, datapack zip, and resource-pack zip bytes you are uploading/hosting.
+- After hosting the resource pack, run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/set_resource_pack_config.ps1 -Url <hosted-https-zip-url>`**
+  so the URL and current zip SHA1 are written together.
 - The side-quest audit enforces the launch rule: only two blunt false/dead leads total, and each must
   have teeth. Optional content should build confidence, not teach players the ARG wastes their walks.
 
@@ -111,11 +130,15 @@
   Static checks prove wiring; the evidence packet proves scale, readability, scares, NPC/world contracts,
   side-path value, and finale staging. Do not launch on green tooling alone.
   Start it with **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_rehearsal_packet.ps1`**.
+  The generated `launch-attestations.md` must also be completed before the final launch blocker command can
+  pass with `-RehearsalPacket`.
 
 ## 3. SESSION ZERO (before the friends join the fiction)
 - Read **`design/SESSION-ZERO.md`** — the out-of-fiction consent + onboarding script. Cover: this
   server watches (in-game behavior; later chat/voice), you can opt out anytime, there's a debrief.
   Veteran group — being watched can land hard, so this is not optional.
+
+- Before enabling capture, handle the consent conversation and record any `observer_opt_out` choices.
 
 ## 4. RUN THE FIRST SESSION
 1. **Ignite** the arc — either admin `/observance flag set prologue_ignited true`, OR in-world (real
@@ -162,7 +185,9 @@
 ## 6. HONEST STATUS — what works vs. the real ceiling (read before promising friends anything)
 **Works now (built + checked this wave):** `tools/audit_all.ps1` is green: story/data audit,
 showrunner runtime checks, dashboard selftests/lint/type/build, Java 21 plugin source compile,
-operator-doc command check, plugin jar freshness/contents, and datapack/resourcepack JSON/reference/zip checks.
+plugin DB contract checks, operator-doc command check, Minecraft sign/book/HUD text-surface fit, plugin jar freshness/contents,
+Record/web lure withholding, Record terminal hint escalation, rune alphabet cohesion, and
+datapack/resourcepack JSON/reference/zip checks.
 Plugin target jar is `observance-0.3.22.jar`; use
 `tools/package_plugin.ps1` to rebuild it without Gradle. On the live server, verify with
 `/observance status` and `/observance preflight`;
@@ -177,10 +202,12 @@ companion betrayal arc live** (NPC + producers + the reckoning choice); the **fi
 erase the Seventh's name); the fog **Undercroft dimension** + reward-toast advancements; the **record
 website** (deployable); the reworked+registered beats (reveal→per-player, room-swap→teleport,
 spatial-voice→positional, keeper-npc). The Discord audit includes seedcheck, webaudit, sidequestaudit,
-specscheck, and resolvecheck; the plugin source check compiled 151 Java files under JDK 21; the jar
+specscheck, and resolvecheck; the plugin source check compiled 152 Java files under JDK 21; the jar
 check verifies the deployable jar is fresh and contains plugin.yml/config/sites/classes; the asset check
-verifies the resourcepack sounds/font texture and both zip packages; the media readiness check verifies
-the 11 OGG files are mono Vorbis with sane duration.
+verifies the resourcepack sounds/font texture, pins `observance:runes` to the A-Z/0-9 generated atlas, and
+checks both zip packages; the dashboard selftest keeps the web Record rune marks geometrically identical to
+the canonical Discord/resource-pack alphabet; the media readiness check verifies the 11 OGG files are mono
+Vorbis with sane duration.
 
 **Built but only the live server can *prove*:** the illusion visuals, visual scale of stamped
 structures, dialogue/world proof, the co-op partition with a real group, the companion arc end-to-end,

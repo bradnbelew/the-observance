@@ -4,9 +4,9 @@ import com.observance.watcher.data.rows.BeatQueueRow;
 import com.observance.watcher.util.Safety;
 
 /**
- * Phase-0 placeholder enactor: logs the beat it WOULD enact and reports FIRED so the full
- * poll → decide → mark-fired pipeline can be exercised end-to-end with no real world effect.
- * Replaced by the Haunting-Engine subsystem agent's real enactor.
+ * Fallback enactor: logs the beat it WOULD enact and reports FIRED so the full poll -> decide ->
+ * mark-fired pipeline can be exercised if the Haunting Engine fails to activate. Normal startup replaces
+ * this with the real enactor via {@code ObservancePlugin#setBeatEnactor}.
  */
 public final class NoopBeatEnactor implements BeatEnactor {
 

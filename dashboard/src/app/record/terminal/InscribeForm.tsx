@@ -67,7 +67,7 @@ export function InscribeForm() {
         </label>
 
         <label className="flex items-baseline gap-3 px-3 py-2">
-          <span className="w-16 shrink-0 text-[11px] lowercase tracking-wide text-neutral-600">answer</span>
+          <span className="w-16 shrink-0 text-[11px] lowercase tracking-wide text-neutral-600">mark</span>
           <input
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}

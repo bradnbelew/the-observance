@@ -84,6 +84,26 @@ function RequireDialogueKeys([string] $contract, [string[]] $keys) {
   }
 }
 
+# Contract 0: archive-authored townsfolk reaction texture must actually reach Minecraft.
+RequireDialogueKeys "surface conduct texture" @(
+  "aro.greet.again",
+  "aro.greet.warm",
+  "aro.greet.cold",
+  "aro.greet.iss_cold",
+  "wenna.greet.again",
+  "wenna.greet.warm",
+  "wenna.greet.cold",
+  "coll.greet.warm",
+  "coll.greet.cold",
+  "old-pell.greet.warm",
+  "old-pell.greet.cold",
+  "dob.react.bad"
+)
+RequireContains "surface conduct texture archive" $archiveVoice "'aro.greet.iss_cold'"
+RequireContains "surface conduct texture archive" $archiveVoice "'wenna.greet.warm'"
+RequireContains "surface conduct texture archive" $archiveVoice "'coll.greet.cold'"
+RequireContains "surface conduct texture arc echo" $townsfolk 'String issEchoKey = id + ".greet.iss_cold";'
+
 # Contract 1: Aro/Coll/Dob's painted-line claims must point to a real route and a real consequence.
 RequireDialogueKeys "painted-line" @(
   "aro.rumor.line",

@@ -65,8 +65,6 @@ Phase 0 (below) needs **only #5 + #6**. The VPS/Supabase/Discord/Claude come onl
 
 ## Build / run
 
-- Java 21, Gradle, Paper API. Open in IntelliJ.
-- `./gradlew build` → drop the jar in PebbleHost `plugins/` → restart.
+- Java 21, Paper API dependencies resolved by the plugin Gradle wrapper. Open in IntelliJ.
+- `cd plugin && gradlew.bat build` on Windows, or `cd plugin && ./gradlew build` elsewhere, then drop the jar in PebbleHost `plugins/` and restart.
 - Local test: run a Paper jar locally, hot-reload during dev.
-
-(The Gradle project scaffold is the next artifact — see DESIGN.md "Build setup".)

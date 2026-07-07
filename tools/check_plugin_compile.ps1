@@ -8,6 +8,8 @@ $pluginRoot = Join-Path $RepoRoot "plugin"
 $srcRoot = Join-Path $pluginRoot "src\main\java"
 $pluginSource = Join-Path $srcRoot "com\observance\watcher\ObservancePlugin.java"
 $beatEngineSource = Join-Path $srcRoot "com\observance\watcher\beats\BeatEngine.java"
+$beatLibrarySource = Join-Path $srcRoot "com\observance\watcher\beats\BeatLibrary.java"
+$packTrackerSource = Join-Path $srcRoot "com\observance\watcher\signal\ResourcePackTracker.java"
 $buildRoot = Join-Path $pluginRoot "build"
 $classesDir = Join-Path $buildRoot "check-plugin-classes"
 $argsFile = Join-Path $buildRoot "check-plugin-javac.args"
@@ -16,7 +18,7 @@ $gradleCache = Join-Path $env:USERPROFILE ".gradle\caches\modules-2\files-2.1"
 if (!(Test-Path $srcRoot)) {
   throw "Plugin source directory not found: $srcRoot"
 }
-foreach ($file in @($pluginSource, $beatEngineSource)) {
+foreach ($file in @($pluginSource, $beatEngineSource, $beatLibrarySource, $packTrackerSource)) {
   if (!(Test-Path $file)) {
     throw "Plugin runtime wiring source not found: $file"
   }
@@ -87,6 +89,8 @@ if ($compileExit -ne 0) {
 
 $pluginText = Get-Content -LiteralPath $pluginSource -Raw
 $engineText = Get-Content -LiteralPath $beatEngineSource -Raw
+$libraryText = Get-Content -LiteralPath $beatLibrarySource -Raw
+$packTrackerText = Get-Content -LiteralPath $packTrackerSource -Raw
 if (-not $pluginText.Contains("this.beatEnactor.set(new NoopBeatEnactor(safety))")) {
   throw "Plugin runtime wiring check failed: ObservancePlugin no longer installs the safe initial beat enactor"
 }
@@ -97,5 +101,33 @@ if (-not $pluginText.Contains("this.beatEngine = new com.observance.watcher.beat
 if (-not $engineText.Contains("plugin.setBeatEnactor(new RealBeatEnactor(ctx, library, budget))")) {
   throw "Plugin runtime wiring check failed: BeatEngine no longer replaces the no-op enactor with RealBeatEnactor"
 }
+foreach ($beat in @("RevealBeat", "RoomSwapBeat", "KeeperNpcBeat", "ModeledMobBeat", "SpatialVoiceBeat")) {
+  if (-not $libraryText.Contains("register(new $beat")) {
+    throw "Plugin beat library check failed: signature beat $beat is no longer registered"
+  }
+}
+if (-not $pluginText.Contains("java.util.function.IntSupplier thresholdActiveRosterSize") -or
+    -not $pluginText.Contains("thresholdActiveRosterSize,") -or
+    $pluginText.Contains("active-roster supplier unwired")) {
+  throw "Plugin runtime wiring check failed: ThresholdVault active-roster supplier is not explicitly wired"
+}
+if (-not $pluginText.Contains("public com.observance.watcher.signal.ResourcePackTracker resourcePack()")) {
+  throw "Plugin resource-pack tracking check failed: ObservancePlugin no longer exposes ResourcePackTracker"
+}
+foreach ($statusName in @("DOWNLOADED", "FAILED_RELOAD", "INVALID_URL", "DISCARDED")) {
+  if (-not $packTrackerText.Contains($statusName)) {
+    throw "Plugin resource-pack tracking check failed: status mapping no longer handles $statusName"
+  }
+}
+if (-not $packTrackerText.Contains("statusMappingSelfTest()") -or
+    -not $packTrackerText.Contains('case "SUCCESSFULLY_LOADED" -> PackStatus.LOADED')) {
+  throw "Plugin resource-pack tracking check failed: status mapping self-test contract is missing"
+}
+$commandText = Get-Content -LiteralPath (Join-Path $srcRoot "com\observance\watcher\command\ObservanceCommand.java") -Raw
+foreach ($statusSurface in @("sendPackStatus(sender)", "pack readiness:", "pack not ready:", "tracker.status")) {
+  if (-not $commandText.Contains($statusSurface)) {
+    throw "Plugin resource-pack tracking check failed: /obs status no longer surfaces pack readiness ($statusSurface)"
+  }
+}
 
-Write-Host "plugin compile check: OK - $($javaFiles.Count) source files compiled with $versionText and real beat enactor wiring verified"
+Write-Host "plugin compile check: OK - $($javaFiles.Count) source files compiled with $versionText, real beat enactor wiring, and signature beat registration verified"

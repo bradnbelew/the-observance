@@ -6934,6 +6934,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(" local sleep:        " + plugin.isLocallyAsleep());
         sender.sendMessage(" sites placed:       " + plugin.placedSiteCount());
         sender.sendMessage(" drama enabled:      " + (plugin.config() != null && plugin.config().dramaEnabled()));
+        sendPackStatus(sender);
         var wren = plugin.wren();
         if (wren != null) {
             sender.sendMessage(" wren:               " + (wren.isSpawned() ? "present" : "not spawned")
@@ -6944,6 +6945,65 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(" keeper:             " + (keeper.isSpawned() ? "present" : "not spawned")
                     + " (" + keeper.backend() + ")");
         }
+    }
+
+    private void sendPackStatus(CommandSender sender) {
+        var cfg = plugin.config();
+        var tracker = plugin.resourcePack();
+        if (cfg == null || tracker == null) {
+            sender.sendMessage(" resource pack:      unavailable");
+            return;
+        }
+
+        boolean configured = cfg.resourcePackUrl() != null && !cfg.resourcePackUrl().isBlank();
+        boolean hashed = cfg.resourcePackSha1() != null
+                && cfg.resourcePackSha1().trim().matches("(?i)[0-9a-f]{40}");
+        java.util.Collection<? extends Player> online = Bukkit.getOnlinePlayers();
+        int onlineCount = online == null ? 0 : online.size();
+        int loaded = 0;
+        java.util.EnumMap<com.observance.watcher.signal.ResourcePackTracker.PackStatus, Integer> counts =
+                new java.util.EnumMap<>(com.observance.watcher.signal.ResourcePackTracker.PackStatus.class);
+        java.util.List<String> notReady = new java.util.ArrayList<>();
+
+        if (online != null) {
+            for (Player p : online) {
+                if (p == null) continue;
+                var status = tracker.status(p.getUniqueId());
+                counts.put(status, counts.getOrDefault(status, 0) + 1);
+                if (status == com.observance.watcher.signal.ResourcePackTracker.PackStatus.LOADED) {
+                    loaded++;
+                } else {
+                    notReady.add(p.getName() + "=" + status);
+                }
+            }
+        }
+
+        sender.sendMessage(" resource pack:      " + (configured ? "configured" : "url unset")
+                + ", sha1 " + (hashed ? "set" : "missing")
+                + ", required " + cfg.resourcePackRequired());
+        sender.sendMessage(" pack readiness:     " + loaded + "/" + onlineCount + " online loaded"
+                + packStatusCounts(counts));
+        if (!notReady.isEmpty()) {
+            sender.sendMessage(" pack not ready:     " + joinFirst(notReady, 6));
+        }
+    }
+
+    private static String packStatusCounts(java.util.EnumMap<com.observance.watcher.signal.ResourcePackTracker.PackStatus, Integer> counts) {
+        if (counts == null || counts.isEmpty()) return "";
+        java.util.List<String> parts = new java.util.ArrayList<>();
+        for (var status : com.observance.watcher.signal.ResourcePackTracker.PackStatus.values()) {
+            int n = counts.getOrDefault(status, 0);
+            if (n > 0) parts.add(status + "=" + n);
+        }
+        return parts.isEmpty() ? "" : " (" + String.join(", ", parts) + ")";
+    }
+
+    private static String joinFirst(java.util.List<String> values, int limit) {
+        if (values == null || values.isEmpty()) return "";
+        int n = Math.max(0, Math.min(limit, values.size()));
+        String joined = String.join(", ", values.subList(0, n));
+        int remaining = values.size() - n;
+        return remaining > 0 ? joined + ", +" + remaining + " more" : joined;
     }
 
     /**

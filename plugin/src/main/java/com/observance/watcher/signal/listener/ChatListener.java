@@ -37,9 +37,9 @@ import java.util.function.BooleanSupplier;
  * <p><b>Consent (privacy-sensitive).</b> Capture is GROUNDED (the utterance is stored verbatim, never
  * altered) and DOUBLE consent-gated: gate 1 is the GLOBAL {@code observer_capture} switch, read here
  * cheaply via {@link #captureEnabled} (a cached flag refreshed off the chat thread) — when it is false
- * (the default) NOTHING is stored. Gate 2 is the per-player {@code players.observer_opt_out}, deferred
- * DOWNSTREAM to the showrunner's weaponizer (a per-message players lookup on the chat thread would be
- * too expensive) — it skips opted-out players before ever quoting them. A capture failure is silent: a
+ * (the default) NOTHING is stored. Gate 2 is the per-player {@code players.observer_opt_out}, checked
+ * before insert via a fail-closed player lookup. The showrunner repeats that filter before quoting.
+ * A capture failure is silent: a
  * missing observation is always safer than a crash.
  */
 public final class ChatListener implements Listener {
@@ -99,8 +99,7 @@ public final class ChatListener implements Listener {
             // OBSERVER TIER-1 — verbatim capture, GATE 1 (global switch). Only when the operator has
             // enabled it; the default is off, so zero chat is stored until then. The message is captured
             // EXACTLY as sent (never censored — the event is untouched above and here). Gate 2 (per-player
-            // opt-out) is enforced downstream by the weaponizer. Blocking I/O is queued by the client, so
-            // this stays cheap on the chat thread; the whole body is already Safety-wrapped.
+            // opt-out) is enforced below before insertion. Blocking I/O is isolated by Safety.
             if (supabase != null && captureEnabled != null && captureEnabled.getAsBoolean()) {
                 captureObservation(p, message);
             }
@@ -114,6 +113,7 @@ public final class ChatListener implements Listener {
      * {@code player_id}/{@code weaponized_at} are left null (resolved/set downstream). Never throws.
      */
     private void captureObservation(Player p, String message) {
+        if (supabase.observerOptedOut(p.getUniqueId().toString())) return; // fail-closed on missing consent
         if (message.length() > MAX_CAPTURE_CHARS) return; // skip pastes; grounding = whole utterance or none
         // Provenance is the CONSTANT "in-game" — we deliberately do NOT read p.getWorld() here: this runs
         // OFF the main thread, and the class invariant is to touch NO Bukkit world objects (only the

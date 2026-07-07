@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "selftest": "node ../discord/node_modules/tsx/dist/cli.mjs src/app/author/fate-preview.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/archive-projection.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/record-projection.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/record/record-oracle.selftest.ts"
+    "selftest": "node ../discord/node_modules/tsx/dist/cli.mjs src/app/author/fate-preview.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/archive-projection.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/record-projection.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/record/record-oracle.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/record/record-terminal.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/record/record-copy.selftest.ts && node ../discord/node_modules/tsx/dist/cli.mjs src/lib/runes.selftest.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

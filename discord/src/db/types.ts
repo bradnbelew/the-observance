@@ -14,6 +14,8 @@ export interface Player {
   name: string;
   /** Linked Discord user id, or null if never linked. */
   discord_id: string | null;
+  /** Per-player observer chat/text opt-out. Unknown/missing is treated as opted out at capture edges. */
+  observer_opt_out?: boolean | null;
 }
 
 /** public.whisper_budgets — per (player, act) spend tracking. PK is `id`. */
@@ -37,7 +39,7 @@ export interface WhisperEvent {
 
 /** public.beat_queue — story beats awaiting approval / firing. `failed` is a terminal status the plugin
  *  writes when an enactor throws (widened in the beat_queue status CHECK; see the dashboard migration). */
-export type BeatStatus = 'pending' | 'approved' | 'skipped' | 'fired' | 'failed';
+export type BeatStatus = 'pending' | 'approved' | 'firing' | 'skipped' | 'fired' | 'failed';
 
 export interface BeatQueueRow {
   id: number;

@@ -7,11 +7,16 @@ $ErrorActionPreference = "Stop"
 $discord = Join-Path $RepoRoot "discord"
 $dashboard = Join-Path $RepoRoot "dashboard"
 $pluginCheck = Join-Path $RepoRoot "tools\check_plugin_compile.ps1"
+$pluginDbContractCheck = Join-Path $RepoRoot "tools\check_plugin_db_contracts.ps1"
+$companionArcContractCheck = Join-Path $RepoRoot "tools\check_companion_arc_contracts.ps1"
 $pluginJarCheck = Join-Path $RepoRoot "tools\check_plugin_jar.ps1"
 $assetCheck = Join-Path $RepoRoot "tools\check_assets.ps1"
+$deployManifestCheck = Join-Path $RepoRoot "tools\check_deploy_manifest.ps1"
+$resourcePackConfigToolCheck = Join-Path $RepoRoot "tools\check_resource_pack_config_tools.ps1"
 $brandSurfaceCheck = Join-Path $RepoRoot "tools\check_brand_surfaces.ps1"
 $mediaCheck = Join-Path $RepoRoot "tools\check_media_readiness.ps1"
 $operatorDocsCheck = Join-Path $RepoRoot "tools\check_operator_docs.ps1"
+$minecraftTextCheck = Join-Path $RepoRoot "tools\check_minecraft_text_surfaces.ps1"
 $rehearsalCheck = Join-Path $RepoRoot "tools\check_rehearsal_consistency.ps1"
 $dialogueContractCheck = Join-Path $RepoRoot "tools\check_dialogue_contracts.ps1"
 $scareImmersionCheck = Join-Path $RepoRoot "tools\check_scare_immersion.ps1"
@@ -21,6 +26,7 @@ $launchPlacementCheck = Join-Path $RepoRoot "tools\check_launch_placement_packet
 $launchCoordQualityCheck = Join-Path $RepoRoot "tools\check_launch_coord_quality.ps1"
 $worldBuildCheck = Join-Path $RepoRoot "tools\check_world_build_readiness.ps1"
 $unlitReadinessCheck = Join-Path $RepoRoot "tools\check_unlit_readiness.ps1"
+$launchManualBlockerCheck = Join-Path $RepoRoot "tools\check_launch_manual_blockers.ps1"
 
 Push-Location $discord
 try {
@@ -63,7 +69,22 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
+& powershell -NoProfile -ExecutionPolicy Bypass -File $pluginDbContractCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $companionArcContractCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
 & powershell -NoProfile -ExecutionPolicy Bypass -File $operatorDocsCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $minecraftTextCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
@@ -113,12 +134,27 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
+& powershell -NoProfile -ExecutionPolicy Bypass -File $launchManualBlockerCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
 & powershell -NoProfile -ExecutionPolicy Bypass -File $pluginJarCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $assetCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $deployManifestCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $resourcePackConfigToolCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
@@ -133,4 +169,4 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
-Write-Host "observance audit: OK - story/data, showrunner, dashboard selftests/build, plugin source/jar, operator docs, dialogue contracts, scare immersion, motif freshness, rehearsal wiring/evidence, launch placement packet, launch coordinate quality, world-build gate, Unlit readiness, assets, brand surfaces, and media checks passed"
+Write-Host "observance audit: OK - automated repo checks passed; see the launch manual blocker section above for live-server tasks that still prevent a true launch-ready verdict"

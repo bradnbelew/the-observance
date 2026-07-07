@@ -11,8 +11,8 @@
 --     is used at most once — sparse by construction, never a nagging replay.
 --   * CONSENT: capture is gated TWICE. Globally by settings.observer_capture (default OFF — nothing is
 --     stored until the operator turns it on), and per-player by players.observer_opt_out (a person can
---     say "don't keep my words" and the capture skips them). The group already consented (known-author
---     lens); this is the individual floor.
+--     say "don't keep my words" and the capture skips them). The group/operator handles the pre-launch
+--     consent conversation; this field is the emergency individual floor.
 --   * PRIVATE: RLS service-role only. NEVER anon-readable (unlike the archive) — this is PII. No view,
 --     no grant. The public Record can never surface a captured utterance.
 --
@@ -50,6 +50,9 @@ alter table public.players
 -- 3. the global capture switch — OFF until the operator enables it (nothing is stored before then).
 insert into public.settings (key, value)
   values ('observer_capture', 'false'::jsonb)
+  on conflict (key) do nothing;
+insert into public.settings (key, value)
+  values ('voice_capture', 'false'::jsonb)
   on conflict (key) do nothing;
 
 commit;

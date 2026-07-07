@@ -20,7 +20,16 @@ function Write-PackZip([string]$SourceDir, [string]$ZipPath, [string]$Label) {
   if (Test-Path $ZipPath) {
     Remove-Item -LiteralPath $ZipPath -Force
   }
-  $items = Get-ChildItem -LiteralPath $SourceDir -Force
+  $items = @()
+  foreach ($name in @("pack.mcmeta", "pack.png", "assets", "data")) {
+    $path = Join-Path $SourceDir $name
+    if (Test-Path $path) {
+      $items += Get-Item -LiteralPath $path
+    }
+  }
+  if ($items.Count -eq 0) {
+    throw "$Label source has no runtime pack files: $SourceDir"
+  }
   Compress-Archive -LiteralPath $items.FullName -DestinationPath $ZipPath -CompressionLevel Optimal
   $sha1 = (Get-FileHash -LiteralPath $ZipPath -Algorithm SHA1).Hash.ToLowerInvariant()
   Write-Host "$Label packaged: $ZipPath"
@@ -32,3 +41,8 @@ $resourcepackSource = Join-Path $RepoRoot "resourcepack"
 
 Write-PackZip $datapackSource (Join-Path $RepoRoot "observance-datapack.zip") "datapack"
 Write-PackZip $resourcepackSource (Join-Path $RepoRoot "observance-resourcepack.zip") "resourcepack"
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\write_deploy_manifest.ps1") -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}

@@ -488,8 +488,9 @@ resource-pack:
   # required:true rejects players who decline the pack (the runes are unreadable without it). Keep FALSE
   # until the pack is live + tested so a bad URL can't lock the friend group out of the server.
   required: false
-  # The prompt line shown in the client's pack dialog (lore-agnostic; keep plain, the keeper register).
-  prompt: ""
+  # The prompt line shown in the client's pack dialog. Keep it plain: this is the one client-facing
+  # install moment, so it should name the alphabet/voice without becoming operator narration.
+  prompt: "The Record keeps an alphabet your client has not learned. Accept the pack to read it and hear the dark."
   # Ticks after join before the push (lets the client settle). 20 = 1s.
   delay-ticks: 20
 

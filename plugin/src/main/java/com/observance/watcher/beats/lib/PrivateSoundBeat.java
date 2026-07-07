@@ -51,8 +51,8 @@ public final class PrivateSoundBeat extends AbstractBeat {
 
         String named = p.string("named_sound", null);
         if (named != null && !named.isBlank()) {
-            // named (resource-pack) sound — play at player (or use namedSound at location below)
-            PerPlayer.namedSound(pl, named, volume, pitch);
+            // Named resource-pack sounds honor the authored source location too.
+            PerPlayer.namedSoundAt(pl, where, named, volume, pitch);
             return BeatResult.fired("named-sound");
         }
         Sound sound = sound(p.string("sound", null));

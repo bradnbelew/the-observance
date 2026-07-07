@@ -238,6 +238,35 @@ if ($visualTemplateMarkers -lt 15) {
   Fail "StructureTemplates.java expected at least 15 Post-Unlit visual overhaul template chambers; found $visualTemplateMarkers"
 }
 
+$templateHandlers = @(
+  "handlePlaceWorld",
+  "handlePlaceRoom",
+  "handlePlaceRegion",
+  "handlePlaceDeep"
+)
+foreach ($handler in $templateHandlers) {
+  $slice = SourceSlice $commandSource ("private void $handler") "`r`n    private "
+  if ([string]::IsNullOrWhiteSpace($slice)) {
+    Fail "ObservanceCommand.java missing $handler() placement handler"
+  } elseif ($slice.IndexOf("StructureTemplates.keeper(", [System.StringComparison]::Ordinal) -lt 0) {
+    Fail "ObservanceCommand.java $handler() must use StructureTemplates.keeper(...) so rich keeper/rosetta templates are placed"
+  } elseif ($slice.IndexOf("StructureTemplates.keeperStone(", [System.StringComparison]::Ordinal) -ge 0) {
+    Fail "ObservanceCommand.java $handler() must not call generic keeperStone(...) directly"
+  }
+}
+
+foreach ($keeperCase in @(
+  'case "rosetta", "rune_rosetta", "rune" -> rosetta(pen, base);',
+  'case "vaun"   -> vaun(pen, base);',
+  'case "mara"   -> mara(pen, base);',
+  'case "sella"  -> sella(pen, base);',
+  'case "orin"   -> orin(pen, base);',
+  'case "brann"  -> brann(pen, base);',
+  'case "iss"    -> iss(pen, base);'
+)) {
+  RequireText "StructureTemplates.java" $structureTemplateSource $keeperCase
+}
+
 $requiredProofBuilders = @(
   "buildSchoolStand",
   "buildMarkersRow",

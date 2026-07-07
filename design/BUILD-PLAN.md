@@ -45,15 +45,19 @@ or are folded into the four canonical docs. History is in git if anything's need
 
 ## 1. STATUS SNAPSHOT (what is real, 2026-06-29)
 
+> Current override (2026-07-07): this section is a historical baseline, not the launch verdict. Use
+> `design/CURRENT-READINESS-VERDICT.md` plus `tools/audit_all.ps1` for current readiness; many items below
+> have since moved from "unbuilt" to "built, guarded, but still requiring live proof."
+
 - ✅ **PROVEN (Discord engine):** the storylet gate nerve — `0006_requires_flags.sql` + atomic merge
   RPC, gate-aware `getOpenPuzzles`, `oracle/gate.ts`, `matchPuzzles`+unsolved-preference, ignition
   wired, specscheck/seedcheck/gatecheck + all showrunner suites GREEN. `npm run gatecheck`.
 - ⚠️ **WRITTEN, COMPILE-PENDING (Java surface parity):** `FlagGate` (predicate PROVEN via javac) +
   the OracleResolver/SupabaseClient/rows wiring + `/observance flag`. Needs the owner's `gradle build`.
-- ❌ **THE GAME ITSELF — ~0% built:** no world geometry (every `sites.yml` coord is null), no `.schem`
-  files, **no audio (zero OGG)**, no fog datapack, no display-entity visuals, NPCs unplaced, the
-  signature v2 features (per-player illusion, asymmetric co-op, Observer Engine, the record website,
-  the reunion) unbuilt. **Nothing has ever run on a real server.**
+- ❌ **HISTORICAL BASELINE — the game itself was ~0% built on 2026-06-29:** no world geometry (every
+  `sites.yml` coord was null), no `.schem` files, audio/fog/display/NPC/signature systems were not yet
+  checked, and nothing had run on a real server. Current automated readiness has moved several of these
+  to built/guarded; live server proof is still required.
 
 The honest shape: a strong *engine + script* for a game that **has not been built**. Phase A below is sacred.
 
@@ -64,7 +68,7 @@ The honest shape: a strong *engine + script* for a game that **has not been buil
 | `0001`–`0005` | ✅ applied | Foundation; do not touch |
 | `0006_requires_flags.sql` | ⚠️ **PENDING apply** | Keystone — additive + idempotent; everything gated (incl. companion reveal) needs it. Apply first. |
 | `0007_answer_kind.sql` | ⬜ **new, not yet written** | Adds `answer_kind` col on `puzzles`, default `'phrase'` — existing rows untouched. Needed for A3 puzzle types (PUZZLES §4). Apply after 0006. |
-| `0008_observations.sql` | ⬜ **new, Phase D** | Observer Engine `observations` table. Apply when building Phase D. |
+| `0009_observations.sql` | Done | Observer Engine `observations` table is now in the bundled SQL; live Supabase still needs apply/verify. |
 
 **Companion / Nether / End schema:** none — their state is jsonb keys in `arc_state.flags` (0006).
 Seed-only changes (new flags, storylets, companion flags) are idempotent `ON CONFLICT` upserts and
@@ -90,15 +94,15 @@ re-run safely after any fold.
      `sites.yml`).
    The quality burden shifts onto **procedural-craft skill** (tight palettes, decay passes, jigsaw
    assembly — see §12 art direction). Validate with a generated test room in Playtest 1.
-2. **No audio.** Ship the 4 declared OGG events + keeper voices (mono Vorbis). A sound beat that
-   plays silence is worse than no beat.
+2. **Audio now built; live host still required.** The checked resource pack ships 11 mono Vorbis OGGs
+   including keeper voices. Host the exact zip and verify in-client playback before launch.
 3. **No atmosphere.** Author the Undercroft fog **datapack** (dimension + ≤3 biomes + `mood_sound`).
 4. **The Seventh is a void** (and the new ending needs them) — §6.
 5. **Empty hint rail.** Author 2–3 diegetic hint tiers per spine puzzle (the `hints` table is empty).
 6. **FAWE paste is main-thread** (tick-stall tell) — wrap async + `fastMode(true)` + `changeSetNull()`
    + relight. Must be fixed before the dresser pass or any display-entity work.
-7. **Missing flag producers** — at minimum `IgnitionListener` (the arc can't start); `/obs flag` is
-   the stopgap.
+7. **Flag producers** - the old missing-producer class is now guarded by compile/contract checks
+   (`IgnitionListener`, Wren/reckoning, co-op, Seventh choice, Unlit). Remaining risk is live proof.
 
 > **PREP DONE 2026-06-29 (server-free head-starts on these blockers):** #4 Seventh → written
 > ([the-seventh-below.md](../arc/lore/documents/the-seventh-below.md), with copy-paste voice fixes).
@@ -122,7 +126,8 @@ re-run safely after any fold.
       zero-manual world model; validates the dresser pass and block palette.
 - [ ] One **per-player illusion** ("it knows ME": a fake block / a rune only one player sees).
 - [ ] One sealed-door reveal; ignition fires; one cipher solvable **with a hint**.
-- [ ] Ship the **4 OGG sounds** + a **stub fog datapack** so the room has atmosphere.
+- [ ] Host the checked resource pack (11 mono Vorbis OGGs) + checked fog datapack, then verify the room
+      atmosphere on a real client/server.
 - [ ] **Run it with 3–4 friends.** Prove: ignition → gate → solve → unlock → a scare lands. Watch
       for: does the code-generated room read as intentional? Tune procedural craft if not.
 
@@ -134,8 +139,9 @@ re-run safely after any fold.
 - [ ] Generalize the puzzle row with **`answer_kind`** (PUZZLES §4) so non-typed answers work.
 
 ### PHASE C — THE SIGNATURE INTEGRATION (defines the feel — INTEGRATION "signature 8")
-- [ ] Per-player illusion library: `showEntity`, packet light (dims when watched), per-player fog.
-- [ ] The **asymmetric co-op vault** (dynamic-roster fragment partition).
+- [ ] Rehearse the per-player illusion library: `showEntity` display reveals and packet light are built;
+      per-player fog remains optional polish.
+- [ ] Rehearse the **asymmetric co-op vault** (dynamic-roster fragment partition) on a live server.
 - [ ] The **Lens** item; the **reflection puzzle**; **display-entity** beats (floating runes, faces).
 - [ ] **Desire-paths** (heatmap → worn path / grave on the most-walked route).
 - [ ] RoomSwap → teleport; register the 5 unregistered beats.
@@ -307,16 +313,18 @@ below are **older plugin code that must NOT be reused as-is** — each contradic
 - **`RoomSwapBeat`** — in-place mutation → **sealed-door + teleport-on-reentry**.
 - **`ModeledMobBeat`** + the worn-skin path in `NamedMobBeat`/`offline-skin` — **ModelEngine is CUT** and a
   mislabeled Warden is worse than nothing. Use **vanilla texture-swap reskins** only.
-- **`SpatialVoiceBeat`** — not actually positional (reads `behind`/`offset`, ignores them). Use
-  `PerPlayer.soundAt(loc)` at a real behind-the-player location, or drop the dead params.
+- **Resolved:** `SpatialVoiceBeat` now computes a real behind/in-front source location and plays the
+  named resource-pack sound there. `PrivateSoundBeat` also honors that authored location for named sounds.
 - **`FaweSchematicPaster`** — pastes on the **main thread** (tick-stall tell). Wrap async +
   `fastMode(true)` + `changeSetNull()` + relight.
-- **5 beats coded but NOT registered** in `BeatLibrary` (`reveal`/`room_swap`/`keeper_npc`/`modeled_mob`/
-  `spatial_voice`) — the enactor can't fire them. Register them only **after** the rework above.
+- **Resolved:** the signature beats (`reveal`/`room_swap`/`keeper_npc`/`modeled_mob`/`spatial_voice`) are
+  registered in `BeatLibrary` and guarded by `tools/check_plugin_compile.ps1`; remaining risk is live
+  rehearsal quality, especially where a beat depends on player-facing illusion polish.
 - **`BeatQueuePoller`** double-fire window on a crash mid-PATCH — claim-then-act (flip to `firing` before
   enacting) when hardening for a real run.
-- **The 5 missing flag producers** (`IgnitionListener` etc.) don't exist — build them (Ignition first; the
-  arc can't start without it). `/observance flag` is the stopgap that proves gating meanwhile.
+- **Historical producer gap is closed.** `IgnitionListener`, Wren/reckoning, `CoopPlateListener`,
+  `SeventhChoiceListener`, and Unlit producers are now guarded by compile/contract checks; `/observance flag`
+  remains an operator recovery tool, not the designed primary route.
 
 ---
 

@@ -31,6 +31,29 @@ $clipsDir = Join-Path $packetDir "clips"
 New-Item -ItemType Directory -Force -Path $screenshotsDir | Out-Null
 New-Item -ItemType Directory -Force -Path $clipsDir | Out-Null
 
+function FileSha1OrInstruction([string] $Path, [string] $Instruction) {
+  if (Test-Path $Path) {
+    return (Get-FileHash -LiteralPath $Path -Algorithm SHA1).Hash.ToLowerInvariant()
+  }
+  return "MISSING - $Instruction"
+}
+
+function PluginJarPath([string] $Root) {
+  $buildFile = Join-Path $Root "plugin\build.gradle"
+  if (-not (Test-Path $buildFile)) {
+    return Join-Path $Root "plugin\build\libs\observance-UNKNOWN.jar"
+  }
+  $buildText = Get-Content -LiteralPath $buildFile -Raw
+  $versionMatch = [regex]::Match($buildText, "(?m)^version\s*=\s*'([^']+)'")
+  $version = if ($versionMatch.Success) { $versionMatch.Groups[1].Value } else { "UNKNOWN" }
+  return Join-Path $Root "plugin\build\libs\observance-$version.jar"
+}
+
+$pluginJarPath = PluginJarPath $repoFull
+$pluginJarSha1 = FileSha1OrInstruction $pluginJarPath "run tools\package_plugin.ps1 before final rehearsal"
+$resourcepackZip = Join-Path $repoFull "observance-resourcepack.zip"
+$resourcepackSha1 = FileSha1OrInstruction $resourcepackZip "run tools\package_assets.ps1 before hosting the pack"
+
 $majorSites = @(
   "rune_rosetta",
   "stone_vaun",
@@ -102,6 +125,15 @@ $firstHourBeats = @(
   "first side pull",
   "first scare pressure",
   "handoff to live route"
+)
+
+$directorAxes = @(
+  "haunted place, not puzzle course",
+  "NPCs have separate jobs",
+  "side paths change belief",
+  "manual builds require body verbs",
+  "operator stays invisible",
+  "finale restores a person, not a password"
 )
 
 $sidePaths = @(
@@ -311,6 +343,19 @@ $notes.Add("- what they tried without help:")
 $notes.Add("- when the world first felt wrong:")
 $notes.Add("- when it started feeling like a puzzle course:")
 $notes.Add("")
+$notes.Add("## Director Cut Scorecard")
+$notes.Add("")
+$notes.Add("This is the taste gate. Score each axis 1-5 after watching the rehearsal evidence.")
+$notes.Add("A launch packet needs every axis at 4 or 5. A 3 is not `"close enough`"; it becomes a fix.")
+$notes.Add("")
+foreach ($axis in $directorAxes) {
+  $notes.Add("- [ ] $axis")
+  $notes.Add("      score: 1 / 2 / 3 / 4 / 5")
+  $notes.Add("      evidence:")
+  $notes.Add("      failure if under 4:")
+  $notes.Add("      fix:")
+}
+$notes.Add("")
 $notes.Add("## Stop/Launch Decision")
 $notes.Add("")
 $notes.Add("- [ ] Every required major site is KEEP or explicitly cut from the live route.")
@@ -339,10 +384,90 @@ Use this as the working punch list after the rehearsal. Do not soften blockers i
 - Wren sounds like exposition.
 - Record page feels like documentation.
 - Finale feels like password entry.
+- Any Director Cut Scorecard axis is below 4.
 "@
+
+$attestations = @'
+# Launch Attestations - __DATE__
+
+These are the live-server facts that static checks cannot prove. Fill them after the real Paper/client
+pass. `tools\check_rehearsal_packet.ps1` treats unchecked or template evidence as a launch blocker.
+
+## Supabase Live Status
+
+- [ ] `discord/supabase/apply-all.sql` was applied to the live Supabase project.
+- [ ] `/observance status` on the live server showed `supabase configured: true`.
+- [ ] `/observance status` on the live server showed `last db call ok: true`.
+- [ ] `/observance status` on the live server showed `queued writes: 0`.
+evidence:
+
+## Server Load
+
+- [ ] Plugin `observance-0.3.22.jar` loaded on the target Paper 1.21.11 server.
+- [ ] Plugin jar SHA1 matched the current repo package: __PLUGIN_JAR_SHA1__.
+- [ ] Datapack `observance` loaded with no compatibility warnings.
+- [ ] Hosted resource pack downloaded for a real client.
+- [ ] Hosted resource pack SHA1 matched the current repo zip: __RESOURCEPACK_SHA1__.
+- [ ] `/observance status` showed `pack readiness` with every rehearsal client `LOADED`.
+- [ ] No plugin/datapack/resource-pack errors appeared in console during join and first route.
+evidence:
+
+## Real Client Rendering
+
+- [ ] Books display correctly.
+- [ ] Signs fit and remain readable.
+- [ ] Item lore is readable.
+- [ ] Titles, subtitles, actionbars, and bossbars display correctly.
+- [ ] Custom rune font glyphs render from the hosted resource pack.
+- [ ] Sounds and particles fire in-world at usable volume/timing.
+- [ ] NPC lines display and correspond to physical proof.
+- [ ] Resource-pack fallback behavior is acceptable if a client declines the pack.
+evidence:
+
+## Live Command Audits
+
+- [ ] `/observance preflight` passed.
+- [ ] `/observance visualaudit` passed.
+- [ ] `/observance dialogueaudit` passed.
+- [ ] `/obs unlit audit` passed.
+- [ ] `/obs unlit ready` passed.
+evidence:
+
+## External Media
+
+- [ ] No in-world clue points to a missing web/download artifact.
+- [ ] `/record/...` routes used by the route loaded from the clue path.
+- [ ] Optional media that is not ready is withheld rather than planted.
+evidence:
+
+## Session Zero And Capture Consent
+
+- [ ] `design/SESSION-ZERO.md` was read before players entered the fiction.
+- [ ] Every player understood behavior/chat/voice observation boundaries.
+- [ ] Opt-out choices were recorded.
+- [ ] `observer_capture` and `voice_capture` match the consent state.
+- [ ] `players.observer_opt_out` is `true` for opted-out or unclear players.
+evidence:
+
+## Credential Rotation
+
+- [ ] Previously exposed Supabase service-role credentials were rotated or confirmed dead.
+- [ ] Previously exposed Discord bot credentials were rotated or confirmed dead.
+- [ ] Live Render/Vercel/plugin config uses the fresh credentials.
+- [ ] `/observance status` still passed after rotation.
+evidence:
+
+## Operator Verdict
+
+- [ ] All above attestations are true.
+- [ ] Any failed rehearsal item has been fixed and re-proven.
+decision: LAUNCH / DO NOT LAUNCH
+reason:
+'@.Replace("__DATE__", $Date).Replace("__PLUGIN_JAR_SHA1__", $pluginJarSha1).Replace("__RESOURCEPACK_SHA1__", $resourcepackSha1)
 
 [System.IO.File]::WriteAllLines((Join-Path $packetDir "00-notes.md"), $notes, [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText((Join-Path $packetDir "fixes.md"), $fixes, [System.Text.UTF8Encoding]::new($false))
+[System.IO.File]::WriteAllText((Join-Path $packetDir "launch-attestations.md"), $attestations, [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText((Join-Path $screenshotsDir "README.md"), @"
 Put approach/focal/action/exit screenshots here. Name files with the site id first.
 
@@ -374,4 +499,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_rehearsal_packet
 "@, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "rehearsal packet created: $packetDir"
-Write-Host "next: fill 00-notes.md, add screenshots/clips, move blockers into fixes.md, then run tools\check_rehearsal_packet.ps1"
+Write-Host "next: fill 00-notes.md and launch-attestations.md, add screenshots/clips, move blockers into fixes.md, then run tools\check_rehearsal_packet.ps1"

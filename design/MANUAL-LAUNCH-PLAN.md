@@ -1,0 +1,84 @@
+# THE OBSERVANCE - MANUAL LAUNCH PLAN
+
+> Current verdict: the repo automation can be green while launch is still not approved. This plan is the
+> handoff for the work that only a live server, real client, hosted files, and Ethan/operator judgment can
+> prove. The final go/no-go command is:
+>
+> ```powershell
+> powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>
+> ```
+>
+> Do not invite players until that command passes and every manual attestation below is true on the live
+> Paper server.
+>
+> The current high-level verdict is maintained in `design/CURRENT-READINESS-VERDICT.md`.
+
+## Evidence Packet
+
+Create one folder for the launch rehearsal and keep every artifact there:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_launch_placement_packet.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_rehearsal_packet.ps1
+```
+
+The packet must contain:
+
+- `coords-capture.csv` filled from live `/observance site set <siteId>` placement.
+- `launch-attestations.md` completed from the real Paper/client pass, including the current plugin jar SHA1
+  and hosted resource-pack SHA1.
+- Four proof shots per launch-required site: approach, focal object, answer/action surface, exit.
+- Completed `LIVE-REHEARSAL-EVIDENCE.md` fields, with only `KEEP` verdicts for launch surfaces.
+- Clips for first hour, scare families, Unlit route, Record/web jump, and finale.
+- `fixes.md` containing either no unresolved blockers or links to the replacement proof after each fix.
+
+## Manual Tasks
+
+| Order | Task | Why it matters | Where it belongs | How to do it | When | Player-discovery requirement | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | Regenerate and apply Supabase SQL | Discord, web Record/Archive, puzzle gates, solves, observations, and operator status all depend on the live schema matching the repo. | Live Supabase project `fdnmhbpxnodrnbrzrlqq`; plugin `/observance status`. | From `discord/`, run `npm run db:seed`; paste all of `discord/supabase/apply-all.sql` into Supabase SQL Editor; run it once; do not paste loose migrations or `apply-tonight.sql`. | Before plugin live testing. | Players should only see diegetic progression; if DB drift exists, signs, reports, Record pages, and flags can silently miss. | `/observance status` shows `supabase configured: true`, `last db call ok: true`, `queued writes: 0`. |
+| 2 | Build and deploy plugin/datapack/resource pack together | The ARG is cross-surface; testing only one layer can hide broken runes, sounds, dimensions, commands, and producers. | Paper 1.21.11 server, `plugins/`, world `datapacks/`, server resource pack config. | Run `tools\package_launch_bundle.ps1`, then run the repo audit. Upload `plugin/build/libs/observance-0.3.22.jar`, record its SHA1 from `observance-deploy-manifest.json`, install the datapack, host `observance-resourcepack.zip`, run `tools\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>` so `resource-pack.url` and `resource-pack.sha1` move together, then run `/observance status` after rehearsal clients join. | Before any in-client proof. | Players must load the exact current plugin and custom font/sounds as part of the world, not as operator explanation. | Server console has no plugin/datapack/pack errors; `/observance status` shows `pack readiness` with every rehearsal client `LOADED`; `launch-attestations.md` records the exact plugin/resource-pack SHA1 values from the current deploy manifest; `check_launch_manual_blockers.ps1` accepts URL/SHA1. |
+| 3 | Rotate exposed credentials | A friend launch should not run on keys that may have appeared in local files, logs, screenshots, or chat. | Supabase service role, Discord bot token, Render/Vercel env, local plugin config. | Rotate the service role and bot token; update live env/config; restart services; verify status. | After deploy config is settled, before players join. | Invisible to players; protects the live fiction and data. | Fresh keys in live systems; no old key works; `/observance status` still passes. |
+| 4 | Place the 42 launch-required site coordinates | Authoring placeholders are safe no-ops, but launch needs real walkable locations with sightlines and body language. | Live world `plugins/Observance/sites.yml`; proof packet `coords-capture.csv`. | In game, use `/observance site todo`, `/observance site next`, `/observance site plan <siteId>`, then stand at the real anchor and run `/observance site set <siteId>`. Export/fill the capture CSV and validate it. | After the world route exists, before rehearsal. | Every site must be discoverable from the clue or surrounding world; no floating marker, test pad, or labeled route may be required. | `check_world_build_readiness.ps1 -Launch` passes; `check_launch_coord_quality.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv` passes. |
+| 5 | Build and validate major world surfaces | Placement alone is not enough; books, signs, item lore, structures, runes, light, sound, and NPC claims must read in Minecraft. | Major sites, keeper stones, townsfolk area, Deep Hold, Undercroft, Unlit, finale chamber. | Join with a real client and inspect every major surface in `LIVE-REHEARSAL-EVIDENCE.md`; run `/observance preflight`, `/observance visualaudit`, `/observance dialogueaudit`, `/obs unlit audit`, `/obs unlit ready`. | After site placement, before inviting friends. | Players should infer the next action from the build, line, object, or sound itself; no out-of-fiction explanation. | All in-game audits pass; packet screenshots show legible approach/focal/action/exit surfaces. |
+| 6 | Stage launch beats | The built mechanics still need live staging: prologue, townsfolk, Unlit, reading fragments, and finale markers. | Live world and operator commands. | Run `/observance placeprologue`; spawn townsfolk; follow `UNLIT-PREARG-STARTUP.md`; run `/observance reading` after keeper sites are placed; run `/observance finale` in the Seventh chamber. | After placement, before the rehearsal route reaches each beat. | Players should meet the beats as events in the world, not as admin-spawned props. | Rehearsal clips show the cold open, social surface, Unlit handoff, reading fragments, and finale markers in context. |
+| 7 | Complete live rehearsal packet | Static checks prove wiring; rehearsal proves scale, pacing, fairness, dread, retraceability, and live-only readiness. | `rehearsals/<date>/`, `design/LIVE-REHEARSAL-EVIDENCE.md`, and packet `launch-attestations.md`. | Run the route as a player would. Capture required screenshots/clips, mark every surface `KEEP`, complete live attestations, and fix/retest every `RESHAPE`, `REPLACE`, or `CUT`. Validate with `check_rehearsal_packet.ps1`. | After staging, before session zero/final launch decision. | The first hour must feel haunted before it feels like a puzzle course; side paths must change belief, create dread, or confirm a motif. | `check_rehearsal_packet.ps1 -PacketDir <packet-dir>` passes; no unresolved `fixes.md` blockers; `launch-attestations.md` decision is `LAUNCH`. |
+| 8 | Verify external media choices | Some artifacts are optional enrichment, but live clues to missing downloads are not acceptable. | Dashboard public files, Record pages, Discord/archive rows, in-world lure clues. | Add `dashboard/public/the-hold/the-hold.zip` only when real; add found-footage/Drive/spectrogram media only when ready; do not plant the in-world lure clue until the linked file exists. | Before any clue that sends players outside Minecraft. | A player following a clue should find an artifact, not a placeholder or a 404. | Web route works from the clue path; missing optional media is either withheld or clearly not planted. |
+| 9 | Run session zero and consent | Observer and voice systems are part of the fiction, but consent is not optional. | Out-of-fiction pre-game conversation; `design/SESSION-ZERO.md`. | Read the session-zero script; explain behavior/chat/voice observation, opt-out, debrief, and optional tiers. Keep `observer_capture` and `voice_capture` off until you have handled consent; set `players.observer_opt_out = true` for anyone you choose to exclude from capture. | Immediately before friends join the fiction. | The fiction can feel watched only after the humans understand the boundary. | Consent/opt-out notes recorded; observer/voice settings match the group decision. |
+| 10 | Run final go/no-go | This prevents a green repo audit from being mistaken for launch approval. | Repo root and live server. | Run `tools\audit_all.ps1`, then run the launch blocker command with the real capture CSV and rehearsal packet. If it fails, fix the named blocker and rerun. | Last action before launch. | Players only enter after every repo-verifiable and live-attested blocker is cleared. | `check_launch_manual_blockers.ps1 -Launch ...` exits 0 and printed manual attestations are true. |
+
+## Stop Conditions
+
+Stop and fix before launch if any of these are true:
+
+- Any launch-required site still has placeholder coordinates.
+- Any coordinate row is not `KEEP` or lacks proof shots.
+- Any major site needs operator explanation to identify the important object.
+- Any NPC line names a place, object, route, or custom that is not physically or mechanically proven.
+- Any book, sign, item lore, title, actionbar, bossbar, rune glyph, sound, or particle is illegible or missing in a real client.
+- Any in-world clue points to a missing web/download artifact.
+- Any required command audit fails on the live server.
+- Any consent/opt-out state is unclear before enabling observation or voice capture.
+- Any previously exposed credential remains active.
+
+## Launch Verdict Template
+
+Use this exact language in the final operator note:
+
+```text
+Launch verdict:
+- Repo automation: PASS/FAIL
+- Launch blocker command: PASS/FAIL
+- Supabase live status: PASS/FAIL
+- Resource pack hosted and hash-matched: PASS/FAIL
+- 42 launch-required coordinates placed and proofed: PASS/FAIL
+- Live Minecraft client rendering/audio/text check: PASS/FAIL (`launch-attestations.md`)
+- Plugin jar SHA1 matches current repo package: PASS/FAIL (`launch-attestations.md`)
+- Resource pack SHA1 matches hosted zip: PASS/FAIL (`launch-attestations.md`)
+- Rehearsal packet: PASS/FAIL
+- Session-zero consent/opt-out: PASS/FAIL (`launch-attestations.md`)
+- Credential rotation: PASS/FAIL (`launch-attestations.md`)
+
+Decision: LAUNCH / DO NOT LAUNCH
+Reason:
+```

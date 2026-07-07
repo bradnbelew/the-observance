@@ -8,9 +8,8 @@ import com.observance.watcher.data.rows.BeatQueueRow;
  * realized in-world. The enactor is invoked on the MAIN thread (world mutation), wrapped in
  * Safety by the caller.
  *
- * <p>Phase 0 ships a {@link NoopBeatEnactor} so the pipeline is complete and testable before any
- * real beats exist. Subsystem agents register a real implementation via
- * {@code ObservancePlugin#setBeatEnactor}.
+ * <p>Startup installs a fallback {@link NoopBeatEnactor} first so the queue poller always has a target.
+ * The Haunting Engine then replaces it with the real enactor through {@code ObservancePlugin#setBeatEnactor}.
  */
 public interface BeatEnactor {
 

@@ -42,3 +42,8 @@ if ($LASTEXITCODE -ne 0) {
 $sha1 = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA1).Hash.ToLowerInvariant()
 Write-Host "plugin packaged: $jarPath"
 Write-Host "plugin sha1: $sha1"
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\write_deploy_manifest.ps1") -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}

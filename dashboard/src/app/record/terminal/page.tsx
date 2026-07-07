@@ -83,7 +83,7 @@ function Muster({ ledger }: { ledger: LedgerProjection }) {
       </div>
       <div className="flex items-baseline gap-2">
         <span className="text-xl tabular-nums text-neutral-500">{ledger.openPuzzles}</span>
-        <span className="text-[11px] uppercase tracking-wide text-neutral-700">entries unresolved</span>
+        <span className="text-[11px] uppercase tracking-wide text-neutral-700">marks unkept</span>
       </div>
     </div>
   );
@@ -220,10 +220,10 @@ export default async function RecordTerminalPage() {
         <section className="mb-10">
           <div className="mb-3 flex items-baseline gap-3 border-b border-neutral-900 pb-1 font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-600">
             <span>inscribe</span>
-            <span className="text-neutral-800">{"// write into the record"}</span>
+            <span className="text-neutral-800">{"// a hand and a mark"}</span>
           </div>
           <p className="mb-2 font-mono text-[11px] lowercase leading-relaxed text-neutral-700">
-            a hand and an answer. what is true is kept. what is not is not read back.
+            a hand. a mark. what belongs is kept. what does not is not read back.
           </p>
           <InscribeForm />
         </section>

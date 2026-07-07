@@ -329,12 +329,12 @@ public final class StructureTemplates {
         pen.setIfAir(cx - 3, cy, cz - 3, Material.COBWEB);
 
         // RESHAPE R0: label REDUCED — cut "read, then answer" (English instruction); title only.
-        // RESHAPE R2: notation TBD — a world-cipher mark replaces the English subtitle when cipher-as-
-        // inversion motif is authored (Wave R2 fills this label's lower lines).
+        // The teaching happens through the crib-pair signs below; the title stays spare so this does not
+        // read like an English tutorial board.
         pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"the rosetta", "", "", ""});
 
-        // RESHAPE R2 fill (was "notation TBD"): the earned-literacy KEY made concrete. Three rune↔plaintext
+        // Earned-literacy key made concrete: three rune/plaintext
         // crib PAIRS on the clear way-mark pillars — the same word in runes over its plain letters — so the
         // rosetta actually TEACHES the alphabet (the "oh, these are letters" turn), show-not-tell. Placed on
         // the outward pillar face at eye level, physics-free so they persist. Not the abraded pillar (i==4).
@@ -1070,8 +1070,8 @@ public final class StructureTemplates {
 
         // RESHAPE R0: label REDUCED — cut "count the marks, then the way — north, down, read" (a walkthrough).
         // The cracked/disputed compass arm is the detail to study; the title stays as a site anchor.
-        // RESHAPE R2: notation TBD — world-cipher coordinate marks replace the English lines when the
-        // cipher-as-inversion notation is authored (Wave R2 fills these lower lines).
+        // Coordinate marks are now carried by the room geometry itself (the six studs and disputed arm);
+        // the title stays spare so the compass remains a puzzle surface, not a caption.
         pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, deepslateWallSign(),
                 new String[]{"the reckoning", "", "", ""});
         return answer;
@@ -1334,8 +1334,8 @@ public final class StructureTemplates {
         Location answer = pen.wallSign(cx, cy + 1, cz + 1, BlockFace.WEST, Material.DARK_OAK_WALL_SIGN);
         // RESHAPE R0: grave-marker REDUCED to date-only in world-notation (unglossed).
         // CUT "the stone is open from the inside" — the shoved-out capstone lit from within IS the story.
-        // RESHAPE R2: notation TBD — the world-calendar notation for the future date is authored in Wave R2
-        // when the date-in-world-notation system is established; placeholder below is the bare site-mark.
+        // Unglossed date-mark: deliberately bare, a world mark to revisit after the future-grave beat, not
+        // an English explanation.
         pen.set(cx, cy, cz + 2, Material.POLISHED_BLACKSTONE_BRICKS);
         pen.labelWallSign(cx, cy, cz + 3, BlockFace.SOUTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"· · — · · ·", "", "", ""});
@@ -1523,8 +1523,8 @@ public final class StructureTemplates {
         // RESHAPE R0: label REDUCED — cut "each holds one rune — read them as one" (narrates the mechanic).
         // Replaced with an untranslatable cipher inscription so the vault reads as a made lock, not a
         // tutorial. The honest co-op mechanic is allowed to show, but not to narrate itself.
-        // RESHAPE R2: notation TBD — the actual cipher inscription is authored in Wave R2 (cipher-as-
-        // inversion motif); placeholder dots stand in until then.
+        // Unglossed lock inscription: the dots/dashes make the vault read as a made lock without narrating
+        // the co-op mechanic in English.
         pen.labelWallSign(cx, cy + 1, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN,
                 new String[]{"· — ·· — ···", "·· — · — ··", "", ""});
         return answer;

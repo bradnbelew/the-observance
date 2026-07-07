@@ -10,7 +10,16 @@ Phase 0** — every decision is a deterministic gate. The owner's hard rule is h
 
 ## 1. Build + source check
 
-The deployable jar can be packaged without Gradle from the repo root:
+For final launch packaging, prefer the repo-level bundle command:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_launch_bundle.ps1
+```
+
+It rebuilds the plugin jar, datapack zip, resource-pack zip, validates them, and refreshes
+`observance-deploy-manifest.json`.
+
+The deployable jar can also be packaged by itself without Gradle from the repo root:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1
@@ -23,16 +32,10 @@ That compiles every plugin Java source file with JDK 21 against the local Gradle
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_jar.ps1
 ```
 
-The Gradle path is still valid if a machine has Gradle 8.10+ available. This repo currently has
-`gradle/wrapper/gradle-wrapper.properties` but not the wrapper jar/scripts, so materialize them once:
+The Gradle wrapper is checked in, so a clean checkout can build the plugin without a preinstalled Gradle:
 
 ```bash
 cd D:/the-observance/plugin
-
-# 1) one-time: materialize the Gradle wrapper (needs a local Gradle >= 8.10 on PATH)
-gradle wrapper
-
-# 2) every build thereafter
 ./gradlew build        # Windows: gradlew.bat build
 ```
 

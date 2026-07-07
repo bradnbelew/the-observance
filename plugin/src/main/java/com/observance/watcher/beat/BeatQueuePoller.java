@@ -26,8 +26,8 @@ import java.util.function.Supplier;
  * </ol>
  *
  * <p>Idempotency: an in-flight set keys on beat id so the same row can't be double-enacted within
- * a process even if it's still returned by an overlapping poll. The DB status update is the durable
- * guard across restarts.
+ * a process even if it's still returned by an overlapping poll. The durable cross-process guard is the
+ * {@code approved -> firing} claim before enactment; only the winner mutates the world.
  */
 public final class BeatQueuePoller {
 
@@ -83,6 +83,10 @@ public final class BeatQueuePoller {
             if (beat == null || beat.id == null || beat.id.isBlank()) continue;
             if (!inFlight.add(beat.id)) {
                 continue; // already being handled this run
+            }
+            if (!supabase.claimBeatForFiring(beat.id)) {
+                inFlight.remove(beat.id);
+                continue; // another process won, status changed, or Supabase could not durably claim
             }
             // Hop to main for the world mutation, then back to async to record the decision.
             scheduler.runMainSafe("beat.enact", () -> enactOnMain(beat));

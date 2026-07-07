@@ -209,7 +209,7 @@ public final class ObservancePlugin extends JavaPlugin {
                     (uuid, name, st) -> logEvent("info", "pack", name + " resource-pack " + st, uuid.toString()));
         }
 
-        // 6. Default (noop) beat enactor — subsystem agents replace via setBeatEnactor().
+        // 6. Fallback beat enactor. BeatEngine.activate() replaces it with the real enactor below.
         this.beatEnactor.set(new NoopBeatEnactor(safety));
 
         // 7. Beat-queue poller.
@@ -607,6 +607,7 @@ public final class ObservancePlugin extends JavaPlugin {
                     return Boolean.FALSE; // any failure → gate stays closed (never leak runes early)
                 }
             };
+            java.util.function.IntSupplier thresholdActiveRosterSize = () -> getServer().getOnlinePlayers().size();
             this.thresholdVault = new com.observance.watcher.signal.listener.ThresholdVaultListener(
                     this, this::sites, oracleResolver, rateLimiter, scheduler, safety,
                     true,
@@ -614,7 +615,7 @@ public final class ObservancePlugin extends JavaPlugin {
                     cfg.getString("puzzles.spine-threshold-vault.puzzle-key", "spine-threshold-vault"),
                     splitCombination(cfg.getString("puzzles.spine-threshold-vault.combination", "")),
                     cfg.getInt("puzzles.spine-threshold-vault.quorum", 2),
-                    null,               // active-roster supplier unwired → falls back to the online count
+                    thresholdActiveRosterSize,
                     deepGateOpen);
             pm.registerEvents(thresholdVault, this);
             thresholdVault.start();   // MAIN thread (registerListeners runs synchronously) → safe to start the loop

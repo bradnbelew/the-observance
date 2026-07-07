@@ -22,5 +22,8 @@ public final class PlayerLookupRow {
     @SerializedName("discord_id")
     public String discordId;     // nullable; denormalized into solves for audit
 
+    @SerializedName("observer_opt_out")
+    public Boolean observerOptOut; // nullable; fail-closed callers treat null as opted out
+
     public PlayerLookupRow() { }
 }

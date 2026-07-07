@@ -71,8 +71,9 @@ accent only: the single never-doused fire (campfire/soul-fire under a hearth).
 3. The custom dimension is `observance:undercroft`. Reach it with `/execute in observance:undercroft run
    tp @s <x> <y> <z>` (or a plugin teleport beat) — Multiverse does NOT create datapack dimensions; the
    datapack defines it, you teleport into it. Build the Undercroft room geometry inside it (FAWE/manual).
-4. `mood_sound` points at `observance:whisper` — needs the resource-pack OGG (still ⬜). Until then the
-   mood sound is silent (graceful); the fog/dark work regardless. **UNTESTED — verify on a server.**
+4. `mood_sound` points at `observance:whisper`; the resource-pack OGG now ships and is guarded by
+   `tools/check_media_readiness.ps1`. **UNTESTED live** - verify the datapack dimension plus hosted
+   resource pack together on the server.
 
 ## Build order within the region (so a first playtest is possible fast)
 The Mouth → Descent → Rosettas → ONE keeper-stone (Vaun) + its answer lectern → one per-player illusion

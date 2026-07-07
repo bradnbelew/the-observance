@@ -29,11 +29,15 @@ Live keys:
 
 Launch rule:
 
-- run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_assets.ps1`
+- run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_launch_bundle.ps1`
 - host `observance-resourcepack.zip`
-- set `resource-pack.url` to the hosted HTTPS URL
-- set `resource-pack.sha1` to the lowercase SHA1 printed by `tools/package_assets.ps1` or `tools/check_assets.ps1`
+- run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/set_resource_pack_config.ps1 -Url <hosted-https-zip-url>`
+  to set `resource-pack.url` and the current zip SHA1 together
+- compare the hosted zip and uploaded plugin against `observance-deploy-manifest.json`; it is refreshed by
+  the launch bundle command, `tools/package_assets.ps1`, and `tools/package_plugin.ps1`
+- keep `resource-pack.prompt` non-empty and plain; it should name the alphabet and voice/sound without operator narration
 - keep `required: false` until the URL is tested with a real client
+- run `/observance status` after rehearsal clients join; `pack readiness` should show every rehearsal client `LOADED`
 - the rune font and rune-heavy beats depend on this
 
 ### Supabase

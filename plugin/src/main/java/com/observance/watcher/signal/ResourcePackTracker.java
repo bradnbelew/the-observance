@@ -27,9 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * It never cancels anything, never messages the player, never mutates the world. Body in Safety.
  *
  * <p>State is keyed by UUID and survives a config reload (the instance is created once); it is cleared
- * for a player only on quit. The status enum is intentionally coarse and switches on only the four
- * version-stable {@code Status} constants (newer ones default to {@code NONE}), so the gate compiles
- * across Paper API versions and only ever reports {@code LOADED} on a genuine SUCCESSFULLY_LOADED.
+ * for a player only on quit. The status enum is intentionally coarse and maps by status NAME so newer
+ * Paper constants stay useful without becoming compile-time gates: transitional statuses are LOADING,
+ * hard bad statuses are FAILED, and only SUCCESSFULLY_LOADED reports {@code LOADED}.
  */
 public final class ResourcePackTracker implements Listener {
 
@@ -102,17 +102,35 @@ public final class ResourcePackTracker implements Listener {
         return true;
     }
 
-    /** Maps the Bukkit status to our coarse gate state. Switches only on the four version-stable
-     *  constants; any newer/unknown status (DOWNLOADED, INVALID_URL, FAILED_RELOAD, DISCARDED, …)
-     *  defaults to NONE — so the gate stays closed until a genuine SUCCESSFULLY_LOADED. */
+    /** Maps the Bukkit status to our coarse gate state. Name-based mapping keeps the code resilient
+     *  across Paper API additions while still surfacing operator-useful live evidence. */
     private static PackStatus map(PlayerResourcePackStatusEvent.Status s) {
-        if (s == null) return PackStatus.NONE;
-        switch (s) {
-            case SUCCESSFULLY_LOADED: return PackStatus.LOADED;
-            case ACCEPTED:            return PackStatus.LOADING;
-            case DECLINED:            return PackStatus.DECLINED;
-            case FAILED_DOWNLOAD:     return PackStatus.FAILED;
-            default:                  return PackStatus.NONE;
-        }
+        return mapStatusName(s == null ? null : s.name());
+    }
+
+    static PackStatus mapStatusName(String name) {
+        if (name == null || name.isBlank()) return PackStatus.NONE;
+        return switch (name) {
+            case "SUCCESSFULLY_LOADED" -> PackStatus.LOADED;
+            case "ACCEPTED", "DOWNLOADED" -> PackStatus.LOADING;
+            case "DECLINED", "DISCARDED" -> PackStatus.DECLINED;
+            case "FAILED_DOWNLOAD", "FAILED_RELOAD", "INVALID_URL" -> PackStatus.FAILED;
+            default -> PackStatus.NONE;
+        };
+    }
+
+    /** Cheap contract used by the repo compile check: only the final applied state opens the gate, while
+     *  known operator-actionable failures do not collapse into NONE. */
+    static boolean statusMappingSelfTest() {
+        if (mapStatusName("SUCCESSFULLY_LOADED") != PackStatus.LOADED) return false;
+        if (mapStatusName("ACCEPTED") != PackStatus.LOADING) return false;
+        if (mapStatusName("DOWNLOADED") != PackStatus.LOADING) return false;
+        if (mapStatusName("DECLINED") != PackStatus.DECLINED) return false;
+        if (mapStatusName("DISCARDED") != PackStatus.DECLINED) return false;
+        if (mapStatusName("FAILED_DOWNLOAD") != PackStatus.FAILED) return false;
+        if (mapStatusName("FAILED_RELOAD") != PackStatus.FAILED) return false;
+        if (mapStatusName("INVALID_URL") != PackStatus.FAILED) return false;
+        return mapStatusName("SOMETHING_NEW") == PackStatus.NONE
+                && mapStatusName(null) == PackStatus.NONE;
     }
 }

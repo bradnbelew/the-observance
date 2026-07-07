@@ -39,10 +39,20 @@
   the Seventh; what the ending meant. Give the experience a clean door to close. Especially for this
   group, end *with* them, not on a cliff.
 
+## Capture switch rule (operator, before players join)
+- Do not enable `observer_capture` until this script has been read and every player's opt-out choice is
+  recorded.
+- Keep `players.observer_opt_out = true` for anyone who opts out of personal capture, is absent from
+  session zero, or has an unclear consent state. Only explicitly clear it to `false` after disclosure.
+- Do not enable `voice_capture` unless you have handled voice consent with the group beforehand.
+- Record the final `observer_capture`, `voice_capture`, and any `observer_opt_out` state in the rehearsal
+  packet's `launch-attestations.md`.
+
 ## Practical setup checklist
 - [ ] Server is Paper 1.21.x (pinned), plugin + datapack installed, resource-pack auto-push on
       (`force=true`); confirm each friend accepts the pack (decline → degraded clues, see them re: the mirror).
 - [ ] The bot/showrunner is hosted and running; Supabase reachable; `0006` applied + seeds re-run.
 - [ ] The record website is reachable at its URL (the discover-by-URL hook).
 - [ ] Each player has `/link`-ed (or is auto-linked) so the record knows their name.
-- [ ] Confirm who opted in/out of voice; set the Observer tier accordingly (BUILD-PLAN §13).
+- [ ] Confirm who opted in/out of observer personalization and voice; set the DB flags and capture switches
+      above before the first session.

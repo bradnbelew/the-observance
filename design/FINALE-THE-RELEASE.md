@@ -25,10 +25,12 @@
 > + kick line) · run passes (reveal + release) · the `the_closing` death/kick beat · the ReleaseRiteListener ·
 > `/observance finale` marker placement · config.yml `closing.*` · lockstep lore reconcile (the-seventh-below
 > coda **+ the six-facets synthesis across `arc/WORLD-BIBLE.md`, `arc/_SEALED_ARC_BIBLE.md`,
-> `arc/lore/canon-spine.md`, `arc/bestiary-sealed.md`**). Every surface green. Awaits only: Ethan's canon
-> Seventh name (optional — signs off as its reclaimed title without one; **note: `THE-SEVENTH-READING.md`
-> already canonizes AVERYN**, see that file), world-placement of the finale markers, and a playtest. See §8
-> for the go-live checklist.
+> `arc/lore/canon-spine.md`, `arc/bestiary-sealed.md`**). Repo-side automation is green, but launch still
+> awaits the manual gate in `tools\check_launch_manual_blockers.ps1`: hosted resource-pack URL/SHA1, real
+> site coordinates/evidence, completed rehearsal packet, world-placement of the finale markers, and a live
+> client playtest. Ethan's canon Seventh name remains optional — the finale signs off as its reclaimed title
+> without one; **note: `THE-SEVENTH-READING.md` already canonizes AVERYN**, see that file. See §8 for the
+> go-live checklist.
 
 ---
 

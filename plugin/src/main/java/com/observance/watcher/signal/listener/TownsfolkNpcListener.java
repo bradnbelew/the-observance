@@ -56,8 +56,8 @@ import java.util.function.Supplier;
  * Every string in {@link #LINES} below is a byte-for-byte copy of the corresponding {@code npcLines}
  * value; the {@code // <key>} comment on each names the source key.
  *
- * <p><b>The conduct-skin (Old Pell + Dob).</b> Two of the five surface townsfolk greet/react to WHO
- * THE CLICKING PLAYER IS BEING — warm when they've kept the ways, cold when they've been breaking
+ * <p><b>The conduct-skin.</b> The surface townsfolk greet/react to WHO THE CLICKING PLAYER IS BEING
+ * — warm when they've kept the ways, cold when they've been breaking
  * them. The signal is the player's LOCAL in-memory compliance tallies (read via
  * {@link SignalTracker}/{@link PlayerSignals}); it colours only which greet/react line is spoken and
  * gates nothing, degrading to the neutral back-compat line whenever there's no data. See the
@@ -101,6 +101,14 @@ public final class TownsfolkNpcListener implements Listener {
             "aro", List.of(
                     new String[]{"aro.greet.neutral",
                             "Ah — fresh boots. Sit, sit, you’re letting the cold in. You want the way down, you want the right person, and lucky you, here I am."},
+                    new String[]{"aro.greet.again",
+                            "You’re the lot poking round the old hole, yeah? Course you are. Everyone is, this season. Drink first. The hole’s not going anywhere."},
+                    new String[]{"aro.greet.warm",
+                            "Huh. You went down and you came *back* up, and you came back — quiet. Most don’t. Most come back loud or don’t come back. You’re alright, you. Sit. On the house."},
+                    new String[]{"aro.greet.cold",
+                            "...you don’t look so good. No offence. You’ve got that — that grey on you. Bunch came through last month with that same grey and I, ah. I don’t see ’em anymore. Tab’s closed. Go on."},
+                    new String[]{"aro.greet.iss_cold",
+                            "You found what’s past the line, then. Yeah. I can tell by your faces. Look — I never *been* down there, I just say what sells, that’s all I — don’t. Don’t tell me about it. I don’t want it in my head with the rest of the things I say."},
                     new String[]{"aro.rumor.town",
                             "Way I heard it, there’s a whole town down there. Lamps still burning. People who just — stayed. Living fat off the warm while we freeze our backsides up here. That’s why nobody comes back up, see. Not ’cause they died. ’Cause it’s *nice*."},
                     new String[]{"aro.rumor.line",
@@ -118,6 +126,12 @@ public final class TownsfolkNpcListener implements Listener {
             "wenna", List.of(
                     new String[]{"wenna.greet.neutral",
                             "Mind the lamp by the door, love, don’t pinch it out. House likes to look lived-in after dark. Gran’s rule, not mine, but I’ve never had cause to break it."},
+                    new String[]{"wenna.greet.again",
+                            "Back again. Good. Take a crust for your pocket — no, I won’t hear it, you take the crust. You leave a little, you get to keep a little. That’s the whole of it, near enough."},
+                    new String[]{"wenna.greet.warm",
+                            "Oh, you minded it all, didn’t you. I can tell. You’ve got the — the *kept* look. Gran would’ve liked you. She’d have given you the good chair."},
+                    new String[]{"wenna.greet.cold",
+                            "...did you leave a little? Down there. Did you give anything back, or did you just — take. You don’t have to answer. I can see you didn’t. Take the crust anyway. Maybe it’s not too late for the crust."},
                     new String[]{"wenna.rumor.seven",
                             "Gran used to say there were seven somethings you had to mind down there. Seven. I only ever remember six and I always forget a different one, isn’t that the way. Light, and the line, and the bird, and the bowing, and the giving, and... see, there’s the sixth gone again."},
                     new String[]{"wenna.rumor.name",
@@ -139,6 +153,10 @@ public final class TownsfolkNpcListener implements Listener {
             "coll", List.of(
                     new String[]{"coll.greet.neutral",
                             "Torches, oil, rope, three days’ rations, a spare striker ’cause your first one’s already wet. Don’t haggle, I’ve heard your speech, the answer’s the price on the tag."},
+                    new String[]{"coll.greet.warm",
+                            "You came back, you’re spending, you’re not babbling. Model customer. Here — striker’s on me. Don’t tell the others I do that, it ruins the business."},
+                    new String[]{"coll.greet.cold",
+                            "Cash up front from you. No, nothing personal. Last three that came up looking like you settled their tab and then I never saw the coin spend again. It just... sat where they dropped it. So. Up front."},
                     new String[]{"coll.shop",
                             "Down or up? Down, you buy light. Up, you sell whatever you found that’s still worth anything. Which is rarely much. People bring up the strangest junk and want gold for it."},
                     new String[]{"coll.rumor.oil",
@@ -203,10 +221,10 @@ public final class TownsfolkNpcListener implements Listener {
                             "Go on. I’ll be here. Where else."}));
 
     /* ================================================================== */
-    /*  THE CONDUCT-SKIN (Old Pell + Dob react to WHO YOU'RE BEING)        */
+    /*  THE CONDUCT-SKIN (surface townsfolk react to WHO YOU'RE BEING)     */
     /* ================================================================== */
     /*
-     * MECHANIC → FICTION. Two surface townsfolk greet/react to the CLICKING player's own conduct —
+     * MECHANIC → FICTION. Surface townsfolk greet/react to the CLICKING player's own conduct —
      * warm when they've kept the ways, cold when they've been breaking them. The signal is the
      * player's LOCAL, in-memory compliance tallies ({@link PlayerSignals#complianceTotals()}): the
      * honored/violated counts every custom the tracker already keeps. No DB read, no showrunner
@@ -215,7 +233,8 @@ public final class TownsfolkNpcListener implements Listener {
      * is spoken; it gates nothing (tolls take warmth, not progress), and it degrades to the neutral
      * back-compat behaviour whenever there's no conduct data (or the tracker is unreachable).
      *
-     * The other three townsfolk (aro / wenna / coll) have no conduct variants and are untouched.
+     * Aro, Wenna, and Coll only colour their opening greet. Old Pell and Dob remain the stronger
+     * conduct readers because they also carry the reaction slots.
      */
 
     /** How the clicking player is BEING, derived purely from their compliance tallies. */
@@ -225,7 +244,7 @@ public final class TownsfolkNpcListener implements Listener {
      * The keys of the two conduct-sensitive slots. A cycle entry whose key equals one of these is
      * resolved by tier at pick time rather than spoken as-is:
      * <ul>
-     *   <li>{@code *.greet.neutral} (Old Pell only) → WARM: {@code greet.warm} · COLD: {@code greet.cold}
+     *   <li>{@code *.greet.neutral} (Aro/Wenna/Coll/Old Pell) → WARM: {@code greet.warm} · COLD: {@code greet.cold}
      *       · NEUTRAL: {@code greet.neutral}.</li>
      *   <li>{@code *.react.good} (Old Pell + Dob) → COLD: {@code react.bad} · else: {@code react.good}.</li>
      * </ul>
@@ -250,9 +269,9 @@ public final class TownsfolkNpcListener implements Listener {
     private static final Map<String, String> TEXT = buildTextIndex();
 
     /**
-     * Build the per-townsperson cycle key-lists. For the two conduct townsfolk (old-pell, dob) the
-     * conduct-variant keys are OMITTED from the cycle (they're only reachable via tier resolution of
-     * the neutral/good slot); everyone else's cycle is simply their {@link #LINES} keys in order.
+     * Build the per-townsperson cycle key-lists. Conduct-variant keys are OMITTED from the cycle
+     * (they're only reachable via tier resolution of the neutral/good slot); plain greet-again lines
+     * stay in the normal walk.
      */
     private static Map<String, List<String>> buildCycles() {
         java.util.Map<String, List<String>> out = new java.util.HashMap<>();
@@ -363,9 +382,9 @@ public final class TownsfolkNpcListener implements Listener {
      * CACHED arc echo: whether the group has caught Iss / found the dead shrine ({@code iss_caught}).
      * Read off a plugin-side volatile that's refreshed on the maint timer (NEVER a per-click DB read),
      * mirroring the Observer capture switch. Fail-CLOSED: a null supplier or a false read keeps the
-     * townsfolk lane arc-agnostic (its pre-existing conduct behaviour) — the ONE authored line it
-     * unlocks ({@code old-pell.greet.iss_cold}) is a specific acknowledgement of finding the dead
-     * shrine, spoken only when the arc actually says so.
+     * townsfolk lane arc-agnostic (its pre-existing conduct behaviour). The specific acknowledgement
+     * lines it unlocks ({@code old-pell.greet.iss_cold}, {@code aro.greet.iss_cold}) speak only when
+     * the arc actually says so.
      */
     private final BooleanSupplier issCaught;
 
@@ -424,13 +443,14 @@ public final class TownsfolkNpcListener implements Listener {
                 }
             }
 
-            // Arc echo (Old Pell only): once the group has caught Iss / found the dead shrine, Pell's
-            // GREET becomes the specific narrative acknowledgement — it takes PRECEDENCE over the
-            // conduct WARM/COLD/NEUTRAL greet. Read from the CACHED flag (never a per-click DB read);
+            // Arc echo: once the group has caught Iss / found the dead shrine, Aro and Pell's GREET
+            // becomes the specific narrative acknowledgement — it takes PRECEDENCE over the conduct
+            // WARM/COLD/NEUTRAL greet. Read from the CACHED flag (never a per-click DB read);
             // fail-closed, so with no flag / no supplier the conduct greet below is unchanged.
-            if ("old-pell".equals(id) && key.endsWith(SLOT_GREET) && issCaughtCached()
-                    && TEXT.containsKey("old-pell.greet.iss_cold")) {
-                speak(p, id, TEXT.get("old-pell.greet.iss_cold"));
+            String issEchoKey = id + ".greet.iss_cold";
+            if (("old-pell".equals(id) || "aro".equals(id)) && key.endsWith(SLOT_GREET) && issCaughtCached()
+                    && TEXT.containsKey(issEchoKey)) {
+                speak(p, id, TEXT.get(issEchoKey));
                 return;
             }
 
@@ -711,7 +731,7 @@ public final class TownsfolkNpcListener implements Listener {
 
     /**
      * Resolve a cycle source-key to its spoken text, colouring the two conduct slots by tier and
-     * speaking everything else verbatim. A greet slot ({@link #SLOT_GREET}, Old Pell only) becomes
+     * speaking everything else verbatim. A greet slot ({@link #SLOT_GREET}) becomes
      * {@code greet.warm} / {@code greet.cold} / {@code greet.neutral}; a react slot ({@link #SLOT_REACT},
      * Old Pell + Dob) becomes {@code react.bad} for COLD, else {@code react.good}. If a tier variant is
      * somehow missing from {@link #TEXT}, we fall back to the base slot's own text (never null/blank).

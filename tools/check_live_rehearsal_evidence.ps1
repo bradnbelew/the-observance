@@ -222,6 +222,7 @@ $testPacket = Join-Path $testRoot "audit"
 foreach ($rel in @(
   "00-notes.md",
   "fixes.md",
+  "launch-attestations.md",
   "screenshots\README.md",
   "clips\README.md"
 )) {
@@ -235,6 +236,12 @@ if (Test-Path (Join-Path $testPacket "00-notes.md")) {
   $notes = Get-Content -LiteralPath (Join-Path $testPacket "00-notes.md") -Raw
   foreach ($required in @("Evidence Lanes", "First-Hour Pacing", "Major Site Visual Shots", "Side Path Value Matrix", "NPC/World Contracts", "Puzzle Fairness Matrix", "Scare Review", "Unlit Expedition Proof", "Stop/Launch Decision")) {
     RequireContains "generated 00-notes.md" $notes $required
+  }
+}
+if (Test-Path (Join-Path $testPacket "launch-attestations.md")) {
+  $attestations = Get-Content -LiteralPath (Join-Path $testPacket "launch-attestations.md") -Raw
+  foreach ($required in @("Supabase Live Status", "Server Load", "Real Client Rendering", "Live Command Audits", "External Media", "Session Zero And Capture Consent", "Credential Rotation", "Operator Verdict")) {
+    RequireContains "generated launch-attestations.md" $attestations $required
   }
 }
 
@@ -255,11 +262,13 @@ if ($LASTEXITCODE -ne 0) {
 $completePacket = Join-Path $completeRoot "audit"
 $completeNotes = Join-Path $completePacket "00-notes.md"
 $completeFixes = Join-Path $completePacket "fixes.md"
+$completeAttestations = Join-Path $completePacket "launch-attestations.md"
 if (Test-Path $completeNotes) {
   $text = Get-Content -LiteralPath $completeNotes -Raw
   $text = $text.Replace("- [ ]", "- [x]")
   $text = $text.Replace("status: KEEP / RESHAPE / REPLACE / CUT", "status: KEEP")
   $text = $text.Replace("verdict: KEEP / RESHAPE / REPLACE / CUT", "verdict: KEEP")
+  $text = $text.Replace("score: 1 / 2 / 3 / 4 / 5", "score: 5")
   $text = $text.Replace("timestamp:", "timestamp: 00:01 audit-confirmed")
   $text = $text.Replace("player action:", "player action: audit-confirmed player acted without prompting")
   $text = $text.Replace("world evidence:", "world evidence: audit-confirmed map/NPC/sound response")
@@ -284,6 +293,7 @@ if (Test-Path $completeNotes) {
   $text = $text.Replace("source:", "source: appears to come from the world or player action")
   $text = $text.Replace("restraint:", "restraint: one beat, cooldown respected, no spam")
   $text = $text.Replace("aftertaste:", "aftertaste: adds a lore question rather than an instruction card")
+  $text = $text.Replace("failure if under 4:", "failure if under 4: synthetic pass scored 5")
   $text = $text.Replace("approach:", "approach: audit-confirmed dark-copy approach reads clearly")
   $text = $text.Replace("borrowed lantern route:", "borrowed lantern route: audit-confirmed route uses limited borrowed lanterns")
   $text = $text.Replace("light radius:", "light radius: audit-confirmed safe edge is readable")
@@ -297,6 +307,14 @@ if (Test-Path $completeNotes) {
 }
 if (Test-Path $completeFixes) {
   [System.IO.File]::WriteAllText($completeFixes, "# Fixes From Rehearsal - audit`n`nNo unresolved blockers in this synthetic validator self-test.`n", [System.Text.UTF8Encoding]::new($false))
+}
+if (Test-Path $completeAttestations) {
+  $attestationText = Get-Content -LiteralPath $completeAttestations -Raw
+  $attestationText = $attestationText.Replace("- [ ]", "- [x]")
+  $attestationText = $attestationText.Replace("evidence:", "evidence: audit-confirmed live-server proof captured")
+  $attestationText = $attestationText.Replace("decision: LAUNCH / DO NOT LAUNCH", "decision: LAUNCH")
+  $attestationText = $attestationText.Replace("reason:", "reason: synthetic validator self-test completed all launch attestations")
+  [System.IO.File]::WriteAllText($completeAttestations, $attestationText, [System.Text.UTF8Encoding]::new($false))
 }
 $shotDir = Join-Path $completePacket "screenshots"
 $clipDir = Join-Path $completePacket "clips"

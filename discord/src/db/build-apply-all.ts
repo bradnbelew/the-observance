@@ -53,6 +53,7 @@ const ORDER: readonly string[] = [
   'discord/supabase/migrations/0009_observations.sql',
   'discord/supabase/migrations/0010_answer_attempts_web_rate_limit.sql',
   'discord/supabase/migrations/0011_showrunner_lock.sql',
+  'discord/supabase/migrations/0012_world_paste_ledger.sql',
   // ---- dashboard public/admin views that depend on the Discord schema ----
   'dashboard/supabase/migrations/0004_v_record.sql',
   'dashboard/supabase/migrations/0005_reconcile_tracker_views.sql',

@@ -160,8 +160,8 @@ public final class SupabaseClient {
      * durability — on failure it is queued (bounded) like other writes. Never throws.
      *
      * <p>Consent is enforced by the CALLER (the global {@code observer_capture} switch) before we ever get
-     * here; this method only writes. The per-player {@code observer_opt_out} gate is enforced DOWNSTREAM by
-     * the showrunner's weaponizer, which skips opted-out players before quoting.
+     * here; this method only writes. The per-player {@code observer_opt_out} gate is enforced before
+     * insertion by callers via {@link #observerOptedOut(String)}; the showrunner repeats it before quoting.
      */
     public SupabaseResult<Void> insertObservation(ObservationRow row) {
         if (row == null) return SupabaseResult.fail(0, "null-row");
@@ -249,6 +249,37 @@ public final class SupabaseClient {
                     doWrite("PATCH", "beat_queue", filter, body, true, "markBeatDecided"));
         }
         return r;
+    }
+
+    /**
+     * Atomically claim an approved beat before world mutation. Returns true only when this JVM won the
+     * {@code approved -> firing} transition; false means another process claimed it, the row was no
+     * longer approved, or Supabase could not durably record the claim. In every false case the caller must
+     * skip enactment rather than risk a cross-restart or two-instance double-fire.
+     */
+    public boolean claimBeatForFiring(String beatId) {
+        if (beatId == null || beatId.isBlank() || !config.isConfigured()) {
+            return false;
+        }
+        String filter = "id=eq." + enc(beatId) + "&status=eq.approved";
+        String body = "{\"status\":\"firing\"}";
+        return withRetries("claimBeatForFiring", () -> {
+            HttpRequest req = baseRequest("beat_queue", filter)
+                    .header("Content-Type", "application/json")
+                    .header("Prefer", "return=representation")
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                    .build();
+            HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+            int code = resp.statusCode();
+            if (code >= 200 && code < 300) {
+                markSuccess();
+                String b = resp.body();
+                return b != null && b.trim().length() > 2; // "[]" means no approved row matched.
+            }
+            markFailure();
+            logFailure("claimBeatForFiring", "http-" + code);
+            return false;
+        }, false);
     }
 
     /** Read a single setting by key. Returns ok with null value if absent. */
@@ -343,13 +374,23 @@ public final class SupabaseClient {
         if (!config.isConfigured() || mcUuid == null || mcUuid.isBlank()) {
             return SupabaseResult.ok(0, null);
         }
-        String q = "select=id,mc_uuid,discord_id&mc_uuid=eq." + enc(mcUuid.trim()) + "&limit=1";
+        String q = "select=id,mc_uuid,discord_id,observer_opt_out&mc_uuid=eq." + enc(mcUuid.trim()) + "&limit=1";
         SupabaseResult<List<PlayerLookupRow>> r =
                 doRead("players", q, LIST_PLAYER_LOOKUP, "fetchPlayerByUuid");
         if (!r.ok()) return SupabaseResult.fail(r.httpStatus(), r.error());
         List<PlayerLookupRow> list = r.value();
         PlayerLookupRow first = (list == null || list.isEmpty()) ? null : list.get(0);
         return SupabaseResult.ok(r.httpStatus(), first);
+    }
+
+    /**
+     * Consent floor for Observer capture. Returns true when the player has opted out, cannot be found, or
+     * Supabase cannot be read. Capture is privacy-sensitive, so uncertainty means skip before storage.
+     */
+    public boolean observerOptedOut(String mcUuid) {
+        SupabaseResult<PlayerLookupRow> r = fetchPlayerByUuid(mcUuid);
+        if (!r.ok() || r.value() == null) return true;
+        return !Boolean.FALSE.equals(r.value().observerOptOut);
     }
 
     /**

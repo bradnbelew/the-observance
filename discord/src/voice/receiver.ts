@@ -12,8 +12,8 @@
  *   - OPTIONAL LIBS: @discordjs/voice + prism-media are dynamically imported; if they're not installed the
  *     tier logs one line and does nothing (they are optionalDependencies, so a failed install never breaks
  *     the deploy or the rest of the bot).
- *   - CONSENT: only LINKED players are captured, and voice is stricter than chat — a speaker is skipped
- *     unless positively confirmed NOT opted out (observerOptedOut), BEFORE any audio is transcribed.
+ *   - CONSENT: only LINKED players are captured, and voice is stricter than chat: a speaker is skipped
+ *     unless positively confirmed NOT opted out, BEFORE any audio is subscribed.
  *   - FAULT-ISOLATED: every per-utterance capture is wrapped; a stumble is logged once and the bot rolls on.
  *
  * The Watcher joins self-MUTED (it never speaks in voice) and self-UNDEAF only because it must hear to
@@ -115,10 +115,10 @@ async function captureUtterance(
   if (capturing.has(userId)) return; // already capturing this speaker's current utterance
   capturing.add(userId);
   try {
-    // consent + link gate, BEFORE any audio is transcribed.
+    // consent + link gate, BEFORE any audio is subscribed/transcribed.
     const player = await getPlayerByDiscordId(userId);
     if (!player || typeof player.mc_uuid !== 'string' || player.mc_uuid.trim() === '') return; // unlinked
-    if (await observerOptedOut(player.mc_uuid)) return; // opted out (or unconfirmed) → never captured
+    if (await observerOptedOut(player.mc_uuid)) return; // opted out (or unconfirmed) => never captured
 
     const opus = receiver.subscribe(userId, {
       end: { behavior: dv.EndBehaviorType.AfterSilence, duration: SILENCE_MS },

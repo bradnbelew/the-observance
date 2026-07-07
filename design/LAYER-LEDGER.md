@@ -22,36 +22,36 @@ a relief.
 
 ---
 
-## 1. GENUINELY FORGOTTEN — planned, zero code (the real worry, and it's only 3 things)
+## 1. GENUINELY FORGOTTEN / NOW RESOLVED - planned layers from the stale snapshot
 1. **The LLM "AI Director" brain** (Claude Agent SDK + per-player personalization) — the headline "it's
    intelligent" promise. VERIFIED absent (no Anthropic SDK anywhere); the **deterministic `decide()` is
    quietly standing in for it.** DECISION: build a thin Agent-SDK layer *on top of* the proven
    deterministic floor, OR formally re-scope to "deterministic showrunner" and stop promising a brain.
-2. **`0008_observations` table** (the Observer Engine DB) — the keystone that turns chat/voice capture into
-   grounded scares. VERIFIED absent (migrations stop at 0007). Its absence silently no-ops a whole chain
-   (autonomy readers, shape-rhyme apparitions, the "Discord bleeds" leaks). DECISION: author it, or cut the
-   Observer Engine and delete the dead readers.
-3. **Six distinct keeper voices** (per-keeper OGGs) — only 4 generic sounds exist. Claude can generate
-   these (same pipeline as the 4 we already made).
+2. **Observation table - RESOLVED.** The old observation-table absence is obsolete; current schema uses
+   `discord/supabase/migrations/0009_observations.sql`, and `discord/supabase/apply-all.sql` includes the
+   `observations` table used by grounded observer capture.
+3. **Keeper voices - RESOLVED.** The resource pack now has 11 checked OGGs: four ambient events, the generic
+   `keeper_voice`, and six named keeper clips. `tools/check_media_readiness.ps1` guards the sound keys/files.
 
 ## 2. BUILT BUT NOT WIRED — code exists, doesn't fire
-- **ThresholdVault active-roster supplier** — passed `null` (`ObservancePlugin.java:519`) → falls back to
-  online-count, breaking the dynamic-roster invariant for the co-op vault. ✅ confirmed. Owner: claude.
+- **ThresholdVault active-roster supplier - RESOLVED.** `ObservancePlugin` now passes an explicit online
+  roster supplier into `ThresholdVaultListener`, and `tools/check_plugin_compile.ps1` guards against
+  regressing to the old null/fallback wiring. True cross-platform roster identity remains a deferred
+  deep-half design choice, not a week-one launch blocker.
 - **Undercroft dimension** — datapack built but no teleport/entry wired; the live gather-room is stamped on
   the overworld instead. Decide: wire an entry, or accept the overworld version as canonical.
-- **Cross-owner autonomy readers** (liar warm-beats, shape-rhyme, keeper-record/name-where/offline-skin) —
-  pure policies pass self-tests but sit behind un-wired reads (many depend on the unbuilt `0008`).
-- ⚠️ **CORRECTION — Companion/Reckoning producers: the ledger flagged these "unbuilt." FALSE.**
-  `WrenNpcListener` (registered `ObservancePlugin:403`) sets `companion_trust/revealed` and
-  `reckoning_condemn/understand/free` via `mergeArcFlags`; `CompanionArcWatcher` + `SeventhChoiceListener`
-  are live too. The arc **is wired.** (Smaller real item: confirm the `companion-reveal` puzzle seed row
-  exists — the reveal *content* gate, separate from the producers.)
+- **Cross-owner autonomy readers** (liar warm-beats, shape-rhyme, keeper-record/name-where/offline-skin) -
+  pure policies pass self-tests and now have the observation table in the bundled SQL; remaining proof is live Supabase/server rehearsal.
+- **CORRECTION - Companion/Reckoning producers: the ledger flagged these "unbuilt." FALSE.**
+  `WrenNpcListener`, `CompanionArcWatcher`, `CoopPlateListener`, and `SeventhChoiceListener` are wired, and
+  `tools/check_companion_arc_contracts.ps1` guards their plugin/Discord contracts. The remaining item is live rehearsal proof.
 
 ## 3. BUILT BUT NOT DEPLOYED — ready, just not on the server/host (only the jar is live)
 - **Discord bot** (discord.js v14, tsc clean) + slash commands `/whisper /link /answer` → needs a host.
 - **Showrunner cron** (snapshot→decide→apply, dry-run works) + clue-drip→card→`#the-record` poster → needs a scheduled cron.
 - **The Record website** (Next 15: public archive, inscribe endpoint, un-redacting `v_record`, admin console) → not on Vercel.
-- **Resourcepack** (rune font + 4 OGGs) + **reward-toast datapack** → not on the server, so runes fall back to ASCII and toasts can't fire.
+- **Resourcepack** (rune font + 11 OGGs) + **reward-toast datapack** - built and checked, but still must be
+  hosted/configured on the live server so runes/sounds/toasts render for real clients.
 
 ## 4. WIRED BUT UNPROVEN — in the jar, never seen working live (the playtest list)
 The 34-beat Haunting Engine · SignalTracker + 21 listeners · per-player illusions · the Lens + ignition +
@@ -75,9 +75,10 @@ the puzzle seed + flag-graph + tiered hints + thread cards (applied live) · the
 3. **ETHAN — host the resourcepack + datapack** on the server, then run `/observance placeregion` + `placedeep` (0.2.2).
 4. **CLAUDE + ETHAN — the FIRST vertical-slice playtest:** ignition → one rosetta/keeper solve → flag set →
    unlock beat → toast → clue drips to `#the-record`. **This is the gate.** It proves ~15 unproven layers.
-5. **CLAUDE — wire the ThresholdVault roster supplier** (and confirm the companion-reveal seed row).
-6. **DECIDE the 3 forgotten items** (LLM brain / `0008` Observer / keeper voices) — build or formally cut,
-   but don't leave them as invisible holes.
+5. **CLAUDE — keep the ThresholdVault roster supplier guard green** and confirm the companion-reveal seed row
+   during live rehearsal.
+6. **DECIDE the remaining scope item** (the optional LLM brain). The observation DB and keeper voices are
+   no longer invisible holes; they still need live deployment proof like the rest of the stack.
 
 **Rule (the consistency principle):** do not add new arc until the vertical slice is seen working
 end-to-end live. The ledger's lesson is that we already have *more* built than proven — the next win is
@@ -89,10 +90,9 @@ end-to-end live. The ledger's lesson is that we already have *more* built than p
 - **Companion-reveal chain — NOT a gap.** The reveal is flag-driven: `WrenNpcListener` sets
   `companion_revealed` → `thread_cards.sql:303` surfaces a card gated on `companion:revealed`. The missing
   `companion-reveal` *puzzle row* is intentional (`metapuzzle_seed:293`: "harmless today"). No action.
-- **ThresholdVault roster supplier — acceptable for week one.** There is no existing active-roster source;
-  `AcceptingRiteListener` uses the same online-count fallback. For a small synchronous group, online-count
-  ≈ the active roster, so this does NOT block week one. A true "active roster" (opted-in / dossier-bearing
-  players) is a deferred deep-half design decision, not a bug. Downgraded from built_not_wired → deferred.
+- **ThresholdVault roster supplier — explicit for week one.** The plugin now passes online-player count as
+  the week-one active-roster source. For a small synchronous group, online-count approximates the active
+  roster; a true cross-platform active roster remains a deferred deep-half design decision, not a bug.
 
 **Director status:** week-one *building* is essentially complete. The remaining path is DEPLOY (bot/cron on
 Render, website on Vercel, packs on the server — all in progress) + the first VERTICAL-SLICE PLAYTEST. Per

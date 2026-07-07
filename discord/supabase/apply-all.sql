@@ -25,21 +25,22 @@
 --   10. discord/supabase/migrations/0009_observations.sql
 --   11. discord/supabase/migrations/0010_answer_attempts_web_rate_limit.sql
 --   12. discord/supabase/migrations/0011_showrunner_lock.sql
---   13. dashboard/supabase/migrations/0004_v_record.sql
---   14. dashboard/supabase/migrations/0005_reconcile_tracker_views.sql
---   15. dashboard/supabase/migrations/0006_v_record_theories.sql
---   16. dashboard/supabase/migrations/0007_v_archive.sql
---   17. dashboard/supabase/migrations/0008_v_archive_flag_gate.sql
---   18. dashboard/supabase/migrations/0009_beat_queue_failed_status.sql
---   19. discord/supabase/seeds/puzzles_seed.sql
---   20. discord/supabase/seeds/seventh_seed.sql
---   21. discord/supabase/seeds/thread_tags.sql
---   22. discord/supabase/seeds/thread_cards.sql
---   23. discord/supabase/seeds/side_quests.sql
---   24. discord/supabase/seeds/hints_seed.sql
---   25. discord/supabase/seeds/metapuzzle_seed.sql
---   26. discord/supabase/seeds/progression_seed.sql
---   27. discord/supabase/schema-repair.sql
+--   13. discord/supabase/migrations/0012_world_paste_ledger.sql
+--   14. dashboard/supabase/migrations/0004_v_record.sql
+--   15. dashboard/supabase/migrations/0005_reconcile_tracker_views.sql
+--   16. dashboard/supabase/migrations/0006_v_record_theories.sql
+--   17. dashboard/supabase/migrations/0007_v_archive.sql
+--   18. dashboard/supabase/migrations/0008_v_archive_flag_gate.sql
+--   19. dashboard/supabase/migrations/0009_beat_queue_failed_status.sql
+--   20. discord/supabase/seeds/puzzles_seed.sql
+--   21. discord/supabase/seeds/seventh_seed.sql
+--   22. discord/supabase/seeds/thread_tags.sql
+--   23. discord/supabase/seeds/thread_cards.sql
+--   24. discord/supabase/seeds/side_quests.sql
+--   25. discord/supabase/seeds/hints_seed.sql
+--   26. discord/supabase/seeds/metapuzzle_seed.sql
+--   27. discord/supabase/seeds/progression_seed.sql
+--   28. discord/supabase/schema-repair.sql
 -- ============================================================================
 
 
@@ -542,7 +543,7 @@ end $$;
 
 alter table public.beat_queue
   add constraint beat_queue_status_check
-  check (status in ('pending','approved','skipped','fired','failed'));
+  check (status in ('pending','approved','firing','skipped','fired','failed'));
 
 -- APPROVAL GATE: the plugin poller fires `status=eq.approved` ONLY, ordered by
 -- priority desc, created_at asc — so `pending` beats wait for a human to approve
@@ -1123,8 +1124,8 @@ commit;
 --     is used at most once — sparse by construction, never a nagging replay.
 --   * CONSENT: capture is gated TWICE. Globally by settings.observer_capture (default OFF — nothing is
 --     stored until the operator turns it on), and per-player by players.observer_opt_out (a person can
---     say "don't keep my words" and the capture skips them). The group already consented (known-author
---     lens); this is the individual floor.
+--     say "don't keep my words" and the capture skips them). The group/operator handles the pre-launch
+--     consent conversation; this field is the emergency individual floor.
 --   * PRIVATE: RLS service-role only. NEVER anon-readable (unlike the archive) — this is PII. No view,
 --     no grant. The public Record can never surface a captured utterance.
 --
@@ -1162,6 +1163,9 @@ alter table public.players
 -- 3. the global capture switch — OFF until the operator enables it (nothing is stored before then).
 insert into public.settings (key, value)
   values ('observer_capture', 'false'::jsonb)
+  on conflict (key) do nothing;
+insert into public.settings (key, value)
+  values ('voice_capture', 'false'::jsonb)
   on conflict (key) do nothing;
 
 commit;
@@ -1289,6 +1293,39 @@ revoke all on function public.showrunner_try_acquire_lock(int) from public;
 revoke all on function public.showrunner_release_lock() from public;
 grant execute on function public.showrunner_try_acquire_lock(int) to service_role;
 grant execute on function public.showrunner_release_lock() to service_role;
+
+
+-- ============================================================
+-- FILE: discord/supabase/migrations/0012_world_paste_ledger.sql
+-- ============================================================
+
+-- The Observance - durable world paste ledger.
+-- 0012_world_paste_ledger.sql
+--
+-- The plugin's optional FAWE schematic path calls SupabaseClient.claimPasteLedger()
+-- before pasting a large single-use set-piece. Without this table, that path compiles
+-- but fails its durable cross-restart idempotency guard at runtime.
+
+begin;
+
+create table if not exists public.world_paste_ledger (
+  id         bigserial primary key,
+  world      text not null,
+  site_id    text not null default '',
+  schematic  text not null,
+  base_x     int not null,
+  base_y     int not null,
+  base_z     int not null,
+  pasted_at  timestamptz not null default now(),
+  unique (world, site_id, schematic, base_x, base_y, base_z)
+);
+
+alter table public.world_paste_ledger enable row level security;
+
+create index if not exists idx_world_paste_ledger_site
+  on public.world_paste_ledger (site_id, schematic);
+
+commit;
 
 
 -- ============================================================
@@ -1776,27 +1813,19 @@ commit;
 -- FILE: dashboard/supabase/migrations/0009_beat_queue_failed_status.sql
 -- ============================================================
 
--- 0009_beat_queue_failed_status.sql — allow the terminal 'failed' beat status (cross-surface fix).
+-- 0009_beat_queue_failed_status.sql - allow plugin runtime beat statuses.
 --
--- The plugin's BeatQueuePoller writes status='failed' when an enactor throws (a terminal status, so the
--- beat leaves the queue instead of being re-served every poll). That value was added to the beat_queue
--- status CHECK only in the DISCORD migration lineage (discord/0004_oracle.sql). The table itself is
--- created here in the dashboard lineage (0001_init.sql) WITHOUT 'failed'. The two lineages are numbered
--- independently but target ONE shared DB — so if the discord widening is skipped when provisioning, the
--- plugin's 'failed' write is rejected by the CHECK, the beat stays 'approved', and fetchActionableBeats
--- re-serves it every poll → a beat whose enactor throws re-fires forever.
---
--- This migration makes the constraint correct in the dashboard lineage too. Fully IDEMPOTENT + order-
--- independent: drop the constraint if present, re-add it with the full status set. Safe to apply whether
--- or not discord/0004 already widened it (dropping a same-named constraint and re-adding an identical one
--- is a no-op in effect), and safe on a fresh DB.
+-- The plugin claims an approved beat by moving it to status='firing' before world mutation, then writes
+-- a terminal status ('fired', 'skipped', or 'failed') afterward. The beat_queue table is born in the
+-- dashboard lineage, while the plugin status contract is maintained in the Discord lineage, so keep this
+-- dashboard-side repair in sync.
 
 alter table if exists public.beat_queue
   drop constraint if exists beat_queue_status_check;
 
 alter table if exists public.beat_queue
   add constraint beat_queue_status_check
-  check (status in ('pending', 'approved', 'skipped', 'fired', 'failed'));
+  check (status in ('pending', 'approved', 'firing', 'skipped', 'fired', 'failed'));
 
 
 -- ============================================================
@@ -4229,6 +4258,12 @@ values
     array['human-count-uneven','human-the-record-opens','surface-seventh-marker'], 'no-wall-catch', null, 210 ),
 
   -- ===== THE UNLIT VILLAGE (new pillar) =====
+  -- On-ramp card: revealed before entry, once the undercroft/kept-light beat has made the
+  -- village-copy logic fair. It points to the physical `unlit_entry` anchor in the real village well.
+  ( 'place-unlit-well-mouth', 'place', 'the old well mouth', 'cardPlaceUnlitWellMouth',
+    'unlit_entry', 'explore',
+    array['place-deeper-wrong','place-undercroft-sealed'], 'undercroft-fog', null, 225 ),
+
   -- Flag-gated by house discovery, not by expedition number. The group can reach the houses in any
   -- order; the archive simply files what they actually found in the mirrored village.
   ( 'place-unlit-mirror', 'place', 'the village laid over itself', 'cardPlaceUnlitMirror',
@@ -5341,26 +5376,18 @@ commit;
 -- FILE: discord/supabase/schema-repair.sql
 -- ============================================================
 
--- THE OBSERVANCE — schema-repair.sql  (2026-07-01)
+-- THE OBSERVANCE - schema-repair.sql
 -- ---------------------------------------------------------------------------
 -- Fixes plugin<->DB schema drift. The Java plugin writes flat, mc_uuid-keyed
--- rows (DossierRow / CustomComplianceRow / BaseRow), but dashboard 0001_init
--- created dossiers / custom_compliance / bases with a player_id-keyed shape and
--- different column names. Result: every background-tracker flush returned HTTP 400.
---
--- This is ADDITIVE + IDEMPOTENT: it ADDS the columns + upsert conflict keys the
--- plugin needs, and KEEPS the old columns so the dashboard's existing reads still
--- resolve (they'll be null for plugin-written rows until a proper reconciliation).
--- The puzzle loop (players / solves / heatmap_cells) already matched and is untouched.
---
--- Apply in the Supabase SQL Editor for the Observance project (fdnmhbpxnodrnbrzrlqq),
--- as service_role. Safe to re-run. After applying, the `tracker.flush.dossier`
--- 400 spam stops and behavior tracking starts saving.
+-- rows for tracker and world systems, while the dashboard base schema began with
+-- player_id-keyed shapes. This repair is additive and idempotent: it adds the
+-- columns, indexes, and support tables the plugin speaks without removing older
+-- dashboard-facing columns.
 -- ---------------------------------------------------------------------------
 
 begin;
 
--- ===== dossiers — plugin upserts on mc_uuid with flat signal columns =====
+-- ===== dossiers - plugin upserts on mc_uuid with flat signal columns =====
 alter table public.dossiers
   add column if not exists mc_uuid              text,
   add column if not exists name                 text,
@@ -5369,15 +5396,11 @@ alter table public.dossiers
   add column if not exists distance_from_group  double precision,
   add column if not exists extra                text;
 
--- The plugin inserts without player_id, so player_id can no longer be a NOT NULL
--- primary key. Drop the PK, make it nullable, and key upserts off mc_uuid instead.
--- (Old rows keep their player_id; new plugin rows carry mc_uuid. Dashboard reads by
--- player_id still work for old rows; join via players.mc_uuid for new ones.)
 alter table public.dossiers drop constraint if exists dossiers_pkey;
 alter table public.dossiers alter column player_id drop not null;
 create unique index if not exists dossiers_mc_uuid_uidx on public.dossiers (mc_uuid);
 
--- ===== custom_compliance — plugin upserts on (mc_uuid, custom_key) =====
+-- ===== custom_compliance - plugin upserts on (mc_uuid, custom_key) =====
 alter table public.custom_compliance
   add column if not exists mc_uuid        text,
   add column if not exists name           text,
@@ -5385,17 +5408,11 @@ alter table public.custom_compliance
   add column if not exists violated_count int default 0,
   add column if not exists last_event_at  timestamptz,
   add column if not exists updated_at     timestamptz default now();
--- player_id here is already nullable (the PK is the bigserial `id`), so the plugin's
--- null-player_id inserts are fine; it just needs a unique target for (mc_uuid, custom_key).
+
 create unique index if not exists custom_compliance_mcuuid_key_uidx
   on public.custom_compliance (mc_uuid, custom_key);
 
--- ===== bases — plugin upserts on owner_uuid (TEXT) with center_x/y/z + label + radius =====
--- CONTRACT (P0-D2): the plugin's BaseDetector upsert is re-keyed to conflict on the TEXT
--- column `owner_uuid` (one base per keeper), NOT on the bigint `id`. So this repair guarantees
--- the column exists AND a UNIQUE index it can name as the ON CONFLICT target. bases.id stays the
--- bigint PK (untouched) — old dashboard reads by id/owner_player_id keep resolving; new plugin
--- rows carry owner_uuid. Idempotent: add column / create index if not exists.
+-- ===== bases - plugin upserts on owner_uuid with center/radius fields =====
 alter table public.bases
   add column if not exists owner_uuid text,
   add column if not exists label      text,
@@ -5404,21 +5421,31 @@ alter table public.bases
   add column if not exists center_z   int,
   add column if not exists radius     numeric;
 
--- The upsert conflict target: one base row per owner_uuid. Named exactly `bases_owner_uuid_key`
--- so the plugin's `on_conflict=owner_uuid` upsert resolves against it.
 create unique index if not exists bases_owner_uuid_key on public.bases (owner_uuid);
 
--- ===== event_log — plugin writes type/context/mc_uuid/detail; the table has only level/source =====
--- Without these columns every plugin log write 400s (all plugin diagnostics lost). Additive.
+-- ===== event_log - plugin writes type/context/mc_uuid/detail =====
 alter table public.event_log
   add column if not exists type    text,
   add column if not exists context text,
   add column if not exists mc_uuid text,
   add column if not exists detail  text;
 
-commit;
+-- ===== world_paste_ledger - durable FAWE single-paste idempotency =====
+create table if not exists public.world_paste_ledger (
+  id         bigserial primary key,
+  world      text not null,
+  site_id    text not null default '',
+  schematic  text not null,
+  base_x     int not null,
+  base_y     int not null,
+  base_z     int not null,
+  pasted_at  timestamptz not null default now(),
+  unique (world, site_id, schematic, base_x, base_y, base_z)
+);
 
--- ===== NOTE: world_paste_ledger — the plugin also references this table for the =====
--- optional FAWE schematic-paste path; no migration creates it. It's only touched if
--- FAWE is installed (it isn't tonight), so it's left out of tonight's repair. Create it
--- when the schematic-paste path is enabled.
+alter table public.world_paste_ledger enable row level security;
+
+create index if not exists idx_world_paste_ledger_site
+  on public.world_paste_ledger (site_id, schematic);
+
+commit;

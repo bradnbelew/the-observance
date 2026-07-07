@@ -1,5 +1,12 @@
 # THE OBSERVANCE — LAUNCH READINESS (2026-07-03)
-
+> CURRENT STATUS OVERRIDE (2026-07-06): this document is historical context, not the current go/no-go
+> verdict. The current repository state is **not launch-ready** until
+> `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`
+> passes and the manual attestations it prints are completed on the live Paper server/client. Known current
+> blockers include the unhosted resource pack URL/SHA1, 42 launch-required placeholder site coordinates,
+> missing coordinate proof CSV, missing completed live rehearsal packet, and live Minecraft rendering/load
+> verification. Use `design/MANUAL-LAUNCH-PLAN.md` for the ordered manual completion plan and evidence
+> requirements. Use `design/CURRENT-READINESS-VERDICT.md` for the current ready/not-ready verdict.
 The state after the "build everything left + full first-contact→finale pass" push. Branch
 `feat/build-everything-2026-07-01`, all committed, **every surface green** under the one-button root
 audit: story/data, showrunner runtime checks, dashboard selftests/build, plugin source/jar, operator docs,

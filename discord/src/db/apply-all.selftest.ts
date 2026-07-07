@@ -18,6 +18,7 @@ const expected = [
   'discord/supabase/migrations/0009_observations.sql',
   'discord/supabase/migrations/0010_answer_attempts_web_rate_limit.sql',
   'discord/supabase/migrations/0011_showrunner_lock.sql',
+  'discord/supabase/migrations/0012_world_paste_ledger.sql',
   'dashboard/supabase/migrations/0004_v_record.sql',
   'dashboard/supabase/migrations/0005_reconcile_tracker_views.sql',
   'dashboard/supabase/migrations/0006_v_record_theories.sql',
@@ -60,6 +61,8 @@ for (const key of [
   '0009_observations.sql',
   '0010_answer_attempts_web_rate_limit.sql',
   '0011_showrunner_lock.sql',
+  '0012_world_paste_ledger.sql',
+  'world_paste_ledger',
   '0009_beat_queue_failed_status.sql',
 ]) {
   if (!sql.includes(key)) {
