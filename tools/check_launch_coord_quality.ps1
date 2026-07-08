@@ -82,11 +82,25 @@ $launchSites = [string[]]([regex]::Matches($launchMatch.Groups["body"].Value, '"
   $_.Groups[1].Value
 })
 
+$laneMatches = [regex]::Matches(
+  $commandSource,
+  'new\s+PlacementLane\(\s*"(?<id>[^"]+)"\s*,\s*"(?<label>[^"]+)"\s*,\s*new\s+String\[\]\s*\{(?<body>.*?)\}\s*\)',
+  [System.Text.RegularExpressions.RegexOptions]::Singleline
+)
+$siteLane = @{}
+foreach ($m in $laneMatches) {
+  $laneId = $m.Groups["id"].Value
+  foreach ($siteId in [regex]::Matches($m.Groups["body"].Value, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value }) {
+    $siteLane[$siteId] = $laneId
+  }
+}
+
 $rows = @(Import-Csv -LiteralPath $captureFull)
 $failures = [System.Collections.Generic.List[string]]::new()
 
 foreach ($column in @(
   "Order",
+  "Lane",
   "SiteId",
   "ChosenWorld",
   "X",
@@ -121,6 +135,9 @@ if ($failures.Count -eq 0) {
     }
     if ($launchSites -notcontains $id) {
       Fail "coords-capture.csv includes non-launch site '$id'"
+    }
+    if ($siteLane.ContainsKey($id) -and (Clean $row.Lane) -ne $siteLane[$id]) {
+      Fail "site '$id' has lane '$($row.Lane)', expected '$($siteLane[$id])'"
     }
   }
   foreach ($id in $launchSites) {

@@ -94,6 +94,31 @@ $majorLaunchSites = @(
   "stone_brann",
   "stone_iss",
   "stone_of_reckoning",
+  "vaun_hoard_chest",
+  "vaun_bookshelf",
+  "mara_lectern_1",
+  "mara_lectern_2",
+  "mara_lectern_3",
+  "mara_lectern_4",
+  "mara_lectern_5",
+  "mara_map_marker",
+  "sella_pool",
+  "sella_anchor",
+  "orin_marker_1",
+  "orin_marker_2",
+  "orin_marker_3",
+  "orin_marker_4",
+  "orin_marker_5",
+  "orin_marker_6",
+  "orin_frame_dial_1",
+  "orin_frame_dial_2",
+  "orin_frame_dial_3",
+  "orin_frame_dial_4",
+  "orin_frame_dial_5",
+  "orin_frame_dial_6",
+  "brann_toll_tower",
+  "brann_corridor_start",
+  "brann_corridor_end",
   "bow_marker_01",
   "offering_cairn_01",
   "kept_light_home_01",
@@ -139,12 +164,68 @@ if (-not $placementBriefMatch.Success) {
 }
 $placementBriefBody = if ($placementBriefMatch.Success) { $placementBriefMatch.Groups["body"].Value } else { "" }
 
+$placementLaneMatches = [regex]::Matches(
+  $commandSource,
+  'new\s+PlacementLane\(\s*"(?<id>[^"]+)"\s*,\s*"(?<label>[^"]+)"\s*,\s*new\s+String\[\]\s*\{(?<body>.*?)\}\s*\)',
+  [System.Text.RegularExpressions.RegexOptions]::Singleline
+)
+if ($placementLaneMatches.Count -eq 0) {
+  Fail "ObservanceCommand.java must define PLACEMENT_LANES for lane-based setup"
+}
+$laneSites = [System.Collections.Generic.List[string]]::new()
+$laneIds = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($m in $placementLaneMatches) {
+  [void]$laneIds.Add($m.Groups["id"].Value)
+  foreach ($siteId in ([regex]::Matches($m.Groups["body"].Value, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value })) {
+    $laneSites.Add($siteId) | Out-Null
+  }
+}
+foreach ($requiredLane in @("prologue", "keepers", "customs", "human", "deep", "dread", "dimensions")) {
+  if (-not $laneIds.Contains($requiredLane)) {
+    Fail "PLACEMENT_LANES missing required setup lane '$requiredLane'"
+  }
+}
+foreach ($id in $majorLaunchSites) {
+  if (-not ($laneSites -contains $id)) {
+    Fail "launch-required site '$id' is not assigned to a PLACEMENT_LANES setup lane"
+  }
+}
+foreach ($id in $laneSites) {
+  if (-not ($majorLaunchSites -contains $id)) {
+    Fail "PLACEMENT_LANES contains non-launch site '$id'"
+  }
+  if (@($laneSites | Where-Object { $_ -eq $id }).Count -gt 1) {
+    Fail "PLACEMENT_LANES assigns site '$id' more than once"
+  }
+}
+
+$keeperSpineSlice = SourceSlice $commandSource "private static final String[][] KEEPER_SPINE" "private static final String[] PLACEWORLD_SURVEY_FIXTURES"
+$keeperSpineSiteIds = @([regex]::Matches($keeperSpineSlice, '\{\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value })
+$surveyFixtureSlice = SourceSlice $commandSource "private static final String[] PLACEWORLD_SURVEY_FIXTURES" "private static final String[] LAUNCH_REQUIRED_SITES"
+$surveyFixtureSiteIds = @([regex]::Matches($surveyFixtureSlice, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value })
+if ($keeperSpineSiteIds.Count -eq 0) {
+  Fail "ObservanceCommand.java KEEPER_SPINE could not be audited for placeworld stamp coverage"
+}
+if ($surveyFixtureSiteIds.Count -eq 0) {
+  Fail "ObservanceCommand.java PLACEWORLD_SURVEY_FIXTURES could not be audited for placeworld stamp coverage"
+}
+foreach ($id in $majorLaunchSites) {
+  if (-not (($keeperSpineSiteIds -contains $id) -or ($surveyFixtureSiteIds -contains $id))) {
+    Fail "launch-required site '$id' has no /obs placeworld stamp path (missing from KEEPER_SPINE and PLACEWORLD_SURVEY_FIXTURES)"
+  }
+}
+
 $expectedTypes = @{
   first_report_lectern_01 = "report_lectern"
   bow_marker_01 = "bow_marker"
   offering_cairn_01 = "offering_cairn"
   kept_light_home_01 = "kept_light"
+  vaun_hoard_chest = "vaun_hoard_chest"
+  vaun_bookshelf = "vaun_bookshelf"
   the_far_water = "far_water"
+  mara_map_marker = "mara_map_marker"
+  sella_pool = "sella_pool"
+  sella_anchor = "sella_anchor"
   school_stand = "school_stand"
   markers_row = "markers_row"
   cistern_7 = "cistern_7"
@@ -172,6 +253,18 @@ $expectedTypes = @{
 
 foreach ($keeper in @("stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss")) {
   $expectedTypes[$keeper] = "keeper_stone"
+}
+foreach ($lectern in @("mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5")) {
+  $expectedTypes[$lectern] = "mara_lectern"
+}
+foreach ($marker in @("orin_marker_1", "orin_marker_2", "orin_marker_3", "orin_marker_4", "orin_marker_5", "orin_marker_6")) {
+  $expectedTypes[$marker] = "orin_marker"
+}
+foreach ($dial in @("orin_frame_dial_1", "orin_frame_dial_2", "orin_frame_dial_3", "orin_frame_dial_4", "orin_frame_dial_5", "orin_frame_dial_6")) {
+  $expectedTypes[$dial] = "orin_frame_dial"
+}
+foreach ($brann in @("brann_toll_tower", "brann_corridor_start", "brann_corridor_end")) {
+  $expectedTypes[$brann] = $brann
 }
 foreach ($dread in @("dread_route_start", "dread_route_elsewhere", "dread_route_figure", "dread_route_exit")) {
   $expectedTypes[$dread] = "dread_route"

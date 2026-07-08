@@ -116,7 +116,7 @@ update public.puzzles
 --      threshold_open    ← m4-three-hands
 --      true_coord_known  ← threshold-coordinate
 --      seventh_named     ← seventh-unwriting
---      seventh_suspected ← stone-sella / seventh-shrine (the deep's pre-req)
+--      seventh_suspected ← sella-reflection-bearing / seventh-shrine (the deep's pre-req)
 --
 --    Authored as a guarded block so it cleanly no-ops if 0006 (the column) has not landed.
 -- ===========================================================================
@@ -159,7 +159,17 @@ begin
       where puzzle_key in ('m2-rhyme', 'difficulty-mara');
     update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
       where puzzle_key = 'name-where';
-    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
+    -- Optional external archive: never surface the Drive/spectrogram trail until
+    -- the real artifact exists and the operator explicitly marks it ready.
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_01_ready', true, 'record_received', true)
+      where puzzle_key = 'media-prior-base';
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_02_ready', true, 'seventh_suspected', true)
+      where puzzle_key = 'media-far-water';
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_03_ready', true, 'site_seen_watch_floor', true)
+      where puzzle_key = 'media-black-moon-toll';
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_04_ready', true, 'seventh_named', true)
+      where puzzle_key = 'media-release-room';
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true, 'recovered_archive_ready', true)
       where puzzle_key = 'spine-recovered-archive';
     update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true)
       where puzzle_key in ('undercroft-fog', 'fork-light', 'pressure-glyph-walk');
@@ -167,16 +177,40 @@ begin
       where puzzle_key in ('orin-threshold', 'orin-bow-fall-order');
     update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
       where puzzle_key in ('atonement-refrain', 'fork-name', 'haunting-biography');
-    -- The Accepting rite now needs recovered evidence from the Unlit, not just
-    -- the on-ramp flag. These four houses can be found in any order and are
-    -- deliberately fewer than the full eight-house archive so the pillar is
-    -- required without becoming a brittle checklist.
+    -- The Accepting rite now needs the six keeper theories, recovered evidence from
+    -- the whole Unlit mirror village, and the human-history side-proof web. This
+    -- makes the main route depend on corroborating evidence: a single decoded keeper
+    -- stone is not enough, and the ordinary ruined places cannot remain optional scenery.
     update public.puzzles set requires_flags = jsonb_build_object(
       'accepting_onramp_open', true,
+      'vaun_theory', true,
+      'mara_theory', true,
+      'sella_theory', true,
+      'orin_theory', true,
+      'brann_theory', true,
+      'iss_theory', true,
       'unlit_seen_lamp', true,
+      'unlit_seen_cairn', true,
+      'unlit_seen_coop', true,
       'unlit_seen_well', true,
       'unlit_seen_watch', true,
-      'unlit_seen_base', true
+      'unlit_seen_warm', true,
+      'unlit_seen_threshold', true,
+      'unlit_seen_base', true,
+      'site_seen_school_stand', true,
+      'site_seen_markers_row', true,
+      'site_seen_cistern_7', true,
+      'site_seen_watch_floor', true,
+      'site_seen_set_apart_shelf', true,
+      'site_seen_undercroft_seal', true,
+      'site_seen_forgotten_mouth', true,
+      'site_seen_deep_market', true,
+      'site_seen_ration_table', true,
+      'site_seen_third_bay_breach', true,
+      'site_seen_warm_town_collapse', true,
+      'site_seen_deep_bird_coops', true,
+      'npc_wenna_crust_done', true,
+      'npc_coll_lamp_done', true
     )
       where puzzle_key = 'rite-tokens';
     update public.puzzles set requires_flags = jsonb_build_object('tokens_laid', true)
@@ -194,19 +228,10 @@ begin
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true, 'bowed_as_one', true)
       where puzzle_key = 'seventh-name';
 
-    -- P1-C3 COLLISION FIX (audit): the phrase `the last marker is not the last` is an accepted
-    -- answer on BOTH stone-sella (ungated active=true) and seventh-shrine. Both were open at once,
-    -- so the resolver always resolved stone-sella (first UNSOLVED in DB order) and seventh-shrine's
-    -- second payoff for that string never surfaced. GATE seventh-shrine on seventh_suspected — the
-    -- flag stone-sella''s next-clue SETS — so the two are never open simultaneously (the exact
-    -- bound-word/iss_caught sequencing the audit blesses). Order preserved: before Sella is solved,
-    -- seventh_suspected is false → seventh-shrine is closed → the phrase resolves to stone-sella (its
-    -- intended first payoff); after Sella is solved, stone-sella is solved (the resolver prefers the
-    -- unsolved candidate) AND seventh_suspected is true → the phrase resolves to seventh-shrine (its
-    -- intended second payoff). No accepted-answer string changes; no lore/clue doc changes. This is
-    -- consistent with the established contract — seventh-unwriting/seventh-cause (the shrine''s deeper
-    -- chambers) already require seventh_suspected, so Sella-first is the canonical Seventh-thread order.
-    -- seventh-shrine stays active=true (its active flag is untouched; requires_flags is the AND-gate).
+    -- Sella-first order: the Seventh shrine stays closed until the live Sella reflection-bearing
+    -- evidence sets seventh_suspected. This keeps the shrine from surfacing before the group has a
+    -- real in-world reason to count past six, and preserves the old collision fix now that
+    -- stone-sella's Atbash row is permanently retired.
     update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
       where puzzle_key = 'seventh-shrine';
 
@@ -285,9 +310,9 @@ end $$;
 --      m4-three-hands            → bound_word_known                    (bound-word)
 --      threshold-coordinate      → threshold_open                      (m4-three-hands)
 --      true-walk-arrive          → true_coord_known                    (threshold-coordinate)
---      seventh-shrine            → seventh_suspected                   (stone-sella)     [P1-C3 collision gate; ungated upstream, stays active=true]
---      seventh-unwriting         → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
---      seventh-cause             → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
+--      seventh-shrine            → seventh_suspected                   (sella-reflection-bearing)
+--      seventh-unwriting         → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ sella-reflection-bearing)
+--      seventh-cause             → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ sella-reflection-bearing)
 --      seventh-choice            → seventh_named                       (seventh-unwriting)
 --
 --    INVARIANT (seedcheck NEW): rite-tokens (active=true, the Accepting on-ramp) is reachable

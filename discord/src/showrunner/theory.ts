@@ -19,9 +19,11 @@
  * arc_state.flags, merged atomically by setArcFlags.
  *
  * DATA-DRIVEN THRESHOLDS. The cluster map is pure data (CLUSTERS below) so it is tunable without
- * touching the policy. `threshold` = "enough of the cluster solved to be a coherent theory." Each
- * evidence key was VERIFIED against the live puzzles_seed.sql / metapuzzle_seed.sql (all 22 keys are
- * real puzzle_key rows — no drift, no keys dropped).
+ * touching the policy. `threshold` = "enough of the cluster solved to be a coherent theory." For this
+ * veteran-facing route, threshold 3 means one stone is only suspicion, two pieces are still a lead, and
+ * a theory locks only when the group has handled a real cluster of story/evidence. Each evidence key
+ * was VERIFIED against the live puzzles_seed.sql / metapuzzle_seed.sql (all 21 keys are real puzzle_key
+ * rows — no drift, no keys dropped).
  */
 
 /** The six keepers a theory can be assembled about (fall-order; WEB-MASTER §6). */
@@ -39,16 +41,16 @@ export interface KeeperCluster {
 /**
  * The cluster map (pure data). Each keeper → their evidence puzzle_keys + a coherence threshold.
  * Every key here is a real `puzzle_key` in supabase/seeds/{puzzles,metapuzzle}_seed.sql (verified
- * against the live seed at build time — 22 keys, 0 drift). Threshold 2 = the stone plus at least one
- * corroborating solve, so a lone stone-decode is NOT yet a theory (the whole point: cluster > decode).
+ * against the live seed at build time — 21 keys, 0 drift). Threshold 3 = a fuller theory cluster, so a
+ * lone stone-decode or a single corroborating beat is NOT yet a theory (the whole point: web > decode).
  */
 export const CLUSTERS: readonly KeeperCluster[] = [
-  { keeper: 'vaun', evidence: ['stone-vaun', 'vaun-hoard-sorted', 'vaun-bookshelf-tally'], threshold: 2 },
-  { keeper: 'mara', evidence: ['stone-mara', 'mara-lectern-lock', 'mara-walk-the-map'], threshold: 2 },
-  { keeper: 'sella', evidence: ['stone-sella', 'sella-reflection-bearing', 'sella-overlay-lake', 'sella-shore-memorial'], threshold: 2 },
-  { keeper: 'orin', evidence: ['stone-orin', 'orin-bow-fall-order', 'orin-banner-heraldry', 'orin-frame-dials'], threshold: 2 },
-  { keeper: 'brann', evidence: ['stone-brann', 'stone-brann-cipher', 'brann-black-moon-toll', 'brann-silence-corridor'], threshold: 2 },
-  { keeper: 'iss', evidence: ['stone-iss-wall', 'iss-which-is-true', 'iss-nbt-falsified-entry', 'iss-bound-word-callback'], threshold: 2 },
+  { keeper: 'vaun', evidence: ['stone-vaun', 'vaun-hoard-sorted', 'vaun-bookshelf-tally'], threshold: 3 },
+  { keeper: 'mara', evidence: ['stone-mara', 'mara-lectern-lock', 'mara-walk-the-map'], threshold: 3 },
+  { keeper: 'sella', evidence: ['sella-reflection-bearing', 'sella-overlay-lake', 'sella-shore-memorial'], threshold: 3 },
+  { keeper: 'orin', evidence: ['stone-orin', 'orin-bow-fall-order', 'orin-banner-heraldry', 'orin-frame-dials'], threshold: 3 },
+  { keeper: 'brann', evidence: ['stone-brann', 'stone-brann-cipher', 'brann-black-moon-toll', 'brann-silence-corridor'], threshold: 3 },
+  { keeper: 'iss', evidence: ['stone-iss-wall', 'iss-which-is-true', 'iss-nbt-falsified-entry', 'iss-bound-word-callback'], threshold: 3 },
 ] as const;
 
 /** The arc_state.flags key that locks (idempotent high-water) once a keeper's theory is received. */

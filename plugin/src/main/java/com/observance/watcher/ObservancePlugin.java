@@ -98,6 +98,7 @@ public final class ObservancePlugin extends JavaPlugin {
     private InventoryScanner inventoryScanner;
     // --- surface townsfolk lane (kept so its tracked-quest proximity sweep can be scheduled) ---
     private com.observance.watcher.signal.listener.TownsfolkNpcListener townsfolkListener;
+    private com.observance.watcher.signal.listener.SiteDiscoveryListener siteDiscoveryListener;
 
     // --- OBSERVER TIER-0 (BUILD-PLAN §13): the behavior-only "it knows you" selector. Built from the
     //     config's tier0: block; consumed by the ComposureBeat. Rebuilt on reload. ---
@@ -489,6 +490,11 @@ public final class ObservancePlugin extends JavaPlugin {
                 townsfolk, signalTracker, rateLimiter, scheduler, safety, supabase, this::sites, this::issCaught);
         pm.registerEvents(townsfolkListener, this);
 
+        // Side-proof discovery lane. A player physically reaching a placed proof site writes the
+        // matching arc_state flag, which reveals its Recovery Archive card and feeds the finale web.
+        this.siteDiscoveryListener = new com.observance.watcher.signal.listener.SiteDiscoveryListener(
+                supabase, this::sites, scheduler, safety);
+
         // The Accepting — the TERMINAL group rite (MF-8). A synchronized group bow on the
         // accepting_floor site posts the opaque token to the same oracle (never typeable). Config-driven;
         // degrades to a no-op when disabled or the token is blank. Read live so a reload re-arms it.
@@ -752,6 +758,10 @@ public final class ObservancePlugin extends JavaPlugin {
         if (townsfolkListener != null) {
             scheduledTasks.add(scheduler.runTimerSafe("townsfolk.quest.completion", sampleTicks, sampleTicks,
                     () -> townsfolkListener.completionTick()));
+        }
+        if (siteDiscoveryListener != null) {
+            scheduledTasks.add(scheduler.runTimerSafe("site.discovery", sampleTicks, sampleTicks,
+                    () -> siteDiscoveryListener.tick()));
         }
 
         // Dossier/compliance/heatmap flush — network I/O so ASYNC. Cadence = the presence

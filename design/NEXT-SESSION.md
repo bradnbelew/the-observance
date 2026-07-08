@@ -11,7 +11,7 @@
 > from an earlier repo-only pass. The current launch verdict is **not launch-ready** until
 > `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`
 > passes and the live Paper server/client attestations in `design/RUNBOOK.md` are completed. Known blockers
-> include the hosted resource-pack URL/SHA1, 42 launch-required placeholder site coordinates, coordinate
+> include the hosted resource-pack URL/SHA1, 67 launch-required placeholder site coordinates, coordinate
 > proof capture, completed live rehearsal packet, and in-client verification of books/signs/lore/runes/sounds.
 > Use `design/CURRENT-READINESS-VERDICT.md` for the current verdict and `design/MANUAL-LAUNCH-PLAN.md` as
 > the ordered handoff for closing those blockers.
@@ -99,7 +99,7 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
 - **C — OPS (Ethan; required to run):** regenerate and apply `discord/supabase/apply-all.sql`;
   host the resourcepack + set `config.yml` url/sha1
   (**the rune font ships there — the rosetta cribs need it**); `placeworld` the sites incl. the new
-  `coop_plate` + the Nether/End lane spots; replace all 42 launch-required placeholder site coordinates;
+  `coop_plate` + the Nether/End lane spots; replace all 67 launch-required placeholder site coordinates;
   fill and validate the coordinate proof CSV; complete the live rehearsal packet; stage the cold open
   (`/observance placeprologue`); rotate creds.
 - **B — MEDIA (Ethan; optional enrichment):** the found-footage clip + recovered Drive folder + a

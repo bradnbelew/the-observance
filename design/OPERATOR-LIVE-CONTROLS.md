@@ -15,6 +15,16 @@ or code reference proves otherwise.
 
 ## Required Launch Controls
 
+Fast path before touching live controls:
+
+- run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/prepare_friend_launch.ps1`
+- after hosting `observance-resourcepack.zip`, rerun it with `-ResourcePackUrl <hosted-https-zip-url>`
+- use the printed placement packet, rehearsal packet, deploy manifest, `friend-launch-quickstart.md`,
+  `launch-blockers.md`, `manual-media-checklist.md`, `supabase-apply-card.md`, `live-server-command-sheet.md`, and
+  `friend-launch-todo.md` as the current setup handoff; the quickstart includes the Supabase SQL SHA1 for
+  the exact `apply-all.sql` bundle, and `launch-attestations.md` must record the matching Applied SQL SHA1
+  after the live apply
+
 ### Resource Pack
 
 File: `plugin/src/main/resources/config.yml`
@@ -33,6 +43,8 @@ Launch rule:
 - host `observance-resourcepack.zip`
 - run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/set_resource_pack_config.ps1 -Url <hosted-https-zip-url>`
   to set `resource-pack.url` and the current zip SHA1 together
+- run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_hosted_resource_pack.ps1`
+  to prove the hosted bytes match the configured SHA1
 - compare the hosted zip and uploaded plugin against `observance-deploy-manifest.json`; it is refreshed by
   the launch bundle command, `tools/package_assets.ps1`, and `tools/package_plugin.ps1`
 - keep `resource-pack.prompt` non-empty and plain; it should name the alphabet and voice/sound without operator narration

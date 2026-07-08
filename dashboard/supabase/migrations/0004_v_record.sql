@@ -43,12 +43,14 @@ select
   least(greatest(coalesce((select current_act from public.arc_state where id = 1), 1), 1), 5)::int
     as movement,
 
-  -- how many of the six keeper-stones have been read (solved). A bare count over solves, filtered to
-  -- the six canonical keeper-stone keys — no key, answer, label, or player leaves the view.
+  -- how many of the six keeper evidence clusters have their first keeper read solved. A bare count
+  -- over solves, filtered to the current six canonical keeper keys — no key, answer, label, or
+  -- player leaves the view. Sella's retired Atbash row is intentionally not counted; her live read is
+  -- the water/reflection bearing.
   (select count(distinct s.puzzle_key)
      from public.solves s
     where s.puzzle_key in (
-      'stone-vaun', 'stone-mara', 'stone-sella',
+      'stone-vaun', 'stone-mara', 'sella-reflection-bearing',
       'stone-orin', 'stone-brann', 'stone-iss-wall'
     ))::int
     as stones_read,

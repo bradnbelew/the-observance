@@ -55,7 +55,7 @@ commands:
       /observance site set <siteId> - bind your current block as any configured story, puzzle, NPC, or keeper site
       /observance placeworld - survey/place every configured site that isn't placed yet
       /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
-      /observance placeregion [spacing] - stamp the starter spine (rosetta + six keeper stones) here
+      /observance placeregion [spacing] - stamp the starter spine (rosetta + keeper evidence sites) here
       /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
       /observance placelecterns [spacing] - stamp the five Mara page-lock lecterns here with books already loaded
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs

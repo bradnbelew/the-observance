@@ -1377,12 +1377,14 @@ select
   least(greatest(coalesce((select current_act from public.arc_state where id = 1), 1), 1), 5)::int
     as movement,
 
-  -- how many of the six keeper-stones have been read (solved). A bare count over solves, filtered to
-  -- the six canonical keeper-stone keys — no key, answer, label, or player leaves the view.
+  -- how many of the six keeper evidence clusters have their first keeper read solved. A bare count
+  -- over solves, filtered to the current six canonical keeper keys — no key, answer, label, or
+  -- player leaves the view. Sella's retired Atbash row is intentionally not counted; her live read is
+  -- the water/reflection bearing.
   (select count(distinct s.puzzle_key)
      from public.solves s
     where s.puzzle_key in (
-      'stone-vaun', 'stone-mara', 'stone-sella',
+      'stone-vaun', 'stone-mara', 'sella-reflection-bearing',
       'stone-orin', 'stone-brann', 'stone-iss-wall'
     ))::int
     as stones_read,
@@ -1592,12 +1594,13 @@ select
   least(greatest(coalesce((select current_act from public.arc_state where id = 1), 1), 1), 5)::int
     as movement,
 
-  -- how many of the six keeper-stones have been read (solved) — the bare count (unchanged from 0004).
-  -- Retained as the progressive fallback the projection uses before any theory has locked.
+  -- how many of the six keeper evidence clusters have their first keeper read solved — the bare count
+  -- (unchanged from 0004 except Sella's retired Atbash row is not counted). Retained as the progressive
+  -- fallback the projection uses before any theory has locked.
   (select count(distinct s.puzzle_key)
      from public.solves s
     where s.puzzle_key in (
-      'stone-vaun', 'stone-mara', 'stone-sella',
+      'stone-vaun', 'stone-mara', 'sella-reflection-bearing',
       'stone-orin', 'stone-brann', 'stone-iss-wall'
     ))::int
     as stones_read,
@@ -3378,7 +3381,7 @@ values
     'next_puzzle_key', 'stone-orin',
     'set_flags', jsonb_build_object('orin_key_found', true)
   ),
-  'phrase', 2, true, null ),
+  'phrase', 2, true, 8 ),
 
 -- orin-frame-dials (§5.3) — six item-frame rotation dials pointed to match the markers'
 -- fall-order facings (a physical combination lock). answer_kind 'code'; opaque token on
@@ -3533,23 +3536,106 @@ values
 -- 8. CROSS-KEEPER / SPINE (external / co-op vault / Observer / meta-acrostic)
 -- ───────────────────────────────────────────────────────────────────────────
 
--- spine-recovered-archive (§8.1) — a carved string resolves to an unlisted Drive folder;
--- an image inside hides a name in its audio spectrogram. answer_kind 'phrase': the hidden
--- spectrogram name. lore + a Whisper-budget grant. Typed. OPTIONAL external surface — the
--- spine never depends on it (INV-12). No site (external → web).
-( 'spine-recovered-archive',
-  'the salvaged archive',
+-- media-prior-base (§8.media.1) — found-footage clip 1. Frame-scrub payload: hotbar/book
+-- evidence and a one-frame route/file token combine to ASH-13. OPTIONAL external surface:
+-- no main-spine row depends on this; it is hidden until media_clip_01_ready + record_received.
+( 'media-prior-base',
+  'prior base recovery',
   array[
-    'the name the spectrogram keeps',
-    'the recovered name in the waveform',
-    'the seventh adjacent name off the record'
+    'ash 13',
+    'ash thirteen',
+    'kept elsewhere ash 13',
+    'base check ash 13'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'oracleLore',
-    'set_flags', jsonb_build_object('recovered_archive_read', true, 'whisper_budget_earned', true),
+    'set_flags', jsonb_build_object('media_prior_base_read', true),
     'voice_args', jsonb_build_object(
-      'fragment', 'what was recovered is kept off the record. the image is a waveform. read it as a spectrogram and it holds a name the record would not.'
+      'fragment', 'the recovered base clip did not point to a shrine. it gave a file token: ash thirteen. the record was already copying the room before the room knew it was copied.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- media-far-water (§8.media.2) — found-footage clip 2. The water/map frame gives a
+-- place-bearing phrase, not only a count: WHERE THE REEDS FOLD BACK. Optional Sella
+-- side-proof reinforcement; hidden until media_clip_02_ready + seventh_suspected.
+( 'media-far-water',
+  'shore copy recovery',
+  array[
+    'where the reeds fold back',
+    'the reeds fold back',
+    'reeds fold back'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('media_far_water_read', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'the shore copy is not another sad count. it gives a place: where the reeds fold back. go there only after the water has already taught you how to read its returns.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- media-black-moon-toll (§8.media.3) — found-footage clip 3. The nine-lamp/toll rhythm
+-- confirms the Brann verb: STAY AWAKE / DO NOT CLOSE YOUR EYES. Optional timing proof,
+-- not the only black-moon route; hidden until media_clip_03_ready + site_seen_watch_floor.
+( 'media-black-moon-toll',
+  'black moon recovery',
+  array[
+    'stay awake',
+    'awake',
+    'do not close your eyes',
+    'do not sleep on the black moon'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('media_black_moon_read', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'the ninth toll is not decoration. it tells the watch rule plainly enough to survive a bad night: stay awake. do not close your eyes.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- media-release-room (§8.media.4) — late found-footage clip 4. It carries a physical
+-- approach checksum for the release room after the name is already earned: SIX RETURN,
+-- ONE IS NOT KEPT. Optional late confirmation; hidden until media_clip_04_ready + seventh_named.
+( 'media-release-room',
+  'release room recovery',
+  array[
+    'six return one is not kept',
+    'six return and one is not kept',
+    'six return one not kept'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('media_release_room_read', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'the late room clip is a checksum, not a spoiler. six return. one is not kept. approach the place as a room, not a password.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- spine-recovered-archive (§8.1) — a carved string resolves to an unlisted Drive folder;
+-- an image/audio file inside hides I WAS NOT KEPT in its spectrogram. answer_kind
+-- 'phrase': the exact hidden phrase. lore + a Whisper-budget grant. Typed. OPTIONAL
+-- external surface — the spine never depends on it (INV-12). No site (external → web).
+( 'spine-recovered-archive',
+  'the salvaged archive',
+  array[
+    'i was not kept',
+    'was not kept',
+    'the spectrogram says i was not kept',
+    'the waveform says i was not kept'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('recovered_archive_read', true, 'media_spectrogram_read', true, 'whisper_budget_earned', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'what was recovered is kept off the record. the sound image is not a picture. read it as a spectrogram and the hidden line says what the record refused to keep: i was not kept.'
     )
   ),
   'phrase', 3, true, null ),
@@ -3891,39 +3977,43 @@ commit;
 -- FILE: discord/supabase/seeds/thread_cards.sql
 -- ============================================================
 
--- The Observance — THREAD_CARDS SEED (the Recovery Archive — design/content/thread-archive.md
--- + the four gather-event cards — design/content/gather-events.md §6, realized in the 0005 schema)
+-- The Observance â€” THREAD_CARDS SEED (the Recovery Archive â€” design/content/thread-archive.md
+-- + the four gather-event cards â€” design/content/gather-events.md Â§6, realized in the 0005 schema)
 -- discord/supabase/seeds/thread_cards.sql
 --
--- 45 place-anchored CARDS that cluster under the five reconstruction threads
--- (who / place / happened / surface / human). 40 come from the Recovery Archive
--- (thread-archive.md) and 5 from the group gather-events (gather-events.md §6).
--- Each card is one FIND in the world — a torn record, a journal leaf, a carved stone,
--- a thing seen on a summons night — its in-character body fetched at render time by
+-- 70 place-anchored CARDS that cluster under the five reconstruction threads
+-- (who / place / happened / surface / human). The set includes Recovery Archive
+-- field cards, group gather-event cards, companion/reckoning cards, Unlit mirror
+-- cards, and site-discovery side-proof cards.
+-- Each card is one FIND in the world â€” a torn record, a journal leaf, a carved stone,
+-- a thing seen on a summons night â€” its in-character body fetched at render time by
 -- body_voice_key from voice.archive.ts (never stored as English in the row; INV-1).
 --
--- Column contract (0005_threads.sql §2 public.thread_cards):
+-- Column contract (0005_threads.sql Â§2 public.thread_cards):
 --   card_key, thread_key, title, body_voice_key, anchor_site_id, card_kind,
 --   references_card_key text[], revealed_by_solve, alt_text_condition, sort_order.
 --
 -- INVARIANTS HELD (asserted against the live files at author time):
---   * every thread_key ∈ public.threads {who,place,happened,surface,human} (FK, 0005 §1).
+--   * every thread_key âˆˆ public.threads {who,place,happened,surface,human} (FK, 0005 Â§1).
 --   * every anchor_site_id is an ENABLED site in plugin/.../sites.yml (free-text in 0005,
 --     but kept real so a beat can target it): stone_of_reckoning, stone_vaun, stone_mara,
 --     stone_orin, stone_brann, stone_iss, the_far_water, school_stand, markers_row, cistern_7,
---     watch_floor, set_apart_shelf, undercroft_seal, forgotten_mouth, the_threshold, rune_rosetta,
---     unbroken_light, offering_cairn_01, the_cold_hearth, kept_light_home_01,
+--     watch_floor, set_apart_shelf, undercroft_seal, forgotten_mouth, deep_market, ration_table,
+--     third_bay_breach, warm_town_collapse, deep_bird_coops, the_threshold, rune_rosetta,
+--     unlit_entry, unlit_house_base, unlit_house_lamp, unlit_house_cairn, unlit_house_coop,
+--     unlit_house_well, unlit_house_watch, unlit_house_warm, unlit_house_threshold,
+--     unbroken_light, offering_cairn_01, coop_plate, the_cold_hearth, kept_light_home_01,
 --     first_report_lectern_01. (Disabled keeper_stone_01/02 are NOT used.)
 --   * every revealed_by_solve is a real puzzle_key in puzzles_seed.sql; NULL where the
 --     card is found-on-descent / read-on-the-surface / event-revealed (not solve-gated).
 --   * every references_card_key entry resolves to a card_key seeded in THIS file.
---   * card_kind ∈ {rumor,explore,verified,contradicted} (0005 CHECK). The five gather
+--   * card_kind âˆˆ {rumor,explore,verified,contradicted} (0005 CHECK). The five gather
 --     cards are 'verified' (written by the director when the gather flag flips).
 --
--- IDEMPOTENT: ON CONFLICT (card_key) DO NOTHING — re-running is safe; this file is the
+-- IDEMPOTENT: ON CONFLICT (card_key) DO NOTHING â€” re-running is safe; this file is the
 -- canonical authored content and does not overwrite live per-row edits.
 --
--- Run AFTER 0005_threads.sql, as service_role (RLS bypass — spoiler table).
+-- Run AFTER 0005_threads.sql, as service_role (RLS bypass â€” spoiler table).
 
 begin;
 
@@ -3933,11 +4023,11 @@ insert into public.thread_cards
 values
 
   -- ========================================================================
-  -- THREAD: who — who they were  (amber)
+  -- THREAD: who â€” who they were  (amber)
   -- ========================================================================
   ( 'who-deep-market', 'who', 'the deep market', 'cardWhoDeepMarket',
     'deep_market', 'explore',
-    '{}', 'undercroft-descent', null, 10 ),
+    '{}', null, 'flag:site_seen_deep_market', 10 ),
 
   ( 'who-vaun-counted', 'who', 'the founder who counted', 'cardWhoVaunCounted',
     'stone_vaun', 'explore',
@@ -3947,7 +4037,7 @@ values
     'stone_mara', 'explore',
     array['who-vaun-counted','who-sella-token'], 'stone-mara', null, 30 ),
 
-  -- Mara's second clue (W9 completeness): the rite she annotated but never walked — revealed when the
+  -- Mara's second clue (W9 completeness): the rite she annotated but never walked â€” revealed when the
   -- group WALKS it (mara-walk-the-map), which also gives that expansion puzzle its archive payoff. Gives
   -- Mara the >=3-clue web the design bar asks for (who-mara-read + this + the marker she read).
   ( 'happened-mara-unwalked', 'happened', 'the rite she read but never walked', 'cardHappenedMaraUnwalked',
@@ -3956,7 +4046,7 @@ values
 
   ( 'who-sella-token', 'who', 'the under-warden', 'cardWhoSellaToken',
     'the_far_water', 'explore',
-    array['who-mara-read','surface-seventh-marker'], 'stone-sella', null, 40 ),
+    array['who-mara-read','surface-seventh-marker'], 'sella-reflection-bearing', null, 40 ),
 
   ( 'who-orin-mason', 'who', 'the mason who would not bow', 'cardWhoOrinMason',
     'stone_orin', 'explore',
@@ -3971,7 +4061,7 @@ values
     array['happened-the-doubt','surface-iss-was-right'], 'stone-iss-wall', null, 70 ),
 
   -- ========================================================================
-  -- THREAD: place — what this place was  (green)
+  -- THREAD: place â€” what this place was  (green)
   -- ========================================================================
   ( 'place-came-down', 'place', 'we came down', 'cardPlaceCameDown',
     'the_threshold', 'explore',
@@ -3987,15 +4077,19 @@ values
 
   ( 'place-cistern-seven', 'place', 'cistern seven', 'voice.dest.cistern.find',
     'cistern_7', 'verified',
-    array['place-deeper-wrong','happened-going-out'], null, null, 35 ),
+    array['place-deeper-wrong','happened-going-out'], null, 'flag:site_seen_cistern_7', 35 ),
 
   ( 'place-deep-line', 'place', 'the deep line', 'cardPlaceDeepLine',
     'third_bay_breach', 'explore',
-    array['happened-the-break','surface-iss-was-right'], 'stone-iss-wall', null, 40 ),
+    array['happened-the-break','surface-iss-was-right'], null, 'flag:site_seen_third_bay_breach', 40 ),
 
   ( 'place-way-up', 'place', 'the way up', 'voice.dest.wayUp.find',
     'forgotten_mouth', 'verified',
-    array['surface-iss-was-right','place-deep-line'], null, null, 45 ),
+    array['surface-iss-was-right','place-deep-line'], null, 'flag:site_seen_forgotten_mouth', 45 ),
+
+  ( 'place-warm-town-collapse', 'place', 'the warm town does not stand', 'voice.dest.warmTown.find',
+    'warm_town_collapse', 'contradicted',
+    array['surface-aro-lie','place-deep-line','human-ration-redivided'], null, 'flag:site_seen_warm_town_collapse', 47 ),
 
   ( 'place-cairn', 'place', 'the offering-cairn', 'cardPlaceCairn',
     'offering_cairn_01', 'explore',
@@ -4006,19 +4100,19 @@ values
     array['happened-orin-sealed','human-galleries-unruled'], 'undercroft-fog', null, 60 ),
 
   -- ========================================================================
-  -- THREAD: happened — what happened  (red)
+  -- THREAD: happened â€” what happened  (red)
   -- ========================================================================
   ( 'happened-the-doubt', 'happened', 'the doubt', 'cardHappenedTheDoubt',
     'stone_iss', 'explore',
     array['who-iss-friend','surface-iss-was-right'], 'stone-iss-wall', null, 10 ),
 
-  -- ← CONTRADICTED BY happened-no-wall (the warm lie the player is steered to trust)
+  -- â† CONTRADICTED BY happened-no-wall (the warm lie the player is steered to trust)
   ( 'happened-ways-are-wall', 'happened', 'the ways are a wall', 'cardHappenedWaysAreWall',
     'stone_iss', 'explore',
     array['happened-no-wall','surface-iss-was-right'], 'iss-warm', null, 20 ),
 
-  -- ← CONTRADICTS happened-ways-are-wall (the catch that overturns the doctrine)
-  -- THE ISS-SEAM: this catch also re-opens surface-seventh-marker (cited here) — overturning
+  -- â† CONTRADICTS happened-ways-are-wall (the catch that overturns the doctrine)
+  -- THE ISS-SEAM: this catch also re-opens surface-seventh-marker (cited here) â€” overturning
   -- the wall-lie overturns "cast out for nothing" (the-seventh-below.md REWRITE SPEC).
   ( 'happened-no-wall', 'happened', 'no wall was ever built here', 'cardHappenedNoWall',
     'stone_iss', 'explore',
@@ -4029,17 +4123,17 @@ values
     'stone_brann', 'explore',
     array['happened-break-accident','happened-break-betrayal','happened-break-mercy'], 'stone-brann', null, 40 ),
 
-  -- ← CONTRADICTS the other two Break accounts
+  -- â† CONTRADICTS the other two Break accounts
   ( 'happened-break-accident', 'happened', 'an accident', 'cardHappenedBreakAccident',
     'stone_brann', 'explore',
     array['happened-break-betrayal','happened-break-mercy'], 'stone-brann', null, 50 ),
 
-  -- ← CONTRADICTS the other two Break accounts (rumor: reached on the trusting route, then reframed)
+  -- â† CONTRADICTS the other two Break accounts (rumor: reached on the trusting route, then reframed)
   ( 'happened-break-betrayal', 'happened', 'a betrayal', 'cardHappenedBreakBetrayal',
     'the_cold_hearth', 'rumor',
     array['happened-break-accident','happened-break-mercy'], 'iss-warm', null, 60 ),
 
-  -- ← CONTRADICTS the other two Break accounts
+  -- â† CONTRADICTS the other two Break accounts
   ( 'happened-break-mercy', 'happened', 'a mercy', 'cardHappenedBreakMercy',
     'the_far_water', 'explore',
     array['happened-break-accident','happened-break-betrayal'], 'seventh-shrine', null, 70 ),
@@ -4050,30 +4144,30 @@ values
 
   ( 'happened-undercroft-seal', 'happened', 'sealed from the wrong side', 'voice.dest.undercroftSeal.find',
     'undercroft_seal', 'verified',
-    array['happened-orin-sealed','who-orin-mason'], null, null, 83 ),
+    array['happened-orin-sealed','who-orin-mason'], null, 'flag:site_seen_undercroft_seal', 83 ),
 
   ( 'happened-markers-row', 'happened', 'six stones and one hollow', 'voice.dest.markers.find',
     'markers_row', 'verified',
-    array['place-seven-ways','surface-seventh-marker'], null, null, 85 ),
+    array['place-seven-ways','surface-seventh-marker'], null, 'flag:site_seen_markers_row', 85 ),
 
   ( 'happened-going-out', 'happened', 'the going-out', 'cardHappenedGoingOut',
     'kept_light_home_01', 'explore',
     array['human-lamp-roll-counts-down','human-they-were-kept'], 'undercroft-fog', null, 90 ),
 
   -- ========================================================================
-  -- THREAD: surface — what is on the surface  (grey)
+  -- THREAD: surface â€” what is on the surface  (grey)
   -- ========================================================================
 
-  -- ← CONTRADICTED on arrival at place-deep-line (Aro's lie; flips rumor → contradicted)
-  ( 'surface-aro-lie', 'surface', 'step right over it', 'cardSurfaceAroLie',
+  -- â† CONTRADICTED on arrival at place-deep-line (Aro's lie; flips rumor â†’ contradicted)
+  ( 'surface-aro-lie', 'surface', 'the warm town story', 'cardSurfaceAroLie',
     'first_report_lectern_01', 'rumor',
     array['place-deep-line','surface-pell-truth'], 'm1-record-opens', null, 10 ),
 
-  ( 'surface-wenna-folk', 'surface', 'seven somethings', 'cardSurfaceWennaFolk',
+  ( 'surface-wenna-folk', 'surface', 'seven things', 'cardSurfaceWennaFolk',
     'first_report_lectern_01', 'rumor',
     array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 20 ),
 
-  ( 'surface-pell-truth', 'surface', 'it does not chase', 'cardSurfacePellTruth',
+  ( 'surface-pell-truth', 'surface', 'be watched', 'cardSurfacePellTruth',
     'first_report_lectern_01', 'explore',
     array['surface-watcher-counts','surface-aro-lie'], 'm1-named-habit', null, 30 ),
 
@@ -4089,9 +4183,9 @@ values
     'rune_rosetta', 'explore',
     array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 60 ),
 
-  -- ← CONTRADICTS the official "six markers" count (Sella's count against the record's)
+  -- â† CONTRADICTS the official "six markers" count (Sella's count against the record's)
   -- THE ISS-SEAM (the-seventh-below.md REWRITE SPEC "Iss-seam"): catching Iss's wall-lie
-  -- (the happened-no-wall solve) RE-OPENS this Seventh-marker card — the same lens that
+  -- (the happened-no-wall solve) RE-OPENS this Seventh-marker card â€” the same lens that
   -- overturns "the ways are a wall" overturns "cast out for nothing", wiring the solved
   -- catch into the Seventh's main quest. The edge is the added happened-no-wall citation +
   -- alt_text_condition 'reopened:no-wall-catch' (the re-surface trigger; the primary
@@ -4102,14 +4196,18 @@ values
 
   ( 'surface-watch-floor', 'surface', 'the watch-floor', 'voice.dest.watchFloor.find',
     'watch_floor', 'verified',
-    array['who-brann-watch','surface-watcher-counts'], null, null, 75 ),
+    array['who-brann-watch','surface-watcher-counts'], null, 'flag:site_seen_watch_floor', 75 ),
 
   ( 'surface-set-apart', 'surface', 'entry five', 'voice.dest.setApart.find',
     'set_apart_shelf', 'verified',
-    array['surface-watch-floor','who-brann-watch'], null, null, 78 ),
+    array['surface-watch-floor','who-brann-watch'], null, 'flag:site_seen_set_apart_shelf', 78 ),
+
+  ( 'surface-bird-coops', 'surface', 'empty coops', 'voice.dest.coops.find',
+    'deep_bird_coops', 'verified',
+    array['surface-wenna-folk','happened-birds-silent'], null, 'flag:site_seen_deep_bird_coops', 79 ),
 
   -- ========================================================================
-  -- THREAD: human — were they human?  (black)
+  -- THREAD: human â€” were they human?  (black)
   --   Never resolved by a single card; the thread answers only when the
   --   dehumanization cards are held beside the induction-twist cards.
   -- ========================================================================
@@ -4123,11 +4221,11 @@ values
 
   ( 'human-school-stand', 'human', 'a school-stand', 'voice.dest.school.find',
     'school_stand', 'verified',
-    array['human-lamp-roll-counts-down','surface-seventh-marker'], null, null, 25 ),
+    array['human-lamp-roll-counts-down','surface-seventh-marker'], null, 'flag:site_seen_school_stand', 25 ),
 
   ( 'human-ration-redivided', 'human', 'a head off the roll, still hungry', 'cardHumanRation',
     'ration_table', 'explore',
-    array['human-names-over-heads','who-deep-market'], 'undercroft-fog', null, 30 ),
+    array['human-names-over-heads','who-deep-market'], null, 'flag:site_seen_ration_table', 30 ),
 
   ( 'human-hand-as-lamp', 'human', 'entry five', 'cardHumanHandAsLamp',
     'kept_light_home_01', 'explore',
@@ -4150,9 +4248,9 @@ values
     array['human-names-over-heads','human-they-were-kept','surface-watcher-counts'], 'm1-record-opens', null, 80 ),
 
   -- ========================================================================
-  -- GATHER-EVENT CARDS — the five the four group summons-night events write
-  --   (gather-events.md §6). card_kind 'verified' (director-written when the
-  --   gather flag flips); event-revealed → revealed_by_solve null. Anchored to
+  -- GATHER-EVENT CARDS â€” the five the four group summons-night events write
+  --   (gather-events.md Â§6). card_kind 'verified' (director-written when the
+  --   gather flag flips); event-revealed â†’ revealed_by_solve null. Anchored to
   --   the Undercroft / Accepting floor (unbroken_light). alt_text_condition on
   --   the two human cards expands them AFTER the relevant ending state.
   -- ========================================================================
@@ -4177,24 +4275,24 @@ values
     '{}', null, 'bowed:as_one', 110 ),
 
   -- ========================================================================
-  -- WEB REALIZATION (WEB-MASTER / INTEGRATION-V2) — the four cards BUILD-MANIFEST §5
+  -- WEB REALIZATION (WEB-MASTER / INTEGRATION-V2) â€” the four cards BUILD-MANIFEST Â§5
   -- names (forged-eighth surface, three-hands, fate, record-url). Each body_voice_key
   -- is a cardXxx key the TS-VOICE / archive owner must define in voice.archive.ts (the
-  -- threadCardVoiceCoverageSelfTest build guard fails until they exist — see the RETURN).
-  -- anchor_site_id ∈ enabled sites.yml ids; references_card_key resolve in THIS file;
+  -- threadCardVoiceCoverageSelfTest build guard fails until they exist â€” see the RETURN).
+  -- anchor_site_id âˆˆ enabled sites.yml ids; references_card_key resolve in THIS file;
   -- revealed_by_solve is a real puzzle_key (NULL = not solve-gated).
   -- ========================================================================
 
   -- the forged eighth law, found as one more ordinance among the true seven (surface).
-  -- card_kind 'rumor' → flips to 'contradicted' at the M4 record correction. References
-  -- Aro's parrot-line card (surface-aro-lie) — the human who repeats the lie.
+  -- card_kind 'rumor' â†’ flips to 'contradicted' at the M4 record correction. References
+  -- Aro's parrot-line card (surface-aro-lie) â€” the human who repeats the lie.
   ( 'surface-eighth-forged', 'surface', 'the covering of the hands', 'cardSurfaceEighthForged',
     'stone_iss', 'rumor',
     array['surface-aro-lie','happened-no-wall'], 'forged-eighth', null, 80 ),
 
-  -- the lad (letters L08a/L08b) — the eighth's one human cost. He obeyed the covering all
+  -- the lad (letters L08a/L08b) â€” the eighth's one human cost. He obeyed the covering all
   -- winter, asked the one question that names the catch itself (a true way answers when
-  -- broken; a covering answers never), and is answered with silence — read, at the time, as
+  -- broken; a covering answers never), and is answered with silence â€” read, at the time, as
   -- the wall holding. Revealed post-catch (2026-07-05 audit): every other planted thread in
   -- the corpus has a traceable payoff card; this was the one exception, a fully-written
   -- figure whose fate had nowhere left to go. References the same forged board + the catch
@@ -4203,52 +4301,52 @@ values
     'stone_iss', 'explore',
     array['surface-eighth-forged','happened-no-wall'], 'no-wall-catch', null, 81 ),
 
-  -- the three-hands gate — the cold square Mara typed into the dark, read as the rite
+  -- the three-hands gate â€” the cold square Mara typed into the dark, read as the rite
   -- instruction at the catch (happened). Anchored at the Undercroft plate. Solve-gated on
   -- the gate clearing. References the catch + the bound word's home.
   ( 'happened-three-hands', 'happened', 'three hands held', 'cardHappenedThreeHands',
     'coop_plate', 'explore',
     array['happened-no-wall','place-deep-line'], 'm4-three-hands', null, 100 ),
 
-  -- the fate — the ending the floor shows (happened). 'verified', written when the rite
+  -- the fate â€” the ending the floor shows (happened). 'verified', written when the rite
   -- resolves; event-revealed (revealed_by_solve null). Anchored at the Accepting floor.
   -- Names no player (INV-11/16); the card is the neutral close the M5 composer emits.
   ( 'happened-the-fate', 'happened', 'what the floor showed', 'cardHappenedTheFate',
     'unbroken_light', 'verified',
     array['happened-no-wall','human-they-were-kept'], null, null, 120 ),
 
-  -- the record kept elsewhere — the off-world page (surface). 'explore' (verified when the
+  -- the record kept elsewhere â€” the off-world page (surface). 'explore' (verified when the
   -- group finds the path). References the founder archivists card. Solve-gated on record-url.
   ( 'surface-record-elsewhere', 'surface', 'the record is kept elsewhere', 'cardSurfaceRecordElsewhere',
     'first_report_lectern_01', 'explore',
     array['surface-watcher-counts','human-the-record-opens'], 'record-url', null, 90 ),
 
   -- ========================================================================
-  -- THE COMPANION — the found "kept close" tally (the-companion.md §6). Wren's ONE
+  -- THE COMPANION â€” the found "kept close" tally (the-companion.md Â§6). Wren's ONE
   -- authored artifact: an inventory of the group in his own hand, the proof no
-  -- accusation could be. It CANNOT be found during Trust (he carries it) — it
+  -- accusation could be. It CANNOT be found during Trust (he carries it) â€” it
   -- surfaces ONLY post-reveal, so it is NOT solve-gated (revealed_by_solve null) and
   -- carries alt_text_condition 'companion:revealed' (the reveal event, one group
-  -- flag, quorum-free — companion_revealed). It retroactively explains the Observer's
-  -- precision (the sharp quotes were harvested here, not magic; §6 design note), so
-  -- it clusters under 'human' (the fourth face of "kept" — kept-in-part, a person
+  -- flag, quorum-free â€” companion_revealed). It retroactively explains the Observer's
+  -- precision (the sharp quotes were harvested here, not magic; Â§6 design note), so
+  -- it clusters under 'human' (the fourth face of "kept" â€” kept-in-part, a person
   -- holding his edges together with other people's names). card_kind 'verified'
   -- (event-revealed at the reveal, like the gather cards). References the record-
-  -- knows-your-name card (surface-watcher-counts — the north-star it earns) + the
+  -- knows-your-name card (surface-watcher-counts â€” the north-star it earns) + the
   -- open-column card (human-the-record-opens). body_voice_key cardKeptClose is the
   -- Watcher-register archive body defined in voice.archive.ts. Anchored at the cold
-  -- hearth (the dead-shrine surface — where a warm liar's proof is dropped).
+  -- hearth (the dead-shrine surface â€” where a warm liar's proof is dropped).
   ( 'kept-close', 'human', 'kept close', 'cardKeptClose',
     'the_cold_hearth', 'verified',
     array['surface-watcher-counts','human-the-record-opens'], null, 'companion:revealed', 130 ),
 
-  -- ===== THE COUNT OF THE OPENINGS (W3c — six-were-kept-before-you.md) =====
+  -- ===== THE COUNT OF THE OPENINGS (W3c â€” six-were-kept-before-you.md) =====
   -- The 6-prior-groups slow-burn, surfaced as three human-thread cards that ACCRETE across late solves:
-  -- the count that will not come out even (Brann, the counter) → the six openings + the struck seventh
-  -- (post-catch, once the record is understood to keep people) → "you are the next" (when the Seventh is
+  -- the count that will not come out even (Brann, the counter) â†’ the six openings + the struck seventh
+  -- (post-catch, once the record is understood to keep people) â†’ "you are the next" (when the Seventh is
   -- named). Each rhymes into the human spine (the open column that fills, the surplus that is kept) and,
   -- via the struck seventh, cross-references Sella's uncounted seventh. Spoiler-safe: surface facts +
-  -- the induction frame the human thread already approaches — no fate, no key, no name, revealed only on
+  -- the induction frame the human thread already approaches â€” no fate, no key, no name, revealed only on
   -- earned late solves. Bodies are Watcher-register (voice.archive.ts cardHumanCount* / cardHumanYouAreNext).
   ( 'human-count-uneven', 'human', 'the surplus at the table', 'cardHumanCountUneven',
     'first_report_lectern_01', 'explore',
@@ -4307,15 +4405,15 @@ commit;
 -- The Observance — side_quests.sql
 -- The TRAVEL longevity layer (LONGEVITY.md §2 / design/content/travel-destinations.md): 18
 -- rumor→verify destinations out in the Hold/world, NONE at spawn, that pay lore/atmosphere/items/
--- time and GATE NOTHING. A pooling ARG group shares each rumor in a second but cannot pool the
+-- time and do not directly open the next node. A pooling ARG group shares each rumor in a second but cannot pool the
 -- 1–3k-block walk; that walk is the longevity. Launch rule: there is only one blunt false-lead
 -- walk in this set (Aro's warm-town lie). Any contradicted/hollow destination must still teach a
 -- rule, expose a character, or point forward; optional content spends player trust.
 --
 -- BREADTH INVARIANT (migration 0005): every row has gates_progress = false (satisfied by omission —
--- the column defaults false and carries a CHECK (gates_progress = false)). Removing all 18 must leave
--- the spine reconstruction intact. entry_puzzle_key is NULL for all 18: these are DISCOVERED BY TRAVEL,
--- not opened by a spine puzzle node — that is the whole point (they gate nothing and nothing gates them).
+-- the column defaults false and carries a CHECK (gates_progress = false)). These ledger rows are not
+-- the gate; their evidence can still matter through the keeper-theory layer. entry_puzzle_key is NULL
+-- for all 18: these are DISCOVERED BY TRAVEL, not opened by a spine puzzle node.
 --
 -- The matching thread_cards (one rumor card → flips to verified/contradicted on arrival, anchored at
 -- each destination's sites.yml id) are authored in the thread-card seed; this block seeds only the
@@ -4371,7 +4469,7 @@ values
   --  NOT travel destinations (no 1-3k-block walk) — these are the two anomalies that
   --  appear in the group's OWN base, engine-seated in a PLUGIN/SHOWRUNNER beat, never a
   --  submit-answer (honest [flavor / atmosphere]; nothing inert costumes itself as a
-  --  puzzle — OVERHAUL §5 cohesion gate). They GATE NOTHING (gates_progress false + CHECK,
+  --  puzzle — OVERHAUL §5 cohesion gate). They do not directly gate a puzzle row (gates_progress false + CHECK,
   --  INV-12) and entry_puzzle_key is NULL (discovered, not opened by a spine node — the
   --  same "no node gates them, they gate no node" property the 18 travel rows carry). They
   --  are seeded HERE as the breadth-ledger acknowledgement the Recovery Archive can cluster
@@ -4426,6 +4524,14 @@ commit;
 
 begin;
 
+-- Retired/non-open puzzle cleanup. Because this seed upserts hints, old live databases
+-- need explicit deletes or /whisper can keep teaching dead/non-open mechanisms:
+-- stone-sella's Atbash was replaced by sella-reflection-bearing; base-docket-reread
+-- is owned by base-docket-reread-auto; record-receives is a world response, not an
+-- oracle-open puzzle.
+delete from public.hints
+where puzzle_key in ('stone-sella', 'base-docket-reread', 'record-receives');
+
 insert into public.hints (puzzle_key, tier, body) values
 
 -- rosetta-ring — the rune-literacy on-ramp (assemble the six ways, in order, off the carved ring).
@@ -4439,10 +4545,6 @@ insert into public.hints (puzzle_key, tier, body) values
 -- stone-mara — book cipher (page/line/word into the lectern shelf she kept).
 ('stone-mara', 2, 'mara read and did not walk. the numbers on her stone are not the answer — they are where to look. she left the books.'),
 ('stone-mara', 3, 'three numbers to a word: the page, the line, the word along it. walk her shelf, count to each, and the sentence assembles itself.'),
-
--- stone-sella — atbash (the mirror; the water gives the face back wrong).
-('stone-sella', 2, 'sella speaks only as a reflection now. her marks are the same — read backward. the water would show you how.'),
-('stone-sella', 3, 'the first letter is the last, the last is the first, folded at the middle of the row. read her stone as its own mirror.'),
 
 -- stone-orin — substitution (one rune, one letter, kept the same throughout).
 ('stone-orin', 2, 'orin would not bow, and he would not bend his marks either. each one is a letter, and it is always that letter. find the small words first.'),
@@ -4553,9 +4655,6 @@ insert into public.hints (puzzle_key, tier, body) values
 ('fork-name', 2, 'you know his name now. the choice is whether to cut it into the record or leave the mark empty. the unspoken is one of the ways.'),
 ('fork-name', 3, 'speak the name and it is carved for good; keep it, and the mark stays uncut. the kept reading is the withheld one — but the choice is yours, and the record keeps whichever you make.'),
 
--- base-docket-reread — the down-count re-read after the catch (the muster of present hands).
-('base-docket-reread', 2, 'you read the down-count as a doom-clock. read it again, after the catch. it was never counting the dark.'),
-('base-docket-reread', 3, 'the muster is being read. the count was never of the dark — it was of the hands, and the hands are almost all in. it is a roll call, not a doom clock.'),
 -- base-docket-reread-auto — the offline twin (same payoff, whichever the world serves live).
 ('base-docket-reread-auto', 2, 'you read the down-count as a doom-clock. read it again, after the catch. it was never counting the dark.'),
 ('base-docket-reread-auto', 3, 'the muster is being read. the count was never of the dark — it was of the hands, and the hands are almost all in. it is a roll call, not a doom clock.'),
@@ -4593,10 +4692,6 @@ insert into public.hints (puzzle_key, tier, body) values
 -- accepting-crouch — everyone present bows as one, at the hour, in the kept light (detected).
 ('accepting-crouch', 2, 'there is no chosen one here, and no word to type. the rite asks all of you at once. what is the smallest of the ways — the one orin thought too small to matter?'),
 ('accepting-crouch', 3, 'everyone present bows together, as one, in the kept light, at the hour. the bow is the smallest way and the whole of it. no one is left standing; no one goes first. do it together and the record opens.'),
-
--- record-receives — the world''s answer to the bow (opaque sentinel; witness it, do not solve it).
-('record-receives', 2, 'this one is not yours to open. once the bow is made as one, the record answers on its own. stay, and let it.'),
-('record-receives', 3, 'nothing here is to be decoded. the record receives you — the world turns kept, and the change is felt, not typed. you have already done the thing that opens it.'),
 
 -- ===========================================================================
 -- THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md). Same rail: tier 2 plainer, tier 3
@@ -4663,9 +4758,21 @@ insert into public.hints (puzzle_key, tier, body) values
 ('iss-bound-word-callback', 3, 'the bound word you drew from his stone binds the deep. speak again the one who turned away, here, and the gate toward the threshold gives.'),
 
 -- ── CROSS-KEEPER / SPINE (research / co-op / speak / observe) ──
--- spine-recovered-archive — the salvaged folder + the spectrogram name.
-('spine-recovered-archive', 2, 'what was recovered is kept off the record. the string on the sign is where. most of what is there is only lore — but one image is not an image.'),
-('spine-recovered-archive', 3, 'open the archive the sign points to, and read the waveform image as a spectrogram. a name is written in it — the one the record would not keep.'),
+-- media-prior-base — frame-scrub found footage; map/frame token + count 13.
+('media-prior-base', 2, 'the base recording is not asking for a place. scrub the cut frame, then read the named map and the count that keeps repeating after thirteen seconds.'),
+('media-prior-base', 3, 'one frame gives ash. the torches and the drift count give thirteen. speak it together: ash thirteen.'),
+-- media-far-water — found footage gives a place-bearing phrase, not another count.
+('media-far-water', 2, 'the shore clip gives the phrase in pieces. read the map label, the reed frames, and the water-reflected sign as one sentence.'),
+('media-far-water', 3, 'the words assemble as a place: where the reeds fold back. it is not a name. it is where the water wants you to return.'),
+-- media-black-moon-toll — count the toll groups and the late ninth light.
+('media-black-moon-toll', 2, 'do not treat the tolls as mood. count the close group, then the second group, then the late ninth sound after the pause.'),
+('media-black-moon-toll', 3, 'four tolls, then five. the watch rule is the phrase: stay awake. the late ninth toll only proves whose night it is.'),
+-- media-release-room — late checksum; six visible returns, one absence.
+('media-release-room', 2, 'this clip is late because it is a checksum, not a spoiler. count what returns to the room, then name the absent space.'),
+('media-release-room', 3, 'six return. one is not kept. that is the whole late-room instruction; it tells you how to approach, not what name to guess.'),
+-- spine-recovered-archive — the salvaged folder + the spectrogram sentence.
+('spine-recovered-archive', 2, 'what was recovered is kept off the record. the string on the sign is where. most of what is there is only lore — but one sound image is not only a picture.'),
+('spine-recovered-archive', 3, 'open the archive the sign points to, and read the waveform image as a spectrogram. the hidden sentence is the answer: i was not kept.'),
 -- spine-threshold-vault — each of you holds a piece; read them aloud together.
 ('spine-threshold-vault', 2, 'each of you sees runes the others cannot. no one holds the whole combination. the wall is not the puzzle — the difference between what each of you sees is.'),
 ('spine-threshold-vault', 3, 'read your own runes aloud and combine them with the others'' — the code is only whole when the roster is whole. the assembled combination makes the keys; the keys open the vault.'),
@@ -4844,7 +4951,7 @@ update public.puzzles
 --      threshold_open    ← m4-three-hands
 --      true_coord_known  ← threshold-coordinate
 --      seventh_named     ← seventh-unwriting
---      seventh_suspected ← stone-sella / seventh-shrine (the deep's pre-req)
+--      seventh_suspected ← sella-reflection-bearing / seventh-shrine (the deep's pre-req)
 --
 --    Authored as a guarded block so it cleanly no-ops if 0006 (the column) has not landed.
 -- ===========================================================================
@@ -4887,7 +4994,17 @@ begin
       where puzzle_key in ('m2-rhyme', 'difficulty-mara');
     update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
       where puzzle_key = 'name-where';
-    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
+    -- Optional external archive: never surface the Drive/spectrogram trail until
+    -- the real artifact exists and the operator explicitly marks it ready.
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_01_ready', true, 'record_received', true)
+      where puzzle_key = 'media-prior-base';
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_02_ready', true, 'seventh_suspected', true)
+      where puzzle_key = 'media-far-water';
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_03_ready', true, 'site_seen_watch_floor', true)
+      where puzzle_key = 'media-black-moon-toll';
+    update public.puzzles set requires_flags = jsonb_build_object('media_clip_04_ready', true, 'seventh_named', true)
+      where puzzle_key = 'media-release-room';
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true, 'recovered_archive_ready', true)
       where puzzle_key = 'spine-recovered-archive';
     update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true)
       where puzzle_key in ('undercroft-fog', 'fork-light', 'pressure-glyph-walk');
@@ -4895,16 +5012,40 @@ begin
       where puzzle_key in ('orin-threshold', 'orin-bow-fall-order');
     update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
       where puzzle_key in ('atonement-refrain', 'fork-name', 'haunting-biography');
-    -- The Accepting rite now needs recovered evidence from the Unlit, not just
-    -- the on-ramp flag. These four houses can be found in any order and are
-    -- deliberately fewer than the full eight-house archive so the pillar is
-    -- required without becoming a brittle checklist.
+    -- The Accepting rite now needs the six keeper theories, recovered evidence from
+    -- the whole Unlit mirror village, and the human-history side-proof web. This
+    -- makes the main route depend on corroborating evidence: a single decoded keeper
+    -- stone is not enough, and the ordinary ruined places cannot remain optional scenery.
     update public.puzzles set requires_flags = jsonb_build_object(
       'accepting_onramp_open', true,
+      'vaun_theory', true,
+      'mara_theory', true,
+      'sella_theory', true,
+      'orin_theory', true,
+      'brann_theory', true,
+      'iss_theory', true,
       'unlit_seen_lamp', true,
+      'unlit_seen_cairn', true,
+      'unlit_seen_coop', true,
       'unlit_seen_well', true,
       'unlit_seen_watch', true,
-      'unlit_seen_base', true
+      'unlit_seen_warm', true,
+      'unlit_seen_threshold', true,
+      'unlit_seen_base', true,
+      'site_seen_school_stand', true,
+      'site_seen_markers_row', true,
+      'site_seen_cistern_7', true,
+      'site_seen_watch_floor', true,
+      'site_seen_set_apart_shelf', true,
+      'site_seen_undercroft_seal', true,
+      'site_seen_forgotten_mouth', true,
+      'site_seen_deep_market', true,
+      'site_seen_ration_table', true,
+      'site_seen_third_bay_breach', true,
+      'site_seen_warm_town_collapse', true,
+      'site_seen_deep_bird_coops', true,
+      'npc_wenna_crust_done', true,
+      'npc_coll_lamp_done', true
     )
       where puzzle_key = 'rite-tokens';
     update public.puzzles set requires_flags = jsonb_build_object('tokens_laid', true)
@@ -4922,19 +5063,10 @@ begin
     update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true, 'bowed_as_one', true)
       where puzzle_key = 'seventh-name';
 
-    -- P1-C3 COLLISION FIX (audit): the phrase `the last marker is not the last` is an accepted
-    -- answer on BOTH stone-sella (ungated active=true) and seventh-shrine. Both were open at once,
-    -- so the resolver always resolved stone-sella (first UNSOLVED in DB order) and seventh-shrine's
-    -- second payoff for that string never surfaced. GATE seventh-shrine on seventh_suspected — the
-    -- flag stone-sella''s next-clue SETS — so the two are never open simultaneously (the exact
-    -- bound-word/iss_caught sequencing the audit blesses). Order preserved: before Sella is solved,
-    -- seventh_suspected is false → seventh-shrine is closed → the phrase resolves to stone-sella (its
-    -- intended first payoff); after Sella is solved, stone-sella is solved (the resolver prefers the
-    -- unsolved candidate) AND seventh_suspected is true → the phrase resolves to seventh-shrine (its
-    -- intended second payoff). No accepted-answer string changes; no lore/clue doc changes. This is
-    -- consistent with the established contract — seventh-unwriting/seventh-cause (the shrine''s deeper
-    -- chambers) already require seventh_suspected, so Sella-first is the canonical Seventh-thread order.
-    -- seventh-shrine stays active=true (its active flag is untouched; requires_flags is the AND-gate).
+    -- Sella-first order: the Seventh shrine stays closed until the live Sella reflection-bearing
+    -- evidence sets seventh_suspected. This keeps the shrine from surfacing before the group has a
+    -- real in-world reason to count past six, and preserves the old collision fix now that
+    -- stone-sella's Atbash row is permanently retired.
     update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
       where puzzle_key = 'seventh-shrine';
 
@@ -5013,9 +5145,9 @@ end $$;
 --      m4-three-hands            → bound_word_known                    (bound-word)
 --      threshold-coordinate      → threshold_open                      (m4-three-hands)
 --      true-walk-arrive          → true_coord_known                    (threshold-coordinate)
---      seventh-shrine            → seventh_suspected                   (stone-sella)     [P1-C3 collision gate; ungated upstream, stays active=true]
---      seventh-unwriting         → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
---      seventh-cause             → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ stone-sella)
+--      seventh-shrine            → seventh_suspected                   (sella-reflection-bearing)
+--      seventh-unwriting         → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ sella-reflection-bearing)
+--      seventh-cause             → iss_caught ∧ seventh_suspected      (no-wall-catch ∧ sella-reflection-bearing)
 --      seventh-choice            → seventh_named                       (seventh-unwriting)
 --
 --    INVARIANT (seedcheck NEW): rite-tokens (active=true, the Accepting on-ramp) is reachable

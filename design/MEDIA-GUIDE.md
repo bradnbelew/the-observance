@@ -15,9 +15,9 @@
 | A1 | Rune font (`runes.png` + `runes.json`) | **Required** | ✅ **done, in repo** |
 | A2 | 11 sound files (`.ogg`) | **Required-ish** (degrades to silence) | ✅ **format verified by audit** — still do a human listening pass for taste |
 | — | *Package + host the resource pack* | **Required** | ops, not media (see §Ops) |
-| B1 | Found-footage "recovered recording" video | Hero artifact (enrichment) | ❌ **you produce** |
-| B2 | `the-hold.zip` — the downloadable lure vignette | Hero artifact (enrichment) | ❌ **you produce** |
-| B3 | Recovered Drive folder + spectrogram image | Hero artifact (enrichment) | ❌ **you produce** |
+| B1 | Found-footage "recovered recording" video | Hero artifact (enrichment) | produced, hosted on YouTube, still gated |
+| B2 | `the-hold.zip` — the downloadable lure vignette | Hero artifact (enrichment) | produced, in dashboard public |
+| B3 | Recovered Drive folder + spectrogram image | Hero artifact (enrichment) | produced + local-staged; host before live |
 | C1–C2 | Optional stego image / audio voicemail | Nice-to-have | ❌ optional, unwired |
 
 **Nothing in the B/C list blocks the spine.** The game plays start→finish with only A1 + A2 + ops. The B
@@ -72,7 +72,11 @@ coordinates in this file" only lands if the data is *really there to extract*. E
 graceful placeholder; **wire your real version in when it's ready. Until then, don't plant the in-world clue
 that points at it** (or the trail dead-ends / a link 404s).
 
-### B1 — The found-footage "recovered recording" video ❌ YOU PRODUCE
+### B1 — The found-footage recovered clips PRODUCED + HOSTED
+- **Current state:** four clips are produced and recorded in `design/MANUAL-MEDIA-STAGING.md` with local
+  paths, sizes, SHA1 values, payloads, and hosted YouTube URLs. The URLs passed HTTP reachability and
+  operator playback checks, but `media_clip_01_ready` through `media_clip_04_ready` must remain false/dormant
+  until the operator intentionally arms each matching clip at its story gate.
 - **What it is:** a degraded, found-not-produced clip — a "recovered recording," ~30–90 s, that surfaces on
   the **record website** as a single recovered-file entry and reads as *unearthed*, never a trailer.
 - **Form + look:** unlisted YouTube or a hosted `.mp4`. Handheld / static-cam or "screen recording of a
@@ -86,14 +90,13 @@ that points at it** (or the trail dead-ends / a link 404s).
     John's playthrough.)
   - *Finale lead-in:* **the Seventh, in the dark, waiting** — a figure far down, a slow pan, a held breath.
     The emotional gut-punch pointing at the reunion.
-- **Hidden payload — pick 1–2, I wire the check:**
-  - **Visible coordinates in one frame** (on a sign / F3 overlay, on-screen <1 s) → leads to an in-world
-    place. *answer_kind: coords, or a token found there.*
-  - **A word/name** burned into a corrupt frame or spelled by the wrong timestamps → typed answer.
-  - **A spectrogram payload in the audio** → a word/coords visible only in the audio spectrogram.
-  - **EXIF / filename / description-field payload** on the hosted file → the datamine reward.
-- **Where it wires:** an in-world haunting beat (a whisper, the record) surfaces the URL; the payload
-  resolves to a place or a typed token; solving flips a thread flag. Retrace-fair once solved.
+- **Hidden payloads are fixed in `design/MANUAL-MEDIA-PACKET.md`:**
+  - clip 1 resolves to `ASH-13`.
+  - clip 2 resolves to `where the reeds fold back`.
+  - clip 3 resolves to `stay awake`.
+  - clip 4 is late-only and resolves to `six return one is not kept`.
+- **Where it wires:** each produced clip is hidden behind its own `media_clip_0N_ready` flag; solving the
+  typed payload flips a matching `media_*_read` flag. These are optional evidence flags, not main-spine gates.
 - **⚠️ OPEN DECISION (you raised this):** you're weighing making the **cold open** a found-footage video
   instead of the in-base staged anomaly. Right now the *live, built* cold open is the in-base anomaly
   (`/observance placeprologue` — a marker that knows a real number); found-footage is a *separate mid/late*
@@ -102,15 +105,18 @@ that points at it** (or the trail dead-ends / a link 404s).
 - **Assist offer:** I can generate a *draft* clip via HyperFrames (tooling installed) as a wired,
   testable placeholder so the beat works before your real one lands.
 
-### B2 — `the-hold.zip` — the downloadable lure vignette ❌ YOU PRODUCE
+### B2 — `the-hold.zip` — the downloadable lure vignette PRODUCED
+- **Current state:** the clean sendable zip is present at `dashboard/public/the-hold/the-hold.zip`.
+  It is 153281 bytes, SHA1 `892dfb2c3a52d002280d0a669777fc6d5bee2b97`, and its zip entries were checked
+  for README/manifest/spoiler-style files. The final room points to `snoikerz.com:25569`.
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
   download on the record website's lure page (`/record/the-record-keeps`).
 - **Where it wires:** `dashboard/public/the-hold/the-hold.zip`. The lure page withholds the download link until this file exists
   (`the-hold.zip`, with the README "lie": *"a small offline map. single player. no mods. ~fifteen minutes.
   it does not connect to anything. play it through and it will tell you where the rest is kept."*).
-  **The file is NOT in the repo yet — until it's hosted, do NOT plant the in-world clue to the lure slug
-  or the group sees a withheld artifact instead of a playable map.**
+  The file is now in the dashboard public folder. Verify the deployed `/the-hold/the-hold.zip` URL before
+  planting the in-world clue to the lure slug; do NOT plant the in-world clue until that deployed URL works.
 - **Full build spec already written:** `design/prologue/PROLOGUE-VIGNETTE.md` — beat-by-beat, room-by-room,
   all vanilla blocks, gamerules locked, datapack-tick logic (no visible command-block clocks). It carries
   the dead-uploader (Mara, "m.kept"), the number **6** on a page, a closing rune string, and the
@@ -122,7 +128,11 @@ that points at it** (or the trail dead-ends / a link 404s).
   your wheelhouse. I can help author the datapack functions / tellraw lines if you want; the world geometry
   is yours to build.
 
-### B3 — The recovered Drive folder + the spectrogram image ❌ YOU PRODUCE
+### B3 — The recovered Drive folder + the spectrogram image PRODUCED + LOCAL-STAGED
+- **Current state:** the archive packet is produced and recorded in `design/MANUAL-MEDIA-STAGING.md` with
+  local path, zip SHA1, spectrogram audio hash, and hosted Dropbox folder URL. The URL is reachable, the
+  Dropbox contents are checked, and the spectrogram payload has been verified, but `recovered_archive_ready`
+  must remain false/dormant until the group has earned the gated context.
 - **What it is:** the payload behind the `spine-recovered-archive` puzzle (an optional external-research
   surface — the spine never depends on it). A carved in-world string resolves to an **unlisted Google Drive
   (or similar) folder**; most of what's in it is atmospheric lore, but **one "image" is actually an audio
@@ -130,12 +140,13 @@ that points at it** (or the trail dead-ends / a link 404s).
 - **What to make:**
   1. A **hostable folder** (Drive/Dropbox/static dir) of "recovered" files — degraded scans, half-corrupt
      screenshots, a couple of documents. Mostly flavor.
-  2. **One spectrogram image** whose audio, read as a spectrogram (or the image itself viewed as one),
-     spells a **name** — the answer the puzzle wants. The seed accepts phrasings like *"the name the
-     spectrogram keeps."* (Tools: Audacity spectrogram view, or Photosounder, to paint text into audio.)
+  2. **One spectrogram-bearing audio/image artifact** whose audio, read as a spectrogram, spells
+     **I WAS NOT KEPT**. That exact phrase is the optional archive answer; do not hide `AVERYN` here unless
+     the group has already earned the name in-world. (Tools: Audacity spectrogram view, or Photosounder, to
+     paint text into audio.)
   3. Optionally a **waveform/spectrogram still** that feeds the record website's recovered-archive entry.
-- **Where it wires:** `spine-recovered-archive` (a wired puzzle awaiting its artifact) + the coords-in-a-
-  frame first-find aid. Answer is typed (the hidden name). No in-world site — it's an external → web loop.
+- **Where it wires:** `spine-recovered-archive` (a wired puzzle awaiting its artifact). Answer is typed:
+  `i was not kept`. No in-world site — it's an external → web loop.
 
 ---
 
@@ -157,8 +168,11 @@ Lower priority; make these only if you're having fun. None is wired, so each wou
   `resource-pack.url` + `resource-pack.sha1` (40-char hex of the zip bytes) in `plugin/.../config.yml`.
   The push half is now wired, so once the URL is set every joiner is prompted. **This is what makes A1 + A2
   actually reach players.**
-- **Host `the-hold.zip`** at `dashboard/public/the-hold/the-hold.zip` (B2) before planting its clue.
-- **Host the found-footage clip** (B1) and give me the URL to wire the payload check.
+- **Verify `the-hold.zip`** at the deployed `/the-hold/the-hold.zip` URL before planting its clue.
+- **Found-footage clips** (B1) are hosted on YouTube and operator-checked; flip a `media_clip_0N_ready` flag
+  only when that clip should enter play.
+- **Recovered archive folder** (B3) is hosted on Dropbox and operator-checked; flip `recovered_archive_ready`
+  only when the story gate is ready.
 
 ---
 
@@ -178,7 +192,11 @@ Lower priority; make these only if you're having fun. None is wired, so each wou
 Get the **resource pack packaged + hosted** (A1+A2 + ops) — that's the only thing that changes whether the
 game looks right. The audit now blocks broken/stereo/tiny audio; **listen to the 11 OGGs and replace any
 placeholder-grade ones (mono only).** Then the
-three hero artifacts (B1 found-footage, B2 the-hold.zip, B3 spectrogram/Drive) are pure enrichment you can
-add on your own schedule — each degrades safely, and I wire your real version in the moment you hand it over.
-Decide the **found-footage slot** (cold-open vehicle vs. mid-game artifact) before you shoot B1, because that
-changes what it needs to contain.
+three hero artifacts (B1 found-footage, B2 the-hold.zip, B3 spectrogram/Drive) are pure enrichment. B1 is
+produced, hosted on YouTube, and operator-checked but remains behind the `media_clip_0N_ready` gates; B3 is hosted on Dropbox and operator-checked but remains behind the
+`recovered_archive_ready` story gate.
+# THE OBSERVANCE - LEGACY MEDIA BACKGROUND
+
+> Active production source: `design/MANUAL-MEDIA-PACKET.md`. That packet is the current remake-aligned
+> checklist for exactly what to make, how to host it, and where it enters the ARG. This older guide remains
+> as background and technique reference only.

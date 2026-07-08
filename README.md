@@ -22,7 +22,7 @@ either makes the group *kept* or casts them out.
 
 | Piece | Home | Role |
 |---|---|---|
-| World + plugin | **PebbleHost** (Paper) | the deterministic engine — Phase 0 needs **zero** AI |
+| World + plugin | **Crafty-managed Paper 1.21.11 server** | the deterministic engine — Phase 0 needs **zero** AI |
 | Shared state | **Supabase** (Postgres) | dossiers, heatmap, Whisper ledger, custom + arc state |
 | Live model | **Claude API** | rare, validated "scalpel" beats (text only) |
 | Discord bot | **cheap cloud VPS** | the Whisper/hint surface + reports |
@@ -44,7 +44,7 @@ slow, weird, or offline. See `DESIGN.md`.
 3. **Discord** — create an application + bot, invite it to the server, grab the token.
 4. **Claude API** — you have keys; set `ANTHROPIC_API_KEY`.
 5. **Local dev** — JDK 21 + IntelliJ IDEA (you have it) + a local Paper jar for testing.
-6. **PebbleHost** — confirm Paper, plugin-upload access via panel.
+6. **Crafty/Paper server** — confirm Paper 1.21.11, plugin-upload access, datapack access, and resource-pack URL support.
 
 Phase 0 (below) needs **only #5 + #6**. The VPS/Supabase/Discord/Claude come online for Phase 1.
 
@@ -66,5 +66,5 @@ Phase 0 (below) needs **only #5 + #6**. The VPS/Supabase/Discord/Claude come onl
 ## Build / run
 
 - Java 21, Paper API dependencies resolved by the plugin Gradle wrapper. Open in IntelliJ.
-- `cd plugin && gradlew.bat build` on Windows, or `cd plugin && ./gradlew build` elsewhere, then drop the jar in PebbleHost `plugins/` and restart.
+- `cd plugin && gradlew.bat build` on Windows, or `cd plugin && ./gradlew build` elsewhere, then drop the jar in the Paper server `plugins/` folder and restart.
 - Local test: run a Paper jar locally, hot-reload during dev.

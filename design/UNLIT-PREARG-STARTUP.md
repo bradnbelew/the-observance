@@ -10,11 +10,12 @@ Use it after uploading the fresh plugin jar and before friends enter the fiction
 - Every entrant receives 7 borrowed lanterns and one return token.
 - Doors work. Breaking, building, carried lights, buckets, boats, pearls, beds, and route cheese do not.
 - The figure stalks, vanishes, rushes exposed lanterns, breaks them, and deals small pressure damage.
-- The ending cannot reach `rite-tokens` until the group has recovered four required Unlit findings:
-  `unlit_seen_lamp`, `unlit_seen_well`, `unlit_seen_watch`, and `unlit_seen_base`.
+- The ending cannot reach `rite-tokens` until the group has recovered the whole Unlit evidence set:
+  `unlit_seen_lamp`, `unlit_seen_cairn`, `unlit_seen_coop`, `unlit_seen_well`,
+  `unlit_seen_watch`, `unlit_seen_warm`, `unlit_seen_threshold`, and `unlit_seen_base`.
 
-The other four houses are still useful archive/coherence/fallback evidence. They should feel valuable,
-but the finish line does not require all eight.
+All eight houses are required ending evidence. The route is still non-linear, but no house is optional
+scenery; each one corroborates a different part of the surface/deep/keeper web.
 
 ## One-Time Update Steps
 
@@ -67,16 +68,17 @@ Recommended placement order:
    `/obs unlit site exit`
 4. Visit each authored house. Stand where the fixture should face/read well, face the clue direction, and run:
    `/obs unlit clue lamp`
-   `/obs unlit clue well`
-   `/obs unlit clue watch`
-   `/obs unlit clue base`
-5. Place the optional/archive houses the same way:
    `/obs unlit clue cairn`
    `/obs unlit clue coop`
+   `/obs unlit clue well`
+   `/obs unlit clue watch`
    `/obs unlit clue warm`
    `/obs unlit clue threshold`
+   `/obs unlit clue base`
 
-The required ending evidence houses are lamp, well, watch, and base. If time is short, polish those first.
+The required ending evidence houses are all eight: lamp, cairn, coop, well, watch, warm, threshold,
+and base. If time is short, do not launch the Unlit; use `/obs unlit pass house` to rehearse fixtures
+until every house reads cleanly.
 
 ## Darken And Bound The World
 
@@ -121,7 +123,7 @@ Use a non-op account if possible, because op build mode can hide real restrictio
 6. Place a borrowed lantern and confirm it helps but does not make the whole area fully visible.
 7. Stand outside safety long enough to feel darkness pressure.
 8. Watch the figure stalk, vanish, move quickly, make sound, and break exposed lanterns.
-9. Reach lamp, well, watch, and base across one or more expeditions.
+9. Reach lamp, cairn, coop, well, watch, warm, threshold, and base across one or more expeditions.
 10. Confirm each discovery writes an actionbar message and later appears in the Record/dashboard/archive.
 11. Exit by walking to `unlit_exit` and by using the return token; inventory should restore both ways.
 

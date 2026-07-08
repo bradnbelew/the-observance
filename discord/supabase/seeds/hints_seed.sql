@@ -15,6 +15,14 @@
 
 begin;
 
+-- Retired/non-open puzzle cleanup. Because this seed upserts hints, old live databases
+-- need explicit deletes or /whisper can keep teaching dead/non-open mechanisms:
+-- stone-sella's Atbash was replaced by sella-reflection-bearing; base-docket-reread
+-- is owned by base-docket-reread-auto; record-receives is a world response, not an
+-- oracle-open puzzle.
+delete from public.hints
+where puzzle_key in ('stone-sella', 'base-docket-reread', 'record-receives');
+
 insert into public.hints (puzzle_key, tier, body) values
 
 -- rosetta-ring — the rune-literacy on-ramp (assemble the six ways, in order, off the carved ring).
@@ -28,10 +36,6 @@ insert into public.hints (puzzle_key, tier, body) values
 -- stone-mara — book cipher (page/line/word into the lectern shelf she kept).
 ('stone-mara', 2, 'mara read and did not walk. the numbers on her stone are not the answer — they are where to look. she left the books.'),
 ('stone-mara', 3, 'three numbers to a word: the page, the line, the word along it. walk her shelf, count to each, and the sentence assembles itself.'),
-
--- stone-sella — atbash (the mirror; the water gives the face back wrong).
-('stone-sella', 2, 'sella speaks only as a reflection now. her marks are the same — read backward. the water would show you how.'),
-('stone-sella', 3, 'the first letter is the last, the last is the first, folded at the middle of the row. read her stone as its own mirror.'),
 
 -- stone-orin — substitution (one rune, one letter, kept the same throughout).
 ('stone-orin', 2, 'orin would not bow, and he would not bend his marks either. each one is a letter, and it is always that letter. find the small words first.'),
@@ -142,9 +146,6 @@ insert into public.hints (puzzle_key, tier, body) values
 ('fork-name', 2, 'you know his name now. the choice is whether to cut it into the record or leave the mark empty. the unspoken is one of the ways.'),
 ('fork-name', 3, 'speak the name and it is carved for good; keep it, and the mark stays uncut. the kept reading is the withheld one — but the choice is yours, and the record keeps whichever you make.'),
 
--- base-docket-reread — the down-count re-read after the catch (the muster of present hands).
-('base-docket-reread', 2, 'you read the down-count as a doom-clock. read it again, after the catch. it was never counting the dark.'),
-('base-docket-reread', 3, 'the muster is being read. the count was never of the dark — it was of the hands, and the hands are almost all in. it is a roll call, not a doom clock.'),
 -- base-docket-reread-auto — the offline twin (same payoff, whichever the world serves live).
 ('base-docket-reread-auto', 2, 'you read the down-count as a doom-clock. read it again, after the catch. it was never counting the dark.'),
 ('base-docket-reread-auto', 3, 'the muster is being read. the count was never of the dark — it was of the hands, and the hands are almost all in. it is a roll call, not a doom clock.'),
@@ -182,10 +183,6 @@ insert into public.hints (puzzle_key, tier, body) values
 -- accepting-crouch — everyone present bows as one, at the hour, in the kept light (detected).
 ('accepting-crouch', 2, 'there is no chosen one here, and no word to type. the rite asks all of you at once. what is the smallest of the ways — the one orin thought too small to matter?'),
 ('accepting-crouch', 3, 'everyone present bows together, as one, in the kept light, at the hour. the bow is the smallest way and the whole of it. no one is left standing; no one goes first. do it together and the record opens.'),
-
--- record-receives — the world''s answer to the bow (opaque sentinel; witness it, do not solve it).
-('record-receives', 2, 'this one is not yours to open. once the bow is made as one, the record answers on its own. stay, and let it.'),
-('record-receives', 3, 'nothing here is to be decoded. the record receives you — the world turns kept, and the change is felt, not typed. you have already done the thing that opens it.'),
 
 -- ===========================================================================
 -- THE DIVERSE EXPANSION (design/PUZZLE-DESIGNS.md). Same rail: tier 2 plainer, tier 3
@@ -252,9 +249,21 @@ insert into public.hints (puzzle_key, tier, body) values
 ('iss-bound-word-callback', 3, 'the bound word you drew from his stone binds the deep. speak again the one who turned away, here, and the gate toward the threshold gives.'),
 
 -- ── CROSS-KEEPER / SPINE (research / co-op / speak / observe) ──
--- spine-recovered-archive — the salvaged folder + the spectrogram name.
-('spine-recovered-archive', 2, 'what was recovered is kept off the record. the string on the sign is where. most of what is there is only lore — but one image is not an image.'),
-('spine-recovered-archive', 3, 'open the archive the sign points to, and read the waveform image as a spectrogram. a name is written in it — the one the record would not keep.'),
+-- media-prior-base — frame-scrub found footage; map/frame token + count 13.
+('media-prior-base', 2, 'the base recording is not asking for a place. scrub the cut frame, then read the named map and the count that keeps repeating after thirteen seconds.'),
+('media-prior-base', 3, 'one frame gives ash. the torches and the drift count give thirteen. speak it together: ash thirteen.'),
+-- media-far-water — found footage gives a place-bearing phrase, not another count.
+('media-far-water', 2, 'the shore clip gives the phrase in pieces. read the map label, the reed frames, and the water-reflected sign as one sentence.'),
+('media-far-water', 3, 'the words assemble as a place: where the reeds fold back. it is not a name. it is where the water wants you to return.'),
+-- media-black-moon-toll — count the toll groups and the late ninth light.
+('media-black-moon-toll', 2, 'do not treat the tolls as mood. count the close group, then the second group, then the late ninth sound after the pause.'),
+('media-black-moon-toll', 3, 'four tolls, then five. the watch rule is the phrase: stay awake. the late ninth toll only proves whose night it is.'),
+-- media-release-room — late checksum; six visible returns, one absence.
+('media-release-room', 2, 'this clip is late because it is a checksum, not a spoiler. count what returns to the room, then name the absent space.'),
+('media-release-room', 3, 'six return. one is not kept. that is the whole late-room instruction; it tells you how to approach, not what name to guess.'),
+-- spine-recovered-archive — the salvaged folder + the spectrogram sentence.
+('spine-recovered-archive', 2, 'what was recovered is kept off the record. the string on the sign is where. most of what is there is only lore — but one sound image is not only a picture.'),
+('spine-recovered-archive', 3, 'open the archive the sign points to, and read the waveform image as a spectrogram. the hidden sentence is the answer: i was not kept.'),
 -- spine-threshold-vault — each of you holds a piece; read them aloud together.
 ('spine-threshold-vault', 2, 'each of you sees runes the others cannot. no one holds the whole combination. the wall is not the puzzle — the difference between what each of you sees is.'),
 ('spine-threshold-vault', 3, 'read your own runes aloud and combine them with the others'' — the code is only whole when the roster is whole. the assembled combination makes the keys; the keys open the vault.'),

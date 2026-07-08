@@ -116,7 +116,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId|lane] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -221,6 +221,31 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             "forgotten_mouth",
             "keeper_altar",
             "coop_plate",
+            "vaun_hoard_chest",
+            "vaun_bookshelf",
+            "mara_lectern_1",
+            "mara_lectern_2",
+            "mara_lectern_3",
+            "mara_lectern_4",
+            "mara_lectern_5",
+            "mara_map_marker",
+            "sella_pool",
+            "sella_anchor",
+            "orin_marker_1",
+            "orin_marker_2",
+            "orin_marker_3",
+            "orin_marker_4",
+            "orin_marker_5",
+            "orin_marker_6",
+            "orin_frame_dial_1",
+            "orin_frame_dial_2",
+            "orin_frame_dial_3",
+            "orin_frame_dial_4",
+            "orin_frame_dial_5",
+            "orin_frame_dial_6",
+            "brann_toll_tower",
+            "brann_corridor_start",
+            "brann_corridor_end",
             "lampworks_stair",
             "third_lamp_stand",
             "painted_line",
@@ -247,6 +272,31 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             "stone_brann",
             "stone_iss",
             "stone_of_reckoning",
+            "vaun_hoard_chest",
+            "vaun_bookshelf",
+            "mara_lectern_1",
+            "mara_lectern_2",
+            "mara_lectern_3",
+            "mara_lectern_4",
+            "mara_lectern_5",
+            "mara_map_marker",
+            "sella_pool",
+            "sella_anchor",
+            "orin_marker_1",
+            "orin_marker_2",
+            "orin_marker_3",
+            "orin_marker_4",
+            "orin_marker_5",
+            "orin_marker_6",
+            "orin_frame_dial_1",
+            "orin_frame_dial_2",
+            "orin_frame_dial_3",
+            "orin_frame_dial_4",
+            "orin_frame_dial_5",
+            "orin_frame_dial_6",
+            "brann_toll_tower",
+            "brann_corridor_start",
+            "brann_corridor_end",
             "bow_marker_01",
             "offering_cairn_01",
             "kept_light_home_01",
@@ -280,6 +330,44 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             "dread_route_exit",
             "nether_forge",
             "end_seventh_shrine"
+    };
+
+    private record PlacementLane(String id, String label, String[] sites) { }
+
+    private static final PlacementLane[] PLACEMENT_LANES = {
+            new PlacementLane("prologue", "Prologue / first literacy", new String[]{
+                    "first_report_lectern_01", "rune_rosetta"
+            }),
+            new PlacementLane("keepers", "Six keeper evidence sites", new String[]{
+                    "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
+                    "stone_of_reckoning",
+                    "vaun_hoard_chest", "vaun_bookshelf",
+                    "mara_lectern_1", "mara_lectern_2", "mara_lectern_3", "mara_lectern_4", "mara_lectern_5",
+                    "mara_map_marker",
+                    "sella_pool", "sella_anchor",
+                    "orin_marker_1", "orin_marker_2", "orin_marker_3", "orin_marker_4", "orin_marker_5", "orin_marker_6",
+                    "orin_frame_dial_1", "orin_frame_dial_2", "orin_frame_dial_3", "orin_frame_dial_4", "orin_frame_dial_5", "orin_frame_dial_6",
+                    "brann_toll_tower", "brann_corridor_start", "brann_corridor_end"
+            }),
+            new PlacementLane("customs", "Body customs and home proof", new String[]{
+                    "bow_marker_01", "offering_cairn_01", "kept_light_home_01"
+            }),
+            new PlacementLane("human", "Human-history side proof web", new String[]{
+                    "the_far_water", "school_stand", "markers_row", "cistern_7", "watch_floor",
+                    "set_apart_shelf", "undercroft_seal", "forgotten_mouth"
+            }),
+            new PlacementLane("deep", "Deep route, market, and finale", new String[]{
+                    "the_cold_hearth", "unbroken_light", "the_threshold", "the_unwriting", "keeper_altar",
+                    "coop_plate", "threshold_vault", "lampworks_stair", "third_lamp_stand", "painted_line",
+                    "dead_stall", "deep_bird_coops", "deep_market", "ration_table", "third_bay_breach",
+                    "warm_town_collapse"
+            }),
+            new PlacementLane("dread", "Watcher dread route", new String[]{
+                    "dread_route_start", "dread_route_elsewhere", "dread_route_figure", "dread_route_exit"
+            }),
+            new PlacementLane("dimensions", "Optional Nether / End deepening lanes", new String[]{
+                    "nether_forge", "end_seventh_shrine"
+            })
     };
 
     /**
@@ -402,7 +490,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (op.equals("next")) {
-            handleSiteNext(sender);
+            handleSiteNext(sender, args);
             return;
         }
         if (op.equals("plan")) {
@@ -410,7 +498,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
         if (!op.equals("set")) {
-            sender.sendMessage("Usage: /observance site <todo|next|plan|launch|list|set> [siteId]   (keeper spine: " + keeperIdList() + ")");
+            sender.sendMessage("Usage: /observance site <todo|next|plan|launch|list|set> [siteId|lane]   (keeper spine: " + keeperIdList() + ")");
             return;
         }
         if (!(sender instanceof Player player)) {
@@ -781,45 +869,38 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (!siteId.startsWith("unlit_house_")) return null;
         int radius = 4;
         String house = unlitShortId(siteId);
-        boolean sign = hasSignNear(loc, radius);
         return switch (house) {
             case "lamp" -> (!hasMaterialNear(loc, radius, Material.LECTERN)
-                    || !hasMaterialNear(loc, radius, Material.BLACK_CANDLE)
-                    || !sign)
-                    ? "expected ledger lectern, black candle, and short fixture sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CANDLE))
+                    ? "expected ledger lectern and black candle evidence" : null;
             case "cairn" -> (!hasMaterialNear(loc, radius, Material.CAULDRON)
                     || !hasMaterialNear(loc, radius, Material.COBBLED_DEEPSLATE)
-                    || !hasMaterialNear(loc, radius, Material.POLISHED_DEEPSLATE)
-                    || !sign)
-                    ? "expected offering bowl, deepslate stones, and non-light return sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.POLISHED_DEEPSLATE))
+                    ? "expected offering bowl and deepslate return stones" : null;
             case "coop" -> (!hasMaterialNear(loc, radius, Material.HAY_BLOCK)
                     || !hasMaterialNear(loc, radius, Material.IRON_BARS)
-                    || !hasMaterialNear(loc, radius, Material.OAK_FENCE)
-                    || !sign)
-                    ? "expected silent perch, cage bars, hay, and absence clue sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.OAK_FENCE))
+                    ? "expected silent perch, cage bars, and hay" : null;
             case "well" -> (!hasMaterialNear(loc, radius, Material.WATER_CAULDRON)
                     || !hasMaterialNear(loc, radius, Material.DARK_PRISMARINE)
                     || !hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
-                    || !sign)
-                    ? "expected water/reflection bowl, dark prismarine, blackstone, and below-reading sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.LECTERN))
+                    ? "expected water/reflection bowl, dark prismarine, blackstone, and a written well note" : null;
             case "watch" -> (!hasMaterialNear(loc, radius, Material.BELL)
                     || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
-                    || !sign)
-                    ? "expected bell, dark watch marks, and no-sleep sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.LECTERN))
+                    ? "expected bell, dark watch marks, and a written watch log" : null;
             case "warm" -> (!hasMaterialNear(loc, radius, Material.CAMPFIRE)
                     || !hasMaterialNear(loc, radius, Material.RED_WOOL)
-                    || !hasMaterialNear(loc, radius, Material.BLUE_ICE)
-                    || !sign)
-                    ? "expected unlit campfire, false warmth/cold contrast, and turn-back sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.BLUE_ICE))
+                    ? "expected unlit campfire and false warmth/cold contrast" : null;
             case "threshold" -> (!hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
                     || !hasMaterialNear(loc, radius, Material.DEEPSLATE_BRICK_SLAB)
-                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
-                    || !sign)
-                    ? "expected low lintel, black threshold marks, and bow-low sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET))
+                    ? "expected low lintel and black threshold marks" : null;
             case "base" -> (!hasMaterialNear(loc, radius, Material.BARREL)
-                    || !hasMaterialNear(loc, radius, Material.LECTERN)
-                    || !sign)
-                    ? "expected copied-base barrel, docket lectern, and wrong-sky sign" : null;
+                    || !hasMaterialNear(loc, radius, Material.LECTERN))
+                    ? "expected copied-base barrel and docket lectern" : null;
             default -> "unknown Unlit house id";
         };
     }
@@ -1054,44 +1135,47 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         "what burns in the copy is never returned."
                 ));
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CANDLE);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"lamp account", "oil / names", "borrowed lamp", "not returned"});
-                return "Reads as a ledger, not a plain answer.";
+                setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+                return "Reads as a ledger and a burnt accounting mark, not a signboard.";
             }
             case "cairn" -> {
                 setBlock(base, Material.CAULDRON);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.COBBLED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.COBBLED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, 0, -1, 0), Material.POLISHED_DEEPSLATE);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"first thing", "goes back", "not light", "not yours"});
-                return "Use as an offering bowl; no expedition order implied.";
+                setBlock(offsetFrom(base, facing, 0, 1, 0), Material.COBBLED_DEEPSLATE_SLAB);
+                return "Use as an offering bowl; the return is a shape, not written instructions.";
             }
             case "coop" -> {
                 setBlock(base, Material.HAY_BLOCK);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.IRON_BARS);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.IRON_BARS);
                 setBlock(base.clone().add(0, 1, 0), Material.OAK_FENCE);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"perch whole", "seed full", "no call", "no feather"});
-                return "Sacred-beast clue; absence is the point.";
+                setBlock(offsetFrom(base, facing, 0, 1, 0), Material.LIGHT_GRAY_CARPET);
+                return "Sacred-beast clue; the untouched perch and missing call are the evidence.";
             }
             case "well" -> {
                 setBlock(base, Material.WATER_CAULDRON);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.DARK_PRISMARINE);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.DARK_PRISMARINE);
                 setBlock(offsetFrom(base, facing, 0, -1, 0), Material.POLISHED_BLACKSTONE);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"read below", "not above", "water keeps", "one copy"});
-                return "Reflection clue; pair with a hidden/reflection mark if desired.";
+                placeUnlitEvidenceBook(base, facing, "well copy", List.of(
+                        "the upper line is always the liar.",
+                        "read what the water keeps under it.",
+                        "one copy came back wrong."
+                ));
+                return "Reflection clue; the readable surface is now a found well note.";
             }
             case "watch" -> {
                 setBlock(base, Material.BELL);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"no moon", "no bed", "no relief", "keep watch"});
-                return "Dark-hours clue with a timed/watch verb.";
+                placeUnlitEvidenceBook(base, facing, "watch floor", List.of(
+                        "no moon entered the count.",
+                        "no bed relieved the watch.",
+                        "four names slept. one name stood."
+                ));
+                return "Dark-hours clue now lives in a watch log.";
             }
             case "warm" -> {
                 setBlock(base, Material.CAMPFIRE);
@@ -1104,18 +1188,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 } catch (Throwable ignored) { }
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.RED_WOOL);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLUE_ICE);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"warm road", "is the lie", "too bright", "turn back"});
-                return "False-warmth clue; deliberately different from lamp safety.";
+                setBlock(offsetFrom(base, facing, 0, 1, 0), Material.RED_CONCRETE);
+                return "False-warmth clue; the too-bright red mark is the lie.";
             }
             case "threshold" -> {
                 setBlock(base, Material.POLISHED_BLACKSTONE);
                 setBlock(base.clone().add(0, 1, 0), Material.DEEPSLATE_BRICK_SLAB);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"under", "not through", "bow low", "get room"});
-                return "Threshold/bow clue; extraction-like verb without requiring order.";
+                setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
+                return "Threshold/bow clue; the low lintel teaches the verb without a sign.";
             }
             case "base" -> {
                 setBlock(base, Material.BARREL);
@@ -1127,9 +1209,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         "a fence turned, a stair repaired, a door left open.",
                         "the village remembers the surface without carrying its warmth."
                 ));
-                placeUnlitFixtureSign(base, facing,
-                        new String[]{"same village", "wrong heat", "same marks", "wrong sky"});
-                return "Surface-copy clue; anchors the mirror-village premise.";
+                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.CALIBRATED_SCULK_SENSOR);
+                return "Surface-copy clue; anchors the mirror-village premise without a signboard.";
             }
             default -> {
                 placeStandingSign(base, facing,
@@ -1139,8 +1220,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void placeUnlitFixtureSign(Location base, BlockFace facing, String[] lines) {
-        placeStandingSign(offsetFrom(base, facing, 0, 1, 0), facing, lines);
+    private void placeUnlitEvidenceBook(Location base, BlockFace facing, String title, List<String> pages) {
+        Location lectern = offsetFrom(base, facing, 0, 1, 0);
+        placeEvidenceLectern(lectern, facing, title, pages);
+    }
+
+    private void placeEvidenceLectern(Location loc, BlockFace facing, String title, List<String> pages) {
+        if (loc == null || loc.getWorld() == null) return;
+        setBlock(loc, Material.LECTERN);
+        faceDirectional(loc, facing);
+        fillWrittenLecternBook(loc.getBlock(), title, "the record", pages);
     }
 
     private static Location offsetFrom(Location base, BlockFace facing, int right, int forward, int up) {
@@ -1246,16 +1335,26 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("  ... " + (missing.size() - shown) + " more. Use /obs site next for the next survey target.");
         }
         sender.sendMessage("Next: stand at the intended site and run /obs site set " + nextLaunchMissingId() + ".");
+        sender.sendMessage("Lane focus: /obs site plan lanes, or /obs site next human|deep|dread.");
     }
 
-    private void handleSiteNext(CommandSender sender) {
-        String id = nextLaunchMissingId();
-        if (id == null) {
-            sender.sendMessage("[OK] Every launch-required site is placed. Run /obs preflight and the rehearsal packet.");
+    private void handleSiteNext(CommandSender sender, String[] args) {
+        String laneId = args.length > 2 ? args[2].toLowerCase(Locale.ROOT).trim() : "";
+        PlacementLane lane = laneId.isBlank() ? null : placementLane(laneId);
+        if (!laneId.isBlank() && lane == null) {
+            sender.sendMessage("Observance: unknown placement lane '" + laneId + "'. Use /obs site plan lanes.");
             return;
         }
-        sender.sendMessage("Next launch site to survey: " + id + ".");
+        String id = lane == null ? nextLaunchMissingId() : nextLaunchMissingId(lane);
+        if (id == null) {
+            sender.sendMessage(lane == null
+                    ? "[OK] Every launch-required site is placed. Run /obs preflight and the rehearsal packet."
+                    : "[OK] Placement lane '" + lane.id() + "' is placed. Run /obs site next for the next global target.");
+            return;
+        }
+        sender.sendMessage("Next launch site to survey" + (lane == null ? "" : " in " + lane.id()) + ": " + id + ".");
         sender.sendMessage("Stand at its real anchor and run: /obs site set " + id);
+        sender.sendMessage("Director rule: place one site, build/prove it, then move on. Do not batch unknown structures.");
         sendPlacementBrief(sender, id, false);
         if (isLaneSite(id)) {
             sender.sendMessage("  Dimension lane: do this while standing in the correct Nether/End world, then run /obs placeworld there.");
@@ -1278,19 +1377,51 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sendPlacementBrief(sender, next, true);
             return;
         }
+        if (raw.equals("lanes")) {
+            sender.sendMessage("== Observance placement lanes ==");
+            for (PlacementLane lane : PLACEMENT_LANES) {
+                int placed = 0;
+                for (String siteId : lane.sites()) {
+                    if (launchSiteIssue(siteId) == null) placed++;
+                }
+                sender.sendMessage("[" + lane.id() + "] " + lane.label() + " - " + placed + "/" + lane.sites().length + " placed");
+                String next = nextLaunchMissingId(lane);
+                if (next != null) sender.sendMessage("  next: /obs site next " + lane.id() + " -> " + next);
+            }
+            return;
+        }
         if (raw.equals("all")) {
             sender.sendMessage("== Observance launch placement plan ==");
-            for (String id : LAUNCH_REQUIRED_SITES) {
+            for (PlacementLane lane : PLACEMENT_LANES) {
+                sender.sendMessage("[" + lane.id() + "] " + lane.label());
+                for (String id : lane.sites()) {
+                    PlacementBrief brief = placementBrief(id);
+                    String status = launchSiteIssue(id) == null ? "[placed]" : "[todo]";
+                    sender.sendMessage("  " + status + " " + id + " - " + brief.intent);
+                }
+            }
+            sender.sendMessage("Use /obs site plan <siteId> for placement rule + proof shots.");
+            sender.sendMessage("Recommended flow: generate placement/rehearsal packets -> /obs site plan lanes -> /obs site next <lane> -> one /obs site set + /obs placeworld at a time.");
+            return;
+        }
+        PlacementLane lane = placementLane(raw);
+        if (lane != null) {
+            sender.sendMessage("== placement lane: " + lane.id() + " ==");
+            sender.sendMessage(lane.label());
+            for (String id : lane.sites()) {
                 PlacementBrief brief = placementBrief(id);
                 String status = launchSiteIssue(id) == null ? "[placed]" : "[todo]";
                 sender.sendMessage(status + " " + id + " - " + brief.intent);
             }
-            sender.sendMessage("Use /obs site plan <siteId> for placement rule + proof shots.");
+            String next = nextLaunchMissingId(lane);
+            sender.sendMessage(next == null
+                    ? "[OK] Lane placed. Use /obs preflight or continue another lane."
+                    : "Next in lane: /obs site next " + lane.id() + " -> " + next);
             return;
         }
         if (!isLaunchRequiredSite(raw)) {
             sender.sendMessage("Observance: '" + raw + "' is not in the launch-required placement plan.");
-            sender.sendMessage("Try /obs site plan next, /obs site plan all, or a launch site id.");
+            sender.sendMessage("Try /obs site plan lanes, /obs site plan all, /obs site plan human, or a launch site id.");
             return;
         }
         sendPlacementBrief(sender, raw, true);
@@ -1302,6 +1433,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             String issue = launchSiteIssue(id);
             sender.sendMessage("== " + id + " ==");
             sender.sendMessage("Status: " + (issue == null ? "placed" : issue));
+            String lane = placementLaneId(id);
+            if (!lane.isBlank()) sender.sendMessage("Lane: " + lane + "   (use /obs site next " + lane + ")");
         }
         sender.sendMessage("  Intent: " + brief.intent);
         sender.sendMessage("  Place: " + brief.placeRule);
@@ -1330,6 +1463,55 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     "digit literacy and count logic; the number language becomes physical",
                     "place where players can circle it and compare marks without mobs interrupting",
                     "wide shot of count geometry, focal shot of digit key, answer/action surface, exit toward deep route");
+            case "vaun_hoard_chest" -> new PlacementBrief(
+                    "Vaun theory proof: the empty given-back column becomes an inventory act",
+                    "inside or beside Vaun's storage geometry; the empty return chest must be readable before use",
+                    "approach to hoard, empty given-back chest, deposited deep item, and opened cache/state");
+            case "vaun_bookshelf" -> new PlacementBrief(
+                    "Vaun theory proof: all taken / none given back becomes a six-slot count",
+                    "near the hoard chest but not touching it; let the shelf read as ledger storage, not a code pad",
+                    "shelf face, six-slot fill pattern, ledger clue nearby, and solved/open state");
+            case "mara_lectern_1" -> maraLecternPlacementBrief(1);
+            case "mara_lectern_2" -> maraLecternPlacementBrief(2);
+            case "mara_lectern_3" -> maraLecternPlacementBrief(3);
+            case "mara_lectern_4" -> maraLecternPlacementBrief(4);
+            case "mara_lectern_5" -> maraLecternPlacementBrief(5);
+            case "mara_map_marker" -> new PlacementBrief(
+                    "Mara theory proof: the map has to be walked by the group",
+                    "at the marker row destination with enough level ground for every present player to bow together",
+                    "approach from marker row, group bow positions, map/route clue, and solved cue");
+            case "sella_pool" -> new PlacementBrief(
+                    "Sella theory proof: the first bearing exists only as a water reflection",
+                    "at a real shore or still pool where looking down is natural and safe",
+                    "approach to water, reflection sightline, readable mirrored rune, and path toward far water");
+            case "sella_anchor" -> new PlacementBrief(
+                    "Sella theory proof: the shore scatter resolves only from one worn standing place",
+                    "above or beside the far-water pool; the bird-over-water silhouette must appear from this block",
+                    "anchor block, view-down alignment, resolved bird scatter, and return path");
+            case "orin_marker_1" -> orinMarkerPlacementBrief(1);
+            case "orin_marker_2" -> orinMarkerPlacementBrief(2);
+            case "orin_marker_3" -> orinMarkerPlacementBrief(3);
+            case "orin_marker_4" -> orinMarkerPlacementBrief(4);
+            case "orin_marker_5" -> orinMarkerPlacementBrief(5);
+            case "orin_marker_6" -> orinMarkerPlacementBrief(6);
+            case "orin_frame_dial_1" -> orinDialPlacementBrief(1);
+            case "orin_frame_dial_2" -> orinDialPlacementBrief(2);
+            case "orin_frame_dial_3" -> orinDialPlacementBrief(3);
+            case "orin_frame_dial_4" -> orinDialPlacementBrief(4);
+            case "orin_frame_dial_5" -> orinDialPlacementBrief(5);
+            case "orin_frame_dial_6" -> orinDialPlacementBrief(6);
+            case "brann_toll_tower" -> new PlacementBrief(
+                    "Brann theory proof: the black-moon toll is heard, not decoded from a plaque",
+                    "a high or exposed watch point where night changes the read; keep bed/shelter comfort away",
+                    "night approach, bell/toll surface, watch position, and heard/awake proof");
+            case "brann_corridor_start" -> new PlacementBrief(
+                    "Brann theory proof: silence begins here",
+                    "at the mouth of a sculk corridor with an obvious quiet path and no jump-scare clutter",
+                    "start threshold, visible sculk listening surfaces, crouch entry, and route to far end");
+            case "brann_corridor_end" -> new PlacementBrief(
+                    "Brann theory proof: silence must survive to the far door",
+                    "at the corridor's far threshold; it should be reachable only by staying quiet through the route",
+                    "far door, corridor back-view, solved/open state, and exit into Brann evidence");
             case "bow_marker_01" -> new PlacementBrief(
                     "teaches bowing as a custom before it is demanded",
                     "at a threshold players naturally slow at; leave room for multiple bodies",
@@ -1459,9 +1641,30 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private PlacementBrief keeperPlacementBrief(String keeper, String motif, String placeRule) {
         return new PlacementBrief(
-                keeper + " keeper stone; " + motif + " becomes a readable place",
-                placeRule + "; scatter away from other stones so it is found, not farmed",
+                keeper + " keeper evidence site; " + motif + " becomes a readable place",
+                placeRule + "; scatter away from sibling evidence sites so it is found, not farmed",
                 "approach silhouette, keeper-specific focal object, answer surface, and route away");
+    }
+
+    private PlacementBrief maraLecternPlacementBrief(int index) {
+        return new PlacementBrief(
+                "Mara theory proof: lectern " + index + " of five in the annotated page-lock",
+                "place with the other Mara lecterns as one readable shelf, not as five isolated stations",
+                "shelf approach, lectern " + index + " page, lamp/comparator state, and whole five-lectern view");
+    }
+
+    private PlacementBrief orinMarkerPlacementBrief(int index) {
+        return new PlacementBrief(
+                "Orin theory proof: fall-order bow marker " + index + " of six",
+                "space the six markers as a walkable row; each must have room for a crouch without falling or fighting mobs",
+                "marker " + index + " approach, crouch position, facing/mark detail, and view to the next marker");
+    }
+
+    private PlacementBrief orinDialPlacementBrief(int index) {
+        return new PlacementBrief(
+                "Orin theory proof: frame dial " + index + " of six echoes the marker facings",
+                "group the six dials in one niche or wall so players compare them with the marker walk",
+                "dial " + index + " face, intended rotation, full six-dial wall, and opened niche/state");
     }
 
     private PlacementBrief dreadPlacementBrief(String role, String placeRule) {
@@ -1477,6 +1680,35 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (launchSiteIssue(id) != null) return id;
         }
         return null;
+    }
+
+    private String nextLaunchMissingId(PlacementLane lane) {
+        if (lane == null) return nextLaunchMissingId();
+        if (plugin.sites() == null) return lane.sites().length > 0 ? lane.sites()[0] : null;
+        for (String id : lane.sites()) {
+            if (launchSiteIssue(id) != null) return id;
+        }
+        return null;
+    }
+
+    private static PlacementLane placementLane(String raw) {
+        if (raw == null) return null;
+        String want = raw.trim().toLowerCase(Locale.ROOT);
+        if (want.isBlank()) return null;
+        for (PlacementLane lane : PLACEMENT_LANES) {
+            if (lane.id().equals(want)) return lane;
+        }
+        return null;
+    }
+
+    private static String placementLaneId(String siteId) {
+        if (siteId == null) return "";
+        for (PlacementLane lane : PLACEMENT_LANES) {
+            for (String id : lane.sites()) {
+                if (id.equals(siteId)) return lane.id();
+            }
+        }
+        return "";
     }
 
     private String launchSiteIssue(String id) {
@@ -2681,10 +2913,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         placeLampStand(new Location(world, bx + 4, by - 7, bz + 27), 4, true);
         placeLampStand(new Location(world, bx - 4, by - 10, bz + 33), 5, true);
 
-        placeStandingSign(new Location(world, bx + 5, by + 1, bz + 2), BlockFace.WEST,
-                new String[]{"lamp-works", "upper stair", "oil counted", ""});
-        placeStandingSign(new Location(world, bx + 5, by - 7, bz + 24), BlockFace.WEST,
-                new String[]{"", "do not", "count below", ""});
+        placeEvidenceLectern(new Location(world, bx + 5, by + 1, bz + 2), BlockFace.WEST,
+                "lampworks ledger", List.of(
+                        "oil was counted at the upper stair.",
+                        "stand three was a dry cup.",
+                        "do not count below the black step."
+                ));
+        world.getBlockAt(bx + 5, by - 7, bz + 24).setType(Material.BLACK_CANDLE, false);
     }
 
     private void placeStairTread(Block block, Material material) {
@@ -2709,8 +2944,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             light.setLit(false);
             lamp.setBlockData(light, false);
         }
-        placeStandingSign(new Location(world, x, y, z - 1), BlockFace.SOUTH,
-                new String[]{"stand " + number, lit ? "kept" : "dry cup", lit ? "" : "no oil", ""});
+        world.getBlockAt(x, y, z - 1).setType(lit ? Material.CUT_COPPER : Material.WEATHERED_CUT_COPPER, false);
     }
 
     private void buildDeadStall(Location base) {
@@ -2763,8 +2997,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx - 2, by, bz).setType(Material.SOUL_LANTERN, false);
         world.getBlockAt(bx + 2, by, bz).setType(Material.CANDLE, false);
         world.getBlockAt(bx, by, bz).setType(Material.CAKE, false);
-        placeStandingSign(new Location(world, bx, by, bz - 1), BlockFace.SOUTH,
-                new String[]{"dead-stall", "leave a crust", "take nothing", ""});
+        placeEvidenceLectern(new Location(world, bx, by, bz - 1), BlockFace.SOUTH,
+                "stall slate", List.of(
+                        "leave a crust.",
+                        "take nothing.",
+                        "the dead stall records giving, not buying."
+                ));
     }
 
     private void buildBirdCoops(Location base) {
@@ -2811,8 +3049,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx - 4, by, bz + 3).setType(Material.BONE_BLOCK, false);
         world.getBlockAt(bx - 3, by, bz + 3).setType(Material.WHITE_CARPET, false);
         world.getBlockAt(bx + 4, by, bz + 3).setType(Material.CALCITE, false);
-        placeStandingSign(new Location(world, bx, by, bz - 1), BlockFace.SOUTH,
-                new String[]{"third coop", "door open", "husk left", ""});
+        world.getBlockAt(bx, by, bz - 1).setType(Material.LIGHT_GRAY_CARPET, false);
     }
 
     private void buildSchoolStand(Location base) {
@@ -2857,10 +3094,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx + 3, by, bz - 2).setType(Material.BARREL, false);
         world.getBlockAt(bx, by + 1, bz + 3).setType(Material.WHITE_CARPET, false);
 
-        placeStandingSign(new Location(world, bx - 4, by, bz), BlockFace.EAST,
-                new String[]{"school-stand", "six stones", "one grey", ""});
-        placeStandingSign(new Location(world, bx + 4, by, bz), BlockFace.WEST,
-                new String[]{"keep your", "light", "keep your", "light"});
+        placeEvidenceLectern(new Location(world, bx - 4, by, bz), BlockFace.EAST,
+                "copy line", List.of(
+                        "keep your light.",
+                        "keep your light.",
+                        "six stones copied the line. the grey one did not."
+                ));
+        world.getBlockAt(bx + 4, by, bz).setType(Material.LIGHT_GRAY_CARPET, false);
     }
 
     private void buildMarkersRow(Location base) {
@@ -2891,10 +3131,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx + 7, by, bz).setType(Material.GRAY_CONCRETE, false);
         world.getBlockAt(bx + 7, by, bz - 1).setType(Material.AIR, false);
         world.getBlockAt(bx + 7, by + 1, bz).setType(Material.GRAY_CANDLE, false);
-        placeStandingSign(new Location(world, bx - 7, by, bz + 2), BlockFace.SOUTH,
-                new String[]{"the markers", "bow at each", "not all one", "winter"});
-        placeStandingSign(new Location(world, bx + 4, by, bz + 2), BlockFace.WEST,
-                new String[]{"six set", "one hollow", "count again", ""});
+        placeEvidenceLectern(new Location(world, bx - 7, by, bz + 2), BlockFace.SOUTH,
+                "marker row", List.of(
+                        "six stones were set for bowing.",
+                        "one hollow was left at the end.",
+                        "count again after the winter mark."
+                ));
+        world.getBlockAt(bx + 4, by, bz + 2).setType(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, false);
     }
 
     private void buildCisternSeven(Location base) {
@@ -2932,10 +3175,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx - 3, by, bz + 3).setType(Material.BARREL, false);
         world.getBlockAt(bx + 3, by, bz + 3).setType(Material.LANTERN, false);
         world.getBlockAt(bx + 3, by - 1, bz + 1).setType(materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
-        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.EAST,
-                new String[]{"cistern 7", "good oil", "two jars", ""});
-        placeStandingSign(new Location(world, bx + 5, by, bz - 2), BlockFace.WEST,
-                new String[]{"the water", "gives light", "back wrong", ""});
+        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.EAST,
+                "cistern seven", List.of(
+                        "good oil: two jars.",
+                        "the water gave light back wrong.",
+                        "the seventh mark is under the dark surface."
+                ));
+        world.getBlockAt(bx + 5, by, bz - 2).setType(Material.DARK_PRISMARINE_SLAB, false);
     }
 
     private void buildWatchFloor(Location base) {
@@ -2962,6 +3208,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             d.setFacing(BlockFace.SOUTH);
             lectern.setBlockData(d, false);
         }
+        fillWrittenLecternBook(lectern, "watch floor", "the record", List.of(
+                "black moon.",
+                "do not sleep on the floor of the watch.",
+                "the log stopped writing before the keepers stopped standing."
+        ));
         for (int dx : new int[]{-4, 4}) {
             for (int dz : new int[]{-3, 3}) {
                 world.getBlockAt(bx + dx, by, bz + dz).setType(Material.DEEPSLATE_BRICK_WALL, false);
@@ -2971,10 +3222,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx - 2, by, bz).setType(Material.CHISELED_BOOKSHELF, false);
         world.getBlockAt(bx + 2, by, bz).setType(Material.DAYLIGHT_DETECTOR, false);
         world.getBlockAt(bx, by, bz + 2).setType(Material.BLACK_CANDLE, false);
-        placeStandingSign(new Location(world, bx - 4, by, bz - 4), BlockFace.SOUTH,
-                new String[]{"watch floor", "black moon", "do not sleep", ""});
-        placeStandingSign(new Location(world, bx + 4, by, bz - 4), BlockFace.SOUTH,
-                new String[]{"the log", "does not", "write now", "kept"});
+        world.getBlockAt(bx - 4, by, bz - 4).setType(Material.BLACK_CARPET, false);
+        world.getBlockAt(bx + 4, by, bz - 4).setType(Material.LIGHT_GRAY_CARPET, false);
     }
 
     private void buildSetApartShelf(Location base) {
@@ -3006,10 +3255,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         world.getBlockAt(bx, by, bz - 1).setType(Material.REDSTONE_LAMP, false);
         world.getBlockAt(bx + 4, by, bz + 3).setType(Material.BLACK_CANDLE, false);
-        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
-                new String[]{"set apart", "entry 5", "warm lamp", ""});
-        placeStandingSign(new Location(world, bx + 5, by, bz + 2), BlockFace.WEST,
-                new String[]{"do not price", "do not count", "with cold", ""});
+        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+                "entry five shelf", List.of(
+                        "entry five was set apart with a warm lamp.",
+                        "do not price it.",
+                        "do not count it with the cold shelf."
+                ));
+        world.getBlockAt(bx + 5, by, bz + 2).setType(Material.WEATHERED_CUT_COPPER, false);
     }
 
     private void buildUndercroftSeal(Location base) {
@@ -3044,10 +3296,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx, by + 1, bz - 1).setType(Material.SOUL_LANTERN, false);
         world.getBlockAt(bx - 4, by, bz).setType(Material.GRAY_CARPET, false);
         world.getBlockAt(bx - 3, by, bz).setType(Material.GRAY_CARPET, false);
-        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
-                new String[]{"seal entered", "mason last", "rest cut low", ""});
-        placeStandingSign(new Location(world, bx + 4, by - 1, bz), BlockFace.WEST,
-                new String[]{"bow to read", "not small", "i --", ""});
+        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+                "mason's rest", List.of(
+                        "the seal was entered from the wrong side.",
+                        "the mason cut the last line low.",
+                        "bow to read what was not small."
+                ));
+        world.getBlockAt(bx + 4, by - 1, bz).setType(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, false);
     }
 
     private void buildForgottenMouth(Location base) {
@@ -3085,10 +3340,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx - 1, by, bz + 3).setType(Material.OAK_LEAVES, false);
         world.getBlockAt(bx + 1, by, bz + 3).setType(Material.OAK_LEAVES, false);
         world.getBlockAt(bx, by, bz + 5).setType(Material.LANTERN, false);
-        placeStandingSign(new Location(world, bx - 3, by, bz - 5), BlockFace.SOUTH,
-                new String[]{"way up", "real", "cost the line", ""});
-        placeStandingSign(new Location(world, bx + 3, by, bz + 4), BlockFace.WEST,
-                new String[]{"return mark", "last draft", "surface heals", ""});
+        placeEvidenceLectern(new Location(world, bx - 3, by, bz - 5), BlockFace.SOUTH,
+                "way up draft", List.of(
+                        "the way up was real.",
+                        "it cost the line.",
+                        "the last return mark healed where the surface could still remember it."
+                ));
+        world.getBlockAt(bx + 3, by, bz + 4).setType(Material.MOSS_CARPET, false);
     }
 
     private void buildDeepMarket(Location base) {
@@ -3129,11 +3387,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx + 4, by, bz + 5).setType(Material.CHISELED_BOOKSHELF, false);
         world.getBlockAt(bx + 6, by, bz + 5).setType(Material.CHISELED_BOOKSHELF, false);
         world.getBlockAt(bx + 5, by + 1, bz + 5).setType(Material.LANTERN, false);
-
-        placeStandingSign(new Location(world, bx, by, bz - 6), BlockFace.SOUTH,
-                new String[]{"18 stalls", "bread 4 salt", "oil mending", "lectern shelf"});
-        placeStandingSign(new Location(world, bx - 6, by, bz + 5), BlockFace.EAST,
-                new String[]{"lamp minded", "for a token", "while you eat", ""});
+        fillWrittenLecternBook(lectern, "market tallies", "the record", List.of(
+                "eighteen stalls were counted before the warm road closed.",
+                "bread was traded for salt, oil, mending, and a watched lamp.",
+                "one lamp could be minded for a token while the owner ate."
+        ));
+        world.getBlockAt(bx, by, bz - 6).setType(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, false);
+        world.getBlockAt(bx - 6, by, bz + 5).setType(Material.BARREL, false);
     }
 
     private void buildMarketStall(org.bukkit.World world, int x, int y, int z, int stall) {
@@ -3180,18 +3440,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx + 1, by, bz - 1).setType(Material.CANDLE, false);
         world.getBlockAt(bx + 2, by, bz - 1).setType(Material.AIR, false);
 
-        Block sheet = world.getBlockAt(bx, by + 1, bz);
-        sheet.setType(Material.OAK_SIGN, false);
-        if (sheet.getBlockData() instanceof Rotatable r) {
-            r.setRotation(BlockFace.SOUTH);
-            sheet.setBlockData(r, false);
-        }
-        setSignLines(sheet, true, new String[]{"3 heads", "1 1/2 loaves", "hand over", "no head"});
-
-        placeStandingSign(new Location(world, bx - 3, by, bz + 2), BlockFace.EAST,
-                new String[]{"child line", "not a tally", "drawn through", "the form"});
-        placeStandingSign(new Location(world, bx + 3, by, bz + 2), BlockFace.WEST,
-                new String[]{"R14", "filled correct", "still hungry", ""});
+        world.getBlockAt(bx, by + 1, bz).setType(Material.LIGHT_GRAY_CARPET, false);
+        world.getBlockAt(bx - 3, by, bz + 2).setType(Material.GRAY_CANDLE, false);
+        placeEvidenceLectern(new Location(world, bx + 3, by, bz + 2), BlockFace.WEST,
+                "ration form r14", List.of(
+                        "three heads. one and a half loaves.",
+                        "the hand was filled correctly.",
+                        "the crossed line is where the child stopped being a tally."
+                ));
         world.getBlockAt(bx, by + 2, bz - 2).setType(Material.LANTERN, false);
     }
 
@@ -3239,10 +3495,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             light.setLit(false);
             coldLamp.setBlockData(light, false);
         }
-        placeStandingSign(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
-                new String[]{"mark 33", "third bay", "line broken", ""});
-        placeStandingSign(new Location(world, bx + 5, by, bz + 2), BlockFace.WEST,
-                new String[]{"not a road", "down is colder", "lamp set apart", ""});
+        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+                "third bay mark", List.of(
+                        "mark 33: the line broke downward here.",
+                        "this is not a road.",
+                        "the lamp was set apart after the floor began answering."
+                ));
+        world.getBlockAt(bx + 5, by, bz + 2).setType(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, false);
     }
 
     private void buildWarmTownCollapse(Location base) {
@@ -3300,10 +3559,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         world.getBlockAt(bx + 3, by, bz + 1).setType(Material.IRON_BARS, false);
         world.getBlockAt(bx + 4, by, bz + 2).setType(Material.BLACK_CANDLE, false);
-        placeStandingSign(new Location(world, bx, by, bz + 2), BlockFace.SOUTH,
-                new String[]{"WARDEN-3", "east closed", "no town", "hands return"});
-        placeStandingSign(new Location(world, bx - 4, by, bz - 1), BlockFace.SOUTH,
-                new String[]{"market east", "no bread", "lamp out", ""});
+        placeEvidenceLectern(new Location(world, bx, by, bz + 2), BlockFace.SOUTH,
+                "warden 3 closure", List.of(
+                        "east market closed under WARDEN-3.",
+                        "no bread remained warm.",
+                        "all hands returned except the one sent for the lamp."
+                ));
+        world.getBlockAt(bx - 4, by, bz - 1).setType(Material.BLACK_CANDLE, false);
     }
 
     private void placePaintedLineFixture(Location base) {
@@ -3322,8 +3584,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 world.getBlockAt(bx + dx, by - 1, bz + dz).setType(Material.CRACKED_DEEPSLATE_BRICKS, false);
             }
         }
-        placeStandingSign(new Location(world, bx + 6, by, bz), BlockFace.WEST,
-                new String[]{"", "the line", "is counted", ""});
+        placeEvidenceLectern(new Location(world, bx + 6, by, bz), BlockFace.WEST,
+                "line count", List.of(
+                        "the line is counted.",
+                        "crossing it is a choice, not a road.",
+                        "Aro's warm answer stops here."
+                ));
     }
 
     private void placeRouteLanding(org.bukkit.World world, int cx, int y, int z, int halfWidth, int depth) {
@@ -3632,7 +3898,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             new CoverageLane("prologue", "Prologue and first marker", "setup", false,
                     new String[]{"first_report_lectern_01", "first_marker_01"},
                     "Open first report, confirm marker exists."),
-            new CoverageLane("surface", "Rosetta and six keeper stones", "spine", false,
+            new CoverageLane("surface", "Rosetta and keeper evidence sites", "spine", false,
                     new String[]{"rune_rosetta", "stone_vaun", "stone_mara", "stone_sella",
                             "stone_orin", "stone_brann", "stone_iss"},
                     "Read/touch each keeper site; submit at one blank answer surface."),
@@ -3931,18 +4197,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void sendSetupRunbook(CommandSender sender) {
         sender.sendMessage("[setup]");
-        sender.sendMessage("  1) Test lab: /obs fullrun  OR compact world: /obs director world");
-        sender.sendMessage("  2) Verify hardware: /obs audit -> /obs repair -> /obs audit");
-        sender.sendMessage("  3) Give tools if needed: /obs lens give <player> and /obs needle <player>");
-        sender.sendMessage("  4) Route proof: /obs descentproof; cross the painted line, then /obs flag list.");
-        sender.sendMessage("  5) Focused mechanic grid: /obs puzzlepass; side/lore row: /obs sidepass.");
-        sender.sendMessage("  6) Keep Watcher manual/muted with /obs sleep on; rearm with /obs sleep off.");
+        sender.sendMessage("  1) Rehearsal lab: /obs director lab. Prove mechanics and pacing before choosing final terrain.");
+        sender.sendMessage("  2) Proof packets: run tools\\new_launch_placement_packet.ps1 and tools\\new_rehearsal_packet.ps1 before surveying.");
+        sender.sendMessage("  3) Lane plan: /obs site plan lanes, then /obs site next prologue|keepers|human|deep|dread as you work.");
+        sender.sendMessage("  4) Real placement: read one lane brief, stand at one anchor, /obs site set <siteId>, then /obs placeworld.");
+        sender.sendMessage("  5) Underground rule: let /obs placeworld build deep pockets. Spend your judgment on entrances, sightlines, and believable surface context.");
+        sender.sendMessage("  6) Proof loop after each lane: fill coords-capture proof shots, /obs preflight, fix REPLACE issues, then /obs rehearse done.");
+        sender.sendMessage("  7) Focused tests: /obs puzzlepass for mechanics; /obs sidepass for NPC/lore; /obs dreadpass run for scares; /obs unlit ready for the mirror village.");
+        sender.sendMessage("  8) Keep Watcher manual/muted with /obs sleep on while setting up; rearm with /obs sleep off.");
     }
 
     private void sendSpineRunbook(CommandSender sender) {
         sender.sendMessage("[main spine]");
         sender.sendMessage("  Prologue: open/read first lectern; confirm the first marker exists.");
-        sender.sendMessage("  Rosetta/keepers: inspect signs/lecterns; edit blank answer signs to submit tests.");
+        sender.sendMessage("  Rosetta/keepers: inspect books, lecterns, objects, and answer surfaces; edit blank answer signs only to submit tests.");
         sender.sendMessage("  Vaun: use hoard chest and chiseled bookshelf fixtures.");
         sender.sendMessage("  Mara: open all five page-lock lecterns; books must be written, not blank.");
         sender.sendMessage("  Sella: test reflection/pool fixture and Lens visibility.");
@@ -4005,15 +4273,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  6) Fence it: /obs unlit border [radius]. Then verify: /obs unlit audit.");
         sender.sendMessage("  7) Rehearse pieces: /obs unlit pass light, stalker, extinguish, house, extract.");
         sender.sendMessage("  8) Handoff check: /obs unlit ready, then tools\\check_unlit_playtest_ready.ps1 -PacketDir rehearsals\\<date>.");
+        sender.sendMessage("  Fixture rule: required houses read through ledgers/books/objects. Plain signs are fallback markers, not the house language.");
         sender.sendMessage("  Rule: houses are non-linear. Do not write clue text that assumes expedition numbers.");
     }
 
     private void sendOpsRunbook(CommandSender sender) {
         sender.sendMessage("[ops/dashboard]");
-        sender.sendMessage("  Dashboard shows mode, pending approvals, armed beats, and failed beats.");
+        sender.sendMessage("  Dashboard setup flow shows the intended order: rehearsal lab, proof packets, real placement, launch proof.");
+        sender.sendMessage("  Dashboard shows mode, pending approvals, armed beats, failed beats, Unlit evidence, and keeper theories.");
         sender.sendMessage("  Pending approvals live in the beat queue; failed beats mean inspect dashboard/console.");
         sender.sendMessage("  Vercel dashboard does not fix blocks. Empty lecterns are fixed by jar + /obs repair.");
-        sender.sendMessage("  Production placement: survey with /obs site set <siteId>, then /obs placeworld.");
+        sender.sendMessage("  Production placement: read /obs site plan next, survey with /obs site set <siteId>, then /obs placeworld.");
     }
 
     private void placeDirectPrologue(Location origin) {
@@ -4687,12 +4957,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx, by + 1, bz - 3).setType(Material.IRON_CHAIN, false);
         world.getBlockAt(bx, by, bz - 3).setType(Material.SOUL_LANTERN, false);
         world.getBlockAt(bx - 2, by, bz - 3).setType(Material.CHISELED_BOOKSHELF, false);
-        world.getBlockAt(bx + 2, by, bz - 3).setType(Material.LECTERN, false);
-
-        placeStandingSign(new Location(world, bx - 4, by, bz + 4), BlockFace.SOUTH,
-                new String[]{"six stones", "and one grey", "count again", ""});
-        placeStandingSign(new Location(world, bx + 4, by, bz - 3), BlockFace.WEST,
-                new String[]{"face water", "read still", "not straight", ""});
+        placeEvidenceLectern(new Location(world, bx + 2, by, bz - 3), BlockFace.WEST,
+                "far water copy", List.of(
+                        "six stones and one grey.",
+                        "face the water and read what holds still.",
+                        "the line is not straight when the copy gives it back."
+                ));
+        world.getBlockAt(bx - 4, by, bz + 4).setType(Material.LIGHT_GRAY_CARPET, false);
+        world.getBlockAt(bx + 4, by, bz - 3).setType(Material.DARK_PRISMARINE_SLAB, false);
     }
 
     private void setSignLines(Block b, boolean waxed, String[] lines) {
@@ -6145,6 +6417,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         handleDialogueAudit(sender);
         handleCoverage(sender);
         sender.sendMessage("Preflight rule: hardware green is not enough; visualaudit must not report REPLACE issues, and NPC claims must have world/mechanic proof before live placement.");
+        sender.sendMessage("Setup rule: lab first, compact route second, curated real placement last. Underground pockets should be built, not hand-improvised.");
     }
 
     private void handleDialogueAudit(CommandSender sender) {
@@ -6774,79 +7047,79 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.DARK_PRISMARINE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SEA_LANTERN)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected far-water mirror pool, count stones, copybook shelf, and shoreline signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected far-water mirror pool, count stones, copybook shelf, and far-water copybook inside radius.";
         }
         if ("school_stand".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected school slate, copybook shelf, six stones, grey seventh marker, and copy-line signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected school slate, copybook shelf, six stones, grey seventh marker, and copy-line book inside radius.";
         }
         if ("markers_row".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_DEEPSLATE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BROWN_CARPET)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected six bow-stones, worn bow marks, grey seventh hollow, and marker-row signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected six bow-stones, worn bow marks, grey seventh hollow, and marker-row book inside radius.";
         }
         if ("cistern_7".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.DARK_PRISMARINE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.END_STONE_BRICKS)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected black water, pale arch, good-oil jars, and cistern warning signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected black water, pale arch, good-oil jars, and cistern record inside radius.";
         }
         if ("watch_floor".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SOUL_LANTERN)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CANDLE)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected watch-log lectern, black-moon lights, finished-log signs, and dark-hours proof inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CANDLE))) {
+            return "FAIL " + site.id() + ": expected watch-log lectern, black-moon lights, and dark-hours proof inside radius.";
         }
         if ("set_apart_shelf".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LANTERN)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected entry-5 shelf, cold/warm lamp contrast, redacted count, and set-apart signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected entry-5 shelf, cold/warm lamp contrast, redacted count, and set-apart record inside radius.";
         }
         if ("undercroft_seal".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_DEEPSLATE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.POLISHED_DEEPSLATE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SOUL_LANTERN)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected sealed door, mason line, low bow-to-read line, and undercroft warning signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected sealed door, mason line, low bow-to-read line, and mason record inside radius.";
         }
         if ("forgotten_mouth".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRASS_BLOCK)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GLOWSTONE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SEA_LANTERN)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected true way-up mouth, healed surface, return mark, and way-up signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected true way-up mouth, healed surface, return mark, and way-up draft inside radius.";
         }
         if ("deep_market".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected market stalls, lectern-shelf books, and market board inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected market stalls, lectern-shelf ledger, and lived-in trade objects inside radius.";
         }
         if ("ration_table".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CAKE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected ration table, half-loaf marker, and R14/child-line signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected ration table, half-loaf marker, and written R14 ration form inside radius.";
         }
         if ("third_bay_breach".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SCULK)
-                || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected broken Deep Line, downward breach, and third-bay warning signs inside radius.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected broken Deep Line, downward breach, and third-bay incident note inside radius.";
         }
         if ("warm_town_collapse".equals(type)
-                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAVEL) || !hasSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected collapse rubble and WARDEN-3 notice inside warm-town radius.";
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAVEL)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected collapse rubble and WARDEN-3 closure record inside warm-town radius.";
         }
         if (isCoreAuditSite(site.id()) && block.getType() == Material.AIR) {
             return "FAIL " + site.id() + ": anchor block is air.";
@@ -7093,11 +7366,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             for (String s : new String[]{"todo", "next", "plan", "launch", "list", "set"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("next")) {
+            for (PlacementLane lane : PLACEMENT_LANES) {
+                if (lane.id().startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(lane.id());
+            }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("set")) {
             out.addAll(siteIdSuggestions(args[2]));
         } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("plan")) {
-            for (String s : new String[]{"next", "all"}) {
+            for (String s : new String[]{"next", "all", "lanes"}) {
                 if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+            for (PlacementLane lane : PLACEMENT_LANES) {
+                if (lane.id().startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(lane.id());
             }
             out.addAll(siteIdSuggestions(args[2]));
         } else if (args.length == 2 && args[0].equalsIgnoreCase("sleep")) {

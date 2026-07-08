@@ -355,6 +355,14 @@ Status: **media-required**
 
 The found footage, Drive folder, waveform/spectrogram, and `the-hold.zip` are record copies.
 
+Current staging state:
+
+- found footage is produced/local-staged; see `design/MANUAL-MEDIA-STAGING.md`
+- `the-hold.zip` is produced and present in `dashboard/public/the-hold/`; see `design/MANUAL-MEDIA-STAGING.md`
+- recovered archive/spectrogram is produced/local-staged and hosted on Dropbox; see `design/MANUAL-MEDIA-STAGING.md`
+- found footage is hosted on YouTube and HTTP-reachable; see `design/MANUAL-MEDIA-STAGING.md`
+- YouTube videos, archive contents, and spectrogram payload are operator-checked; do not flip media-ready flags or plant player-facing trails until the matching story gate is ready
+
 Each media artifact must have:
 
 - one concrete payload that John can use
@@ -366,6 +374,10 @@ Found footage:
 - John watches normally, then scrubs frame by frame
 - a frame, audio layer, subtitle, or metadata point reveals a real clue
 - the clue confirms a known language: kept, record, wall, seventh, count, light, deep, name
+- clip 1 resolves to `ASH-13` and flags `media_prior_base_read`
+- clip 2 resolves to `where the reeds fold back` and flags `media_far_water_read`
+- clip 3 resolves to `stay awake` and flags `media_black_moon_read`
+- clip 4 is late only; after the name is earned it resolves to `six return one is not kept`
 
 Drive folder:
 
@@ -375,6 +387,9 @@ Drive folder:
 Spectrogram:
 
 - damaged sound becomes record text or glyphs
+- the launch spectrogram phrase is `I WAS NOT KEPT`; it maps to the optional `spine-recovered-archive`
+  answer and flags `media_spectrogram_read`
+- it must not reveal `AVERYN` before the group earns the name in-world
 
 `the-hold.zip`:
 
@@ -439,8 +454,8 @@ Required before a real launch run:
 - stage cold open
 - run `/observance reading`
 - run `/observance finale`
-- host `the-hold.zip`
-- prepare found footage, Drive folder, waveform/spectrogram
+- verify deployed `the-hold.zip`
+- verify hosted found footage, Drive folder, waveform/spectrogram
 - rotate exposed credentials
 - run vertical slice
 

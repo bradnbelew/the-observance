@@ -9,14 +9,24 @@ $applyFile = Join-Path $RepoRoot "tools\apply_launch_coords.ps1"
 $qualityFile = Join-Path $RepoRoot "tools\check_launch_coord_quality.ps1"
 $commandFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\command\ObservanceCommand.java"
 $sitesFile = Join-Path $RepoRoot "plugin\src\main\resources\sites.yml"
+$applyAllSqlFile = Join-Path $RepoRoot "discord\supabase\apply-all.sql"
+$deployManifestFile = Join-Path $RepoRoot "observance-deploy-manifest.json"
+$datapackZipFile = Join-Path $RepoRoot "observance-datapack.zip"
+$resourcepackZipFile = Join-Path $RepoRoot "observance-resourcepack.zip"
 $runbookFile = Join-Path $RepoRoot "design\RUNBOOK.md"
 $directorFile = Join-Path $RepoRoot "design\DIRECTOR-SIMPLIFICATION.md"
 
-foreach ($file in @($generatorFile, $applyFile, $qualityFile, $commandFile, $sitesFile, $runbookFile, $directorFile)) {
+foreach ($file in @($generatorFile, $applyFile, $qualityFile, $commandFile, $sitesFile, $applyAllSqlFile, $deployManifestFile, $datapackZipFile, $resourcepackZipFile, $runbookFile, $directorFile)) {
   if (-not (Test-Path $file)) {
     throw "launch placement packet check: missing required file: $file"
   }
 }
+
+$pluginJars = @(Get-ChildItem -LiteralPath (Join-Path $RepoRoot "plugin\build\libs") -Filter "*.jar" -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTimeUtc -Descending)
+if ($pluginJars.Count -eq 0) {
+  throw "launch placement packet check: missing built plugin jar under plugin\build\libs"
+}
+$pluginJarFile = $pluginJars[0].FullName
 
 $commandSource = Get-Content -LiteralPath $commandFile -Raw
 $applySource = Get-Content -LiteralPath $applyFile -Raw
@@ -32,6 +42,10 @@ function RequireContains([string]$Label, [string]$Text, [string]$Needle) {
   if ($Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Fail "$Label missing expected text: $Needle"
   }
+}
+
+function FileSha1([string]$Path) {
+  return (Get-FileHash -LiteralPath $Path -Algorithm SHA1).Hash.ToLowerInvariant()
 }
 
 function QuotedStrings([string]$Text) {
@@ -70,9 +84,17 @@ if (Test-Path $csvPath) {
   if ($rows.Count -ne $launchSites.Count) {
     Fail "launch-sites.csv has $($rows.Count) row(s), expected $($launchSites.Count)"
   }
+  if (-not ($rows | Get-Member -Name "Lane" -MemberType NoteProperty)) {
+    Fail "launch-sites.csv missing placement Lane column"
+  }
   foreach ($id in $launchSites) {
     if (-not ($rows | Where-Object { $_.SiteId -eq $id })) {
       Fail "launch-sites.csv missing launch site '$id'"
+    }
+  }
+  foreach ($lane in @("prologue", "keepers", "customs", "human", "deep", "dread", "dimensions")) {
+    if (-not ($rows | Where-Object { $_.Lane -eq $lane })) {
+      Fail "launch-sites.csv has no rows for placement lane '$lane'"
     }
   }
 }
@@ -82,7 +104,7 @@ if (Test-Path $capturePath) {
   if ($captureRows.Count -ne $launchSites.Count) {
     Fail "coords-capture.csv has $($captureRows.Count) row(s), expected $($launchSites.Count)"
   }
-  foreach ($column in @("ApproachShot", "FocalShot", "ActionShot", "ExitShot", "CohesionNotes")) {
+  foreach ($column in @("Lane", "ApproachShot", "FocalShot", "ActionShot", "ExitShot", "CohesionNotes")) {
     if (-not ($captureRows | Get-Member -Name $column -MemberType NoteProperty)) {
       Fail "coords-capture.csv missing quality-proof column '$column'"
     }
@@ -92,7 +114,38 @@ if (Test-Path $capturePath) {
 if (Test-Path $mdPath) {
   $md = Get-Content -LiteralPath $mdPath -Raw
   foreach ($required in @(
+    "Launch Receipt",
+    "Supabase SQL",
+    "discord\supabase\apply-all.sql",
+    "Apply-all SHA1",
+    (FileSha1 $applyAllSqlFile),
+    "Deploy manifest",
+    "observance-deploy-manifest.json",
+    "Plugin jar",
+    "Plugin jar SHA1",
+    (FileSha1 $pluginJarFile),
+    "Datapack zip",
+    "observance-datapack.zip",
+    "Datapack SHA1",
+    (FileSha1 $datapackZipFile),
+    "Resource pack zip",
+    "observance-resourcepack.zip",
+    "Resource pack SHA1",
+    (FileSha1 $resourcepackZipFile),
+    "resource-pack.url",
+    "set_resource_pack_config.ps1",
+    "check_hosted_resource_pack.ps1",
+    "friend-launch-quickstart.md",
+    "launch-blockers.md",
+    "manual-media-checklist.md",
+    "supabase-apply-card.md",
+    "live-server-command-sheet.md",
+    "friend-launch-todo.md",
+    "launch-attestations.md",
     "launch-required coordinate anchors",
+    "Placement Lanes",
+    "/obs site plan lanes",
+    "/obs site next <lane>",
     "/obs site plan",
     "/obs site set",
     "/obs placeworld",
@@ -101,7 +154,10 @@ if (Test-Path $mdPath) {
     "silhouette / palette / lighting / body verb / action-answer legibility",
     "Visual status is KEEP",
     "four proof-shot columns",
-    "CohesionNotes"
+    "CohesionNotes",
+    "prologue - Prologue / first literacy",
+    "human - Human-history side proof web",
+    "deep - Deep route, market, and finale"
   )) {
     RequireContains "00-placement.md" $md $required
   }
@@ -136,8 +192,8 @@ $applySmokeSites = Join-Path $packetDir "sites-apply-smoke.yml"
 Copy-Item -LiteralPath $sitesFile -Destination $applySmokeSites -Force
 $applySmokeCsv = Join-Path $packetDir "coords-apply-smoke.csv"
 @"
-SiteId,ChosenWorld,X,Y,Z,SurveyedBy,VisualStatus,ApproachShot,FocalShot,ActionShot,ExitShot,CohesionNotes,Notes
-first_report_lectern_01,world,11,64,-22,audit,KEEP,approach.png,focal.png,action.png,exit.png,near the rune teaching route,synthetic apply smoke
+SiteId,Lane,ChosenWorld,X,Y,Z,SurveyedBy,VisualStatus,ApproachShot,FocalShot,ActionShot,ExitShot,CohesionNotes,Notes
+first_report_lectern_01,prologue,world,11,64,-22,audit,KEEP,approach.png,focal.png,action.png,exit.png,near the rune teaching route,synthetic apply smoke
 "@ | Set-Content -LiteralPath $applySmokeCsv -Encoding UTF8
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $applyFile -RepoRoot $RepoRoot -SitesFile $applySmokeSites -CaptureCsv $applySmokeCsv | Out-Null

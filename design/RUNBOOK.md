@@ -19,6 +19,16 @@
 - Grab your **`service_role`** key (Project Settings → API → `service_role`, the *secret* one).
 
 - From the repo root, run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_friend_launch.ps1`**. This is the
+  fastest friend-launch prep path: it builds the deploy bundle, creates the launch placement packet, creates
+  the live rehearsal packet, and runs the current launch blocker report against those exact files.
+  It also writes `friend-launch-quickstart.md`, `launch-blockers.md`, `manual-media-checklist.md`,
+  `supabase-apply-card.md`, `live-server-command-sheet.md`, and `friend-launch-todo.md` into the rehearsal
+  packet with the exact paths, Supabase SQL SHA1, deploy hashes, media-ready flags, live command receipts
+  to collect, remaining live blockers, and final go/no-go command for that run.
+  If the resource pack is already hosted, run the same helper with
+  **`-ResourcePackUrl <hosted-https-zip-url>`** so the URL and current zip SHA1 are written during prep.
+- From the repo root, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_all.ps1`**. This is the one-button
   prep check: Discord/data story audit, dashboard build, Java 21 plugin source/jar checks, plugin DB
   contract checks, Minecraft text-surface fit, Record/web artifact withholding, Record terminal hint
@@ -52,6 +62,9 @@
 - After hosting the resource pack, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/set_resource_pack_config.ps1 -Url <hosted-https-zip-url>`**
   so the URL and current zip SHA1 are written together.
+- Then run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_hosted_resource_pack.ps1`**
+  so the hosted `.zip` bytes are proved to match the local resource-pack SHA1 before players join.
 - The side-quest audit enforces the launch rule: only two blunt false/dead leads total, and each must
   have teeth. Optional content should build confidence, not teach players the ARG wastes their walks.
 
@@ -77,30 +90,32 @@
   lecterns, townsfolk, companion/finale tools, the Lamp-works descent proof chain, and the warm-town
   false-lead collapse in one pass.
 - For the final curated world, use **`/observance site todo`** in game as the live launch-coordinate
-  checklist. **`/observance site next`** names the next required site to survey and includes its placement
-  brief; **`/observance site plan <siteId>`** gives the intent, placement rule, and proof shots for any
-  launch anchor. Stand at the real anchor and run **`/observance site set <siteId>`**. The command prints the
-  remaining launch count after each survey so you do not have to keep the 42-site list in your head.
+  checklist. Start with **`/observance site plan lanes`** so placement is handled as scene passes:
+  `prologue`, `keepers`, `customs`, `human`, `deep`, `dread`, and `dimensions`. **`/observance site next <lane>`**
+  names the next required site in that lane and includes its placement brief; **`/observance site plan <siteId>`**
+  gives the intent, placement rule, and proof shots for any launch anchor. Stand at the real anchor and run
+  **`/observance site set <siteId>`**. The command prints the remaining launch count after each survey so you do
+  not have to keep the 67-site list in your head.
 - Before that final survey sprint, generate the external worksheet:
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_launch_placement_packet.ps1`**.
   It writes `00-placement.md`, `launch-sites.csv`, and `coords-capture.csv` under `build\launch-placement\`.
-  Keep `coords-capture.csv` open while placing: choose terrain, run `/observance site plan <siteId>`,
-  survey with `/observance site set <siteId>`, then record the real world/X/Y/Z, visual verdict, four
-  proof shots, and cohesion notes. A row is not launch-ready just because it has numbers; it needs
+  Keep `coords-capture.csv` open while placing: choose one lane, run `/observance site next <lane>` or
+  `/observance site plan <siteId>`, survey with `/observance site set <siteId>`, then record the real
+  world/X/Y/Z, visual verdict, four proof shots, and cohesion notes. A row is not launch-ready just because it has numbers; it needs
   approach/focal/action/exit evidence and a reason it belongs in that route.
   Run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_coord_quality.ps1 -CaptureCsv <packet>\coords-capture.csv`**
-  during placement to catch duplicate anchors, wrong dimensions, cramped keeper stones, route sprawl,
+  during placement to catch duplicate anchors, wrong dimensions, cramped keeper evidence sites, route sprawl,
   and missing proof. For the final pass, add `-Launch` so every row must be `KEEP` with all proof fields.
   If you are applying captured coordinates from the worksheet instead of relying on the server's saved
   `sites.yml`, preview them first with
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\apply_launch_coords.ps1 -CaptureCsv <packet>\coords-capture.csv`**.
   It refuses non-`KEEP` visual verdicts and only writes when rerun with `-Apply`.
-- For separate passes, run **`/observance placeregion`** (starter rune-ring + six keeper stones) and
+- For separate passes, run **`/observance placeregion`** (starter rune-ring + keeper evidence sites) and
   **`/observance placedeep`** (deep-half payoff sites). These persist to `sites.yml` and survive
   restarts.
 - **Submitting answers:** edit the **blank** sign (the *labelled* sign is waxed and won't take input,
-  so flavour text can't pollute your answer). For one stone: `/observance placeroom <keeper>`.
+  so flavour text can't pollute your answer). For one keeper evidence site: `/observance placeroom <keeper>`.
 - **Proof the world matches the dialogue:** run **`/observance descentproof`** if you need to stage the
   Lamp-works stair, third lamp, painted line, dead-stall, and empty bird coops around you for fast testing.
   `prepworld` and `sidepass` also stage `school_stand`, `the_far_water`, `markers_row`, `cistern_7`,
@@ -113,8 +128,8 @@
   `design/UNLIT-PREARG-STARTUP.md`: duplicate the main world folder, import it with Multiverse, place the
   well entry/spawn/exit/house anchors with `/obs unlit site` and `/obs unlit clue`, then run
   `/obs unlit border 138`, `/obs unlit darken all 138`, `/obs unlit audit`, and `/obs unlit ready`.
-  The required ending evidence houses are lamp, well, watch, and base; players receive 7 borrowed lanterns
-  each.
+  The required ending evidence houses are all eight: lamp, cairn, coop, well, watch, warm, threshold, and
+  base. Players receive 7 borrowed lanterns each.
 - **The companion:** `/observance wren spawn` places Wren (Citizens if installed, else a fallback body).
 - **The townsfolk (REQUIRED — reshape S-G):** `/observance townsfolk spawn` places the 5 surface people
   (Aro/Wenna/Coll/Dob/Old Pell) with their walk-up-and-talk dialogue. `placeregion` does NOT spawn them;
@@ -148,9 +163,11 @@
 2. Players **read the rune ring** and submit answers by **editing an answer-sign** (clear the sign, type
    the answer, Done). First gate: the rune ring →
    `bow offering kept light deep line unspoken sacred beast`.
-3. Solving the ring opens the **six keeper stones** (any order). Each keeper's cipher + hint is seeded.
-   The spine runs: keepers → the Iss catch → the descent → the Seventh. Salience surfaces one thread at
-   a time; the hint rail escalates if a thread stalls.
+3. Solving the ring opens the **six keeper evidence sites** (any order). Each keeper's cipher + hint is
+   seeded, but a single decoded site is only suspicion: the ending waits for keeper theories, side proof,
+   and the whole Unlit evidence set. The spine runs as a web: keepers, side destinations, townsfolk,
+   Unlit, Iss, descent, then the Seventh. Salience surfaces one thread at a time; the hint rail escalates
+   if a thread stalls.
 4. **Watch for** (this is playtest data): findability (dead air?), whether a scare/toast lands, whether
    people know *how* to answer, and pacing. Capture it — that's what turns "it runs" into "it's good."
 
@@ -166,11 +183,11 @@
 - `/observance visualaudit` — catches tiny/flat/test-prop story sites before players see them.
 - `/observance dialogueaudit` — lists NPC claims that must have physical or mechanical proof.
 - `/observance descentproof [spacing]` — stages the Stair/third-lamp/painted-line/dead-stall/bird-coops proof chain.
-- `/observance site todo|next|plan` — in-game checklist and placement brief for the 42 launch-required coordinate anchors.
+- `/observance site todo|next|plan` — in-game checklist and placement brief for the 67 launch-required coordinate anchors.
 - `/observance site set <siteId>` — survey the block you are standing on into `sites.yml`; the command
   reports how many launch-required placements remain.
 - `/observance flag <set|clear|list> [key] [true|false]` — drive the storylet gate (e.g. force ignition).
-- `/observance placeroom <keeper>` / `/observance placeregion` — stamp the keeper spine.
+- `/observance placeroom <keeper>` / `/observance placeregion` — stamp the keeper evidence sites.
 - `/observance placedeep` — stamp the deep-half payoff sites (hearth, accepting floor, vault, grave,
   Seventh's chamber, reckoning stone).
 - `/observance wren spawn|despawn|reckoning` — the companion NPC + his reckoning-choice markers.

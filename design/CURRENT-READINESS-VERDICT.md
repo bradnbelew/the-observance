@@ -12,9 +12,9 @@ pack packaging, media file format checks, operator docs, rehearsal packet genera
 generation, and manual blocker gate are wired and passing.
 
 Launch is still blocked by work that only a real live server/client/operator pass can prove: hosted resource pack
-URL/SHA1, 42 real launch-required site coordinates, completed coordinate proof CSV, completed rehearsal packet,
-completed `launch-attestations.md`, live Supabase status, live Paper/client rendering, session-zero consent, and
-credential rotation.
+URL/SHA1 plus hosted-byte verification, 67 real launch-required site coordinates, completed coordinate proof CSV,
+completed rehearsal packet, completed `launch-attestations.md`, live Supabase status, live Paper/client rendering,
+session-zero consent, and credential rotation.
 
 ## 2. Ready
 
@@ -27,13 +27,13 @@ credential rotation.
   archive body resolution, and scenario tests pass.
 - Dashboard/web: lint, selftests, and production build pass; missing optional lure downloads are withheld by
   the Record route and guarded by web audit.
-- Plugin source and package: Java 21 source compile passes for 152 files, the jar check verifies the deployable
+- Plugin source and package: Java 21 source compile passes for 153 files, the jar check verifies the deployable
   plugin jar contents, and the checked-in Gradle wrapper builds/tests the plugin.
 - Datapack/resourcepack assets: JSON/reference/format-metadata/zip checks pass; the `observance:runes` bitmap atlas is
-  pinned to A-Z/0-9, the resource-pack zip excludes docs/non-runtime files, and current resourcepack SHA1 is
-  `a6059cf6953037d66c6088a6ac99f33edfe5304d`.
+  pinned to A-Z/0-9, the resource-pack zip excludes docs/non-runtime files, and the current deploy hashes live in
+  `observance-deploy-manifest.json`.
 - Audio files: 11 OGG files are present, mono Vorbis, and duration-checked.
-- Operator tooling: launch-bundle packager, resource-pack config setter and self-check, launch coordinate
+- Operator tooling: launch-bundle packager, resource-pack config setter, hosted resource-pack byte verifier, launch coordinate
   packet generator, coordinate quality checker, live rehearsal packet generator/validator,
   deploy-manifest writer/checker, Unlit readiness checks, manual launch blocker gate, and operator-doc drift
   checks pass.
@@ -73,7 +73,8 @@ credential rotation.
 
 - Resource pack is built but not hosted/configured in launch config.
 - `resource-pack.sha1` is blank in the plugin config until the hosted zip is chosen.
-- 42 launch-required sites still have authoring placeholder coordinates.
+- Hosted resource-pack bytes have not been downloaded and hash-verified against the current zip.
+- 67 launch-required sites still have authoring placeholder coordinates.
 - No completed launch coordinate proof CSV has been supplied.
 - No completed live rehearsal packet has been supplied.
 - No completed `launch-attestations.md` exists for live Supabase, exact plugin/resource-pack deploy hashes,
@@ -88,7 +89,8 @@ credential rotation.
   overrides and are guarded by `tools/check_operator_docs.ps1`, so the mismatch is called out rather than silent.
 - `sites.yml` intentionally contains placeholder coordinates. That is acceptable for authoring but is a launch
   blocker; `check_world_build_readiness.ps1 -Launch` and the manual blocker gate enforce the distinction.
-- The resource pack zip exists and hashes correctly, but launch config does not point to a hosted copy yet.
+- The resource pack zip exists and hashes correctly, but launch config does not point to a hosted copy yet and
+  the hosted bytes have not been verified.
 - Rehearsal and launch evidence can be generated, but no real packet proves live readiness yet.
 - Optional media wiring exists, but missing media must remain withheld from player-facing clue routes.
 - Record lure withholding is guarded for the current page, but the actual `the-hold.zip` artifact is still
@@ -136,7 +138,7 @@ credential rotation.
   should each produce the expected DB flag/event and in-world or Discord payoff.
 - `/observance preflight`, `/observance visualaudit`, `/observance dialogueaudit`, `/obs unlit audit`, and
   `/obs unlit ready` after live placement.
-- Coordinate placement and proof CSV for all 42 launch-required anchors.
+- Coordinate placement and proof CSV for all 67 launch-required anchors.
 - Full live rehearsal route, including first hour, side paths, scare families, Unlit, Record/web jump, and finale.
 - Session-zero consent/opt-out behavior before enabling observer or voice capture.
 - Credential rotation after live config is finalized.
@@ -146,9 +148,9 @@ credential rotation.
 Use `design/MANUAL-LAUNCH-PLAN.md` as the detailed operator checklist. In short:
 
 - Apply and verify Supabase SQL.
-- Deploy plugin, datapack, and hosted resource pack together.
+- Deploy plugin, datapack, and hosted resource pack together, then verify the hosted pack bytes.
 - Rotate exposed credentials.
-- Place and proof all 42 launch-required site coordinates.
+- Place and proof all 67 launch-required site coordinates.
 - Validate world surfaces and run live command audits.
 - Stage launch beats: prologue, townsfolk, Unlit, reading fragments, and finale markers.
 - Complete the live rehearsal packet and `launch-attestations.md`, including exact plugin jar and resource-pack
@@ -180,8 +182,8 @@ packet, rehearsal packet, and `launch-attestations.md`.
 
 1. Generate launch placement and rehearsal packets.
 2. Apply Supabase SQL and verify `/observance status`.
-3. Deploy plugin/datapack/resourcepack and host/hash the pack.
-4. Place all 42 launch-required sites with `/observance site todo|next|plan|set`.
+3. Deploy plugin/datapack/resourcepack, host/hash the pack, and run `tools\check_hosted_resource_pack.ps1`.
+4. Place all 67 launch-required sites with `/observance site todo|next|plan|set`.
 5. Validate coordinates with the capture CSV in launch mode.
 6. Stage prologue, townsfolk, Unlit, reading fragments, and finale markers.
 7. Run live command audits and fix every failure.
@@ -197,6 +199,7 @@ packet, rehearsal packet, and `launch-attestations.md`.
 - `tools\audit_all.ps1` passes.
 - Hosted resource pack URL is set.
 - Hosted resource pack SHA1 matches `observance-resourcepack.zip`.
+- `tools\check_hosted_resource_pack.ps1` proves the hosted zip bytes match the configured SHA1.
 - `check_world_build_readiness.ps1 -Launch` passes.
 - `check_launch_coord_quality.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv` passes.
 - `check_rehearsal_packet.ps1 -PacketDir <packet-dir>` passes.
@@ -219,7 +222,8 @@ packet, rehearsal packet, and `launch-attestations.md`.
 
 ## 12. Looked Built But Was Not Truly Finished
 
-- Resource pack: built and hashable, but not launch-configured until hosted URL/SHA1 are set.
+- Resource pack: built and hashable, but not launch-configured until hosted URL/SHA1 are set and hosted bytes
+  are verified.
 - World build: sites exist in config, but launch-required anchors are still placeholder coordinates.
 - Rehearsal process: templates and validators exist, but no real completed packet has been supplied.
 - Live manual attestations: now enforceable through `launch-attestations.md`, but not completed.
@@ -239,7 +243,7 @@ packet, rehearsal packet, and `launch-attestations.md`.
 
 ## 13. Easy-To-Miss Items Now Explicitly Called Out
 
-- 42 launch-required coordinate anchors.
+- 67 launch-required coordinate anchors.
 - Four proof shots per launch-required placement.
 - Real-client rendering of books, signs, item lore, titles/actionbars, bossbars, custom rune font, sounds,
   particles, NPC lines, and resource-pack fallback behavior.

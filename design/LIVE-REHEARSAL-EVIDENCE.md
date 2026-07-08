@@ -40,8 +40,10 @@ When that prints `unlit playtest readiness: OK`, stop building and let Nano play
 
 The validator is intentionally strict: it expects completed checkboxes, named screenshots for every major
 site, named clips for the first hour, scare families, Unlit expedition, Record/web jump, and finale, plus
-`launch-attestations.md` evidence for live-only checks such as Supabase status, exact plugin/resource-pack
+`launch-attestations.md` evidence for live-only checks such as Supabase status, exact Supabase SQL/plugin/resource-pack
 SHA1 values, real-client rendering, session-zero consent, and credential rotation.
+Synthetic audit placeholders, text files renamed as images/video, and tiny fake proof files fail the real
+launch validator. The only synthetic pass is the tool's own internal self-test.
 
 `00-notes.md` should be short and blunt. For every stop, write:
 

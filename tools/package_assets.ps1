@@ -20,17 +20,54 @@ function Write-PackZip([string]$SourceDir, [string]$ZipPath, [string]$Label) {
   if (Test-Path $ZipPath) {
     Remove-Item -LiteralPath $ZipPath -Force
   }
-  $items = @()
+  $files = [System.Collections.Generic.List[System.IO.FileInfo]]::new()
   foreach ($name in @("pack.mcmeta", "pack.png", "assets", "data")) {
     $path = Join-Path $SourceDir $name
     if (Test-Path $path) {
-      $items += Get-Item -LiteralPath $path
+      $item = Get-Item -LiteralPath $path
+      if ($item.PSIsContainer) {
+        foreach ($file in Get-ChildItem -LiteralPath $item.FullName -Recurse -File) {
+          $files.Add($file) | Out-Null
+        }
+      } else {
+        $files.Add($item) | Out-Null
+      }
     }
   }
-  if ($items.Count -eq 0) {
+  if ($files.Count -eq 0) {
     throw "$Label source has no runtime pack files: $SourceDir"
   }
-  Compress-Archive -LiteralPath $items.FullName -DestinationPath $ZipPath -CompressionLevel Optimal
+  Add-Type -AssemblyName System.IO.Compression
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  $sourceFull = [System.IO.Path]::GetFullPath($SourceDir).TrimEnd('\', '/')
+  $fixedTimestamp = [System.DateTimeOffset]::new(2026, 1, 1, 0, 0, 0, [System.TimeSpan]::Zero)
+  $zipStream = [System.IO.File]::Open($ZipPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite)
+  try {
+    $archive = [System.IO.Compression.ZipArchive]::new($zipStream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
+    try {
+      foreach ($file in ($files | Sort-Object FullName)) {
+        $fileFull = [System.IO.Path]::GetFullPath($file.FullName)
+        $relative = $fileFull.Substring($sourceFull.Length).TrimStart('\', '/').Replace('\', '/')
+        $entry = $archive.CreateEntry($relative, [System.IO.Compression.CompressionLevel]::Optimal)
+        $entry.LastWriteTime = $fixedTimestamp
+        $entryStream = $entry.Open()
+        try {
+          $input = [System.IO.File]::OpenRead($fileFull)
+          try {
+            $input.CopyTo($entryStream)
+          } finally {
+            $input.Dispose()
+          }
+        } finally {
+          $entryStream.Dispose()
+        }
+      }
+    } finally {
+      $archive.Dispose()
+    }
+  } finally {
+    $zipStream.Dispose()
+  }
   $sha1 = (Get-FileHash -LiteralPath $ZipPath -Algorithm SHA1).Hash.ToLowerInvariant()
   Write-Host "$Label packaged: $ZipPath"
   Write-Host "$Label sha1: $sha1"

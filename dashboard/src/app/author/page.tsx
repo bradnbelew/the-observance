@@ -1,4 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { ArcControl } from "@/components/author/ArcControl";
 import { BeatQueue } from "@/components/author/BeatQueue";
 import { WhisperBudgets } from "@/components/author/WhisperBudgets";
@@ -8,7 +10,11 @@ import { WatcherSleepToggle } from "@/components/author/WatcherSleepToggle";
 import { AcceptingTrigger } from "@/components/author/AcceptingTrigger";
 import { EndingSelector } from "@/components/author/EndingSelector";
 import { DirectorRunPanel } from "@/components/author/DirectorRunPanel";
+import { SetupFlow } from "@/components/author/SetupFlow";
 import { UnlitProgress } from "@/components/author/UnlitProgress";
+import { KeeperTheoryProgress } from "@/components/author/KeeperTheoryProgress";
+import { SideProofProgress } from "@/components/author/SideProofProgress";
+import { ManualMediaProgress } from "@/components/author/ManualMediaProgress";
 import type { FateInput, EndingFate } from "@/app/author/fate-preview";
 import type { DossierEntry } from "@/components/author/Dossiers";
 import type { WhisperBudgetRow } from "@/components/author/WhisperBudgets";
@@ -207,6 +213,9 @@ export default async function AuthorPage() {
     seventhChoiceRaw === "restore" || seventhChoiceRaw === "erase"
       ? seventhChoiceRaw
       : null;
+  const hasHoldZip = existsSync(
+    join(process.cwd(), "public", "the-hold", "the-hold.zip"),
+  );
 
   return (
     <div className="space-y-8">
@@ -219,6 +228,8 @@ export default async function AuthorPage() {
         </p>
       </header>
 
+      <SetupFlow />
+
       <DirectorRunPanel
         watcherAsleep={watcherAsleep}
         pendingBeats={pendingBeats}
@@ -229,6 +240,9 @@ export default async function AuthorPage() {
       <ArcControl arc={arc} />
 
       <UnlitProgress flags={flags} />
+      <KeeperTheoryProgress flags={flags} />
+      <SideProofProgress flags={flags} />
+      <ManualMediaProgress flags={flags} hasHoldZip={hasHoldZip} />
 
       <WatcherSleepToggle asleep={watcherAsleep} />
 

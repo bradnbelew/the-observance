@@ -15,6 +15,9 @@ $manualLaunchPlanPath = Join-Path $RepoRoot "design\MANUAL-LAUNCH-PLAN.md"
 $currentReadinessVerdictPath = Join-Path $RepoRoot "design\CURRENT-READINESS-VERDICT.md"
 $sessionZeroPath = Join-Path $RepoRoot "design\SESSION-ZERO.md"
 $launchBlockerPath = Join-Path $RepoRoot "tools\check_launch_manual_blockers.ps1"
+$friendLaunchPrepPath = Join-Path $RepoRoot "tools\prepare_friend_launch.ps1"
+$externalMediaCheckPath = Join-Path $RepoRoot "tools\check_external_media_readiness.ps1"
+$hostedResourcePackCheckPath = Join-Path $RepoRoot "tools\check_hosted_resource_pack.ps1"
 $resourcepackZipPath = Join-Path $RepoRoot "observance-resourcepack.zip"
 $resourcePackSetterPath = Join-Path $RepoRoot "tools\set_resource_pack_config.ps1"
 $docs = @(
@@ -58,6 +61,15 @@ if (-not (Test-Path $sessionZeroPath)) {
 }
 if (-not (Test-Path $launchBlockerPath)) {
   throw "operator docs check: missing launch blocker gate: $launchBlockerPath"
+}
+if (-not (Test-Path $friendLaunchPrepPath)) {
+  throw "operator docs check: missing friend launch prep helper: $friendLaunchPrepPath"
+}
+if (-not (Test-Path $externalMediaCheckPath)) {
+  throw "operator docs check: missing external media readiness gate: $externalMediaCheckPath"
+}
+if (-not (Test-Path $hostedResourcePackCheckPath)) {
+  throw "operator docs check: missing hosted resource-pack checker: $hostedResourcePackCheckPath"
 }
 if (-not (Test-Path $resourcepackZipPath)) {
   throw "operator docs check: missing packaged resource pack zip: $resourcepackZipPath"
@@ -158,7 +170,7 @@ $launchReadinessText = Get-Content -LiteralPath $launchReadinessPath -Raw
 $hasHistoricalLaunchClaim = $launchReadinessText.IndexOf("code-complete and launch-ready", [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
                             $launchReadinessText.IndexOf("every surface green", [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 if ($hasHistoricalLaunchClaim) {
-  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "42 launch-required placeholder site coordinates")) {
+  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "67 launch-required placeholder site coordinates")) {
     if ($launchReadinessText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Write-Error "operator docs check: LAUNCH-READINESS has historical launch-ready claims but lacks current override text: $required"
       exit 1
@@ -171,7 +183,7 @@ $hasHistoricalNextSessionClaim = $nextSessionText.IndexOf("complete and green", 
                                  $nextSessionText.IndexOf("code-complete end to end", [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
                                  $nextSessionText.IndexOf("build is DONE + green", [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 if ($hasHistoricalNextSessionClaim) {
-  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "42 launch-required placeholder site coordinates")) {
+  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "67 launch-required placeholder site coordinates")) {
     if ($nextSessionText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Write-Error "operator docs check: NEXT-SESSION has historical launch-ready claims but lacks current override text: $required"
       exit 1
@@ -181,12 +193,22 @@ if ($hasHistoricalNextSessionClaim) {
 
 $manualLaunchPlanText = Get-Content -LiteralPath $manualLaunchPlanPath -Raw
 foreach ($required in @(
+  "prepare_friend_launch.ps1",
+  "ResourcePackUrl",
+  "friend-launch-quickstart.md",
+  "launch-blockers.md",
+  "manual-media-checklist.md",
+  "supabase-apply-card.md",
+  "live-server-command-sheet.md",
+  "friend-launch-todo.md",
+  "Supabase SQL SHA1",
   "check_launch_manual_blockers.ps1 -Launch",
   "Supabase SQL",
   "launch-attestations.md",
   "resource-pack.url",
   "set_resource_pack_config.ps1",
-  "42 launch-required site coordinates",
+  "check_hosted_resource_pack.ps1",
+  "67 launch-required site coordinates",
   "LIVE-REHEARSAL-EVIDENCE.md",
     "SESSION-ZERO.md",
     "observer_opt_out",
@@ -217,8 +239,19 @@ foreach ($required in @(
 
 $operatorControlsText = Get-Content -LiteralPath (Join-Path $RepoRoot "design\OPERATOR-LIVE-CONTROLS.md") -Raw
 foreach ($required in @(
+  "prepare_friend_launch.ps1",
+  "ResourcePackUrl",
+  "friend-launch-quickstart.md",
+  "launch-blockers.md",
+  "manual-media-checklist.md",
+  "supabase-apply-card.md",
+  "live-server-command-sheet.md",
+  "friend-launch-todo.md",
+  "Supabase SQL SHA1",
+  "Applied SQL SHA1",
   "package_launch_bundle.ps1",
   "set_resource_pack_config.ps1",
+  "check_hosted_resource_pack.ps1",
   "observance-deploy-manifest.json",
   "pack readiness"
 )) {
@@ -229,7 +262,6 @@ foreach ($required in @(
 }
 
 $currentReadinessVerdictText = Get-Content -LiteralPath $currentReadinessVerdictPath -Raw
-$currentResourcepackSha1 = (Get-FileHash -LiteralPath $resourcepackZipPath -Algorithm SHA1).Hash.ToLowerInvariant()
 foreach ($required in @(
   "repo-ready but not launch-ready",
   "High-Level Verdict",
@@ -245,10 +277,10 @@ foreach ($required in @(
   "Extra Suggestions",
   "Looked Built But Was Not Truly Finished",
   "Easy-To-Miss Items Now Explicitly Called Out",
-  "42 launch-required sites",
+  "67 launch-required sites",
   "launch-attestations.md",
   "check_launch_manual_blockers.ps1 -Launch",
-  $currentResourcepackSha1
+  "observance-deploy-manifest.json"
 )) {
   if ($currentReadinessVerdictText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Write-Error "operator docs check: CURRENT-READINESS-VERDICT is missing required readiness verdict text: $required"
@@ -258,6 +290,9 @@ foreach ($required in @(
 
 $launchBlockerText = Get-Content -LiteralPath $launchBlockerPath -Raw
 foreach ($required in @(
+  "prepare_friend_launch.ps1",
+  "ResourcePackUrl",
+  "Applied SQL SHA1",
   "Completed live rehearsal packet not supplied",
   "00-notes.md",
   "launch-attestations.md",
@@ -265,14 +300,68 @@ foreach ($required in @(
   "Resource pack URL must be an absolute HTTPS URL",
   "Resource pack SHA1 must be the 40-character lowercase hex SHA1",
   "set_resource_pack_config.ps1",
+  "check_hosted_resource_pack.ps1",
   "package_launch_bundle.ps1",
   "Launch coordinate proof CSV not supplied",
+  "check_external_media_readiness.ps1",
+  "friend-launch-quickstart.md",
+  "launch-blockers.md",
+  "manual-media-checklist.md",
+  "supabase-apply-card.md",
+  "live-server-command-sheet.md",
+  "friend-launch-todo.md",
   "design\SESSION-ZERO.md",
   "observer_opt_out",
   "manual completion plan: design/MANUAL-LAUNCH-PLAN.md"
 )) {
   if ($launchBlockerText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Write-Error "operator docs check: launch blocker gate is missing required readiness blocker text: $required"
+    exit 1
+  }
+}
+
+$friendLaunchPrepText = Get-Content -LiteralPath $friendLaunchPrepPath -Raw
+foreach ($required in @(
+  "ResourcePackUrl",
+  "friend-launch-quickstart.md",
+  "Apply-all SHA1",
+  "Ordered bundle files",
+  "package_launch_bundle.ps1",
+  "check_deploy_manifest.ps1",
+  "Verify existing deploy bundle",
+  "new_launch_placement_packet.ps1",
+  "new_rehearsal_packet.ps1",
+  "check_launch_manual_blockers.ps1",
+  "launch-blockers.md",
+  "manual-media-checklist.md",
+  "supabase-apply-card.md",
+  "live-server-command-sheet.md",
+  "friend-launch-todo.md",
+  "discord\supabase\apply-all.sql",
+  "Apply-all SHA1",
+  "Ordered bundle files",
+  "set_resource_pack_config.ps1",
+  "check_hosted_resource_pack.ps1",
+  "Hosted resource-pack verification",
+  "coords-capture.csv",
+  "launch-blockers.md",
+  "manual-media-checklist.md",
+  "supabase-apply-card.md",
+  "live-server-command-sheet.md",
+  "friend-launch-todo.md",
+  "Do not paste loose migration files",
+  "Paper 1.21.11",
+  "67 launch anchors",
+  "media_clip_01_ready",
+  "ASH-13",
+  "WHERE THE REEDS FOLD BACK",
+  "STAY AWAKE",
+  "SIX RETURN, ONE IS NOT KEPT",
+  "I WAS NOT KEPT",
+  "launch-attestations.md"
+)) {
+  if ($friendLaunchPrepText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+    Write-Error "operator docs check: friend launch prep helper is missing required handoff text: $required"
     exit 1
   }
 }

@@ -35,7 +35,7 @@
    who still keep the ways." Those two are the *back half* of the spine; Movement I–II skew WHO/HAPPENED;
    PLACE is rare and concentrated where geography is the payoff (the descent). The distribution below is
    lopsided because the content is.
-4. **The seven ways are NOT evenly distributed across the six keeper stones.** `the_bow` is taught by
+4. **The seven ways are NOT evenly distributed across the six keeper evidence sites.** `the_bow` is taught by
    THREE different nodes (Orin's stone, the crouch-to-read verb, the synchronized Accepting) because the
    corpus makes the bow the load-bearing way — "the smallest of the ways," the one whose letting-go lets
    the rest go. `the_sacred_beast` (the deep-bird) was taught by NONE of the original 24 — it lived in

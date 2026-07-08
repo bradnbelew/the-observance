@@ -3,7 +3,7 @@
 > verdict. The current repository state is **not launch-ready** until
 > `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`
 > passes and the manual attestations it prints are completed on the live Paper server/client. Known current
-> blockers include the unhosted resource pack URL/SHA1, 42 launch-required placeholder site coordinates,
+> blockers include the unhosted resource pack URL/SHA1, 67 launch-required placeholder site coordinates,
 > missing coordinate proof CSV, missing completed live rehearsal packet, and live Minecraft rendering/load
 > verification. Use `design/MANUAL-LAUNCH-PLAN.md` for the ordered manual completion plan and evidence
 > requirements. Use `design/CURRENT-READINESS-VERDICT.md` for the current ready/not-ready verdict.

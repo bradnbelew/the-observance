@@ -131,7 +131,7 @@ RequireDialogueKeys "third-lamp" @(
 )
 RequireSite "third_lamp_stand" "lamp_stand"
 RequireContains "third-lamp fixture" $command "placeLampStand"
-RequireRegex "third-lamp quest mapping" $townsfolk '"coll\.quest\.offer",\s*new Quest\("coll_lamp",\s*"coll\.quest\.offer",\s*"coll\.quest\.done",\s*"third_lamp_stand",\s*false\)'
+RequireRegex "third-lamp quest mapping" $townsfolk '"coll\.quest\.offer",\s*new Quest\("coll_lamp",\s*"coll\.quest\.offer",\s*"coll\.quest\.done",\s*"third_lamp_stand",\s*false,\s*"npc_coll_lamp_done"\)'
 RequireContains "third-lamp block-place hook" $townsfolk "onThirdLampLit"
 RequireContains "third-lamp interact hook" $townsfolk "onThirdLampInteract"
 RequireContains "third-lamp completion" $townsfolk 'completeQuestByKey(player, "coll_lamp"'
@@ -143,7 +143,7 @@ RequireDialogueKeys "dead-stall" @(
 )
 RequireSite "dead_stall" "dead_stall"
 RequireContains "dead-stall fixture" $command "buildDeadStall"
-RequireRegex "dead-stall quest mapping" $townsfolk '"wenna\.quest\.offer",\s*new Quest\("wenna_crust",\s*"wenna\.quest\.offer",\s*"wenna\.quest\.done",\s*"dead_stall",\s*false\)'
+RequireRegex "dead-stall quest mapping" $townsfolk '"wenna\.quest\.offer",\s*new Quest\("wenna_crust",\s*"wenna\.quest\.offer",\s*"wenna\.quest\.done",\s*"dead_stall",\s*false,\s*"npc_wenna_crust_done"\)'
 RequireContains "dead-stall drop hook" $townsfolk "onCrustDrop"
 RequireContains "dead-stall crust filter" $townsfolk "isCrust"
 RequireContains "dead-stall completion" $townsfolk 'completeQuestByKey(player, "wenna_crust"'
@@ -170,7 +170,7 @@ RequireContains "far-water compact staging" $command "placeFarWaterProof"
 RequireContains "far-water launch list" $command '"the_far_water"'
 RequireContains "far-water coverage" $command '"the_far_water"'
 RequireContains "far-water visual audit" $command '"far_water"'
-RequireContains "far-water visual proof" $command "expected far-water mirror pool, count stones, copybook shelf, and shoreline signs"
+RequireContains "far-water visual proof" $command "expected far-water mirror pool, count stones, copybook shelf, and far-water copybook"
 RequireContains "far-water sidequest" $sideQuests "'dest-far-water'"
 RequireContains "far-water sidequest reward" $sideQuests "KEYED (face-the-water mirror): Sella''s copybook drawings"
 RequireContains "far-water travel spec find" $travelDest 'voice.dest.farWater.find'
@@ -185,7 +185,7 @@ RequireContains "school-stand compact staging" $command "placeSchoolStandProof"
 RequireContains "school-stand launch list" $command '"school_stand"'
 RequireContains "school-stand coverage" $command '"school_stand"'
 RequireContains "school-stand visual audit" $command '"school_stand"'
-RequireContains "school-stand visual proof" $command "expected school slate, copybook shelf, six stones, grey seventh marker"
+RequireContains "school-stand visual proof" $command "expected school slate, copybook shelf, six stones, grey seventh marker, and copy-line book"
 RequireContains "school-stand sidequest" $sideQuests "'dest-school-stand'"
 RequireContains "school-stand sidequest reward" $sideQuests "domestic were-they-human detail"
 RequireContains "school-stand travel spec" $travelDest 'voice.dest.school.find'
@@ -197,7 +197,7 @@ RequireContains "markers-row compact staging" $command "placeMarkersRowProof"
 RequireContains "markers-row launch list" $command '"markers_row"'
 RequireContains "markers-row coverage" $command '"markers_row"'
 RequireContains "markers-row visual audit" $command '"markers_row"'
-RequireContains "markers-row visual proof" $command "expected six bow-stones, worn bow marks, grey seventh hollow"
+RequireContains "markers-row visual proof" $command "expected six bow-stones, worn bow marks, grey seventh hollow, and marker-row book"
 RequireContains "markers-row sidequest" $sideQuests "'dest-markers-row'"
 RequireContains "markers-row sidequest reward" $sideQuests "the_bow taught; seventh-mark surplus"
 RequireContains "markers-row travel spec" $travelDest 'voice.dest.markers.find'
@@ -209,7 +209,7 @@ RequireContains "cistern-7 compact staging" $command "placeCisternProof"
 RequireContains "cistern-7 launch list" $command '"cistern_7"'
 RequireContains "cistern-7 coverage" $command '"cistern_7"'
 RequireContains "cistern-7 visual audit" $command '"cistern_7"'
-RequireContains "cistern-7 visual proof" $command "expected black water, pale arch, good-oil jars"
+RequireContains "cistern-7 visual proof" $command "expected black water, pale arch, good-oil jars, and cistern record"
 RequireContains "cistern-7 sidequest" $sideQuests "'dest-cistern-7'"
 RequireContains "cistern-7 sidequest reward" $sideQuests "the lamp-in-water-lies spook"
 RequireContains "cistern-7 travel spec" $travelDest 'voice.dest.cistern.find'
@@ -221,7 +221,7 @@ RequireContains "watch-floor compact staging" $command "placeWatchFloorProof"
 RequireContains "watch-floor launch list" $command '"watch_floor"'
 RequireContains "watch-floor coverage" $command '"watch_floor"'
 RequireContains "watch-floor visual audit" $command '"watch_floor"'
-RequireContains "watch-floor visual proof" $command "expected watch-log lectern, black-moon lights, finished-log signs"
+RequireContains "watch-floor visual proof" $command "expected watch-log lectern, black-moon lights, and dark-hours proof"
 RequireContains "watch-floor sidequest" $sideQuests "'dest-watch-floor'"
 RequireContains "watch-floor sidequest reward" $sideQuests "the_dark_hours; proves the watch ended"
 RequireContains "watch-floor travel spec" $travelDest 'voice.dest.watchFloor.find'
@@ -232,7 +232,7 @@ RequireSite "set_apart_shelf" "set_apart_shelf"
 RequireContains "set-apart fixture" $command "buildSetApartShelf"
 RequireContains "set-apart compact staging" $command "placeSetApartProof"
 RequireContains "set-apart launch list" $command '"set_apart_shelf"'
-RequireContains "set-apart visual proof" $command "expected entry-5 shelf"
+RequireContains "set-apart visual proof" $command "expected entry-5 shelf, cold/warm lamp contrast, redacted count, and set-apart record"
 RequireContains "set-apart sidequest" $sideQuests "'dest-set-apart'"
 RequireContains "set-apart travel spec" $travelDest 'voice.dest.setApart.find'
 RequireContains "set-apart archive find" $archiveVoice "'voice.dest.setApart.find'"
@@ -241,7 +241,7 @@ RequireSite "undercroft_seal" "undercroft_seal"
 RequireContains "undercroft-seal fixture" $command "buildUndercroftSeal"
 RequireContains "undercroft-seal compact staging" $command "placeUndercroftSealProof"
 RequireContains "undercroft-seal launch list" $command '"undercroft_seal"'
-RequireContains "undercroft-seal visual proof" $command "expected sealed door"
+RequireContains "undercroft-seal visual proof" $command "expected sealed door, mason line, low bow-to-read line, and mason record"
 RequireContains "undercroft-seal sidequest" $sideQuests "'dest-undercroft-seal'"
 RequireContains "undercroft-seal travel spec" $travelDest 'voice.dest.undercroftSeal.find'
 RequireContains "undercroft-seal archive find" $archiveVoice "'voice.dest.undercroftSeal.find'"
@@ -250,7 +250,7 @@ RequireSite "forgotten_mouth" "forgotten_mouth"
 RequireContains "forgotten-mouth fixture" $command "buildForgottenMouth"
 RequireContains "forgotten-mouth compact staging" $command "placeForgottenMouthProof"
 RequireContains "forgotten-mouth launch list" $command '"forgotten_mouth"'
-RequireContains "forgotten-mouth visual proof" $command "expected true way-up mouth"
+RequireContains "forgotten-mouth visual proof" $command "expected true way-up mouth, healed surface, return mark, and way-up draft"
 RequireContains "forgotten-mouth sidequest" $sideQuests "'dest-way-up'"
 RequireContains "forgotten-mouth travel spec" $travelDest 'voice.dest.wayUp.find'
 RequireContains "forgotten-mouth archive find" $archiveVoice "'voice.dest.wayUp.find'"
@@ -262,7 +262,7 @@ RequireContains "deep-market compact staging" $command "placeDeepMarketProof"
 RequireContains "deep-market launch list" $command '"deep_market"'
 RequireContains "deep-market coverage" $command '"deep_market"'
 RequireContains "deep-market visual audit" $command '"deep_market"'
-RequireContains "deep-market visual proof" $command "expected market stalls, lectern-shelf books, and market board"
+RequireContains "deep-market visual proof" $command "expected market stalls, lectern-shelf ledger, and lived-in trade objects"
 RequireContains "deep-market sidequest" $sideQuests "'dest-deep-market'"
 RequireContains "deep-market sidequest reward" $sideQuests "the warmth they grieve"
 RequireContains "deep-market travel spec" $travelDest 'voice.dest.market.find'
@@ -274,7 +274,7 @@ RequireContains "ration-table compact staging" $command "placeRationTableProof"
 RequireContains "ration-table launch list" $command '"ration_table"'
 RequireContains "ration-table coverage" $command '"ration_table"'
 RequireContains "ration-table visual audit" $command '"ration_table"'
-RequireContains "ration-table visual proof" $command "expected ration table, half-loaf marker, and R14/child-line signs"
+RequireContains "ration-table visual proof" $command "expected ration table, half-loaf marker, and written R14 ration form"
 RequireContains "ration-table sidequest" $sideQuests "'dest-ration-table'"
 RequireContains "ration-table sidequest reward" $sideQuests "were-they-human hottest"
 RequireContains "ration-table travel spec" $travelDest 'voice.dest.rationTable.find'
@@ -286,7 +286,7 @@ RequireContains "third-bay compact staging" $command "placeThirdBayProof"
 RequireContains "third-bay launch list" $command '"third_bay_breach"'
 RequireContains "third-bay coverage" $command '"third_bay_breach"'
 RequireContains "third-bay visual audit" $command '"third_bay_breach"'
-RequireContains "third-bay visual proof" $command "expected broken Deep Line, downward breach, and third-bay warning signs"
+RequireContains "third-bay visual proof" $command "expected broken Deep Line, downward breach, and third-bay incident note"
 RequireContains "third-bay sidequest" $sideQuests "'dest-third-bay'"
 RequireContains "third-bay sidequest reward" $sideQuests "DANGEROUS PROOF"
 RequireContains "third-bay travel spec" $travelDest 'voice.dest.thirdBay.find'
@@ -302,7 +302,7 @@ RequireContains "warm-town compact staging" $command "placeWarmTownProof"
 RequireContains "warm-town launch list" $command '"warm_town_collapse"'
 RequireContains "warm-town coverage" $command '"warm_town_collapse"'
 RequireContains "warm-town visual audit" $command '"warm_town_collapse"'
-RequireContains "warm-town visual proof" $command "expected collapse rubble and WARDEN-3 notice"
+RequireContains "warm-town visual proof" $command "expected collapse rubble and WARDEN-3 closure record"
 RequireContains "warm-town sidequest" $sideQuests "'dest-warm-town'"
 RequireContains "warm-town sidequest reward" $sideQuests "FALSE LEAD WITH TEETH"
 RequireContains "warm-town travel spec" $travelDest 'voice.dest.warmTown.find'

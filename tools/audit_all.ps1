@@ -13,8 +13,10 @@ $pluginJarCheck = Join-Path $RepoRoot "tools\check_plugin_jar.ps1"
 $assetCheck = Join-Path $RepoRoot "tools\check_assets.ps1"
 $deployManifestCheck = Join-Path $RepoRoot "tools\check_deploy_manifest.ps1"
 $resourcePackConfigToolCheck = Join-Path $RepoRoot "tools\check_resource_pack_config_tools.ps1"
+$friendLaunchPrepCheck = Join-Path $RepoRoot "tools\check_friend_launch_prep.ps1"
 $brandSurfaceCheck = Join-Path $RepoRoot "tools\check_brand_surfaces.ps1"
 $mediaCheck = Join-Path $RepoRoot "tools\check_media_readiness.ps1"
+$externalMediaCheck = Join-Path $RepoRoot "tools\check_external_media_readiness.ps1"
 $operatorDocsCheck = Join-Path $RepoRoot "tools\check_operator_docs.ps1"
 $minecraftTextCheck = Join-Path $RepoRoot "tools\check_minecraft_text_surfaces.ps1"
 $rehearsalCheck = Join-Path $RepoRoot "tools\check_rehearsal_consistency.ps1"
@@ -80,6 +82,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $operatorDocsCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $externalMediaCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
@@ -155,6 +162,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $resourcePackConfigToolCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $friendLaunchPrepCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }

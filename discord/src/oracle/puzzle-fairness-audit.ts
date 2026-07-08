@@ -16,6 +16,7 @@ const seeds = resolve(here, '../../supabase/seeds');
 const puzzleFiles = ['puzzles_seed.sql', 'progression_seed.sql'];
 const rows = puzzleFiles.flatMap((file) => parsePuzzleRows(file, readFileSync(resolve(seeds, file), 'utf8')));
 const hints = parseHints(readFileSync(resolve(seeds, 'hints_seed.sql'), 'utf8'));
+const activatedBySeed = parseSeedActivatedKeys(['metapuzzle_seed.sql', 'progression_seed.sql']);
 
 const producedKinds = new Set(['behavior', 'object', 'code', 'spoken']);
 const humanTypedKinds = new Set(['phrase', 'coords', 'url_token']);
@@ -24,7 +25,8 @@ const hintExempt = new Set([
   'record-receives',
 ]);
 
-const missingHints = rows.filter((row) => !hintExempt.has(row.key) && !hasHintTiers(row.key, hints, [2, 3]));
+const hintableRows = rows.filter((row) => row.active || activatedBySeed.has(row.key));
+const missingHints = hintableRows.filter((row) => !hintExempt.has(row.key) && !hasHintTiers(row.key, hints, [2, 3]));
 const weakOpaqueTokens = rows.filter((row) =>
   producedKinds.has(row.answerKind) && row.answers.some((answer) => !isOpaqueToken(answer)),
 );
@@ -63,7 +65,7 @@ if (emptyAnswers.length > 0) {
 
 if (failed) process.exit(1);
 
-const hinted = rows.filter((row) => hasHintTiers(row.key, hints, [2, 3])).length;
+const hinted = hintableRows.filter((row) => hasHintTiers(row.key, hints, [2, 3])).length;
 const opaque = rows.filter((row) => producedKinds.has(row.answerKind)).length;
 const shortTypedCapped = rows.filter((row) =>
   humanTypedKinds.has(row.answerKind) &&
@@ -72,7 +74,7 @@ const shortTypedCapped = rows.filter((row) =>
 ).length;
 
 console.log(`puzzlefairness: OK - ${rows.length} puzzle rows audited.`);
-console.log(`  hint coverage: ${hinted}/${rows.length} rows have tier-2 + tier-3 rescue text (${hintExempt.size} exempt)`);
+console.log(`  hint coverage: ${hinted}/${hintableRows.length} live/staged-live rows have tier-2 + tier-3 rescue text (${hintExempt.size} exempt)`);
 console.log(`  opaque plugin tokens: ${opaque} produced-kind row(s) protected`);
 console.log(`  short typed caps: ${shortTypedCapped} short typed row(s) capped`);
 
@@ -140,6 +142,19 @@ function parseHints(seedSql: string): Map<string, Set<number>> {
     hints.set(row[1]!, tiers);
   }
   return hints;
+}
+
+function parseSeedActivatedKeys(files: string[]): Set<string> {
+  const keys = new Set<string>();
+  for (const file of files) {
+    const text = readFileSync(resolve(seeds, file), 'utf8');
+    const updateRe = /update\s+public\.puzzles\s+set\s+active\s*=\s*true\s+where\s+puzzle_key\s+in\s*\(([\s\S]*?)\)\s*;/gi;
+    let update: RegExpExecArray | null;
+    while ((update = updateRe.exec(text))) {
+      for (const key of update[1]!.matchAll(/'([a-z0-9-]+)'/g)) keys.add(key[1]!);
+    }
+  }
+  return keys;
 }
 
 function hasHintTiers(key: string, allHints: Map<string, Set<number>>, tiers: number[]): boolean {

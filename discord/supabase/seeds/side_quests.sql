@@ -1,15 +1,15 @@
 -- The Observance — side_quests.sql
 -- The TRAVEL longevity layer (LONGEVITY.md §2 / design/content/travel-destinations.md): 18
 -- rumor→verify destinations out in the Hold/world, NONE at spawn, that pay lore/atmosphere/items/
--- time and GATE NOTHING. A pooling ARG group shares each rumor in a second but cannot pool the
+-- time and do not directly open the next node. A pooling ARG group shares each rumor in a second but cannot pool the
 -- 1–3k-block walk; that walk is the longevity. Launch rule: there is only one blunt false-lead
 -- walk in this set (Aro's warm-town lie). Any contradicted/hollow destination must still teach a
 -- rule, expose a character, or point forward; optional content spends player trust.
 --
 -- BREADTH INVARIANT (migration 0005): every row has gates_progress = false (satisfied by omission —
--- the column defaults false and carries a CHECK (gates_progress = false)). Removing all 18 must leave
--- the spine reconstruction intact. entry_puzzle_key is NULL for all 18: these are DISCOVERED BY TRAVEL,
--- not opened by a spine puzzle node — that is the whole point (they gate nothing and nothing gates them).
+-- the column defaults false and carries a CHECK (gates_progress = false)). These ledger rows are not
+-- the gate; their evidence can still matter through the keeper-theory layer. entry_puzzle_key is NULL
+-- for all 18: these are DISCOVERED BY TRAVEL, not opened by a spine puzzle node.
 --
 -- The matching thread_cards (one rumor card → flips to verified/contradicted on arrival, anchored at
 -- each destination's sites.yml id) are authored in the thread-card seed; this block seeds only the
@@ -65,7 +65,7 @@ values
   --  NOT travel destinations (no 1-3k-block walk) — these are the two anomalies that
   --  appear in the group's OWN base, engine-seated in a PLUGIN/SHOWRUNNER beat, never a
   --  submit-answer (honest [flavor / atmosphere]; nothing inert costumes itself as a
-  --  puzzle — OVERHAUL §5 cohesion gate). They GATE NOTHING (gates_progress false + CHECK,
+  --  puzzle — OVERHAUL §5 cohesion gate). They do not directly gate a puzzle row (gates_progress false + CHECK,
   --  INV-12) and entry_puzzle_key is NULL (discovered, not opened by a spine node — the
   --  same "no node gates them, they gate no node" property the 18 travel rows carry). They
   --  are seeded HERE as the breadth-ledger acknowledgement the Recovery Archive can cluster

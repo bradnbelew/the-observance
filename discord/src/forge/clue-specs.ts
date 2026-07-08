@@ -368,7 +368,11 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'iss-nbt-falsified-entry': 'a doctored record entry hidden in item NBT → a record-website path token the group corrects (answer_kind url_token); datamine/found-object, not a Discord cipher',
   'iss-bound-word-callback': 're-submit the earned bound word at the deep gate (answer_kind phrase, a callback); recognition of an earned answer, not a new cipher',
   // Cross-keeper / spine:
-  'spine-recovered-archive': 'a salvaged Drive folder + an audio-spectrogram name (answer_kind phrase); external research, not a Discord cipher',
+  'media-prior-base': 'found-footage frame/audio/metadata payload ASH-13 (answer_kind phrase); external media observation, not a Discord cipher',
+  'media-far-water': 'found-footage place phrase "where the reeds fold back" (answer_kind phrase); optional Sella media evidence, not a Discord cipher',
+  'media-black-moon-toll': 'found-footage toll rhythm "stay awake" (answer_kind phrase); optional Brann media evidence, not a Discord cipher',
+  'media-release-room': 'late found-footage release-room checksum "six return one is not kept" (answer_kind phrase); optional media evidence, not a Discord cipher',
+  'spine-recovered-archive': 'a salvaged Drive folder + audio-spectrogram sentence "i was not kept" (answer_kind phrase); external research, not a Discord cipher',
   'spine-threshold-vault': 'asymmetric co-op vault; per-player rune fragments assemble a combination (answer_kind code); a plugin illusion + vault, not a cipher',
   'spine-spoken-name': 'the Observer Engine hears the spoken truth and quotes it back (answer_kind spoken); voice-scan token, not a cipher',
   'spine-unkept-acrostic': 'the six maker’s-mark glyphs read in fall-order spell UNKEPT (answer_kind phrase); an in-world observation acrostic in the carved framing, not a bound cipher',

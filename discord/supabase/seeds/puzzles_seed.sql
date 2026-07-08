@@ -1544,7 +1544,7 @@ values
     'next_puzzle_key', 'stone-orin',
     'set_flags', jsonb_build_object('orin_key_found', true)
   ),
-  'phrase', 2, true, null ),
+  'phrase', 2, true, 8 ),
 
 -- orin-frame-dials (§5.3) — six item-frame rotation dials pointed to match the markers'
 -- fall-order facings (a physical combination lock). answer_kind 'code'; opaque token on
@@ -1699,23 +1699,106 @@ values
 -- 8. CROSS-KEEPER / SPINE (external / co-op vault / Observer / meta-acrostic)
 -- ───────────────────────────────────────────────────────────────────────────
 
--- spine-recovered-archive (§8.1) — a carved string resolves to an unlisted Drive folder;
--- an image inside hides a name in its audio spectrogram. answer_kind 'phrase': the hidden
--- spectrogram name. lore + a Whisper-budget grant. Typed. OPTIONAL external surface — the
--- spine never depends on it (INV-12). No site (external → web).
-( 'spine-recovered-archive',
-  'the salvaged archive',
+-- media-prior-base (§8.media.1) — found-footage clip 1. Frame-scrub payload: hotbar/book
+-- evidence and a one-frame route/file token combine to ASH-13. OPTIONAL external surface:
+-- no main-spine row depends on this; it is hidden until media_clip_01_ready + record_received.
+( 'media-prior-base',
+  'prior base recovery',
   array[
-    'the name the spectrogram keeps',
-    'the recovered name in the waveform',
-    'the seventh adjacent name off the record'
+    'ash 13',
+    'ash thirteen',
+    'kept elsewhere ash 13',
+    'base check ash 13'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'oracleLore',
-    'set_flags', jsonb_build_object('recovered_archive_read', true, 'whisper_budget_earned', true),
+    'set_flags', jsonb_build_object('media_prior_base_read', true),
     'voice_args', jsonb_build_object(
-      'fragment', 'what was recovered is kept off the record. the image is a waveform. read it as a spectrogram and it holds a name the record would not.'
+      'fragment', 'the recovered base clip did not point to a shrine. it gave a file token: ash thirteen. the record was already copying the room before the room knew it was copied.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- media-far-water (§8.media.2) — found-footage clip 2. The water/map frame gives a
+-- place-bearing phrase, not only a count: WHERE THE REEDS FOLD BACK. Optional Sella
+-- side-proof reinforcement; hidden until media_clip_02_ready + seventh_suspected.
+( 'media-far-water',
+  'shore copy recovery',
+  array[
+    'where the reeds fold back',
+    'the reeds fold back',
+    'reeds fold back'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('media_far_water_read', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'the shore copy is not another sad count. it gives a place: where the reeds fold back. go there only after the water has already taught you how to read its returns.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- media-black-moon-toll (§8.media.3) — found-footage clip 3. The nine-lamp/toll rhythm
+-- confirms the Brann verb: STAY AWAKE / DO NOT CLOSE YOUR EYES. Optional timing proof,
+-- not the only black-moon route; hidden until media_clip_03_ready + site_seen_watch_floor.
+( 'media-black-moon-toll',
+  'black moon recovery',
+  array[
+    'stay awake',
+    'awake',
+    'do not close your eyes',
+    'do not sleep on the black moon'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('media_black_moon_read', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'the ninth toll is not decoration. it tells the watch rule plainly enough to survive a bad night: stay awake. do not close your eyes.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- media-release-room (§8.media.4) — late found-footage clip 4. It carries a physical
+-- approach checksum for the release room after the name is already earned: SIX RETURN,
+-- ONE IS NOT KEPT. Optional late confirmation; hidden until media_clip_04_ready + seventh_named.
+( 'media-release-room',
+  'release room recovery',
+  array[
+    'six return one is not kept',
+    'six return and one is not kept',
+    'six return one not kept'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('media_release_room_read', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'the late room clip is a checksum, not a spoiler. six return. one is not kept. approach the place as a room, not a password.'
+    )
+  ),
+  'phrase', 2, true, 8 ),
+
+-- spine-recovered-archive (§8.1) — a carved string resolves to an unlisted Drive folder;
+-- an image/audio file inside hides I WAS NOT KEPT in its spectrogram. answer_kind
+-- 'phrase': the exact hidden phrase. lore + a Whisper-budget grant. Typed. OPTIONAL
+-- external surface — the spine never depends on it (INV-12). No site (external → web).
+( 'spine-recovered-archive',
+  'the salvaged archive',
+  array[
+    'i was not kept',
+    'was not kept',
+    'the spectrogram says i was not kept',
+    'the waveform says i was not kept'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('recovered_archive_read', true, 'media_spectrogram_read', true, 'whisper_budget_earned', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'what was recovered is kept off the record. the sound image is not a picture. read it as a spectrogram and the hidden line says what the record refused to keep: i was not kept.'
     )
   ),
   'phrase', 3, true, null ),

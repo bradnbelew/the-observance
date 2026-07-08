@@ -24,6 +24,22 @@ function Run-Setter([string[]]$ArgsList) {
   }
 }
 
+function Run-Hosted-Check([string[]]$ArgsList) {
+  $scriptPath = Join-Path $repoFull "tools\check_hosted_resource_pack.ps1"
+  $oldErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $output = & powershell -NoProfile -ExecutionPolicy Bypass -File $scriptPath @ArgsList 2>&1
+    $exitCode = $LASTEXITCODE
+    return [ordered]@{
+      exitCode = $exitCode
+      output = @($output | ForEach-Object { [string]$_ })
+    }
+  } finally {
+    $ErrorActionPreference = $oldErrorActionPreference
+  }
+}
+
 function Resource-Pack-Value([string]$Text, [string]$Key) {
   $pattern = "(?ms)^resource-pack:\s.*?^\s+$([regex]::Escape($Key)):\s+`"([^`"]*)`""
   $match = [regex]::Match($Text, $pattern)
@@ -35,10 +51,11 @@ $repoFull = [System.IO.Path]::GetFullPath($RepoRoot)
 $failures = [System.Collections.Generic.List[string]]::new()
 
 $setter = Join-Path $repoFull "tools\set_resource_pack_config.ps1"
+$hostedChecker = Join-Path $repoFull "tools\check_hosted_resource_pack.ps1"
 $sourceConfig = Join-Path $repoFull "plugin\src\main\resources\config.yml"
 $resourceZip = Join-Path $repoFull "observance-resourcepack.zip"
 
-foreach ($file in @($setter, $sourceConfig, $resourceZip)) {
+foreach ($file in @($setter, $hostedChecker, $sourceConfig, $resourceZip)) {
   if (!(Test-Path $file)) {
     Add-Failure "Missing required file: $file"
   }
@@ -68,6 +85,37 @@ if ($failures.Count -eq 0) {
   $badPath = Run-Setter @("-Url", "https://example.com/not-a-pack.txt", "-DryRun", "-RepoRoot", $repoFull)
   if ($badPath.exitCode -eq 0) {
     Add-Failure "set_resource_pack_config accepted a non-zip URL"
+  }
+
+  $hostedBadUrl = Run-Hosted-Check @(
+    "-RepoRoot", $repoFull,
+    "-Url", "http://example.com/observance-resourcepack.zip",
+    "-ExpectedSha1", $expectedSha1
+  )
+  if ($hostedBadUrl.exitCode -eq 0) {
+    Add-Failure "check_hosted_resource_pack accepted a non-HTTPS URL"
+  }
+
+  $hostedBadSha = Run-Hosted-Check @(
+    "-RepoRoot", $repoFull,
+    "-Url", "https://example.com/observance-resourcepack.zip",
+    "-ExpectedSha1", "not-a-sha"
+  )
+  if ($hostedBadSha.exitCode -eq 0) {
+    Add-Failure "check_hosted_resource_pack accepted a malformed SHA1"
+  }
+
+  $wrongSha = "0000000000000000000000000000000000000000"
+  if ($wrongSha -eq $expectedSha1) {
+    $wrongSha = "1111111111111111111111111111111111111111"
+  }
+  $hostedWrongSha = Run-Hosted-Check @(
+    "-RepoRoot", $repoFull,
+    "-Url", "https://example.com/observance-resourcepack.zip",
+    "-ExpectedSha1", $wrongSha
+  )
+  if ($hostedWrongSha.exitCode -eq 0) {
+    Add-Failure "check_hosted_resource_pack accepted a SHA1 that does not match the local zip"
   }
 
   $smokeDir = Join-Path $repoFull "build\check-resource-pack-config-tools"
@@ -107,4 +155,4 @@ if ($failures.Count -gt 0) {
   exit 1
 }
 
-Write-Host "resource-pack config tool check: OK - setter dry-run, URL validation, SHA calculation, and scoped config write hold"
+Write-Host "resource-pack config tool check: OK - setter dry-run, hosted verifier validation, SHA calculation, and scoped config write hold"

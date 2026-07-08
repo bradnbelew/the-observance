@@ -2,12 +2,12 @@ type FlagMap = Record<string, unknown>;
 
 const HOUSES = [
   { key: "unlit_seen_lamp", label: "Lamp house", required: true },
-  { key: "unlit_seen_cairn", label: "Cairn house" },
-  { key: "unlit_seen_coop", label: "Coop house" },
+  { key: "unlit_seen_cairn", label: "Cairn house", required: true },
+  { key: "unlit_seen_coop", label: "Coop house", required: true },
   { key: "unlit_seen_well", label: "Well house", required: true },
   { key: "unlit_seen_watch", label: "Watch house", required: true },
-  { key: "unlit_seen_warm", label: "Warm house" },
-  { key: "unlit_seen_threshold", label: "Threshold house" },
+  { key: "unlit_seen_warm", label: "Warm house", required: true },
+  { key: "unlit_seen_threshold", label: "Threshold house", required: true },
   { key: "unlit_seen_base", label: "Base house", required: true },
 ];
 
@@ -32,7 +32,7 @@ export function UnlitProgress({ flags }: { flags: FlagMap }) {
         <div>
           <h2 className="font-mono text-lg text-neutral-100">Unlit</h2>
           <p className="mt-1 text-sm text-neutral-400">
-            {found}/{HOUSES.length} house discoveries recorded; {requiredFound}/{requiredTotal} ending evidence
+            {found}/{HOUSES.length} house discoveries recorded; {requiredFound}/{requiredTotal} required houses
           </p>
         </div>
         <div className="font-mono text-xs text-neutral-500">

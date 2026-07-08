@@ -1,5 +1,6 @@
 package com.observance.watcher.signal.listener;
 
+import com.google.gson.JsonObject;
 import com.observance.watcher.config.Site;
 import com.observance.watcher.config.SitesConfig;
 import com.observance.watcher.data.SupabaseClient;
@@ -110,11 +111,11 @@ public final class TownsfolkNpcListener implements Listener {
                     new String[]{"aro.greet.iss_cold",
                             "You found what’s past the line, then. Yeah. I can tell by your faces. Look — I never *been* down there, I just say what sells, that’s all I — don’t. Don’t tell me about it. I don’t want it in my head with the rest of the things I say."},
                     new String[]{"aro.rumor.town",
-                            "Way I heard it, there’s a whole town down there. Lamps still burning. People who just — stayed. Living fat off the warm while we freeze our backsides up here. That’s why nobody comes back up, see. Not ’cause they died. ’Cause it’s *nice*."},
+                            "Way I heard it, there is a warm town past the line. If that were true, the market ledger would still balance and the ration table would not look like a crime scene. Go see which story can stand up."},
                     new String[]{"aro.rumor.line",
-                            "There’s a line painted across the big stair, halfway down. Don’t mean nothing. Old paint. Builders’ mark. People make a whole religion out of a stripe of pitch, I swear. You want to see it, it’s down past the lamp-house, on the Stair."},
+                            "There is a line painted across the big stair, past the lamp-house. Just an old survey mark, old pitch, nothing sacred. If you want a thrill, follow it until the place starts keeping count of you."},
                     new String[]{"aro.rumor.bird",
-                            "They say there’s a bird down there older than the digging. Keeps the air sweet. You find the bird, you find the bottom, and the bottom’s where they kept the good stuff. Coops were up at the Lamp-works, last anyone said."},
+                            "They say there was a bird that kept the air sweet. I never saw a feather, only heard the coops were up by the Lamp-works. If a cage is empty and still set for feeding, ask what left and why nobody calls it."},
                     new String[]{"aro.lie.cross",
                             "The painted line? Step right over it, friend. That’s the locals keeping the soft folk out so they can have the warm to themselves. Cross it and keep going. That’s where it gets good."},
                     new String[]{"aro.lie.moon",
@@ -133,15 +134,15 @@ public final class TownsfolkNpcListener implements Listener {
                     new String[]{"wenna.greet.cold",
                             "...did you leave a little? Down there. Did you give anything back, or did you just — take. You don’t have to answer. I can see you didn’t. Take the crust anyway. Maybe it’s not too late for the crust."},
                     new String[]{"wenna.rumor.seven",
-                            "Gran used to say there were seven somethings you had to mind down there. Seven. I only ever remember six and I always forget a different one, isn’t that the way. Light, and the line, and the bird, and the bowing, and the giving, and... see, there’s the sixth gone again."},
+                            "Gran used to say there were seven things you had to mind down there. The school-stand had children copying them, six stones and one grey one. I only remember pieces: light, line, bird, bow, giving, and the one nobody names."},
                     new String[]{"wenna.rumor.name",
                             "You don’t say the cold’s name. That one I do remember, ’cause she’d go white when I tried. ‘You don’t *name* it, Wenna.’ Name what, Gran? And she’d just — wouldn’t. So I don’t. Habit now."},
                     new String[]{"wenna.rumor.moon",
-                            "When the moon goes black you stay up. Stupid, isn’t it. I still do it. Sit up all night with the lamp like a fool. Slept through it once as a girl and had the worst dreams of my life, so."},
+                            "When the moon goes black you stay up. Stupid thing, but Gran meant it. There was a watch-floor for that, she said, a log that stopped writing when the watching stopped. I still sit up with the lamp."},
                     new String[]{"wenna.truth.bow",
-                            "Bow at the stones. I don’t know who to, mind. Gran never said who. You just bend your knee going past and you don’t think too hard about it. The ones who don’t bend... she’d just shake her head."},
+                            "Bow at the stones. Not one stone, love, a row; you bend at each and count what is hollow after the sixth. I do not know who it honors. I know who it shames when you walk past standing."},
                     new String[]{"wenna.truth.light",
-                            "Keep your light. Above all the others, keep your light. That one she said like it mattered more than the rest put together, and she didn’t say things like that twice."},
+                            "Keep your light. The school copied that line, the lampworks counted it, and some shelf set one warm lamp apart from all the cold ones. That is three old places saying the same thing, which is near enough to proof for me."},
                     new String[]{"wenna.quest.offer",
                             "Do me a kindness while you’re down there. There’s a little shelf-stall, sells nothing, kept lit for the dead — leave the crust there, not in your pocket. Gran’s gran kept that stall. I never can go myself. You’ll do it? Good."},
                     new String[]{"wenna.quest.done",
@@ -160,13 +161,13 @@ public final class TownsfolkNpcListener implements Listener {
                     new String[]{"coll.shop",
                             "Down or up? Down, you buy light. Up, you sell whatever you found that’s still worth anything. Which is rarely much. People bring up the strangest junk and want gold for it."},
                     new String[]{"coll.rumor.oil",
-                            "Folk come up babbling about a watcher, a presence, eyes in the dark. You know what I sell to those folk? More oil. Whatever’s down there, it’s never once stopped a man from needing more oil."},
+                            "Folk come up babbling about a watcher, a presence, eyes in the dark. Then they buy more oil. The market tallies used to say the same thing: bread, salt, mending, watched lamp. Fear still needs a receipt."},
                     new String[]{"coll.rumor.lampworks",
-                            "Furthest I go’s the lamp-house — the Lamp-works, second level. Good trade there, people coming up are scared and scared pays full price. Past that? Nothing past that’s worth a markup. Past that you don’t come back to spend it."},
+                            "Furthest I go is the lamp-house, the Lamp-works, second level. There is a ledger by the upper stair if it has not rotted. Past the black step the counting gets funny, and funny does not spend."},
                     new String[]{"coll.truth.line",
-                            "The painted line’s real, if that’s your question. I’ve seen it. I don’t cross it. Not ’cause of stories — ’cause everyone who does stops buying oil from me, and I notice when a customer stops existing."},
+                            "The painted line is real. I have seen the line count by the stair and the third-bay break beyond it. I do not cross it because everyone who does stops buying oil from me, and I notice when a customer stops existing."},
                     new String[]{"coll.truth.twolamps",
-                            "Keep one lamp more than you think you need. That’s not wisdom, that’s stock advice. The man with two lamps comes back to spend. The man with one comes back as a story. I’d rather you came back to spend."},
+                            "Keep one lamp more than you think you need. If you find a shelf where one warm lamp is set apart from the cold ones, do not price it like stock. Some lamps are not for selling."},
                     new String[]{"coll.quest.offer",
                             "You’re going down past where I go. Fine. Take this sealed jar to the third lamp on the Lamp-works stair — it’s been dark for years, some lampwright’s old stand, number’s worn off. Light it. I’ll knock the rope off your next bill. I don’t like a dark stand on my route, bad for trade."},
                     new String[]{"coll.quest.done",
@@ -181,11 +182,11 @@ public final class TownsfolkNpcListener implements Listener {
                     new String[]{"dob.greet.alert",
                             "I’m not scared, before you ask. I’m *alert*. There’s a difference and my mum says it’s a good quality."},
                     new String[]{"dob.chatter.lampworks",
-                            "See, this is fine. Lamps, smell of oil, nothing weird. People worked here. Normal job, normal — okay, why’s it so *tall*, the ceiling, down here. Was it always this tall? I don’t remember tall."},
+                            "See, this is fine. Lamps, smell of oil, ledger by the stair, stand three dry. Normal job, normal--okay, why is it so tall down here. Was it always this tall?"},
                     new String[]{"dob.chatter.cisterns",
-                            "Don’t drink the still water, that’s Cistern 7, that one’s gone bad — my uncle said. Or was it 7’s the good one. One of ’em’s good. Let’s not test it. Let’s super not test it."},
+                            "Do not drink the still water. Cistern 7 had good oil jars, I think, and a copybook thing about the water giving light back wrong. That is a lot of reasons to keep your mouth shut."},
                     new String[]{"dob.chatter.line",
-                            "There’s the line. The painted one. We’re — we’re not crossing that, are we. Tell me we’re stopping at the line. Aro said cross it but Aro’s a liar, everyone knows Aro’s a liar, why’d I even — we’re stopping at the line, right?"},
+                            "There is the line. The painted one. If the line has a count, that means someone counted crossings, right? Aro said cross it, but Aro sells stories. Please do not make me be in one."},
                     new String[]{"dob.truth.lied",
                             "Okay — real talk — I’ve never been past the Lamp-works. I lied. Twice was a lie, it was once and I cried on the way up. I just wanted to come ’cause everyone treats me like a kid. I don’t know what’s down there any more than you do."},
                     new String[]{"dob.truth.lamp",
@@ -210,9 +211,9 @@ public final class TownsfolkNpcListener implements Listener {
                     new String[]{"old-pell.memory.kinds",
                             "I knew people who went down keeping every little rule like it was nothing, like a game, and they came up and they were *here*, you understand, all the way here, behind their own eyes. And I knew the other kind. I don’t say what happened to the other kind. You’ll know it if you see it. You’ll wish you didn’t."},
                     new String[]{"old-pell.memory.seventh",
-                            "There were seven things you minded down there. I minded six of them. Six. I have spent a long time thinking about the seventh, and what it would’ve cost me to mind it, and I think now it would’ve cost me less than the not-minding has."},
+                            "There were seven things you minded down there. I minded six. I saw a school-stand once, six stones and one grey, and I laughed because children make everything into a lesson. I have spent my life learning I was the child."},
                     new String[]{"old-pell.truth.watched",
-                            "I’ll tell you the only true thing I have. It doesn’t chase. Whatever’s down there, it does not chase you. It waits, and it watches, and it takes what stops being watched. So be watched. Stay where your people can see you. That’s all I’ve got and it’s worth more than every map Aro’s ever sold."},
+                            "I will tell you the only true thing I have. It does not chase. The watch-floor knew that. The log stops, the light goes cold, and whatever is down there takes what stops being watched. So be watched. Stay where your people can see you."},
                     new String[]{"old-pell.react.good",
                             "I’ll remember you came back right. That’s not nothing, a person remembering you right. It’s most of what I’ve got left to give."},
                     new String[]{"old-pell.react.bad",
@@ -313,9 +314,10 @@ public final class TownsfolkNpcListener implements Listener {
      * interaction, and PAID OFF the next time the player right-clicks that townsperson while done —
      * the quest.done line is swapped in for the offer line so the errand isn't perpetually re-offered.
      *
-     * SCOPE: dialogue + npc_quests + proximity ONLY. No world blocks, no arc_state, no oracle, no
-     * rumor-flip. Every DB touch is async/fire-and-forget + Safety-wrapped; a DB hiccup only means
-     * the quest isn't tracked that tick (the quest just isn't remembered — never a crash, never a block).
+     * SCOPE: dialogue + npc_quests + proximity/action + one group evidence flag. No world blocks,
+     * no oracle, no rumor-flip. Every DB touch is async/fire-and-forget + Safety-wrapped; a DB hiccup
+     * only means the quest isn't tracked that tick (the quest just isn't remembered — never a crash,
+     * never a block).
      */
 
     /**
@@ -326,7 +328,8 @@ public final class TownsfolkNpcListener implements Listener {
      *   <li>{@code coll_lamp} — place a light at {@code third_lamp_stand}.</li>
      * </ul>
      */
-    private record Quest(String questKey, String offerKey, String doneKey, String siteId, boolean proximityComplete) { }
+    private record Quest(String questKey, String offerKey, String doneKey, String siteId,
+                         boolean proximityComplete, String flagKey) { }
 
     /** ~24-block completion radius (squared) around the quest's target site. */
     private static final double COMPLETE_RADIUS = 24.0;
@@ -335,9 +338,9 @@ public final class TownsfolkNpcListener implements Listener {
     /** Offer-key → quest, so an offer line spoken can arm its quest cheaply. */
     private static final Map<String, Quest> QUESTS_BY_OFFER = Map.of(
             "wenna.quest.offer", new Quest("wenna_crust", "wenna.quest.offer",
-                    "wenna.quest.done", "dead_stall", false),
+                    "wenna.quest.done", "dead_stall", false, "npc_wenna_crust_done"),
             "coll.quest.offer", new Quest("coll_lamp", "coll.quest.offer",
-                    "coll.quest.done", "third_lamp_stand", false));
+                    "coll.quest.done", "third_lamp_stand", false, "npc_coll_lamp_done"));
 
     /** Townsperson-id → its quest (so a click can find whether that npc has a payoff owed). */
     private static final Map<String, Quest> QUESTS_BY_NPC = Map.of(
@@ -614,6 +617,7 @@ public final class TownsfolkNpcListener implements Listener {
         // Atomic single-fire: only the transition ACTIVE→DONE proceeds.
         if (questStates.replace(stKey, QuestState.ACTIVE, QuestState.DONE)) {
             upsertQuestAsync(p.getUniqueId(), q.questKey(), "done");
+            mergeFlag(q.flagKey());
             // Understated acknowledgement — cold, small, no popup.
             try {
                 p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_SNARE, 0.35f, 0.6f);
@@ -687,6 +691,15 @@ public final class TownsfolkNpcListener implements Listener {
             var lookup = supabase.fetchPlayerByUuid(uuid.toString());
             if (!lookup.ok() || lookup.value() == null) return;   // no players row → can't key the FK
             supabase.upsertQuest(new NpcQuestRow(lookup.value().id, questKey, status));
+        });
+    }
+
+    private void mergeFlag(String key) {
+        if (supabase == null || scheduler == null || key == null || key.isBlank()) return;
+        scheduler.runAsyncSafe("townsfolk.quest.flag." + key, () -> {
+            JsonObject flags = new JsonObject();
+            flags.addProperty(key, true);
+            supabase.mergeArcFlags(flags);
         });
     }
 

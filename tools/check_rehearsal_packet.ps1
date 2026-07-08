@@ -1,7 +1,8 @@
 param(
   [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
   [string]$PacketDir = "",
-  [switch]$AllowOpenItems
+  [switch]$AllowOpenItems,
+  [switch]$AllowSyntheticEvidence
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,12 +41,26 @@ if (-not (Test-Path $packetFull)) {
 $notesFile = Join-Path $packetFull "00-notes.md"
 $fixesFile = Join-Path $packetFull "fixes.md"
 $attestationsFile = Join-Path $packetFull "launch-attestations.md"
+$commandSheetFile = Join-Path $packetFull "live-server-command-sheet.md"
+$supabaseApplyCardFile = Join-Path $packetFull "supabase-apply-card.md"
 $screenshotsDir = Join-Path $packetFull "screenshots"
 $clipsDir = Join-Path $packetFull "clips"
 
 $failures = [System.Collections.Generic.List[string]]::new()
 function Fail([string] $message) {
   $script:failures.Add($message)
+}
+
+function LooksSynthetic([string] $Value) {
+  if ([string]::IsNullOrWhiteSpace($Value)) { return $false }
+  return $Value -match '(?i)audit[- ]placeholder|audit-confirmed|synthetic validator self-test|synthetic pass'
+}
+
+function ConcreteValue([string] $Value) {
+  if ([string]::IsNullOrWhiteSpace($Value)) { return $false }
+  if ($Value -match '(?i)^todo$|^n/a$|^\?$') { return $false }
+  if (-not $AllowSyntheticEvidence -and (LooksSynthetic $Value)) { return $false }
+  return $true
 }
 
 function PluginJarPath([string] $Root) {
@@ -67,7 +82,7 @@ function ExpectedSha1([string] $Path, [string] $Label) {
   return (Get-FileHash -LiteralPath $Path -Algorithm SHA1).Hash.ToLowerInvariant()
 }
 
-foreach ($path in @($notesFile, $fixesFile, $attestationsFile, $screenshotsDir, $clipsDir)) {
+foreach ($path in @($notesFile, $fixesFile, $attestationsFile, $commandSheetFile, $supabaseApplyCardFile, $screenshotsDir, $clipsDir)) {
   if (-not (Test-Path $path)) {
     Fail "missing required packet path: $path"
   }
@@ -77,6 +92,22 @@ if ($failures.Count -eq 0) {
   $notes = Get-Content -LiteralPath $notesFile -Raw
   $fixes = Get-Content -LiteralPath $fixesFile -Raw
   $attestations = Get-Content -LiteralPath $attestationsFile -Raw
+  $commandSheet = Get-Content -LiteralPath $commandSheetFile -Raw
+  $supabaseApplyCard = Get-Content -LiteralPath $supabaseApplyCardFile -Raw
+
+  if (-not $AllowOpenItems -and -not $AllowSyntheticEvidence) {
+    foreach ($pair in @(
+      @("00-notes.md", $notes),
+      @("fixes.md", $fixes),
+      @("launch-attestations.md", $attestations),
+      @("live-server-command-sheet.md", $commandSheet),
+      @("supabase-apply-card.md", $supabaseApplyCard)
+    )) {
+      if (LooksSynthetic $pair[1]) {
+        Fail "$($pair[0]) contains synthetic/audit placeholder evidence; final rehearsal packets need real client proof"
+      }
+    }
+  }
 
   if (-not $AllowOpenItems) {
     if ([regex]::IsMatch($notes, '^\s*-\s+\[\s\]', [System.Text.RegularExpressions.RegexOptions]::Multiline)) {
@@ -115,10 +146,63 @@ if ($failures.Count -eq 0) {
   }
 
   foreach ($required in @(
+    "Supabase Apply Card",
+    "fdnmhbpxnodrnbrzrlqq",
+    "discord\supabase\apply-all.sql",
+    "Apply-all SHA1 to record",
+    "Ordered bundle files",
+    "discord\supabase\apply-tonight.sql",
+    "Do not paste loose migration or seed files",
+    "discord\src\db\build-apply-all.ts",
     "/observance status",
     "supabase configured: true",
     "last db call ok: true",
     "queued writes: 0",
+    "Copy To Attestations"
+  )) {
+    if ($supabaseApplyCard.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "supabase-apply-card.md missing required SQL apply text: $required"
+    }
+  }
+
+  $expectedApplyAllForCard = ExpectedSha1 (Join-Path $repoFull "discord\supabase\apply-all.sql") "apply-all SQL"
+  if ($expectedApplyAllForCard -and $supabaseApplyCard.IndexOf($expectedApplyAllForCard, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+    Fail "supabase-apply-card.md must include the current apply-all SQL SHA1: $expectedApplyAllForCard"
+  }
+
+  foreach ($required in @(
+    "Live Server Command Sheet",
+    "Before Players",
+    "Placement Loop",
+    "Unlit Setup And Proof",
+    "Media Flags",
+    "Final Live Receipts",
+    "/observance status",
+    "/observance preflight",
+    "/observance visualaudit",
+    "/observance dialogueaudit",
+    "/observance site launch",
+    "/observance site next",
+    "/observance site set <siteId>",
+    "/obs unlit audit",
+    "/obs unlit ready",
+    "/obs unlit pass light",
+    "/observance flag set media_clip_01_ready true",
+    "/observance flag set recovered_archive_ready true",
+    "launch-attestations.md"
+  )) {
+    if ($commandSheet.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "live-server-command-sheet.md missing required command receipt text: $required"
+    }
+  }
+
+  foreach ($required in @(
+    "/observance status",
+    "supabase configured: true",
+    "last db call ok: true",
+    "queued writes: 0",
+    "No loose migration or seed files",
+    "Applied SQL SHA1",
     "Paper 1.21.11",
     "Plugin jar SHA1",
     "Hosted resource pack SHA1",
@@ -129,6 +213,12 @@ if ($failures.Count -eq 0) {
     "/observance dialogueaudit",
     "/obs unlit audit",
     "/obs unlit ready",
+    "media_clip_01_ready",
+    "media_clip_02_ready",
+    "media_clip_03_ready",
+    "media_clip_04_ready",
+    "recovered_archive_ready",
+    "manual-media-checklist.md",
     "SESSION-ZERO.md",
     "observer_capture",
     "voice_capture",
@@ -145,6 +235,10 @@ if ($failures.Count -eq 0) {
   if (-not $AllowOpenItems) {
     $expectedPluginJarSha1 = ExpectedSha1 (PluginJarPath $repoFull) "plugin jar"
     $expectedResourcepackSha1 = ExpectedSha1 (Join-Path $repoFull "observance-resourcepack.zip") "resource pack zip"
+    $expectedApplyAllSha1 = ExpectedSha1 (Join-Path $repoFull "discord\supabase\apply-all.sql") "apply-all SQL"
+    if ($expectedApplyAllSha1 -and $attestations.IndexOf($expectedApplyAllSha1, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "launch-attestations.md must include the current apply-all SQL SHA1: $expectedApplyAllSha1"
+    }
     if ($expectedPluginJarSha1 -and $attestations.IndexOf($expectedPluginJarSha1, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Fail "launch-attestations.md must include the current plugin jar SHA1: $expectedPluginJarSha1"
     }
@@ -173,10 +267,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $evidence = $evidenceMatch.Groups["value"].Value.Trim()
-      if ([string]::IsNullOrWhiteSpace($evidence) -or
-          $evidence -match '^audit-placeholder$' -or
-          $evidence -match '^todo$' -or
-          $evidence -match '^n/a$') {
+      if (-not (ConcreteValue $evidence)) {
         Fail "launch-attestations.md section '$section' needs concrete evidence"
       }
     }
@@ -241,10 +332,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $value = $fieldMatch.Groups["value"].Value.Trim()
-      if (-not $AllowOpenItems -and (
-          [string]::IsNullOrWhiteSpace($value) -or
-          $value -match '^audit-placeholder$' -or
-          $value -match 'operator explains')) {
+      if (-not $AllowOpenItems -and ((-not (ConcreteValue $value)) -or $value -match 'operator explains')) {
         Fail "first-hour beat '$beat' needs concrete pacing proof for: $field"
       }
     }
@@ -327,7 +415,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $value = $fieldMatch.Groups["value"].Value.Trim()
-      if (-not $AllowOpenItems -and [string]::IsNullOrWhiteSpace($value)) {
+      if (-not $AllowOpenItems -and -not (ConcreteValue $value)) {
         Fail "major site '$site' needs concrete visual proof for: $field"
       }
     }
@@ -356,6 +444,18 @@ if ($failures.Count -eq 0) {
         $_.BaseName.IndexOf("return", [System.StringComparison]::OrdinalIgnoreCase) -ge 0
       })) {
         Fail "site '$site' missing exit/return screenshot filename"
+      }
+      if (-not $AllowSyntheticEvidence) {
+        foreach ($file in $siteFiles) {
+          if ($file.Length -lt 1024) {
+            Fail "site '$site' screenshot '$($file.Name)' is too small to be real client evidence ($($file.Length) bytes)"
+          }
+          $sample = ""
+          try { $sample = Get-Content -LiteralPath $file.FullName -Raw -TotalCount 1 -ErrorAction SilentlyContinue } catch { $sample = "" }
+          if (LooksSynthetic $sample) {
+            Fail "site '$site' screenshot '$($file.Name)' contains synthetic placeholder content"
+          }
+        }
       }
     }
   }
@@ -405,9 +505,8 @@ if ($failures.Count -eq 0) {
     }
     $value = $valueMatch.Groups["value"].Value.Trim()
     if (-not $AllowOpenItems -and (
-        [string]::IsNullOrWhiteSpace($value) -or
         $value -match 'belief\s*/\s*dread\s*/\s*confirmation\s*/\s*motif' -or
-        $value -match '^audit-placeholder$')) {
+        (-not (ConcreteValue $value)))) {
       Fail "side path '$site' needs a concrete value: belief change, dread, confirmation, motif, or useful contradiction"
     }
   }
@@ -438,10 +537,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $value = $fieldMatch.Groups["value"].Value.Trim()
-      if (-not $AllowOpenItems -and (
-          [string]::IsNullOrWhiteSpace($value) -or
-          $value -match '^audit-placeholder$' -or
-          $value -match '^\?$')) {
+      if (-not $AllowOpenItems -and -not (ConcreteValue $value)) {
         Fail "puzzle family '$family' needs concrete fairness proof for: $field"
       }
     }
@@ -474,10 +570,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $value = $fieldMatch.Groups["value"].Value.Trim()
-      if (-not $AllowOpenItems -and (
-          [string]::IsNullOrWhiteSpace($value) -or
-          $value -match '^audit-placeholder$' -or
-          $value -match 'be scared now')) {
+      if (-not $AllowOpenItems -and ((-not (ConcreteValue $value)) -or $value -match 'be scared now')) {
         Fail "scare '$scare' needs concrete $field proof tied to lore, source, restraint, and aftertaste"
       }
     }
@@ -545,7 +638,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $value = $fieldMatch.Groups["value"].Value.Trim()
-      if (-not $AllowOpenItems -and [string]::IsNullOrWhiteSpace($value)) {
+      if (-not $AllowOpenItems -and -not (ConcreteValue $value)) {
         Fail "Unlit house '$house' needs concrete proof for: $field"
       }
     }
@@ -590,7 +683,7 @@ if ($failures.Count -eq 0) {
         continue
       }
       $value = $fieldMatch.Groups["value"].Value.Trim()
-      if (-not $AllowOpenItems -and [string]::IsNullOrWhiteSpace($value)) {
+      if (-not $AllowOpenItems -and -not (ConcreteValue $value)) {
         Fail "Director Cut Scorecard axis '$axis' needs concrete $field"
       }
     }
@@ -612,6 +705,17 @@ if ($failures.Count -eq 0) {
       $pattern = $clip[1]
       if (-not ($clipFiles | Where-Object { $_.BaseName -match $pattern })) {
         Fail "missing required clip filename for $label"
+      } elseif (-not $AllowSyntheticEvidence) {
+        foreach ($file in @($clipFiles | Where-Object { $_.BaseName -match $pattern })) {
+          if ($file.Length -lt 8192) {
+            Fail "clip '$($file.Name)' for $label is too small to be real client video evidence ($($file.Length) bytes)"
+          }
+          $sample = ""
+          try { $sample = Get-Content -LiteralPath $file.FullName -Raw -TotalCount 1 -ErrorAction SilentlyContinue } catch { $sample = "" }
+          if (LooksSynthetic $sample) {
+            Fail "clip '$($file.Name)' for $label contains synthetic placeholder content"
+          }
+        }
       }
     }
   }

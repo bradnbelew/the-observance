@@ -73,8 +73,12 @@ foreach ($needle in @(
   "observance_unlit",
   "7 borrowed lanterns",
   "unlit_seen_lamp",
+  "unlit_seen_cairn",
+  "unlit_seen_coop",
   "unlit_seen_well",
   "unlit_seen_watch",
+  "unlit_seen_warm",
+  "unlit_seen_threshold",
   "unlit_seen_base",
   "/obs unlit border 138",
   "/obs unlit darken all 138",
@@ -89,9 +93,15 @@ foreach ($needle in @(
   "UNLIT-PREARG-STARTUP.md",
   "/obs unlit border 138",
   "/obs unlit darken all 138",
-  "players receive 7 borrowed lanterns"
+  "players receive 7 borrowed lanterns",
+  "lamp, cairn, coop, well, watch, warm, threshold",
+  "all eight"
 )) {
   RequireText "design/RUNBOOK.md Unlit handoff" $runbook $needle
+}
+
+if ($runbook.IndexOf("required ending evidence houses are lamp, well, watch, and base", [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+  Fail "design/RUNBOOK.md must not describe only four Unlit houses as required ending evidence"
 }
 
 foreach ($needle in @(
@@ -243,8 +253,14 @@ if ($hasBorrowedCoalDrift) {
 foreach ($needle in @(
   "UnlitProgress",
   "unlit_seen_lamp",
+  "unlit_seen_cairn",
+  "unlit_seen_coop",
+  "unlit_seen_well",
+  "unlit_seen_watch",
+  "unlit_seen_warm",
+  "unlit_seen_threshold",
   "unlit_seen_base",
-  "ending evidence",
+  "required houses",
   "house discoveries recorded"
 )) {
   RequireText "dashboard Unlit progress" ($authorPage + $unlitPanel) $needle
@@ -254,8 +270,12 @@ foreach ($needle in @(
   "rite-tokens",
   "accepting_onramp_open",
   "unlit_seen_lamp",
+  "unlit_seen_cairn",
+  "unlit_seen_coop",
   "unlit_seen_well",
   "unlit_seen_watch",
+  "unlit_seen_warm",
+  "unlit_seen_threshold",
   "unlit_seen_base"
 )) {
   RequireText "metapuzzle_seed Unlit endgame gate" $metapuzzle $needle

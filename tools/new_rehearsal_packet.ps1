@@ -49,10 +49,115 @@ function PluginJarPath([string] $Root) {
   return Join-Path $Root "plugin\build\libs\observance-$version.jar"
 }
 
+function Code([string]$Value) {
+  return [string]([char]0x60) + $Value + [string]([char]0x60)
+}
+
+function Write-LiveServerCommandSheet([string]$PacketDir, [string]$Date) {
+  $path = Join-Path $PacketDir "live-server-command-sheet.md"
+  $lines = [System.Collections.Generic.List[string]]::new()
+  $lines.Add("# Live Server Command Sheet - $Date")
+  $lines.Add("")
+  $lines.Add("Run these on the actual Paper server after the current plugin, datapack, resource pack config, and live Supabase settings are loaded. Copy the pass/fail receipts into " + (Code "launch-attestations.md") + ".")
+  $lines.Add("")
+  $lines.Add("## Before Players")
+  $lines.Add("")
+  $lines.Add("- [ ] " + (Code "/observance status") + " - record Supabase configured, last db call ok, queued writes, and pack readiness.")
+  $lines.Add("- [ ] " + (Code "/observance preflight") + " - launch route must be coherent before rehearsal.")
+  $lines.Add("- [ ] " + (Code "/observance visualaudit") + " - no REPLACE/CUT launch surfaces may remain in the live route.")
+  $lines.Add("- [ ] " + (Code "/observance dialogueaudit") + " - NPC claims must have world/mechanic proof.")
+  $lines.Add("- [ ] " + (Code "/observance site launch") + " - confirm launch-required placement progress.")
+  $lines.Add("")
+  $lines.Add("## Placement Loop")
+  $lines.Add("")
+  $lines.Add("- [ ] " + (Code "/observance site next") + " - find the next unplaced launch site.")
+  $lines.Add("- [ ] " + (Code "/observance site set <siteId>") + " - set each real location after building/proofing it.")
+  $lines.Add("- [ ] Fill " + (Code "coords-capture.csv") + " with coordinates, KEEP verdict, four proof shots, and cohesion notes.")
+  $lines.Add("- [ ] Rerun " + (Code "/observance site launch") + " until it reports the launch coordinates are complete.")
+  $lines.Add("")
+  $lines.Add("## Unlit Setup And Proof")
+  $lines.Add("")
+  $lines.Add("- [ ] " + (Code "/obs unlit site entry") + " at the outside entry ritual point.")
+  $lines.Add("- [ ] " + (Code "/obs unlit site spawn") + " at the mirror spawn inside observance_unlit.")
+  $lines.Add("- [ ] " + (Code "/obs unlit site exit") + " at the retreat/extraction point.")
+  $lines.Add("- [ ] " + (Code "/obs unlit buildmode off") + " before any player-facing Unlit test.")
+  $lines.Add("- [ ] " + (Code "/obs unlit darken all [radius]") + " after final clue placement.")
+  $lines.Add("- [ ] " + (Code "/obs unlit border [radius]") + " after final spawn placement.")
+  $lines.Add("- [ ] " + (Code "/obs unlit audit") + " - fixture proof, stray light, and border must pass.")
+  $lines.Add("- [ ] " + (Code "/obs unlit ready") + " - copy its handoff output into rehearsal evidence.")
+  $lines.Add("- [ ] " + (Code "/obs unlit pass light") + ", " + (Code "stalker") + ", " + (Code "extinguish") + ", " + (Code "house") + ", and " + (Code "extract") + " - prove the playable pressure pieces.")
+  $lines.Add("")
+  $lines.Add("## Media Flags")
+  $lines.Add("")
+  $lines.Add("- [ ] Review " + (Code "manual-media-checklist.md") + " before flipping media flags.")
+  $lines.Add("- [ ] " + (Code "/observance flag set media_clip_01_ready true") + " only after clip 1 exists and ASH-13 is extractable.")
+  $lines.Add("- [ ] " + (Code "/observance flag set media_clip_02_ready true") + " only after clip 2 exists and WHERE THE REEDS FOLD BACK is extractable.")
+  $lines.Add("- [ ] " + (Code "/observance flag set media_clip_03_ready true") + " only after clip 3 exists and STAY AWAKE is extractable.")
+  $lines.Add("- [ ] " + (Code "/observance flag set media_clip_04_ready true") + " only after clip 4 exists and SIX RETURN, ONE IS NOT KEPT is extractable.")
+  $lines.Add("- [ ] " + (Code "/observance flag set recovered_archive_ready true") + " only after the archive exists and I WAS NOT KEPT is extractable from the spectrogram.")
+  $lines.Add("- [ ] " + (Code "/observance flag list") + " - record the final media-ready flag state.")
+  $lines.Add("")
+  $lines.Add("## Final Live Receipts")
+  $lines.Add("")
+  $lines.Add("- [ ] " + (Code "/observance status") + " after all rehearsal clients join: db true, last call ok true, queued writes 0, pack readiness LOADED for test clients.")
+  $lines.Add("- [ ] " + (Code "/observance preflight") + " after placement and media flag decisions.")
+  $lines.Add("- [ ] " + (Code "/observance visualaudit") + " after the last visual fix.")
+  $lines.Add("- [ ] " + (Code "/observance dialogueaudit") + " after the last NPC/world proof fix.")
+  $lines.Add("- [ ] " + (Code "/obs unlit audit") + " and " + (Code "/obs unlit ready") + " after final Unlit placement.")
+  $lines.Add("- [ ] Paste command receipts into " + (Code "launch-attestations.md") + " and rerun the final go/no-go check.")
+  [System.IO.File]::WriteAllLines($path, $lines, [System.Text.UTF8Encoding]::new($false))
+  return $path
+}
+
+function Write-SupabaseApplyCard([string]$PacketDir, [string]$Date, [string]$ApplyAllSha1, [string]$ApplyAllSqlPath) {
+  $path = Join-Path $PacketDir "supabase-apply-card.md"
+  $relativeSql = "discord\supabase\apply-all.sql"
+  $orderedCount = "PENDING"
+  if (Test-Path $ApplyAllSqlPath) {
+    $sqlText = Get-Content -LiteralPath $ApplyAllSqlPath -Raw
+    $orderedCount = [string]([regex]::Matches($sqlText, "(?m)^-- FILE: ").Count)
+  }
+
+  $lines = [System.Collections.Generic.List[string]]::new()
+  $lines.Add("# Supabase Apply Card - $Date")
+  $lines.Add("")
+  $lines.Add("Use this card during the live database step, then copy the receipts into " + (Code "launch-attestations.md") + ".")
+  $lines.Add("")
+  $lines.Add("## Exact Bundle")
+  $lines.Add("")
+  $lines.Add("- Live project: " + (Code "fdnmhbpxnodrnbrzrlqq"))
+  $lines.Add("- Apply this one file: " + (Code $relativeSql))
+  $lines.Add("- Apply-all SHA1 to record: " + (Code $ApplyAllSha1))
+  $lines.Add("- Ordered bundle files: " + (Code $orderedCount))
+  $lines.Add("- Deprecated file to avoid: " + (Code "discord\supabase\apply-tonight.sql"))
+  $lines.Add("")
+  $lines.Add("## Operator Rule")
+  $lines.Add("")
+  $lines.Add("- Paste the whole generated " + (Code $relativeSql) + " bundle into Supabase SQL Editor and run it once.")
+  $lines.Add("- Do not paste loose migration or seed files after it.")
+  $lines.Add("- If a migration matters for launch, add it to " + (Code "discord\src\db\build-apply-all.ts") + ", regenerate, and apply the new bundle.")
+  $lines.Add("")
+  $lines.Add("## Live Verification")
+  $lines.Add("")
+  $lines.Add("- " + (Code "/observance status") + " shows " + (Code "supabase configured: true") + ".")
+  $lines.Add("- " + (Code "/observance status") + " shows " + (Code "last db call ok: true") + ".")
+  $lines.Add("- " + (Code "/observance status") + " shows " + (Code "queued writes: 0") + ".")
+  $lines.Add("")
+  $lines.Add("## Copy To Attestations")
+  $lines.Add("")
+  $lines.Add("- Applied SQL SHA1: " + (Code $ApplyAllSha1))
+  $lines.Add("- Supabase status receipt:")
+  $lines.Add("- Notes about reruns or errors:")
+  [System.IO.File]::WriteAllLines($path, $lines, [System.Text.UTF8Encoding]::new($false))
+  return $path
+}
+
 $pluginJarPath = PluginJarPath $repoFull
 $pluginJarSha1 = FileSha1OrInstruction $pluginJarPath "run tools\package_plugin.ps1 before final rehearsal"
 $resourcepackZip = Join-Path $repoFull "observance-resourcepack.zip"
 $resourcepackSha1 = FileSha1OrInstruction $resourcepackZip "run tools\package_assets.ps1 before hosting the pack"
+$applyAllSql = Join-Path $repoFull "discord\supabase\apply-all.sql"
+$applyAllSha1 = FileSha1OrInstruction $applyAllSql "run npm run db:seed from discord before final rehearsal"
 
 $majorSites = @(
   "rune_rosetta",
@@ -396,6 +501,8 @@ pass. `tools\check_rehearsal_packet.ps1` treats unchecked or template evidence a
 ## Supabase Live Status
 
 - [ ] `discord/supabase/apply-all.sql` was applied to the live Supabase project.
+- [ ] No loose migration or seed files were pasted after the generated `apply-all.sql` bundle.
+- [ ] Applied SQL SHA1 matched the current repo bundle: __APPLY_ALL_SHA1__.
 - [ ] `/observance status` on the live server showed `supabase configured: true`.
 - [ ] `/observance status` on the live server showed `last db call ok: true`.
 - [ ] `/observance status` on the live server showed `queued writes: 0`.
@@ -438,6 +545,8 @@ evidence:
 - [ ] No in-world clue points to a missing web/download artifact.
 - [ ] `/record/...` routes used by the route loaded from the clue path.
 - [ ] Optional media that is not ready is withheld rather than planted.
+- [ ] Any flipped media flags have matching real artifacts and payload proof: `media_clip_01_ready`, `media_clip_02_ready`, `media_clip_03_ready`, `media_clip_04_ready`, `recovered_archive_ready`.
+- [ ] `manual-media-checklist.md` was reviewed before flipping media-ready flags.
 evidence:
 
 ## Session Zero And Capture Consent
@@ -463,11 +572,13 @@ evidence:
 - [ ] Any failed rehearsal item has been fixed and re-proven.
 decision: LAUNCH / DO NOT LAUNCH
 reason:
-'@.Replace("__DATE__", $Date).Replace("__PLUGIN_JAR_SHA1__", $pluginJarSha1).Replace("__RESOURCEPACK_SHA1__", $resourcepackSha1)
+'@.Replace("__DATE__", $Date).Replace("__APPLY_ALL_SHA1__", $applyAllSha1).Replace("__PLUGIN_JAR_SHA1__", $pluginJarSha1).Replace("__RESOURCEPACK_SHA1__", $resourcepackSha1)
 
 [System.IO.File]::WriteAllLines((Join-Path $packetDir "00-notes.md"), $notes, [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText((Join-Path $packetDir "fixes.md"), $fixes, [System.Text.UTF8Encoding]::new($false))
 [System.IO.File]::WriteAllText((Join-Path $packetDir "launch-attestations.md"), $attestations, [System.Text.UTF8Encoding]::new($false))
+Write-LiveServerCommandSheet $packetDir $Date | Out-Null
+Write-SupabaseApplyCard $packetDir $Date $applyAllSha1 $applyAllSql | Out-Null
 [System.IO.File]::WriteAllText((Join-Path $screenshotsDir "README.md"), @"
 Put approach/focal/action/exit screenshots here. Name files with the site id first.
 
@@ -499,4 +610,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_rehearsal_packet
 "@, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "rehearsal packet created: $packetDir"
-Write-Host "next: fill 00-notes.md and launch-attestations.md, add screenshots/clips, move blockers into fixes.md, then run tools\check_rehearsal_packet.ps1"
+Write-Host "next: fill 00-notes.md, supabase-apply-card.md/live-server-command-sheet.md receipts, and launch-attestations.md, add screenshots/clips, move blockers into fixes.md, then run tools\check_rehearsal_packet.ps1"

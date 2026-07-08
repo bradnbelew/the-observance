@@ -57,6 +57,9 @@ foreach ($doc in @(
 
 RequireContains "LIVE-REHEARSAL-EVIDENCE.md" $packet "tools\check_rehearsal_packet.ps1"
 RequireContains "LIVE-REHEARSAL-EVIDENCE.md" $packet "tools\check_unlit_playtest_ready.ps1"
+RequireContains "rehearsal packet validator" $validator "AllowSyntheticEvidence"
+RequireContains "rehearsal packet validator" $validator "final rehearsal packets need real client proof"
+RequireContains "rehearsal packet validator" $validator "too small to be real client"
 RequireContains "Unlit playtest gate" $unlitPlaytest "unlit playtest readiness: OK"
 RequireContains "Unlit playtest gate" $unlitPlaytest "stop building and hand this to Nano for playtest"
 RequireContains "Unlit playtest gate" $unlitPlaytest "stray light OK"
@@ -115,6 +118,14 @@ foreach ($required in @(
   "This packet is allowed to be ugly. The ARG is not."
 )) {
   RequireContains "live rehearsal packet" $packet $required
+}
+
+foreach ($required in @(
+  "Synthetic audit placeholders",
+  "tiny fake proof files fail",
+  "internal self-test"
+)) {
+  RequireContains "live rehearsal packet strict evidence warning" $packet $required
 }
 
 $majorSites = @(
@@ -223,6 +234,8 @@ foreach ($rel in @(
   "00-notes.md",
   "fixes.md",
   "launch-attestations.md",
+  "live-server-command-sheet.md",
+  "supabase-apply-card.md",
   "screenshots\README.md",
   "clips\README.md"
 )) {
@@ -242,6 +255,18 @@ if (Test-Path (Join-Path $testPacket "launch-attestations.md")) {
   $attestations = Get-Content -LiteralPath (Join-Path $testPacket "launch-attestations.md") -Raw
   foreach ($required in @("Supabase Live Status", "Server Load", "Real Client Rendering", "Live Command Audits", "External Media", "Session Zero And Capture Consent", "Credential Rotation", "Operator Verdict")) {
     RequireContains "generated launch-attestations.md" $attestations $required
+  }
+}
+if (Test-Path (Join-Path $testPacket "live-server-command-sheet.md")) {
+  $commandSheet = Get-Content -LiteralPath (Join-Path $testPacket "live-server-command-sheet.md") -Raw
+  foreach ($required in @("Live Server Command Sheet", "/observance status", "/observance preflight", "/observance visualaudit", "/observance dialogueaudit", "/obs unlit audit", "/obs unlit ready", "/observance flag set media_clip_01_ready true", "/observance flag set recovered_archive_ready true")) {
+    RequireContains "generated live-server-command-sheet.md" $commandSheet $required
+  }
+}
+if (Test-Path (Join-Path $testPacket "supabase-apply-card.md")) {
+  $supabaseCard = Get-Content -LiteralPath (Join-Path $testPacket "supabase-apply-card.md") -Raw
+  foreach ($required in @("Supabase Apply Card", "fdnmhbpxnodrnbrzrlqq", "discord\supabase\apply-all.sql", "Apply-all SHA1 to record", "Ordered bundle files", "discord\supabase\apply-tonight.sql", "Do not paste loose migration or seed files", "/observance status", "queued writes: 0")) {
+    RequireContains "generated supabase-apply-card.md" $supabaseCard $required
   }
 }
 
@@ -337,7 +362,16 @@ foreach ($clipName in @(
   [System.IO.File]::WriteAllText((Join-Path $clipDir $clipName), "audit placeholder", [System.Text.UTF8Encoding]::new($false))
 }
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File $validatorFile -RepoRoot $RepoRoot -PacketDir $completePacket | Out-Null
+$oldErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+& powershell -NoProfile -ExecutionPolicy Bypass -File $validatorFile -RepoRoot $RepoRoot -PacketDir $completePacket *> $null
+$syntheticWithoutSwitchExit = $LASTEXITCODE
+$ErrorActionPreference = $oldErrorActionPreference
+if ($syntheticWithoutSwitchExit -eq 0) {
+  Fail "check_rehearsal_packet.ps1 unexpectedly passed synthetic placeholder evidence without -AllowSyntheticEvidence"
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $validatorFile -RepoRoot $RepoRoot -PacketDir $completePacket -AllowSyntheticEvidence | Out-Null
 if ($LASTEXITCODE -ne 0) {
   Fail "check_rehearsal_packet.ps1 failed a synthetic completed packet"
 }
