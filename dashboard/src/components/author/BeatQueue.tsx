@@ -1,4 +1,4 @@
-import { approveBeat, skipBeat } from "@/app/author/actions";
+import { approveBeatForm, skipBeatForm } from "@/app/author/actions";
 import type { Beat, BeatStatus } from "@/lib/database.types";
 
 const STATUS_STYLES: Record<BeatStatus, string> = {
@@ -93,7 +93,7 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
 
                   {pending ? (
                     <div className="flex items-center gap-2">
-                      <form action={async (fd: FormData) => { await approveBeat(fd); }}>
+                      <form action={approveBeatForm}>
                         <input type="hidden" name="id" value={beat.id} />
                         <button
                           type="submit"
@@ -102,7 +102,7 @@ export function BeatQueue({ beats }: { beats: Beat[] }) {
                           Approve
                         </button>
                       </form>
-                      <form action={async (fd: FormData) => { await skipBeat(fd); }}>
+                      <form action={skipBeatForm}>
                         <input type="hidden" name="id" value={beat.id} />
                         <button
                           type="submit"

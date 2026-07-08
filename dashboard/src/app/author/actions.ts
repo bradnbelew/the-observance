@@ -60,12 +60,20 @@ export async function advanceArc(formData: FormData): Promise<ActionResult> {
   return setArcAct(current + 1);
 }
 
+export async function advanceArcForm(formData: FormData): Promise<void> {
+  await advanceArc(formData);
+}
+
 /**
  * Rewind the arc by one act (form-action shaped).
  */
 export async function rewindArc(formData: FormData): Promise<ActionResult> {
   const current = Number(formData.get("current_act") ?? 1);
   return setArcAct(current - 1);
+}
+
+export async function rewindArcForm(formData: FormData): Promise<void> {
+  await rewindArc(formData);
 }
 
 // ---------------------------------------------------------------------------
@@ -113,6 +121,14 @@ export async function skipBeat(formData: FormData): Promise<ActionResult> {
   return decideBeat(Number(formData.get("id")), "skipped");
 }
 
+export async function approveBeatForm(formData: FormData): Promise<void> {
+  await approveBeat(formData);
+}
+
+export async function skipBeatForm(formData: FormData): Promise<void> {
+  await skipBeat(formData);
+}
+
 // ---------------------------------------------------------------------------
 // Whisper budgets — edit the hint economy per player/act.
 // ---------------------------------------------------------------------------
@@ -155,6 +171,12 @@ export async function updateWhisperBudget(
 
   refresh();
   return { ok: true };
+}
+
+export async function updateWhisperBudgetForm(
+  formData: FormData,
+): Promise<void> {
+  await updateWhisperBudget(formData);
 }
 
 // ---------------------------------------------------------------------------

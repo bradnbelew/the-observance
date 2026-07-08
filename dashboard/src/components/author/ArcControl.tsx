@@ -1,4 +1,4 @@
-import { advanceArc, rewindArc } from "@/app/author/actions";
+import { advanceArcForm, rewindArcForm } from "@/app/author/actions";
 import type { ArcState, Json } from "@/lib/database.types";
 
 const ACT_NAMES: Record<number, string> = {
@@ -61,7 +61,7 @@ export function ArcControl({ arc }: { arc: ArcState | null }) {
         </div>
 
         <div className="ml-auto flex items-center gap-2">
-          <form action={async (fd: FormData) => { await rewindArc(fd); }}>
+          <form action={rewindArcForm}>
             <input type="hidden" name="current_act" value={current} />
             <button
               type="submit"
@@ -71,7 +71,7 @@ export function ArcControl({ arc }: { arc: ArcState | null }) {
               ← Rewind
             </button>
           </form>
-          <form action={async (fd: FormData) => { await advanceArc(fd); }}>
+          <form action={advanceArcForm}>
             <input type="hidden" name="current_act" value={current} />
             <button
               type="submit"
