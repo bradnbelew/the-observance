@@ -15,7 +15,7 @@ Do not plant or expose player-facing clues to these artifacts just because this 
 ## Local Staging Roots
 
 - Found footage folder: `C:\Users\nanob\Documents\Codex\2026-07-07\hey\outputs\manual-media`
-- Source Hold zip: `C:\Users\nanob\Documents\Codex\2026-07-07\you-are-working-on-my-minecraft\outputs\the-hold.zip`
+- Source Hold zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - Dashboard Hold zip: `D:\the-observance\dashboard\public\the-hold\the-hold.zip`
 - Recovered archive folder: `C:\Users\nanob\Documents\Codex\2026-07-07\hey\outputs\recovered-archive-packet`
 - Recovered archive zip: `C:\Users\nanob\Documents\Codex\2026-07-07\hey\outputs\recovered-archive-packet.zip`
@@ -39,7 +39,7 @@ Do not plant or expose player-facing clues to these artifacts just because this 
 
 | Artifact | Dashboard path | Payload | Size bytes | SHA1 | Hosting state |
 | --- | --- | --- | ---: | --- | --- |
-| `the-hold.zip` | `dashboard/public/the-hold/the-hold.zip` | `the-record-keeps`; `snoikerz.com:25569`; kept count `6`; missing seventh | 153281 | `892dfb2c3a52d002280d0a669777fc6d5bee2b97` | present in dashboard public; deploy route must be checked before planting live lure |
+| `the-hold.zip` | `dashboard/public/the-hold/the-hold.zip` | route + gate name + common ending + port arithmetic; kept count `6`; missing seventh; no raw server endpoint | 154145 | `b3a9459e102cde1e072771660def4b37bf55896e` | present in dashboard public; deploy route must be checked before planting live lure |
 
 ## Produced Recovered Archive Packet
 

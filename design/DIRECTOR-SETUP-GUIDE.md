@@ -1,0 +1,282 @@
+# The Observance - Director Setup Guide
+
+This is the start-here operator handoff for turning the current repo into a
+playable setup. It does not replace `design/RUNBOOK.md`,
+`design/MANUAL-LAUNCH-PLAN.md`, or `design/DIRECTOR-FLOW-BIBLE.md`; it tells
+you which one to use at each moment and what evidence proves the step.
+
+The guiding rule is simple: repo-ready is not launch-ready. Repo-ready means the
+creative/code/tooling package is internally coherent and packaged. Launch-ready
+means a real Paper server, real clients, hosted services, coordinates, proof
+shots, rehearsal notes, consent, and credentials have all been verified.
+
+## What This Guide Assumes
+
+- You are running from the repo root: `D:\the-observance`.
+- You have a Paper 1.21.11 server available for the live pass.
+- You understand that the 67 launch-required coordinates are intentionally
+  placeholders until placed in Minecraft.
+- You will not invite players until the final launch blocker command passes.
+
+## First Read
+
+Read these in this order:
+
+1. `design/DIRECTOR-FLOW-BIBLE.md` for the player experience and pacing.
+2. `design/CLUE-LEDGER.md` for clue ownership, truth state, and remaining debt.
+3. `design/CUSTOMS-FIELD-GUIDE.md` for the seven ways and their six faces.
+4. `design/KEEPER-INVESTIGATION-DOSSIERS.md` for the six keeper play patterns.
+5. `design/WREN-EVIDENCE-LOOP.md` for Wren's reveal and reckoning contract.
+6. `design/DIRECTOR-CONCERN-CLOSURE.md` for the original concern categories
+   and residual risk tests.
+7. `outputs/observance-200-scenario-break-speedrun-audit.md` for functional
+   break/speedrun cases.
+8. `outputs/observance-200-concern-closure-scenario-audit.md` for variety,
+   linearity, cohesion, difficulty, relevance, copy, and immersion cases.
+9. `design/structures.md` for the physical build doctrine.
+10. `design/RUNBOOK.md` for detailed command use.
+11. `design/MANUAL-LAUNCH-PLAN.md` for the live task proof checklist.
+12. This guide again, then execute the setup chain below.
+
+## Setup Chain
+
+Run the repo audit before touching the live server:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\audit_all.ps1
+```
+
+Expected repo result: automated checks pass, while launch manual blockers still
+name live-only work such as hosted resource pack, real coordinates, rehearsal
+packet, Supabase attestation, Session Zero, and credential rotation.
+
+Create the operator packet:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_friend_launch.ps1
+```
+
+If the resource pack is already hosted at a direct HTTPS zip URL, use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_friend_launch.ps1 -ResourcePackUrl <hosted-https-zip-url>
+```
+
+The packet gives you the current quickstart, blocker report, placement packet,
+rehearsal packet, command sheet, Supabase apply card, media checklist, todo
+list, and launch attestations template. Treat that packet as the live evidence
+folder for the run.
+
+Package the deploy artifacts if you changed plugin, datapack, resource pack, or
+assets:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\package_launch_bundle.ps1
+```
+
+Record hashes from `observance-deploy-manifest.json`, not from memory.
+
+## Live Server Order
+
+1. Apply `discord/supabase/apply-all.sql` to the live Supabase project.
+2. Upload `plugin/build/libs/observance-0.3.22.jar` to the Paper server.
+3. Install `observance-datapack.zip` into the target world datapacks folder.
+4. Host `observance-resourcepack.zip` at a direct HTTPS zip URL.
+5. Run `tools\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>` if
+   you did not already use `prepare_friend_launch.ps1 -ResourcePackUrl`.
+6. Run `tools\check_hosted_resource_pack.ps1`.
+7. Join with rehearsal clients and run `/obs status`.
+
+The first live receipt you want is:
+
+- Supabase configured: true.
+- Last DB call: ok.
+- Queued writes: 0.
+- Resource pack: configured, SHA1 set.
+- Pack readiness: every rehearsal client loaded.
+
+## In-Game Director Loop
+
+Use this loop while placing, staging, and rehearsing:
+
+1. Ask what is missing:
+
+```text
+/obs director state
+```
+
+2. Check whether the group is progressing or stuck:
+
+```text
+/obs director progress
+```
+
+This is the live player-progress and stuck-player hint view. It summarizes
+recent solves, recent wrong inputs, open unsolved gated puzzles, and the next
+authored hint text available for each visible stuck candidate. It is for the
+director, not for direct player copy.
+
+3. Place the next required site:
+
+```text
+/obs site todo
+/obs site plan lanes
+/obs site next <lane>
+/obs site plan <siteId>
+/obs site set <siteId>
+```
+
+4. Build or refresh world surfaces:
+
+```text
+/obs placeworld
+/obs prepworld
+/obs sidepass
+/obs puzzlepass
+/obs dreadpass stage
+```
+
+5. Check hardware, structure, and dialogue:
+
+```text
+/obs preflight
+/obs visualaudit
+/obs dialogueaudit
+/obs coverage
+```
+
+6. Rehearse the player path:
+
+```text
+/obs rehearse start
+/obs visit next
+/obs rehearse done
+```
+
+7. Re-check direction:
+
+```text
+/obs director state
+```
+
+The director state command is the cockpit: it reports open player leads, setup
+risk, media gates, finale readiness, resource pack state, NPC proof, and the
+next operator move. The progress command is the pressure gauge: it tells you
+whether solves are landing, whether wrong answers are clustering, and which
+authored hints exist before you decide to intervene. The Author dashboard mirrors
+this with Director State and Director Progress panels, so you can read the run
+without spelunking Supabase tables.
+
+## Structure Proof Standard
+
+Every launch-required site needs more than coordinates. The placement packet
+asks for four proof shots:
+
+- approach: can players find the scene from the route?
+- focal object: is the important thing visually readable?
+- action or answer surface: can the intended interaction be understood?
+- exit or aftermath: does the scene point onward or close cleanly?
+
+A site should be marked `KEEP` only if:
+
+- the entrance and exit are clear;
+- the structure cannot softlock normal players;
+- important books, item frames, containers, water, light, sound, entities, or
+  redstone states are present;
+- at least two non-sign clue surfaces exist where the site carries major clue
+  weight;
+- any sign or typed answer surface is supporting the scene, not replacing it;
+- the clue points somewhere traceable by place, person, record, media, behavior,
+  time, or memory.
+
+Use `RESHAPE` if the concept is good but the build is weak. Use `REPLACE` if
+the site only works because the operator can explain it. Use `CUT` if it is dead
+weight.
+
+## Player Flow Rehearsal
+
+During the live rehearsal, prove these player beats in order:
+
+1. Hold invitation can be solved without leaking the raw endpoint.
+2. First server report feels local and wrong.
+3. Rosetta teaches the seven way names and answer shape.
+4. Townsfolk lines point to real places or later contradictions.
+5. Keeper work behaves like six investigations, not six isolated stones.
+6. Side proof changes the later case file.
+7. Customs have folk reason, physical proof, false version, consequence, and
+   late use.
+8. Iss becomes suspicious through comparison, not villain styling.
+9. Manual media confirms earlier suspicion and never becomes the only path.
+10. Unlit reads as an expedition, not an appendix.
+11. Threshold and Accepting require group action, not a typed finale phrase.
+12. Release can be traced back to player evidence and choices.
+
+If a beat only works because you describe what players should notice, fix the
+surface and rehearse again.
+
+Also run the concern-closure rehearsals from
+`design/DIRECTOR-CONCERN-CLOSURE.md`:
+
+- Speedrun rehearsal: try the fastest legal route from Hold to Threshold and
+  fail the build if it reaches finale without keeper theory, side proof,
+  Wren/Iss context, media proof, Unlit correction, and physical convergence.
+- Side-proof retelling: after each side site, ask what changed about the case.
+  "It was lore" is a failure.
+- Copy read-aloud: read key NPC, book, record, Watcher, Iss, and inscription
+  lines aloud; rewrite anything that sounds like generic fantasy narration.
+- Sign-room pass: reshape any major site described as a sign room, book room,
+  or answer room.
+- Traversal pass: for every required next move, name the prior place, time,
+  behavior, person, record, observer, media, memory, route, item, or consequence
+  vector players had before it became mandatory.
+
+## Website, Discord, And Media Discipline
+
+Before planting any clue that leaves Minecraft:
+
+- Verify the deployed dashboard route works in an incognito/private browser.
+- Verify `/the-hold/the-hold.zip` exists on the deployed site.
+- Keep `media_clip_01_ready`, `media_clip_02_ready`,
+  `media_clip_03_ready`, `media_clip_04_ready`, and
+  `recovered_archive_ready` dormant until their story gates are earned.
+- Run `tools\check_external_media_readiness.ps1`.
+- Record hosted URLs, payloads, sizes, hashes, and extraction method in the
+  media checklist or launch attestations.
+
+No in-world clue may point to a missing video, zip, archive, spectrogram, route,
+or Discord/web surface.
+
+## Final Go/No-Go
+
+The final command is:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>
+```
+
+Do not launch unless:
+
+- the command exits 0;
+- `launch-attestations.md` ends with `decision: LAUNCH`;
+- all 67 launch-required coordinates are placed and proofed;
+- hosted resource-pack bytes hash-match the configured SHA1;
+- live Supabase status is recorded;
+- live client rendering/audio/text was checked;
+- Session Zero is complete;
+- exposed credentials were rotated;
+- unresolved `fixes.md` items are empty or have replacement proof.
+
+## Stop Immediately If
+
+- `/obs director state` reports missing launch placement, missing NPC proof, or
+  sleeping Watcher during a live-ready rehearsal.
+- Any major site has a sign as its only meaningful clue surface.
+- Any required destination lacks a prior pointer.
+- Any NPC, book, web page, or media artifact points to something not placed or
+  not reachable.
+- Any answer requires strange formatting that the build did not teach.
+- The group is bored because they are repeating the same solve grammar.
+- A live check is red and the fix is only "tell players what to do."
+
+Fix the build, clue, gate, pacing, or surface. Then rerun the relevant audit and
+rehearse the affected player beat again.

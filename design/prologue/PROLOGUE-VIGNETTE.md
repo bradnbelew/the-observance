@@ -283,3 +283,7 @@ and unreachable from the client (`2f`). Cracking it spoils nothing.
    under the dashboard `public/` dir — which does not exist yet — or a CDN).
 5. **Wire the on-arrival frame-break beat** into the BUILT ack path (TS-SHOWRUN), gated on the
    count-callback measured signal; emit `recordFrameBreak()` once.
+> **Current override (2026-07-08):** the Hold handoff must not print a raw server endpoint. Use the rebuilt
+> destination grammar instead: route (`record / the-record-keeps`), gate name (`SNOIKERZ`), common ending,
+> and port arithmetic (`25500 + (six marked x 11) + the third room`). If older text below says to bake a
+> plain server address into room 5, treat that as retired.

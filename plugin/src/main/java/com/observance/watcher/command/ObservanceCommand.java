@@ -3,6 +3,11 @@ package com.observance.watcher.command;
 import com.google.gson.JsonObject;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.config.Site;
+import com.observance.watcher.data.rows.AnswerAttemptReadRow;
+import com.observance.watcher.data.rows.HintRow;
+import com.observance.watcher.data.rows.PuzzleRow;
+import com.observance.watcher.data.rows.SolveReadRow;
+import com.observance.watcher.oracle.FlagGate;
 import com.observance.watcher.structure.StructureTemplates;
 import com.observance.watcher.util.Safety;
 import org.bukkit.Bukkit;
@@ -28,8 +33,10 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -116,7 +123,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director [world|lab] [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId|lane] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director <state|progress|world|lab> [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId|lane] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -3709,6 +3716,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * builds a compact playable course; lab mode builds the full floating proof surface.
      */
     private void handleDirectorStart(CommandSender sender, String[] args) {
+        if (args.length >= 2) {
+            String raw = args[1].toLowerCase(Locale.ROOT).trim();
+            if (raw.equals("state") || raw.equals("run") || raw.equals("leads") || raw.equals("open")) {
+                handleDirectorState(sender);
+                return;
+            }
+            if (raw.equals("progress") || raw.equals("players") || raw.equals("stuck") || raw.equals("hints")) {
+                handleDirectorProgress(sender);
+                return;
+            }
+        }
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Observance: /observance director must be run by a player (needs a location).");
             return;
@@ -3757,6 +3775,331 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("Scare pass when ready: /obs dreadpass run");
     }
 
+    /**
+     * {@code /observance director state} - console-safe run direction. It compresses the same live
+     * flag logic as the author dashboard into Minecraft chat so setup operators can see what is open,
+     * what is missing, and what to do next without hunting through docs.
+     */
+    private void handleDirectorState(CommandSender sender) {
+        sender.sendMessage("== Observance director state ==");
+        String missingLaunch = nextLaunchMissingId();
+        int launchReady = launchPlacedCount();
+        sender.sendMessage("Setup: launch sites " + launchReady + "/" + LAUNCH_REQUIRED_SITES.length
+                + (missingLaunch == null ? " ready" : ", next missing " + missingLaunch
+                + " (" + placementLaneId(missingLaunch) + ")"));
+
+        int townsfolkTotal = com.observance.watcher.npc.TownsfolkNpc.TOWNSFOLK.size();
+        int townsfolkSpawned = plugin.townsfolk() == null ? 0 : plugin.townsfolk().spawnedCount();
+        boolean wrenSpawned = plugin.wren() != null && plugin.wren().isSpawned();
+        boolean keeperSpawned = plugin.keeper() != null && plugin.keeper().isSpawned();
+        sender.sendMessage("NPC proof: townsfolk " + townsfolkSpawned + "/" + townsfolkTotal
+                + ", Wren " + yesNo(wrenSpawned) + ", Keeper " + yesNo(keeperSpawned));
+
+        sender.sendMessage("Run risk: sleep " + (plugin.isLocallyAsleep() ? "ON" : "off")
+                + ", drama " + yesNo(plugin.config() != null && plugin.config().dramaEnabled()));
+        sendPackStatus(sender);
+
+        var sb = plugin.supabase();
+        if (sb == null || !sb.isConfigured()) {
+            sender.sendMessage("Open player leads: live flags unavailable; start with Hold/Rosetta proof.");
+            sender.sendMessage("Media gates: unknown until Supabase is configured.");
+            sender.sendMessage("Finale readiness: unknown; run /obs preflight after setup.");
+            sender.sendMessage("Next operator move: " + localDirectorNextMove(missingLaunch, townsfolkSpawned,
+                    townsfolkTotal, wrenSpawned, keeperSpawned, -1, Collections.emptyMap()));
+            return;
+        }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            var r = sb.fetchArcState();
+            Map<String, Object> flags = (r.ok() && r.value() != null)
+                    ? r.value().flagsMap() : Collections.emptyMap();
+            Bukkit.getScheduler().runTask(plugin, () -> sendDirectorFlagState(sender, flags, missingLaunch,
+                    townsfolkSpawned, townsfolkTotal, wrenSpawned, keeperSpawned));
+        });
+    }
+
+    private void sendDirectorFlagState(CommandSender sender, Map<String, Object> flags, String missingLaunch,
+                                       int townsfolkSpawned, int townsfolkTotal,
+                                       boolean wrenSpawned, boolean keeperSpawned) {
+        int theories = directorCountFlags(flags, "vaun_theory", "mara_theory", "sella_theory",
+                "orin_theory", "brann_theory", "iss_theory");
+        int sideProofs = directorCountFlags(flags, "site_seen_deep_market", "site_seen_cistern_7",
+                "site_seen_watch_floor", "site_seen_third_bay_breach", "site_seen_warm_town_collapse");
+        int mediaReady = directorCountFlags(flags, "media_clip_01_ready", "media_clip_02_ready",
+                "media_clip_03_ready", "media_clip_04_ready", "recovered_archive_ready");
+
+        sender.sendMessage("Story state: keeper theories " + theories + "/6, side proofs " + sideProofs
+                + "/5, seventh named " + yesNo(directorFlag(flags, "seventh_named")));
+        sender.sendMessage("Open player leads:");
+        for (String lead : directorOpenLeads(flags, theories)) {
+            sender.sendMessage(" - " + lead);
+        }
+        sender.sendMessage("Media gates: " + mediaReady + "/5 ready"
+                + (directorFlag(flags, "recovered_archive_ready") ? ", archive ready" : ", archive not ready"));
+        sender.sendMessage("Finale readiness: accepting " + yesNo(directorFlag(flags, "accepting_onramp_open"))
+                + ", tokens " + yesNo(directorFlag(flags, "tokens_laid"))
+                + ", bowed as one " + yesNo(directorFlag(flags, "bowed_as_one")));
+        sender.sendMessage("Next operator move: " + localDirectorNextMove(missingLaunch, townsfolkSpawned,
+                townsfolkTotal, wrenSpawned, keeperSpawned, theories, flags));
+    }
+
+    private List<String> directorOpenLeads(Map<String, Object> flags, int theoryCount) {
+        List<String> leads = new ArrayList<>();
+        if (!directorFlag(flags, "rosetta_known")) {
+            leads.add("Cold open/Rosetta literacy is still live.");
+        }
+        if (directorFlag(flags, "rosetta_known") && theoryCount < 6) {
+            leads.add("Keeper investigations remain open; use evidence clusters, not stone-only solves.");
+        }
+        if (theoryCount >= 3 && !directorFlag(flags, "iss_caught")) {
+            leads.add("Iss contradiction can surface once players compare enough keeper evidence.");
+        }
+        if (directorFlag(flags, "iss_caught") && !directorFlag(flags, "seventh_suspected")) {
+            leads.add("Seventh suspicion should point back through Sella/far-water proof.");
+        }
+        if (directorFlag(flags, "seventh_suspected") && !directorFlag(flags, "seventh_named")) {
+            leads.add("Seventh name is a comparison solve, not a fresh random cipher.");
+        }
+        if (directorFlag(flags, "seventh_named") && !directorFlag(flags, "accepting_onramp_open")) {
+            leads.add("Threshold/Unlit route is next after the seventh lands.");
+        }
+        if (directorFlag(flags, "accepting_onramp_open") && !directorFlag(flags, "tokens_laid")) {
+            leads.add("Accepting token work is open; keep it physical and group-owned.");
+        }
+        if (directorFlag(flags, "tokens_laid") && !directorFlag(flags, "bowed_as_one")) {
+            leads.add("Finale gate is synchronized bow, not a typed phrase.");
+        }
+        if (directorFlag(flags, "bowed_as_one")) {
+            leads.add("Release/debrief delivery is active.");
+        }
+        if (leads.isEmpty()) {
+            leads.add("No clear live flag lead yet; prove Hold, first report, and Rosetta.");
+        }
+        return leads;
+    }
+
+    private String localDirectorNextMove(String missingLaunch, int townsfolkSpawned, int townsfolkTotal,
+                                         boolean wrenSpawned, boolean keeperSpawned,
+                                         int theoryCount, Map<String, Object> flags) {
+        if (missingLaunch != null) {
+            String lane = placementLaneId(missingLaunch);
+            return lane.isBlank() ? "/obs site next" : "/obs site next " + lane;
+        }
+        if (townsfolkSpawned < townsfolkTotal) return "/obs townsfolk spawn";
+        if (!wrenSpawned) return "/obs wren spawn";
+        if (!keeperSpawned) return "/obs keeper spawn";
+        if (plugin.isLocallyAsleep()) return "/obs sleep off";
+        if (theoryCount >= 0 && theoryCount < 6) return "/obs site todo, then /obs visit next";
+        if (directorFlag(flags, "accepting_onramp_open") && !directorFlag(flags, "bowed_as_one")) {
+            return "/obs unlit ready, then /obs finale";
+        }
+        return "/obs preflight, then /obs rehearse start";
+    }
+
+    private int launchPlacedCount() {
+        int ready = 0;
+        for (String id : LAUNCH_REQUIRED_SITES) {
+            if (launchSiteIssue(id) == null) ready++;
+        }
+        return ready;
+    }
+
+    private static int directorCountFlags(Map<String, Object> flags, String... keys) {
+        int n = 0;
+        for (String key : keys) {
+            if (directorFlag(flags, key)) n++;
+        }
+        return n;
+    }
+
+    private static boolean directorFlag(Map<String, Object> flags, String key) {
+        if (flags == null || key == null) return false;
+        Object value = flags.get(key);
+        if (value instanceof Boolean b) return b;
+        if (value instanceof Number n) return n.intValue() != 0;
+        if (value instanceof String s) return s.equalsIgnoreCase("true") || s.equals("1");
+        return false;
+    }
+
+    private static String yesNo(boolean value) {
+        return value ? "yes" : "no";
+    }
+
+    /**
+     * {@code /observance director progress} - read-only live progress and stuck-player hint view.
+     * It does not deliver hints; it tells the operator what the data says so they can decide whether
+     * to observe, approve a beat, nudge with the Record terminal, or fix a broken traversal surface.
+     */
+    private void handleDirectorProgress(CommandSender sender) {
+        var sb = plugin.supabase();
+        if (sb == null || !sb.isConfigured()) {
+            sender.sendMessage("Observance: Supabase is not configured; player progress and stuck hints are unavailable.");
+            return;
+        }
+        sender.sendMessage("== Observance director progress ==");
+        sender.sendMessage("Reading recent solves, attempts, open puzzles, and authored hints...");
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            var arc = sb.fetchArcState();
+            Map<String, Object> flags = (arc.ok() && arc.value() != null)
+                    ? arc.value().flagsMap() : Collections.emptyMap();
+            List<PuzzleRow> puzzles = sb.fetchOpenPuzzles(220).value();
+            List<SolveReadRow> solves = sb.fetchRecentSolves(160).value();
+            List<AnswerAttemptReadRow> attempts = sb.fetchRecentAnswerAttempts(180).value();
+            List<HintRow> hints = sb.fetchHints(500).value();
+            Bukkit.getScheduler().runTask(plugin, () -> sendDirectorProgress(sender,
+                    flags,
+                    puzzles == null ? Collections.emptyList() : puzzles,
+                    solves == null ? Collections.emptyList() : solves,
+                    attempts == null ? Collections.emptyList() : attempts,
+                    hints == null ? Collections.emptyList() : hints));
+        });
+    }
+
+    private void sendDirectorProgress(CommandSender sender, Map<String, Object> flags,
+                                      List<PuzzleRow> puzzles, List<SolveReadRow> solves,
+                                      List<AnswerAttemptReadRow> attempts, List<HintRow> hints) {
+        Map<String, Integer> solveCountByUuid = new HashMap<>();
+        Map<String, Integer> missCountByUuid = new HashMap<>();
+        Set<String> solvedPuzzleKeys = new HashSet<>();
+
+        for (SolveReadRow solve : solves) {
+            if (solve == null) continue;
+            if (solve.puzzleKey != null && !solve.puzzleKey.isBlank()) {
+                solvedPuzzleKeys.add(solve.puzzleKey);
+            }
+            if (solve.mcUuid != null && !solve.mcUuid.isBlank()) {
+                solveCountByUuid.put(solve.mcUuid, solveCountByUuid.getOrDefault(solve.mcUuid, 0) + 1);
+            }
+        }
+        int recentMisses = 0;
+        Map<String, Integer> missesByPuzzle = new HashMap<>();
+        for (AnswerAttemptReadRow attempt : attempts) {
+            if (attempt == null || Boolean.TRUE.equals(attempt.matched)) continue;
+            recentMisses++;
+            if (attempt.mcUuid != null && !attempt.mcUuid.isBlank()) {
+                missCountByUuid.put(attempt.mcUuid, missCountByUuid.getOrDefault(attempt.mcUuid, 0) + 1);
+            }
+            if (attempt.puzzleKey != null && !attempt.puzzleKey.isBlank()) {
+                missesByPuzzle.put(attempt.puzzleKey, missesByPuzzle.getOrDefault(attempt.puzzleKey, 0) + 1);
+            }
+        }
+
+        List<PuzzleRow> openUnsolved = new ArrayList<>();
+        for (PuzzleRow puzzle : puzzles) {
+            if (puzzle == null || puzzle.puzzleKey == null || puzzle.puzzleKey.isBlank()) continue;
+            if (!Boolean.TRUE.equals(puzzle.active)) continue;
+            if (!FlagGate.satisfied(puzzle.requiresFlagsMap(), flags)) continue;
+            if (!solvedPuzzleKeys.contains(puzzle.puzzleKey)) openUnsolved.add(puzzle);
+        }
+        openUnsolved.sort(Comparator
+                .comparingInt((PuzzleRow p) -> p.movement == null ? 999 : p.movement)
+                .thenComparing(p -> p.puzzleKey == null ? "" : p.puzzleKey));
+
+        Map<String, List<HintRow>> hintsByPuzzle = new LinkedHashMap<>();
+        for (HintRow hint : hints) {
+            if (hint == null || hint.puzzleKey == null || hint.puzzleKey.isBlank()) continue;
+            hintsByPuzzle.computeIfAbsent(hint.puzzleKey, k -> new ArrayList<>()).add(hint);
+        }
+        for (List<HintRow> rows : hintsByPuzzle.values()) {
+            rows.sort(Comparator.comparingInt(h -> h.tier == null ? 99 : h.tier));
+        }
+
+        sender.sendMessage("Player progress summary:");
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            sender.sendMessage(" - no online players; showing database-wide recent activity below.");
+        } else {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                String uuid = player.getUniqueId().toString();
+                sender.sendMessage(" - " + player.getName()
+                        + ": recent solves " + solveCountByUuid.getOrDefault(uuid, 0)
+                        + ", recent misses " + missCountByUuid.getOrDefault(uuid, 0));
+            }
+        }
+
+        sender.sendMessage("Recent solves:");
+        int shown = 0;
+        for (SolveReadRow solve : solves) {
+            if (solve == null || solve.puzzleKey == null) continue;
+            sender.sendMessage(" - " + shortKey(solve.puzzleKey) + " by " + playerLabel(solve.mcUuid)
+                    + " (" + compactTime(solve.solvedAt) + ")");
+            if (++shown >= 6) break;
+        }
+        if (shown == 0) sender.sendMessage(" - none in the recent window.");
+
+        sender.sendMessage("Stuck-player hint view:");
+        sender.sendMessage(" - open unsolved gated puzzles: " + openUnsolved.size()
+                + "; recent unmatched attempts: " + recentMisses);
+        shown = 0;
+        for (PuzzleRow puzzle : openUnsolved) {
+            List<HintRow> rows = hintsByPuzzle.getOrDefault(puzzle.puzzleKey, Collections.emptyList());
+            if (rows.isEmpty()) continue;
+            HintRow next = rows.get(0);
+            sender.sendMessage(" - " + shortKey(puzzle.puzzleKey)
+                    + " [M" + (puzzle.movement == null ? "?" : puzzle.movement) + "]"
+                    + " misses=" + missesByPuzzle.getOrDefault(puzzle.puzzleKey, 0)
+                    + " next hint t" + (next.tier == null ? "?" : next.tier)
+                    + ": " + compactText(next.body, 86));
+            if (++shown >= 8) break;
+        }
+        if (shown == 0) {
+            sender.sendMessage(" - no open unsolved puzzle with authored hints is visible under current flags.");
+        }
+
+        sender.sendMessage("Recent wrong inputs:");
+        shown = 0;
+        for (AnswerAttemptReadRow attempt : attempts) {
+            if (attempt == null || Boolean.TRUE.equals(attempt.matched)) continue;
+            String text = attempt.normalized == null || attempt.normalized.isBlank()
+                    ? attempt.raw : attempt.normalized;
+            sender.sendMessage(" - " + playerLabel(attempt.mcUuid) + " @ " + compactTime(attempt.at)
+                    + ": " + compactText(text, 70));
+            if (++shown >= 5) break;
+        }
+        if (shown == 0) sender.sendMessage(" - none in the recent window.");
+
+        String nextMove;
+        if (recentMisses >= 6 && !openUnsolved.isEmpty()) {
+            nextMove = "watch the group solve path; if the surface is fair, let Record/hints breathe; if not, fix traversal.";
+        } else if (solves.isEmpty()) {
+            nextMove = "/obs director state, then verify Hold/Rosetta/first report are actually reachable.";
+        } else {
+            nextMove = "keep observing; use /obs director state for the next story lead.";
+        }
+        sender.sendMessage("Next operator move: " + nextMove);
+    }
+
+    private static String playerLabel(String mcUuid) {
+        if (mcUuid == null || mcUuid.isBlank()) return "unknown";
+        try {
+            Player p = Bukkit.getPlayer(UUID.fromString(mcUuid));
+            if (p != null) return p.getName();
+        } catch (Throwable ignored) { }
+        String s = mcUuid.trim();
+        return s.length() <= 8 ? s : s.substring(0, 8);
+    }
+
+    private static String shortKey(String key) {
+        if (key == null || key.isBlank()) return "unknown";
+        return key.length() <= 34 ? key : key.substring(0, 31) + "...";
+    }
+
+    private static String compactTime(String iso) {
+        if (iso == null || iso.isBlank()) return "time?";
+        String s = iso.trim();
+        if (s.length() >= 19 && s.charAt(10) == 'T') {
+            return s.substring(0, 10) + " " + s.substring(11, 19);
+        }
+        return compactText(s, 24);
+    }
+
+    private static String compactText(String text, int max) {
+        if (text == null || text.isBlank()) return "(blank)";
+        String s = text.replace('\n', ' ').replace('\r', ' ').trim();
+        while (s.contains("  ")) s = s.replace("  ", " ");
+        int limit = Math.max(8, max);
+        return s.length() <= limit ? s : s.substring(0, limit - 3) + "...";
+    }
+
     private static final RehearsalStage[] REHEARSAL_STAGES = {
             new RehearsalStage("setup", "Build the rehearsal world", "setup",
                     new String[]{
@@ -3803,10 +4146,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             new RehearsalStage("ops", "Check dashboard and final placement path", "ops",
                     new String[]{
                             "Dashboard should show mode, pending approvals, armed beats, and failed beats.",
+                            "In-game state should show open leads, setup risk, media gates, and the next operator move.",
+                            "In-game progress should show recent solves, wrong-answer pressure, and available stuck hints.",
                             "Use manual mode when approving beats by hand.",
                             "For production geography, survey anchors with site set before placeworld."
                     },
-                    new String[]{"/obs status", "/obs runbook ops", "/obs site set <siteId>", "/obs placeworld"})
+                    new String[]{"/obs director state", "/obs director progress", "/obs status", "/obs runbook ops", "/obs site set <siteId>", "/obs placeworld"})
     };
 
     /**
@@ -4279,6 +4624,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void sendOpsRunbook(CommandSender sender) {
         sender.sendMessage("[ops/dashboard]");
+        sender.sendMessage("  Live direction: /obs director state summarizes open leads, setup risk, media gates, finale readiness, and next operator move.");
+        sender.sendMessage("  Player pressure: /obs director progress summarizes recent solves, wrong inputs, open unsolved puzzles, and authored stuck hints.");
         sender.sendMessage("  Dashboard setup flow shows the intended order: rehearsal lab, proof packets, real placement, launch proof.");
         sender.sendMessage("  Dashboard shows mode, pending approvals, armed beats, failed beats, Unlit evidence, and keeper theories.");
         sender.sendMessage("  Pending approvals live in the beat queue; failed beats mean inspect dashboard/console.");
@@ -7305,7 +7652,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
-            for (String s : new String[]{"world", "lab"}) {
+            for (String s : new String[]{"state", "progress", "players", "stuck", "hints", "world", "lab"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {

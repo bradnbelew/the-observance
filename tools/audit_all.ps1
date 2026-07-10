@@ -17,12 +17,19 @@ $friendLaunchPrepCheck = Join-Path $RepoRoot "tools\check_friend_launch_prep.ps1
 $brandSurfaceCheck = Join-Path $RepoRoot "tools\check_brand_surfaces.ps1"
 $mediaCheck = Join-Path $RepoRoot "tools\check_media_readiness.ps1"
 $externalMediaCheck = Join-Path $RepoRoot "tools\check_external_media_readiness.ps1"
+$holdInvitationCheck = Join-Path $RepoRoot "tools\check_hold_invitation.ps1"
 $operatorDocsCheck = Join-Path $RepoRoot "tools\check_operator_docs.ps1"
 $minecraftTextCheck = Join-Path $RepoRoot "tools\check_minecraft_text_surfaces.ps1"
 $rehearsalCheck = Join-Path $RepoRoot "tools\check_rehearsal_consistency.ps1"
 $dialogueContractCheck = Join-Path $RepoRoot "tools\check_dialogue_contracts.ps1"
 $scareImmersionCheck = Join-Path $RepoRoot "tools\check_scare_immersion.ps1"
 $motifFreshnessCheck = Join-Path $RepoRoot "tools\check_motif_freshness.ps1"
+$clueLedgerCheck = Join-Path $RepoRoot "tools\check_clue_ledger.ps1"
+$structureQualityCheck = Join-Path $RepoRoot "tools\check_structure_quality.ps1"
+$keeperInvestigationCheck = Join-Path $RepoRoot "tools\check_keeper_investigations.ps1"
+$customsRosettaCheck = Join-Path $RepoRoot "tools\check_customs_rosetta.ps1"
+$directorToolsCheck = Join-Path $RepoRoot "tools\check_director_tools.ps1"
+$directorConcernClosureCheck = Join-Path $RepoRoot "tools\check_director_concern_closure.ps1"
 $liveRehearsalCheck = Join-Path $RepoRoot "tools\check_live_rehearsal_evidence.ps1"
 $launchPlacementCheck = Join-Path $RepoRoot "tools\check_launch_placement_packet.ps1"
 $launchCoordQualityCheck = Join-Path $RepoRoot "tools\check_launch_coord_quality.ps1"
@@ -91,6 +98,11 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
+& powershell -NoProfile -ExecutionPolicy Bypass -File $holdInvitationCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
 & powershell -NoProfile -ExecutionPolicy Bypass -File $minecraftTextCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
@@ -107,6 +119,36 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $motifFreshnessCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $clueLedgerCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $structureQualityCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $keeperInvestigationCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $customsRosettaCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $directorToolsCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $directorConcernClosureCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }

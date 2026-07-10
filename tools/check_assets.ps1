@@ -148,11 +148,37 @@ function Test-RuneFont([string]$FontPath, [string]$TexturePath) {
   }
 }
 
+function Test-SpoilerAssetNames([string[]]$Roots) {
+  $forbidden = @(
+    "averyn",
+    "seventh-name",
+    "threshold-coordinate",
+    "true-walk-arrive",
+    "service_role",
+    "supabase_service",
+    "discord_token",
+    "25569"
+  )
+
+  foreach ($root in $Roots) {
+    if (-not (Test-Path -LiteralPath $root)) { continue }
+    Get-ChildItem -LiteralPath $root -Recurse -Force | ForEach-Object {
+      $relative = $_.FullName.Substring($root.Length).TrimStart("\", "/").ToLowerInvariant()
+      foreach ($needle in $forbidden) {
+        if ($relative.Contains($needle)) {
+          Add-Failure "Player-facing runtime asset path contains spoiler/secret marker '$needle': $($_.FullName)"
+        }
+      }
+    }
+  }
+}
+
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $datapackSource = Join-Path $RepoRoot "datapack\observance"
 $resourcepackSource = Join-Path $RepoRoot "resourcepack"
 $resourceNamespace = Join-Path $resourcepackSource "assets\observance"
+$dashboardPublic = Join-Path $RepoRoot "dashboard\public"
 
 Test-JsonTree (Join-Path $RepoRoot "datapack")
 Test-JsonTree $resourcepackSource
@@ -204,6 +230,8 @@ Get-ChildItem -LiteralPath $fontRoot -Filter *.json -ErrorAction SilentlyContinu
 Test-RuneFont `
   (Join-Path $fontRoot "runes.json") `
   (Join-Path $resourceNamespace "textures\font\runes.png")
+
+Test-SpoilerAssetNames @($datapackSource, $resourcepackSource, $dashboardPublic)
 
 Test-PackMetadata (Join-Path $datapackSource "pack.mcmeta") @(94, 1) @(94, 1) "datapack"
 Test-PackMetadata (Join-Path $resourcepackSource "pack.mcmeta") @(75, 0) @(75, 0) "resourcepack"

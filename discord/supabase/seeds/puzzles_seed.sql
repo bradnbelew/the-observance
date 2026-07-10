@@ -169,7 +169,6 @@ values
   'i thought it small',
   array[
     'i thought it small it was not small',
-    'threshold',
     'the bow is the smallest of the ways'
   ],
   'next_clue',
@@ -178,8 +177,8 @@ values
     'next_puzzle_key', 'orin-threshold',
     'set_flags', jsonb_build_object('orin_stone_read', true)
   ),
-  -- max_attempts:8 - includes a short fallback answer ("threshold"), so cap the
-  -- per-minute per-player tries without changing the normal solve path.
+  -- max_attempts:8 - the old bare fallback answer "threshold" was removed by the
+  -- investigation-cluster pass; the answer now has to come from Orin's posture evidence.
   2, true, 8 ),
 
 -- stone-brann — NOW the carved FRAMING for the rail-fence cipher (puzzle-variety audit
@@ -1331,7 +1330,8 @@ values
   'next_clue',
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
-    'next_puzzle_key', 'stone-vaun'
+    'next_puzzle_key', 'stone-vaun',
+    'set_flags', jsonb_build_object('vaun_tally_read', true)
   ),
   'code', 2, false, null ),
 

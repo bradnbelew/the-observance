@@ -1,6 +1,6 @@
 # THE OBSERVANCE - CURRENT READINESS VERDICT
 
-Date: 2026-07-07
+Date: 2026-07-08
 
 ## 1. High-Level Verdict
 
@@ -25,8 +25,8 @@ session-zero consent, and credential rotation.
 - Puzzle fairness scaffolding: every audited puzzle row has rescue/hint coverage or an explicit exemption.
 - Discord runtime: gate matching, showrunner autonomy, custom reports, companion, finale/release, Observer echo,
   archive body resolution, and scenario tests pass.
-- Dashboard/web: lint, selftests, and production build pass; missing optional lure downloads are withheld by
-  the Record route and guarded by web audit.
+- Dashboard/web: lint, selftests, and production build pass; the local `the-hold.zip` lure download is present
+  under `dashboard/public/the-hold/`, and the Record route still withholds the link safely if that file is absent.
 - Plugin source and package: Java 21 source compile passes for 153 files, the jar check verifies the deployable
   plugin jar contents, and the checked-in Gradle wrapper builds/tests the plugin.
 - Datapack/resourcepack assets: JSON/reference/format-metadata/zip checks pass; the `observance:runes` bitmap atlas is
@@ -81,7 +81,9 @@ session-zero consent, and credential rotation.
   real-client rendering, command audits, consent, external media, and credential rotation.
 - Live Minecraft behavior is not proven until Paper 1.21.11, plugin, datapack, resource pack, and real clients are
   tested together.
-- Optional external media remains pending unless Ethan supplies it; any clue to missing media must stay unplanted.
+- External media has been supplied and operator-checked, but it is not launch-armed: found-footage clips and
+  the recovered archive remain story-gated by dormant flags, and the deployed `/the-hold/the-hold.zip` URL
+  still needs live-route verification before planting the lure clue.
 
 ## 4. Contradictions Or Mismatches
 
@@ -92,9 +94,10 @@ session-zero consent, and credential rotation.
 - The resource pack zip exists and hashes correctly, but launch config does not point to a hosted copy yet and
   the hosted bytes have not been verified.
 - Rehearsal and launch evidence can be generated, but no real packet proves live readiness yet.
-- Optional media wiring exists, but missing media must remain withheld from player-facing clue routes.
-- Record lure withholding is guarded for the current page, but the actual `the-hold.zip` artifact is still
-  intentionally absent until the offline map is real and tested.
+- Optional media wiring exists and the external artifacts are now hosted/checked, but all media flags must
+  remain dormant until the matching story gates.
+- Record lure withholding is guarded for the current page, and the actual `the-hold.zip` artifact is now
+  present locally; the deployed dashboard URL still needs verification before the in-world clue is planted.
 
 ## 5. Stale, Placeholder, Unfinished, Forgotten, Or Weak Content
 
@@ -102,9 +105,11 @@ session-zero consent, and credential rotation.
   check failure.
 - Placeholder coordinates remain for all launch-required sites and are explicitly not shippable.
 - The live rehearsal packet and `launch-attestations.md` are templates until a real server/client run fills them.
-- Optional external media is unfinished as a production artifact unless real files are supplied.
-- `spine-recovered-archive` is wired as an optional terminal lore puzzle, not a showrunner drip. It must stay
-  unplanted until the Drive/spectrogram artifact exists, or be treated as withheld enrichment.
+- Optional external media is produced and documented, but remains unarmed until the story gates and deployed
+  clue paths are verified.
+- `spine-recovered-archive` is wired as an optional terminal lore puzzle, not a showrunner drip. The Dropbox
+  archive and spectrogram payload now exist, but the path must stay unplanted until `recovered_archive_ready`
+  is intentionally flipped at the right story gate.
 - `arc/cipher-web-seed.sealed.json` still contains the sealed true-threshold staging answer `0 0`; it is
   inactive and spoiler-sealed, but should be replaced with the real built threshold coordinate during staging
   if that sealed path is activated.
@@ -122,8 +127,8 @@ session-zero consent, and credential rotation.
   lore.
 - Static Minecraft text fit now has an automated guard, but it still needs a real client pass for font/glyph
   rendering, lighting, distance, and resource-pack fallback.
-- Record/web lure behavior should be rechecked during rehearsal: absent `the-hold.zip` must stay withheld;
-  once supplied, the exact decoded route must expose the real file and no placeholder.
+- Record/web lure behavior should be rechecked during rehearsal: the exact decoded route must expose the real
+  `the-hold.zip` file from the deployed dashboard and no placeholder.
 - Record terminal answer-writing and integrity hints need live route rehearsal with real Supabase state:
   verify neutral non-answer copy, no puzzle identity leak, tier-1 cold-open behavior, and 24h/72h escalation
   only after real elapsed stall.
@@ -155,7 +160,7 @@ Use `design/MANUAL-LAUNCH-PLAN.md` as the detailed operator checklist. In short:
 - Stage launch beats: prologue, townsfolk, Unlit, reading fragments, and finale markers.
 - Complete the live rehearsal packet and `launch-attestations.md`, including exact plugin jar and resource-pack
   SHA1 evidence.
-- Verify or withhold external media.
+- Verify deployed external media routes and keep story-gated media flags dormant until intentionally armed.
 - Run session zero and record capture switch state plus any `observer_opt_out` choices.
 - Run the final go/no-go command:
 
@@ -210,7 +215,8 @@ packet, rehearsal packet, and `launch-attestations.md`.
 
 ## 11. Extra Suggestions
 
-- Keep optional media withheld unless it is real and tested from the exact clue path players will follow.
+- Keep optional media withheld until it is tested from the exact clue path players will follow and its story
+  gate is due.
 - Keep the dashboard rune port and the resource-pack atlas in lockstep with the canonical Discord rune table;
   the added selftest should fail any future drift.
 - Keep the Record terminal hard but fair: use it as a safety valve for stalled groups, not as a cold-start
@@ -230,10 +236,10 @@ packet, rehearsal packet, and `launch-attestations.md`.
 - Historical launch docs: looked authoritative but overstated readiness; now overridden and guarded.
 - Observer/voice capture consent: code paths are now safer, but live session-zero consent and settings still
   need proof.
-- Optional recovered-archive media: the puzzle row exists and is solvable if the artifact is supplied, but the
-  actual Drive/spectrogram payload is not present in the repo.
-- Record lure download: the page is correctly wired to withhold `the-hold.zip` while absent, but the offline
-  map itself is still a manual/creative deliverable before that route can become a real player payoff.
+- Optional recovered-archive media: the puzzle row exists and is solvable, and the external Dropbox archive plus
+  spectrogram payload are now hosted/checked; the remaining work is story-gate arming and live clue-path proof.
+- Record lure download: the page is correctly wired to expose `the-hold.zip` when present and withhold it when
+  absent; the remaining work is deployed URL verification before the lure clue goes live.
 - Sealed true-coordinate path: the sealed detail file still carries `0 0` as a staging coordinate answer; safe
   while inactive, not acceptable if that sealed row is promoted.
 - FAWE paste ledger: looked partially built because the plugin had `claimPasteLedger`, but the bundled DB
@@ -250,7 +256,7 @@ packet, rehearsal packet, and `launch-attestations.md`.
 - Supabase live status after applying the bundled SQL.
 - Session-zero consent before observer/voice capture.
 - Credential rotation before public/friend launch.
-- Optional media withholding so players never hit a 404 or placeholder artifact.
+- Optional media gate discipline so players never hit a 404, placeholder artifact, or out-of-order reveal.
 - Rune alphabet drift across Minecraft, Discord, and web Record surfaces is now explicitly audited.
 - Record terminal hint escalation drift is now explicitly audited, including the no-prior-solve case.
 - `spine-recovered-archive` specifically: do not surface its Drive/spectrogram trail until that artifact exists.

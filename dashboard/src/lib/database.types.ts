@@ -301,6 +301,164 @@ export interface Database {
         };
         Relationships: [];
       };
+      puzzles: {
+        Row: {
+          puzzle_key: string;
+          title: string;
+          accepted_answers: string[];
+          outcome_type: "next_clue" | "lore" | "dead_end" | "side_quest" | "main_beat";
+          outcome_payload: Json;
+          movement: number;
+          active: boolean;
+          max_attempts: number | null;
+          created_at: string;
+          requires_flags: Json;
+        };
+        Insert: {
+          puzzle_key: string;
+          title: string;
+          accepted_answers: string[];
+          outcome_type: "next_clue" | "lore" | "dead_end" | "side_quest" | "main_beat";
+          outcome_payload?: Json;
+          movement?: number;
+          active?: boolean;
+          max_attempts?: number | null;
+          created_at?: string;
+          requires_flags?: Json;
+        };
+        Update: {
+          puzzle_key?: string;
+          title?: string;
+          accepted_answers?: string[];
+          outcome_type?: "next_clue" | "lore" | "dead_end" | "side_quest" | "main_beat";
+          outcome_payload?: Json;
+          movement?: number;
+          active?: boolean;
+          max_attempts?: number | null;
+          created_at?: string;
+          requires_flags?: Json;
+        };
+        Relationships: [];
+      };
+      solves: {
+        Row: {
+          id: number;
+          puzzle_key: string;
+          player_id: string;
+          mc_uuid: string | null;
+          discord_id: string | null;
+          attempt_count: number;
+          solved_at: string;
+        };
+        Insert: {
+          id?: number;
+          puzzle_key: string;
+          player_id: string;
+          mc_uuid?: string | null;
+          discord_id?: string | null;
+          attempt_count?: number;
+          solved_at?: string;
+        };
+        Update: {
+          id?: number;
+          puzzle_key?: string;
+          player_id?: string;
+          mc_uuid?: string | null;
+          discord_id?: string | null;
+          attempt_count?: number;
+          solved_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "solves_puzzle_key_fkey";
+            columns: ["puzzle_key"];
+            referencedRelation: "puzzles";
+            referencedColumns: ["puzzle_key"];
+          },
+          {
+            foreignKeyName: "solves_player_id_fkey";
+            columns: ["player_id"];
+            referencedRelation: "players";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      answer_attempts: {
+        Row: {
+          id: number;
+          puzzle_key: string | null;
+          player_id: string | null;
+          mc_uuid: string | null;
+          discord_id: string | null;
+          surface: "discord" | "world" | "web" | null;
+          raw: string | null;
+          normalized: string | null;
+          matched: boolean;
+          at: string;
+          ip_hash: string | null;
+        };
+        Insert: {
+          id?: number;
+          puzzle_key?: string | null;
+          player_id?: string | null;
+          mc_uuid?: string | null;
+          discord_id?: string | null;
+          surface?: "discord" | "world" | "web" | null;
+          raw?: string | null;
+          normalized?: string | null;
+          matched?: boolean;
+          at?: string;
+          ip_hash?: string | null;
+        };
+        Update: {
+          id?: number;
+          puzzle_key?: string | null;
+          player_id?: string | null;
+          mc_uuid?: string | null;
+          discord_id?: string | null;
+          surface?: "discord" | "world" | "web" | null;
+          raw?: string | null;
+          normalized?: string | null;
+          matched?: boolean;
+          at?: string;
+          ip_hash?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "answer_attempts_puzzle_key_fkey";
+            columns: ["puzzle_key"];
+            referencedRelation: "puzzles";
+            referencedColumns: ["puzzle_key"];
+          },
+          {
+            foreignKeyName: "answer_attempts_player_id_fkey";
+            columns: ["player_id"];
+            referencedRelation: "players";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      hints: {
+        Row: {
+          id: number;
+          puzzle_key: string;
+          tier: number;
+          body: string;
+        };
+        Insert: {
+          id?: number;
+          puzzle_key: string;
+          tier: number;
+          body: string;
+        };
+        Update: {
+          id?: number;
+          puzzle_key?: string;
+          tier?: number;
+          body?: string;
+        };
+        Relationships: [];
+      };
       beat_queue: {
         Row: {
           id: number;
@@ -466,6 +624,10 @@ export type WhisperBudget = Tables<"whisper_budgets">;
 export type WhisperEvent = Tables<"whisper_events">;
 export type BondLedger = Tables<"bond_ledger">;
 export type ArcState = Tables<"arc_state">;
+export type Puzzle = Tables<"puzzles">;
+export type Solve = Tables<"solves">;
+export type AnswerAttempt = Tables<"answer_attempts">;
+export type Hint = Tables<"hints">;
 export type Beat = Tables<"beat_queue">;
 export type EventLogRow = Tables<"event_log">;
 export type Setting = Tables<"settings">;

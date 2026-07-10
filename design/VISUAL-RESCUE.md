@@ -116,6 +116,9 @@ Before go-live, run a visual rehearsal pass after `/obs director lab` or `/obs d
 4. Fill the five proof fields for every major site: silhouette, palette, lighting, body verb, and action/answer legibility.
 5. Only sites marked `KEEP` are allowed into the real world placement list.
 
+The screenshot set must prove the approach silhouette, palette, focal object, lighting, and player movement.
+If the route, body verb, or exit only makes sense after an operator explains it, the site is not ready.
+
 Record the proof in `design/LIVE-REHEARSAL-EVIDENCE.md`: every major site needs approach, focal object,
 answer/action surface, and exit screenshots. A green `/obs visualaudit` means the site avoids the most
 obvious test-prop failures, including missing answer surfaces on keeper-stones and answer-sign sites; it

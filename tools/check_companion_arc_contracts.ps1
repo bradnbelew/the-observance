@@ -35,6 +35,7 @@ $coopGate = Read-Text "discord\src\showrunner\coop-gate.ts"
 $autonomyRunner = Read-Text "discord\src\showrunner\autonomy.run.ts"
 $botIndex = Read-Text "discord\src\bot\index.ts"
 $config = Read-Text "plugin\src\main\resources\config.yml"
+$wrenEvidence = Read-Text "design\WREN-EVIDENCE-LOOP.md"
 
 Assert-All $wren @(
   "companion_introduced",
@@ -147,4 +148,24 @@ Assert-All $config @(
   "puzzle-key:"
 ) "Plugin puzzle config"
 
-Write-Host "companion arc contract check: OK - Wren trust/reveal/reckoning, coop world legs, Seventh choice, and Discord consumers are wired"
+Assert-All $wrenEvidence @(
+  "## Wren Standard",
+  "Independent proof before the reveal",
+  "A player memory or action Wren can react to",
+  "A reason Wren benefits from staying close",
+  "A contradiction the group can name",
+  "A reckoning choice after the reveal",
+  "A finale callback that reflects the choice without erasing player agency",
+  "## Beat 1 - Trust As Access",
+  "## Beat 2 - Memory As Bait",
+  "## Beat 3 - Independent Proof First",
+  "## Beat 4 - The Reveal Is A Comparison",
+  "## Beat 5 - Reckoning Choice",
+  "## Beat 6 - Finale Callback",
+  "Wren never becomes an out-of-fiction hint button",
+  'Wren''s reveal must be gated behind `iss_caught`',
+  "Wren's reckoning must be one-of-three and set-once",
+  "the reveal lands before they understand Iss"
+) "WREN-EVIDENCE-LOOP.md"
+
+Write-Host "companion arc contract check: OK - Wren trust/reveal/reckoning, evidence-loop guard, coop world legs, Seventh choice, and Discord consumers are wired"

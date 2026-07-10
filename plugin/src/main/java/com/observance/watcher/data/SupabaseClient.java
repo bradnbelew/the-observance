@@ -6,18 +6,21 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.observance.watcher.config.ObservanceConfig;
 import com.observance.watcher.data.rows.ArcStateRow;
+import com.observance.watcher.data.rows.AnswerAttemptReadRow;
 import com.observance.watcher.data.rows.BaseRow;
 import com.observance.watcher.data.rows.BeatQueueRow;
 import com.observance.watcher.data.rows.CustomComplianceRow;
 import com.observance.watcher.data.rows.DossierRow;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.data.rows.HeatmapCellRow;
+import com.observance.watcher.data.rows.HintRow;
 import com.observance.watcher.data.rows.NpcQuestRow;
 import com.observance.watcher.data.rows.ObservationRow;
 import com.observance.watcher.data.rows.PlayerLookupRow;
 import com.observance.watcher.data.rows.PlayerRow;
 import com.observance.watcher.data.rows.PuzzleRow;
 import com.observance.watcher.data.rows.SettingsRow;
+import com.observance.watcher.data.rows.SolveReadRow;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -79,6 +82,12 @@ public final class SupabaseClient {
             new TypeToken<List<ArcStateRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_PUZZLE =
             new TypeToken<List<PuzzleRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_SOLVE_READ =
+            new TypeToken<List<SolveReadRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_ATTEMPT_READ =
+            new TypeToken<List<AnswerAttemptReadRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_HINT =
+            new TypeToken<List<HintRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_PLAYER_LOOKUP =
             new TypeToken<List<PlayerLookupRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_NPC_QUEST =
@@ -359,6 +368,52 @@ public final class SupabaseClient {
                 + "&order=movement.asc,created_at.asc"
                 + "&limit=" + Math.max(1, limit);
         SupabaseResult<List<PuzzleRow>> r = doRead("puzzles", q, LIST_PUZZLE, "fetchOpenPuzzles");
+        if (!r.ok() || r.value() == null) {
+            return SupabaseResult.ok(r.httpStatus(), Collections.emptyList());
+        }
+        return r;
+    }
+
+    /** Recent solves for director-only progress/stuck reports. Spoiler-safe only because /obs is admin-gated. */
+    public SupabaseResult<List<SolveReadRow>> fetchRecentSolves(int limit) {
+        if (!config.isConfigured()) {
+            return SupabaseResult.ok(0, Collections.emptyList());
+        }
+        String q = "select=puzzle_key,player_id,mc_uuid,discord_id,attempt_count,solved_at"
+                + "&order=solved_at.desc"
+                + "&limit=" + Math.max(1, Math.min(500, limit));
+        SupabaseResult<List<SolveReadRow>> r = doRead("solves", q, LIST_SOLVE_READ, "fetchRecentSolves");
+        if (!r.ok() || r.value() == null) {
+            return SupabaseResult.ok(r.httpStatus(), Collections.emptyList());
+        }
+        return r;
+    }
+
+    /** Recent answer attempts for director-only stuck reports. Never shown to players. */
+    public SupabaseResult<List<AnswerAttemptReadRow>> fetchRecentAnswerAttempts(int limit) {
+        if (!config.isConfigured()) {
+            return SupabaseResult.ok(0, Collections.emptyList());
+        }
+        String q = "select=puzzle_key,player_id,mc_uuid,discord_id,surface,raw,normalized,matched,at"
+                + "&order=at.desc"
+                + "&limit=" + Math.max(1, Math.min(500, limit));
+        SupabaseResult<List<AnswerAttemptReadRow>> r =
+                doRead("answer_attempts", q, LIST_ATTEMPT_READ, "fetchRecentAnswerAttempts");
+        if (!r.ok() || r.value() == null) {
+            return SupabaseResult.ok(r.httpStatus(), Collections.emptyList());
+        }
+        return r;
+    }
+
+    /** Authored hint rows for director-only stuck reports. Bodies are spoilers and must never be player-chat. */
+    public SupabaseResult<List<HintRow>> fetchHints(int limit) {
+        if (!config.isConfigured()) {
+            return SupabaseResult.ok(0, Collections.emptyList());
+        }
+        String q = "select=puzzle_key,tier,body"
+                + "&order=puzzle_key.asc,tier.asc"
+                + "&limit=" + Math.max(1, Math.min(1000, limit));
+        SupabaseResult<List<HintRow>> r = doRead("hints", q, LIST_HINT, "fetchHints");
         if (!r.ok() || r.value() == null) {
             return SupabaseResult.ok(r.httpStatus(), Collections.emptyList());
         }

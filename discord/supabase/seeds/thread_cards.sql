@@ -52,11 +52,11 @@ values
 
   ( 'who-vaun-counted', 'who', 'the founder who counted', 'cardWhoVaunCounted',
     'stone_vaun', 'explore',
-    array['who-mara-read','human-offering-ledger'], 'stone-vaun', null, 20 ),
+    array['who-mara-read','human-offering-ledger'], 'vaun-bookshelf-tally', null, 20 ),
 
   ( 'who-mara-read', 'who', 'the lampwright who read', 'cardWhoMaraRead',
     'stone_mara', 'explore',
-    array['who-vaun-counted','who-sella-token'], 'stone-mara', null, 30 ),
+    array['who-vaun-counted','who-sella-token'], 'mara-lectern-lock', null, 30 ),
 
   -- Mara's second clue (W9 completeness): the rite she annotated but never walked â€” revealed when the
   -- group WALKS it (mara-walk-the-map), which also gives that expansion puzzle its archive payoff. Gives
@@ -71,11 +71,11 @@ values
 
   ( 'who-orin-mason', 'who', 'the mason who would not bow', 'cardWhoOrinMason',
     'stone_orin', 'explore',
-    array['who-brann-watch','happened-orin-sealed'], 'stone-orin', null, 50 ),
+    array['who-brann-watch','happened-orin-sealed'], 'orin-frame-dials', null, 50 ),
 
   ( 'who-brann-watch', 'who', 'the watchman who would not sleep', 'cardWhoBrannWatch',
     'stone_brann', 'explore',
-    array['who-orin-mason','surface-watcher-counts'], 'stone-brann', null, 60 ),
+    array['who-orin-mason','surface-watcher-counts'], 'brann-black-moon-toll', null, 60 ),
 
   ( 'who-iss-friend', 'who', 'the best of the young ones', 'cardWhoIssFriend',
     'stone_iss', 'explore',
@@ -114,7 +114,7 @@ values
 
   ( 'place-cairn', 'place', 'the offering-cairn', 'cardPlaceCairn',
     'offering_cairn_01', 'explore',
-    array['who-vaun-counted','human-offering-ledger'], 'stone-vaun', null, 50 ),
+    array['who-vaun-counted','human-offering-ledger'], 'vaun-hoard-sorted', null, 50 ),
 
   ( 'place-undercroft-sealed', 'place', 'the sealed undercroft', 'cardPlaceUndercroftSealed',
     'unbroken_light', 'explore',
@@ -142,12 +142,12 @@ values
   -- the Break hub: points at three accounts that cannot all be true
   ( 'happened-the-break', 'happened', 'the break', 'cardHappenedTheBreak',
     'stone_brann', 'explore',
-    array['happened-break-accident','happened-break-betrayal','happened-break-mercy'], 'stone-brann', null, 40 ),
+    array['happened-break-accident','happened-break-betrayal','happened-break-mercy'], 'brann-silence-corridor', null, 40 ),
 
   -- â† CONTRADICTS the other two Break accounts
   ( 'happened-break-accident', 'happened', 'an accident', 'cardHappenedBreakAccident',
     'stone_brann', 'explore',
-    array['happened-break-betrayal','happened-break-mercy'], 'stone-brann', null, 50 ),
+    array['happened-break-betrayal','happened-break-mercy'], 'stone-brann-cipher', null, 50 ),
 
   -- â† CONTRADICTS the other two Break accounts (rumor: reached on the trusting route, then reframed)
   ( 'happened-break-betrayal', 'happened', 'a betrayal', 'cardHappenedBreakBetrayal',
@@ -234,7 +234,7 @@ values
   -- ========================================================================
   ( 'human-offering-ledger', 'human', 'the open column', 'cardHumanOfferingLedger',
     'offering_cairn_01', 'explore',
-    array['who-vaun-counted','place-cairn'], 'stone-vaun', null, 10 ),
+    array['who-vaun-counted','place-cairn'], 'vaun-bookshelf-tally', null, 10 ),
 
   ( 'human-lamp-roll-counts-down', 'human', 'two hundred fourteen to one', 'cardHumanLampRoll',
     'kept_light_home_01', 'explore',
@@ -371,7 +371,7 @@ values
   -- earned late solves. Bodies are Watcher-register (voice.archive.ts cardHumanCount* / cardHumanYouAreNext).
   ( 'human-count-uneven', 'human', 'the surplus at the table', 'cardHumanCountUneven',
     'first_report_lectern_01', 'explore',
-    array['human-names-over-heads','human-the-record-opens'], 'stone-brann', null, 200 ),
+    array['human-names-over-heads','human-the-record-opens'], 'brann-black-moon-toll', null, 200 ),
   ( 'human-six-openings', 'human', 'six openings, one struck', 'cardHumanSixOpenings',
     'first_report_lectern_01', 'explore',
     array['human-count-uneven','human-the-record-opens','surface-seventh-marker'], 'no-wall-catch', null, 210 ),

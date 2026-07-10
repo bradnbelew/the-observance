@@ -25,9 +25,9 @@ where puzzle_key in ('stone-sella', 'base-docket-reread', 'record-receives');
 
 insert into public.hints (puzzle_key, tier, body) values
 
--- rosetta-ring — the rune-literacy on-ramp (assemble the six ways, in order, off the carved ring).
-('rosetta-ring', 2, 'these marks are not decoration. you have seen them elsewhere — cut beside the fire, the water, the graves. the thing each sits beside is what it says.'),
-('rosetta-ring', 3, 'read them where they name something you already know: the mark by the flame is "fire," the mark by the pool is "water." learn a few letters that way and the ring — and every stone — begins to speak.'),
+-- rosetta-ring — the rune-literacy on-ramp (assemble the seven ways, in ring order).
+('rosetta-ring', 2, 'these marks are not decoration. each one sits beside the thing it names: bow marker, offering cairn, kept lamp, deep line, shut mouth, living bird. read the ring in the order it gives you.'),
+('rosetta-ring', 3, 'the ring is asking for the seven way names, not a sentence. give the names in ring order: bow, offering, kept light, deep line, unspoken, sacred beast. keep the spaces ordinary.'),
 
 -- stone-vaun — Caesar (every letter held back by a fixed amount; his hoarding made literal).
 ('stone-vaun', 2, 'vaun gave nothing back. even his letters are held back — every one, by the same measure. find the measure and give them back.'),

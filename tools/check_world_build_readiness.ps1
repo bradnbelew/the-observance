@@ -8,11 +8,12 @@ $ErrorActionPreference = "Stop"
 $sitesFile = Join-Path $RepoRoot "plugin\src\main\resources\sites.yml"
 $runbookFile = Join-Path $RepoRoot "design\RUNBOOK.md"
 $structuresFile = Join-Path $RepoRoot "design\structures.md"
+$clueLedgerFile = Join-Path $RepoRoot "design\CLUE-LEDGER.md"
 $evidenceFile = Join-Path $RepoRoot "design\LIVE-REHEARSAL-EVIDENCE.md"
 $commandFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\command\ObservanceCommand.java"
 $structureTemplateFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\structure\StructureTemplates.java"
 
-foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $evidenceFile, $commandFile, $structureTemplateFile)) {
+foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $clueLedgerFile, $evidenceFile, $commandFile, $structureTemplateFile)) {
   if (-not (Test-Path $file)) {
     throw "world build readiness: missing required file: $file"
   }
@@ -21,9 +22,20 @@ foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $evidenceFile, $c
 $siteText = Get-Content -LiteralPath $sitesFile -Raw
 $runbook = Get-Content -LiteralPath $runbookFile -Raw
 $structures = Get-Content -LiteralPath $structuresFile -Raw
+$clueLedger = Get-Content -LiteralPath $clueLedgerFile -Raw
 $evidence = Get-Content -LiteralPath $evidenceFile -Raw
 $commandSource = Get-Content -LiteralPath $commandFile -Raw
 $structureTemplateSource = Get-Content -LiteralPath $structureTemplateFile -Raw
+
+# Structure quality is now a launch gate, not a vibe check. The build can pass
+# coverage while still failing the ARG if it is only a sign/answer slab. Keep
+# this check tied to design\CLUE-LEDGER.md and tools\check_structure_quality.ps1.
+$structureQualityContract = @(
+  "structure quality",
+  "non-sign",
+  "clue surface",
+  "CLUE-LEDGER"
+)
 
 $failures = [System.Collections.Generic.List[string]]::new()
 
@@ -324,6 +336,11 @@ RequireText "RUNBOOK.md" $runbook "/observance site plan"
 RequireText "RUNBOOK.md" $runbook "tools\new_launch_placement_packet.ps1"
 RequireText "RUNBOOK.md" $runbook "coords-capture.csv"
 RequireText "structures.md" $structures "tools\check_world_build_readiness.ps1 -Launch"
+RequireText "structures.md" $structures "playable investigation spaces"
+RequireText "structures.md" $structures "two non-sign clue surfaces"
+RequireText "structures.md" $structures "traversal vector"
+RequireText "CLUE-LEDGER.md" $clueLedger "hold-address-reconstruction"
+RequireText "CLUE-LEDGER.md" $clueLedger "accepting-convergence"
 RequireText "LIVE-REHEARSAL-EVIDENCE.md" $evidence "launch-required site coordinates"
 
 $visualTemplateMarkers = [regex]::Matches($structureTemplateSource, "Post-Unlit visual overhaul").Count

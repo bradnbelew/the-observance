@@ -254,14 +254,22 @@ begin
     --   spine-unkept-acrostic    → iss_caught           (no-wall-catch)
     update public.puzzles set requires_flags = jsonb_build_object('vaun_cache_open', true)
       where puzzle_key = 'vaun-bookshelf-tally';
+    update public.puzzles set requires_flags = jsonb_build_object('vaun_tally_read', true)
+      where puzzle_key = 'stone-vaun';
     update public.puzzles set requires_flags = jsonb_build_object('mara_alcove_open', true)
       where puzzle_key = 'mara-walk-the-map';
+    update public.puzzles set requires_flags = jsonb_build_object('mara_walked', true)
+      where puzzle_key = 'stone-mara';
     update public.puzzles set requires_flags = jsonb_build_object('sella_bearing_read', true)
       where puzzle_key = 'sella-overlay-lake';
     update public.puzzles set requires_flags = jsonb_build_object('sella_overlay_read', true)
       where puzzle_key = 'sella-shore-memorial';
     update public.puzzles set requires_flags = jsonb_build_object('orin_bowed', true)
       where puzzle_key = 'orin-frame-dials';
+    update public.puzzles set requires_flags = jsonb_build_object('orin_key_found', true)
+      where puzzle_key = 'stone-orin';
+    update public.puzzles set requires_flags = jsonb_build_object('brann_toll_heard', true, 'brann_corridor_passed', true)
+      where puzzle_key in ('stone-brann', 'stone-brann-cipher');
     update public.puzzles set requires_flags = jsonb_build_object('iss_key_turned', true)
       where puzzle_key = 'iss-which-is-true';
     update public.puzzles set requires_flags = jsonb_build_object('iss_doubted', true)

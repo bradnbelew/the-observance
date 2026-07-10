@@ -107,8 +107,9 @@ that points at it** (or the trail dead-ends / a link 404s).
 
 ### B2 — `the-hold.zip` — the downloadable lure vignette PRODUCED
 - **Current state:** the clean sendable zip is present at `dashboard/public/the-hold/the-hold.zip`.
-  It is 153281 bytes, SHA1 `892dfb2c3a52d002280d0a669777fc6d5bee2b97`, and its zip entries were checked
-  for README/manifest/spoiler-style files. The final room points to `snoikerz.com:25569`.
+  It is 154145 bytes, SHA1 `b3a9459e102cde1e072771660def4b37bf55896e`, and its zip entries were checked
+  for README/manifest/spoiler-style files. The final room splits the destination into route, gate name,
+  common ending, and port arithmetic instead of exposing a raw server endpoint.
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
   download on the record website's lure page (`/record/the-record-keeps`).

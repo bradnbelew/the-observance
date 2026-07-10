@@ -23,6 +23,7 @@ $resourcePackSetterPath = Join-Path $RepoRoot "tools\set_resource_pack_config.ps
 $docs = @(
   "plugin\src\main\resources\plugin.yml",
   "design\RUNBOOK.md",
+  "design\DIRECTOR-SETUP-GUIDE.md",
   "design\MANUAL-LAUNCH-PLAN.md",
   "design\CURRENT-READINESS-VERDICT.md",
   "design\DIRECTOR-SIMPLIFICATION.md",
@@ -316,6 +317,41 @@ foreach ($required in @(
 )) {
   if ($launchBlockerText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Write-Error "operator docs check: launch blocker gate is missing required readiness blocker text: $required"
+    exit 1
+  }
+}
+
+$directorSetupGuidePath = Join-Path $RepoRoot "design\DIRECTOR-SETUP-GUIDE.md"
+if (-not (Test-Path $directorSetupGuidePath)) {
+  throw "operator docs check: missing director setup guide: $directorSetupGuidePath"
+}
+$directorSetupGuideText = Get-Content -LiteralPath $directorSetupGuidePath -Raw
+foreach ($required in @(
+  "repo-ready is not launch-ready",
+  "audit_all.ps1",
+  "prepare_friend_launch.ps1",
+  "ResourcePackUrl",
+  "observance-deploy-manifest.json",
+  "set_resource_pack_config.ps1",
+  "check_hosted_resource_pack.ps1",
+  "/obs director state",
+  "/obs director progress",
+  "stuck-player hint view",
+  "/obs site next <lane>",
+  "/obs preflight",
+  "/obs rehearse start",
+  "Structure Proof Standard",
+  "Website, Discord, And Media Discipline",
+  "check_external_media_readiness.ps1",
+  "check_launch_manual_blockers.ps1 -Launch",
+  "67 launch-required coordinates",
+  "launch-attestations.md",
+  "decision: LAUNCH",
+  "Session Zero",
+  "credentials were rotated"
+)) {
+  if ($directorSetupGuideText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+    Write-Error "operator docs check: DIRECTOR-SETUP-GUIDE is missing required setup handoff text: $required"
     exit 1
   }
 }

@@ -10,6 +10,8 @@ import { WatcherSleepToggle } from "@/components/author/WatcherSleepToggle";
 import { AcceptingTrigger } from "@/components/author/AcceptingTrigger";
 import { EndingSelector } from "@/components/author/EndingSelector";
 import { DirectorRunPanel } from "@/components/author/DirectorRunPanel";
+import { DirectorStateReport } from "@/components/author/DirectorStateReport";
+import { DirectorProgressReport } from "@/components/author/DirectorProgressReport";
 import { SetupFlow } from "@/components/author/SetupFlow";
 import { UnlitProgress } from "@/components/author/UnlitProgress";
 import { KeeperTheoryProgress } from "@/components/author/KeeperTheoryProgress";
@@ -21,12 +23,16 @@ import type { WhisperBudgetRow } from "@/components/author/WhisperBudgets";
 import type { BondLedgerEntry } from "@/components/author/BondLedger";
 import type {
   ArcState,
+  AnswerAttempt,
   Beat,
   BondLedger as BondLedgerType,
   CustomCompliance,
   Dossier,
+  Hint,
   Player,
+  Puzzle,
   Setting,
+  Solve,
   WhisperBudget,
 } from "@/lib/database.types";
 
@@ -56,6 +62,10 @@ export default async function AuthorPage() {
     dossiersRes,
     complianceRes,
     settingsRes,
+    puzzlesRes,
+    solvesRes,
+    attemptsRes,
+    hintsRes,
   ] = await Promise.all([
     supabase.from("arc_state").select("*").eq("id", 1).maybeSingle(),
     supabase
@@ -82,6 +92,29 @@ export default async function AuthorPage() {
     supabase.from("v_dossiers").select("*"),
     supabase.from("v_custom_compliance").select("*"),
     supabase.from("settings").select("*"),
+    supabase
+      .from("puzzles")
+      .select("puzzle_key,title,accepted_answers,outcome_type,outcome_payload,movement,active,max_attempts,created_at,requires_flags")
+      .eq("active", true)
+      .order("movement", { ascending: true })
+      .order("created_at", { ascending: true })
+      .limit(220),
+    supabase
+      .from("solves")
+      .select("id,puzzle_key,player_id,mc_uuid,discord_id,attempt_count,solved_at")
+      .order("solved_at", { ascending: false })
+      .limit(160),
+    supabase
+      .from("answer_attempts")
+      .select("id,puzzle_key,player_id,mc_uuid,discord_id,surface,raw,normalized,matched,at,ip_hash")
+      .order("at", { ascending: false })
+      .limit(180),
+    supabase
+      .from("hints")
+      .select("id,puzzle_key,tier,body")
+      .order("puzzle_key", { ascending: true })
+      .order("tier", { ascending: true })
+      .limit(500),
   ]);
 
   const arc = (arcRes.data ?? null) as ArcState | null;
@@ -98,6 +131,10 @@ export default async function AuthorPage() {
   const dossiers = (dossiersRes.data ?? []) as Dossier[];
   const compliance = (complianceRes.data ?? []) as CustomCompliance[];
   const settings = (settingsRes.data ?? []) as Setting[];
+  const puzzles = (puzzlesRes.data ?? []) as Puzzle[];
+  const solves = (solvesRes.data ?? []) as Solve[];
+  const attempts = (attemptsRes.data ?? []) as AnswerAttempt[];
+  const hints = (hintsRes.data ?? []) as Hint[];
 
   // Index players for cheap joins (the plugin owns the keys; we just label).
   const playerById = new Map(players.map((p) => [p.id, p]));
@@ -235,6 +272,26 @@ export default async function AuthorPage() {
         pendingBeats={pendingBeats}
         approvedBeats={approvedBeats}
         failedBeats={failedBeats}
+      />
+
+      <DirectorStateReport
+        currentAct={arc?.current_act ?? 1}
+        flags={flags}
+        players={players}
+        compliance={compliance}
+        beats={beats}
+        watcherAsleep={watcherAsleep}
+        activeRosterSize={activeRosterSize}
+        hasHoldZip={hasHoldZip}
+      />
+
+      <DirectorProgressReport
+        flags={flags}
+        players={players}
+        puzzles={puzzles}
+        solves={solves}
+        attempts={attempts}
+        hints={hints}
       />
 
       <ArcControl arc={arc} />

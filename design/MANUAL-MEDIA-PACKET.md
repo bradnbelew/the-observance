@@ -107,12 +107,12 @@ Player-facing route:
 
 Current production state:
 
-- source zip: `C:\Users\nanob\Documents\Codex\2026-07-07\you-are-working-on-my-minecraft\outputs\the-hold.zip`
+- source zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - dashboard zip: `dashboard/public/the-hold/the-hold.zip`
-- size: 153281 bytes
-- SHA1: `892dfb2c3a52d002280d0a669777fc6d5bee2b97`
+- size: 154145 bytes
+- SHA1: `b3a9459e102cde1e072771660def4b37bf55896e`
 - zip cleanliness check: 534 entries; no README/manifest/spoiler-style entries found
-- final room handoff: `the-record-keeps` and `snoikerz.com:25569`
+- final room handoff: route + gate name + common ending + port arithmetic; no raw server endpoint
 
 Format:
 
@@ -121,7 +121,7 @@ Format:
 - adventure mode
 - 10-15 minutes
 - one route, no survival grind
-- final room points to the live server or next launch instruction
+- final room points to the live server through a small reconstruction puzzle, not a raw address
 
 Minimum build:
 
@@ -129,7 +129,7 @@ Minimum build:
 2. Domestic room: beds, lamp, ration evidence, signs of people rather than monsters.
 3. Water/reflection room: a Sella count problem, seven where six is expected.
 4. Lamp/hearth room: the kept light and one wrong cold place.
-5. Handoff room: the server clue in a book, lectern, wall layout, or item names.
+5. Handoff room: the destination split across route, gate name, common ending, and port arithmetic.
 
 Payload:
 
