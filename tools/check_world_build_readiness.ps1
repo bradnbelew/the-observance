@@ -402,7 +402,32 @@ foreach ($builder in $requiredProofBuilders) {
 RequireText "ObservanceCommand.java" $commandSource "private void buildProofChamber"
 RequireText "ObservanceCommand.java" $commandSource 'String spacing = args.length >= 2 ? args[1] : "36"'
 RequireText "ObservanceCommand.java" $commandSource "int platformRadius = 18"
-RequireText "ObservanceCommand.java" $commandSource "spacing = Math.max(32, Math.min(64"
+RequireText "ObservanceCommand.java" $commandSource "spacing = Math.max(34, Math.min(48"
+RequireText "ObservanceCommand.java" $commandSource "prepareCompactCell(siteLoc, Math.max(12, radius + 4), 9)"
+RequireText "ObservanceCommand.java" $commandSource "compactGridCell(origin, 0, 6, spacing, 2)"
+RequireText "ObservanceCommand.java" $commandSource "compactSurfaceCell(world, bx + (step * 4), bz)"
+RequireText "ObservanceCommand.java" $commandSource 'seedFixtureLore(loc, "far_water")'
+RequireText "ObservanceCommand.java" $commandSource "if (block.getType() == Material.CHISELED_BOOKSHELF) continue"
+RequireText "ObservanceCommand.java" $commandSource "private void placeDecorativeBookshelf(Block block, int seed)"
+RequireText "ObservanceCommand.java" $commandSource "placeDecorativeBookshelf(world.getBlockAt(bx + 4, by, bz + 5), 31)"
+RequireText "StructureTemplates.java" $structureTemplateSource "prepareTemplateVolume(pen, base, id)"
+RequireText "StructureTemplates.java" $structureTemplateSource "void clearBox(int cx, int y, int cz, int radius, int height)"
+RequireText "StructureTemplates.java" $structureTemplateSource "seedLoreStorage(base, id)"
+RequireText "StructureTemplates.java" $structureTemplateSource "if (b.getType() == Material.CHISELED_BOOKSHELF) continue"
+RequireText "StructureTemplates.java" $structureTemplateSource "void chiseledShelf(int x, int y, int z)"
+RequireText "StructureTemplates.java" $structureTemplateSource "shelf.setSlotOccupied(slot, occupied)"
+RequireText "StructureTemplates.java" $structureTemplateSource 'pen.putBook(cx, cy + 1, cz, "the rosetta"'
+RequireText "StructureTemplates.java" $structureTemplateSource 'pen.putBook(cx + 2, cy, cz - 1, "the missing volume"'
+RequireText "StructureTemplates.java" $structureTemplateSource "pen.topSlab(cx, cy + 1, cz, Material.POLISHED_DEEPSLATE_SLAB)"
+RequireText "StructureTemplates.java" $structureTemplateSource "Wall banners need a solid backing behind the banner block"
+RequireText "RUNBOOK.md" $runbook "No structure uses a beacon beam as a player waypoint"
+
+if ($commandSource.IndexOf("keptLightBeacon", [System.StringComparison]::Ordinal) -ge 0) {
+  Fail "ObservanceCommand.java must not place retired beacon waypoints"
+}
+if ($structureTemplateSource.IndexOf("Material.BEACON", [System.StringComparison]::Ordinal) -ge 0) {
+  Fail "StructureTemplates.java must not place retired beacon waypoints"
+}
 
 if ($failures.Count -gt 0) {
   Write-Host "world build readiness check: FAILED"

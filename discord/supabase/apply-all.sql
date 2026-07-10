@@ -1367,6 +1367,8 @@ commit;
 
 begin;
 
+drop view if exists public.v_record;
+
 -- v_record: the coarse, spoiler-free public archive signal. Reads the spoiler tables as the view
 -- owner and projects only the three blunt public facts the sealed Record is allowed to show.
 create or replace view public.v_record
@@ -1494,6 +1496,8 @@ alter table public.custom_compliance
 --   * deaths / blocks_mined / chat_sentiment / updated_at pass through the base
 --     columns (chat_sentiment has no plugin source yet -> null, which the type
 --     already allows).
+drop view if exists public.v_dossiers;
+
 create or replace view public.v_dossiers
 with (security_invoker = false) as
 select
@@ -1528,6 +1532,8 @@ comment on view public.v_dossiers is
 --                        'warned', else 'keeping'. Matches Dossiers.tsx's
 --                        COMPLIANCE_STYLES keys (keeping/warned/violating).
 --   * id / custom_key pass through the base columns.
+drop view if exists public.v_custom_compliance;
+
 create or replace view public.v_custom_compliance
 with (security_invoker = false) as
 select
@@ -1586,6 +1592,8 @@ commit;
 -- on arc_state (jsonb flags) + solves, which exist by then.
 
 begin;
+
+drop view if exists public.v_record;
 
 create or replace view public.v_record
 with (security_invoker = false) as
@@ -1705,6 +1713,8 @@ revoke all on public.thread_card_bodies from anon, authenticated;
 --    title + recovered body, its kind (rumor/explore/verified/contradicted), the citation web
 --    (references_card_key — kebab slugs, no bodies), and the sort orders. No answer, no player,
 --    no custom label, no sealed flag. The reveal gate is the WHERE clause (see header).
+drop view if exists public.v_archive;
+
 create or replace view public.v_archive
 with (security_invoker = false) as
 select
@@ -1767,6 +1777,8 @@ commit;
 -- unrevealed body never leaves the view. Additive + idempotent (create or replace). Apply after 0007.
 
 begin;
+
+drop view if exists public.v_archive;
 
 create or replace view public.v_archive
 with (security_invoker = false) as
@@ -2006,7 +2018,6 @@ values
   'i thought it small',
   array[
     'i thought it small it was not small',
-    'threshold',
     'the bow is the smallest of the ways'
   ],
   'next_clue',
@@ -2015,8 +2026,8 @@ values
     'next_puzzle_key', 'orin-threshold',
     'set_flags', jsonb_build_object('orin_stone_read', true)
   ),
-  -- max_attempts:8 - includes a short fallback answer ("threshold"), so cap the
-  -- per-minute per-player tries without changing the normal solve path.
+  -- max_attempts:8 - the old bare fallback answer "threshold" was removed by the
+  -- investigation-cluster pass; the answer now has to come from Orin's posture evidence.
   2, true, 8 ),
 
 -- stone-brann — NOW the carved FRAMING for the rail-fence cipher (puzzle-variety audit
@@ -3168,7 +3179,8 @@ values
   'next_clue',
   jsonb_build_object(
     'voice_key', 'oracleNextClue',
-    'next_puzzle_key', 'stone-vaun'
+    'next_puzzle_key', 'stone-vaun',
+    'set_flags', jsonb_build_object('vaun_tally_read', true)
   ),
   'code', 2, false, null ),
 
@@ -4031,11 +4043,11 @@ values
 
   ( 'who-vaun-counted', 'who', 'the founder who counted', 'cardWhoVaunCounted',
     'stone_vaun', 'explore',
-    array['who-mara-read','human-offering-ledger'], 'stone-vaun', null, 20 ),
+    array['who-mara-read','human-offering-ledger'], 'vaun-bookshelf-tally', null, 20 ),
 
   ( 'who-mara-read', 'who', 'the lampwright who read', 'cardWhoMaraRead',
     'stone_mara', 'explore',
-    array['who-vaun-counted','who-sella-token'], 'stone-mara', null, 30 ),
+    array['who-vaun-counted','who-sella-token'], 'mara-lectern-lock', null, 30 ),
 
   -- Mara's second clue (W9 completeness): the rite she annotated but never walked â€” revealed when the
   -- group WALKS it (mara-walk-the-map), which also gives that expansion puzzle its archive payoff. Gives
@@ -4050,11 +4062,11 @@ values
 
   ( 'who-orin-mason', 'who', 'the mason who would not bow', 'cardWhoOrinMason',
     'stone_orin', 'explore',
-    array['who-brann-watch','happened-orin-sealed'], 'stone-orin', null, 50 ),
+    array['who-brann-watch','happened-orin-sealed'], 'orin-frame-dials', null, 50 ),
 
   ( 'who-brann-watch', 'who', 'the watchman who would not sleep', 'cardWhoBrannWatch',
     'stone_brann', 'explore',
-    array['who-orin-mason','surface-watcher-counts'], 'stone-brann', null, 60 ),
+    array['who-orin-mason','surface-watcher-counts'], 'brann-black-moon-toll', null, 60 ),
 
   ( 'who-iss-friend', 'who', 'the best of the young ones', 'cardWhoIssFriend',
     'stone_iss', 'explore',
@@ -4093,7 +4105,7 @@ values
 
   ( 'place-cairn', 'place', 'the offering-cairn', 'cardPlaceCairn',
     'offering_cairn_01', 'explore',
-    array['who-vaun-counted','human-offering-ledger'], 'stone-vaun', null, 50 ),
+    array['who-vaun-counted','human-offering-ledger'], 'vaun-hoard-sorted', null, 50 ),
 
   ( 'place-undercroft-sealed', 'place', 'the sealed undercroft', 'cardPlaceUndercroftSealed',
     'unbroken_light', 'explore',
@@ -4121,12 +4133,12 @@ values
   -- the Break hub: points at three accounts that cannot all be true
   ( 'happened-the-break', 'happened', 'the break', 'cardHappenedTheBreak',
     'stone_brann', 'explore',
-    array['happened-break-accident','happened-break-betrayal','happened-break-mercy'], 'stone-brann', null, 40 ),
+    array['happened-break-accident','happened-break-betrayal','happened-break-mercy'], 'brann-silence-corridor', null, 40 ),
 
   -- â† CONTRADICTS the other two Break accounts
   ( 'happened-break-accident', 'happened', 'an accident', 'cardHappenedBreakAccident',
     'stone_brann', 'explore',
-    array['happened-break-betrayal','happened-break-mercy'], 'stone-brann', null, 50 ),
+    array['happened-break-betrayal','happened-break-mercy'], 'stone-brann-cipher', null, 50 ),
 
   -- â† CONTRADICTS the other two Break accounts (rumor: reached on the trusting route, then reframed)
   ( 'happened-break-betrayal', 'happened', 'a betrayal', 'cardHappenedBreakBetrayal',
@@ -4213,7 +4225,7 @@ values
   -- ========================================================================
   ( 'human-offering-ledger', 'human', 'the open column', 'cardHumanOfferingLedger',
     'offering_cairn_01', 'explore',
-    array['who-vaun-counted','place-cairn'], 'stone-vaun', null, 10 ),
+    array['who-vaun-counted','place-cairn'], 'vaun-bookshelf-tally', null, 10 ),
 
   ( 'human-lamp-roll-counts-down', 'human', 'two hundred fourteen to one', 'cardHumanLampRoll',
     'kept_light_home_01', 'explore',
@@ -4350,7 +4362,7 @@ values
   -- earned late solves. Bodies are Watcher-register (voice.archive.ts cardHumanCount* / cardHumanYouAreNext).
   ( 'human-count-uneven', 'human', 'the surplus at the table', 'cardHumanCountUneven',
     'first_report_lectern_01', 'explore',
-    array['human-names-over-heads','human-the-record-opens'], 'stone-brann', null, 200 ),
+    array['human-names-over-heads','human-the-record-opens'], 'brann-black-moon-toll', null, 200 ),
   ( 'human-six-openings', 'human', 'six openings, one struck', 'cardHumanSixOpenings',
     'first_report_lectern_01', 'explore',
     array['human-count-uneven','human-the-record-opens','surface-seventh-marker'], 'no-wall-catch', null, 210 ),
@@ -4534,9 +4546,9 @@ where puzzle_key in ('stone-sella', 'base-docket-reread', 'record-receives');
 
 insert into public.hints (puzzle_key, tier, body) values
 
--- rosetta-ring — the rune-literacy on-ramp (assemble the six ways, in order, off the carved ring).
-('rosetta-ring', 2, 'these marks are not decoration. you have seen them elsewhere — cut beside the fire, the water, the graves. the thing each sits beside is what it says.'),
-('rosetta-ring', 3, 'read them where they name something you already know: the mark by the flame is "fire," the mark by the pool is "water." learn a few letters that way and the ring — and every stone — begins to speak.'),
+-- rosetta-ring — the rune-literacy on-ramp (assemble the seven ways, in ring order).
+('rosetta-ring', 2, 'these marks are not decoration. each one sits beside the thing it names: bow marker, offering cairn, kept lamp, deep line, shut mouth, living bird. read the ring in the order it gives you.'),
+('rosetta-ring', 3, 'the ring is asking for the seven way names, not a sentence. give the names in ring order: bow, offering, kept light, deep line, unspoken, sacred beast. keep the spaces ordinary.'),
 
 -- stone-vaun — Caesar (every letter held back by a fixed amount; his hoarding made literal).
 ('stone-vaun', 2, 'vaun gave nothing back. even his letters are held back — every one, by the same measure. find the measure and give them back.'),
@@ -4682,8 +4694,8 @@ insert into public.hints (puzzle_key, tier, body) values
 -- ── MOVEMENT V — the Accepting (acts and rites; the whisper points at what to do) ──
 
 -- rite-tokens — lay one personal token per slot; the missing tool is you.
-('rite-tokens', 2, 'the six slots are not asking for the right object. they are asking for a piece of you — one you cannot read your way out of. bring the thing only you can give.'),
-('rite-tokens', 3, 'lay one personal token in each of the six slots, alongside the named components. the tool the rite was always missing is the giver. deeps first, heart, unbroken light, salt of the keepers — and the piece that is yours.'),
+('rite-tokens', 2, 'the floor will not take a token from a thin case. the keepers must be understood, the copied village must be filed, and the old places must have answered before the slots are willing. this is evidence before rite.'),
+('rite-tokens', 3, 'before the slots answer, the record needs the six keeper theories, all eight unlit house recoveries, the named side proofs, and the two surface kindnesses. then lay one personal token in each slot with the named components. the missing tool is the giver.'),
 
 -- pressure-glyph-walk — walk the rune the floor names, footstep by footstep (do not decode it).
 ('pressure-glyph-walk', 2, 'the floor names a rune. do not decode it. this is mara''s lesson made a door — the shape is walked, not read.'),
@@ -5089,14 +5101,22 @@ begin
     --   spine-unkept-acrostic    → iss_caught           (no-wall-catch)
     update public.puzzles set requires_flags = jsonb_build_object('vaun_cache_open', true)
       where puzzle_key = 'vaun-bookshelf-tally';
+    update public.puzzles set requires_flags = jsonb_build_object('vaun_tally_read', true)
+      where puzzle_key = 'stone-vaun';
     update public.puzzles set requires_flags = jsonb_build_object('mara_alcove_open', true)
       where puzzle_key = 'mara-walk-the-map';
+    update public.puzzles set requires_flags = jsonb_build_object('mara_walked', true)
+      where puzzle_key = 'stone-mara';
     update public.puzzles set requires_flags = jsonb_build_object('sella_bearing_read', true)
       where puzzle_key = 'sella-overlay-lake';
     update public.puzzles set requires_flags = jsonb_build_object('sella_overlay_read', true)
       where puzzle_key = 'sella-shore-memorial';
     update public.puzzles set requires_flags = jsonb_build_object('orin_bowed', true)
       where puzzle_key = 'orin-frame-dials';
+    update public.puzzles set requires_flags = jsonb_build_object('orin_key_found', true)
+      where puzzle_key = 'stone-orin';
+    update public.puzzles set requires_flags = jsonb_build_object('brann_toll_heard', true, 'brann_corridor_passed', true)
+      where puzzle_key in ('stone-brann', 'stone-brann-cipher');
     update public.puzzles set requires_flags = jsonb_build_object('iss_key_turned', true)
       where puzzle_key = 'iss-which-is-true';
     update public.puzzles set requires_flags = jsonb_build_object('iss_doubted', true)

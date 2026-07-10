@@ -70,4 +70,15 @@ for (const key of [
   }
 }
 
+for (const key of [
+  'drop view if exists public.v_record;',
+  'drop view if exists public.v_archive;',
+  'drop view if exists public.v_dossiers;',
+  'drop view if exists public.v_custom_compliance;',
+]) {
+  if (!sql.includes(key)) {
+    fail(`bundle is missing view-rebuild guard for live reapply compatibility: ${key}`);
+  }
+}
+
 console.log(`apply-all selftest OK (${markers.length} ordered files)`);

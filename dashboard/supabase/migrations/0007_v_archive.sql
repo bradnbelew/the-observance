@@ -62,6 +62,8 @@ revoke all on public.thread_card_bodies from anon, authenticated;
 --    title + recovered body, its kind (rumor/explore/verified/contradicted), the citation web
 --    (references_card_key — kebab slugs, no bodies), and the sort orders. No answer, no player,
 --    no custom label, no sealed flag. The reveal gate is the WHERE clause (see header).
+drop view if exists public.v_archive;
+
 create or replace view public.v_archive
 with (security_invoker = false) as
 select

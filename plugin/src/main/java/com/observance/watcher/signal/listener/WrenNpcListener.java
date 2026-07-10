@@ -80,7 +80,7 @@ public final class WrenNpcListener implements Listener {
 
     /** Warm, present-tense companion beats so Wren speaks even pre-showrunner-binding. */
     private static final List<String> INTRO_LINES = List.of(
-            "oh - hey. you're new. real people, not the dark doing a voice. sorry, you get careful about that down here. stay close, would you. i lost people going off alone.",
+            "oh - hey. you're new. you're breathing, anyway. sorry, you get careful about that down here. stay close, would you. i lost people going off alone.",
             "not that way. i mean it - not that way. i know it looks like the easy road. the easy road down here is how you lose someone.",
             "here. take it, it's nothing, it's just a spare - you'll want it before i will. no, keep it.",
             "tell me where you're headed and i'll tell you what i know. what you'd never do, where you'd run if it got bad. that's the trade. it's a good trade.",

@@ -78,6 +78,8 @@ alter table public.custom_compliance
 --   * deaths / blocks_mined / chat_sentiment / updated_at pass through the base
 --     columns (chat_sentiment has no plugin source yet -> null, which the type
 --     already allows).
+drop view if exists public.v_dossiers;
+
 create or replace view public.v_dossiers
 with (security_invoker = false) as
 select
@@ -112,6 +114,8 @@ comment on view public.v_dossiers is
 --                        'warned', else 'keeping'. Matches Dossiers.tsx's
 --                        COMPLIANCE_STYLES keys (keeping/warned/violating).
 --   * id / custom_key pass through the base columns.
+drop view if exists public.v_custom_compliance;
+
 create or replace view public.v_custom_compliance
 with (security_invoker = false) as
 select

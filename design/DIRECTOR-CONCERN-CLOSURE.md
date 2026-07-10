@@ -58,6 +58,10 @@ Residual risk:
 
 - Docs can claim a side site matters while players experience it as optional
   mood. The retelling rehearsal is the truth test.
+- The Accepting gate intentionally waits on keeper theories, Unlit recoveries,
+  side proofs, and surface kindnesses. If players experience that as an
+  invisible checklist instead of a built case, the failure is in the surfaces,
+  not in the players; add visible evidence feedback or reduce the gate.
 
 ## Original Concern: Six Keeper Stones Are Repetitive
 

@@ -19,6 +19,8 @@ import org.bukkit.block.data.type.Candle;
 import org.bukkit.block.data.type.Stairs;
 import org.bukkit.block.sign.Side;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.List;
@@ -104,7 +106,8 @@ public final class StructureTemplates {
         if (id.startsWith("stone_")) id = id.substring("stone_".length());
 
         Pen pen = new Pen(world);
-        return switch (id) {
+        prepareTemplateVolume(pen, base, id);
+        Location answer = switch (id) {
             case "rosetta", "rune_rosetta", "rune" -> rosetta(pen, base);
             case "vaun"   -> vaun(pen, base);
             case "mara"   -> mara(pen, base);
@@ -124,6 +127,8 @@ public final class StructureTemplates {
             case "end_seventh_shrine", "seventh_shrine", "end_shrine" -> endShrine(pen, base);
             default        -> keeperStone(base); // generic fallback
         };
+        pen.seedLoreStorage(base, id);
+        return answer;
     }
 
     /**
@@ -136,6 +141,7 @@ public final class StructureTemplates {
         if (world == null) return null;
         if (!world.isChunkLoaded(base.getBlockX() >> 4, base.getBlockZ() >> 4)) return null;
         Pen pen = new Pen(world);
+        prepareTemplateVolume(pen, base, "keeper_stone");
         int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
 
         // Seat it INTO the ground: a shallow 3x3 cobbled-deepslate hollow (WORLD-BUILD §4 palette +
@@ -157,85 +163,28 @@ public final class StructureTemplates {
         return answer;
     }
 
-    /* ================================================================================================
-     * KEPT-LIGHT BEACON — the landmark beam for the two canonically-lit sites (Site#beacon()).
-     * ------------------------------------------------------------------------------------------------
-     * FICTION: "one light, somewhere below, did not go out." A KEPT LIGHT — Brann's watch-fire that was
-     * never doused, or the one fire of the unbroken_light — is meant to be seen from far off across the
-     * black, so a scattered world is never lost (Dark-Souls legible geography). The beam is diegetically
-     * the kept light itself, NEVER a game waypoint marker.
-     * TRIGGER: stamped by {@code /observance placeworld} / {@code placeroom} / {@code placedeep} ONLY for a
-     * site whose sites.yml carries {@code visual_beacon: true} (read via {@link Site#beacon()}). Every other
-     * site stays dark — this is not a beam on every marker.
-     * INTERACTION: a real vanilla beacon on the minimum 3x3 mineral base, capped with firelight-tinted glass
-     * ({@code tint}: e.g. ORANGE_STAINED_GLASS for Brann's watch-fire). The beam projects only with sky
-     * access; when the sky is blocked (a deep/roofed site) we still leave the base + a real light source so
-     * the kept light reads on the ground, and return {@code false} so the caller can note it. Never throws.
-     *
-     * @param base    the site anchor (the set-piece's ground cell); the beacon rises a few courses above it
-     *                so it clears the set-piece and reads as the light at the site's top.
-     * @param tint    stained-glass material tinting the beam (firelight); null → no tint (plain white beam).
-     * @return true if the beam has clear sky above (it will project); false if the sky is blocked (base +
-     *         light still placed so the kept light reads; caller may log the note).
+    /**
+     * Clear the volume the code template intentionally owns before placing blocks. Without this, a template
+     * built into a hill keeps dirt/stone/grass inside the room wherever the code expects open air. Clearing
+     * starts at the anchor Y and leaves the floor support below intact; the builder then lays its own floor,
+     * walls, props, signs, and roof.
      */
-    public static boolean keptLightBeacon(Location base, Material tint) {
-        if (base == null) return false;
-        World world = base.getWorld();
-        if (world == null) return false;
-        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
-        if (!world.isChunkLoaded(bx >> 4, bz >> 4)) return false;
-
-        Pen pen = new Pen(world);
-        // Raise the beacon above the set-piece: the tallest keeper caps around by+4, so seat the mineral base
-        // at by+5 and the beacon on top. This lifts the kept light to the site's top, clear of the structure.
-        int baseY = by + 5;
-        // The minimum pyramid: a single 3x3 iron tier directly under the beacon (one tier = a projecting beam).
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                pen.set(bx + dx, baseY, bz + dz, Material.IRON_BLOCK);
-            }
-        }
-        int beaconY = baseY + 1;
-        pen.set(bx, beaconY, bz, Material.BEACON);
-        // Firelight tint one course above the beacon (the glass the beam passes through takes its colour).
-        if (tint != null) pen.set(bx, beaconY + 1, bz, tint);
-
-        // Sky-access probe: a beacon only projects with an unobstructed column to the world height. Walk up
-        // from just above the beacon; any non-passable block blocks the beam. Passable = air / glass tint /
-        // transparent decor. Conservative: on any doubt we treat the column as blocked (return false).
-        boolean skyClear = true;
-        try {
-            int top = world.getMaxHeight();
-            for (int y = beaconY + 1; y < top; y++) {
-                Material m = world.getBlockAt(bx, y, bz).getType();
-                if (m == Material.AIR || m == Material.CAVE_AIR || m == Material.VOID_AIR) continue;
-                if (tint != null && y == beaconY + 1 && m == tint) continue;   // our own tint glass is beam-transparent
-                if (isBeamTransparent(m)) continue;
-                skyClear = false;
-                break;
-            }
-        } catch (Throwable ignored) {
-            skyClear = false;   // couldn't verify → treat as blocked (place the ground light below either way)
-        }
-
-        // Graceful when the sky is blocked (a deep/roofed site): the beam won't project, so drop a real light
-        // source ON the tint cap so the kept light still reads on the ground — never a crash, never darkness.
-        if (!skyClear) {
-            pen.setIfAir(bx, beaconY + 2, bz, Material.SHROOMLIGHT);
-        }
-        return skyClear;
-    }
-
-    /** Glass/leaves/thin blocks a beacon beam passes through (so a stained-glass roof doesn't count as blocking). */
-    private static boolean isBeamTransparent(Material m) {
-        if (m == null) return false;
-        String n = m.name();
-        // NB: TINTED_GLASS is deliberately EXCLUDED — vanilla tinted glass blocks the beacon beam (and light),
-        // unlike normal/stained glass which it passes through. The firelight tint we cap the beacon with is
-        // stained glass (ORANGE/WHITE), so it is beam-transparent; a tinted-glass roof would correctly block.
-        return n.endsWith("_STAINED_GLASS") || n.endsWith("_STAINED_GLASS_PANE")
-                || n.equals("GLASS") || n.equals("GLASS_PANE")
-                || n.endsWith("_LEAVES") || n.equals("BEACON");
+    private static void prepareTemplateVolume(Pen pen, Location base, String id) {
+        if (pen == null || base == null) return;
+        String key = id == null ? "" : id.toLowerCase(Locale.ROOT);
+        int radius = switch (key) {
+            case "rosetta", "rune_rosetta", "rune" -> 10;
+            case "unbroken_light", "accepting", "undercroft", "threshold_vault", "vault" -> 9;
+            case "the_threshold", "threshold", "the_unwriting", "unwriting", "seventh",
+                    "nether_forge", "forge", "end_seventh_shrine", "seventh_shrine", "end_shrine" -> 8;
+            default -> 7;
+        };
+        int height = switch (key) {
+            case "rosetta", "rune_rosetta", "rune", "unbroken_light", "accepting", "undercroft" -> 7;
+            case "threshold_vault", "vault", "the_unwriting", "unwriting", "seventh" -> 6;
+            default -> 5;
+        };
+        pen.clearBox(base.getBlockX(), base.getBlockY(), base.getBlockZ(), radius, height);
     }
 
     /* ================================================================================================
@@ -298,6 +247,16 @@ public final class StructureTemplates {
         // Central dais step + lectern (the answer). Lectern sits on a chiseled block, facing south.
         pen.set(cx, cy, cz, Material.CHISELED_DEEPSLATE);
         Location answer = pen.lectern(cx, cy + 1, cz, BlockFace.SOUTH);
+        pen.putBook(cx, cy + 1, cz, "the rosetta",
+                "The first marker sent us here.\n"
+                + "The stones do not speak\n"
+                + "plain at first.\n\n"
+                + "Copy the paired marks.\n"
+                + "Upper: carved hand.\n"
+                + "Lower: sound it keeps.\n\n"
+                + "When keeper stones answer\n"
+                + "in cuts and names, bring\n"
+                + "this page back to them.");
         // Amethyst cluster at the heart — the learning-light — placed on the dais front edge.
         pen.set(cx, cy, cz + 1, Material.BUDDING_AMETHYST);
         pen.clusterOn(cx, cy + 1, cz + 1, BlockFace.UP);
@@ -466,10 +425,12 @@ public final class StructureTemplates {
                 pen.set(cx + dx, cy - 1, cz + dz, floor);
                 if (rim) {
                     for (int dy = 0; dy <= 4; dy++) {
-                        Material wall = (dy == 1 && Math.abs(dx) == 7 && dz % 2 == 0)
-                                ? Material.CHISELED_BOOKSHELF
-                                : (dy == 4 ? Material.DARK_OAK_PLANKS : Material.DEEPSLATE_TILES);
-                        pen.set(cx + dx, cy + dy, cz + dz, wall);
+                        if (dy == 1 && Math.abs(dx) == 7 && dz % 2 == 0) {
+                            pen.chiseledShelf(cx + dx, cy + dy, cz + dz);
+                        } else {
+                            pen.set(cx + dx, cy + dy, cz + dz,
+                                    dy == 4 ? Material.DARK_OAK_PLANKS : Material.DEEPSLATE_TILES);
+                        }
                     }
                 }
             }
@@ -487,13 +448,17 @@ public final class StructureTemplates {
         for (int dx = -2; dx <= 2; dx++) {
             for (int dy = 0; dy <= 2; dy++) {
                 boolean gap = (dx == -1 && dy == 1) || (dx == 2 && dy == 2); // missing volumes
-                pen.set(cx + dx, cy + dy, cz - 2, gap ? Material.DARK_OAK_PLANKS : Material.CHISELED_BOOKSHELF);
+                if (gap) {
+                    pen.set(cx + dx, cy + dy, cz - 2, Material.DARK_OAK_PLANKS);
+                } else {
+                    pen.chiseledShelf(cx + dx, cy + dy, cz - 2);
+                }
             }
         }
         // Side shelves.
         for (int dz = -1; dz <= 1; dz++) {
             pen.set(cx - 2, cy, cz + dz, Material.BOOKSHELF);
-            pen.set(cx - 2, cy + 1, cz + dz, Material.CHISELED_BOOKSHELF);
+            pen.chiseledShelf(cx - 2, cy + 1, cz + dz);
         }
 
         // The reading chair: dark-oak stairs (seat) + a trapdoor backrest.
@@ -517,12 +482,17 @@ public final class StructureTemplates {
         // (cx-1,cy+1,cz+1). crib: the referent is the reading candle one cell south of this sign.
         pen.runeCrib(cx - 1, cy + 1, cz, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "LIGHT");
 
-        // A second lectern with no book (a place someone stopped reading). RESHAPE R0 fold: the submission
-        // surface IS this empty lectern + the bookshelf gap — "return the missing volume" reads as the
-        // diegetic action, not a blank "fill-me-in" box. The label sign is CUT (margin-note now lives in
-        // the first lectern's book text above). The gap in the bookshelf (dx==-1, dy==1) is the answer's
-        // physical shape: a volume that belongs there and isn't.
+        // A second lectern used to be empty, which tested like a broken build. Keep the missing-volume clue,
+        // but put it in-world as an authored note so players know the absence is intentional.
         pen.lectern(cx + 2, cy, cz - 1, BlockFace.WEST);
+        pen.putBook(cx + 2, cy, cz - 1, "the missing volume",
+                "South wall shelf inventory,\n"
+                + "copied after closing:\n\n"
+                + "One hymnal missing again.\n"
+                + "Mara says it was not stolen.\n\n"
+                + "\"Returned to the wrong room.\n"
+                + "Check the walk before\n"
+                + "accusing anyone.\"");
 
         // Heavy cobwebs/dust — the wrongness (a room read in, never left).
         pen.setIfAir(cx - 2, cy + 2, cz - 2, Material.COBWEB);
@@ -683,10 +653,10 @@ public final class StructureTemplates {
             }
         }
 
-        // THE LOW LINTEL at z=0: the ceiling drops to head height so you must SNEAK under to pass.
-        // Floor at cy-1, so a normal 2-block gap is cy..cy+1. We lower the lintel to cy+1 (a 1-block
-        // opening at cy) — the bow built into the architecture.
-        pen.set(cx, cy + 1, cz, Material.CHISELED_DEEPSLATE);   // the lintel block, dead centre
+        // THE LOW LINTEL at z=0: Minecraft sneaking is about 1.5 blocks tall, so a full block at cy+1
+        // would hard-block the player instead of teaching a bow. A TOP slab at cy+1 leaves a real
+        // sneakable 1.5-block clearance over the floor at cy-1.
+        pen.topSlab(cx, cy + 1, cz, Material.POLISHED_DEEPSLATE_SLAB);   // the stoop lintel
         pen.set(cx - 1, cy + 1, cz, Material.CRACKED_DEEPSLATE_BRICKS); // wrongness: a cracked lintel stone
         pen.set(cx + 1, cy + 1, cz, Material.DEEPSLATE_BRICKS);
         pen.set(cx, cy + 2, cz, Material.DEEPSLATE_BRICKS);
@@ -720,6 +690,13 @@ public final class StructureTemplates {
         // mean something, go read the stone") with the Rosetta brute-force backup already covered by
         // design (PUZZLE-DESIGNS.md §5.2: "if they ignore the banner they can still brute the
         // substitution — the fragile solution has a backup").
+        // Wall banners need a solid backing behind the banner block. The corridor walls at x +/- 1
+        // become the banner surface; x +/- 2 is the backing masonry. Without this, banners can replace
+        // the wall they are supposed to hang from and read as floating or missing on a real server.
+        for (int z : new int[]{cz - 1, cz + 1, cz + 2}) {
+            pen.set(cx - 2, cy + 1, z, Material.DEEPSLATE_BRICKS);
+            pen.set(cx + 2, cy + 1, z, Material.DEEPSLATE_BRICKS);
+        }
         pen.wallBanner(cx - 1, cy + 1, cz - 1, BlockFace.EAST, DyeColor.BLUE, keeperMark('U'));      // Vaun
         pen.wallBanner(cx - 1, cy + 1, cz + 1, BlockFace.EAST, DyeColor.PURPLE, keeperMark('N'));    // Mara
         pen.wallBanner(cx - 1, cy + 1, cz + 2, BlockFace.EAST, DyeColor.CYAN, keeperMark('K'));      // Sella
@@ -1757,6 +1734,20 @@ public final class StructureTemplates {
             } catch (Throwable ignored) { }
         }
 
+        /** Clear the intended interior footprint before stamping a room/set-piece into terrain. */
+        void clearBox(int cx, int y, int cz, int radius, int height) {
+            if (world == null) return;
+            int r = Math.max(1, Math.min(14, radius));
+            int h = Math.max(1, Math.min(10, height));
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    for (int dy = 0; dy <= h; dy++) {
+                        set(cx + dx, y + dy, cz + dz, Material.AIR);
+                    }
+                }
+            }
+        }
+
         /** A flat square floor of radius r (odd square) at height y. */
         void floor(int cx, int y, int cz, int r, Material mat) {
             for (int dx = -r; dx <= r; dx++)
@@ -1840,6 +1831,39 @@ public final class StructureTemplates {
                     s.setFacing(facing);
                     s.setHalf(top ? org.bukkit.block.data.Bisected.Half.TOP : org.bukkit.block.data.Bisected.Half.BOTTOM);
                     b.setBlockData(s, false);
+                }
+            } catch (Throwable ignored) { }
+        }
+
+        /** A top-half slab used for real 1.5-block sneak clearance, not a fake one-block crawl gap. */
+        void topSlab(int x, int y, int z, Material mat) {
+            if (world == null || mat == null) return;
+            try {
+                Block b = world.getBlockAt(x, y, z);
+                b.setType(mat, false);
+                if (b.getBlockData() instanceof org.bukkit.block.data.type.Slab slab) {
+                    slab.setType(org.bukkit.block.data.type.Slab.Type.TOP);
+                    b.setBlockData(slab, false);
+                }
+            } catch (Throwable ignored) { }
+        }
+
+        /** Decorative chiseled bookshelf with visible books; never used for Vaun's mechanic shelf. */
+        void chiseledShelf(int x, int y, int z) {
+            if (world == null) return;
+            try {
+                Block b = world.getBlockAt(x, y, z);
+                b.setType(Material.CHISELED_BOOKSHELF, false);
+                if (b.getBlockData() instanceof org.bukkit.block.data.type.ChiseledBookshelf shelf) {
+                    int max = Math.max(1, shelf.getMaximumOccupiedSlots());
+                    int seed = Math.abs((x * 31) ^ (y * 17) ^ (z * 13));
+                    for (int slot = 0; slot < max; slot++) {
+                        boolean occupied = slot == (seed % max)
+                                || slot == ((seed + 2) % max)
+                                || slot == ((seed + 5) % max);
+                        shelf.setSlotOccupied(slot, occupied);
+                    }
+                    b.setBlockData(shelf, false);
                 }
             } catch (Throwable ignored) { }
         }
@@ -2079,6 +2103,175 @@ public final class StructureTemplates {
                 lectern.getInventory().setItem(0, book);
                 lectern.update(true, false);
             } catch (Throwable ignored) { }
+        }
+
+        /**
+         * Seed nearby storage with small readable records. Empty barrels/chests/bookshelves otherwise read
+         * as broken ARG surfaces, so every inspected container should give either evidence, texture, or a
+         * clear local contradiction without becoming the main puzzle answer.
+         */
+        void seedLoreStorage(Location base, String id) {
+            if (world == null || base == null) return;
+            String key = id == null ? "" : id.trim().toLowerCase(Locale.ROOT);
+            String[] fragments = loreFragments(key);
+            if (fragments.length == 0) return;
+
+            int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+            int written = 0;
+            int max = Math.min(8, fragments.length);
+            for (int dx = -9; dx <= 9 && written < max; dx++) {
+                for (int dy = -1; dy <= 5 && written < max; dy++) {
+                    for (int dz = -9; dz <= 9 && written < max; dz++) {
+                        Block b = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                        if (b.getState() instanceof Lectern) continue;
+                        if (b.getType() == Material.CHISELED_BOOKSHELF) continue;
+                        if (!(b.getState() instanceof InventoryHolder holder)) continue;
+                        Inventory inv = holder.getInventory();
+                        if (inv == null) continue;
+                        int slot = firstEmptySlot(inv);
+                        if (slot < 0) continue;
+                        inv.setItem(slot, loreBook(key, written, fragments[written % fragments.length]));
+                        try { b.getState().update(true, false); } catch (Throwable ignored) { }
+                        written++;
+                    }
+                }
+            }
+        }
+
+        private int firstEmptySlot(Inventory inv) {
+            if (inv == null) return -1;
+            int size = Math.min(inv.getSize(), 12);
+            for (int i = 0; i < size; i++) {
+                ItemStack item = inv.getItem(i);
+                if (item == null || item.getType() == Material.AIR) return i;
+            }
+            return -1;
+        }
+
+        private ItemStack loreBook(String id, int index, String body) {
+            ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+            if (book.getItemMeta() instanceof BookMeta meta) {
+                meta.setTitle(com.observance.watcher.util.TextFit.clampLine(loreTitle(id, index), 32));
+                meta.setAuthor("the record");
+                String text = body == null ? "" : body;
+                if (text.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
+                    meta.addPage(text);
+                } else {
+                    for (String page : com.observance.watcher.util.TextFit.paginate(text)) {
+                        meta.addPage(page);
+                    }
+                }
+                book.setItemMeta(meta);
+            }
+            return book;
+        }
+
+        private String loreTitle(String id, int index) {
+            String who = switch (id) {
+                case "vaun" -> "vaun ledger";
+                case "mara" -> "mara margin";
+                case "sella" -> "sella copy";
+                case "orin" -> "orin order";
+                case "brann" -> "brann watch";
+                case "iss" -> "iss docket";
+                case "cold_hearth", "the_cold_hearth" -> "cold hearth";
+                case "unbroken_light", "accepting", "undercroft" -> "under light";
+                case "threshold", "the_threshold" -> "threshold note";
+                case "unwriting", "the_unwriting", "seventh" -> "seventh scrap";
+                case "threshold_vault", "vault" -> "vault slip";
+                case "nether_forge", "forge" -> "forge note";
+                case "end_seventh_shrine", "seventh_shrine", "end_shrine" -> "end shrine";
+                default -> "field note";
+            };
+            return who + " " + (index + 1);
+        }
+
+        private String[] loreFragments(String id) {
+            return switch (id) {
+                case "vaun" -> new String[]{
+                        "Store ledger, lower room:\n\nLamps issued: 6\nLamps returned: 0\nOil held back: 3 jars\n\nVaun wrote KEPT beside each empty hook.",
+                        "Argument copied by Tann:\n\n\"The door is dark.\"\n\"Then tell them to bring back what they borrowed. I am done paying twice.\"",
+                        "Receipt from Harl's cart: copper wire, lamp glass, two hinges.\n\nPaid in grain while the grain bin was already marked short.",
+                        "Council margin:\n\nDo not write hoarding. Write held in trust until the town agrees to terms.",
+                        "There is a column for GIVEN BACK.\n\nIt is ruled straight. It is empty."
+                };
+                case "mara" -> new String[]{
+                        "Copyist note:\n\nMara copied the rite seven times. The soles of her boots were still clean when she filed the last one.",
+                        "Shelf order card:\n\nNorth wall is public text. South wall is corrections. Do not mix them because visitors prefer the public version.",
+                        "Margin beside DESCEND:\n\nUnderlined twice. Beside BOW she drew a hand, then scratched it out.",
+                        "Shelf inventory:\n\nMissing volume returned to wrong room for the fourth time. Check the route before blaming the reader.",
+                        "Lamp use record:\n\nOne reader may hold a flame for two pages. Mara kept hers through six."
+                };
+                case "sella" -> new String[]{
+                        "School copybook:\n\nSella wrote the six names backward in the wet margin. Teacher corrected the letters, not the order.",
+                        "Shore note from Brann:\n\nThe far pool reflects the stone row cleanly only at dusk. Count the posts on land first.",
+                        "Lesson slate:\n\nOne grey mark was added after dismissal. No student initials beside it.",
+                        "Path report:\n\nReeds are broken where the shore stops being a road. Small prints, then adult boots.",
+                        "Teacher to Sella:\n\n\"Do not drink from still water near copied names. I am not being poetic. I found glass in it.\""
+                };
+                case "orin" -> new String[]{
+                        "Mason order:\n\nLower lintel to one and one-half blocks above the floor. Orin approved the measure and then used the side path.",
+                        "Banner inventory:\n\nSix cloths hung. Read makers by where they fall in the hall, not by dye color.",
+                        "Apprentice complaint:\n\n\"Master says the door teaches humility. Master has not gone through the door.\"",
+                        "Tool mark sheet:\n\nSquare mark belongs to Orin. The blank after it was left on purpose.",
+                        "Work-stop notice:\n\nFinal stroke refused. Chisel returned clean."
+                };
+                case "brann" -> new String[]{
+                        "Night watch log:\n\nOne fire left awake. One watcher recorded in bed. Bell not rung until after smoke was seen.",
+                        "Shift handoff:\n\nBlack moon watch requires three tolls before dawn. Brann wrote two, then changed it to three.",
+                        "Complaint filed by Nessa:\n\nThe lamp showed an empty chair more clearly than any witness would.",
+                        "Brann wrote the same line twice. The second copy is steadier and later.",
+                        "Question left on the log:\n\nIf the fire stayed lit, who was missing when it needed tending?"
+                };
+                case "iss" -> new String[]{
+                        "Public notice:\n\nThe road is safe.\n\nPrivate copy, same hand:\n\nDo not send children by the warm town.",
+                        "Iss filed the comfort statement in triplicate. Witness signature lines are blank on all three.",
+                        "Interview note:\n\n\"People believe a warm room faster than a correct one.\" - Iss, after the hearing",
+                        "Hearth report:\n\nAsh cooled before the room was dressed. Whoever staged it forgot the smoke direction.",
+                        "Archivist note:\n\nIf Iss sounds kind, compare him to the cold copy."
+                };
+                case "of_reckoning", "reckoning", "stone_of_reckoning" -> new String[]{
+                        "Survey scratch:\n\nCount marks begin at the chipped side. Two people got a different answer when they started at the clean edge.",
+                        "Route grammar card:\n\nNorth, south, east, down. These are directions, not decoration.",
+                        "Field rule:\n\nA coordinate without a witness is only a dare. Mark who saw it."
+                };
+                case "cold_hearth", "the_cold_hearth" -> new String[]{
+                        "Hearth inspection:\n\nAsh was cold before fresh wood was placed. Warmth was staged after the room died.",
+                        "Witness note:\n\nThe first person to arrive called it safe before checking the smoke stain.",
+                        "Reminder from the archive:\n\nDo not follow comfort. Follow the contradiction in the room."
+                };
+                case "unbroken_light", "accepting", "undercroft" -> new String[]{
+                        "Undercroft maintenance:\n\nOne lamp remained lit because someone carried oil down every third night.",
+                        "Floor plan note:\n\nThe center is wide enough for several hands at once. That was requested, not accidental.",
+                        "Keeper minutes:\n\nA lone bow proves posture. A shared bow leaves a record."
+                };
+                case "threshold", "the_threshold" -> new String[]{
+                        "Door account, older copy:\n\nThe threshold opens from the inside. Later copies remove that sentence.",
+                        "Carver receipt:\n\nDate cut before the named person arrived. Paid in advance by Iss.",
+                        "Builder note:\n\nSame hinge, two uses: keep a crowd out, or keep a witness in."
+                };
+                case "unwriting", "the_unwriting", "seventh" -> new String[]{
+                        "Archive repair ticket:\n\nSix names preserved by cutting away the seventh. Damage was approved, not accidental.",
+                        "Catalog note:\n\nAbsence is not automatically loss. Sometimes it is a filed decision.",
+                        "Restoration warning:\n\nRestoring and erasing both leave marks. Choose which mark players can read."
+                };
+                case "threshold_vault", "vault" -> new String[]{
+                        "Vault instruction slip:\n\nThree hands are not always three people. The lock records acts.",
+                        "Plate, word, witness. Keeper says order matters less than doing them in the same breath.",
+                        "Builder invoice:\n\nClient requested a door that admits it was built to keep people out."
+                };
+                case "nether_forge", "forge" -> new String[]{
+                        "Forge tally:\n\nThe fire was not born in the house. It was carried up in a covered pot.",
+                        "Fuel receipt:\n\nBelow the below, heat lasts longer than memory. Bring tongs, not stories.",
+                        "Work rule:\n\nA kept light is labor. Do not call it comfort when someone paid for the oil."
+                };
+                case "end_seventh_shrine", "seventh_shrine", "end_shrine" -> new String[]{
+                        "Shrine survey:\n\nPast the door that is not a threshold, the refused place still has measured corners.",
+                        "Archive argument:\n\nExile becomes a location when a record needs somewhere to put the blame.",
+                        "Seventh note:\n\nNot lost. Placed where ordinary counting could not reach."
+                };
+                default -> new String[0];
+            };
         }
 
         /**

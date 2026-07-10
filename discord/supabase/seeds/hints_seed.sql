@@ -173,8 +173,8 @@ insert into public.hints (puzzle_key, tier, body) values
 -- ── MOVEMENT V — the Accepting (acts and rites; the whisper points at what to do) ──
 
 -- rite-tokens — lay one personal token per slot; the missing tool is you.
-('rite-tokens', 2, 'the six slots are not asking for the right object. they are asking for a piece of you — one you cannot read your way out of. bring the thing only you can give.'),
-('rite-tokens', 3, 'lay one personal token in each of the six slots, alongside the named components. the tool the rite was always missing is the giver. deeps first, heart, unbroken light, salt of the keepers — and the piece that is yours.'),
+('rite-tokens', 2, 'the floor will not take a token from a thin case. the keepers must be understood, the copied village must be filed, and the old places must have answered before the slots are willing. this is evidence before rite.'),
+('rite-tokens', 3, 'before the slots answer, the record needs the six keeper theories, all eight unlit house recoveries, the named side proofs, and the two surface kindnesses. then lay one personal token in each slot with the named components. the missing tool is the giver.'),
 
 -- pressure-glyph-walk — walk the rune the floor names, footstep by footstep (do not decode it).
 ('pressure-glyph-walk', 2, 'the floor names a rune. do not decode it. this is mara''s lesson made a door — the shape is walked, not read.'),

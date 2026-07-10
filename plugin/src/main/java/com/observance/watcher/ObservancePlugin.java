@@ -956,6 +956,8 @@ public final class ObservancePlugin extends JavaPlugin {
             sec.set("protect",          site.protect());
             sec.set("enabled",          site.enabled());
             if (site.puzzleKey() != null) sec.set("puzzle-key", site.puzzleKey());
+            sec.set("visual_beacon", null);
+            sec.set("visual-beacon", null);
 
             cfg.save(file);
         } catch (Throwable t) {

@@ -16,6 +16,8 @@
 
 begin;
 
+drop view if exists public.v_archive;
+
 create or replace view public.v_archive
 with (security_invoker = false) as
 select

@@ -318,6 +318,58 @@ foreach ($requiredText in @(
   }
 }
 
+foreach ($requiredText in @(
+  "prepareTemplateVolume(pen, base, id)",
+  "prepareTemplateVolume(pen, base, `"keeper_stone`")",
+  "void clearBox(int cx, int y, int cz, int radius, int height)",
+  "set(cx + dx, y + dy, cz + dz, Material.AIR)",
+  "seedLoreStorage(base, id)",
+  "b.getType() == Material.CHISELED_BOOKSHELF",
+  "void chiseledShelf(int x, int y, int z)",
+  "shelf.setSlotOccupied(slot, occupied)",
+  "pen.putBook(cx, cy + 1, cz, `"the rosetta`"",
+  "pen.putBook(cx + 2, cy, cz - 1, `"the missing volume`"",
+  "pen.topSlab(cx, cy + 1, cz, Material.POLISHED_DEEPSLATE_SLAB)",
+  "slab.setType(org.bukkit.block.data.type.Slab.Type.TOP)",
+  "Wall banners need a solid backing behind the banner block"
+)) {
+  if ($structureSource.IndexOf($requiredText, [System.StringComparison]::Ordinal) -lt 0) {
+    Fail $failures "StructureTemplates must clear intentional air volumes before stamping into terrain: $requiredText"
+  }
+}
+
+foreach ($requiredText in @(
+  "int spacing = 36",
+  "Math.max(34, Math.min(48",
+  "placeCompactSpine(origin.clone().add(spacing, 0, 0), surface, spacing)",
+  "placeCompactSpine(origin.clone().add(spacing, 0, spacing), deep, spacing)",
+  "compactSurfaceCell(world, bx + (step * 4), bz)",
+  "compactGridCell(origin, 0, 6, spacing, 2)",
+  "seedFixtureLore(loc, `"far_water`")",
+  "if (block.getType() == Material.CHISELED_BOOKSHELF) continue",
+  "private void placeDecorativeBookshelf(Block block, int seed)",
+  "placeDecorativeBookshelf(world.getBlockAt(bx + 4, by, bz + 5), 31)",
+  "prepareCompactCell(siteLoc, Math.max(12, radius + 4), 9)",
+  "radius, 6, true, true, null, false",
+  "Compact layout: facing east, rows are Lamp-works proof"
+)) {
+  if ($source.IndexOf($requiredText, [System.StringComparison]::Ordinal) -lt 0) {
+    Fail $failures "prepworld must stay a compact platform-board layout, not wide scatter: $requiredText"
+  }
+}
+
+foreach ($forbiddenText in @("keptLightBeacon", "beaconTint", "beam projecting")) {
+  if ($source.IndexOf($forbiddenText, [System.StringComparison]::Ordinal) -ge 0) {
+    Fail $failures "beacon waypoint code must stay retired from ObservanceCommand.java: $forbiddenText"
+  }
+}
+
+foreach ($forbiddenText in @("Material.BEACON", "keptLightBeacon")) {
+  if ($structureSource.IndexOf($forbiddenText, [System.StringComparison]::Ordinal) -ge 0) {
+    Fail $failures "beacon waypoint structures must stay retired from StructureTemplates.java: $forbiddenText"
+  }
+}
+
 if ($failures.Count -gt 0) {
   foreach ($failure in $failures) {
     [Console]::Error.WriteLine($failure)

@@ -14,6 +14,7 @@ $assetCheck = Join-Path $RepoRoot "tools\check_assets.ps1"
 $deployManifestCheck = Join-Path $RepoRoot "tools\check_deploy_manifest.ps1"
 $resourcePackConfigToolCheck = Join-Path $RepoRoot "tools\check_resource_pack_config_tools.ps1"
 $friendLaunchPrepCheck = Join-Path $RepoRoot "tools\check_friend_launch_prep.ps1"
+$serverTestPrepCheck = Join-Path $RepoRoot "tools\check_server_test_prep.ps1"
 $brandSurfaceCheck = Join-Path $RepoRoot "tools\check_brand_surfaces.ps1"
 $mediaCheck = Join-Path $RepoRoot "tools\check_media_readiness.ps1"
 $externalMediaCheck = Join-Path $RepoRoot "tools\check_external_media_readiness.ps1"
@@ -26,6 +27,8 @@ $scareImmersionCheck = Join-Path $RepoRoot "tools\check_scare_immersion.ps1"
 $motifFreshnessCheck = Join-Path $RepoRoot "tools\check_motif_freshness.ps1"
 $clueLedgerCheck = Join-Path $RepoRoot "tools\check_clue_ledger.ps1"
 $structureQualityCheck = Join-Path $RepoRoot "tools\check_structure_quality.ps1"
+$structureSurfaceIntegrityCheck = Join-Path $RepoRoot "tools\check_structure_surface_integrity.ps1"
+$sideLoreCohesionCheck = Join-Path $RepoRoot "tools\check_side_lore_cohesion.ps1"
 $keeperInvestigationCheck = Join-Path $RepoRoot "tools\check_keeper_investigations.ps1"
 $customsRosettaCheck = Join-Path $RepoRoot "tools\check_customs_rosetta.ps1"
 $directorToolsCheck = Join-Path $RepoRoot "tools\check_director_tools.ps1"
@@ -133,6 +136,16 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
+& powershell -NoProfile -ExecutionPolicy Bypass -File $structureSurfaceIntegrityCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $sideLoreCohesionCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
 & powershell -NoProfile -ExecutionPolicy Bypass -File $keeperInvestigationCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
@@ -209,6 +222,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $friendLaunchPrepCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+& powershell -NoProfile -ExecutionPolicy Bypass -File $serverTestPrepCheck -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }

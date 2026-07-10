@@ -350,6 +350,7 @@ def rite_tokens_gate_block(text: str) -> str | None:
 def check_director_truth(cards: list[dict[str, object]], errors: list[str]) -> None:
     """Guards the current story direction, not just mechanical file references."""
     metapuzzle = read(METAPUZZLE)
+    hints = read(ROOT / "discord" / "supabase" / "seeds" / "hints_seed.sql")
     theory = read(THEORY)
     unlit_panel = read(UNLIT_PANEL)
     runbook = read(RUNBOOK)
@@ -389,6 +390,8 @@ def check_director_truth(cards: list[dict[str, object]], errors: list[str]) -> N
     else:
         for flag in ["accepting_onramp_open", *KEEPER_THEORY_FLAGS, *UNLIT_FLAGS, *SIDE_PROOF_FLAGS, *NPC_PROOF_FLAGS]:
             require_contains(errors, "rite-tokens web gate", rite_block, flag)
+        for phrase in ["six keeper theories", "all eight unlit house recoveries", "named side proofs", "two surface kindnesses"]:
+            require_contains(errors, "rite-tokens rescue text", hints, phrase)
 
     for flag in SIDE_PROOF_FLAGS:
         require_contains(errors, "site discovery flag producer", site_discovery, flag)

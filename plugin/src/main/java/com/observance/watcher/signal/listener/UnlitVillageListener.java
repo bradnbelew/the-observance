@@ -178,7 +178,7 @@ public final class UnlitVillageListener implements Listener {
                 && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.PHYSICAL)
                 && isRouteCheeseBlock(clicked.getType())) {
             event.setCancelled(true);
-            player.sendActionBar(Component.text("The copied village will not open that way.", NamedTextColor.DARK_GRAY));
+            player.sendActionBar(Component.text("The copy refuses that way.", NamedTextColor.DARK_GRAY));
         }
     }
 
@@ -235,7 +235,7 @@ public final class UnlitVillageListener implements Listener {
         ItemStack item = event.getItemInHand();
         if (!isActive(player) || !isBorrowedLight(item)) {
             event.setCancelled(true);
-            player.sendActionBar(Component.text("Only borrowed light can be spent here.", NamedTextColor.DARK_GRAY));
+            player.sendActionBar(Component.text("Only the borrowed lantern catches here.", NamedTextColor.DARK_GRAY));
             return;
         }
 
@@ -643,7 +643,7 @@ public final class UnlitVillageListener implements Listener {
             case "lamp" -> "The lamp account is recovered.";
             case "well" -> "The reflection gives back a missing line.";
             case "watch" -> "The dark hour is recorded.";
-            case "base" -> "The copied village files itself in the Record.";
+            case "base" -> "The copied village is filed.";
             case "threshold" -> "The low threshold is remembered.";
             case "cairn" -> "The bowl records what cannot be kept.";
             case "coop" -> "The missing call is recorded.";

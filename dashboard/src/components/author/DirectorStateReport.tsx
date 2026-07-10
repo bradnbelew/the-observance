@@ -29,11 +29,20 @@ const MEDIA_FLAGS = [
 ] as const;
 
 const SIDE_PROOF_FLAGS = [
+  ["site_seen_school_stand", "school stand"],
+  ["site_seen_markers_row", "markers row"],
   ["site_seen_deep_market", "deep market"],
   ["site_seen_cistern_7", "cistern seven"],
   ["site_seen_watch_floor", "watch floor"],
+  ["site_seen_set_apart_shelf", "entry five shelf"],
+  ["site_seen_undercroft_seal", "undercroft seal"],
+  ["site_seen_forgotten_mouth", "forgotten mouth"],
+  ["site_seen_ration_table", "ration table"],
   ["site_seen_third_bay_breach", "third bay breach"],
   ["site_seen_warm_town_collapse", "warm town collapse"],
+  ["site_seen_deep_bird_coops", "bird coops"],
+  ["npc_wenna_crust_done", "Wenna crust"],
+  ["npc_coll_lamp_done", "Coll lamp"],
 ] as const;
 
 function isTrue(flags: Record<string, unknown>, key: string) {
@@ -195,7 +204,7 @@ export function DirectorStateReport({
         </div>
         <div className="rounded-md border border-neutral-800 bg-ash p-3">
           <p className="font-mono text-[11px] uppercase text-neutral-500">Side/media</p>
-          <p className="mt-1 font-mono text-2xl text-neutral-100">{sideProofs}/{SIDE_PROOF_FLAGS.length} · {mediaReady}/{MEDIA_FLAGS.length}</p>
+          <p className="mt-1 font-mono text-2xl text-neutral-100">{sideProofs}/{SIDE_PROOF_FLAGS.length} / {mediaReady}/{MEDIA_FLAGS.length}</p>
         </div>
       </div>
 
@@ -253,7 +262,7 @@ export function DirectorStateReport({
                     {name ?? "unknown player"}
                   </p>
                   <p className="mt-1 text-sm text-neutral-400">
-                    {row.custom_key} · {row.violation_count}x · {row.status}
+                    {row.custom_key} / {row.violation_count}x / {row.status}
                   </p>
                 </div>
               );

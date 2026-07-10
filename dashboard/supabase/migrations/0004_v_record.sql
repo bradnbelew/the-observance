@@ -33,6 +33,8 @@
 
 begin;
 
+drop view if exists public.v_record;
+
 -- v_record: the coarse, spoiler-free public archive signal. Reads the spoiler tables as the view
 -- owner and projects only the three blunt public facts the sealed Record is allowed to show.
 create or replace view public.v_record

@@ -28,6 +28,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -539,14 +541,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         boolean protect = existing == null || existing.protect();
         boolean enabled = existing == null || existing.enabled();
         String puzzleKey = existing != null ? existing.puzzleKey() : null;
-        boolean beacon = existing != null && existing.beacon();
         String world = loc.getWorld().getName();
 
         // Record the sender's block position as the survey anchor. placeworld terrain-re-seats on the
         // surface at this X/Z, so the stored Y need only be in the right column.
         Site site = new Site(siteId, siteType, world,
                 (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
-                radius, verticalRadius, protect, enabled, puzzleKey, beacon);
+                radius, verticalRadius, protect, enabled, puzzleKey, false);
         plugin.registerRuntimeSite(site); // also persists to sites.yml (idempotent — re-survey overwrites)
 
         sender.sendMessage("Observance: surveyed '" + siteId + "' -> "
@@ -1830,10 +1831,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 occupied++;
                 sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "surveyed" : "auto")
                         + " @ " + ax + "," + ay + "," + az + " -> occupied (already placed; skipped).");
-                // Still (re)register the site so its coords are authoritative in sites.yml (keep its beacon flag).
-                boolean occBeacon = existing != null && existing.beacon();
+                // Still (re)register the site so its coords are authoritative in sites.yml.
                 plugin.registerRuntimeSite(new Site(siteId, siteType, worldName,
-                        (double) ax, (double) ay, (double) az, radius, 6, true, true, null, occBeacon));
+                        (double) ax, (double) ay, (double) az, radius, 6, true, true, null, false));
                 continue;
             }
 
@@ -1846,21 +1846,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 continue;
             }
 
-            // KEPT-LIGHT beacon: only the two canonically-lit sites (visual_beacon:true in sites.yml) get a
-            // landmark beam — the fiction's "one light, somewhere below, did not go out." Read the flag off the
-            // loaded config site, thread it into the runtime re-register so a reload keeps it, and stamp the beam.
-            boolean beacon = existing != null && existing.beacon();
             plugin.registerRuntimeSite(new Site(siteId, siteType, worldName,
-                    (double) ax, (double) ay, (double) az, radius, 6, true, true, null, beacon));
+                    (double) ax, (double) ay, (double) az, radius, 6, true, true, null, false));
             placed++;
-            String beaconNote = "";
-            if (beacon) {
-                boolean skyClear = StructureTemplates.keptLightBeacon(anchor, beaconTint(siteId));
-                beaconNote = skyClear ? " [kept-light beacon: beam projecting]"
-                        : " [kept-light beacon: sky blocked — base+light placed, no beam]";
-            }
             sender.sendMessage("  " + siteId + ": " + (fromSurvey ? "SURVEYED" : "auto-scatter")
-                    + " @ " + ax + "," + ay + "," + az + " -> placed." + beaconNote);
+                    + " @ " + ax + "," + ay + "," + az + " -> placed.");
         }
 
         sender.sendMessage("Observance: placeworld complete — " + placed + " placed, " + occupied
@@ -1904,10 +1894,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 Site live = new Site(cfg.id(), cfg.type(), worldName,
                         (double) ax, (double) ay, (double) az,
                         cfg.radius(), cfg.verticalRadius(), cfg.protect(), true,
-                        cfg.puzzleKey(), cfg.beacon());
+                        cfg.puzzleKey(), false);
                 plugin.registerRuntimeSite(live);
                 repairPlacedSite(live, base);
-                if (cfg.beacon()) StructureTemplates.keptLightBeacon(base, beaconTint(cfg.id()));
                 placed++;
                 if (sender != null) {
                     sender.sendMessage("  " + siteId + ": surveyed fixture -> stamped @ " + ax + "," + ay + "," + az + ".");
@@ -1961,26 +1950,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int x = baseX + (int) Math.round(Math.cos(bearing) * radius);
         int z = baseZ + (int) Math.round(Math.sin(bearing) * radius);
         return new int[]{ x, z };
-    }
-
-    /**
-     * KEPT-LIGHT beam tint per site — the beacon glass reads as firelight, not a neutral waypoint.
-     * Brann's watch-fire is warm orange/red ("one fire was never doused"); the unbroken_light is pale/white
-     * (the one clean fire in the deep). Any other beaconed site → null (plain white beam). Never throws.
-     */
-    private static Material beaconTint(String siteId) {
-        String id = siteId == null ? "" : siteId.trim().toLowerCase(Locale.ROOT);
-        return switch (id) {
-            case "stone_brann", "brann"    -> Material.ORANGE_STAINED_GLASS;   // the watch-fire's firelight
-            case "unbroken_light"          -> Material.WHITE_STAINED_GLASS;    // the one unbroken light
-            default                        -> null;                            // plain white beam
-        };
-    }
-
-    /** First non-null Site among the candidates, or null. Used to resolve a keeperId to its config entry. */
-    private static Site firstNonNull(Site... sites) {
-        if (sites != null) for (Site s : sites) if (s != null) return s;
-        return null;
     }
 
     /** Deterministic 64-bit hash of a keeper id (used to seed its scatter). */
@@ -2048,30 +2017,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // KEPT-LIGHT beacon: honor visual_beacon for the canonically-lit sites even on this manual path. The
-        // flag is read off the config entry the keeperId maps to (accepts the bare "brann" and the slug forms),
-        // so placing Brann's watch-stone or the unbroken_light by hand still raises its landmark beam.
-        Site cfg = plugin.sites() == null ? null : firstNonNull(
-                plugin.sites().get(siteId),           // keeper_<slug>
-                plugin.sites().get("stone_" + keeperId),
-                plugin.sites().get(keeperId));        // e.g. unbroken_light
-        boolean beacon = cfg != null && cfg.beacon();
-
         // Register the pillar's base as a live keeper_stone site. The site radius (config defaults) comfortably
         // covers the sign a few blocks above, so the answer sign resolves. In-memory only (see registerRuntimeSite).
         String world = loc.getWorld().getName();
         Site site = new Site(siteId, "keeper_stone", world,
                 (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
-                6, 6, false, true, null, beacon);
+                6, 6, false, true, null, false);
         plugin.registerRuntimeSite(site);
 
         sender.sendMessage("Observance: placed keeper stone '" + siteId + "' at "
                 + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + " in " + world + ".");
-        if (beacon) {
-            boolean skyClear = StructureTemplates.keptLightBeacon(loc, beaconTint(keeperId));
-            sender.sendMessage("  Kept-light beacon raised (" + (skyClear
-                    ? "beam projecting" : "sky blocked — base+light placed, no beam") + ").");
-        }
         sender.sendMessage("  Answer sign is live. Site persisted to sites.yml (survives reload/restart).");
     }
 
@@ -2361,20 +2316,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 continue;
             }
 
-            // KEPT-LIGHT beacon: unbroken_light carries visual_beacon (the one fire that never goes out). Deep
-            // in a roofed undercroft the sky is blocked, so keptLightBeacon leaves the base + a real light (no
-            // sky-beam) — the kept light reads on the ground where the descent ends, which is exactly right here.
-            Site cfg = plugin.sites() == null ? null : plugin.sites().get(siteId);
-            boolean beacon = cfg != null && cfg.beacon();
             Site site = new Site(siteId, siteType, world,
                     siteLoc.getX(), siteLoc.getY(), siteLoc.getZ(),
-                    radius, 6, true, true, null, beacon);
+                    radius, 6, true, true, null, false);
             plugin.registerRuntimeSite(site); // also writes to sites.yml
-            if (beacon) {
-                boolean skyClear = StructureTemplates.keptLightBeacon(siteLoc, beaconTint(siteId));
-                sender.sendMessage("  " + siteId + ": kept-light beacon "
-                        + (skyClear ? "beam projecting." : "sky blocked (deep) — base+light placed, no beam."));
-            }
 
             placed++;
         }
@@ -2495,11 +2440,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 Site labSite = new Site(cfg.id(), cfg.type(), worldName,
                         (double) base.getBlockX(), (double) base.getBlockY(), (double) base.getBlockZ(),
                         cfg.radius(), cfg.verticalRadius(), cfg.protect(), true,
-                        cfg.puzzleKey(), cfg.beacon());
+                        cfg.puzzleKey(), false);
                 plugin.registerRuntimeSite(labSite);
-                if (cfg.beacon()) {
-                    StructureTemplates.keptLightBeacon(base, beaconTint(cfg.id()));
-                }
                 placed++;
             } catch (Throwable t) {
                 skipped++;
@@ -2592,10 +2534,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        int spacing = 40;
+        int spacing = 36;
         if (args.length >= 2) {
             try {
-                spacing = Math.max(32, Math.min(64, Integer.parseInt(args[1].trim())));
+                spacing = Math.max(34, Math.min(48, Integer.parseInt(args[1].trim())));
             } catch (NumberFormatException ignored) { /* keep default */ }
         }
 
@@ -2613,7 +2555,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 {"stone_brann", "keeper_stone", "8"},
                 {"stone_iss", "keeper_stone", "8"},
         };
-        int surfacePlaced = placeCompactSpine(origin.clone().add(0, 0, spacing), surface, spacing);
+        int surfacePlaced = placeCompactSpine(origin.clone().add(spacing, 0, 0), surface, spacing);
 
         sender.sendMessage("Step 3/7: placing the deep payoff sites...");
         String[][] deep = {
@@ -2624,34 +2566,35 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 {"the_unwriting", "seventh_shrine", "6"},
                 {"threshold_vault", "coop_plate", "6"},
         };
-        int deepPlaced = placeCompactSpine(origin.clone().add(0, 0, -spacing), deep, spacing);
+        int deepPlaced = placeCompactSpine(origin.clone().add(spacing, 0, spacing), deep, spacing);
 
         sender.sendMessage("Step 4/9: placing the Lamp-works/Stair dialogue proof chain...");
-        int descentProofPlaced = placeDescentProofChain(origin.clone().add(spacing * 2, 0, spacing), spacing);
+        int descentProofPlaced = placeDescentProofChain(origin.clone().add(spacing, 0, -spacing), spacing);
 
-        sender.sendMessage("Step 5/9: placing side-destination proofs, count/light/watch sites, and far-water mirror...");
-        int sideDestinationProofPlaced = placeSchoolStandProof(origin.clone().add(-spacing * 2, 0, spacing + 54));
-        sideDestinationProofPlaced += placeFarWaterProof(origin.clone().add(-spacing * 2, 0, spacing + 36));
-        sideDestinationProofPlaced += placeMarkersRowProof(origin.clone().add(-spacing * 2, 0, spacing + 72));
-        sideDestinationProofPlaced += placeCisternProof(origin.clone().add(-spacing * 2, 0, spacing + 90));
-        sideDestinationProofPlaced += placeWatchFloorProof(origin.clone().add(-spacing * 2, 0, spacing + 108));
-        sideDestinationProofPlaced += placeSetApartProof(origin.clone().add(-spacing * 2, 0, spacing + 126));
-        sideDestinationProofPlaced += placeUndercroftSealProof(origin.clone().add(-spacing * 2, 0, spacing + 144));
-        sideDestinationProofPlaced += placeForgottenMouthProof(origin.clone().add(-spacing * 2, 0, spacing + 162));
-        sideDestinationProofPlaced += placeDeepMarketProof(origin.clone().add(-spacing * 2, 0, spacing));
-        sideDestinationProofPlaced += placeRationTableProof(origin.clone().add(-spacing * 2, 0, spacing - 18));
-        sideDestinationProofPlaced += placeThirdBayProof(origin.clone().add(-spacing * 2, 0, spacing - 36));
-        sideDestinationProofPlaced += placeWarmTownProof(origin.clone().add(-spacing * 2, 0, spacing + 18));
+        sender.sendMessage("Step 5/9: placing side-destination proofs as two readable parallel rows...");
+        int sideDestinationProofPlaced = 0;
+        sideDestinationProofPlaced += placeSchoolStandProof(compactGridCell(origin, 0, 6, spacing, 2));
+        sideDestinationProofPlaced += placeFarWaterProof(compactGridCell(origin, 1, 6, spacing, 2));
+        sideDestinationProofPlaced += placeMarkersRowProof(compactGridCell(origin, 2, 6, spacing, 2));
+        sideDestinationProofPlaced += placeCisternProof(compactGridCell(origin, 3, 6, spacing, 2));
+        sideDestinationProofPlaced += placeWatchFloorProof(compactGridCell(origin, 4, 6, spacing, 2));
+        sideDestinationProofPlaced += placeSetApartProof(compactGridCell(origin, 5, 6, spacing, 2));
+        sideDestinationProofPlaced += placeUndercroftSealProof(compactGridCell(origin, 0, 6, spacing, 3));
+        sideDestinationProofPlaced += placeForgottenMouthProof(compactGridCell(origin, 1, 6, spacing, 3));
+        sideDestinationProofPlaced += placeDeepMarketProof(compactGridCell(origin, 2, 6, spacing, 3));
+        sideDestinationProofPlaced += placeRationTableProof(compactGridCell(origin, 3, 6, spacing, 3));
+        sideDestinationProofPlaced += placeThirdBayProof(compactGridCell(origin, 4, 6, spacing, 3));
+        sideDestinationProofPlaced += placeWarmTownProof(compactGridCell(origin, 5, 6, spacing, 3));
 
         sender.sendMessage("Step 6/9: placing Mara page-lock lecterns with books...");
-        int lecternsPlaced = placeMaraLecternsAt(origin.clone().add(spacing, 0, spacing * 2), 3);
+        int lecternsPlaced = placeMaraLecternsAt(origin.clone().add(spacing, 0, spacing * 4), 3);
 
         sender.sendMessage("Step 7/9: carving reading/finale markers...");
         handleReadingCarvings(sender);
         handleFinaleMarkers(sender);
 
         sender.sendMessage("Step 8/9: spawning NPC row where possible...");
-        Location npc = origin.clone().add(-spacing, 1, -spacing);
+        Location npc = origin.clone().add(0, 1, -spacing);
         if (plugin.townsfolk() != null) plugin.townsfolk().spawnAll(npc);
         if (plugin.wren() != null) plugin.wren().spawn(npc.clone().add(5, 0, 0));
         if (plugin.keeper() != null) plugin.keeper().spawn(npc.clone().add(9, 0, 0), "prepworld");
@@ -2664,7 +2607,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + "/7 surface sites, " + deepPlaced + "/6 deep sites, " + descentProofPlaced
                 + "/5 dialogue-proof sites, " + sideDestinationProofPlaced + "/12 side-destination proofs, "
                 + lecternsPlaced + "/5 Mara lecterns.");
-        sender.sendMessage("  Walkable test order: prologue -> rosetta/keepers -> school stand/far water/count-light-watch -> Lamp-works/Stair line -> warm-town collapse -> Mara lecterns -> deep sites -> finale.");
+        sender.sendMessage("  Compact layout: facing east, rows are Lamp-works proof (north), surface keepers, deep payoff, side proof A, side proof B, Mara books; default spacing avoids platform overlap.");
+        sender.sendMessage("  Walkable test order: prologue -> surface row -> side proof rows -> Lamp-works/Stair line -> Mara lecterns -> deep row -> finale.");
         sender.sendMessage("  Optional Nether/End lanes still require standing in that dimension and using /obs site set + /obs placeworld.");
         sender.sendMessage("  Run /obs coverage, /obs rehearse start, and /obs visit next for the walk-through pass.");
     }
@@ -2698,15 +2642,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         String worldName = world.getName();
         int bx = origin.getBlockX();
         int bz = origin.getBlockZ();
-        int by = world.getHighestBlockYAt(bx, bz, org.bukkit.HeightMap.OCEAN_FLOOR) + 5;
+        int step = Math.max(34, spacing);
 
-        Location stair = new Location(world, bx, by, bz);
+        Location stair = compactSurfaceCell(world, bx, bz);
+        Location thirdLamp = compactSurfaceCell(world, bx + step, bz);
+        Location line = compactSurfaceCell(world, bx + (step * 2), bz);
+        Location deadStall = compactSurfaceCell(world, bx + (step * 3), bz);
+        Location birdCoops = compactSurfaceCell(world, bx + (step * 4), bz);
+        prepareCompactCell(stair, 15, 12);
+        prepareCompactCell(thirdLamp, 8, 7);
+        prepareCompactCell(line, 8, 7);
+        prepareCompactCell(deadStall, 10, 7);
+        prepareCompactCell(birdCoops, 11, 8);
         buildLampworksStair(stair);
-
-        Location thirdLamp = new Location(world, bx - 4, by - 4, bz + 18);
-        Location line = new Location(world, bx, by - 7, bz + 24);
-        Location deadStall = new Location(world, bx + Math.max(10, spacing / 2), by - 8, bz + 30);
-        Location birdCoops = new Location(world, bx - Math.max(10, spacing / 2), by - 3, bz + 10);
         placePaintedLineFixture(line);
         buildDeadStall(deadStall);
         buildBirdCoops(birdCoops);
@@ -2734,7 +2682,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 14, 7);
         placeFarWater(loc);
+        seedFixtureLore(loc, "far_water");
         plugin.registerRuntimeSite(new Site("the_far_water", "far_water", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 12, 6, true, true, null));
         return 1;
@@ -2747,7 +2697,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 12, 7);
         buildSchoolStand(loc);
+        seedFixtureLore(loc, "school_stand");
         plugin.registerRuntimeSite(new Site("school_stand", "school_stand", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 10, 6, true, true, null));
         return 1;
@@ -2760,7 +2712,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 14, 7);
         buildMarkersRow(loc);
+        seedFixtureLore(loc, "markers_row");
         plugin.registerRuntimeSite(new Site("markers_row", "markers_row", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 12, 6, true, true, null));
         return 1;
@@ -2773,7 +2727,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 13, 7);
         buildCisternSeven(loc);
+        seedFixtureLore(loc, "cistern_7");
         plugin.registerRuntimeSite(new Site("cistern_7", "cistern_7", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 11, 6, true, true, null));
         return 1;
@@ -2786,7 +2742,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 13, 8);
         buildWatchFloor(loc);
+        seedFixtureLore(loc, "watch_floor");
         plugin.registerRuntimeSite(new Site("watch_floor", "watch_floor", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
         return 1;
@@ -2799,7 +2757,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 13, 7);
         buildSetApartShelf(loc);
+        seedFixtureLore(loc, "set_apart_shelf");
         plugin.registerRuntimeSite(new Site("set_apart_shelf", "set_apart_shelf", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 11, 6, true, true, null));
         return 1;
@@ -2812,7 +2772,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 13, 8);
         buildUndercroftSeal(loc);
+        seedFixtureLore(loc, "undercroft_seal");
         plugin.registerRuntimeSite(new Site("undercroft_seal", "undercroft_seal", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
         return 1;
@@ -2825,7 +2787,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 13, 8);
         buildForgottenMouth(loc);
+        seedFixtureLore(loc, "forgotten_mouth");
         plugin.registerRuntimeSite(new Site("forgotten_mouth", "forgotten_mouth", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
         return 1;
@@ -2838,7 +2802,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 13, 8);
         buildWarmTownCollapse(loc);
+        seedFixtureLore(loc, "warm_town_collapse");
         plugin.registerRuntimeSite(new Site("warm_town_collapse", "warm_town_collapse", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 11, 7, true, true, null));
         return 1;
@@ -2851,7 +2817,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 15, 8);
         buildDeepMarket(loc);
+        seedFixtureLore(loc, "deep_market");
         plugin.registerRuntimeSite(new Site("deep_market", "deep_market", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 13, 7, true, true, null));
         return 1;
@@ -2864,7 +2832,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 12, 7);
         buildRationTable(loc);
+        seedFixtureLore(loc, "ration_table");
         plugin.registerRuntimeSite(new Site("ration_table", "ration_table", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 10, 6, true, true, null));
         return 1;
@@ -2877,10 +2847,165 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int z = origin.getBlockZ();
         int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
         Location loc = new Location(world, x, y, z);
+        prepareCompactCell(loc, 14, 8);
         buildThirdBayBreach(loc);
+        seedFixtureLore(loc, "third_bay_breach");
         plugin.registerRuntimeSite(new Site("third_bay_breach", "third_bay_breach", world.getName(),
                 loc.getX(), loc.getY(), loc.getZ(), 12, 7, true, true, null));
         return 1;
+    }
+
+    private void seedFixtureLore(Location base, String id) {
+        if (base == null || base.getWorld() == null) return;
+        org.bukkit.World world = base.getWorld();
+        String key = id == null ? "" : id.trim().toLowerCase(Locale.ROOT);
+        String[] fragments = fixtureLoreFragments(key);
+        if (fragments.length == 0) return;
+
+        int bx = base.getBlockX(), by = base.getBlockY(), bz = base.getBlockZ();
+        int written = 0;
+        int max = Math.min(4, fragments.length);
+        for (int dx = -12; dx <= 12 && written < max; dx++) {
+            for (int dy = -1; dy <= 5 && written < max; dy++) {
+                for (int dz = -12; dz <= 12 && written < max; dz++) {
+                    Block block = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                    if (block.getState() instanceof Lectern) continue;
+                    if (block.getType() == Material.CHISELED_BOOKSHELF) continue;
+                    if (!(block.getState() instanceof InventoryHolder holder)) continue;
+                    Inventory inv = holder.getInventory();
+                    int slot = firstEmptyFixtureSlot(inv);
+                    if (slot < 0) continue;
+                    inv.setItem(slot, fixtureLoreBook(key, written, fragments[written]));
+                    try { block.getState().update(true, false); } catch (Throwable ignored) { }
+                    written++;
+                }
+            }
+        }
+    }
+
+    private int firstEmptyFixtureSlot(Inventory inv) {
+        if (inv == null) return -1;
+        int size = Math.min(inv.getSize(), 12);
+        for (int i = 0; i < size; i++) {
+            ItemStack item = inv.getItem(i);
+            if (item == null || item.getType() == Material.AIR) return i;
+        }
+        return -1;
+    }
+
+    private ItemStack fixtureLoreBook(String id, int index, String body) {
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        if (book.getItemMeta() instanceof BookMeta meta) {
+            meta.setTitle(com.observance.watcher.util.TextFit.clampLine(fixtureLoreTitle(id, index), 32));
+            meta.setAuthor("field record");
+            String text = body == null ? "" : body;
+            if (text.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
+                meta.addPage(text);
+            } else {
+                for (String page : com.observance.watcher.util.TextFit.paginate(text)) {
+                    meta.addPage(page);
+                }
+            }
+            book.setItemMeta(meta);
+        }
+        return book;
+    }
+
+    private String fixtureLoreTitle(String id, int index) {
+        String prefix = switch (id) {
+            case "far_water" -> "shore note";
+            case "school_stand" -> "copybook";
+            case "markers_row" -> "marker count";
+            case "cistern_7" -> "cistern slip";
+            case "watch_floor" -> "watch log";
+            case "set_apart_shelf" -> "shelf card";
+            case "undercroft_seal" -> "mason rest";
+            case "forgotten_mouth" -> "route draft";
+            case "warm_town_collapse" -> "warden file";
+            case "deep_market" -> "market ledger";
+            case "ration_table" -> "ration form";
+            case "third_bay_breach" -> "bay report";
+            default -> "field note";
+        };
+        return prefix + " " + (index + 1);
+    }
+
+    private String[] fixtureLoreFragments(String id) {
+        return switch (id) {
+            case "far_water" -> new String[]{
+                    "Shore watch note:\n\nAt dusk the far pool reflects six pale stones and one grey. Count the real bank first; the water is only useful after the land count is honest.",
+                    "Teacher to Sella:\n\n\"Your letters are correct. Your order is not. Bring the slate back before rain gets into it.\"",
+                    "Found under a wet plank:\n\nSmall prints at the reeds, adult boots after. No return marks on the mud side.",
+                    "Archive tag:\n\nFile with Sella, not with weather. This place proves the grey seventh was seen before anyone called it rumor."
+            };
+            case "school_stand" -> new String[]{
+                    "Copybook exercise:\n\nKeep your light.\nCount your light.\nReturn your light.\n\nThe last line is crossed out by a different hand.",
+                    "Teacher's slate:\n\nIf a child copies a rule backward, check whether the room taught it backward first. This is before the far-water mistake.",
+                    "Dismissal note:\n\nSella stayed after class. Brann waited by the door but did not come in.",
+                    "Conversation copied by Nessa:\n\n\"She only wrote what she saw.\"\n\"Then move what she saw.\""
+            };
+            case "markers_row" -> new String[]{
+                    "Mason tally:\n\nSix bow stones set level. One grey marker added after payment and not in the first order.",
+                    "Road crew note:\n\nDo not repaint the arrow until Orin confirms whether the low mark is a mistake. His hall repeats the count lower.",
+                    "Complaint:\n\nTravelers bow at the wrong place because the grey marker looks official.",
+                    "Count card:\n\nBegin at the chipped edge. Starting clean changes the answer."
+            };
+            case "cistern_7" -> new String[]{
+                    "Cistern receipt:\n\nGood oil: two jars.\nSpoiled oil: one jar.\nSeven cups reserved for the lower work.",
+                    "Utility notice:\n\nThe seventh measure is held back until all lamps are named. Vaun objected in writing.",
+                    "Complaint left in the drain:\n\nSomeone keeps calling it waste. It is not waste if the stair stays lit. The first dark was managed, not weather.",
+                    "Inspection line:\n\nCopper bulb replaced. Water line remains below safe mark."
+            };
+            case "watch_floor" -> new String[]{
+                    "Shift log:\n\nBlack moon watch. No bed on floor. Three bell tolls required before dawn.",
+                    "Handoff note:\n\nBrann took the second watch. Chair warm, lamp low, door still barred.",
+                    "Witness line:\n\nI saw smoke before I heard the bell. Do not write that the other way around; it changes who failed the watch.",
+                    "Floor chalk:\n\nThe sleeping mark was scrubbed once. You can still see it by the west post."
+            };
+            case "set_apart_shelf" -> new String[]{
+                    "Shelf card, entry five:\n\nSet apart with warm lamp. Do not shelve with public copies; this is where the warm story starts to split.",
+                    "Archivist note:\n\nReaders keep grabbing entry five because it looks important. It is important because it was isolated.",
+                    "Iss to Mara:\n\n\"Leave the correction where a careful reader can find it, not where a loud one can wave it around.\"",
+                    "Lamp record:\n\nCold shelves: four. Warm shelf: one. Missing: one book, often."
+            };
+            case "undercroft_seal" -> new String[]{
+                    "Mason work order:\n\nSeal readable only when approached low from the east side. Do not raise the line.",
+                    "Apprentice note:\n\nI asked why the writing sits under eye level. Orin said proud people miss useful things. This is the bow before the door.",
+                    "Repair ticket:\n\nCrack at lower mark is old. Leave it; the crack points to the correct side.",
+                    "Delivery slip:\n\nTwo slabs refused for being too tall."
+            };
+            case "forgotten_mouth" -> new String[]{
+                    "Route draft:\n\nThe way up was real. Surface entry later filled and called natural collapse.",
+                    "Surveyor correction:\n\nDo not write forgotten. The mouth was covered while people still remembered it.",
+                    "Conversation in margin:\n\n\"If they can come back up, they can contradict us.\"\n\"Then the mouth was never there.\"\n\nThis is not a wall. It is a cover story.",
+                    "Tool tally:\n\nFour shovels returned. One pick missing. Dirt still fresh on all handles."
+            };
+            case "warm_town_collapse" -> new String[]{
+                    "WARDEN-3 closure:\n\nEast market sealed after staged hearth report. Public reason: unsafe wall.",
+                    "Witness refusal:\n\nI will not sign that the room was warm when I found it.",
+                    "Supply ledger:\n\nFresh wood delivered after the collapse. Iss approved payment anyway. Compare this to his safe-road notice.",
+                    "Inspection note:\n\nSmoke stain runs the wrong direction for the story filed."
+            };
+            case "deep_market" -> new String[]{
+                    "Stall ledger:\n\nThree heads counted at ration table. One name paid twice. One name missing. This is before WARDEN-3 closed the warm road.",
+                    "Market argument:\n\n\"You cannot sell light.\"\n\"Then stop asking me to keep yours.\"",
+                    "Crate label:\n\nLamp glass for lower work. Do not stack near bread.",
+                    "Closing note:\n\nMarket bell failed. Watch floor bell answered late."
+            };
+            case "ration_table" -> new String[]{
+                    "Ration form R14:\n\nThree heads. One and a half loaves. Half loaf kept for the absent watcher.",
+                    "Table scratch:\n\nIf the count includes the absent, the bread proves who was expected.",
+                    "Receipt:\n\nMara took no bread. Sella took half. Vaun disputed both entries. The table ties people to the market, not to myth.",
+                    "Kitchen note:\n\nDo not let Iss rewrite ration forms after serving."
+            };
+            case "third_bay_breach" -> new String[]{
+                    "Incident report:\n\nMark 33: line broke downward. Third bay took water first. This is why the deep line is evidence, not scenery.",
+                    "Repair crew note:\n\nDo not patch over the carved number. The number is why we know which bay lied.",
+                    "Witness line:\n\nI heard the lower room before the wall opened.",
+                    "Tool return:\n\nThree buckets lost, two ropes cut, one lantern recovered still warm."
+            };
+            default -> new String[0];
+        };
     }
 
     private void buildLampworksStair(Location start) {
@@ -2999,7 +3124,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         for (int dx = -1; dx <= 1; dx++) {
             world.getBlockAt(bx + dx, by, bz + 2).setType(Material.BARREL, false);
-            world.getBlockAt(bx + dx, by + 1, bz + 2).setType(Material.CHISELED_BOOKSHELF, false);
+            placeDecorativeBookshelf(world.getBlockAt(bx + dx, by + 1, bz + 2), dx + 7);
         }
         world.getBlockAt(bx - 2, by, bz).setType(Material.SOUL_LANTERN, false);
         world.getBlockAt(bx + 2, by, bz).setType(Material.CANDLE, false);
@@ -3097,7 +3222,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(bx + dx, by, bz - 1).setType(Material.DARK_OAK_SLAB, false);
             world.getBlockAt(bx + dx, by, bz - 2).setType(Material.DARK_OAK_SLAB, false);
         }
-        world.getBlockAt(bx - 3, by, bz - 2).setType(Material.CHISELED_BOOKSHELF, false);
+        placeDecorativeBookshelf(world.getBlockAt(bx - 3, by, bz - 2), 11);
         world.getBlockAt(bx + 3, by, bz - 2).setType(Material.BARREL, false);
         world.getBlockAt(bx, by + 1, bz + 3).setType(Material.WHITE_CARPET, false);
 
@@ -3226,7 +3351,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 world.getBlockAt(bx + dx, by + 1, bz + dz).setType(Material.SOUL_LANTERN, false);
             }
         }
-        world.getBlockAt(bx - 2, by, bz).setType(Material.CHISELED_BOOKSHELF, false);
+        placeDecorativeBookshelf(world.getBlockAt(bx - 2, by, bz), 17);
         world.getBlockAt(bx + 2, by, bz).setType(Material.DAYLIGHT_DETECTOR, false);
         world.getBlockAt(bx, by, bz + 2).setType(Material.BLACK_CANDLE, false);
         world.getBlockAt(bx - 4, by, bz - 4).setType(Material.BLACK_CARPET, false);
@@ -3256,9 +3381,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             int x = bx - 4 + (i * 2);
             world.getBlockAt(x, by, bz).setType(Material.BARREL, false);
             world.getBlockAt(x, by + 1, bz).setType(i == 4 ? Material.LANTERN : Material.SOUL_LANTERN, false);
-            world.getBlockAt(x, by, bz + 1).setType(i == 4
-                    ? materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB")
-                    : Material.CHISELED_BOOKSHELF, false);
+            if (i == 4) {
+                world.getBlockAt(x, by, bz + 1).setType(
+                        materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
+            } else {
+                placeDecorativeBookshelf(world.getBlockAt(x, by, bz + 1), i + 23);
+            }
         }
         world.getBlockAt(bx, by, bz - 1).setType(Material.REDSTONE_LAMP, false);
         world.getBlockAt(bx + 4, by, bz + 3).setType(Material.BLACK_CANDLE, false);
@@ -3391,8 +3519,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             d.setFacing(BlockFace.WEST);
             lectern.setBlockData(d, false);
         }
-        world.getBlockAt(bx + 4, by, bz + 5).setType(Material.CHISELED_BOOKSHELF, false);
-        world.getBlockAt(bx + 6, by, bz + 5).setType(Material.CHISELED_BOOKSHELF, false);
+        placeDecorativeBookshelf(world.getBlockAt(bx + 4, by, bz + 5), 31);
+        placeDecorativeBookshelf(world.getBlockAt(bx + 6, by, bz + 5), 37);
         world.getBlockAt(bx + 5, by + 1, bz + 5).setType(Material.LANTERN, false);
         fillWrittenLecternBook(lectern, "market tallies", "the record", List.of(
                 "eighteen stalls were counted before the warm road closed.",
@@ -3404,13 +3532,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildMarketStall(org.bukkit.World world, int x, int y, int z, int stall) {
-        Material counter = stall % 6 == 0 ? Material.CHISELED_BOOKSHELF : Material.BARREL;
         Material marker = switch (stall % 6) {
             case 1, 2, 3, 4 -> Material.HAY_BLOCK;
             case 5 -> Material.CAULDRON;
             default -> Material.ANVIL;
         };
-        world.getBlockAt(x, y, z).setType(counter, false);
+        if (stall % 6 == 0) {
+            placeDecorativeBookshelf(world.getBlockAt(x, y, z), stall + 41);
+        } else {
+            world.getBlockAt(x, y, z).setType(Material.BARREL, false);
+        }
         world.getBlockAt(x + 1, y, z).setType(marker, false);
         world.getBlockAt(x, y + 1, z).setType(stall % 4 == 0 ? Material.CANDLE : Material.SOUL_LANTERN, false);
         if (stall == 4 || stall == 9 || stall == 14 || stall == 18) {
@@ -3638,6 +3769,24 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 block.setType(material, false);
             }
         }
+    }
+
+    private void placeDecorativeBookshelf(Block block, int seed) {
+        if (block == null) return;
+        try {
+            block.setType(Material.CHISELED_BOOKSHELF, false);
+            if (block.getBlockData() instanceof org.bukkit.block.data.type.ChiseledBookshelf shelf) {
+                int max = Math.max(1, shelf.getMaximumOccupiedSlots());
+                int base = Math.floorMod(seed, max);
+                for (int slot = 0; slot < max; slot++) {
+                    boolean occupied = slot == base
+                            || slot == Math.floorMod(base + 2, max)
+                            || slot == Math.floorMod(base + 4, max);
+                    shelf.setSlotOccupied(slot, occupied);
+                }
+                block.setBlockData(shelf, false);
+            }
+        } catch (Throwable ignored) { }
     }
 
     private void buildProofChamber(org.bukkit.World world, int bx, int by, int bz,
@@ -4659,7 +4808,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = origin.getWorld();
         String worldName = world.getName();
         int placed = 0;
-        int[] zOffsets = {0, 5, -6, 9, -4, 7, -8};
         for (int i = 0; i < rows.length; i++) {
             String siteId = rows[i][0];
             String siteType = rows[i][1];
@@ -4667,25 +4815,44 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             try { radius = Integer.parseInt(rows[i][2]); } catch (NumberFormatException e) { radius = 8; }
 
             int sx = origin.getBlockX() + (i * spacing);
-            int sz = origin.getBlockZ() + zOffsets[i % zOffsets.length];
+            int sz = origin.getBlockZ();
             int sy = world.getHighestBlockYAt(sx, sz, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
             Location siteLoc = new Location(world, sx, sy, sz);
 
+            prepareCompactCell(siteLoc, Math.max(12, radius + 4), 9);
             Location answer = StructureTemplates.keeper(siteId, siteLoc);
             if (answer == null) continue;
             ensureAuditAnchor(siteId, siteLoc);
 
             Site cfg = plugin.sites() == null ? null : plugin.sites().get(siteId);
-            boolean beacon = cfg != null && cfg.beacon();
             String puzzleKey = cfg == null ? null : cfg.puzzleKey();
             Site site = new Site(siteId, siteType, worldName,
                     siteLoc.getX(), siteLoc.getY(), siteLoc.getZ(),
-                    radius, 6, true, true, puzzleKey, beacon);
+                    radius, 6, true, true, puzzleKey, false);
             plugin.registerRuntimeSite(site);
-            if (beacon) StructureTemplates.keptLightBeacon(siteLoc, beaconTint(siteId));
             placed++;
         }
         return placed;
+    }
+
+    private Location compactGridCell(Location origin, int index, int columns, int spacing, int row) {
+        if (origin == null) return null;
+        int safeColumns = Math.max(1, columns);
+        int col = Math.floorMod(index, safeColumns);
+        int extraRow = Math.floorDiv(index, safeColumns);
+        return origin.clone().add((col + 1) * spacing, 0, (row + extraRow) * spacing);
+    }
+
+    private Location compactSurfaceCell(org.bukkit.World world, int x, int z) {
+        if (world == null) return null;
+        int y = world.getHighestBlockYAt(x, z, org.bukkit.HeightMap.OCEAN_FLOOR) + 1;
+        return new Location(world, x, y, z);
+    }
+
+    private void prepareCompactCell(Location base, int radius, int height) {
+        if (base == null || base.getWorld() == null) return;
+        clearLabCell(base, Math.max(8, radius), Math.max(6, height));
+        buildLabPlatform(base, Math.max(8, radius));
     }
 
     private void clearLabCell(Location base, int radius, int height) {
@@ -5303,7 +5470,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         world.getBlockAt(bx, by + 1, bz - 3).setType(Material.IRON_CHAIN, false);
         world.getBlockAt(bx, by, bz - 3).setType(Material.SOUL_LANTERN, false);
-        world.getBlockAt(bx - 2, by, bz - 3).setType(Material.CHISELED_BOOKSHELF, false);
+        placeDecorativeBookshelf(world.getBlockAt(bx - 2, by, bz - 3), 53);
         placeEvidenceLectern(new Location(world, bx + 2, by, bz - 3), BlockFace.WEST,
                 "far water copy", List.of(
                         "six stones and one grey.",
@@ -6330,7 +6497,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             int vertical = cfg == null ? fallbackVertical : cfg.verticalRadius();
             boolean protect = cfg == null || cfg.protect();
             String puzzleKey = cfg == null ? null : cfg.puzzleKey();
-            boolean beacon = cfg != null && cfg.beacon();
 
             int col = i % cols;
             int gridRow = i / cols;
@@ -6346,11 +6512,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
                 Site live = new Site(id, type, worldName,
                         (double) base.getBlockX(), (double) base.getBlockY(), (double) base.getBlockZ(),
-                        radius, vertical, protect, true, puzzleKey, beacon);
+                        radius, vertical, protect, true, puzzleKey, false);
                 buildLabFixture(live, base);
                 plugin.registerRuntimeSite(live);
                 repairPlacedSite(live, base);
-                if (beacon) StructureTemplates.keptLightBeacon(base, beaconTint(id));
                 placed++;
             } catch (Throwable t) {
                 skipped++;
@@ -7246,6 +7411,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private boolean repairPlacedSite(Site site, Location loc) {
         String type = site.type();
         Block block = loc.getBlock();
+        boolean changed = removeRetiredBeaconNear(loc);
         if ("report_lectern".equals(type) || "first_report_lectern_01".equals(site.id())) {
             fillPrologueLecternBook(loc);
             return true;
@@ -7353,12 +7519,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             placeMarker(loc, Material.CHISELED_STONE_BRICKS, Material.CANDLE, true);
             return true;
         }
-        return false;
+        return changed;
     }
 
     private String auditPlacedSite(Site site, Location loc) {
         Block block = loc.getBlock();
         String type = site.type();
+        if (hasMaterialNear(loc, Math.max(3, site.radius()), Material.BEACON)) {
+            return "FAIL " + site.id() + ": retired beacon block still present near site; run /observance repair.";
+        }
         if ("report_lectern".equals(type) || "mara_lectern".equals(type)) {
             if (block.getType() != Material.LECTERN) {
                 return "FAIL " + site.id() + ": expected a lectern, found " + block.getType() + ".";
@@ -7487,6 +7656,40 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         return false;
+    }
+
+    private boolean removeRetiredBeaconNear(Location loc) {
+        if (loc == null || loc.getWorld() == null) return false;
+        org.bukkit.World world = loc.getWorld();
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        boolean changed = false;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = 4; dy <= 9; dy++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    Block beacon = world.getBlockAt(bx + dx, by + dy, bz + dz);
+                    if (beacon.getType() != Material.BEACON) continue;
+                    beacon.setType(Material.AIR, false);
+                    changed = true;
+                    int baseY = beacon.getY() - 1;
+                    for (int ox = -1; ox <= 1; ox++) {
+                        for (int oz = -1; oz <= 1; oz++) {
+                            Block base = world.getBlockAt(beacon.getX() + ox, baseY, beacon.getZ() + oz);
+                            if (base.getType() == Material.IRON_BLOCK) {
+                                base.setType(Material.AIR, false);
+                            }
+                        }
+                    }
+                    for (int oy = 1; oy <= 2; oy++) {
+                        Block cap = world.getBlockAt(beacon.getX(), beacon.getY() + oy, beacon.getZ());
+                        String n = cap.getType().name();
+                        if (n.endsWith("_STAINED_GLASS") || cap.getType() == Material.SHROOMLIGHT) {
+                            cap.setType(Material.AIR, false);
+                        }
+                    }
+                }
+            }
+        }
+        return changed;
     }
 
     private boolean hasSignNear(Location loc, int radius) {

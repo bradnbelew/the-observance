@@ -21,6 +21,8 @@
 
 begin;
 
+drop view if exists public.v_record;
+
 create or replace view public.v_record
 with (security_invoker = false) as
 select

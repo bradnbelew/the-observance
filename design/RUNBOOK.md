@@ -19,6 +19,20 @@
 - Grab your **`service_role`** key (Project Settings → API → `service_role`, the *secret* one).
 
 - From the repo root, run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_server_test.ps1`** when your next
+  goal is easier server testing rather than a launch promise. It still generates the normal friend-launch
+  placement and rehearsal packets, then adds `server-test-guide.md` with exact smoke-test, vertical-slice,
+  full-rehearsal, and launch-go/no-go scripts. Use `-SkipBundle` only for a fast dry packet; rebuild before
+  uploading fresh server bytes. After hosting the resource pack, rerun it with
+  **`-ResourcePackUrl <hosted-https-zip-url>`** so hosted pack verification and the generated guide agree.
+- From the repo root, run
+  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_server_test.ps1`** when your next
+  goal is easier server testing rather than a launch promise. It still generates the normal friend-launch
+  placement and rehearsal packets, then adds `server-test-guide.md` with exact smoke-test, vertical-slice,
+  full-rehearsal, and launch-go/no-go scripts. Use `-SkipBundle` only for a fast dry packet; rebuild before
+  uploading fresh server bytes. After hosting the resource pack, rerun it with
+  **`-ResourcePackUrl <hosted-https-zip-url>`** so hosted pack verification and the generated guide agree.
+- From the repo root, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_friend_launch.ps1`**. This is the
   fastest friend-launch prep path: it builds the deploy bundle, creates the launch placement packet, creates
   the live rehearsal packet, and runs the current launch blocker report against those exact files.
@@ -85,17 +99,25 @@
   If not, the key is wrong or the SQL didn't run — fix before continuing.
 
 ## 2. BUILD THE WORLD (bootstrap first, launch gate after)
-- Preferred compact bootstrap: stand at the **center** of the intended play area and run
-  **`/observance prepworld [spacing]`**. It stages the prologue surface, starter spine, deep spine,
-  lecterns, townsfolk, companion/finale tools, the Lamp-works descent proof chain, and the warm-town
-  false-lead collapse in one pass.
+- Preferred compact bootstrap: stand at the **southwest corner / operator edge** of a fresh intended test board
+  and run **`/observance prepworld`** (default spacing **36**; optional spacing is clamped to **34-48**). It now builds a readable platform board instead of wide
+  scatter: facing east, the parallel rows are Lamp-works proof, surface keeper spine, deep payoff spine,
+  side-proof row A, side-proof row B, and Mara books. Each compact cell is cleared before stamping so
+  terrain does not fill intentional air inside structures. Use the default spacing for smoke tests; reserve
+  final terrain-integrated placement for `/observance site set <siteId>` plus `/observance placeworld`.
+  If you already generated an older overlapping rehearsal board, abandon that patch of terrain and run
+  `prepworld` in a fresh area; the command lays out a new board but does not erase/move stale old platforms.
+  No structure uses a beacon beam as a player waypoint; players must be moved by the authored route:
+  report/marker evidence, Rosetta and reckoning literacy, keeper books/signs/items, NPC claims, dashboard
+  cards, Discord/media clues, and the placement briefs' approach/focal/action/exit proof.
 - For the final curated world, use **`/observance site todo`** in game as the live launch-coordinate
   checklist. Start with **`/observance site plan lanes`** so placement is handled as scene passes:
   `prologue`, `keepers`, `customs`, `human`, `deep`, `dread`, and `dimensions`. **`/observance site next <lane>`**
   names the next required site in that lane and includes its placement brief; **`/observance site plan <siteId>`**
   gives the intent, placement rule, and proof shots for any launch anchor. Stand at the real anchor and run
   **`/observance site set <siteId>`**. The command prints the remaining launch count after each survey so you do
-  not have to keep the 67-site list in your head.
+  not have to keep the 67-site list in your head. If a site only feels findable because an operator knows
+  the coordinates, move it or add a real clue surface before testing it.
 - Before that final survey sprint, generate the external worksheet:
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_launch_placement_packet.ps1`**.
   It writes `00-placement.md`, `launch-sites.csv`, and `coords-capture.csv` under `build\launch-placement\`.
@@ -116,6 +138,9 @@
   restarts.
 - **Submitting answers:** edit the **blank** sign (the *labelled* sign is waxed and won't take input,
   so flavour text can't pollute your answer). For one keeper evidence site: `/observance placeroom <keeper>`.
+- **Structure surface spot-checks:** the Rosetta lectern must contain the "the rosetta" book and its
+  rune/plaintext crib pairs; Orin's low lintel must be passable while sneaking but awkward while standing,
+  and its six wall banners must render on masonry backing instead of floating or replacing the walls.
 - **Proof the world matches the dialogue:** run **`/observance descentproof`** if you need to stage the
   Lamp-works stair, third lamp, painted line, dead-stall, and empty bird coops around you for fast testing.
   `prepworld` and `sidepass` also stage `school_stand`, `the_far_water`, `markers_row`, `cistern_7`,
@@ -237,8 +262,9 @@ the Undercroft generation, and the deep-site rites. In-world behavior is unprove
   taste, mix, volume, and timing in actual Minecraft space.
 - **Observer Tiers 1–2** (the chat/voice archivist that quotes real words back) — needs the always-on
   hosted bot + Whisper + LLM budget. Tier-0 (behavior) is built; 1–2 are the hosting lift.
-- **World arrangement** — `prepworld`/`placeregion`/`placedeep` now scatter and harden set-pieces, but
-  weaving them into an evocative landscape / re-dressed ancient-city + trial-chamber is still the big
+- **World arrangement** — `prepworld` now gives you a cleared compact rehearsal board, while
+  `placeregion`/`placedeep` still scatter and harden set-pieces. Weaving the final route into an evocative
+  landscape / re-dressed ancient-city + trial-chamber is still the big
   live-server art pass. Run `visualaudit`; treat `REPLACE` findings as blockers.
 - **Small polish (P2):** the desire-path grave (needs a heatmap read-path), the deep-site choice-markers
   need hand-placing, the black-moon toll's temporal *gate* (works, just not restricted), `bases` id-type.

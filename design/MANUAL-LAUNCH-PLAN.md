@@ -15,6 +15,20 @@
 
 ## Evidence Packet
 
+For easier server testing before a launch promise, generate the normal launch/rehearsal packets plus one
+operator-facing test guide:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_server_test.ps1
+```
+
+That command writes `server-test-guide.md` into the rehearsal packet with exact smoke-test, vertical-slice,
+full-rehearsal, and launch go/no-go scripts. It still uses the same placement packet, rehearsal packet,
+blocker report, media checklist, command sheet, Supabase apply card, and launch attestations as the launch
+helper. Use `-SkipBundle` only for a fast dry packet; rebuild before uploading fresh server bytes. After
+`observance-resourcepack.zip` is hosted, rerun it with `-ResourcePackUrl <hosted-https-zip-url>` so the
+resource-pack config, hosted-byte verification, and generated test guide agree.
+
 Create one folder for the launch rehearsal and keep every artifact there:
 
 ```powershell
