@@ -9,6 +9,11 @@ param(
 $ErrorActionPreference = "Stop"
 
 $repoFull = [System.IO.Path]::GetFullPath($RepoRoot)
+$builder = Join-Path $repoFull "tools\build_hold_prologue.py"
+if (-not (Test-Path -LiteralPath $builder)) {
+  throw "hold rebuild: production builder is missing: $builder"
+}
+
 if ([string]::IsNullOrWhiteSpace($InputZip)) {
   $InputZip = Join-Path $repoFull "dashboard\public\the-hold\the-hold.zip"
 }
@@ -16,91 +21,21 @@ if ([string]::IsNullOrWhiteSpace($OutZip)) {
   $OutZip = $InputZip
 }
 
-$inputFull = [System.IO.Path]::GetFullPath($InputZip)
-$outFull = [System.IO.Path]::GetFullPath($OutZip)
-if (-not (Test-Path -LiteralPath $inputFull)) {
-  throw "hold rebuild: input zip not found: $inputFull"
+$arguments = @(
+  $builder,
+  "--input", [System.IO.Path]::GetFullPath($InputZip),
+  "--output", [System.IO.Path]::GetFullPath($OutZip)
+)
+if (-not $NoBackup) {
+  $arguments += "--backup"
 }
-$siteHost = $PublicSiteHost.Trim()
-if ([string]::IsNullOrWhiteSpace($siteHost)) {
-  throw "hold rebuild: PublicSiteHost is required"
+
+& python @arguments
+if ($LASTEXITCODE -ne 0) {
+  throw "hold rebuild: production builder exited with code $LASTEXITCODE"
 }
-$siteHost = $siteHost -replace '^https?://', ''
-$siteHost = $siteHost.TrimEnd('/')
 
-$workRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("observance-rebuild-hold-" + [System.Guid]::NewGuid().ToString("N"))
-New-Item -ItemType Directory -Path $workRoot | Out-Null
-try {
-  Expand-Archive -LiteralPath $inputFull -DestinationPath $workRoot -Force
-
-  $worldRoot = Join-Path $workRoot "the-hold"
-  if (-not (Test-Path -LiteralPath $worldRoot)) {
-    throw "hold rebuild: expected extracted world folder 'the-hold'"
-  }
-
-  $functionRoot = Join-Path $worldRoot "datapacks\the_hold\data\the_hold\function"
-  $handoffBookFile = Join-Path $functionRoot "generated\line_0515.mcfunction"
-  $paperFile = Join-Path $functionRoot "generated\line_0517.mcfunction"
-  $compassFile = Join-Path $functionRoot "generated\line_0518.mcfunction"
-  $finalTriggerFile = Join-Path $functionRoot "triggers\final.mcfunction"
-
-  foreach ($file in @($handoffBookFile, $paperFile, $compassFile, $finalTriggerFile)) {
-    if (-not (Test-Path -LiteralPath $file)) {
-      throw "hold rebuild: expected function file missing: $file"
-    }
-  }
-
-  $handoffBook = 'data merge block 0 241 334 {Book:{id:"minecraft:written_book",count:1,components:{"minecraft:written_book_content":{title:"handoff",author:"m.kept",pages:[''{"text":"this copy does not connect to anything."}'',''{"text":"the rest is kept elsewhere. do not read this as a place yet."}'',''{"text":"three pieces were kept apart.\n\nprovider: COPPERLINE\nservice: HOSTING\nending: common web"}'',''{"text":"directory number 1842. the old row says 0 / 7 and the account is expired.\n\nthat row is the door, not this file."}'',''{"text":"the server address is not in this file.\n\nfind the hand that listed it. read what that hand left. bring the others. say kept."}'']}}},Page:0}'
-  $paper = 'item replace block 0 241 346 container.0 with minecraft:paper[minecraft:item_name=''"copperline / service 1842"''] 1'
-  $compass = 'item replace block 0 241 346 container.1 with minecraft:compass[minecraft:item_name=''"hosting; common web"''] 1'
-  $finalTrigger = @(
-    "scoreboard players set @s hold_stage 5",
-    "title @s times 20 60 40",
-    'title @s subtitle {"text":"service 1842 remains in the directory","color":"gray"}',
-    'title @s title {"text":"","color":"gray"}',
-    "playsound minecraft:block.respawn_anchor.deplete master @s 0 241 334 0.25 0.55"
-  )
-
-  [System.IO.File]::WriteAllText($handoffBookFile, $handoffBook + "`n", [System.Text.UTF8Encoding]::new($false))
-  [System.IO.File]::WriteAllText($paperFile, $paper + "`n", [System.Text.UTF8Encoding]::new($false))
-  [System.IO.File]::WriteAllText($compassFile, $compass + "`n", [System.Text.UTF8Encoding]::new($false))
-  [System.IO.File]::WriteAllLines($finalTriggerFile, $finalTrigger, [System.Text.UTF8Encoding]::new($false))
-
-  $allText = Get-ChildItem -LiteralPath $worldRoot -Recurse -File |
-    ForEach-Object {
-      try {
-        [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes($_.FullName))
-      } catch {
-        ""
-      }
-    } | Out-String
-
-  if ($allText -match '\b[a-z0-9.-]+\.(com|net|org|gg|io)\s*:\s*[0-9]{2,5}\b') {
-    throw "hold rebuild: raw server endpoint still present after rewrite"
-  }
-
-  $stagingZip = Join-Path $workRoot "the-hold.zip"
-  if (Test-Path -LiteralPath $stagingZip) {
-    Remove-Item -LiteralPath $stagingZip -Force
-  }
-  Compress-Archive -LiteralPath $worldRoot -DestinationPath $stagingZip -Force
-
-  if ((-not $NoBackup) -and (Test-Path -LiteralPath $outFull)) {
-    $backup = $outFull + ".bak-" + (Get-Date -Format "yyyyMMddHHmmss")
-    Copy-Item -LiteralPath $outFull -Destination $backup -Force
-    Write-Host "hold rebuild: backup written to $backup"
-  }
-
-  Copy-Item -LiteralPath $stagingZip -Destination $outFull -Force
-  $item = Get-Item -LiteralPath $outFull
-  $sha1 = (Get-FileHash -LiteralPath $outFull -Algorithm SHA1).Hash.ToLowerInvariant()
-  Write-Host "hold rebuild: wrote $outFull"
-  Write-Host "hold rebuild: size $($item.Length)"
-  Write-Host "hold rebuild: sha1 $sha1"
-  Write-Host "hold rebuild: public listing = https://$siteHost/"
-  Write-Host "hold rebuild: destination grammar = copperline + hosting + common web + service 1842; no server port"
-} finally {
-  if (Test-Path -LiteralPath $workRoot) {
-    Remove-Item -LiteralPath $workRoot -Recurse -Force -ErrorAction SilentlyContinue
-  }
-}
+$siteHost = ($PublicSiteHost -replace '^https?://', '').TrimEnd('/')
+Write-Host "hold rebuild: public listing = https://$siteHost/"
+Write-Host "hold rebuild: route = six contained rooms; five controlled gates; one lamp interaction"
+Write-Host "hold rebuild: destination grammar = copperline + hosting + common web + service 1842; no server endpoint"

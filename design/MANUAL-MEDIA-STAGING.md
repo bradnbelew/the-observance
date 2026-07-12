@@ -39,7 +39,7 @@ Do not plant or expose player-facing clues to these artifacts just because this 
 
 | Artifact | Dashboard path | Payload | Size bytes | SHA1 | Hosting state |
 | --- | --- | --- | ---: | --- | --- |
-| `the-hold.zip` | `dashboard/public/the-hold/the-hold.zip` | copperline + hosting + common web + service 1842; no server port; kept count `6`; missing seventh; no raw server endpoint | 154220 | `532a28149ba38785cf30729ee92b89109f388caa` | present in dashboard public; deploy route must be checked before planting live lure |
+| `the-hold.zip` | `dashboard/public/the-hold/the-hold.zip` | six-room contained prologue; structured books; copperline + hosting + common web + service 1842; no server port; kept count `6`; missing seventh; no raw server endpoint | 17296 | `89e13b613e370fab47a9b5544dced4646737a96e` | present in dashboard public; deterministic command-built payload; Paper/Java 1.21.11; deploy route must be checked before planting live lure |
 
 ## Produced Recovered Archive Packet
 

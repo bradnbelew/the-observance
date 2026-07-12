@@ -107,8 +107,9 @@ that points at it** (or the trail dead-ends / a link 404s).
 
 ### B2 — `the-hold.zip` — the downloadable lure vignette PRODUCED
 - **Current state:** the clean sendable zip is present at `dashboard/public/the-hold/the-hold.zip`.
-  It is 154220 bytes, SHA1 `532a28149ba38785cf30729ee92b89109f388caa`, and its zip entries were checked
-  for README/manifest/spoiler-style files. The final room splits the destination into Copperline,
+  It is 17296 bytes, SHA1 `89e13b613e370fab47a9b5544dced4646737a96e`, and its 22 zip entries were checked
+  for README/spoiler/backup files. The compact payload is intentional: its datapack constructs six roofed,
+  bounded rooms on first load. The final room splits the destination into Copperline,
   Hosting, common web, and service 1842, pointing to the public directory without exposing a server port or raw endpoint.
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
@@ -118,16 +119,12 @@ that points at it** (or the trail dead-ends / a link 404s).
   it does not connect to anything. play it through and it will tell you where the rest is kept."*).
   The file is now in the dashboard public folder. Verify the deployed `/the-hold/the-hold.zip` URL before
   planting the in-world clue to the lure slug; do NOT plant the in-world clue until that deployed URL works.
-- **Full build spec already written:** `design/prologue/PROLOGUE-VIGNETTE.md` — beat-by-beat, room-by-room,
-  all vanilla blocks, gamerules locked, datapack-tick logic (no visible command-block clocks). It carries
-  the dead-uploader (Mara, "m.kept"), the number **6** on a page, a closing rune string, and the
-  frame-break — and **zero spoilers past FACT 1/2, zero server machinery, zero Supabase URL** beyond the
-  public listing handoff. Cracking the world file reveals only what the player already saw.
-- **Scaled cut:** the **1-room version ships first** (spawn → one record lectern → the server pointer); the
-  full 6-room hold is a later expansion. The 1-room form still carries everything above.
-- **This is a build task more than an "art" task** — it's a Minecraft world + datapack, which is squarely in
-  your wheelhouse. I can help author the datapack functions / tellraw lines if you want; the world geometry
-  is yours to build.
+- **Production build spec:** `design/prologue/PROLOGUE-VIGNETTE.md` records the generated six-room route,
+  exact evidence, containment, current 1.21.11 text-component format, and runtime proof. It carries m.kept,
+  the six/missing-seventh pattern, `the record keeps`, and the four-field Copperline handoff. The offline
+  map does not perform the server-side frame-break and contains no server machinery or Supabase URL.
+- **Shipped form:** the complete six-room build is the release artifact. The retired one-room cut and
+  decorative rune-string proposal are not present in the production zip.
 
 **Current handoff rule:** the map points to the abandoned public listing first. The live Paper address is
 shown by the website only when `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` is configured; the zip should never

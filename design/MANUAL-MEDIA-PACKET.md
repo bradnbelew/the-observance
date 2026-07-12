@@ -109,9 +109,11 @@ Current production state:
 
 - source zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - dashboard zip: `dashboard/public/the-hold/the-hold.zip`
-- size: 154181 bytes
-- SHA1: `532a28149ba38785cf30729ee92b89109f388caa`
-- zip cleanliness check: 534 entries; no README/manifest/spoiler-style entries found
+- size: 17296 bytes (the datapack constructs the world on first load)
+- SHA1: `89e13b613e370fab47a9b5544dced4646737a96e`
+- zip cleanliness check: 22 entries; no README/spoiler/backup entries; no pre-generated region files
+- runtime check: all functions parse on Paper 1.21.11; first/final lecterns store structured written-book pages
+- route check: six roofed rooms, five controlled gates, dry accessible walkways, one lever interaction
 - final room handoff: copperline + hosting + common web + service 1842; no server port and no raw server endpoint
 
 Format:
@@ -125,17 +127,18 @@ Format:
 
 Minimum build:
 
-1. Record room: a held archive with `kept: 6` and one struck seventh row.
-2. Domestic room: beds, lamp, ration evidence, signs of people rather than monsters.
-3. Water/reflection room: a Sella count problem, seven where six is expected.
-4. Lamp/hearth room: the kept light and one wrong cold place.
-5. Handoff room: the destination split across Copperline, Hosting, common web, and service 1842.
+1. Archive Vestibule: copied records, six present hands, one missing line.
+2. Domestic Hall: six accessible beds and settings, with the seventh place unissued.
+3. Reed Cistern: six dry posts and the seventh answer below the water.
+4. Lampworks: six tended lamps, one untended lamp, and the lever that changes the room.
+5. Register Gallery: six complete depositions, one intentionally empty shelf, and `the record keeps`.
+6. Dispatch Office: Copperline, Hosting, common web, service 1842, expired status, and owner mkept.
 
 Payload:
 
 - emotional payload: this place had ordinary people in it
 - functional payload: the public listing handoff, then the live server address on the website
-- optional payload: a rune string players can decode later, but not a required early cipher
+- recognition payload: the plain phrase `the record keeps`, not a required early cipher
 
 Integration:
 
