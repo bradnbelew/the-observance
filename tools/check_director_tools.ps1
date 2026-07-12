@@ -132,8 +132,8 @@ if ($failures.Count -eq 0) {
   RequireContains "DirectorProgressReport.tsx" $directorProgress "mirrors /obs director progress"
   RequireContains "DimensionLaneProgress.tsx" $dimensionLane "nether_forge_placed"
   RequireContains "DimensionLaneProgress.tsx" $dimensionLane "end_seventh_shrine_placed"
-  RequireContains "DimensionLaneProgress.tsx" $dimensionLane "/obs site set nether_forge"
-  RequireContains "DimensionLaneProgress.tsx" $dimensionLane "/obs site set end_seventh_shrine"
+  RequireContains "DimensionLaneProgress.tsx" $dimensionLane "stand at the safe Nether anchor, then /obs placeworld"
+  RequireContains "DimensionLaneProgress.tsx" $dimensionLane "stand at the safe End anchor, then /obs placeworld"
 
   RequireContains "ObservanceCommand.java" $observanceCommand "handleDirectorState"
   RequireContains "ObservanceCommand.java" $observanceCommand "handleDirectorProgress"

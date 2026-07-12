@@ -13,10 +13,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -48,6 +53,7 @@ public final class SilenceCorridorListener implements Listener {
     private static final String START_TYPE = "brann_corridor_start";
     private static final String END_TYPE = "brann_corridor_end";
     private static final long SOLVE_COOLDOWN_MS = 2_000L;
+    private static final long RUN_TIMEOUT_MS = 90_000L;
 
     private final Supplier<SitesConfig> sitesSupplier;
     private final OracleResolver oracle;
@@ -61,6 +67,7 @@ public final class SilenceCorridorListener implements Listener {
 
     /** Keepers with an armed silent run (entered the start sneaking, no vibration since). */
     private final Set<UUID> silentRun = new HashSet<>();
+    private final Map<UUID, Long> runStartedAt = new HashMap<>();
 
     public SilenceCorridorListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
                                    RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
@@ -96,13 +103,15 @@ public final class SilenceCorridorListener implements Listener {
                 Site start = nearestPlacedOfType(sites, START_TYPE, world, to.getX(), to.getY(), to.getZ());
                 if (start != null && p.isSneaking()) {
                     silentRun.add(id);
+                    runStartedAt.put(id, System.currentTimeMillis());
                 }
                 return;
             }
 
-            // Armed: staying silent means staying sneaked. Un-sneaking voids the run.
-            if (!p.isSneaking()) {
-                silentRun.remove(id);
+            Long started = runStartedAt.get(id);
+            if (started == null || System.currentTimeMillis() - started > RUN_TIMEOUT_MS
+                    || !p.isSneaking() || !insideAuthoredCorridor(sites, world, to)) {
+                reset(id);
                 return;
             }
 
@@ -110,7 +119,7 @@ public final class SilenceCorridorListener implements Listener {
             Site end = nearestPlacedOfType(sites, END_TYPE, world, to.getX(), to.getY(), to.getZ());
             if (end == null) return;                          // still traversing
 
-            silentRun.remove(id);                             // consume the run
+            reset(id);                                       // consume the run
             if (!rateLimiter.tryCooldown("brann_corridor:" + id, SOLVE_COOLDOWN_MS)) return;
             final String mc = id.toString();
             final String name = p.getName();
@@ -127,23 +136,49 @@ public final class SilenceCorridorListener implements Listener {
         if (!enabled) return;
         if (!event.isSprinting()) return;                     // only STARTING to sprint is a vibration
         Player p = event.getPlayer();
-        if (p != null) silentRun.remove(p.getUniqueId());
+        if (p != null) reset(p.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         if (!enabled) return;
         Player p = event.getPlayer();
-        if (p != null) silentRun.remove(p.getUniqueId());
+        if (p != null) reset(p.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAttack(EntityDamageByEntityEvent event) {
         if (!enabled) return;
-        if (event.getDamager() instanceof Player p) silentRun.remove(p.getUniqueId());
+        if (event.getDamager() instanceof Player p) reset(p.getUniqueId());
     }
 
+    @EventHandler public void onQuit(PlayerQuitEvent event) { reset(event.getPlayer().getUniqueId()); }
+    @EventHandler public void onDeath(PlayerDeathEvent event) { reset(event.getEntity().getUniqueId()); }
+    @EventHandler(ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) { reset(event.getPlayer().getUniqueId()); }
+
     /* ----------------------------- helpers ---------------------------- */
+
+    private void reset(UUID id) {
+        silentRun.remove(id);
+        runStartedAt.remove(id);
+    }
+
+    private boolean insideAuthoredCorridor(SitesConfig sites, String world, Location point) {
+        Site start = sites.get("brann_corridor_start");
+        Site end = sites.get("brann_corridor_end");
+        if (start == null || end == null || !start.isPlaced() || !end.isPlaced()) return false;
+        Location a = start.location();
+        Location b = end.location();
+        if (a == null || b == null || a.getWorld() == null || b.getWorld() == null) return false;
+        if (!world.equals(a.getWorld().getName()) || !world.equals(b.getWorld().getName())) return false;
+        double minX = Math.min(a.getX(), b.getX()) - 5.0, maxX = Math.max(a.getX(), b.getX()) + 5.0;
+        double minY = Math.min(a.getY(), b.getY()) - 2.0, maxY = Math.max(a.getY(), b.getY()) + 6.0;
+        double minZ = Math.min(a.getZ(), b.getZ()) - 5.0, maxZ = Math.max(a.getZ(), b.getZ()) + 5.0;
+        return point.getX() >= minX && point.getX() <= maxX
+                && point.getY() >= minY && point.getY() <= maxY
+                && point.getZ() >= minZ && point.getZ() <= maxZ;
+    }
 
     private Site nearestPlacedOfType(SitesConfig sites, String type,
                                      String world, double x, double y, double z) {

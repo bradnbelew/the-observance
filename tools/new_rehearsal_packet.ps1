@@ -77,8 +77,8 @@ function Write-LiveServerCommandSheet([string]$PacketDir, [string]$Date) {
   $lines.Add("- [ ] " + (Code "/observance site next") + " - find the next remaining outside-Hold or dimension launch site.")
   $lines.Add("- [ ] " + (Code "/observance site set <siteId>") + " - survey each remaining real location; this is not proof by itself.")
   $lines.Add("- [ ] " + (Code "/observance placeworld") + " - stamp every surveyed placeworld row before it can count as launch-complete.")
-  $lines.Add("- [ ] " + (Code "/observance site set nether_forge") + " in the Nether, then " + (Code "/observance placeworld") + " there; record the " + (Code "nether_forge_placed") + " receipt.")
-  $lines.Add("- [ ] " + (Code "/observance site set end_seventh_shrine") + " in the End, then " + (Code "/observance placeworld") + " there; record the " + (Code "end_seventh_shrine_placed") + " receipt.")
+  $lines.Add("- [ ] Stand at the safe Nether anchor, run " + (Code "/observance placeworld") + ", and record the " + (Code "nether_forge_placed") + " receipt.")
+  $lines.Add("- [ ] Stand at the safe End anchor, run " + (Code "/observance placeworld") + ", and record the " + (Code "end_seventh_shrine_placed") + " receipt.")
   $lines.Add("- [ ] Fill " + (Code "coords-capture.csv") + " with Deep Hold GeneratedProof, PlaceworldReceipt for stamped rows, outside-Hold coordinates, KEEP verdict, four proof shots, and cohesion notes.")
   $lines.Add("- [ ] Rerun " + (Code "/observance site launch") + " plus " + (Code "check_launch_coord_quality.ps1 -Launch") + " until generated Hold proof and outside-Hold coordinates are complete.")
   $lines.Add("")
@@ -554,7 +554,7 @@ evidence:
 
 ## Server Load
 
-- [ ] Plugin `observance-0.3.22.jar` loaded on the target Paper 1.21.11 server.
+- [ ] Plugin `observance-0.3.23.jar` loaded on the target Paper 1.21.11 server.
 - [ ] Plugin jar SHA1 matched the current repo package: __PLUGIN_JAR_SHA1__.
 - [ ] Datapack `observance` loaded with no compatibility warnings.
 - [ ] Hosted resource pack downloaded for a real client.

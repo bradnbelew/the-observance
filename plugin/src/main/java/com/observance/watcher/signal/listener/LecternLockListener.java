@@ -97,7 +97,7 @@ public final class LecternLockListener implements Listener {
             if (loc.getWorld() == null) return;
             String world = loc.getWorld().getName();
             // Only proceed if the clicked lectern is actually one of the lock's lecterns.
-            Site here = nearestPlacedOfType(sites, lecternType, world, loc.getX(), loc.getY(), loc.getZ());
+            Site here = exactLockSiteAt(sites, world, loc.getX(), loc.getY(), loc.getZ());
             if (here == null) return;
 
             final String mc = p.getUniqueId().toString();
@@ -112,22 +112,15 @@ public final class LecternLockListener implements Listener {
     private void checkCombination(String mcUuid, String playerName) {
         SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
         if (sites == null) return;
-        List<Site> lecterns = sites.placedOfType(lecternType);
-        if (lecterns.isEmpty()) return;
         if (markedPages.length == 0) return;                 // nothing to match against — inert
 
-        boolean allMatch = true;
-        int matched = 0;
-        for (Site s : lecterns) {
-            int idx = OrderedBowListener.trailingRank(s.id());   // reuse the trailing-index parse (1..6)
-            if (idx < 1 || idx > markedPages.length) { allMatch = false; continue; }
+        for (int idx = 1; idx <= markedPages.length; idx++) {
+            Site s = sites.get(lecternType + "_" + idx);
+            if (s == null || !s.isPlaced() || !lecternType.equals(s.type())) return;
             int targetPage = markedPages[idx - 1];
             Integer openPage = openPageOf(s);
-            if (openPage == null || openPage != targetPage) { allMatch = false; }
-            else matched++;
+            if (openPage == null || openPage != targetPage) return;
         }
-        // Require that every configured page has a matching, correctly-turned lectern.
-        if (!allMatch || matched < markedPages.length) return;
 
         if (!rateLimiter.tryCooldown(lecternType + ":lock", CHECK_COOLDOWN_MS)) return;
         safety.info(puzzleKey + ".lectern", playerName + " cleared the lectern lock — posting " + puzzleKey);
@@ -157,18 +150,13 @@ public final class LecternLockListener implements Listener {
         return out;
     }
 
-    private Site nearestPlacedOfType(SitesConfig sites, String type,
-                                     String world, double x, double y, double z) {
-        Site best = null;
-        double bestD2 = Double.MAX_VALUE;
-        for (Site s : sites.placedOfType(type)) {
+    private Site exactLockSiteAt(SitesConfig sites, String world, double x, double y, double z) {
+        for (int idx = 1; idx <= markedPages.length; idx++) {
+            Site s = sites.get(lecternType + "_" + idx);
+            if (s == null || !s.isPlaced() || !lecternType.equals(s.type())) continue;
             if (!s.contains(world, x, y, z)) continue;
-            Location c = s.location();
-            if (c == null) { if (best == null) best = s; continue; }
-            double dx = x - c.getX(), dy = y - c.getY(), dz = z - c.getZ();
-            double d2 = dx * dx + dy * dy + dz * dz;
-            if (d2 < bestD2) { bestD2 = d2; best = s; }
+            return s;
         }
-        return best;
+        return null;
     }
 }

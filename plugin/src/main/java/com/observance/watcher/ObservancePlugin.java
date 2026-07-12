@@ -117,6 +117,8 @@ public final class ObservancePlugin extends JavaPlugin {
     //     townsfolk lane is otherwise arc-agnostic, so with no flag / a DB hiccup Old Pell keeps his
     //     existing conduct greet. Only used to colour ONE authored greet (old-pell.greet.iss_cold). ---
     private volatile boolean issCaught = false;
+    /** Cached terminal-rite gate: the six physical offerings have been laid. */
+    private volatile boolean acceptingReady = false;
 
     // --- resource-pack load gate (MF-11): rune rendering is unsafe until the client applies the pack ---
     private com.observance.watcher.signal.ResourcePackTracker resourcePack;
@@ -509,13 +511,20 @@ public final class ObservancePlugin extends JavaPlugin {
         // degrades to a no-op when disabled or the token is blank. Read live so a reload re-arms it.
         var rites = getConfig();
         if (rites.getBoolean("rites.accepting.enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.RiteTokenDepositListener(
+                    this::sites, oracleResolver, scheduler, rateLimiter, safety,
+                    () -> this.acceptingReady = true,
+                    rites.getString("rites.tokens.token", ""),
+                    rites.getString("rites.tokens.puzzle-key", "rite-tokens")), this);
             pm.registerEvents(new com.observance.watcher.signal.listener.AcceptingRiteListener(
                     this::sites, oracleResolver, rateLimiter, scheduler, safety,
                     true,
                     rites.getString("rites.accepting.token", ""),
                     rites.getString("rites.accepting.puzzle-key", "accepting-crouch"),
                     rites.getInt("rites.accepting.quorum", 7),  // default = active-cast size; clamped to the live active roster at runtime
-                    rites.getLong("rites.accepting.cooldown-seconds", 300L) * 1000L), this);
+                    rites.getLong("rites.accepting.cooldown-seconds", 300L) * 1000L,
+                    this::acceptingReady,
+                    () -> Math.max(1, org.bukkit.Bukkit.getOnlinePlayers().size())), this);
         }
 
         // The non-typed puzzle PRODUCERS (design/PUZZLE-DESIGNS.md §2–§6). Each detects an in-world
@@ -698,6 +707,8 @@ public final class ObservancePlugin extends JavaPlugin {
             pm.registerEvents(new com.observance.watcher.signal.listener.PaintedLineListener(
                     supabase, this::sites, rateLimiter, scheduler, safety), this);
         }
+        pm.registerEvents(new com.observance.watcher.signal.listener.DreadRouteListener(
+                this::sites, supabase, scheduler, rateLimiter, safety), this);
 
         // --- THE THREE-HANDS COOP GATE (the IV→V hinge, m4-three-hands) ---
         // Owns the two WORLD legs of the cross-surface gate: a foot on the coop_plate + a carve at the
@@ -866,6 +877,7 @@ public final class ObservancePlugin extends JavaPlugin {
      *  cheaply on the click thread; it is refreshed off-thread by {@link #refreshIssCaught()} on the
      *  maint cadence. Defaults FALSE — Old Pell keeps his conduct greet until the flag is truly set. */
     public boolean issCaught() { return issCaught; }
+    public boolean acceptingReady() { return acceptingReady; }
 
     /**
      * Refresh the cached {@code iss_caught} arc flag from {@code arc_state}. ASYNC ONLY (does a DB read).
@@ -875,17 +887,20 @@ public final class ObservancePlugin extends JavaPlugin {
      */
     private void refreshIssCaught() {
         boolean caught = false;
+        boolean tokensLaid = false;
         try {
             if (supabase != null && supabase.isConfigured()) {
                 var r = supabase.fetchArcState();
                 if (r != null && r.ok() && r.value() != null) {
                     caught = truthyFlag(r.value().flagsMap().get("iss_caught"));
+                    tokensLaid = truthyFlag(r.value().flagsMap().get("tokens_laid"));
                 }
             }
         } catch (Throwable ignored) {
             caught = false; // fail-closed: never echo the dead shrine on a DB error
         }
         this.issCaught = caught;
+        this.acceptingReady = tokensLaid;
     }
     public RateLimiter rateLimiter() { return rateLimiter; }
 

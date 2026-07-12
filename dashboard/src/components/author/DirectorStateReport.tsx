@@ -162,10 +162,10 @@ function buildNextCommand({
   if (theoryCount < THEORY_FLAGS.length) return "/obs site todo, then /obs visit next";
   if (priorCount < PRIOR_FLAGS.length) return "/obs placehold sync, then audit prior_camp and failed_accepting";
   if (isTrue(flags, "undercroft_open") && !isTrue(flags, "nether_forge_placed")) {
-    return "/obs site set nether_forge in the Nether, then /obs placeworld";
+    return "stand at the safe Nether anchor, then /obs placeworld";
   }
   if (isTrue(flags, "seventh_named") && !isTrue(flags, "end_seventh_shrine_placed")) {
-    return "/obs site set end_seventh_shrine in the End, then /obs placeworld";
+    return "stand at the safe End anchor, then /obs placeworld";
   }
   return "/obs preflight, then /obs unlit ready";
 }

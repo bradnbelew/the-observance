@@ -200,6 +200,13 @@ tracker:
 # rite is the ONLY way its opaque token enters the system â€” it cannot be guessed, read off a wiki,
 # or typed at a sign / in Discord. It must be PERFORMED.
 rites:
+  # Six Keeper remainders must be moved from their room reliquaries into the six receptacles,
+  # each paired with a differently signed living page. The returned first stone and the physical
+  # Unbroken Light complete the named components. Only that whole arrangement posts this token.
+  tokens:
+    token: "t6k4 n9p2 w7x1 h3m8"
+    puzzle-key: "rite-tokens"
+
   # The Accepting â€” the terminal climax. When every player present on the `accepting_floor` site
   # crouches at once ("bow as one"), the plugin posts the opaque token below as a solve of the
   # `accepting-crouch` puzzle. The token MUST byte-match that row's accepted_answers in the seed â€”
@@ -382,7 +389,7 @@ puzzles:
     # The combination the fragments assemble (space-separated groups). Each group is
     # one fragment unit; the partition slices these contiguously over the roster.
     # Plugin-only â€” do NOT put this in the seed (the seed carries the token above).
-    combination: "v8k3 mq2n x6w1 t4d9 c7s5"
+    combination: "witness before accepting"
     # Convergence quorum (INV-19): min players AT the vault for the solve to land,
     # clamped to the live active roster so an absent member never blocks it. Keeps a
     # lone player who learned the whole code from opening it alone.

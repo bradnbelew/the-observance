@@ -104,7 +104,11 @@ public final class IssKeepsakeLampItem {
                                 .decoration(TextDecoration.ITALIC, true),
                         Component.text("It carries more than it shows.")
                                 .color(NamedTextColor.DARK_GRAY)
-                                .decoration(TextDecoration.ITALIC, true)));
+                                .decoration(TextDecoration.ITALIC, true),
+                        Component.text("filing string: " + b64.substring(0, Math.min(48, b64.length())))
+                                .color(NamedTextColor.DARK_AQUA).decoration(TextDecoration.ITALIC, false),
+                        Component.text(b64.substring(Math.min(48, b64.length())))
+                                .color(NamedTextColor.DARK_AQUA).decoration(TextDecoration.ITALIC, false)));
                 item.setItemMeta(meta);
             }
         } catch (Throwable ignored) {

@@ -83,7 +83,7 @@ public final class FrameDialsListener implements Listener {
             Location loc = frame.getLocation();
             if (loc == null || loc.getWorld() == null) return;
             String world = loc.getWorld().getName();
-            Site here = nearestPlacedOfType(sites, DIAL_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
+            Site here = exactDialSiteAt(sites, world, loc.getX(), loc.getY(), loc.getZ());
             if (here == null) return;                        // not one of the dial frames
 
             final String mc = p.getUniqueId().toString();
@@ -98,19 +98,13 @@ public final class FrameDialsListener implements Listener {
         SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
         if (sites == null) return;
         if (targetRotations.length == 0) return;             // nothing to match — inert
-        List<Site> dials = sites.placedOfType(DIAL_TYPE);
-        if (dials.isEmpty()) return;
-
-        int matched = 0;
-        for (Site s : dials) {
-            int idx = OrderedBowListener.trailingRank(s.id());
-            if (idx < 1 || idx > targetRotations.length) return;   // an unindexed/extra dial = no clear
+        for (int idx = 1; idx <= targetRotations.length; idx++) {
+            Site s = sites.get("orin_frame_dial_" + idx);
+            if (s == null || !s.isPlaced() || !DIAL_TYPE.equals(s.type())) return;
             Integer rot = rotationOf(s);
             if (rot == null) return;                         // a dial frame not loaded → cannot clear yet
             if (rot != normalize(targetRotations[idx - 1])) return;
-            matched++;
         }
-        if (matched < targetRotations.length) return;        // not every configured dial is placed+set
 
         if (!rateLimiter.tryCooldown("orin_dials:lock", CHECK_COOLDOWN_MS)) return;
         safety.info("orin.dials", playerName + " cleared the frame dials — posting orin-frame-dials");
@@ -142,18 +136,13 @@ public final class FrameDialsListener implements Listener {
 
     /* ----------------------------- helpers ---------------------------- */
 
-    private Site nearestPlacedOfType(SitesConfig sites, String type,
-                                     String world, double x, double y, double z) {
-        Site best = null;
-        double bestD2 = Double.MAX_VALUE;
-        for (Site s : sites.placedOfType(type)) {
+    private Site exactDialSiteAt(SitesConfig sites, String world, double x, double y, double z) {
+        for (int idx = 1; idx <= targetRotations.length; idx++) {
+            Site s = sites.get("orin_frame_dial_" + idx);
+            if (s == null || !s.isPlaced() || !DIAL_TYPE.equals(s.type())) continue;
             if (!s.contains(world, x, y, z)) continue;
-            Location c = s.location();
-            if (c == null) { if (best == null) best = s; continue; }
-            double dx = x - c.getX(), dy = y - c.getY(), dz = z - c.getZ();
-            double d2 = dx * dx + dy * dy + dz * dz;
-            if (d2 < bestD2) { bestD2 = d2; best = s; }
+            return s;
         }
-        return best;
+        return null;
     }
 }

@@ -20,7 +20,7 @@ scenery; each one corroborates a different part of the surface/deep/keeper web.
 ## One-Time Update Steps
 
 1. Upload the latest jar:
-   `plugin/build/libs/observance-0.3.22.jar`
+   `plugin/build/libs/observance-0.3.23.jar`
 2. Apply the latest database bundle:
    from `discord/`, run `npm run db:seed`, then paste and run `discord/supabase/apply-all.sql` in Supabase.
 3. Restart the Minecraft server.

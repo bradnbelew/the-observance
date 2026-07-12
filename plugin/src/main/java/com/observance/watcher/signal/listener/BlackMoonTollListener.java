@@ -93,10 +93,7 @@ public final class BlackMoonTollListener implements Listener {
             // One toll per keeper per window.
             if (!rateLimiter.tryCooldown("brann_toll:" + p.getUniqueId(), TOLL_COOLDOWN_MS)) return;
 
-            // Play the toll privately to the keeper (they HEAR the morse-carrying bell). Best-effort.
-            try {
-                p.playSound(p.getLocation(), Sound.BLOCK_BELL_USE, 1.0f, 0.6f);
-            } catch (Throwable ignored) { /* sound is a nicety; never fail the flag on it */ }
+            playAwakeMorse(p);
 
             final String name = p.getName();
             scheduler.runAsyncSafe("brann.toll.flag", () -> {
@@ -107,6 +104,29 @@ public final class BlackMoonTollListener implements Listener {
                         FLAG_KEY + " set — " + name + " heard the toll on the black moon at " + tower.id());
             });
         });
+    }
+
+    private void playAwakeMorse(Player player) {
+        String[] awake = {".-", ".--", ".-", "-.-", "."};
+        long tick = 0L;
+        int note = 0;
+        for (String letter : awake) {
+            for (int i = 0; i < letter.length(); i++) {
+                char mark = letter.charAt(i);
+                long at = tick;
+                int sequence = note++;
+                scheduler.runLaterSafe("brann.toll.morse." + sequence, at, () -> {
+                    if (!player.isOnline()) return;
+                    try {
+                        player.playSound(player.getLocation(), Sound.BLOCK_BELL_USE, 1.0f,
+                                mark == '.' ? 1.35f : 0.55f);
+                    } catch (Throwable ignored) { }
+                });
+                tick += mark == '.' ? 4L : 10L;
+                tick += 4L;
+            }
+            tick += 10L;
+        }
     }
 
     /* ----------------------------- helpers ---------------------------- */

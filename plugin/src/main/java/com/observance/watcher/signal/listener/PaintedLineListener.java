@@ -65,9 +65,21 @@ public final class PaintedLineListener implements Listener {
             if (sites == null) return;
             String worldName = to.getWorld().getName();
 
-            Site line = nearestPlacedOfType(sites, LINE_TYPE, worldName, to.getX(), to.getY(), to.getZ());
-            if (line == null) return;
-            if (line.contains(worldName, from.getX(), from.getY(), from.getZ())) return;
+            Site line = sites.get("painted_line");
+            if (line == null || !line.isPlaced() || !LINE_TYPE.equals(line.type())) return;
+            Location center = line.location();
+            if (center == null || center.getWorld() == null || !worldName.equals(center.getWorld().getName())) return;
+            double planeZ = center.getBlockZ() + 0.5;
+            double fromSide = from.getZ() - planeZ;
+            double toSide = to.getZ() - planeZ;
+            if (fromSide == 0.0 || toSide == 0.0 || Math.signum(fromSide) == Math.signum(toSide)) return;
+            double dz = to.getZ() - from.getZ();
+            if (Math.abs(dz) < 0.0001) return;
+            double t = (planeZ - from.getZ()) / dz;
+            double crossX = from.getX() + (to.getX() - from.getX()) * t;
+            double crossY = from.getY() + (to.getY() - from.getY()) * t;
+            if (crossX < center.getBlockX() - 8 || crossX > center.getBlockX() + 9
+                    || crossY < center.getBlockY() || crossY > center.getBlockY() + 3) return;
 
             String key = "painted_line:" + player.getUniqueId();
             if (rateLimiter != null && !rateLimiter.tryCooldown(key, CROSS_COOLDOWN_MS)) return;

@@ -232,7 +232,21 @@ export function riteTokenSelfTest(configYml: string, seedSql: string): { passed:
         `Keep rites.accepting.token === the accepting-crouch accepted_answer. (MF-8)`,
     );
   }
-  return { passed: 1, cases: [`rite token: config.yml Accepting token matches the seed (the climax will resolve)`] };
+  const tokenCfg = configYml.match(/tokens:\s*[\s\S]*?token:\s*"([^"]*)"/i);
+  if (!tokenCfg) {
+    throw new Error('riteTokenSelfTest: could not find rites.tokens.token in config.yml.');
+  }
+  const tokenSeed = sql.match(/\(\s*'rite-tokens'\s*,[\s\S]*?array\s*\[\s*'([^']*)'/i);
+  if (!tokenSeed || tokenCfg[1]!.trim() !== tokenSeed[1]!.trim()) {
+    throw new Error(
+      `riteTokenSelfTest: the physical six-token producer disagrees with the rite-tokens seed.\n` +
+      `  config.yml: "${tokenCfg[1]?.trim() ?? ''}"\n  seed:       "${tokenSeed?.[1]?.trim() ?? ''}"`,
+    );
+  }
+  return { passed: 2, cases: [
+    `rite token: config.yml Accepting token matches the seed (the climax will resolve)`,
+    `rite token: physical six-token producer matches the rite-tokens seed`,
+  ] };
 }
 
 /**

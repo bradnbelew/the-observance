@@ -61,6 +61,7 @@ public final class ReleaseRiteListener implements Listener {
     public static final String FLAG_RECORD_RELEASED = "record_released";
     /** The gate: the Accepting rite must be made first (the release is the LAST act). */
     public static final String FLAG_BOWED_AS_ONE = "bowed_as_one";
+    public static final String FLAG_SEVENTH_CHOICE = "seventh_choice";
 
     /** Per-player cooldown — debounces a double-click; long enough for the async round-trip. */
     private static final long RELEASE_COOLDOWN_MS = 8_000L;
@@ -111,6 +112,10 @@ public final class ReleaseRiteListener implements Listener {
                 if (!truthyFlag(flags.get(FLAG_BOWED_AS_ONE))) {
                     notify(p, Component.text("it is not finished. the hands are not yet in.",
                             NamedTextColor.DARK_GRAY));
+                    return;
+                }
+                if (!truthyFlag(flags.get(FLAG_SEVENTH_CHOICE))) {
+                    notify(p, Component.text("the blank has not been answered.", NamedTextColor.DARK_GRAY));
                     return;
                 }
 

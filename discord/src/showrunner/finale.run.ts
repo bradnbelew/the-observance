@@ -70,6 +70,8 @@ export async function runFinalePass(
     lightKept: flags.light_kept === true,
     lightTaken: flags.light_taken === true,
     sacredBeastBroken: flags.sacred_beast_broken === true,
+    netherForgeFound: flags.nether_forge_found === true,
+    seventhSeenOut: flags.seventh_seen_out === true,
     // The Pale field's M5 condition (design/ideas/herd-conversion.md §1.2, FACT 15.a): read straight
     // off state.herd_pale_count (the pacer's persisted high-water — herd.ts/autonomy.run.ts), NOT a
     // new measurement. Gated at >1 so the clause never fires on the M1-only single-beast state (the
@@ -174,6 +176,8 @@ export async function runReleasePass(
     lightKept: flags.light_kept === true,
     lightTaken: flags.light_taken === true,
     sacredBeastBroken: flags.sacred_beast_broken === true,
+    netherForgeFound: flags.nether_forge_found === true,
+    seventhSeenOut: flags.seventh_seen_out === true,
     // The Release (the LAST beat, after the Accepting close) does not carry its own Pale-field
     // clause — the design doc scopes the field's M5 read to the Accepting close (composeFinale)
     // only; runReleasePass has no `state` param to read herd_pale_count from. Left false rather

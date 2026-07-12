@@ -10,7 +10,7 @@ const DIMENSION_LANES = [
     placementLabel: "Forge placed",
     payoffFlag: "nether_forge_found",
     payoffLabel: "Lent found",
-    command: "/obs site set nether_forge, then /obs placeworld in the Nether",
+    command: "stand at the safe Nether anchor, then /obs placeworld",
   },
   {
     key: "end",
@@ -21,7 +21,7 @@ const DIMENSION_LANES = [
     placementLabel: "Shrine placed",
     payoffFlag: "seventh_seen_out",
     payoffLabel: "Out-of-record read",
-    command: "/obs site set end_seventh_shrine, then /obs placeworld in the End",
+    command: "stand at the safe End anchor, then /obs placeworld",
   },
 ] as const;
 

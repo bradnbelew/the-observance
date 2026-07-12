@@ -321,6 +321,32 @@ foreach ($required in @(
   }
 }
 
+# Deployment instructions must follow the plugin manifest version. A stale literal jar name is a
+# launch-breaking defect even when every command in the document is valid.
+$pluginManifestPath = Join-Path $RepoRoot "plugin\src\main\resources\plugin.yml"
+$pluginManifestText = Get-Content -LiteralPath $pluginManifestPath -Raw
+$versionMatch = [regex]::Match($pluginManifestText, '(?m)^version:\s*["'']?([^"''\s]+)')
+if (-not $versionMatch.Success) {
+  Write-Error "operator docs check: could not read version from plugin.yml"
+  exit 1
+}
+$currentPluginVersion = $versionMatch.Groups[1].Value
+$versionSurfaces = @($docs) + @(
+  "plugin\README.md",
+  "design\LIVE-LAUNCH-RUNBOOK.md",
+  "design\UNLIT-PREARG-STARTUP.md",
+  "tools\new_rehearsal_packet.ps1"
+)
+foreach ($rel in $versionSurfaces | Select-Object -Unique) {
+  $text = Get-Content -LiteralPath (Join-Path $RepoRoot $rel) -Raw
+  foreach ($match in [regex]::Matches($text, 'observance-(\d+\.\d+\.\d+)\.jar')) {
+    if ($match.Groups[1].Value -ne $currentPluginVersion) {
+      Write-Error "operator docs check: $rel names stale plugin jar $($match.Value); current manifest is $currentPluginVersion"
+      exit 1
+    }
+  }
+}
+
 $directorSetupGuidePath = Join-Path $RepoRoot "design\DIRECTOR-SETUP-GUIDE.md"
 if (-not (Test-Path $directorSetupGuidePath)) {
   throw "operator docs check: missing director setup guide: $directorSetupGuidePath"

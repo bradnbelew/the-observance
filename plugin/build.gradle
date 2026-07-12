@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'com.observance'
-version = '0.3.22'
+version = '0.3.23'
 description = 'The Observance — deterministic soft-pressure haunting engine (Phase 0)'
 
 java {
@@ -50,6 +50,7 @@ tasks.withType(JavaCompile).configureEach {
 // processResources expands ${version} etc. in plugin.yml if you ever templatize it.
 tasks.named('processResources') {
     filteringCharset = 'UTF-8'
+    from('../design/deep-hold-d05-shelf.json')
 }
 
 // The plain `jar` task IS the deployable plugin (our classes + plugin.yml). Paper

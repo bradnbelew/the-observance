@@ -203,7 +203,8 @@ RequireContains "painted-line staging" $command "placeDescentProofChain"
 RequireContains "painted-line fixture" $command "placePaintedLineFixture"
 RequireContains "painted-line visit coverage" $command '"painted_line"'
 RequireContains "painted-line flag constant" $paintedLine 'FLAG_CROSSED = "painted_line_crossed"'
-RequireContains "painted-line typed site search" $paintedLine 'nearestPlacedOfType(sites, LINE_TYPE'
+RequireContains "painted-line exact authored site" $paintedLine 'sites.get("painted_line")'
+RequireContains "painted-line plane crossing" $paintedLine 'double planeZ = center.getBlockZ() + 0.5'
 RequireContains "painted-line private cue" $paintedLine "playPressureCue(player)"
 RequireContains "painted-line durable flag" $paintedLine "supabase.mergeArcFlags(flags)"
 RequireContains "painted-line listener registration" $plugin "new com.observance.watcher.signal.listener.PaintedLineListener"

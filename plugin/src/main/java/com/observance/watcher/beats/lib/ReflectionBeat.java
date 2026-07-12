@@ -107,6 +107,11 @@ public final class ReflectionBeat extends AbstractBeat {
 
         // Hang the glyph just UNDER the water surface, facing up, MIRRORED so it reads only in reflection.
         final Location spot = surface.clone().subtract(0.0, depth, 0.0);
+        // FIXED displays need an authored pool-to-player frame. Aim the drowned writing toward this
+        // personalized viewer's standing zone, then apply the X-axis mirror below.
+        double frameDx = pl.getLocation().getX() - surface.getX();
+        double frameDz = pl.getLocation().getZ() - surface.getZ();
+        spot.setYaw((float) Math.toDegrees(Math.atan2(-frameDx, frameDz)));
 
         TextDisplay display;
         try {

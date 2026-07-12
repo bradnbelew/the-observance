@@ -1,0 +1,9 @@
+station_id,room_id,x,y,z,stand_x,stand_y,stand_z,expected_front,title,required_fragment
+mouth_register,mouth_vestibule,12,-24,90,8,-24,90,WEST,mouth register,One row stayed blank
+court_census,keeper_nave,-22,-28,160,-18,-28,160,EAST,court census,trust the physical room
+intake_rail,archive_nave,-40,-24,310,-36,-24,310,EAST,intake rail,"evidence, not decoration"
+prior_roster,prior_case,-160,-28,610,-154,-28,610,EAST,prior roster,no witness
+closure_docket,archive_nave,40,-24,310,36,-24,310,WEST,closure docket,before the collapse
+lamp_count,puzzle_works,-12,-24,524,-8,-24,524,EAST,lamp count,Do not break the wall
+threshold_hands,lower_convergence,-18,-28,660,-14,-28,660,EAST,threshold hands,"Plate. Name. Word."
+side_hush,dread,132,-28,600,136,-28,600,EAST,side hush,uncrossed word

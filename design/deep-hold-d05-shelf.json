@@ -1,0 +1,81 @@
+{
+  "artifact": "page-line-word",
+  "shelf_order": "left_to_right",
+  "compound_expansions": {
+    "UNBROKEN-LIGHT": "UNBROKEN LIGHT"
+  },
+  "books": [
+    {
+      "title": "Landings of the First Descent",
+      "author": "Mara, copyist",
+      "reference": {"page": 4, "line": 4, "word": 6},
+      "pages": [
+        "The first stair was civic work before it was sacred. Every household sent hands or stone; no keeper owned the way down.",
+        "Landing marks were cut waist-high for a standing adult and eye-high for the children who carried lamp oil.",
+        "A descent made alone is only travel. The old rubric begins when the last person crosses beneath the lintel.",
+        "At the last counted landing\nwhere all warm copies end\nkeep the living shoulder close\nLeave the written road and DESCEND"
+      ]
+    },
+    {
+      "title": "The Joined Account",
+      "author": "Mara, copyist",
+      "reference": {"page": 7, "line": 1, "word": 2},
+      "pages": [
+        "One hand opens the docket. Another hand reads the names back. Neither act is a witness by itself.",
+        "The oldest account uses a joining stroke where later clerks use the word and. The stroke never means ownership.",
+        "Six gifts may differ in kind and worth. Their only common property is that the giver will notice their absence.",
+        "A person arriving late is not omitted. The rite waits or it has not begun.",
+        "The record dislikes a crowd because a crowd can remember differently. This is why the crowd is needed.",
+        "No keeper may answer for another. A shared sentence is assembled from separately risked voices.",
+        "Wait AND hear the final foot\nbefore the lower door is named\nfor joining is not nearness\nand silence is not consent"
+      ]
+    },
+    {
+      "title": "Postures Before the Record",
+      "author": "Mara, copyist",
+      "reference": {"page": 2, "line": 3, "word": 1},
+      "pages": [
+        "Standing is used for testimony. Crouching is used for reading low marks. Kneeling belongs to grief, not payment.",
+        "Do not lower yourself to the clerk\nor to the lamp that lets them see\nBOW where the cut floor receives you\nthen rise with every name intact"
+      ]
+    },
+    {
+      "title": "The Receiving Floor",
+      "author": "Mara, copyist",
+      "reference": {"page": 9, "line": 2, "word": 4},
+      "pages": [
+        "The lower chamber was laid wider than six households required. The unused width is not an error.",
+        "Tokens rest on marked stone, never in a keeper's hand. A hand that closes over a gift has interrupted the offering.",
+        "The floor's pale cross predates the cap above it. Masons repaired the cap and left the cross worn.",
+        "No fire is lit for arrival. The company brings its own small lights and covers them before speaking.",
+        "The clerk stands beyond the ring. If the clerk enters it, another person must take the account.",
+        "A returned token is proof of refusal, not proof of failure. The living may leave with what remains theirs.",
+        "The word accepting describes the room's action, not the visitor's obedience.",
+        "A scratched rail outside the old circle has no household mark. Later copies omit it instead of explaining it.",
+        "Enter without rehearsing the answer\nSet each token AT the pale cut\nleave both hands where others see\nand do not close the circle early"
+      ]
+    },
+    {
+      "title": "Light Kept Without Owner",
+      "author": "Mara, copyist",
+      "reference": {"page": 1, "line": 5, "word": 3},
+      "pages": [
+        "The lamp is tended by whoever wakes\nnot by the name filed beside its oil\nits cap is lowered before the gifts\nits wick survives the closing docket\nCarry toward THE waiting brightness\nwhat cannot be copied from a page"
+      ]
+    },
+    {
+      "title": "The Lamp the Docket Missed",
+      "author": "Mara, copyist",
+      "reference": {"page": 6, "line": 1, "word": 5},
+      "pages": [
+        "Every extinguished civic lamp has a closing line: oil spent, glass broken, room abandoned, or keeper absent.",
+        "One lamp has repairs and oil tallies after its closing line should appear. The blank is older than the newest entries.",
+        "Brann called it a watch lamp. Vaun called it communal stock. Sella drew it as a white square under water.",
+        "Orin's plan labels the chamber but not the source. Iss's copy supplies a warm name that the stone itself does not bear.",
+        "A binding stroke joins two record-words when separating them would break the named thing. Speak the stroke as a space.",
+        "The old docket names UNBROKEN-LIGHT\nnot because flame cannot be quenched\nbut because no closing was witnessed\nGo together; do not merely copy"
+      ]
+    }
+  ],
+  "expected_extraction": "DESCEND AND BOW AT THE UNBROKEN LIGHT"
+}

@@ -8,6 +8,7 @@ import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -58,7 +60,7 @@ public final class HoardSortedListener implements Listener {
     private final boolean enabled;
     private final String token;
     private final String puzzleKey;
-    private final Set<Material> required;
+    private final NamespacedKey relicKey = new NamespacedKey("observance", "vaun_first_deep");
 
     public HoardSortedListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
                                RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
@@ -72,7 +74,6 @@ public final class HoardSortedListener implements Listener {
         this.enabled = enabled;
         this.token = token == null ? "" : token.trim();
         this.puzzleKey = (puzzleKey == null || puzzleKey.isBlank()) ? "vaun-hoard-sorted" : puzzleKey.trim();
-        this.required = parseMaterials(requiredMaterials);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -93,7 +94,7 @@ public final class HoardSortedListener implements Listener {
             Site chest = nearestPlacedOfType(sites, CHEST_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
             if (chest == null) return;              // not the "given back" chest
 
-            if (!containsAllRequired(inv)) return;  // the offering isn't complete yet — silent
+            if (!containsAuthoredRelic(inv)) return;
 
             // Anti-spam: one check per chest per window. The solve is idempotent regardless.
             if (!rateLimiter.tryCooldown("vaun_hoard:" + chest.id(), CHECK_COOLDOWN_MS)) return;
@@ -109,16 +110,13 @@ public final class HoardSortedListener implements Listener {
 
     /* ----------------------------- helpers ---------------------------- */
 
-    /** True iff every required material appears at least once among the container's contents. */
-    private boolean containsAllRequired(Inventory inv) {
-        Set<Material> needed = EnumSet.noneOf(Material.class);
-        needed.addAll(required);
+    private boolean containsAuthoredRelic(Inventory inv) {
         for (ItemStack it : inv.getContents()) {
             if (it == null || it.getType() == Material.AIR) continue;
-            needed.remove(it.getType());
-            if (needed.isEmpty()) return true;
+            if (it.hasItemMeta() && it.getItemMeta().getPersistentDataContainer()
+                    .has(relicKey, PersistentDataType.BYTE)) return true;
         }
-        return needed.isEmpty();
+        return false;
     }
 
     /** Parse a config material-name list into a Material set; unknown names skipped; empty ⇒ default. */

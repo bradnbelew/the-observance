@@ -47,6 +47,10 @@ export interface FinaleComposeInput {
   lightTaken: boolean;
   /** fork A transgressor leaf. */
   sacredBeastBroken: boolean;
+  /** the optional Nether forge account was recovered; a close colorant, never a fate input. */
+  netherForgeFound: boolean;
+  /** the optional exiled-Seventh account was recovered; a close colorant, never a fate input. */
+  seventhSeenOut: boolean;
   /**
    * The Pale field's M5 condition (design/ideas/herd-conversion.md §1.2/§3, FACT 15.a): true once
    * the cosmetic pale count has climbed enough to read as "a field", at the close. A small/absent
@@ -99,6 +103,11 @@ export function composeFinale(inp: FinaleComposeInput): FinaleComposeDecision {
   if (inp.nameUnspoken) lines.push(voice.forkNameUnspoken());
   else if (inp.nameSpoken) lines.push(voice.forkNameSpoken());
   if (inp.sacredBeastBroken) lines.push(voice.forkSacredBeastBroken());
+
+  // (3a) cross-dimension evidence. These reads acknowledge discoveries the players actually earned,
+  // but never alter fate selection or unlock the close.
+  if (inp.netherForgeFound) lines.push(voice.netherForgeFound());
+  if (inp.seventhSeenOut) lines.push(voice.seventhSeenOut());
 
   // (3b) the Pale field's condition — cosmetic, colors only, appended right after the tracked
   // beast's own fork line so the two never get read as the same thing (INV-13: one glowing +

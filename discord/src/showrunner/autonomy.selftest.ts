@@ -486,7 +486,7 @@ function cInput(over: Partial<CompanionDialogueInput> = {}): CompanionDialogueIn
 // finale.ts — M5 composer: ordered close, seventh_choice tint, reckoning_free cost, reckoning optional.
 // ===========================================================================
 function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
-  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, paleFieldStands: false, inheritorsCodicil: false, reckoningFree: false, ...over };
+  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, netherForgeFound: false, seventhSeenOut: false, paleFieldStands: false, inheritorsCodicil: false, reckoningFree: false, ...over };
 }
 {
   // The base opener is always present (never an empty close).
@@ -506,6 +506,8 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
   // fork colorants stack in order.
   const forks = composeFinale(finInput({ fate: 'cast_out', lightTaken: true, nameSpoken: true, sacredBeastBroken: true }));
   check('finale: fork leaves add colorant lines', forks.lines.length === 4);
+  const dimensions = composeFinale(finInput({ netherForgeFound: true, seventhSeenOut: true }));
+  check('finale: both dimension discoveries add non-gating colorants', dimensions.lines.length === 3);
   check('finale: inheritors codicil appends', composeFinale(finInput({ inheritorsCodicil: true })).lines.length === 2);
   // A12 herd: the Pale field's M5 condition colors only (INV-12) — absent by default, one extra
   // line when the field stands, and a DISTINCT line when Fork A is also broken (never the same
@@ -525,7 +527,7 @@ function finInput(over: Partial<FinaleComposeInput> = {}): FinaleComposeInput {
 // finale.ts — THE RELEASE composer: mask-off farewell + disconnect kick line (FINALE-THE-RELEASE.md).
 // ===========================================================================
 function relInput(over: Partial<ReleaseComposeInput> = {}): ReleaseComposeInput {
-  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, paleFieldStands: false, inheritorsCodicil: false, reckoningFree: false, reckoningUnderstand: false, reckoningCondemn: false, seventhName: null, ...over };
+  return { fate: 'divided', seventhChoice: null, nameSpoken: false, nameUnspoken: false, lightKept: false, lightTaken: false, sacredBeastBroken: false, netherForgeFound: false, seventhSeenOut: false, paleFieldStands: false, inheritorsCodicil: false, reckoningFree: false, reckoningUnderstand: false, reckoningCondemn: false, seventhName: null, ...over };
 }
 {
   // The three universal movements are ALWAYS present (opener + made + closing), whatever the flavor.

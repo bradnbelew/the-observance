@@ -13,7 +13,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +48,8 @@ public final class GroupWalkListener implements Listener {
     private static final String MARKER_TYPE = "mara_map_marker";
     private static final String ROUTE_TYPE = "mara_route_marker";
     private static final int ROUTE_MARKERS = 4;
+    private static final long ROUTE_TIMEOUT_MS = 5 * 60 * 1000L;
+    private static final int[] MARA_LOCK_PAGES = {1, 2, 4, 4, 6};
 
     private final Supplier<SitesConfig> sitesSupplier;
     private final OracleResolver oracle;
@@ -59,6 +64,7 @@ public final class GroupWalkListener implements Listener {
     private final long cooldownMs;
     /** Next route rank each player must reach; 5 means the full four-marker walk is complete. */
     private final Map<UUID, Integer> routeProgress = new ConcurrentHashMap<>();
+    private final Map<UUID, Long> routeTouchedAt = new ConcurrentHashMap<>();
 
     public GroupWalkListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
                              RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
@@ -87,15 +93,28 @@ public final class GroupWalkListener implements Listener {
         safety.run("mara.walk.route", () -> {
             SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
             if (sites == null) return;
+            UUID id = event.getPlayer().getUniqueId();
+            expireRoute(id);
+            if (!maraAlcoveIsOpen(sites)) {
+                resetRoute(id);
+                return;
+            }
             Site marker = nearestPlacedOfType(sites, ROUTE_TYPE, to.getWorld().getName(),
                     to.getX(), to.getY(), to.getZ());
             if (marker == null) return;
             int rank = OrderedBowListener.trailingRank(marker.id());
             if (rank < 1 || rank > ROUTE_MARKERS) return;
-            UUID id = event.getPlayer().getUniqueId();
             int expected = routeProgress.getOrDefault(id, 1);
-            if (rank == expected) routeProgress.put(id, expected + 1);
-            else if (rank == 1) routeProgress.put(id, 2);
+            if (rank == expected) {
+                routeProgress.put(id, expected + 1);
+                routeTouchedAt.put(id, System.currentTimeMillis());
+            } else {
+                resetRoute(id);
+                if (rank == 1) {
+                    routeProgress.put(id, 2);
+                    routeTouchedAt.put(id, System.currentTimeMillis());
+                }
+            }
         });
     }
 
@@ -109,6 +128,7 @@ public final class GroupWalkListener implements Listener {
             if (toggler == null) return;
             SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
             if (sites == null) return;
+            if (!maraAlcoveIsOpen(sites)) return;
 
             Location loc = toggler.getLocation();
             if (loc == null || loc.getWorld() == null) return;
@@ -118,7 +138,7 @@ public final class GroupWalkListener implements Listener {
             if (marker == null) return;                      // not at the map marker
 
             List<Player> present = playersInSite(marker, world);
-            int effectiveQuorum = AcceptingRiteListener.clampQuorum(quorum, onlineCount());
+            int effectiveQuorum = AcceptingRiteListener.clampQuorum(quorum, activeRouteCount());
             if (present.size() < effectiveQuorum) return;    // not the whole present (active) group yet
             for (Player p : present) {
                 if (routeProgress.getOrDefault(p.getUniqueId(), 1) <= ROUTE_MARKERS) return;
@@ -138,14 +158,43 @@ public final class GroupWalkListener implements Listener {
         });
     }
 
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) { resetRoute(event.getPlayer().getUniqueId()); }
+
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) { resetRoute(event.getEntity().getUniqueId()); }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) { resetRoute(event.getPlayer().getUniqueId()); }
+
     /* ----------------------------- helpers ---------------------------- */
 
-    private int onlineCount() {
-        try {
-            return Bukkit.getOnlinePlayers().size();
-        } catch (Throwable t) {
-            return 1;
+    private int activeRouteCount() {
+        long cutoff = System.currentTimeMillis() - ROUTE_TIMEOUT_MS;
+        routeTouchedAt.entrySet().removeIf(entry -> entry.getValue() < cutoff);
+        routeProgress.keySet().removeIf(id -> !routeTouchedAt.containsKey(id));
+        return Math.max(1, routeTouchedAt.size());
+    }
+
+    private void expireRoute(UUID id) {
+        Long touched = routeTouchedAt.get(id);
+        if (touched != null && touched < System.currentTimeMillis() - ROUTE_TIMEOUT_MS) resetRoute(id);
+    }
+
+    private void resetRoute(UUID id) {
+        routeProgress.remove(id);
+        routeTouchedAt.remove(id);
+    }
+
+    private boolean maraAlcoveIsOpen(SitesConfig sites) {
+        for (int idx = 1; idx <= MARA_LOCK_PAGES.length; idx++) {
+            Site site = sites.get("mara_lectern_" + idx);
+            if (site == null || !site.isPlaced() || !"mara_lectern".equals(site.type())) return false;
+            Location loc = site.location();
+            if (loc == null || !(loc.getBlock().getState() instanceof org.bukkit.block.Lectern lectern)) return false;
+            if (lectern.getPage() + 1 != MARA_LOCK_PAGES[idx - 1]) return false;
         }
+        return true;
     }
 
     private List<Player> playersInSite(Site site, String world) {

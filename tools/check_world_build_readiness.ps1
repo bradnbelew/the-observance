@@ -64,7 +64,9 @@ function RequireText([string]$Label, [string]$Text, [string]$Needle) {
 
 RequireText "ObservanceCommand.java production Hold fixture path" $commandSource "buildHoldIntegratedFixture"
 RequireText "ObservanceCommand.java production Hold fixture path" $commandSource "Production Hold fixtures are dressed into the district shell"
-RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "isHoldNativeChamber(row)"
+RequireText "ObservanceCommand.java production Hold owned rooms" $commandSource "buildHoldV2Shells"
+RequireText "ObservanceCommand.java production Hold owned rooms" $commandSource "buildHoldOwnedRoom"
+RequireText "ObservanceCommand.java production Hold owned templates" $commandSource "keeperInOwnedRoom"
 RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "buildHoldThresholdVaultCore"
 RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "buildHoldUnwritingCore"
 RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "hasHoldFinaleMarkersNear"
@@ -207,6 +209,13 @@ $holdSites = [System.Collections.Generic.HashSet[string]]::new([System.StringCom
 foreach ($m in [regex]::Matches($commandSource, 'new\s+HoldSite\(\s*"([^"]+)"')) {
   [void]$holdSites.Add($m.Groups[1].Value)
 }
+$commandGeneratedSites = [System.Collections.Generic.HashSet[string]]::new($holdSites, [System.StringComparer]::OrdinalIgnoreCase)
+foreach ($id in @("first_report_lectern_01", "nether_forge", "end_seventh_shrine")) {
+  [void]$commandGeneratedSites.Add($id)
+}
+RequireText "ObservanceCommand.java dimension-safe placeworld" $commandSource "dimensionLaneMatchesWorld"
+RequireText "ObservanceCommand.java dimension-safe placeworld" $commandSource "world.getEnvironment() != World.Environment.NORMAL"
+RequireText "ObservanceCommand.java surveyed Y preservation" $commandSource "int ay = configured.getBlockY()"
 
 $placementBriefMatch = [regex]::Match(
   $commandSource,
@@ -356,7 +365,7 @@ $unplacedEnabled = @($enabledSites | Where-Object {
   [string]::IsNullOrWhiteSpace([string]$_.x) -or [string]::IsNullOrWhiteSpace([string]$_.y) -or [string]::IsNullOrWhiteSpace([string]$_.z)
 })
 $unplacedLaunch = @($majorLaunchSites | Where-Object {
-  -not $holdSites.Contains($_) -and
+  -not $commandGeneratedSites.Contains($_) -and
   $sites.Contains($_) -and (
     [string]$sites[$_].x -eq "null" -or [string]$sites[$_].y -eq "null" -or [string]$sites[$_].z -eq "null" -or
     [string]::IsNullOrWhiteSpace([string]$sites[$_].x) -or
@@ -457,10 +466,10 @@ RequireText "ObservanceCommand.java" $commandSource "private int[][] fixtureLore
 RequireText "ObservanceCommand.java" $commandSource "private void placeDecorativeBookshelf(Block block, int seed)"
 RequireText "ObservanceCommand.java" $commandSource "private void placeMechanicBookshelf(Block block)"
 RequireText "ObservanceCommand.java" $commandSource "Vaun tally shelf is pre-filled"
-RequireText "ObservanceCommand.java" $commandSource "placeMechanicBookshelf(loc.getBlock())"
+RequireText "ObservanceCommand.java" $commandSource "placeMechanicBookshelf(loc.getBlock(), holdFixtureFront(id))"
 RequireText "ObservanceCommand.java" $commandSource "placeFrameDial(new Location(world, bx, by, bz))"
 RequireText "ObservanceCommand.java" $commandSource "expected an item-frame dial entity with an arrow"
-RequireText "ObservanceCommand.java" $commandSource "placeDecorativeBookshelf(world.getBlockAt(bx + 4, by, bz + 5), 31)"
+RequireText "ObservanceCommand.java" $commandSource "placeDecorativeBookshelf(world.getBlockAt(bx + 5, by, bz + 5), 31, BlockFace.NORTH)"
 RequireText "StructureTemplates.java" $structureTemplateSource "prepareTemplateVolume(pen, base, id)"
 RequireText "StructureTemplates.java" $structureTemplateSource "void clearBox(int cx, int y, int cz, int radius, int height)"
 RequireText "StructureTemplates.java" $structureTemplateSource "seedLoreStorage(base, id)"

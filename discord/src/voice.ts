@@ -595,6 +595,16 @@ export const voice = {
     return 'the one that glowed is down. the boon it would have lent is closed, and stays closed. the herd keeps the death-spot in its facing.';
   },
 
+  /** Optional Nether lane: the group recovered the account of the kept light's origin. */
+  netherForgeFound(): string {
+    return 'you found where the first kept light was carried from. the fire did not begin below, and the record no longer pretends that it did.';
+  },
+
+  /** Optional End lane: the group recovered the Seventh's account from outside the record. */
+  seventhSeenOut(): string {
+    return 'you read the seventh from the far side of the keeping. the account made outside the book is entered beside the account that cut her out.';
+  },
+
   /**
    * The Pale field's M5 condition (design/ideas/herd-conversion.md §3/§4.3, FACT 15.a). Composed
    * ONLY when the cosmetic pale count is non-trivial at the close (a small/empty field composes

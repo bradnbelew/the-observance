@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 import sys
+import csv
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -367,6 +368,56 @@ def check_sql_and_dashboard(puzzles: str, metapuzzle: str, hints: str, dashboard
         require_text("PriorAcceptingProgress.tsx", dashboard, needle)
 
 
+def check_layout_v2(source: str, answer_listener: str, sites: dict[str, HoldSite],
+                    gates: dict[str, HoldGate], spans: dict[str, HoldGateSpan]) -> None:
+    fixture_path = ROOT / "design" / "DEEP-HOLD-FIXTURE-MANIFEST.csv"
+    with fixture_path.open(encoding="utf-8", newline="") as handle:
+        fixtures = list(csv.DictReader(handle))
+    if len(fixtures) != 76:
+        fail(f"V2 fixture manifest must contain 76 sites, found {len(fixtures)}")
+    for row in fixtures:
+        site = sites.get(row["site_id"])
+        if site is None:
+            fail(f"missing V2 fixture site: {row['site_id']}")
+            continue
+        expected = (int(row["x"]), int(row["y"]), int(row["z"]))
+        if (site.x, site.y, site.z) != expected:
+            fail(f"{site.id} executable anchor {(site.x, site.y, site.z)} != manifest {expected}")
+
+    expected_gates = {
+        "entry": (0, -24, 99, True), "keeper": (0, -28, 152, False),
+        "archive": (0, -24, 292, False), "undercroft": (0, -24, 506, False),
+        "deep": (0, -28, 589, False), "prior": (-150, -28, 648, False),
+        "dread": (120, -28, 602, False), "accepting": (0, -32, 774, False),
+        "coda": (0, -32, 876, False),
+    }
+    for gate_id, expected in expected_gates.items():
+        gate = gates.get(gate_id)
+        if gate is None:
+            fail(f"missing V2 gate: {gate_id}")
+            continue
+        actual = (gate.x, gate.y, gate.z, gate.open_initially)
+        if actual != expected:
+            fail(f"{gate_id} executable gate {actual} != V2 contract {expected}")
+        if gate_id not in spans:
+            fail(f"missing explicit HoldGateSpan case: {gate_id}")
+
+    build = source_slice(source, "private int buildDeepHold", "\n    private void registerHoldRegion")
+    for needle in ("buildHoldV2Shells", "buildHoldV2Mouth", "by - 36", "loadHoldChunks"):
+        require_text("buildDeepHold", build, needle)
+    if "buildHoldSpine(" in build or "buildHoldSurfaceStair(" in build:
+        fail("V2 buildDeepHold still invokes a legacy overlapping shell/stair builder")
+    for needle in (
+        "private void buildHoldOwnedRoom", "private void buildHoldDreadPassage",
+        "private void dressHoldOwnedRoomArchitecture",
+        "private void buildMaraD05Shelf", "private void placeKeeperRiteToken",
+        'case "coda" -> new HoldGateSpan', "syncPlaceHoldGatesAutomatically",
+    ):
+        require_text("ObservanceCommand.java", source, needle)
+    for needle in ("TYPE_CASE_BOARD", "TYPE_PRIOR_CAMP", "TYPE_FAILED_ACCEPTING", "ANSWER_SITE_TYPES"):
+        require_text("AnswerSignListener.java", answer_listener, needle)
+
+
 def main() -> int:
     source = read(COMMAND_FILE)
     answer_listener = read(ANSWER_SIGN_LISTENER_FILE)
@@ -393,7 +444,7 @@ def main() -> int:
     if not spans:
         fail("no HoldGateSpan cases parsed from ObservanceCommand.java")
 
-    check_layout(source, answer_listener, sites, gates, spans)
+    check_layout_v2(source, answer_listener, sites, gates, spans)
     check_sql_and_dashboard(puzzles, metapuzzle, hints, dashboard)
 
     for i in range(1, 6):
@@ -420,19 +471,13 @@ def main() -> int:
             print(f"  - {failure}")
         return 1
 
-    prior = sites["prior_camp"]
-    failed = sites["failed_accepting"]
-    prior_gate = gates["prior"]
-    prior_span = spans["prior"]
-    accepting_gate = gates["accepting"]
     print(
         "deep hold layout check: OK - "
-        f"{len(sites)} Hold sites, {len(gates)} gates, prior/failed-accepting flow wired"
+        f"{len(sites)} Hold sites, {len(gates)} gates, V2 ownership/progression wired"
     )
     print(
-        "  prior camp front z="
-        f"{z_min(prior)} gated by z {prior_gate.z}..{prior_gate.z + prior_span.depth}; "
-        f"failed floor z={z_min(failed)}..{z_max(failed)} before accepting gate z={accepting_gate.z}"
+        "  surface mouth y=origin; deepest authored floor=origin-32; "
+        "entry -> keepers -> archive -> lower works -> prior/Accepting -> Unwriting"
     )
     return 0
 

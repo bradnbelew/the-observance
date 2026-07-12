@@ -667,10 +667,10 @@ sites:
   #  GO-LIVE / world-coverage note (siteCoverageSelfTest extension, R7): a cross-
   #  dimension row (nether-forge / end-seventh-out in progression_seed.sql) must NOT
   #  seed OPEN unless its site here is placed + enabled IN THE NAMED WORLD. Coords
-  #  null = UNPLACED until surveyed in-dimension; the plugin SILENTLY skips an unplaced
-  #  site, never errors at a player. FLOW: stand in the Nether/End, run
-  #  `/observance site set nether_forge` (resp. `end_seventh_shrine`), then
-  #  `/observance placeworld` from that dimension to stamp the set-piece there.
+  #  null = UNPLACED until generated in-dimension; the plugin SILENTLY skips an unplaced
+  #  site, never errors at a player. FLOW: stand at a safe anchor in the Nether/End and run
+  #  `/observance placeworld`. The generator records that exact world + Y and stamps only
+  #  the matching dimension set-piece; `/observance site set` remains an optional override.
   # ==========================================================================
 
   # --- The Nether lane (world_nether) ---------------------------------------

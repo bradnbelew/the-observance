@@ -88,6 +88,9 @@ public final class ShoreMemorialListener implements Listener {
 
             Site anchor = nearestPlacedOfType(sites, ANCHOR_TYPE, world, to.getX(), to.getY(), to.getZ());
             if (anchor == null) return;                      // not standing at the worn stone
+            Site pool = sites.get("sella_pool");
+            Location focal = pool == null ? null : pool.location();
+            if (focal == null || !gazeHitsFocalPoint(p, focal.clone().add(0.5, 0.25, 0.5))) return;
 
             // Collapse the move-event stream at the anchor into one measured detection per window.
             if (!rateLimiter.tryCooldown("sella_gaze:" + p.getUniqueId() + ":" + anchor.id(),
@@ -103,6 +106,19 @@ public final class ShoreMemorialListener implements Listener {
     }
 
     /* ----------------------------- helpers ---------------------------- */
+
+    private boolean gazeHitsFocalPoint(Player player, Location focal) {
+        Location eye = player.getEyeLocation();
+        if (eye.getWorld() == null || focal.getWorld() == null || !eye.getWorld().equals(focal.getWorld())) return false;
+        org.bukkit.util.Vector toward = focal.toVector().subtract(eye.toVector());
+        double distance = toward.length();
+        if (distance < 1.0 || distance > 24.0) return false;
+        if (eye.getDirection().normalize().dot(toward.normalize()) < 0.975) return false;
+        org.bukkit.util.RayTraceResult hit = eye.getWorld().rayTraceBlocks(
+                eye, eye.getDirection(), distance + 0.75, org.bukkit.FluidCollisionMode.NEVER, true);
+        return hit == null || hit.getHitBlock() == null
+                || hit.getHitBlock().getLocation().distanceSquared(focal) <= 12.0;
+    }
 
     private Site nearestPlacedOfType(SitesConfig sites, String type,
                                      String world, double x, double y, double z) {

@@ -6,7 +6,7 @@ not turn the live world into a rehearsal grid and does not advance the live stor
 ## Production Artifacts
 
 - Server: Paper 1.21.11 on Java 21
-- Plugin: `plugin/build/libs/observance-0.3.22.jar`
+- Plugin: `plugin/build/libs/observance-0.3.23.jar`
 - Plugin SHA1: `38ebdcb6ab700ba81a4efd7b771e4b661559e092`
 - Datapack: `observance-datapack.zip`
 - Datapack SHA1: `2b8563889735e82d3ed26ac8e94537c7b2c08c19`
@@ -29,7 +29,7 @@ Given a Paper server root called `<server>` and the `level-name` from `server.pr
    `<server>/plugins/Observance` if they already exist.
 2. Remove or archive older Observance jars so exactly one Observance jar will be in
    `<server>/plugins/`.
-3. Put `observance-0.3.22.jar` at `<server>/plugins/observance-0.3.22.jar`.
+3. Put `observance-0.3.23.jar` at `<server>/plugins/observance-0.3.23.jar`.
 4. Put `observance-datapack.zip` at `<server>/<world>/datapacks/observance-datapack.zip`. Leave it as
    a zip.
 5. Set the Paper process environment variable `OBSERVANCE_SUPABASE_KEY` to the rotated live Supabase
@@ -64,7 +64,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_hosted_resource_
 ## 2. First Controlled Boot
 
 1. Start Paper with the whitelist on.
-2. Confirm the console says Observance 0.3.22 enabled and shows no plugin, datapack, pack-format, or
+2. Confirm the console says Observance 0.3.23 enabled and shows no plugin, datapack, pack-format, or
    worldgen error.
 3. Join as the operator and run:
 
@@ -125,9 +125,10 @@ Enter the real vanilla Nether, choose a short safe delve just beyond a reachable
 the ruined forge should be centered, and run:
 
 ```text
-/obs site set nether_forge
 /obs placeworld
 ```
+
+The command uses the exact current Y coordinate in the Nether; it does not consult the roof heightmap.
 
 Record the `nether_forge_placed` receipt.
 
@@ -137,7 +138,6 @@ Enter the real vanilla End, choose a reachable but isolated exile site, stand at
 and run:
 
 ```text
-/obs site set end_seventh_shrine
 /obs placeworld
 ```
 

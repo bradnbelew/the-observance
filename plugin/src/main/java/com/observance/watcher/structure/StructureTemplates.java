@@ -95,6 +95,15 @@ public final class StructureTemplates {
      * (the block a player edits to submit), or {@code null} if the world/chunk is unavailable.
      */
     public static Location keeper(String keeperId, Location base) {
+        return keeperInternal(keeperId, base, true);
+    }
+
+    /** Place a template inside an already-owned, already-cleared megastructure room. */
+    public static Location keeperInOwnedRoom(String keeperId, Location base) {
+        return keeperInternal(keeperId, base, false);
+    }
+
+    private static Location keeperInternal(String keeperId, Location base, boolean clearTemplateVolume) {
         if (base == null) return null;
         World world = base.getWorld();
         if (world == null) return null;
@@ -106,7 +115,7 @@ public final class StructureTemplates {
         if (id.startsWith("stone_")) id = id.substring("stone_".length());
 
         Pen pen = new Pen(world);
-        prepareTemplateVolume(pen, base, id);
+        if (clearTemplateVolume) prepareTemplateVolume(pen, base, id);
         Location answer = switch (id) {
             case "rosetta", "rune_rosetta", "rune" -> rosetta(pen, base);
             case "vaun"   -> vaun(pen, base);
@@ -188,10 +197,10 @@ public final class StructureTemplates {
     }
 
     /* ================================================================================================
-     * ROSETTA — the literacy gate. A ring of 6 short inscribed polished-blackstone pillars around a
+     * ROSETTA — the literacy gate. A ring of 7 short inscribed polished-blackstone pillars around a
      * central lectern on a sculk-veined deepslate-brick dais; an amethyst cluster at the heart (the
      * learning-light). Answer = the central lectern.
-     * Palette: polished blackstone + deepslate brick. Prop: 6 way-mark pillars w/ hanging signs. Light:
+     * Palette: polished blackstone + deepslate brick. Prop: 7 way-mark pillars w/ hanging signs. Light:
      * amethyst (earned, cool). Wrongness: one pillar's hanging sign faces inward/blank + a cobweb.
      * ============================================================================================== */
     private static Location rosetta(Pen pen, Location base) {
@@ -261,20 +270,20 @@ public final class StructureTemplates {
         pen.set(cx, cy, cz + 1, Material.BUDDING_AMETHYST);
         pen.clusterOn(cx, cy + 1, cz + 1, BlockFace.UP);
 
-        // Ring of 6 inscribed way-mark pillars around the dais (hex-ish placement on the 7x7).
+        // Seven inscribed ways: the six Keeper hands and the visibly later witness mark.
         // RESHAPE R0: marks are worn/partial carvings — NOT sequential Roman numerals (that reads as a
-        // tutorial list). Index 4 (the abraded pillar) uses a cracked block + a subtly different mark
-        // so its content differs; the "wrong" outward-facing pillar is now the abraded one (i==4) so it
+        // tutorial list). The seventh (abraded) pillar uses a cracked block + a subtly different mark
+        // so its content differs; the "wrong" outward-facing pillar is the added witness mark, so it
         // is physically distinct (cracked cap + different mark), not just blank+outward.
-        int[][] ring = {{0, -3}, {3, -1}, {3, 2}, {0, 3}, {-3, 2}, {-3, -1}};
+        int[][] ring = {{0, -4}, {3, -2}, {4, 1}, {2, 4}, {-2, 4}, {-4, 1}, {-3, -2}};
         // Worn/partial marks — non-sequential, fragmentary, like worn carvings (not a numbered list).
-        String[] marks = {"·", "··", "·", "···", "·̃", "··"};
+        String[] marks = {"·", "··", "·", "···", "·̃", "··", "· / ·"};
         for (int i = 0; i < ring.length; i++) {
             int px = cx + ring[i][0], pz = cz + ring[i][1];
             pen.set(px, cy, pz, Material.POLISHED_BLACKSTONE_BRICKS);
             pen.set(px, cy + 1, pz, Material.POLISHED_BLACKSTONE);
-            // Abraded pillar (index 4): cracked cap — physically distinct, content subtly differs.
-            boolean abraded = i == 4;
+            // Abraded seventh: cracked cap, later hand, content subtly differs.
+            boolean abraded = i == ring.length - 1;
             pen.set(px, cy + 2, pz, abraded ? Material.CRACKED_POLISHED_BLACKSTONE_BRICKS
                     : Material.CHISELED_POLISHED_BLACKSTONE);
             // A hanging sign on chains under a small overhang block, facing the centre (a way-mark).
@@ -296,7 +305,7 @@ public final class StructureTemplates {
         // Earned-literacy key made concrete: three rune/plaintext
         // crib PAIRS on the clear way-mark pillars — the same word in runes over its plain letters — so the
         // rosetta actually TEACHES the alphabet (the "oh, these are letters" turn), show-not-tell. Placed on
-        // the outward pillar face at eye level, physics-free so they persist. Not the abraded pillar (i==4).
+        // the outward pillar face at eye level, physics-free so they persist. Not the abraded seventh.
         String[] cribWords = {"KEPT", "STONE", "NAME"};
         int[] cribPillars = {0, 1, 2};
         for (int c = 0; c < cribWords.length; c++) {
@@ -2328,7 +2337,7 @@ public final class StructureTemplates {
                 case "unwriting", "the_unwriting", "seventh" -> new String[]{
                         "Archive repair ticket:\n\nSix names preserved by cutting away the seventh. Damage was approved, not accidental.",
                         "Catalog note:\n\nAbsence is not automatically loss. Sometimes it is a filed decision.",
-                        "Restoration warning:\n\nRestoring and erasing both leave marks. Choose which mark players can read."
+                        "Restoration warning:\n\nRestoring and erasing both leave marks. Choose which mark the living must carry."
                 };
                 case "threshold_vault", "vault" -> new String[]{
                         "Vault instruction slip:\n\nThree hands are not always three people. The lock records acts.",

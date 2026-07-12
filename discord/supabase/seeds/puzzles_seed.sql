@@ -663,6 +663,7 @@ values
 ( 'rite-tokens',
   'bring the thing only you can give',
   array[
+    't6k4 n9p2 w7x1 h3m8',
     'bring the thing only you can give',
     'deeps first heart unbroken light salt of the keepers',
     'a piece you cannot read your way out of'

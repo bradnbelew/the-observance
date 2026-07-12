@@ -103,18 +103,25 @@ public final class CoopPlateListener implements Listener {
 
             SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
             if (sites == null) return;
-            Site site = nearestPlacedOfType(sites, SITE_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
-            if (site == null) return; // not at the coop plate (or unplaced → no-op, go-live safe)
+            Site site = sites.get("coop_plate");
+            if (site == null || !site.isPlaced() || !SITE_TYPE.equals(site.type())) return;
+            Location center = site.location();
+            if (center == null || center.getWorld() == null || !world.equals(center.getWorld().getName())) return;
+            boolean exactFoot = foot && b.getX() == center.getBlockX() && b.getY() == center.getBlockY()
+                    && b.getZ() == center.getBlockZ() && b.getType() == org.bukkit.Material.STONE_PRESSURE_PLATE;
+            boolean exactCarve = carve && b.getX() == center.getBlockX() + 3 && b.getY() == center.getBlockY()
+                    && b.getZ() == center.getBlockZ() && b.getType() == org.bukkit.Material.CHISELED_TUFF;
+            if (!exactFoot && !exactCarve) return;
 
             long now = System.currentTimeMillis();
             String siteId = site.id();
-            if (foot) lastFootMsBySite.put(siteId, now); else lastCarveMsBySite.put(siteId, now);
+            if (exactFoot) lastFootMsBySite.put(siteId, now); else lastCarveMsBySite.put(siteId, now);
 
             if (bothFresh(siteId, now)) {
                 sendLegFeedback(p, siteId, "the square waits on the word.", 0.55f);
                 tryPublish(now);
             } else {
-                sendLegFeedback(p, siteId, foot ? "one hand stands." : "one hand marks.", foot ? 0.45f : 0.5f);
+                sendLegFeedback(p, siteId, exactFoot ? "one hand stands." : "one hand marks.", exactFoot ? 0.45f : 0.5f);
             }
         });
     }

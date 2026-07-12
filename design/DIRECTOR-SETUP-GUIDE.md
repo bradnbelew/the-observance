@@ -80,7 +80,7 @@ Record hashes from `observance-deploy-manifest.json`, not from memory.
 ## Live Server Order
 
 1. Apply `discord/supabase/apply-all.sql` to the live Supabase project.
-2. Upload `plugin/build/libs/observance-0.3.22.jar` to the Paper server.
+2. Upload `plugin/build/libs/observance-0.3.23.jar` to the Paper server.
 3. Install `observance-datapack.zip` into the target world datapacks folder.
 4. Host `observance-resourcepack.zip` at a direct HTTPS zip URL.
 5. Run `tools\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>` if
