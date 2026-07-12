@@ -70,10 +70,17 @@ function Write-LiveServerCommandSheet([string]$PacketDir, [string]$Date) {
   $lines.Add("")
   $lines.Add("## Placement Loop")
   $lines.Add("")
-  $lines.Add("- [ ] " + (Code "/observance site next") + " - find the next unplaced launch site.")
-  $lines.Add("- [ ] " + (Code "/observance site set <siteId>") + " - set each real location after building/proofing it.")
-  $lines.Add("- [ ] Fill " + (Code "coords-capture.csv") + " with coordinates, KEEP verdict, four proof shots, and cohesion notes.")
-  $lines.Add("- [ ] Rerun " + (Code "/observance site launch") + " until it reports the launch coordinates are complete.")
+  $lines.Add("- [ ] " + (Code "/observance placehold build") + " - build the generated Deep Hold from the chosen surface mouth.")
+  $lines.Add("- [ ] " + (Code "/observance placehold audit") + " - prove Hold entry, gates, rooms, records, and geology before hand-surveying outside anchors.")
+  $lines.Add("- [ ] " + (Code "/observance placehold sync") + " - sync generated Hold gates from live Supabase flags after SQL is configured.")
+  $lines.Add("- [ ] Prove the Failed Accepting gate: " + (Code "case_board") + " accepts " + (Code "no witness") + ", " + (Code "prior_camp") + " accepts " + (Code "answers are not witness") + ", all six repair signs accept their keeper corrections, and " + (Code "failed_accepting") + " accepts " + (Code "witness before accepting") + " before " + (Code "rite-tokens") + " opens.")
+  $lines.Add("- [ ] " + (Code "/observance site next") + " - find the next remaining outside-Hold or dimension launch site.")
+  $lines.Add("- [ ] " + (Code "/observance site set <siteId>") + " - survey each remaining real location; this is not proof by itself.")
+  $lines.Add("- [ ] " + (Code "/observance placeworld") + " - stamp every surveyed placeworld row before it can count as launch-complete.")
+  $lines.Add("- [ ] " + (Code "/observance site set nether_forge") + " in the Nether, then " + (Code "/observance placeworld") + " there; record the " + (Code "nether_forge_placed") + " receipt.")
+  $lines.Add("- [ ] " + (Code "/observance site set end_seventh_shrine") + " in the End, then " + (Code "/observance placeworld") + " there; record the " + (Code "end_seventh_shrine_placed") + " receipt.")
+  $lines.Add("- [ ] Fill " + (Code "coords-capture.csv") + " with Deep Hold GeneratedProof, PlaceworldReceipt for stamped rows, outside-Hold coordinates, KEEP verdict, four proof shots, and cohesion notes.")
+  $lines.Add("- [ ] Rerun " + (Code "/observance site launch") + " plus " + (Code "check_launch_coord_quality.ps1 -Launch") + " until generated Hold proof and outside-Hold coordinates are complete.")
   $lines.Add("")
   $lines.Add("## Unlit Setup And Proof")
   $lines.Add("")
@@ -84,8 +91,18 @@ function Write-LiveServerCommandSheet([string]$PacketDir, [string]$Date) {
   $lines.Add("- [ ] " + (Code "/obs unlit darken all [radius]") + " after final clue placement.")
   $lines.Add("- [ ] " + (Code "/obs unlit border [radius]") + " after final spawn placement.")
   $lines.Add("- [ ] " + (Code "/obs unlit audit") + " - fixture proof, stray light, and border must pass.")
-  $lines.Add("- [ ] " + (Code "/obs unlit ready") + " - copy its handoff output into rehearsal evidence.")
+  $lines.Add("- [ ] " + (Code "/obs unlit ready") + " - must print " + (Code "Gate: READY") + "; copy its handoff output into rehearsal evidence.")
   $lines.Add("- [ ] " + (Code "/obs unlit pass light") + ", " + (Code "stalker") + ", " + (Code "extinguish") + ", " + (Code "house") + ", and " + (Code "extract") + " - prove the playable pressure pieces.")
+  $lines.Add("")
+  $lines.Add("## Normal Non-Op Pass")
+  $lines.Add("")
+  $lines.Add("- [ ] Join as a real non-op player account after the operator build/audit commands are finished.")
+  $lines.Add("- [ ] Confirm the player cannot freely break/build inside the Deep Hold protection region.")
+  $lines.Add("- [ ] Confirm gates, answer signs, lecterns/books, chests/barrels, NPC dialogue, resource-pack runes, and return routes work without operator permissions.")
+  $lines.Add("- [ ] Confirm the old camp stays physically gated until the missing-condition file is solved, and that a non-op player cannot bypass the sealed prior gate through ceiling, side wall, fixture top, or return route.")
+  $lines.Add("- [ ] Confirm the player can leave the old camp after seeing a repair file, find supporting keeper/side evidence elsewhere, return, and submit the correction without losing state.")
+  $lines.Add("- [ ] Capture one wrong-answer attempt, one correct answer/input, one retrace/return, one Unlit pressure action, and one pack-loaded rendering proof.")
+  $lines.Add("- [ ] Record the player name/UUID, world, coordinates, screenshots/clips, and any console errors in " + (Code "launch-attestations.md") + ".")
   $lines.Add("")
   $lines.Add("## Media Flags")
   $lines.Add("")
@@ -103,7 +120,7 @@ function Write-LiveServerCommandSheet([string]$PacketDir, [string]$Date) {
   $lines.Add("- [ ] " + (Code "/observance preflight") + " after placement and media flag decisions.")
   $lines.Add("- [ ] " + (Code "/observance visualaudit") + " after the last visual fix.")
   $lines.Add("- [ ] " + (Code "/observance dialogueaudit") + " after the last NPC/world proof fix.")
-  $lines.Add("- [ ] " + (Code "/obs unlit audit") + " and " + (Code "/obs unlit ready") + " after final Unlit placement.")
+  $lines.Add("- [ ] " + (Code "/obs unlit audit") + " and " + (Code "/obs unlit ready") + " after final Unlit placement; record " + (Code "Gate: READY") + ".")
   $lines.Add("- [ ] Paste command receipts into " + (Code "launch-attestations.md") + " and rerun the final go/no-go check.")
   [System.IO.File]::WriteAllLines($path, $lines, [System.Text.UTF8Encoding]::new($false))
   return $path
@@ -181,6 +198,9 @@ $majorSites = @(
   "the_threshold",
   "the_unwriting",
   "threshold_vault",
+  "case_board",
+  "prior_camp",
+  "failed_accepting",
   "nether_forge",
   "end_seventh_shrine",
   "lampworks_stair",
@@ -218,6 +238,7 @@ $lanes = @(
   "Scares",
   "Unlit",
   "Record/web",
+  "Failed Accepting",
   "Finale"
 )
 
@@ -276,6 +297,7 @@ $puzzleFamilies = @(
   "NPC errands: third lamp / dead stall",
   "co-op plate / threshold vault",
   "Record web jump / oracle inscription",
+  "Failed Accepting / prior-run corrections",
   "Accepting rite / Seventh choice",
   "Nether and End deepening lanes"
 )
@@ -298,6 +320,7 @@ $contracts = @(
   "Coll/third-lamp: lamp exists and light action changes state.",
   "Dob/bowing stones: bow marker exists and crouching together matters.",
   "Old Pell/dark hours: black-moon sleep/restraint has a visible consequence.",
+  "Failed Accepting: case board, sealed prior gate, old camp, six repair signs, and failed floor are physically legible.",
   "Wren/reckoning: choice markers exist and are not reachable before the reveal."
 )
 
@@ -390,6 +413,27 @@ foreach ($family in $puzzleFamilies) {
   $notes.Add("      fix:")
 }
 $notes.Add("")
+$notes.Add("## Failed Accepting Proof")
+$notes.Add("")
+$notes.Add("This is the post-keeper anti-speedrun gate. It must feel like an investigation of a failed group, not another password hallway.")
+$notes.Add("")
+$notes.Add("- [ ] " + (Code "case_board") + " has the editable filing sign " + (Code "file / missing / condition") + " and accepts " + (Code "no witness") + " only after the roster evidence is readable.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] The prior gate is physically sealed before `prior_absence_known`, including ceiling, sides, fixture tops, and return-route edges.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] " + (Code "prior_camp") + " contains the failed inventory, six bedroll packets, six correction barrels, and seven editable filing signs.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] " + (Code "prior_camp") + " accepts " + (Code "answers are not witness") + " and then leaves the six keeper repair files solvable in parallel.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] The six corrections are extracted from camp evidence plus earlier keeper/side evidence, not guessed from hint text alone.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] A player can leave a repair file, find external evidence, return through an authored route, and submit without losing state.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] " + (Code "failed_accepting") + " accepts " + (Code "witness before accepting") + " and sets " + (Code "prior_witness_ready") + " before " + (Code "rite-tokens") + " can open.")
+$notes.Add("      proof:")
+$notes.Add("- [ ] The old camp reads as abandoned human evidence, not a labelled checklist or tutorial room.")
+$notes.Add("      proof:")
+$notes.Add("")
 $notes.Add("## Scare Review")
 $notes.Add("")
 foreach ($scare in @("ambient", "directed", "dread route", "Wren/companion", "Tier-0 implication")) {
@@ -417,7 +461,7 @@ $notes.Add('- [ ] `/obs unlit buildmode off` before any player-facing Unlit test
 $notes.Add('- [ ] `/obs unlit darken all [radius]` after final clue placement')
 $notes.Add('- [ ] `/obs unlit border` after final spawn placement')
 $notes.Add('- [ ] `/obs unlit audit` reports fixture proof, stray light OK, and border OK')
-$notes.Add('- [ ] `/obs unlit ready` prints the playtest handoff command')
+$notes.Add('- [ ] `/obs unlit ready` prints `Gate: READY` before the playtest handoff command')
 $notes.Add('- [ ] `/obs unlit pass light` proves dark pressure and borrowed lantern safety')
 $notes.Add('- [ ] `/obs unlit pass stalker` proves display-figure stalk/vanish')
 $notes.Add('- [ ] `/obs unlit pass extinguish` proves an exposed borrowed lantern is broken/taken')
@@ -487,7 +531,7 @@ Use this as the working punch list after the rehearsal. Do not soften blockers i
 - Puzzle has no retraceable clue after one failed attempt.
 - First hour becomes answer entry before the world feels wrong.
 - Wren sounds like exposition.
-- Record page feels like documentation.
+- Public listing or Record page feels like documentation instead of a place.
 - Finale feels like password entry.
 - Any Director Cut Scorecard axis is below 4.
 "@
@@ -529,6 +573,27 @@ evidence:
 - [ ] Sounds and particles fire in-world at usable volume/timing.
 - [ ] NPC lines display and correspond to physical proof.
 - [ ] Resource-pack fallback behavior is acceptable if a client declines the pack.
+evidence:
+
+## Normal Non-Op Player Pass
+
+- [ ] A real player account joined without operator status.
+- [ ] The player could not freely break or build inside the Deep Hold protection region.
+- [ ] Gates, answer signs, lecterns/books, chests/barrels, NPC dialogue, resource-pack runes, and return routes worked without operator permissions.
+- [ ] The Failed Accepting route was proven as a non-op player: `no witness` -> `answers are not witness` -> six repair files -> `witness before accepting`.
+- [ ] The sealed prior gate blocked ceiling, side-wall, fixture-top, and return-route bypass attempts before `prior_absence_known`.
+- [ ] The rehearsal captured one wrong-answer attempt, one correct answer/input, one retrace/return, one Unlit pressure action, and one pack-loaded rendering proof.
+- [ ] Player name or UUID, world, coordinates, screenshots/clips, and console errors or no-error note are recorded.
+evidence:
+
+## Failed Accepting / Post-Keeper Gate
+
+- [ ] `case_board`, `prior_camp`, and `failed_accepting` were present in the generated Hold and inside the Deep Hold protection region.
+- [ ] `case_board` accepted `no witness` from player-facing roster evidence and opened the old camp gate.
+- [ ] `prior_camp` accepted `answers are not witness` from the failed camp evidence.
+- [ ] All six correction files were solved from evidence and accepted at their keeper filing signs.
+- [ ] `failed_accepting` accepted `witness before accepting` and `rite-tokens` stayed closed until `prior_witness_ready`.
+- [ ] Return/retrace paths worked while this chain was partially complete.
 evidence:
 
 ## Live Command Audits

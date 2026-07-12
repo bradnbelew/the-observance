@@ -107,9 +107,9 @@ that points at it** (or the trail dead-ends / a link 404s).
 
 ### B2 — `the-hold.zip` — the downloadable lure vignette PRODUCED
 - **Current state:** the clean sendable zip is present at `dashboard/public/the-hold/the-hold.zip`.
-  It is 154145 bytes, SHA1 `b3a9459e102cde1e072771660def4b37bf55896e`, and its zip entries were checked
-  for README/manifest/spoiler-style files. The final room splits the destination into route, gate name,
-  common ending, and port arithmetic instead of exposing a raw server endpoint.
+  It is 154181 bytes, SHA1 `b638e989e7f03c2aec2346f9a1c972bddcf9c7de`, and its zip entries were checked
+  for README/manifest/spoiler-style files. The final room splits the destination into front door,
+  common web, and root path, pointing to the public listing without exposing a server port or raw endpoint.
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
   download on the record website's lure page (`/record/the-record-keeps`).
@@ -122,12 +122,16 @@ that points at it** (or the trail dead-ends / a link 404s).
   all vanilla blocks, gamerules locked, datapack-tick logic (no visible command-block clocks). It carries
   the dead-uploader (Mara, "m.kept"), the number **6** on a page, a closing rune string, and the
   frame-break — and **zero spoilers past FACT 1/2, zero server machinery, zero Supabase URL** beyond the
-  public server address. Cracking the world file reveals only what the player already saw.
+  public listing handoff. Cracking the world file reveals only what the player already saw.
 - **Scaled cut:** the **1-room version ships first** (spawn → one record lectern → the server pointer); the
   full 6-room hold is a later expansion. The 1-room form still carries everything above.
 - **This is a build task more than an "art" task** — it's a Minecraft world + datapack, which is squarely in
   your wheelhouse. I can help author the datapack functions / tellraw lines if you want; the world geometry
   is yours to build.
+
+**Current handoff rule:** the map points to the abandoned public listing first. The live Paper address is
+shown by the website only when `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` is configured; the zip should never
+contain the server port.
 
 ### B3 — The recovered Drive folder + the spectrogram image PRODUCED + LOCAL-STAGED
 - **Current state:** the archive packet is produced and recorded in `design/MANUAL-MEDIA-STAGING.md` with

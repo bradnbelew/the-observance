@@ -39,7 +39,7 @@ Do not plant or expose player-facing clues to these artifacts just because this 
 
 | Artifact | Dashboard path | Payload | Size bytes | SHA1 | Hosting state |
 | --- | --- | --- | ---: | --- | --- |
-| `the-hold.zip` | `dashboard/public/the-hold/the-hold.zip` | route + gate name + common ending + port arithmetic; kept count `6`; missing seventh; no raw server endpoint | 154145 | `b3a9459e102cde1e072771660def4b37bf55896e` | present in dashboard public; deploy route must be checked before planting live lure |
+| `the-hold.zip` | `dashboard/public/the-hold/the-hold.zip` | front door + common web + root path + mirror 03; no server port; kept count `6`; missing seventh; no raw server endpoint | 154181 | `b638e989e7f03c2aec2346f9a1c972bddcf9c7de` | present in dashboard public; deploy route must be checked before planting live lure |
 
 ## Produced Recovered Archive Packet
 
@@ -68,7 +68,7 @@ Spectrogram audio:
 ## Safe Wiring State
 
 - Found-footage puzzle rows and accepted answers are already seeded.
-- The Hold download is present at the dashboard path used by `/record/the-record-keeps`.
+- The Hold download is present at the dashboard path used by `/` and `/record/the-record-keeps`.
 - The recovered archive answer is already seeded as `i was not kept`.
 - The archive remains gated by `seventh_suspected` plus `recovered_archive_ready`.
 - Video rows remain gated by their `media_clip_0N_ready` flags and context flags even though the YouTube URLs are reachable.
@@ -79,6 +79,6 @@ Spectrogram audio:
 ## Remaining Hosting Choices
 
 - Found footage: YouTube URLs are supplied, HTTP-reachable, and operator-checked; set `media_clip_0N_ready` only when the matching clue should enter play.
-- the-hold.zip: present in `dashboard/public/the-hold/`; verify the deployed `/the-hold/the-hold.zip` URL before sending players to `/record/the-record-keeps`.
+- the-hold.zip: present in `dashboard/public/the-hold/`; verify deployed `/`, `/the-hold/the-hold.zip`, and `/record/the-record-keeps` before sending players to the web trail.
 - Recovered archive: Dropbox folder URL supplied, reachable, correctly populated, and spectrogram-checked; keep this URL stable or update the receipt before launch.
 - If hosted outside the dashboard, record the exact URL, final filename, size, SHA1, and incognito test result before setting any ready flag.

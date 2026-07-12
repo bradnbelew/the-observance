@@ -170,11 +170,47 @@ insert into public.hints (puzzle_key, tier, body) values
 ('true-walk-arrive', 2, 'the road kept its word. you have to be standing where it ends to read what it left — the answer is carved there, not here.'),
 ('true-walk-arrive', 3, 'walk the true road to its end and read the leaves placed at the tableau. you were filed here before you came: kept here before you. the road kept its word.'),
 
+-- prior-absence — the prior-run roster before the failed camp gate.
+('prior-absence', 2, 'do not start inside the camp. read the roster before it. the old group had the stones, the answers, and the tokens. one condition is named by its absence.'),
+('prior-absence', 3, 'the roster says six names, six keeper answers, six tokens prepared, then the correction line: no witness. file that condition plainly before you try to enter the old camp.'),
+
+-- prior-camp-refusal — the camp proves why six answers were not enough.
+('prior-camp-refusal', 2, 'the camp did not fail because they lacked solutions. read both lecterns and the blank place. the room is separating finished answers from something that can stand outside the finish.'),
+('prior-camp-refusal', 3, 'the failed record says the floor took their tokens and returned nothing because no one outside the circle could say what was true. answers are not a witness.'),
+
+-- prior-vaun-correction — repair Vaun's prior-run file.
+('prior-vaun-correction', 2, 'vaun''s barrel points back to debt before inventory. compare it with the market and ration evidence; the old file made counting sound like holiness.'),
+('prior-vaun-correction', 3, 'the correction line in vaun''s barrel is the answer shape: return first before count. the first thing was already owed before anyone counted it.'),
+
+-- prior-mara-correction — repair Mara's prior-run file.
+('prior-mara-correction', 2, 'mara''s barrel points back to the walked route. the old file treated a copied sentence like proof; the living test is whether anyone actually walked it.'),
+('prior-mara-correction', 3, 'file the correction as walk it before filing it. a read route changes paper; a walked route changes the walker.'),
+
+-- prior-sella-correction — repair Sella's prior-run file.
+('prior-sella-correction', 2, 'sella''s barrel points at later ink, school, water, and the seventh count. the old file called the addition an error because the count looked cleaner without it.'),
+('prior-sella-correction', 3, 'file the correction as count the seventh before the six. later ink is still evidence; it is how the absence was added back.'),
+
+-- prior-orin-correction — repair Orin's prior-run file.
+('prior-orin-correction', 2, 'orin''s barrel points back to the crouch and the threshold. the old file treated the bow as a price paid to the room. read what the posture actually proves.'),
+('prior-orin-correction', 3, 'file the correction as bowing is proof not payment. smallness is how the stone is read without turning it into a possession.'),
+
+-- prior-brann-correction — repair Brann's prior-run file.
+('prior-brann-correction', 2, 'brann''s barrel points at the toll and the silence corridor. the old file stopped at hearing the warning; the watch still had to be kept afterward.'),
+('prior-brann-correction', 3, 'file the correction as the watch must be kept. a warning heard once is not the same as staying awake through the count.'),
+
+-- prior-iss-correction — repair Iss's prior-run file.
+('prior-iss-correction', 2, 'iss''s barrel points back to the warm wall and the cold land. do not ask whether the sentence comforts you; ask whether the world agrees with it.'),
+('prior-iss-correction', 3, 'file the correction as test warmth against the land. comfort is not proof; the warm wall was cover over the count.'),
+
+-- prior-witness-before-accepting — synthesize the failed camp before the final floor.
+('prior-witness-before-accepting', 2, 'after all six correction files are entered, go to the failed accepting floor below. it is not asking for another keeper answer; it is asking for the condition missing from the old attempt.'),
+('prior-witness-before-accepting', 3, 'the failed floor shows six old tokens and one blank relation. name the condition exactly: witness before accepting. then the last warm gate and the real rite can matter.'),
+
 -- ── MOVEMENT V — the Accepting (acts and rites; the whisper points at what to do) ──
 
 -- rite-tokens — lay one personal token per slot; the missing tool is you.
-('rite-tokens', 2, 'the floor will not take a token from a thin case. the keepers must be understood, the copied village must be filed, and the old places must have answered before the slots are willing. this is evidence before rite.'),
-('rite-tokens', 3, 'before the slots answer, the record needs the six keeper theories, all eight unlit house recoveries, the named side proofs, and the two surface kindnesses. then lay one personal token in each slot with the named components. the missing tool is the giver.'),
+('rite-tokens', 2, 'the floor will not take a token from a thin case. the keepers, copied village, old places, surface kindnesses, and failed accepting correction must all be filed first. this is evidence before rite.'),
+('rite-tokens', 3, 'before the slots answer, the record needs the six keeper theories, all eight unlit house recoveries, the thirteen named side proofs, the two surface kindnesses, and the prior witness condition. then lay one personal token in each slot with the named components. the missing tool is the giver.'),
 
 -- pressure-glyph-walk — walk the rune the floor names, footstep by footstep (do not decode it).
 ('pressure-glyph-walk', 2, 'the floor names a rune. do not decode it. this is mara''s lesson made a door — the shape is walked, not read.'),
@@ -299,9 +335,9 @@ insert into public.hints (puzzle_key, tier, body) values
 -- name-where - the place-filing reread; true, terminal, and personal.
 ('name-where', 2, 'the new carving is not about strangers who came before you. it files the living by place. read the name and the ground beside it together.'),
 ('name-where', 3, 'say the shape of the reread: the record files the living by place, not only by name. before you was never about strangers. it opens nothing because the proof is you.'),
--- record-url - the off-world Record path, decoded from the founder line.
-('record-url', 2, 'the record says it is kept in more than one place. do not look for a second chest. look for the path the line itself gives you.'),
-('record-url', 3, 'the founder line points outside the first record. the path is the record keeps; it is a place to read, not a gate through the stones.'),
+-- record-url - the off-world host row and Record path, decoded from the founder line and Hold copy.
+('record-url', 2, 'the record says it is kept in more than one place. do not look for a second chest, a raw server port, or the removed minecraft service row. combine the host-row pieces the map left apart.'),
+('record-url', 3, 'the old row is the front door, common web, root path, mirror 03. the record-keeps phrase is the recovered file on that host, not the server address or srv record itself.'),
 -- difficulty-mara - the fairness plant; the land''s grip changes with the living.
 ('difficulty-mara', 2, 'mara left this as a sentence, not a mechanism. read the cruelty she names: the land counts the quick more closely and opens around stumbling hands.'),
 ('difficulty-mara', 3, 'the line is the point. the record keeps a closer count of the quick; it closes on those who run ahead and opens for those who stumble. this colors the rite; it does not unlock one.'),

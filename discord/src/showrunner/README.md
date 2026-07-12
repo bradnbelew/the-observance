@@ -50,6 +50,10 @@ npm run showrunner               # one live tick (drip/gift + customs bridge)
 ```
 
 ## Deploy (Render Cron Job)
+
+The repository-root `render.yaml` provisions both the always-on Discord worker and this hourly cron
+from one Blueprint. Secrets remain `sync: false`; enter them in Render rather than committing them.
+Run `npm run register` once after the bot credentials and guild are configured.
 - **Build:** `npm install`  •  **Command:** `npm run showrunner`  •  **Schedule:** e.g. `0 * * * *` (hourly;
   drip cadence is gated to 20h internally regardless of how often the cron fires).
 - **Env:** the same vars as the bot — `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DISCORD_BOT_TOKEN`,

@@ -2330,6 +2330,170 @@ values
   4, true, null ),
 
 -- ===========================================================================
+-- MOVEMENT IV-B — The Failed Accepting
+-- ===========================================================================
+
+-- prior-absence — after the keeper case is broad enough to reach the archive,
+-- the prior-run roster names the missing condition before the old camp opens.
+-- Typed deduction from the audited Hold record station: not "find another cipher,"
+-- but notice that the previous group had six answers and no witness.
+( 'prior-absence',
+  'what the prior run did not bring',
+  array[
+    'no witness',
+    'they had no witness',
+    'the prior run had no witness'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'prior-camp-refusal',
+    'set_flags', jsonb_build_object('prior_absence_known', true)
+  ),
+  4, true, 8 ),
+
+-- prior-camp-refusal — the camp record explains why the same six answers failed.
+-- The answer is not another name; it is the distinction the accepting floor enforces:
+-- solved answers are still inside the desire to finish, so they cannot witness it.
+( 'prior-camp-refusal',
+  'why the old camp failed',
+  array[
+    'answers are not witness',
+    'answers are not a witness',
+    'they had answers not witness'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'prior-vaun-correction',
+    'set_flags', jsonb_build_object('prior_camp_read', true)
+  ),
+  4, true, 8 ),
+
+-- The six correction files open in parallel once the camp has been read. Each is
+-- a one-line repair of the prior group's mistaken interpretation, grounded in a
+-- camp barrel plus the keeper/side evidence it points back toward.
+( 'prior-vaun-correction',
+  'correct vauns filed answer',
+  array[
+    'return first before count',
+    'return first before counting',
+    'the first thing was already owed'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_vaun_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Vaun is corrected as debt before inventory. The first of the deep cannot be counted cleanly until it is returned.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-mara-correction',
+  'correct maras filed answer',
+  array[
+    'walk it before filing it',
+    'walk before filing',
+    'a read route is not a walked route'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_mara_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Mara is corrected as action before record. The route is not true because it can be copied; it is true because someone walks it.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-sella-correction',
+  'correct sellas filed answer',
+  array[
+    'count the seventh before the six',
+    'the seventh was not an error',
+    'later ink is still evidence'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_sella_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Sella is corrected as absence before neat count. Later ink does not make the seventh false; it proves who had to be added back.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-orin-correction',
+  'correct orins filed answer',
+  array[
+    'bowing is proof not payment',
+    'smallness is proof',
+    'read low without owning it'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_orin_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Orin is corrected as posture before possession. The bow is not a price paid to the room; it is how the room can be read honestly.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-brann-correction',
+  'correct branns filed answer',
+  array[
+    'the watch must be kept',
+    'a warning heard once is not a watch kept',
+    'stay awake through the count'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_brann_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Brann is corrected as duration before alarm. Hearing the toll is not the same as keeping watch after it.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-iss-correction',
+  'correct iss filed answer',
+  array[
+    'test warmth against the land',
+    'comfort is not proof',
+    'the warm wall was cover'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_iss_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Iss is corrected as cross-check before comfort. A warm account only matters if the cold land agrees with it.'
+    )
+  ),
+  4, true, 8 ),
+
+-- prior-witness-before-accepting — the final synthesis between the failed camp
+-- and the real accepting floor. This is now required by rite-tokens and by the
+-- physical Hold accepting gate: the finale cannot start by speedrunning stones.
+( 'prior-witness-before-accepting',
+  'the missing condition',
+  array[
+    'witness before accepting',
+    'bring witness before accepting',
+    'the witness comes before the rite'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleMainBeat',
+    'set_flags', jsonb_build_object('prior_witness_ready', true),
+    'next_puzzle_key', 'rite-tokens'
+  ),
+  4, true, 8 ),
+
+-- ===========================================================================
 -- MOVEMENT V — The Accepting
 -- ===========================================================================
 
@@ -2914,22 +3078,28 @@ values
   4, false, 8 ),
 
 -- record-url — the Record website (A13). The founder line "the record is kept in more than
--- one place" decodes to a URL path off-world (the click, #11). Pure lore, GATES NOTHING.
--- The page is static-per-build, noindex, reads the spoiler-free projection only. The decoded
--- PATH is the answer (a clean token), not a coordinate. recordElsewhere voice. Active M2 (it
--- un-redacts entries in lockstep with stones actually read; the Iss card carries the stego).
+-- one place" now joins the Hold-copy handoff: front door SNOIKERZ, common web, root path /,
+-- mirror 03, and the recovered Record slug. Pure lore, GATES NOTHING. The old listing owns
+-- the live address; the zip must never carry a raw endpoint. recordElsewhere voice. Active M2.
 ( 'record-url',
-  'the record is kept elsewhere',
+  'the old listing keeps the record',
   array[
-    'the record keeps',
-    'the record is kept in more than one place',
-    'the record is kept in more than one place against the loss of the first'
+    'the old listing keeps the record',
+    'the old listing is snoikerz mirror 03',
+    'the record keeps on snoikerz mirror 03',
+    'the record is kept on snoikerz mirror 03',
+    'snoikerz mirror 03 keeps the record',
+    'snoikerz mirror 03 keeps the old listing',
+    'snoikerz mirror 03',
+    'snoikerz common web root mirror 03',
+    'snoikerz slash mirror 03 the record keeps',
+    'front door snoikerz common web root mirror 03'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'recordElsewhere',
     'voice_args', jsonb_build_object(
-      'fragment', 'the record is kept in more than one place, against the loss of the first. the path is the record keeps.'
+      'fragment', 'the record is kept in more than one place, against the loss of the first. the old listing is snoikerz mirror 03; the recovered file is the record keeps.'
     )
   ),
   2, true, null ),
@@ -4195,6 +4365,10 @@ values
     'rune_rosetta', 'explore',
     array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 60 ),
 
+  ( 'surface-far-water-copy', 'surface', 'the far-water copybook', 'voice.dest.farWater.find',
+    'the_far_water', 'verified',
+    array['who-sella-token','surface-seventh-marker'], null, 'flag:site_seen_far_water', 65 ),
+
   -- â† CONTRADICTS the official "six markers" count (Sella's count against the record's)
   -- THE ISS-SEAM (the-seventh-below.md REWRITE SPEC "Iss-seam"): catching Iss's wall-lie
   -- (the happened-no-wall solve) RE-OPENS this Seventh-marker card â€” the same lens that
@@ -4400,6 +4574,15 @@ values
   ( 'happened-threshold-under-copy', 'happened', 'the copied threshold bowed back', 'cardHappenedThresholdUnderCopy',
     'unlit_house_threshold', 'verified',
     array['place-came-down','place-undercroft-sealed'], null, 'flag:unlit_seen_threshold', 140 ),
+
+  -- The figure leaves archive consequences instead of behaving like a disposable haunted-house mob.
+  -- First sight and first stolen lamp are separate earned facts; neither is required for spine progress.
+  ( 'happened-unlit-figure', 'happened', 'the copy learned distance', 'cardHappenedUnlitFigure',
+    'unlit_spawn_mirror', 'rumor',
+    array['place-unlit-mirror','happened-birds-silent'], null, 'flag:unlit_figure_seen', 145 ),
+  ( 'happened-unlit-light-taken', 'happened', 'the borrowed light was corrected', 'cardHappenedUnlitLightTaken',
+    'unlit_spawn_mirror', 'verified',
+    array['human-cold-lamp-ledger','happened-unlit-figure'], null, 'flag:unlit_light_taken', 150 ),
 
   ( 'human-you-are-the-next', 'human', 'you are the next', 'cardHumanYouAreNext',
     'first_report_lectern_01', 'explore',
@@ -4691,11 +4874,47 @@ insert into public.hints (puzzle_key, tier, body) values
 ('true-walk-arrive', 2, 'the road kept its word. you have to be standing where it ends to read what it left — the answer is carved there, not here.'),
 ('true-walk-arrive', 3, 'walk the true road to its end and read the leaves placed at the tableau. you were filed here before you came: kept here before you. the road kept its word.'),
 
+-- prior-absence — the prior-run roster before the failed camp gate.
+('prior-absence', 2, 'do not start inside the camp. read the roster before it. the old group had the stones, the answers, and the tokens. one condition is named by its absence.'),
+('prior-absence', 3, 'the roster says six names, six keeper answers, six tokens prepared, then the correction line: no witness. file that condition plainly before you try to enter the old camp.'),
+
+-- prior-camp-refusal — the camp proves why six answers were not enough.
+('prior-camp-refusal', 2, 'the camp did not fail because they lacked solutions. read both lecterns and the blank place. the room is separating finished answers from something that can stand outside the finish.'),
+('prior-camp-refusal', 3, 'the failed record says the floor took their tokens and returned nothing because no one outside the circle could say what was true. answers are not a witness.'),
+
+-- prior-vaun-correction — repair Vaun's prior-run file.
+('prior-vaun-correction', 2, 'vaun''s barrel points back to debt before inventory. compare it with the market and ration evidence; the old file made counting sound like holiness.'),
+('prior-vaun-correction', 3, 'the correction line in vaun''s barrel is the answer shape: return first before count. the first thing was already owed before anyone counted it.'),
+
+-- prior-mara-correction — repair Mara's prior-run file.
+('prior-mara-correction', 2, 'mara''s barrel points back to the walked route. the old file treated a copied sentence like proof; the living test is whether anyone actually walked it.'),
+('prior-mara-correction', 3, 'file the correction as walk it before filing it. a read route changes paper; a walked route changes the walker.'),
+
+-- prior-sella-correction — repair Sella's prior-run file.
+('prior-sella-correction', 2, 'sella''s barrel points at later ink, school, water, and the seventh count. the old file called the addition an error because the count looked cleaner without it.'),
+('prior-sella-correction', 3, 'file the correction as count the seventh before the six. later ink is still evidence; it is how the absence was added back.'),
+
+-- prior-orin-correction — repair Orin's prior-run file.
+('prior-orin-correction', 2, 'orin''s barrel points back to the crouch and the threshold. the old file treated the bow as a price paid to the room. read what the posture actually proves.'),
+('prior-orin-correction', 3, 'file the correction as bowing is proof not payment. smallness is how the stone is read without turning it into a possession.'),
+
+-- prior-brann-correction — repair Brann's prior-run file.
+('prior-brann-correction', 2, 'brann''s barrel points at the toll and the silence corridor. the old file stopped at hearing the warning; the watch still had to be kept afterward.'),
+('prior-brann-correction', 3, 'file the correction as the watch must be kept. a warning heard once is not the same as staying awake through the count.'),
+
+-- prior-iss-correction — repair Iss's prior-run file.
+('prior-iss-correction', 2, 'iss''s barrel points back to the warm wall and the cold land. do not ask whether the sentence comforts you; ask whether the world agrees with it.'),
+('prior-iss-correction', 3, 'file the correction as test warmth against the land. comfort is not proof; the warm wall was cover over the count.'),
+
+-- prior-witness-before-accepting — synthesize the failed camp before the final floor.
+('prior-witness-before-accepting', 2, 'after all six correction files are entered, go to the failed accepting floor below. it is not asking for another keeper answer; it is asking for the condition missing from the old attempt.'),
+('prior-witness-before-accepting', 3, 'the failed floor shows six old tokens and one blank relation. name the condition exactly: witness before accepting. then the last warm gate and the real rite can matter.'),
+
 -- ── MOVEMENT V — the Accepting (acts and rites; the whisper points at what to do) ──
 
 -- rite-tokens — lay one personal token per slot; the missing tool is you.
-('rite-tokens', 2, 'the floor will not take a token from a thin case. the keepers must be understood, the copied village must be filed, and the old places must have answered before the slots are willing. this is evidence before rite.'),
-('rite-tokens', 3, 'before the slots answer, the record needs the six keeper theories, all eight unlit house recoveries, the named side proofs, and the two surface kindnesses. then lay one personal token in each slot with the named components. the missing tool is the giver.'),
+('rite-tokens', 2, 'the floor will not take a token from a thin case. the keepers, copied village, old places, surface kindnesses, and failed accepting correction must all be filed first. this is evidence before rite.'),
+('rite-tokens', 3, 'before the slots answer, the record needs the six keeper theories, all eight unlit house recoveries, the thirteen named side proofs, the two surface kindnesses, and the prior witness condition. then lay one personal token in each slot with the named components. the missing tool is the giver.'),
 
 -- pressure-glyph-walk — walk the rune the floor names, footstep by footstep (do not decode it).
 ('pressure-glyph-walk', 2, 'the floor names a rune. do not decode it. this is mara''s lesson made a door — the shape is walked, not read.'),
@@ -4820,9 +5039,9 @@ insert into public.hints (puzzle_key, tier, body) values
 -- name-where - the place-filing reread; true, terminal, and personal.
 ('name-where', 2, 'the new carving is not about strangers who came before you. it files the living by place. read the name and the ground beside it together.'),
 ('name-where', 3, 'say the shape of the reread: the record files the living by place, not only by name. before you was never about strangers. it opens nothing because the proof is you.'),
--- record-url - the off-world Record path, decoded from the founder line.
-('record-url', 2, 'the record says it is kept in more than one place. do not look for a second chest. look for the path the line itself gives you.'),
-('record-url', 3, 'the founder line points outside the first record. the path is the record keeps; it is a place to read, not a gate through the stones.'),
+-- record-url - the off-world host row and Record path, decoded from the founder line and Hold copy.
+('record-url', 2, 'the record says it is kept in more than one place. do not look for a second chest, a raw server port, or the removed minecraft service row. combine the host-row pieces the map left apart.'),
+('record-url', 3, 'the old row is the front door, common web, root path, mirror 03. the record-keeps phrase is the recovered file on that host, not the server address or srv record itself.'),
 -- difficulty-mara - the fairness plant; the land''s grip changes with the living.
 ('difficulty-mara', 2, 'mara left this as a sentence, not a mechanism. read the cruelty she names: the land counts the quick more closely and opens around stumbling hands.'),
 ('difficulty-mara', 3, 'the line is the point. the record keeps a closer count of the quick; it closes on those who run ahead and opens for those who stumble. this colors the rite; it does not unlock one.'),
@@ -5024,12 +5243,79 @@ begin
       where puzzle_key in ('orin-threshold', 'orin-bow-fall-order');
     update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
       where puzzle_key in ('atonement-refrain', 'fork-name', 'haunting-biography');
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'undercroft_open', true,
+      'vaun_theory', true,
+      'mara_theory', true,
+      'sella_theory', true,
+      'orin_theory', true,
+      'brann_theory', true,
+      'iss_theory', true
+    )
+      where puzzle_key = 'prior-absence';
+    update public.puzzles set requires_flags = jsonb_build_object('prior_absence_known', true)
+      where puzzle_key = 'prior-camp-refusal';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'vaun_theory', true,
+      'site_seen_deep_market', true,
+      'site_seen_ration_table', true
+    )
+      where puzzle_key = 'prior-vaun-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'mara_theory', true,
+      'mara_walked', true,
+      'unlit_seen_threshold', true
+    )
+      where puzzle_key = 'prior-mara-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'sella_theory', true,
+      'site_seen_school_stand', true,
+      'site_seen_far_water', true,
+      'site_seen_cistern_7', true
+    )
+      where puzzle_key = 'prior-sella-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'orin_theory', true,
+      'orin_bowed', true,
+      'site_seen_undercroft_seal', true
+    )
+      where puzzle_key = 'prior-orin-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'brann_theory', true,
+      'brann_toll_heard', true,
+      'brann_corridor_passed', true,
+      'site_seen_watch_floor', true
+    )
+      where puzzle_key = 'prior-brann-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'iss_theory', true,
+      'iss_caught', true,
+      'site_seen_warm_town_collapse', true,
+      'site_seen_set_apart_shelf', true
+    )
+      where puzzle_key = 'prior-iss-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_vaun_corrected', true,
+      'prior_mara_corrected', true,
+      'prior_sella_corrected', true,
+      'prior_orin_corrected', true,
+      'prior_brann_corrected', true,
+      'prior_iss_corrected', true
+    )
+      where puzzle_key = 'prior-witness-before-accepting';
     -- The Accepting rite now needs the six keeper theories, recovered evidence from
     -- the whole Unlit mirror village, and the human-history side-proof web. This
     -- makes the main route depend on corroborating evidence: a single decoded keeper
     -- stone is not enough, and the ordinary ruined places cannot remain optional scenery.
     update public.puzzles set requires_flags = jsonb_build_object(
       'accepting_onramp_open', true,
+      'prior_witness_ready', true,
       'vaun_theory', true,
       'mara_theory', true,
       'sella_theory', true,
@@ -5045,6 +5331,7 @@ begin
       'unlit_seen_threshold', true,
       'unlit_seen_base', true,
       'site_seen_school_stand', true,
+      'site_seen_far_water', true,
       'site_seen_markers_row', true,
       'site_seen_cistern_7', true,
       'site_seen_watch_floor', true,
@@ -5305,12 +5592,13 @@ commit;
 --     TS-VOICE/archive owner's (threadCardVoiceCoverageSelfTest fails until they exist).
 --   * NON_CIPHER_KEYS: the two ACTIVE payoff rows (when activated) are non-cipher lore
 --     nodes — the TS-FORGE lane must add 'nether-forge' + 'end-seventh-out' to NON_CIPHER_KEYS
---     or specsCoverageSelfTest fails (listed in the RETURN). Until activated (active=false)
---     they are exempt.
+--     or specsCoverageSelfTest fails (listed in the RETURN). These rows live in this
+--     progression seed, so the dashboard/operator audits are the launch guard.
 --   * siteCoverageSelfTest extension (R7): a cross-dimension row must NOT seed OPEN unless
 --     its site resolves to a placed + enabled site IN THE NAMED WORLD (observance_nether /
---     observance_end must EXIST). The rows ship active=false until the dimension worlds are
---     built (GO-LIVE), so this holds by construction.
+--     observance_end must EXIST). The rows are active=true but require the plugin-written
+--     placement flags (`nether_forge_placed`, `end_seventh_shrine_placed`) before players can
+--     solve them.
 --
 -- Run AFTER 0004_oracle.sql + 0005_threads.sql + (ideally) 0006_*.sql + puzzles_seed.sql +
 -- seventh_seed.sql, as service_role (RLS bypass — spoiler tables). Idempotent.
@@ -5319,8 +5607,8 @@ begin;
 
 -- ===========================================================================
 -- 1. THE PAYOFF PUZZLE ROWS (puzzles_seed.sql shape; ON CONFLICT DO UPDATE).
---    Both ship active=FALSE — STAGED until (a) the dimension world is built AND
---    (b) the requires_flags gate is satisfied (§4 below). Both are `lore` (a told
+--    Both ship active=TRUE but CLOSED until (a) the dimension set-piece has been placed AND
+--    (b) the story requires_flags gate is satisfied (§4 below). Both are `lore` (a told
 --    secret, no door) — they GATE NOTHING. The destination WORD is the answer
 --    (INV-14), read off the slab/carving on-site; the row is the closed-loop
 --    acknowledgement the AnswerSignListener records when the on-site word is typed.
@@ -5340,9 +5628,10 @@ values
 -- the PROPOSED FateInput.netherForgeFound, NOT wired into decideFate until §8 ratified, S9)
 -- + whisper_budget_earned (bonus, additive, never the front-loaded backstop — INV-15/S10) +
 -- reveals the Kept-Light ORIGIN (the keeping was always a carrying). GATES NOTHING. lore.
--- requires_flags {undercroft_open} (set in §4 — found at the Undercroft post-descent). The
--- bearing that sends the group is Brann's M2 framing line + the-fire-is-lent page, not a row.
--- active=false: STAGED until observance_nether is built (GO-LIVE) AND undercroft_open is set.
+-- requires_flags {undercroft_open, nether_forge_placed}. The story half is found at the
+-- Undercroft post-descent; the placement half is written by /obs placeworld only after the
+-- Nether forge is stamped or confirmed already present. The bearing that sends the group is
+-- Brann's M2 framing line + the-fire-is-lent page, not a row.
 ( 'nether-forge',
   'the fire is lent',
   array[
@@ -5374,10 +5663,9 @@ values
 -- group-scoped flag, NEVER a fate input (S2): it deepens the seventh_choice context (a group
 -- that walked the End learns WHY the Seventh chose exile) and licenses the End's cast_out/
 -- refusers re-read in the M5 composer. GATES NOTHING. lore. The on-site READ is the answer
--- (INV-14), not a coordinate. requires_flags {seventh_named} (set in §4 — the way-out pointer
--- on the unwriting wall is legible only at seventh_named; that pointer is a REVEAL on the
--- existing surface, NO row, S9). active=false: STAGED until observance_end is built (GO-LIVE)
--- AND seventh_named is set.
+-- (INV-14), not a coordinate. requires_flags {seventh_named, end_seventh_shrine_placed}. The
+-- story half comes from the unwriting-wall way-out pointer; the placement half is written by
+-- /obs placeworld only after the End shrine is stamped or confirmed already present.
 ( 'end-seventh-out',
   'the name i cut myself',
   array[
@@ -5474,13 +5762,12 @@ on conflict (card_key) do nothing;
 --    Set the requires_flags COLUMN on the two payoff rows so getOpenPuzzles holds each
 --    closed until its upstream flag is truthy in arc_state — independent of the showrunner:
 --
---      nether-forge     ← undercroft_open   (found at the Undercroft post-descent)
---      end-seventh-out  ← seventh_named     (the way-out pointer is legible only then)
+--      nether-forge     ← undercroft_open + nether_forge_placed
+--      end-seventh-out  ← seventh_named + end_seventh_shrine_placed
 --
 --    Authored as a guarded block so it cleanly no-ops if 0006 (the column) has not landed.
---    These rows stay active=false here (STAGED until the dimension worlds are built at GO-LIVE);
---    the GO-LIVE step flips active=true per row once observance_nether / observance_end exist
---    (siteCoverageSelfTest / R7). The requires_flags gate is the SECOND condition — both
+--    These rows stay active=true here; the placement flags keep them closed until the operator has
+--    actually surveyed and stamped the Nether/End sites (siteCoverageSelfTest / R7). Both
 --    (active=true AND requires_flags-satisfied) must hold for getOpenPuzzles to open the row.
 -- ===========================================================================
 
@@ -5491,9 +5778,9 @@ begin
     where table_schema = 'public' and table_name = 'puzzles' and column_name = 'requires_flags'
   ) then
 
-    update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true)
+    update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true, 'nether_forge_placed', true)
       where puzzle_key = 'nether-forge';
-    update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true, 'end_seventh_shrine_placed', true)
       where puzzle_key = 'end-seventh-out';
 
   else
@@ -5510,8 +5797,8 @@ end $$;
 --    by EXACTLY ONE activation rule; no active=true row reachable only through a staged
 --    predecessor:
 --
---      nether-forge     → undercroft_open   (undercroft-descent)        [GATES NOTHING — lore]
---      end-seventh-out  → seventh_named     (seventh-unwriting)         [GATES NOTHING — lore]
+--      nether-forge     → undercroft_open + nether_forge_placed         [GATES NOTHING — lore]
+--      end-seventh-out  → seventh_named + end_seventh_shrine_placed     [GATES NOTHING — lore]
 --
 --    INVARIANT: neither row is a spine predecessor of any other row (both are leaf `lore`
 --    payoffs — no next_puzzle_key, no set_flags any spine row reads as a requires_flags gate).

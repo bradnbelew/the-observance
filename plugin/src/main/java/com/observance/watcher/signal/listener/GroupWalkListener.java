@@ -12,10 +12,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -39,6 +43,8 @@ import java.util.function.Supplier;
 public final class GroupWalkListener implements Listener {
 
     private static final String MARKER_TYPE = "mara_map_marker";
+    private static final String ROUTE_TYPE = "mara_route_marker";
+    private static final int ROUTE_MARKERS = 4;
 
     private final Supplier<SitesConfig> sitesSupplier;
     private final OracleResolver oracle;
@@ -51,6 +57,8 @@ public final class GroupWalkListener implements Listener {
     private final String puzzleKey;
     private final int quorum;
     private final long cooldownMs;
+    /** Next route rank each player must reach; 5 means the full four-marker walk is complete. */
+    private final Map<UUID, Integer> routeProgress = new ConcurrentHashMap<>();
 
     public GroupWalkListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
                              RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
@@ -66,6 +74,29 @@ public final class GroupWalkListener implements Listener {
         this.puzzleKey = (puzzleKey == null || puzzleKey.isBlank()) ? "mara-walk-the-map" : puzzleKey.trim();
         this.quorum = Math.max(1, quorum);
         this.cooldownMs = Math.max(1_000L, cooldownMs);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMove(PlayerMoveEvent event) {
+        if (!enabled || event.getTo() == null || event.getFrom() == null) return;
+        Location to = event.getTo();
+        if (to.getWorld() == null) return;
+        if (event.getFrom().getBlockX() == to.getBlockX()
+                && event.getFrom().getBlockY() == to.getBlockY()
+                && event.getFrom().getBlockZ() == to.getBlockZ()) return;
+        safety.run("mara.walk.route", () -> {
+            SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
+            if (sites == null) return;
+            Site marker = nearestPlacedOfType(sites, ROUTE_TYPE, to.getWorld().getName(),
+                    to.getX(), to.getY(), to.getZ());
+            if (marker == null) return;
+            int rank = OrderedBowListener.trailingRank(marker.id());
+            if (rank < 1 || rank > ROUTE_MARKERS) return;
+            UUID id = event.getPlayer().getUniqueId();
+            int expected = routeProgress.getOrDefault(id, 1);
+            if (rank == expected) routeProgress.put(id, expected + 1);
+            else if (rank == 1) routeProgress.put(id, 2);
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -90,6 +121,7 @@ public final class GroupWalkListener implements Listener {
             int effectiveQuorum = AcceptingRiteListener.clampQuorum(quorum, onlineCount());
             if (present.size() < effectiveQuorum) return;    // not the whole present (active) group yet
             for (Player p : present) {
+                if (routeProgress.getOrDefault(p.getUniqueId(), 1) <= ROUTE_MARKERS) return;
                 boolean sneaking = p.equals(toggler) || p.isSneaking();
                 if (!sneaking) return;                       // someone present is NOT bowing → not yet
             }

@@ -81,6 +81,10 @@ if (-not $launchMatch.Success) {
 $launchSites = [string[]]([regex]::Matches($launchMatch.Groups["body"].Value, '"([^"]+)"') | ForEach-Object {
   $_.Groups[1].Value
 })
+$holdSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($m in [regex]::Matches($commandSource, 'new\s+HoldSite\(\s*"([^"]+)"')) {
+  [void]$holdSites.Add($m.Groups[1].Value)
+}
 
 $laneMatches = [regex]::Matches(
   $commandSource,
@@ -102,6 +106,9 @@ foreach ($column in @(
   "Order",
   "Lane",
   "SiteId",
+  "PlacementMethod",
+  "GeneratedProof",
+  "PlaceworldReceipt",
   "ChosenWorld",
   "X",
   "Y",
@@ -259,8 +266,26 @@ if ($failures.Count -eq 0) {
   if ($Launch) {
     foreach ($row in $rows) {
       $id = Clean $row.SiteId
-      if (IsBlank $row.ChosenWorld -or IsBlank $row.X -or IsBlank $row.Y -or IsBlank $row.Z) {
+      $isHoldGenerated = $holdSites.Contains($id) -or (Clean $row.PlacementMethod) -eq "Deep Hold generated"
+      if ($isHoldGenerated) {
+        if (IsBlank $row.GeneratedProof) {
+          Fail "site '$id' has no Deep Hold generated proof"
+        }
+      } elseif (IsBlank $row.ChosenWorld -or IsBlank $row.X -or IsBlank $row.Y -or IsBlank $row.Z) {
         Fail "site '$id' has no launch coordinates"
+      }
+      $method = Clean $row.PlacementMethod
+      if ($method -eq "Dimension survey" -or $method -eq "Bespoke survey + placeworld") {
+        if (IsBlank $row.PlaceworldReceipt) {
+          Fail "site '$id' has no /obs placeworld receipt"
+        }
+      }
+      $placeworldReceipt = Clean $row.PlaceworldReceipt
+      if ($id -eq "nether_forge" -and -not (IsBlank $row.PlaceworldReceipt) -and $placeworldReceipt -notmatch "nether_forge_placed") {
+        Fail "nether_forge PlaceworldReceipt must mention nether_forge_placed"
+      }
+      if ($id -eq "end_seventh_shrine" -and -not (IsBlank $row.PlaceworldReceipt) -and $placeworldReceipt -notmatch "end_seventh_shrine_placed") {
+        Fail "end_seventh_shrine PlaceworldReceipt must mention end_seventh_shrine_placed"
       }
       if ((Clean $row.VisualStatus) -ne "KEEP") {
         Fail "site '$id' must be KEEP before launch; found '$($row.VisualStatus)'"
@@ -289,7 +314,7 @@ $mode = if ($Launch) { "launch" } else { "audit" }
 $filledCount = @($rows | Where-Object {
   -not (IsBlank $_.ChosenWorld) -or -not (IsBlank $_.X) -or -not (IsBlank $_.Y) -or -not (IsBlank $_.Z)
 }).Count
-Write-Host "launch coord quality check: OK ($mode mode) - $($rows.Count) launch rows, $filledCount coordinate row(s) filled"
+Write-Host "launch coord quality check: OK ($mode mode) - $($rows.Count) launch rows, $filledCount outside-Hold coordinate row(s) filled"
 if (-not $Launch) {
-  Write-Host "  launch proof gate is armed: KEEP verdicts, four proof shots, dimension sanity, duplicate detection, and spacing checks"
+  Write-Host "  launch proof gate is armed: KEEP verdicts, four proof shots, generated Hold proof, placeworld receipts, dimension sanity, duplicate detection, and spacing checks"
 }

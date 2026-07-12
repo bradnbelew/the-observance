@@ -14,7 +14,9 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, '../../..');
 const seeds = resolve(here, '../../supabase/seeds');
+const publicListingPage = resolve(repo, 'dashboard/src/app/page.tsx');
 const recordSlugPage = resolve(repo, 'dashboard/src/app/record/[slug]/page.tsx');
+const voiceArchive = resolve(repo, 'discord/src/voice.archive.ts');
 const holdZip = resolve(repo, 'dashboard/public/the-hold/the-hold.zip');
 
 interface PuzzleSeedRow {
@@ -29,7 +31,10 @@ interface PuzzleSeedRow {
 const puzzleSeed = readFileSync(resolve(seeds, 'puzzles_seed.sql'), 'utf8');
 const progressionSeed = readFileSync(resolve(seeds, 'progression_seed.sql'), 'utf8');
 const metapuzzleSeed = readFileSync(resolve(seeds, 'metapuzzle_seed.sql'), 'utf8');
+const hintSeed = readFileSync(resolve(seeds, 'hints_seed.sql'), 'utf8');
+const publicListingSource = readFileSync(publicListingPage, 'utf8');
 const recordSlugSource = readFileSync(recordSlugPage, 'utf8');
+const voiceArchiveSource = readFileSync(voiceArchive, 'utf8');
 
 const rows = [
   ...parsePuzzleRows(puzzleSeed),
@@ -86,7 +91,12 @@ const coldByMovement = countBy(coldOpen, (r) => `M${r.movement}`);
 const lateColdOpen = coldOpen.filter((r) => r.movement >= 3);
 const m2ColdOpen = coldOpen.filter((r) => r.movement === 2);
 const MAX_M2_COLD_OPEN = 12;
-const webArtifactIssues = auditWebArtifacts(recordSlugSource);
+const webArtifactIssues = [
+  ...auditWebArtifacts(publicListingSource, recordSlugSource),
+  ...auditRecordElsewhereVoice(voiceArchiveSource),
+  ...auditRecordUrlDifficulty(rows),
+  ...auditRecordUrlHints(hintSeed),
+];
 
 if (webArtifactIssues.length > 0) {
   console.error(`webaudit: FAILED - ${webArtifactIssues.length} web artifact readiness issue(s):`);
@@ -114,14 +124,107 @@ if (m2ColdOpen.length > MAX_M2_COLD_OPEN) {
 
 console.log(`webaudit: OK — ${rows.length} puzzle rows audited; no simultaneous accepted-answer collisions.`);
 console.log(`  cold-open rows: ${coldOpen.length} (${formatCounts(coldByMovement)})`);
-console.log(`  web artifacts: Record lure download ${existsSync(holdZip) ? 'available' : 'safely withheld until dashboard/public/the-hold/the-hold.zip exists'}`);
+console.log(`  web artifacts: public listing + Record lure download ${existsSync(holdZip) ? 'available' : 'safely withheld until dashboard/public/the-hold/the-hold.zip exists'}`);
 if (sequenced.length > 0) {
   console.log(`  sequenced duplicate answers: ${sequenced.length} (gated, review on story edits)`);
   for (const issue of sequenced) console.log(`    - ${issue}`);
 }
 
-function auditWebArtifacts(recordPageSource: string): string[] {
+function auditWebArtifacts(publicPageSource: string, recordPageSource: string): string[] {
   const issues: string[] = [];
+  if (!publicPageSource.includes('archived server listing')) {
+    issues.push('Public root must render as an abandoned server/map listing, not a generic dashboard');
+  }
+  if (!publicPageSource.includes('mirror 03') || !publicPageSource.includes('ping: no reply')) {
+    issues.push('Public root must carry stale mirror/ping residue so it reads as a found server listing');
+  }
+  if (!publicPageSource.includes('players') || !publicPageSource.includes('whitelist residue')) {
+    issues.push('Public root must include mundane Minecraft server-listing fields, not only ARG navigation');
+  }
+  if (!publicPageSource.includes('server.properties') || !publicPageSource.includes('enforce-whitelist')) {
+    issues.push('Public root must include mundane host config residue so it reads as an old server listing');
+  }
+  if (!publicPageSource.includes('host account') || !publicPageSource.includes('legacy free')) {
+    issues.push('Public root must include old hosting-account residue so SNOIKERZ reads like a real abandoned host');
+  }
+  if (!publicPageSource.includes('control panel residue') || !publicPageSource.includes('console", "disabled on free plan')
+      || !publicPageSource.includes('restart", "queued, never acknowledged')
+      || !publicPageSource.includes('operator tab", "no verified staff')) {
+    issues.push('Public root must include stale control-panel residue so the listed address feels hosted, not magically revealed');
+  }
+  if (!publicPageSource.includes('billing ledger') || !publicPageSource.includes('staff removal request')
+      || !publicPageSource.includes('invoice waived') || !publicPageSource.includes('blank whitelist row')) {
+    issues.push('Public root must include billing/support-account residue tying staff removal, free mirror, and blank whitelist row together');
+  }
+  if (!publicPageSource.includes('abuse queue') || !publicPageSource.includes('hidden address in the map')
+      || !publicPageSource.includes('closed: not in file') || !publicPageSource.includes('staff.txt restore')) {
+    issues.push('Public root must include abuse-queue residue proving the map itself does not contain the live endpoint');
+  }
+  if (!publicPageSource.includes('uptime checks') || !publicPageSource.includes('timeout')) {
+    issues.push('Public root must include failed uptime checks so the server row feels operational but dormant');
+  }
+  if (!publicPageSource.includes('download comments') || !publicPageSource.includes('ending says the rest is kept here')) {
+    issues.push('Public root must include old download-comment residue that bridges the offline map to the host row');
+  }
+  if (!publicPageSource.includes('observance-pack.zip') || !publicPageSource.includes('served by server')) {
+    issues.push('Public root must mention the join resource pack as a server-served file, not a raw puzzle download');
+  }
+  if (!publicPageSource.includes('support ticket cache') || !publicPageSource.includes('third lamp marked ready without a lamp')) {
+    issues.push('Public root must include believable support-ticket residue that quietly previews in-world mechanics');
+  }
+  if (!publicPageSource.includes('join packet') || !publicPageSource.includes('copy the address from this row only')
+      || !publicPageSource.includes('map files are not endpoints')) {
+    issues.push('Public root must give a mundane join packet that makes the listing the server-address authority, not the map');
+  }
+  if (!publicPageSource.includes('whitelist queue') || !publicPageSource.includes('row exists')) {
+    issues.push('Public root must carry the seven-row whitelist ghost without naming the withheld row');
+  }
+  if (!publicPageSource.includes('packet trace') || !publicPageSource.includes('do not reconstruct a port')
+      || !publicPageSource.includes('mirror_03/the-hold.zip')) {
+    issues.push('Public root must include packet/DNS trace residue that steers players away from raw ports and toward the map/listing split');
+  }
+  if (!publicPageSource.includes('checksum ledger') || !publicPageSource.includes('level.dat')
+      || !publicPageSource.includes('sign repairs only') || !publicPageSource.includes('manifest.txt')) {
+    issues.push('Public root must include checksum/file-ledger residue so the recovered map reads like a real repaired world copy');
+  }
+  if (!publicPageSource.includes('failed join log') || !publicPageSource.includes('kicked: not whitelisted')
+      || !publicPageSource.includes('kicked: missing pack') || !publicPageSource.includes('server row still resolves')) {
+    issues.push('Public root must include failed join residue that explains whitelist/pack behavior without leaking operator setup');
+  }
+  if (!publicPageSource.includes('maintenance notes') || !publicPageSource.includes('lecterns with no book are host errors')
+      || !publicPageSource.includes('do not rewrite low signs upward') || !publicPageSource.includes('ready mark is not the same as lit')) {
+    issues.push('Public root must include maintenance-note residue that reinforces in-world reading rules without turning them into UI instructions');
+  }
+  if (!publicPageSource.includes('moderation cache') || !publicPageSource.includes('the map is a copy. the listing is the door.')) {
+    issues.push('Public root must include old moderation residue that states the map/listing relationship in-fiction');
+  }
+  if (!publicPageSource.includes('mirror log') || !publicPageSource.includes('seventh row erased')) {
+    issues.push('Public root must include old host/archive chronology that connects the map to the Record');
+  }
+  if (!publicPageSource.includes('dns cache') || !publicPageSource.includes('_minecraft') || !publicPageSource.includes('founder residue')) {
+    issues.push('Public root must include DNS/cache residue so the SNOIKERZ clue reads like a stale host record, not a magic URL');
+  }
+  if (!publicPageSource.includes('_minecraft", "removed"')) {
+    issues.push('Public root DNS cache must explicitly withhold the Minecraft SRV record until the live address is intentionally listed');
+  }
+  if (!publicPageSource.includes('NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS')) {
+    issues.push('Public root must own the live server address reveal via NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS');
+  }
+  if (!publicPageSource.includes('address withheld until the host is awake')) {
+    issues.push('Public root must render an in-fiction withheld server-address state before launch');
+  }
+  if (!publicPageSource.includes('download the-hold.zip')) {
+    issues.push('Public root must expose the opening Hold download as the listing world file');
+  }
+  if (!publicPageSource.includes('href="/record/the-record-keeps"')) {
+    issues.push('Public root must keep a visible path back to the Record lure page');
+  }
+  if (!publicPageSource.includes('/keeper-eye.svg')) {
+    issues.push('Public root must use a real Observance visual asset, not a bare text menu');
+  }
+  if (!publicPageSource.includes('accept the pack or the carved alphabet will look wrong')) {
+    issues.push('Public root must warn in fiction that the resource pack matters for rune readability');
+  }
   if (!recordPageSource.includes('const HOLD_ZIP_PUBLIC_PATH = "/the-hold/the-hold.zip"')) {
     issues.push('Record lure page must centralize the-hold.zip path as HOLD_ZIP_PUBLIC_PATH');
   }
@@ -133,6 +236,94 @@ function auditWebArtifacts(recordPageSource: string): string[] {
   }
   if (!existsSync(holdZip) && !recordPageSource.includes('hasHoldZip ?')) {
     issues.push('the-hold.zip is absent, but the Record lure page does not conditionally withhold the download link');
+  }
+  return issues;
+}
+
+function auditRecordUrlDifficulty(seedRows: PuzzleSeedRow[]): string[] {
+  const row = seedRows.find((r) => r.key === 'record-url');
+  if (!row) return ['record-url seed row is missing; opening web-door puzzle cannot be audited'];
+  const issues: string[] = [];
+  const forbidden = new Set([
+    'the record keeps',
+    'the record is kept in more than one place',
+    'the record is kept in more than one place against the loss of the first',
+  ]);
+  for (const answer of row.answers) {
+    if (forbidden.has(answer)) {
+      issues.push(`record-url accepted answer is too generic and bypasses the SNOIKERZ mirror reconstruction: "${answer}"`);
+    }
+    const requiresHost = answer.includes('snoikerz') || answer.includes('old listing') || answer.includes('mirror 03');
+    if (!requiresHost) {
+      issues.push(`record-url accepted answer must name the host/listing/mirror context: "${answer}"`);
+    }
+  }
+  if (!row.answers.some((answer) => answer.includes('snoikerz mirror 03'))) {
+    issues.push('record-url must accept at least one answer that explicitly reconstructs SNOIKERZ mirror 03');
+  }
+  return issues;
+}
+
+function auditRecordUrlHints(hintsSql: string): string[] {
+  const issues: string[] = [];
+  const rowHints = [...hintsSql.matchAll(/\('record-url',\s*(\d+),\s*'((?:[^']|'')*)'\)/g)]
+    .map((m) => ({ tier: Number(m[1]), body: (m[2] ?? '').replace(/''/g, "'").toLowerCase() }));
+  if (rowHints.length < 2) {
+    issues.push('record-url must have at least two hint tiers for the off-world host-row solve');
+    return issues;
+  }
+  const all = rowHints.map((h) => h.body).join('\n');
+  if (!all.includes('host-row pieces') || !all.includes('front door') || !all.includes('common web')
+      || !all.includes('root path') || !all.includes('mirror 03')) {
+    issues.push('record-url hints must teach reconstruction of the SNOIKERZ host row without skipping the puzzle');
+  }
+  if (!all.includes('raw server port') || !all.includes('removed minecraft service row')
+      || !all.includes('srv record')) {
+    issues.push('record-url hints must steer players away from raw server endpoints and the removed Minecraft service/SRV row');
+  }
+  if (all.includes('next_public_observance_server_address') || all.includes('address withheld until the host is awake')) {
+    issues.push('record-url hints must not leak implementation/configured server-address wording');
+  }
+  return issues;
+}
+
+function auditRecordElsewhereVoice(archiveSource: string): string[] {
+  const issues: string[] = [];
+  if (!archiveSource.includes('cardSurfaceRecordElsewhere')) {
+    issues.push('Archive voice must keep the surface-record-elsewhere card for the web-door payoff');
+  }
+  if (!archiveSource.includes('front door, common web, root path, mirror 03')) {
+    issues.push('Archive web-door card must preserve the exact SNOIKERZ host-row reconstruction');
+  }
+  if (!archiveSource.includes('uptime checks time out') || !archiveSource.includes('download comments')) {
+    issues.push('Archive web-door card must mention the same uptime/download-comment residue shown on the public host page');
+  }
+  if (!archiveSource.includes('join packet') || !archiveSource.includes('the map is a copy and the listing is the door')) {
+    issues.push('Archive web-door card must preserve the map/listing distinction shown on the public host page');
+  }
+  if (!archiveSource.includes('checksum ledger says level.dat was last played by m.kept')
+      || !archiveSource.includes('region diffs are sign repairs only')) {
+    issues.push('Archive web-door card must echo checksum/file-ledger residue from the public host page');
+  }
+  if (!archiveSource.includes('failed joins kick a guest for whitelist and missing pack')
+      || !archiveSource.includes('row still resolves')) {
+    issues.push('Archive web-door card must echo failed join residue without revealing a live endpoint');
+  }
+  if (!archiveSource.includes('control panel is expired, console disabled, restart queued')
+      || !archiveSource.includes('billing ledger waives the mirror')
+      || !archiveSource.includes('abuse queue says the hidden address was not in the map file')) {
+    issues.push('Archive web-door card must echo host-panel/billing/abuse residue from the public host page');
+  }
+  if (!archiveSource.includes('maintenance notes say low signs stay low and empty lecterns are host errors')) {
+    issues.push('Archive web-door card must echo maintenance-note reading rules for signs and lecterns');
+  }
+  if (!archiveSource.includes('ready without a lamp')) {
+    issues.push('Archive web-door card must retain the lampworks support-ticket callback');
+  }
+  if (!archiveSource.includes("'aro.rumor.host'")
+      || !archiveSource.includes('Old SNOIKERZ row still gets checked')
+      || !archiveSource.includes('A map is where a server leaves a forwarding address')) {
+    issues.push('Aro must carry a human-scale SNOIKERZ host/listing rumor so the web-door reveal is echoed in town');
   }
   return issues;
 }

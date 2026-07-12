@@ -16,6 +16,8 @@ import { SetupFlow } from "@/components/author/SetupFlow";
 import { UnlitProgress } from "@/components/author/UnlitProgress";
 import { KeeperTheoryProgress } from "@/components/author/KeeperTheoryProgress";
 import { SideProofProgress } from "@/components/author/SideProofProgress";
+import { DimensionLaneProgress } from "@/components/author/DimensionLaneProgress";
+import { PriorAcceptingProgress } from "@/components/author/PriorAcceptingProgress";
 import { ManualMediaProgress } from "@/components/author/ManualMediaProgress";
 import type { FateInput, EndingFate } from "@/app/author/fate-preview";
 import type { DossierEntry } from "@/components/author/Dossiers";
@@ -253,6 +255,9 @@ export default async function AuthorPage() {
   const hasHoldZip = existsSync(
     join(process.cwd(), "public", "the-hold", "the-hold.zip"),
   );
+  const serverAddressConfigured = Boolean(
+    process.env.NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS?.trim(),
+  );
 
   return (
     <div className="space-y-8">
@@ -283,6 +288,7 @@ export default async function AuthorPage() {
         watcherAsleep={watcherAsleep}
         activeRosterSize={activeRosterSize}
         hasHoldZip={hasHoldZip}
+        serverAddressConfigured={serverAddressConfigured}
       />
 
       <DirectorProgressReport
@@ -299,6 +305,8 @@ export default async function AuthorPage() {
       <UnlitProgress flags={flags} />
       <KeeperTheoryProgress flags={flags} />
       <SideProofProgress flags={flags} />
+      <DimensionLaneProgress flags={flags} />
+      <PriorAcceptingProgress flags={flags} />
       <ManualMediaProgress flags={flags} hasHoldZip={hasHoldZip} />
 
       <WatcherSleepToggle asleep={watcherAsleep} />

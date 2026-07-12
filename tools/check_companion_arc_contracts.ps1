@@ -24,6 +24,12 @@ function Assert-All([string]$Text, [string[]]$Needles, [string]$Label) {
   }
 }
 
+function Assert-NotContains([string]$Text, [string]$Needle, [string]$Label) {
+  if ($Text.IndexOf($Needle, [StringComparison]::Ordinal) -ge 0) {
+    throw "$Label contains retired companion phrasing: $Needle"
+  }
+}
+
 $plugin = Read-Text "plugin\src\main\java\com\observance\watcher\ObservancePlugin.java"
 $wren = Read-Text "plugin\src\main\java\com\observance\watcher\signal\listener\WrenNpcListener.java"
 $watcher = Read-Text "plugin\src\main\java\com\observance\watcher\npc\CompanionArcWatcher.java"
@@ -52,10 +58,13 @@ Assert-All $wren @(
   'case "condemn"',
   'case "understand"',
   'case "free"',
-  "stay close",
-  "what you'd never do",
-  "just behind you"
+  "if i say i know a place, ask me how i know it",
+  "i marked the turns with charcoal once",
+  "no speech, no debt"
 ) "WrenNpcListener"
+
+Assert-NotContains $wren "tell me where you're headed and i'll tell you what i know" "WrenNpcListener"
+Assert-NotContains $wren "that's the trade. it's a good trade" "WrenNpcListener"
 
 Assert-All $watcher @(
   "iss_caught",

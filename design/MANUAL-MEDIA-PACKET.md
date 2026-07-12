@@ -102,17 +102,17 @@ dashboard/public/the-hold/the-hold.zip
 Player-facing route:
 
 ```text
-/record/the-record-keeps
+/
 ```
 
 Current production state:
 
 - source zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - dashboard zip: `dashboard/public/the-hold/the-hold.zip`
-- size: 154145 bytes
-- SHA1: `b3a9459e102cde1e072771660def4b37bf55896e`
+- size: 154181 bytes
+- SHA1: `b638e989e7f03c2aec2346f9a1c972bddcf9c7de`
 - zip cleanliness check: 534 entries; no README/manifest/spoiler-style entries found
-- final room handoff: route + gate name + common ending + port arithmetic; no raw server endpoint
+- final room handoff: front door + common web + root path + mirror 03; no server port and no raw server endpoint
 
 Format:
 
@@ -121,7 +121,7 @@ Format:
 - adventure mode
 - 10-15 minutes
 - one route, no survival grind
-- final room points to the live server through a small reconstruction puzzle, not a raw address
+- final room points to the abandoned public listing through a small reconstruction puzzle, not a raw address
 
 Minimum build:
 
@@ -129,18 +129,18 @@ Minimum build:
 2. Domestic room: beds, lamp, ration evidence, signs of people rather than monsters.
 3. Water/reflection room: a Sella count problem, seven where six is expected.
 4. Lamp/hearth room: the kept light and one wrong cold place.
-5. Handoff room: the destination split across route, gate name, common ending, and port arithmetic.
+5. Handoff room: the destination split across front door, common web, and root path.
 
 Payload:
 
 - emotional payload: this place had ordinary people in it
-- functional payload: the public route or server handoff
+- functional payload: the public listing handoff, then the live server address on the website
 - optional payload: a rune string players can decode later, but not a required early cipher
 
 Integration:
 
 - The Record page withholds the link unless `dashboard/public/the-hold/the-hold.zip` exists.
-- The zip is now present locally; before planting the in-world clue to `/record/the-record-keeps`, verify the deployed dashboard can serve `/the-hold/the-hold.zip`.
+- The public root and Record page both point at the same zip. Before planting the live lure, verify the deployed dashboard can serve `/`, `/the-hold/the-hold.zip`, and `/record/the-record-keeps`.
 - Once present, include it in the rehearsal packet as a web-jump proof clip.
 
 Hosting:

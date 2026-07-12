@@ -70,7 +70,8 @@ RequireText "StructureTemplates.java" $templates 'pen.putBook(cx + 2, cy, cz - 1
 RequireText "StructureTemplates.java" $templates "South wall shelf inventory"
 RequireText "ObservanceCommand.java" $command 'seedFixtureLore(loc, "far_water")'
 RequireText "ObservanceCommand.java" $command "private void seedFixtureLore(Location base, String id)"
-RequireText "ObservanceCommand.java" $command "if (block.getType() == Material.CHISELED_BOOKSHELF) continue"
+RequireText "ObservanceCommand.java" $command "int[][] targets = fixtureLoreTargets(key);"
+RequireText "ObservanceCommand.java" $command "private int[][] fixtureLoreTargets(String id)"
 RequireText "ObservanceCommand.java" $command "private void placeDecorativeBookshelf(Block block, int seed)"
 RequireText "ObservanceCommand.java" $command "placeDecorativeBookshelf(world.getBlockAt(bx + 4, by, bz + 5), 31)"
 RequireText "ObservanceCommand.java" $command "fixtureLoreFragments"

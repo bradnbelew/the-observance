@@ -54,6 +54,8 @@ function Run-Check([string]$Name, [string]$ScriptPath, [string[]]$CheckArgs) {
 
     $placeholderSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $missingCoordSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $missingGeneratedProofSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $missingPlaceworldSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $notKeepSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $missingProofSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     $otherDetails = [System.Collections.Generic.List[string]]::new()
@@ -64,7 +66,7 @@ function Run-Check([string]$Name, [string]$ScriptPath, [string[]]$CheckArgs) {
         continue
       }
       $detail = $trimmed.Substring(2)
-      $placeholderMatch = [regex]::Match($detail, "launch-required site '([^']+)' still has placeholder coordinates")
+      $placeholderMatch = [regex]::Match($detail, "(?:outside-Hold )?launch-required site '([^']+)' still has placeholder coordinates")
       if ($placeholderMatch.Success) {
         [void]$placeholderSites.Add($placeholderMatch.Groups[1].Value)
         continue
@@ -72,6 +74,16 @@ function Run-Check([string]$Name, [string]$ScriptPath, [string[]]$CheckArgs) {
       $missingCoordMatch = [regex]::Match($detail, "site '([^']+)' has no launch coordinates")
       if ($missingCoordMatch.Success) {
         [void]$missingCoordSites.Add($missingCoordMatch.Groups[1].Value)
+        continue
+      }
+      $missingGeneratedProofMatch = [regex]::Match($detail, "site '([^']+)' has no Deep Hold generated proof")
+      if ($missingGeneratedProofMatch.Success) {
+        [void]$missingGeneratedProofSites.Add($missingGeneratedProofMatch.Groups[1].Value)
+        continue
+      }
+      $missingPlaceworldMatch = [regex]::Match($detail, "site '([^']+)' has no /obs placeworld receipt")
+      if ($missingPlaceworldMatch.Success) {
+        [void]$missingPlaceworldSites.Add($missingPlaceworldMatch.Groups[1].Value)
         continue
       }
       $notKeepMatch = [regex]::Match($detail, "site '([^']+)' must be KEEP before launch")
@@ -88,6 +100,8 @@ function Run-Check([string]$Name, [string]$ScriptPath, [string[]]$CheckArgs) {
     }
 
     if ($placeholderSites.Count -eq 0 -and $missingCoordSites.Count -eq 0 -and
+        $missingGeneratedProofSites.Count -eq 0 -and
+        $missingPlaceworldSites.Count -eq 0 -and
         $notKeepSites.Count -eq 0 -and $missingProofSites.Count -eq 0 -and
         $otherDetails.Count -eq 0) {
       Add-Blocker "$Name failed: $($lines[0].Trim())"
@@ -95,10 +109,16 @@ function Run-Check([string]$Name, [string]$ScriptPath, [string[]]$CheckArgs) {
     }
 
     if ($placeholderSites.Count -gt 0) {
-      Add-Blocker "${Name}: $($placeholderSites.Count) launch-required site coordinate(s) are still placeholders in sites.yml; place them in-game or apply a completed coords-capture.csv."
+      Add-Blocker "${Name}: $($placeholderSites.Count) outside-Hold launch-required site coordinate(s) are still placeholders in sites.yml; place them in-game or apply a completed coords-capture.csv."
     }
     if ($missingCoordSites.Count -gt 0) {
-      Add-Blocker "${Name}: $($missingCoordSites.Count) placement packet row(s) still need launch coordinates."
+      Add-Blocker "${Name}: $($missingCoordSites.Count) outside-Hold placement packet row(s) still need launch coordinates."
+    }
+    if ($missingGeneratedProofSites.Count -gt 0) {
+      Add-Blocker "${Name}: $($missingGeneratedProofSites.Count) Deep Hold generated row(s) still need GeneratedProof from /obs placehold audit and room proof."
+    }
+    if ($missingPlaceworldSites.Count -gt 0) {
+      Add-Blocker "${Name}: $($missingPlaceworldSites.Count) placeworld row(s) still need /obs placeworld stamp receipts."
     }
     if ($notKeepSites.Count -gt 0) {
       Add-Blocker "${Name}: $($notKeepSites.Count) placement packet row(s) still need VisualVerdict set to KEEP."
@@ -173,9 +193,9 @@ Run-Check "external media readiness" $externalMediaCheck @("-RepoRoot", $repoFul
 
 if ([string]::IsNullOrWhiteSpace($CaptureCsv)) {
   if ($Launch) {
-    Add-Blocker "No launch coords capture CSV was supplied. Run tools\new_launch_placement_packet.ps1, fill coords-capture.csv from live server placement, then rerun this check with -CaptureCsv."
+    Add-Blocker "No launch coords/proof capture CSV was supplied. Run tools\new_launch_placement_packet.ps1, fill coords-capture.csv with Deep Hold GeneratedProof, PlaceworldReceipt for stamped rows, outside-Hold coordinates, proof shots, and cohesion notes, then rerun this check with -CaptureCsv."
   } else {
-    Add-Blocker "Launch coordinate proof CSV not supplied; audit mode did not validate proof-shot fields. Use -CaptureCsv for a real placement packet."
+    Add-Blocker "Launch coordinate/proof CSV not supplied; audit mode did not validate GeneratedProof, PlaceworldReceipt, or proof-shot fields. Use -CaptureCsv for a real placement packet."
   }
 } else {
   $captureFull = Resolve-UnderRepo $repoFull $CaptureCsv
@@ -209,7 +229,7 @@ if ([string]::IsNullOrWhiteSpace($RehearsalPacket)) {
 
 Add-Manual "Apply discord/supabase/apply-all.sql to the live Supabase project; record Applied SQL SHA1 $applyAllSha in launch-attestations.md; verify /observance status shows db true, last call ok true, queued writes 0."
 Add-Manual "Build the deploy bundle with tools\package_launch_bundle.ps1, host observance-resourcepack.zip, verify the hosted bytes with tools\check_hosted_resource_pack.ps1, then load the plugin, datapack, and resource pack together on the exact Paper 1.21.11 server build; record the current plugin jar SHA1 and resource-pack SHA1 from observance-deploy-manifest.json in launch-attestations.md; confirm no console load errors or pack/datapack compatibility warnings."
-Add-Manual "Join with a real Minecraft client and verify books, signs, item lore, titles/actionbars, bossbars, custom rune font glyphs, sounds, particles, NPC lines, and resource-pack fallback behavior in situ; record this in the rehearsal packet's launch-attestations.md."
+Add-Manual "Join with a real non-op Minecraft client and verify books, signs, item lore, titles/actionbars, bossbars, custom rune font glyphs, sounds, particles, NPC lines, answer input, return routes, Deep Hold protection, and resource-pack fallback behavior in situ; record this in the rehearsal packet's launch-attestations.md."
 Add-Manual "Run /observance preflight, /observance visualaudit, /observance dialogueaudit, /obs unlit audit, and /obs unlit ready on the live server after placement."
 Add-Manual "Complete design/SESSION-ZERO.md before enabling observer_capture or voice_capture; record capture switch state and any observer_opt_out choices in launch-attestations.md."
 Add-Manual "Rotate any previously exposed service_role or Discord bot credentials before public/friend launch; record proof in launch-attestations.md."

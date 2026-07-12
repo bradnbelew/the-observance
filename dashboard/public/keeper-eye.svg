@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>The Keeper's Eye</title>
+  <desc>Sigil of The Observance: a ring of rune-marks (the customs) around an engraved eye whose pupil is the glowing keystone rune.</desc>
+  <rect width="512" height="512" fill="#0a0c0f"/>
+  <circle cx="256" cy="256" r="218" fill="none" stroke="#8f897b" stroke-width="2" opacity="0.45"/>
+  <circle cx="256" cy="256" r="206" fill="none" stroke="#cfc8b8" stroke-width="7" stroke-dasharray="3 24" stroke-linecap="round" opacity="0.85"/>
+  <circle cx="256" cy="256" r="194" fill="none" stroke="#8f897b" stroke-width="2" opacity="0.45"/>
+  <path d="M118,256 C190,168 322,168 394,256 C322,344 190,344 118,256 Z" fill="#0a0c0f" stroke="#cfc8b8" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="256" cy="256" r="66" fill="#C8A24B" opacity="0.10"/>
+  <circle cx="256" cy="256" r="50" fill="#C8A24B" opacity="0.16"/>
+  <circle cx="256" cy="256" r="40" fill="#3a2f16" stroke="#0a0c0f" stroke-width="3"/>
+  <g stroke="#C8A24B" stroke-width="11" stroke-linecap="round" fill="none" opacity="0.30">
+    <line x1="256" y1="220" x2="256" y2="300"/>
+    <line x1="256" y1="238" x2="232" y2="217"/>
+    <line x1="256" y1="262" x2="282" y2="286"/>
+    <line x1="256" y1="282" x2="234" y2="297"/>
+  </g>
+  <g stroke="#E8E2D4" stroke-width="6" stroke-linecap="round" fill="none">
+    <line x1="256" y1="220" x2="256" y2="300"/>
+    <line x1="256" y1="238" x2="232" y2="217"/>
+    <line x1="256" y1="262" x2="282" y2="286"/>
+    <line x1="256" y1="282" x2="234" y2="297"/>
+  </g>
+  <circle cx="256" cy="260" r="3.5" fill="#E8E2D4"/>
+</svg>

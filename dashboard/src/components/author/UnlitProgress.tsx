@@ -87,6 +87,27 @@ export function UnlitProgress({ flags }: { flags: FlagMap }) {
           );
         })}
       </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        {[
+          { key: "unlit_figure_seen", label: "Figure witnessed" },
+          { key: "unlit_light_taken", label: "Light taken" },
+          { key: "unlit_figure_hunt", label: "Hunt reached" },
+        ].map((signal) => {
+          const seen = truthy(flags[signal.key]);
+          return (
+            <div
+              key={signal.key}
+              className="flex items-center justify-between rounded-md border border-neutral-800 bg-black/20 px-3 py-2"
+            >
+              <span className="text-xs text-neutral-400">{signal.label}</span>
+              <span className={seen ? "font-mono text-xs text-amber-300" : "font-mono text-xs text-neutral-700"}>
+                {seen ? "yes" : "no"}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

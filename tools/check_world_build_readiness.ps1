@@ -11,9 +11,12 @@ $structuresFile = Join-Path $RepoRoot "design\structures.md"
 $clueLedgerFile = Join-Path $RepoRoot "design\CLUE-LEDGER.md"
 $evidenceFile = Join-Path $RepoRoot "design\LIVE-REHEARSAL-EVIDENCE.md"
 $commandFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\command\ObservanceCommand.java"
+$pluginFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\ObservancePlugin.java"
+$holdProtectionFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\signal\listener\HoldProtectionListener.java"
 $structureTemplateFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\structure\StructureTemplates.java"
+$deepHoldLayoutCheck = Join-Path $RepoRoot "tools\check_deep_hold_layout.py"
 
-foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $clueLedgerFile, $evidenceFile, $commandFile, $structureTemplateFile)) {
+foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $clueLedgerFile, $evidenceFile, $commandFile, $pluginFile, $holdProtectionFile, $structureTemplateFile, $deepHoldLayoutCheck)) {
   if (-not (Test-Path $file)) {
     throw "world build readiness: missing required file: $file"
   }
@@ -25,6 +28,8 @@ $structures = Get-Content -LiteralPath $structuresFile -Raw
 $clueLedger = Get-Content -LiteralPath $clueLedgerFile -Raw
 $evidence = Get-Content -LiteralPath $evidenceFile -Raw
 $commandSource = Get-Content -LiteralPath $commandFile -Raw
+$pluginSource = Get-Content -LiteralPath $pluginFile -Raw
+$holdProtectionSource = Get-Content -LiteralPath $holdProtectionFile -Raw
 $structureTemplateSource = Get-Content -LiteralPath $structureTemplateFile -Raw
 
 # Structure quality is now a launch gate, not a vibe check. The build can pass
@@ -54,6 +59,38 @@ function Clean-Value([string]$Value) {
 function RequireText([string]$Label, [string]$Text, [string]$Needle) {
   if ($Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Fail "$Label missing expected launch-readiness text: $Needle"
+  }
+}
+
+RequireText "ObservanceCommand.java production Hold fixture path" $commandSource "buildHoldIntegratedFixture"
+RequireText "ObservanceCommand.java production Hold fixture path" $commandSource "Production Hold fixtures are dressed into the district shell"
+RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "isHoldNativeChamber(row)"
+RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "buildHoldThresholdVaultCore"
+RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "buildHoldUnwritingCore"
+RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "hasHoldFinaleMarkersNear"
+RequireText "ObservanceCommand.java production Hold gate containment" $commandSource "holdGateReturnWidth"
+RequireText "ObservanceCommand.java Hold repair path" $commandSource "placeHoldFixture(site, loc, holdRow)"
+RequireText "ObservanceCommand.java Hold protection audit" $commandSource "hold_region"
+RequireText "ObservanceCommand.java placeworld stamp gate" $commandSource "requiresPlaceWorldStamp"
+RequireText "ObservanceCommand.java placeworld stamp gate" $commandSource "placeWorldStampPresent"
+RequireText "ObservanceCommand.java placeworld stamp gate" $commandSource "surveyed; needs /obs placeworld stamp"
+RequireText "ObservanceCommand.java dimension lane placement flags" $commandSource "nether_forge_placed"
+RequireText "ObservanceCommand.java dimension lane placement flags" $commandSource "end_seventh_shrine_placed"
+RequireText "ObservancePlugin.java Hold protection registration" $pluginSource "HoldProtectionListener"
+RequireText "HoldProtectionListener.java normal-player protection" $holdProtectionSource "The Hold does not give."
+RequireText "HoldProtectionListener.java third-lamp exception" $holdProtectionSource "isAllowedThirdLampPlacement"
+if ($commandSource.IndexOf("touch while", [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+  Fail "ObservanceCommand.java native Hold chamber text still contains tutorial-like wording: touch while"
+}
+
+$deepHoldLayoutOutput = & python $deepHoldLayoutCheck 2>&1
+if ($LASTEXITCODE -ne 0) {
+  foreach ($line in $deepHoldLayoutOutput) {
+    Fail "deep hold layout: $line"
+  }
+} else {
+  foreach ($line in $deepHoldLayoutOutput) {
+    Write-Host $line
   }
 }
 
@@ -165,6 +202,11 @@ $majorLaunchSites = @(
   "nether_forge",
   "end_seventh_shrine"
 )
+
+$holdSites = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($m in [regex]::Matches($commandSource, 'new\s+HoldSite\(\s*"([^"]+)"')) {
+  [void]$holdSites.Add($m.Groups[1].Value)
+}
 
 $placementBriefMatch = [regex]::Match(
   $commandSource,
@@ -314,6 +356,7 @@ $unplacedEnabled = @($enabledSites | Where-Object {
   [string]::IsNullOrWhiteSpace([string]$_.x) -or [string]::IsNullOrWhiteSpace([string]$_.y) -or [string]::IsNullOrWhiteSpace([string]$_.z)
 })
 $unplacedLaunch = @($majorLaunchSites | Where-Object {
+  -not $holdSites.Contains($_) -and
   $sites.Contains($_) -and (
     [string]$sites[$_].x -eq "null" -or [string]$sites[$_].y -eq "null" -or [string]$sites[$_].z -eq "null" -or
     [string]::IsNullOrWhiteSpace([string]$sites[$_].x) -or
@@ -324,12 +367,13 @@ $unplacedLaunch = @($majorLaunchSites | Where-Object {
 
 if ($Launch) {
   foreach ($id in $unplacedLaunch) {
-    Fail "launch-required site '$id' still has placeholder coordinates"
+    Fail "outside-Hold launch-required site '$id' still has placeholder coordinates"
   }
 }
 
 RequireText "RUNBOOK.md" $runbook "tools\check_world_build_readiness.ps1 -Launch"
-RequireText "RUNBOOK.md" $runbook "launch-required site coordinates"
+RequireText "RUNBOOK.md" $runbook "outside-Hold launch-required site coordinates"
+RequireText "RUNBOOK.md" $runbook "GeneratedProof"
 RequireText "RUNBOOK.md" $runbook "/observance site todo"
 RequireText "RUNBOOK.md" $runbook "/observance site next"
 RequireText "RUNBOOK.md" $runbook "/observance site plan"
@@ -341,7 +385,8 @@ RequireText "structures.md" $structures "two non-sign clue surfaces"
 RequireText "structures.md" $structures "traversal vector"
 RequireText "CLUE-LEDGER.md" $clueLedger "hold-address-reconstruction"
 RequireText "CLUE-LEDGER.md" $clueLedger "accepting-convergence"
-RequireText "LIVE-REHEARSAL-EVIDENCE.md" $evidence "launch-required site coordinates"
+RequireText "LIVE-REHEARSAL-EVIDENCE.md" $evidence "outside-Hold launch-required site coordinates"
+RequireText "LIVE-REHEARSAL-EVIDENCE.md" $evidence "generated Deep Hold rooms"
 
 $visualTemplateMarkers = [regex]::Matches($structureTemplateSource, "Post-Unlit visual overhaul").Count
 if ($visualTemplateMarkers -lt 15) {
@@ -407,8 +452,14 @@ RequireText "ObservanceCommand.java" $commandSource "prepareCompactCell(siteLoc,
 RequireText "ObservanceCommand.java" $commandSource "compactGridCell(origin, 0, 6, spacing, 2)"
 RequireText "ObservanceCommand.java" $commandSource "compactSurfaceCell(world, bx + (step * 4), bz)"
 RequireText "ObservanceCommand.java" $commandSource 'seedFixtureLore(loc, "far_water")'
-RequireText "ObservanceCommand.java" $commandSource "if (block.getType() == Material.CHISELED_BOOKSHELF) continue"
+RequireText "ObservanceCommand.java" $commandSource "int[][] targets = fixtureLoreTargets(key);"
+RequireText "ObservanceCommand.java" $commandSource "private int[][] fixtureLoreTargets(String id)"
 RequireText "ObservanceCommand.java" $commandSource "private void placeDecorativeBookshelf(Block block, int seed)"
+RequireText "ObservanceCommand.java" $commandSource "private void placeMechanicBookshelf(Block block)"
+RequireText "ObservanceCommand.java" $commandSource "Vaun tally shelf is pre-filled"
+RequireText "ObservanceCommand.java" $commandSource "placeMechanicBookshelf(loc.getBlock())"
+RequireText "ObservanceCommand.java" $commandSource "placeFrameDial(new Location(world, bx, by, bz))"
+RequireText "ObservanceCommand.java" $commandSource "expected an item-frame dial entity with an arrow"
 RequireText "ObservanceCommand.java" $commandSource "placeDecorativeBookshelf(world.getBlockAt(bx + 4, by, bz + 5), 31)"
 RequireText "StructureTemplates.java" $structureTemplateSource "prepareTemplateVolume(pen, base, id)"
 RequireText "StructureTemplates.java" $structureTemplateSource "void clearBox(int cx, int y, int cz, int radius, int height)"
@@ -424,6 +475,10 @@ RequireText "RUNBOOK.md" $runbook "No structure uses a beacon beam as a player w
 
 if ($commandSource.IndexOf("keptLightBeacon", [System.StringComparison]::Ordinal) -ge 0) {
   Fail "ObservanceCommand.java must not place retired beacon waypoints"
+}
+
+if ($commandSource.IndexOf("setType(Material.ITEM_FRAME", [System.StringComparison]::Ordinal) -ge 0) {
+  Fail "ObservanceCommand.java must spawn item-frame entities; Material.ITEM_FRAME is not valid block placement"
 }
 if ($structureTemplateSource.IndexOf("Material.BEACON", [System.StringComparison]::Ordinal) -ge 0) {
   Fail "StructureTemplates.java must not place retired beacon waypoints"
@@ -441,7 +496,7 @@ $mode = if ($Launch) { "launch" } else { "audit" }
 Write-Host "world build readiness check: OK ($mode mode) - $($majorLaunchSites.Count) launch-required sites defined with expected types"
 Write-Host "  enabled sites: $($enabledSites.Count); enabled sites with placeholder coords: $($unplacedEnabled.Count)"
 if ($unplacedLaunch.Count -gt 0) {
-  Write-Host "  launch-required placeholder coords remaining: $($unplacedLaunch.Count) (run with -Launch to fail until placed)"
+  Write-Host "  outside-Hold launch-required placeholder coords remaining: $($unplacedLaunch.Count) (run with -Launch to fail until placed)"
 } else {
-  Write-Host "  launch-required placeholder coords remaining: 0"
+  Write-Host "  outside-Hold launch-required placeholder coords remaining: 0"
 }

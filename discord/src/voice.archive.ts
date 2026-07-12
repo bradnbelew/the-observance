@@ -98,6 +98,10 @@ export const archive: Record<string, string> = {
     'the warm way in the copy is too bright to be mercy. it has no smoke, no ash, no hand held near it for heat. it is the lie of morning with the sun removed.',
   cardHappenedThresholdUnderCopy:
     'the copied threshold keeps the old command and takes away the road. bow under it and the dark gives a little room. stand tall and the house stays only a house.',
+  cardHappenedUnlitFigure:
+    'the tall shape is not entered on any village roll. it stands where a person would stand if the copy had kept the place and removed the person. it appears first at the edge, then nearer. the copy is learning distance.',
+  cardHappenedUnlitLightTaken:
+    'one borrowed lamp ends as a black candle before its time. no hand carries it away. the copy does not hate light. it corrects light that was entered in the wrong column.',
 
   // ===== thread: who =====
   cardWhoDeepMarket:
@@ -388,7 +392,7 @@ export const archive: Record<string, string> = {
   // surface-record-elsewhere → the off-world page (A13). The record is kept in more than one
   // place, against the loss of the first; found when the group walks the decoded path.
   cardSurfaceRecordElsewhere:
-    'a founder’s line: the record is kept in more than one place, against the loss of the first. it is not only here. read the path it gives and the record is there too, the same count, the same hand, kept where this hold cannot reach to burn it.',
+    'a founder’s line: the record is kept in more than one place, against the loss of the first. the copy did not hide a live address; it split an old listing row into pieces. front door, common web, root path, mirror 03. there the old listing keeps the address, and the recovered file keeps the colder record beside it. its join packet says the map is a copy and the listing is the door. its checksum ledger says level.dat was last played by m.kept and the region diffs are sign repairs only. its failed joins kick a guest for whitelist and missing pack before the row still resolves. its control panel is expired, console disabled, restart queued and never acknowledged. its billing ledger waives the mirror after staff removal. its abuse queue says the hidden address was not in the map file. its maintenance notes say low signs stay low and empty lecterns are host errors. its uptime checks time out four times a day. its old download comments say the ending points back here. its whitelist has six filled rows and one blank counted row. its ticket cache repeats the lampworks error: ready without a lamp.',
 
   // -------------------------------------------------------------------------
   // THE TRUE WALK — coord found-markers (A7 `coords-to-real-place`, INV-14). The Threshold
@@ -552,6 +556,8 @@ export const npcLines: Record<string, string> = {
     'There is a line painted across the big stair, past the lamp-house. Just an old survey mark, old pitch, nothing sacred. If you want a thrill, follow it until the place starts keeping count of you.',
   'aro.rumor.bird':
     'They say there was a bird that kept the air sweet. I never saw a feather, only heard the coops were up by the Lamp-works. If a cage is empty and still set for feeding, ask what left and why nobody calls it.',
+  'aro.rumor.host':
+    'Old SNOIKERZ row still gets checked, if you believe it. Mirror 03, free account, no staff answering. Kids download the map and think that is the place. It is not. A map is where a server leaves a forwarding address after staff stop answering.',
   'aro.lie.cross':
     'The painted line? Step right over it, friend. That’s the locals keeping the soft folk out so they can have the warm to themselves. Cross it and keep going. That’s where it gets good.',
   'aro.lie.moon':

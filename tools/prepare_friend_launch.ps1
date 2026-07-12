@@ -90,9 +90,9 @@ function Write-ManualMediaChecklist([string]$RehearsalDir, [string]$Date) {
   $lines.Add("")
   $lines.Add('- Dashboard path: `dashboard/public/the-hold/the-hold.zip`.')
   $lines.Add('- Public deployed URL to verify: `/the-hold/the-hold.zip`.')
-  $lines.Add('- Size: `154145` bytes.')
-  $lines.Add('- SHA1: `b3a9459e102cde1e072771660def4b37bf55896e`.')
-  $lines.Add('- Final room handoff: route + gate name + common ending + port arithmetic; no raw server endpoint.')
+  $lines.Add('- Size: `154181` bytes.')
+  $lines.Add('- SHA1: `b638e989e7f03c2aec2346f9a1c972bddcf9c7de`.')
+  $lines.Add('- Final room handoff: front door + common web + root path + mirror 03; no server port and no raw server endpoint.')
   $lines.Add("- Do not plant the in-world route clue until the deployed dashboard URL works from an incognito/private browser.")
   $lines.Add("")
   $lines.Add("## Recovered Archive")
@@ -190,8 +190,9 @@ function Write-FriendLaunchTodo(
   $lines.Add("- [ ] Install " + (Code $datapackPath) + " in the live world datapacks folder.")
   $lines.Add("- [ ] Host " + (Code $resourcepackPath) + " at a direct HTTPS .zip URL.")
   $lines.Add("- [ ] Run " + (Code "tools\prepare_friend_launch.ps1 -ResourcePackUrl <hosted-https-zip-url>") + " so config, hosted-byte verification, quickstart, blocker report, media checklist, Supabase card, command sheet, launch todo, and attestations are refreshed together.")
-  $lines.Add("- [ ] Use " + (Code $PlacementDir) + " to place the 67 launch anchors.")
-  $lines.Add("- [ ] Fill " + (Code $CaptureCsv) + " with coordinates, KEEP verdicts, four proof shots, and cohesion notes.")
+  $lines.Add("- [ ] Use " + (Code $PlacementDir) + " to build/proof the Deep Hold rows and place the remaining outside-Hold anchors.")
+  $lines.Add("- [ ] Prove the Failed Accepting route in the generated Hold: " + (Code "no witness") + " opens the old camp, " + (Code "answers are not witness") + " starts the repair files, all six repair signs accept evidence-backed corrections, and " + (Code "witness before accepting") + " opens the final rite path.")
+  $lines.Add("- [ ] Fill " + (Code $CaptureCsv) + " with Deep Hold GeneratedProof, PlaceworldReceipt for stamped rows, outside-Hold coordinates, KEEP verdicts, four proof shots, and cohesion notes.")
   $lines.Add("- [ ] Use " + (Code $LiveServerCommandSheet) + " while running the live server commands; copy receipts into launch-attestations.md.")
   $lines.Add("- [ ] Review " + (Code $ManualMediaChecklist) + ' before flipping `media_clip_01_ready`, `media_clip_02_ready`, `media_clip_03_ready`, `media_clip_04_ready`, or `recovered_archive_ready`.')
   $lines.Add("- [ ] Run the live rehearsal and fill " + (Code (Join-Path $RehearsalDir "00-notes.md")) + ", " + (Code (Join-Path $RehearsalDir "fixes.md")) + ", and " + (Code (Join-Path $RehearsalDir "launch-attestations.md")) + ".")
@@ -310,14 +311,17 @@ function Write-FriendQuickstart(
   $lines.Add("4. Host the resource pack zip above at the hosted URL listed here.")
   $lines.Add("5. If the hosted URL is still pending, rerun " + (Code "tools\prepare_friend_launch.ps1 -ResourcePackUrl <hosted-https-zip-url>") + ".")
   $lines.Add("6. Verify hosted pack bytes with " + (Code "tools\check_hosted_resource_pack.ps1") + ".")
-  $lines.Add("7. Place launch anchors using the placement packet, then fill " + (Code "coords-capture.csv") + " with proof shots.")
-  $lines.Add("8. Run the live rehearsal and fill " + (Code "00-notes.md") + ", " + (Code "launch-attestations.md") + ", and " + (Code "fixes.md") + ".")
-  $lines.Add("9. Use " + (Code $LiveServerCommandSheet) + " for exact live command receipts.")
-  $lines.Add("10. Review " + (Code $ManualMediaChecklist) + " before flipping any media-ready flags.")
-  $lines.Add("11. Work through " + (Code $FriendLaunchTodo) + " as the plain launch checklist.")
-  $lines.Add("12. Read " + (Code $BlockerReport) + " and move anything actionable into the rehearsal fixes list.")
-  $lines.Add("13. Complete session zero and credential rotation before inviting players.")
-  $lines.Add("14. Run the final go/no-go command below.")
+  $lines.Add("7. Run " + (Code "/obs placehold build") + "/" + (Code "/obs placehold audit") + " for Hold-owned rows. For outside-Hold rows, " + (Code "/obs site set") + " surveys the anchor and " + (Code "/obs placeworld") + " stamps any placeworld/dimension set-piece before it counts.")
+  $lines.Add("8. Prove the Failed Accepting route: " + (Code "case_board") + "/" + (Code "no witness") + " gates the old camp, " + (Code "prior_camp") + "/" + (Code "answers are not witness") + " starts six repair files, all six repair signs are evidence-backed, and " + (Code "failed_accepting") + "/" + (Code "witness before accepting") + " is required before " + (Code "rite-tokens") + ".")
+  $lines.Add("9. Stamp " + (Code "nether_forge") + " from the Nether and " + (Code "end_seventh_shrine") + " from the End; record the " + (Code "nether_forge_placed") + " and " + (Code "end_seventh_shrine_placed") + " receipts.")
+  $lines.Add("10. Fill " + (Code "coords-capture.csv") + " with GeneratedProof, PlaceworldReceipt, coordinates, KEEP verdicts, four proof shots, and cohesion notes.")
+  $lines.Add("11. Run the live rehearsal and fill " + (Code "00-notes.md") + ", " + (Code "launch-attestations.md") + ", and " + (Code "fixes.md") + ".")
+  $lines.Add("12. Use " + (Code $LiveServerCommandSheet) + " for exact live command receipts.")
+  $lines.Add("13. Review " + (Code $ManualMediaChecklist) + " before flipping any media-ready flags.")
+  $lines.Add("14. Work through " + (Code $FriendLaunchTodo) + " as the plain launch checklist.")
+  $lines.Add("15. Read " + (Code $BlockerReport) + " and move anything actionable into the rehearsal fixes list.")
+  $lines.Add("16. Complete session zero and credential rotation before inviting players.")
+  $lines.Add("17. Run the final go/no-go command below.")
   $lines.Add("")
   $lines.Add("## Final Go/No-Go")
   $lines.Add("")
@@ -433,13 +437,19 @@ if ([string]::IsNullOrWhiteSpace($ResourcePackUrl)) {
   Write-Host "  4) Host observance-resourcepack.zip at an HTTPS .zip URL."
   Write-Host "  5) Rerun this helper with -ResourcePackUrl <hosted-https-zip-url>, or run tools\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>."
   Write-Host "  6) Run tools\check_hosted_resource_pack.ps1 after the URL/SHA1 are configured."
-  Write-Host "  7) Place all launch anchors with the placement packet, then fill coords-capture.csv."
-  Write-Host "  8) Run the live rehearsal and fill launch-attestations.md."
-  Write-Host "  9) Rerun tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv `"$captureCsv`" -RehearsalPacket `"$rehearsalDir`"."
+  Write-Host "  7) Build/proof the Deep Hold rows; use /obs site set only as survey, then /obs placeworld to stamp placeworld/dimension rows."
+  Write-Host "  8) Prove the Failed Accepting route and its old-camp physical gate before rite-tokens."
+  Write-Host "  9) Stamp nether_forge in the Nether and end_seventh_shrine in the End; record their placement flag receipts."
+  Write-Host "  10) Fill coords-capture.csv with GeneratedProof, PlaceworldReceipt, coordinates, KEEP verdicts, four proof shots, and cohesion notes."
+  Write-Host "  11) Run the live rehearsal and fill launch-attestations.md."
+  Write-Host "  12) Rerun tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv `"$captureCsv`" -RehearsalPacket `"$rehearsalDir`"."
 } else {
   Write-Host "  4) Hosted URL/SHA1 is already verified and written to plugin config."
   Write-Host "  5) Keep observance-resourcepack.zip at that exact URL; rerun tools\check_hosted_resource_pack.ps1 if the host changes."
-  Write-Host "  6) Place all launch anchors with the placement packet, then fill coords-capture.csv."
-  Write-Host "  7) Run the live rehearsal and fill launch-attestations.md."
-  Write-Host "  8) Rerun tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv `"$captureCsv`" -RehearsalPacket `"$rehearsalDir`"."
+  Write-Host "  6) Build/proof the Deep Hold rows; use /obs site set only as survey, then /obs placeworld to stamp placeworld/dimension rows."
+  Write-Host "  7) Prove the Failed Accepting route and its old-camp physical gate before rite-tokens."
+  Write-Host "  8) Stamp nether_forge in the Nether and end_seventh_shrine in the End; record their placement flag receipts."
+  Write-Host "  9) Fill coords-capture.csv with GeneratedProof, PlaceworldReceipt, coordinates, KEEP verdicts, four proof shots, and cohesion notes."
+  Write-Host "  10) Run the live rehearsal and fill launch-attestations.md."
+  Write-Host "  11) Rerun tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv `"$captureCsv`" -RehearsalPacket `"$rehearsalDir`"."
 }

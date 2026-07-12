@@ -124,7 +124,7 @@ if ($failures.Count -eq 0) {
     }
   }
 
-  foreach ($required in @("Evidence Lanes", "First-Hour Pacing", "Major Site Visual Shots", "Side Path Value Matrix", "NPC/World Contracts", "Puzzle Fairness Matrix", "Scare Review", "Unlit Expedition Proof", "Director Cut Scorecard", "Stop/Launch Decision")) {
+  foreach ($required in @("Evidence Lanes", "First-Hour Pacing", "Major Site Visual Shots", "Side Path Value Matrix", "NPC/World Contracts", "Puzzle Fairness Matrix", "Failed Accepting Proof", "Scare Review", "Unlit Expedition Proof", "Director Cut Scorecard", "Stop/Launch Decision")) {
     if ($notes.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Fail "00-notes.md missing section: $required"
     }
@@ -134,6 +134,8 @@ if ($failures.Count -eq 0) {
     "Supabase Live Status",
     "Server Load",
     "Real Client Rendering",
+    "Normal Non-Op Player Pass",
+    "Failed Accepting / Post-Keeper Gate",
     "Live Command Audits",
     "External Media",
     "Session Zero And Capture Consent",
@@ -175,6 +177,7 @@ if ($failures.Count -eq 0) {
     "Before Players",
     "Placement Loop",
     "Unlit Setup And Proof",
+    "Normal Non-Op Pass",
     "Media Flags",
     "Final Live Receipts",
     "/observance status",
@@ -182,11 +185,21 @@ if ($failures.Count -eq 0) {
     "/observance visualaudit",
     "/observance dialogueaudit",
     "/observance site launch",
+    "/observance placehold build",
+    "/observance placehold audit",
+    "/observance placehold sync",
+    "Failed Accepting gate",
+    "no witness",
+    "answers are not witness",
+    "witness before accepting",
     "/observance site next",
     "/observance site set <siteId>",
     "/obs unlit audit",
     "/obs unlit ready",
+    "Gate: READY",
     "/obs unlit pass light",
+    "real non-op player account",
+    "cannot freely break/build inside the Deep Hold protection region",
     "/observance flag set media_clip_01_ready true",
     "/observance flag set recovered_archive_ready true",
     "launch-attestations.md"
@@ -208,6 +221,16 @@ if ($failures.Count -eq 0) {
     "Hosted resource pack SHA1",
     "pack readiness",
     "Custom rune font glyphs",
+    "real player account joined without operator status",
+    "Deep Hold protection region",
+    "Failed Accepting route",
+    "sealed prior gate",
+    "Failed Accepting / Post-Keeper Gate",
+    "prior_witness_ready",
+    "wrong-answer attempt",
+    "correct answer/input",
+    "retrace/return",
+    "Unlit pressure action",
     "/observance preflight",
     "/observance visualaudit",
     "/observance dialogueaudit",
@@ -250,6 +273,7 @@ if ($failures.Count -eq 0) {
       "Supabase Live Status",
       "Server Load",
       "Real Client Rendering",
+      "Failed Accepting / Post-Keeper Gate",
       "Live Command Audits",
       "External Media",
       "Session Zero And Capture Consent",
@@ -360,6 +384,9 @@ if ($failures.Count -eq 0) {
     "the_threshold",
     "the_unwriting",
     "threshold_vault",
+    "case_board",
+    "prior_camp",
+    "failed_accepting",
     "nether_forge",
     "end_seventh_shrine",
     "lampworks_stair",
@@ -484,6 +511,7 @@ if ($failures.Count -eq 0) {
     "NPC errands: third lamp / dead stall",
     "co-op plate / threshold vault",
     "Record web jump / oracle inscription",
+    "Failed Accepting / prior-run corrections",
     "Accepting rite / Seventh choice",
     "Nether and End deepening lanes"
   )
@@ -511,7 +539,7 @@ if ($failures.Count -eq 0) {
     }
   }
 
-  $fairnessSectionMatch = [regex]::Match($notes, '(?is)##\s+Puzzle Fairness Matrix(?<body>.*?)(?=##\s+Scare Review|\z)')
+  $fairnessSectionMatch = [regex]::Match($notes, '(?is)##\s+Puzzle Fairness Matrix(?<body>.*?)(?=##\s+Failed Accepting Proof|\z)')
   $fairnessSection = if ($fairnessSectionMatch.Success) { $fairnessSectionMatch.Groups["body"].Value } else { "" }
   foreach ($family in $puzzleFamilies) {
     $pattern = '(?is)^\s*-\s+\[[xX ]\]\s+' + [regex]::Escape($family) + '\s*(?<block>.*?)(?=^\s*-\s+\[[xX ]\]\s+|\z)'
@@ -540,6 +568,36 @@ if ($failures.Count -eq 0) {
       if (-not $AllowOpenItems -and -not (ConcreteValue $value)) {
         Fail "puzzle family '$family' needs concrete fairness proof for: $field"
       }
+    }
+  }
+
+  $failedAcceptingSectionMatch = [regex]::Match($notes, '(?is)##\s+Failed Accepting Proof(?<body>.*?)(?=##\s+Scare Review|\z)')
+  $failedAcceptingSection = if ($failedAcceptingSectionMatch.Success) { $failedAcceptingSectionMatch.Groups["body"].Value } else { "" }
+  foreach ($required in @(
+    "case_board",
+    "file / missing / condition",
+    "no witness",
+    "prior gate",
+    "prior_absence_known",
+    "ceiling",
+    "side",
+    "prior_camp",
+    "failed inventory",
+    "six bedroll packets",
+    "six correction barrels",
+    "seven editable filing signs",
+    "answers are not witness",
+    "six keeper repair files",
+    "external evidence",
+    "return",
+    "failed_accepting",
+    "witness before accepting",
+    "prior_witness_ready",
+    "rite-tokens",
+    "abandoned human evidence"
+  )) {
+    if ($failedAcceptingSection.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
+      Fail "Failed Accepting Proof missing '$required'"
     }
   }
 

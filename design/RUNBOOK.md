@@ -26,13 +26,6 @@
   uploading fresh server bytes. After hosting the resource pack, rerun it with
   **`-ResourcePackUrl <hosted-https-zip-url>`** so hosted pack verification and the generated guide agree.
 - From the repo root, run
-  **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_server_test.ps1`** when your next
-  goal is easier server testing rather than a launch promise. It still generates the normal friend-launch
-  placement and rehearsal packets, then adds `server-test-guide.md` with exact smoke-test, vertical-slice,
-  full-rehearsal, and launch-go/no-go scripts. Use `-SkipBundle` only for a fast dry packet; rebuild before
-  uploading fresh server bytes. After hosting the resource pack, rerun it with
-  **`-ResourcePackUrl <hosted-https-zip-url>`** so hosted pack verification and the generated guide agree.
-- From the repo root, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\prepare_friend_launch.ps1`**. This is the
   fastest friend-launch prep path: it builds the deploy bundle, creates the launch placement packet, creates
   the live rehearsal packet, and runs the current launch blocker report against those exact files.
@@ -49,12 +42,14 @@
   escalation, rune-font cohesion, and asset checks. Do not start a live session if this is red.
 - For the final live server, also run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`**.
-  This is the launch-required site coordinates gate: it fails until every load-bearing site has real
-  coordinates instead of authoring placeholders.
+  This is the outside-Hold launch-required site coordinates gate: it fails until every bespoke, surface,
+  Nether, End, and Unlit-adjacent anchor has real coordinates instead of authoring placeholders. Deep
+  Hold-owned sites are generated together by `/observance placehold build` and are proven in
+  `coords-capture.csv` with `GeneratedProof`, audit output, and room screenshots.
 - For the final no-excuses go/no-go gate, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`**.
-  This combines the repo-verifiable manual blockers: hosted resource-pack URL/SHA1, launch site
-  coordinates, coordinate proof quality, and the completed live rehearsal packet. It also prints the
+  This combines the repo-verifiable manual blockers: hosted resource-pack URL/SHA1, outside-Hold launch
+  coordinates, Deep Hold generated proof, coordinate/proof quality, and the completed live rehearsal packet. It also prints the
   remaining manual attestations that only the live Paper server/client can prove.
 - Use **`design/MANUAL-LAUNCH-PLAN.md`** as the ordered human checklist. It is the source for what each
   manual task is, why it matters, where it belongs, how to do it, when to do it, how players should find it,
@@ -98,37 +93,56 @@
   Want: **`supabase configured: true`**, **`last db call ok: true`**, **`queued writes: 0`**.
   If not, the key is wrong or the SQL didn't run — fix before continuing.
 
-## 2. BUILD THE WORLD (bootstrap first, launch gate after)
-- Preferred compact bootstrap: stand at the **southwest corner / operator edge** of a fresh intended test board
-  and run **`/observance prepworld`** (default spacing **36**; optional spacing is clamped to **34-48**). It now builds a readable platform board instead of wide
-  scatter: facing east, the parallel rows are Lamp-works proof, surface keeper spine, deep payoff spine,
-  side-proof row A, side-proof row B, and Mara books. Each compact cell is cleared before stamping so
-  terrain does not fill intentional air inside structures. Use the default spacing for smoke tests; reserve
-  final terrain-integrated placement for `/observance site set <siteId>` plus `/observance placeworld`.
+## 2. BUILD THE WORLD (production hold first, rehearsal board when needed)
+- Preferred production bootstrap: stand at the intended **surface mouth** and run
+  **`/observance placehold build [depth]`** (default depth **392**, accepted range **340-520**), or from console run
+  **`/observance placehold build <world> <x> <y> <z>`** where `y` is the Hold floor. This carves the
+  controlled stone envelope, a broad encased Return Mouth stair from the surface, the grand Keeper Court,
+  upper terraces, archive/cistern gallery, market/collapse wing, lampworks descent, threshold cathedral, and side-hush
+  branch. It places and registers the 64 overworld/deep ARG sites that reasonably belong together inside
+  one civic ruin rather than a row of isolated boxes, seeds side-evidence containers, keeps decorative chiseled bookshelves
+  occupied, leaves mechanic-owned shelves under their mechanics, installs full-width physical gates,
+  and registers protected Hold/entry-stair regions. Run **`/observance placehold audit`** immediately; it must
+  report 64/64 hold sites, 7/7 gates, records 8/8, entry walkable, clean early-route/grand-court/terrace samples,
+  protected regions, and zero critical findings. Use
+  **`/observance placehold seal|open <gate|all>`** for manual operation and **`/observance placehold sync`**
+  once Supabase flags are live. This does not replace the surface prologue (`first_report_lectern_01` /
+  `first_marker_01`), Nether/End lanes, Unlit, NPC spawning, or the one loose `answer_sign_01` puzzle
+  fixture.
+- Compact rehearsal board: stand at the **southwest corner / operator edge** of a fresh intended test board
+  and run **`/observance prepworld`** (default spacing **36**; optional spacing is clamped to **34-48**).
+  This is a readable platform board for smoke testing, not the production setup tool. Facing east, the
+  parallel rows are Lamp-works proof, surface keeper spine, deep payoff spine, side-proof row A,
+  side-proof row B, and Mara books. Each compact cell is cleared before stamping so terrain does not fill
+  intentional air inside structures.
   If you already generated an older overlapping rehearsal board, abandon that patch of terrain and run
   `prepworld` in a fresh area; the command lays out a new board but does not erase/move stale old platforms.
   No structure uses a beacon beam as a player waypoint; players must be moved by the authored route:
   report/marker evidence, Rosetta and reckoning literacy, keeper books/signs/items, NPC claims, dashboard
   cards, Discord/media clues, and the placement briefs' approach/focal/action/exit proof.
-- For the final curated world, use **`/observance site todo`** in game as the live launch-coordinate
+- For final curated world sites outside the Hold, use **`/observance site todo`** in game as the outside-Hold launch-coordinate
   checklist. Start with **`/observance site plan lanes`** so placement is handled as scene passes:
   `prologue`, `keepers`, `customs`, `human`, `deep`, `dread`, and `dimensions`. **`/observance site next <lane>`**
   names the next required site in that lane and includes its placement brief; **`/observance site plan <siteId>`**
   gives the intent, placement rule, and proof shots for any launch anchor. Stand at the real anchor and run
-  **`/observance site set <siteId>`**. The command prints the remaining launch count after each survey so you do
-  not have to keep the 67-site list in your head. If a site only feels findable because an operator knows
+  **`/observance site set <siteId>`** to survey the anchor; for any placeworld or dimension row, run
+  **`/observance placeworld`** from that world before it can count as placed. Hold-owned rows should instead be proofed inside the generated Deep Hold after
+  `/observance placehold build` and `/observance placehold audit`. The command prints the remaining launch count after each survey so you do
+  not have to keep the full launch list in your head. If a site only feels findable because an operator knows
   the coordinates, move it or add a real clue surface before testing it.
 - Before that final survey sprint, generate the external worksheet:
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_launch_placement_packet.ps1`**.
   It writes `00-placement.md`, `launch-sites.csv`, and `coords-capture.csv` under `build\launch-placement\`.
   Keep `coords-capture.csv` open while placing: choose one lane, run `/observance site next <lane>` or
-  `/observance site plan <siteId>`, survey with `/observance site set <siteId>`, then record the real
-  world/X/Y/Z, visual verdict, four proof shots, and cohesion notes. A row is not launch-ready just because it has numbers; it needs
-  approach/focal/action/exit evidence and a reason it belongs in that route.
+  `/observance site plan <siteId>`, survey with `/observance site set <siteId>`, stamp placeworld rows with
+  `/observance placeworld`, then record the real world/X/Y/Z, `PlaceworldReceipt` where applicable, visual verdict,
+  four proof shots, and cohesion notes. A row is not launch-ready just because it has numbers; it needs
+  approach/focal/action/exit evidence, any required stamp receipt, and a reason it belongs in that route.
   Run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_launch_coord_quality.ps1 -CaptureCsv <packet>\coords-capture.csv`**
   during placement to catch duplicate anchors, wrong dimensions, cramped keeper evidence sites, route sprawl,
-  and missing proof. For the final pass, add `-Launch` so every row must be `KEEP` with all proof fields.
+  and missing proof. For the final pass, add `-Launch` so every row must be `KEEP` with all proof fields, and Nether/End rows must record
+  `nether_forge_placed` / `end_seventh_shrine_placed` in `PlaceworldReceipt`.
   If you are applying captured coordinates from the worksheet instead of relying on the server's saved
   `sites.yml`, preview them first with
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\apply_launch_coords.ps1 -CaptureCsv <packet>\coords-capture.csv`**.
@@ -138,15 +152,20 @@
   restarts.
 - **Submitting answers:** edit the **blank** sign (the *labelled* sign is waxed and won't take input,
   so flavour text can't pollute your answer). For one keeper evidence site: `/observance placeroom <keeper>`.
+- **Returnability proof:** at least one live-tested puzzle must be reached before the group has enough
+  evidence, left by an authored route, revisited after finding the missing clue, and solved without teleporting,
+  operator hints, consumed one-use evidence, or a newly-hidden answer surface. If players cannot tell where to
+  type the answer when they return, fix the local clueing before launch.
 - **Structure surface spot-checks:** the Rosetta lectern must contain the "the rosetta" book and its
   rune/plaintext crib pairs; Orin's low lintel must be passable while sneaking but awkward while standing,
   and its six wall banners must render on masonry backing instead of floating or replacing the walls.
 - **Proof the world matches the dialogue:** run **`/observance descentproof`** if you need to stage the
   Lamp-works stair, third lamp, painted line, dead-stall, and empty bird coops around you for fast testing.
-  `prepworld` and `sidepass` also stage `school_stand`, `the_far_water`, `markers_row`, `cistern_7`,
+  `placehold` places these side-proof destinations inside the production Hold. `prepworld` and `sidepass`
+  also stage `school_stand`, `the_far_water`, `markers_row`, `cistern_7`,
   `watch_floor`, `set_apart_shelf`, `undercroft_seal`, `forgotten_mouth`, `deep_market`, `ration_table`, `third_bay_breach`, and
-  `warm_town_collapse` for rehearsal; for final placement, survey them near the real Deep Market/Warrens/
-  Deep Line route and run `/observance placeworld`.
+  `warm_town_collapse` for rehearsal; for bespoke final placement, survey them near the real Deep Market/
+  Warrens/Deep Line route and run `/observance placeworld`.
 - **The Undercroft dimension** (datapack) is a real descendable dark cavern — reach it via Multiverse:
   `/mv create undercroft NORMAL -g observance:undercroft`.
 - **The Unlit dimension** is a separate mirrored village world named `observance_unlit`. Follow
@@ -154,7 +173,7 @@
   well entry/spawn/exit/house anchors with `/obs unlit site` and `/obs unlit clue`, then run
   `/obs unlit border 138`, `/obs unlit darken all 138`, `/obs unlit audit`, and `/obs unlit ready`.
   The required ending evidence houses are all eight: lamp, cairn, coop, well, watch, warm, threshold, and
-  base. Players receive 7 borrowed lanterns each.
+  base. Players receive 3 borrowed lanterns each.
 - **The companion:** `/observance wren spawn` places Wren (Citizens if installed, else a fallback body).
 - **The townsfolk (REQUIRED — reshape S-G):** `/observance townsfolk spawn` places the 5 surface people
   (Aro/Wenna/Coll/Dob/Old Pell) with their walk-up-and-talk dialogue. `placeregion` does NOT spawn them;
@@ -164,7 +183,7 @@
   claims without proof are blockers for a real session.
 - **Before friends join:** run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`**
-  from the repo root after `prepworld`/curated placement has saved `sites.yml`. This catches the most
+  from the repo root after `placehold`/curated placement has saved `sites.yml`. This catches the most
   embarrassing launch failure: a required site still exists only as a placeholder coordinate.
 - **Before friends join:** complete **`design/LIVE-REHEARSAL-EVIDENCE.md`** once on the actual server.
   Static checks prove wiring; the evidence packet proves scale, readability, scares, NPC/world contracts,
@@ -172,6 +191,11 @@
   Start it with **`powershell -NoProfile -ExecutionPolicy Bypass -File tools\new_rehearsal_packet.ps1`**.
   The generated `launch-attestations.md` must also be completed before the final launch blocker command can
   pass with `-RehearsalPacket`.
+- **Before friends join:** after operator build/audit commands pass, join once as a real non-op player account.
+  Prove the player cannot freely break/build inside the Deep Hold protection region, can read books/signs/runes,
+  can find answer input surfaces, can make one wrong-answer attempt, can make one correct answer/input, can
+  leave and retrace/return without losing state, and can feel one Unlit pressure action with the resource pack
+  loaded. Record this under `Normal Non-Op Player Pass` in `launch-attestations.md`.
 
 ## 3. SESSION ZERO (before the friends join the fiction)
 - Read **`design/SESSION-ZERO.md`** — the out-of-fiction consent + onboarding script. Cover: this
@@ -208,7 +232,7 @@
 - `/observance visualaudit` — catches tiny/flat/test-prop story sites before players see them.
 - `/observance dialogueaudit` — lists NPC claims that must have physical or mechanical proof.
 - `/observance descentproof [spacing]` — stages the Stair/third-lamp/painted-line/dead-stall/bird-coops proof chain.
-- `/observance site todo|next|plan` — in-game checklist and placement brief for the 67 launch-required coordinate anchors.
+- `/observance site todo|next|plan` — in-game checklist and placement brief for launch proof rows: generated Deep Hold rooms plus outside-Hold coordinate anchors.
 - `/observance site set <siteId>` — survey the block you are standing on into `sites.yml`; the command
   reports how many launch-required placements remain.
 - `/observance flag <set|clear|list> [key] [true|false]` — drive the storylet gate (e.g. force ignition).

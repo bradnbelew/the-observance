@@ -69,6 +69,12 @@ function Extract-FirstColumn2d([string]$Name) {
   return [string[]]([regex]::Matches($m.Groups["body"].Value, '\{\s*"([^"]+)"') | ForEach-Object { $_.Groups[1].Value })
 }
 
+function Extract-HoldSiteIds {
+  return [string[]]([regex]::Matches($commandSource, 'new\s+HoldSite\(\s*"([^"]+)"') | ForEach-Object {
+    $_.Groups[1].Value
+  })
+}
+
 function Extract-PlacementLanes {
   $pattern = 'new\s+PlacementLane\(\s*"(?<id>[^"]+)"\s*,\s*"(?<label>[^"]+)"\s*,\s*new\s+String\[\]\s*\{(?<body>.*?)\}\s*\)'
   $lanes = [System.Collections.Generic.List[object]]::new()
@@ -117,6 +123,9 @@ foreach ($line in ($sitesText -split "`r?`n")) {
 $launchSites = Extract-StringArray "LAUNCH_REQUIRED_SITES"
 $surveyFixtures = Extract-StringArray "PLACEWORLD_SURVEY_FIXTURES"
 $keeperSpine = Extract-FirstColumn2d "KEEPER_SPINE"
+$holdSites = Extract-HoldSiteIds
+$holdSiteSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($holdSite in $holdSites) { [void]$holdSiteSet.Add($holdSite) }
 $placementLanes = Extract-PlacementLanes
 $siteLane = @{}
 foreach ($lane in $placementLanes) {
@@ -172,6 +181,9 @@ function Is-Placeholder($Site) {
 }
 
 function After-Survey([string]$SiteId) {
+  if ($holdSiteSet.Contains($SiteId)) {
+    return "No hand survey first: run /obs placehold build, then /obs placehold audit/sync; capture proof from the generated Hold room."
+  }
   if ($SiteId -eq "nether_forge" -or $SiteId -eq "end_seventh_shrine") {
     return "Run /obs placeworld while standing in the correct Nether/End world."
   }
@@ -219,12 +231,37 @@ foreach ($id in $launchSites) {
   $order++
   $site = if ($sites.Contains($id)) { $sites[$id] } else { $null }
   $brief = Brief-For $id
-  $status = if (Is-Placeholder $site) { "TODO" } else { "PLACED" }
+  $isHoldOwned = $holdSiteSet.Contains($id)
+  $placementMethod = if ($isHoldOwned) {
+    "Deep Hold generated"
+  } elseif ($id -eq "nether_forge" -or $id -eq "end_seventh_shrine") {
+    "Dimension survey"
+  } elseif ($keeperSpine -contains $id -or $surveyFixtures -contains $id) {
+    "Bespoke survey + placeworld"
+  } else {
+    "Bespoke survey"
+  }
+  $status = if (Is-Placeholder $site) {
+    "TODO"
+  } elseif ($isHoldOwned) {
+    "GENERATED_PROOF_PENDING"
+  } elseif ($placementMethod -eq "Dimension survey" -or $placementMethod -eq "Bespoke survey + placeworld") {
+    "SURVEYED_STAMP_PENDING"
+  } else {
+    "COORDS_CAPTURED"
+  }
+  $setupCommand = if ($isHoldOwned) { "/obs placehold build; /obs placehold audit; /obs placehold sync" } else { "/obs site set $id" }
+  $placeRule = if ($isHoldOwned) {
+    "Generated inside the Deep Hold district plan; use the intent as the room-proof lens, not as a manual scatter rule."
+  } else {
+    $brief.place
+  }
   $rows.Add([pscustomobject]@{
     Order = $order
     Lane = if ($siteLane.ContainsKey($id)) { [string]$siteLane[$id] } else { "ungrouped" }
     SiteId = $id
     Status = $status
+    PlacementMethod = $placementMethod
     Type = if ($null -ne $site) { [string]$site.type } else { "" }
     World = if ($null -ne $site) { [string]$site.world } else { "" }
     X = if ($null -ne $site) { [string]$site.x } else { "" }
@@ -232,10 +269,10 @@ foreach ($id in $launchSites) {
     Z = if ($null -ne $site) { [string]$site.z } else { "" }
     Radius = if ($null -ne $site) { [string]$site.radius } else { "" }
     Intent = $brief.intent
-    PlaceRule = $brief.place
+    PlaceRule = $placeRule
     ProofShots = $brief.proof
     PlanCommand = "/obs site plan $id"
-    SurveyCommand = "/obs site set $id"
+    SurveyCommand = $setupCommand
     AfterSurvey = After-Survey $id
   }) | Out-Null
 }
@@ -244,10 +281,14 @@ $csvPath = Join-Path $packetFull "launch-sites.csv"
 $rows | Export-Csv -LiteralPath $csvPath -NoTypeInformation -Encoding UTF8
 
 $captureRows = foreach ($row in $rows) {
+  $isGenerated = $row.PlacementMethod -eq "Deep Hold generated"
   [pscustomobject]@{
     Order = $row.Order
     Lane = $row.Lane
     SiteId = $row.SiteId
+    PlacementMethod = $row.PlacementMethod
+    GeneratedProof = ""
+    PlaceworldReceipt = ""
     ChosenWorld = ""
     X = ""
     Y = ""
@@ -259,24 +300,36 @@ $captureRows = foreach ($row in $rows) {
     ActionShot = ""
     ExitShot = ""
     CohesionNotes = ""
-    Notes = ""
+    Notes = if ($isGenerated) {
+      "GeneratedProof: paste the /obs placehold audit summary and room-proof note here, then move actual proof into GeneratedProof."
+    } elseif ($row.PlacementMethod -eq "Dimension survey") {
+      if ($row.SiteId -eq "nether_forge") { "PlaceworldReceipt must mention nether_forge_placed after stamping in the Nether." }
+      elseif ($row.SiteId -eq "end_seventh_shrine") { "PlaceworldReceipt must mention end_seventh_shrine_placed after stamping in the End." }
+      else { "PlaceworldReceipt must name the dimension stamp receipt." }
+    } elseif ($row.PlacementMethod -eq "Bespoke survey + placeworld") {
+      "PlaceworldReceipt: paste the stamped/occupied receipt from chat or /obs site launch."
+    } else {
+      ""
+    }
   }
 }
 $captureRows | Export-Csv -LiteralPath (Join-Path $packetFull "coords-capture.csv") -NoTypeInformation -Encoding UTF8
 
 $todoCount = @($rows | Where-Object { $_.Status -eq "TODO" }).Count
-$placedCount = $rows.Count - $todoCount
+$stampPendingCount = @($rows | Where-Object { $_.Status -eq "SURVEYED_STAMP_PENDING" }).Count
+$generatedPendingCount = @($rows | Where-Object { $_.Status -eq "GENERATED_PROOF_PENDING" }).Count
+$coordsCapturedCount = @($rows | Where-Object { $_.Status -eq "COORDS_CAPTURED" }).Count
 $md = [System.Collections.Generic.List[string]]::new()
 $md.Add("# The Observance Launch Placement Packet - $Date")
 $md.Add("")
 $md.Add("This packet turns the in-game ``/obs site plan`` route into an external placement worksheet.")
 $md.Add("It does not replace the server commands; it keeps the director from losing lane intent, proof shots, and coordinates during the sprint.")
 $md.Add("")
-$md.Add("Placed: $placedCount/$($rows.Count). Remaining launch-required coordinate anchors: $todoCount.")
+$md.Add("Remaining launch proof rows: $todoCount todo, $stampPendingCount surveyed-stamp-pending, $generatedPendingCount generated-proof-pending. Coordinate/proof state: $coordsCapturedCount coord-captured.")
 $md.Add("")
 $md.Add("## Launch Receipt")
 $md.Add("")
-$md.Add("Record these receipts with the completed coordinate proof so the placement pass can be matched to the exact launch build.")
+$md.Add("Record these receipts with the completed coordinate/proof packet so the placement pass can be matched to the exact launch build.")
 $md.Add("")
 $md.Add("- Supabase SQL: ``$(Get-RelativePath $applyAllSqlFile)``")
 $md.Add("- Apply-all SHA1: ``$(Get-FileSha1 $applyAllSqlFile)``")
@@ -293,39 +346,44 @@ $md.Add("")
 $md.Add("## How To Use")
 $md.Add("")
 $md.Add("1. Run ``/obs site todo`` in game.")
-$md.Add("2. Run ``/obs site plan lanes`` and choose one lane to finish before opening the next.")
-$md.Add("3. For each TODO row in that lane, run ``/obs site next <lane>`` or ``/obs site plan <siteId>`` and read the intent/place/proof brief.")
-$md.Add("4. Stand at the chosen real anchor and run ``/obs site set <siteId>``.")
-$md.Add("5. Follow the row's after-survey instruction, usually ``/obs placeworld``.")
-$md.Add("6. Capture approach, focal, action/answer, and exit screenshots.")
-$md.Add("7. Mark visual status only after checking silhouette, palette, lighting, body verb, and action/answer legibility.")
-$md.Add("8. Fill the four proof-shot columns: approach, focal object, player action/answer surface, and exit/aftertaste.")
-$md.Add("9. Fill ``CohesionNotes`` with the spacing/route reason: why this anchor belongs here and what nearby anchor it speaks to.")
-$md.Add("10. Run ``tools\check_launch_coord_quality.ps1 -CaptureCsv <packet>\coords-capture.csv`` early and often; for the real launch pass, add ``-Launch``.")
-$md.Add("11. If you are applying coordinates from the worksheet instead of relying on ``/obs site set`` persistence, preview with ``tools\apply_launch_coords.ps1 -CaptureCsv <packet>\coords-capture.csv``. Only after the preview is clean, rerun with ``-Apply``.")
-$md.Add("12. Finish with ``/obs preflight``, then ``tools\check_world_build_readiness.ps1 -Launch`` and a live rehearsal packet.")
+$md.Add("2. Run ``/obs placehold build`` and ``/obs placehold audit`` before surveying individual underground rooms; Hold-owned rows are generated together and need generated-room proof, not hand-surveyed static coordinates.")
+$md.Add("3. Run ``/obs site plan lanes`` and choose one outside-Hold lane to finish before opening the next.")
+$md.Add("4. For each TODO row in that lane, run ``/obs site next <lane>`` or ``/obs site plan <siteId>`` and read the intent/place/proof brief.")
+$md.Add("5. If the row's PlacementMethod is ``Deep Hold generated``, proof the generated room in place instead of running ``/obs site set``. Otherwise stand at the chosen real anchor and run the row's SurveyCommand.")
+$md.Add("6. Follow the row's after-survey instruction, usually ``/obs placeworld`` for bespoke or dimension sites.")
+$md.Add("7. Capture approach, focal, action/answer, and exit screenshots. For Deep Hold generated rows, fill ``GeneratedProof`` with the ``/obs placehold audit`` result and the generated room proof note.")
+$md.Add("8. For rows whose PlacementMethod includes ``placeworld`` or ``Dimension survey``, fill ``PlaceworldReceipt`` after the stamp. Dimension rows must name ``nether_forge_placed`` or ``end_seventh_shrine_placed``.")
+$md.Add("9. Mark visual status only after checking silhouette, palette, lighting, body verb, and action/answer legibility.")
+$md.Add("10. Fill the four proof-shot columns: approach, focal object, player action/answer surface, and exit/aftertaste.")
+$md.Add("11. Fill ``CohesionNotes`` with the spacing/route reason: why this anchor belongs here and what nearby anchor it speaks to.")
+$md.Add("12. Run ``tools\check_launch_coord_quality.ps1 -CaptureCsv <packet>\coords-capture.csv`` early and often; for the real launch pass, add ``-Launch``.")
+$md.Add("13. If you are applying coordinates from the worksheet instead of relying on ``/obs site set`` persistence, preview with ``tools\apply_launch_coords.ps1 -CaptureCsv <packet>\coords-capture.csv``. Only after the preview is clean, rerun with ``-Apply``.")
+$md.Add("14. Finish with ``/obs preflight``, then ``tools\check_world_build_readiness.ps1 -Launch`` and a live rehearsal packet.")
 $md.Add("")
 $md.Add("## Files")
 $md.Add("")
 $md.Add("- ``launch-sites.csv`` - current site state plus command/proof brief.")
-$md.Add("- ``coords-capture.csv`` - empty capture sheet for chosen coordinates, placement lane, visual verdicts, four proof shots, and cohesion notes.")
-$md.Add("- ``tools\check_launch_coord_quality.ps1`` - worksheet quality gate for duplicate anchors, wrong dimensions, spacing, route cohesion, KEEP verdicts, and proof shots.")
+$md.Add("- ``coords-capture.csv`` - capture sheet for outside-Hold chosen coordinates plus Deep Hold generated-room proof, placeworld receipts, placement lane, visual verdicts, four proof shots, and cohesion notes.")
+$md.Add("- ``tools\check_launch_coord_quality.ps1`` - worksheet quality gate for duplicate outside-Hold anchors, wrong dimensions, generated Hold proof, placeworld receipts, spacing, route cohesion, KEEP verdicts, and proof shots.")
 $md.Add("- ``tools\apply_launch_coords.ps1`` - guarded worksheet-to-``sites.yml`` updater; refuses non-KEEP visual verdicts unless explicitly overridden.")
 $md.Add("")
 $md.Add("## Placement Lanes")
 $md.Add("")
 foreach ($lane in $placementLanes) {
   $laneRows = @($rows | Where-Object { $_.Lane -eq $lane.id })
-  $lanePlaced = @($laneRows | Where-Object { $_.Status -eq "PLACED" }).Count
+  $laneReady = @($laneRows | Where-Object { $_.Status -eq "COORDS_CAPTURED" }).Count
+  $laneStampPending = @($laneRows | Where-Object { $_.Status -eq "SURVEYED_STAMP_PENDING" }).Count
+  $laneGeneratedPending = @($laneRows | Where-Object { $_.Status -eq "GENERATED_PROOF_PENDING" }).Count
   $md.Add("### $($lane.id) - $($lane.label)")
   $md.Add("")
-  $md.Add("Placed: $lanePlaced/$($laneRows.Count). Work this as one coherent pass with ``/obs site next $($lane.id)``.")
+  $md.Add("Coord-captured: $laneReady/$($laneRows.Count); stamp-pending: $laneStampPending; generated-proof-pending: $laneGeneratedPending. Work this as one coherent pass with ``/obs site next $($lane.id)``.")
   $md.Add("")
   foreach ($row in $laneRows) {
     $md.Add("#### $($row.Order). ``$($row.SiteId)`` - $($row.Status)")
     $md.Add("")
     $md.Add("- type/world/radius: ``$($row.Type)`` / ``$($row.World)`` / ``$($row.Radius)``")
     $md.Add("- current coords: ``$($row.X),$($row.Y),$($row.Z)``")
+    $md.Add("- placement method: $($row.PlacementMethod)")
     $md.Add("- intent: $($row.Intent)")
     $md.Add("- place: $($row.PlaceRule)")
     $md.Add("- proof shots: $($row.ProofShots)")
@@ -335,8 +393,15 @@ foreach ($lane in $placementLanes) {
     $md.Add("")
     $md.Add("Checklist:")
     $md.Add("- [ ] Intent still fits the chosen terrain.")
-    $md.Add("- [ ] Coordinate captured in ``coords-capture.csv``.")
+    if ($row.PlacementMethod -eq "Deep Hold generated") {
+      $md.Add("- [ ] GeneratedProof captured in ``coords-capture.csv`` with clean ``/obs placehold audit`` result.")
+    } else {
+      $md.Add("- [ ] Coordinate captured in ``coords-capture.csv``.")
+    }
     $md.Add("- [ ] Survey command run in game.")
+    if ($row.PlacementMethod -eq "Dimension survey" -or $row.PlacementMethod -eq "Bespoke survey + placeworld") {
+      $md.Add("- [ ] PlaceworldReceipt captured in ``coords-capture.csv`` after the stamp.")
+    }
     $md.Add("- [ ] After-survey command run if needed.")
     $md.Add("- [ ] Four proof screenshots captured.")
     $md.Add("- [ ] Visual status is KEEP.")
@@ -348,4 +413,4 @@ foreach ($lane in $placementLanes) {
 [System.IO.File]::WriteAllLines((Join-Path $packetFull "00-placement.md"), $md, [System.Text.UTF8Encoding]::new($false))
 
 Write-Host "launch placement packet created: $packetFull"
-Write-Host "remaining launch-required coordinate anchors: $todoCount"
+Write-Host "remaining launch proof rows: $todoCount todo, $stampPendingCount stamp-pending, $generatedPendingCount generated-proof-pending"

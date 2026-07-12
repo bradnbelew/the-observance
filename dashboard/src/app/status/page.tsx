@@ -1,85 +1,85 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
-import type {
-  HealthView,
-  HeatmapView,
-  ComplianceCountsView,
-} from "@/lib/database.types";
-import HealthPanel from "@/components/status/HealthPanel";
-import Heatmap from "@/components/status/Heatmap";
-import ComplianceCounts from "@/components/status/ComplianceCounts";
+import type { HealthView } from "@/lib/database.types";
 
 export const metadata: Metadata = {
-  title: "Status — The Observance",
-  description: "Spoiler-free health, traffic, and compliance status.",
+  title: "Host status — SNOIKERZ",
+  description: "Archived mirror availability.",
   robots: { index: false, follow: false },
 };
 
-// Always read live state; never serve a stale cache of the control surface.
 export const dynamic = "force-dynamic";
 
 /**
- * Spoiler-free Status mode (PUBLIC / anon).
- *
- * This server component reads ONLY the three spoiler-free views — v_health,
- * v_heatmap, v_compliance_counts — through the request-scoped (anon-key) server
- * Supabase client. anon has no table grants and no base-table RLS policies, so
- * these views are the only thing it can physically read. There is NO story
- * content on this page: no player names, no custom names, no arc/beat labels.
+ * Public mirror status. Operational and player telemetry belong on /author;
+ * this surface exposes only a diegetic host response and last-contact time.
  */
 export default async function StatusPage() {
   const supabase = await createClient();
-
-  // Run all three reads concurrently. Each is a single neutral view query.
-  const [healthRes, heatmapRes, complianceRes] = await Promise.all([
-    supabase.from("v_health").select("*").maybeSingle(),
-    supabase
-      .from("v_heatmap")
-      .select("*")
-      .order("visits", { ascending: false })
-      .limit(5000),
-    supabase.from("v_compliance_counts").select("*").maybeSingle(),
-  ]);
-
-  const health: HealthView | null = healthRes.data ?? null;
-  const heatmapCells: HeatmapView[] = heatmapRes.data ?? [];
-  const compliance: ComplianceCountsView | null = complianceRes.data ?? null;
-
-  const errors = [
-    healthRes.error?.message,
-    heatmapRes.error?.message,
-    complianceRes.error?.message,
-  ].filter(Boolean) as string[];
+  const healthRes = await supabase.from("v_health").select("*").maybeSingle();
+  const health = healthRes.data as HealthView | null;
+  const unavailable = Boolean(healthRes.error);
+  const errorCount = health?.error_24h ?? 0;
+  const last = health?.last_beat_at
+    ? new Date(health.last_beat_at).toISOString().replace("T", " ").slice(0, 19) + "Z"
+    : "unknown";
+  const response = unavailable
+    ? "no reply"
+    : errorCount > 0
+      ? "degraded"
+      : "reply received";
 
   return (
     <div className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="font-mono text-2xl text-neutral-100">Status</h1>
+      <header className="space-y-2 border-b border-neutral-900 pb-5">
+        <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-700">
+          snoikerz mirror 03 / uptime cache
+        </p>
+        <h1 className="font-mono text-2xl uppercase text-neutral-100">
+          host status
+        </h1>
         <p className="max-w-prose text-sm text-neutral-400">
-          Spoiler-free health view. Is it running, is it misfiring, where are
-          people, and the neutral compliance counts. No story.
+          The old panel kept only a public response row. Staff, traffic, player,
+          and moderation records were removed with the account list.
         </p>
       </header>
 
-      {errors.length > 0 && (
-        <div className="rounded-md border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-          <p className="font-mono">Some status data could not be loaded.</p>
-          <ul className="mt-1 list-disc pl-5 text-rose-300/80">
-            {errors.map((e, i) => (
-              <li key={i} className="font-mono text-xs">
-                {e}
-              </li>
-            ))}
-          </ul>
+      <section className="max-w-2xl border border-neutral-900 bg-black/25 font-mono text-sm">
+        <div className="border-b border-neutral-900 px-4 py-2 text-[10px] uppercase tracking-wider text-neutral-700">
+          cached check
         </div>
-      )}
+        <dl className="divide-y divide-neutral-900 px-4">
+          <div className="flex justify-between gap-6 py-4">
+            <dt className="text-neutral-600">ping</dt>
+            <dd
+              className={
+                unavailable || errorCount > 0
+                  ? "text-amber-700"
+                  : "text-neutral-300"
+              }
+            >
+              {response}
+            </dd>
+          </div>
+          <div className="flex justify-between gap-6 py-4">
+            <dt className="text-neutral-600">last contact</dt>
+            <dd className="text-neutral-400">{last}</dd>
+          </div>
+          <div className="flex justify-between gap-6 py-4">
+            <dt className="text-neutral-600">public row</dt>
+            <dd className="text-neutral-400">unlisted / retained</dd>
+          </div>
+          <div className="flex justify-between gap-6 py-4">
+            <dt className="text-neutral-600">staff</dt>
+            <dd className="text-neutral-500">no staff listed</dd>
+          </div>
+        </dl>
+      </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <HealthPanel health={health} />
-        <ComplianceCounts counts={compliance} />
-      </div>
-
-      <Heatmap cells={heatmapCells} />
+      <p className="max-w-2xl font-mono text-xs lowercase leading-relaxed text-neutral-700">
+        A missing reply does not prove the world is gone. Mirror 03 continued
+        checking after the control account expired.
+      </p>
     </div>
   );
 }

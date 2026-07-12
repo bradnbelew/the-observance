@@ -481,6 +481,170 @@ values
   4, true, null ),
 
 -- ===========================================================================
+-- MOVEMENT IV-B — The Failed Accepting
+-- ===========================================================================
+
+-- prior-absence — after the keeper case is broad enough to reach the archive,
+-- the prior-run roster names the missing condition before the old camp opens.
+-- Typed deduction from the audited Hold record station: not "find another cipher,"
+-- but notice that the previous group had six answers and no witness.
+( 'prior-absence',
+  'what the prior run did not bring',
+  array[
+    'no witness',
+    'they had no witness',
+    'the prior run had no witness'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'prior-camp-refusal',
+    'set_flags', jsonb_build_object('prior_absence_known', true)
+  ),
+  4, true, 8 ),
+
+-- prior-camp-refusal — the camp record explains why the same six answers failed.
+-- The answer is not another name; it is the distinction the accepting floor enforces:
+-- solved answers are still inside the desire to finish, so they cannot witness it.
+( 'prior-camp-refusal',
+  'why the old camp failed',
+  array[
+    'answers are not witness',
+    'answers are not a witness',
+    'they had answers not witness'
+  ],
+  'next_clue',
+  jsonb_build_object(
+    'voice_key', 'oracleNextClue',
+    'next_puzzle_key', 'prior-vaun-correction',
+    'set_flags', jsonb_build_object('prior_camp_read', true)
+  ),
+  4, true, 8 ),
+
+-- The six correction files open in parallel once the camp has been read. Each is
+-- a one-line repair of the prior group's mistaken interpretation, grounded in a
+-- camp barrel plus the keeper/side evidence it points back toward.
+( 'prior-vaun-correction',
+  'correct vauns filed answer',
+  array[
+    'return first before count',
+    'return first before counting',
+    'the first thing was already owed'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_vaun_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Vaun is corrected as debt before inventory. The first of the deep cannot be counted cleanly until it is returned.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-mara-correction',
+  'correct maras filed answer',
+  array[
+    'walk it before filing it',
+    'walk before filing',
+    'a read route is not a walked route'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_mara_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Mara is corrected as action before record. The route is not true because it can be copied; it is true because someone walks it.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-sella-correction',
+  'correct sellas filed answer',
+  array[
+    'count the seventh before the six',
+    'the seventh was not an error',
+    'later ink is still evidence'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_sella_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Sella is corrected as absence before neat count. Later ink does not make the seventh false; it proves who had to be added back.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-orin-correction',
+  'correct orins filed answer',
+  array[
+    'bowing is proof not payment',
+    'smallness is proof',
+    'read low without owning it'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_orin_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Orin is corrected as posture before possession. The bow is not a price paid to the room; it is how the room can be read honestly.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-brann-correction',
+  'correct branns filed answer',
+  array[
+    'the watch must be kept',
+    'a warning heard once is not a watch kept',
+    'stay awake through the count'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_brann_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Brann is corrected as duration before alarm. Hearing the toll is not the same as keeping watch after it.'
+    )
+  ),
+  4, true, 8 ),
+
+( 'prior-iss-correction',
+  'correct iss filed answer',
+  array[
+    'test warmth against the land',
+    'comfort is not proof',
+    'the warm wall was cover'
+  ],
+  'lore',
+  jsonb_build_object(
+    'voice_key', 'oracleLore',
+    'set_flags', jsonb_build_object('prior_iss_corrected', true),
+    'voice_args', jsonb_build_object(
+      'fragment', 'Iss is corrected as cross-check before comfort. A warm account only matters if the cold land agrees with it.'
+    )
+  ),
+  4, true, 8 ),
+
+-- prior-witness-before-accepting — the final synthesis between the failed camp
+-- and the real accepting floor. This is now required by rite-tokens and by the
+-- physical Hold accepting gate: the finale cannot start by speedrunning stones.
+( 'prior-witness-before-accepting',
+  'the missing condition',
+  array[
+    'witness before accepting',
+    'bring witness before accepting',
+    'the witness comes before the rite'
+  ],
+  'main_beat',
+  jsonb_build_object(
+    'voice_key', 'oracleMainBeat',
+    'set_flags', jsonb_build_object('prior_witness_ready', true),
+    'next_puzzle_key', 'rite-tokens'
+  ),
+  4, true, 8 ),
+
+-- ===========================================================================
 -- MOVEMENT V — The Accepting
 -- ===========================================================================
 
@@ -1065,22 +1229,28 @@ values
   4, false, 8 ),
 
 -- record-url — the Record website (A13). The founder line "the record is kept in more than
--- one place" decodes to a URL path off-world (the click, #11). Pure lore, GATES NOTHING.
--- The page is static-per-build, noindex, reads the spoiler-free projection only. The decoded
--- PATH is the answer (a clean token), not a coordinate. recordElsewhere voice. Active M2 (it
--- un-redacts entries in lockstep with stones actually read; the Iss card carries the stego).
+-- one place" now joins the Hold-copy handoff: front door SNOIKERZ, common web, root path /,
+-- mirror 03, and the recovered Record slug. Pure lore, GATES NOTHING. The old listing owns
+-- the live address; the zip must never carry a raw endpoint. recordElsewhere voice. Active M2.
 ( 'record-url',
-  'the record is kept elsewhere',
+  'the old listing keeps the record',
   array[
-    'the record keeps',
-    'the record is kept in more than one place',
-    'the record is kept in more than one place against the loss of the first'
+    'the old listing keeps the record',
+    'the old listing is snoikerz mirror 03',
+    'the record keeps on snoikerz mirror 03',
+    'the record is kept on snoikerz mirror 03',
+    'snoikerz mirror 03 keeps the record',
+    'snoikerz mirror 03 keeps the old listing',
+    'snoikerz mirror 03',
+    'snoikerz common web root mirror 03',
+    'snoikerz slash mirror 03 the record keeps',
+    'front door snoikerz common web root mirror 03'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'recordElsewhere',
     'voice_args', jsonb_build_object(
-      'fragment', 'the record is kept in more than one place, against the loss of the first. the path is the record keeps.'
+      'fragment', 'the record is kept in more than one place, against the loss of the first. the old listing is snoikerz mirror 03; the recovered file is the record keeps.'
     )
   ),
   2, true, null ),

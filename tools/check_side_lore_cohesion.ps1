@@ -31,6 +31,7 @@ $applyAll = ReadText (Join-Path $RepoRoot "discord\supabase\apply-all.sql")
 $experience = ReadText (Join-Path $RepoRoot "tools\check_experience_coherence.py")
 $dashboard = ReadText (Join-Path $RepoRoot "dashboard\src\components\author\SideProofProgress.tsx")
 $directorReport = ReadText (Join-Path $RepoRoot "dashboard\src\components\author\DirectorStateReport.tsx")
+$proofFlags = ReadText (Join-Path $RepoRoot "dashboard\src\components\author\proofFlags.ts")
 $simplification = ReadText (Join-Path $RepoRoot "design\DIRECTOR-SIMPLIFICATION.md")
 $serverPrep = ReadText (Join-Path $RepoRoot "tools\prepare_server_test.ps1")
 
@@ -56,6 +57,7 @@ foreach ($site in $sideSites) {
 
 foreach ($site in @(
   "school_stand",
+  "far_water",
   "markers_row",
   "cistern_7",
   "watch_floor",
@@ -69,17 +71,18 @@ foreach ($site in @(
   "deep_bird_coops"
 )) {
   RequireText "check_experience_coherence.py" $experience ("site_seen_" + $site)
-  RequireText "SideProofProgress.tsx" $dashboard ("site_seen_" + $site)
-  RequireText "DirectorStateReport.tsx" $directorReport ("site_seen_" + $site)
+  RequireText "proofFlags.ts" $proofFlags ("site_seen_" + $site)
 }
 
 foreach ($flag in @(
   "npc_wenna_crust_done",
   "npc_coll_lamp_done"
 )) {
-  RequireText "SideProofProgress.tsx" $dashboard $flag
-  RequireText "DirectorStateReport.tsx" $directorReport $flag
+  RequireText "proofFlags.ts" $proofFlags $flag
 }
+
+RequireText "SideProofProgress.tsx" $dashboard 'import { SIDE_PROOF_FLAGS } from "./proofFlags"'
+RequireText "DirectorStateReport.tsx" $directorReport 'import { SIDE_PROOF_FLAGS } from "./proofFlags"'
 
 foreach ($required in @(
   'seedFixtureLore(loc, "far_water")',

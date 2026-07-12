@@ -42,7 +42,7 @@ Each row must answer these questions.
 
 | Expedition | Purpose | Required Shape |
 | --- | --- | --- |
-| Hold Copy | Cold-open invitation artifact | Adventure-map reconstruction, not direct server pointer |
+| Hold Copy | Cold-open invitation artifact | Adventure-map to abandoned listing, not direct server pointer |
 | Surface Evidence | First week grounding | Human claims tied to physical proof |
 | Customs | Lived rules | Folk version, practical reason, physical proof, consequence, false version, late use |
 | Record Website | Casework | Proof state, contradictions, provenance, fair answer handling |
@@ -57,7 +57,7 @@ Each row must answer these questions.
 
 | id | expedition | status | truth_state | surface_owner | players_see | players_infer | invited_action | traversal_vector | later_proof | implementation | audit_status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| hold-address-reconstruction | Hold Copy | required | partial | `the-hold.zip` | A contained adventure map with broken route evidence instead of a raw address | The server destination must be reconstructed from several pieces | Complete the map, compare final room evidence, reconstruct destination | place + item + route + memory | First server arrival and Record site receipt confirm it | `dashboard/public/the-hold/the-hold.zip`; `tools/rebuild_hold_invitation.ps1`; `tools/check_hold_invitation.ps1` | ready |
+| hold-address-reconstruction | Hold Copy | required | partial | `the-hold.zip` + public website root | A contained adventure map with front-door/common-web/root-path evidence instead of a raw address | The server is real, but the live address belongs to the old listing, not the zip | Complete the map, follow the old listing, then join from the listed address | place + item + route + memory | First server arrival and Record site receipt confirm it | `dashboard/public/the-hold/the-hold.zip`; `dashboard/src/app/page.tsx`; `tools/rebuild_hold_invitation.ps1`; `tools/check_hold_invitation.ps1`; `discord/src/oracle/web-audit.ts` | ready |
 | first-report-mouth | Surface Evidence | required | true | Minecraft lectern/site | A dry first report near the descent mouth | This is a field record, not fantasy prophecy | Find the descent and first literacy surfaces | place + record | Rosetta and later archive records use the same record logic | `first_report_lectern_01`; `sites.yml`; puzzle seeds | needs_build |
 | rune-literacy | Surface Evidence | required | true | `rune_rosetta` | A readable script-learning surface | The script can be decoded consistently | Decode later local marks | record + structure | Later glyphs round-trip against the same alphabet | `rune_rosetta`; resource pack font; clue specs | needs_build |
 | reckoning-literacy | Surface Evidence | required | true | `stone_of_reckoning` | Digit/sign marks that make coordinate-like clues legible | Place clues have their own grammar | Use place marks only after learning them | record + place | Coordinate-bearing rows become fair only after this | `stone_of_reckoning`; puzzle seeds | needs_build |

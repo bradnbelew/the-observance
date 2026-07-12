@@ -80,11 +80,12 @@ public final class WrenNpcListener implements Listener {
 
     /** Warm, present-tense companion beats so Wren speaks even pre-showrunner-binding. */
     private static final List<String> INTRO_LINES = List.of(
-            "oh - hey. you're new. you're breathing, anyway. sorry, you get careful about that down here. stay close, would you. i lost people going off alone.",
-            "not that way. i mean it - not that way. i know it looks like the easy road. the easy road down here is how you lose someone.",
-            "here. take it, it's nothing, it's just a spare - you'll want it before i will. no, keep it.",
-            "tell me where you're headed and i'll tell you what i know. what you'd never do, where you'd run if it got bad. that's the trade. it's a good trade.",
-            "i stepped out for a second. sorry. thought i heard something in the dark and went to check and it was nothing. it's always nothing. i hate not being just behind you.");
+            "hey. keep your voices low on the stair. not quiet because it listens. quiet because people make worse choices when they hear themselves panic.",
+            "i know the short way down. i am not taking it. every short way i ever trusted asked for something after.",
+            "here. spare flint. no speech, no debt. if your lamp goes out, use it before you start arguing about whose fault it was.",
+            "if i say i know a place, ask me how i know it. if i cannot answer, do not follow me there. fair?",
+            "i marked the turns with charcoal once. came back and half the marks were still mine. half were not. i do not mark turns anymore.",
+            "i stepped away for a second. sorry. thought i heard someone behind us and went to count. it was only the stair settling. i still counted twice.");
 
     /** Per-player fallback speech cursor so Wren advances instead of repeating a packet every click. */
     private final Map<UUID, Integer> speechCursors = new ConcurrentHashMap<>();

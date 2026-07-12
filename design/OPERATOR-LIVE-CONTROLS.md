@@ -128,7 +128,7 @@ Launch rule:
 
 - create/import the duplicate world as `observance_unlit`
 - use `design/UNLIT-PREARG-STARTUP.md` for the setup sequence
-- keep `light-budget: 7` unless playtest proves groups still cannot reach one or two houses per run
+- keep `light-budget: 3` unless playtest proves groups cannot reach one or two houses per run
 - keep `buildmode: false` before friends test it
 - run `/obs unlit border 138` and `/obs unlit darken all 138` for the current 275-wide worldborder plan
 - run `/obs unlit audit` and `/obs unlit ready` before handoff

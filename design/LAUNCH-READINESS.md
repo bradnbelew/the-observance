@@ -3,8 +3,8 @@
 > verdict. The current repository state is **not launch-ready** until
 > `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`
 > passes and the manual attestations it prints are completed on the live Paper server/client. Known current
-> blockers include the unhosted resource pack URL/SHA1, 67 launch-required placeholder site coordinates,
-> missing coordinate proof CSV, missing completed live rehearsal packet, and live Minecraft rendering/load
+> blockers include the unhosted resource pack URL/SHA1, missing generated Deep Hold proof, outside-Hold
+> placeholder site coordinates, missing coordinate/proof CSV, missing completed live rehearsal packet, and live Minecraft rendering/load
 > verification. Use `design/MANUAL-LAUNCH-PLAN.md` for the ordered manual completion plan and evidence
 > requirements. Use `design/CURRENT-READINESS-VERDICT.md` for the current ready/not-ready verdict.
 The state after the "build everything left + full first-contact→finale pass" push. Branch
@@ -84,8 +84,9 @@ make/apply, which the code already degrades around safely).
       + flip the `voice_capture` setting, then restart the bot. (Deps auto-install as optionalDependencies.)
 
 **Real media (the hero artifacts — the code has the wiring and safely withholds live lures until files exist)**
-- [ ] `dashboard/public/the-hold/the-hold.zip` — the offline "cursed map" the lure page links. Until it's
-      hosted, **don't plant the in-world clue to the lure slug** (`/record/the-record-keeps`) — the link 404s otherwise.
+- [ ] `dashboard/public/the-hold/the-hold.zip` — the offline "cursed map" the public listing links. Until
+      the deployed `/`, `/the-hold/the-hold.zip`, and `/record/the-record-keeps` routes work, **don't plant
+      the live web lure**.
 - [ ] The found-footage clip + the recovered Drive folder + the waveform/spectrogram image — for
       `spine-recovered-archive` (a wired puzzle awaiting its artifact) and the coords-in-a-frame first-find aid.
 

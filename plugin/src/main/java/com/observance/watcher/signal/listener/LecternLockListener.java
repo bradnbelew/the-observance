@@ -39,7 +39,7 @@ import java.util.function.Supplier;
  */
 public final class LecternLockListener implements Listener {
 
-    private static final String LECTERN_TYPE = "mara_lectern";
+    private static final String DEFAULT_LECTERN_TYPE = "mara_lectern";
     private static final long CHECK_COOLDOWN_MS = 1_500L;
     private static final long SETTLE_TICKS = 1L;
 
@@ -52,6 +52,7 @@ public final class LecternLockListener implements Listener {
     private final boolean enabled;
     private final String token;
     private final String puzzleKey;
+    private final String lecternType;
     /** Target 1-based page per lectern, ordered by the lectern site's trailing index (1..N). */
     private final int[] markedPages;
 
@@ -59,6 +60,14 @@ public final class LecternLockListener implements Listener {
                                RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
                                boolean enabled, String token, String puzzleKey,
                                List<Integer> markedPages) {
+        this(sitesSupplier, oracle, rateLimiter, scheduler, safety, enabled, token, puzzleKey,
+                DEFAULT_LECTERN_TYPE, markedPages);
+    }
+
+    public LecternLockListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
+                               RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
+                               boolean enabled, String token, String puzzleKey,
+                               String lecternType, List<Integer> markedPages) {
         this.sitesSupplier = sitesSupplier;
         this.oracle = oracle;
         this.rateLimiter = rateLimiter;
@@ -67,6 +76,8 @@ public final class LecternLockListener implements Listener {
         this.enabled = enabled;
         this.token = token == null ? "" : token.trim();
         this.puzzleKey = (puzzleKey == null || puzzleKey.isBlank()) ? "mara-lectern-lock" : puzzleKey.trim();
+        this.lecternType = (lecternType == null || lecternType.isBlank())
+                ? DEFAULT_LECTERN_TYPE : lecternType.trim();
         this.markedPages = toIntArray(markedPages);
     }
 
@@ -76,7 +87,7 @@ public final class LecternLockListener implements Listener {
         Block b = event.getClickedBlock();
         if (b == null || !(b.getState() instanceof Lectern)) return;   // cheap: only lectern clicks
 
-        safety.run("mara.lectern.interact", () -> {
+        safety.run(puzzleKey + ".lectern.interact", () -> {
             Player p = event.getPlayer();
             if (p == null || oracle == null || scheduler == null) return;
             SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
@@ -86,14 +97,14 @@ public final class LecternLockListener implements Listener {
             if (loc.getWorld() == null) return;
             String world = loc.getWorld().getName();
             // Only proceed if the clicked lectern is actually one of the lock's lecterns.
-            Site here = nearestPlacedOfType(sites, LECTERN_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
+            Site here = nearestPlacedOfType(sites, lecternType, world, loc.getX(), loc.getY(), loc.getZ());
             if (here == null) return;
 
             final String mc = p.getUniqueId().toString();
             final String name = p.getName();
             // Re-read the whole combination after a settle tick (the page flip applies post-event).
-            scheduler.runLaterSafe("mara.lectern.settle", SETTLE_TICKS, () -> safety.run(
-                    "mara.lectern.check", () -> checkCombination(mc, name)));
+            scheduler.runLaterSafe(puzzleKey + ".lectern.settle", SETTLE_TICKS, () -> safety.run(
+                    puzzleKey + ".lectern.check", () -> checkCombination(mc, name)));
         });
     }
 
@@ -101,7 +112,7 @@ public final class LecternLockListener implements Listener {
     private void checkCombination(String mcUuid, String playerName) {
         SitesConfig sites = sitesSupplier == null ? null : sitesSupplier.get();
         if (sites == null) return;
-        List<Site> lecterns = sites.placedOfType(LECTERN_TYPE);
+        List<Site> lecterns = sites.placedOfType(lecternType);
         if (lecterns.isEmpty()) return;
         if (markedPages.length == 0) return;                 // nothing to match against — inert
 
@@ -118,9 +129,9 @@ public final class LecternLockListener implements Listener {
         // Require that every configured page has a matching, correctly-turned lectern.
         if (!allMatch || matched < markedPages.length) return;
 
-        if (!rateLimiter.tryCooldown("mara_lectern:lock", CHECK_COOLDOWN_MS)) return;
-        safety.info("mara.lectern", playerName + " cleared the lectern lock — posting mara-lectern-lock");
-        scheduler.runAsyncSafe("mara.lectern.resolve",
+        if (!rateLimiter.tryCooldown(lecternType + ":lock", CHECK_COOLDOWN_MS)) return;
+        safety.info(puzzleKey + ".lectern", playerName + " cleared the lectern lock — posting " + puzzleKey);
+        scheduler.runAsyncSafe(puzzleKey + ".lectern.resolve",
                 () -> oracle.resolveWorld(mcUuid, playerName, token, puzzleKey));
     }
 

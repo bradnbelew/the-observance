@@ -78,7 +78,8 @@ sites:
   #  receipt ("the sign clears.") so the slot feels heard without leaking correctness.
   #  Coordinate-shaped submissions receive the narrow nudge "a place is not an answer."
   #
-  #  Site types treated as answer slots: `answer_sign` (preferred) and `keeper_stone`.
+  #  Site types treated as answer slots: `answer_sign` (preferred), `keeper_stone`,
+  #  `case_board`, `prior_camp`, and `failed_accepting`.
   #  Optional `puzzle-key:` BINDS a site to ONE puzzle (a focused gate). OMIT it (the
   #  default) for the non-linear web — the sign then resolves against ALL open puzzles,
   #  so any clue a group has solved can be answered at any keeper-stone.
@@ -341,10 +342,11 @@ sites:
     enabled: true
 
   # --- Dialogue-world proof anchors ----------------------------------------
-  # These exist because NPCs point at them directly. If Aro/Coll/Wenna talk about
-  # the Stair, the painted line, the third lamp, bird coops, the warm-town lie, or the dead-stall, these sites
-  # must either be staged by `/observance descentproof` / `/observance prepworld`
-  # or deliberately rewritten/cut before launch.
+  # These exist because NPCs point at them directly. In production, `/observance placehold build`
+  # clusters this proof family into the generated Deep Hold; `/observance descentproof`,
+  # `/observance prepworld`, and `/observance sidepass` are rehearsal surfaces only. If a line names
+  # the Stair, painted line, third lamp, bird coops, warm-town lie, or dead-stall, the generated Hold
+  # must prove it or the line must be rewritten/cut before launch.
 
   lampworks_stair:
     type: "lampworks_stair"

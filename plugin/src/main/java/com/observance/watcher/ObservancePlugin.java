@@ -60,6 +60,8 @@ public final class ObservancePlugin extends JavaPlugin {
     private ObservanceConfig config;
     private SitesConfig sites;
     private SupabaseClient supabase;
+    private int runtimeSiteBatchDepth = 0;
+    private final List<Site> runtimeSiteBatch = new ArrayList<>();
 
     // --- shared utilities exposed to subsystem agents ---
     private Reveal reveal;
@@ -130,6 +132,7 @@ public final class ObservancePlugin extends JavaPlugin {
     // --- runtime state ---
     private volatile boolean locallyAsleep = false;          // /observance sleep on|off
     private final List<BukkitTask> scheduledTasks = new ArrayList<>();
+    private ObservanceCommand observanceCommand;
 
     /* ==================================================================== */
     /*  Lifecycle                                                           */
@@ -445,6 +448,12 @@ public final class ObservancePlugin extends JavaPlugin {
         pm.registerEvents(unlitVillage, this);
         unlitVillage.start();
 
+        // Production Deep Hold region guard. The beat protection listener protects individual anchors;
+        // this protects the whole carved Hold from ordinary player break/place/fluid bypasses while
+        // preserving the authored third-lamp light placement proof.
+        pm.registerEvents(new com.observance.watcher.signal.listener.HoldProtectionListener(
+                this::sites, safety), this);
+
         // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.
         pm.registerEvents(new AnswerSignListener(
@@ -577,6 +586,15 @@ public final class ObservancePlugin extends JavaPlugin {
                     cfg.getString("puzzles.mara-lectern-lock.puzzle-key", "mara-lectern-lock"),
                     cfg.getIntegerList("puzzles.mara-lectern-lock.marked-pages")), this);
         }
+        if (cfg.getBoolean("puzzles.sella-overlay-lake.enabled", true)) {
+            pm.registerEvents(new com.observance.watcher.signal.listener.LecternLockListener(
+                    this::sites, oracleResolver, rateLimiter, scheduler, safety,
+                    true,
+                    cfg.getString("puzzles.sella-overlay-lake.token", ""),
+                    cfg.getString("puzzles.sella-overlay-lake.puzzle-key", "sella-overlay-lake"),
+                    "sella_lectern",
+                    cfg.getIntegerList("puzzles.sella-overlay-lake.ring-pages")), this);
+        }
         if (cfg.getBoolean("puzzles.vaun-bookshelf-tally.enabled", true)) {
             pm.registerEvents(new com.observance.watcher.signal.listener.BookshelfTallyListener(
                     this::sites, oracleResolver, rateLimiter, scheduler, safety,
@@ -696,6 +714,7 @@ public final class ObservancePlugin extends JavaPlugin {
 
     private void registerCommands() {
         ObservanceCommand handler = new ObservanceCommand(this, safety);
+        this.observanceCommand = handler;
         var cmd = getCommand("observance");
         if (cmd != null) {
             cmd.setExecutor(handler);
@@ -763,6 +782,14 @@ public final class ObservancePlugin extends JavaPlugin {
             scheduledTasks.add(scheduler.runTimerSafe("site.discovery", sampleTicks, sampleTicks,
                     () -> siteDiscoveryListener.tick()));
         }
+
+        // Physical Hold gates follow live monotonic story flags without an operator command.
+        // The command-side controller performs its own async fetch and overlap guard.
+        long holdGateTicks = 10L * 20L;
+        scheduledTasks.add(scheduler.runTimerSafe("hold.gates.sync", holdGateTicks, holdGateTicks,
+                () -> {
+                    if (observanceCommand != null) observanceCommand.syncPlaceHoldGatesAutomatically();
+                }));
 
         // Dossier/compliance/heatmap flush — network I/O so ASYNC. Cadence = the presence
         // heartbeat (a sensible "write back what changed" rhythm).
@@ -919,7 +946,33 @@ public final class ObservancePlugin extends JavaPlugin {
     public void registerRuntimeSite(Site site) {
         if (site == null || sites == null) return;
         this.sites = sites.withSite(site);
-        persistSiteToYml(site);
+        if (runtimeSiteBatchDepth > 0) {
+            runtimeSiteBatch.add(site);
+        } else {
+            persistSiteToYml(site);
+        }
+
+    }
+
+    /**
+     * Batch runtime site persistence for admin mega-build commands. Runtime registration still happens
+     * immediately, but disk persistence is flushed once at the end instead of reloading/saving sites.yml
+     * for every placed site.
+     */
+    public void beginRuntimeSiteBatch() {
+        runtimeSiteBatchDepth++;
+    }
+
+    public void endRuntimeSiteBatch() {
+        if (runtimeSiteBatchDepth > 0) runtimeSiteBatchDepth--;
+        if (runtimeSiteBatchDepth == 0) flushRuntimeSiteBatch();
+    }
+
+    private void flushRuntimeSiteBatch() {
+        if (runtimeSiteBatch.isEmpty()) return;
+        List<Site> pending = new ArrayList<>(runtimeSiteBatch);
+        runtimeSiteBatch.clear();
+        persistSitesToYml(pending);
     }
 
     /**
@@ -964,6 +1017,48 @@ public final class ObservancePlugin extends JavaPlugin {
             getLogger().warning("[Observance] Could not persist site '" + site.id()
                     + "' to sites.yml: " + t.getClass().getSimpleName() + ": " + t.getMessage());
         }
+    }
+
+    private void persistSitesToYml(List<Site> siteList) {
+        if (siteList == null || siteList.isEmpty()) return;
+        try {
+            File file = new File(getDataFolder(), "sites.yml");
+            if (!file.exists()) {
+                saveResource("sites.yml", false);
+            }
+            YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+            for (Site site : siteList) {
+                writeSiteToYml(cfg, site);
+            }
+            cfg.save(file);
+        } catch (Throwable t) {
+            getLogger().warning("[Observance] Could not persist " + siteList.size()
+                    + " runtime site(s) to sites.yml: "
+                    + t.getClass().getSimpleName() + ": " + t.getMessage());
+        }
+    }
+
+    private void writeSiteToYml(YamlConfiguration cfg, Site site) {
+        if (cfg == null || site == null) return;
+        String path = "sites." + site.id();
+        ConfigurationSection sec = cfg.getConfigurationSection(path);
+        if (sec == null) sec = cfg.createSection(path);
+
+        sec.set("type", site.type());
+        sec.set("world", site.worldName());
+        var loc = site.location();
+        if (loc != null) {
+            sec.set("x", loc.getX());
+            sec.set("y", loc.getY());
+            sec.set("z", loc.getZ());
+        }
+        sec.set("radius", site.radius());
+        sec.set("vertical-radius", site.verticalRadius());
+        sec.set("protect", site.protect());
+        sec.set("enabled", site.enabled());
+        if (site.puzzleKey() != null) sec.set("puzzle-key", site.puzzleKey());
+        sec.set("visual_beacon", null);
+        sec.set("visual-beacon", null);
     }
 
     /** Build the OBSERVER TIER-0 selector from the live config's {@code tier0:} block. Fault-isolated:

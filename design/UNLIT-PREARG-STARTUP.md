@@ -7,7 +7,7 @@ Use it after uploading the fresh plugin jar and before friends enter the fiction
 
 - It is a dark duplicate of the spawn village, preferably an exact copy of the real village world at 0,0.
 - Players enter from the real village well at `unlit_entry`.
-- Every entrant receives 7 borrowed lanterns and one return token.
+- Every entrant receives 3 borrowed lanterns and one return token.
 - Doors work. Breaking, building, carried lights, buckets, boats, pearls, beds, and route cheese do not.
 - The figure stalks, vanishes, rushes exposed lanterns, breaks them, and deals small pressure damage.
 - The ending cannot reach `rite-tokens` until the group has recovered the whole Unlit evidence set:
@@ -116,7 +116,7 @@ Before any player-facing test:
 Use a non-op account if possible, because op build mode can hide real restrictions.
 
 1. Stand at the overworld well entry and right-click to enter.
-2. Confirm inventory swaps to 7 borrowed lanterns plus one return token.
+2. Confirm inventory swaps to 3 borrowed lanterns plus one return token.
 3. Confirm doors open.
 4. Confirm normal blocks cannot be broken or placed.
 5. Confirm arbitrary lights cannot be brought in or used.

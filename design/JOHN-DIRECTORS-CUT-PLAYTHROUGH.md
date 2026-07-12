@@ -112,16 +112,21 @@ John uses the alphabet he built from the Rosetta ring. He decodes the line:
 
 > the-record-keeps
 
-The hyphens make it look like a route, not a sentence. The note said it was a name to call the kept-place by,
-not a place to walk to. John tries it on the record site:
+This is not the first web door anymore. The Hold copy already taught him a rougher address shape: front
+door `SNOIKERZ`, common web, root path. John reaches the old listing first. It does not look like a clean
+ARG menu. It looks like an abandoned Minecraft server/map host: the file is there, the Record links are
+there, and the live server address is either withheld or listed by the host.
+
+The hyphens make `the-record-keeps` look like a route, not a sentence. The note said it was a name to call
+the kept-place by, not a place to walk to. John tries it on the same site:
 
 > /record/the-record-keeps
 
 The page opens.
 
-That confirmation matters. John did not guess a website because the ARG needed a website. Minecraft taught
-him the script, the note told him not to walk, the decoded phrase looked like a slug, and the record route
-answered.
+That confirmation matters. John did not guess a website because the ARG needed a website. The map gave him
+the old listing, Minecraft taught him the script, the note told him not to walk, the decoded phrase looked
+like a slug, and the record route answered.
 
 Now John has two worlds: the world he walks through, and the record that keeps copies elsewhere.
 

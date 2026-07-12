@@ -31,12 +31,14 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 THREAD_CARDS = ROOT / "discord" / "supabase" / "seeds" / "thread_cards.sql"
 SIDE_QUESTS = ROOT / "discord" / "supabase" / "seeds" / "side_quests.sql"
 PUZZLES = ROOT / "discord" / "supabase" / "seeds" / "puzzles_seed.sql"
+PROGRESSION = ROOT / "discord" / "supabase" / "seeds" / "progression_seed.sql"
 VOICE_ARCHIVE = ROOT / "discord" / "src" / "voice.archive.ts"
 SITES = ROOT / "plugin" / "src" / "main" / "resources" / "sites.yml"
 MANIFEST = ROOT / "design" / "EXPERIENCE-MANIFEST.md"
 METAPUZZLE = ROOT / "discord" / "supabase" / "seeds" / "metapuzzle_seed.sql"
 THEORY = ROOT / "discord" / "src" / "showrunner" / "theory.ts"
 UNLIT_PANEL = ROOT / "dashboard" / "src" / "components" / "author" / "UnlitProgress.tsx"
+DIMENSION_PANEL = ROOT / "dashboard" / "src" / "components" / "author" / "DimensionLaneProgress.tsx"
 RUNBOOK = ROOT / "design" / "RUNBOOK.md"
 COMMAND_JAVA = (
     ROOT
@@ -100,6 +102,7 @@ UNLIT_FLAGS = [
 ]
 SIDE_PROOF_FLAGS = [
     "site_seen_school_stand",
+    "site_seen_far_water",
     "site_seen_markers_row",
     "site_seen_cistern_7",
     "site_seen_watch_floor",
@@ -116,6 +119,9 @@ NPC_PROOF_FLAGS = [
     "npc_wenna_crust_done",
     "npc_coll_lamp_done",
 ]
+PRIOR_ACCEPTING_FLAGS = [
+    "prior_witness_ready",
+]
 SIDE_PROOF_CARD_GATES = {
     "who-deep-market": "flag:site_seen_deep_market",
     "place-cistern-seven": "flag:site_seen_cistern_7",
@@ -128,6 +134,7 @@ SIDE_PROOF_CARD_GATES = {
     "surface-set-apart": "flag:site_seen_set_apart_shelf",
     "surface-bird-coops": "flag:site_seen_deep_bird_coops",
     "human-school-stand": "flag:site_seen_school_stand",
+    "surface-far-water-copy": "flag:site_seen_far_water",
     "human-ration-redivided": "flag:site_seen_ration_table",
 }
 
@@ -310,7 +317,7 @@ def check_manifest(errors: list[str]) -> None:
         "surface people before stones",
         "the world watches",
         "rosetta literacy",
-        "the record is kept elsewhere",
+        "the old listing and the record elsewhere",
         "side destinations",
         "recovery archive threads",
         "wren",
@@ -347,12 +354,24 @@ def rite_tokens_gate_block(text: str) -> str | None:
     return m.group("body") if m else None
 
 
+def requires_flags_gate_block(text: str, puzzle_key: str) -> str | None:
+    key = re.escape(puzzle_key)
+    m = re.search(
+        rf"update\s+public\.puzzles\s+set\s+requires_flags\s*=\s*jsonb_build_object\((?P<body>.*?)\)\s*where\s+puzzle_key\s*=\s*'{key}'",
+        text,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    return m.group("body") if m else None
+
+
 def check_director_truth(cards: list[dict[str, object]], errors: list[str]) -> None:
     """Guards the current story direction, not just mechanical file references."""
     metapuzzle = read(METAPUZZLE)
+    progression = read(PROGRESSION)
     hints = read(ROOT / "discord" / "supabase" / "seeds" / "hints_seed.sql")
     theory = read(THEORY)
     unlit_panel = read(UNLIT_PANEL)
+    dimension_panel = read(DIMENSION_PANEL)
     runbook = read(RUNBOOK)
     command = read(COMMAND_JAVA)
     dialogue_contracts = read(DIALOGUE_CONTRACTS)
@@ -388,10 +407,28 @@ def check_director_truth(cards: list[dict[str, object]], errors: list[str]) -> N
     if rite_block is None:
         errors.append("metapuzzle_seed.sql missing rite-tokens requires_flags gate")
     else:
-        for flag in ["accepting_onramp_open", *KEEPER_THEORY_FLAGS, *UNLIT_FLAGS, *SIDE_PROOF_FLAGS, *NPC_PROOF_FLAGS]:
+        for flag in ["accepting_onramp_open", *PRIOR_ACCEPTING_FLAGS, *KEEPER_THEORY_FLAGS, *UNLIT_FLAGS, *SIDE_PROOF_FLAGS, *NPC_PROOF_FLAGS]:
             require_contains(errors, "rite-tokens web gate", rite_block, flag)
-        for phrase in ["six keeper theories", "all eight unlit house recoveries", "named side proofs", "two surface kindnesses"]:
+        for phrase in ["six keeper theories", "all eight unlit house recoveries", "named side proofs", "two surface kindnesses", "prior witness condition"]:
             require_contains(errors, "rite-tokens rescue text", hints, phrase)
+
+    for phrase in ["prior_camp", "failed_accepting", "prior_witness_ready"]:
+        require_contains(errors, "Deep Hold prior accepting bridge", command, phrase)
+
+    dimension_gates = {
+        "nether-forge": ["undercroft_open", "nether_forge_placed"],
+        "end-seventh-out": ["seventh_named", "end_seventh_shrine_placed"],
+    }
+    for puzzle_key, flags in dimension_gates.items():
+        block = requires_flags_gate_block(progression, puzzle_key)
+        if block is None:
+            errors.append(f"progression_seed.sql missing {puzzle_key} requires_flags gate")
+            continue
+        for flag in flags:
+            require_contains(errors, f"{puzzle_key} placement/story gate", block, flag)
+            require_contains(errors, "dimension lane plugin flag", command, flag)
+            require_contains(errors, "dimension lane dashboard flag", dimension_panel, flag)
+    require_contains(errors, "dimension lane plugin flag writer", command, "markDimensionLanePlaced")
 
     for flag in SIDE_PROOF_FLAGS:
         require_contains(errors, "site discovery flag producer", site_discovery, flag)

@@ -8,6 +8,8 @@ $privateMessageFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\w
 $composureFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\beats\lib\ComposureBeat.java"
 $hintFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\beats\lib\HintWhisperBeat.java"
 $commandFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\command\ObservanceCommand.java"
+$unlitFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\signal\listener\UnlitVillageListener.java"
+$ambientFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\beats\AmbientBeatGenerator.java"
 $directorDoc = Join-Path $RepoRoot "design\DIRECTOR-SIMPLIFICATION.md"
 $gatherDoc = Join-Path $RepoRoot "design\content\gather-events.md"
 $evidenceDoc = Join-Path $RepoRoot "design\LIVE-REHEARSAL-EVIDENCE.md"
@@ -25,7 +27,7 @@ $activeStoryFiles = @(
   "discord\src\oracle\resolve.ts"
 )
 
-foreach ($file in @($privateMessageFile, $composureFile, $hintFile, $commandFile, $directorDoc, $gatherDoc, $evidenceDoc, $packetGeneratorFile, $packetValidatorFile)) {
+foreach ($file in @($privateMessageFile, $composureFile, $hintFile, $commandFile, $unlitFile, $ambientFile, $directorDoc, $gatherDoc, $evidenceDoc, $packetGeneratorFile, $packetValidatorFile)) {
   if (-not (Test-Path $file)) {
     throw "scare immersion check: missing required file: $file"
   }
@@ -42,6 +44,8 @@ $privateMessage = Get-Content -LiteralPath $privateMessageFile -Raw
 $composure = Get-Content -LiteralPath $composureFile -Raw
 $hint = Get-Content -LiteralPath $hintFile -Raw
 $command = Get-Content -LiteralPath $commandFile -Raw
+$unlit = Get-Content -LiteralPath $unlitFile -Raw
+$ambient = Get-Content -LiteralPath $ambientFile -Raw
 $director = Get-Content -LiteralPath $directorDoc -Raw
 $gather = Get-Content -LiteralPath $gatherDoc -Raw
 $evidence = Get-Content -LiteralPath $evidenceDoc -Raw
@@ -83,6 +87,17 @@ RequireNotRegex "ObservanceCommand scare payloads" $command '\\\"mode\\\"\\s*:\\
 RequireNotRegex "ObservanceCommand authored dread labels" $command 'new\s+String\[\]\s*\{\s*"(DREAD ROUTE|FIGURE|EXIT)"'
 RequireNotRegex "ObservanceCommand authored dread labels" $command 'new\s+String\[\]\s*\{[^}]*"(walk slowly|sound on|look back once|then move)"'
 RequireNotRegex "ObservanceCommand private scare text" $command '\{\\?"mode\\?"\s*:\s*\\?"actionbar\\?"[^}]*?(DREAD ROUTE|walk slowly|sound on|look back once|then move)'
+
+# Unlit apparitions are private, escalate through witnessed behavior, and leave state that other
+# surfaces can acknowledge. Ambient scares should use each site's lore instead of generic mobs.
+foreach ($needle in @('figureStage', 'setVisibleByDefault(false)', 'target.showEntity(plugin, part)', 'unlit_figure_seen', 'unlit_light_taken', 'unlit_figure_hunt')) {
+  RequireContains "Unlit staged private figure" $unlit $needle
+}
+RequireNotRegex "Unlit lurid eye label" $unlit 'Component\.text\("O O"'
+RequireNotRegex "ambient generic named mob" $ambient 'Material\.WITHER_SKELETON_SKULL'
+foreach ($needle in @('observance:cold_toll', 'observance:stone_breath', 'observance:drone_low')) {
+  RequireContains "site-conditioned ambient scares" $ambient $needle
+}
 
 # Active authored payloads may not sneak full-screen text into the run. The runtime demotes accidental
 # titles, but seed/showrunner content should still carry the right intent: actionbar/display unless a rare

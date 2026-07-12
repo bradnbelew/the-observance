@@ -22,6 +22,15 @@ function RequireContains([string]$Label, [string]$Text, [string]$Needle) {
   }
 }
 
+function RequireContainsAny([string]$Label, [string]$Text, [string[]]$Needles) {
+  foreach ($needle in $Needles) {
+    if ($Text.IndexOf($needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+      return
+    }
+  }
+  Fail "$Label missing one of expected texts: $($Needles -join ' | ')"
+}
+
 function RequireNotContains([string]$Label, [string]$Text, [string]$Needle) {
   if ($Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
     Fail "$Label contains retired duplicated text: $Needle"
@@ -97,6 +106,7 @@ try {
     "friend-launch-todo.md",
     "live-server-command-sheet.md",
     "supabase-apply-card.md",
+    "Prove the Failed Accepting route",
     "check_launch_manual_blockers.ps1 -Launch"
   )) {
     RequireContains "friend-launch-quickstart.md" $quickstart $needle
@@ -104,12 +114,17 @@ try {
 
   foreach ($needle in @(
     "launch manual blocker check: NOT READY",
-    "Resource pack is built but not launch-configured",
     "manual attestations still required",
     "discord/supabase/apply-all.sql"
   )) {
     RequireContains "launch-blockers.md" $blocker $needle
   }
+  RequireContainsAny "launch-blockers.md" $blocker @(
+    "Resource pack is built but not launch-configured",
+    "hosted resource pack failed",
+    "Resource pack URL must be an absolute HTTPS URL",
+    "Resource pack SHA1 mismatch"
+  )
 
   foreach ($needle in @(
     "clip_01_prior_base.mp4",
@@ -128,8 +143,8 @@ try {
     "SIX RETURN, ONE IS NOT KEPT",
     "https://youtu.be/DtZizx5QIEs",
     "dashboard/public/the-hold/the-hold.zip",
-    "b3a9459e102cde1e072771660def4b37bf55896e",
-    "route + gate name + common ending + port arithmetic",
+    "b638e989e7f03c2aec2346f9a1c972bddcf9c7de",
+    "front door + common web + root path + mirror 03; no server port",
     "no raw server endpoint",
     "operator-checked on 2026-07-08",
     "recovered_archive_ready",
@@ -150,7 +165,12 @@ try {
     "prepare_friend_launch.ps1 -ResourcePackUrl",
     "media checklist, Supabase card, command sheet, launch todo, and attestations are refreshed together",
     "supabase-apply-card.md",
-    "67 launch anchors",
+    "build/proof the Deep Hold rows",
+    "Prove the Failed Accepting route",
+    "no witness",
+    "answers are not witness",
+    "witness before accepting",
+    "remaining outside-Hold anchors",
     "live-server-command-sheet.md",
     "media_clip_01_ready",
     "recovered_archive_ready",
@@ -169,11 +189,20 @@ try {
     "/observance visualaudit",
     "/observance dialogueaudit",
     "/observance site launch",
+    "/observance placehold build",
+    "/observance placehold audit",
+    "/observance placehold sync",
+    "Failed Accepting gate",
+    "no witness",
+    "answers are not witness",
+    "witness before accepting",
     "/observance site next",
     "/observance site set <siteId>",
     "/obs unlit audit",
     "/obs unlit ready",
     "/obs unlit pass light",
+    "Normal Non-Op Pass",
+    "real non-op player account",
     "/observance flag set media_clip_01_ready true",
     "/observance flag set recovered_archive_ready true",
     "launch-attestations.md"
@@ -202,6 +231,10 @@ try {
 
   foreach ($needle in @(
     "No loose migration or seed files",
+    "Normal Non-Op Player Pass",
+    "Failed Accepting / Post-Keeper Gate",
+    "prior_witness_ready",
+    "real player account joined without operator status",
     "Applied SQL SHA1",
     "media_clip_01_ready",
     "media_clip_02_ready",

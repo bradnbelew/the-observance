@@ -393,6 +393,27 @@ public final class StructureTemplates {
         // RUNE-CRIB "KEPT" — on the hoard barrels (the thing Vaun did: kept it all). Mounted on the SOUTH face
         // of the stacked barrels at (cx-2,cy+1,cz-1), facing the room. crib: the referent is the barrel-hoard
         // directly north of this sign.
+        // Cipher carrier: Vaun hides what he owes by keeping wrong letters inside an inventory hand.
+        // Extract the letters that do not belong, in order, then give them back by shifting the held
+        // count three marks: JLYH WKH ILUVW RI WKH GHHS EDFN WR WKH GHHS -> GIVE THE FIRST OF THE DEEP
+        // BACK TO THE DEEP. This makes the Caesar artifact live in the room instead of only on the
+        // Discord clue card.
+        pen.lectern(cx - 3, cy, cz + 3, BlockFace.EAST);
+        pen.putBook(cx - 3, cy, cz + 3, "the held letters",
+                "audit\n"
+                + "wrong caps\n"
+                + "three back\n\n"
+                + "oil Jar gLass drY Hook\n"
+                + "old Wick Knot Hook\n"
+                + "ash Ink Lamp Urn Vine Wire\n"
+                + "red Rind Ink\n"
+                + "old Wax Knot Hook\n"
+                + "ash Grain Hook Hook Stone\n"
+                + "old Empty Drawer Faded Nail\n"
+                + "old Wire Root\n"
+                + "old Wax Knot Hook\n"
+                + "ash Grain Hook Hook Stone");
+
         pen.runeCrib(cx - 2, cy + 1, cz, BlockFace.SOUTH, Material.SPRUCE_WALL_SIGN, "KEPT");
         // RUNE-CRIB "DEEP" — placed here (Vaun has no descent-mouth) on the corroding copper back wall, per the
         // task's fallback. Mounted on the SOUTH face of the weathered-cut-copper back wall at (cx+1,cy+1,cz-2),
@@ -474,6 +495,23 @@ public final class StructureTemplates {
                         "[in the margin, her hand:]\n\"read it back to me —\"");
 
         // Reading candles on a small deepslate-tile side table — sparse, warm.
+        // Local book-cipher carriers. The margin book keeps the refs; the shelf book keeps the source
+        // text they index. The answer is the assembled sentence, not the numbers.
+        pen.lectern(cx - 2, cy, cz + 2, BlockFace.EAST);
+        pen.putBook(cx - 2, cy, cz + 2, "the kept-light shelf",
+                "descend the stair by still water\n\n"
+                + "and bow your head at the door\n\n"
+                + "the unbroken light waits below\n\n"
+                + "do not write it and call it kept\n\n"
+                + "do the thing the marks tell you");
+        pen.lectern(cx + 2, cy, cz + 2, BlockFace.WEST);
+        pen.putBook(cx + 2, cy, cz + 2, "mara's refs",
+                "the numbers are not the answer.\n"
+                + "count page, line, word.\n\n"
+                + "1-1-1  2-1-1  2-1-2\n"
+                + "2-1-5  1-1-2\n"
+                + "3-1-2  3-1-3");
+
         pen.set(cx - 1, cy, cz + 1, Material.DEEPSLATE_TILE_SLAB);
         pen.candle(cx - 1, cy + 1, cz + 1, Material.CANDLE, true);
 
@@ -719,6 +757,18 @@ public final class StructureTemplates {
         pen.runeCrib(cx - 1, cy, cz + 2, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN, "STONE");
 
         // One soul lantern past the threshold — cold blue light (earned, sparse).
+        // The actual substitution carving: the Rosetta alphabet turns these rune words straight back into
+        // the sentence. It is placed low along the mason's walls so players must stoop and look through
+        // the threshold, matching Orin's failed bow instead of making the Discord card the only carrier.
+        pen.runeCrib(cx, cy + 1, cz - 2, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "I");
+        pen.runeCrib(cx, cy + 1, cz - 1, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "THOUGHT");
+        pen.runeCrib(cx, cy + 1, cz + 1, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "IT");
+        pen.runeCrib(cx, cy + 1, cz + 2, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "SMALL");
+        pen.runeCrib(cx, cy + 2, cz - 2, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "IT");
+        pen.runeCrib(cx, cy + 2, cz - 1, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "WAS");
+        pen.runeCrib(cx, cy + 2, cz + 1, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "NOT");
+        pen.runeCrib(cx, cy + 2, cz + 2, BlockFace.EAST, Material.DARK_OAK_WALL_SIGN, "SMALL");
+
         pen.set(cx, cy + 2, cz + 2, Material.DEEPSLATE_BRICKS);
         pen.hangingLantern(cx, cy + 1, cz + 2, true);
 
@@ -855,6 +905,18 @@ public final class StructureTemplates {
         // (cx,cy,cz+1) — a small carved word right beside the amethyst floor-stud. Placed AFTER the plinth so
         // the backing exists. crib: the referent is the amethyst at (cx,cy-1,cz), directly under this sign.
         pen.runeCrib(cx, cy, cz, BlockFace.NORTH, Material.DARK_OAK_WALL_SIGN, "MOON");
+        // Rail-fence carrier: the dark watch note preserves the actual scrambled line locally. "Nine
+        // lights" is the rail count from the clue forge; the players still have to identify rail fence
+        // from the watch/rail language and unwind the rows.
+        pen.lectern(cx - 3, cy, cz + 3, BlockFace.EAST);
+        pen.putBook(cx - 3, cy, cz + 3, "the raked watch",
+                "black moon handoff:\n\n"
+                + "nine lights counted before\n"
+                + "sleep. brann wrote the line\n"
+                + "across the rails so no one\n"
+                + "could read it lying down.\n\n"
+                + "CBO EPUSFENEOETRRL\n"
+                + "IESTF  H YUEO");
         // RESHAPE R0: label CUT — "count the black moons — do not sleep" was a posted instruction for a
         // mechanic that now speaks for itself: BlackMoonTollListener tolls the bell for real on the actual
         // black moon (a live world-fact, not a prompt), and the uneven tally + amethyst moon already read
@@ -938,6 +1000,19 @@ public final class StructureTemplates {
         // without being told to look, framed by the warm brick corner (not the cold front edge). A found
         // object, not an admin hand-out — the datamine is the find (PUZZLES.md §1/§5-Iss, D7).
         pen.chestWithItem(cx + 2, cy, cz + 2, BlockFace.WEST, IssKeepsakeLampItem.create("observance"));
+        // Vigenere carrier: the public comfort-copy gives the false safety line; the private line uses
+        // ISS as the key, making his own name the thing that undoes the warmth.
+        pen.lectern(cx - 2, cy, cz + 2, BlockFace.EAST);
+        pen.putBook(cx - 2, cy, cz + 2, "the warm wall",
+                "public copy, unsigned:\n\n"
+                + "the ways are a wall.\n"
+                + "the watching stays out.\n"
+                + "inside the wall you are safe.\n\n"
+                + "private line, same hand:\n"
+                + "BZW WFW EZG\n"
+                + "BMJVWV IOSG\n\n"
+                + "the key is the man who\n"
+                + "made the comfort.");
 
         // THE ANSWER: a warm-looking sign on the cold dead hearth (a birch/warm-wood sign against black
         // stone — the deception). Blank submission slot at reading height on the hearth face.

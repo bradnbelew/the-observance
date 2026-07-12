@@ -71,7 +71,7 @@ foreach ($needle in @(
 foreach ($needle in @(
   "PRE-ARG STARTUP GUIDE",
   "observance_unlit",
-  "7 borrowed lanterns",
+  "3 borrowed lanterns",
   "unlit_seen_lamp",
   "unlit_seen_cairn",
   "unlit_seen_coop",
@@ -93,7 +93,7 @@ foreach ($needle in @(
   "UNLIT-PREARG-STARTUP.md",
   "/obs unlit border 138",
   "/obs unlit darken all 138",
-  "players receive 7 borrowed lanterns",
+  "players receive 3 borrowed lanterns",
   "lamp, cairn, coop, well, watch, warm, threshold",
   "all eight"
 )) {
@@ -106,7 +106,7 @@ if ($runbook.IndexOf("required ending evidence houses are lamp, well, watch, and
 
 foreach ($needle in @(
   "The Unlit Village",
-  "light-budget: 7",
+  "light-budget: 3",
   "/obs unlit border 138",
   "rite-tokens"
 )) {
@@ -119,6 +119,7 @@ foreach ($needle in @(
   "check_rehearsal_packet.ps1",
   "/obs unlit buildmode off",
   "/obs unlit darken all",
+  "Gate: READY",
   "stray light OK",
   "borrowed lantern",
   "lantern is broken"
@@ -147,6 +148,12 @@ foreach ($needle in @(
   "TextDisplay",
   "spawnBlockPart",
   "spawnEyeDisplay",
+  "figureStage",
+  "target.showEntity(plugin, part)",
+  'setVisibleByDefault(false)',
+  'unlit_figure_seen',
+  'unlit_light_taken',
+  'unlit_figure_hunt',
   "figureOffset",
   "rushFigureToLight",
   "discoveryMessage",
@@ -184,6 +191,9 @@ foreach ($needle in @(
   "handleUnlitReady",
   "unlitStrayLightIssue",
   "isUnauthorizedUnlitLight",
+  "collectUnlitAuditSnapshot",
+  "Gate: NOT READY",
+  "Gate: READY",
   "stampUnlitClue",
   "buildUnlitPassLane",
   "sendUnlitRunbook",
@@ -209,7 +219,7 @@ foreach ($needle in @(
   "buildmode:",
   "force-night:",
   "disable-regular-mob-spawns:",
-  "light-budget: 7",
+  "light-budget: 3",
   "darkness-effect-amplifier:"
 )) {
   RequireText "config.yml" $config $needle
@@ -305,6 +315,20 @@ foreach ($needle in @(
   "cardHappenedThresholdUnderCopy"
 )) {
   RequireText "voice.archive Unlit card bodies" $voiceArchive $needle
+}
+
+foreach ($needle in @(
+  "cardHappenedUnlitFigure",
+  "cardHappenedUnlitLightTaken"
+)) {
+  RequireText "voice.archive Unlit consequence cards" $voiceArchive $needle
+}
+
+foreach ($needle in @(
+  "flag:unlit_figure_seen",
+  "flag:unlit_light_taken"
+)) {
+  RequireText "thread_cards Unlit consequence gates" $threadCards $needle
 }
 
 if ($threadCards.IndexOf("expedition 4", [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {

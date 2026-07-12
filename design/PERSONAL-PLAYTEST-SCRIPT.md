@@ -81,22 +81,26 @@ Pass criteria:
 - the resource pack renders correctly
 - the solve feels earned, not guessed
 
-## Pass 3 - The Record Elsewhere
+## Pass 3 - The Old Listing And Record Elsewhere
 
-1. Find the founder note about the record being kept in more than one place.
-2. Read the warning that the elsewhere is not a shrine, bearing, or coordinate.
-3. Decode the old-script line:
+1. Complete the Hold copy handoff and follow its front-door/common-web/root-path clue.
+2. Confirm `/` reads as an abandoned server/map listing, not a dashboard menu.
+3. Confirm the listing exposes `the-hold.zip`, Record links, and a withheld or configured server address.
+4. Find the founder note about the record being kept in more than one place.
+5. Read the warning that the elsewhere is not a shrine, bearing, or coordinate.
+6. Decode the old-script line:
 
 > the-record-keeps
 
-4. Open the record route:
+7. Open the record route:
 
 > /record/the-record-keeps
 
 Pass criteria:
 
 - the web jump is logically forced by the text
-- the page feels like a place in the ARG, not a website menu
+- the listing and Record page feel like places in the ARG, not website menus
+- the server address appears only on the listing, not inside `the-hold.zip`
 - no live lure points to missing media unless intentionally staged
 
 ## Pass 4 - Side Story Sampling
@@ -195,7 +199,7 @@ Stop and fix before inviting others if:
 
 - the first hour feels like a puzzle course
 - any NPC feels generic or interchangeable
-- the record website feels like a wiki
+- the public listing or Record page feels like a wiki/menu instead of a place
 - a clue points to missing media
 - a side destination feels empty after the walk
 - Wren sounds temporary

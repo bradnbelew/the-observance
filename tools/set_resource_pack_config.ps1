@@ -18,12 +18,12 @@ function Resolve-UnderRoot([string]$Root, [string]$Path) {
 
 function Replace-ResourcePackValue([string]$Text, [string]$Key, [string]$Value) {
   $pattern = "(?ms)(^resource-pack:\s.*?^\s+$([regex]::Escape($Key)):\s+)`"[^`"]*`""
-  $replacement = '${1}"' + ($Value -replace '\$', '$$') + '"'
-  $updated = [regex]::Replace($Text, $pattern, $replacement, 1)
-  if ($updated -eq $Text) {
+  $match = [regex]::Match($Text, $pattern)
+  if (-not $match.Success) {
     throw "Could not find resource-pack.$Key in config"
   }
-  return $updated
+  $replacement = '${1}"' + ($Value -replace '\$', '$$') + '"'
+  return [regex]::Replace($Text, $pattern, $replacement, 1)
 }
 
 $uri = $null
@@ -66,6 +66,18 @@ Write-Host "zip:                $zipFull"
 
 if ($DryRun) {
   Write-Host "dry run: config not changed"
+  exit 0
+}
+
+if ($updated -eq $original) {
+  Write-Host "resource-pack config already current"
+  $defaultConfig = [System.IO.Path]::GetFullPath((Join-Path $repoFull "plugin\src\main\resources\config.yml"))
+  if ($configFull.Equals($defaultConfig, [System.StringComparison]::OrdinalIgnoreCase)) {
+    & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $repoFull "tools\write_deploy_manifest.ps1") -RepoRoot $repoFull
+    if ($LASTEXITCODE -ne 0) {
+      exit $LASTEXITCODE
+    }
+  }
   exit 0
 }
 

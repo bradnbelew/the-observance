@@ -1,13 +1,15 @@
-# The Observance Dashboard
+# The Observance Website / Dashboard
 
-Control surface for The Observance, an emergent-horror Minecraft ARG backed by Supabase.
+Public web surface and operator dashboard for The Observance, an emergent-horror Minecraft server backed by Supabase.
 
-The Minecraft plugin writes live game state into Supabase: players, dossiers, heatmap cells, beat queue, arc state, settings, and event logs. This Next.js app gives the operator two views onto that state.
+The public root (`/`) is an abandoned-looking server/map host: it exposes the downloadable opening map, the live server address when configured, and the recovered Record links. The Minecraft plugin writes live game state into Supabase: players, dossiers, heatmap cells, beat queue, arc state, settings, and event logs. The operator pages give the director two views onto that state.
 
 ## Modes
 
+- `/` is the in-fiction server listing players reach after the opening map. It should be safe to share once the live server address is ready.
 - `/status` is spoiler-free. It reads only neutral public views such as health, heatmap, and compliance counts.
 - `/author` is the full-spoiler operator console. It includes arc control, beat approval, whisper budgets, bond ledger, named dossiers, Watcher sleep, ending preview/override, and director run status.
+- `/record/the-record-keeps`, `/record/the-record`, `/record/archive`, and `/record/terminal` are in-fiction recovered archive surfaces. They remain `noindex`.
 
 Author mode is intentionally not sign-in gated. Anyone who can reach the deployed `/author` URL can use the operator controls, so protect the dashboard URL outside the app: private deployment, Vercel protection, VPN, localhost, or another access wall.
 
@@ -34,9 +36,11 @@ Required variables:
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon/publishable key>
 SUPABASE_SERVICE_ROLE_KEY=<service_role secret key>
+NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS=<host:port shown on the public listing>
 ```
 
 The dashboard and Minecraft plugin should point at the same Supabase project.
+Leave `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` blank until the live Paper address is safe to reveal; `/` will render it as withheld.
 
 ## Local Development
 
@@ -47,6 +51,7 @@ npm run dev
 
 Open:
 
+- `http://localhost:3000/`
 - `http://localhost:3000/status`
 - `http://localhost:3000/author`
 

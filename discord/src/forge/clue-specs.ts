@@ -89,10 +89,10 @@ export interface ClueSpecEntry {
 // ---------------------------------------------------------------------------
 
 const MARA_BOOK = [
-  'descend the stair when the water is still',
+  'descend the stair by still water',
   'and bow your head at the door',
-  'the unbroken light waits at the foot of it',
-  'do not write the way down and think it kept',
+  'the unbroken light waits below',
+  'do not write it and call it kept',
   'do the thing the marks tell you',
 ].join('\n\n');
 
@@ -307,7 +307,7 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'prophet-wall-comfort': 'the prophet wall’s warm promises — a found carving (dead_end); true-but-empty, no Discord cipher',
   'prophet-wall-name': 'the prophet wall’s name-reading — a found carving (dead_end); disambiguated to its own answers (the shared `the one who turned away` is owned by stone-iss-wall), no cipher',
   'name-where': 'place-filing cross-reference observation (FACT 16) — notice the record files by ground; dead_end, the world is the puzzle',
-  'record-url': 'the founder line pointing off-world to the record website (A13) — found lore, the page is the payoff, no carving',
+  'record-url': 'the founder line + Hold-copy handoff pointing off-world to the SNOIKERZ mirror listing and recovered Record slug (A13/A14) - found lore, no raw server endpoint',
   'difficulty-mara': 'Mara’s “closer count of the quick” fragment — demoted to texture/lore (OVERHAUL §5: the difficulty REVEAL is cut; the line stays), not a deterministic cipher',
   'base-docket-reread-auto': 'the Hold-Book down-count re-read (A3), found-document lore gated on iss_caught via requires_flags; the showrunner-flipped twin base-docket-reread is retired (OVERHAUL §5)',
   // S3-A (archived puzzles-ciphers.md audit): ships active=false in puzzles_seed.sql (so a
@@ -368,6 +368,15 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'iss-nbt-falsified-entry': 'a doctored record entry hidden in item NBT → a record-website path token the group corrects (answer_kind url_token); datamine/found-object, not a Discord cipher',
   'iss-bound-word-callback': 're-submit the earned bound word at the deep gate (answer_kind phrase, a callback); recognition of an earned answer, not a new cipher',
   // Cross-keeper / spine:
+  'prior-absence': 'failed-accepting roster deduction (answer_kind phrase); found-record condition, not a Discord cipher',
+  'prior-camp-refusal': 'failed prior camp deduction (answer_kind phrase); distinguishes solved answers from witness, not a cipher',
+  'prior-vaun-correction': 'prior-run Vaun correction file (answer_kind phrase); evidence synthesis across camp + market/ration proof, not a cipher',
+  'prior-mara-correction': 'prior-run Mara correction file (answer_kind phrase); action-vs-record deduction, not a cipher',
+  'prior-sella-correction': 'prior-run Sella correction file (answer_kind phrase); seventh/evidence deduction, not a cipher',
+  'prior-orin-correction': 'prior-run Orin correction file (answer_kind phrase); posture/proof deduction, not a cipher',
+  'prior-brann-correction': 'prior-run Brann correction file (answer_kind phrase); temporal duty deduction, not a cipher',
+  'prior-iss-correction': 'prior-run Iss correction file (answer_kind phrase); cross-check comfort against land, not a cipher',
+  'prior-witness-before-accepting': 'failed accepting synthesis (answer_kind phrase); names the final pre-rite condition, not a cipher',
   'media-prior-base': 'found-footage frame/audio/metadata payload ASH-13 (answer_kind phrase); external media observation, not a Discord cipher',
   'media-far-water': 'found-footage place phrase "where the reeds fold back" (answer_kind phrase); optional Sella media evidence, not a Discord cipher',
   'media-black-moon-toll': 'found-footage toll rhythm "stay awake" (answer_kind phrase); optional Brann media evidence, not a Discord cipher',

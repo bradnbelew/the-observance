@@ -52,6 +52,7 @@ foreach ($required in @(
   "/obs unlit darken all",
   "/obs unlit audit",
   "/obs unlit ready",
+  "Gate: READY",
   "fixture proof",
   "stray light OK",
   "border OK",

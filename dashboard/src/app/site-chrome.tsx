@@ -4,20 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 /**
- * Site chrome. The dashboard routes (/, /status, /author) get the control-surface header nav +
- * a constrained main. The public Record (/record/*) is an in-world artifact that "leaves the game"
- * — it must NOT show dashboard chrome, so it renders bare and full-bleed (its own record-root styles
- * it). Client-only so it can key off the pathname; the record page content itself stays server-rendered.
+ * Site chrome. The public listing (/) and Record routes (/record/*) are in-world artifacts,
+ * so they render bare and full-bleed. Operator routes keep the dashboard header and frame.
  */
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  if (pathname?.startsWith("/record")) {
+  if (pathname === "/" || pathname?.startsWith("/record")) {
     return <>{children}</>;
   }
-  // The Author link is spoiler-mode navigation. Hiding it while ON /status (the spoiler-free view
-  // Ethan actually plays with live) is an immersion guard, not a security boundary.
-  // — it's a small immersion papercut fix (2026-07-05 audit): don't put a "go see the spoilers" link in
-  // view while glancing at the nav during unspoiled play.
+
+  // The Author link is spoiler-mode navigation. Hiding it while on /status is an immersion guard,
+  // not a security boundary.
   const onSpoilerFreePage = pathname?.startsWith("/status");
   return (
     <>

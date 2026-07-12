@@ -5,8 +5,7 @@
 > the delivery vehicle for the server engine. The campaign still needs only the auto-pushed resource
 > pack. A friend who refuses the download joins the server and gets the in-server Prologue unchanged.
 > **Mints nothing.** Carries **zero** server machinery and **zero** spoilers: no FACT past 1/2, no
-> keeper name past the generic Archivist, no cipher key, no server flag, no Supabase URL beyond the
-> public server address. Cracking the world file reveals only what the player already saw + the address
+> keeper name past the generic Archivist, no cipher key, no server flag, no Supabase URL, and no server port. Cracking the world file reveals only what the player already saw + the abandoned listing handoff
 > the map hands out anyway. Authority: `WEB-MASTER §1.M0-remote`, `INTEGRATION-V2 §A14`,
 > `CURSED-MAP-SITE.md`. Where this disagrees with those, they win.
 
@@ -62,7 +61,7 @@ no inventory puzzles beyond one lever.
 | **2 — the doused hearth** | a fireplace of basalt + a campfire that is **out** (soul-soil/ash, no flame); the player cannot relight it (adventure mode) | the Seventh's UNNAMED texture | ledger #27 (doused hearth) |
 | **3 — the wall of marks** | a wall with **six** carved marks (banner/sign glyphs or block-letter runes) and a **seventh scraped blank** (a single stripped/empty slot) | the FACT-2 miscount, inert | ledger #2 + #27 (scraped wall) |
 | **4 — the long walk** | a corridor with a single lever (the one trivial puzzle); passing it arms the conduct check | pacing; the conduct tell setup | — |
-| **5 — the hand-off** | lectern with the closing book; a wall map (item frame) OR a sign carrying the server address + the rune string | the pointer to the server | ledger #11 (rune string → `the-record-keeps`) |
+| **5 — the hand-off** | lectern with the closing book; a wall map (item frame) OR a sign carrying the old listing clue + the rune string | the pointer to the website/listing | ledger #11 (rune string → `the-record-keeps`) |
 
 **Reveal-safety in build:** rooms 2 and 3 are the Seventh's only appearance and they are **texture, never
 attribution** — the hearth is doused and the seventh slot is blank; nothing names the Seventh, nothing
@@ -180,13 +179,13 @@ italic gray, or written-book/sign text. **No line claims the map is haunted; no 
   > the rest is not kept in this hold. it is kept where the others are. bring them, and come to the place
   > named below. the record is open there. it was open before you.
 - Beneath/beside it, a sign or item-frame map carrying **two things**, in plain text:
-  1. **the server address** in plain text (so no decode is required to act on it).
+  1. **the old listing clue**: front door `SNOIKERZ`, common web, root path `/`. The live server address belongs on that listing, not inside the file.
   2. **the rune string** that decodes (later, in-server, P4 literacy) to `the-record-keeps` — the **same**
      founder-margin key (`kept-in-more-than-one-place`, ledger #11). It is a **recognition token**, not a
      day-zero gate; the player is not asked to crack it. Rendered in the campaign rune glyphs if the
      optional resource pack is bundled, else as block-letter runes built into the wall.
 - A final closing line tells the group, in voice, the ONE plain action the server ignition needs (§4):
-  > *(small, beneath the address)* say one word in the place named below, when you are all in. say *kept*.
+  > *(small, beneath the listing clue)* say one word in the place named below, when you are all in. say *kept*.
 - **The map ends. No frame-break has happened. The map behaved like a map.** (The dread is banked for the
   server — `2b`.)
 
@@ -247,7 +246,7 @@ A player who opens the datapack in a text editor / NBT tool finds **only**:
 - the `tellraw` strings (the FACT-1/2 public lines + the flat doused-hearth/seventh-wall texture) — all of
   which they already saw in-game;
 - the conduct scoreboard logic (a `passed_seventh` flag) — no name, no personalization, no server signal;
-- the server address — handed out anyway on the closing sign;
+- the old listing clue — handed out anyway on the closing sign;
 - the rune string — a recognition token, no key, no plaintext, no decode logic.
 
 It contains **no** FACT past 1/2, **no** keeper name past the generic Archivist (Mara is on the page, not
@@ -275,15 +274,15 @@ and unreachable from the client (`2f`). Cracking it spoils nothing.
 1. **Build the world + datapack** (`the-hold.zip`) in a 1.21.x client — the 6 rooms, the lectern books,
    the lever, the conduct volumes' exact coordinates (the `tick.mcfunction` region checks are
    coordinate-specific and must be filled against the built geometry). Ship the 1-room form first.
-2. **Bake the real server address** into the room-5 sign/handoff function (placeholder until the server
-   has a public address).
+2. **Do not bake the real server address** into the room-5 sign/handoff function. Configure it on the
+   public listing with `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS`.
 3. **Render the rune string** for `the-record-keeps` — either bundle the campaign rune resource pack
    inside the `.zip` (the one optional asset) or build block-letter runes into the room-5 wall.
-4. **Host the `.zip`** at the URL the lure page's `the-hold.zip` link points to (`/the-hold/the-hold.zip`
-   under the dashboard `public/` dir — which does not exist yet — or a CDN).
+4. **Host the `.zip`** at the URL the public listing and lure page point to (`/the-hold/the-hold.zip`
+   under the dashboard `public/` dir, or a CDN with the same byte-for-byte file).
 5. **Wire the on-arrival frame-break beat** into the BUILT ack path (TS-SHOWRUN), gated on the
    count-callback measured signal; emit `recordFrameBreak()` once.
 > **Current override (2026-07-08):** the Hold handoff must not print a raw server endpoint. Use the rebuilt
-> destination grammar instead: route (`record / the-record-keeps`), gate name (`SNOIKERZ`), common ending,
-> and port arithmetic (`25500 + (six marked x 11) + the third room`). If older text below says to bake a
-> plain server address into room 5, treat that as retired.
+> destination grammar instead: front door (`SNOIKERZ`), common web, and root path (`/`). The map points to
+> the abandoned public listing first; the website owns the live Paper address reveal. If older text above
+> says to bake a plain server address or port into room 5, treat that as retired.

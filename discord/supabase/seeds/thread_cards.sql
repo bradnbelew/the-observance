@@ -204,6 +204,10 @@ values
     'rune_rosetta', 'explore',
     array['place-seven-ways','surface-seventh-marker'], 'rosetta-ring', null, 60 ),
 
+  ( 'surface-far-water-copy', 'surface', 'the far-water copybook', 'voice.dest.farWater.find',
+    'the_far_water', 'verified',
+    array['who-sella-token','surface-seventh-marker'], null, 'flag:site_seen_far_water', 65 ),
+
   -- â† CONTRADICTS the official "six markers" count (Sella's count against the record's)
   -- THE ISS-SEAM (the-seventh-below.md REWRITE SPEC "Iss-seam"): catching Iss's wall-lie
   -- (the happened-no-wall solve) RE-OPENS this Seventh-marker card â€” the same lens that
@@ -409,6 +413,15 @@ values
   ( 'happened-threshold-under-copy', 'happened', 'the copied threshold bowed back', 'cardHappenedThresholdUnderCopy',
     'unlit_house_threshold', 'verified',
     array['place-came-down','place-undercroft-sealed'], null, 'flag:unlit_seen_threshold', 140 ),
+
+  -- The figure leaves archive consequences instead of behaving like a disposable haunted-house mob.
+  -- First sight and first stolen lamp are separate earned facts; neither is required for spine progress.
+  ( 'happened-unlit-figure', 'happened', 'the copy learned distance', 'cardHappenedUnlitFigure',
+    'unlit_spawn_mirror', 'rumor',
+    array['place-unlit-mirror','happened-birds-silent'], null, 'flag:unlit_figure_seen', 145 ),
+  ( 'happened-unlit-light-taken', 'happened', 'the borrowed light was corrected', 'cardHappenedUnlitLightTaken',
+    'unlit_spawn_mirror', 'verified',
+    array['human-cold-lamp-ledger','happened-unlit-figure'], null, 'flag:unlit_light_taken', 150 ),
 
   ( 'human-you-are-the-next', 'human', 'you are the next', 'cardHumanYouAreNext',
     'first_report_lectern_01', 'explore',

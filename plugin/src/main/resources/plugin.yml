@@ -58,9 +58,10 @@ commands:
       /observance placeregion [spacing] - stamp the starter spine (rosetta + keeper evidence sites) here
       /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
       /observance placelecterns [spacing] - stamp the five Mara page-lock lecterns here with books already loaded
+      /observance placehold <build|audit|seal|open|sync> - place and operate the production Deep Hold megastructure
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance fullrun [spacing] - one-command rehearsal: full lab, side/lore, puzzle grid, dread route, repair, audit, coverage
-      /observance prepworld [spacing] - compact real-world bootstrap: prologue, surface/deep spine, lecterns, NPCs, finale/readings, tools
+      /observance prepworld [spacing] - compact rehearsal-only board: prologue, spine, lecterns, NPCs, finale/readings, tools
       /observance descentproof [spacing] - stage the Lamp-works stair, third lamp, painted line, and dead-stall around you
       /observance sidepass - stage all side/lore NPC bodies nearby and print the right-click checklist
       /observance puzzlepass [gates] [spacing] - stage a compact puzzle-mechanic proof grid and optional rehearsal gate flags

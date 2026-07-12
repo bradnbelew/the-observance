@@ -1,0 +1,17 @@
+export const SIDE_PROOF_FLAGS = [
+  { key: "site_seen_school_stand", label: "School stand" },
+  { key: "site_seen_far_water", label: "Far water" },
+  { key: "site_seen_markers_row", label: "Markers row" },
+  { key: "site_seen_cistern_7", label: "Cistern 7" },
+  { key: "site_seen_watch_floor", label: "Watch floor" },
+  { key: "site_seen_set_apart_shelf", label: "Entry five shelf" },
+  { key: "site_seen_undercroft_seal", label: "Undercroft seal" },
+  { key: "site_seen_forgotten_mouth", label: "Forgotten Mouth" },
+  { key: "site_seen_deep_market", label: "Deep Market" },
+  { key: "site_seen_ration_table", label: "Ration table" },
+  { key: "site_seen_third_bay_breach", label: "Third bay" },
+  { key: "site_seen_warm_town_collapse", label: "Warm-town collapse" },
+  { key: "site_seen_deep_bird_coops", label: "Bird coops" },
+  { key: "npc_wenna_crust_done", label: "Wenna crust" },
+  { key: "npc_coll_lamp_done", label: "Coll lamp" },
+] as const;

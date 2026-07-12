@@ -30,6 +30,7 @@ public final class SiteDiscoveryListener {
 
     private static final List<Discovery> DISCOVERIES = List.of(
             new Discovery("school_stand", "site_seen_school_stand", "The school copy is filed."),
+            new Discovery("the_far_water", "site_seen_far_water", "The far-water copybook is filed."),
             new Discovery("markers_row", "site_seen_markers_row", "The hollow after six is filed."),
             new Discovery("cistern_7", "site_seen_cistern_7", "Cistern seven is filed."),
             new Discovery("watch_floor", "site_seen_watch_floor", "The watch-floor is filed."),

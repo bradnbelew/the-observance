@@ -177,12 +177,79 @@ begin
       where puzzle_key in ('orin-threshold', 'orin-bow-fall-order');
     update public.puzzles set requires_flags = jsonb_build_object('iss_caught', true)
       where puzzle_key in ('atonement-refrain', 'fork-name', 'haunting-biography');
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'undercroft_open', true,
+      'vaun_theory', true,
+      'mara_theory', true,
+      'sella_theory', true,
+      'orin_theory', true,
+      'brann_theory', true,
+      'iss_theory', true
+    )
+      where puzzle_key = 'prior-absence';
+    update public.puzzles set requires_flags = jsonb_build_object('prior_absence_known', true)
+      where puzzle_key = 'prior-camp-refusal';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'vaun_theory', true,
+      'site_seen_deep_market', true,
+      'site_seen_ration_table', true
+    )
+      where puzzle_key = 'prior-vaun-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'mara_theory', true,
+      'mara_walked', true,
+      'unlit_seen_threshold', true
+    )
+      where puzzle_key = 'prior-mara-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'sella_theory', true,
+      'site_seen_school_stand', true,
+      'site_seen_far_water', true,
+      'site_seen_cistern_7', true
+    )
+      where puzzle_key = 'prior-sella-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'orin_theory', true,
+      'orin_bowed', true,
+      'site_seen_undercroft_seal', true
+    )
+      where puzzle_key = 'prior-orin-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'brann_theory', true,
+      'brann_toll_heard', true,
+      'brann_corridor_passed', true,
+      'site_seen_watch_floor', true
+    )
+      where puzzle_key = 'prior-brann-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_camp_read', true,
+      'iss_theory', true,
+      'iss_caught', true,
+      'site_seen_warm_town_collapse', true,
+      'site_seen_set_apart_shelf', true
+    )
+      where puzzle_key = 'prior-iss-correction';
+    update public.puzzles set requires_flags = jsonb_build_object(
+      'prior_vaun_corrected', true,
+      'prior_mara_corrected', true,
+      'prior_sella_corrected', true,
+      'prior_orin_corrected', true,
+      'prior_brann_corrected', true,
+      'prior_iss_corrected', true
+    )
+      where puzzle_key = 'prior-witness-before-accepting';
     -- The Accepting rite now needs the six keeper theories, recovered evidence from
     -- the whole Unlit mirror village, and the human-history side-proof web. This
     -- makes the main route depend on corroborating evidence: a single decoded keeper
     -- stone is not enough, and the ordinary ruined places cannot remain optional scenery.
     update public.puzzles set requires_flags = jsonb_build_object(
       'accepting_onramp_open', true,
+      'prior_witness_ready', true,
       'vaun_theory', true,
       'mara_theory', true,
       'sella_theory', true,
@@ -198,6 +265,7 @@ begin
       'unlit_seen_threshold', true,
       'unlit_seen_base', true,
       'site_seen_school_stand', true,
+      'site_seen_far_water', true,
       'site_seen_markers_row', true,
       'site_seen_cistern_7', true,
       'site_seen_watch_floor', true,

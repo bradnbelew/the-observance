@@ -84,7 +84,84 @@ function RequireDialogueKeys([string] $contract, [string[]] $keys) {
   }
 }
 
+function NormalizeDialogueText([string] $value) {
+  if ($null -eq $value) { return "" }
+  $out = $value -replace "`r`n", "`n"
+  $out = $out -replace "`r", "`n"
+  $out = $out -replace '\\n', "`n"
+  $out = $out -replace '\\r', "`r"
+  $out = $out -replace '\\t', "`t"
+  $out = $out -replace "\\'", "'"
+  $out = $out -replace '\\"', '"'
+  $out = $out -replace '\\\\', '\'
+  return $out.Trim()
+}
+
+function ExtractArchiveNpcLines([string] $source) {
+  $lines = @{}
+  $pattern = "(?ms)'(?<key>[a-z0-9.-]+)'\s*:\s*'(?<text>(?:[^'\\]|\\.)*)'"
+  foreach ($m in [regex]::Matches($source, $pattern)) {
+    $lines[$m.Groups["key"].Value] = NormalizeDialogueText $m.Groups["text"].Value
+  }
+  return $lines
+}
+
+function ExtractPluginTownLines([string] $source) {
+  $lines = @{}
+  $pattern = '(?ms)new\s+String\[\]\s*\{\s*"(?<key>[a-z0-9.-]+)"\s*,\s*"(?<text>(?:[^"\\]|\\.)*)"\s*\}'
+  foreach ($m in [regex]::Matches($source, $pattern)) {
+    $lines[$m.Groups["key"].Value] = NormalizeDialogueText $m.Groups["text"].Value
+  }
+  return $lines
+}
+
+function LineNumberOf([string] $source, [int] $index) {
+  if ($index -le 0) { return 1 }
+  return (($source.Substring(0, [Math]::Min($index, $source.Length)) -split "`n").Count)
+}
+
+function RequireAuthoredSignTextFits {
+  $patterns = @(
+    '(?ms)placeStandingSign\s*\([^;]*?new\s+String\[\]\s*\{(?<body>.*?)\}\s*\)',
+    '(?ms)setSignLines\s*\([^;]*?new\s+String\[\]\s*\{(?<body>.*?)\}\s*\)'
+  )
+  foreach ($pattern in $patterns) {
+    foreach ($m in [regex]::Matches($command, $pattern)) {
+      foreach ($s in [regex]::Matches($m.Groups["body"].Value, '"(?<text>(?:[^"\\]|\\.)*)"')) {
+        $text = NormalizeDialogueText $s.Groups["text"].Value
+        if ($text.Length -gt 15) {
+          $line = LineNumberOf $command $m.Index
+          Fail "authored Minecraft sign text is too long at ObservanceCommand.java:$line ('$text' is $($text.Length) chars; max 15 before client truncation)"
+        }
+      }
+    }
+  }
+}
+
+function RequireTownsfolkArchiveParity {
+  $archiveLines = ExtractArchiveNpcLines $archiveVoice
+  $pluginLines = ExtractPluginTownLines $townsfolk
+  if ($pluginLines.Count -lt 45) {
+    Fail "townsfolk dialogue drift guard parsed too few plugin npc lines ($($pluginLines.Count)); parser likely broke"
+    return
+  }
+  foreach ($key in ($pluginLines.Keys | Sort-Object)) {
+    if (-not $archiveLines.ContainsKey($key)) {
+      Fail "townsfolk dialogue key '$key' is shipped in Minecraft but missing from voice.archive.ts npcLines"
+      continue
+    }
+    if ($pluginLines[$key] -ne $archiveLines[$key]) {
+      Fail "townsfolk dialogue drift for '$key': Minecraft text no longer matches voice.archive.ts npcLines"
+    }
+  }
+}
+
 # Contract 0: archive-authored townsfolk reaction texture must actually reach Minecraft.
+RequireTownsfolkArchiveParity
+RequireAuthoredSignTextFits
+RequireContains "sign text runtime clamp" $command "TextFit.SIGN_LINE_CHARS"
+RequireContains "lectern book pagination" $command "TextFit.paginate(body)"
+RequireContains "fixture lore book pagination" $command "TextFit.paginate(text)"
 RequireDialogueKeys "surface conduct texture" @(
   "aro.greet.again",
   "aro.greet.warm",
@@ -103,6 +180,15 @@ RequireContains "surface conduct texture archive" $archiveVoice "'aro.greet.iss_
 RequireContains "surface conduct texture archive" $archiveVoice "'wenna.greet.warm'"
 RequireContains "surface conduct texture archive" $archiveVoice "'coll.greet.cold'"
 RequireContains "surface conduct texture arc echo" $townsfolk 'String issEchoKey = id + ".greet.iss_cold";'
+
+# Contract 0b: the abandoned SNOIKERZ host/listing conceit must be echoed by a human rumor,
+# not only by the public web page and Recovery Archive card.
+RequireDialogueKeys "server-listing bridge" @(
+  "aro.rumor.host"
+)
+RequireContains "server-listing bridge archive" $archiveVoice "Old SNOIKERZ row still gets checked"
+RequireContains "server-listing bridge archive" $archiveVoice "Mirror 03, free account"
+RequireContains "server-listing bridge archive" $archiveVoice "A map is where a server leaves a forwarding address"
 
 # Contract 1: Aro/Coll/Dob's painted-line claims must point to a real route and a real consequence.
 RequireDialogueKeys "painted-line" @(
@@ -364,4 +450,4 @@ if ($failures.Count -gt 0) {
   exit 1
 }
 
-Write-Host "dialogue contract check: OK - NPC claims and major side destinations have world/mechanic proof"
+Write-Host "dialogue contract check: OK - townsfolk/archive line parity, sign/book readability guards, NPC claims, and major side destinations have world/mechanic proof"

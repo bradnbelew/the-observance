@@ -5,6 +5,55 @@ type DirectorRunPanelProps = {
   failedBeats: number;
 };
 
+const COMMAND_GROUPS = [
+  {
+    title: "Server + Web",
+    commands: [
+      "/obs status",
+      "NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS=<host-row-address>",
+      "tools\\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>",
+      "tools\\prepare_server_test.ps1 -ResourcePackUrl <hosted-https-zip-url> -Force",
+    ],
+  },
+  {
+    title: "Production Hold",
+    commands: [
+      "/obs placehold build",
+      "/obs placehold audit",
+      "/obs placehold sync",
+    ],
+  },
+  {
+    title: "Placement Proof",
+    commands: [
+      "/obs director world",
+      "/obs site todo",
+      "/obs site plan lanes",
+      "/obs site next human",
+      "/obs site set <siteId>",
+      "/obs placeworld",
+      "/obs visit next",
+      "/obs coverage",
+    ],
+  },
+  {
+    title: "Rehearsal + Audits",
+    commands: [
+      "/obs director lab",
+      "rehearsal only: /obs prepworld",
+      "/obs rehearse start",
+      "/obs puzzlepass",
+      "/obs puzzlepass gates",
+      "/obs sidepass",
+      "/obs dreadpass run",
+      "/obs runbook spine",
+      "/obs audit",
+      "/obs repair",
+      "/obs test gauntlet",
+    ],
+  },
+];
+
 function CountTile({
   label,
   value,
@@ -73,25 +122,31 @@ export function DirectorRunPanel({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           <p className="font-mono text-xs uppercase text-neutral-500">
-            Minecraft
+            Run order
           </p>
-          <CommandLine>/obs status</CommandLine>
-          <CommandLine>/obs director world</CommandLine>
-          <CommandLine>/obs director lab</CommandLine>
-          <CommandLine>/obs prepworld</CommandLine>
-          <CommandLine>/obs coverage</CommandLine>
-          <CommandLine>/obs rehearse start</CommandLine>
-          <CommandLine>/obs visit next</CommandLine>
-          <CommandLine>/obs puzzlepass</CommandLine>
-          <CommandLine>/obs puzzlepass gates</CommandLine>
-          <CommandLine>/obs sidepass</CommandLine>
-          <CommandLine>/obs dreadpass run</CommandLine>
-          <CommandLine>/obs runbook spine</CommandLine>
-          <CommandLine>/obs audit</CommandLine>
-          <CommandLine>/obs repair</CommandLine>
-          <CommandLine>/obs test gauntlet</CommandLine>
+          <p className="text-sm text-neutral-400">
+            SNOIKERZ address row, hosted pack, and Supabase proof come before
+            non-op Hold testing.
+          </p>
+          <div className="grid gap-3">
+            {COMMAND_GROUPS.map((group) => (
+              <div
+                key={group.title}
+                className="rounded-md border border-neutral-800 bg-black/20 p-3"
+              >
+                <h3 className="font-mono text-xs uppercase text-neutral-500">
+                  {group.title}
+                </h3>
+                <div className="mt-2 space-y-2">
+                  {group.commands.map((command) => (
+                    <CommandLine key={command}>{command}</CommandLine>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

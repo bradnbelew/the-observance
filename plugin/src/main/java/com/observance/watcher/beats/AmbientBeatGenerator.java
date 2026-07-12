@@ -130,7 +130,7 @@ public final class AmbientBeatGenerator {
      * over several considerations rather than spiking instantly.
      */
     private AmbientChoice pickScaryAmbient(Attention.Tier tier, BeatRequest baseReq) {
-        AmbientChoice[] choices = scaryChoices(tier);
+        AmbientChoice[] choices = scaryChoices(tier, baseReq.site());
         int total = 0;
         for (AmbientChoice c : choices) {
             if (c.weight <= 0) continue;
@@ -160,9 +160,49 @@ public final class AmbientBeatGenerator {
         return null;
     }
 
-    private static AmbientChoice[] scaryChoices(Attention.Tier tier) {
+    private static AmbientChoice[] scaryChoices(Attention.Tier tier, Site site) {
         boolean dread = tier == Attention.Tier.DREAD;
         boolean unease = tier == Attention.Tier.UNEASE;
+        String id = site == null || site.id() == null ? "" : site.id().toLowerCase(java.util.Locale.ROOT);
+        String type = site == null || site.type() == null ? "" : site.type().toLowerCase(java.util.Locale.ROOT);
+        if (id.contains("brann") || id.contains("watch") || id.contains("toll")) {
+            return new AmbientChoice[]{
+                    new AmbientChoice("private_sound",
+                            "{\"named_sound\":\"observance:cold_toll\",\"volume\":0.42,\"pitch\":0.72,\"behind\":true,\"offset\":10.0}", 6),
+                    new AmbientChoice("proximity_dim", "{\"seconds\":" + (dread ? 9 : 6) + "}", 3),
+                    new AmbientChoice("private_darkness", "{\"effect\":\"DARKNESS\",\"seconds\":4,\"amplifier\":0}", 1)
+            };
+        }
+        if (id.contains("sella") || id.contains("water") || id.contains("cistern")) {
+            return new AmbientChoice[]{
+                    new AmbientChoice("private_sound",
+                            "{\"named_sound\":\"observance:whisper\",\"volume\":0.28,\"pitch\":0.62,\"behind\":true,\"offset\":7.0}", 5),
+                    new AmbientChoice("private_particle",
+                            "{\"particle\":\"FALLING_WATER\",\"count\":18,\"spread\":0.65,\"speed\":0.0,\"height\":1.0,\"near_player\":true,\"offset\":2.5}", 3),
+                    new AmbientChoice("proximity_dim", "{\"seconds\":5}", 2)
+            };
+        }
+        if (id.startsWith("stone_") || id.contains("rosetta") || id.contains("threshold")
+                || id.contains("reckoning") || type.contains("keeper")) {
+            return new AmbientChoice[]{
+                    new AmbientChoice("private_sound",
+                            "{\"named_sound\":\"observance:stone_breath\",\"volume\":0.38,\"pitch\":0.64,\"behind\":true,\"offset\":6.0}", 6),
+                    new AmbientChoice("private_particle",
+                            "{\"particle\":\"ASH\",\"count\":24,\"spread\":0.55,\"speed\":0.0,\"height\":0.7,\"near_player\":true,\"offset\":2.0}", 2),
+                    new AmbientChoice("private_darkness",
+                            "{\"effect\":\"DARKNESS\",\"seconds\":" + (dread ? 6 : 3) + ",\"amplifier\":0}", 2)
+            };
+        }
+        if (id.contains("dread") || id.contains("unwriting") || id.contains("unbroken")
+                || type.contains("hold_")) {
+            return new AmbientChoice[]{
+                    new AmbientChoice("private_sound",
+                            "{\"named_sound\":\"observance:drone_low\",\"volume\":0.24,\"pitch\":0.58,\"behind\":true,\"offset\":12.0}", 5),
+                    new AmbientChoice("private_darkness",
+                            "{\"effect\":\"DARKNESS\",\"seconds\":" + (dread ? 7 : 4) + ",\"amplifier\":0}", 3),
+                    new AmbientChoice("proximity_dim", "{\"seconds\":" + (dread ? 9 : 6) + "}", 2)
+            };
+        }
         return new AmbientChoice[]{
                 new AmbientChoice("private_sound",
                         "{\"sound\":\"AMBIENT_CAVE\",\"volume\":0.9,\"pitch\":0.55,\"behind\":true,\"offset\":3.0}",
@@ -179,9 +219,9 @@ public final class AmbientBeatGenerator {
                 new AmbientChoice("proximity_dim",
                         "{\"seconds\":" + (dread ? 8 : 5) + "}",
                         2),
-                new AmbientChoice("named_mob",
-                        "{\"entity\":\"WITHER_SKELETON\",\"fallback_entity\":\"STRAY\",\"name\":\"\",\"distance\":8,\"silent\":true,\"no_ai_drift\":true,\"invulnerable\":true,\"glowing\":false,\"despawn_seconds\":14,\"name_visible\":false}",
-                        dread ? 1 : 0)
+                new AmbientChoice("private_sound",
+                        "{\"named_sound\":\"observance:stone_breath\",\"volume\":0.25,\"pitch\":0.55,\"behind\":true,\"offset\":9.0}",
+                        dread ? 2 : 0)
         };
     }
 

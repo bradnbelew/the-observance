@@ -3,8 +3,8 @@ import "./globals.css";
 import SiteChrome from "./site-chrome";
 
 export const metadata: Metadata = {
-  title: "The Observance — Dashboard",
-  description: "Control surface for The Observance.",
+  title: "The Observance",
+  description: "Archived Minecraft server listing and recovered record.",
   robots: { index: false, follow: false },
 };
 

@@ -73,11 +73,14 @@ $joinedExtractedText = Get-ChildItem -LiteralPath $workRoot -Recurse -File |
   } | Out-String
 
 foreach ($requiredText in @(
-  "record / the-record-keeps",
-  "gate name: SNOIKERZ",
+  "front door: SNOIKERZ",
   "ending: common web",
-  "25500 + (six marked x 11) + the third room",
-  "the rest is kept in pieces"
+  "path: /",
+  "look for mirror 03",
+  "0 / 7",
+  "no staff listed",
+  "the server address is not in this file",
+  "mirror 03 keeps the old listing"
 )) {
   if ($joinedExtractedText.IndexOf($requiredText, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Fail "the-hold.zip missing rebuilt invitation evidence: $requiredText"
@@ -97,8 +100,7 @@ foreach ($requiredText in @(
 }
 
 foreach ($requiredText in @(
-  "route + gate name + common ending + port arithmetic",
-  "b3a9459e102cde1e072771660def4b37bf55896e",
+  "front door + common web + root path + mirror 03; no server port",
   "no raw server endpoint"
 )) {
   if ($staging.IndexOf($requiredText, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {

@@ -12,9 +12,9 @@ pack packaging, media file format checks, operator docs, rehearsal packet genera
 generation, and manual blocker gate are wired and passing.
 
 Launch is still blocked by work that only a real live server/client/operator pass can prove: hosted resource pack
-URL/SHA1 plus hosted-byte verification, 67 real launch-required site coordinates, completed coordinate proof CSV,
-completed rehearsal packet, completed `launch-attestations.md`, live Supabase status, live Paper/client rendering,
-session-zero consent, and credential rotation.
+URL/SHA1 plus hosted-byte verification, generated Deep Hold proof, real outside-Hold launch coordinates,
+completed coordinate/proof CSV, completed rehearsal packet, completed `launch-attestations.md`, live Supabase
+status, live Paper/client rendering, session-zero consent, and credential rotation.
 
 ## 2. Ready
 
@@ -74,8 +74,8 @@ session-zero consent, and credential rotation.
 - Resource pack is built but not hosted/configured in launch config.
 - `resource-pack.sha1` is blank in the plugin config until the hosted zip is chosen.
 - Hosted resource-pack bytes have not been downloaded and hash-verified against the current zip.
-- 67 launch-required sites still have authoring placeholder coordinates.
-- No completed launch coordinate proof CSV has been supplied.
+- The generated Deep Hold has not been live-built/proofed, and outside-Hold launch-required sites still have authoring placeholder coordinates.
+- No completed launch coordinate/proof CSV has been supplied.
 - No completed live rehearsal packet has been supplied.
 - No completed `launch-attestations.md` exists for live Supabase, exact plugin/resource-pack deploy hashes,
   real-client rendering, command audits, consent, external media, and credential rotation.
@@ -143,7 +143,7 @@ session-zero consent, and credential rotation.
   should each produce the expected DB flag/event and in-world or Discord payoff.
 - `/observance preflight`, `/observance visualaudit`, `/observance dialogueaudit`, `/obs unlit audit`, and
   `/obs unlit ready` after live placement.
-- Coordinate placement and proof CSV for all 67 launch-required anchors.
+- Generated Deep Hold proof plus outside-Hold coordinate placement/proof CSV for all launch-required anchors.
 - Full live rehearsal route, including first hour, side paths, scare families, Unlit, Record/web jump, and finale.
 - Session-zero consent/opt-out behavior before enabling observer or voice capture.
 - Credential rotation after live config is finalized.
@@ -155,7 +155,7 @@ Use `design/MANUAL-LAUNCH-PLAN.md` as the detailed operator checklist. In short:
 - Apply and verify Supabase SQL.
 - Deploy plugin, datapack, and hosted resource pack together, then verify the hosted pack bytes.
 - Rotate exposed credentials.
-- Place and proof all 67 launch-required site coordinates.
+- Build/proof the generated Deep Hold and place/proof all outside-Hold launch-required coordinates.
 - Validate world surfaces and run live command audits.
 - Stage launch beats: prologue, townsfolk, Unlit, reading fragments, and finale markers.
 - Complete the live rehearsal packet and `launch-attestations.md`, including exact plugin jar and resource-pack
@@ -188,8 +188,8 @@ packet, rehearsal packet, and `launch-attestations.md`.
 1. Generate launch placement and rehearsal packets.
 2. Apply Supabase SQL and verify `/observance status`.
 3. Deploy plugin/datapack/resourcepack, host/hash the pack, and run `tools\check_hosted_resource_pack.ps1`.
-4. Place all 67 launch-required sites with `/observance site todo|next|plan|set`.
-5. Validate coordinates with the capture CSV in launch mode.
+4. Build/proof the generated Deep Hold, then place outside-Hold launch sites with `/observance site todo|next|plan|set`.
+5. Validate GeneratedProof, outside-Hold coordinates, and proof shots with the capture CSV in launch mode.
 6. Stage prologue, townsfolk, Unlit, reading fragments, and finale markers.
 7. Run live command audits and fix every failure.
 8. Rehearse first hour, major sites, side paths, scares, Unlit, Record/web, and finale.
@@ -249,7 +249,7 @@ packet, rehearsal packet, and `launch-attestations.md`.
 
 ## 13. Easy-To-Miss Items Now Explicitly Called Out
 
-- 67 launch-required coordinate anchors.
+- Generated Deep Hold proof plus outside-Hold launch-required coordinate anchors.
 - Four proof shots per launch-required placement.
 - Real-client rendering of books, signs, item lore, titles/actionbars, bossbars, custom rune font, sounds,
   particles, NPC lines, and resource-pack fallback behavior.

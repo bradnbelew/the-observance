@@ -16,8 +16,29 @@ const STEPS = [
   },
   {
     label: "3",
-    title: "Lane Placement",
-    body: "Work one story lane at a time, then stamp and proof each anchor.",
+    title: "Web Door + Pack",
+    body: "Make the abandoned host row, pushed resource pack, and live database true before normal-player proof.",
+    commands: [
+      "NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS=<host-row-address>",
+      "tools\\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>",
+      "tools\\prepare_server_test.ps1 -ResourcePackUrl <hosted-https-zip-url> -Force",
+      "discord\\supabase\\apply-all.sql",
+    ],
+  },
+  {
+    label: "4",
+    title: "Encased Hold",
+    body: "Run the surface-mouth descent into controlled stone, then prove the city shell, gates, ceilings, and player route before treating any clue as placed.",
+    commands: [
+      "/obs placehold build",
+      "/obs placehold audit",
+      "/obs placehold sync",
+    ],
+  },
+  {
+    label: "5",
+    title: "Outside Anchors",
+    body: "Place the launch anchors that intentionally remain outside the Hold.",
     commands: [
       "/obs site todo",
       "/obs site plan lanes",
@@ -27,10 +48,11 @@ const STEPS = [
     ],
   },
   {
-    label: "4",
+    label: "6",
     title: "Launch Proof",
-    body: "Clear live server proof: pack, coordinates, Unlit, rehearsal, and attestations.",
+    body: "Clear live proof: Hold audit, hosted pack, coordinates, Supabase, Unlit, rehearsal, and attestations.",
     commands: [
+      "/obs placehold audit",
       "/obs preflight",
       "/obs unlit ready",
       "check_launch_manual_blockers.ps1 -Launch",
@@ -55,15 +77,15 @@ export function SetupFlow() {
             Setup flow
           </p>
           <h2 className="mt-1 font-mono text-lg text-neutral-100">
-            Build, then place
+            Host, build, then prove
           </h2>
         </div>
         <div className="font-mono text-xs text-neutral-500">
-          worksheet first, world second
+          web door first, world second
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 lg:grid-cols-4">
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
         {STEPS.map((step) => (
           <div
             key={step.label}

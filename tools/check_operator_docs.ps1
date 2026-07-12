@@ -171,7 +171,7 @@ $launchReadinessText = Get-Content -LiteralPath $launchReadinessPath -Raw
 $hasHistoricalLaunchClaim = $launchReadinessText.IndexOf("code-complete and launch-ready", [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
                             $launchReadinessText.IndexOf("every surface green", [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 if ($hasHistoricalLaunchClaim) {
-  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "67 launch-required placeholder site coordinates")) {
+  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "generated Deep Hold proof", "outside-Hold")) {
     if ($launchReadinessText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Write-Error "operator docs check: LAUNCH-READINESS has historical launch-ready claims but lacks current override text: $required"
       exit 1
@@ -184,7 +184,7 @@ $hasHistoricalNextSessionClaim = $nextSessionText.IndexOf("complete and green", 
                                  $nextSessionText.IndexOf("code-complete end to end", [System.StringComparison]::OrdinalIgnoreCase) -ge 0 -or
                                  $nextSessionText.IndexOf("build is DONE + green", [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 if ($hasHistoricalNextSessionClaim) {
-  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "67 launch-required placeholder site coordinates")) {
+  foreach ($required in @("CURRENT STATUS OVERRIDE", "not launch-ready", "check_launch_manual_blockers.ps1", "generated Deep Hold proof", "outside-Hold")) {
     if ($nextSessionText.IndexOf($required, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
       Write-Error "operator docs check: NEXT-SESSION has historical launch-ready claims but lacks current override text: $required"
       exit 1
@@ -209,7 +209,7 @@ foreach ($required in @(
   "resource-pack.url",
   "set_resource_pack_config.ps1",
   "check_hosted_resource_pack.ps1",
-  "67 launch-required site coordinates",
+  "Build/proof the Deep Hold",
   "LIVE-REHEARSAL-EVIDENCE.md",
     "SESSION-ZERO.md",
     "observer_opt_out",
@@ -278,7 +278,7 @@ foreach ($required in @(
   "Extra Suggestions",
   "Looked Built But Was Not Truly Finished",
   "Easy-To-Miss Items Now Explicitly Called Out",
-  "67 launch-required sites",
+  "generated Deep Hold proof",
   "launch-attestations.md",
   "check_launch_manual_blockers.ps1 -Launch",
   "observance-deploy-manifest.json"
@@ -303,7 +303,7 @@ foreach ($required in @(
   "set_resource_pack_config.ps1",
   "check_hosted_resource_pack.ps1",
   "package_launch_bundle.ps1",
-  "Launch coordinate proof CSV not supplied",
+  "Launch coordinate/proof CSV not supplied",
   "check_external_media_readiness.ps1",
   "friend-launch-quickstart.md",
   "launch-blockers.md",
@@ -344,7 +344,7 @@ foreach ($required in @(
   "Website, Discord, And Media Discipline",
   "check_external_media_readiness.ps1",
   "check_launch_manual_blockers.ps1 -Launch",
-  "67 launch-required coordinates",
+  "GeneratedProof",
   "launch-attestations.md",
   "decision: LAUNCH",
   "Session Zero",
@@ -387,7 +387,8 @@ foreach ($required in @(
   "friend-launch-todo.md",
   "Do not paste loose migration files",
   "Paper 1.21.11",
-  "67 launch anchors",
+  "Deep Hold GeneratedProof",
+  "outside-Hold anchors",
   "media_clip_01_ready",
   "ASH-13",
   "WHERE THE REEDS FOLD BACK",

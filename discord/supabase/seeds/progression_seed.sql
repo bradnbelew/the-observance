@@ -34,12 +34,13 @@
 --     TS-VOICE/archive owner's (threadCardVoiceCoverageSelfTest fails until they exist).
 --   * NON_CIPHER_KEYS: the two ACTIVE payoff rows (when activated) are non-cipher lore
 --     nodes — the TS-FORGE lane must add 'nether-forge' + 'end-seventh-out' to NON_CIPHER_KEYS
---     or specsCoverageSelfTest fails (listed in the RETURN). Until activated (active=false)
---     they are exempt.
+--     or specsCoverageSelfTest fails (listed in the RETURN). These rows live in this
+--     progression seed, so the dashboard/operator audits are the launch guard.
 --   * siteCoverageSelfTest extension (R7): a cross-dimension row must NOT seed OPEN unless
 --     its site resolves to a placed + enabled site IN THE NAMED WORLD (observance_nether /
---     observance_end must EXIST). The rows ship active=false until the dimension worlds are
---     built (GO-LIVE), so this holds by construction.
+--     observance_end must EXIST). The rows are active=true but require the plugin-written
+--     placement flags (`nether_forge_placed`, `end_seventh_shrine_placed`) before players can
+--     solve them.
 --
 -- Run AFTER 0004_oracle.sql + 0005_threads.sql + (ideally) 0006_*.sql + puzzles_seed.sql +
 -- seventh_seed.sql, as service_role (RLS bypass — spoiler tables). Idempotent.
@@ -48,8 +49,8 @@ begin;
 
 -- ===========================================================================
 -- 1. THE PAYOFF PUZZLE ROWS (puzzles_seed.sql shape; ON CONFLICT DO UPDATE).
---    Both ship active=FALSE — STAGED until (a) the dimension world is built AND
---    (b) the requires_flags gate is satisfied (§4 below). Both are `lore` (a told
+--    Both ship active=TRUE but CLOSED until (a) the dimension set-piece has been placed AND
+--    (b) the story requires_flags gate is satisfied (§4 below). Both are `lore` (a told
 --    secret, no door) — they GATE NOTHING. The destination WORD is the answer
 --    (INV-14), read off the slab/carving on-site; the row is the closed-loop
 --    acknowledgement the AnswerSignListener records when the on-site word is typed.
@@ -69,9 +70,10 @@ values
 -- the PROPOSED FateInput.netherForgeFound, NOT wired into decideFate until §8 ratified, S9)
 -- + whisper_budget_earned (bonus, additive, never the front-loaded backstop — INV-15/S10) +
 -- reveals the Kept-Light ORIGIN (the keeping was always a carrying). GATES NOTHING. lore.
--- requires_flags {undercroft_open} (set in §4 — found at the Undercroft post-descent). The
--- bearing that sends the group is Brann's M2 framing line + the-fire-is-lent page, not a row.
--- active=false: STAGED until observance_nether is built (GO-LIVE) AND undercroft_open is set.
+-- requires_flags {undercroft_open, nether_forge_placed}. The story half is found at the
+-- Undercroft post-descent; the placement half is written by /obs placeworld only after the
+-- Nether forge is stamped or confirmed already present. The bearing that sends the group is
+-- Brann's M2 framing line + the-fire-is-lent page, not a row.
 ( 'nether-forge',
   'the fire is lent',
   array[
@@ -103,10 +105,9 @@ values
 -- group-scoped flag, NEVER a fate input (S2): it deepens the seventh_choice context (a group
 -- that walked the End learns WHY the Seventh chose exile) and licenses the End's cast_out/
 -- refusers re-read in the M5 composer. GATES NOTHING. lore. The on-site READ is the answer
--- (INV-14), not a coordinate. requires_flags {seventh_named} (set in §4 — the way-out pointer
--- on the unwriting wall is legible only at seventh_named; that pointer is a REVEAL on the
--- existing surface, NO row, S9). active=false: STAGED until observance_end is built (GO-LIVE)
--- AND seventh_named is set.
+-- (INV-14), not a coordinate. requires_flags {seventh_named, end_seventh_shrine_placed}. The
+-- story half comes from the unwriting-wall way-out pointer; the placement half is written by
+-- /obs placeworld only after the End shrine is stamped or confirmed already present.
 ( 'end-seventh-out',
   'the name i cut myself',
   array[
@@ -203,13 +204,12 @@ on conflict (card_key) do nothing;
 --    Set the requires_flags COLUMN on the two payoff rows so getOpenPuzzles holds each
 --    closed until its upstream flag is truthy in arc_state — independent of the showrunner:
 --
---      nether-forge     ← undercroft_open   (found at the Undercroft post-descent)
---      end-seventh-out  ← seventh_named     (the way-out pointer is legible only then)
+--      nether-forge     ← undercroft_open + nether_forge_placed
+--      end-seventh-out  ← seventh_named + end_seventh_shrine_placed
 --
 --    Authored as a guarded block so it cleanly no-ops if 0006 (the column) has not landed.
---    These rows stay active=false here (STAGED until the dimension worlds are built at GO-LIVE);
---    the GO-LIVE step flips active=true per row once observance_nether / observance_end exist
---    (siteCoverageSelfTest / R7). The requires_flags gate is the SECOND condition — both
+--    These rows stay active=true here; the placement flags keep them closed until the operator has
+--    actually surveyed and stamped the Nether/End sites (siteCoverageSelfTest / R7). Both
 --    (active=true AND requires_flags-satisfied) must hold for getOpenPuzzles to open the row.
 -- ===========================================================================
 
@@ -220,9 +220,9 @@ begin
     where table_schema = 'public' and table_name = 'puzzles' and column_name = 'requires_flags'
   ) then
 
-    update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true)
+    update public.puzzles set requires_flags = jsonb_build_object('undercroft_open', true, 'nether_forge_placed', true)
       where puzzle_key = 'nether-forge';
-    update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true)
+    update public.puzzles set requires_flags = jsonb_build_object('seventh_named', true, 'end_seventh_shrine_placed', true)
       where puzzle_key = 'end-seventh-out';
 
   else
@@ -239,8 +239,8 @@ end $$;
 --    by EXACTLY ONE activation rule; no active=true row reachable only through a staged
 --    predecessor:
 --
---      nether-forge     → undercroft_open   (undercroft-descent)        [GATES NOTHING — lore]
---      end-seventh-out  → seventh_named     (seventh-unwriting)         [GATES NOTHING — lore]
+--      nether-forge     → undercroft_open + nether_forge_placed         [GATES NOTHING — lore]
+--      end-seventh-out  → seventh_named + end_seventh_shrine_placed     [GATES NOTHING — lore]
 --
 --    INVARIANT: neither row is a spine predecessor of any other row (both are leaf `lore`
 --    payoffs — no next_puzzle_key, no set_flags any spine row reads as a requires_flags gate).

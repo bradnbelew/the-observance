@@ -3,8 +3,8 @@
 > Static audits prove the build is wired. This packet proves the experience is worth showing to friends.
 > Do not treat a green `audit_all.ps1` as launch approval until this pass has evidence attached.
 > Also run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`
-> after staging the world. That gate proves launch-required site coordinates are real; this packet proves
-> those placed sites are good.
+> after staging the world. That gate proves outside-Hold launch-required site coordinates are real; this
+> packet proves those placed sites and the generated Deep Hold rooms are good.
 > The ordered human launch handoff lives in `design/MANUAL-LAUNCH-PLAN.md`.
 
 ## Output
@@ -41,7 +41,7 @@ When that prints `unlit playtest readiness: OK`, stop building and let Nano play
 The validator is intentionally strict: it expects completed checkboxes, named screenshots for every major
 site, named clips for the first hour, scare families, Unlit expedition, Record/web jump, and finale, plus
 `launch-attestations.md` evidence for live-only checks such as Supabase status, exact Supabase SQL/plugin/resource-pack
-SHA1 values, real-client rendering, session-zero consent, and credential rotation.
+SHA1 values, real-client rendering, Normal Non-Op Player Pass, session-zero consent, and credential rotation.
 Synthetic audit placeholders, text files renamed as images/video, and tiny fake proof files fail the real
 launch validator. The only synthetic pass is the tool's own internal self-test.
 
@@ -63,10 +63,12 @@ Capture these before inviting the group:
 | Visuals | Approach, focal object, answer surface, and exit screenshot for every major site | No major site reads as a test pad, tiny prop, floating marker, or labeled route. |
 | Dialogue proof | Screenshot/clip of each NPC line that names a place, followed by the place itself | The named thing exists, matters, and changes what the line means. |
 | Puzzle fairness | One solve attempt per puzzle family with notes on first guess, retrace clue, and solve route | Hard is allowed; opaque after retracing is not. |
+| Normal non-op | One real non-op player account pass through Deep Hold protection, answer input, wrong-answer attempt, correct answer/input, retrace/return, Unlit pressure action, and pack-loaded rendering | The game works for a player without operator permissions, teleport crutches, build rights, or out-of-fiction explanation. |
 | Side paths | Twelve side destinations tested from the clue that points to them | Each one changes belief, creates dread, or pays a motif. No empty walks. |
 | Scares | One clip for each scare family: ambient, directed, dread route, Wren/companion, Tier-0 implication | The scare is environmental or personal, not a full-screen instruction card. |
 | Unlit | One route clip plus house screenshots for entry, spawn, exit, light use, figure behavior, clue reading, extraction, and anti-cheese | It reads as the dark copy of home, not combat, not a maze, not a numbered checklist. |
 | Record/web | Clip from in-world clue to `/record/...` page | The jump feels like discovery, not opening a wiki. |
+| Failed Accepting | Clip and screenshots proving case board, sealed prior gate, old camp repair files, failed floor, and `prior_witness_ready` before `rite-tokens` | Players investigate why the prior group failed; they cannot speedrun keeper stones into the finale. |
 | Finale | Clip or rehearsal notes for Accepting, Seventh choice, release/kick | The ending feels staged and earned, not password entry. |
 | Director cut | Filled `Director Cut Scorecard` in `00-notes.md` | Every axis scores 4 or 5: haunted place, distinct NPCs, valuable side paths, embodied builds, invisible operator, restored-person finale. |
 
@@ -81,9 +83,12 @@ Stop and fix before launch if any of these happen:
 - A scare uses big full-screen text or an obvious command/test label.
 - The Unlit can be bypassed with doors, containers, carried light, block changes, or a fixed house order.
 - A puzzle has no retraceable clue after the player fails once.
+- A real non-op player account can freely break/build inside the Deep Hold protection region, cannot locate
+  answer input, cannot recover from a wrong-answer attempt, cannot make a correct answer/input, cannot
+  retrace/return without state loss, or never feels an Unlit pressure action.
 - The first hour turns into answer submission before the world feels wrong.
 - Wren sounds like an exposition dispenser or a temporary placeholder.
-- The Record website feels like documentation instead of a place.
+- The public listing or Record page feels like documentation instead of a place.
 - The final name is experienced as a password rather than a restoration.
 - Any Director Cut Scorecard axis scores below 4.
 
@@ -150,6 +155,9 @@ site entry must also explain:
 - `the_threshold`
 - `the_unwriting`
 - `threshold_vault`
+- `case_board`
+- `prior_camp`
+- `failed_accepting`
 - `nether_forge`
 - `end_seventh_shrine`
 - `lampworks_stair`
@@ -218,6 +226,7 @@ Minimum required contracts:
 - Coll/third-lamp: the lamp exists and the light action changes state.
 - Dob/bowing stones: the bow marker exists and crouching together matters.
 - Old Pell/dark hours: black-moon sleep/restraint has a visible consequence.
+- Failed Accepting: the case board, sealed prior gate, old camp, six repair signs, and failed floor are physically legible.
 - Wren/reckoning: choice markers exist and are not reachable before the reveal.
 
 ## Puzzle Fairness Matrix
@@ -246,8 +255,50 @@ Minimum required families:
 - NPC errands: third lamp / dead stall
 - co-op plate / threshold vault
 - Record web jump / oracle inscription
+- Failed Accepting / prior-run corrections
 - Accepting rite / Seventh choice
 - Nether and End deepening lanes
+
+## Failed Accepting Proof
+
+This is the post-keeper anti-speedrun gate. It must feel like an investigation of a failed group,
+not another password hallway. The proof packet must show:
+
+- `case_board` has the editable filing sign `file / missing / condition` and accepts `no witness`
+  only after the roster evidence is readable.
+- The prior gate is physically sealed before `prior_absence_known`, including ceiling, sides,
+  fixture tops, and return-route edges.
+- `prior_camp` contains the failed inventory, six bedroll packets, six correction barrels, and
+  seven editable filing signs.
+- `prior_camp` accepts `answers are not witness` and then leaves the six keeper repair files
+  solvable in parallel.
+- The six corrections are extracted from camp evidence plus earlier keeper/side evidence, not
+  guessed from hint text alone.
+- A player can leave a repair file, find external evidence, return through an authored route, and
+  submit without losing state.
+- `failed_accepting` accepts `witness before accepting` and sets `prior_witness_ready` before
+  `rite-tokens` can open.
+- The old camp reads as abandoned human evidence, not a labelled checklist or tutorial room.
+
+## Normal Non-Op Player Pass
+
+Run this after the operator has finished build/audit commands. Use a real non-op player account, not an
+opped alt with restraint. Record the evidence in `launch-attestations.md`.
+
+The pass must prove:
+
+- the player cannot freely break/build inside the Deep Hold protection region.
+- books, signs, rune glyphs, containers, answer surfaces, NPC interactions, gates, and return routes work
+  without operator permissions.
+- one wrong-answer attempt fails recoverably.
+- one correct answer/input completes from the intended surface.
+- one retrace/return proves the player can leave a puzzle, find missing evidence, come back, and continue.
+- the Failed Accepting route is proven non-op: `no witness` -> `answers are not witness` -> six repair
+  files -> `witness before accepting`.
+- the sealed prior gate blocks ceiling, side-wall, fixture-top, and return-route bypass attempts before
+  `prior_absence_known`.
+- one Unlit pressure action lands without creative mode, build mode, or admin explanation.
+- the resource pack is loaded while the player reads custom rune/font/audio surfaces.
 
 ## Scare Review
 
@@ -277,7 +328,7 @@ The live proof must show the operator can finalize it without hand-editing confi
 - `/obs unlit darken all [radius]`
 - `/obs unlit border`
 - `/obs unlit audit`
-- `/obs unlit ready`
+- `/obs unlit ready` with `Gate: READY`
 - `/obs unlit pass light`
 - `/obs unlit pass stalker`
 - `/obs unlit pass extinguish`
@@ -306,6 +357,7 @@ Required houses:
 Launch only when:
 
 - every required major site is `KEEP`, or explicitly cut from the live route;
+- the Normal Non-Op Player Pass is complete in `launch-attestations.md`;
 - every NPC/world contract has proof;
 - each required evidence lane has at least one screenshot or clip;
 - every `RESHAPE` item has a named owner and exact fix;

@@ -17,12 +17,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 /**
- * THE IN-WORLD ANSWER VERB. A player submits a clue answer by editing an "answer sign" at a
- * configured keeper-stone site (sites.yml type {@code answer_sign} or {@code keeper_stone}). This is
+ * THE IN-WORLD ANSWER VERB. A player submits a clue answer by editing an answer/filing sign at a
+ * configured answer-bearing site. This is
  * the world-surface twin of the bot's Discord {@code #the-record} scan — both feed the SAME shared
  * {@link OracleResolver} against the SAME {@code puzzles} table, so the loop closes on either surface.
  *
@@ -42,6 +43,16 @@ public final class AnswerSignListener implements Listener {
     /** Site types whose signs are treated as answer-submission slots. */
     private static final String TYPE_ANSWER_SIGN = "answer_sign";
     private static final String TYPE_KEEPER_STONE = "keeper_stone";
+    private static final String TYPE_CASE_BOARD = "case_board";
+    private static final String TYPE_PRIOR_CAMP = "prior_camp";
+    private static final String TYPE_FAILED_ACCEPTING = "failed_accepting";
+    private static final List<String> ANSWER_SITE_TYPES = List.of(
+            TYPE_ANSWER_SIGN,
+            TYPE_KEEPER_STONE,
+            TYPE_CASE_BOARD,
+            TYPE_PRIOR_CAMP,
+            TYPE_FAILED_ACCEPTING
+    );
 
     /** A coarse per-player submit cooldown — defense in depth on top of the resolver's own limiter.
      *  Config-driven (tracker.answer-sign.cooldown-seconds via TrackerConfig#answerSignCooldownMs),
@@ -84,7 +95,7 @@ public final class AnswerSignListener implements Listener {
             if (loc == null || loc.getWorld() == null) return;
             String world = loc.getWorld().getName();
 
-            // Is this sign at a configured answer site? (answer_sign first, then keeper_stone.)
+            // Is this sign at a configured answer site? (focused answer signs first, then broader rooms.)
             Site site = nearestAnswerSite(sites, world, loc.getX(), loc.getY(), loc.getZ());
             if (site == null) return;   // an ordinary sign — not a submission slot, ignore entirely
 
@@ -127,14 +138,16 @@ public final class AnswerSignListener implements Listener {
     /* ----------------------------- helpers ---------------------------- */
 
     /**
-     * Nearest placed answer-submission site containing the point. Prefers {@code answer_sign} sites,
-     * then {@code keeper_stone}. Uses {@link Site#contains} (snapshot coords, no Bukkit) so it is
-     * cheap and exact.
+     * Nearest placed answer-submission site containing the point. Prefers focused {@code answer_sign}
+     * sites, then broader keeper/prior rooms. Uses {@link Site#contains} (snapshot coords, no Bukkit) so
+     * it is cheap and exact.
      */
     private Site nearestAnswerSite(SitesConfig sites, String world, double x, double y, double z) {
-        Site best = bestOfType(sites, TYPE_ANSWER_SIGN, world, x, y, z);
-        if (best != null) return best;
-        return bestOfType(sites, TYPE_KEEPER_STONE, world, x, y, z);
+        for (String type : ANSWER_SITE_TYPES) {
+            Site best = bestOfType(sites, type, world, x, y, z);
+            if (best != null) return best;
+        }
+        return null;
     }
 
     private Site bestOfType(SitesConfig sites, String type,

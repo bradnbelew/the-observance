@@ -98,6 +98,8 @@ public final class UnlitVillageListener implements Listener {
 
     private final Map<UUID, StoredInventory> storedInventories = new HashMap<>();
     private final Map<UUID, Integer> darknessExposure = new HashMap<>();
+    /** Per-player apparition pressure: 0 glimpse, 1 stalk, 2 takes light, 3 hunt. */
+    private final Map<UUID, Integer> figureStage = new HashMap<>();
     private final Map<UUID, Long> lastFigureMs = new HashMap<>();
     private final Map<LightKey, Long> liveLights = new HashMap<>();
     private final Set<String> reportedDiscoveries = new HashSet<>();
@@ -144,6 +146,7 @@ public final class UnlitVillageListener implements Listener {
         }
         storedInventories.clear();
         darknessExposure.clear();
+        figureStage.clear();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -319,6 +322,7 @@ public final class UnlitVillageListener implements Listener {
         inv.setItem(8, returnToken());
         player.setGameMode(GameMode.ADVENTURE);
         darknessExposure.put(player.getUniqueId(), 0);
+        figureStage.put(player.getUniqueId(), 0);
         player.teleport(spawn);
         mergeFlag("unlit_open", true);
         mergeFlag("unlit_last_entry", SupabaseClient.timestampNow());
@@ -337,6 +341,7 @@ public final class UnlitVillageListener implements Listener {
             player.setGameMode(stored.gameMode());
         }
         darknessExposure.remove(player.getUniqueId());
+        figureStage.remove(player.getUniqueId());
         if (teleportOut) {
             Location exit = siteLocation(ENTRY_SITE);
             if (exit == null) exit = siteLocation(EXIT_SITE);
@@ -363,14 +368,22 @@ public final class UnlitVillageListener implements Listener {
             if (safe) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS,
                         safeDarknessEffectTicks(), safeDarknessEffectAmplifier(), false, false, false));
-                player.sendActionBar(Component.text("The borrowed light holds.", NamedTextColor.GRAY));
+                if (rateLimiter.tryCooldown("unlit:status:safe:" + player.getUniqueId(), 7_000L)) {
+                    player.sendActionBar(Component.text("The borrowed light holds.", NamedTextColor.GRAY));
+                }
+                if (exposure == 0 && rateLimiter.tryCooldown(
+                        "unlit:figure:decay:" + player.getUniqueId(), 35_000L)) {
+                    figureStage.computeIfPresent(player.getUniqueId(), (id, stage) -> Math.max(0, stage - 1));
+                }
             } else {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.DARKNESS,
                         darknessEffectTicks(), darknessEffectAmplifier(), false, false, false));
                 if (exposure >= darknessGraceSeconds()) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 60, 0, false, false, false));
-                    player.sendActionBar(Component.text("The dark is finding you.", NamedTextColor.DARK_GRAY));
-                } else {
+                    if (rateLimiter.tryCooldown("unlit:status:found:" + player.getUniqueId(), 7_000L)) {
+                        player.sendActionBar(Component.text("The dark is finding you.", NamedTextColor.DARK_GRAY));
+                    }
+                } else if (rateLimiter.tryCooldown("unlit:status:close:" + player.getUniqueId(), 7_000L)) {
                     player.sendActionBar(Component.text("The dark presses close.", NamedTextColor.DARK_GRAY));
                 }
                 if (exposure >= darknessDamageSeconds()) {
@@ -383,21 +396,40 @@ public final class UnlitVillageListener implements Listener {
 
     private void maybeMoveFigure(Player player, boolean safe, int exposure) {
         long now = System.currentTimeMillis();
+        int stage = Math.max(0, Math.min(3, figureStage.getOrDefault(player.getUniqueId(), 0)));
+        int requiredExposure = switch (stage) {
+            case 0 -> 6;
+            case 1 -> 10;
+            case 2 -> 14;
+            default -> 18;
+        };
+        if (safe || exposure < requiredExposure) return;
         long last = lastFigureMs.getOrDefault(player.getUniqueId(), 0L);
-        if (now - last < figureCooldownSeconds() * 1000L) return;
-        if (exposure < 5 && liveLights.isEmpty()) return;
+        long cooldownMs = (figureCooldownSeconds() + (stage * 6L)) * 1000L;
+        if (now - last < cooldownMs) return;
         lastFigureMs.put(player.getUniqueId(), now);
+        figureStage.put(player.getUniqueId(), Math.min(3, stage + 1));
 
-        Location standAt = chooseFigureSpot(player.getLocation());
-        List<Entity> figure = spawnFigure(standAt, player);
+        int distance = switch (stage) { case 0 -> 14; case 1 -> 11; case 2 -> 8; default -> 6; };
+        double side = ((player.getUniqueId().hashCode() + stage) & 1) == 0 ? 3.5 : -3.5;
+        Location standAt = chooseFigureSpot(player.getLocation(), distance, side);
+        List<Entity> figure = spawnFigure(standAt, player, stage);
         if (figure.isEmpty()) return;
         figureBodies.addAll(figure);
-        playFigureSound(standAt, Sound.ENTITY_ENDERMAN_AMBIENT, 0.7f, 0.55f);
+        playFigureSound(player, standAt, stage == 0 ? Sound.BLOCK_SCULK_SENSOR_CLICKING
+                : Sound.ENTITY_ENDERMAN_AMBIENT, stage == 0 ? 0.35f : 0.65f, stage == 0 ? 0.6f : 0.5f);
+        if (stage == 0) mergeFlag("unlit_figure_seen", true);
+        if (stage == 3) mergeFlag("unlit_figure_hunt", true);
 
-        scheduler.runLaterSafe("unlit.figure.shift", 10L, () -> shiftFigureNearPlayer(figure, player, 6.0, 2.5));
-        scheduler.runLaterSafe("unlit.figure.swoop", 22L, () -> maybeSwoopFigureAtPlayer(figure, player));
+        if (stage >= 1) {
+            scheduler.runLaterSafe("unlit.figure.shift", 14L,
+                    () -> shiftFigureNearPlayer(figure, player, stage >= 2 ? 5.5 : 8.0, -side));
+        }
+        if (stage >= 3) {
+            scheduler.runLaterSafe("unlit.figure.swoop", 30L, () -> maybeSwoopFigureAtPlayer(figure, player));
+        }
 
-        if (!safe && exposure >= 10) {
+        if (stage >= 2) {
             LightKey nearest = nearestLight(player.getLocation());
             if (nearest != null) {
                 scheduler.runLaterSafe("unlit.figure.rush", 14L, () -> {
@@ -408,16 +440,15 @@ public final class UnlitVillageListener implements Listener {
                     Location loc = nearest.location();
                     if (loc != null) {
                         burnOut(loc);
-                        playFigureSound(loc, Sound.ENTITY_PHANTOM_SWOOP, 0.9f, 0.45f);
-                        if (player.isOnline()) {
-                            player.sendActionBar(Component.text("The borrowed light is taken.", NamedTextColor.DARK_GRAY));
-                        }
+                        playFigureSound(player, loc, Sound.ENTITY_PHANTOM_SWOOP, 0.8f, 0.42f);
+                        mergeFlag("unlit_light_taken", true);
                     }
                 });
             }
         }
         scheduler.runLaterSafe("unlit.figure.vanish", figureVisibleTicks(), () -> {
-            if (player.isOnline()) playFigureSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.65f, 0.6f);
+            if (player.isOnline()) playFigureSound(player, player.getLocation(),
+                    Sound.ENTITY_ENDERMAN_TELEPORT, 0.45f, 0.55f);
             figureBodies.removeAll(figure);
             for (Entity entity : figure) {
                 if (entity != null && !entity.isDead()) entity.remove();
@@ -425,7 +456,7 @@ public final class UnlitVillageListener implements Listener {
         });
     }
 
-    private List<Entity> spawnFigure(Location loc, Player target) {
+    private List<Entity> spawnFigure(Location loc, Player target, int stage) {
         if (loc == null || loc.getWorld() == null) return List.of();
         World world = loc.getWorld();
         List<Entity> parts = new ArrayList<>();
@@ -446,9 +477,10 @@ public final class UnlitVillageListener implements Listener {
             parts.add(spawnBlockPart(world, base, 0.52, 1.55, 0.04, 0.14f, 1.85f, 0.18f)); // long right arm
             parts.add(spawnBlockPart(world, base, -0.17, 0.72, 0.00, 0.16f, 1.28f, 0.18f)); // long left leg
             parts.add(spawnBlockPart(world, base, 0.17, 0.72, 0.00, 0.16f, 1.28f, 0.18f)); // long right leg
-            parts.add(spawnEyeDisplay(world, figureOffset(base, 0.0, 3.00, 0.26)));
+            if (stage >= 1) parts.add(spawnEyeDisplay(world, figureOffset(base, 0.0, 3.00, 0.26)));
             for (Entity part : parts) {
                 tagFigure(part);
+                if (target != null) target.showEntity(plugin, part);
             }
             return parts;
         } catch (Throwable t) {
@@ -468,7 +500,7 @@ public final class UnlitVillageListener implements Listener {
         Location loc = figureOffset(base, x, y, z);
         return world.spawn(loc, BlockDisplay.class, display -> {
             display.setPersistent(false);
-            display.setVisibleByDefault(true);
+            display.setVisibleByDefault(false);
             display.setBlock(Material.BLACK_CONCRETE.createBlockData());
             display.setBrightness(new Display.Brightness(3, 3));
             display.setViewRange(1.1f);
@@ -512,7 +544,7 @@ public final class UnlitVillageListener implements Listener {
                 // One display part failing to move should not break the scare or leave the light safe.
             }
         }
-        playFigureSound(lightLoc, Sound.ENTITY_PHANTOM_SWOOP, 0.75f, 0.55f);
+        // The caller owns the private sound cue; movement itself remains silent.
     }
 
     private void shiftFigureNearPlayer(List<Entity> figure, Player player, double distance, double sideOffset) {
@@ -538,10 +570,9 @@ public final class UnlitVillageListener implements Listener {
         if (Math.random() > figureSwoopChance()) return;
         Location target = player.getLocation().clone().add(0.0, 0.15, 0.0);
         moveFigureTo(figure, target);
-        playFigureSound(target, Sound.ENTITY_PHANTOM_SWOOP, 0.95f, 0.5f);
+        playFigureSound(player, target, Sound.ENTITY_PHANTOM_SWOOP, 0.85f, 0.48f);
         double damage = figureSwoopDamage();
         if (damage > 0.0) player.damage(damage);
-        player.sendActionBar(Component.text("Something crosses through you.", NamedTextColor.DARK_GRAY));
     }
 
     private void moveFigureTo(List<Entity> figure, Location target) {
@@ -559,10 +590,10 @@ public final class UnlitVillageListener implements Listener {
         }
     }
 
-    private void playFigureSound(Location loc, Sound sound, float volume, float pitch) {
+    private void playFigureSound(Player target, Location loc, Sound sound, float volume, float pitch) {
         if (loc == null || loc.getWorld() == null || sound == null) return;
         try {
-            loc.getWorld().playSound(loc, sound, volume, pitch);
+            if (target != null && target.isOnline()) target.playSound(loc, sound, volume, pitch);
         } catch (Throwable ignored) {
             // Sound names are best-effort across minor server builds.
         }
@@ -571,14 +602,14 @@ public final class UnlitVillageListener implements Listener {
     private TextDisplay spawnEyeDisplay(World world, Location loc) {
         return world.spawn(loc, TextDisplay.class, display -> {
             display.setPersistent(false);
-            display.setVisibleByDefault(true);
-            display.text(Component.text("O O", NamedTextColor.YELLOW));
+            display.setVisibleByDefault(false);
+            display.text(Component.text("·  ·", NamedTextColor.DARK_RED));
             display.setBillboard(Display.Billboard.CENTER);
-            display.setSeeThrough(true);
+            display.setSeeThrough(false);
             display.setShadowed(false);
             display.setDefaultBackground(false);
             try { display.setBackgroundColor(org.bukkit.Color.fromARGB(0)); } catch (Throwable ignored) { }
-            display.setBrightness(new Display.Brightness(15, 15));
+            display.setBrightness(new Display.Brightness(7, 7));
             display.setViewRange(1.6f);
             display.setTransformation(new Transformation(
                     new Vector3f(0f, 0f, 0f),
@@ -594,12 +625,16 @@ public final class UnlitVillageListener implements Listener {
         pdc.set(figureKey, PersistentDataType.BYTE, (byte) 1);
     }
 
-    private Location chooseFigureSpot(Location playerLoc) {
+    private Location chooseFigureSpot(Location playerLoc, int distance, double sideOffset) {
         Location loc = playerLoc.clone();
         float yaw = loc.getYaw();
         double radians = Math.toRadians(yaw + 180.0);
-        int distance = 10;
         loc.add(-Math.sin(radians) * distance, 0.0, Math.cos(radians) * distance);
+        Vector forward = playerLoc.getDirection().setY(0.0);
+        if (forward.lengthSquared() > 1.0e-6) {
+            forward.normalize();
+            loc.add(new Vector(-forward.getZ(), 0.0, forward.getX()).multiply(sideOffset));
+        }
         World world = loc.getWorld();
         if (world != null) {
             int y = world.getHighestBlockYAt(loc) + 1;

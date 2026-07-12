@@ -147,7 +147,7 @@ Drift risk:
 - older wording in `learn-them-as-we-learned-them.md` references stale symbol names. Current implemented
   canon is the sequence above.
 
-### 4. The Record Is Kept Elsewhere
+### 4. The Old Listing And The Record Elsewhere
 
 Status: **live**, **media-required for downstream lure**
 
@@ -165,22 +165,37 @@ John decodes the old-script line with the Rosetta literacy:
 
 > the-record-keeps
 
-He tries the record route:
+The opening Hold copy also teaches a blunter web door:
+
+> front door: SNOIKERZ
+> ending: common web
+> path: /
+
+John reaches the abandoned listing first. It looks like an old server/map host,
+not a clean puzzle menu: the Hold download is there, the Record routes are there,
+and the live Paper address appears there only once the operator has configured
+`NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS`.
+
+The decoded Record route remains the deeper receipt:
 
 > /record/the-record-keeps
 
-The page opens. The website is now an in-universe place.
+The page opens. The website is now an in-universe place, and not only a Record
+page: it is the old public face of the server that still keeps files.
 
 What John learns:
 
 - off-world content is canonical
 - the record preserves copies outside Minecraft
+- the server address is hosted by the old listing, not hidden in the zip
 - hyphenated decoded phrases may be route slugs, not coordinates
 
 Launch rule:
 
-- do not plant the live in-world lure to this route until `the-hold.zip` and record media placeholders are
-  hosted or intentionally staged
+- do not plant the live in-world lure until `/`, `/the-hold/the-hold.zip`, and
+  `/record/the-record-keeps` work from the deployed site
+- do not put the live Paper port inside `the-hold.zip`; configure it on the
+  listing with `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS`
 
 ### 5. Side Destinations: Longevity and World Truth
 
@@ -395,6 +410,7 @@ Spectrogram:
 
 - the readme is not fully trustworthy
 - John compares the hold's count against the world
+- the final room points to the old listing instead of exposing a server port
 - absence and redaction become evidence
 
 ### 11. The Seventh Below and the Final Reading
@@ -454,6 +470,7 @@ Required before a real launch run:
 - stage cold open
 - run `/observance reading`
 - run `/observance finale`
+- verify deployed website root `/` renders the old listing and configured server address
 - verify deployed `the-hold.zip`
 - verify hosted found footage, Drive folder, waveform/spectrogram
 - rotate exposed credentials

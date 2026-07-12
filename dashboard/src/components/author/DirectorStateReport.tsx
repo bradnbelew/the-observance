@@ -1,4 +1,5 @@
 import type { Beat, CustomCompliance, Player } from "@/lib/database.types";
+import { SIDE_PROOF_FLAGS } from "./proofFlags";
 
 type DirectorStateReportProps = {
   currentAct: number;
@@ -9,6 +10,7 @@ type DirectorStateReportProps = {
   watcherAsleep: boolean;
   activeRosterSize: number;
   hasHoldZip: boolean;
+  serverAddressConfigured: boolean;
 };
 
 const THEORY_FLAGS = [
@@ -28,21 +30,16 @@ const MEDIA_FLAGS = [
   ["recovered_archive_ready", "recovered archive"],
 ] as const;
 
-const SIDE_PROOF_FLAGS = [
-  ["site_seen_school_stand", "school stand"],
-  ["site_seen_markers_row", "markers row"],
-  ["site_seen_deep_market", "deep market"],
-  ["site_seen_cistern_7", "cistern seven"],
-  ["site_seen_watch_floor", "watch floor"],
-  ["site_seen_set_apart_shelf", "entry five shelf"],
-  ["site_seen_undercroft_seal", "undercroft seal"],
-  ["site_seen_forgotten_mouth", "forgotten mouth"],
-  ["site_seen_ration_table", "ration table"],
-  ["site_seen_third_bay_breach", "third bay breach"],
-  ["site_seen_warm_town_collapse", "warm town collapse"],
-  ["site_seen_deep_bird_coops", "bird coops"],
-  ["npc_wenna_crust_done", "Wenna crust"],
-  ["npc_coll_lamp_done", "Coll lamp"],
+const PRIOR_FLAGS = [
+  ["prior_absence_known", "absence"],
+  ["prior_camp_read", "camp"],
+  ["prior_vaun_corrected", "Vaun"],
+  ["prior_mara_corrected", "Mara"],
+  ["prior_sella_corrected", "Sella"],
+  ["prior_orin_corrected", "Orin"],
+  ["prior_brann_corrected", "Brann"],
+  ["prior_iss_corrected", "Iss"],
+  ["prior_witness_ready", "witness"],
 ] as const;
 
 function isTrue(flags: Record<string, unknown>, key: string) {
@@ -80,6 +77,7 @@ function CommandLine({ children }: { children: string }) {
 
 function buildOpenLeads(flags: Record<string, unknown>) {
   const theoryCount = THEORY_FLAGS.filter(([key]) => isTrue(flags, key)).length;
+  const priorCount = PRIOR_FLAGS.filter(([key]) => isTrue(flags, key)).length;
   const leads: string[] = [];
 
   if (!isTrue(flags, "rosetta_known")) {
@@ -100,7 +98,31 @@ function buildOpenLeads(flags: Record<string, unknown>) {
   if (isTrue(flags, "seventh_named") && !isTrue(flags, "accepting_onramp_open")) {
     leads.push("Threshold and Unlit: open the late route only after the prior evidence has landed.");
   }
-  if (isTrue(flags, "accepting_onramp_open") && !isTrue(flags, "tokens_laid")) {
+  if (isTrue(flags, "undercroft_open") && !isTrue(flags, "nether_forge_placed")) {
+    leads.push("Nether forge: the story has earned the deep fire lane, but the physical forge is not placed yet.");
+  }
+  if (isTrue(flags, "seventh_named") && !isTrue(flags, "end_seventh_shrine_placed")) {
+    leads.push("End shrine: the Seventh way-out can be pursued only after the End site is surveyed and stamped.");
+  }
+  if (isTrue(flags, "nether_forge_placed") && !isTrue(flags, "nether_forge_found")) {
+    leads.push("Nether payoff: the forge is live; the group can still close the lent-fire receipt.");
+  }
+  if (isTrue(flags, "end_seventh_shrine_placed") && !isTrue(flags, "seventh_seen_out")) {
+    leads.push("End payoff: the shrine is live; the out-of-record Seventh read is still unclaimed.");
+  }
+  if (theoryCount === THEORY_FLAGS.length && !isTrue(flags, "prior_absence_known")) {
+    leads.push("Failed Accepting: the roster before the camp gate should make the missing condition answerable.");
+  }
+  if (isTrue(flags, "prior_absence_known") && !isTrue(flags, "prior_camp_read")) {
+    leads.push("Prior camp: read the failed record and distinguish solved answers from witness.");
+  }
+  if (isTrue(flags, "prior_camp_read") && priorCount < PRIOR_FLAGS.length) {
+    leads.push("Prior corrections: six repair files can be worked in parallel from camp barrels plus keeper/side evidence.");
+  }
+  if (isTrue(flags, "accepting_onramp_open") && !isTrue(flags, "prior_witness_ready")) {
+    leads.push("Accepting is blocked by the failed-run witness condition; do not let token placement become a shortcut.");
+  }
+  if (isTrue(flags, "accepting_onramp_open") && isTrue(flags, "prior_witness_ready") && !isTrue(flags, "tokens_laid")) {
     leads.push("Accepting on-ramp: token work is open; keep it physical and group-owned.");
   }
   if (isTrue(flags, "tokens_laid") && !isTrue(flags, "bowed_as_one")) {
@@ -118,19 +140,33 @@ function buildNextCommand({
   pendingBeats,
   failedBeats,
   theoryCount,
+  priorCount,
   hasHoldZip,
+  serverAddressConfigured,
+  flags,
 }: {
   watcherAsleep: boolean;
   pendingBeats: number;
   failedBeats: number;
   theoryCount: number;
+  priorCount: number;
   hasHoldZip: boolean;
+  serverAddressConfigured: boolean;
+  flags: Record<string, unknown>;
 }) {
   if (!hasHoldZip) return "tools\\rebuild_hold_invitation.ps1";
+  if (!serverAddressConfigured) return "set NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS before planting record-url";
   if (failedBeats > 0) return "/obs status, then inspect failed beat payloads";
   if (pendingBeats > 0) return "review pending beats in this dashboard";
   if (watcherAsleep) return "/obs sleep off when the rehearsal is ready";
   if (theoryCount < THEORY_FLAGS.length) return "/obs site todo, then /obs visit next";
+  if (priorCount < PRIOR_FLAGS.length) return "/obs placehold sync, then audit prior_camp and failed_accepting";
+  if (isTrue(flags, "undercroft_open") && !isTrue(flags, "nether_forge_placed")) {
+    return "/obs site set nether_forge in the Nether, then /obs placeworld";
+  }
+  if (isTrue(flags, "seventh_named") && !isTrue(flags, "end_seventh_shrine_placed")) {
+    return "/obs site set end_seventh_shrine in the End, then /obs placeworld";
+  }
   return "/obs preflight, then /obs unlit ready";
 }
 
@@ -143,10 +179,12 @@ export function DirectorStateReport({
   watcherAsleep,
   activeRosterSize,
   hasHoldZip,
+  serverAddressConfigured,
 }: DirectorStateReportProps) {
   const theoryCount = THEORY_FLAGS.filter(([key]) => isTrue(flags, key)).length;
+  const priorCount = PRIOR_FLAGS.filter(([key]) => isTrue(flags, key)).length;
   const mediaReady = MEDIA_FLAGS.filter(([key]) => isTrue(flags, key)).length;
-  const sideProofs = SIDE_PROOF_FLAGS.filter(([key]) => isTrue(flags, key)).length;
+  const sideProofs = SIDE_PROOF_FLAGS.filter((proof) => isTrue(flags, proof.key)).length;
   const pendingBeats = beats.filter((beat) => beat.status === "pending").length;
   const failedBeats = beats.filter((beat) => beat.status === "failed").length;
   const openLeads = buildOpenLeads(flags);
@@ -155,7 +193,10 @@ export function DirectorStateReport({
     pendingBeats,
     failedBeats,
     theoryCount,
+    priorCount,
     hasHoldZip,
+    serverAddressConfigured,
+    flags,
   });
 
   const playerById = new Map(players.map((player) => [player.id, player]));
@@ -167,6 +208,7 @@ export function DirectorStateReport({
 
   const risks = [
     !hasHoldZip ? "Hold zip is missing from the deployed public path." : null,
+    !serverAddressConfigured ? "Public listing is still withholding the live server address." : null,
     watcherAsleep ? "Watcher is asleep; automatic run beats are muted." : null,
     pendingBeats > 0 ? `${pendingBeats} beat approval(s) waiting.` : null,
     failedBeats > 0 ? `${failedBeats} beat failure(s) need inspection.` : null,
@@ -189,7 +231,7 @@ export function DirectorStateReport({
         </StatusPill>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-4">
+      <div className="mt-4 grid gap-3 md:grid-cols-5">
         <div className="rounded-md border border-neutral-800 bg-ash p-3">
           <p className="font-mono text-[11px] uppercase text-neutral-500">Act</p>
           <p className="mt-1 font-mono text-2xl text-neutral-100">{currentAct}</p>
@@ -203,9 +245,43 @@ export function DirectorStateReport({
           <p className="mt-1 font-mono text-2xl text-neutral-100">{theoryCount}/6</p>
         </div>
         <div className="rounded-md border border-neutral-800 bg-ash p-3">
+          <p className="font-mono text-[11px] uppercase text-neutral-500">Prior</p>
+          <p className="mt-1 font-mono text-2xl text-neutral-100">{priorCount}/{PRIOR_FLAGS.length}</p>
+        </div>
+        <div className="rounded-md border border-neutral-800 bg-ash p-3">
           <p className="font-mono text-[11px] uppercase text-neutral-500">Side/media</p>
           <p className="mt-1 font-mono text-2xl text-neutral-100">{sideProofs}/{SIDE_PROOF_FLAGS.length} / {mediaReady}/{MEDIA_FLAGS.length}</p>
         </div>
+      </div>
+
+      <div className="mt-4 rounded-md border border-neutral-800 bg-black/20 p-4">
+        <h3 className="font-mono text-sm text-neutral-100">Opening web</h3>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <StatusPill tone={hasHoldZip ? "good" : "warn"}>
+            {hasHoldZip ? "the-hold.zip present" : "the-hold.zip missing"}
+          </StatusPill>
+          <StatusPill tone={serverAddressConfigured ? "good" : "warn"}>
+            {serverAddressConfigured ? "server address listed" : "server address withheld"}
+          </StatusPill>
+        </div>
+        <p className="mt-3 text-sm text-neutral-400">
+          Plant the Record URL only after the deployed public root works in a private browser,
+          the recovered file is downloadable, and the listing shows the live address intentionally.
+        </p>
+      </div>
+
+      <div className="mt-4 rounded-md border border-neutral-800 bg-black/20 p-4">
+        <h3 className="font-mono text-sm text-neutral-100">Production placement</h3>
+        <div className="mt-3 grid gap-2 md:grid-cols-3">
+          <CommandLine>/obs placehold build</CommandLine>
+          <CommandLine>/obs placehold audit</CommandLine>
+          <CommandLine>/obs placehold sync</CommandLine>
+        </div>
+        <p className="mt-3 text-sm text-neutral-400">
+          Use the Deep Hold for the clustered underground city. Use site placement for the
+          remaining surface, Nether, End, Unlit, media, and bespoke anchors; keep prepworld as
+          a disposable rehearsal board.
+        </p>
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">

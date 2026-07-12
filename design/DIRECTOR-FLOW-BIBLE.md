@@ -41,7 +41,7 @@ Current hard rules:
 
 | Phase | Player experience | Primary traversal vector | Director proof |
 | --- | --- | --- | --- |
-| 0. Hold copy | Off-server adventure-map invitation, reconstructed endpoint | route + item + arithmetic | `check_hold_invitation.ps1` |
+| 0. Hold copy | Off-server adventure-map invitation, old listing handoff | route + item + web listing | `check_hold_invitation.ps1` |
 | 1. First server wrongness | Base/report anomaly and first human testimony | place + person + record | prologue placement proof |
 | 2. Rosetta and Record | Seven way-names and the first Record route | script + route slug | `check_customs_rosetta.ps1` |
 | 3. Surface people | Aro/Wenna/Coll/Dob/Pell contradict and humanize the rules | person + memory | dialogue/world audit |
@@ -57,25 +57,29 @@ Current hard rules:
 ## Phase 0 - Hold Copy
 
 Players receive `the-hold.zip` before the server. It must not simply hand them
-the IP. It now behaves as a contained invitation puzzle: route phrase, gate
-name, common web ending, and port arithmetic reconstruct the destination.
+the IP. It now behaves as a contained invitation puzzle that resolves to the
+abandoned public listing: front door, common web, and root path. The listing,
+not the zip, owns the live Paper address reveal.
 
 Players should infer:
 
-- There is a real server, but it is not being handed over as a normal invite.
-- The Record phrase matters before they have the Record context.
+- There is a real server, but the invite passes through a neglected web surface.
+- The old listing and Record pages are part of the same evidence system.
 - The first puzzle grammar is comparison and reconstruction, not "decode blob."
 
 Onward vector:
 
-- The final room points to `the-record-keeps`, `SNOIKERZ`, and the port math.
-- First server arrival confirms they reconstructed something real.
+- The final room points to `SNOIKERZ`, common web, and `/`.
+- The public listing exposes `the-hold.zip`, the Record links, and the live
+  server address once `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` is configured.
+- First server arrival confirms the web trail resolved to something real.
 
 Director watch:
 
 - If a player can extract a raw endpoint from the zip, this phase fails.
-- If the final room does not clearly teach what pieces must be combined, this
-  becomes busywork rather than mystery.
+- If the final room exposes a server port, this phase fails.
+- If the listing looks like a modern dashboard or menu, the frame breaks before
+  the server ever gets to be strange.
 
 ## Phase 1 - First Server Wrongness
 
@@ -120,7 +124,8 @@ Players should infer:
 Onward vector:
 
 - `rosetta_known` opens the literacy layer.
-- `/record/the-record-keeps` establishes the website as diegetic evidence.
+- `/` establishes the abandoned listing; `/record/the-record-keeps` establishes
+  the recovered Record as diegetic evidence.
 
 Director watch:
 
@@ -407,7 +412,7 @@ Launch-ready means all of the above plus:
 
 - hosted resource pack configured and byte-verified
 - live Supabase bundle applied and attested
-- all launch coordinates placed and proofed
+- generated Deep Hold proof recorded, and all outside-Hold launch coordinates placed/proofed
 - Unlit ready on the actual server
 - live Paper/client visual proof captured
 - rehearsal packet complete

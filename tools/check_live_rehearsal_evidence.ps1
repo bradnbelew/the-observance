@@ -6,6 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $packetFile = Join-Path $RepoRoot "design\LIVE-REHEARSAL-EVIDENCE.md"
 $runbookFile = Join-Path $RepoRoot "design\RUNBOOK.md"
+$manualPlanFile = Join-Path $RepoRoot "design\MANUAL-LAUNCH-PLAN.md"
 $playtestFile = Join-Path $RepoRoot "design\PERSONAL-PLAYTEST-SCRIPT.md"
 $visualFile = Join-Path $RepoRoot "design\VISUAL-RESCUE.md"
 $commandFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\command\ObservanceCommand.java"
@@ -13,7 +14,7 @@ $generatorFile = Join-Path $RepoRoot "tools\new_rehearsal_packet.ps1"
 $validatorFile = Join-Path $RepoRoot "tools\check_rehearsal_packet.ps1"
 $unlitPlaytestFile = Join-Path $RepoRoot "tools\check_unlit_playtest_ready.ps1"
 
-foreach ($file in @($packetFile, $runbookFile, $playtestFile, $visualFile, $commandFile, $generatorFile, $validatorFile, $unlitPlaytestFile)) {
+foreach ($file in @($packetFile, $runbookFile, $manualPlanFile, $playtestFile, $visualFile, $commandFile, $generatorFile, $validatorFile, $unlitPlaytestFile)) {
   if (-not (Test-Path $file)) {
     throw "live rehearsal evidence check: missing required file: $file"
   }
@@ -21,6 +22,7 @@ foreach ($file in @($packetFile, $runbookFile, $playtestFile, $visualFile, $comm
 
 $packet = Get-Content -LiteralPath $packetFile -Raw
 $runbook = Get-Content -LiteralPath $runbookFile -Raw
+$manualPlan = Get-Content -LiteralPath $manualPlanFile -Raw
 $playtest = Get-Content -LiteralPath $playtestFile -Raw
 $visual = Get-Content -LiteralPath $visualFile -Raw
 $command = Get-Content -LiteralPath $commandFile -Raw
@@ -42,6 +44,7 @@ function RequireContains([string] $label, [string] $text, [string] $needle) {
 
 foreach ($doc in @(
   @("RUNBOOK.md", $runbook),
+  @("MANUAL-LAUNCH-PLAN.md", $manualPlan),
   @("PERSONAL-PLAYTEST-SCRIPT.md", $playtest),
   @("VISUAL-RESCUE.md", $visual)
 )) {
@@ -53,6 +56,24 @@ foreach ($doc in @(
   @("LIVE-REHEARSAL-EVIDENCE.md", $packet)
 )) {
   RequireContains $doc[0] $doc[1] "tools\new_rehearsal_packet.ps1"
+}
+
+foreach ($doc in @(
+  @("RUNBOOK.md", $runbook),
+  @("MANUAL-LAUNCH-PLAN.md", $manualPlan),
+  @("LIVE-REHEARSAL-EVIDENCE.md", $packet)
+)) {
+  foreach ($required in @(
+    "Normal Non-Op Player Pass",
+    "real non-op player account",
+    "Deep Hold protection region",
+    "wrong-answer attempt",
+    "correct answer/input",
+    "retrace/return",
+    "Unlit pressure action"
+  )) {
+    RequireContains $doc[0] $doc[1] $required
+  }
 }
 
 RequireContains "LIVE-REHEARSAL-EVIDENCE.md" $packet "tools\check_rehearsal_packet.ps1"
@@ -70,10 +91,12 @@ foreach ($lane in @(
   "Visuals",
   "Dialogue proof",
   "Puzzle fairness",
+  "Normal non-op",
   "Side paths",
   "Scares",
   "Unlit",
   "Record/web",
+  "Failed Accepting",
   "Finale"
 )) {
   RequireContains "evidence lane" $packet "| $lane |"
@@ -93,6 +116,7 @@ foreach ($required in @(
   "/obs unlit darken all",
   "/obs unlit audit",
   "/obs unlit ready",
+  "Gate: READY",
   "fixture proof, stray light OK, and border OK",
   "borrowed lantern",
   "lantern is broken",
@@ -110,6 +134,16 @@ foreach ($required in @(
   "silhouette: what reads from approach distance",
   "body verb: what players physically do there",
   "Puzzle Fairness Matrix",
+  "Normal Non-Op Player Pass",
+  "Failed Accepting Proof",
+  "prior_witness_ready",
+  "rite-tokens",
+  "real non-op player account",
+  "Deep Hold protection region",
+  "wrong-answer attempt",
+  "correct answer/input",
+  "retrace/return",
+  "Unlit pressure action",
   "Every puzzle family must be retraceable",
   "Hard is fine; opaque is not",
   "If a tester solves by guessing",
@@ -150,6 +184,9 @@ $majorSites = @(
   "the_threshold",
   "the_unwriting",
   "threshold_vault",
+  "case_board",
+  "prior_camp",
+  "failed_accepting",
   "nether_forge",
   "end_seventh_shrine",
   "lampworks_stair",
@@ -218,7 +255,7 @@ foreach ($blocker in @(
   "full-screen text",
   "no retraceable clue",
   "Wren sounds like an exposition dispenser",
-  "Record website feels like documentation"
+  "Public listing or Record page feels like documentation instead of a place"
 )) {
   RequireContains "launch blocker list" $packet $blocker
 }
@@ -253,13 +290,13 @@ if (Test-Path (Join-Path $testPacket "00-notes.md")) {
 }
 if (Test-Path (Join-Path $testPacket "launch-attestations.md")) {
   $attestations = Get-Content -LiteralPath (Join-Path $testPacket "launch-attestations.md") -Raw
-  foreach ($required in @("Supabase Live Status", "Server Load", "Real Client Rendering", "Live Command Audits", "External Media", "Session Zero And Capture Consent", "Credential Rotation", "Operator Verdict")) {
+  foreach ($required in @("Supabase Live Status", "Server Load", "Real Client Rendering", "Normal Non-Op Player Pass", "Live Command Audits", "External Media", "Session Zero And Capture Consent", "Credential Rotation", "Operator Verdict")) {
     RequireContains "generated launch-attestations.md" $attestations $required
   }
 }
 if (Test-Path (Join-Path $testPacket "live-server-command-sheet.md")) {
   $commandSheet = Get-Content -LiteralPath (Join-Path $testPacket "live-server-command-sheet.md") -Raw
-  foreach ($required in @("Live Server Command Sheet", "/observance status", "/observance preflight", "/observance visualaudit", "/observance dialogueaudit", "/obs unlit audit", "/obs unlit ready", "/observance flag set media_clip_01_ready true", "/observance flag set recovered_archive_ready true")) {
+  foreach ($required in @("Live Server Command Sheet", "Normal Non-Op Pass", "real non-op player account", "Deep Hold protection region", "wrong-answer attempt", "correct answer/input", "retrace/return", "Unlit pressure action", "/observance status", "/observance preflight", "/observance visualaudit", "/observance dialogueaudit", "/obs unlit audit", "/obs unlit ready", "/observance flag set media_clip_01_ready true", "/observance flag set recovered_archive_ready true")) {
     RequireContains "generated live-server-command-sheet.md" $commandSheet $required
   }
 }

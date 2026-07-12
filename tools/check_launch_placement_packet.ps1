@@ -30,6 +30,7 @@ $pluginJarFile = $pluginJars[0].FullName
 
 $commandSource = Get-Content -LiteralPath $commandFile -Raw
 $applySource = Get-Content -LiteralPath $applyFile -Raw
+$qualitySource = Get-Content -LiteralPath $qualityFile -Raw
 $runbook = Get-Content -LiteralPath $runbookFile -Raw
 $director = Get-Content -LiteralPath $directorFile -Raw
 $failures = [System.Collections.Generic.List[string]]::new()
@@ -84,8 +85,10 @@ if (Test-Path $csvPath) {
   if ($rows.Count -ne $launchSites.Count) {
     Fail "launch-sites.csv has $($rows.Count) row(s), expected $($launchSites.Count)"
   }
-  if (-not ($rows | Get-Member -Name "Lane" -MemberType NoteProperty)) {
-    Fail "launch-sites.csv missing placement Lane column"
+  foreach ($column in @("Lane", "PlacementMethod", "SurveyCommand", "AfterSurvey")) {
+    if (-not ($rows | Get-Member -Name $column -MemberType NoteProperty)) {
+      Fail "launch-sites.csv missing placement column '$column'"
+    }
   }
   foreach ($id in $launchSites) {
     if (-not ($rows | Where-Object { $_.SiteId -eq $id })) {
@@ -97,6 +100,24 @@ if (Test-Path $csvPath) {
       Fail "launch-sites.csv has no rows for placement lane '$lane'"
     }
   }
+  foreach ($id in @("rune_rosetta", "stone_vaun", "school_stand", "deep_market", "threshold_vault", "dread_route_start")) {
+    $row = @($rows | Where-Object { $_.SiteId -eq $id }) | Select-Object -First 1
+    if ($null -eq $row) {
+      Fail "launch-sites.csv missing Hold-owned site '$id'"
+    } elseif ($row.PlacementMethod -ne "Deep Hold generated") {
+      Fail "launch-sites.csv marks Hold-owned site '$id' as '$($row.PlacementMethod)', expected Deep Hold generated"
+    } elseif ($row.SurveyCommand -notmatch "placehold build") {
+      Fail "launch-sites.csv Hold-owned site '$id' does not point at /obs placehold build"
+    } elseif ($row.PlaceRule -match "scatter away") {
+      Fail "launch-sites.csv Hold-owned site '$id' still carries a manual scatter place rule"
+    }
+  }
+  foreach ($id in @("first_report_lectern_01", "nether_forge", "end_seventh_shrine")) {
+    $row = @($rows | Where-Object { $_.SiteId -eq $id }) | Select-Object -First 1
+    if ($null -ne $row -and $row.PlacementMethod -eq "Deep Hold generated") {
+      Fail "launch-sites.csv incorrectly marks outside-Hold site '$id' as Deep Hold generated"
+    }
+  }
 }
 
 if (Test-Path $capturePath) {
@@ -104,9 +125,17 @@ if (Test-Path $capturePath) {
   if ($captureRows.Count -ne $launchSites.Count) {
     Fail "coords-capture.csv has $($captureRows.Count) row(s), expected $($launchSites.Count)"
   }
-  foreach ($column in @("Lane", "ApproachShot", "FocalShot", "ActionShot", "ExitShot", "CohesionNotes")) {
+  foreach ($column in @("Lane", "PlacementMethod", "GeneratedProof", "PlaceworldReceipt", "ApproachShot", "FocalShot", "ActionShot", "ExitShot", "CohesionNotes")) {
     if (-not ($captureRows | Get-Member -Name $column -MemberType NoteProperty)) {
       Fail "coords-capture.csv missing quality-proof column '$column'"
+    }
+  }
+  foreach ($row in $captureRows) {
+    if (-not [string]::IsNullOrWhiteSpace([string]$row.GeneratedProof)) {
+      Fail "coords-capture.csv prefilled GeneratedProof for '$($row.SiteId)'; proof cells must start blank"
+    }
+    if (-not [string]::IsNullOrWhiteSpace([string]$row.PlaceworldReceipt)) {
+      Fail "coords-capture.csv prefilled PlaceworldReceipt for '$($row.SiteId)'; receipt cells must start blank"
     }
   }
 }
@@ -142,8 +171,18 @@ if (Test-Path $mdPath) {
     "live-server-command-sheet.md",
     "friend-launch-todo.md",
     "launch-attestations.md",
-    "launch-required coordinate anchors",
+    "Remaining launch proof rows",
+    "surveyed-stamp-pending",
     "Placement Lanes",
+    "PlacementMethod",
+    "Deep Hold generated",
+    "GeneratedProof",
+    "PlaceworldReceipt",
+    "nether_forge_placed",
+    "end_seventh_shrine_placed",
+    "/obs placehold build",
+    "/obs placehold audit",
+    "generated-room proof",
     "/obs site plan lanes",
     "/obs site next <lane>",
     "/obs site plan",
@@ -173,6 +212,10 @@ RequireContains "RUNBOOK.md" $runbook "tools\apply_launch_coords.ps1"
 RequireContains "DIRECTOR-SIMPLIFICATION.md" $director "new_launch_placement_packet.ps1"
 RequireContains "DIRECTOR-SIMPLIFICATION.md" $director "check_launch_coord_quality.ps1"
 RequireContains "DIRECTOR-SIMPLIFICATION.md" $director "apply_launch_coords.ps1"
+RequireContains "check_launch_coord_quality.ps1" $qualitySource "PlaceworldReceipt"
+RequireContains "check_launch_coord_quality.ps1" $qualitySource "has no /obs placeworld receipt"
+RequireContains "check_launch_coord_quality.ps1" $qualitySource "nether_forge_placed"
+RequireContains "check_launch_coord_quality.ps1" $qualitySource "end_seventh_shrine_placed"
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $qualityFile -RepoRoot $RepoRoot -CaptureCsv $capturePath | Out-Null
 if ($LASTEXITCODE -ne 0) {
