@@ -265,9 +265,9 @@ export default async function AuthorPage() {
     <div className="director-console space-y-8">
       <header className="director-header">
         <div>
-          <p className="eyebrow">Live production / restricted</p>
-          <h1>Observance Director</h1>
-          <p>World state, story pressure, player progress, and intervention controls in one live console.</p>
+          <p className="eyebrow">Production operations · live state</p>
+          <h1>Observance Operations Console</h1>
+          <p>Readiness, world state, story pressure, player progress, and guarded interventions.</p>
         </div>
         <form action={signOutAuthor}>
           <span>{operator.email}</span>

@@ -6,7 +6,6 @@ import {
   type ArchiveThread,
   type ArchiveCardView,
 } from "@/lib/archive-projection";
-import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * The Recovery Archive — the reading-room, one stratum below The Record (A13 `arg-leaves-the-game`, §7).
@@ -26,14 +25,14 @@ import { RuneGlyphs } from "@/lib/RuneGlyphs";
  *
  * ANTI-JANK: server component, no client JS, no polling. Static-per-build of the live revealed set — it
  * un-redacts in lockstep with progress (revalidate). The card bodies are authored recovered material; we
- * render them verbatim and author only the tiny UI chrome (section frame, the withheld line, the kind
- * tags, the citation links) — lowercase, cold, minimal, matching the Record's own chrome.
+ * render them verbatim and author only the exposed recordsrv chrome (section frame, withheld line, kind
+ * tags, citation links) — lowercase, cold, and shared with every deeper Record route.
  */
 
 export const metadata: Metadata = {
   // Found in-world, never by a crawler. (The segment layout sets this too; pinned here for the route.)
   robots: { index: false, follow: false },
-  title: "the recovery archive",
+  title: "recordsrv / recovery archive",
 };
 
 // Static-per-build of the live revealed set: revalidate periodically so the archive un-redacts with
@@ -190,15 +189,12 @@ function SealedShell() {
   return (
     <main className="record-site archive-site">
       <div className="record-page archive-page">
-        <header className="mb-10 text-center">
-          <div className="mb-4 flex select-none justify-center text-neutral-700">
-            <RuneGlyphs text="THE RECOVERY ARCHIVE" height={24} />
-          </div>
-          <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
-            the recovery archive
-          </h1>
+        <header className="record-system-header">
+          <div><span>recordsrv/0.7</span><span>projection: recovered</span><span>mode: sealed</span></div>
+          <h1>RECOVERY ARCHIVE</h1>
+          <p>no indexed material</p>
         </header>
-        <p className="text-center font-mono text-xs lowercase tracking-wide text-neutral-700">
+        <p className="record-empty">
           nothing has been recovered yet.
         </p>
       </div>
@@ -215,17 +211,10 @@ export default async function ArchivePage() {
   return (
     <main className="record-site archive-site">
       <div className="record-page archive-page">
-        {/* The rune-mark header — the same seal as the Record, this being its deeper layer, not a new page. */}
-        <header className="record-header">
-          <div className="record-glyph">
-            <RuneGlyphs text="THE RECOVERY ARCHIVE" height={24} />
-          </div>
-          <h1>
-            the recovery archive
-          </h1>
-          <p className="record-subtitle">
-            what has been recovered, kept under five heads.
-          </p>
+        <header className="record-system-header">
+          <div><span>recordsrv/0.7</span><span>projection: recovered</span><span>mode: read-only</span></div>
+          <h1>RECOVERY ARCHIVE</h1>
+          <p>indexed material grouped under five heads</p>
         </header>
 
         {/* The five threads, canonical order — recovered cards where found, a withheld line where not. */}

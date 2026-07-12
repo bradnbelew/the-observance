@@ -14,8 +14,11 @@ const nav: Array<[Active, string, string]> = [
 export function LegacyShell({ active, children }: { active: Active; children: React.ReactNode }) {
   return (
     <div className="legacy-site">
+      <div className="legacy-preservation" role="note">
+        Preserved customer-site snapshot · interactive account functions disabled · last complete mirror 03 Nov 2014
+      </div>
       <div className="legacy-utility">
-        <div><span>Legacy customer archive</span><span>New sales and support requests are closed</span></div>
+        <div><span>Copperline customer archive</span><span>Chicago · Dallas · Atlanta</span></div>
         <div><Link href="/clientarea.php">Client Area</Link><Link href="/support/index.php">Support</Link><Link href="/status">Network Status</Link></div>
       </div>
       <header className="legacy-header">
@@ -23,7 +26,7 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
           <strong>copper<span>line</span></strong>
           <small>WEB &amp; GAME SERVER HOSTING</small>
         </Link>
-        <div className="legacy-phone"><b>Sales &amp; Support</b><span>Live chat: offline</span><small>Existing account pages are read only</small></div>
+        <div className="legacy-phone"><b>Sales &amp; Support</b><span>1-877-555-0142</span><small>Office closed · archive enquiries unavailable</small></div>
       </header>
       <nav className="legacy-nav" aria-label="Primary navigation">
         {nav.map(([key, href, label]) => <Link key={key} href={href} className={active === key ? "active" : ""}>{label}</Link>)}
@@ -37,7 +40,7 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
               <label>Username<input disabled aria-label="Username" /></label>
               <label>Password<input disabled type="password" aria-label="Password" /></label>
               <button type="button" disabled>Login</button>
-              <p>Legacy billing access has been disabled.</p>
+              <p>Billing authentication retired 01 Dec 2014.</p>
             </div>
           </section>
           <section className="legacy-box">
@@ -56,7 +59,7 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
               <Link href="/announcements.php#java">Java 7 image update</Link><time>Apr 11, 2013</time>
             </div>
           </section>
-          <div className="legacy-badge"><b>PAYPAL</b><span>verified merchant</span></div>
+          <div className="legacy-badge"><b>PAYPAL</b><span>verified merchant · archived</span></div>
         </aside>
 
         <main className="legacy-content">{children}</main>
@@ -64,8 +67,8 @@ export function LegacyShell({ active, children }: { active: Active; children: Re
 
       <footer className="legacy-footer">
         <div><Link href="/">Home</Link> | <Link href="/support/index.php">Terms of Service</Link> | <Link href="/support/index.php">Privacy Policy</Link> | <Link href="/support/index.php">Contact Us</Link></div>
-        <p>Copyright © 2009–2014 Copperline Hosting. All rights reserved.</p>
-        <small>Copperline Hosting is not affiliated with Mojang AB. Minecraft is a trademark of Mojang AB.</small>
+        <p>Copyright © 2009–2014 Copperline Hosting. Archived pages are provided as-is.</p>
+        <small>Powered by WHMCS 5 · TCAdmin 1 · Copperline Hosting is not affiliated with Mojang AB.</small>
       </footer>
     </div>
   );

@@ -143,7 +143,7 @@ Payload:
 Integration:
 
 - The Record page withholds the link unless `dashboard/public/the-hold/the-hold.zip` exists.
-- The public root and Record page both point at the same zip. Before planting the live lure, verify the deployed dashboard can serve `/`, `/the-hold/the-hold.zip`, and `/record/the-record-keeps`.
+- The community attachment and mkept static mirror both point at the same zip. Before planting the live lure, verify the deployed dashboard can serve `/`, `/the-hold/the-hold.zip`, and `/record/the-record-keeps`.
 - Once present, include it in the rehearsal packet as a web-jump proof clip.
 
 Hosting:

@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { readLedger, EMPTY as EMPTY_LEDGER, type LedgerProjection } from "@/lib/record/ledger";
 import { readIntegrityLog, type IntegrityWarning } from "@/lib/record/integrity";
 import { InscribeForm } from "./InscribeForm";
-import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * /record/terminal — THE RECORD, recovered-archive terminal (CHANGE-MANIFEST A5 + L4, INTEGRATION
  * Layer 5). NOT a clean puzzle site: a half-corrupted archive terminal of the Hold's own
- * record-keeping — degraded, half-redacted, entries out of order, integrity/error warnings. It unifies
+ * record-keeping — a plain exposed service with half-redacted entries and integrity warnings. It unifies
  * three surfaces into one artifact: the LEDGER (names fill in), the WRITE-IN (inscribe answers), and
  * the INTEGRITY CHECK (the hint rail as an escalating error log).
  *
@@ -28,7 +27,7 @@ import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
-  title: "the record // recovered",
+  title: "recordsrv / recovery terminal",
 };
 
 // Re-read the live state periodically so the terminal un-redacts with progress. No client polling.
@@ -44,27 +43,18 @@ function Redaction({ width = 8 }: { width?: number }) {
   );
 }
 
-/** The corrupted header — an integrity banner, a decayed archive id, glitched runes. Reads recovered. */
+/** The exposed internal-service header. Its plain protocol chrome explains the visual break from Copperline. */
 function Header({ ledger }: { ledger: LedgerProjection }) {
   return (
-    <header className="mb-8 border border-neutral-900 bg-black/30">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-900 px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-neutral-600">
-        <span>archive//the-record</span>
+    <header className="record-system-header terminal-system-header">
+      <div>
+        <span>recordsrv/0.7</span><span>endpoint: /terminal</span>
         <span className={ledger.sealed ? "text-red-800" : "text-amber-700/80"}>
-          {ledger.sealed ? "integrity: unreadable — cold restore" : "integrity: partial — recovered"}
+          {ledger.sealed ? "integrity: unreadable" : "integrity: partial"}
         </span>
       </div>
-      <div className="px-4 py-6">
-        <div className="mb-3 flex select-none items-center gap-2 text-neutral-700">
-          <RuneGlyphs text="THE RECORD" height={22} />
-          <span className="font-mono text-xl tracking-[0.5em] text-red-900/60">▚▚</span>
-        </div>
-        <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-400">the record</h1>
-        <p className="mt-2 font-mono text-[11px] lowercase leading-relaxed text-neutral-600">
-          recovered fragment. read order not preserved. some entries are struck. the count is what the
-          record could keep.
-        </p>
-      </div>
+      <h1>THE RECORD / RECOVERY TERMINAL</h1>
+      <p>read order not preserved · struck entries omitted · writes accepted without echo</p>
     </header>
   );
 }

@@ -9,7 +9,6 @@ import {
   type RecordSignal,
   type RecordEntry,
 } from "@/lib/record-projection";
-import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * The Record — the keepers' archive that leaves the game (A13 `arg-leaves-the-game`, §7) + the
@@ -23,11 +22,10 @@ import { RuneGlyphs } from "@/lib/RuneGlyphs";
  * THE SLUG (A14). The route is the slug authority for the closed set { the-record, the-record-keeps }.
  *   - `the-record` → the BASE archive (A13, unchanged). (Bare `/record` does not match this dynamic
  *     segment; the plain Record is reached at `/record/the-record`.)
- *   - `the-record-keeps` → the base archive + the DOWNLOADS BLOCK (the lure page: a static `kept: 6`,
- *     one recovered-file entry quoting Mara's provenance, the README "lie", the struck-7). The `6` is a
- *     STATIC AUTHORED number — six prior keeper-generations the record already kept (ledger #24), NOT a
- *     live counter (a live count would drift off 6 and add a backend; CURSED-MAP-SITE §2c). The downloads
- *     block reads NO new data — the projection is not widened.
+ *   - `the-record-keeps` → a crude preserved user-file mirror outside the WHMCS template. It carries the
+ *     static `kept: 6`, the struck seventh row, the map file, and m.kept's uploader note. Its black-page
+ *     appearance is explained by the surviving lighttpd user directory, not by unexplained ARG styling.
+ *     The authored six is not a live counter and this branch reads no story state.
  *   - anything else → one in-voice 404 (the cold shell, one struck line, no entries) — a guessed slug
  *     never leaks the real archive (CURSED-MAP-SITE §1).
  *
@@ -70,11 +68,17 @@ function resolveSlug(raw: string | undefined): RecordSlug {
   return "unknown";
 }
 
-export const metadata: Metadata = {
-  // Found in-world, never by a crawler. (The segment layout sets this too; pinned here for the route.)
-  robots: { index: false, follow: false },
-  title: "the record",
-};
+export async function generateMetadata({ params }: { params: Promise<{ slug?: string }> }): Promise<Metadata> {
+  const which = resolveSlug((await params).slug);
+  return {
+    robots: { index: false, follow: false },
+    title: which === "lure"
+      ? "Index of /~mkept/record/"
+      : which === "base"
+        ? "recordsrv / public projection"
+        : "record key not found",
+  };
+}
 
 // Static-per-build of the live coarse state: revalidate periodically so the archive un-redacts with
 // progress WITHOUT any client polling. No request-time spoiler surface; just the neutral view, cached.
@@ -151,98 +155,42 @@ function ArchiveLine({ entry, index }: { entry: RecordEntry; index: number }) {
   );
 }
 
-/**
- * The downloads block — the ONLY thing the lure slug adds (A14, CURSED-MAP-SITE §2). Pure + static:
- * no props from the DB, reads no view. The `kept: 6` is an AUTHORED number (ledger #24), not a metric;
- * the struck-7 reuses the projection's REDACTED_GLYPH for iceberg continuity. All copy is verbatim,
- * de-slopped, cold register (the map description, Mara's `m.kept` provenance, the README "lie"). The
- * download href is the GO-LIVE vignette asset (see PROLOGUE-VIGNETTE.md). Quotes the-copy-i-kept.md +
- * is backed by six-were-kept-before-you.md (the canon homes; LORE owns the wording).
- */
+/** The preserved file row. Pure and static: it reads no view and exposes no server endpoint. */
 function Downloads({ hasHoldZip }: { hasHoldZip: boolean }) {
   return (
-    <section className="mt-12 border-t border-neutral-900 pt-8 font-mono text-sm text-neutral-400">
-      {/* the one legible recovered-file entry — the map description (flat, found, no marketing). */}
-      <p className="leading-relaxed text-neutral-300">
-        a hold, kept and left. one walk through it remains. the rest of the record is kept elsewhere.
-        what is downloaded is only the part that fit in a file.
-      </p>
-
-      {/* the file name as an archive row — a filename, never a button/CTA. */}
-      <p className="mt-4 font-mono">
+    <section className="mirror-files" aria-labelledby="mirror-files-heading">
+      <h2 id="mirror-files-heading">files</h2>
+      <div className="mirror-file-row">
+        <span>-rw-r--r--</span><span>mkept</span><span>17K</span>
         {hasHoldZip ? (
           <a
             href={HOLD_ZIP_PUBLIC_PATH}
             download
             rel="noopener"
-            className="text-neutral-300 underline decoration-neutral-700 underline-offset-4 hover:text-neutral-200"
           >
             the-hold.zip
           </a>
         ) : (
-          <span className="text-neutral-700 line-through decoration-neutral-800" title="not recovered">
+          <span className="mirror-missing" title="not recovered">
             the-hold.zip
           </span>
         )}
-      </p>
-      {!hasHoldZip && (
-        <p className="mt-1 text-xs lowercase tracking-wide text-neutral-700">
-          file not yet recovered.
-        </p>
-      )}
-
-      {/* the README "lie" — technically true; the load-bearing line is "it does not connect to anything"
-          (ledger #25: the map connects to nothing; the server does). */}
-      <p className="mt-2 text-xs leading-relaxed text-neutral-600">
-        the-hold.zip — a small offline map. single player. no mods. about fifteen minutes.
-        <br />
-        it does not connect to anything. play it through to the end and it will tell you where the rest
-        is kept.
-      </p>
-
-      {/* the provenance — Mara's hand, signed m.kept (the dead uploader; ledger #26). Quotes the last
-          four lines of the-copy-i-kept.md verbatim. */}
-      <p className="mt-6 text-xs leading-relaxed text-neutral-500">
-        i copied it as it was given, page for page, and set the copy where fire and water do not reach.
-        <br />
-        i did not keep the seventh. i was not the hand that decides what is kept. — m.kept
-      </p>
-
-      {/* the counter — STATIC `kept: 6` + the struck seventh row (ledger #24). Not a live count. */}
-      <div className="mt-8 font-mono">
-        <div className="flex items-baseline gap-2">
-          <span className="text-xs uppercase tracking-wide text-neutral-700">kept</span>
-          <span className="text-2xl tabular-nums text-neutral-300">6</span>
-        </div>
-        <div
-          aria-label="withheld"
-          title="withheld"
-          className="mt-1 select-none tracking-widest text-neutral-700"
-        >
-          {REDACTED_GLYPH}
-        </div>
       </div>
+      {!hasHoldZip && (
+        <p className="mirror-error">file not yet recovered from preserved object store.</p>
+      )}
+      <p className="mirror-file-note">normal single-player world · no mods · approximately fifteen minutes · does not connect to anything</p>
     </section>
   );
 }
 
-/** The in-voice 404 — a guessed slug never leaks the real archive (A14, CURSED-MAP-SITE §1). The same
- *  cold shell, one struck line, no entries: an archive that holds nothing under that name. */
+/** A guessed key receives the service's ordinary lookup error and leaks no archive state. */
 function NotFoundShell() {
   return (
-    <main className="record-site">
-      <div className="record-page narrow">
-        <header className="mb-10 text-center">
-          <div className="mb-4 flex select-none justify-center text-neutral-700">
-            <RuneGlyphs text="THE RECORD" height={26} />
-          </div>
-          <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
-            the record
-          </h1>
-        </header>
-        <p className="text-center font-mono text-xs lowercase tracking-wide text-neutral-700">
-          nothing is kept under that name here.
-        </p>
+    <main className="record-error-site">
+      <div className="record-error-box">
+        <p>recordsrv/0.7</p><h1>404: key not found</h1>
+        <pre>lookup failed{`\n`}nothing is kept under that name here.</pre>
       </div>
     </main>
   );
@@ -261,22 +209,18 @@ export default async function RecordPage({
   const hasHoldZip = holdZipAvailable();
   if (which === "lure") {
     return (
-      <main className="record-site lure-site">
-        <div className="record-page narrow">
-          <header className="record-header">
-            <div className="record-glyph"><RuneGlyphs text="THE RECORD KEEPS" height={28} /></div>
-            <p className="eyebrow">mirror fragment / uploader copy</p>
-            <h1>the record keeps</h1>
-            <p className="record-subtitle">six hands entered before the public row was struck.</p>
+      <main className="mirror-site">
+        <div className="mirror-page">
+          <header className="mirror-header">
+            <p>files.copperlinehosting.com :: static user mirror</p>
+            <h1>/home/mkept/public_html/record/</h1>
+            <span>read-only snapshot · last modified 2011-02-08 23:51 CST</span>
           </header>
-          <ol className="lure-ledger" aria-label="prior kept entries">
-            {Array.from({ length: 6 }, (_, index) => (
-              <li key={index}><span>{String(index + 1).padStart(2, "0")}</span><Redaction /></li>
-            ))}
-            <li className="broken"><span>07</span><em>row returned without a name</em></li>
-          </ol>
+          <nav className="mirror-nav"><Link href="/community/2011/02/08/world-backup">../ return to community post</Link></nav>
+          <section className="mirror-note-block"><h2>copy-register.txt</h2><pre>{`THE RECORD KEEPS\n\n01  copy withheld\n02  copy withheld\n03  copy withheld\n04  copy withheld\n05  copy withheld\n06  copy withheld\n07  row returned without a name\n\nkept: 6\nseventh: ----------------`}</pre></section>
           <Downloads hasHoldZip={hasHoldZip} />
-          <footer className="record-footer"><Link href="/">return to the mirror</Link></footer>
+          <section className="mirror-note-block"><h2>uploader-note.txt</h2><p>a hold, kept and left. one walk through it remains. the rest of the record is kept elsewhere.</p><p>i copied it as it was given, page for page. i did not keep the seventh. i was not the hand that decides what is kept.</p><p>— m.kept</p></section>
+          <footer className="mirror-footer">lighttpd/1.4.28 · preserved directory index · write methods disabled</footer>
         </div>
       </main>
     );
@@ -292,18 +236,10 @@ export default async function RecordPage({
   return (
     <main className="record-site">
       <div className="record-page narrow">
-        {/* The rune-mark header. The glyph block stands for the archive's seal — the same rune
-            alphabet learned in-world (a recognizable mark, not decoded text). Cold, no warmth. */}
-        <header className="record-header">
-          <div className="record-glyph">
-            <RuneGlyphs text="THE RECORD" height={26} />
-          </div>
-          <h1>
-            the record
-          </h1>
-          <p className="record-subtitle">
-            {rec.season}
-          </p>
+        <header className="record-system-header">
+          <div><span>recordsrv/0.7</span><span>projection: public</span><span>mode: read-only</span></div>
+          <h1>THE RECORD</h1>
+          <p>{rec.season}</p>
         </header>
 
         {/* The one number — a muster, not a clock. */}
@@ -323,8 +259,6 @@ export default async function RecordPage({
           ))}
         </ol>
 
-        {/* The lure slug appends the downloads block (the recovered file + the static `kept: 6`). The
-            base slug renders the archive alone. The block reads no new data (A14). */}
         {/* The standing footer — a count, then the iceberg. */}
         <footer className="record-footer">
           {rec.footer}

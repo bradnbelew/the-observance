@@ -21,7 +21,7 @@ export default function HomePage() {
         <div className="old-server-art" aria-hidden><i /><i /><i /><span>99.9%<small>NETWORK UPTIME</small></span></div>
       </section>
 
-      <div className="old-alert"><b>Notice:</b> Copperline is no longer accepting new orders. Existing account information remains available through the legacy client area.</div>
+      <div className="old-alert"><b>Archived notice — December 1, 2014:</b> Copperline no longer accepts orders, payments, uploads, or support requests. Public directory records remain available exactly as retained.</div>
 
       <section className="old-section">
         <h2 className="old-rule-title">Minecraft Hosting Plans</h2>
@@ -41,7 +41,7 @@ export default function HomePage() {
         <section className="old-section"><h2 className="old-rule-title">Company News</h2><article className="home-news"><time>Nov 03, 2014</time><h3><Link href="/announcements.php#panel">Legacy panel access</Link></h3><p>The TCAdmin 1 panel is now available in read-only mode for expired accounts...</p></article><article className="home-news"><time>Jul 20, 2014</time><h3><Link href="/announcements.php#billing">Billing system maintenance</Link></h3><p>The client area will be unavailable Sunday during scheduled maintenance...</p></article><Link href="/announcements.php" className="small-old-link">View all announcements »</Link></section>
       </div>
 
-      <section className="old-testimonial"><b>What customers are saying</b><blockquote>“Setup was quick and the Chicago connection has been solid. Support moved our old world over the same day.”</blockquote><span>— Daniel R., Builder plan customer</span></section>
+      <section className="old-testimonial"><b>From the 2012 customer survey</b><blockquote>“Setup was quick and the Chicago connection has been solid. Support moved our old world over the same day.”</blockquote><span>— Daniel R., Builder plan customer</span></section>
     </LegacyShell>
   );
 }

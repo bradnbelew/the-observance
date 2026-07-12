@@ -11,7 +11,7 @@ The public root (`/`) is the retired Copperline Hosting company site. It contain
 - `/community/2011/02/08/world-backup` carries the Hold download and the quiet bridge to the Record lure.
 - `/status` is spoiler-free. It reads only neutral public views such as health, heatmap, and compliance counts.
 - `/author` is the full-spoiler operator console. It includes arc control, beat approval, whisper budgets, bond ledger, named dossiers, Watcher sleep, ending preview/override, and director run status.
-- `/record/the-record-keeps`, `/record/the-record`, `/record/archive`, and `/record/terminal` are in-fiction recovered archive surfaces. They remain `noindex`.
+- `/record/the-record-keeps` is the crude preserved mkept user-file mirror. `/record/the-record`, `/record/archive`, and `/record/terminal` are progressively deeper views of the same exposed `recordsrv` service. All remain `noindex`.
 
 Author mode is sign-in gated with Supabase passwordless authentication and the `ADMIN_EMAILS` allowlist. Every privileged server action re-checks authorization before constructing the service-role client.
 

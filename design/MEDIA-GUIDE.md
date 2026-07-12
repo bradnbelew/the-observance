@@ -113,8 +113,8 @@ that points at it** (or the trail dead-ends / a link 404s).
   Hosting, common web, and service 1842, pointing to the public directory without exposing a server port or raw endpoint.
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
-  download on the record website's lure page (`/record/the-record-keeps`).
-- **Where it wires:** `dashboard/public/the-hold/the-hold.zip`. The lure page withholds the download link until this file exists
+  download on mkept's preserved static file mirror (`/record/the-record-keeps`).
+- **Where it wires:** `dashboard/public/the-hold/the-hold.zip`. The static mirror withholds the download link until this file exists
   (`the-hold.zip`, with the README "lie": *"a small offline map. single player. no mods. ~fifteen minutes.
   it does not connect to anything. play it through and it will tell you where the rest is kept."*).
   The file is now in the dashboard public folder. Verify the deployed `/the-hold/the-hold.zip` URL before

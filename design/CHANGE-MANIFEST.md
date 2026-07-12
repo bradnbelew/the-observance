@@ -860,7 +860,7 @@ web (S4) for the cross-surface lock. Re-run seedcheck/specscheck/gatecheck.
 |---|---|---|---|
 | `/record/[slug]` (the-record) projection | `record-projection.ts` | **REBUILD (extend)** | Multi-state legibility: `legible / corrected / struck / silent-absence` (not just legible↔struck). Add the M4 **correction variant** (the record was told X, later writes Y). Model **silence** (a fact kept so well it is *absent*, not struck). Corruption/decay skin. |
 | `/record/terminal` (ledger + threads + integrity) | `terminal/page.tsx` + `ledger.ts` + `integrity.ts` | **MIGRATE** | Keep structure; add **layered ledger history** (not just current count), **web-branching threads** (a clue → multiple nodes), recovered-note decay aesthetic. |
-| `/record/the-record-keeps` (lure) | same route | **KEEP** | Solid fiction; optional light decay skin. |
+| `/record/the-record-keeps` (lure) | same route | **REBUILT** | Preserved user-file mirror; crude lighttpd index, no ceremonial ARG skin. |
 | `layout.tsx` nav bleed | `record/layout.tsx` / `app/layout.tsx` | **FIX (bug)** | Public record still renders the admin Status/Author nav. Conditional on pathname so the archive reads as a standalone off-world artifact. |
 | `/status`, `/author` | — | **KEEP** | Infrastructure / director console; not narrative surface. |
 | `/` home | `page.tsx` | **MIGRATE (minor)** | Admin hub — keep, but ensure it never appears on the public archive side. |

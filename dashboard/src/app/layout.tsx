@@ -3,8 +3,8 @@ import "./globals.css";
 import SiteChrome from "./site-chrome";
 
 export const metadata: Metadata = {
-  title: "The Observance",
-  description: "Archived Minecraft server listing and recovered record.",
+  title: "Copperline Hosting Archive",
+  description: "Preserved Copperline Hosting customer pages and public server directory.",
   robots: { index: false, follow: false },
 };
 

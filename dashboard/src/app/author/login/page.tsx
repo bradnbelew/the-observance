@@ -11,15 +11,15 @@ export default async function AuthorLoginPage() {
   return (
     <main className="operator-login-shell">
       <section className="operator-login-card">
-        <p className="eyebrow">Observance control / restricted channel</p>
-        <div className="operator-seal" aria-hidden>VII</div>
-        <h1>Director access</h1>
+        <p className="eyebrow">Production operations · authenticated</p>
+        <div className="operator-seal" aria-hidden>OPS</div>
+        <h1>Operator sign-in</h1>
         <p className="operator-login-copy">
-          This surface can alter the live world, release queued events, and expose unrecovered evidence.
-          Access is limited to configured operators.
+          This console can alter live story state, release queued events, and expose unrecovered evidence.
+          Passwordless access is restricted to the configured operator allowlist.
         </p>
         <LoginForm />
-        <Link href="/" className="quiet-link">Return to public mirror</Link>
+        <Link href="/" className="quiet-link">Return to Copperline archive</Link>
       </section>
     </main>
   );
