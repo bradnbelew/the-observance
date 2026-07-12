@@ -113,9 +113,9 @@ John uses the alphabet he built from the Rosetta ring. He decodes the line:
 > the-record-keeps
 
 This is not the first web door anymore. The Hold copy already taught him a rougher address shape: front
-door `SNOIKERZ`, common web, root path. John reaches the old listing first. It does not look like a clean
-ARG menu. It looks like an abandoned Minecraft server/map host: the file is there, the Record links are
-there, and the live server address is either withheld or listed by the host.
+provider `COPPERLINE`, service `HOSTING`, common web, directory number `1842`. John reaches a dead game
+hosting company, not an ARG menu. He searches its ordinary public directory for service 1842, finds the
+expired Observance row and its owner activity, then follows the backup post to the file and plain mirror page.
 
 The hyphens make `the-record-keeps` look like a route, not a sentence. The note said it was a name to call
 the kept-place by, not a place to walk to. John tries it on the same site:

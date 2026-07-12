@@ -2,16 +2,18 @@
 
 Public web surface and operator dashboard for The Observance, an emergent-horror Minecraft server backed by Supabase.
 
-The public root (`/`) is an abandoned-looking server/map host: it exposes the downloadable opening map, the live server address when configured, and the recovered Record links. The Minecraft plugin writes live game state into Supabase: players, dossiers, heatmap cells, beat queue, arc state, settings, and event logs. The operator pages give the director two views onto that state.
+The public root (`/`) is the retired Copperline Hosting company site. It contains ordinary product, support, announcement, community, and server-directory pages. The Observance is buried at `/server.php?id=1842`; that row owns the configured live address and leads through its account activity to the world copy and Record. The Minecraft plugin writes live state into Supabase, while `/author` is the authenticated director console.
 
 ## Modes
 
-- `/` is the in-fiction server listing players reach after the opening map. It should be safe to share once the live server address is ready.
+- `/` is the ordinary Copperline company homepage and contains no direct ARG navigation.
+- `/server-list.php` and `/server.php?id=1842` form the expired customer-directory trail.
+- `/community/2011/02/08/world-backup` carries the Hold download and the quiet bridge to the Record lure.
 - `/status` is spoiler-free. It reads only neutral public views such as health, heatmap, and compliance counts.
 - `/author` is the full-spoiler operator console. It includes arc control, beat approval, whisper budgets, bond ledger, named dossiers, Watcher sleep, ending preview/override, and director run status.
 - `/record/the-record-keeps`, `/record/the-record`, `/record/archive`, and `/record/terminal` are in-fiction recovered archive surfaces. They remain `noindex`.
 
-Author mode is intentionally not sign-in gated. Anyone who can reach the deployed `/author` URL can use the operator controls, so protect the dashboard URL outside the app: private deployment, Vercel protection, VPN, localhost, or another access wall.
+Author mode is sign-in gated with Supabase passwordless authentication and the `ADMIN_EMAILS` allowlist. Every privileged server action re-checks authorization before constructing the service-role client.
 
 ## Stack
 
@@ -37,10 +39,11 @@ NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon/publishable key>
 SUPABASE_SERVICE_ROLE_KEY=<service_role secret key>
 NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS=<host:port shown on the public listing>
+ADMIN_EMAILS=<comma-separated operator email addresses>
 ```
 
 The dashboard and Minecraft plugin should point at the same Supabase project.
-Leave `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` blank until the live Paper address is safe to reveal; `/` will render it as withheld.
+Leave `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` blank until the live Paper address is safe to reveal; Copperline service `1842` will render its old address row as unavailable.
 
 ## Local Development
 
@@ -55,7 +58,7 @@ Open:
 - `http://localhost:3000/status`
 - `http://localhost:3000/author`
 
-`/author` opens directly. Keep local tunnels and deployed URLs private.
+`/author` redirects to `/author/login` until an allowlisted operator signs in.
 
 ## Database Migrations
 

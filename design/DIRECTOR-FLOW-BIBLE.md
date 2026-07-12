@@ -58,7 +58,7 @@ Current hard rules:
 
 Players receive `the-hold.zip` before the server. It must not simply hand them
 the IP. It now behaves as a contained invitation puzzle that resolves to the
-abandoned public listing: front door, common web, and root path. The listing,
+abandoned public directory: Copperline, Hosting, common web, and service 1842. The customer row,
 not the zip, owns the live Paper address reveal.
 
 Players should infer:
@@ -69,9 +69,9 @@ Players should infer:
 
 Onward vector:
 
-- The final room points to `SNOIKERZ`, common web, and `/`.
-- The public listing exposes `the-hold.zip`, the Record links, and the live
-  server address once `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` is configured.
+- The final room points to Copperline Hosting on the common web and service `1842`.
+- The company homepage exposes no ARG menu. Service 1842 owns the live address and links to the
+  account owner’s ordinary community post; that post carries the world copy and quiet Record bridge.
 - First server arrival confirms the web trail resolved to something real.
 
 Director watch:

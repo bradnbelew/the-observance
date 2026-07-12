@@ -167,14 +167,15 @@ John decodes the old-script line with the Rosetta literacy:
 
 The opening Hold copy also teaches a blunter web door:
 
-> front door: SNOIKERZ
+> provider: COPPERLINE
+> service: HOSTING
 > ending: common web
-> path: /
+> directory number 1842
 
-John reaches the abandoned listing first. It looks like an old server/map host,
-not a clean puzzle menu: the Hold download is there, the Record routes are there,
-and the live Paper address appears there only once the operator has configured
-`NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS`.
+John reaches an ordinary abandoned hosting company first. The homepage contains no ARG menu.
+The public directory entry for service 1842 contains the configured Paper address and names the
+account hand; its activity trail reaches a community backup post, which carries the Hold download
+and one understated link to the Record page.
 
 The decoded Record route remains the deeper receipt:
 

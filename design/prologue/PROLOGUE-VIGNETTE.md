@@ -179,7 +179,7 @@ italic gray, or written-book/sign text. **No line claims the map is haunted; no 
   > the rest is not kept in this hold. it is kept where the others are. bring them, and come to the place
   > named below. the record is open there. it was open before you.
 - Beneath/beside it, a sign or item-frame map carrying **two things**, in plain text:
-  1. **the old listing clue**: front door `SNOIKERZ`, common web, root path `/`. The live server address belongs on that listing, not inside the file.
+  1. **the old directory clue**: provider `COPPERLINE`, service `HOSTING`, common web, directory number `1842`. The live server address belongs on that customer row, not inside the file.
   2. **the rune string** that decodes (later, in-server, P4 literacy) to `the-record-keeps` — the **same**
      founder-margin key (`kept-in-more-than-one-place`, ledger #11). It is a **recognition token**, not a
      day-zero gate; the player is not asked to crack it. Rendered in the campaign rune glyphs if the
@@ -283,6 +283,7 @@ and unreachable from the client (`2f`). Cracking it spoils nothing.
 5. **Wire the on-arrival frame-break beat** into the BUILT ack path (TS-SHOWRUN), gated on the
    count-callback measured signal; emit `recordFrameBreak()` once.
 > **Current override (2026-07-08):** the Hold handoff must not print a raw server endpoint. Use the rebuilt
-> destination grammar instead: front door (`SNOIKERZ`), common web, and root path (`/`). The map points to
-> the abandoned public listing first; the website owns the live Paper address reveal. If older text above
+> destination grammar instead: provider (`COPPERLINE`), service (`HOSTING`), common web, and directory
+> number (`1842`). The map points to the abandoned company directory first; service 1842 owns the live
+> Paper address reveal. If older text above
 > says to bake a plain server address or port into room 5, treat that as retired.

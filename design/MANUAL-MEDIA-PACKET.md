@@ -129,7 +129,7 @@ Minimum build:
 2. Domestic room: beds, lamp, ration evidence, signs of people rather than monsters.
 3. Water/reflection room: a Sella count problem, seven where six is expected.
 4. Lamp/hearth room: the kept light and one wrong cold place.
-5. Handoff room: the destination split across front door, common web, and root path.
+5. Handoff room: the destination split across Copperline, Hosting, common web, and service 1842.
 
 Payload:
 
