@@ -36,3 +36,5 @@ observance-deploy-manifest.json
 
 # generated launch/rehearsal packets
 rehearsals/
+
+.vercel
