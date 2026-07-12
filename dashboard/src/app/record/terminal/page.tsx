@@ -208,8 +208,8 @@ export default async function RecordTerminalPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#070809] px-4 py-12 text-neutral-400">
-      <div className="mx-auto max-w-2xl">
+    <main className="record-site terminal-site">
+      <div className="record-page terminal-page">
         <Header ledger={ledger} />
         <Muster ledger={ledger} />
         <Ledger ledger={ledger} />

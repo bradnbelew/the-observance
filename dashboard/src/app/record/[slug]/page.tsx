@@ -230,8 +230,8 @@ function Downloads({ hasHoldZip }: { hasHoldZip: boolean }) {
  *  cold shell, one struck line, no entries: an archive that holds nothing under that name. */
 function NotFoundShell() {
   return (
-    <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
-      <div className="mx-auto max-w-xl">
+    <main className="record-site">
+      <div className="record-page narrow">
         <header className="mb-10 text-center">
           <div className="mb-4 flex select-none justify-center text-neutral-700">
             <RuneGlyphs text="THE RECORD" height={26} />
@@ -258,33 +258,56 @@ export default async function RecordPage({
   const which = resolveSlug(slug);
   if (which === "unknown") return <NotFoundShell />;
 
+  const hasHoldZip = holdZipAvailable();
+  if (which === "lure") {
+    return (
+      <main className="record-site lure-site">
+        <div className="record-page narrow">
+          <header className="record-header">
+            <div className="record-glyph"><RuneGlyphs text="THE RECORD KEEPS" height={28} /></div>
+            <p className="eyebrow">mirror fragment / uploader copy</p>
+            <h1>the record keeps</h1>
+            <p className="record-subtitle">six hands entered before the public row was struck.</p>
+          </header>
+          <ol className="lure-ledger" aria-label="prior kept entries">
+            {Array.from({ length: 6 }, (_, index) => (
+              <li key={index}><span>{String(index + 1).padStart(2, "0")}</span><Redaction /></li>
+            ))}
+            <li className="broken"><span>07</span><em>row returned without a name</em></li>
+          </ol>
+          <Downloads hasHoldZip={hasHoldZip} />
+          <footer className="record-footer"><Link href="/">return to the mirror</Link></footer>
+        </div>
+      </main>
+    );
+  }
+
   const signal = await readSignal();
   const rec = project(signal);
-  const hasHoldZip = holdZipAvailable();
   // Discoverability for the deeper layer (/record/archive), gated on the ALREADY-READ coarse signal (no
   // second DB round-trip): at least one stone read ⇒ the recovery archive has something to show. The link
   // is cold + in-register — a kept filename, never a CTA. Never shown on the sealed baseline.
   const archiveHasContent = (signal.stonesRead ?? 0) > 0;
 
   return (
-    <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
-      <div className="mx-auto max-w-xl">
+    <main className="record-site">
+      <div className="record-page narrow">
         {/* The rune-mark header. The glyph block stands for the archive's seal — the same rune
             alphabet learned in-world (a recognizable mark, not decoded text). Cold, no warmth. */}
-        <header className="mb-10 text-center">
-          <div className="mb-4 flex select-none justify-center text-neutral-700">
+        <header className="record-header">
+          <div className="record-glyph">
             <RuneGlyphs text="THE RECORD" height={26} />
           </div>
-          <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
+          <h1>
             the record
           </h1>
-          <p className="mt-3 font-mono text-xs lowercase tracking-wide text-neutral-600">
+          <p className="record-subtitle">
             {rec.season}
           </p>
         </header>
 
         {/* The one number — a muster, not a clock. */}
-        <div className="mb-8 flex items-baseline justify-center gap-2 font-mono">
+        <div className="record-muster">
           <span className="text-3xl tabular-nums text-neutral-300">{rec.kept}</span>
           <span className="text-sm text-neutral-700">/</span>
           <span className="text-sm tabular-nums text-neutral-600">{rec.total}</span>
@@ -294,7 +317,7 @@ export default async function RecordPage({
         </div>
 
         {/* The archive — earned entries legible, the rest withheld (struck blocks). */}
-        <ol className="border-b border-neutral-900">
+        <ol className="record-ledger">
           {rec.entries.map((entry, i) => (
             <ArchiveLine key={entry.id} entry={entry} index={i} />
           ))}
@@ -302,10 +325,8 @@ export default async function RecordPage({
 
         {/* The lure slug appends the downloads block (the recovered file + the static `kept: 6`). The
             base slug renders the archive alone. The block reads no new data (A14). */}
-        {which === "lure" && <Downloads hasHoldZip={hasHoldZip} />}
-
         {/* The standing footer — a count, then the iceberg. */}
-        <footer className="mt-8 text-center font-mono text-xs lowercase tracking-wide text-neutral-700">
+        <footer className="record-footer">
           {rec.footer}
           {/* The quiet link to the deeper layer — shown only once something is kept there (a stone read).
               A plain underlined mono line in-register, never a CTA. */}

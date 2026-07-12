@@ -188,8 +188,8 @@ function Thread({ thread }: { thread: ArchiveThread }) {
 /** The sealed shell — nothing recovered yet. The cold "nothing kept" tone, never an error. */
 function SealedShell() {
   return (
-    <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
-      <div className="mx-auto max-w-xl">
+    <main className="record-site archive-site">
+      <div className="record-page archive-page">
         <header className="mb-10 text-center">
           <div className="mb-4 flex select-none justify-center text-neutral-700">
             <RuneGlyphs text="THE RECOVERY ARCHIVE" height={24} />
@@ -213,17 +213,17 @@ export default async function ArchivePage() {
   if (archive.empty) return <SealedShell />;
 
   return (
-    <main className="min-h-screen bg-[#070809] px-4 py-16 text-neutral-400">
-      <div className="mx-auto max-w-xl">
+    <main className="record-site archive-site">
+      <div className="record-page archive-page">
         {/* The rune-mark header — the same seal as the Record, this being its deeper layer, not a new page. */}
-        <header className="mb-10 text-center">
-          <div className="mb-4 flex select-none justify-center text-neutral-700">
+        <header className="record-header">
+          <div className="record-glyph">
             <RuneGlyphs text="THE RECOVERY ARCHIVE" height={24} />
           </div>
-          <h1 className="font-mono text-sm uppercase tracking-[0.4em] text-neutral-500">
+          <h1>
             the recovery archive
           </h1>
-          <p className="mt-3 font-mono text-xs lowercase tracking-wide text-neutral-600">
+          <p className="record-subtitle">
             what has been recovered, kept under five heads.
           </p>
         </header>

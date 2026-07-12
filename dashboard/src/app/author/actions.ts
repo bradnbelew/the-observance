@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { assertAuthor } from "@/lib/author-auth";
 import { coerceFate } from "@/app/author/fate-preview";
 import type { BeatStatus, Json } from "@/lib/database.types";
 
@@ -31,6 +32,7 @@ function refresh() {
  * constraint), so we always target it.
  */
 export async function setArcAct(act: number): Promise<ActionResult> {
+  await assertAuthor();
   const next = Math.max(1, Math.min(3, Math.trunc(act)));
   const supabase = createAdminClient();
 
@@ -94,6 +96,7 @@ async function decideBeat(
   id: number,
   status: Extract<BeatStatus, "approved" | "fired" | "skipped">,
 ): Promise<ActionResult> {
+  await assertAuthor();
   const supabase = createAdminClient();
 
   const { error } = await supabase
@@ -140,6 +143,7 @@ export async function skipBeatForm(formData: FormData): Promise<void> {
 export async function updateWhisperBudget(
   formData: FormData,
 ): Promise<ActionResult> {
+  await assertAuthor();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id)) return { ok: false, error: "Bad budget id." };
 
@@ -191,6 +195,7 @@ export async function updateWhisperBudgetForm(
 export async function setWatcherSleep(
   asleep: boolean,
 ): Promise<ActionResult> {
+  await assertAuthor();
   const supabase = createAdminClient();
 
   const value: Json = asleep;
@@ -237,6 +242,7 @@ export async function toggleWatcherSleep(
 export async function triggerAccepting(
   formData: FormData,
 ): Promise<ActionResult> {
+  await assertAuthor();
   if (String(formData.get("confirm")) !== "ACCEPTING") {
     return { ok: false, error: "Confirmation phrase did not match." };
   }
@@ -281,6 +287,7 @@ export async function triggerAccepting(
 export async function overrideEndingFate(
   formData: FormData,
 ): Promise<ActionResult> {
+  await assertAuthor();
   if (String(formData.get("confirm")) !== "FATE") {
     return { ok: false, error: "Confirmation phrase did not match." };
   }

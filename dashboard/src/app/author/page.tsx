@@ -1,4 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAuthor } from "@/lib/author-auth";
+import { signOutAuthor } from "@/app/author/login/actions";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { ArcControl } from "@/components/author/ArcControl";
@@ -51,7 +53,7 @@ const BEAT_ORDER: Record<Beat["status"], number> = {
 };
 
 export default async function AuthorPage() {
-  // Operator console: keep the dashboard URL operator-only.
+  const operator = await requireAuthor();
   const supabase = createAdminClient();
 
   // Read the full control surface in parallel (service-role bypasses RLS).
@@ -260,74 +262,65 @@ export default async function AuthorPage() {
   );
 
   return (
-    <div className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="font-mono text-2xl text-neutral-100">Author</h1>
-        <p className="max-w-prose text-sm text-neutral-400">
-          Full control surface. Everything here is spoiler-rich — the arc, the
-          beat queue, named dossiers, the bond ledger. Keep this dashboard URL
-          operator-only.
-        </p>
+    <div className="director-console space-y-8">
+      <header className="director-header">
+        <div>
+          <p className="eyebrow">Live production / restricted</p>
+          <h1>Observance Director</h1>
+          <p>World state, story pressure, player progress, and intervention controls in one live console.</p>
+        </div>
+        <form action={signOutAuthor}>
+          <span>{operator.email}</span>
+          <button type="submit">Sign out</button>
+        </form>
       </header>
 
-      <SetupFlow />
+      <nav className="director-nav" aria-label="Director console sections">
+        <a href="#overview">Overview</a><a href="#story">Story state</a><a href="#evidence">Evidence</a>
+        <a href="#operations">Operations</a><a href="#players">Players</a><a href="#ending">Ending</a>
+      </nav>
 
-      <DirectorRunPanel
-        watcherAsleep={watcherAsleep}
-        pendingBeats={pendingBeats}
-        approvedBeats={approvedBeats}
-        failedBeats={failedBeats}
-      />
+      <div className="director-group" id="overview">
+        <div className="director-group-title"><span>01</span><div><h2>Launch and live overview</h2><p>Readiness, immediate risks, and recommended next intervention.</p></div></div>
+        <DirectorRunPanel watcherAsleep={watcherAsleep} pendingBeats={pendingBeats} approvedBeats={approvedBeats} failedBeats={failedBeats} />
+        <DirectorStateReport currentAct={arc?.current_act ?? 1} flags={flags} players={players} compliance={compliance} beats={beats} watcherAsleep={watcherAsleep} activeRosterSize={activeRosterSize} hasHoldZip={hasHoldZip} serverAddressConfigured={serverAddressConfigured} />
+        <SetupFlow />
+      </div>
 
-      <DirectorStateReport
-        currentAct={arc?.current_act ?? 1}
-        flags={flags}
-        players={players}
-        compliance={compliance}
-        beats={beats}
-        watcherAsleep={watcherAsleep}
-        activeRosterSize={activeRosterSize}
-        hasHoldZip={hasHoldZip}
-        serverAddressConfigured={serverAddressConfigured}
-      />
+      <div className="director-group" id="story">
+        <div className="director-group-title"><span>02</span><div><h2>Story state</h2><p>Arc progression, live puzzle pressure, and current narrative gates.</p></div></div>
+        <DirectorProgressReport flags={flags} players={players} puzzles={puzzles} solves={solves} attempts={attempts} hints={hints} />
+        <ArcControl arc={arc} />
+      </div>
 
-      <DirectorProgressReport
-        flags={flags}
-        players={players}
-        puzzles={puzzles}
-        solves={solves}
-        attempts={attempts}
-        hints={hints}
-      />
+      <div className="director-group" id="evidence">
+        <div className="director-group-title"><span>03</span><div><h2>Evidence lanes</h2><p>Completion across the Hold, the Unlit, side proofs, dimensions, and recovered media.</p></div></div>
+        <UnlitProgress flags={flags} />
+        <KeeperTheoryProgress flags={flags} />
+        <SideProofProgress flags={flags} />
+        <DimensionLaneProgress flags={flags} />
+        <PriorAcceptingProgress flags={flags} />
+        <ManualMediaProgress flags={flags} hasHoldZip={hasHoldZip} />
+      </div>
 
-      <ArcControl arc={arc} />
+      <div className="director-group" id="operations">
+        <div className="director-group-title"><span>04</span><div><h2>Live operations</h2><p>Automation mode and the event queue. Review context before releasing a beat.</p></div></div>
+        <WatcherSleepToggle asleep={watcherAsleep} />
+        <BeatQueue beats={beats} />
+      </div>
 
-      <UnlitProgress flags={flags} />
-      <KeeperTheoryProgress flags={flags} />
-      <SideProofProgress flags={flags} />
-      <DimensionLaneProgress flags={flags} />
-      <PriorAcceptingProgress flags={flags} />
-      <ManualMediaProgress flags={flags} hasHoldZip={hasHoldZip} />
+      <div className="director-group" id="players">
+        <div className="director-group-title"><span>05</span><div><h2>Players and pressure</h2><p>Hint economy, Watcher reliance, and private dossier state.</p></div></div>
+        <WhisperBudgets rows={budgetRows} />
+        <BondLedger rows={bondRows} />
+        <Dossiers entries={dossierEntries} />
+      </div>
 
-      <WatcherSleepToggle asleep={watcherAsleep} />
-
-      <BeatQueue beats={beats} />
-
-      <WhisperBudgets rows={budgetRows} />
-
-      <BondLedger rows={bondRows} />
-
-      <Dossiers entries={dossierEntries} />
-
-      <EndingSelector
-        input={fateInput}
-        activeRosterSize={activeRosterSize}
-        codicil={codicil}
-        resolved={resolvedFate}
-        seventhChoice={seventhChoice}
-      />
-
-      <AcceptingTrigger />
+      <div className="director-group danger-group" id="ending">
+        <div className="director-group-title"><span>06</span><div><h2>Ending controls</h2><p>Set-once fate preview and guarded climax actions. Treat this section as live ordnance.</p></div></div>
+        <EndingSelector input={fateInput} activeRosterSize={activeRosterSize} codicil={codicil} resolved={resolvedFate} seventhChoice={seventhChoice} />
+        <AcceptingTrigger />
+      </div>
     </div>
   );
 }

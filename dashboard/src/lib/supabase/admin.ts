@@ -12,8 +12,8 @@ import type { Database } from "@/lib/database.types";
  * `arc_state.current_act`, etc.
  *
  * NEVER import this into a Client Component or expose the key to the browser.
- * Author mode is intentionally an open operator console, so protect the
- * deployed dashboard URL at the hosting/network layer.
+ * Author routes and every privileged server action must authenticate the
+ * operator before constructing this client.
  *
  * No session persistence / auto-refresh: this is a stateless privileged client.
  */
