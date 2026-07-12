@@ -335,9 +335,9 @@ insert into public.hints (puzzle_key, tier, body) values
 -- name-where - the place-filing reread; true, terminal, and personal.
 ('name-where', 2, 'the new carving is not about strangers who came before you. it files the living by place. read the name and the ground beside it together.'),
 ('name-where', 3, 'say the shape of the reread: the record files the living by place, not only by name. before you was never about strangers. it opens nothing because the proof is you.'),
--- record-url - the off-world host row and Record path, decoded from the founder line and Hold copy.
-('record-url', 2, 'the record says it is kept in more than one place. do not look for a second chest, a raw server port, or the removed minecraft service row. combine the host-row pieces the map left apart.'),
-('record-url', 3, 'the old row is the front door, common web, root path, mirror 03. the record-keeps phrase is the recovered file on that host, not the server address or srv record itself.'),
+-- record-url - the off-world provider directory and Record path, decoded from the founder line and Hold copy.
+('record-url', 2, 'the map gives a provider, a service, the common-web ending, and a directory number. combine them as an old customer would, not as a minecraft server address.'),
+('record-url', 3, 'copperline plus hosting names the provider on the common web. search its public server directory for service 1842, then follow the hand that filed the row.'),
 -- difficulty-mara - the fairness plant; the land''s grip changes with the living.
 ('difficulty-mara', 2, 'mara left this as a sentence, not a mechanism. read the cruelty she names: the land counts the quick more closely and opens around stumbling hands.'),
 ('difficulty-mara', 3, 'the line is the point. the record keeps a closer count of the quick; it closes on those who run ahead and opens for those who stumble. this colors the rite; it does not unlock one.'),

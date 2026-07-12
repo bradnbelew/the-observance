@@ -307,7 +307,7 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'prophet-wall-comfort': 'the prophet wall’s warm promises — a found carving (dead_end); true-but-empty, no Discord cipher',
   'prophet-wall-name': 'the prophet wall’s name-reading — a found carving (dead_end); disambiguated to its own answers (the shared `the one who turned away` is owned by stone-iss-wall), no cipher',
   'name-where': 'place-filing cross-reference observation (FACT 16) — notice the record files by ground; dead_end, the world is the puzzle',
-  'record-url': 'the founder line + Hold-copy handoff pointing off-world to the SNOIKERZ mirror listing and recovered Record slug (A13/A14) - found lore, no raw server endpoint',
+  'record-url': 'the founder line + Hold-copy handoff pointing off-world to Copperline service 1842, its owner post, and the recovered Record slug (A13/A14) - found lore, no raw server endpoint',
   'difficulty-mara': 'Mara’s “closer count of the quick” fragment — demoted to texture/lore (OVERHAUL §5: the difficulty REVEAL is cut; the line stays), not a deterministic cipher',
   'base-docket-reread-auto': 'the Hold-Book down-count re-read (A3), found-document lore gated on iss_caught via requires_flags; the showrunner-flipped twin base-docket-reread is retired (OVERHAUL §5)',
   // S3-A (archived puzzles-ciphers.md audit): ships active=false in puzzles_seed.sql (so a

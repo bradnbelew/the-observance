@@ -33,7 +33,6 @@ New-Item -ItemType Directory -Path $workRoot | Out-Null
 Expand-Archive -LiteralPath $zipFile -DestinationPath $workRoot -Force
 
 $rawEndpointPatterns = @(
-  'snoikerz\.com\s*:\s*25569',
   '\b[a-z0-9.-]+\.(com|net|org|gg|io)\s*:\s*[0-9]{2,5}\b',
   '\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\s*:\s*[0-9]{2,5}\b'
 )
@@ -73,14 +72,14 @@ $joinedExtractedText = Get-ChildItem -LiteralPath $workRoot -Recurse -File |
   } | Out-String
 
 foreach ($requiredText in @(
-  "front door: SNOIKERZ",
+  "provider: COPPERLINE",
+  "service: HOSTING",
   "ending: common web",
-  "path: /",
-  "look for mirror 03",
+  "directory number 1842",
   "0 / 7",
-  "no staff listed",
+  "account is expired",
   "the server address is not in this file",
-  "mirror 03 keeps the old listing"
+  "service 1842 remains in the directory"
 )) {
   if ($joinedExtractedText.IndexOf($requiredText, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {
     Fail "the-hold.zip missing rebuilt invitation evidence: $requiredText"
@@ -100,7 +99,7 @@ foreach ($requiredText in @(
 }
 
 foreach ($requiredText in @(
-  "front door + common web + root path + mirror 03; no server port",
+  "copperline + hosting + common web + service 1842; no server port",
   "no raw server endpoint"
 )) {
   if ($staging.IndexOf($requiredText, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) {

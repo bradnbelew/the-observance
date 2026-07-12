@@ -392,7 +392,7 @@ export const archive: Record<string, string> = {
   // surface-record-elsewhere → the off-world page (A13). The record is kept in more than one
   // place, against the loss of the first; found when the group walks the decoded path.
   cardSurfaceRecordElsewhere:
-    'a founder’s line: the record is kept in more than one place, against the loss of the first. the copy did not hide a live address; it split an old listing row into pieces. front door, common web, root path, mirror 03. there the old listing keeps the address, and the recovered file keeps the colder record beside it. its join packet says the map is a copy and the listing is the door. its checksum ledger says level.dat was last played by m.kept and the region diffs are sign repairs only. its failed joins kick a guest for whitelist and missing pack before the row still resolves. its control panel is expired, console disabled, restart queued and never acknowledged. its billing ledger waives the mirror after staff removal. its abuse queue says the hidden address was not in the map file. its maintenance notes say low signs stay low and empty lecterns are host errors. its uptime checks time out four times a day. its old download comments say the ending points back here. its whitelist has six filled rows and one blank counted row. its ticket cache repeats the lampworks error: ready without a lamp.',
+    'a founder’s line: the record is kept in more than one place, against the loss of the first. the copy names an old provider and a service number, not a live address: copperline hosting, common web, service 1842. the provider directory keeps the dead public row. the row names the hand that filed it. that hand’s ordinary community post keeps the world copy, and the keyed name keeps the colder notes beside it. no live endpoint was written into the map.',
 
   // -------------------------------------------------------------------------
   // THE TRUE WALK — coord found-markers (A7 `coords-to-real-place`, INV-14). The Threshold
@@ -557,7 +557,7 @@ export const npcLines: Record<string, string> = {
   'aro.rumor.bird':
     'They say there was a bird that kept the air sweet. I never saw a feather, only heard the coops were up by the Lamp-works. If a cage is empty and still set for feeding, ask what left and why nobody calls it.',
   'aro.rumor.host':
-    'Old SNOIKERZ row still gets checked, if you believe it. Mirror 03, free account, no staff answering. Kids download the map and think that is the place. It is not. A map is where a server leaves a forwarding address after staff stop answering.',
+    'Copperline used to host half the little servers around here. Their billing panel died years ago, but the public directory never got cleaned out. Old service numbers still turn up if you know which one to ask for.',
   'aro.lie.cross':
     'The painted line? Step right over it, friend. That’s the locals keeping the soft folk out so they can have the warm to themselves. Cross it and keep going. That’s where it gets good.',
   'aro.lie.moon':

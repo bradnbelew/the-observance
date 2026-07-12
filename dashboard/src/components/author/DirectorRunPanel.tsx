@@ -127,7 +127,7 @@ export function DirectorRunPanel({
             Run order
           </p>
           <p className="text-sm text-neutral-400">
-            SNOIKERZ address row, hosted pack, and Supabase proof come before
+            Copperline service row, hosted pack, and Supabase proof come before
             non-op Hold testing.
           </p>
           <div className="grid gap-3">

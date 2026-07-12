@@ -2,7 +2,7 @@ param(
   [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
   [string]$InputZip = "",
   [string]$OutZip = "",
-  [string]$PublicSiteHost = "snoikerz.com",
+  [string]$PublicSiteHost = "copperlinehosting.com",
   [switch]$NoBackup
 )
 
@@ -50,13 +50,13 @@ try {
     }
   }
 
-  $handoffBook = 'data merge block 0 241 334 {Book:{id:"minecraft:written_book",count:1,components:{"minecraft:written_book_content":{title:"handoff",author:"m.kept",pages:[''{"text":"this copy does not connect to anything."}'',''{"text":"the rest is kept elsewhere. do not read this as a place yet."}'',''{"text":"three pieces were kept apart.\n\nfront door: SNOIKERZ\nending: common web\npath: /"}'',''{"text":"look for mirror 03. the old row says 0 / 7 and no staff listed.\n\nthat row is the door, not this file."}'',''{"text":"the server address is not in this file.\n\nread the listing after the walk. bring the hands. say kept."}'']}}},Page:0}'
-  $paper = 'item replace block 0 241 346 container.0 with minecraft:paper[minecraft:item_name=''"front door / mirror 03"''] 1'
-  $compass = 'item replace block 0 241 346 container.1 with minecraft:compass[minecraft:item_name=''"common web; root path"''] 1'
+  $handoffBook = 'data merge block 0 241 334 {Book:{id:"minecraft:written_book",count:1,components:{"minecraft:written_book_content":{title:"handoff",author:"m.kept",pages:[''{"text":"this copy does not connect to anything."}'',''{"text":"the rest is kept elsewhere. do not read this as a place yet."}'',''{"text":"three pieces were kept apart.\n\nprovider: COPPERLINE\nservice: HOSTING\nending: common web"}'',''{"text":"directory number 1842. the old row says 0 / 7 and the account is expired.\n\nthat row is the door, not this file."}'',''{"text":"the server address is not in this file.\n\nfind the hand that listed it. read what that hand left. bring the others. say kept."}'']}}},Page:0}'
+  $paper = 'item replace block 0 241 346 container.0 with minecraft:paper[minecraft:item_name=''"copperline / service 1842"''] 1'
+  $compass = 'item replace block 0 241 346 container.1 with minecraft:compass[minecraft:item_name=''"hosting; common web"''] 1'
   $finalTrigger = @(
     "scoreboard players set @s hold_stage 5",
     "title @s times 20 60 40",
-    'title @s subtitle {"text":"mirror 03 keeps the old listing","color":"gray"}',
+    'title @s subtitle {"text":"service 1842 remains in the directory","color":"gray"}',
     'title @s title {"text":"","color":"gray"}',
     "playsound minecraft:block.respawn_anchor.deplete master @s 0 241 334 0.25 0.55"
   )
@@ -75,7 +75,7 @@ try {
       }
     } | Out-String
 
-  if ($allText -match 'snoikerz\.com\s*:\s*25569' -or $allText -match '\b[a-z0-9.-]+\.(com|net|org|gg|io)\s*:\s*[0-9]{2,5}\b') {
+  if ($allText -match '\b[a-z0-9.-]+\.(com|net|org|gg|io)\s*:\s*[0-9]{2,5}\b') {
     throw "hold rebuild: raw server endpoint still present after rewrite"
   }
 
@@ -98,7 +98,7 @@ try {
   Write-Host "hold rebuild: size $($item.Length)"
   Write-Host "hold rebuild: sha1 $sha1"
   Write-Host "hold rebuild: public listing = https://$siteHost/"
-  Write-Host "hold rebuild: destination grammar = front door + common web + root path + mirror 03; no server port"
+  Write-Host "hold rebuild: destination grammar = copperline + hosting + common web + service 1842; no server port"
 } finally {
   if (Test-Path -LiteralPath $workRoot) {
     Remove-Item -LiteralPath $workRoot -Recurse -Force -ErrorAction SilentlyContinue

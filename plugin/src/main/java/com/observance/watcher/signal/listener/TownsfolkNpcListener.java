@@ -117,7 +117,7 @@ public final class TownsfolkNpcListener implements Listener {
                     new String[]{"aro.rumor.bird",
                             "They say there was a bird that kept the air sweet. I never saw a feather, only heard the coops were up by the Lamp-works. If a cage is empty and still set for feeding, ask what left and why nobody calls it."},
                     new String[]{"aro.rumor.host",
-                            "Old SNOIKERZ row still gets checked, if you believe it. Mirror 03, free account, no staff answering. Kids download the map and think that is the place. It is not. A map is where a server leaves a forwarding address after staff stop answering."},
+                            "Copperline used to host half the little servers around here. Their billing panel died years ago, but the public directory never got cleaned out. Old service numbers still turn up if you know which one to ask for."},
                     new String[]{"aro.lie.cross",
                             "The painted line? Step right over it, friend. That’s the locals keeping the soft folk out so they can have the warm to themselves. Cross it and keep going. That’s where it gets good."},
                     new String[]{"aro.lie.moon",

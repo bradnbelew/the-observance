@@ -15,6 +15,11 @@ const here = dirname(fileURLToPath(import.meta.url));
 const repo = resolve(here, '../../..');
 const seeds = resolve(here, '../../supabase/seeds');
 const publicListingPage = resolve(repo, 'dashboard/src/app/page.tsx');
+const serverListPage = resolve(repo, 'dashboard/src/app/server-list.php/page.tsx');
+const serverDetailsPage = resolve(repo, 'dashboard/src/app/server.php/page.tsx');
+const communityPostPage = resolve(repo, 'dashboard/src/app/community/2011/02/08/world-backup/page.tsx');
+const legacyShell = resolve(repo, 'dashboard/src/components/legacy/LegacyShell.tsx');
+const legacyContent = resolve(repo, 'dashboard/src/lib/legacy-content.ts');
 const recordSlugPage = resolve(repo, 'dashboard/src/app/record/[slug]/page.tsx');
 const voiceArchive = resolve(repo, 'discord/src/voice.archive.ts');
 const holdZip = resolve(repo, 'dashboard/public/the-hold/the-hold.zip');
@@ -33,6 +38,11 @@ const progressionSeed = readFileSync(resolve(seeds, 'progression_seed.sql'), 'ut
 const metapuzzleSeed = readFileSync(resolve(seeds, 'metapuzzle_seed.sql'), 'utf8');
 const hintSeed = readFileSync(resolve(seeds, 'hints_seed.sql'), 'utf8');
 const publicListingSource = readFileSync(publicListingPage, 'utf8');
+const serverListSource = readFileSync(serverListPage, 'utf8');
+const serverDetailsSource = readFileSync(serverDetailsPage, 'utf8');
+const communityPostSource = readFileSync(communityPostPage, 'utf8');
+const legacyShellSource = readFileSync(legacyShell, 'utf8');
+const legacyContentSource = readFileSync(legacyContent, 'utf8');
 const recordSlugSource = readFileSync(recordSlugPage, 'utf8');
 const voiceArchiveSource = readFileSync(voiceArchive, 'utf8');
 
@@ -92,10 +102,10 @@ const lateColdOpen = coldOpen.filter((r) => r.movement >= 3);
 const m2ColdOpen = coldOpen.filter((r) => r.movement === 2);
 const MAX_M2_COLD_OPEN = 12;
 const webArtifactIssues = [
-  ...auditWebArtifacts(publicListingSource, recordSlugSource),
-  ...auditRecordElsewhereVoice(voiceArchiveSource),
-  ...auditRecordUrlDifficulty(rows),
-  ...auditRecordUrlHints(hintSeed),
+  ...auditCopperlineArtifacts(publicListingSource, serverListSource, serverDetailsSource, communityPostSource, legacyShellSource, legacyContentSource, recordSlugSource),
+  ...auditCopperlineVoice(voiceArchiveSource),
+  ...auditCopperlineDifficulty(rows),
+  ...auditCopperlineHints(hintSeed),
 ];
 
 if (webArtifactIssues.length > 0) {
@@ -128,6 +138,88 @@ console.log(`  web artifacts: public listing + Record lure download ${existsSync
 if (sequenced.length > 0) {
   console.log(`  sequenced duplicate answers: ${sequenced.length} (gated, review on story edits)`);
   for (const issue of sequenced) console.log(`    - ${issue}`);
+}
+
+function auditCopperlineArtifacts(
+  publicPageSource: string,
+  serverListSource: string,
+  serverDetailsSource: string,
+  communityPostSource: string,
+  shellSource: string,
+  contentSource: string,
+  recordPageSource: string,
+): string[] {
+  const issues: string[] = [];
+  if (!shellSource.includes('Copperline Hosting') || !shellSource.includes('Copyright © 2009–2014')) {
+    issues.push('Public shell must identify the fictional Copperline Hosting company and retain its period footer');
+  }
+  if (!publicPageSource.includes('Minecraft server hosting') || !publicPageSource.includes('TCAdmin')) {
+    issues.push('Public root must read as an ordinary period game host, with mundane product and panel language');
+  }
+  for (const forbidden of ['/record/', 'The Observance', 'mkept', 'keeper-eye']) {
+    if (publicPageSource.includes(forbidden)) issues.push(`Public root must not expose ARG-specific material: ${forbidden}`);
+  }
+  if (!serverListSource.includes('publicServers') || !serverListSource.includes('/server.php?id=')) {
+    issues.push('Copperline must expose a normal public server directory with ordinary customer listings');
+  }
+  if (!serverDetailsSource.includes('server.id === "1842"') || !contentSource.includes('name: "The Observance"')) {
+    issues.push('The Observance must exist only as expired Copperline service 1842');
+  }
+  if (!serverDetailsSource.includes('/community/2011/02/08/world-backup/') || !serverDetailsSource.includes('/support/ticket.php?id=1851')) {
+    issues.push('Service 1842 must lead naturally to its owner post and archived support request');
+  }
+  if (serverDetailsSource.includes('href="/record/')) {
+    issues.push('The customer listing must never link directly to a Record surface');
+  }
+  if (!communityPostSource.includes('/the-hold/the-hold.zip') || !communityPostSource.includes('/record/the-record-keeps')) {
+    issues.push('The ordinary owner post must be the sole public bridge from the world download to the Record lure');
+  }
+  if (!recordPageSource.includes('const HOLD_ZIP_PUBLIC_PATH = "/the-hold/the-hold.zip"')) {
+    issues.push('Record lure page must retain the canonical recovered-file path');
+  }
+  if (!existsSync(holdZip)) issues.push('Production Hold download is missing from dashboard/public/the-hold/the-hold.zip');
+  return issues;
+}
+
+function auditCopperlineDifficulty(seedRows: PuzzleSeedRow[]): string[] {
+  const row = seedRows.find((r) => r.key === 'record-url');
+  if (!row) return ['record-url seed row is missing'];
+  const issues: string[] = [];
+  for (const answer of row.answers) {
+    if (!answer.includes('copperline') || !answer.includes('1842')) {
+      issues.push(`record-url answer must identify both the provider and service number: "${answer}"`);
+    }
+    if (answer.includes('snoikerz') || answer.includes('mirror 03')) {
+      issues.push(`record-url answer retains the retired host fiction: "${answer}"`);
+    }
+  }
+  return issues;
+}
+
+function auditCopperlineHints(hintsSql: string): string[] {
+  const bodies = [...hintsSql.matchAll(/\('record-url',\s*(\d+),\s*'((?:[^']|'')*)'\)/g)]
+    .map((match) => (match[2] ?? '').replace(/''/g, "'").toLowerCase());
+  if (bodies.length < 2) return ['record-url must retain two earned hint tiers'];
+  const all = bodies.join('\n');
+  if (!all.includes('provider') || !all.includes('directory number')) {
+    return ['record-url hints must teach the provider + directory-number reconstruction'];
+  }
+  if (!all.includes('copperline') || !all.includes('1842') || !all.includes('public server directory')) {
+    return ['record-url final hint must identify Copperline service 1842 and its directory trail'];
+  }
+  return [];
+}
+
+function auditCopperlineVoice(archiveSource: string): string[] {
+  const issues: string[] = [];
+  if (!archiveSource.includes('cardSurfaceRecordElsewhere') || !archiveSource.includes('copperline hosting, common web, service 1842')) {
+    issues.push('Archive web-door card must preserve the Copperline service 1842 reconstruction');
+  }
+  if (!archiveSource.includes("'aro.rumor.host'") || !archiveSource.includes('public directory never got cleaned out')) {
+    issues.push('Aro must echo the abandoned Copperline directory in ordinary human speech');
+  }
+  if (archiveSource.includes('Old SNOIKERZ row')) issues.push('Archive voice retains the retired Snoikerz fiction');
+  return issues;
 }
 
 function auditWebArtifacts(publicPageSource: string, recordPageSource: string): string[] {

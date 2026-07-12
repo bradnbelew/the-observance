@@ -1229,29 +1229,29 @@ values
   -- six marks lands it first try). Caps at 8 → in-voice withholding, never a hint.
   4, false, 8 ),
 
--- record-url — the Record website (A13). The founder line "the record is kept in more than
--- one place" now joins the Hold-copy handoff: front door SNOIKERZ, common web, root path /,
--- mirror 03, and the recovered Record slug. Pure lore, GATES NOTHING. The old listing owns
--- the live address; the zip must never carry a raw endpoint. recordElsewhere voice. Active M2.
+-- record-url — the Record website (A13). The Hold-copy handoff reconstructs the
+-- ordinary provider name and expired directory entry: Copperline Hosting on the common web,
+-- service 1842. That row names the account hand; its community post leads to the recovered
+-- Record slug. Pure lore, GATES NOTHING. The zip never carries a raw server endpoint.
 ( 'record-url',
-  'the old listing keeps the record',
+  'copperline service 1842 keeps the record',
   array[
-    'the old listing keeps the record',
-    'the old listing is snoikerz mirror 03',
-    'the record keeps on snoikerz mirror 03',
-    'the record is kept on snoikerz mirror 03',
-    'snoikerz mirror 03 keeps the record',
-    'snoikerz mirror 03 keeps the old listing',
-    'snoikerz mirror 03',
-    'snoikerz common web root mirror 03',
-    'snoikerz slash mirror 03 the record keeps',
-    'front door snoikerz common web root mirror 03'
+    'copperline service 1842 keeps the record',
+    'copperline hosting service 1842',
+    'copperlinehosting com service 1842',
+    'the observance is copperline service 1842',
+    'service 1842 on copperline hosting',
+    'copperline directory 1842',
+    'copperline 1842 mkept',
+    'copperline service 1842 the record keeps',
+    'the record keeps on copperline service 1842',
+    'copperline hosting common web service 1842'
   ],
   'lore',
   jsonb_build_object(
     'voice_key', 'recordElsewhere',
     'voice_args', jsonb_build_object(
-      'fragment', 'the record is kept in more than one place, against the loss of the first. the old listing is snoikerz mirror 03; the recovered file is the record keeps.'
+      'fragment', 'the record is kept in more than one place, against the loss of the first. copperline hosting keeps service 1842 in its dead directory; the hand on that row left the recovered file and the record-keeps page.'
     )
   ),
   2, true, null ),

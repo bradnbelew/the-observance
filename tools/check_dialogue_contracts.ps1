@@ -181,14 +181,14 @@ RequireContains "surface conduct texture archive" $archiveVoice "'wenna.greet.wa
 RequireContains "surface conduct texture archive" $archiveVoice "'coll.greet.cold'"
 RequireContains "surface conduct texture arc echo" $townsfolk 'String issEchoKey = id + ".greet.iss_cold";'
 
-# Contract 0b: the abandoned SNOIKERZ host/listing conceit must be echoed by a human rumor,
+# Contract 0b: the abandoned Copperline directory must be echoed by a human rumor,
 # not only by the public web page and Recovery Archive card.
 RequireDialogueKeys "server-listing bridge" @(
   "aro.rumor.host"
 )
-RequireContains "server-listing bridge archive" $archiveVoice "Old SNOIKERZ row still gets checked"
-RequireContains "server-listing bridge archive" $archiveVoice "Mirror 03, free account"
-RequireContains "server-listing bridge archive" $archiveVoice "A map is where a server leaves a forwarding address"
+RequireContains "server-listing bridge archive" $archiveVoice "Copperline used to host half the little servers"
+RequireContains "server-listing bridge archive" $archiveVoice "public directory never got cleaned out"
+RequireContains "server-listing bridge archive" $archiveVoice "Old service numbers still turn up"
 
 # Contract 1: Aro/Coll/Dob's painted-line claims must point to a real route and a real consequence.
 RequireDialogueKeys "painted-line" @(

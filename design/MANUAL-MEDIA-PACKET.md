@@ -110,9 +110,9 @@ Current production state:
 - source zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - dashboard zip: `dashboard/public/the-hold/the-hold.zip`
 - size: 154181 bytes
-- SHA1: `b638e989e7f03c2aec2346f9a1c972bddcf9c7de`
+- SHA1: `532a28149ba38785cf30729ee92b89109f388caa`
 - zip cleanliness check: 534 entries; no README/manifest/spoiler-style entries found
-- final room handoff: front door + common web + root path + mirror 03; no server port and no raw server endpoint
+- final room handoff: copperline + hosting + common web + service 1842; no server port and no raw server endpoint
 
 Format:
 
