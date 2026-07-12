@@ -99,7 +99,8 @@ try {
     "1842",
     "status: expired / slots: 0 of 7",
     "row owner: mkept",
-    "when all are present, say kept"
+    "when all are present, say kept",
+    "#the-record"
   )) {
     RequireText $functionText $evidence "production evidence"
   }
@@ -159,9 +160,20 @@ try {
     RequireText $functionText $position "player-facing lectern"
   }
 
-  foreach ($gate in @(28, 88, 150, 207, 265)) {
+  $gateRoutes = @(
+    @{ Gate = 28; CorridorNear = 29; CorridorFar = 42; NextRoom = 43 },
+    @{ Gate = 88; CorridorNear = 89; CorridorFar = 102; NextRoom = 103 },
+    @{ Gate = 150; CorridorNear = 151; CorridorFar = 163; NextRoom = 164 },
+    @{ Gate = 207; CorridorNear = 208; CorridorFar = 220; NextRoom = 221 },
+    @{ Gate = 265; CorridorNear = 266; CorridorFar = 278; NextRoom = 279 }
+  )
+  foreach ($route in $gateRoutes) {
+    $gate = $route.Gate
     RequireText $functionText "fill -2 240 $gate 2 245 $gate minecraft:polished_blackstone_bricks" "closed gate $gate"
     RequireText $functionText "fill -2 240 $gate 2 246 $gate minecraft:air" "controlled gate opening $gate"
+    RequireText $functionText "fill -2 240 $($route.CorridorNear) 2 246 $($route.CorridorNear) minecraft:air" "open corridor entry behind gate $gate"
+    RequireText $functionText "fill -2 240 $($route.CorridorFar) 2 246 $($route.CorridorFar) minecraft:air" "open corridor exit beyond gate $gate"
+    RequireText $functionText "fill -2 240 $($route.NextRoom) 2 246 $($route.NextRoom) minecraft:air" "open next-room threshold beyond gate $gate"
   }
 
   foreach ($route in @(
@@ -180,6 +192,14 @@ try {
     Fail "each of the six rooms must have a physical reinforced roof"
   }
   RequireText $functionText "fill -3 238 104 3 238 149 minecraft:polished_deepslate" "continuous dry cistern bridge"
+  foreach ($recovery in @(
+    "setblock -4 238 126 minecraft:ladder[facing=west]",
+    "setblock 4 238 126 minecraft:ladder[facing=east]",
+    "setblock -4 238 140 minecraft:ladder[facing=west]",
+    "setblock 4 238 140 minecraft:ladder[facing=east]"
+  )) {
+    RequireText $functionText $recovery "adventure-mode cistern recovery"
+  }
   RequireText $functionText "fill -11 240 48 -11 243 52 minecraft:air" "accessible west bed alcove"
   RequireText $functionText "fill 11 240 48 11 243 52 minecraft:air" "accessible east bed alcove"
   RequireText $functionText "fill -2 240 252 2 243 252 minecraft:air" "accessible seventh register alcove"
@@ -241,7 +261,7 @@ try {
 
   $zip = Get-Item -LiteralPath $zipFile
   $sha1 = (Get-FileHash -LiteralPath $zipFile -Algorithm SHA1).Hash.ToLowerInvariant()
-  Write-Host "hold prologue check: OK - 6 rooms, 5 controlled gates, structured books, filled evidence, accessible route, bounded geometry"
+  Write-Host "hold prologue check: OK - 6 rooms, 5 single-layer controlled gates, structured books, filled evidence, cistern recovery, accessible route, bounded geometry"
   Write-Host "hold prologue check: $($functionFiles.Count) functions; $($zip.Length) bytes; SHA1 $sha1"
 } finally {
   if (Test-Path -LiteralPath $workRoot) {

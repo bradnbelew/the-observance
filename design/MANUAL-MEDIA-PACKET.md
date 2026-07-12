@@ -109,8 +109,8 @@ Current production state:
 
 - source zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - dashboard zip: `dashboard/public/the-hold/the-hold.zip`
-- size: 17296 bytes (the datapack constructs the world on first load)
-- SHA1: `89e13b613e370fab47a9b5544dced4646737a96e`
+- size: 17468 bytes (the datapack constructs the world on first load)
+- SHA1: `69d227914501508c382952706c1f154e5e71152f`
 - zip cleanliness check: 22 entries; no README/spoiler/backup entries; no pre-generated region files
 - runtime check: all functions parse on Paper 1.21.11; first/final lecterns store structured written-book pages
 - route check: six roofed rooms, five controlled gates, dry accessible walkways, one lever interaction

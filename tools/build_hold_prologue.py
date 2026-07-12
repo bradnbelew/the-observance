@@ -354,6 +354,20 @@ def make_datapack(root: Path) -> None:
         "setblock 0 240 134 minecraft:tuff_bricks",
         wall_sign(0, 240, 133, "north", ["VII", "ANSWERS BELOW", "NOT ABOVE"]),
     ]
+    # Adventure-mode recovery points. The bridge rail is deliberately solid
+    # everywhere else, but a player who investigates the submerged seventh
+    # mark must always be able to climb back onto the dry route without placing
+    # or breaking blocks. Each lit ladder has a clear water-side approach and
+    # lands directly on the bridge edge.
+    for z in [126, 140]:
+        cistern += [
+            f"fill -5 238 {z} -4 239 {z} minecraft:air",
+            f"fill 4 238 {z} 5 239 {z} minecraft:air",
+            f"setblock -4 237 {z} minecraft:sea_lantern",
+            f"setblock 4 237 {z} minecraft:sea_lantern",
+            f"setblock -4 238 {z} minecraft:ladder[facing=west]",
+            f"setblock 4 238 {z} minecraft:ladder[facing=east]",
+        ]
     for x in [-13, -8, -3, 3, 8, 13]:
         cistern += [
             f"fill {x} 238 116 {x} 246 116 minecraft:polished_basalt[axis=y]",
@@ -512,7 +526,7 @@ def make_datapack(root: Path) -> None:
             "four dispatch fields survived:\n\nprovider\nservice\nending\ndirectory",
             "assemble the first three as one place.\n\nfind the old server list and open the directory number.",
             "the row names the hand that filed it. read what that hand left behind.",
-            "bring the others to the address in that row.\n\nwhen all are present, say kept.",
+            "bring the others to the address in that row.\n\nwhen all are present, say kept in #the-record.",
         ],
     )
     for z in [292, 308, 324]:
@@ -534,7 +548,12 @@ def make_datapack(root: Path) -> None:
         (266, 278, 279),
     ]:
         passages += corridor(z1, z2)
-        passages += [opening(next_room_z)]
+        # shell() closes both ends of every corridor.  Those endcaps are not
+        # progression gates: leaving them in place creates an invisible second
+        # and third wall after the room gate opens.  Keep the room-side gate as
+        # the only controlled barrier and permanently join the corridor to both
+        # adjacent rooms.
+        passages += [opening(z1), opening(z2), opening(next_room_z)]
     write_text(function_root / "build" / "passages.mcfunction", passages)
 
     triggers = {

@@ -12,8 +12,8 @@ tools/check_hold_invitation.ps1 audits the package.
 - Player mode: adventure.
 - Required mods or resource pack: none.
 - Payload: deterministic command-built world; no pre-generated region files.
-- Size: 17296 bytes.
-- SHA1: 89e13b613e370fab47a9b5544dced4646737a96e.
+- Size: 17468 bytes.
+- SHA1: 69d227914501508c382952706c1f154e5e71152f.
 - Route envelope: x=-20..20, y=235..253, z=-28..333.
 - Structure: six closed rooms, five closed progression gates, five bounded passages.
 - Runtime verification: every function parsed on the repository Paper 1.21.11 server; endpoint books,

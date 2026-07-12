@@ -111,7 +111,7 @@ foreach ($needle in @(
   "spectrogram-key.txt",
   "intentionally omitted",
   "dashboard/public/the-hold/the-hold.zip",
-  "89e13b613e370fab47a9b5544dced4646737a96e",
+  "69d227914501508c382952706c1f154e5e71152f",
   "copperline + hosting + common web + service 1842; no server port",
   "no raw server endpoint",
   "/record/the-record-keeps",
@@ -127,7 +127,7 @@ foreach ($needle in @(
 foreach ($needle in @(
   "MANUAL MEDIA STAGING RECEIPT",
   "the-hold.zip",
-  "89e13b613e370fab47a9b5544dced4646737a96e",
+  "69d227914501508c382952706c1f154e5e71152f",
   "copperline + hosting + common web + service 1842; no server port",
   "no raw server endpoint",
   "no README/manifest/spoiler-style entries found",
