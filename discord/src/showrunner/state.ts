@@ -37,6 +37,8 @@ export interface ShowrunnerState {
    * when a newer break timestamp arrives. Absent on a fresh deploy / before the latch's first break.
    */
   unlit_deep_last_reported_at?: number | null;
+  /** Highest durable `unlit_deep_kept_at` already delivered to the Record. */
+  unlit_deep_last_kept_reported_at?: number | null;
 
   // -------------------------------------------------------------------------
   // BETWEEN-SESSION AUTONOMY bookkeeping (A2/A3/A8–A13, B3/B4). Stored on this
@@ -55,6 +57,13 @@ export interface ShowrunnerState {
 
   /** A3 Hold-Book: per-player enrolment tier high-water (groupKey → tier ordinal 1..3). */
   keeper_record?: Record<string, number>;
+
+  /** D8 Keeper dialogue: highest folded keeper/npc.open event consumed exactly once. */
+  keeper_last_open_id?: number;
+  /** D8 FACT 9: player UUID -> three-hour window in which Keeper dialogue delivered it. */
+  keeper_fact9_windows?: Record<string, number>;
+  /** D8 M-IV atonement: measured custom withheld and honored-count at withholding time. */
+  keeper_atonement_pending?: Record<string, { customKey: string; honoredAtOpen: number }>;
 
   /** A9 grave: the two one-shot rows' fired-state + the bound subject (one grave per arc). */
   grave?: { carved?: boolean; opened?: boolean; group_key?: string; name?: string };

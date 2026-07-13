@@ -63,7 +63,7 @@
   plugin jar, datapack zip, resource-pack zip, validates them, and refreshes the deploy manifest.
 - If you changed only plugin Java/resources and need a partial package, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1`** before uploading
-  `plugin/build/libs/observance-0.3.24.jar`.
+  `plugin/build/libs/observance-0.3.29.jar`.
 - If you changed only `datapack/` or `resourcepack/` and need a partial package, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_assets.ps1`** before the audit.
 - Those package commands refresh **`observance-deploy-manifest.json`**. Use that manifest as the deploy
@@ -79,7 +79,7 @@
 
 ### 1c. Server (Crafty)
 - Create a **Paper 1.21.11** server; give it Java 21 + 3–4 GB RAM.
-- **Plugin:** upload `plugin/build/libs/observance-0.3.24.jar` to `plugins/` (the reshape build — earned-
+- **Plugin:** upload `plugin/build/libs/observance-0.3.29.jar` to `plugins/` (the V4 Deep Hold build — earned-
   literacy rune-cribs, de-announced structure labels, terrain-following + scattered placement, townsfolk).
 - **Key:** in `plugins/Observance/config.yml`, set `supabase.service-key: "<service_role key>"`
   (leave `service-key-env` alone). The `url` is already filled.
@@ -94,16 +94,17 @@
   If not, the key is wrong or the SQL didn't run — fix before continuing.
 
 ## 2. BUILD THE WORLD (production hold first, rehearsal board when needed)
-- Preferred production bootstrap: stand at the intended **surface mouth** and run
-  **`/observance placehold build [depth]`** (default depth **392**, accepted range **340-520**), or from console run
-  **`/observance placehold build <world> <x> <y> <z>`** where `y` is the Hold floor. This carves the
+- Preferred production bootstrap: stand at the intended **Surface Mouth** and run
+  **`/observance placehold build`**, or from console run
+  **`/observance placehold build <world> <x> <y> <z>`** where `x y z` is the Mouth center. V4 has a fixed,
+  surveyed three-stratum layout and no caller-selected depth. This carves the
   controlled stone envelope, a broad encased Return Mouth stair from the surface, the grand Keeper Court,
   upper terraces, archive/cistern gallery, market/collapse wing, lampworks descent, threshold cathedral, and side-hush
   branch. It places and registers the 64 overworld/deep ARG sites that reasonably belong together inside
   one civic ruin rather than a row of isolated boxes, seeds side-evidence containers, keeps decorative chiseled bookshelves
   occupied, leaves mechanic-owned shelves under their mechanics, installs full-width physical gates,
   and registers protected Hold/entry-stair regions. Run **`/observance placehold audit`** immediately; it must
-  report 64/64 hold sites, 7/7 gates, records 8/8, entry walkable, clean early-route/grand-court/terrace samples,
+  report 76/76 Hold sites, 8/8 gates, records 8/8, a walkable entry, virtual-open full traversal,
   protected regions, and zero critical findings. Use
   **`/observance placehold seal|open <gate|all>`** for manual operation and **`/observance placehold sync`**
   once Supabase flags are live. This does not replace the surface prologue (`first_report_lectern_01` /
@@ -254,7 +255,7 @@ showrunner runtime checks, dashboard selftests/lint/type/build, Java 21 plugin s
 plugin DB contract checks, operator-doc command check, Minecraft sign/book/HUD text-surface fit, plugin jar freshness/contents,
 Record/web lure withholding, Record terminal hint escalation, rune alphabet cohesion, and
 datapack/resourcepack JSON/reference/zip checks.
-Plugin target jar is `observance-0.3.24.jar`; use
+Plugin target jar is `observance-0.3.29.jar`; use
 `tools/package_plugin.ps1` to rebuild it without Gradle. On the live server, verify with
 `/observance status` and `/observance preflight`;
 DB connected (drift fixed);

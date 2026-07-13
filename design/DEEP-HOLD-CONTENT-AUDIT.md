@@ -4,6 +4,12 @@ Status: pre-rebuild blocker register. This is derived from runtime Java, live pl
 SQL puzzle definitions, and canonical found-document payloads. It is not a claim that the current world
 matches the intended design.
 
+> **CURRENT STATUS OVERRIDE — 2026-07-13.** Deep Hold V4 supersedes the pre-rebuild defects below.
+> The five Mara lock books and separate six-volume D05 shelf are fully authored; all 76 fixtures have
+> explicit production builders/content; unhandled fixtures throw before world placement; and the
+> isolated Paper audit reports 76/76 sites, 8/8 gates, 8/8 record surfaces, and zero critical findings.
+> Keep this register as the provenance for the V4 content and fallback guards.
+
 ## Direct answer: Mara's books
 
 The five lecterns and the page combination `1, 2, 4, 4, 6` are intentional. The current book bodies are

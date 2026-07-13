@@ -107,7 +107,7 @@ async function runTick(dryRun: boolean, nowMs: number, nowIso: string): Promise<
       console.error('[showrunner] customs pass error (isolated)', e);
     }
     // The Unlit Deep group latch's ONE report (INV-17): the plugin's UnlitDeepListener writes
-    // unlit_deep_broken_at directly to arc_state.flags; this posts the toll once per fresh break.
+    // UnlitDeepListener writes durable kept/broken windows; this posts one fresh outcome per cadence.
     try {
       unlitDeep = await runUnlitDeepPass(nowIso);
     } catch (e) {

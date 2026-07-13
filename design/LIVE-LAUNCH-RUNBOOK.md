@@ -6,8 +6,8 @@ not turn the live world into a rehearsal grid and does not advance the live stor
 ## Production Artifacts
 
 - Server: Paper 1.21.11 on Java 21
-- Plugin: `plugin/build/libs/observance-0.3.24.jar`
-- Plugin SHA1: `db24d2da504c4afa936bfd9f32e4540608cf1ecd`
+- Plugin: `plugin/build/libs/observance-0.3.29.jar`
+- Plugin SHA1: `a22a0989ee918b50004f008f2b28177d5aae5d49`
 - Datapack: `observance-datapack.zip`
 - Datapack SHA1: `2b8563889735e82d3ed26ac8e94537c7b2c08c19`
 - Resource pack: `observance-resourcepack.zip`
@@ -29,7 +29,7 @@ Given a Paper server root called `<server>` and the `level-name` from `server.pr
    `<server>/plugins/Observance` if they already exist.
 2. Remove or archive older Observance jars so exactly one Observance jar will be in
    `<server>/plugins/`.
-3. Put `observance-0.3.24.jar` at `<server>/plugins/observance-0.3.24.jar`.
+3. Put `observance-0.3.29.jar` at `<server>/plugins/observance-0.3.29.jar` and remove the superseded Observance jar.
 4. Put `observance-datapack.zip` at `<server>/<world>/datapacks/observance-datapack.zip`. Leave it as
    a zip.
 5. Set the Paper process environment variable `OBSERVANCE_SUPABASE_KEY` to the rotated live Supabase
@@ -64,7 +64,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_hosted_resource_
 ## 2. First Controlled Boot
 
 1. Start Paper with the whitelist on.
-2. Confirm the console says Observance 0.3.24 enabled and shows no plugin, datapack, pack-format, or
+2. Confirm the console says Observance 0.3.29 enabled and shows no plugin, datapack, pack-format, or
    worldgen error.
 3. Join as the operator and run:
 
@@ -84,24 +84,24 @@ is absent.
 
 ## 3. Build The Production Deep Hold
 
-Choose the permanent surface mouth in the main overworld. The build has a fixed world orientation:
-the underground body extends toward positive Z, regardless of where the player looks. Reserve a very
-large underground corridor in that direction. The main envelope is approximately 445 blocks wide
-and extends roughly from `mouth Z + 518` through `mouth Z + 1186`; the carved entrance descent joins
-the mouth to that body.
+Choose the permanent Surface Mouth in the main overworld. The build has a fixed world orientation:
+the underground body extends toward positive Z, regardless of where the player looks. Reserve the
+full local envelope `X -118..118`, `Y -104..+12`, and `Z -6..378` around that Mouth. The survey requires
+at least 12 blocks of surface cover over every non-Mouth roof and a 12-block bottom-world buffer; an
+unsafe location aborts before changing a block.
 
 Stand on the exact center block of the intended surface mouth and run:
 
 ```text
-/obs placehold build 392
+/obs placehold build
 /obs placehold audit
 /obs placehold sync
 /obs site launch
 ```
 
-The audit must report 8/8 records, a walkable entry, clean court/terrace/enclosure samples, and zero
-critical findings. Initial entry and keeper gates are open; later gates remain sealed. Do not run
-`/obs placehold open all` on the live story.
+The audit must report 76/76 Hold sites, 8/8 gates, 8/8 records, protected Hold and entry regions,
+virtual-open full traversal, and zero critical findings. All eight gates start sealed; the Mouth and
+Grand Stair remain open. Do not run `/obs placehold open all` on the live story.
 
 The Hold command owns its contained sites. Never hand-survey or `placeworld` those rooms.
 

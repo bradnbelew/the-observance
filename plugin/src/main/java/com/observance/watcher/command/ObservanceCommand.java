@@ -10,6 +10,8 @@ import com.observance.watcher.data.rows.HintRow;
 import com.observance.watcher.data.rows.PuzzleRow;
 import com.observance.watcher.data.rows.SolveReadRow;
 import com.observance.watcher.oracle.FlagGate;
+import com.observance.watcher.structure.DeepHoldV4Geometry;
+import com.observance.watcher.structure.DeepHoldV4Plan;
 import com.observance.watcher.structure.StructureTemplates;
 import com.observance.watcher.util.Safety;
 import org.bukkit.Bukkit;
@@ -39,6 +41,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -498,44 +501,89 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                                      int signX, int signY, int signZ) { }
 
     private record HoldRoomBox(String id, int minX, int maxX, int floorY, int ceilingY, int minZ, int maxZ) { }
+    private record HoldRoomLink(String from, String to) { }
+    private record HoldWalkNode(int x, int y, int z) { }
 
     private static final HoldRoomBox[] DEEP_HOLD_ROOM_BOXES = {
-            new HoldRoomBox("mouth_vestibule", -20, 20, -24, 0, 82, 96),
-            new HoldRoomBox("orientation_west", -34, -10, -24, -10, 104, 146),
-            new HoldRoomBox("orientation_center", -9, 9, -24, -10, 104, 146),
-            new HoldRoomBox("orientation_east", 10, 34, -24, -10, 104, 146),
-            new HoldRoomBox("keeper_vaun", -104, -56, -28, -4, 164, 210),
-            new HoldRoomBox("keeper_mara", 56, 104, -28, -4, 164, 211),
-            new HoldRoomBox("keeper_iss", -104, -56, -28, -4, 212, 248),
-            new HoldRoomBox("keeper_sella", 56, 104, -28, -4, 212, 248),
-            new HoldRoomBox("keeper_brann", -104, -56, -28, -4, 250, 286),
-            new HoldRoomBox("keeper_orin", 56, 104, -28, -4, 250, 286),
-            new HoldRoomBox("keeper_nave", -50, 50, -28, -4, 158, 286),
-            new HoldRoomBox("archive_nave", -50, 50, -24, -6, 300, 500),
-            new HoldRoomBox("archive_school", -164, -116, -24, -8, 304, 356),
-            new HoldRoomBox("archive_markers", -114, -66, -24, -8, 304, 356),
-            new HoldRoomBox("archive_cistern", -164, -116, -24, -8, 362, 438),
-            new HoldRoomBox("archive_watch", -114, -66, -24, -8, 362, 438),
-            new HoldRoomBox("archive_shelf", -164, -116, -24, -8, 444, 500),
-            new HoldRoomBox("archive_water", -114, -66, -24, -6, 444, 500),
-            new HoldRoomBox("archive_market", 116, 164, -24, -6, 304, 356),
-            new HoldRoomBox("archive_ration", 66, 114, -24, -8, 304, 356),
-            new HoldRoomBox("archive_breach", 116, 164, -24, -6, 362, 438),
-            new HoldRoomBox("archive_warm", 66, 114, -24, -6, 362, 438),
-            new HoldRoomBox("archive_stall", 116, 164, -24, -8, 444, 500),
-            new HoldRoomBox("archive_coops", 66, 114, -24, -8, 444, 500),
-            new HoldRoomBox("puzzle_works", -50, 50, -24, -8, 512, 586),
-            new HoldRoomBox("prior_case", -178, -122, -28, -8, 594, 646),
-            new HoldRoomBox("prior_camp", -184, -116, -28, -6, 650, 730),
-            new HoldRoomBox("lower_reckoning", -104, -12, -28, -6, 594, 650),
-            new HoldRoomBox("lower_threshold", 12, 104, -28, -6, 594, 650),
-            new HoldRoomBox("lower_convergence", -48, 48, -28, -4, 652, 710),
-            new HoldRoomBox("lower_vault", 50, 104, -28, -4, 652, 710),
-            new HoldRoomBox("lower_altar", -104, -12, -28, -4, 712, 770),
-            new HoldRoomBox("lower_coop", 12, 104, -28, -4, 712, 770),
-            new HoldRoomBox("dread", 122, 188, -28, -4, 594, 770),
-            new HoldRoomBox("accepting", -54, 54, -32, -4, 782, 858),
-            new HoldRoomBox("unwriting", -54, 54, -32, -4, 892, 964),
+            new HoldRoomBox("mouth_vestibule", -16, 16, -24, -8, 66, 86),
+            new HoldRoomBox("orientation_west", -50, -20, -24, -10, 94, 138),
+            new HoldRoomBox("orientation_center", -18, 18, -24, -8, 94, 138),
+            new HoldRoomBox("orientation_east", 20, 50, -24, -10, 94, 138),
+
+            new HoldRoomBox("keeper_vaun", -78, -34, -28, -8, 150, 184),
+            new HoldRoomBox("keeper_mara", 34, 78, -28, -8, 150, 190),
+            new HoldRoomBox("keeper_iss", -78, -34, -28, -8, 190, 222),
+            new HoldRoomBox("keeper_sella", 34, 78, -28, -8, 196, 226),
+            new HoldRoomBox("keeper_brann", -78, -34, -28, -8, 226, 260),
+            new HoldRoomBox("keeper_orin", 34, 78, -28, -8, 232, 266),
+            new HoldRoomBox("keeper_nave", -28, 28, -28, -6, 148, 266),
+
+            new HoldRoomBox("archive_nave", -24, 24, -24, -8, 274, 422),
+            new HoldRoomBox("archive_school", -120, -72, -24, -8, 278, 316),
+            new HoldRoomBox("archive_markers", -70, -28, -24, -8, 278, 316),
+            new HoldRoomBox("archive_cistern", -120, -72, -24, -8, 324, 362),
+            new HoldRoomBox("archive_watch", -70, -28, -24, -8, 324, 362),
+            new HoldRoomBox("archive_shelf", -120, -72, -24, -8, 370, 414),
+            new HoldRoomBox("archive_water", -70, -28, -24, -8, 370, 414),
+            new HoldRoomBox("archive_market", 72, 120, -24, -8, 278, 316),
+            new HoldRoomBox("archive_ration", 28, 70, -24, -8, 278, 316),
+            new HoldRoomBox("archive_breach", 72, 120, -24, -8, 324, 362),
+            new HoldRoomBox("archive_warm", 28, 70, -24, -8, 324, 362),
+            new HoldRoomBox("archive_stall", 72, 120, -24, -8, 370, 414),
+            new HoldRoomBox("archive_coops", 28, 70, -24, -8, 370, 414),
+            new HoldRoomBox("puzzle_works", -38, 38, -24, -6, 430, 492),
+
+            new HoldRoomBox("prior_case", -108, -68, -28, -8, 508, 548),
+            new HoldRoomBox("prior_camp", -118, -58, -28, -6, 552, 612),
+            new HoldRoomBox("lower_reckoning", -56, -8, -28, -6, 508, 556),
+            new HoldRoomBox("lower_threshold", 8, 56, -28, -6, 508, 556),
+            new HoldRoomBox("lower_convergence", -38, 38, -28, -4, 560, 606),
+            new HoldRoomBox("lower_vault", 42, 82, -28, -4, 560, 606),
+            new HoldRoomBox("lower_altar", -56, -8, -28, -4, 612, 650),
+            new HoldRoomBox("lower_coop", 8, 56, -28, -4, 612, 650),
+            new HoldRoomBox("dread", 88, 122, -28, -4, 508, 650),
+            new HoldRoomBox("accepting", -42, 42, -32, -4, 658, 718),
+            new HoldRoomBox("unwriting", -42, 42, -32, -4, 732, 788),
+    };
+
+    /** Authored doorway graph. Every owned room must be connected to the mouth through these links. */
+    private static final HoldRoomLink[] DEEP_HOLD_ROOM_LINKS = {
+            new HoldRoomLink("mouth_vestibule", "orientation_center"),
+            new HoldRoomLink("orientation_center", "orientation_west"),
+            new HoldRoomLink("orientation_center", "orientation_east"),
+            new HoldRoomLink("orientation_center", "keeper_nave"),
+            new HoldRoomLink("keeper_nave", "keeper_vaun"),
+            new HoldRoomLink("keeper_nave", "keeper_mara"),
+            new HoldRoomLink("keeper_nave", "keeper_iss"),
+            new HoldRoomLink("keeper_nave", "keeper_sella"),
+            new HoldRoomLink("keeper_nave", "keeper_brann"),
+            new HoldRoomLink("keeper_nave", "keeper_orin"),
+            new HoldRoomLink("keeper_nave", "archive_nave"),
+            new HoldRoomLink("archive_nave", "archive_school"),
+            new HoldRoomLink("archive_nave", "archive_markers"),
+            new HoldRoomLink("archive_nave", "archive_cistern"),
+            new HoldRoomLink("archive_nave", "archive_watch"),
+            new HoldRoomLink("archive_nave", "archive_shelf"),
+            new HoldRoomLink("archive_nave", "archive_water"),
+            new HoldRoomLink("archive_nave", "archive_market"),
+            new HoldRoomLink("archive_nave", "archive_ration"),
+            new HoldRoomLink("archive_nave", "archive_breach"),
+            new HoldRoomLink("archive_nave", "archive_warm"),
+            new HoldRoomLink("archive_nave", "archive_stall"),
+            new HoldRoomLink("archive_nave", "archive_coops"),
+            new HoldRoomLink("archive_nave", "puzzle_works"),
+            new HoldRoomLink("puzzle_works", "lower_reckoning"),
+            new HoldRoomLink("lower_reckoning", "lower_threshold"),
+            new HoldRoomLink("lower_reckoning", "prior_case"),
+            new HoldRoomLink("prior_case", "prior_camp"),
+            new HoldRoomLink("lower_threshold", "dread"),
+            new HoldRoomLink("lower_reckoning", "lower_convergence"),
+            new HoldRoomLink("lower_threshold", "lower_convergence"),
+            new HoldRoomLink("lower_convergence", "lower_vault"),
+            new HoldRoomLink("lower_convergence", "lower_altar"),
+            new HoldRoomLink("lower_convergence", "lower_coop"),
+            new HoldRoomLink("lower_convergence", "accepting"),
+            new HoldRoomLink("accepting", "unwriting"),
     };
 
     private static final String HOLD_REGION_SITE_ID = "deep_hold_region";
@@ -546,118 +594,120 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * surveyed and placed in their real dimensions.
      */
     private static final HoldSite[] DEEP_HOLD_SITES = {
-            new HoldSite("undercroft_seal", "undercroft_seal", 11, 7, -24, -24, 120, 0, 0),
-            new HoldSite("forgotten_mouth", "forgotten_mouth", 11, 7, 24, -24, 120, 0, 0),
-            new HoldSite("rune_rosetta", "structure", 8, 7, 0, -24, 130, 15, 12),
-            new HoldSite("bow_marker_01", "bow_marker", 4, 4, -22, -24, 140, 0, 0),
-            new HoldSite("offering_cairn_01", "offering_cairn", 4, 4, 0, -24, 140, 0, 0),
-            new HoldSite("kept_light_home_01", "kept_light", 5, 4, 22, -24, 140, 0, 0),
+            new HoldSite("undercroft_seal", "undercroft_seal", 11, 7, -34, -24, 108, 0, 0),
+            new HoldSite("forgotten_mouth", "forgotten_mouth", 11, 7, 34, -24, 108, 0, 0),
+            new HoldSite("rune_rosetta", "structure", 8, 7, 0, -24, 112, 15, 12),
+            new HoldSite("bow_marker_01", "bow_marker", 4, 4, -34, -24, 132, 0, 0),
+            new HoldSite("offering_cairn_01", "offering_cairn", 4, 4, 0, -24, 132, 0, 0),
+            new HoldSite("kept_light_home_01", "kept_light", 5, 4, 34, -24, 132, 0, 0),
 
-            new HoldSite("stone_vaun", "keeper_stone", 8, 7, -92, -28, 188, 0, 0),
-            new HoldSite("vaun_hoard_chest", "vaun_hoard_chest", 2, 3, -76, -28, 178, 0, 0),
-            new HoldSite("vaun_bookshelf", "vaun_bookshelf", 2, 3, -76, -28, 198, 0, 0),
-            new HoldSite("stone_mara", "keeper_stone", 8, 7, 92, -28, 188, 0, 0),
-            new HoldSite("mara_lectern_1", "mara_lectern", 2, 2, 62, -28, 176, 0, 0),
-            new HoldSite("mara_lectern_2", "mara_lectern", 2, 2, 70, -28, 176, 0, 0),
-            new HoldSite("mara_lectern_3", "mara_lectern", 2, 2, 78, -28, 176, 0, 0),
-            new HoldSite("mara_lectern_4", "mara_lectern", 2, 2, 86, -28, 176, 0, 0),
-            new HoldSite("mara_lectern_5", "mara_lectern", 2, 2, 94, -28, 176, 0, 0),
-            new HoldSite("mara_route_marker_1", "mara_route_marker", 2, 3, 62, -28, 194, 0, 0),
-            new HoldSite("mara_route_marker_2", "mara_route_marker", 2, 3, 72, -28, 202, 0, 0),
-            new HoldSite("mara_route_marker_3", "mara_route_marker", 2, 3, 84, -28, 202, 0, 0),
-            new HoldSite("mara_route_marker_4", "mara_route_marker", 2, 3, 96, -28, 194, 0, 0),
-            new HoldSite("mara_map_marker", "mara_map_marker", 4, 4, 79, -28, 210, 0, 0),
-            new HoldSite("stone_sella", "keeper_stone", 8, 7, 92, -28, 228, 0, 0),
-            new HoldSite("sella_pool", "sella_pool", 5, 4, 76, -29, 232, 0, 0),
-            new HoldSite("sella_anchor", "sella_anchor", 3, 5, 76, -24, 240, 0, 0),
-            new HoldSite("sella_lectern_1", "sella_lectern", 2, 2, 60, -28, 216, 0, 0),
-            new HoldSite("sella_lectern_2", "sella_lectern", 2, 2, 68, -28, 216, 0, 0),
-            new HoldSite("sella_lectern_3", "sella_lectern", 2, 2, 76, -28, 216, 0, 0),
-            new HoldSite("sella_lectern_4", "sella_lectern", 2, 2, 84, -28, 216, 0, 0),
-            new HoldSite("sella_lectern_5", "sella_lectern", 2, 2, 92, -28, 216, 0, 0),
+            new HoldSite("stone_vaun", "keeper_stone", 8, 7, -68, -28, 168, 0, 0),
+            new HoldSite("vaun_hoard_chest", "vaun_hoard_chest", 2, 3, -52, -28, 158, 0, 0),
+            new HoldSite("vaun_bookshelf", "vaun_bookshelf", 2, 3, -52, -28, 176, 0, 0),
+            new HoldSite("stone_mara", "keeper_stone", 8, 7, 68, -28, 168, 0, 0),
+            new HoldSite("mara_lectern_1", "mara_lectern", 2, 2, 40, -28, 158, 0, 0),
+            new HoldSite("mara_lectern_2", "mara_lectern", 2, 2, 48, -28, 158, 0, 0),
+            new HoldSite("mara_lectern_3", "mara_lectern", 2, 2, 56, -28, 158, 0, 0),
+            new HoldSite("mara_lectern_4", "mara_lectern", 2, 2, 64, -28, 158, 0, 0),
+            new HoldSite("mara_lectern_5", "mara_lectern", 2, 2, 72, -28, 158, 0, 0),
+            new HoldSite("mara_route_marker_1", "mara_route_marker", 2, 3, 40, -28, 174, 0, 0),
+            new HoldSite("mara_route_marker_2", "mara_route_marker", 2, 3, 48, -28, 182, 0, 0),
+            new HoldSite("mara_route_marker_3", "mara_route_marker", 2, 3, 64, -28, 182, 0, 0),
+            new HoldSite("mara_route_marker_4", "mara_route_marker", 2, 3, 72, -28, 174, 0, 0),
+            new HoldSite("mara_map_marker", "mara_map_marker", 4, 4, 56, -28, 184, 0, 0),
 
-            new HoldSite("stone_orin", "keeper_stone", 8, 7, 92, -28, 270, 0, 0),
-            new HoldSite("orin_marker_1", "orin_marker", 3, 4, 62, -28, 256, 0, 0),
-            new HoldSite("orin_marker_2", "orin_marker", 3, 4, 74, -28, 256, 0, 0),
-            new HoldSite("orin_marker_3", "orin_marker", 3, 4, 86, -28, 256, 0, 0),
-            new HoldSite("orin_marker_4", "orin_marker", 3, 4, 62, -28, 264, 0, 0),
-            new HoldSite("orin_marker_5", "orin_marker", 3, 4, 74, -28, 264, 0, 0),
-            new HoldSite("orin_marker_6", "orin_marker", 3, 4, 86, -28, 264, 0, 0),
-            new HoldSite("orin_frame_dial_1", "orin_frame_dial", 2, 3, 62, -27, 280, 0, 0),
-            new HoldSite("orin_frame_dial_2", "orin_frame_dial", 2, 3, 69, -27, 280, 0, 0),
-            new HoldSite("orin_frame_dial_3", "orin_frame_dial", 2, 3, 76, -27, 280, 0, 0),
-            new HoldSite("orin_frame_dial_4", "orin_frame_dial", 2, 3, 83, -27, 280, 0, 0),
-            new HoldSite("orin_frame_dial_5", "orin_frame_dial", 2, 3, 90, -27, 280, 0, 0),
-            new HoldSite("orin_frame_dial_6", "orin_frame_dial", 2, 3, 97, -27, 280, 0, 0),
-            new HoldSite("stone_brann", "keeper_stone", 8, 7, -92, -28, 270, 0, 0),
-            new HoldSite("brann_toll_tower", "brann_toll_tower", 5, 7, -76, -28, 258, 0, 0),
-            new HoldSite("brann_corridor_start", "brann_corridor_start", 3, 4, -98, -28, 280, 0, 0),
-            new HoldSite("brann_corridor_end", "brann_corridor_end", 3, 4, -60, -28, 280, 0, 0),
-            new HoldSite("stone_iss", "keeper_stone", 8, 7, -92, -28, 228, 0, 0),
-            new HoldSite("the_cold_hearth", "marker", 8, 7, -74, -28, 232, 16, 13),
-            new HoldSite("case_board", "case_board", 8, 6, -150, -28, 620, 0, 0),
-            new HoldSite("prior_camp", "prior_camp", 28, 12, -150, -28, 690, 26, 18),
+            new HoldSite("stone_sella", "keeper_stone", 8, 7, 68, -28, 212, 0, 0),
+            new HoldSite("sella_pool", "sella_pool", 5, 4, 56, -29, 214, 0, 0),
+            new HoldSite("sella_anchor", "sella_anchor", 3, 5, 44, -24, 218, 0, 0),
+            new HoldSite("sella_lectern_1", "sella_lectern", 2, 2, 40, -28, 200, 0, 0),
+            new HoldSite("sella_lectern_2", "sella_lectern", 2, 2, 48, -28, 200, 0, 0),
+            new HoldSite("sella_lectern_3", "sella_lectern", 2, 2, 56, -28, 200, 0, 0),
+            new HoldSite("sella_lectern_4", "sella_lectern", 2, 2, 64, -28, 200, 0, 0),
+            new HoldSite("sella_lectern_5", "sella_lectern", 2, 2, 72, -28, 200, 0, 0),
 
-            new HoldSite("school_stand", "school_stand", 14, 8, -140, -24, 330, 0, 0),
-            new HoldSite("markers_row", "markers_row", 15, 8, -90, -24, 330, 0, 0),
-            new HoldSite("cistern_7", "cistern_7", 15, 9, -140, -24, 400, 0, 0),
-            new HoldSite("watch_floor", "watch_floor", 14, 9, -90, -24, 400, 0, 0),
-            new HoldSite("set_apart_shelf", "set_apart_shelf", 14, 8, -140, -24, 470, 0, 0),
-            new HoldSite("the_far_water", "far_water", 18, 9, -90, -24, 470, 0, 0),
-            new HoldSite("deep_market", "deep_market", 20, 10, 140, -24, 330, 0, 0),
-            new HoldSite("ration_table", "ration_table", 13, 8, 90, -24, 330, 0, 0),
-            new HoldSite("third_bay_breach", "third_bay_breach", 16, 9, 140, -24, 400, 0, 0),
-            new HoldSite("warm_town_collapse", "warm_town_collapse", 18, 10, 90, -24, 400, 0, 0),
+            new HoldSite("stone_orin", "keeper_stone", 8, 7, 68, -28, 252, 0, 0),
+            new HoldSite("orin_marker_1", "orin_marker", 3, 4, 40, -28, 240, 0, 0),
+            new HoldSite("orin_marker_2", "orin_marker", 3, 4, 52, -28, 240, 0, 0),
+            new HoldSite("orin_marker_3", "orin_marker", 3, 4, 64, -28, 240, 0, 0),
+            new HoldSite("orin_marker_4", "orin_marker", 3, 4, 40, -28, 248, 0, 0),
+            new HoldSite("orin_marker_5", "orin_marker", 3, 4, 52, -28, 248, 0, 0),
+            new HoldSite("orin_marker_6", "orin_marker", 3, 4, 64, -28, 248, 0, 0),
+            new HoldSite("orin_frame_dial_1", "orin_frame_dial", 2, 3, 40, -27, 260, 0, 0),
+            new HoldSite("orin_frame_dial_2", "orin_frame_dial", 2, 3, 46, -27, 260, 0, 0),
+            new HoldSite("orin_frame_dial_3", "orin_frame_dial", 2, 3, 52, -27, 260, 0, 0),
+            new HoldSite("orin_frame_dial_4", "orin_frame_dial", 2, 3, 58, -27, 260, 0, 0),
+            new HoldSite("orin_frame_dial_5", "orin_frame_dial", 2, 3, 64, -27, 260, 0, 0),
+            new HoldSite("orin_frame_dial_6", "orin_frame_dial", 2, 3, 70, -27, 260, 0, 0),
+            new HoldSite("stone_brann", "keeper_stone", 8, 7, -68, -28, 246, 0, 0),
+            new HoldSite("brann_toll_tower", "brann_toll_tower", 5, 7, -52, -28, 238, 0, 0),
+            new HoldSite("brann_corridor_start", "brann_corridor_start", 3, 4, -72, -28, 254, 0, 0),
+            new HoldSite("brann_corridor_end", "brann_corridor_end", 3, 4, -40, -28, 254, 0, 0),
+            new HoldSite("stone_iss", "keeper_stone", 8, 7, -68, -28, 204, 0, 0),
+            new HoldSite("the_cold_hearth", "marker", 8, 7, -53, -28, 206, 16, 13),
 
-            new HoldSite("lampworks_stair", "lampworks_stair", 20, 16, 0, -24, 540, 0, 0),
-            new HoldSite("third_lamp_stand", "lamp_stand", 4, 5, -18, -26, 562, 0, 0),
-            new HoldSite("painted_line", "painted_line", 5, 5, 0, -28, 574, 0, 0),
-            new HoldSite("dead_stall", "dead_stall", 10, 7, 140, -24, 470, 16, 12),
-            new HoldSite("deep_bird_coops", "bird_coops", 12, 7, 90, -24, 470, 18, 14),
-            new HoldSite("stone_of_reckoning", "structure", 10, 9, -58, -28, 620, 20, 16),
-            new HoldSite("the_threshold", "the_threshold", 10, 9, 58, -28, 620, 20, 16),
-            new HoldSite("threshold_vault", "coop_plate", 9, 8, 58, -28, 680, 17, 14),
-            new HoldSite("failed_accepting", "failed_accepting", 20, 10, 0, -28, 690, 27, 19),
-            new HoldSite("unbroken_light", "accepting_floor", 24, 12, 0, -32, 810, 33, 25),
-            new HoldSite("keeper_altar", "keeper_altar", 10, 8, -58, -28, 742, 16, 13),
-            new HoldSite("coop_plate", "coop_plate", 9, 7, 58, -28, 742, 16, 13),
-            new HoldSite("the_unwriting", "seventh_shrine", 18, 10, 0, -32, 920, 29, 21),
+            new HoldSite("case_board", "case_board", 8, 6, -88, -28, 528, 0, 0),
+            new HoldSite("prior_camp", "prior_camp", 28, 12, -88, -28, 582, 26, 18),
 
-            new HoldSite("dread_route_start", "dread_route", 5, 5, 140, -28, 610, 0, 0),
-            new HoldSite("dread_route_elsewhere", "dread_route", 5, 5, 170, -28, 650, 0, 0),
-            new HoldSite("dread_route_figure", "dread_route", 5, 5, 170, -28, 700, 0, 0),
-            new HoldSite("dread_route_exit", "dread_route", 5, 5, 140, -28, 742, 0, 0),
+            new HoldSite("school_stand", "school_stand", 14, 8, -95, -24, 298, 0, 0),
+            new HoldSite("markers_row", "markers_row", 15, 8, -49, -24, 298, 0, 0),
+            new HoldSite("cistern_7", "cistern_7", 15, 9, -95, -24, 344, 0, 0),
+            new HoldSite("watch_floor", "watch_floor", 14, 9, -49, -24, 344, 0, 0),
+            new HoldSite("set_apart_shelf", "set_apart_shelf", 14, 8, -95, -24, 390, 0, 0),
+            new HoldSite("the_far_water", "far_water", 18, 9, -49, -24, 390, 18, 9),
+            new HoldSite("deep_market", "deep_market", 20, 10, 95, -24, 298, 20, 10),
+            new HoldSite("ration_table", "ration_table", 13, 8, 49, -24, 298, 0, 0),
+            new HoldSite("third_bay_breach", "third_bay_breach", 16, 9, 95, -24, 344, 16, 9),
+            new HoldSite("warm_town_collapse", "warm_town_collapse", 18, 10, 49, -24, 344, 18, 10),
+
+            new HoldSite("lampworks_stair", "lampworks_stair", 20, 16, 0, -24, 450, 20, 16),
+            new HoldSite("third_lamp_stand", "lamp_stand", 4, 5, -18, -24, 474, 0, 0),
+            new HoldSite("painted_line", "painted_line", 5, 5, 0, -24, 486, 0, 0),
+            new HoldSite("dead_stall", "dead_stall", 10, 7, 95, -24, 390, 16, 12),
+            new HoldSite("deep_bird_coops", "bird_coops", 12, 7, 49, -24, 390, 18, 14),
+
+            new HoldSite("stone_of_reckoning", "structure", 10, 9, -32, -28, 532, 20, 16),
+            new HoldSite("the_threshold", "the_threshold", 10, 9, 32, -28, 532, 20, 16),
+            new HoldSite("threshold_vault", "coop_plate", 9, 8, 62, -28, 582, 17, 14),
+            new HoldSite("failed_accepting", "failed_accepting", 20, 10, 0, -28, 584, 27, 19),
+            new HoldSite("unbroken_light", "accepting_floor", 24, 12, 0, -32, 688, 33, 25),
+            new HoldSite("keeper_altar", "keeper_altar", 10, 8, -32, -28, 632, 16, 13),
+            new HoldSite("coop_plate", "coop_plate", 9, 7, 32, -28, 632, 16, 13),
+            new HoldSite("the_unwriting", "seventh_shrine", 18, 10, 0, -32, 760, 29, 21),
+
+            new HoldSite("dread_route_start", "dread_route", 5, 5, 96, -28, 520, 0, 0),
+            new HoldSite("dread_route_elsewhere", "dread_route", 5, 5, 112, -28, 552, 0, 0),
+            new HoldSite("dread_route_figure", "dread_route", 5, 5, 112, -28, 592, 0, 0),
+            new HoldSite("dread_route_exit", "dread_route", 5, 5, 96, -28, 632, 0, 0),
     };
 
     private static final HoldGate[] DEEP_HOLD_GATES = {
-            new HoldGate("entry", 0, -24, 99, true, "old mouth"),
-            new HoldGate("keeper", 0, -28, 152, false, "six-hand court"),
-            new HoldGate("archive", 0, -24, 292, false, "recovery archive"),
-            new HoldGate("undercroft", 0, -24, 506, false, "lampworks"),
-            new HoldGate("deep", 0, -28, 589, false, "lower reckoning"),
-            new HoldGate("prior", -150, -28, 648, false, "failed camp"),
-            new HoldGate("dread", 120, -28, 602, false, "side hush"),
-            new HoldGate("accepting", 0, -32, 774, false, "last warm"),
-            new HoldGate("coda", 0, -32, 876, false, "the unwriting"),
+            new HoldGate("keeper", 0, -40, 157, false, "G1 rosetta"),
+            new HoldGate("archive", 0, -40, 251, false, "G2 investigation"),
+            new HoldGate("undercroft", 0, -68, 99, false, "G3 undercroft"),
+            new HoldGate("deep", 0, -96, 111, false, "G4 deep"),
+            new HoldGate("prior", -80, -96, 156, false, "prior camp"),
+            new HoldGate("dread", 72, -96, 132, false, "dread procession"),
+            new HoldGate("accepting", 0, -96, 223, false, "G5 accepting"),
+            new HoldGate("coda", 0, -96, 295, false, "G6 coda"),
     };
 
     private static final HoldRecordStation[] DEEP_HOLD_RECORD_STATIONS = {
-            new HoldRecordStation("mouth_register", 12, -24, 90, BlockFace.WEST,
-                    "mouth register", "One row stayed blank", 8, -24, 90),
-            new HoldRecordStation("court_census", -22, -28, 160, BlockFace.EAST,
-                    "court census", "trust the physical room", -18, -28, 160),
-            new HoldRecordStation("intake_rail", -40, -24, 310, BlockFace.EAST,
-                    "intake rail", "evidence, not decoration", -36, -24, 310),
-            new HoldRecordStation("prior_roster", -160, -28, 610, BlockFace.EAST,
-                    "prior roster", "no witness", -154, -28, 610),
-            new HoldRecordStation("closure_docket", 40, -24, 310, BlockFace.WEST,
-                    "closure docket", "before the collapse", 36, -24, 310),
-            new HoldRecordStation("lamp_count", -12, -24, 524, BlockFace.EAST,
-                    "lamp count", "Do not break the wall", -8, -24, 524),
-            new HoldRecordStation("threshold_hands", -18, -28, 660, BlockFace.EAST,
-                    "threshold hands", "Plate. Name. Word.", -14, -28, 660),
-            new HoldRecordStation("side_hush", 132, -28, 600, BlockFace.EAST,
-                    "side hush", "uncrossed word", 136, -28, 600),
+            new HoldRecordStation("mouth_register", 10, -24, 76, BlockFace.WEST,
+                    "mouth register", "One row stayed blank", 6, -24, 76),
+            new HoldRecordStation("court_census", -18, -28, 154, BlockFace.EAST,
+                    "court census", "trust the physical room", -14, -28, 154),
+            new HoldRecordStation("intake_rail", -16, -24, 282, BlockFace.EAST,
+                    "intake rail", "evidence, not decoration", -12, -24, 282),
+            new HoldRecordStation("prior_roster", -98, -28, 518, BlockFace.EAST,
+                    "prior roster", "no witness", -94, -28, 518),
+            new HoldRecordStation("closure_docket", 16, -24, 282, BlockFace.WEST,
+                    "closure docket", "before the collapse", 12, -24, 282),
+            new HoldRecordStation("lamp_count", -28, -24, 438, BlockFace.EAST,
+                    "lamp count", "Do not break the wall", -24, -24, 438),
+            new HoldRecordStation("threshold_hands", -18, -28, 566, BlockFace.EAST,
+                    "threshold hands", "Plate. Name. Word.", -14, -28, 566),
+            new HoldRecordStation("side_hush", 96, -28, 514, BlockFace.EAST,
+                    "side hush", "uncrossed word", 100, -28, 514),
     };
 
     private static final Set<String> DEEP_HOLD_LORE_SEEDS = Set.of(
@@ -2848,12 +2898,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     Location mouth = anchor.surfaceMouth();
                     sender.sendMessage("  Surface mouth: " + mouth.getBlockX() + ","
                             + mouth.getBlockY() + "," + mouth.getBlockZ()
-                            + " (the court anchor is offset underground from that entrance).");
+                            + " (all V4 coordinates descend from this one public entrance).");
                 }
-                int placed = buildDeepHold(base, anchor.surfaceMouth(), sender);
+                int placed;
+                try {
+                    placed = buildDeepHoldV4(base, anchor.surfaceMouth(), sender);
+                } catch (IllegalStateException rejected) {
+                    String message = rejected.getMessage() == null ? "unknown placement failure" : rejected.getMessage();
+                    if (message.contains("survey rejected this Mouth")) {
+                        sender.sendMessage("Observance: Deep Hold build refused before block placement.");
+                        sender.sendMessage("  " + message);
+                        return;
+                    }
+                    throw rejected;
+                }
                 sender.sendMessage("Observance: Deep Hold build complete - " + placed + "/"
-                        + DEEP_HOLD_SITES.length + " ARG sites registered inside the hold.");
-                sender.sendMessage("  Initial gates: entry + keeper open; archive, deep, dread, threshold, accepting sealed.");
+                        + DeepHoldV4Plan.FIXTURES.size() + " canonical ARG sites registered inside the V4 Hold.");
+                sender.sendMessage("  Initial gates: G1-G6 plus Prior and Dread are sealed; the Mouth and Grand Stair always remain open.");
                 sender.sendMessage("  First report / first marker remain prologue setup, not production Hold rooms.");
                 sender.sendMessage("  Next: /obs placehold audit, then /obs placehold sync once Supabase flags are live.");
             }
@@ -2867,7 +2928,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
             case "sync" -> syncPlaceHoldGates(sender);
             default -> sender.sendMessage("Usage: /observance placehold <build|audit|seal|open|sync> "
-                    + "[gate]  (player build: [depth]; console build: <world> <x> <y> <z>)");
+                    + "[gate]  (player build: stand at Mouth; console build: <world> <x> <y> <z>)");
         }
     }
 
@@ -2885,7 +2946,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage("Usage: /observance placehold build <world> <x> <y> <z>");
                 return null;
             }
-            return new HoldBuildAnchor(new Location(world, x, clampHoldY(world, y), z), null);
+            Location mouth = new Location(world, x, clampHoldY(world, y), z);
+            return new HoldBuildAnchor(mouth, mouth.clone());
         }
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Observance: console build needs /observance placehold build <world> <x> <y> <z>.");
@@ -2897,10 +2959,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return null;
         }
         World world = here.getWorld();
-        int mouthY = Math.max(world.getMinHeight() + 44, here.getBlockY());
+        int mouthY = here.getBlockY();
         Location mouth = new Location(world, here.getBlockX(), mouthY, here.getBlockZ());
-        Location base = mouth.clone();
-        return new HoldBuildAnchor(base, mouth);
+        // V4 coordinates are local to the one public Mouth. Three buried strata fold below this
+        // point; a read-only survey rejects shallow terrain before any block is changed.
+        return new HoldBuildAnchor(mouth.clone(), mouth);
     }
 
     private Integer parseHoldInt(String raw) {
@@ -2920,6 +2983,581 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return Math.max(min, Math.min(max, y));
     }
 
+    /** Production V4 build. Geometry is clean-sheet; canonical fixtures and runtime ids are preserved. */
+    private int buildDeepHoldV4(Location base, Location surfaceMouth, CommandSender sender) {
+        Location mouth = surfaceMouth == null ? base : surfaceMouth;
+        if (mouth == null || mouth.getWorld() == null) return 0;
+        World world = mouth.getWorld();
+        String worldName = world.getName();
+        int bx = mouth.getBlockX();
+        int by = mouth.getBlockY();
+        int bz = mouth.getBlockZ();
+
+        DeepHoldV4Geometry.Survey survey = DeepHoldV4Geometry.survey(world, mouth);
+        if (!survey.safe()) {
+            throw new IllegalStateException("Deep Hold V4 survey rejected this Mouth: "
+                    + String.join("; ", survey.issues()));
+        }
+        List<String> collisionIssues = surveyDeepHoldV4SiteCollisions(mouth);
+        if (!collisionIssues.isEmpty()) {
+            throw new IllegalStateException("Deep Hold V4 site-envelope survey rejected this Mouth: "
+                    + String.join("; ", collisionIssues));
+        }
+        if (sender != null) {
+            sender.sendMessage("  V4 survey passed: minimum surface Y=" + survey.minimumSurfaceY()
+                    + ", highest buried roof Y=" + survey.highestAuthoredRoofY()
+                    + ", lowest foundation Y=" + survey.lowestAuthoredFoundationY()
+                    + "; registered-site envelope clear.");
+        }
+
+        plugin.beginRuntimeSiteBatch();
+        try {
+            // Fail before changing blocks when a packaged manuscript or static plan is incomplete.
+            loadHoldLockBooks();
+            loadHoldD05Books();
+            List<String> planIssues = DeepHoldV4Plan.validate();
+            if (!planIssues.isEmpty()) {
+                throw new IllegalStateException("Deep Hold V4 static plan failed: " + String.join("; ", planIssues));
+            }
+
+            DeepHoldV4Geometry.BuildResult shell = DeepHoldV4Geometry.build(world, mouth,
+                    line -> { if (sender != null) sender.sendMessage("  " + line + "..."); });
+            if (sender != null) sender.sendMessage("  architecture changed " + shell.changedBlocks()
+                    + " blocks across " + shell.rooms() + " owned rooms.");
+
+            placeHoldPrologueEchoV4(world, bx, by, bz);
+            placeHoldDistrictRecordsV4(world, bx, by, bz);
+
+            int placed = 0;
+            List<Site> pendingSites = new ArrayList<>();
+            for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+                HoldSite row = v4HoldSite(fixture);
+                Location loc = new Location(world, bx + fixture.x(), by + fixture.y(), bz + fixture.z());
+                try {
+                    loc.getChunk().load(true);
+                    Site live = configuredHoldSite(row, loc, worldName);
+                    placeHoldFixture(live, loc, row);
+                    ensureHoldAnchorVisual(live, loc);
+                    String fixtureIssue = auditPlacedSite(live, loc);
+                    if (fixtureIssue != null) throw new IllegalStateException(fixtureIssue);
+                    String frameIssue = auditV4FixtureFrame(world, mouth, fixture);
+                    if (frameIssue != null) throw new IllegalStateException(frameIssue);
+                    pendingSites.add(live);
+                    placed++;
+                    if (sender != null && (placed % 10 == 0 || placed == DeepHoldV4Plan.FIXTURES.size())) {
+                        sender.sendMessage("  placed and framed " + placed + "/"
+                                + DeepHoldV4Plan.FIXTURES.size() + " canonical fixtures...");
+                    }
+                } catch (Throwable t) {
+                    if (sender != null) sender.sendMessage("  [!] V4 stopped at fixture " + fixture.id()
+                            + "; this fresh-location build is NOT production-ready.");
+                    throw new IllegalStateException("Deep Hold V4 fixture failed: " + fixture.id(), t);
+                }
+            }
+
+            placeHoldWayfindingV4(world, bx, by, bz);
+            String routeIssue = auditV4OpenRoute(world, mouth);
+            if (routeIssue != null) throw new IllegalStateException(routeIssue);
+
+            // Stamp progression gates only after the complete open route and every standing frame pass.
+            for (HoldGate gate : DEEP_HOLD_GATES) {
+                Location gateLoc = new Location(world, bx + gate.x(), by + gate.y(), bz + gate.z());
+                HoldGateSpan span = holdGateSpan(gate);
+                pendingSites.add(new Site(holdGateSiteId(gate.id()), "hold_gate", worldName,
+                        gateLoc.getX(), gateLoc.getY(), gateLoc.getZ(),
+                        Math.max(8, span.halfAcross()), span.height() + 2,
+                        true, true, null, false));
+                setHoldGate(gate, gateLoc, true);
+                placeHoldGateLabel(gate, gateLoc);
+                String issue = auditHoldGateIntegrity(gate, gateLoc);
+                if (issue != null) throw new IllegalStateException(issue);
+            }
+
+            registerHoldRegionV4(worldName, bx, by, bz);
+            registerHoldFocusedAnswerSlotsV4(worldName, bx, by, bz);
+            for (Site pending : pendingSites) plugin.registerRuntimeSite(pending);
+            return placed;
+        } finally {
+            plugin.endRuntimeSiteBatch();
+        }
+    }
+
+    private HoldSite v4HoldSite(DeepHoldV4Plan.Fixture fixture) {
+        return new HoldSite(fixture.id(), fixture.type(), fixture.radius(), fixture.verticalRadius(),
+                fixture.x(), fixture.y(), fixture.z(), 0, 0);
+    }
+
+    /**
+     * Read-only registered-site collision pass. A rebuild at the exact same V4 Mouth may replace its
+     * own generated registrations, but it still refuses to erase a newly authored external site.
+     */
+    private List<String> surveyDeepHoldV4SiteCollisions(Location mouth) {
+        if (mouth == null || mouth.getWorld() == null || plugin.sites() == null) return List.of();
+        Location existingMouth = resolveDeepHoldV4Mouth();
+        boolean samePlacement = existingMouth != null && existingMouth.getWorld() == mouth.getWorld()
+                && existingMouth.getBlockX() == mouth.getBlockX()
+                && existingMouth.getBlockY() == mouth.getBlockY()
+                && existingMouth.getBlockZ() == mouth.getBlockZ();
+        int minX = mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE;
+        int maxX = mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE;
+        int minY = mouth.getBlockY() + DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE;
+        int maxY = mouth.getBlockY() + DeepHoldV4Plan.MAX_Y + DeepHoldV4Plan.ENVELOPE;
+        int minZ = mouth.getBlockZ() + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE;
+        int maxZ = mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE;
+        List<String> issues = new ArrayList<>();
+        for (Site site : plugin.sites().all()) {
+            if (site == null || !site.enabled() || !site.isPlaced()) continue;
+            if (samePlacement && isDeepHoldV4ManagedSite(site.id())) continue;
+            Location loc = site.location();
+            if (loc == null || loc.getWorld() != mouth.getWorld()) continue;
+            int radius = Math.max(0, site.radius());
+            int vertical = Math.max(0, site.verticalRadius());
+            boolean x = loc.getX() + radius >= minX && loc.getX() - radius <= maxX;
+            boolean y = loc.getY() + vertical >= minY && loc.getY() - vertical <= maxY;
+            boolean z = loc.getZ() + radius >= minZ && loc.getZ() - radius <= maxZ;
+            if (x && y && z) {
+                issues.add("registered site " + site.id() + " intersects the authored envelope");
+                if (issues.size() >= 8) break;
+            }
+        }
+        return List.copyOf(issues);
+    }
+
+    private boolean isDeepHoldV4ManagedSite(String id) {
+        if (id == null) return false;
+        if (HOLD_REGION_SITE_ID.equals(id) || HOLD_ENTRY_REGION_SITE_ID.equals(id)
+                || id.startsWith("hold_gate_") || id.startsWith("hold_answer_")) return true;
+        return DeepHoldV4Plan.fixture(id) != null;
+    }
+
+    private String auditV4FixtureFrame(World world, Location mouth, DeepHoldV4Plan.Fixture fixture) {
+        if (world == null || mouth == null || fixture == null) return "missing V4 fixture frame input";
+        int sx = mouth.getBlockX() + fixture.standX();
+        int sy = mouth.getBlockY() + fixture.standY();
+        int sz = mouth.getBlockZ() + fixture.standZ();
+        Block floor = world.getBlockAt(sx, sy - 1, sz);
+        Block feet = world.getBlockAt(sx, sy, sz);
+        Block head = world.getBlockAt(sx, sy + 1, sz);
+        if (floor.isPassable() || !feet.isPassable() || !head.isPassable()) {
+            return fixture.id() + " has a blocked or unsupported player standing zone at "
+                    + sx + "," + sy + "," + sz;
+        }
+        int fx = mouth.getBlockX() + fixture.x();
+        int fy = mouth.getBlockY() + fixture.y();
+        int fz = mouth.getBlockZ() + fixture.z();
+        int dx = Integer.compare(fx, sx);
+        int dz = Integer.compare(fz, sz);
+        int steps = Math.max(Math.abs(fx - sx), Math.abs(fz - sz));
+        // Prove the approach outside the authored fixture footprint. Multi-block fixtures such as
+        // Vaun's five-wide shelf intentionally occupy cells before the anchor; those cells are the
+        // exhibit, not a blocked sightline.
+        for (int i = 1; i < steps; i++) {
+            int ex = sx + dx * i;
+            int ez = sz + dz * i;
+            if (Math.max(Math.abs(ex - fx), Math.abs(ez - fz)) <= Math.max(1, fixture.radius())) break;
+            Block eye = world.getBlockAt(ex, sy + 1, ez);
+            if (!eye.isPassable()) return fixture.id() + " sightline is blocked at "
+                    + eye.getX() + "," + eye.getY() + "," + eye.getZ();
+        }
+        return null;
+    }
+
+    private void registerHoldRegionV4(String worldName, int bx, int by, int bz) {
+        plugin.registerRuntimeSite(new Site(HOLD_REGION_SITE_ID, "hold_region", worldName,
+                (double) bx, (double) (by - 50), (double) (bz + 186),
+                230, 66, true, true, null, false));
+        plugin.registerRuntimeSite(new Site(HOLD_ENTRY_REGION_SITE_ID, "hold_region", worldName,
+                (double) bx, (double) (by - 20), (double) (bz + 52),
+                72, 34, true, true, null, false));
+    }
+
+    private void registerHoldFocusedAnswerSlotsV4(String worldName, int bx, int by, int bz) {
+        Object[][] slots = {
+                {"hold_answer_prior_absence", bx - 80, by - 96, bz + 140, "prior-absence"},
+                {"hold_answer_prior_camp", bx - 80, by - 96, bz + 181, "prior-camp-refusal"},
+                {"hold_answer_prior_vaun", bx - 92, by - 96, bz + 190, "prior-vaun-correction"},
+                {"hold_answer_prior_mara", bx - 90, by - 96, bz + 193, "prior-mara-correction"},
+                {"hold_answer_prior_sella", bx - 84, by - 96, bz + 194, "prior-sella-correction"},
+                {"hold_answer_prior_orin", bx - 76, by - 96, bz + 194, "prior-orin-correction"},
+                {"hold_answer_prior_brann", bx - 70, by - 96, bz + 193, "prior-brann-correction"},
+                {"hold_answer_prior_iss", bx - 68, by - 96, bz + 190, "prior-iss-correction"},
+                {"hold_answer_witness", bx + 3, by - 96, bz + 212, "prior-witness-before-accepting"}
+        };
+        for (Object[] slot : slots) {
+            plugin.registerRuntimeSite(new Site((String) slot[0], "answer_sign", worldName,
+                    ((Number) slot[1]).doubleValue(), ((Number) slot[2]).doubleValue(),
+                    ((Number) slot[3]).doubleValue(), 1, 2, true, true, (String) slot[4], false));
+        }
+    }
+
+    private void placeHoldPrologueEchoV4(World world, int bx, int by, int bz) {
+        if (world == null) return;
+        placeEvidenceLectern(new Location(world, bx - 14, by - 40, bz + 112), BlockFace.EAST,
+                "covered copy", List.of(
+                        "This is a copy, not the first report.\n\nThe real first report remains above, where the living first allowed themselves to be counted.",
+                        "The Hold kept only a cover mark. The record was carried underground after the opening, never before it.",
+                        "A descent without the first report is a descent without a name. Return through the same Mouth before reading the city."
+                ));
+        placeDecorativeBookshelf(world.getBlockAt(bx - 16, by - 40, bz + 112), 83, BlockFace.EAST);
+        placeStandingSign(new Location(world, bx - 10, by - 40, bz + 112), BlockFace.EAST,
+                new String[]{"COVERED COPY", "original stays", "above", ""});
+    }
+
+    private void placeHoldDistrictRecordsV4(World world, int bx, int by, int bz) {
+        if (world == null) return;
+        placeHoldRecordStation(world, bx + 12, by - 40, bz + 112, BlockFace.WEST,
+                "first register", List.of(
+                        "Entry register.\n\nSix signed before the covered descent. A seventh mark was added later in grey ink and matched no hand.",
+                        "Do not call the grey line prophecy. It is a correction made after the stair was sealed.",
+                        "Later copies turned six hand marks into seven rows. One row stayed blank, but the lock still counted it.",
+                        "The first report stays above because the first count was public. This copy proves the public story changed."
+                ), 101);
+        placeStandingSign(new Location(world, bx + 8, by - 40, bz + 112), BlockFace.WEST,
+                new String[]{"FIRST COUNT", "above", "copy below", ""});
+
+        placeHoldRecordStation(world, bx - 18, by - 40, bz + 170, BlockFace.EAST,
+                "court census", List.of(
+                        "Keeper court seating.\n\nVaun, Mara, Sella, Orin, Brann, Iss. Six chairs were cut before any lower work began.",
+                        "Margin correction: one place was not cut. It was reserved by leaving the count unfinished.",
+                        "When seven appears where six were built, trust the physical room over the speech. Each Keeper leaves a different kind of proof."
+                ), 117);
+        placeStandingSign(new Location(world, bx - 14, by - 40, bz + 170), BlockFace.EAST,
+                new String[]{"SIX SEATS", "one margin", "count stone", ""});
+
+        placeHoldRecordStation(world, bx - 18, by - 68, bz + 116, BlockFace.EAST,
+                "archive index", List.of(
+                        "Archive intake: school, markers, cistern, watch, shelf, water; market, ration, breach, warm room, dead stall, coops.",
+                        "The records were split so no one reader could see the lower pattern at once. Treat every room as evidence, never scenery.",
+                        "Compare physical counts to written counts. Compare what moved before the collapse to what the public story says moved after it.",
+                        "Mara filed copies by consequence. Brann filed doors by convenience. Iss filed blame before either was complete."
+                ), 131);
+        placeStandingSign(new Location(world, bx - 14, by - 68, bz + 116), BlockFace.EAST,
+                new String[]{"ARCHIVE INDEX", "twelve rooms", "two loops", ""});
+
+        placeHoldRecordStation(world, bx + 18, by - 68, bz + 222, BlockFace.WEST,
+                "closure docket", List.of(
+                        "Market closure docket WARDEN-3.\n\nPublic reason: unsafe wall. Private reason: the ration account proved light moved before the collapse.",
+                        "The warm-town story depends on smoke. The ledgers depend on delivery. Compare which one had to be rewritten.",
+                        "A dark stand is not a missing stand. Do not break the wall for it. Bring light to the cup and let the third account answer."
+                ), 149);
+        placeStandingSign(new Location(world, bx + 14, by - 68, bz + 222), BlockFace.WEST,
+                new String[]{"WARDEN-3", "goods before", "smoke", ""});
+
+        placeHoldRecordStation(world, bx - 60, by - 96, bz + 124, BlockFace.WEST,
+                "absence docket", List.of(
+                        "Prior accepting roster.\n\nSix names copied clean. Six Keeper answers filed. Six tokens prepared.",
+                        "Seventh line: no witness.\n\nDo not correct this to no seventh. The failed run had no one outside the finish.",
+                        "The camp is sealed because the same mistake should not be rehearsed twice. File the absence before opening it.",
+                        "Open condition: NO WITNESS. Then compare every correction in camp against the six living methods."
+                ), 139);
+        placeStandingSign(new Location(world, bx - 64, by - 96, bz + 124), BlockFace.WEST,
+                new String[]{"PRIOR RUN", "six ready", "no witness", ""});
+
+        placeHoldRecordStation(world, bx + 18, by - 96, bz + 124, BlockFace.WEST,
+                "threshold hands", List.of(
+                        "Threshold work note.\n\nThree actions were required so no single Keeper could make the last door look like consent.",
+                        "Plate. Name. Word. The order matters less than the fact that the room hears more than one person.",
+                        "A group should argue here. If everyone agrees too quickly, the earlier contradiction was probably missed.",
+                        "The optional dread procession may corroborate Iss. It must never be required to leave, resume, or finish."
+                ), 191);
+        placeStandingSign(new Location(world, bx + 14, by - 96, bz + 124), BlockFace.WEST,
+                new String[]{"THREE HANDS", "plate name", "word", ""});
+
+        placeHoldRecordStation(world, bx, by - 96, bz + 366, BlockFace.NORTH,
+                "release record", List.of(
+                        "Release receipt.\n\nThe group reached the end with a witness outside the finish and a route still open behind them.",
+                        "Nothing below grants a second entrance. Return through Unwriting, Accepting, the lower works, both archives, and the Grand Stair.",
+                        "The well still leads only to the Unlit. The Mouth still leads only to the Hold. Do not merge the two stories for convenience.",
+                        "Record who bowed, who refused, and which claim survived comparison. Then leave by the same Mouth you entered."
+                ), 211);
+        placeStandingSign(new Location(world, bx, by - 96, bz + 362), BlockFace.NORTH,
+                new String[]{"RELEASE", "same route", "same Mouth", ""});
+    }
+
+    private void placeHoldWayfindingV4(World world, int bx, int by, int bz) {
+        if (world == null) return;
+        Object[][] signs = {
+                {-9, 0, 3, BlockFace.EAST, new String[]{"THE DEEP HOLD", "one Mouth", "return here", "to leave"}},
+                {-8, -40, 108, BlockFace.EAST, new String[]{"ORIENTATION", "read the copy", "then count", ""}},
+                {-8, -40, 164, BlockFace.EAST, new String[]{"KEEPER COURT", "six methods", "one margin", ""}},
+                {-8, -40, 246, BlockFace.EAST, new String[]{"G2", "archive below", "return stair", "behind"}},
+                {-8, -68, 104, BlockFace.EAST, new String[]{"CIVIC ARCHIVE", "west + east", "loops rejoin", ""}},
+                {8, -68, 294, BlockFace.WEST, new String[]{"PUZZLE WORKS", "third lamp", "then descend", ""}},
+                {-8, -96, 42, BlockFace.EAST, new String[]{"LOWER WORKS", "reckon first", "return north", ""}},
+                {-18, -96, 136, BlockFace.EAST, new String[]{"WEST", "absence case", "prior camp", ""}},
+                {18, -96, 136, BlockFace.WEST, new String[]{"EAST", "threshold", "vault + dread", ""}},
+                {-8, -96, 218, BlockFace.EAST, new String[]{"G5", "accepting", "requires witness", ""}},
+                {-8, -96, 290, BlockFace.EAST, new String[]{"G6", "unwriting", "bowed as one", ""}},
+                {-8, -96, 358, BlockFace.EAST, new String[]{"RELEASE", "no second exit", "turn back", ""}}
+        };
+        for (Object[] row : signs) {
+            placeStandingSign(new Location(world, bx + (Integer) row[0], by + (Integer) row[1],
+                    bz + (Integer) row[2]), (BlockFace) row[3], (String[]) row[4]);
+        }
+    }
+
+    private String auditV4OpenRoute(World world, Location mouth) {
+        if (world == null || mouth == null) return "V4 route audit has no world or Mouth.";
+        int bx = mouth.getBlockX();
+        int by = mouth.getBlockY();
+        int bz = mouth.getBlockZ();
+        Set<HoldWalkNode> visited = new HashSet<>();
+        ArrayDeque<HoldWalkNode> queue = new ArrayDeque<>();
+        // Seed the authored interior floor, never the walkable earth/roof above the Mouth.  A
+        // top-down search made the old audit flood the surface and falsely report every buried room
+        // unreachable.  The short fallback is only for a locally uneven Mouth floor.
+        HoldWalkNode seed = isHoldStandable(world, bx, by, bz + 2)
+                ? new HoldWalkNode(bx, by, bz + 2) : null;
+        for (int z = 0; z <= 8 && seed == null; z++) {
+            for (int dy : new int[]{0, -1, 1, -2}) {
+                int y = by + dy;
+                if (isHoldStandable(world, bx, y, bz + z)) {
+                    seed = new HoldWalkNode(bx, y, bz + z);
+                    break;
+                }
+            }
+        }
+        if (seed == null) return "V4 Surface Mouth has no Adventure-mode walk seed.";
+        queue.add(seed);
+        int minX = bx + DeepHoldV4Plan.MIN_X - 4;
+        int maxX = bx + DeepHoldV4Plan.MAX_X + 4;
+        int minY = by + DeepHoldV4Plan.MIN_Y - 4;
+        int maxY = by + DeepHoldV4Plan.MAX_Y + 4;
+        int minZ = bz + DeepHoldV4Plan.MIN_Z;
+        int maxZ = bz + DeepHoldV4Plan.MAX_Z + 4;
+        final int hardLimit = 900_000;
+        while (!queue.isEmpty()) {
+            HoldWalkNode node = queue.removeFirst();
+            if (!visited.add(node)) continue;
+            if (visited.size() > hardLimit) {
+                return "V4 walk graph escaped the authored envelope (over " + hardLimit + " nodes).";
+            }
+            for (int[] step : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                int nx = node.x() + step[0];
+                int nz = node.z() + step[1];
+                if (nx < minX || nx > maxX || nz < minZ || nz > maxZ) continue;
+                for (int dy : new int[]{0, 1, -1}) {
+                    int ny = node.y() + dy;
+                    if (ny < minY || ny > maxY) continue;
+                    HoldWalkNode candidate = new HoldWalkNode(nx, ny, nz);
+                    if (!visited.contains(candidate) && isV4AuditStandable(world, mouth, nx, ny, nz)) {
+                        queue.addLast(candidate);
+                        break;
+                    }
+                }
+            }
+        }
+
+        Set<String> reachedRooms = new HashSet<>();
+        for (HoldWalkNode node : visited) {
+            int lx = node.x() - bx;
+            int ly = node.y() - by;
+            int lz = node.z() - bz;
+            for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) {
+                if (ly == room.floorY() && room.contains(lx, ly, lz, 3)) reachedRooms.add(room.id());
+            }
+        }
+        for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) {
+            if (!reachedRooms.contains(room.id())) return "V4 room " + room.id()
+                    + " is not reachable from the one Surface Mouth; "
+                    + nearestV4WalkDiagnostic(visited, mouth, room) + ".";
+        }
+        for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+            HoldWalkNode stand = new HoldWalkNode(bx + fixture.standX(), by + fixture.standY(), bz + fixture.standZ());
+            if (!visited.contains(stand)) return "V4 fixture " + fixture.id()
+                    + " has a valid standing frame but no Mouth-reachable route; "
+                    + nearestV4FixtureDiagnostic(visited, mouth, fixture) + ".";
+        }
+        for (DeepHoldV4Plan.RecordStation station : DeepHoldV4Plan.RECORD_STATIONS) {
+            if (!hasHoldReachableNode(visited, bx + station.x(), by + station.y(), bz + station.z(), 6, 6, 2)) {
+                return "V4 record station " + station.id() + " has no Mouth-reachable reading position.";
+            }
+        }
+
+        String signIssue = auditV4Signs(world, mouth, visited);
+        if (signIssue != null) return signIssue;
+        return null;
+    }
+
+    private boolean isV4AuditStandable(World world, Location mouth, int x, int y, int z) {
+        if (world == null || mouth == null) return false;
+        Block floor = world.getBlockAt(x, y - 1, z);
+        Block feet = world.getBlockAt(x, y, z);
+        Block head = world.getBlockAt(x, y + 1, z);
+        return floor.getType().isSolid()
+                && (isHoldBodyClear(feet) || isV4GateDoorCell(mouth, x, y, z))
+                && (isHoldBodyClear(head) || isV4GateDoorCell(mouth, x, y + 1, z));
+    }
+
+    private boolean isV4GateDoorCell(Location mouth, int x, int y, int z) {
+        int lx = x - mouth.getBlockX(), ly = y - mouth.getBlockY(), lz = z - mouth.getBlockZ();
+        for (HoldGate gate : DEEP_HOLD_GATES) {
+            HoldGateSpan span = holdGateSpan(gate);
+            int across = span.acrossX() ? lx - gate.x() : lz - gate.z();
+            int depth = span.acrossX() ? lz - gate.z() : lx - gate.x();
+            int dy = ly - gate.y();
+            int doorHeight = Math.min(span.height() - 3, Math.max(6, span.doorHalf() + 1));
+            if (Math.abs(across) <= span.doorHalf() && depth >= 0 && depth <= span.depth()
+                    && dy >= 0 && dy <= doorHeight) return true;
+        }
+        return false;
+    }
+
+    private String nearestV4FixtureDiagnostic(Set<HoldWalkNode> visited, Location mouth,
+                                              DeepHoldV4Plan.Fixture fixture) {
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        int tx = bx + fixture.standX(), ty = by + fixture.standY(), tz = bz + fixture.standZ();
+        HoldWalkNode nearest = null;
+        int best = Integer.MAX_VALUE;
+        for (HoldWalkNode node : visited) {
+            if (node.y() != ty) continue;
+            int distance = Math.abs(node.x() - tx) + Math.abs(node.z() - tz);
+            if (distance < best) {
+                best = distance;
+                nearest = node;
+            }
+        }
+        if (nearest == null) return "no reachable cell exists on the fixture floor";
+        String routeReport = "threshold_vault".equals(fixture.id())
+                ? "; vault chain " + diagnoseV4VaultChain(visited, mouth) : "";
+        return "nearest fixture-floor cell is local " + (nearest.x() - bx) + ","
+                + (nearest.y() - by) + "," + (nearest.z() - bz)
+                + " at horizontal distance " + best + routeReport;
+    }
+
+    private String diagnoseV4VaultChain(Set<HoldWalkNode> visited, Location mouth) {
+        int[][] checkpoints = {
+                {39, 136}, {39, 144}, {52, 144}, {52, 150}, {52, 162},
+                {46, 162}, {40, 162}, {40, 170}, {40, 184}, {40, 188}
+        };
+        World world = mouth.getWorld();
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        for (int[] point : checkpoints) {
+            int x = bx + point[0], y = by - 96, z = bz + point[1];
+            HoldWalkNode node = new HoldWalkNode(x, y, z);
+            if (visited.contains(node)) continue;
+            Block floor = world.getBlockAt(x, y - 1, z);
+            Block feet = world.getBlockAt(x, y, z);
+            Block head = world.getBlockAt(x, y + 1, z);
+            return "first unreached checkpoint local " + point[0] + ",-96," + point[1]
+                    + " floor/feet/head=" + floor.getType() + "/" + feet.getType() + "/" + head.getType();
+        }
+        return "all authored checkpoints reached";
+    }
+
+    private String nearestV4WalkDiagnostic(Set<HoldWalkNode> visited, Location mouth,
+                                           DeepHoldV4Plan.Room room) {
+        if (visited == null || visited.isEmpty() || mouth == null || room == null) return "walk graph is empty";
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        int minX = bx + room.minX() + 3, maxX = bx + room.maxX() - 3;
+        int targetY = by + room.floorY();
+        int minZ = bz + room.minZ() + 3, maxZ = bz + room.maxZ() - 3;
+        HoldWalkNode nearest = null;
+        HoldWalkNode nearestOnFloor = null;
+        int best = Integer.MAX_VALUE;
+        int bestOnFloor = Integer.MAX_VALUE;
+        for (HoldWalkNode node : visited) {
+            int dx = node.x() < minX ? minX - node.x() : (node.x() > maxX ? node.x() - maxX : 0);
+            int dy = Math.abs(node.y() - targetY);
+            int dz = node.z() < minZ ? minZ - node.z() : (node.z() > maxZ ? node.z() - maxZ : 0);
+            int distance = dx + dy + dz;
+            if (distance < best) {
+                best = distance;
+                nearest = node;
+            }
+            if (node.y() == targetY) {
+                int horizontal = dx + dz;
+                if (horizontal < bestOnFloor) {
+                    bestOnFloor = horizontal;
+                    nearestOnFloor = node;
+                }
+            }
+        }
+        if (nearest == null) return "walk graph is empty";
+        int probeX = bx + (room.minX() < 0 ? room.maxX() - 3 : room.minX() + 3);
+        int probeZ = bz + ((room.minZ() + room.maxZ()) / 2);
+        Block probeFloor = mouth.getWorld().getBlockAt(probeX, targetY - 1, probeZ);
+        Block probeFeet = mouth.getWorld().getBlockAt(probeX, targetY, probeZ);
+        Block probeHead = mouth.getWorld().getBlockAt(probeX, targetY + 1, probeZ);
+        String floorReport = nearestOnFloor == null ? "no reachable cell on room floor"
+                : "nearest room-floor cell is local " + (nearestOnFloor.x() - bx) + ","
+                + (nearestOnFloor.y() - by) + "," + (nearestOnFloor.z() - bz)
+                + " at horizontal distance " + bestOnFloor;
+        String stairReport = "lower_works".equals(room.id())
+                ? "; lower switchback " + diagnoseV4LowerSwitchback(visited, mouth) : "";
+        return "nearest walk cell is local " + (nearest.x() - bx) + "," + (nearest.y() - by)
+                + "," + (nearest.z() - bz) + " at distance " + best + "; " + floorReport
+                + "; doorway probe floor/feet/head=" + probeFloor.getType() + "/"
+                + probeFeet.getType() + "/" + probeHead.getType() + stairReport;
+    }
+
+    private String diagnoseV4LowerSwitchback(Set<HoldWalkNode> visited, Location mouth) {
+        World world = mouth.getWorld();
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        for (int z = 34; z >= 6; z--) {
+            int y = -68 - Math.min(14, (34 - z) / 2);
+            String issue = diagnoseV4Tread(world, visited, bx - 10, by + y, bz + z, bx, by, bz);
+            if (issue != null) return "west flight " + issue;
+        }
+        for (int z = 6; z <= 34; z++) {
+            int y = -82 - Math.min(14, (z - 6) / 2);
+            String issue = diagnoseV4Tread(world, visited, bx + 10, by + y, bz + z, bx, by, bz);
+            if (issue != null) return "east flight " + issue;
+        }
+        return "all center treads are standable and reached";
+    }
+
+    private String diagnoseV4Tread(World world, Set<HoldWalkNode> visited, int x, int y, int z,
+                                   int bx, int by, int bz) {
+        HoldWalkNode node = new HoldWalkNode(x, y, z);
+        if (visited.contains(node)) return null;
+        Block floor = world.getBlockAt(x, y - 1, z);
+        Block feet = world.getBlockAt(x, y, z);
+        Block head = world.getBlockAt(x, y + 1, z);
+        return "first unreached tread local " + (x - bx) + "," + (y - by) + "," + (z - bz)
+                + " floor/feet/head=" + floor.getType() + "/" + feet.getType() + "/" + head.getType();
+    }
+
+    private String auditV4Signs(World world, Location mouth, Set<HoldWalkNode> visited) {
+        int bx = mouth.getBlockX();
+        int by = mouth.getBlockY();
+        int bz = mouth.getBlockZ();
+        Set<HoldWalkNode> seen = new HashSet<>();
+        int authored = 0;
+        for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) {
+            for (int x = room.minX(); x <= room.maxX(); x++) {
+                for (int z = room.minZ(); z <= room.maxZ(); z++) {
+                    for (int y = room.floorY(); y < room.ceilingY(); y++) {
+                        Block block = world.getBlockAt(bx + x, by + y, bz + z);
+                        if (!(block.getState() instanceof Sign)) continue;
+                        HoldWalkNode key = new HoldWalkNode(block.getX(), block.getY(), block.getZ());
+                        if (!seen.add(key)) continue;
+                        authored++;
+                        String issue = auditHoldReadableSign(block, visited);
+                        if (issue != null) return issue;
+                    }
+                }
+            }
+        }
+        for (int x = -18; x <= 18; x++) {
+            for (int z = -6; z <= 108; z++) {
+                for (int y = -44; y <= 12; y++) {
+                    Block block = world.getBlockAt(bx + x, by + y, bz + z);
+                    if (!(block.getState() instanceof Sign)) continue;
+                    HoldWalkNode key = new HoldWalkNode(block.getX(), block.getY(), block.getZ());
+                    if (!seen.add(key)) continue;
+                    authored++;
+                    String issue = auditHoldReadableSign(block, visited);
+                    if (issue != null) return issue;
+                }
+            }
+        }
+        if (authored < DeepHoldV4Plan.RECORD_STATIONS.size() + 12) {
+            return "V4 sign audit found only " + authored + " authored signs.";
+        }
+        return null;
+    }
+
     private int buildDeepHold(Location base, Location surfaceMouth, CommandSender sender) {
         if (base == null || base.getWorld() == null) return 0;
         World world = base.getWorld();
@@ -2934,14 +3572,24 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (by - 36 < world.getMinHeight() + 4) {
             throw new IllegalStateException("Deep Hold mouth is too low for the authored 36-block envelope");
         }
+        // Load every external manuscript before changing a single block. A missing packaged resource
+        // must fail cleanly, not after leaving a city shell and nineteen registered fixtures behind.
+        loadHoldLockBooks();
+        loadHoldD05Books();
+        validateDeepHoldPlan();
         if (sender != null) sender.sendMessage("  carving V2 owned rooms, roofed corridors, and the 24-block descent...");
         buildHoldV2Shells(world, bx, by, bz);
+        if (surfaceMouth != null) {
+            buildHoldSurfaceMouth(surfaceMouth, base);
+            String surfaceIssue = auditBuiltHoldSurfaceMouth(surfaceMouth, base);
+            if (surfaceIssue != null) throw new IllegalStateException(surfaceIssue);
+        }
         placeHoldPrologueEcho(world, bx, by, bz);
         placeHoldDistrictRecords(world, bx, by, bz);
-        registerHoldRegion(worldName, bx, by, bz, surfaceMouth);
 
         int placed = 0;
         int step = 0;
+        List<Site> pendingSites = new ArrayList<>();
         for (HoldSite row : DEEP_HOLD_SITES) {
             step++;
             Location loc = new Location(world, bx + row.x(), by + row.y(), bz + row.z());
@@ -2950,7 +3598,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 Site live = configuredHoldSite(row, loc, worldName);
                 placeHoldFixture(live, loc, row);
                 ensureHoldAnchorVisual(live, loc);
-                plugin.registerRuntimeSite(live);
+                String fixtureIssue = auditPlacedSite(live, loc);
+                if (fixtureIssue != null) {
+                    throw new IllegalStateException(fixtureIssue);
+                }
+                if (!hasHoldNearbyPlayerSpace(loc, 5, 10)) {
+                    throw new IllegalStateException(row.id() + " has no Adventure-mode standing clearance");
+                }
+                pendingSites.add(live);
                 placed++;
                 if (sender != null && (step % 12 == 0 || step == DEEP_HOLD_SITES.length)) {
                     sender.sendMessage("  placed " + placed + "/" + DEEP_HOLD_SITES.length + " hold sites...");
@@ -2964,18 +3619,47 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        registerHoldFocusedAnswerSlots(worldName, bx, by, bz);
+        // Prove the completed, fixture-populated structure while every authored doorway is still
+        // open.  Gates are stamped only after this full Adventure-mode walk succeeds, so a sealed
+        // progression gate can never hide a broken staircase or an inaccessible room.
+        placeHoldWayfinding(world, bx, by, bz);
+        String shellIssue = auditHoldCivicShell(world, bx, by, bz);
+        if (shellIssue != null) throw new IllegalStateException(shellIssue);
+        String enclosureIssue = auditHoldDistrictEnclosure(world, bx, by, bz);
+        if (enclosureIssue != null) throw new IllegalStateException(enclosureIssue);
+        Set<HoldWalkNode> openWalk = collectHoldAdventureWalk(world, bx, by, bz);
+        String traversalIssue = auditHoldAdventureReachability(world, bx, by, bz, openWalk);
+        if (traversalIssue != null) throw new IllegalStateException(traversalIssue);
+        String signIssue = auditHoldSigns(world, bx, by, bz, openWalk);
+        if (signIssue != null) throw new IllegalStateException(signIssue);
 
         for (HoldGate gate : DEEP_HOLD_GATES) {
             Location loc = new Location(world, bx + gate.x(), by + gate.y(), bz + gate.z());
             HoldGateSpan span = holdGateSpan(gate);
-            plugin.registerRuntimeSite(new Site(holdGateSiteId(gate.id()), "hold_gate", worldName,
+            pendingSites.add(new Site(holdGateSiteId(gate.id()), "hold_gate", worldName,
                     loc.getX(), loc.getY(), loc.getZ(), Math.max(8, span.halfAcross()), span.height() + 2,
                     true, true, null, false));
             setHoldGate(gate, loc, !gate.openInitially());
             placeHoldGateLabel(gate, loc);
+            String gateIssue = auditHoldGateIntegrity(gate, loc);
+            if (gateIssue != null) throw new IllegalStateException(gateIssue);
+            String gateLabelIssue = auditHoldGateLabel(gate, loc);
+            if (gateLabelIssue != null) throw new IllegalStateException(gateLabelIssue);
         }
-        placeHoldWayfinding(world, bx, by, bz);
+
+        String prologueIssue = auditHoldPrologueEcho(world, bx, by, bz);
+        if (prologueIssue != null) throw new IllegalStateException(prologueIssue);
+        for (HoldRecordStation station : DEEP_HOLD_RECORD_STATIONS) {
+            String recordIssue = auditHoldRecordStation(world, bx, by, bz, station);
+            if (recordIssue != null) throw new IllegalStateException(recordIssue);
+        }
+
+        // Publish runtime coordinates only after the complete physical build succeeds. A thrown fixture
+        // may leave diagnostic blocks in this abandoned test area, but it can never persist a misleading
+        // partial Hold into sites.yml or make audit report a valid subset.
+        registerHoldRegion(worldName, bx, by, bz, surfaceMouth);
+        registerHoldFocusedAnswerSlots(worldName, bx, by, bz);
+        for (Site pending : pendingSites) plugin.registerRuntimeSite(pending);
         return placed;
         } finally {
             plugin.endRuntimeSiteBatch();
@@ -2985,15 +3669,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void registerHoldFocusedAnswerSlots(String worldName, int bx, int by, int bz) {
         if (worldName == null || worldName.isBlank()) return;
         Object[][] slots = {
-                {"hold_answer_prior_absence", bx - 150, by - 28, bz + 624, "prior-absence"},
-                {"hold_answer_prior_camp", bx - 150, by - 28, bz + 683, "prior-camp-refusal"},
-                {"hold_answer_prior_vaun", bx - 162, by - 28, bz + 692, "prior-vaun-correction"},
-                {"hold_answer_prior_mara", bx - 160, by - 28, bz + 695, "prior-mara-correction"},
-                {"hold_answer_prior_sella", bx - 154, by - 28, bz + 696, "prior-sella-correction"},
-                {"hold_answer_prior_orin", bx - 146, by - 28, bz + 696, "prior-orin-correction"},
-                {"hold_answer_prior_brann", bx - 140, by - 28, bz + 695, "prior-brann-correction"},
-                {"hold_answer_prior_iss", bx - 138, by - 28, bz + 692, "prior-iss-correction"},
-                {"hold_answer_witness", bx + 3, by - 28, bz + 695, "prior-witness-before-accepting"}
+                {"hold_answer_prior_absence", bx - 88, by - 28, bz + 532, "prior-absence"},
+                {"hold_answer_prior_camp", bx - 88, by - 28, bz + 575, "prior-camp-refusal"},
+                {"hold_answer_prior_vaun", bx - 100, by - 28, bz + 584, "prior-vaun-correction"},
+                {"hold_answer_prior_mara", bx - 98, by - 28, bz + 587, "prior-mara-correction"},
+                {"hold_answer_prior_sella", bx - 92, by - 28, bz + 588, "prior-sella-correction"},
+                {"hold_answer_prior_orin", bx - 84, by - 28, bz + 588, "prior-orin-correction"},
+                {"hold_answer_prior_brann", bx - 78, by - 28, bz + 587, "prior-brann-correction"},
+                {"hold_answer_prior_iss", bx - 76, by - 28, bz + 584, "prior-iss-correction"},
+                {"hold_answer_witness", bx + 3, by - 28, bz + 589, "prior-witness-before-accepting"}
         };
         for (Object[] slot : slots) {
             plugin.registerRuntimeSite(new Site((String) slot[0], "answer_sign", worldName,
@@ -3011,6 +3695,95 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         for (HoldGate gate : DEEP_HOLD_GATES) {
             world.getChunkAt((bx + gate.x()) >> 4, (bz + gate.z()) >> 4).load(true);
         }
+    }
+
+    private void validateDeepHoldPlan() {
+        Map<String, HoldRoomBox> roomsById = new LinkedHashMap<>();
+        for (int i = 0; i < DEEP_HOLD_ROOM_BOXES.length; i++) {
+            HoldRoomBox a = DEEP_HOLD_ROOM_BOXES[i];
+            if (a.minX() >= a.maxX() || a.minZ() >= a.maxZ() || a.floorY() >= a.ceilingY()) {
+                throw new IllegalStateException("Invalid Hold room box " + a.id());
+            }
+            if (roomsById.put(a.id(), a) != null) {
+                throw new IllegalStateException("Duplicate Hold room id " + a.id());
+            }
+            for (int j = i + 1; j < DEEP_HOLD_ROOM_BOXES.length; j++) {
+                HoldRoomBox b = DEEP_HOLD_ROOM_BOXES[j];
+                boolean overlapX = a.minX() <= b.maxX() && b.minX() <= a.maxX();
+                boolean overlapZ = a.minZ() <= b.maxZ() && b.minZ() <= a.maxZ();
+                boolean overlapY = a.floorY() - 2 <= b.ceilingY() + 1
+                        && b.floorY() - 2 <= a.ceilingY() + 1;
+                if (overlapX && overlapZ && overlapY) {
+                    throw new IllegalStateException("Overlapping Hold room ownership: " + a.id() + " / " + b.id());
+                }
+            }
+        }
+        Map<String, Set<String>> graph = new LinkedHashMap<>();
+        for (String id : roomsById.keySet()) graph.put(id, new HashSet<>());
+        for (HoldRoomLink link : DEEP_HOLD_ROOM_LINKS) {
+            if (!roomsById.containsKey(link.from()) || !roomsById.containsKey(link.to())) {
+                throw new IllegalStateException("Hold doorway link references an unknown room: "
+                        + link.from() + " / " + link.to());
+            }
+            graph.get(link.from()).add(link.to());
+            graph.get(link.to()).add(link.from());
+        }
+        Set<String> reachable = new HashSet<>();
+        ArrayDeque<String> roomQueue = new ArrayDeque<>();
+        roomQueue.add("mouth_vestibule");
+        while (!roomQueue.isEmpty()) {
+            String room = roomQueue.removeFirst();
+            if (!reachable.add(room)) continue;
+            roomQueue.addAll(graph.getOrDefault(room, Set.of()));
+        }
+        if (reachable.size() != roomsById.size()) {
+            Set<String> missing = new HashSet<>(roomsById.keySet());
+            missing.removeAll(reachable);
+            throw new IllegalStateException("Hold doorway graph leaves rooms unreachable: " + missing);
+        }
+        for (HoldSite site : DEEP_HOLD_SITES) {
+            int owners = 0;
+            HoldRoomBox owner = null;
+            for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+                if (holdSiteInsideRoom(site, room)) {
+                    owners++;
+                    owner = room;
+                }
+            }
+            if (owners != 1) {
+                throw new IllegalStateException("Hold fixture " + site.id() + " has " + owners
+                        + " interior owners" + (owner == null ? "" : " (" + owner.id() + ")"));
+            }
+        }
+        for (HoldRecordStation station : DEEP_HOLD_RECORD_STATIONS) {
+            int owners = 0;
+            for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+                if (station.x() >= room.minX() + 3 && station.x() <= room.maxX() - 3
+                        && station.z() >= room.minZ() + 3 && station.z() <= room.maxZ() - 3
+                        && station.y() >= room.floorY() && station.y() <= room.ceilingY() - 2) {
+                    owners++;
+                }
+            }
+            if (owners != 1) {
+                throw new IllegalStateException("Hold record station " + station.id()
+                        + " has " + owners + " interior owners");
+            }
+        }
+    }
+
+    private boolean holdSiteInsideRoom(HoldSite site, HoldRoomBox room) {
+        if (site == null || room == null) return false;
+        int floorInset = switch (site.id()) {
+            case "sella_pool" -> 1;
+            case "third_lamp_stand" -> 2;
+            case "painted_line" -> 4;
+            default -> 0;
+        };
+        int halfX = Math.max(0, site.halfX());
+        int halfZ = Math.max(0, site.halfZ());
+        return site.x() - halfX >= room.minX() + 3 && site.x() + halfX <= room.maxX() - 3
+                && site.z() - halfZ >= room.minZ() + 3 && site.z() + halfZ <= room.maxZ() - 3
+                && site.y() >= room.floorY() - floorInset && site.y() <= room.ceilingY() - 2;
     }
 
     private Site configuredHoldSite(HoldSite row, Location loc, String worldName) {
@@ -3045,13 +3818,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             int[] ringPages = {2, 3, 5, 7, 11};
             int marked = ringPages[Math.max(0, Math.min(ringPages.length - 1, index - 1))];
             fillSellaLockBook(b, index, marked);
-        } else if (isTemplateLabSite(id)) {
-            StructureTemplates.keeperInOwnedRoom(id, loc);
-            if (Set.of("stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss").contains(id)) {
-                placeKeeperRiteToken(loc, id.substring("stone_".length()));
-            }
         } else if (buildHoldIntegratedFixture(site, loc, row)) {
             // Production Hold fixtures are dressed into the district shell instead of pasting lab rooms.
+        } else if (isTemplateLabSite(id)) {
+            // A production Hold fixture must never paste a legacy self-contained room. Those templates
+            // own floors, walls, and roofs and can erase the civic shell or a neighboring fixture.
+            throw new IllegalStateException("No Hold-native fixture registered for " + id);
         } else {
             throw new IllegalStateException("Unhandled production Hold fixture " + id + " (" + type + ")");
         }
@@ -3074,6 +3846,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private BlockFace holdFixtureFront(String siteId) {
         if (siteId == null) return BlockFace.NORTH;
+        DeepHoldV4Plan.Fixture v4 = DeepHoldV4Plan.fixture(siteId);
+        if (v4 != null) {
+            try {
+                return BlockFace.valueOf(v4.front().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException ignored) {
+                return BlockFace.NORTH;
+            }
+        }
         if (siteId.startsWith("mara_lectern_") || siteId.startsWith("sella_lectern_")) return BlockFace.SOUTH;
         if (siteId.startsWith("orin_frame_dial_") || siteId.equals("vaun_bookshelf")) return BlockFace.NORTH;
         return switch (siteId) {
@@ -3091,7 +3871,32 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int bx = loc.getBlockX();
         int by = loc.getBlockY();
         int bz = loc.getBlockZ();
-        if ("case_board".equals(id)) {
+        if ("rune_rosetta".equals(id)) {
+            buildHoldRosettaCore(world, bx, by, bz);
+            return true;
+        } else if (Set.of("stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss").contains(id)) {
+            buildHoldKeeperStoneCore(world, bx, by, bz, id, holdFixtureFront(id));
+            placeKeeperRiteToken(loc, id.substring("stone_".length()));
+            return true;
+        } else if ("stone_of_reckoning".equals(id)) {
+            buildHoldReckoningCore(world, bx, by, bz);
+            return true;
+        } else if ("the_cold_hearth".equals(id)) {
+            buildHoldColdHearthCore(world, bx, by, bz);
+            return true;
+        } else if ("the_threshold".equals(id)) {
+            buildHoldThresholdCore(world, bx, by, bz);
+            return true;
+        } else if ("threshold_vault".equals(id)) {
+            buildHoldThresholdVaultCore(world, bx, by, bz);
+            return true;
+        } else if ("unbroken_light".equals(id)) {
+            buildHoldAcceptingCore(world, bx, by, bz);
+            return true;
+        } else if ("the_unwriting".equals(id)) {
+            buildHoldUnwritingCore(world, bx, by, bz);
+            return true;
+        } else if ("case_board".equals(id)) {
             buildHoldCaseBoardCore(world, bx, by, bz);
             return true;
         } else if ("prior_camp".equals(id)) {
@@ -3294,10 +4099,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 "Seal. Mouth. Market. Ration. Third bay. Warm collapse. Coops.",
                 "A room is not filed because it was visited. Say what changed."
         ));
-        placeDecorativeBookshelf(world.getBlockAt(bx - 9, by, bz + 5), 113, BlockFace.NORTH);
-        placeDecorativeBookshelf(world.getBlockAt(bx + 9, by, bz + 5), 127, BlockFace.NORTH);
-        world.getBlockAt(bx - 8, by + 1, bz - 5).setType(Material.SOUL_LANTERN, false);
-        world.getBlockAt(bx + 8, by + 1, bz - 5).setType(Material.LANTERN, false);
+        placeDecorativeBookshelf(world.getBlockAt(bx - 7, by, bz + 5), 113, BlockFace.NORTH);
+        placeDecorativeBookshelf(world.getBlockAt(bx + 7, by, bz + 5), 127, BlockFace.NORTH);
+        world.getBlockAt(bx - 7, by + 1, bz - 5).setType(Material.SOUL_LANTERN, false);
+        world.getBlockAt(bx + 7, by + 1, bz - 5).setType(Material.LANTERN, false);
         world.getBlockAt(bx, by, bz + 5).setType(Material.LIGHT_GRAY_CARPET, false);
 
         placeStandingSign(new Location(world, bx - 5, by, bz + 4), BlockFace.NORTH,
@@ -3307,7 +4112,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         placeStandingSign(new Location(world, bx + 5, by, bz + 4), BlockFace.NORTH,
                 new String[]{"decode", "witness", "compare", "then carry"});
 
-        placeEvidenceLectern(new Location(world, bx - 9, by, bz - 2), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 7, by, bz - 2), BlockFace.EAST,
                 "case board", List.of(
                         "The six stones are not the case. They are the index.\n\n" +
                                 "Before the lower rite opens, the record wants four kinds of proof: " +
@@ -3322,7 +4127,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         "The unwaxed sign between the labels is a filing slit, not a notice board.\n\n" +
                                 "Use it when the record asks for a condition rather than another solved cipher."
                 ));
-        placeEvidenceLectern(new Location(world, bx + 9, by, bz - 2), BlockFace.WEST,
+        placeEvidenceLectern(new Location(world, bx + 7, by, bz - 2), BlockFace.WEST,
                 "open rows", List.of(
                         "Parallel work is expected.\n\n" +
                                 "One group can trace Sella through water and school while another checks Brann's " +
@@ -3421,6 +4226,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 new String[]{"file", "correction", "here", ""});
         placeStandingSign(new Location(world, bx + 4, by, bz - 7), BlockFace.NORTH,
                 new String[]{"correct", "the file", "before rite", ""});
+        // Central grey correction light keeps the prior-run state legible from the camp entrance;
+        // the six packet candles remain distributed at their individual bedrolls.
+        world.getBlockAt(bx - 2, by, bz - 5).setType(Material.GRAY_CANDLE, false);
 
         placeEvidenceLectern(new Location(world, bx - 23, by, bz - 10), BlockFace.EAST,
                 "accepting record, failed", List.of(
@@ -3544,14 +4352,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         placeEditableStandingSign(new Location(world, bx + 3, by, bz + 5), BlockFace.NORTH,
                 new String[]{"file", "witness", "condition", ""});
 
-        placeEvidenceLectern(new Location(world, bx - 9, by, bz - 4), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 7, by, bz - 4), BlockFace.EAST,
                 "failed accepting floor", List.of(
                         "This is not a rehearsal room. It is the old result.",
                         "Six tokens reached the floor. The room refused them because every hand inside the circle wanted the same finish.",
                         "The correction is not another token.\n\nBring witness before accepting.",
                         "Six blank leaves remain in the barrel. A living hand must sign one for each keeper; copied titles are refused."
                 ));
-        placeEvidenceLectern(new Location(world, bx + 9, by, bz - 4), BlockFace.WEST,
+        placeEvidenceLectern(new Location(world, bx + 7, by, bz - 4), BlockFace.WEST,
                 "before the last warm", List.of(
                         "The accepting floor is not asking whether the case is complete.",
                         "It asks whether completion can be checked by someone who is not trying to own it.",
@@ -3624,13 +4432,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         Block chest = world.getBlockAt(bx, by, bz);
         chest.setType(Material.CHEST, false);
         if (chest.getBlockData() instanceof Directional d) {
-            d.setFacing(BlockFace.SOUTH);
+            d.setFacing(holdFixtureFront("vaun_hoard_chest"));
             chest.setBlockData(d, false);
         }
         if (chest.getState() instanceof InventoryHolder holder) holder.getInventory().clear();
         int sourceIndex = 0;
-        for (int dx : new int[]{-3, 3}) {
-            Block source = world.getBlockAt(bx + dx, by, bz);
+        // Source barrels flank the chest north/south; the east-facing approach and sightline stay
+        // completely clear for Adventure-mode players.
+        for (int dz : new int[]{-3, 3}) {
+            Block source = world.getBlockAt(bx, by, bz + dz);
             source.setType(Material.BARREL, false);
             if (source.getState() instanceof InventoryHolder holder) {
                 holder.getInventory().clear();
@@ -3651,12 +4461,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     holder.getInventory().setItem(13, new ItemStack(Material.COBBLED_DEEPSLATE, 8));
                 }
             }
-            world.getBlockAt(bx + dx, by + 1, bz).setType(Material.DEEPSLATE_BRICK_WALL, false);
-            world.getBlockAt(bx + dx, by + 2, bz).setType(Material.SOUL_LANTERN, false);
+            world.getBlockAt(bx, by + 1, bz + dz).setType(Material.DEEPSLATE_BRICK_WALL, false);
+            world.getBlockAt(bx, by + 2, bz + dz).setType(Material.SOUL_LANTERN, false);
         }
-        placeStandingSign(new Location(world, bx, by, bz + 1), BlockFace.NORTH,
+        placeStandingSign(new Location(world, bx - 2, by, bz + 1), BlockFace.NORTH,
                 new String[]{"GIVEN BACK", "what was first", "must return", "then close"});
-        placeEvidenceLectern(new Location(world, bx, by, bz + 3), BlockFace.NORTH,
+        placeEvidenceLectern(new Location(world, bx - 2, by, bz + 3), BlockFace.NORTH,
                 "hoard tally", List.of(
                         "One stone in the source barrels still bears Vaun's entry. Return that first taking to the empty GIVEN BACK chest.",
                         "Vaun's guilt begins as inventory, not greed."
@@ -3781,7 +4591,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void buildHoldLampworksCore(World world, int bx, int by, int bz) {
         // The grand spine owns the continuous 84-block staircase. This fixture dresses it without
         // recarving a second, steeper ramp through the walkable surface.
-        placeEvidenceLectern(new Location(world, bx - 10, by, bz - 2), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 7, by, bz - 2), BlockFace.EAST,
                 "lamp count", List.of(
                         "first line kept. second line borrowed. third line went dry.",
                         "the ready mark was copied after the lamp was gone."
@@ -3814,8 +4624,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void buildHoldPaintedLineCore(World world, int bx, int by, int bz) {
         for (int dx = -8; dx <= 8; dx++) {
-            world.getBlockAt(bx + dx, by - 1, bz).setType(Material.DEEPSLATE_BRICKS, false);
-            world.getBlockAt(bx + dx, by, bz).setType(Material.BLACK_CARPET, false);
+            // A flush inlaid line preserves the exact listener plane while leaving the authored
+            // feet/head cells clear. Corridor-width carpet in the feet layer was visually thin but
+            // failed deterministic Adventure traversal and could snag movement at the gate approach.
+            world.getBlockAt(bx + dx, by - 1, bz).setType(Material.BLACK_CONCRETE, false);
+            world.getBlockAt(bx + dx, by, bz).setType(Material.AIR, false);
         }
         placeEvidenceLectern(new Location(world, bx + 9, by, bz), BlockFace.WEST,
                 "line count", List.of(
@@ -3968,21 +4781,41 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldForgottenMouthCore(World world, int bx, int by, int bz) {
-        for (int dx = -2; dx <= 2; dx++) {
-            world.getBlockAt(bx + dx, by - 1, bz + 4).setType(Material.GRASS_BLOCK, false);
-        }
-        for (int dz = -5; dz <= 3; dz++) {
-            for (int dx : new int[]{-3, 3}) {
-                int height = dz < -1 ? 5 : 3;
-                for (int dy = 0; dy <= height; dy++) {
-                    world.getBlockAt(bx + dx, by + dy, bz + dz).setType(Material.BLACKSTONE, false);
+        // A legible, freestanding remnant of a surface doorway: five-block clear mouth, complete
+        // lintel, side buttresses, and restrained moss/rubble.  Nothing is allowed to masquerade as
+        // a random terrain blob or consume the room's approach path.
+        for (int dx = -5; dx <= 5; dx++) {
+            for (int dy = 0; dy <= 6; dy++) {
+                boolean frame = Math.abs(dx) >= 4 || dy >= 5;
+                Block block = world.getBlockAt(bx + dx, by + dy, bz + 4);
+                if (!frame) {
+                    block.setType(Material.AIR, false);
+                } else {
+                    int hash = Math.floorMod(dx * 17 + dy * 31, 7);
+                    block.setType(hash == 0 ? Material.MOSSY_COBBLESTONE
+                            : (hash == 1 ? Material.MOSSY_STONE_BRICKS : Material.STONE_BRICKS), false);
                 }
             }
         }
-        world.getBlockAt(bx, by, bz - 5).setType(Material.SEA_LANTERN, false);
-        world.getBlockAt(bx, by, bz + 4).setType(Material.GLOWSTONE, false);
-        world.getBlockAt(bx - 1, by, bz + 3).setType(Material.OAK_LEAVES, false);
-        world.getBlockAt(bx + 1, by, bz + 3).setType(Material.OAK_LEAVES, false);
+        for (int dz = -4; dz <= 4; dz++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(
+                        Math.floorMod(dx + dz, 5) == 0 ? Material.MOSS_BLOCK : Material.STONE_BRICKS, false);
+            }
+        }
+        // The healed surface and paired return mark are evidence, not decorative prose: preserve
+        // them as a readable floor sequence inside the buried remnant without blocking the mouth.
+        world.getBlockAt(bx - 2, by - 1, bz + 2).setType(Material.GRASS_BLOCK, false);
+        world.getBlockAt(bx + 2, by - 1, bz + 2).setType(Material.GRASS_BLOCK, false);
+        world.getBlockAt(bx, by - 1, bz + 1).setType(Material.GLOWSTONE, false);
+        world.getBlockAt(bx, by - 1, bz + 2).setType(Material.SEA_LANTERN, false);
+        for (int[] rubble : new int[][]{{-6, 3}, {-5, 2}, {5, 2}, {6, 3}, {-6, 4}, {6, 4}}) {
+            world.getBlockAt(bx + rubble[0], by, bz + rubble[1]).setType(
+                    Math.floorMod(rubble[0], 2) == 0 ? Material.MOSSY_COBBLESTONE_WALL
+                            : Material.MOSSY_COBBLESTONE, false);
+        }
+        world.getBlockAt(bx, by + 4, bz + 4).setType(materialOr(Material.IRON_BARS, "CHAIN"), false);
+        world.getBlockAt(bx, by + 3, bz + 4).setType(Material.LANTERN, false);
         placeEvidenceLectern(new Location(world, bx - 3, by, bz - 5), BlockFace.SOUTH,
                 "way up draft", List.of(
                         "the way up was real.",
@@ -4053,7 +4886,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         for (int dx = -5; dx <= 5; dx++) {
             world.getBlockAt(bx + dx, by, bz + 3).setType(Material.BLACK_CONCRETE, false);
         }
-        world.getBlockAt(bx, by - 1, bz).setType(Material.SCULK_SENSOR, false);
+        // Keep the pit supported and put the audible breach witness on the registered focal cell.
+        world.getBlockAt(bx, by - 1, bz).setType(Material.SCULK, false);
+        world.getBlockAt(bx, by, bz).setType(Material.SCULK_SENSOR, false);
         Block coldLamp = world.getBlockAt(bx, by, bz - 3);
         coldLamp.setType(materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
         if (coldLamp.getBlockData() instanceof org.bukkit.block.data.Lightable light) {
@@ -4122,6 +4957,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
             world.getBlockAt(x + 1, by, bz).setType(i == 2 ? Material.GRAY_CARPET : Material.WHITE_CARPET, false);
         }
+        // Registered focal: a non-coop witness mark centered between the four visible cage groups.
+        world.getBlockAt(bx, by, bz).setType(Material.CHISELED_TUFF, false);
+        world.getBlockAt(bx, by + 1, bz).setType(Material.GRAY_CANDLE, false);
         world.getBlockAt(bx, by, bz + 3).setType(Material.BARREL, false);
         placeEvidenceLectern(new Location(world, bx - 5, by, bz + 3), BlockFace.SOUTH,
                 "coop count", List.of(
@@ -4164,6 +5002,55 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 || "coop_plate".equals(id);
     }
 
+    private void buildHoldKeeperStoneCore(World world, int bx, int by, int bz,
+                                          String siteId, BlockFace playerFront) {
+        if (world == null) return;
+        BlockFace front = playerFront == null ? BlockFace.NORTH : playerFront;
+        buildHoldStoneReadingFloor(world, bx, by, bz, Material.DEEPSLATE_TILES);
+
+        // The anchor is the keeper stone itself. Everything else remains on the room side of the
+        // shell and leaves a six-block sightline from the manifest standing zone.
+        world.getBlockAt(bx, by, bz).setType(Material.CHISELED_DEEPSLATE, false);
+        world.getBlockAt(bx, by + 1, bz).setType(Material.POLISHED_BASALT, false);
+        world.getBlockAt(bx, by + 2, bz).setType(Material.CHISELED_TUFF, false);
+        world.getBlockAt(bx, by + 3, bz).setType(Material.BLACK_CANDLE, false);
+
+        int sx = bx + (front.getModX() * 2);
+        int sz = bz + (front.getModZ() * 2);
+        placeEditableStandingSign(new Location(world, sx, by, sz), front,
+                new String[]{"keeper record", siteId.substring("stone_".length()), "", ""});
+
+        // Flanking ribs identify the focal object without placing anything in its approach aisle.
+        BlockFace side = front == BlockFace.EAST || front == BlockFace.WEST ? BlockFace.NORTH : BlockFace.EAST;
+        for (int sign : new int[]{-1, 1}) {
+            int px = bx + side.getModX() * sign * 3;
+            int pz = bz + side.getModZ() * sign * 3;
+            world.getBlockAt(px, by, pz).setType(Material.POLISHED_DEEPSLATE, false);
+            world.getBlockAt(px, by + 1, pz).setType(Material.DEEPSLATE_BRICK_WALL, false);
+            world.getBlockAt(px, by + 2, pz).setType(Material.SOUL_LANTERN, false);
+        }
+    }
+
+    private void buildHoldColdHearthCore(World world, int bx, int by, int bz) {
+        if (world == null) return;
+        buildHoldStoneReadingFloor(world, bx, by, bz, Material.POLISHED_BLACKSTONE);
+        Block hearth = world.getBlockAt(bx, by, bz);
+        hearth.setType(Material.SOUL_CAMPFIRE, false);
+        if (hearth.getBlockData() instanceof org.bukkit.block.data.type.Campfire campfire) {
+            campfire.setLit(false);
+            hearth.setBlockData(campfire, false);
+        }
+        for (int dz = -3; dz <= 3; dz++) {
+            world.getBlockAt(bx - 3, by, bz + dz).setType(Material.POLISHED_BLACKSTONE_BRICKS, false);
+        }
+        placeEvidenceLectern(new Location(world, bx + 5, by, bz + 2), BlockFace.WEST,
+                "cold account", List.of(
+                        "The account calls this warmth. The stone and the land do not.",
+                        "Compare the kept story with the place that was left cold.",
+                        "A comfortable record can still be false."
+                ));
+    }
+
     private void buildHoldRosettaCore(World world, int bx, int by, int bz) {
         buildHoldStoneReadingFloor(world, bx, by, bz, Material.CHISELED_TUFF);
         for (int i = 0; i < 7; i++) {
@@ -4172,15 +5059,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(x, by, bz).setType(mat, false);
             world.getBlockAt(x, by + 1, bz).setType(i == 6 ? Material.BLACK_CANDLE : Material.WHITE_CANDLE, false);
         }
-        placeEvidenceLectern(new Location(world, bx - 7, by, bz + 4), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 4, by, bz + 3), BlockFace.EAST,
                 "rosetta cover", List.of(
                         "The runes are not a secret alphabet. They are a clerk's shortcut for things the Keepers already knew.",
                         "Six hands were copied clean. The grey seventh was copied after the room was built.",
                         "Read the stone, then read the copy. The order is the first lie."
                 ));
-        placeStandingSign(new Location(world, bx + 7, by, bz + 4), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 6, by, bz + 3), BlockFace.WEST,
                 new String[]{"six copied", "one added", "low hand", "low truth"});
-        world.getBlockAt(bx, by, bz - 2).setType(Material.CHISELED_TUFF, false);
+        // Keep the registered anchor on the actual Rosetta focal stone so runtime audit and
+        // interaction proximity cannot point at an arbitrary floor tile.
+        world.getBlockAt(bx, by, bz).setType(Material.CHISELED_TUFF, false);
     }
 
     private void buildHoldReckoningCore(World world, int bx, int by, int bz) {
@@ -4190,13 +5079,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(bx - 3, by, bz + dz).setType(Material.BLACK_CONCRETE, false);
             world.getBlockAt(bx + 3, by, bz + dz).setType(Material.GRAY_CONCRETE, false);
         }
-        placeEvidenceLectern(new Location(world, bx - 7, by, bz), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 6, by, bz), BlockFace.EAST,
                 "reckoning copy", List.of(
                         "The reckoning stone repeats the Rosetta, but the line has been turned toward judgment.",
                         "No single keeper owns the answer. The room asks whether the record can survive being corrected.",
                         "The old hands did not read this standing tall. That was the point."
                 ));
-        placeStandingSign(new Location(world, bx + 7, by, bz), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 6, by, bz), BlockFace.WEST,
                 new String[]{"not trial", "reckoning", "read the", "turned line"});
     }
 
@@ -4208,13 +5097,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         world.getBlockAt(bx, by, bz).setType(Material.REINFORCED_DEEPSLATE, false);
         world.getBlockAt(bx, by + 1, bz).setType(Material.BLACK_CANDLE, false);
-        placeEvidenceLectern(new Location(world, bx - 7, by, bz + 2), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 6, by, bz + 2), BlockFace.EAST,
                 "threshold note", List.of(
                         "This door was written as a grave so no one would ask who was still moving behind it.",
                         "The date is not prophecy. It is appointment language.",
                         "If the group reaches this alone, the room should feel wrong."
                 ));
-        placeStandingSign(new Location(world, bx + 7, by, bz + 2), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 6, by, bz + 2), BlockFace.WEST,
                 new String[]{"the door", "opens from", "inside", ""});
     }
 
@@ -4311,7 +5200,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (Math.abs(dx) == 3) world.getBlockAt(bx + dx, by + 1, bz).setType(Material.SOUL_LANTERN, false);
         }
         world.getBlockAt(bx, by + 1, bz).setType(Material.CHISELED_DEEPSLATE, false);
-        placeEvidenceLectern(new Location(world, bx - 6, by, bz + 3), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 4, by, bz + 3), BlockFace.EAST,
                 "last keeper", List.of(
                         "The altar is not worship. It is where the keepers stopped pretending procedure was mercy.",
                         "A name can be restored only after the room admits it was removed.",
@@ -4342,13 +5231,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (Math.abs(dx) == 6) world.getBlockAt(bx + dx, by + 1, bz - 3).setType(Material.SOUL_LANTERN, false);
         }
         world.getBlockAt(bx, by, bz).setType(Material.SCULK_SHRIEKER, false);
-        placeEvidenceLectern(new Location(world, bx - 8, by, bz + 4), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 6, by, bz + 4), BlockFace.EAST,
                 "unwriting", List.of(
                         "The missing name was not lost. It was made administratively blank.",
                         "Restore is not forgiveness. Erase is not mercy. Both are records.",
                         "After the choice, the last act is whether the record is allowed to stop."
                 ));
-        placeStandingSign(new Location(world, bx + 8, by, bz + 4), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 6, by, bz + 4), BlockFace.WEST,
                 new String[]{"restore", "erase", "then release", ""});
         placeHoldFinaleMarkers(new Location(world, bx, by, bz + 1));
     }
@@ -4665,39 +5554,373 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             buildHoldOwnedRoom(world, bx, by, bz, room);
         }
 
-        // Main civic spine. Floor transitions are spread over their connecting halls; every step is a
-        // normal one-block Minecraft step and every slice has an eight-block clear headway.
-        buildHoldTunnelZ(world, bx, by, bz, 97, 104, -24, -24, 5);
-        buildHoldTunnelZ(world, bx, by, bz, 147, 158, -24, -28, 5);
-        buildHoldTunnelZ(world, bx, by, bz, 287, 300, -28, -24, 5);
-        buildHoldTunnelZ(world, bx, by, bz, 501, 512, -24, -24, 5);
-        buildHoldTunnelZ(world, bx, by, bz, 587, 594, -24, -28, 5);
-        buildHoldTunnelZ(world, bx, by, bz, 711, 782, -28, -32, 5);
-        buildHoldTunnelZ(world, bx, by, bz, 859, 892, -32, -32, 5);
+        // V3 civic spine: every room wall is crossed deliberately and every gate has a level landing.
+        buildHoldTunnelZ(world, bx, by, bz, 58, 72, -19, -24, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 84, 96, -24, -24, 5);
+        buildHoldTunnelX(world, bx, by, bz, -23, -15, 112, -24, 4);
+        buildHoldTunnelX(world, bx, by, bz, 15, 23, 112, -24, 4);
+        buildHoldTunnelZ(world, bx, by, bz, 136, 140, -24, -28, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 140, 150, -28, -28, 5);
 
-        // Keeper Court bays to the central nave.
-        for (int z : new int[]{188, 230, 268}) {
-            buildHoldTunnelX(world, bx, by, bz, -56, -50, z, -28, 4);
-            buildHoldTunnelX(world, bx, by, bz, 50, 56, z, -28, 4);
+        // Keeper Court: three paired evidence bays, each with its own broad Adventure-mode doorway.
+        for (int z : new int[]{168, 206, 246}) {
+            buildHoldTunnelX(world, bx, by, bz, -36, -26, z, -28, 4);
+            buildHoldTunnelX(world, bx, by, bz, 26, 36, z, -28, 4);
         }
-        // Archive evidence rooms to the central archive nave.
-        for (int z : new int[]{330, 400, 470}) {
-            buildHoldTunnelX(world, bx, by, bz, -116, -50, z, -24, 4);
-            buildHoldTunnelX(world, bx, by, bz, 50, 116, z, -24, 4);
+        buildHoldTunnelZ(world, bx, by, bz, 264, 268, -28, -24, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 268, 276, -24, -24, 5);
+
+        // Archive rooms open from three transverse streets. Outer rooms are reached from the street,
+        // never by tunnelling through an inner exhibit room.
+        int[] archiveRoomXs = {-95, -49, 49, 95};
+        for (int streetZ : new int[]{270, 320, 366}) {
+            buildHoldTunnelX(world, bx, by, bz, -95, 95, streetZ, -24, 4);
         }
-        // Lower-work modules, Prior wing, and optional Dread wing.
-        buildHoldTunnelX(world, bx, by, bz, -122, -104, 620, -28, 4);
-        buildHoldTunnelZ(world, bx - 150, by, bz, 647, 650, -28, -28, 4);
-        buildHoldTunnelX(world, bx, by, bz, -12, 12, 620, -28, 5);
-        buildHoldTunnelX(world, bx, by, bz, 48, 50, 680, -28, 4);
-        buildHoldTunnelX(world, bx, by, bz, -12, 12, 742, -28, 5);
-        buildHoldTunnelX(world, bx, by, bz, 104, 122, 610, -28, 5);
+        for (int x : archiveRoomXs) {
+            buildHoldTunnelZ(world, bx + x, by, bz, 270, 282, -24, -24, 4);
+            buildHoldTunnelZ(world, bx + x, by, bz, 320, 328, -24, -24, 4);
+            buildHoldTunnelZ(world, bx + x, by, bz, 366, 374, -24, -24, 4);
+        }
+        buildHoldTunnelZ(world, bx, by, bz, 414, 432, -24, -24, 5);
+
+        // Lampworks to lower Hold.
+        buildHoldTunnelZ(world, bx, by, bz, 490, 498, -24, -28, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 498, 562, -28, -28, 5);
+        buildHoldTunnelX(world, bx, by, bz, -12, 12, 532, -28, 5);
+        buildHoldTunnelX(world, bx, by, bz, -70, -54, 528, -28, 4);
+        buildHoldTunnelZ(world, bx - 88, by, bz, 546, 556, -28, -28, 4);
+        buildHoldTunnelX(world, bx, by, bz, 54, 90, 520, -28, 4);
+        buildHoldTunnelX(world, bx, by, bz, 38, 46, 582, -28, 4);
+        buildHoldTunnelZ(world, bx, by, bz, 604, 614, -28, -28, 5);
+        buildHoldTunnelX(world, bx, by, bz, -12, 12, 632, -28, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 648, 652, -28, -32, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 652, 660, -32, -32, 5);
+        buildHoldTunnelZ(world, bx, by, bz, 716, 734, -32, -32, 5);
         buildHoldDreadPassage(world, bx, by, bz);
+        dressHoldV3Districts(world, bx, by, bz);
+    }
+
+    /**
+     * Gives every owned room a visible civic purpose.  This pass intentionally runs after the
+     * connector carve, so no table, shelf, bench, or stall can resurrect one of the sealed-wall
+     * failures found in the live V2 walk.  Puzzle fixtures are placed later and therefore remain
+     * the final authority inside their declared footprints.
+     */
+    private void dressHoldV3Districts(World world, int bx, int by, int bz) {
+        if (world == null) return;
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            int floor = by + room.floorY();
+            int cx = (room.minX() + room.maxX()) / 2;
+            int cz = (room.minZ() + room.maxZ()) / 2;
+            switch (room.id()) {
+                case "orientation_west", "orientation_center", "orientation_east" ->
+                        dressHoldOrientationRoom(world, bx, bz, room, floor, cx, cz);
+                case "keeper_nave" -> dressHoldKeeperNave(world, bx, bz, floor);
+                case "archive_nave" -> dressHoldArchiveNave(world, bx, bz, floor);
+                case "archive_school" -> dressHoldSchoolroom(world, bx, bz, room, floor);
+                case "archive_markers" -> dressHoldMarkerGallery(world, bx, bz, room, floor);
+                case "archive_cistern", "archive_water" ->
+                        dressHoldWaterRoom(world, bx, bz, room, floor);
+                case "archive_watch" -> dressHoldWatchRoom(world, bx, bz, room, floor);
+                case "archive_shelf" -> dressHoldLibraryRoom(world, bx, bz, room, floor);
+                case "archive_market", "archive_stall" ->
+                        dressHoldMarketRoom(world, bx, bz, room, floor);
+                case "archive_ration" -> dressHoldRationHall(world, bx, bz, room, floor);
+                case "archive_breach" -> dressHoldBreachRoom(world, bx, bz, room, floor);
+                case "archive_warm" -> dressHoldWarmTownRoom(world, bx, bz, room, floor);
+                case "archive_coops" -> dressHoldCoopRoom(world, bx, bz, room, floor);
+                case "puzzle_works" -> dressHoldLampworks(world, bx, bz, room, floor);
+                case "prior_case", "prior_camp" ->
+                        dressHoldPriorRooms(world, bx, bz, room, floor);
+                case "lower_reckoning", "lower_threshold", "lower_convergence",
+                     "lower_vault", "lower_altar", "lower_coop" ->
+                        dressHoldLowerRoom(world, bx, bz, room, floor);
+                case "dread" -> dressHoldDreadRoom(world, bx, bz, room, floor);
+                default -> {
+                    // Keeper evidence bays, the mouth, Accepting, and Unwriting are already dominated
+                    // by their large authored fixture footprints.  Their perimeter architecture stays
+                    // deliberately quieter so the puzzle itself remains readable.
+                }
+            }
+        }
+    }
+
+    private void dressHoldOrientationRoom(World world, int bx, int bz, HoldRoomBox room,
+                                           int floor, int cx, int cz) {
+        for (int dz : new int[]{-12, 12}) {
+            int z = cz + dz;
+            if (!holdInteriorReserved(room, cx, z, 3)) {
+                placeHoldTable(world, bx + cx, floor, bz + z, 5, true, Material.TUFF_BRICK_SLAB);
+                placeHoldBench(world, bx + cx, floor, bz + z - 2, 5, true, BlockFace.SOUTH);
+                placeHoldBench(world, bx + cx, floor, bz + z + 2, 5, true, BlockFace.NORTH);
+            }
+        }
+    }
+
+    private void dressHoldKeeperNave(World world, int bx, int bz, int floor) {
+        for (int courtZ : new int[]{168, 206, 246}) {
+            for (int x : new int[]{-15, 15}) {
+                placeHoldBench(world, bx + x, floor, bz + courtZ - 8, 7, true,
+                        x < 0 ? BlockFace.EAST : BlockFace.WEST);
+                placeHoldBench(world, bx + x, floor, bz + courtZ + 8, 7, true,
+                        x < 0 ? BlockFace.EAST : BlockFace.WEST);
+                placeHoldLampPost(world, bx + x, floor, bz + courtZ);
+            }
+        }
+        for (int z = 158; z <= 258; z += 20) {
+            world.getBlockAt(bx - 7, floor - 1, bz + z).setType(Material.CHISELED_DEEPSLATE, false);
+            world.getBlockAt(bx + 7, floor - 1, bz + z).setType(Material.CHISELED_DEEPSLATE, false);
+        }
+    }
+
+    private void dressHoldArchiveNave(World world, int bx, int bz, int floor) {
+        // Six compact catalogue islands occupy the long archive without touching the central aisle
+        // or the three transverse streets at Z 320 and 366.
+        for (int z : new int[]{290, 306, 338, 352, 384, 402}) {
+            for (int x : new int[]{-13, 13}) {
+                placeHoldShelfBank(world, bx + x, floor, bz + z, 5,
+                        x < 0 ? BlockFace.EAST : BlockFace.WEST);
+                placeHoldTable(world, bx + (x < 0 ? -7 : 7), floor, bz + z, 3,
+                        false, Material.POLISHED_DEEPSLATE_SLAB);
+            }
+        }
+    }
+
+    private void dressHoldSchoolroom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int z : new int[]{room.minZ() + 9, room.maxZ() - 9}) {
+            for (int x = room.minX() + 9; x <= room.maxX() - 9; x += 10) {
+                if (holdInteriorReserved(room, x, z, 2)) continue;
+                placeHoldTable(world, bx + x, floor, bz + z, 3, true, Material.OAK_SLAB);
+                placeHoldBench(world, bx + x, floor, bz + z + 2, 3, true, BlockFace.NORTH);
+            }
+        }
+        placeHoldShelfBank(world, bx + room.minX() + 5, floor, bz + room.maxZ() - 7,
+                5, BlockFace.EAST);
+    }
+
+    private void dressHoldMarkerGallery(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int z = room.minZ() + 8; z <= room.maxZ() - 8; z += 8) {
+            for (int x : new int[]{room.minX() + 6, room.maxX() - 6}) {
+                if (holdInteriorReserved(room, x, z, 2)) continue;
+                world.getBlockAt(bx + x, floor, bz + z).setType(Material.CUT_COPPER, false);
+                world.getBlockAt(bx + x, floor + 1, bz + z).setType(Material.LIGHTNING_ROD, false);
+                world.getBlockAt(bx + x, floor - 1, bz + z).setType(Material.WAXED_CUT_COPPER, false);
+            }
+        }
+    }
+
+    private void dressHoldWaterRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        int x = room.minX() + 7;
+        for (int z = room.minZ() + 8; z <= room.maxZ() - 8; z++) {
+            if (holdInteriorReserved(room, x, z, 2)) continue;
+            world.getBlockAt(bx + x, floor - 1, bz + z).setType(Material.DARK_PRISMARINE, false);
+            if (z % 6 == 0) world.getBlockAt(bx + x, floor, bz + z).setType(Material.CAULDRON, false);
+        }
+        placeHoldTable(world, bx + room.maxX() - 8, floor, bz + room.minZ() + 8,
+                5, false, Material.DARK_PRISMARINE_SLAB);
+    }
+
+    private void dressHoldWatchRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int x : new int[]{room.minX() + 7, room.maxX() - 7}) {
+            int z = room.maxZ() - 7;
+            if (holdInteriorReserved(room, x, z, 3)) continue;
+            for (int y = 0; y <= 3; y++) {
+                world.getBlockAt(bx + x, floor + y, bz + z).setType(Material.SCAFFOLDING, false);
+            }
+            world.getBlockAt(bx + x, floor + 4, bz + z).setType(Material.SOUL_LANTERN, false);
+        }
+        placeHoldTable(world, bx + (room.minX() + room.maxX()) / 2, floor,
+                bz + room.minZ() + 8, 7, true, Material.POLISHED_DEEPSLATE_SLAB);
+    }
+
+    private void dressHoldLibraryRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int x = room.minX() + 7; x <= room.maxX() - 7; x += 9) {
+            for (int z : new int[]{room.minZ() + 7, room.maxZ() - 7}) {
+                if (!holdInteriorReserved(room, x, z, 2)) {
+                    placeHoldShelfBank(world, bx + x, floor, bz + z, 5,
+                            z < (room.minZ() + room.maxZ()) / 2 ? BlockFace.SOUTH : BlockFace.NORTH);
+                }
+            }
+        }
+    }
+
+    private void dressHoldMarketRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        int[][] stalls = {
+                {room.minX() + 8, room.minZ() + 8}, {room.maxX() - 8, room.minZ() + 8},
+                {room.minX() + 8, room.maxZ() - 8}, {room.maxX() - 8, room.maxZ() - 8}
+        };
+        for (int[] stall : stalls) {
+            if (!holdInteriorReserved(room, stall[0], stall[1], 3)) {
+                placeHoldMarketStall(world, bx + stall[0], floor, bz + stall[1]);
+            }
+        }
+    }
+
+    private void dressHoldRationHall(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        int cx = (room.minX() + room.maxX()) / 2;
+        for (int z : new int[]{room.minZ() + 9, room.maxZ() - 9}) {
+            if (!holdInteriorReserved(room, cx, z, 4)) {
+                placeHoldTable(world, bx + cx, floor, bz + z, 9, true, Material.SPRUCE_SLAB);
+                placeHoldBench(world, bx + cx, floor, bz + z - 2, 9, true, BlockFace.SOUTH);
+                placeHoldBench(world, bx + cx, floor, bz + z + 2, 9, true, BlockFace.NORTH);
+                world.getBlockAt(bx + cx - 6, floor, bz + z).setType(Material.BARREL, false);
+                world.getBlockAt(bx + cx + 6, floor, bz + z).setType(Material.BARREL, false);
+            }
+        }
+    }
+
+    private void dressHoldBreachRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int i = 0; i < 22; i++) {
+            int x = room.minX() + 6 + Math.floorMod(i * 11, Math.max(1, room.maxX() - room.minX() - 12));
+            int z = room.minZ() + 6 + Math.floorMod(i * 17, Math.max(1, room.maxZ() - room.minZ() - 12));
+            if (holdInteriorReserved(room, x, z, 2) || Math.abs(x) < 5) continue;
+            world.getBlockAt(bx + x, floor, bz + z).setType(i % 3 == 0
+                    ? Material.COBBLED_DEEPSLATE_WALL : Material.COBBLED_DEEPSLATE, false);
+        }
+    }
+
+    private void dressHoldWarmTownRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int x : new int[]{room.minX() + 8, room.maxX() - 8}) {
+            for (int z : new int[]{room.minZ() + 8, room.maxZ() - 8}) {
+                if (holdInteriorReserved(room, x, z, 3)) continue;
+                world.getBlockAt(bx + x, floor, bz + z).setType(Material.CAMPFIRE, false);
+                world.getBlockAt(bx + x - 1, floor, bz + z).setType(Material.BRICKS, false);
+                world.getBlockAt(bx + x + 1, floor, bz + z).setType(Material.BRICKS, false);
+                placeHoldBench(world, bx + x, floor, bz + z + 3, 3, true, BlockFace.NORTH);
+            }
+        }
+    }
+
+    private void dressHoldCoopRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int x : new int[]{room.minX() + 8, room.maxX() - 8}) {
+            for (int z : new int[]{room.minZ() + 8, room.maxZ() - 8}) {
+                if (holdInteriorReserved(room, x, z, 3)) continue;
+                for (int dx = -2; dx <= 2; dx++) {
+                    world.getBlockAt(bx + x + dx, floor, bz + z - 2).setType(Material.OAK_FENCE, false);
+                    world.getBlockAt(bx + x + dx, floor, bz + z + 2).setType(Material.OAK_FENCE, false);
+                }
+                world.getBlockAt(bx + x, floor, bz + z).setType(Material.HAY_BLOCK, false);
+            }
+        }
+    }
+
+    private void dressHoldLampworks(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int z : new int[]{room.minZ() + 8, room.maxZ() - 8}) {
+            for (int x = room.minX() + 8; x <= room.maxX() - 8; x += 10) {
+                if (holdInteriorReserved(room, x, z, 3)) continue;
+                placeHoldTable(world, bx + x, floor, bz + z, 5, true, Material.CUT_COPPER_SLAB);
+                world.getBlockAt(bx + x, floor + 2, bz + z).setType(Material.REDSTONE_LAMP, false);
+                world.getBlockAt(bx + x, floor, bz + z + 2).setType(Material.CRAFTER, false);
+            }
+        }
+    }
+
+    private void dressHoldPriorRooms(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int z = room.minZ() + 8; z <= room.maxZ() - 8; z += 10) {
+            int x = room.minX() + 7;
+            if (holdInteriorReserved(room, x, z, 3)) continue;
+            world.getBlockAt(bx + x, floor, bz + z).setType(Material.BARREL, false);
+            placeHoldShelfBank(world, bx + x + 2, floor, bz + z, 3, BlockFace.EAST);
+        }
+        if (room.id().equals("prior_camp")) {
+            for (int x : new int[]{room.minX() + 9, room.maxX() - 9}) {
+                int z = room.maxZ() - 9;
+                if (!holdInteriorReserved(room, x, z, 3)) {
+                    world.getBlockAt(bx + x, floor, bz + z).setType(Material.SOUL_CAMPFIRE, false);
+                    placeHoldBench(world, bx + x, floor, bz + z + 3, 5, true, BlockFace.NORTH);
+                }
+            }
+        }
+    }
+
+    private void dressHoldLowerRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        int cx = (room.minX() + room.maxX()) / 2;
+        int cz = (room.minZ() + room.maxZ()) / 2;
+        for (int[] p : new int[][]{{room.minX() + 6, room.minZ() + 6},
+                {room.maxX() - 6, room.minZ() + 6}, {room.minX() + 6, room.maxZ() - 6},
+                {room.maxX() - 6, room.maxZ() - 6}}) {
+            if (holdInteriorReserved(room, p[0], p[1], 3)) continue;
+            placeHoldLampPost(world, bx + p[0], floor, bz + p[1]);
+            placeHoldBench(world, bx + p[0] + Integer.signum(cx - p[0]) * 3, floor,
+                    bz + p[1], 3, false, p[0] < cx ? BlockFace.EAST : BlockFace.WEST);
+        }
+        world.getBlockAt(bx + cx, floor - 1, bz + cz).setType(Material.REINFORCED_DEEPSLATE, false);
+    }
+
+    private void dressHoldDreadRoom(World world, int bx, int bz, HoldRoomBox room, int floor) {
+        for (int z = room.minZ() + 10; z <= room.maxZ() - 10; z += 14) {
+            int x = room.maxX() - 6;
+            if (holdInteriorReserved(room, x, z, 2)) continue;
+            world.getBlockAt(bx + x, floor, bz + z).setType(Material.SCULK_CATALYST, false);
+            world.getBlockAt(bx + x, floor + 1, bz + z).setType(Material.SOUL_LANTERN, false);
+        }
+    }
+
+    private void placeHoldTable(World world, int cx, int floor, int cz, int length,
+                                boolean alongX, Material top) {
+        int half = Math.max(1, length / 2);
+        for (int i = -half; i <= half; i++) {
+            int x = cx + (alongX ? i : 0);
+            int z = cz + (alongX ? 0 : i);
+            world.getBlockAt(x, floor + 1, z).setType(top, false);
+            if (i == -half || i == half) world.getBlockAt(x, floor, z).setType(Material.SPRUCE_FENCE, false);
+        }
+    }
+
+    private void placeHoldBench(World world, int cx, int floor, int cz, int length,
+                                boolean alongX, BlockFace facing) {
+        int half = Math.max(1, length / 2);
+        for (int i = -half; i <= half; i++) {
+            int x = cx + (alongX ? i : 0);
+            int z = cz + (alongX ? 0 : i);
+            Block block = world.getBlockAt(x, floor, z);
+            block.setType(Material.SPRUCE_STAIRS, false);
+            if (block.getBlockData() instanceof Directional directional) {
+                directional.setFacing(facing);
+                block.setBlockData(directional, false);
+            }
+        }
+    }
+
+    private void placeHoldShelfBank(World world, int cx, int floor, int cz, int length,
+                                    BlockFace facing) {
+        int half = Math.max(1, length / 2);
+        boolean alongX = facing == BlockFace.NORTH || facing == BlockFace.SOUTH;
+        for (int i = -half; i <= half; i++) {
+            int x = cx + (alongX ? i : 0);
+            int z = cz + (alongX ? 0 : i);
+            placeDecorativeBookshelf(world.getBlockAt(x, floor, z), cx * 31 + cz + i, facing);
+            placeDecorativeBookshelf(world.getBlockAt(x, floor + 1, z), cx * 31 + cz + i + 17, facing);
+        }
+    }
+
+    private void placeHoldMarketStall(World world, int cx, int floor, int cz) {
+        for (int dx : new int[]{-2, 2}) {
+            for (int dz : new int[]{-2, 2}) {
+                for (int dy = 0; dy <= 3; dy++) {
+                    world.getBlockAt(cx + dx, floor + dy, cz + dz).setType(Material.SPRUCE_FENCE, false);
+                }
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -2; dz <= 2; dz++) {
+                world.getBlockAt(cx + dx, floor + 4, cz + dz).setType(
+                        Math.floorMod(dx + dz, 2) == 0 ? Material.DARK_OAK_SLAB : Material.SPRUCE_SLAB, false);
+            }
+        }
+        world.getBlockAt(cx - 1, floor, cz).setType(Material.BARREL, false);
+        world.getBlockAt(cx + 1, floor, cz).setType(Material.CHEST, false);
+    }
+
+    private void placeHoldLampPost(World world, int x, int floor, int z) {
+        world.getBlockAt(x, floor, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+        world.getBlockAt(x, floor + 1, z).setType(Material.POLISHED_BLACKSTONE_BRICK_WALL, false);
+        world.getBlockAt(x, floor + 2, z).setType(Material.SOUL_LANTERN, false);
     }
 
     private void buildHoldV2Mouth(World world, int bx, int by, int bz) {
-        for (int z = 0; z <= 96; z++) {
-            int floor = by - Math.min(24, z / 4);
+        for (int z = 0; z <= 86; z++) {
+            int floor = by - Math.min(24, z / 3);
             for (int dx = -8; dx <= 8; dx++) {
                 boolean walkway = Math.abs(dx) <= 5;
                 world.getBlockAt(bx + dx, floor - 2, bz + z).setType(Material.DEEPSLATE, false);
@@ -4726,12 +5949,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         Material accent = holdRoomAccent(room.id());
         for (int x = room.minX(); x <= room.maxX(); x++) {
             for (int z = room.minZ(); z <= room.maxZ(); z++) {
-                boolean wallX = x <= room.minX() + 1 || x >= room.maxX() - 1;
-                boolean wallZ = z <= room.minZ() + 1 || z >= room.maxZ() - 1;
+                boolean wallX = x <= room.minX() + 2 || x >= room.maxX() - 2;
+                boolean wallZ = z <= room.minZ() + 2 || z >= room.maxZ() - 2;
                 world.getBlockAt(bx + x, floor - 2, bz + z).setType(Material.DEEPSLATE, false);
                 world.getBlockAt(bx + x, floor - 1, bz + z).setType(
                         (wallX || wallZ) ? Material.POLISHED_BLACKSTONE_BRICKS : accent, false);
-                for (int y = floor; y <= ceiling + 1; y++) {
+                for (int y = floor; y <= ceiling + 2; y++) {
                     boolean wall = wallX || wallZ;
                     boolean roof = y >= ceiling;
                     Material material = roof ? Material.POLISHED_BLACKSTONE_BRICKS
@@ -4759,13 +5982,21 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         // creating interior maze walls. The central six-block mouths remain completely clear.
         for (int x = room.minX() + 4; x <= room.maxX() - 4; x += 8) {
             if (Math.abs(x - centerX) < 6) continue;
-            buildHoldRoomPillar(world, bx + x, floor, bz + room.minZ() + 2, pillarTop, accent);
-            buildHoldRoomPillar(world, bx + x, floor, bz + room.maxZ() - 2, pillarTop, accent);
+            if (!holdInteriorReserved(room, x, room.minZ() + 3, 4)) {
+                buildHoldRoomPillar(world, bx + x, floor, bz + room.minZ() + 2, pillarTop, accent);
+            }
+            if (!holdInteriorReserved(room, x, room.maxZ() - 3, 4)) {
+                buildHoldRoomPillar(world, bx + x, floor, bz + room.maxZ() - 2, pillarTop, accent);
+            }
         }
         for (int z = room.minZ() + 4; z <= room.maxZ() - 4; z += 8) {
             if (Math.abs(z - centerZ) < 6) continue;
-            buildHoldRoomPillar(world, bx + room.minX() + 2, floor, bz + z, pillarTop, accent);
-            buildHoldRoomPillar(world, bx + room.maxX() - 2, floor, bz + z, pillarTop, accent);
+            if (!holdInteriorReserved(room, room.minX() + 3, z, 4)) {
+                buildHoldRoomPillar(world, bx + room.minX() + 2, floor, bz + z, pillarTop, accent);
+            }
+            if (!holdInteriorReserved(room, room.maxX() - 3, z, 4)) {
+                buildHoldRoomPillar(world, bx + room.maxX() - 2, floor, bz + z, pillarTop, accent);
+            }
         }
         // High ribs and a restrained floor cross make the room read as one civic volume from its door.
         if (clearHeight >= 10) {
@@ -4782,6 +6013,101 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(bx + centerX, floor - 1, bz + z).setType(
                     Math.floorMod(z, 7) == 0 ? Material.CHISELED_DEEPSLATE : accent, false);
         }
+        dressHoldCivicVaultFrames(world, bx, bz, room, floor, ceiling, accent);
+        dressHoldPerimeterFurniture(world, bx, bz, room, floor, accent);
+    }
+
+    private void dressHoldCivicVaultFrames(World world, int bx, int bz, HoldRoomBox room,
+                                            int floor, int ceiling, Material accent) {
+        if (world == null || room == null) return;
+        int width = room.maxX() - room.minX();
+        int depth = room.maxZ() - room.minZ();
+        int beamY = Math.max(floor + 8, ceiling - 2);
+        if (depth >= width) {
+            for (int z = room.minZ() + 12; z <= room.maxZ() - 12; z += 18) {
+                int left = room.minX() + 3;
+                int right = room.maxX() - 3;
+                if (holdVaultFrameReserved(room, true, z, left, right)) continue;
+                buildHoldVaultFramePillar(world, bx + left, floor, bz + z, beamY, accent);
+                buildHoldVaultFramePillar(world, bx + right, floor, bz + z, beamY, accent);
+                for (int x = left; x <= right; x++) {
+                    world.getBlockAt(bx + x, beamY, bz + z).setType(
+                            Math.floorMod(x - left, 6) == 0 ? accent : Material.POLISHED_BLACKSTONE_BRICKS, false);
+                }
+            }
+        } else {
+            for (int x = room.minX() + 12; x <= room.maxX() - 12; x += 18) {
+                int near = room.minZ() + 3;
+                int far = room.maxZ() - 3;
+                if (holdVaultFrameReserved(room, false, x, near, far)) continue;
+                buildHoldVaultFramePillar(world, bx + x, floor, bz + near, beamY, accent);
+                buildHoldVaultFramePillar(world, bx + x, floor, bz + far, beamY, accent);
+                for (int z = near; z <= far; z++) {
+                    world.getBlockAt(bx + x, beamY, bz + z).setType(
+                            Math.floorMod(z - near, 6) == 0 ? accent : Material.POLISHED_BLACKSTONE_BRICKS, false);
+                }
+            }
+        }
+    }
+
+    private boolean holdVaultFrameReserved(HoldRoomBox room, boolean acrossX,
+                                           int fixed, int start, int end) {
+        for (int cursor = start; cursor <= end; cursor += 2) {
+            int x = acrossX ? cursor : fixed;
+            int z = acrossX ? fixed : cursor;
+            if (holdInteriorReserved(room, x, z, 3)) return true;
+        }
+        return false;
+    }
+
+    private void buildHoldVaultFramePillar(World world, int x, int floor, int z, int top, Material accent) {
+        for (int y = floor; y <= top; y++) {
+            world.getBlockAt(x, y, z).setType(y == floor || y == top
+                    ? Material.CHISELED_DEEPSLATE
+                    : (Math.floorMod(y - floor, 4) == 0 ? accent : Material.POLISHED_BASALT), false);
+        }
+        if (top - floor >= 8) {
+            world.getBlockAt(x, top - 2, z).setType(Material.SOUL_LANTERN, false);
+        }
+    }
+
+    private void dressHoldPerimeterFurniture(World world, int bx, int bz, HoldRoomBox room,
+                                              int floor, Material accent) {
+        if (world == null || room == null) return;
+        int insideWest = room.minX() + 4;
+        int insideEast = room.maxX() - 4;
+        for (int z = room.minZ() + 8; z <= room.maxZ() - 8; z += 14) {
+            for (int x : new int[]{insideWest, insideEast}) {
+                if (holdInteriorReserved(room, x, z, 10)) continue;
+                Block shelf = world.getBlockAt(bx + x, floor, bz + z);
+                shelf.setType(room.id().contains("archive") ? Material.CHISELED_BOOKSHELF
+                        : Material.POLISHED_DEEPSLATE_SLAB, false);
+                if (shelf.getType() == Material.CHISELED_BOOKSHELF) {
+                    placeDecorativeBookshelf(shelf, x * 31 + z, x == insideWest ? BlockFace.EAST : BlockFace.WEST);
+                }
+                world.getBlockAt(bx + x, floor + 1, bz + z).setType(
+                        Math.floorMod(z, 2) == 0 ? Material.BLACK_CANDLE : accent, false);
+            }
+        }
+    }
+
+    private boolean holdInteriorReserved(HoldRoomBox room, int x, int z, int radius) {
+        if (room == null) return true;
+        int r = Math.max(3, radius);
+        for (HoldSite site : DEEP_HOLD_SITES) {
+            if (site.x() < room.minX() || site.x() > room.maxX()
+                    || site.z() < room.minZ() || site.z() > room.maxZ()) continue;
+            int halfX = site.halfX() > 0 ? site.halfX() : Math.min(12, Math.max(4, site.radius()));
+            int halfZ = site.halfZ() > 0 ? site.halfZ() : Math.min(12, Math.max(4, site.radius()));
+            if (x >= site.x() - halfX - r && x <= site.x() + halfX + r
+                    && z >= site.z() - halfZ - r && z <= site.z() + halfZ + r) return true;
+        }
+        for (HoldRecordStation station : DEEP_HOLD_RECORD_STATIONS) {
+            if (station.x() < room.minX() || station.x() > room.maxX()
+                    || station.z() < room.minZ() || station.z() > room.maxZ()) continue;
+            if (Math.abs(station.x() - x) <= r + 4 && Math.abs(station.z() - z) <= r + 4) return true;
+        }
+        return false;
     }
 
     private void buildHoldRoomPillar(World world, int x, int floor, int z, int top, Material accent) {
@@ -4844,7 +6170,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldDreadPassage(World world, int bx, int by, int bz) {
-        int[][] points = {{122, 610}, {140, 610}, {170, 650}, {170, 700}, {140, 742}};
+        int[][] points = {{88, 520}, {96, 520}, {112, 552}, {112, 592}, {96, 632}};
         for (int i = 0; i < points.length - 1; i++) {
             int x = points[i][0], z = points[i][1];
             int tx = points[i + 1][0], tz = points[i + 1][1];
@@ -4853,7 +6179,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (x != tx) x += Integer.signum(tx - x); else z += Integer.signum(tz - z);
             }
         }
-        buildHoldDreadSlice(world, bx + 140, by - 28, bz + 742);
+        buildHoldDreadSlice(world, bx + 96, by - 28, bz + 632);
     }
 
     private void buildHoldDreadSlice(World world, int cx, int floor, int cz) {
@@ -4933,66 +6259,113 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             double t = step / (double) total;
             int y = (int) Math.round(sy + ((bottomY - sy) * t));
             buildHoldEntryStairSlice(world, sx, y, z, step);
-            if (y < previousY) setHoldEntryStairTread(world, sx, y, z, 16);
+            if (y < previousY) setHoldEntryStairTread(world, sx, y, z, 5);
             previousY = y;
         }
         for (int z = entryZ + 1; z <= bz - 132; z++) {
             buildHoldEntryStairSlice(world, sx, bottomY, z, z - sz);
         }
         buildHoldEntryLanding(world, sx, bottomY, bz - 142);
-        buildHoldCorridorZ(world, sx, bottomY, bz - 150, bz - 96, 20, 16);
-        buildHoldArch(world, sx, bottomY, entryZ + 4, 19, 15);
-        buildHoldArch(world, sx, bottomY, bz - 126, 22, 16);
+        // Meet the V2 mouth at local Z=0. Stopping at bz-96 leaves a sealed 95-block gap between
+        // the surface descent and the generated Hold.
+        buildHoldCorridorZ(world, sx, bottomY, bz - 150, bz, 5, 8);
+        buildHoldArch(world, sx, bottomY, entryZ + 4, 7, 9);
+        buildHoldArch(world, sx, bottomY, bz - 126, 7, 9);
         placeStandingSign(new Location(world, sx - 5, sy, sz - 6), BlockFace.SOUTH,
                 new String[]{"RETURN MOUTH", "count before", "descending", ""});
-        placeStandingSign(new Location(world, sx + 6, bottomY, entryZ + 6), BlockFace.WEST,
+        placeStandingSign(new Location(world, sx + 4, bottomY, entryZ + 6), BlockFace.WEST,
                 new String[]{"the stair", "ends where", "the count", "turns"});
+    }
+
+    private String auditBuiltHoldSurfaceMouth(Location surfaceMouth, Location base) {
+        if (surfaceMouth == null || base == null || surfaceMouth.getWorld() == null
+                || surfaceMouth.getWorld() != base.getWorld()) return "surface Return Mouth cannot be audited.";
+        World world = surfaceMouth.getWorld();
+        int sx = surfaceMouth.getBlockX();
+        int sy = surfaceMouth.getBlockY();
+        int sz = surfaceMouth.getBlockZ();
+        int bottomY = base.getBlockY();
+        int bz = base.getBlockZ();
+        int entryZ = Math.max(sz + 96, bz - 186);
+        int total = Math.max(1, entryZ - sz);
+        for (int z = sz; z <= bz; z += 6) {
+            int y = bottomY;
+            if (z <= entryZ) {
+                double t = (z - sz) / (double) total;
+                y = (int) Math.round(sy + ((bottomY - sy) * t));
+            }
+            if (!hasHoldEntryWalkableSlice(world, sx, y, z)) {
+                return "surface Return Mouth route is blocked near " + sx + "," + y + "," + z + ".";
+            }
+        }
+        Block mouthSign = world.getBlockAt(sx - 5, sy, sz - 6);
+        Block landingSign = world.getBlockAt(sx + 4, bottomY, entryZ + 6);
+        for (Block sign : new Block[]{mouthSign, landingSign}) {
+            if (!(sign.getState() instanceof Sign state)) {
+                return "surface Return Mouth sign is missing at " + sign.getX() + "," + sign.getY() + "," + sign.getZ() + ".";
+            }
+            if (!sign.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                return "surface Return Mouth sign has no floor at " + sign.getX() + "," + sign.getY() + "," + sign.getZ() + ".";
+            }
+            boolean hasText = false;
+            for (String line : state.getLines()) if (line != null && !line.isBlank()) hasText = true;
+            if (!hasText) return "surface Return Mouth sign is blank at " + sign.getX() + "," + sign.getY() + "," + sign.getZ() + ".";
+        }
+        return null;
     }
 
     private void registerHoldRegion(String worldName, int bx, int by, int bz, Location surfaceMouth) {
         int vertical = 56;
         plugin.registerRuntimeSite(new Site(HOLD_REGION_SITE_ID, "hold_region", worldName,
-                (double) bx, (double) (by - 12), (double) (bz + 482), 560, vertical,
+                (double) bx, (double) (by - 12), (double) (bz + 394), 430, vertical,
                 true, true, null, false));
         if (surfaceMouth != null && surfaceMouth.getWorld() != null) {
+            int mouthX = surfaceMouth.getBlockX();
+            int mouthY = surfaceMouth.getBlockY();
+            int mouthZ = surfaceMouth.getBlockZ();
+            int midX = (mouthX + bx) / 2;
+            int midY = (mouthY + by) / 2;
+            int midZ = (mouthZ + bz) / 2;
+            int entryRadius = Math.max(72, (Math.abs(bz - mouthZ) / 2) + 20);
+            int entryVertical = Math.max(48, (Math.abs(mouthY - by) / 2) + 16);
             plugin.registerRuntimeSite(new Site(HOLD_ENTRY_REGION_SITE_ID, "hold_region", worldName,
-                    (double) bx, (double) (by - 12), (double) (bz + 48), 72, 48,
+                    (double) midX, (double) midY, (double) midZ, entryRadius, entryVertical,
                     true, true, null, false));
         }
     }
 
     private void buildHoldSurfaceApron(World world, int sx, int sy, int sz) {
         if (world == null) return;
-        for (int dx = -24; dx <= 24; dx++) {
-            for (int dz = -16; dz <= 30; dz++) {
+        for (int dx = -12; dx <= 12; dx++) {
+            for (int dz = -8; dz <= 18; dz++) {
                 double d = Math.sqrt((dx * dx) + ((dz - 3) * (dz - 3) * 0.72));
-                if (d > 24.2) continue;
-                Material floor = d > 18.6 ? Material.MOSSY_COBBLESTONE
-                        : (d > 10.0 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.POLISHED_DEEPSLATE);
+                if (d > 12.2) continue;
+                Material floor = d > 9.2 ? Material.MOSSY_COBBLESTONE
+                        : (d > 5.5 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.POLISHED_DEEPSLATE);
                 world.getBlockAt(sx + dx, sy - 2, sz + dz).setType(Material.DEEPSLATE, false);
                 world.getBlockAt(sx + dx, sy - 1, sz + dz).setType(floor, false);
                 for (int dy = 0; dy <= 8; dy++) {
-                    boolean mouth = Math.abs(dx) <= 13 && dz >= -3 && dz <= 19;
-                    boolean brokenRim = d > 16.4 && d < 23.1 && dy <= 3 && Math.floorMod(dx * 7 + dz, 4) == 0;
+                    boolean mouth = Math.abs(dx) <= 5 && dz >= -2 && dz <= 12;
+                    boolean brokenRim = d > 8.2 && d < 11.6 && dy <= 3 && Math.floorMod(dx * 7 + dz, 4) == 0;
                     Block block = world.getBlockAt(sx + dx, sy + dy, sz + dz);
                     if (mouth) {
                         block.setType(Material.AIR, false);
                     } else if (brokenRim) {
                         block.setType(dy == 2 ? Material.POLISHED_DEEPSLATE : Material.DEEPSLATE_BRICKS, false);
-                    } else if (dy == 0 && d > 10.2 && Math.floorMod(dx - dz, 5) == 0) {
+                    } else if (dy == 0 && d > 5.2 && Math.floorMod(dx - dz, 5) == 0) {
                         block.setType(Material.MOSSY_COBBLESTONE, false);
                     }
                 }
             }
         }
-        buildHoldArch(world, sx, sy, sz + 8, 15, 10);
+        buildHoldArch(world, sx, sy, sz + 8, 7, 9);
     }
 
     private void buildHoldEntryStairSlice(World world, int cx, int y, int z, int step) {
         if (world == null) return;
-        int outer = 24;
-        int inner = 16;
-        int height = 16;
+        int outer = 7;
+        int inner = 5;
+        int height = 8;
         for (int dx = -outer; dx <= outer; dx++) {
             for (int dy = -3; dy <= height + 2; dy++) {
                 boolean walk = Math.abs(dx) <= inner && dy >= 0 && dy < height;
@@ -5022,7 +6395,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(cx + inner - 1, y + height - 2, z).setType(Material.SOUL_LANTERN, false);
         }
         if (step % 18 == 0) {
-            for (int dx : new int[]{-20, 20}) {
+            for (int dx : new int[]{-6, 6}) {
                 for (int dy = -1; dy <= height + 1; dy++) {
                     world.getBlockAt(cx + dx, y + dy, z).setType(dy == height + 1
                             ? Material.POLISHED_BLACKSTONE_BRICKS : Material.POLISHED_DEEPSLATE, false);
@@ -5045,18 +6418,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void buildHoldEntryLanding(World world, int cx, int y, int cz) {
         if (world == null) return;
-        for (int dx = -34; dx <= 34; dx++) {
-            for (int dz = -24; dz <= 30; dz++) {
-                boolean rim = Math.abs(dx) == 34 || dz == -24 || dz == 30;
-                boolean archPost = Math.abs(dx) == 22 && dz >= -12 && dz <= 24;
+        for (int dx = -12; dx <= 12; dx++) {
+            for (int dz = -10; dz <= 14; dz++) {
+                boolean rim = Math.abs(dx) == 12 || dz == -10 || dz == 14;
+                boolean archPost = Math.abs(dx) == 8 && dz >= -6 && dz <= 10;
                 world.getBlockAt(cx + dx, y - 2, cz + dz).setType(Material.DEEPSLATE, false);
                 world.getBlockAt(cx + dx, y - 1, cz + dz)
                         .setType(rim ? Material.POLISHED_BLACKSTONE_BRICKS
                                 : (Math.abs(dx) <= 2 ? Material.DEEPSLATE_TILES : Material.POLISHED_DEEPSLATE), false);
-                for (int dy = 0; dy <= 17; dy++) {
+                for (int dy = 0; dy <= 9; dy++) {
                     Block block = world.getBlockAt(cx + dx, y + dy, cz + dz);
-                    if (rim || archPost || dy == 17) {
-                        Material material = (dy == 17 || rim)
+                    if (rim || archPost || dy == 9) {
+                        Material material = (dy == 9 || rim)
                                 ? Material.POLISHED_BLACKSTONE_BRICKS
                                 : Material.DEEPSLATE_BRICKS;
                         block.setType(material, false);
@@ -5066,103 +6439,103 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        for (int dz : new int[]{-16, 0, 16, 28}) {
-            buildHoldArch(world, cx, y, cz + dz, 22, 16);
+        for (int dz : new int[]{-6, 6, 12}) {
+            buildHoldArch(world, cx, y, cz + dz, 8, 8);
         }
-        placeStandingSign(new Location(world, cx - 10, y, cz + 8), BlockFace.EAST,
+        placeStandingSign(new Location(world, cx - 6, y, cz + 8), BlockFace.EAST,
                 new String[]{"return stair", "behind you", "city below", ""});
-        placeStandingSign(new Location(world, cx + 10, y, cz + 8), BlockFace.WEST,
+        placeStandingSign(new Location(world, cx + 6, y, cz + 8), BlockFace.WEST,
                 new String[]{"do not dig", "the hold", "opens by", "record"});
     }
 
     private void placeHoldPrologueEcho(World world, int bx, int by, int bz) {
         if (world == null) return;
-        placeEvidenceLectern(new Location(world, bx - 14, by - 24, bz + 90), BlockFace.EAST,
+        placeEvidenceLectern(new Location(world, bx - 10, by - 24, bz + 76), BlockFace.EAST,
                 "covered copy", List.of(
                         "This is a copy, not the first report.\n\nThe real first report belongs above, where the living first allow themselves to be counted.",
                         "The Hold kept only a cover mark: the record was carried underground after the opening, not before it.",
                         "A descent without the first report is a descent without a name. Return to the mouth before reading the city."
                 ));
-        placeDecorativeBookshelf(world.getBlockAt(bx - 16, by - 24, bz + 90), 83, BlockFace.EAST);
-        placeStandingSign(new Location(world, bx - 18, by - 24, bz + 88), BlockFace.EAST,
+        placeDecorativeBookshelf(world.getBlockAt(bx - 12, by - 24, bz + 76), 83, BlockFace.EAST);
+        placeStandingSign(new Location(world, bx - 6, by - 24, bz + 80), BlockFace.EAST,
                 new String[]{"copied cover", "original", "stays above", ""});
     }
 
     private void placeHoldDistrictRecords(World world, int bx, int by, int bz) {
         if (world == null) return;
-        placeHoldRecordStation(world, bx + 12, by - 24, bz + 90, BlockFace.WEST,
+        placeHoldRecordStation(world, bx + 10, by - 24, bz + 76, BlockFace.WEST,
                 "mouth register", List.of(
                         "Entry-mouth census.\n\nSix signed before the covered descent. A seventh mark was added later in grey ink and never matched a hand.",
                         "Do not call the grey line a prophecy. It is a correction made after the stair was sealed.",
                         "Later copies turned the six hand marks into rows for entry. One row stayed blank, but the lock still counted it.",
                         "The first report stays above because the first count was public. The Hold keeps the copy that proves the public story changed."
                 ), 101);
-        placeStandingSign(new Location(world, bx + 8, by - 24, bz + 90), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 6, by - 24, bz + 76), BlockFace.WEST,
                 new String[]{"first count", "above", "copy below", ""});
 
-        placeHoldRecordStation(world, bx - 22, by - 28, bz + 160, BlockFace.EAST,
+        placeHoldRecordStation(world, bx - 18, by - 28, bz + 154, BlockFace.EAST,
                 "court census", List.of(
                         "Keeper court seating.\n\nVaun, Mara, Sella, Orin, Brann, Iss. Six chairs were cut into the ring before any lower work began.",
                         "Margin correction: one place was not cut. It was reserved by leaving the count unfinished.",
                         "When seven appears where six were built, trust the physical room over the speech."
                 ), 117);
-        placeStandingSign(new Location(world, bx - 18, by - 28, bz + 160), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 14, by - 28, bz + 154), BlockFace.EAST,
                 new String[]{"six seats", "one margin", "count the", "stone"});
 
-        placeHoldRecordStation(world, bx - 40, by - 24, bz + 310, BlockFace.EAST,
+        placeHoldRecordStation(world, bx - 16, by - 24, bz + 282, BlockFace.EAST,
                 "intake rail", List.of(
                         "Archive intake rail.\n\nSchool, cistern, watch, shelf, water. These were separated so no single reader could see the lower pattern at once.",
                         "Read the side rooms as evidence, not decoration. Each one changes who looks guilty and who only looks useful.",
                         "Mara filed the copies by consequence. Brann filed the doors by convenience."
                 ), 131);
-        placeStandingSign(new Location(world, bx - 36, by - 24, bz + 310), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 12, by - 24, bz + 282), BlockFace.EAST,
                 new String[]{"records split", "on purpose", "follow what", "changed"});
 
-        placeHoldRecordStation(world, bx - 160, by - 28, bz + 610, BlockFace.EAST,
+        placeHoldRecordStation(world, bx - 98, by - 28, bz + 518, BlockFace.EAST,
                 "prior roster", List.of(
                         "Prior accepting roster.\n\nSix names copied clean. Six keeper answers filed. Six tokens prepared.",
                         "Seventh line: no witness.\n\nDo not correct this to no seventh. The failed run had no one outside the finish.",
                         "The camp beyond this gate is not locked because it is sacred. It is locked because the same mistake should not be rehearsed twice.",
                         "Open condition to file: no witness."
                 ), 139);
-        placeStandingSign(new Location(world, bx - 154, by - 28, bz + 610), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 94, by - 28, bz + 518), BlockFace.EAST,
                 new String[]{"prior run", "six ready", "no witness", ""});
 
-        placeHoldRecordStation(world, bx + 40, by - 24, bz + 310, BlockFace.WEST,
+        placeHoldRecordStation(world, bx + 16, by - 24, bz + 282, BlockFace.WEST,
                 "closure docket", List.of(
                         "Market closure docket WARDEN-3.\n\nPublic reason: unsafe wall. Private reason: the ration account proved light was moved before the collapse.",
                         "The warm-town story depends on smoke, but the ledgers depend on delivery. Compare which one had to be rewritten.",
                         "If the market feels too ordinary, keep reading. Ordinary records are how the lie survived."
                 ), 149);
-        placeStandingSign(new Location(world, bx + 36, by - 24, bz + 310), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 12, by - 24, bz + 282), BlockFace.WEST,
                 new String[]{"warden file", "counts goods", "before smoke", ""});
 
-        placeHoldRecordStation(world, bx - 12, by - 24, bz + 524, BlockFace.EAST,
+        placeHoldRecordStation(world, bx - 28, by - 24, bz + 438, BlockFace.EAST,
                 "lamp count", List.of(
                         "Lampworks maintenance.\n\nFirst line kept. Second line borrowed. Third line went dry and was still marked ready.",
                         "Complaint note: a dark stand is not a missing stand. Do not break the wall for it. Bring light to the cup.",
                         "The black step is not a warning sign. It is an accounting mark for the place where the lower work stops being public.",
                         "Do not hurry past the descent. The lamps tell who paid, who carried, and who pretended not to know."
                 ), 173);
-        placeStandingSign(new Location(world, bx - 8, by - 24, bz + 524), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 24, by - 24, bz + 438), BlockFace.EAST,
                 new String[]{"lampworks", "counts debt", "not light", ""});
 
-        placeHoldRecordStation(world, bx - 18, by - 28, bz + 660, BlockFace.EAST,
+        placeHoldRecordStation(world, bx - 18, by - 28, bz + 566, BlockFace.EAST,
                 "threshold hands", List.of(
                         "Threshold work note.\n\nThree actions were required so no single keeper could make the last door look like consent.",
                         "Plate. Name. Word. The order matters less than the fact that the room hears more than one person.",
                         "A group should argue here. If everyone agrees too quickly, they probably missed the earlier contradiction."
                 ), 191);
-        placeStandingSign(new Location(world, bx - 14, by - 28, bz + 660), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 14, by - 28, bz + 566), BlockFace.EAST,
                 new String[]{"three hands", "before the", "last warm", "floor"});
 
-        placeHoldRecordStation(world, bx + 132, by - 28, bz + 600, BlockFace.EAST,
+        placeHoldRecordStation(world, bx + 96, by - 28, bz + 514, BlockFace.EAST,
                 "side hush", List.of(
                         "Side hush report.\n\nThis passage is not part of the formal count. That is why the formal count keeps failing.",
                         "A witness used the word elsewhere three times and crossed it out twice. The uncrossed word is the useful one.",
                         "Bring this back to the court only after the lower lamps make the first lie too small."
                 ), 211);
-        placeStandingSign(new Location(world, bx + 136, by - 28, bz + 600), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx + 100, by - 28, bz + 514), BlockFace.EAST,
                 new String[]{"not counted", "still true", "bring it", "back"});
     }
 
@@ -6406,13 +7779,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void placeHoldWayfinding(World world, int bx, int by, int bz) {
         if (world == null) return;
-        placeStandingSign(new Location(world, bx - 8, by, bz - 168), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 5, by - 24, bz + 98), BlockFace.NORTH,
                 new String[]{"THE DEEP", "HOLD", "walk low", "count first"});
-        placeStandingSign(new Location(world, bx + 14, by, bz + 64), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 8, by - 24, bz + 280), BlockFace.NORTH,
                 new String[]{"the archive", "does not open", "for noise", ""});
-        placeStandingSign(new Location(world, bx + 15, by, bz + 242), BlockFace.WEST,
+        placeStandingSign(new Location(world, bx + 28, by - 24, bz + 436), BlockFace.WEST,
                 new String[]{"below here", "the lamps", "keep accounts", ""});
-        placeStandingSign(new Location(world, bx - 15, by - 28, bz + 322), BlockFace.EAST,
+        placeStandingSign(new Location(world, bx - 6, by - 28, bz + 568), BlockFace.NORTH,
                 new String[]{"threshold", "waits for", "three hands", ""});
     }
 
@@ -6427,6 +7800,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (gate.id().equals(want)) return gate;
         }
         return null;
+    }
+
+    /**
+     * An opened progression gate is itself the durable latch.  This keeps retreat/resume working
+     * even if a director flag is temporarily unavailable after a restart: automatic sync may open
+     * a gate, but it never closes an already-open gate behind a player.
+     */
+    private boolean holdGateLatchedOpen(String gateId) {
+        HoldGate gate = holdGateById(gateId);
+        if (gate == null) return false;
+        Site site = plugin.sites().get(holdGateSiteId(gate.id()));
+        Location location = site == null ? null : site.location();
+        return location != null && !isHoldGateSealed(gate, location);
     }
 
     private List<String> holdGateSuggestions(String prefix) {
@@ -6511,7 +7897,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         for (int side : new int[]{-1, 1}) {
             for (int a = span.halfAcross() + 1; a <= span.halfAcross() + returnWidth; a++) {
                 int across = side * a;
-                for (int d = -4; d <= span.depth() + 6; d++) {
+                for (int d = 0; d <= span.depth(); d++) {
                     holdGateBlockAt(world, cx, y, cz, span, across, -2, d).setType(Material.DEEPSLATE, false);
                     holdGateBlockAt(world, cx, y, cz, span, across, -1, d)
                             .setType(Material.POLISHED_BLACKSTONE_BRICKS, false);
@@ -6526,7 +7912,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         for (int across = -span.halfAcross() - returnWidth; across <= span.halfAcross() + returnWidth; across++) {
-            for (int d = -3; d <= span.depth() + 5; d++) {
+            for (int d = 0; d <= span.depth(); d++) {
                 for (int dy = span.height() + 1; dy <= span.height() + 5; dy++) {
                     Material material = Math.floorMod(across + d + dy, 7) == 0
                             ? Material.CRACKED_DEEPSLATE_BRICKS : Material.POLISHED_BLACKSTONE_BRICKS;
@@ -6537,8 +7923,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private static int holdGateReturnWidth(HoldGateSpan span) {
-        if (span == null) return 8;
-        return Math.max(8, Math.min(12, span.halfAcross() / 2));
+        if (span == null) return 4;
+        return Math.max(4, Math.min(6, span.halfAcross() / 2));
     }
 
     private static boolean isHoldGateMaterial(Material material) {
@@ -6548,18 +7934,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private static HoldGateSpan holdGateSpan(HoldGate gate) {
-        if (gate == null) return new HoldGateSpan(true, 8, 8, 1, 4);
+        if (gate == null) return new HoldGateSpan(true, 7, 9, 1, 4);
         return switch (gate.id()) {
-            case "entry" -> new HoldGateSpan(true, 13, 13, 3, 6);
-            case "keeper" -> new HoldGateSpan(true, 14, 14, 3, 6);
-            case "archive" -> new HoldGateSpan(true, 14, 13, 3, 5);
-            case "prior" -> new HoldGateSpan(true, 12, 11, 3, 4);
-            case "undercroft" -> new HoldGateSpan(true, 15, 14, 3, 6);
-            case "deep" -> new HoldGateSpan(true, 15, 14, 3, 6);
-            case "accepting" -> new HoldGateSpan(true, 17, 16, 3, 7);
-            case "coda" -> new HoldGateSpan(true, 17, 16, 3, 7);
-            case "dread" -> new HoldGateSpan(false, 10, 10, 3, 4);
-            default -> new HoldGateSpan(true, 10, 9, 1, 4);
+            case "keeper", "archive" -> new HoldGateSpan(true, 12, 20, 3, 5);
+            case "undercroft" -> new HoldGateSpan(true, 12, 18, 3, 5);
+            case "deep" -> new HoldGateSpan(true, 12, 20, 3, 5);
+            case "prior" -> new HoldGateSpan(true, 8, 16, 3, 4);
+            case "accepting", "coda" -> new HoldGateSpan(true, 14, 22, 3, 6);
+            case "dread" -> new HoldGateSpan(false, 7, 16, 3, 4);
+            default -> new HoldGateSpan(true, 7, 9, 1, 4);
         };
     }
 
@@ -6580,9 +7963,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void placeHoldGateLabel(HoldGate gate, Location loc) {
         if (gate == null || loc == null || loc.getWorld() == null) return;
         HoldGateSpan span = holdGateSpan(gate);
-        Location signLoc = span.acrossX() ? loc.clone().add(-span.doorHalf() - 2, 0, -2)
-                : loc.clone().add(-2, 0, -span.doorHalf() - 2);
-        placeStandingSign(signLoc, span.acrossX() ? BlockFace.NORTH : BlockFace.WEST,
+        Location signLoc = span.acrossX() ? loc.clone().add(-span.doorHalf() - 2, 2, -1)
+                : loc.clone().add(-1, 2, -span.doorHalf() - 2);
+        placeWallMountedSign(signLoc, span.acrossX() ? BlockFace.NORTH : BlockFace.WEST,
                 new String[]{gate.label(), "held until", "the record", "turns"});
     }
 
@@ -6599,20 +7982,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     ? r.value().flagsMap() : Collections.emptyMap();
             Bukkit.getScheduler().runTask(plugin, () -> {
                 int changed = 0;
-                changed += applyHoldGateByName(sender, "entry", false) ? 1 : 0;
-                boolean keeperOpen = directorFlag(flags, "rosetta_known");
-                boolean archiveOpen = keeperInvestigationBegun(flags);
-                boolean undercroftOpen = directorFlag(flags, "undercroft_open");
+                boolean keeperOpen = holdGateLatchedOpen("keeper") || directorFlag(flags, "rosetta_known");
+                boolean archiveOpen = holdGateLatchedOpen("archive") || keeperInvestigationBegun(flags);
+                boolean undercroftOpen = holdGateLatchedOpen("undercroft") || directorFlag(flags, "undercroft_open");
                 boolean priorOpen = directorFlag(flags, "prior_absence_known")
                         || directorFlag(flags, "prior_camp_read")
-                        || directorFlag(flags, "prior_witness_ready");
+                        || directorFlag(flags, "prior_witness_ready") || holdGateLatchedOpen("prior");
                 boolean deepOpen = directorFlag(flags, "deep_gate_open")
-                        || (directorFlag(flags, "iss_caught") && directorFlag(flags, "seventh_suspected"));
-                boolean dreadOpen = directorFlag(flags, "iss_caught") || directorFlag(flags, "seventh_suspected");
+                        || (directorFlag(flags, "iss_caught") && directorFlag(flags, "seventh_suspected"))
+                        || holdGateLatchedOpen("deep");
+                boolean dreadOpen = directorFlag(flags, "iss_caught") || directorFlag(flags, "seventh_suspected")
+                        || holdGateLatchedOpen("dread");
                 boolean acceptingReady = directorFlag(flags, "prior_witness_ready");
                 boolean acceptingOpen = acceptingReady && (directorFlag(flags, "accepting_onramp_open")
                         || directorFlag(flags, "threshold_open"));
-                boolean codaOpen = directorFlag(flags, "bowed_as_one");
+                acceptingOpen = acceptingOpen || holdGateLatchedOpen("accepting");
+                boolean codaOpen = directorFlag(flags, "bowed_as_one") || holdGateLatchedOpen("coda");
                 changed += applyHoldGateByName(sender, "keeper", !keeperOpen) ? 1 : 0;
                 changed += applyHoldGateByName(sender, "archive", !archiveOpen) ? 1 : 0;
                 changed += applyHoldGateByName(sender, "undercroft", !undercroftOpen) ? 1 : 0;
@@ -6645,20 +8030,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 try {
                     if (flags == null) return; // fail closed and preserve the last known physical state
-                    applyHoldGateByName(null, "entry", false);
-                    boolean keeperOpen = directorFlag(flags, "rosetta_known");
-                    boolean archiveOpen = keeperInvestigationBegun(flags);
-                    boolean undercroftOpen = directorFlag(flags, "undercroft_open");
+                    boolean keeperOpen = holdGateLatchedOpen("keeper") || directorFlag(flags, "rosetta_known");
+                    boolean archiveOpen = holdGateLatchedOpen("archive") || keeperInvestigationBegun(flags);
+                    boolean undercroftOpen = holdGateLatchedOpen("undercroft") || directorFlag(flags, "undercroft_open");
                     boolean priorOpen = directorFlag(flags, "prior_absence_known")
                             || directorFlag(flags, "prior_camp_read")
-                            || directorFlag(flags, "prior_witness_ready");
+                            || directorFlag(flags, "prior_witness_ready") || holdGateLatchedOpen("prior");
                     boolean deepOpen = directorFlag(flags, "deep_gate_open")
-                            || (directorFlag(flags, "iss_caught") && directorFlag(flags, "seventh_suspected"));
-                    boolean dreadOpen = directorFlag(flags, "iss_caught") || directorFlag(flags, "seventh_suspected");
+                            || (directorFlag(flags, "iss_caught") && directorFlag(flags, "seventh_suspected"))
+                            || holdGateLatchedOpen("deep");
+                    boolean dreadOpen = directorFlag(flags, "iss_caught") || directorFlag(flags, "seventh_suspected")
+                            || holdGateLatchedOpen("dread");
                     boolean acceptingOpen = directorFlag(flags, "prior_witness_ready")
                             && (directorFlag(flags, "accepting_onramp_open")
                             || directorFlag(flags, "threshold_open"));
-                    boolean codaOpen = directorFlag(flags, "bowed_as_one");
+                    acceptingOpen = acceptingOpen || holdGateLatchedOpen("accepting");
+                    boolean codaOpen = directorFlag(flags, "bowed_as_one") || holdGateLatchedOpen("coda");
                     applyHoldGateByName(null, "keeper", !keeperOpen);
                     applyHoldGateByName(null, "archive", !archiveOpen);
                     applyHoldGateByName(null, "undercroft", !undercroftOpen);
@@ -6682,14 +8069,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int placed = 0;
         int critical = 0;
         int recordStations = 0;
-        String entryRouteStatus = "not built";
         List<String> notes = new ArrayList<>();
-        for (HoldSite row : DEEP_HOLD_SITES) {
-            Site site = plugin.sites().get(row.id());
+        Location mouth = resolveDeepHoldV4Mouth();
+
+        for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+            Site site = plugin.sites().get(fixture.id());
             Location loc = site == null ? null : site.location();
             if (site == null || loc == null || loc.getWorld() == null) {
                 critical++;
-                addAuditIssue(notes, row.id() + " missing");
+                addAuditIssue(notes, fixture.id() + " missing");
                 continue;
             }
             placed++;
@@ -6698,21 +8086,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 critical++;
                 addAuditIssue(notes, issue);
             }
-            if (!hasHoldNearbyPlayerSpace(loc, 5, 10)) {
-                critical++;
-                addAuditIssue(notes, row.id() + " has too little nearby player standing room.");
-            }
-            if (needsHoldDedicatedRoom(row) && !hasHoldWalkableSpace(loc, row.halfX(), row.halfZ())) {
-                critical++;
-                addAuditIssue(notes, row.id() + " room has too little walkable two-block air.");
-            }
-            if (needsHoldDedicatedRoom(row) && !hasHoldRoomCeiling(loc, row)) {
-                critical++;
-                addAuditIssue(notes, row.id() + " room shell has an open/missing ceiling.");
+            if (mouth != null) {
+                String frameIssue = auditV4FixtureFrame(loc.getWorld(), mouth, fixture);
+                if (frameIssue != null) {
+                    critical++;
+                    addAuditIssue(notes, frameIssue);
+                }
             }
             if (hasMaterialNear(loc, Math.max(3, site.radius()), Material.BEACON)) {
                 critical++;
-                addAuditIssue(notes, row.id() + " still has retired beacon material.");
+                addAuditIssue(notes, fixture.id() + " still has retired beacon material.");
             }
         }
 
@@ -6743,61 +8126,37 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (!"hold_region".equals(region.type()) || !region.protect()) {
             critical++;
             addAuditIssue(notes, "deep hold protection region is not protected/type=hold_region");
-        } else {
-            int unexpectedFluids = sampleUnexpectedHoldFluids(regionLoc);
-            if (unexpectedFluids > 0) {
-                critical++;
-                addAuditIssue(notes, "controlled geology has unexpected sampled fluid blocks (" + unexpectedFluids + ")");
-            }
         }
         Site entryRegion = plugin.sites().get(HOLD_ENTRY_REGION_SITE_ID);
-        if (entryRegion != null) {
-            Location entryLoc = entryRegion.location();
-            if (entryLoc == null || entryLoc.getWorld() == null) {
-                critical++;
-                addAuditIssue(notes, "deep hold entry stair protection region is not placed");
-            } else if (!"hold_region".equals(entryRegion.type()) || !entryRegion.protect()) {
-                critical++;
-                addAuditIssue(notes, "deep hold entry stair region is not protected/type=hold_region");
-            } else if (regionLoc != null && regionLoc.getWorld() != null) {
-                String entryIssue = auditHoldEntryRoute(regionLoc, entryRegion);
-                if (entryIssue == null) {
-                    entryRouteStatus = "walkable";
-                } else {
-                    entryRouteStatus = "blocked";
-                    critical++;
-                    addAuditIssue(notes, entryIssue);
-                }
-            }
+        Location entryLoc = entryRegion == null ? null : entryRegion.location();
+        if (entryRegion == null || entryLoc == null || entryLoc.getWorld() == null) {
+            critical++;
+            addAuditIssue(notes, "deep hold entry stair protection region missing");
+        } else if (!"hold_region".equals(entryRegion.type()) || !entryRegion.protect()) {
+            critical++;
+            addAuditIssue(notes, "deep hold entry stair region is not protected/type=hold_region");
         }
-        if (regionLoc != null && regionLoc.getWorld() != null) {
-            int bx = regionLoc.getBlockX();
-            int by = regionLoc.getBlockY() - 2;
-            int bz = regionLoc.getBlockZ() - 88;
-            String civicIssue = auditHoldCivicShell(regionLoc.getWorld(), bx, by, bz);
-            if (civicIssue != null) {
-                critical++;
-                addAuditIssue(notes, civicIssue);
-            }
-            String routeIssue = auditHoldEarlyRoute(regionLoc.getWorld(), bx, by, bz);
+
+        if (mouth == null || mouth.getWorld() == null) {
+            critical++;
+            addAuditIssue(notes, "V4 Surface Mouth cannot be reconstructed from placed fixtures");
+        } else {
+            World world = mouth.getWorld();
+            int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+            String routeIssue = auditV4OpenRoute(world, mouth);
             if (routeIssue != null) {
                 critical++;
                 addAuditIssue(notes, routeIssue);
             }
-            String enclosureIssue = auditHoldDistrictEnclosure(regionLoc.getWorld(), bx, by, bz);
-            if (enclosureIssue != null) {
-                critical++;
-                addAuditIssue(notes, enclosureIssue);
-            }
-            String prologueIssue = auditHoldPrologueEcho(regionLoc.getWorld(), bx, by, bz);
+            String prologueIssue = auditV4PrologueEcho(world, bx, by, bz);
             if (prologueIssue == null) {
                 recordStations++;
             } else {
                 critical++;
                 addAuditIssue(notes, prologueIssue);
             }
-            for (HoldRecordStation station : DEEP_HOLD_RECORD_STATIONS) {
-                String recordIssue = auditHoldRecordStation(regionLoc.getWorld(), bx, by, bz, station);
+            for (DeepHoldV4Plan.RecordStation station : DeepHoldV4Plan.RECORD_STATIONS) {
+                String recordIssue = auditV4RecordStation(world, mouth, station);
                 if (recordIssue == null) {
                     recordStations++;
                 } else {
@@ -6807,13 +8166,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        sender.sendMessage("== Observance Deep Hold audit ==");
-        sender.sendMessage(" hold sites: " + placed + "/" + DEEP_HOLD_SITES.length);
+        sender.sendMessage("== Observance Deep Hold V4 audit ==");
+        sender.sendMessage(" hold sites: " + placed + "/" + DeepHoldV4Plan.FIXTURES.size());
         sender.sendMessage(" gates:      " + gates + "/" + DEEP_HOLD_GATES.length + " (" + sealed + " sealed)");
-        sender.sendMessage(" records:    " + recordStations + "/" + (DEEP_HOLD_RECORD_STATIONS.length + 1));
+        sender.sendMessage(" records:    " + recordStations + "/" + (DeepHoldV4Plan.RECORD_STATIONS.size() + 1));
         sender.sendMessage(" region:     " + (regionLoc == null ? "missing" : "protected")
                 + (entryRegion == null ? "" : " + entry stair"));
-        sender.sendMessage(" entry:      " + entryRouteStatus);
+        sender.sendMessage(" route:      " + (mouth == null ? "missing Mouth" : "virtual-open full traversal"));
         sender.sendMessage(" critical:   " + critical);
         if (!notes.isEmpty()) {
             sender.sendMessage(" Findings:");
@@ -6821,34 +8180,72 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (notes.size() >= 12) sender.sendMessage("  - ...showing first 12 findings only.");
         }
         sender.sendMessage(critical == 0
-                ? " Deep Hold looks launch-placeable. Run /obs preflight for whole-plugin readiness."
+                ? " Deep Hold V4 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
                 : " Fix findings, then rerun /obs placehold audit and /obs preflight.");
     }
 
-    private String auditHoldEntryRoute(Location regionLoc, Site entryRegion) {
-        if (regionLoc == null || regionLoc.getWorld() == null || entryRegion == null) {
+    private Location resolveDeepHoldV4Mouth() {
+        if (plugin.sites() == null) return null;
+        for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+            Site site = plugin.sites().get(fixture.id());
+            Location loc = site == null ? null : site.location();
+            if (loc != null && loc.getWorld() != null) {
+                return loc.clone().subtract(fixture.x(), fixture.y(), fixture.z());
+            }
+        }
+        return null;
+    }
+
+    private String auditV4PrologueEcho(World world, int bx, int by, int bz) {
+        Location lectern = new Location(world, bx - 14, by - 40, bz + 112);
+        if (countFilledLecternsNear(lectern, 1) < 1) return "V4 covered-copy prologue lectern is missing or empty.";
+        if (!hasSignNear(new Location(world, bx - 10, by - 40, bz + 112), 1)) {
+            return "V4 covered-copy prologue sign is missing.";
+        }
+        return null;
+    }
+
+    private String auditV4RecordStation(World world, Location mouth,
+                                        DeepHoldV4Plan.RecordStation station) {
+        Location loc = mouth.clone().add(station.x(), station.y(), station.z());
+        if (countFilledLecternsNear(loc, 1) < 1) return "V4 record " + station.id() + " is missing or empty.";
+        if (!hasSignNear(loc, 6)) return "V4 record " + station.id() + " has no readable station sign.";
+        return null;
+    }
+
+    private Location resolveDeepHoldOrigin() {
+        if (plugin.sites() == null) return null;
+        for (HoldSite row : DEEP_HOLD_SITES) {
+            Site site = plugin.sites().get(row.id());
+            Location loc = site == null ? null : site.location();
+            if (loc != null && loc.getWorld() != null) {
+                return loc.clone().subtract(row.x(), row.y(), row.z());
+            }
+        }
+        return null;
+    }
+
+    private String auditHoldEntryRoute(Location origin, Site entryRegion) {
+        if (origin == null || origin.getWorld() == null || entryRegion == null) {
             return "deep hold entry stair cannot be audited.";
         }
         Location entryLoc = entryRegion.location();
         if (entryLoc == null || entryLoc.getWorld() == null) {
             return "deep hold entry stair protection region is not placed.";
         }
-        World world = regionLoc.getWorld();
+        World world = origin.getWorld();
         if (entryLoc.getWorld() != world) {
             return "deep hold entry stair is in a different world from the Hold.";
         }
 
-        int bx = regionLoc.getBlockX();
-        int by = regionLoc.getBlockY() - 2;
-        int bz = regionLoc.getBlockZ() - 88;
-        int sx = entryLoc.getBlockX();
-        int centerY = entryLoc.getBlockY();
-        int centerZ = entryLoc.getBlockZ();
-        int halfRun = Math.max(30, entryRegion.radius() - 46);
-        int mouthZ = centerZ - halfRun;
-        int rampEndZ = centerZ + halfRun;
-        int surfaceY = centerY + Math.max(8, entryRegion.verticalRadius() - 42);
-        int routeEndZ = bz - 98;
+        int bx = origin.getBlockX();
+        int by = origin.getBlockY();
+        int bz = origin.getBlockZ();
+        int sx = (entryLoc.getBlockX() * 2) - bx;
+        int mouthZ = (entryLoc.getBlockZ() * 2) - bz;
+        int surfaceY = (entryLoc.getBlockY() * 2) - by;
+        int rampEndZ = Math.max(mouthZ + 96, bz - 186);
+        int routeEndZ = bz;
         int total = Math.max(1, rampEndZ - mouthZ);
 
         for (int z = mouthZ + 2; z <= routeEndZ; z += 6) {
@@ -6940,17 +8337,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private boolean hasHoldRoomCeiling(Location loc, HoldSite row) {
         if (loc == null || loc.getWorld() == null || row == null) return false;
         World world = loc.getWorld();
-        int bx = loc.getBlockX();
-        int by = loc.getBlockY();
-        int bz = loc.getBlockZ();
-        int halfX = holdRoomHalfX(row);
-        int halfZ = holdRoomHalfZ(row);
-        int y = by + holdRoomHeight(row);
+        HoldRoomBox owner = null;
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            if (holdSiteInsideRoom(row, room)) {
+                owner = room;
+                break;
+            }
+        }
+        Location origin = resolveDeepHoldOrigin();
+        if (owner == null || origin == null || origin.getWorld() != world) return false;
+        int bx = origin.getBlockX();
+        int bz = origin.getBlockZ();
+        int y = origin.getBlockY() + owner.ceilingY();
         int solid = 0;
         int holes = 0;
-        for (int dx = -halfX + 1; dx <= halfX - 1; dx += 3) {
-            for (int dz = -halfZ + 1; dz <= halfZ - 1; dz += 3) {
-                Material material = world.getBlockAt(bx + dx, y, bz + dz).getType();
+        for (int x = owner.minX() + 2; x <= owner.maxX() - 2; x += 6) {
+            for (int z = owner.minZ() + 2; z <= owner.maxZ() - 2; z += 6) {
+                Material material = world.getBlockAt(bx + x, y, bz + z).getType();
                 if (material.isAir() || material == Material.WATER || material == Material.LAVA) holes++;
                 else solid++;
             }
@@ -6965,7 +8368,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int y = loc.getBlockY();
         int cz = loc.getBlockZ();
         HoldGateSpan span = holdGateSpan(gate);
-        int doorHeight = Math.min(span.height() - 2, 5);
+        int doorHeight = Math.min(span.height() - 3, Math.max(6, span.doorHalf() + 1));
         for (int a = -span.doorHalf(); a <= span.doorHalf(); a++) {
             for (int d = 0; d <= span.depth(); d++) {
                 for (int dy = 0; dy <= doorHeight; dy++) {
@@ -6984,7 +8387,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int y = loc.getBlockY();
         int cz = loc.getBlockZ();
         HoldGateSpan span = holdGateSpan(gate);
-        int doorHeight = Math.min(span.height() - 2, 5);
+        int doorHeight = Math.min(span.height() - 3, Math.max(6, span.doorHalf() + 1));
         boolean sealed = isHoldGateSealed(gate, loc);
         boolean sawDoorBlocker = false;
         for (int a = -span.halfAcross(); a <= span.halfAcross(); a++) {
@@ -7049,7 +8452,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         for (int side : new int[]{-1, 1}) {
             for (int a = span.halfAcross() + 1; a <= span.halfAcross() + returnWidth; a++) {
                 int across = side * a;
-                for (int d = -10; d <= span.depth() + 14; d++) {
+                for (int d = 0; d <= span.depth(); d++) {
                     Block feet = holdGateBlockAt(world, cx, y, cz, span, across, 0, d);
                     Block head = holdGateBlockAt(world, cx, y, cz, span, across, 1, d);
                     Block floor = holdGateBlockAt(world, cx, y, cz, span, across, -1, d);
@@ -7070,14 +8473,36 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int cz = loc.getBlockZ();
         HoldGateSpan span = holdGateSpan(gate);
         int returnWidth = holdGateReturnWidth(span);
-        for (int across = -span.halfAcross() - returnWidth; across <= span.halfAcross() + returnWidth; across += 2) {
-            for (int d = -8; d <= span.depth() + 12; d += 2) {
-                for (int dy = span.height(); dy <= span.height() + 14; dy++) {
-                    Block floor = holdGateBlockAt(world, cx, y, cz, span, across, dy, d);
-                    Block feet = holdGateBlockAt(world, cx, y, cz, span, across, dy + 1, d);
-                    Block head = holdGateBlockAt(world, cx, y, cz, span, across, dy + 2, d);
-                    if (floor.getType().isSolid() && feet.getType().isAir() && head.getType().isAir()) {
-                        return true;
+        int minAcross = -span.halfAcross() - returnWidth - 1;
+        int maxAcross = span.halfAcross() + returnWidth + 1;
+        int startDepth = -5;
+        int targetDepth = span.depth() + 5;
+        ArrayDeque<int[]> queue = new ArrayDeque<>();
+        Set<String> visited = new HashSet<>();
+        for (int across = -span.doorHalf(); across <= span.doorHalf(); across++) {
+            if (isHoldGateLocalStandable(world, cx, y, cz, span, across, 0, startDepth)) {
+                queue.add(new int[]{across, 0, startDepth});
+            }
+        }
+        while (!queue.isEmpty()) {
+            int[] node = queue.removeFirst();
+            int across = node[0], dy = node[1], depth = node[2];
+            String key = across + ":" + dy + ":" + depth;
+            if (!visited.add(key)) continue;
+            if (depth >= targetDepth) return true;
+            for (int[] step : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                int nextAcross = across + step[0];
+                int nextDepth = depth + step[1];
+                if (nextAcross < minAcross || nextAcross > maxAcross
+                        || nextDepth < startDepth || nextDepth > targetDepth) continue;
+                for (int ddy : new int[]{0, 1, -1}) {
+                    int nextY = dy + ddy;
+                    if (nextY < 0 || nextY >= span.height() - 1) continue;
+                    String nextKey = nextAcross + ":" + nextY + ":" + nextDepth;
+                    if (!visited.contains(nextKey) && isHoldGateLocalStandable(
+                            world, cx, y, cz, span, nextAcross, nextY, nextDepth)) {
+                        queue.addLast(new int[]{nextAcross, nextY, nextDepth});
+                        break;
                     }
                 }
             }
@@ -7085,62 +8510,274 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return false;
     }
 
+    private boolean isHoldGateLocalStandable(World world, int cx, int y, int cz, HoldGateSpan span,
+                                              int across, int dy, int depth) {
+        Block floor = holdGateBlockAt(world, cx, y, cz, span, across, dy - 1, depth);
+        Block feet = holdGateBlockAt(world, cx, y, cz, span, across, dy, depth);
+        Block head = holdGateBlockAt(world, cx, y, cz, span, across, dy + 1, depth);
+        return floor.getType().isSolid() && isHoldBodyClear(feet) && isHoldBodyClear(head);
+    }
+
     private String auditHoldCivicShell(World world, int bx, int by, int bz) {
         if (world == null) return "deep hold civic shell has no world loaded.";
-        int openFloor = 0;
-        for (int[] p : new int[][]{
-                {-54, -42}, {0, -42}, {54, -42},
-                {-62, -8}, {0, -8}, {62, -8},
-                {-48, 34}, {0, 34}, {48, 34}
-        }) {
-            int x = bx + p[0];
-            int z = bz + p[1];
-            if (world.getBlockAt(x, by - 1, z).getType().isSolid()
-                    && world.getBlockAt(x, by, z).getType().isAir()
-                    && world.getBlockAt(x, by + 1, z).getType().isAir()
-                    && world.getBlockAt(x, by + 6, z).getType().isAir()) {
-                openFloor++;
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            int floor = by + room.floorY();
+            int walkable = 0;
+            for (int x = room.minX() + 4; x <= room.maxX() - 4; x += 6) {
+                for (int z = room.minZ() + 4; z <= room.maxZ() - 4; z += 6) {
+                    Block floorBlock = world.getBlockAt(bx + x, floor - 1, bz + z);
+                    Block feet = world.getBlockAt(bx + x, floor, bz + z);
+                    Block head = world.getBlockAt(bx + x, floor + 1, bz + z);
+                    if (floorBlock.getType().isSolid() && feet.getType().isAir() && head.getType().isAir()) {
+                        walkable++;
+                    }
+                }
+            }
+            if (walkable < 6) {
+                return "owned room " + room.id() + " has too little Adventure-mode floor clearance ("
+                        + walkable + " samples).";
             }
         }
-        if (openFloor < 7) {
-            return "deep hold civic shell is too cramped or blocked (" + openFloor
-                    + "/9 grand-court samples walkable).";
-        }
+        return null;
+    }
 
-        int terrace = 0;
-        for (int side : new int[]{-1, 1}) {
-            for (int z : new int[]{bz - 54, bz - 18, bz + 18, bz + 54}) {
-                int x = bx + (side * 60);
-                if (world.getBlockAt(x, by + 5, z).getType().isSolid()
-                        && world.getBlockAt(x, by + 6, z).getType().isAir()
-                        && world.getBlockAt(x, by + 7, z).getType().isAir()) {
-                    terrace++;
+    private Set<HoldWalkNode> collectHoldAdventureWalk(World world, int bx, int by, int bz) {
+        Set<HoldWalkNode> visited = new HashSet<>();
+        if (world == null) return visited;
+        ArrayDeque<HoldWalkNode> queue = new ArrayDeque<>();
+        HoldWalkNode seed = null;
+        for (int z = 0; z <= 8 && seed == null; z++) {
+            for (int y = by + 2; y >= by - 5 && seed == null; y--) {
+                if (isHoldStandable(world, bx, y, bz + z)) seed = new HoldWalkNode(bx, y, bz + z);
+            }
+        }
+        if (seed == null) return visited;
+        queue.add(seed);
+        final int minX = bx - 124;
+        final int maxX = bx + 124;
+        final int minY = by - 36;
+        final int maxY = by + 4;
+        final int minZ = bz;
+        final int maxZ = bz + 790;
+        final int hardLimit = 750_000;
+        while (!queue.isEmpty()) {
+            HoldWalkNode node = queue.removeFirst();
+            if (!visited.add(node)) continue;
+            if (visited.size() > hardLimit) {
+                throw new IllegalStateException("Deep Hold walk graph exceeded " + hardLimit
+                        + " nodes; an owned shell is open to the world.");
+            }
+            for (int[] step : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
+                int nx = node.x() + step[0];
+                int nz = node.z() + step[1];
+                if (nx < minX || nx > maxX || nz < minZ || nz > maxZ) continue;
+                HoldWalkNode next = null;
+                for (int dy : new int[]{0, 1, -1}) {
+                    int ny = node.y() + dy;
+                    if (ny < minY || ny > maxY) continue;
+                    HoldWalkNode candidate = new HoldWalkNode(nx, ny, nz);
+                    if (!visited.contains(candidate) && isHoldStandable(world, nx, ny, nz)) {
+                        next = candidate;
+                        break;
+                    }
+                }
+                if (next != null) queue.addLast(next);
+            }
+        }
+        return visited;
+    }
+
+    private boolean isHoldStandable(World world, int x, int y, int z) {
+        if (world == null) return false;
+        Block floor = world.getBlockAt(x, y - 1, z);
+        Block feet = world.getBlockAt(x, y, z);
+        Block head = world.getBlockAt(x, y + 1, z);
+        return floor.getType().isSolid() && isHoldBodyClear(feet) && isHoldBodyClear(head);
+    }
+
+    private boolean isHoldBodyClear(Block block) {
+        if (block == null || block.isLiquid()) return false;
+        Material material = block.getType();
+        return material.isAir() || block.isPassable();
+    }
+
+    private String auditHoldAdventureReachability(World world, int bx, int by, int bz,
+                                                   Set<HoldWalkNode> visited) {
+        if (world == null || visited == null || visited.isEmpty()) {
+            return "Deep Hold mouth has no Adventure-mode walk seed.";
+        }
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            int floor = by + room.floorY();
+            boolean reached = false;
+            for (HoldWalkNode node : visited) {
+                if (node.y() == floor
+                        && node.x() >= bx + room.minX() + 3 && node.x() <= bx + room.maxX() - 3
+                        && node.z() >= bz + room.minZ() + 3 && node.z() <= bz + room.maxZ() - 3) {
+                    reached = true;
+                    break;
+                }
+            }
+            if (!reached) return "owned room " + room.id() + " is not reachable from the mouth in Adventure mode.";
+        }
+        for (HoldSite site : DEEP_HOLD_SITES) {
+            int halfX = site.halfX() > 0 ? site.halfX() : Math.max(4, Math.min(10, site.radius()));
+            int halfZ = site.halfZ() > 0 ? site.halfZ() : Math.max(4, Math.min(10, site.radius()));
+            if (!hasHoldReachableNode(visited, bx + site.x(), by + site.y(), bz + site.z(),
+                    halfX + 4, halfZ + 4, 6)) {
+                return "Hold fixture " + site.id() + " has no mouth-reachable Adventure-mode approach.";
+            }
+        }
+        for (HoldRecordStation station : DEEP_HOLD_RECORD_STATIONS) {
+            if (!hasHoldReachableNode(visited, bx + station.x(), by + station.y(), bz + station.z(),
+                    6, 6, 2)) {
+                return "Hold record station " + station.id() + " has no mouth-reachable approach.";
+            }
+        }
+        return null;
+    }
+
+    private boolean hasHoldReachableNode(Set<HoldWalkNode> visited, int x, int y, int z,
+                                         int halfX, int halfZ, int halfY) {
+        if (visited == null || visited.isEmpty()) return false;
+        for (HoldWalkNode node : visited) {
+            if (Math.abs(node.x() - x) <= Math.max(1, halfX)
+                    && Math.abs(node.z() - z) <= Math.max(1, halfZ)
+                    && Math.abs(node.y() - y) <= Math.max(1, halfY)) return true;
+        }
+        return false;
+    }
+
+    private String auditHoldSigns(World world, int bx, int by, int bz, Set<HoldWalkNode> visited) {
+        if (world == null) return "Deep Hold signs have no world loaded.";
+        Set<HoldWalkNode> seen = new HashSet<>();
+        int signs = 0;
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            for (int x = room.minX(); x <= room.maxX(); x++) {
+                for (int z = room.minZ(); z <= room.maxZ(); z++) {
+                    for (int y = room.floorY(); y < room.ceilingY(); y++) {
+                        Block block = world.getBlockAt(bx + x, by + y, bz + z);
+                        if (!(block.getState() instanceof Sign)) continue;
+                        HoldWalkNode key = new HoldWalkNode(block.getX(), block.getY(), block.getZ());
+                        if (!seen.add(key)) continue;
+                        signs++;
+                        String issue = auditHoldReadableSign(block, visited);
+                        if (issue != null) return issue;
+                    }
                 }
             }
         }
-        if (terrace < 6) {
-            return "deep hold civic terraces are missing or blocked (" + terrace
-                    + "/8 samples walkable).";
+        for (int x = bx - 8; x <= bx + 8; x++) {
+            for (int z = bz; z <= bz + 86; z++) {
+                for (int y = by - 30; y <= by + 4; y++) {
+                    Block block = world.getBlockAt(x, y, z);
+                    if (!(block.getState() instanceof Sign)) continue;
+                    HoldWalkNode key = new HoldWalkNode(x, y, z);
+                    if (!seen.add(key)) continue;
+                    signs++;
+                    String issue = auditHoldReadableSign(block, visited);
+                    if (issue != null) return issue;
+                }
+            }
+        }
+        if (signs < DEEP_HOLD_RECORD_STATIONS.length + 5) {
+            return "Deep Hold sign audit found only " + signs + " authored signs.";
+        }
+        return null;
+    }
+
+    private String auditHoldReadableSign(Block block, Set<HoldWalkNode> visited) {
+        if (block == null || !(block.getState() instanceof Sign sign)) return "Hold sign is missing.";
+        boolean hasText = false;
+        for (String line : sign.getLines()) {
+            if (line != null && !line.isBlank()) {
+                hasText = true;
+                break;
+            }
+        }
+        if (!hasText) {
+            boolean editable = false;
+            try {
+                editable = !sign.isWaxed();
+            } catch (Throwable ignored) { }
+            if (!editable) return "Hold sign at " + block.getX() + "," + block.getY() + "," + block.getZ()
+                    + " is blank and was not authored as an editable filing slit.";
+        }
+        if (block.getType().name().endsWith("_WALL_SIGN")) {
+            if (!(block.getBlockData() instanceof Directional directional)) {
+                return "Hold wall sign has no facing data at " + block.getX() + "," + block.getY() + "," + block.getZ() + ".";
+            }
+            BlockFace facing = directional.getFacing();
+            if (!block.getRelative(facing.getOppositeFace()).getType().isSolid()) {
+                return "Hold wall sign has no solid backing at " + block.getX() + "," + block.getY() + "," + block.getZ() + ".";
+            }
+            int fx = block.getX() + facing.getModX() * 2;
+            int fz = block.getZ() + facing.getModZ() * 2;
+            if (!hasHoldReachableNode(visited, fx, block.getY() - 1, fz, 2, 2, 2)) {
+                return "Hold wall sign faces no reachable reading position at " + block.getX() + ","
+                        + block.getY() + "," + block.getZ() + ".";
+            }
+        } else {
+            if (!block.getRelative(BlockFace.DOWN).getType().isSolid()) {
+                return "Hold standing sign has no solid floor at " + block.getX() + "," + block.getY() + "," + block.getZ() + ".";
+            }
+            if (!hasHoldReachableNode(visited, block.getX(), block.getY(), block.getZ(), 3, 3, 2)) {
+                return "Hold standing sign has no reachable reading position at " + block.getX() + ","
+                        + block.getY() + "," + block.getZ() + ".";
+            }
+        }
+        return null;
+    }
+
+    private String auditHoldGateLabel(HoldGate gate, Location loc) {
+        if (gate == null || loc == null || loc.getWorld() == null) return "Hold gate label cannot be audited.";
+        HoldGateSpan span = holdGateSpan(gate);
+        Block label = span.acrossX()
+                ? loc.getWorld().getBlockAt(loc.getBlockX() - span.doorHalf() - 2,
+                loc.getBlockY() + 2, loc.getBlockZ() - 1)
+                : loc.getWorld().getBlockAt(loc.getBlockX() - 1,
+                loc.getBlockY() + 2, loc.getBlockZ() - span.doorHalf() - 2);
+        if (!(label.getState() instanceof Sign sign)) return "gate " + gate.id() + " label is missing.";
+        boolean named = false;
+        for (String line : sign.getLines()) {
+            if (line != null && line.toLowerCase(Locale.ROOT).contains(gate.label().toLowerCase(Locale.ROOT))) {
+                named = true;
+                break;
+            }
+        }
+        if (!named) return "gate " + gate.id() + " label text is wrong.";
+        if (!(label.getBlockData() instanceof Directional directional)
+                || !label.getRelative(directional.getFacing().getOppositeFace()).getType().isSolid()) {
+            return "gate " + gate.id() + " label is embedded or has no backing wall.";
         }
         return null;
     }
 
     private String auditHoldEarlyRoute(World world, int bx, int by, int bz) {
         if (world == null) return "deep hold early route has no world loaded.";
-        int checked = 0;
-        int open = 0;
-        for (int z = bz - 142; z <= bz + 32; z += 6) {
-            checked++;
-            if (hasHoldGroupWalkableSlice(world, bx, by, z, 8, 11)) open++;
+        for (int z = 0; z <= 84; z += 6) {
+            int floor = by - Math.min(24, z / 3);
+            if (!hasHoldGroupWalkableSlice(world, bx, floor, bz + z, 5, 9)) {
+                return "Deep Hold mouth/descent is blocked near local Z " + z + ".";
+            }
         }
-        if (open < checked) {
-            return "deep hold early route is blocked or too narrow between the lower landing and court ("
-                    + open + "/" + checked + " samples group-walkable).";
+        for (int z : new int[]{98, 108, 120, 132, 136}) {
+            if (!hasHoldGroupWalkableSlice(world, bx, by - 24, bz + z, 5, 7)) {
+                return "Orientation center aisle is blocked near local Z " + z + ".";
+            }
         }
-        for (int[] point : new int[][]{{bx - 42, bz - 34}, {bx + 42, bz - 34}, {bx - 38, bz + 20}, {bx + 38, bz + 20}}) {
-            if (!hasHoldGroupWalkableSlice(world, point[0], by, point[1], 3, 5)) {
-                return "deep hold Keeper Court approach is blocked near "
-                        + point[0] + "," + by + "," + point[1] + ".";
+        for (int x : new int[]{-20, -16, 0, 16, 20}) {
+            if (!hasHoldGroupWalkableSliceZ(world, bx + x, by - 24, bz + 112, 3, 5)) {
+                return "Orientation cross-alcove doorway is blocked near local X " + x + ".";
+            }
+        }
+        for (int z : new int[]{152, 168, 188, 206, 226, 246, 264}) {
+            if (!hasHoldGroupWalkableSlice(world, bx, by - 28, bz + z, 5, 7)) {
+                return "Keeper Court center aisle is blocked near local Z " + z + ".";
+            }
+        }
+        for (int z : new int[]{278, 298, 318, 338, 364, 390, 414}) {
+            if (!hasHoldGroupWalkableSlice(world, bx, by - 24, bz + z, 5, 7)) {
+                return "Archive center aisle is blocked near local Z " + z + ".";
             }
         }
         return null;
@@ -7160,30 +8797,36 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return walkable >= Math.max(1, required);
     }
 
+    private boolean hasHoldGroupWalkableSliceZ(World world, int x, int y, int centerZ,
+                                                int halfWidth, int required) {
+        if (world == null) return false;
+        int walkable = 0;
+        for (int dz = -Math.max(1, halfWidth); dz <= Math.max(1, halfWidth); dz++) {
+            Block floor = world.getBlockAt(x, y - 1, centerZ + dz);
+            Block feet = world.getBlockAt(x, y, centerZ + dz);
+            Block head = world.getBlockAt(x, y + 1, centerZ + dz);
+            if (floor.getType().isSolid() && feet.getType().isAir() && head.getType().isAir()) walkable++;
+        }
+        return walkable >= Math.max(1, required);
+    }
+
     private String auditHoldDistrictEnclosure(World world, int bx, int by, int bz) {
         if (world == null) return "deep hold enclosure has no world loaded.";
-        for (int[] p : new int[][]{
-                {-190, -132, 6}, {190, -132, 6},
-                {-190, -32, 18}, {190, -32, 18},
-                {-190, 64, 18}, {190, 64, 18},
-                {-174, 158, 14}, {174, 158, 14},
-                {-144, 224, -8}, {144, 224, -8},
-                {-144, 312, -8}, {144, 312, -8}
-        }) {
-            Material material = world.getBlockAt(bx + p[0], by + p[2], bz + p[1]).getType();
-            if (material.isAir() || material == Material.WATER || material == Material.LAVA) {
-                return "deep hold side envelope is open near "
-                        + (bx + p[0]) + "," + (by + p[2]) + "," + (bz + p[1]) + ".";
-            }
-        }
-        for (int[] p : new int[][]{
-                {0, -108, 36}, {0, -8, 58}, {-88, 112, 42}, {88, 96, 42},
-                {0, 156, 36}, {0, 252, 34}, {76, 214, 22}
-        }) {
-            Material material = world.getBlockAt(bx + p[0], by + p[2], bz + p[1]).getType();
-            if (material.isAir() || material == Material.WATER || material == Material.LAVA) {
-                return "deep hold district ceiling is open near "
-                        + (bx + p[0]) + "," + (by + p[2]) + "," + (bz + p[1]) + ".";
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            int floor = by + room.floorY();
+            int ceiling = by + room.ceilingY();
+            int[] xs = {room.minX() + 1, room.maxX() - 1};
+            int[] zs = {room.minZ() + 1, room.maxZ() - 1};
+            for (int x : xs) {
+                for (int z : zs) {
+                    Material wall = world.getBlockAt(bx + x, floor + 3, bz + z).getType();
+                    Material roof = world.getBlockAt(bx + x, ceiling + 1, bz + z).getType();
+                    if (wall.isAir() || wall == Material.WATER || wall == Material.LAVA
+                            || roof.isAir() || roof == Material.WATER || roof == Material.LAVA) {
+                        return "owned room " + room.id() + " has an open wall/roof corner near "
+                                + (bx + x) + "," + (floor + 3) + "," + (bz + z) + ".";
+                    }
+                }
             }
         }
         return null;
@@ -7191,13 +8834,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private String auditHoldPrologueEcho(World world, int bx, int by, int bz) {
         if (world == null) return "covered copy record has no world loaded.";
-        String lecternIssue = auditWrittenLecternAt(world.getBlockAt(bx - 5, by, bz - 74),
-                "covered copy", "original belongs above", "covered copy");
+        String lecternIssue = auditWrittenLecternAt(world.getBlockAt(bx - 10, by - 24, bz + 76),
+                "covered copy", "real first report belongs above", "covered copy");
         if (lecternIssue != null) return lecternIssue;
-        if (!isOccupiedChiseledShelf(world.getBlockAt(bx - 7, by, bz - 74))) {
+        if (!isOccupiedChiseledShelf(world.getBlockAt(bx - 12, by - 24, bz + 76))) {
             return "covered copy shelf is missing or empty.";
         }
-        if (!isStandingSignAt(world.getBlockAt(bx - 8, by, bz - 76))) {
+        if (!isStandingSignAt(world.getBlockAt(bx - 6, by - 24, bz + 80))) {
             return "covered copy sign is missing.";
         }
         return null;
@@ -7295,34 +8938,31 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private int sampleUnexpectedHoldFluids(Location regionLoc) {
-        if (regionLoc == null || regionLoc.getWorld() == null) return 0;
-        World world = regionLoc.getWorld();
-        int bx = regionLoc.getBlockX();
-        int by = regionLoc.getBlockY() - 2;
-        int bz = regionLoc.getBlockZ() - 88;
+    private int sampleUnexpectedHoldFluids(Location origin) {
+        if (origin == null || origin.getWorld() == null) return 0;
+        World world = origin.getWorld();
+        int bx = origin.getBlockX();
+        int by = origin.getBlockY();
+        int bz = origin.getBlockZ();
         int found = 0;
-        for (int x = bx - 222; x <= bx + 222; x += 3) {
-            for (int z = bz - 234; z <= bz + 434; z += 3) {
-                for (int y = by - 60; y <= by + 80; y += 2) {
-                    Material material = world.getBlockAt(x, y, z).getType();
-                    if (material != Material.WATER && material != Material.LAVA) continue;
-                    if (material == Material.WATER && isAuthoredHoldWater(x, y, z, bx, by, bz)) continue;
-                    found++;
-                    if (found >= 20) return found;
+        for (HoldRoomBox room : DEEP_HOLD_ROOM_BOXES) {
+            boolean allowsWater = room.id().contains("sella") || room.id().contains("cistern")
+                    || room.id().contains("water");
+            int floor = by + room.floorY();
+            int ceiling = by + room.ceilingY();
+            for (int x = room.minX() + 3; x <= room.maxX() - 3; x += 4) {
+                for (int z = room.minZ() + 3; z <= room.maxZ() - 3; z += 4) {
+                    for (int y = floor; y < ceiling; y += 3) {
+                        Material material = world.getBlockAt(bx + x, y, bz + z).getType();
+                        if (material == Material.LAVA || (material == Material.WATER && !allowsWater)) {
+                            found++;
+                            if (found >= 20) return found;
+                        }
+                    }
                 }
             }
         }
         return found;
-    }
-
-    private boolean isAuthoredHoldWater(int x, int y, int z, int bx, int by, int bz) {
-        if (Math.abs(y - by) > 10) return false;
-        if (Math.abs(x - (bx - 62)) <= 20 && Math.abs(z - (bz + 170)) <= 16) return true;
-        if (Math.abs(x - (bx - 52)) <= 12 && Math.abs(z - (bz + 20)) <= 12) return true;
-        if (Math.abs(x - (bx - 62)) <= 12 && Math.abs(z - (bz + 96)) <= 12) return true;
-        if (Math.abs(x - (bx - 62)) <= 20 && Math.abs(z - (bz + 170)) <= 18) return true;
-        return false;
     }
 
     private void handlePlaceLab(CommandSender sender, String[] args) {
@@ -8895,6 +10535,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (block.getBlockData() instanceof Rotatable r) {
             r.setRotation(rotation == null ? BlockFace.SOUTH : rotation);
             block.setBlockData(r, false);
+        }
+        setSignLines(block, true, lines);
+    }
+
+    private void placeWallMountedSign(Location loc, BlockFace facing, String[] lines) {
+        if (loc == null || loc.getWorld() == null) return;
+        BlockFace front = cardinalOnly(facing == null ? BlockFace.NORTH : facing);
+        Block support = loc.getBlock().getRelative(front.getOppositeFace());
+        if (!support.getType().isSolid()) {
+            throw new IllegalStateException("Wall sign at " + loc.getBlockX() + ","
+                    + loc.getBlockY() + "," + loc.getBlockZ() + " has no solid backing block");
+        }
+        Block block = loc.getBlock();
+        block.setType(Material.SPRUCE_WALL_SIGN, false);
+        if (block.getBlockData() instanceof Directional directional) {
+            directional.setFacing(front);
+            block.setBlockData(directional, false);
         }
         setSignLines(block, true, lines);
     }
@@ -12303,6 +13960,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (site == null) return false;
         String id = site.id();
         String type = site.type();
+        // V4's focused Prior inputs are deliberately flush filing slits embedded in the authored
+        // case-board/camp/failed-Accepting set pieces. Their owner fixtures receive the silhouette
+        // audit; grading each slit as a standalone monument produces a false "flat" warning.
+        if (id != null && id.startsWith("hold_answer_")) return false;
         return isCoreAuditSite(id)
                 || isLaunchRequiredSite(id)
                 || "dread_route".equals(type)
@@ -12862,9 +14523,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (needsAnswerSurface(site) && !hasEditableSignNear(loc, Math.max(1, site.radius()))) {
             return "FAIL " + site.id() + ": no editable answer sign found inside answer radius.";
         }
-        if ("painted_line".equals(type) && block.getType() != Material.BLACK_CARPET
-                && block.getType() != Material.BLACK_CONCRETE) {
-            return "FAIL " + site.id() + ": expected black line block, found " + block.getType() + ".";
+        if ("painted_line".equals(type)
+                && !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)) {
+            return "FAIL " + site.id() + ": expected a flush black crossing inlay.";
         }
         if ("bird_coops".equals(type) && !hasMaterialNear(loc, Math.max(2, site.radius()), Material.IRON_BARS)) {
             return "FAIL " + site.id() + ": expected visible cage bars inside coops radius.";
@@ -12947,7 +14608,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
             return "FAIL " + site.id() + ": expected collapse rubble and WARDEN-3 closure record inside warm-town radius.";
         }
-        if (isCoreAuditSite(site.id()) && block.getType() == Material.AIR) {
+        if ("lampworks_stair".equals(type)
+                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.POLISHED_BASALT)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SOUL_LANTERN)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
+            return "FAIL " + site.id() + ": expected open stair spine, paired lamp posts, and lamp-count record.";
+        }
+        if (isCoreAuditSite(site.id()) && block.getType() == Material.AIR
+                && !"lampworks_stair".equals(type) && !"painted_line".equals(type)) {
             return "FAIL " + site.id() + ": anchor block is air.";
         }
         return null;

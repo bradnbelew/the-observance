@@ -365,13 +365,11 @@ its source and never let it die, because to let it die was to lose the only thin
 had against the Long Cold. **The Nether is that source: the furnace the deep's warmth comes
 from, the place a coal was carried up out of — "below the below."**
 
-> **PENDING-IN-CANON (the build gate, `BUILD-MANIFEST §0.12` / S11).** This is sealed in
-> *design*, NOT yet in `canon-spine` FACT 11. Until LORE seals the one sentence — *"the kept
-> fire was carried up from below the bottom; the Undercroft is the bottom of the Hold, the
-> deep-fire its source — one direction, not two"* — into FACT 11 and `structures.md`, the
-> Nether journals say **"below the below," never "the real bottom,"** and the Nether lane
-> does not ship. **The Undercroft remains the bottom of the Hold (§1, R1).** The Nether is
-> the *source* of the one fire, never a second bottom — one direction, not two.
+> **SEALED IN CANON (2026-06-30; `canon-spine` FACT 11).** The kept fire was carried up from
+> below the bottom: the Undercroft is the bottom of the Hold, and the Nether deep-fire is its
+> source. The relationship has one direction, not two. Nether journals therefore say **"below
+> the below," never "the real bottom."** The Nether is the source of the one lent fire, never
+> a second or truer bottom.
 
 **It is the Undercroft's mirror.** Where the Undercroft holds *one* kept fire in the dark,
 the Nether is the dark turned inside out: a world that is *all* the kept fire and *no* kept
@@ -472,7 +470,8 @@ cosmology, R6). The **arrival** at the shrine is the only new row (`end-seventh-
 > two group-scoped flags (`nether_forge_found`, `seventh_seen_out`) and three sites
 > (`nether_forge`, `end_seventh_shrine`, `end_exile_hold`), all already in `BUILD-MANIFEST §6`.
 > Both flags **gate nothing** (INV-12) and are **not in the Accepting quorum** (INV-19). The
-> Nether build is **blocked** on the FACT-11 source-clause seal (§12.1, S11). `end_exile_hold`
+> The Nether origin lane is canon-unblocked by the sealed FACT-11 source clause (§12.1); its
+> live placement receipt remains an operator launch task. `end_exile_hold`
 > stays disabled until its INV-16 binding is built (S10). The `decideFate` edit for
 > `nether_forge_found` waits on `WEB-MASTER §8` ratification (S9); `seventh_seen_out` is never a
 > fate input (S2). See `design/PROGRESSION-LANES.md` for the build spec.

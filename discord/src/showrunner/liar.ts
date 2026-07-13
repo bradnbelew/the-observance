@@ -39,6 +39,8 @@ export interface IssWarmBeat {
   warmKey: string;
   /** the authored COLD voice key to re-stage it as (resolve.ts resolves it to subtitle, 0.10). */
   coldKey: string;
+  /** Minecraft UUID of the player who actually received/solved the warm beat. */
+  targetUuid: string;
   /** optional in-world target (a sign/lectern site) the cold re-carve lands on; null = Discord-only. */
   siteId?: string | null;
 }
@@ -59,6 +61,7 @@ export interface ColdRestageRow {
   beatId: string;
   /** the authored cold voice key (resolve.ts → subtitle). A KEY, never composed text. */
   coldKey: string;
+  targetUuid: string;
   siteId: string | null;
   /** 'approved' only in AUTO; 'pending' otherwise (curatorial gate). */
   status: 'approved' | 'pending';
@@ -96,6 +99,7 @@ export function decideColdRestage(inp: LiarInput): LiarDecision {
     rows.push({
       beatId: b.id,
       coldKey: b.coldKey,
+      targetUuid: b.targetUuid,
       siteId: b.siteId ?? null,
       status,
       reason: `iss_caught — re-stage warm '${b.warmKey}' as cold '${b.coldKey}' (one-way, ${status})`,

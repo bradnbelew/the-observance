@@ -22,6 +22,8 @@ import { decidePersonalizedReports, resolveReportLine, buildObservationDossiers,
 import { decideColdRestage, type LiarInput, type IssWarmBeat } from './liar.js';
 import { selectApparition, type ConductorInput, type ApparitionCandidate } from './conductor.js';
 import { resolveKeeperDialogue, type KeeperDialogueInput, type KeeperDialogueDossier } from './keeper.js';
+import { decodePluginEvent } from './event-log.js';
+import { keeperRhyme, renderKeeperLine, selectBrokenCustom } from './keeper-runtime.js';
 import { resolveCompanionDialogue, type CompanionDialogueInput, type CompanionArcFlags } from './companion.js';
 import { composeFinale, composeRelease, type FinaleComposeInput, type ReleaseComposeInput } from './finale.js';
 import { decideTheories, CLUSTERS, theoryFlag } from './theory.js';
@@ -38,6 +40,41 @@ function check(label: string, cond: boolean): void {
 }
 
 const HOUR = 3_600_000;
+
+// ===========================================================================
+// Folded plugin events + Keeper runtime binding - the actual live DB contract.
+// ===========================================================================
+{
+  const decoded = decodePluginEvent({
+    id: 7,
+    source: 'npc.open',
+    message: '[keeper] Rowan opened the keeper at hold (uuid=123e4567-e89b-12d3-a456-426614174000) {"surface":"keeper_open","trust":3}',
+    created_at: '2026-07-13T00:00:00.000Z',
+  });
+  check('event log: folded Keeper type/context/uuid decode',
+    decoded.type === 'keeper' && decoded.context === 'npc.open'
+      && decoded.mcUuid === '123e4567-e89b-12d3-a456-426614174000');
+  check('event log: folded JSON detail decode',
+    decoded.detail.surface === 'keeper_open' && decoded.detail.trust === 3);
+  check('event log: decoded human message excludes transport fields',
+    decoded.message === 'Rowan opened the keeper at hold');
+
+  const clearHabit: ObservationDossier = {
+    groupKey: 'rowan', name: 'rowan', honoredCount: 0, habits: { hoards: 1, reads: 0.1 },
+  };
+  const flatHabit: ObservationDossier = {
+    groupKey: 'flat', name: 'flat', honoredCount: 0, habits: { hoards: 0.5, reads: 0.5 },
+  };
+  check('keeper runtime: confident chorus habit maps to the matching Keeper', keeperRhyme(clearHabit) === 'vaun');
+  check('keeper runtime: flat dossier makes no accusation', keeperRhyme(flatHabit) === null);
+  check('keeper runtime: only an unresolved measured custom is selected',
+    selectBrokenCustom([
+      { customKey: 'mended', honoredCount: 2, violatedCount: 2 },
+      { customKey: 'the_bow', honoredCount: 1, violatedCount: 4 },
+    ])?.customKey === 'the_bow');
+  check('keeper runtime: FACT 9 binds a real summary and strips line breaks',
+    renderKeeperLine('first: {{first_beat}}.', 'kept\nlight') === 'first: kept light.');
+}
 
 // ===========================================================================
 // fate.ts — INV-11 active-only enum, precision REFUSERS, DIVIDED floor.
@@ -340,8 +377,8 @@ function reportInput(over: Partial<ReportInput> = {}): ReportInput {
 // liar.ts — flag-gated, one-way warm→cold re-stage, curatorial pending default, idempotent.
 // ===========================================================================
 const warmBeats: IssWarmBeat[] = [
-  { id: 'b1', warmKey: 'iss.warm.wall', coldKey: 'iss.cold.wall', siteId: 'stone_iss' },
-  { id: 'b2', warmKey: 'iss.warm.promise', coldKey: 'iss.cold.promise' },
+  { id: 'b1', warmKey: 'iss.warm.wall', coldKey: 'iss.cold.wall', targetUuid: 'u1', siteId: 'stone_iss' },
+  { id: 'b2', warmKey: 'iss.warm.promise', coldKey: 'iss.cold.promise', targetUuid: 'u2' },
 ];
 function liarInput(over: Partial<LiarInput> = {}): LiarInput {
   return { issCaught: true, warmBeats, alreadyFlipped: new Set(), mode: 'auto', ...over };
@@ -356,6 +393,7 @@ function liarInput(over: Partial<LiarInput> = {}): LiarInput {
   check('liar: AUTO mode → approved status', flip.rows.every((r) => r.status === 'approved'));
   check('liar: CONFIRM mode → pending (curatorial gate)', decideColdRestage(liarInput({ mode: 'confirm' })).rows.every((r) => r.status === 'pending'));
   check('liar: carries the in-world site when present', flip.rows.find((r) => r.beatId === 'b1')!.siteId === 'stone_iss');
+  check('liar: carries the player target, never the site id', flip.rows.find((r) => r.beatId === 'b1')!.targetUuid === 'u1');
   // ONE-WAY / IDEMPOTENT: an already-flipped beat is skipped.
   const partial = decideColdRestage(liarInput({ alreadyFlipped: new Set(['b1']) }));
   check('liar: already-flipped beat skipped (one-way)', partial.rows.length === 1 && partial.rows[0]!.beatId === 'b2');

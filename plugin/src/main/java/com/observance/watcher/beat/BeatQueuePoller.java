@@ -107,14 +107,16 @@ public final class BeatQueuePoller {
         }
 
         final BeatEnactor.EnactResult outcome = result;
-        // Record the decision off-main. UNHANDLED leaves the row untouched for a future build.
+        // Record every claimed row off-main. Once approved -> firing succeeds, leaving UNHANDLED
+        // untouched would strand it in `firing` forever. Unknown types therefore fail closed and
+        // visibly; an operator may correct/requeue the row, but it cannot churn or masquerade as live.
         scheduler.runAsyncSafe("beat.decide", () -> {
             try {
                 switch (outcome) {
                     case FIRED -> supabase.markBeatDecided(beat.id, "fired");
                     case SKIPPED -> supabase.markBeatDecided(beat.id, "skipped");
                     case FAILED -> supabase.markBeatDecided(beat.id, "failed");
-                    case UNHANDLED -> { /* leave queued; do not write status */ }
+                    case UNHANDLED -> supabase.markBeatDecided(beat.id, "failed");
                 }
             } finally {
                 inFlight.remove(beat.id);
@@ -122,10 +124,8 @@ public final class BeatQueuePoller {
         });
 
         // Lightweight audit trail of what fired (helps the spoiler-free health view).
-        if (outcome != BeatEnactor.EnactResult.UNHANDLED) {
-            scheduler.runAsyncSafe("beat.audit", () ->
-                    safety.info("beat.fired", "beat=" + beat.id + " type=" + beat.type
-                            + " outcome=" + outcome));
-        }
+        scheduler.runAsyncSafe("beat.audit", () ->
+                safety.info(outcome == BeatEnactor.EnactResult.UNHANDLED ? "beat.unhandled" : "beat.fired",
+                        "beat=" + beat.id + " type=" + beat.type + " outcome=" + outcome));
     }
 }

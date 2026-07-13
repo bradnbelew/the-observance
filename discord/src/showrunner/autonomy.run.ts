@@ -36,6 +36,7 @@ import { decideGrave, type GraveInput } from './grave.js';
 import { decideFate } from './fate.js';
 import { LEFT_AT } from './customs.js';
 import { runKeeperRecordPass } from './keeper-record.run.js';
+import { runKeeperDialoguePass } from './keeper.run.js';
 import { runNameWhereNeverBeenPass } from './name-where-never-been.run.js';
 import { runOfflineSkinPass } from './offline-skin.run.js';
 import { applyForks, type ForkFlags, type ForkTriggers } from './forks.js';
@@ -179,6 +180,8 @@ export interface AutonomyPassResult {
   apparitionClaimed: boolean;
   /** D3 companion: Wren reveal/reckoning last-words beats enqueued this pass. */
   companionBeats: number;
+  /** D8 Keeper NPC: directed dialogue beats enqueued from right-click events this pass. */
+  keeperDialogues: number;
   /** A3 keeper-record: players who crossed to a new Hold-Book enrolment tier this pass. */
   keeperEnrolments: number;
   /** M5 finale: the composed close was posted this pass. */
@@ -211,7 +214,7 @@ export function shouldGrantKeptNeedle(flags: Record<string, unknown>): boolean {
  * the tick log. Every pass that has no live data source degrades to a no-op (precision over recall).
  */
 export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string): Promise<AutonomyPassResult> {
-  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, keeperEnrolments: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0, carveFired: false, offlineSkinFired: false };
+  const result: AutonomyPassResult = { graves: 0, herdSpreads: 0, forksSet: 0, coldRestages: 0, apparitionClaimed: false, companionBeats: 0, keeperDialogues: 0, keeperEnrolments: 0, finalePosted: false, theoriesLocked: 0, keptNeedleGranted: false, reliefPosted: 0, carveFired: false, offlineSkinFired: false };
   const nowMs = Date.parse(nowIso);
   const beatStatus: BeatStatus = mode === 'auto' ? 'approved' : 'pending';
 
@@ -433,10 +436,10 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
       for (const row of liar.rows) {
         // The cold line is an authored voice key resolved by resolve.ts's private_message resolver
         // (0.10) — we pass step_payload.key, never composed text. voice.ts stays the source of truth.
-        await enqueueBeat('private_message', row.siteId, {
+        await enqueueBeat('private_message', row.targetUuid, {
           step_payload: { key: row.coldKey },
           kind: 'iss_cold_restage', beat_id: row.beatId, reason: row.reason,
-        }, row.status);
+        }, row.status, row.siteId);
         result.coldRestages += 1;
       }
       if (liar.flipped.length > 0) {
@@ -462,6 +465,18 @@ export async function runAutonomyPasses(mode: 'auto' | 'confirm', nowIso: string
     if (comp.dirty) dirty = true;
   } catch (e) {
     await logEvent('warn', 'showrunner.autonomy', `companion error (isolated): ${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // --- D8 Keeper dialogue: consume each deliberate right-click once and enqueue the private,
+  //     authored KeeperNpcBeat. Player-directed interactions are approved in either autonomy mode.
+  try {
+    let movement = 1;
+    try { movement = await getArcAct(); } catch { /* graceful - default M1 */ }
+    const keeper = await runKeeperDialoguePass(flags, movement, state, nowMs);
+    result.keeperDialogues += keeper.enqueued;
+    if (keeper.dirty) dirty = true;
+  } catch (e) {
+    await logEvent('warn', 'showrunner.autonomy', `keeper dialogue error (isolated): ${e instanceof Error ? e.message : String(e)}`);
   }
 
   // --- A3 keeper-record: "the record writes you in" — re-fill the Hold-Book when a player crosses a new
@@ -658,16 +673,39 @@ export async function readActiveRoster(windowMs: number): Promise<RosterMember[]
 }
 
 /**
- * readIssWarmBeats — the set of Iss WARM beats (already posted) that have a cold counterpart, for the
- * Liar re-stage (D4). Reads the showrunner's own dripped/posted record of Iss beats from event_log.
- * Until the warm-beat catalog the LORE/SQL lanes own is wired (the warm↔cold key pairs), this returns
- * [] — so the pass is inert-but-correct (no warm beats → no cold rows), never a guessed flip. The
- * authored warm↔cold key pairs are listed in the worker RETURN as a cross-owner dependency.
+ * Read solved Iss warm beats that have an authored cold counterpart for the Liar
+ * re-stage. The player UUID is retained so private restages target the solver,
+ * while the site id remains routing context only.
  */
 async function readIssWarmBeats(): Promise<IssWarmBeat[]> {
-  // No authored warm↔cold catalog is wired yet (cross-owner: LORE supplies the key pairs, TS-VOICE the
-  // bodies). Degrade to empty rather than inventing a flip — precision over recall. See RETURN.
-  return [];
+  const catalog = {
+    'stone-iss-wall': { coldKey: 'iss.dialogue.turns_cold.easy', siteId: 'stone_iss' },
+    'iss-warm': { coldKey: 'iss.dialogue.turns_cold.wall', siteId: 'stone_iss' },
+  } as const;
+  try {
+    const { data, error } = await supabase
+      .from('solves')
+      .select('id, puzzle_key, mc_uuid')
+      .in('puzzle_key', Object.keys(catalog))
+      .order('id', { ascending: true })
+      .returns<{ id: number; puzzle_key: string; mc_uuid: string | null }[]>();
+    if (error) return [];
+    const out: IssWarmBeat[] = [];
+    for (const solve of data ?? []) {
+      const entry = catalog[solve.puzzle_key as keyof typeof catalog];
+      if (!entry || !solve.mc_uuid) continue;
+      out.push({
+        id: `solve:${solve.id}:${solve.puzzle_key}`,
+        warmKey: `puzzle:${solve.puzzle_key}`,
+        coldKey: entry.coldKey,
+        targetUuid: solve.mc_uuid,
+        siteId: entry.siteId,
+      });
+    }
+    return out;
+  } catch {
+    return [];
+  }
 }
 
 /**

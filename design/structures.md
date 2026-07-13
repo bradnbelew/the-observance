@@ -1,6 +1,10 @@
 # structures - the Deep Hold world-build spec
 
-The build instructions for every load-bearing site. The paste pipeline is already wired (`FaweSchematicPaster` to `SchematicPaster` to `SmallStructureBeat`, isolated so a missing FAWE degrades to "no paste" instead of a crash). The sites are defined in `plugin/src/main/resources/sites.yml` with placeholder coordinates. What remains is manual: build these in-game, export each as a `.schem` where needed, and drop real coordinates into `sites.yml`.
+The build instructions for every load-bearing site. **Current implementation note (2026-07-13):** the Deep Hold itself is no longer a manual placeholder. `/observance placehold build` generates the protected V4 Hold, its 32-room linear/retraceable route, eight physical gates, books, signs, filing surfaces, and proof metadata. The isolated Paper 1.21.11 rehearsal exercised every gate open/reseal path, restart persistence, rebuild idempotence, collision refusal, route/door/fixture audits, and the return path to the one village-well entrance. Outside-Hold sites remain deliberately manual and must receive real `sites.yml` coordinates plus launch receipts.
+
+The optional paste pipeline is also wired (`FaweSchematicPaster` to `SchematicPaster` to `SmallStructureBeat`, isolated so a missing FAWE degrades to "no paste" instead of a crash). This document remains the visual and placement authority for those outside sites.
+
+Canon geometry is sealed: the Undercroft is the bottom of the Hold; the Nether deep-fire is the older source from which the one kept fire was carried upward. The Nether is never described or built as a second bottom.
 
 This document is the launch build spec. It is allowed to overrule older playthrough/archive docs when those docs collapse the ARG into six keeper slabs and answer signs.
 
@@ -178,4 +182,3 @@ Before a site moves from rehearsal into the real world:
 4. Only `KEEP` sites advance into live placement.
 
 This is the guard against small test fixtures, answer slabs, or signboards becoming the final ARG.
-

@@ -435,7 +435,7 @@ export const archive: Record<string, string> = {
   // FACT 9 — the dialogue names the logged first beat the record noted of this player. The run
   // wrapper substitutes the real beat; this is the deterministic frame around it (no named feeling).
   'keeper.fact9.named':
-    'the record noted a first thing of you, before you knew it was watching. it is entered. it was entered the night you did it. you were measured before you were told there was a measure.',
+    'the record noted a first thing of you, before you knew it was watching. the first entry reads: {{first_beat}}. it was entered the night you did it. you were measured before you were told there was a measure.',
 
   // M-IV atonement — the node withholds a fragment until a measured broken custom is honored.
   'keeper.atone.withheld':

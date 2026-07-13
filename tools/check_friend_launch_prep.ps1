@@ -115,16 +115,12 @@ try {
   foreach ($needle in @(
     "launch manual blocker check: NOT READY",
     "manual attestations still required",
-    "discord/supabase/apply-all.sql"
+    "discord/supabase/apply-all.sql",
+    "launch coordinate quality:",
+    "live rehearsal packet failed:"
   )) {
     RequireContains "launch-blockers.md" $blocker $needle
   }
-  RequireContainsAny "launch-blockers.md" $blocker @(
-    "Resource pack is built but not launch-configured",
-    "hosted resource pack failed",
-    "Resource pack URL must be an absolute HTTPS URL",
-    "Resource pack SHA1 mismatch"
-  )
 
   foreach ($needle in @(
     "clip_01_prior_base.mp4",

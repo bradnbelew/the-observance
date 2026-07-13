@@ -13,7 +13,7 @@ The public root (`/`) is the retired Copperline Hosting company site. It contain
 - `/author` is the full-spoiler operator console. It includes arc control, beat approval, whisper budgets, bond ledger, named dossiers, Watcher sleep, ending preview/override, and director run status.
 - `/record/the-record-keeps` is the crude preserved mkept user-file mirror. `/record/the-record`, `/record/archive`, and `/record/terminal` are progressively deeper views of the same exposed `recordsrv` service. All remain `noindex`.
 
-Author mode is sign-in gated with Supabase passwordless authentication and the `ADMIN_EMAILS` allowlist. Every privileged server action re-checks authorization before constructing the service-role client.
+Author access requires Supabase passwordless authentication and membership in the `ADMIN_EMAILS` allowlist. Every privileged server action re-checks authorization before constructing the service-role client.
 
 ## Stack
 

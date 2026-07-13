@@ -29,6 +29,7 @@ import {
   type CompanionContext,
   type CompanionDialogueInput,
 } from './companion.js';
+import { decodePluginEvent, type StoredEventLogRow } from './event-log.js';
 
 /** The reckoning contexts the plugin logs (event_log.context) — the reckoning branch reads the latest. */
 const RECKONING_CONTEXTS = new Set(['reckoning.condemn', 'reckoning.understand', 'reckoning.free']);
@@ -43,14 +44,15 @@ async function readCompanionContext(): Promise<{ context: CompanionContext; trus
   try {
     const { data } = await supabase
       .from('event_log')
-      .select('context, detail')
-      .eq('type', 'companion')
-      .returns<{ context: string | null; detail: string | null }[]>();
-    const rows = data ?? [];
+      .select('id, source, message, created_at')
+      .order('id', { ascending: true })
+      .limit(256)
+      .returns<StoredEventLogRow[]>();
+    const rows = (data ?? []).map(decodePluginEvent).filter((r) => r.type === 'companion');
     if (rows.length === 0) return { context: null, trust: 0 };
 
     // Prefer a reckoning row (the arc's latest state) over the trust-ladder 'npc.open' rows.
-    const reckoningRow = rows.find((r) => r.context && RECKONING_CONTEXTS.has(r.context));
+    const reckoningRow = [...rows].reverse().find((r) => r.context && RECKONING_CONTEXTS.has(r.context));
     const context = (reckoningRow?.context ?? rows[rows.length - 1]?.context ?? null) as CompanionContext;
 
     // The measured group trust is the max trust across the npc.open rows' detail (best-effort parse).
@@ -58,7 +60,7 @@ async function readCompanionContext(): Promise<{ context: CompanionContext; trus
     for (const r of rows) {
       if (!r.detail) continue;
       try {
-        const d = JSON.parse(r.detail) as { trust?: unknown };
+        const d = r.detail as { trust?: unknown };
         if (typeof d.trust === 'number' && d.trust > trust) trust = d.trust;
       } catch {
         /* detail is not JSON — ignore, trust stays measured-or-zero */

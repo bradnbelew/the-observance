@@ -92,6 +92,8 @@ public final class ObservancePlugin extends JavaPlugin {
     //     (it spawns display entities that must be cleaned up). ---
     private com.observance.watcher.signal.listener.ThresholdVaultListener thresholdVault;
     private UnlitVillageListener unlitVillage;
+    /** Durable kept/broken detector for the black-moon Unlit Deep trial. Rebuilt on reload. */
+    private UnlitDeepListener unlitDeep;
 
     // --- signal tracker (the dossier) ---
     private TrackerConfig trackerConfig;
@@ -443,7 +445,9 @@ public final class ObservancePlugin extends JavaPlugin {
         // The Unlit Deep — the ONE group-restraint latch (INV-17). GROUP-scoped, not a per-player
         // tally: an explicit flame act at/below the deep line on a taboo moon phase breaks it for all.
         // Config-gated (customs.unlit-deep.enabled + restraint.enabled) — a clean no-op when off.
-        pm.registerEvents(new UnlitDeepListener(signalTracker, supabase, rateLimiter, scheduler, safety), this);
+        this.unlitDeep = new UnlitDeepListener(
+                signalTracker, supabase, rateLimiter, scheduler, safety, this::sites);
+        pm.registerEvents(unlitDeep, this);
         if (unlitVillage != null) { unlitVillage.stop(); unlitVillage = null; }
         this.unlitVillage = new UnlitVillageListener(
                 this, this::sites, supabase, rateLimiter, scheduler, safety, "observance");
@@ -776,6 +780,11 @@ public final class ObservancePlugin extends JavaPlugin {
         long sampleTicks = Math.max(20L, config.locationSampleSeconds() * 20L);
         scheduledTasks.add(scheduler.runTimerSafe("sampler.location", sampleTicks, sampleTicks,
                 () -> locationSampler.sampleTick()));
+
+        // Unlit Deep trial sampling shares the position cadence. It persists entry and evaluates the
+        // previous taboo night at dawn, making both the kept and broken outcomes restart-safe.
+        scheduledTasks.add(scheduler.runTimerSafe("sampler.unlit_deep", sampleTicks, sampleTicks,
+                () -> { if (unlitDeep != null) unlitDeep.sampleTick(); }));
 
         // Inventory/hoard scanner — reads live inventories so MAIN thread.
         long invTicks = Math.max(20L, config.inventoryScanSeconds() * 20L);

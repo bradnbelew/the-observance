@@ -437,7 +437,7 @@ export function makePuzzleKey(
   namespace: string | undefined,
   cipherText: string,
 ): string {
-  const basis = `${cipher} ${namespace ?? ''} ${cipherText}`;
+  const basis = `${cipher}\0${namespace ?? ''}\0${cipherText}`;
   return `clue_${cipher}_${fnv1a32(basis)}`;
 }
 

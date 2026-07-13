@@ -1,9 +1,8 @@
 station_id,room_id,x,y,z,stand_x,stand_y,stand_z,expected_front,title,required_fragment
-mouth_register,mouth_vestibule,12,-24,90,8,-24,90,WEST,mouth register,One row stayed blank
-court_census,keeper_nave,-22,-28,160,-18,-28,160,EAST,court census,trust the physical room
-intake_rail,archive_nave,-40,-24,310,-36,-24,310,EAST,intake rail,"evidence, not decoration"
-prior_roster,prior_case,-160,-28,610,-154,-28,610,EAST,prior roster,no witness
-closure_docket,archive_nave,40,-24,310,36,-24,310,WEST,closure docket,before the collapse
-lamp_count,puzzle_works,-12,-24,524,-8,-24,524,EAST,lamp count,Do not break the wall
-threshold_hands,lower_convergence,-18,-28,660,-14,-28,660,EAST,threshold hands,"Plate. Name. Word."
-side_hush,dread,132,-28,600,136,-28,600,EAST,side hush,uncrossed word
+orientation_register,orientation,12,-40,112,10,-40,112,WEST,first register,Six signed before the covered descent
+court_census,keeper_nave,-18,-40,170,-16,-40,170,EAST,court census,Six chairs were cut
+archive_index,archive_nave,-18,-68,116,-16,-68,116,EAST,archive index,Treat every room as evidence
+archive_closure,archive_nave,18,-68,222,16,-68,222,WEST,closure docket,goods before smoke
+prior_docket,prior_case,-60,-96,124,-62,-96,124,WEST,absence docket,no witness
+threshold_hands,lower_spine,18,-96,124,16,-96,124,WEST,threshold hands,Plate. Name. Word.
+release_record,release,0,-96,366,0,-96,364,NORTH,release record,well still leads only to the Unlit

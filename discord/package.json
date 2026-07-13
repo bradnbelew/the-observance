@@ -37,8 +37,10 @@
     "showrunner:test:prologue": "tsx src/showrunner/prologue.selftest.ts",
     "showrunner:test:autonomy": "tsx src/showrunner/autonomy.selftest.ts && npm run -s showrunner:test:prologue",
     "showrunner:test:scenario": "tsx src/showrunner/scenario.selftest.ts",
+    "showrunner:test:chaos": "tsx src/showrunner/chaos.selftest.ts",
+    "showrunner:test:unlit": "tsx src/showrunner/unlit-deep.selftest.ts",
     "showrunner:test:archive": "tsx src/showrunner/archive.selftest.ts",
-    "showrunner:test:all": "npm run -s showrunner:test && npm run -s showrunner:test:customs && npm run -s showrunner:test:herd && npm run -s showrunner:test:autonomy && npm run -s showrunner:test:scenario && npm run -s showrunner:test:archive",
+    "showrunner:test:all": "npm run -s showrunner:test && npm run -s showrunner:test:customs && npm run -s showrunner:test:herd && npm run -s showrunner:test:autonomy && npm run -s showrunner:test:scenario && npm run -s showrunner:test:chaos && npm run -s showrunner:test:unlit && npm run -s showrunner:test:archive",
     "archive:materialize": "tsx src/showrunner/archive.materialize.ts",
     "pack:build": "tsx src/render/build-runepack.ts",
     "pack:proof": "tsx src/render/rune-proof.ts"

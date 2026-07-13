@@ -1,5 +1,5 @@
 # THE OBSERVANCE — LAUNCH READINESS (2026-07-03)
-> CURRENT STATUS OVERRIDE (2026-07-06): this document is historical context, not the current go/no-go
+> CURRENT STATUS OVERRIDE (2026-07-13): this document is historical context, not the current go/no-go
 > verdict. The current repository state is **not launch-ready** until
 > `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`
 > passes and the manual attestations it prints are completed on the live Paper server/client. Known current
@@ -106,9 +106,10 @@ half-ready code). Ethan's decisions on the earlier open items are recorded here.
   (kept/cast_out/divided) are the live set. To revive it later, add a plugin refusal-rite that sets the flag.
 - **Self-firing cold open — DECIDED: operator-staged (Ethan).** The base anomaly is staged by
   `/observance placeprologue` (you control the base edit). No autonomous base-editing is built (intentional).
-- **`keeper.ts` (keeper-rhyme NPC beat).** Separate from the now-wired keeper-record: an in-world keeper NPC
-  line that rhymes with a player's habit. Pure + self-tested, still unwired (no beat producer). Lower value
-  than keeper-record (which delivers the same rhyme via the Hold-Book); leave until it has a clear surface.
+- **`keeper.ts` (keeper-rhyme NPC beat) — CLOSED 2026-07-13.** The Keeper click event is decoded from the
+  plugin's real four-column `event_log`, resolved against measured dossier/custom state, bound to the FACT9
+  window, and queued as an approved targeted beat. High-water state makes one click produce at most one line;
+  M-IV withholding and later atonement are persisted and self-tested.
 - **Early first-find trailhead for a sky-blocked first site.** The recovery needle is a late (post-Seventh)
   aid; the first-find coords are meant to come from your hero artifact. If a keeper site is sky-blocked (no
   beacon beam) AND no coord artifact is authored, a group could lack a trailhead. Mitigation: ensure the
@@ -182,18 +183,21 @@ glow") — the config's own "gated behind the Undercroft fire (FACT 11) existing
 conditional on a physical light-source structure that hasn't been placed as a site yet; the flag write is
 ready for whatever beat eventually reads it. All 4 surfaces verified green after the build.
 
-**Found, NOT fixed — needs your call, not a unilateral build:**
-- ✅ **CLOSED (2026-07-05 cohesion pass) — the plugin-side half of the `keeper.ts` gap.**
+> **CURRENT OVERRIDE (2026-07-13):** The historical unfinished findings in the block below are
+> closed. Nether/End arrival rows now carry literal authored fragments rather than phantom voice
+> keys; Keeper is end-to-end; Herd spread has a producer; the misleading no-op plugin YAML keys were
+> removed; and Unlit Deep now persists both per-night kept/broken windows, reports either once, and
+> visibly lends/withdraws the Accepting-floor light. Retain the old list as regression history.
+
+**Historical findings (closed):**
+- ✅ **CLOSED (2026-07-13 end-to-end) — the `keeper.ts` dialogue path.**
   `KeeperNpcListener` is now registered in `ObservancePlugin.registerListeners()`, and a real body/tag
   manager (`KeeperNpc.java`, mirrors `WrenNpc.java`) exists — `/observance keeper <spawn|despawn> [node]`
   places him (Citizens2 when present, an armor-stand fallback otherwise) and stamps the `keeper_npc` PDC
-  key the listener reads. Right-clicking the presiding Keeper now genuinely fires (writes an `event_log`
-  row, type `keeper`/`npc.open`) — this was previously a complete no-op. **Still open, separately:**
-  whether a showrunner runner consumes that `npc.open` row and calls the already-pure, already-self-tested
-  `resolveKeeperDialogue` (`keeper.ts`) to post a personalized `KeeperNpcBeat` — I did not build or verify
-  that runner this pass, so don't assume the full personalized-dialogue path is proven end-to-end yet.
-  That's the one remaining leg, and it's a TS-side scoping decision, not a blocker to spawning/clicking the
-  Keeper working at all.
+  key the listener reads. Right-clicking the presiding Keeper writes `keeper/npc.open`; the showrunner now
+  consumes that exact serialized row, resolves `resolveKeeperDialogue` from measured player evidence, and
+  enqueues the personalized `keeper_npc` response. Parser, runtime, targeting, FACT9, withholding, atonement,
+  and high-water behavior are covered by the autonomy selftests.
 - **Two Nether/End `progression_seed.sql` rows reference voice keys that don't exist**
   (`nether.forgeArrive`, `end.shrineArrive`, plus `nether.soulSand`/`end.outsideRecord` named in its own
   header). Harmless today (`active=false`, staged), but will speak nothing the moment you place those

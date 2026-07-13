@@ -32,6 +32,13 @@ if (!(Test-Path $buildFile)) {
       $latestSource = Get-ChildItem -LiteralPath $srcRoot -Recurse -File |
         Sort-Object LastWriteTimeUtc -Descending |
         Select-Object -First 1
+      $holdD05Source = Join-Path $RepoRoot "design\deep-hold-d05-shelf.json"
+      if (Test-Path -LiteralPath $holdD05Source) {
+        $d05Item = Get-Item -LiteralPath $holdD05Source
+        if ($null -eq $latestSource -or $d05Item.LastWriteTimeUtc -gt $latestSource.LastWriteTimeUtc) {
+          $latestSource = $d05Item
+        }
+      }
       if ($null -ne $latestSource -and $jar.LastWriteTimeUtc -lt $latestSource.LastWriteTimeUtc) {
         Add-Failure "Plugin jar is stale: $($jar.Name) older than $($latestSource.FullName)"
       }
@@ -57,6 +64,12 @@ if (!(Test-Path $buildFile)) {
         }
         if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "sites.yml" } | Select-Object -First 1)) {
           Add-Failure "Plugin jar does not contain sites.yml"
+        }
+        if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "deep-hold-lock-books.json" } | Select-Object -First 1)) {
+          Add-Failure "Plugin jar does not contain deep-hold-lock-books.json"
+        }
+        if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "deep-hold-d05-shelf.json" } | Select-Object -First 1)) {
+          Add-Failure "Plugin jar does not contain deep-hold-d05-shelf.json"
         }
         if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "com/observance/watcher/ObservancePlugin.class" } | Select-Object -First 1)) {
           Add-Failure "Plugin jar does not contain ObservancePlugin.class"

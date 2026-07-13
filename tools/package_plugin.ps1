@@ -8,6 +8,8 @@ $pluginRoot = Join-Path $RepoRoot "plugin"
 $buildFile = Join-Path $pluginRoot "build.gradle"
 $classesDir = Join-Path $pluginRoot "build\check-plugin-classes"
 $resourcesDir = Join-Path $pluginRoot "src\main\resources"
+$holdD05Dir = Join-Path $RepoRoot "design"
+$holdD05File = Join-Path $holdD05Dir "deep-hold-d05-shelf.json"
 $libsDir = Join-Path $pluginRoot "build\libs"
 
 if (!(Test-Path $buildFile)) {
@@ -15,6 +17,9 @@ if (!(Test-Path $buildFile)) {
 }
 if (!(Test-Path (Join-Path $resourcesDir "plugin.yml"))) {
   throw "Plugin resources missing plugin.yml: $resourcesDir"
+}
+if (!(Test-Path -LiteralPath $holdD05File)) {
+  throw "Plugin resources missing Deep Hold D05 shelf: $holdD05File"
 }
 
 $versionMatch = [regex]::Match((Get-Content -LiteralPath $buildFile -Raw), "(?m)^version\s*=\s*'([^']+)'")
@@ -34,7 +39,7 @@ if (Test-Path $jarPath) {
   Remove-Item -LiteralPath $jarPath -Force
 }
 
-& jar --create --file $jarPath -C $classesDir . -C $resourcesDir .
+& jar --create --file $jarPath -C $classesDir . -C $resourcesDir . -C $holdD05Dir "deep-hold-d05-shelf.json"
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }

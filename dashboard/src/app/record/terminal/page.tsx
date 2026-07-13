@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { readLedger, EMPTY as EMPTY_LEDGER, type LedgerProjection } from "@/lib/record/ledger";
 import { readIntegrityLog, type IntegrityWarning } from "@/lib/record/integrity";
 import { InscribeForm } from "./InscribeForm";
+import { RuneGlyphs } from "@/lib/RuneGlyphs";
 
 /**
  * /record/terminal — THE RECORD, recovered-archive terminal (CHANGE-MANIFEST A5 + L4, INTEGRATION
@@ -53,6 +54,7 @@ function Header({ ledger }: { ledger: LedgerProjection }) {
           {ledger.sealed ? "integrity: unreadable" : "integrity: partial"}
         </span>
       </div>
+      <RuneGlyphs text="THE RECORD" className="mx-auto my-3 text-amber-700/70" height={22} />
       <h1>THE RECORD / RECOVERY TERMINAL</h1>
       <p>read order not preserved · struck entries omitted · writes accepted without echo</p>
     </header>

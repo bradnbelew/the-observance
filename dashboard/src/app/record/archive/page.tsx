@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { RuneGlyphs } from "@/lib/RuneGlyphs";
 import {
   projectArchive,
   type ArchiveCard,
@@ -191,6 +192,7 @@ function SealedShell() {
       <div className="record-page archive-page">
         <header className="record-system-header">
           <div><span>recordsrv/0.7</span><span>projection: recovered</span><span>mode: sealed</span></div>
+          <RuneGlyphs text="RECOVERY ARCHIVE" className="mx-auto my-3 text-amber-700/70" height={22} />
           <h1>RECOVERY ARCHIVE</h1>
           <p>no indexed material</p>
         </header>
@@ -213,6 +215,7 @@ export default async function ArchivePage() {
       <div className="record-page archive-page">
         <header className="record-system-header">
           <div><span>recordsrv/0.7</span><span>projection: recovered</span><span>mode: read-only</span></div>
+          <RuneGlyphs text="RECOVERY ARCHIVE" className="mx-auto my-3 text-amber-700/70" height={22} />
           <h1>RECOVERY ARCHIVE</h1>
           <p>indexed material grouped under five heads</p>
         </header>

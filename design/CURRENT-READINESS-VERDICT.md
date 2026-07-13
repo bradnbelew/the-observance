@@ -1,5 +1,29 @@
 # THE OBSERVANCE - CURRENT READINESS VERDICT
 
+Date: 2026-07-13
+
+> **CURRENT RELEASE-CANDIDATE OVERRIDE.** The release candidate is **repo-ready but not
+> launch-ready**. Canon, puzzle/input fairness, producers/consumers, all eight Deep Hold gates,
+> books/signs/items, protection, one-mouth retraceability, Keeper/Wren, Discord/showrunner, database
+> bundle, dashboard, packs, and finales are implemented and automated-audit clean. Deep Hold V4 has
+> been physically exercised on isolated Paper 1.21.11, including open/reseal, restart persistence,
+> idempotent rebuild, collision refusal, and route/visual/dialogue audits. The configured hosted
+> resource-pack bytes match the local SHA1. Unlit Deep now has durable, once-only kept and broken
+> outcomes. A 2,300-case chaos suite adds 22,635 invariant checks.
+>
+> What remains is irreducibly production/manual: apply and receipt-check live Supabase; place V4 in
+> the backed-up production world at the village well; place/proof outside-Hold sites; configure NPC
+> bodies; run real-client presentation/fallback and full-route rehearsals; record session-zero consent;
+> rotate credentials; complete `launch-attestations.md`; and pass
+> `check_launch_manual_blockers.ps1 -Launch`. Exact order: `FINAL-LAUNCH-HANDOFF-2026-07-13.md`.
+>
+> Canon correction: the Undercroft is the bottom of the Hold; the Nether is the older source of the
+> one lent fire, never another bottom. `sites.yml` coordinate sentinels are outside-Hold launch work,
+> not evidence that V4 itself is a placeholder. The dated detail below is retained as the pre-V4
+> readiness baseline; where it conflicts with this override, this override wins.
+
+# Historical 2026-07-08 readiness baseline
+
 Date: 2026-07-08
 
 ## 1. High-Level Verdict

@@ -26,7 +26,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1
 ```
 
 That compiles every plugin Java source file with JDK 21 against the local Gradle dependency cache, copies
-`src/main/resources`, and writes `plugin/build/libs/observance-0.3.24.jar`. Verify the deployable jar with:
+`src/main/resources`, and writes `plugin/build/libs/observance-0.3.29.jar`. Verify the deployable jar with:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_jar.ps1
@@ -39,7 +39,7 @@ cd D:/the-observance/plugin
 ./gradlew build        # Windows: gradlew.bat build
 ```
 
-Either path lands the deployable jar in `build/libs/observance-0.3.24.jar`. Copy that into the server's
+Either path lands the deployable jar in `build/libs/observance-0.3.29.jar`. Copy that into the server's
 `plugins/`.
 
 For a source-only compile check without writing the jar:
@@ -117,7 +117,8 @@ Discord bot, a SQL function) can drive the world. Each tick the async poller:
    `mc_uuid`, the site by `site_id`, parses `payload` JSON), gates it through the drama budget, and
    enacts the matching beat,
 3. hops **back to async** to PATCH the row `status = fired | skipped | failed` + `decided_at`.
-   An unknown `type` is left **queued** (`UNHANDLED`) for a future build — never marked fired.
+   An unknown `type` fails closed as `failed` (`UNHANDLED`) after the durable claim and is audit-logged;
+   it is never marked fired and cannot remain stuck in `firing`.
 
 A row looks like:
 

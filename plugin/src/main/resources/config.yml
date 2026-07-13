@@ -1,5 +1,5 @@
-﻿# ============================================================================
-#  The Observance â€” config.yml  (Phase 0, deterministic, NO AI)
+# ============================================================================
+#  The Observance — config.yml  (Phase 0, deterministic, NO AI)
 # ----------------------------------------------------------------------------
 #  Lore-AGNOSTIC: this plugin reads ALL story text (documents, clues, beats)
 #  from Supabase + config. Never hardcode narrative here.
@@ -15,7 +15,7 @@ supabase:
   # PostgREST base url for Braden's project. Tables are reached at <url>/<table>.
   url: "https://fdnmhbpxnodrnbrzrlqq.supabase.co/rest/v1"
 
-  # SERVICE-ROLE KEY â€” NEVER hardcode here, NEVER commit.
+  # SERVICE-ROLE KEY — NEVER hardcode here, NEVER commit.
   # Resolution order at runtime (first non-empty wins):
   #   1. environment variable named by `service-key-env` below
   #   2. this `service-key` value (leave EMPTY in committed config; only fill on a
@@ -42,7 +42,7 @@ beat-queue:
 
 # Scheduled samplers (all run their bodies inside Safety + on the correct thread).
 samplers:
-  # Heatmap / location sampling. NOT PlayerMoveEvent â€” scheduled sampling only.
+  # Heatmap / location sampling. NOT PlayerMoveEvent — scheduled sampling only.
   location-sample-seconds: 20
   heatmap-cell-size: 16          # blocks per coarse grid cell (chunk-sized)
   # Base-detection clustering pass cadence.
@@ -53,7 +53,7 @@ samplers:
   presence-heartbeat-seconds: 60
 
 # ----------------------------------------------------------------------------
-#  DRAMA BUDGET + COOLDOWNS  (the L4D-style director â€” pure deterministic gates)
+#  DRAMA BUDGET + COOLDOWNS  (the L4D-style director — pure deterministic gates)
 #  Restraint IS the horror. Defaults are deliberately sparse.
 # ----------------------------------------------------------------------------
 drama:
@@ -131,7 +131,7 @@ reveal:
   retry-max-attempts: 10
 
 # ----------------------------------------------------------------------------
-#  SIGNAL TRACKER (the dossier) â€” DESIGN Â§2.1 + Â§2.2. PURE measurement, no AI.
+#  SIGNAL TRACKER (the dossier) — DESIGN §2.1 + §2.2. PURE measurement, no AI.
 #  LORE-AGNOSTIC: only opaque tuning inputs live here (which words are forbidden,
 #  which blocks are ore, hoard weights, the depth line). The human-readable name
 #  of any custom lives in Supabase content, NEVER in this file or in code.
@@ -139,22 +139,22 @@ reveal:
 tracker:
   enabled: true
 
-  # The Unspoken â€” forbidden words. Chat containing any of these is a tracked
+  # The Unspoken — forbidden words. Chat containing any of these is a tracked
   # violation + a hit counter. Matched case-insensitively on word boundaries.
   # "unkept" is deliberately live: Wenna's folk-charm warns against the cold's name,
   # and the keeper-field eventually teaches the word, so this custom can actually fire.
   forbidden-words: ["unkept"]
 
   # Which broken blocks count as "ore" (first-ore-of-session + ore tallies).
-  # Empty/omitted â‡’ a sensible vanilla default set is used.
+  # Empty/omitted ⇒ a sensible vanilla default set is used.
   ore-materials: []
 
   # Hoard scoring: material -> per-item weight. Score = sum(count * weight), capped.
-  # Lets the engine recognize "the solo-miner who hoards". Empty â‡’ default weights.
+  # Lets the engine recognize "the solo-miner who hoards". Empty ⇒ default weights.
   hoard-weights: {}
   hoard-score-cap: 1000.0
 
-  # The Deep Line â€” breaking below this Y is a tracked violation (depth taboo).
+  # The Deep Line — breaking below this Y is a tracked violation (depth taboo).
   # cooldown-seconds collapses one deep mining SESSION into a single flag (per player),
   # so a long tunnel below the line can't farm 100 violations (precision over recall).
   deep-line:
@@ -162,13 +162,13 @@ tracker:
     y-threshold: -48
     cooldown-seconds: 300        # one deep-line flag per player per 5 min
 
-  # The Kept Light â€” a base scan (over placed `kept_light` sites) at dusk/night checks
+  # The Kept Light — a base scan (over placed `kept_light` sites) at dusk/night checks
   # whether a light burns at home. cooldown-seconds rate-limits the tally per base+player
   # so a long dark night yields one measured flag, not one per sampler tick.
   kept-light:
     cooldown-seconds: 600        # one kept-light tally per base+player per 10 min
 
-  # The Dark Hours â€” sleeping (PlayerBedEnterEvent) on a taboo moon phase is a violation
+  # The Dark Hours — sleeping (PlayerBedEnterEvent) on a taboo moon phase is a violation
   # ("do not sleep on the black moon"). Moon phase is vanilla 0..7 (0 = full moon),
   # derived from (world.getFullTime() / 24000) % 8. taboo-moon-phases lists the forbidden
   # phases; default [0] = full moon (the arc's "black moon"). cooldown-seconds collapses
@@ -178,26 +178,26 @@ tracker:
     taboo-moon-phases: [0]
     cooldown-seconds: 60
 
-  # The Sacred Beast â€” the PDC tag key a "pale one" mob is marked with (set by the
+  # The Sacred Beast — the PDC tag key a "pale one" mob is marked with (set by the
   # beast-tagging subsystem, SacredAnimalBeat, under the plugin's "observance" namespace).
-  # Must match the literal sub-key SacredAnimalBeat tags with ("sacred_beast") â€” DeathListener
+  # Must match the literal sub-key SacredAnimalBeat tags with ("sacred_beast") — DeathListener
   # reads ONLY this config value now (no hardcoded parallel key). Killing a tagged mob = a violation.
   sacred-beast-pdc-key: "sacred_beast"
 
-  # The in-world answer sign (AnswerSignListener) â€” a coarse per-player+site submit cooldown, defense
+  # The in-world answer sign (AnswerSignListener) — a coarse per-player+site submit cooldown, defense
   # in depth on top of the resolver's own limiter. Matches the dark-hours/kept-light cooldown-seconds
   # idiom; default 3s preserves the listener's previous hardcoded behavior.
   answer-sign:
     cooldown-seconds: 3
 
-  # Base detection (clustering of block-places + bed anchors â†’ the bases table).
+  # Base detection (clustering of block-places + bed anchors → the bases table).
   base-detection:
     cluster-radius: 24       # blocks; placements within this fold into one base centroid
     min-placements: 12       # min block-places before a cluster (without a bed) is a base
     confidence-floor: 0.4    # below this confidence we don't publish a base row
 
 # The rites the plugin DETECTS in-world and posts to the shared oracle (never typeable). A detected
-# rite is the ONLY way its opaque token enters the system â€” it cannot be guessed, read off a wiki,
+# rite is the ONLY way its opaque token enters the system — it cannot be guessed, read off a wiki,
 # or typed at a sign / in Discord. It must be PERFORMED.
 rites:
   # Six Keeper remainders must be moved from their room reliquaries into the six receptacles,
@@ -207,9 +207,9 @@ rites:
     token: "t6k4 n9p2 w7x1 h3m8"
     puzzle-key: "rite-tokens"
 
-  # The Accepting â€” the terminal climax. When every player present on the `accepting_floor` site
+  # The Accepting — the terminal climax. When every player present on the `accepting_floor` site
   # crouches at once ("bow as one"), the plugin posts the opaque token below as a solve of the
-  # `accepting-crouch` puzzle. The token MUST byte-match that row's accepted_answers in the seed â€”
+  # `accepting-crouch` puzzle. The token MUST byte-match that row's accepted_answers in the seed —
   # enforced by discord/src/forge/specs.selftest.ts's "rite token" check (npm run specscheck), which
   # reads this exact file and diffs the token against the seed. (2026-07-05 audit: this comment used to
   # cite a Java `riteTokenSelfTest` that never existed; the real guard is the TS check above, verified
@@ -218,7 +218,7 @@ rites:
     enabled: true
     token: "k7q2m9 x4r8p3 w1n6z5 t0j4h2 b8f1v7 c3d6s9"
     puzzle-key: "accepting-crouch"
-    # The TERMINAL climax must be the WHOLE cast bowing as one â€” set to the cast size (or cast-1 for
+    # The TERMINAL climax must be the WHOLE cast bowing as one — set to the cast size (or cast-1 for
     # safety), NOT a sub-group. Default 7 (the active-cast size) so stragglers off the floor can't fire the
     # finale. This is clamped at runtime to the live active roster (effectiveQuorum = min(quorum,
     # activeRosterSize), AcceptingRiteListener.clampQuorum), so a smaller active group is never blocked and
@@ -228,21 +228,21 @@ rites:
     cooldown-seconds: 300    # one detection attempt per site per 5 min (well past a filmed take)
 
 # ----------------------------------------------------------------------------
-#  THE NON-TYPED PUZZLE PRODUCERS (design/PUZZLE-DESIGNS.md Â§2â€“Â§6). Each opaque,
+#  THE NON-TYPED PUZZLE PRODUCERS (design/PUZZLE-DESIGNS.md §2–§6). Each opaque,
 #  high-entropy token below MUST byte-match its seed row's accepted_answers (the
 #  token is stored already-normalized, so the plugin submits it verbatim and the
 #  oracle's AnswerNormalizer passes it through unchanged). A detected in-world ACT
-#  is the ONLY way its token enters the system â€” it cannot be typed, guessed, or
-#  read off a wiki. Mirror the `rites.accepting` pattern: detect â†’ post token â†’
+#  is the ONLY way its token enters the system — it cannot be typed, guessed, or
+#  read off a wiki. Mirror the `rites.accepting` pattern: detect → post token →
 #  the existing engine records the solve + fires the authored outcome/flags.
 #
 #  Token parity note: these are the SAME strings the puzzles_seed.sql rows carry.
 #  If a seed token is ever re-rolled, mirror it here (there is no runtime cross-
-#  check against the DB â€” the seed is the source of truth, this file the producer).
+#  check against the DB — the seed is the source of truth, this file the producer).
 # ----------------------------------------------------------------------------
 puzzles:
-  # --- BEHAVIOR (Â§5.1 / Â§3.2 / Â§4.3) ---------------------------------------
-  # Orin â€” bow (crouch) at the six `orin_marker` sites in fall-order (Vaun, Mara,
+  # --- BEHAVIOR (§5.1 / §3.2 / §4.3) ---------------------------------------
+  # Orin — bow (crouch) at the six `orin_marker` sites in fall-order (Vaun, Mara,
   # Sella, Orin, Brann, Iss). The marker's fall-order rank is the trailing digit
   # of its site id (orin_marker_1..orin_marker_6). Per-player, solo-friendly.
   orin-bow-fall-order:
@@ -250,17 +250,17 @@ puzzles:
     token: "o9k2 mq6w x1n8 t4d7 fall order"
     puzzle-key: "orin-bow-fall-order"
 
-  # The three-hands coop gate (the IV->V hinge). CoopPlateListener owns the two WORLD legs â€” a foot on the
-  # coop_plate + a carve (left-click) at the mark â€” and writes coop_world_ready_at when both are held within
+  # The three-hands coop gate (the IV->V hinge). CoopPlateListener owns the two WORLD legs — a foot on the
+  # coop_plate + a carve (left-click) at the mark — and writes coop_world_ready_at when both are held within
   # a forgiving ritual window. The Discord side (coop-gate.ts) closes it when the convergence word is posted while the marker is
-  # fresh. NOTE: no token here â€” the plugin does not post it; the Discord closer holds the opaque token
+  # fresh. NOTE: no token here — the plugin does not post it; the Discord closer holds the opaque token
   # (byte-matching the seed's m4-three-hands accepted_answers). Keep window-seconds in sync with the discord
-  # twin (COOP_WINDOW_MS). Unplaced coop_plate site â†’ no-op (go-live safe).
+  # twin (COOP_WINDOW_MS). Unplaced coop_plate site → no-op (go-live safe).
   m4-three-hands:
     enabled: true
     window-seconds: 180
 
-  # Mara â€” the active roster reaches the `mara_map_marker` site together and bows
+  # Mara — the active roster reaches the `mara_map_marker` site together and bows
   # (walk the rite she only read). Group-scoped, active-only quorum (like the
   # Accepting: min(configQuorum, activeRoster)). Gated on mara_alcove_open by the
   # seed's storylet gate (the row is only OPEN once the lectern lock has set it).
@@ -271,7 +271,7 @@ puzzles:
     quorum: 3                 # a small group "walked together"; clamped to active roster
     cooldown-seconds: 60
 
-  # Sella â€” stand AT the `sella_anchor` block and look DOWN (the scatter resolves
+  # Sella — stand AT the `sella_anchor` block and look DOWN (the scatter resolves
   # into her bird-over-water glyph only from the one worn stone above the pool).
   sella-shore-memorial:
     enabled: true
@@ -280,10 +280,10 @@ puzzles:
     # Pitch (degrees) at/below which the keeper is "looking down" (90 = straight down).
     look-down-min-pitch: 55
 
-  # Sella â€” the reflection bearing (Â§4.1, bug fix 2026-07-05). SellaReflectionListener fires the
-  # "reflection" beat DIRECTLY through the beat engine (no oracle token here â€” this puzzle has no
+  # Sella — the reflection bearing (§4.1, bug fix 2026-07-05). SellaReflectionListener fires the
+  # "reflection" beat DIRECTLY through the beat engine (no oracle token here — this puzzle has no
   # solve to detect; it is the CLUE DELIVERY itself). The bearing text is the authored line from
-  # design/PUZZLE-DESIGNS.md Â§4.1; the answer stays the destination word read at the far water. The
+  # design/PUZZLE-DESIGNS.md §4.1; the answer stays the destination word read at the far water. The
   # bonus line ALSO fires (lens_gated:true) only while the same player holds the Lens.
   sella-reflection-bearing:
     enabled: true
@@ -293,8 +293,8 @@ puzzles:
     # default pitch_min, so the trigger and delivery sides judge the same gaze the same way).
     look-down-min-pitch: 25
 
-  # --- OBJECT (Â§2.1) -------------------------------------------------------
-  # Vaun â€” deposit the first-of-the-deep back into the `vaun_hoard_chest` container
+  # --- OBJECT (§2.1) -------------------------------------------------------
+  # Vaun — deposit the first-of-the-deep back into the `vaun_hoard_chest` container
   # (the offering he never made). A sorted-hoard content check the producer runs on
   # the close of the container: the required items must all be present.
   vaun-hoard-sorted:
@@ -302,11 +302,11 @@ puzzles:
     token: "g8k2 vq7m x4d9 p1n6 given back"
     puzzle-key: "vaun-hoard-sorted"
     # The materials that must ALL be present in the chest for the offering to read as
-    # made. Empty â‡’ a sensible default (a single deepslate / raw-ore token; see the
+    # made. Empty ⇒ a sensible default (a single deepslate / raw-ore token; see the
     # listener's DEFAULT_REQUIRED). Material names are Bukkit enum names.
     required-materials: []
 
-  # --- CODE / REDSTONE LOCKS (Â§3.1 / Â§2.2 / Â§5.3) --------------------------
+  # --- CODE / REDSTONE LOCKS (§3.1 / §2.2 / §5.3) --------------------------
   # These read a Minecraft-native redstone/positional state and post the token when
   # the correct combination is achieved. Detection is driven by the player INTERACT
   # that changes the state (lectern page turn, book slot, item-frame rotation), then
@@ -318,7 +318,7 @@ puzzles:
     # The marked pages, one per lectern, in the site's fall-order (mara_lectern_1..N).
     # A lectern is "correct" when its open page (1-based) equals the target. Vanilla
     # lecterns hold up to 100 pages; the target is 1-based. Default 1 2 4 4 6 (the
-    # marker-count key legible from the marker row, Â§3.1). Length = lectern count.
+    # marker-count key legible from the marker row, §3.1). Length = lectern count.
     marked-pages: [1, 2, 4, 4, 6]
 
   # Sella's five loose copybooks are a second, independently typed page lock.
@@ -331,17 +331,17 @@ puzzles:
     puzzle-key: "sella-overlay-lake"
     ring-pages: [2, 3, 5, 7, 11]
 
-  # Vaun â€” a chiseled-bookshelf 6-slot register; fill the slots that reproduce the
+  # Vaun — a chiseled-bookshelf 6-slot register; fill the slots that reproduce the
   # "all taken, none given" tally. A slot is "filled" when it holds a book item.
   vaun-bookshelf-tally:
     enabled: true
     token: "b6t3 kq9w m2x7 v4d1 taken column"
     puzzle-key: "vaun-bookshelf-tally"
     # Which of the 6 chiseled-bookshelf slots must be FILLED (1-based slot indices).
-    # Default: the "taken column" â€” slots 1..6 (all taken). Order-independent set.
+    # Default: the "taken column" — slots 1..6 (all taken). Order-independent set.
     filled-slots: [1, 2, 3, 4, 5, 6]
 
-  # Orin â€” six item-frame rotation dials pointed to match the markers' fall-order
+  # Orin — six item-frame rotation dials pointed to match the markers' fall-order
     # facings. Each `orin_frame_dial_1..6` frame must show the target rotation (0..7,
     # vanilla item-frame rotation index). The six physical marker stones carry the
     # matching cardinal/diagonal arrows in fall-order; length = dial count.
@@ -351,8 +351,8 @@ puzzles:
     puzzle-key: "orin-frame-dials"
     dial-rotations: [0, 2, 4, 6, 1, 5]
 
-  # --- SILENCE / TEMPORAL (Â§6.2 / Â§6.1) ------------------------------------
-  # Brann â€” traverse the calibrated-sculk corridor from the `brann_corridor_start`
+  # --- SILENCE / TEMPORAL (§6.2 / §6.1) ------------------------------------
+  # Brann — traverse the calibrated-sculk corridor from the `brann_corridor_start`
   # site to the `brann_corridor_end` site WHILE SNEAKING the whole way (no sprint,
   # no vibration). Reaching the end door in silence posts the behavior token.
   brann-silence-corridor:
@@ -360,26 +360,26 @@ puzzles:
     token: "r6k3 mq1w x9n2 t5d8 in silence"
     puzzle-key: "brann-silence-corridor"
 
-  # --- ASYMMETRIC CO-OP VAULT (Â§8.2, INTEGRATION signature #2) -------------
-  # The Threshold vault â€” the social centerpiece. Each active player at the
+  # --- ASYMMETRIC CO-OP VAULT (§8.2, INTEGRATION signature #2) -------------
+  # The Threshold vault — the social centerpiece. Each active player at the
   # `threshold_vault` site (a coop_plate-family site whose id names the vault) is
   # shown a DIFFERENT fragment of the `combination` below via per-player showEntity
   # (a rune only they can see). Read aloud + combined, the fragments assemble the
-  # full code; typing it at the vault SIGN posts the OPAQUE `token` â€” recording the
+  # full code; typing it at the vault SIGN posts the OPAQUE `token` — recording the
   # solve and opening the vault (the seed's door_open beat). The `combination` is
   # NEVER in the seed (only the token is): a player cannot bypass the fragments by
   # typing the token, nor solve by guessing the combination anywhere but the sign.
   #
-  # PARTITION (dynamic-roster, OVERHAUL Â§4): the space-separated `combination`
-  # groups are partitioned over the players present at the vault at solve-time â€”
-  # fewer players â†’ fewer/larger fragments; more â†’ more/smaller; every active player
+  # PARTITION (dynamic-roster, OVERHAUL §4): the space-separated `combination`
+  # groups are partitioned over the players present at the vault at solve-time —
+  # fewer players → fewer/larger fragments; more → more/smaller; every active player
   # gets a distinct non-empty piece. Recomputed on every roster change (late joiner
   # folded in; a leaver's slice redealt), so the puzzle self-heals to who is here.
   #
   # TOKEN PARITY: `token` MUST byte-match the seed row spine-threshold-vault's
   # accepted_answers ('v8k3 mq2n x6w1 t4d9 c7s5 assembled'). The `combination` is
   # the plugin-only assembled code (the seed never sees it). Gated on deep_gate_open
-  # by the seed's requires_flags â€” the producer also fail-CLOSED-gates the display +
+  # by the seed's requires_flags — the producer also fail-CLOSED-gates the display +
   # solve on that flag so runes never appear (and the vault never opens) early.
   spine-threshold-vault:
     enabled: true
@@ -388,25 +388,25 @@ puzzles:
     puzzle-key: "spine-threshold-vault"
     # The combination the fragments assemble (space-separated groups). Each group is
     # one fragment unit; the partition slices these contiguously over the roster.
-    # Plugin-only â€” do NOT put this in the seed (the seed carries the token above).
+    # Plugin-only — do NOT put this in the seed (the seed carries the token above).
     combination: "witness before accepting"
     # Convergence quorum (INV-19): min players AT the vault for the solve to land,
     # clamped to the live active roster so an absent member never blocks it. Keeps a
     # lone player who learned the whole code from opening it alone.
     quorum: 2
 
-  # THE FINALE RITE â€” the Seventh's restore/erase choice (seventh-choice; INTEGRATION-V2
+  # THE FINALE RITE — the Seventh's restore/erase choice (seventh-choice; INTEGRATION-V2
   # A1 / FACT 10b). SeventhChoiceListener watches for a right-click on a restore/erase
   # choice marker (PDC observance:seventh_choice = restore|erase) standing at the
   # the_unwriting (seventh_shrine) effaced-name wall. On restore it sets seventh_named +
   # seventh_choice=restore; on erase it sets seventh_choice=erase; then it posts the
   # matching OPAQUE token below so the showrunner's Seventh-choice sentinel composes the
-  # close. Gated on deep_gate_open (fail-CLOSED) â€” the finale can't fire before the deep
+  # close. Gated on deep_gate_open (fail-CLOSED) — the finale can't fire before the deep
   # opens. One-and-once (a set seventh_choice blocks a second hand). Markers are stamped
   # by a world build (or wire them into placedeep); an unplaced site is silently inert.
   #
   # TOKEN PARITY: restore-token / erase-token MUST byte-match the seed row seventh-choice's
-  # accepted_answers (the two opaque, wordless tokens). They are NEVER typeable â€” only a
+  # accepted_answers (the two opaque, wordless tokens). They are NEVER typeable — only a
   # real marker touch at the wall produces them (no-leaked-sentinel, B-5).
   seventh-choice:
     enabled: true
@@ -414,16 +414,16 @@ puzzles:
     restore-token: "r7n4k2 m1x8p5 w3j6h9"
     erase-token: "e5t0b7 c2d4s8 v6f1z3"
 
-  # Brann â€” the black-moon toll. This is a TYPED phrase ('awake'), but only accepted
+  # Brann — the black-moon toll. This is a TYPED phrase ('awake'), but only accepted
   # once the toll has been HEARD on the in-game black moon. This producer plays the
   # toll (a private sound cue) to keepers standing at the `brann_toll_tower` site on
   # the black moon and sets the temporal gate flag `brann_toll_heard` so the seed
   # row (requires that flag) becomes answerable at a keeper-stone. It never posts a
-  # solve itself (the phrase is typed) â€” it only opens the temporal window.
+  # solve itself (the phrase is typed) — it only opens the temporal window.
   brann-black-moon-toll:
     enabled: true
     # The vanilla moon phase(s) that count as the "black moon" (0..7; 0 = full moon,
-    # the arc's canonical black moon per DarkHoursListener). Empty â‡’ [0].
+    # the arc's canonical black moon per DarkHoursListener). Empty ⇒ [0].
     black-moon-phases: [0]
 
   # The painted line is a dialogue promise, not scenery. PaintedLineListener quietly
@@ -433,7 +433,7 @@ puzzles:
     enabled: true
 
 # ----------------------------------------------------------------------------
-#  OBSERVER TIER-0 (BUILD-PLAN Â§13 / CHANGE-MANIFEST A2) â€” the "it knows you" that
+#  OBSERVER TIER-0 (BUILD-PLAN §13 / CHANGE-MANIFEST A2) — the "it knows you" that
 #  needs NO chat, voice, or LLM. It profiles REAL in-world behavior (from the signal
 #  tracker) and, when something is CLEARLY true of a player, speaks ONE grounded
 #  implication line to that player alone (private action-bar by default; title only
@@ -445,7 +445,7 @@ puzzles:
 #  an AMBIENT beat (name: "composure"), so every fire also passes the drama budget
 #  (per-player + global ambient cooldowns + the rolling-window cap). Rare = uncanny.
 #
-#  REGISTER: lowercase, sparse, certain. IMPLICATION, never accusation â€”
+#  REGISTER: lowercase, sparse, certain. IMPLICATION, never accusation —
 #  "you keep one thing you never use", NOT "you are a hoarder". Edit lines freely;
 #  a blank/absent line falls back to the built-in default for that observation.
 # ----------------------------------------------------------------------------
@@ -458,19 +458,19 @@ tier0:
 
   # The thresholds each observation must CLEARLY clear to be spoken (precision > recall).
   thresholds:
-    # KEEPS_TO_THE_DARK â€” mines mostly alone AND has actually put in solo time.
+    # KEEPS_TO_THE_DARK — mines mostly alone AND has actually put in solo time.
     solo-mining-ratio-min: 0.80       # fraction (0..1) of sampled mining done alone
     solo-mining-seconds-min: 600      # and >= 10 min of solo mining (substance)
-    # ALWAYS_THE_FARTHEST â€” last sampled distance to the nearest other player, in blocks.
+    # ALWAYS_THE_FARTHEST — last sampled distance to the nearest other player, in blocks.
     farthest-distance-min: 48.0
-    # KEEPS_WHAT_IS_NEVER_USED â€” hoard score (same scale as tracker.hoard-score-cap).
+    # KEEPS_WHAT_IS_NEVER_USED — hoard score (same scale as tracker.hoard-score-cap).
     hoard-score-min: 600.0
-    # DIES_IN_THE_DARK â€” repeated deaths AND a genuinely deep run.
+    # DIES_IN_THE_DARK — repeated deaths AND a genuinely deep run.
     deaths-min: 3
     deep-death-y-max: 24              # must have broken a block at/below this Y (was in the dark)
-    # ALWAYS_GOES_DEEPER â€” deepest Y a block was broken at (lower = deeper).
+    # ALWAYS_GOES_DEEPER — deepest Y a block was broken at (lower = deeper).
     deeper-y-max: -16
-    # TAKES_AND_TAKES â€” much broken, almost none of it ore ("takes, gives little").
+    # TAKES_AND_TAKES — much broken, almost none of it ore ("takes, gives little").
     blocks-mined-min: 2000
     taker-ore-ratio-max: 0.02        # ores_mined / blocks_mined at/below this
 
@@ -496,15 +496,15 @@ tier0:
       - "you take, and you take"
 
 # ----------------------------------------------------------------------------
-#  RESOURCE PACK (PATH A â€” friends install nothing but ONE auto-pushed pack).
+#  RESOURCE PACK (PATH A — friends install nothing but ONE auto-pushed pack).
 #  Read by listener.ResourcePackPusher. While `url` is blank the push is SKIPPED
-#  SILENTLY (a go-live residue, logged once) â€” every non-rune beat runs unchanged.
+#  SILENTLY (a go-live residue, logged once) — every non-rune beat runs unchanged.
 #  GO-LIVE: host the built pack, set `url` + the 40-char hex `sha1`, then reload.
 # ----------------------------------------------------------------------------
 resource-pack:
   # Public HTTPS URL of the built pack .zip. EMPTY until the pack is hosted (go-live).
   url: "https://fdnmhbpxnodrnbrzrlqq.supabase.co/storage/v1/object/public/observance-public/observance-resourcepack.zip"
-  # 40-char lowercase hex SHA-1 of the .zip bytes (cache key + integrity). EMPTY â‡’ push goes hashless
+  # 40-char lowercase hex SHA-1 of the .zip bytes (cache key + integrity). EMPTY ⇒ push goes hashless
   # (a warn): clients re-download every join and can't verify. Set this at go-live.
   sha1: "fdc15d25e1cc5811269a3405091f7b5a143ac6db"
   # required:true rejects players who decline the pack (the runes are unreadable without it). Keep FALSE
@@ -517,11 +517,11 @@ resource-pack:
   delay-ticks: 20
 
 # ----------------------------------------------------------------------------
-#  THE RELEASE â€” the finale death/kick beat `the_closing` (design/FINALE-THE-RELEASE.md).
+#  THE RELEASE — the finale death/kick beat `the_closing` (design/FINALE-THE-RELEASE.md).
 #  Fires ONCE, enqueued by the showrunner when the group performs the release act. The
 #  world visibly "dies" (fog/dark/whisper, server-wide) for a few seconds, then EVERY
 #  player is KICKED with the Seventh's composed sign-off as the disconnect message.
-#  SIMULATED death â€” Paper keeps running; the operator controls re-entry. KICK, never ban.
+#  SIMULATED death — Paper keeps running; the operator controls re-entry. KICK, never ban.
 # ----------------------------------------------------------------------------
 closing:
   # false = the showrunner still posts the mask-off farewell to #the-record, but the plugin
@@ -533,44 +533,43 @@ closing:
   #        re-open it ("there will be nothing here to come back to"). false = they can rejoin
   #        immediately (rejoining proves it was authored theater, not a ban). NEVER a real ban.
   whitelist-after: false
-  # Registers the release-rite marker listener (right-click after the Accepting â†’ record_released â†’
-  # the showrunner's release pass â†’ the_closing). Default true. Distinct from `enabled` above: this
+  # Registers the release-rite marker listener (right-click after the Accepting → record_released →
+  # the showrunner's release pass → the_closing). Default true. Distinct from `enabled` above: this
   # gates only the release RITE itself, not the whole closing sequence (auto-kick/theater/whitelist
-  # still run once record_released is set some other way). Added 2026-07-05 audit â€” was read in code
+  # still run once record_released is set some other way). Added 2026-07-05 audit — was read in code
   # (ObservancePlugin.java) but undocumented here.
   release-rite-enabled: true
 
 # ----------------------------------------------------------------------------
-#  CUSTOMS â€” the closed set of group conducts the engine DETECTS (INV-17: exactly
+#  CUSTOMS — the closed set of group conducts the engine DETECTS (INV-17: exactly
 #  seven CUSTOM_KEYS already tracked above + the ONE group latch below). Anything
 #  else claiming to be an "observance" is fiction (the forged eighth). LORE-AGNOSTIC.
 # ----------------------------------------------------------------------------
 customs:
-  # The forged eighth law (INTEGRATION-V2 A4, FACT 7b). A LIE the land never enforced â€” it is a
+  # The forged eighth law (INTEGRATION-V2 A4, FACT 7b). A LIE the land never enforced — it is a
   # document + cipher + Iss-rehearsal ONLY, never a real custom. This toggle gates the lore fiction's
   # surfacing (the forged ordinance, the card, the parrot line); it NEVER enforces anything in-world
   # (INV-17: there is no eighth CUSTOM_KEY, no null-enforcement flag). Default on = the lie is in play.
-  # NOTE (2026-07-05 audit): this key is NOT read by the Java plugin (verified â€” no getBoolean call
+  # NOTE (2026-07-05 audit): this key is NOT read by the Java plugin (verified — no getBoolean call
   # anywhere references it). If the lore-fiction surfacing is implemented, it lives in the Discord
-  # showrunner (a separate service with its own config), which does NOT read THIS file â€” editing this
-  # value has no effect on either codebase today. Treat as documentation-only until a real reader exists.
-  false-law:
-    enabled: true
+  # showrunner (a separate service with its own config), which does NOT read THIS file — editing this
+  # value had no effect on either codebase, so the misleading no-op key was removed. The fiction remains
+  # in the seeded story and is intentionally never an enforceable custom.
 
-  # The Unlit Deep â€” the ONE collective-restraint group latch (INTEGRATION-V2 A5; the single group
+  # The Unlit Deep — the ONE collective-restraint group latch (INTEGRATION-V2 A5; the single group
   # custom INV-17 permits). Detected on EXPLICIT flame acts only (BlockPlace + a debounced held-flame
-  # edge) â€” NEVER ambient light sampling (precision over recall). Gated behind the Undercroft fire
+  # edge) — NEVER ambient light sampling (precision over recall). Gated behind the Undercroft fire
   # (FACT 11) existing. Reward = the never-doused fire LENDS its glow; break = it withdraws for all,
   # REVERSIBLE, active-only, `broken_by` recorded-not-spoken. Read by UnlitDeepListener + TrackerConfig
   # (CUSTOM_UNLIT_DEEP). Master kill = `restraint.enabled:false` (also the /observance restraint toggle).
   unlit-deep:
     enabled: true
-    # Materials that count as an explicit "flame act" below the deep line. Empty â‡’ a sensible vanilla
+    # Materials that count as an explicit "flame act" below the deep line. Empty ⇒ a sensible vanilla
     # fire/torch/lantern/campfire default set (resolved in TrackerConfig, mirroring ore-materials).
     flame-materials: []
     # The Y at/below which the latch is armed. Reuses the deep-line frame; default tracks tracker.deep-line.
     deep-line-y: -48
-    # Taboo moon phases the latch braids with dark-hours (0 = full/"black" moon). Empty â‡’ reuse dark-hours.
+    # Taboo moon phases the latch braids with dark-hours (0 = full/"black" moon). Empty ⇒ reuse dark-hours.
     taboo-moon-phases: []
     # One latch-edge per group per cooldown (anti-flicker; the latch is a state, not a spammable counter).
     cooldown-seconds: 300
@@ -586,64 +585,52 @@ restraint:
 #  on-screen, are NOT tracked for conduct (only the GLOWING fork-arming Beast is).
 #  Read by SacredAnimalBeat (mode:"spread") + DeathListener (pale key ignored).
 # ----------------------------------------------------------------------------
-herd:
   # UPDATE (2026-07-05 audit, later pass): SacredAnimalBeat's mode:"spread" IS now built and live
   # (HerdSpreadBeat / BeatLibrary), but it still hardcodes its own PDC key literal ("pale_cosmetic")
-  # and its own cap (SacredAnimalBeat.PALE_CAP = 16) rather than reading these two config values â€”
+  # and its own cap (SacredAnimalBeat.PALE_CAP = 16) rather than reading these two config values —
   # BeatContext/BeatEngine currently have no path to TrackerConfig at all, so wiring these through
   # would mean extending that plumbing, a bigger change than this config-drift item alone justifies.
-  # Both values below happen to already match the hardcoded reality (pale_cosmetic / 16), so nothing
-  # is currently WRONG in-game â€” but an operator editing either key here still changes nothing.
-  # Treat as documentation-only until BeatContext gains a TrackerConfig accessor.
-  # PDC key marking a cosmetic "pale one" â€” DISTINCT from tracker.sacred-beast-pdc-key so killing a Pale
+  # The implementation values are pale_cosmetic / 16 and are regression-checked across producer and
+  # conduct listener; no inert operator setting remains available to drift from those invariants.
+  # The former no-op keys were removed: "pale_cosmetic" and cap 16 are compile-time safety invariants,
+  # not operator controls.
+  # PDC key marking a cosmetic "pale one" — DISTINCT from tracker.sacred-beast-pdc-key so killing a Pale
   # is NOT a violation (the precision guard, INV-13). Never glowing; babies are not auto-pale.
-  pale-cosmetic-pdc-key: "pale_cosmetic"
   # Hard cap on how many Pale exist at once (unwitnessed spread, one-per-pass between sessions).
-  max-pale: 16
 
 # ----------------------------------------------------------------------------
 #  DYNAMIC DIEGETIC DIFFICULTY (INTEGRATION-V2 A10, FACT 2b). The land's grip is
 #  not fixed: a cadence multiplier + dead-end staging + register selection, GROUP-
-#  scalar only (no per-player rank). NEVER touches the Whisper backstop (INV-15) â€”
+#  scalar only (no per-player rank). NEVER touches the Whisper backstop (INV-15) —
 #  there is deliberately no whisper-budget knob here; a `whisper_budgets` reference
 #  anywhere in the difficulty path is a bug. Bounds are read by showrunner/reckoning.
 #  The deterministic engine clamps to [min,max]; these are the only tuning inputs.
 # ----------------------------------------------------------------------------
-difficulty:
-  # NOTE (2026-07-05 audit): this block is NOT read anywhere in the Java plugin (verified). The
+  # NOTE (2026-07-13): former no-op values were removed. This policy belongs to the Discord
   # "showrunner/reckoning" reader referenced above is the separate Discord/TS service, which does NOT
-  # read this file â€” it has (or should have) its own config for these bounds. Treat the values below as
+  # read this file — it has (or should have) its own config for these bounds. Treat the values below as
   # a shared SPEC for what both sides should agree on, not a live parameter this plugin consumes.
-  enabled: true
   # The drip-interval cadence multiplier bounds. >1 = the deep "tightens" (slower drips, longer waits);
   # <1 = it is "patient" (faster). The engine picks within [min,max] from measured group skill
   # (distinct-solver / first-try / whisper-lean), with hysteresis. 1.0 = neutral.
-  cadence-mult-min: 0.75
-  cadence-mult-max: 2.0
   # Hysteresis: minimum ms a reckoning_state must hold before it may flip (anti-flapping, R5). Also the
   # window the dashboard health-panel reads so a spoiler-free Ethan confirms a slow drip is intentional.
-  state-hold-ms: 600000        # 10 min
   # Dead-end staging requires the drip-ordering guard (precondition #3): a staged dead-end may NEVER be
-  # placed in the OPENING drip slot. This flag is belt-and-suspenders â€” the guard enforces it in code.
-  stage-dead-ends: true
+  # placed in the OPENING drip slot. This flag is belt-and-suspenders — the guard enforces it in code.
 
 # ----------------------------------------------------------------------------
 #  THE REAL-CLOCK EVENT WINDOW (INTEGRATION-V2 A13 / A9). A single wall-clock
 #  window the showrunner honors for time-gated beats (the Record-website re-render,
 #  the grave's `not_before`, the summons). The Accepting INSTANT itself is bound in
-#  arc_state by the showrunner (NO config owns it) â€” this only bounds when the
+#  arc_state by the showrunner (NO config owns it) — this only bounds when the
 #  curatorial surfaces may ACT, so a filmed take lands in a known window. All times
-#  UTC ISO-8601; EMPTY start/end â‡’ always-open (the default until a shoot is scheduled).
+#  UTC ISO-8601; EMPTY start/end ⇒ always-open (the default until a shoot is scheduled).
 #  /observance window <on|off> force-overrides this schedule for a live take.
 # ----------------------------------------------------------------------------
-event-window:
-  # NOTE (2026-07-05 audit): NOT read anywhere in the Java plugin (verified). If the showrunner honors
+  # NOTE (2026-07-13): former no-op values were removed. If the showrunner honors
   # a wall-clock window as described, it is the separate Discord/TS service reading its OWN config, not
   # this file. Treat the values below as a shared SPEC, not a live plugin parameter.
-  enabled: false               # false â‡’ always-open (no wall-clock gate); flip on to arm the window
-  start: ""                    # e.g. "2026-07-01T02:00:00Z" â€” UTC ISO-8601; empty = unbounded-open
-  end: ""                      # e.g. "2026-07-01T05:00:00Z" â€” UTC ISO-8601; empty = unbounded-open
-  # The single Accepting instant is NOT set here â€” the showrunner binds it in arc_state and shares it with
+  # The single Accepting instant is NOT set here — the showrunner binds it in arc_state and shares it with
   # the grave date + the Record timestamp + the summons not_before (coherence P1-8). Do not duplicate it.
 
 # Logging verbosity for the in-game console (Supabase event_log is separate + always on).

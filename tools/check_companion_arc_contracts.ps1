@@ -37,6 +37,9 @@ $coop = Read-Text "plugin\src\main\java\com\observance\watcher\signal\listener\C
 $seventh = Read-Text "plugin\src\main\java\com\observance\watcher\signal\listener\SeventhChoiceListener.java"
 $companionResolver = Read-Text "discord\src\showrunner\companion.ts"
 $companionRunner = Read-Text "discord\src\showrunner\companion.run.ts"
+$eventDecoder = Read-Text "discord\src\showrunner\event-log.ts"
+$keeperRunner = Read-Text "discord\src\showrunner\keeper.run.ts"
+$keeperRuntime = Read-Text "discord\src\showrunner\keeper-runtime.ts"
 $coopGate = Read-Text "discord\src\showrunner\coop-gate.ts"
 $autonomyRunner = Read-Text "discord\src\showrunner\autonomy.run.ts"
 $botIndex = Read-Text "discord\src\bot\index.ts"
@@ -117,7 +120,9 @@ Assert-All $companionResolver @(
 
 Assert-All $companionRunner @(
   ".from('event_log')",
-  ".eq('type', 'companion')",
+  ".select('id, source, message, created_at')",
+  "decodePluginEvent",
+  "r.type === 'companion'",
   "companion_revealed",
   "reckoning_condemn",
   "reckoning_understand",
@@ -126,6 +131,35 @@ Assert-All $companionRunner @(
   "companion_reckoning_delivered",
   "enqueueBeat('private_message'"
 ) "Discord companion runner"
+
+Assert-NotContains $companionRunner ".eq('type', 'companion')" "Discord companion runner"
+
+Assert-All $eventDecoder @(
+  "TYPE_PREFIX",
+  "UUID_FIELD",
+  "DETAIL_SUFFIX",
+  "decodePluginEvent",
+  "JSON.parse"
+) "folded plugin event decoder"
+
+Assert-All $keeperRunner @(
+  ".eq('source', 'npc.open')",
+  ".ilike('message', '[keeper]%')",
+  "keeper_last_open_id",
+  "resolveKeeperDialogue",
+  "archiveLine",
+  "renderKeeperLine",
+  "enqueueBeat('keeper_npc'",
+  "'approved'",
+  "keeper_fact9_windows",
+  "keeper_atonement_pending"
+) "Discord Keeper dialogue runner"
+
+Assert-All $keeperRuntime @(
+  "dominantHabit",
+  "selectBrokenCustom",
+  "{{first_beat}}"
+) "Discord Keeper runtime helpers"
 
 Assert-All $coopGate @(
   "coop_world_ready_at",
@@ -137,8 +171,10 @@ Assert-All $coopGate @(
 
 Assert-All $autonomyRunner @(
   "runCompanionPass",
+  "runKeeperDialoguePass",
   "companion_revealed",
-  "comp.dirty"
+  "comp.dirty",
+  "keeper.dirty"
 ) "Discord autonomy runner"
 
 Assert-All $botIndex @(

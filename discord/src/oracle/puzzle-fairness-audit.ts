@@ -6,7 +6,7 @@
  *   - plugin-produced answer kinds use opaque, high-entropy tokens instead of human-readable phrases;
  *   - short human-typed answers are capped against brute-force attempts.
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,9 +17,15 @@ const puzzleFiles = ['puzzles_seed.sql', 'progression_seed.sql'];
 const rows = puzzleFiles.flatMap((file) => parsePuzzleRows(file, readFileSync(resolve(seeds, file), 'utf8')));
 const hints = parseHints(readFileSync(resolve(seeds, 'hints_seed.sql'), 'utf8'));
 const activatedBySeed = parseSeedActivatedKeys(['metapuzzle_seed.sql', 'progression_seed.sql']);
+const repoRoot = resolve(here, '../../..');
+const producerCorpus = readCorpus([
+  resolve(repoRoot, 'plugin/src/main'),
+  resolve(repoRoot, 'discord/src'),
+]);
 
 const producedKinds = new Set(['behavior', 'object', 'code', 'spoken']);
 const humanTypedKinds = new Set(['phrase', 'coords', 'url_token']);
+const knownKinds = new Set([...producedKinds, ...humanTypedKinds, 'none']);
 const hintExempt = new Set([
   // This is a pure arrival/world-change acknowledgement, not a player-facing puzzle stall point.
   'record-receives',
@@ -36,6 +42,19 @@ const uncappedShortTyped = rows.filter((row) =>
   row.answers.some((answer) => isShortTypedAnswer(answer)),
 );
 const emptyAnswers = rows.filter((row) => row.answers.length === 0);
+const unknownKinds = rows.filter((row) => !knownKinds.has(row.answerKind));
+const producedWithoutConsumer = rows.filter((row) =>
+  producedKinds.has(row.answerKind) && row.answers.every((answer) => !producerCorpus.includes(answer)),
+);
+
+const inputContractFiles = {
+  answerSign: readFileSync(resolve(repoRoot, 'plugin/src/main/java/com/observance/watcher/signal/listener/AnswerSignListener.java'), 'utf8'),
+  structures: readFileSync(resolve(repoRoot, 'plugin/src/main/java/com/observance/watcher/structure/StructureTemplates.java'), 'utf8'),
+  command: readFileSync(resolve(repoRoot, 'plugin/src/main/java/com/observance/watcher/command/ObservanceCommand.java'), 'utf8'),
+  discordAnswer: readFileSync(resolve(repoRoot, 'discord/src/bot/commands/answer.ts'), 'utf8'),
+  recordRoute: readFileSync(resolve(repoRoot, 'dashboard/src/app/record/terminal/inscribe/route.ts'), 'utf8'),
+};
+const inputContractFailures = validateInputContracts(inputContractFiles, humanTypedKinds, rows);
 
 let failed = false;
 
@@ -63,6 +82,24 @@ if (emptyAnswers.length > 0) {
   for (const row of emptyAnswers) console.error(`  - ${rowLabel(row)}`);
 }
 
+if (unknownKinds.length > 0) {
+  failed = true;
+  console.error('puzzlefairness: FAILED - puzzle row(s) use an unsupported answer kind:');
+  for (const row of unknownKinds) console.error(`  - ${rowLabel(row)}`);
+}
+
+if (producedWithoutConsumer.length > 0) {
+  failed = true;
+  console.error('puzzlefairness: FAILED - produced puzzle row(s) have no runtime consumer for any accepted token:');
+  for (const row of producedWithoutConsumer) console.error(`  - ${rowLabel(row)}`);
+}
+
+if (inputContractFailures.length > 0) {
+  failed = true;
+  console.error('puzzlefairness: FAILED - player answer/input surface contract is incomplete:');
+  for (const failure of inputContractFailures) console.error(`  - ${failure}`);
+}
+
 if (failed) process.exit(1);
 
 const hinted = hintableRows.filter((row) => hasHintTiers(row.key, hints, [2, 3])).length;
@@ -77,6 +114,7 @@ console.log(`puzzlefairness: OK - ${rows.length} puzzle rows audited.`);
 console.log(`  hint coverage: ${hinted}/${hintableRows.length} live/staged-live rows have tier-2 + tier-3 rescue text (${hintExempt.size} exempt)`);
 console.log(`  opaque plugin tokens: ${opaque} produced-kind row(s) protected`);
 console.log(`  short typed caps: ${shortTypedCapped} short typed row(s) capped`);
+console.log(`  input/producer routes: ${rows.filter((row) => humanTypedKinds.has(row.answerKind)).length} typed row(s) have three submission surfaces; ${opaque} produced row(s) have runtime consumers`);
 
 interface PuzzleRow {
   key: string;
@@ -189,4 +227,41 @@ function stripLineComments(sql: string): string {
 
 function sqlString(value: string): string {
   return value.replace(/''/g, "'");
+}
+
+function readCorpus(roots: string[]): string {
+  const bodies: string[] = [];
+  const visit = (path: string): void => {
+    if (statSync(path).isDirectory()) {
+      for (const child of readdirSync(path)) visit(resolve(path, child));
+      return;
+    }
+    if (/\.(?:java|ts|tsx|yml|yaml)$/i.test(path)) bodies.push(readFileSync(path, 'utf8'));
+  };
+  for (const root of roots) visit(root);
+  return bodies.join('\n');
+}
+
+function validateInputContracts(
+  files: Record<string, string>,
+  typedKinds: ReadonlySet<string>,
+  puzzleRows: PuzzleRow[],
+): string[] {
+  if (!puzzleRows.some((row) => typedKinds.has(row.answerKind))) return [];
+  const required: [keyof typeof files, string, string][] = [
+    ['answerSign', 'SignChangeEvent', 'in-world filing signs do not consume sign edits'],
+    ['answerSign', 'TYPE_KEEPER_STONE', 'keeper stones are not registered as answer-bearing sites'],
+    ['answerSign', 'TYPE_CASE_BOARD', 'the absence case board is not an answer-bearing site'],
+    ['answerSign', 'TYPE_PRIOR_CAMP', 'prior repair files are not answer-bearing sites'],
+    ['answerSign', 'TYPE_FAILED_ACCEPTING', 'Failed Accepting is not an answer-bearing site'],
+    ['answerSign', 'setLine(i, "")', 'submitted guesses are not cleared from filing signs'],
+    ['structures', 'blank unwaxed submission slot', 'structure templates do not author editable answer signs'],
+    ['command', 'no editable answer surface', 'world visual audit does not fail missing answer surfaces'],
+    ['command', 'no editable answer sign found inside answer radius', 'world proof does not enforce a reachable input sign'],
+    ['discordAnswer', 'resolveAnswer(', 'Discord /answer does not reach the shared resolver'],
+    ['recordRoute', 'resolveInscription(', 'Record inscription does not reach the shared resolver'],
+  ];
+  return required
+    .filter(([file, needle]) => !files[file]?.includes(needle))
+    .map(([, , failure]) => failure);
 }

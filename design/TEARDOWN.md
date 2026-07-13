@@ -1,5 +1,12 @@
 # THE OBSERVANCE — EDITOR-IN-CHIEF TEARDOWN
 
+> **CURRENT STATUS OVERRIDE — 2026-07-13.** This is a preserved pre-fix adversarial audit, not a
+> description of the current release candidate. Its missing migrations, producers, resolver gates,
+> Record ignition, `v_record`, resource-pack handling, Keeper/Wren paths, and generated-Hold findings
+> were subsequently fixed and regression-checked. V4 has also been exercised on isolated Paper
+> 1.21.11. Use `FINAL-LAUNCH-HANDOFF-2026-07-13.md` and `CURRENT-READINESS-VERDICT.md` for current
+> truth; retain the numbered findings below as failure history and regression rationale.
+
 Synthesis of six adversarial passes (story, puzzles, players, arg, code, interactions),
 cross-checked against the real seeds/code (not the design guides, which over-claim).
 Verdicts: KEEP / CUT / FIX / SIMPLIFY / REDESIGN. Every point names a real artifact.

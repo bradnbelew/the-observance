@@ -1,11 +1,4 @@
-/**
- * unlit-deep.run.ts — the I/O wrapper for the Unlit Deep group latch's ONE report (see unlit-deep.ts
- * for the pure policy). Reads `arc_state.flags` (the plugin's UnlitDeepListener writes it directly,
- * same seam as coop-gate.ts's `coop_world_ready_at`), runs the pure decision, and on a fresh break
- * posts `voice.tollUnlitDeep()` to #the-record — then advances the high-water mark only after a
- * successful post (mirrors customs.run.ts: a delivery failure re-tries next cadence, never swallowed).
- * Fully fault-isolated + graceful: any failure (Supabase down, post failure) → silence, never throws.
- */
+/** I/O wrapper for the restart-safe kept/broken Unlit Deep reporting policy. */
 import { getArcFlags, logEvent } from '../db/repo.js';
 import { readState, writeState } from './state.js';
 import { postToTheRecord } from './discord.js';
@@ -15,33 +8,38 @@ export interface UnlitDeepPassResult {
   reported: number;
 }
 
+function finiteFlag(flags: Record<string, unknown>, key: string): number | null {
+  const value = flags[key];
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
 export async function runUnlitDeepPass(nowIso: string): Promise<UnlitDeepPassResult> {
   try {
-    const flags = await getArcFlags();
-    const brokenAtRaw = (flags as Record<string, unknown>)['unlit_deep_broken_at'];
-    const brokenAt = typeof brokenAtRaw === 'number' && Number.isFinite(brokenAtRaw) ? brokenAtRaw : null;
-    const brokenByRaw = (flags as Record<string, unknown>)['unlit_deep_broken_by'];
-    const brokenBy = typeof brokenByRaw === 'string' ? brokenByRaw : null;
-
+    const flags = (await getArcFlags()) as Record<string, unknown>;
+    const brokenByRaw = flags['unlit_deep_broken_by'];
     const state = await readState();
     const decision = decideUnlitDeepReport({
-      brokenAt,
-      brokenBy,
-      lastReportedAt: state.unlit_deep_last_reported_at ?? null,
+      brokenAt: finiteFlag(flags, 'unlit_deep_broken_at'),
+      brokenBy: typeof brokenByRaw === 'string' ? brokenByRaw : null,
+      keptAt: finiteFlag(flags, 'unlit_deep_kept_at'),
+      lastBrokenReportedAt: state.unlit_deep_last_reported_at ?? null,
+      lastKeptReportedAt: state.unlit_deep_last_kept_reported_at ?? null,
     });
-    if (!decision.line || decision.mark == null) return { reported: 0 };
+    if (!decision.line || !decision.kind) return { reported: 0 };
 
     const ok = await postToTheRecord(decision.line);
     if (!ok) {
-      await logEvent('warn', 'showrunner.unlit_deep', 'report post FAILED (discord); retrying next cadence');
+      await logEvent('warn', 'showrunner.unlit_deep', `${decision.kind} report post FAILED; retrying next cadence`);
       return { reported: 0 };
     }
 
-    state.unlit_deep_last_reported_at = decision.mark;
+    if (decision.brokenMark != null) state.unlit_deep_last_reported_at = decision.brokenMark;
+    if (decision.keptMark != null) state.unlit_deep_last_kept_reported_at = decision.keptMark;
     await writeState(state, nowIso);
-    await logEvent('info', 'showrunner.unlit_deep', `report posted (broken_at=${decision.mark})`);
+    const mark = decision.brokenMark ?? decision.keptMark;
+    await logEvent('info', 'showrunner.unlit_deep', `${decision.kind} report posted (at=${mark})`);
     return { reported: 1 };
-  } catch (e) {
-    return { reported: 0 }; // graceful: Supabase down / any failure → silence, no throw (INV-7)
+  } catch {
+    return { reported: 0 };
   }
 }

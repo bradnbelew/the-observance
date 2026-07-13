@@ -80,7 +80,7 @@ Record hashes from `observance-deploy-manifest.json`, not from memory.
 ## Live Server Order
 
 1. Apply `discord/supabase/apply-all.sql` to the live Supabase project.
-2. Upload `plugin/build/libs/observance-0.3.24.jar` to the Paper server.
+2. Upload `plugin/build/libs/observance-0.3.29.jar` to the Paper server.
 3. Install `observance-datapack.zip` into the target world datapacks folder.
 4. Host `observance-resourcepack.zip` at a direct HTTPS zip URL.
 5. Run `tools\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>` if
@@ -142,15 +142,13 @@ director, not for direct player copy.
 
 Use `placehold` for the production underground Deep Hold megastructure. Use
 `prepworld` only for the compact rehearsal board. In player mode, `placehold build`
-treats your current location as the surface mouth, uses default depth 392
-(accepted range 340-520), carves a broad protected stair down from that point, and
-places the Hold well below/farther south of the mouth so terrain should not poke
-through the main body. In console mode, the supplied x/y/z is the underground
-court anchor. The command places 64 Hold-contained ARG sites, seven full-width
-physical gates, a grand Keeper Court with upper terraces, controlled geology,
-and protected Hold/entry-stair regions. `/obs placehold audit` must show
-records 8/8, entry walkable, clean early-route/grand-court/terrace/enclosure
-samples, and zero critical findings before a player-facing run.
+treats your current location as the sole Surface Mouth and surveys the fixed V4
+three-stratum envelope before changing a block. In console mode, the supplied x/y/z
+is also the Surface Mouth. The command places 76 Hold-contained ARG sites, eight
+persistent gates, 32 owned rooms, seven district records plus the covered prologue
+copy, and protected Hold/entry-stair regions. `/obs placehold audit` must show
+76/76 sites, 8/8 gates, 8/8 records, full virtual-open traversal, and zero critical
+findings before a player-facing run.
 The surface prologue (`first_report_lectern_01` / `first_marker_01`) is still staged
 separately with `/obs placeprologue`. The Minecraft-to-Discord handoff is also separate:
 stand at its intended south approach near first arrival and run `/obs placerelay`, then verify

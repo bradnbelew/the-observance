@@ -80,6 +80,9 @@ if (!$supabaseClient.Contains("public boolean claimBeatForFiring(String beatId)"
 if (!$beatPoller.Contains("supabase.claimBeatForFiring(beat.id)")) {
   Add-Failure "BeatQueuePoller must claim approved beats before enacting them"
 }
+if (!$beatPoller.Contains('case UNHANDLED -> supabase.markBeatDecided(beat.id, "failed")')) {
+  Add-Failure "BeatQueuePoller must terminally fail unknown types after claiming them; never strand firing rows"
+}
 foreach ($sql in @($oracleMigration, $dashboardBeatStatus, $applyAll)) {
   if (!$sql.Contains("'pending','approved','firing','skipped','fired','failed'") -and
       !$sql.Contains("'pending', 'approved', 'firing', 'skipped', 'fired', 'failed'")) {

@@ -164,7 +164,7 @@ export interface ReportInput {
 }
 
 /** The dominant habit for a dossier, or null if flat/tied (precision floor). */
-function dominantHabit(d: ObservationDossier, k: ReportConstants): HabitAxis | null {
+export function dominantHabit(d: ObservationDossier, k: ReportConstants = REPORT_DEFAULTS): HabitAxis | null {
   const entries = (Object.entries(d.habits) as [HabitAxis, number][])
     .filter(([, v]) => Number.isFinite(v))
     .sort((a, b) => b[1] - a[1]);

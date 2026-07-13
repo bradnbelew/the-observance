@@ -18,7 +18,7 @@ import java.util.UUID;
  * there for us). Everything here is main-thread-safe; the beats themselves schedule any async I/O.
  *
  * <p>Fault isolation: this class never throws — the poller also wraps it in Safety, and we wrap the
- * beat call too. An unknown type returns {@link EnactResult#UNHANDLED} so the foundation LEAVES the
+ * beat call too. An unknown type returns {@link EnactResult#UNHANDLED} so the poller FAILS the
  * row queued for a future build (never marks a misunderstood beat fired).
  */
 public final class RealBeatEnactor implements BeatEnactor {

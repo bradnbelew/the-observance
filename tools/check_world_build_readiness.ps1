@@ -15,8 +15,11 @@ $pluginFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\O
 $holdProtectionFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\signal\listener\HoldProtectionListener.java"
 $structureTemplateFile = Join-Path $RepoRoot "plugin\src\main\java\com\observance\watcher\structure\StructureTemplates.java"
 $deepHoldLayoutCheck = Join-Path $RepoRoot "tools\check_deep_hold_layout.py"
+$deepHoldFixtureCheck = Join-Path $RepoRoot "tools\check_deep_hold_fixture_manifest.py"
+$deepHoldBookCheck = Join-Path $RepoRoot "tools\check_deep_hold_book_manuscripts.py"
+$deepHoldContentCheck = Join-Path $RepoRoot "tools\audit_deep_hold_content.py"
 
-foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $clueLedgerFile, $evidenceFile, $commandFile, $pluginFile, $holdProtectionFile, $structureTemplateFile, $deepHoldLayoutCheck)) {
+foreach ($file in @($sitesFile, $runbookFile, $structuresFile, $clueLedgerFile, $evidenceFile, $commandFile, $pluginFile, $holdProtectionFile, $structureTemplateFile, $deepHoldLayoutCheck, $deepHoldFixtureCheck, $deepHoldBookCheck, $deepHoldContentCheck)) {
   if (-not (Test-Path $file)) {
     throw "world build readiness: missing required file: $file"
   }
@@ -66,7 +69,8 @@ RequireText "ObservanceCommand.java production Hold fixture path" $commandSource
 RequireText "ObservanceCommand.java production Hold fixture path" $commandSource "Production Hold fixtures are dressed into the district shell"
 RequireText "ObservanceCommand.java production Hold owned rooms" $commandSource "buildHoldV2Shells"
 RequireText "ObservanceCommand.java production Hold owned rooms" $commandSource "buildHoldOwnedRoom"
-RequireText "ObservanceCommand.java production Hold owned templates" $commandSource "keeperInOwnedRoom"
+RequireText "ObservanceCommand.java production Hold native keeper fixtures" $commandSource "buildHoldKeeperStoneCore"
+RequireText "ObservanceCommand.java production Hold legacy-template rejection" $commandSource "No Hold-native fixture registered for"
 RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "buildHoldThresholdVaultCore"
 RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "buildHoldUnwritingCore"
 RequireText "ObservanceCommand.java production Hold native chambers" $commandSource "hasHoldFinaleMarkersNear"
@@ -93,6 +97,19 @@ if ($LASTEXITCODE -ne 0) {
 } else {
   foreach ($line in $deepHoldLayoutOutput) {
     Write-Host $line
+  }
+}
+
+foreach ($holdCheck in @($deepHoldFixtureCheck, $deepHoldBookCheck, $deepHoldContentCheck)) {
+  $holdOutput = & python $holdCheck 2>&1
+  if ($LASTEXITCODE -ne 0) {
+    foreach ($line in $holdOutput) {
+      Fail "deep hold strict audit: $line"
+    }
+  } else {
+    foreach ($line in $holdOutput) {
+      Write-Host $line
+    }
   }
 }
 

@@ -228,7 +228,7 @@ function auditCopperlineVoice(archiveSource: string): string[] {
   return issues;
 }
 
-function auditWebArtifacts(publicPageSource: string, recordPageSource: string): string[] {
+export function auditWebArtifacts(publicPageSource: string, recordPageSource: string): string[] {
   const issues: string[] = [];
   if (!publicPageSource.includes('archived server listing')) {
     issues.push('Public root must render as an abandoned server/map listing, not a generic dashboard');
@@ -338,7 +338,7 @@ function auditWebArtifacts(publicPageSource: string, recordPageSource: string): 
   return issues;
 }
 
-function auditRecordUrlDifficulty(seedRows: PuzzleSeedRow[]): string[] {
+export function auditRecordUrlDifficulty(seedRows: PuzzleSeedRow[]): string[] {
   const row = seedRows.find((r) => r.key === 'record-url');
   if (!row) return ['record-url seed row is missing; opening web-door puzzle cannot be audited'];
   const issues: string[] = [];
@@ -362,7 +362,7 @@ function auditRecordUrlDifficulty(seedRows: PuzzleSeedRow[]): string[] {
   return issues;
 }
 
-function auditRecordUrlHints(hintsSql: string): string[] {
+export function auditRecordUrlHints(hintsSql: string): string[] {
   const issues: string[] = [];
   const rowHints = [...hintsSql.matchAll(/\('record-url',\s*(\d+),\s*'((?:[^']|'')*)'\)/g)]
     .map((m) => ({ tier: Number(m[1]), body: (m[2] ?? '').replace(/''/g, "'").toLowerCase() }));
@@ -385,7 +385,7 @@ function auditRecordUrlHints(hintsSql: string): string[] {
   return issues;
 }
 
-function auditRecordElsewhereVoice(archiveSource: string): string[] {
+export function auditRecordElsewhereVoice(archiveSource: string): string[] {
   const issues: string[] = [];
   if (!archiveSource.includes('cardSurfaceRecordElsewhere')) {
     issues.push('Archive voice must keep the surface-record-elsewhere card for the web-door payoff');

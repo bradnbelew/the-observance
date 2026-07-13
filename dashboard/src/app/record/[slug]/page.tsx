@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { RuneGlyphs } from "@/lib/RuneGlyphs";
 import {
   project,
   REDACTED_GLYPH,
@@ -238,6 +239,7 @@ export default async function RecordPage({
       <div className="record-page narrow">
         <header className="record-system-header">
           <div><span>recordsrv/0.7</span><span>projection: public</span><span>mode: read-only</span></div>
+          <RuneGlyphs text="THE RECORD" className="mx-auto my-3 text-amber-700/70" height={22} />
           <h1>THE RECORD</h1>
           <p>{rec.season}</p>
         </header>

@@ -1871,11 +1871,13 @@ public final class StructureTemplates {
                 new String[]{"CALLBACK RACK", "FILE BY AGE", "NOT BY BAY", ""});
 
         Location procedure = pen.lectern(cx, cy, cz + 3, BlockFace.SOUTH);
+        // Canonical destination: copperlinehosting.com/support/ticket.php?id=1842
+        // It is line-wrapped below only to fit Minecraft's readable book width.
         pen.putBook(cx, cy, cz + 3, "callback procedure", "Copperline NOC", List.of(
-                "COPPERLINE FIELD RELAY\n\nservice: 1842\nstate: retired\njob: callback recovery",
-                "Four live line cards remain in the rack. The rack was rewired. Do not read the bays from left to right.",
-                "Recovery procedure:\n\nRead the copper jacket by age, oldest to newest. Copy the port digit from each matching card.",
-                "Enter the four-digit callback on archived support ticket 1842 at:\n\ncopperlinehosting.com/support/ticket.php?id=1842"
+                "COPPERLINE RELAY\n1842 / RETIRED\nCALLBACK\n",
+                "Four cards remain.\nRack rewired.\nDo not read by bay.\n",
+                "Order copper jackets\noldest to newest.\nCopy port digits.\n",
+                "File on ticket 1842:\ncopperlinehosting.com\n/support/ticket.php?id=1842\n"
         ));
 
         // Rack order is scrambled. The copper jacket above each card is the sorting evidence.
@@ -1895,8 +1897,8 @@ public final class StructureTemplates {
             pen.lectern(x, cy, cz - 4, BlockFace.SOUTH);
             pen.putBook(x, cy, cz - 4, "line card " + (i + 1), "Copperline NOC", List.of(
                     "LINE CARD " + (i + 1) + "\n\nport: " + ports[i]
-                            + "\njacket: " + ages[i].toLowerCase(Locale.ROOT) + " copper\nlamp test: passed",
-                    "Card retained after rack rewiring. Callback order follows jacket age, not physical bay."
+                            + "\njacket: " + ages[i].toLowerCase(Locale.ROOT) + "\nlamp: passed\n",
+                    "Card retained after\nrack rewiring.\n\nOrder follows jacket age,\nnot physical bay.\n"
             ));
         }
 

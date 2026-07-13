@@ -1,5 +1,11 @@
 # THE OBSERVANCE — CHANGE MANIFEST (pass 1 of the fold)
 
+> **CURRENT STATUS OVERRIDE — 2026-07-13.** This file is implementation history. Phrases such as
+> "not yet wired" below describe the pass in which they were written, not the current release.
+> The integrated runtime/DB paths, V4 Deep Hold, physical gates, content surfaces, Keeper/Wren paths,
+> and release audits are now implemented. Current truth lives in
+> `FINAL-LAUNCH-HANDOFF-2026-07-13.md` and `CURRENT-READINESS-VERDICT.md`.
+
 > **What this is.** The single "what we're adding / changing / cutting" ledger produced from two
 > research dossiers (Gemini's + Claude's) + the decisions locked with Ethan on **2026-06-30**.
 > It is deliberately produced BEFORE touching the interconnected canon, per Ethan's rule: *one

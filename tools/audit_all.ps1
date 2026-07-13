@@ -39,6 +39,12 @@ $launchCoordQualityCheck = Join-Path $RepoRoot "tools\check_launch_coord_quality
 $worldBuildCheck = Join-Path $RepoRoot "tools\check_world_build_readiness.ps1"
 $unlitReadinessCheck = Join-Path $RepoRoot "tools\check_unlit_readiness.ps1"
 $launchManualBlockerCheck = Join-Path $RepoRoot "tools\check_launch_manual_blockers.ps1"
+$repositoryIntegrityCheck = Join-Path $RepoRoot "tools\check_repository_integrity.py"
+
+python $repositoryIntegrityCheck
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
 
 Push-Location $discord
 try {

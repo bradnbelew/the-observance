@@ -73,8 +73,10 @@ def main() -> int:
         )
     if "StructureTemplates.keeper(id, loc)" in placement or "prepareTemplateVolume" in placement:
         blockers.append("production Keeper templates clear independent volumes instead of respecting V2 room ownership")
-    if "StructureTemplates.keeperInOwnedRoom(id, loc)" not in placement:
-        blockers.append("production Keeper templates are not using the owned-room placement path")
+    if "StructureTemplates.keeperInOwnedRoom" in placement:
+        blockers.append("production Hold placement still invokes a self-contained Keeper room template")
+    if "buildHoldKeeperStoneCore" not in command or "No Hold-native fixture registered for" not in placement:
+        blockers.append("production Keeper sites are not fail-closed on Hold-native fixture placement")
 
     lab = method(command, "fillLabLecternBook")
     if "fillLabLecternBook(" in placement:
@@ -122,7 +124,7 @@ def main() -> int:
             'if ("mara_lectern".equals(type) || "sella_lectern".equals(type))' in shaping:
         blockers.append("Mara/Sella work-table shaping branch is unreachable because the same types return earlier")
 
-    refs = re.findall(r"p\.\s*\d+\s*[Â··]\s*line\s*\d+\s*[Â··]\s*word\s*\d+", document)
+    refs = re.findall(r"p\.\s*\d+\s*[··]\s*line\s*\d+\s*[··]\s*word\s*\d+", document)
     answer_match = re.search(r'^answer:\s*"([^"]+)"', document, re.MULTILINE)
     answer_words = answer_match.group(1).split() if answer_match else []
     d05 = json.loads((ROOT / "design" / "deep-hold-d05-shelf.json").read_text(encoding="utf-8"))
