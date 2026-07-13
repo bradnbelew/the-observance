@@ -23,6 +23,7 @@ secrets.*
 *.db
 logs/
 *.log
+dashboard/public/the-hold/*.bak
 
 # OS / IDE
 .DS_Store

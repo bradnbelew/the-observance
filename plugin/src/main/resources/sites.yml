@@ -24,6 +24,21 @@ defaults:
   vertical-radius: 4     # +/- Y tolerance for proximity checks (caves/cliffs)
 
 sites:
+  # --- Live-server handoff: Copperline callback relay ----------------------
+  # Built once at the surface arrival with `/observance placerelay`. The room
+  # yields only a replaceable Copperline callback code; the expiring Discord
+  # invite remains server-side on the website and is never baked into the jar.
+  discord_relay:
+    type: "discord_relay"
+    world: "world"
+    x: null
+    y: null
+    z: null
+    radius: 12
+    vertical-radius: 8
+    protect: true
+    enabled: true
+
   # --- Custom-compliance anchors (DESIGN §2.4 / arc custom table) ------------
 
   bow_marker_01:

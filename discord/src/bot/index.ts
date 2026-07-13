@@ -15,6 +15,7 @@ import {
   Client,
   GatewayIntentBits,
   MessageFlags,
+  PermissionFlagsBits,
   type Interaction,
   type ChatInputCommandInteraction,
   type Message,
@@ -52,7 +53,7 @@ const client = new Client({
   ],
 });
 
-client.once('ready', (c) => {
+client.once('clientReady', (c) => {
   // wear the presence — the member list reads: The Watcher — Watching the ways.
   c.user.setPresence(BOT_PRESENCE);
 
@@ -64,6 +65,14 @@ client.once('ready', (c) => {
     const message = err instanceof Error ? err.message : String(err);
     console.error('[the-watcher] command registration failed:', err);
     void logEvent('error', SOURCE, `command registration failed: ${message}`);
+  });
+
+  // Production contract check: fail visibly in logs if the configured guild/channel is wrong or
+  // the bot cannot read and answer there. This never posts into player-facing Discord.
+  void auditDiscordSurface(c).catch((err) => {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[the-watcher] discord surface audit failed:', message);
+    void logEvent('error', SOURCE, `discord surface audit failed: ${message}`);
   });
 
   // voice tier (W5) — "it heard you say it". Off unless voice_capture + a voice channel + a Whisper
@@ -219,6 +228,29 @@ client.on('messageCreate', async (message: Message) => {
     // a stumble is silence too — never speak an error into the channel.
   }
 });
+
+async function auditDiscordSurface(readyClient: Client<true>): Promise<void> {
+  const guild = await readyClient.guilds.fetch(config.discord.guildId);
+  const channel = await guild.channels.fetch(config.channels.theRecord);
+  if (!channel || !channel.isTextBased()) {
+    throw new Error(`CHANNEL_THE_RECORD ${config.channels.theRecord} is missing or is not text-based`);
+  }
+  const me = guild.members.me ?? await guild.members.fetchMe();
+  const permissions = channel.permissionsFor(me);
+  const required = [
+    [PermissionFlagsBits.ViewChannel, 'ViewChannel'],
+    [PermissionFlagsBits.SendMessages, 'SendMessages'],
+    [PermissionFlagsBits.ReadMessageHistory, 'ReadMessageHistory'],
+    [PermissionFlagsBits.AttachFiles, 'AttachFiles'],
+  ] as const;
+  const missing = required.filter(([permission]) => !permissions?.has(permission)).map(([, name]) => name);
+  if (missing.length > 0) throw new Error(`#the-record is missing bot permissions: ${missing.join(', ')}`);
+  if (permissions?.has(PermissionFlagsBits.Administrator)) {
+    console.warn('[the-watcher] permission warning: Administrator is unnecessary; scope the bot to its ARG channels');
+    void logEvent('warn', SOURCE, 'bot has unnecessary Administrator permission');
+  }
+  console.log(`[the-watcher] discord surface ready: ${guild.name} / #${'name' in channel ? channel.name : config.channels.theRecord}`);
+}
 
 /**
  * Close the "first post feels dead" gap. The showrunner still owns the richer scheduled prologue

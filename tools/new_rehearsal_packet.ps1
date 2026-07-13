@@ -554,7 +554,7 @@ evidence:
 
 ## Server Load
 
-- [ ] Plugin `observance-0.3.23.jar` loaded on the target Paper 1.21.11 server.
+- [ ] Plugin `observance-0.3.24.jar` loaded on the target Paper 1.21.11 server.
 - [ ] Plugin jar SHA1 matched the current repo package: __PLUGIN_JAR_SHA1__.
 - [ ] Datapack `observance` loaded with no compatibility warnings.
 - [ ] Hosted resource pack downloaded for a real client.

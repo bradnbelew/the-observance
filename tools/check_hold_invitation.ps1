@@ -106,7 +106,8 @@ try {
     "service separator / :",
     "ending: common web",
     "assemble host + ending + service",
-    "when all are present, say kept",
+    "find the retired Copperline relay",
+    "bind every field name",
     "#the-record"
   )) {
     RequireText $functionText $evidence "production evidence"

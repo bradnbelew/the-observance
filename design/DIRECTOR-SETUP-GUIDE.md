@@ -80,7 +80,7 @@ Record hashes from `observance-deploy-manifest.json`, not from memory.
 ## Live Server Order
 
 1. Apply `discord/supabase/apply-all.sql` to the live Supabase project.
-2. Upload `plugin/build/libs/observance-0.3.23.jar` to the Paper server.
+2. Upload `plugin/build/libs/observance-0.3.24.jar` to the Paper server.
 3. Install `observance-datapack.zip` into the target world datapacks folder.
 4. Host `observance-resourcepack.zip` at a direct HTTPS zip URL.
 5. Run `tools\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>` if
@@ -132,6 +132,7 @@ director, not for direct player copy.
 ```text
 /obs placehold build
 /obs placehold audit
+/obs placerelay
 /obs placeworld
 /obs prepworld
 /obs sidepass
@@ -151,7 +152,9 @@ and protected Hold/entry-stair regions. `/obs placehold audit` must show
 records 8/8, entry walkable, clean early-route/grand-court/terrace/enclosure
 samples, and zero critical findings before a player-facing run.
 The surface prologue (`first_report_lectern_01` / `first_marker_01`) is still staged
-separately with `/obs placeprologue`.
+separately with `/obs placeprologue`. The Minecraft-to-Discord handoff is also separate:
+stand at its intended south approach near first arrival and run `/obs placerelay`, then verify
+callback `9137` on Copperline ticket `1842` and the `/link` -> `#the-record` -> `kept` path.
 
 5. Check hardware, structure, and dialogue:
 

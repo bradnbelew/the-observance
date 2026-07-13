@@ -179,6 +179,20 @@ button, input, select, textarea { font: inherit; }
 .support-articles section:first-child { border-top:0; }
 .support-articles h2 { margin:0 0 4px;color:#3d6070;font:bold 13px Georgia,serif; }
 .support-articles p { margin:0;color:#686d70;font-size:10px;line-height:1.55; }
+.relay-form { margin-top:12px;padding:12px;border:1px solid #a8afb2;background:#e8ecee; }
+.relay-form label { display:block;margin-bottom:5px;color:#4f575a;font-size:9px;font-weight:bold;text-transform:uppercase; }
+.relay-form > div { display:flex;gap:6px; }
+.relay-form input { width:150px;height:25px;padding:3px 6px;border:1px solid #899398;background:#fff;color:#25292b;font:12px "Courier New",monospace;letter-spacing:.12em; }
+.relay-form button { padding:3px 12px;border:1px solid #77858b;background:linear-gradient(#f6f7f7,#cbd2d5);color:#35464d;font-size:10px;cursor:pointer; }
+.relay-form small { display:block;margin-top:6px;color:#747d81;font-size:9px; }
+.relay-result { margin-top:12px;padding:13px;border:1px solid #80969f;background:#edf4f5; }
+.relay-result h2 { margin:0 0 5px;color:#34515c;font:bold 15px Georgia,serif; }
+.relay-result > p { margin:0 0 9px; }
+.relay-result > a { display:inline-block;padding:5px 13px;border:1px solid #59737d;background:#d7e5e9;color:#234854;font-size:10px;font-weight:bold; }
+.relay-linking { margin-top:12px;padding:9px;border-top:1px dotted #87999f;background:#e4edef; }
+.relay-linking > b { color:#40545b;font-size:9px;text-transform:uppercase; }
+.relay-linking p { margin:5px 0 0;color:#4c575b;font-size:10px;line-height:1.5; }
+.relay-linking code { padding:1px 3px;background:#d2dcdf;color:#24383f;font-family:"Courier New",monospace; }
 .dead-link { color:#999;font-size:10px; }
 
 /* Static user mirror: deliberately crude. It is outside the restored WHMCS

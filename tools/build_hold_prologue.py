@@ -536,7 +536,8 @@ def make_datapack(root: Path) -> None:
             "four host fragments were filed in rooms one through four.\n\njoin them in numeral order without spaces.",
             "the host ending is common web.",
             "the sixth hand files the service mark.\n\nplace it before the five digits filed by hands one through five.",
-            "assemble host + ending + service.\n\nbring the others there. when all are present, say kept in #the-record.",
+            "assemble host + ending + service.\n\nbring the others there. find the retired Copperline relay near the first landing.",
+            "recover its remote room. bind every field name before one of you writes kept in #the-record.",
         ],
     )
     for z in [292, 308, 324]:

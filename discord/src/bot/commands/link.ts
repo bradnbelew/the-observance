@@ -11,7 +11,7 @@
  * Every player-facing string comes from voice.ts.
  */
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
-import { linkDiscord, logEvent } from '../../db/repo.js';
+import { getPlayerByDiscordId, linkDiscord, logEvent } from '../../db/repo.js';
 import { voice } from '../../voice.js';
 
 const SOURCE = 'the-watcher/link';
@@ -24,6 +24,16 @@ export async function handleLink(
   // CRITICAL (audit): defer ephemeral before the linkDiscord DB lookup so a slow round-trip can't
   // trip Discord's 3s "did not respond". Linking is always a private interaction → ephemeral.
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+  const existing = await getPlayerByDiscordId(interaction.user.id);
+  if (existing) {
+    await interaction.editReply({
+      content: existing.name.toLowerCase() === name.toLowerCase()
+        ? voice.linked(existing.name)
+        : voice.linkFixed(existing.name),
+    });
+    return;
+  }
 
   const player = await linkDiscord(interaction.user.id, name);
 

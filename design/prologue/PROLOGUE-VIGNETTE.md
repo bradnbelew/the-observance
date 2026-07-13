@@ -12,8 +12,8 @@ tools/check_hold_invitation.ps1 audits the package.
 - Player mode: adventure.
 - Required mods or resource pack: none.
 - Payload: deterministic command-built world; no pre-generated region files.
-- Size: 17756 bytes.
-- SHA1: c85cc6509477d8b51fd06142f088a98621c8f73f.
+- Size: 17812 bytes.
+- SHA1: 8a4986422a4af6c65b47f76c61a1e75421b568d4.
 - Route envelope: x=-20..20, y=235..253, z=-28..333.
 - Structure: six closed rooms, five closed progression gates, five bounded passages.
 - Runtime verification: every function parsed on the repository Paper 1.21.11 server; endpoint books,
@@ -147,7 +147,10 @@ Purpose: assemble the live destination from evidence earned throughout the walk.
 
 HANDOFF says the dead directory was the road to this copy, orders host fragments I–IV without spaces,
 supplies the common-web ending, and places the sixth-hand separator before the first five service digits.
-It then tells the player to bring the group to the assembled destination and say `kept` in `#the-record`.
+It then tells the player to bring the group to the assembled destination and find the retired
+Copperline relay near first arrival. That live-server room recovers callback `9137`; Copperline
+ticket `1842` opens the Discord room, which explicitly requires `/link` before the group writes
+`kept` in `#the-record`.
 
 ## Text and container implementation
 

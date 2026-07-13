@@ -73,6 +73,9 @@ export async function linkDiscord(
   if (findErr) throw findErr;
   if (!found) return null;
   if (found.name?.toLowerCase() !== mcName.trim().toLowerCase()) return null;
+  // Never let a second Discord account seize a keeper name that is already bound. Returning null
+  // deliberately does not disclose whether the offered name was absent or privately bound.
+  if (found.discord_id && found.discord_id !== discordId) return null;
 
   const { data, error } = await supabase
     .from('players')
@@ -243,23 +246,31 @@ export async function searchHintedPuzzles(
   const { data, error } = await q.returns<Array<{ puzzle_key: string }>>();
   if (error || !data) return [];
 
+  // Hints exist for the whole authored campaign, including late-game rows. Intersect with the
+  // exact active+requires_flags set used by the answer resolver before autocomplete can expose a
+  // title or internal key. This is also the safe failure mode: a flag/DB error yields no choices.
+  let open: Puzzle[];
+  try {
+    open = await getOpenPuzzles();
+  } catch {
+    return [];
+  }
+  const openByKey = new Map(open.map((p) => [p.puzzle_key, p]));
+
   const keys: string[] = [];
   const seen = new Set<string>();
   for (const row of data) {
-    if (!row.puzzle_key || seen.has(row.puzzle_key)) continue;
+    if (!row.puzzle_key || seen.has(row.puzzle_key) || !openByKey.has(row.puzzle_key)) continue;
     seen.add(row.puzzle_key);
     keys.push(row.puzzle_key);
     if (keys.length >= limit) break;
   }
   if (keys.length === 0) return [];
 
-  const { data: puzzles } = await supabase
-    .from('puzzles')
-    .select('puzzle_key, title')
-    .in('puzzle_key', keys)
-    .returns<Array<{ puzzle_key: string; title: string | null }>>();
-  const titles = new Map((puzzles ?? []).map((p) => [p.puzzle_key, p.title]));
-  return keys.map((puzzleKey) => ({ puzzleKey, title: titles.get(puzzleKey) ?? null }));
+  return keys.map((puzzleKey) => ({
+    puzzleKey,
+    title: openByKey.get(puzzleKey)?.title ?? null,
+  }));
 }
 
 /**

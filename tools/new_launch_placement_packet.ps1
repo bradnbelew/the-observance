@@ -181,6 +181,9 @@ function Is-Placeholder($Site) {
 }
 
 function After-Survey([string]$SiteId) {
+  if ($SiteId -eq "discord_relay") {
+    return "Run /obs audit, read all five books in Adventure mode, then submit 9137 on Copperline ticket 1842."
+  }
   if ($holdSiteSet.Contains($SiteId)) {
     return "No hand survey first: run /obs placehold build, then /obs placehold audit/sync; capture proof from the generated Hold room."
   }
@@ -232,7 +235,10 @@ foreach ($id in $launchSites) {
   $site = if ($sites.Contains($id)) { $sites[$id] } else { $null }
   $brief = Brief-For $id
   $isHoldOwned = $holdSiteSet.Contains($id)
-  $placementMethod = if ($isHoldOwned) {
+  $isDedicatedBuilder = $id -eq "discord_relay"
+  $placementMethod = if ($isDedicatedBuilder) {
+    "Dedicated builder"
+  } elseif ($isHoldOwned) {
     "Deep Hold generated"
   } elseif ($id -eq "nether_forge" -or $id -eq "end_seventh_shrine") {
     "Dimension survey"
@@ -243,14 +249,14 @@ foreach ($id in $launchSites) {
   }
   $status = if (Is-Placeholder $site) {
     "TODO"
-  } elseif ($isHoldOwned) {
+  } elseif ($isHoldOwned -or $isDedicatedBuilder) {
     "GENERATED_PROOF_PENDING"
   } elseif ($placementMethod -eq "Dimension survey" -or $placementMethod -eq "Bespoke survey + placeworld") {
     "SURVEYED_STAMP_PENDING"
   } else {
     "COORDS_CAPTURED"
   }
-  $setupCommand = if ($isHoldOwned) { "/obs placehold build; /obs placehold audit; /obs placehold sync" } else { "/obs site set $id" }
+  $setupCommand = if ($isDedicatedBuilder) { "/obs placerelay; /obs audit" } elseif ($isHoldOwned) { "/obs placehold build; /obs placehold audit; /obs placehold sync" } else { "/obs site set $id" }
   $placeRule = if ($isHoldOwned) {
     "Generated inside the Deep Hold district plan; use the intent as the room-proof lens, not as a manual scatter rule."
   } else {

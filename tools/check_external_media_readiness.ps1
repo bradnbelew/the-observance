@@ -111,7 +111,7 @@ foreach ($needle in @(
   "spectrogram-key.txt",
   "intentionally omitted",
   "dashboard/public/the-hold/the-hold.zip",
-  "c85cc6509477d8b51fd06142f088a98621c8f73f",
+  "8a4986422a4af6c65b47f76c61a1e75421b568d4",
   "host fragments I-IV + common-web ending + service digits 25569; no assembled raw server endpoint",
   "/record/the-record-keeps",
   "spine-recovered-archive requires seventh_suspected and recovered_archive_ready",
@@ -126,7 +126,7 @@ foreach ($needle in @(
 foreach ($needle in @(
   "MANUAL MEDIA STAGING RECEIPT",
   "the-hold.zip",
-  "c85cc6509477d8b51fd06142f088a98621c8f73f",
+  "8a4986422a4af6c65b47f76c61a1e75421b568d4",
   "host fragments I-IV + common-web ending + service digits 25569; no assembled raw server endpoint",
   "no README/manifest/spoiler-style entries found",
   "base_check_06.mp4",

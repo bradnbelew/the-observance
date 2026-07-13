@@ -130,6 +130,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "runbook" -> handleRunbook(sender, args);
             case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
+            case "placerelay" -> handlePlaceRelay(sender);
             case "lens" -> handleLens(sender, args);
             case "wren" -> handleWren(sender, args);
             case "keeper" -> handleKeeper(sender, args);
@@ -138,7 +139,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "needle" -> handleNeedle(sender, args);
             case "finale" -> handleFinaleMarkers(sender);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director <state|progress|world|lab> [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId|lane] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placehold <build|audit|seal|open|sync> | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown subcommand. Use: status | director <state|progress|world|lab> [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId|lane] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placehold <build|audit|seal|open|sync> | placerelay | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
         }
     }
 
@@ -285,6 +286,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     /** The launch blocker list shared with tools/check_world_build_readiness.ps1 -Launch. */
     private static final String[] LAUNCH_REQUIRED_SITES = {
+            "discord_relay",
             "first_report_lectern_01",
             "rune_rosetta",
             "stone_vaun",
@@ -358,7 +360,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private static final PlacementLane[] PLACEMENT_LANES = {
             new PlacementLane("prologue", "Prologue / first literacy", new String[]{
-                    "first_report_lectern_01", "rune_rosetta"
+                    "discord_relay", "first_report_lectern_01", "rune_rosetta"
             }),
             new PlacementLane("keepers", "Six keeper evidence sites", new String[]{
                     "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
@@ -1769,6 +1771,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private PlacementBrief placementBrief(String id) {
         return switch (id) {
+            case "discord_relay" -> new PlacementBrief(
+                    "live-server callback puzzle; the only bridge from Minecraft into the private Discord surface",
+                    "stand at the intended south approach near first arrival and run /obs placerelay; keep it separate from the Hold mouth",
+                    "roofed shell, flat entrance, all five lecterns readable from the south, copper-age order resolves 9137, ticket 1842 accepts it");
             case "first_report_lectern_01" -> new PlacementBrief(
                     "cold-open record handoff; the first readable lie/truth surface",
                     "near the first believable player disturbance, not in a spawn plaza",
@@ -10674,6 +10680,45 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      * the beat engine to be active (it enacts through the shared {@link
      * com.observance.watcher.beats.BeatContext}).
      */
+    /** Build the one surface callback puzzle that hands players from Minecraft to Discord.
+     * Stand at the intended SOUTH approach; the structure is placed immediately to the north and
+     * the player remains outside. The recovered callback is entered on Copperline ticket 1842. */
+    private void handlePlaceRelay(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Observance: /observance placerelay must be run by a player at the intended approach.");
+            return;
+        }
+        World world = player.getWorld();
+        int centerX = player.getLocation().getBlockX();
+        int centerZ = player.getLocation().getBlockZ() - 10;
+
+        // Seat the whole footprint above its highest terrain cell so no hill seals a wall or reading lane.
+        int centerY = world.getMinHeight() + 1;
+        for (int dx = -9; dx <= 9; dx++) {
+            for (int dz = -8; dz <= 10; dz++) {
+                centerY = Math.max(centerY, world.getHighestBlockYAt(centerX + dx, centerZ + dz,
+                        org.bukkit.HeightMap.MOTION_BLOCKING) + 1);
+            }
+        }
+        if (centerY + 8 >= world.getMaxHeight()) {
+            sender.sendMessage("Observance: relay footprint is too close to the build ceiling; choose lower ground.");
+            return;
+        }
+
+        Location roomCenter = new Location(world, centerX, centerY, centerZ);
+        Location procedure = StructureTemplates.discordRelay(roomCenter);
+        if (procedure == null) {
+            sender.sendMessage("Observance: relay build failed; keep the target chunks loaded and try again.");
+            return;
+        }
+        Site relay = new Site("discord_relay", "discord_relay", world.getName(),
+                procedure.getX(), procedure.getY(), procedure.getZ(), 12, 8, true, true, null);
+        plugin.registerRuntimeSite(relay);
+        sender.sendMessage("Observance: Copperline field relay built ahead of you, entrance facing SOUTH.");
+        sender.sendMessage("  Players recover callback 9137 and enter it on archived support ticket 1842.");
+        sender.sendMessage("  Site persisted as discord_relay. Run /obs audit and inspect all five books in Adventure mode.");
+    }
+
     private void handlePlacePrologue(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage("Observance: /observance placeprologue must be run by a player (needs a location).");
@@ -12380,6 +12425,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         String type = site.type();
         if ("first_report_lectern_01".equals(id)
                 || "first_marker_01".equals(id)
+                || "discord_relay".equals(id)
                 || "report_lectern".equals(type)
                 || "mara_lectern".equals(type)) {
             return false;
@@ -12696,6 +12742,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (hasMaterialNear(loc, Math.max(3, site.radius()), Material.BEACON)) {
             return "FAIL " + site.id() + ": retired beacon block still present near site; run /observance repair.";
         }
+        if ("discord_relay".equals(type)) {
+            int radius = Math.max(3, site.radius());
+            if (block.getType() != Material.LECTERN || countFilledLecternsNear(loc, radius) < 5) {
+                return "FAIL discord_relay: expected five filled procedure/card lecterns.";
+            }
+            if (countFacingLecternsNear(loc, radius, BlockFace.SOUTH) < 5) {
+                return "FAIL discord_relay: all five lecterns must face the south approach.";
+            }
+            if (!hasMaterialNear(loc, radius, Material.COPPER_BLOCK)
+                    || !hasMaterialNear(loc, radius, Material.EXPOSED_COPPER)
+                    || !hasMaterialNear(loc, radius, Material.WEATHERED_COPPER)
+                    || !hasMaterialNear(loc, radius, Material.OXIDIZED_COPPER)) {
+                return "FAIL discord_relay: callback rack is missing one or more copper-age jackets.";
+            }
+            if (!relayShellIntact(loc)) {
+                return "FAIL discord_relay: roof, bounded walls, or flat three-wide south entrance is broken.";
+            }
+            return null;
+        }
         if ("report_lectern".equals(type) || "mara_lectern".equals(type) || "sella_lectern".equals(type)) {
             if (block.getType() != Material.LECTERN) {
                 return "FAIL " + site.id() + ": expected a lectern, found " + block.getType() + ".";
@@ -12918,6 +12983,67 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return found;
     }
 
+    private int countFilledLecternsNear(Location loc, int radius) {
+        if (loc == null || loc.getWorld() == null) return 0;
+        int found = 0;
+        int r = Math.max(1, Math.min(12, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -2; dy <= 4; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    Block b = loc.getWorld().getBlockAt(loc.getBlockX() + dx, loc.getBlockY() + dy,
+                            loc.getBlockZ() + dz);
+                    if (!(b.getState() instanceof Lectern lectern)) continue;
+                    ItemStack item = lectern.getInventory().getItem(0);
+                    if (item != null && item.getType() == Material.WRITTEN_BOOK) found++;
+                }
+            }
+        }
+        return found;
+    }
+
+    private int countFacingLecternsNear(Location loc, int radius, BlockFace facing) {
+        if (loc == null || loc.getWorld() == null || facing == null) return 0;
+        int found = 0;
+        int r = Math.max(1, Math.min(12, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -2; dy <= 4; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    Block b = loc.getWorld().getBlockAt(loc.getBlockX() + dx, loc.getBlockY() + dy,
+                            loc.getBlockZ() + dz);
+                    if (b.getType() == Material.LECTERN && b.getBlockData() instanceof Directional d
+                            && d.getFacing() == facing) found++;
+                }
+            }
+        }
+        return found;
+    }
+
+    /** Exact shell contract relative to the persisted procedure lectern at centerZ+3. */
+    private boolean relayShellIntact(Location procedure) {
+        if (procedure == null || procedure.getWorld() == null) return false;
+        World world = procedure.getWorld();
+        int cx = procedure.getBlockX();
+        int cy = procedure.getBlockY();
+        int centerZ = procedure.getBlockZ() - 3;
+        // Roof samples at center and four corners.
+        for (int[] p : new int[][]{{0, 0}, {-8, -7}, {-8, 7}, {8, -7}, {8, 7}}) {
+            if (!world.getBlockAt(cx + p[0], cy + 6, centerZ + p[1]).getType().isSolid()) return false;
+        }
+        // Side/back wall samples must stay closed.
+        for (int[] p : new int[][]{{-8, 1, 0}, {8, 1, 0}, {0, 1, -7}}) {
+            if (!world.getBlockAt(cx + p[0], cy + p[1], centerZ + p[2]).getType().isSolid()) return false;
+        }
+        // South opening and its two-block exterior path remain flat and traversable.
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = 0; dy <= 2; dy++) {
+                if (!world.getBlockAt(cx + dx, cy + dy, centerZ + 7).isEmpty()) return false;
+            }
+            if (!world.getBlockAt(cx + dx, cy - 1, centerZ + 8).getType().isSolid()) return false;
+            if (!world.getBlockAt(cx + dx, cy - 1, centerZ + 9).getType().isSolid()) return false;
+        }
+        return true;
+    }
+
     private boolean hasItemFrameNear(Location loc, double radius) {
         if (loc == null || loc.getWorld() == null) return false;
         double r = Math.max(0.5, Math.min(4.0, radius));
@@ -13025,7 +13151,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private static boolean isCoreAuditSite(String id) {
         if (id == null) return false;
         return switch (id) {
-            case "first_report_lectern_01", "first_marker_01", "rune_rosetta",
+            case "discord_relay", "first_report_lectern_01", "first_marker_01", "rune_rosetta",
                  "stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss",
                  "stone_of_reckoning", "the_cold_hearth", "unbroken_light", "the_threshold",
                  "the_unwriting", "threshold_vault",
@@ -13165,7 +13291,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
         if (args.length == 1) {
-            for (String s : new String[]{"status", "director", "audit", "visualaudit", "dialogueaudit", "preflight", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "unlit", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placehold", "placelab", "fullrun", "prepworld", "descentproof", "sidepass", "puzzlepass", "dreadpass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "director", "audit", "visualaudit", "dialogueaudit", "preflight", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "unlit", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placehold", "placerelay", "placelab", "fullrun", "prepworld", "descentproof", "sidepass", "puzzlepass", "dreadpass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("placehold")) {

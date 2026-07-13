@@ -1,5 +1,5 @@
 name: Observance
-version: '0.3.23'
+version: '0.3.24'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
@@ -59,6 +59,7 @@ commands:
       /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
       /observance placelecterns [spacing] - stamp the five Mara page-lock lecterns here with books already loaded
       /observance placehold <build|audit|seal|open|sync> - place and operate the production Deep Hold megastructure
+      /observance placerelay - build the surface Copperline callback puzzle that opens the Discord handoff
       /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
       /observance fullrun [spacing] - one-command rehearsal: full lab, side/lore, puzzle grid, dread route, repair, audit, coverage
       /observance prepworld [spacing] - compact rehearsal-only board: prologue, spine, lecterns, NPCs, finale/readings, tools

@@ -26,7 +26,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1
 ```
 
 That compiles every plugin Java source file with JDK 21 against the local Gradle dependency cache, copies
-`src/main/resources`, and writes `plugin/build/libs/observance-0.3.23.jar`. Verify the deployable jar with:
+`src/main/resources`, and writes `plugin/build/libs/observance-0.3.24.jar`. Verify the deployable jar with:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/check_plugin_jar.ps1
@@ -39,7 +39,7 @@ cd D:/the-observance/plugin
 ./gradlew build        # Windows: gradlew.bat build
 ```
 
-Either path lands the deployable jar in `build/libs/observance-0.3.23.jar`. Copy that into the server's
+Either path lands the deployable jar in `build/libs/observance-0.3.24.jar`. Copy that into the server's
 `plugins/`.
 
 For a source-only compile check without writing the jar:

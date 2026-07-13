@@ -63,7 +63,7 @@
   plugin jar, datapack zip, resource-pack zip, validates them, and refreshes the deploy manifest.
 - If you changed only plugin Java/resources and need a partial package, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_plugin.ps1`** before uploading
-  `plugin/build/libs/observance-0.3.23.jar`.
+  `plugin/build/libs/observance-0.3.24.jar`.
 - If you changed only `datapack/` or `resourcepack/` and need a partial package, run
   **`powershell -NoProfile -ExecutionPolicy Bypass -File tools/package_assets.ps1`** before the audit.
 - Those package commands refresh **`observance-deploy-manifest.json`**. Use that manifest as the deploy
@@ -79,7 +79,7 @@
 
 ### 1c. Server (Crafty)
 - Create a **Paper 1.21.11** server; give it Java 21 + 3–4 GB RAM.
-- **Plugin:** upload `plugin/build/libs/observance-0.3.23.jar` to `plugins/` (the reshape build — earned-
+- **Plugin:** upload `plugin/build/libs/observance-0.3.24.jar` to `plugins/` (the reshape build — earned-
   literacy rune-cribs, de-announced structure labels, terrain-following + scattered placement, townsfolk).
 - **Key:** in `plugins/Observance/config.yml`, set `supabase.service-key: "<service_role key>"`
   (leave `service-key-env` alone). The `url` is already filled.
@@ -254,7 +254,7 @@ showrunner runtime checks, dashboard selftests/lint/type/build, Java 21 plugin s
 plugin DB contract checks, operator-doc command check, Minecraft sign/book/HUD text-surface fit, plugin jar freshness/contents,
 Record/web lure withholding, Record terminal hint escalation, rune alphabet cohesion, and
 datapack/resourcepack JSON/reference/zip checks.
-Plugin target jar is `observance-0.3.23.jar`; use
+Plugin target jar is `observance-0.3.24.jar`; use
 `tools/package_plugin.ps1` to rebuild it without Gradle. On the live server, verify with
 `/observance status` and `/observance preflight`;
 DB connected (drift fixed);

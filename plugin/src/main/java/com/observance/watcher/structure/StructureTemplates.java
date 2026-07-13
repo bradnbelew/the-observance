@@ -1799,6 +1799,117 @@ public final class StructureTemplates {
      * Every method is null/quirk-safe: a bad material or odd block never throws (Safety is the caller's
      * job, but a set-piece must never half-explode mid-build).
      * ============================================================================================== */
+    /**
+     * Build the mundane Copperline field relay used for the live-server -> Discord handoff.
+     * The actual Discord invite is deliberately not stored in Minecraft; the recovered callback
+     * code is entered on archived Copperline ticket 1842, whose destination can be rotated.
+     *
+     * <p>Approach is from SOUTH. Every lectern faces the entering player. The shell is fully
+     * roofed and bounded, with one flat three-block entrance safe in Adventure mode. The four
+     * cards resolve oldest-to-newest as oxidized 9, weathered 1, exposed 3, bright 7.</p>
+     */
+    public static Location discordRelay(Location base) {
+        if (base == null || base.getWorld() == null) return null;
+        World world = base.getWorld();
+        if (!world.isChunkLoaded(base.getBlockX() >> 4, base.getBlockZ() >> 4)) return null;
+
+        Pen pen = new Pen(world);
+        int cx = base.getBlockX(), cy = base.getBlockY(), cz = base.getBlockZ();
+        pen.clearBox(cx, cy, cz, 10, 8);
+
+        // Sealed shell: 17x15, six-block interior height, one obvious flat entry on the south wall.
+        for (int dx = -8; dx <= 8; dx++) {
+            for (int dz = -7; dz <= 7; dz++) {
+                // Seat the building on uneven surface terrain instead of leaving a floating floor.
+                int supportY = cy - 2;
+                int supportFloor = Math.max(world.getMinHeight(), cy - 14);
+                while (supportY >= supportFloor
+                        && !world.getBlockAt(cx + dx, supportY, cz + dz).getType().isSolid()) {
+                    pen.set(cx + dx, supportY, cz + dz, Material.COBBLED_DEEPSLATE);
+                    supportY--;
+                }
+                Material floor = ((Math.abs(dx) + Math.abs(dz)) % 7 == 0)
+                        ? Material.CRACKED_DEEPSLATE_TILES : Material.DEEPSLATE_TILES;
+                pen.set(cx + dx, cy - 1, cz + dz, floor);
+                Material roof = (Math.abs(dx) == 8 || Math.abs(dz) == 7)
+                        ? Material.WEATHERED_CUT_COPPER : Material.DEEPSLATE_BRICKS;
+                pen.set(cx + dx, cy + 6, cz + dz, roof);
+
+                boolean rim = Math.abs(dx) == 8 || Math.abs(dz) == 7;
+                if (!rim) continue;
+                for (int dy = 0; dy <= 5; dy++) {
+                    Material wall = dy == 2 ? Material.TUFF_BRICKS
+                            : (((dx + dz + dy) & 7) == 0
+                            ? Material.CRACKED_DEEPSLATE_BRICKS : Material.DEEPSLATE_BRICKS);
+                    pen.set(cx + dx, cy + dy, cz + dz, wall);
+                }
+            }
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = 0; dy <= 3; dy++) pen.set(cx + dx, cy + dy, cz + 7, Material.AIR);
+            pen.set(cx + dx, cy - 1, cz + 8, Material.POLISHED_DEEPSLATE);
+            pen.set(cx + dx, cy - 1, cz + 9, Material.POLISHED_DEEPSLATE);
+        }
+
+        // Structural ribs and practical lighting. Nothing depends on a redstone state.
+        for (int x : new int[]{-8, 8}) {
+            for (int z : new int[]{-4, 0, 4}) {
+                for (int dy = 0; dy <= 5; dy++) {
+                    pen.set(cx + x, cy + dy, cz + z,
+                            dy == 3 ? Material.OXIDIZED_CUT_COPPER : Material.POLISHED_DEEPSLATE);
+                }
+            }
+        }
+        for (int x : new int[]{-6, 0, 6}) {
+            pen.set(cx + x, cy + 5, cz + 1, Material.IRON_CHAIN);
+            pen.hangingLantern(cx + x, cy + 4, cz + 1, false);
+        }
+
+        pen.labelWallSign(cx, cy + 4, cz + 8, BlockFace.SOUTH, copperWallSign(),
+                new String[]{"COPPERLINE", "FIELD RELAY", "SERVICE 1842", "RETIRED"});
+        pen.labelWallSign(cx, cy + 3, cz - 6, BlockFace.SOUTH, copperWallSign(),
+                new String[]{"CALLBACK RACK", "FILE BY AGE", "NOT BY BAY", ""});
+
+        Location procedure = pen.lectern(cx, cy, cz + 3, BlockFace.SOUTH);
+        pen.putBook(cx, cy, cz + 3, "callback procedure", "Copperline NOC", List.of(
+                "COPPERLINE FIELD RELAY\n\nservice: 1842\nstate: retired\njob: callback recovery",
+                "Four live line cards remain in the rack. The rack was rewired. Do not read the bays from left to right.",
+                "Recovery procedure:\n\nRead the copper jacket by age, oldest to newest. Copy the port digit from each matching card.",
+                "Enter the four-digit callback on archived support ticket 1842 at:\n\ncopperlinehosting.com/support/ticket.php?id=1842"
+        ));
+
+        // Rack order is scrambled. The copper jacket above each card is the sorting evidence.
+        int[] cardX = {-6, -2, 2, 6};
+        Material[] jackets = {
+                Material.COPPER_BLOCK, Material.OXIDIZED_COPPER,
+                Material.EXPOSED_COPPER, Material.WEATHERED_COPPER
+        };
+        String[] ages = {"BRIGHT", "OXIDIZED", "EXPOSED", "WEATHERED"};
+        String[] ports = {"7", "9", "3", "1"};
+        for (int i = 0; i < cardX.length; i++) {
+            int x = cx + cardX[i];
+            pen.set(x, cy + 2, cz - 6, jackets[i]);
+            pen.set(x, cy + 1, cz - 6, Material.COPPER_BULB);
+            pen.labelWallSign(x, cy + 3, cz - 6, BlockFace.SOUTH, copperWallSign(),
+                    new String[]{"BAY " + (i + 1), ages[i], "PORT " + ports[i], "LINE PASSED"});
+            pen.lectern(x, cy, cz - 4, BlockFace.SOUTH);
+            pen.putBook(x, cy, cz - 4, "line card " + (i + 1), "Copperline NOC", List.of(
+                    "LINE CARD " + (i + 1) + "\n\nport: " + ports[i]
+                            + "\njacket: " + ages[i].toLowerCase(Locale.ROOT) + " copper\nlamp test: passed",
+                    "Card retained after rack rewiring. Callback order follows jacket age, not physical bay."
+            ));
+        }
+
+        // Maintenance residue stays outside every reading sightline and walking lane.
+        pen.set(cx - 6, cy, cz + 4, Material.BARREL);
+        pen.set(cx - 7, cy, cz + 4, Material.CRAFTING_TABLE);
+        pen.set(cx + 6, cy, cz + 4, Material.ENDER_CHEST);
+        pen.set(cx + 7, cy, cz + 4, Material.SMITHING_TABLE);
+        pen.set(cx - 7, cy + 1, cz - 5, Material.COBWEB);
+        pen.set(cx + 7, cy + 1, cz - 5, Material.COBWEB);
+        return procedure;
+    }
+
     private static final class Pen {
         private final World world;
         Pen(World world) { this.world = world; }
@@ -2180,6 +2291,38 @@ public final class StructureTemplates {
                     } else {
                         for (String real : com.observance.watcher.util.TextFit.paginate(body)) {
                             meta.addPage(real);
+                        }
+                    }
+                    book.setItemMeta(meta);
+                }
+                lectern.getInventory().setItem(0, book);
+                lectern.update(true, false);
+            } catch (Throwable ignored) { }
+        }
+
+        /** Put an explicitly-attributed, fully-authored multi-page book on a lectern. Non-Hold
+         * surfaces must not inherit the default "the kept" author, and each page is fitted before
+         * it reaches the client so no invisible overflow or serialized placeholder text is shown. */
+        void putBook(int x, int y, int z, String title, String author, List<String> pages) {
+            if (world == null) return;
+            try {
+                Block b = world.getBlockAt(x, y, z);
+                if (!(b.getState() instanceof Lectern lectern)) return;
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                if (book.getItemMeta() instanceof BookMeta meta) {
+                    meta.setTitle(com.observance.watcher.util.TextFit.clampLine(
+                            title == null || title.isBlank() ? "field record" : title, 32));
+                    meta.setAuthor(com.observance.watcher.util.TextFit.clampLine(
+                            author == null || author.isBlank() ? "unknown" : author, 32));
+                    List<String> authored = (pages == null || pages.isEmpty()) ? List.of("") : pages;
+                    for (String page : authored) {
+                        String body = page == null ? "" : page;
+                        if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
+                            meta.addPage(body);
+                        } else {
+                            for (String fitted : com.observance.watcher.util.TextFit.paginate(body)) {
+                                meta.addPage(fitted);
+                            }
                         }
                     }
                     book.setItemMeta(meta);

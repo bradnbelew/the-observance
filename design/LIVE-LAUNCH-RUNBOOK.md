@@ -6,8 +6,8 @@ not turn the live world into a rehearsal grid and does not advance the live stor
 ## Production Artifacts
 
 - Server: Paper 1.21.11 on Java 21
-- Plugin: `plugin/build/libs/observance-0.3.23.jar`
-- Plugin SHA1: `38ebdcb6ab700ba81a4efd7b771e4b661559e092`
+- Plugin: `plugin/build/libs/observance-0.3.24.jar`
+- Plugin SHA1: `db24d2da504c4afa936bfd9f32e4540608cf1ecd`
 - Datapack: `observance-datapack.zip`
 - Datapack SHA1: `2b8563889735e82d3ed26ac8e94537c7b2c08c19`
 - Resource pack: `observance-resourcepack.zip`
@@ -29,7 +29,7 @@ Given a Paper server root called `<server>` and the `level-name` from `server.pr
    `<server>/plugins/Observance` if they already exist.
 2. Remove or archive older Observance jars so exactly one Observance jar will be in
    `<server>/plugins/`.
-3. Put `observance-0.3.23.jar` at `<server>/plugins/observance-0.3.23.jar`.
+3. Put `observance-0.3.24.jar` at `<server>/plugins/observance-0.3.24.jar`.
 4. Put `observance-datapack.zip` at `<server>/<world>/datapacks/observance-datapack.zip`. Leave it as
    a zip.
 5. Set the Paper process environment variable `OBSERVANCE_SUPABASE_KEY` to the rotated live Supabase
@@ -64,7 +64,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_hosted_resource_
 ## 2. First Controlled Boot
 
 1. Start Paper with the whitelist on.
-2. Confirm the console says Observance 0.3.23 enabled and shows no plugin, datapack, pack-format, or
+2. Confirm the console says Observance 0.3.24 enabled and shows no plugin, datapack, pack-format, or
    worldgen error.
 3. Join as the operator and run:
 
@@ -105,7 +105,22 @@ critical findings. Initial entry and keeper gates are open; later gates remain s
 
 The Hold command owns its contained sites. Never hand-survey or `placeworld` those rooms.
 
-## 4. Place The Three Non-Hold Launch Anchors
+## 4. Place The Non-Hold Launch Anchors
+
+### Copperline relay / Discord handoff
+
+Near the first live-server arrival, choose level surface ground with a clear south approach. Stand
+where the approach should end; the structure will be placed directly north of you. Run:
+
+```text
+/obs placerelay
+/obs audit
+```
+
+Walk the result in Adventure mode. All five lecterns must face the entrance and contain readable
+books. Sorting the four copper jackets oldest-to-newest must yield `9137`; submitting that callback
+at `https://copperlinehosting.com/support/ticket.php?id=1842` must reveal the current Discord room.
+Do not place the relay inside the Hold or beside a later story gate.
 
 ### Opening report
 
@@ -220,8 +235,20 @@ Deploy the repository-root `render.yaml`. Enter the Discord and Supabase secrets
 commit them. The Blueprint creates the persistent Discord worker and hourly showrunner cron. Run
 `npm run register` once from `discord/` with the live Discord application/guild environment configured.
 
-Confirm the deployed website root, `/record/the-record`, and `/status` load. Keep `/author` behind a
-private deployment/access wall.
+Set the Vercel production secret `DISCORD_INVITE_URL` to the current invitation. Rotate only that
+value when an invite expires; never edit the callback code or rebuild Minecraft for invite rotation.
+Confirm the deployed website root, `/record/the-record`, and `/status` load; ticket `1842` must reject
+a wrong callback and reveal the current invite only for `9137`. Keep `/author` behind a private
+deployment/access wall.
+
+Start the persistent worker and verify its boot log includes `discord surface ready` for the intended
+guild/channel. In Discord, `/link` must appear. Test with a non-story account only: an unknown name
+must say to join the Minecraft world once, while an already-bound voice must not be transferable to a
+different player. Do not type `kept` in the live `#the-record` until the real group begins.
+
+The bot needs View Channel, Send Messages, Read Message History, and Attach Files in `#the-record`.
+It does not need Administrator. If startup prints the Administrator warning, remove that permission
+from its Discord role before launch; add Connect only if the optional voice-capture tier is enabled.
 
 Keep optional voice capture, observer capture, recovered archive, and all `media_clip_*_ready` flags
 off until their consent/media checklists are complete.

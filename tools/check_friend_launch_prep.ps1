@@ -143,7 +143,7 @@ try {
     "SIX RETURN, ONE IS NOT KEPT",
     "https://youtu.be/DtZizx5QIEs",
     "dashboard/public/the-hold/the-hold.zip",
-    "c85cc6509477d8b51fd06142f088a98621c8f73f",
+    "8a4986422a4af6c65b47f76c61a1e75421b568d4",
     "host fragments I-IV + common-web ending + service digits 25569; no assembled raw server endpoint",
     "operator-checked on 2026-07-08",
     "recovered_archive_ready",

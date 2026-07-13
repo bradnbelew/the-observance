@@ -21,6 +21,7 @@
 import { MessageFlags, type AutocompleteInteraction, type ChatInputCommandInteraction } from 'discord.js';
 import {
   getPlayerByDiscordId,
+  getOpenPuzzles,
   getArcAct,
   getBudget,
   countWhispersForPuzzle,
@@ -59,6 +60,14 @@ export async function handleWhisper(
   const player = await getPlayerByDiscordId(interaction.user.id);
   if (!player) {
     await interaction.editReply({ content: voice.notLinked() });
+    return;
+  }
+
+  // A manually typed key must obey the same progression gate as autocomplete and the resolver.
+  // Otherwise a player who guesses/obtains a future key could purchase its late-game hint early.
+  const open = await getOpenPuzzles();
+  if (!open.some((puzzle) => puzzle.puzzle_key === puzzleKey)) {
+    await speak(interaction, voice.whisperUnknown());
     return;
   }
 

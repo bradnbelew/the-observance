@@ -136,6 +136,7 @@ foreach ($line in ($siteText -split "`r?`n")) {
 }
 
 $majorLaunchSites = @(
+  "discord_relay",
   "first_report_lectern_01",
   "rune_rosetta",
   "stone_vaun",
@@ -210,7 +211,7 @@ foreach ($m in [regex]::Matches($commandSource, 'new\s+HoldSite\(\s*"([^"]+)"'))
   [void]$holdSites.Add($m.Groups[1].Value)
 }
 $commandGeneratedSites = [System.Collections.Generic.HashSet[string]]::new($holdSites, [System.StringComparer]::OrdinalIgnoreCase)
-foreach ($id in @("first_report_lectern_01", "nether_forge", "end_seventh_shrine")) {
+foreach ($id in @("discord_relay", "first_report_lectern_01", "nether_forge", "end_seventh_shrine")) {
   [void]$commandGeneratedSites.Add($id)
 }
 RequireText "ObservanceCommand.java dimension-safe placeworld" $commandSource "dimensionLaneMatchesWorld"
@@ -273,12 +274,13 @@ if ($surveyFixtureSiteIds.Count -eq 0) {
   Fail "ObservanceCommand.java PLACEWORLD_SURVEY_FIXTURES could not be audited for placeworld stamp coverage"
 }
 foreach ($id in $majorLaunchSites) {
-  if (-not (($keeperSpineSiteIds -contains $id) -or ($surveyFixtureSiteIds -contains $id))) {
-    Fail "launch-required site '$id' has no /obs placeworld stamp path (missing from KEEPER_SPINE and PLACEWORLD_SURVEY_FIXTURES)"
+  if (-not (($keeperSpineSiteIds -contains $id) -or ($surveyFixtureSiteIds -contains $id) -or $commandGeneratedSites.Contains($id))) {
+    Fail "launch-required site '$id' has no generation path (placeworld, placehold, or dedicated builder)"
   }
 }
 
 $expectedTypes = @{
+  discord_relay = "discord_relay"
   first_report_lectern_01 = "report_lectern"
   bow_marker_01 = "bow_marker"
   offering_cairn_01 = "offering_cairn"

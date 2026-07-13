@@ -241,7 +241,7 @@ export const voice = {
 
   /** the discord user is not yet bound to a name in the world. */
   notLinked(): string {
-    return 'i do not yet know which of them you are. tell me the name you wear in the world.  /link';
+    return 'i do not yet know which of them you are. run /link with your exact minecraft username first.';
   },
 
   /** act 3 — the summons. collective; all of them; what is owed. */
@@ -254,7 +254,12 @@ export const voice = {
    * spoken once the world's record acknowledges the name.
    */
   linked(name: string): string {
-    return `you are ${name}. the record knows you now. keep the ways and the ways will keep you.`;
+    return `you are ${name}. the record knows you now. when every hand is bound and present in #the-record, write kept once.`;
+  },
+
+  /** A Discord voice already belongs to one keeper and cannot silently move to another identity. */
+  linkFixed(name: string): string {
+    return `this voice is already entered as ${name}. the record does not exchange one hand for another.`;
   },
 
   /**
@@ -262,7 +267,7 @@ export const voice = {
    * must be seen in the world first. stated, not scolded.
    */
   linkUnknown(name: string): string {
-    return `i hold no one called ${name}. walk the ways once, where i can see you, then tell me again.`;
+    return `i hold no one called ${name}. join the minecraft world once under that exact username, then run /link again.`;
   },
 
   /**

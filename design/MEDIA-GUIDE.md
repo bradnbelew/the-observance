@@ -107,7 +107,7 @@ that points at it** (or the trail dead-ends / a link 404s).
 
 ### B2 — `the-hold.zip` — the downloadable lure vignette PRODUCED
 - **Current state:** the clean sendable zip is present at `dashboard/public/the-hold/the-hold.zip`.
-  It is 17756 bytes, SHA1 `c85cc6509477d8b51fd06142f088a98621c8f73f`, and its 22 zip entries were checked
+  It is 17812 bytes, SHA1 `8a4986422a4af6c65b47f76c61a1e75421b568d4`, and its 22 zip entries were checked
   for README/spoiler/backup files. The compact payload is intentional: its datapack constructs six roofed,
   bounded rooms on first load. Rooms one through four file `SN` / `OI` / `KER` / `Z`; the Register files
   the separator and digits for `:25569`; the final room supplies the common-web ending and assembly rule.
