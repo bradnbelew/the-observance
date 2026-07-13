@@ -239,8 +239,8 @@ def make_datapack(root: Path) -> None:
             arrival += [
                 f"setblock -16 240 {z} minecraft:chiseled_bookshelf[facing=east]",
                 f"setblock 16 240 {z} minecraft:chiseled_bookshelf[facing=west]",
-                f"item replace block -16 240 {z} container.0 with {item_book('WEST SHELF COPY', 'copy room', ['the opening line was copied here.\\n\\nthe copy ends before the seventh name.'])} 1",
-                f"item replace block 16 240 {z} container.0 with {item_book('EAST SHELF COPY', 'copy room', ['the closing line was copied here.\\n\\nno seventh hand signed beneath it.'])} 1",
+                f"item replace block -16 240 {z} container.0 with {item_book('WEST SHELF COPY', 'copy room', ['the opening line was copied here.\n\nthe copy ends before the seventh name.'])} 1",
+                f"item replace block 16 240 {z} container.0 with {item_book('EAST SHELF COPY', 'copy room', ['the closing line was copied here.\n\nno seventh hand signed beneath it.'])} 1",
             ]
         else:
             arrival += [
@@ -276,6 +276,7 @@ def make_datapack(root: Path) -> None:
             "the record is kept in more than one place.\n\nnot every copy is a place you can walk to.",
             "six hands carried this copy out.\n\none line was left empty.",
             "read the rooms in order.\n\nwhat repeats is true.\nwhat is missing matters.",
+            "dispatch fragment i:\n\nSN",
         ],
     )
     write_text(function_root / "build" / "arrival.mcfunction", arrival)
@@ -318,7 +319,7 @@ def make_datapack(root: Path) -> None:
         "setblock 0 240 82 minecraft:dark_oak_slab[type=top]",
         "setblock 0 242 86 minecraft:polished_blackstone_bricks",
         wall_sign(0, 242, 85, "north", ["SEVEN PLACES", "SIX RETURNED", "ONE UNNAMED"]),
-        f"item replace block -4 240 78 container.3 with {item_book('copied place ledger', 'm.kept', ['six beds were copied from the first room.', 'six bowls were set back on the table.\\n\\nthe seventh place has no name.', 'do not fill the blank to make the count look whole.'])} 1",
+        f"item replace block -4 240 78 container.3 with {item_book('copied place ledger', 'm.kept', ['six beds were copied from the first room.', 'six bowls were set back on the table.\n\nthe seventh place has no name.', 'do not fill the blank to make the count look whole.'])} 1",
         f"item replace block 4 240 78 container.1 with {named_item('bowl', 'place seven — unissued', 'dark_gray')} 1",
     ]
     domestic += lectern(
@@ -332,6 +333,7 @@ def make_datapack(root: Path) -> None:
             "the room remembers six sleepers.",
             "the table was laid for seven.\n\nthe last bowl was never used.",
             "an empty place is still part of the record.",
+            "dispatch fragment ii:\n\nOI",
         ],
     )
     write_text(function_root / "build" / "domestic.mcfunction", domestic)
@@ -399,6 +401,7 @@ def make_datapack(root: Path) -> None:
             "six posts stand where the stone stays dry.",
             "the seventh was not raised.\n\nit only answers from the water.",
             "look down before you count again.",
+            "dispatch fragment iii:\n\nKER",
         ],
     )
     write_text(function_root / "build" / "cistern.mcfunction", cistern)
@@ -451,10 +454,16 @@ def make_datapack(root: Path) -> None:
         (19, 239, "west", "FIFTH HAND", "filed the provider apart from the service."),
         (19, 249, "west", "SIXTH HAND", "removed the address and left the directory row."),
     ]
+    service_marks = ["2", "5", "5", "6", "9", ":"]
     for index, (x, z, facing, title, page) in enumerate(shelf_data, 1):
+        service_page = (
+            f"service digit {index} / {service_marks[index - 1]}"
+            if index <= 5
+            else "service separator / :\n\nplace it before the five digits."
+        )
         register += [
             f"setblock {x} 240 {z} minecraft:chiseled_bookshelf[facing={facing}]",
-            f"item replace block {x} 240 {z} container.0 with {item_book(title, 'copy register', [page, 'mark ' + str(index) + ' of 6.\\n\\nthe next line remains blank.'])} 1",
+            f"item replace block {x} 240 {z} container.0 with {item_book(title, 'copy register', [page, 'mark ' + str(index) + ' of 6.\n\nthe next line remains blank.', service_page])} 1",
             f"setblock {x + (1 if x < 0 else -1)} 241 {z} minecraft:light[level=8]",
         ]
     register += [
@@ -474,11 +483,12 @@ def make_datapack(root: Path) -> None:
             "six marks are present.\n\nthe seventh line is not damaged. it was never filed.",
             "do not invent a seventh hand to make the copy feel complete.",
             "margin instruction:\n\nthe record keeps",
+            "the first five hands file five service digits.\n\nthe sixth files the mark placed before them.",
         ],
     )
     write_text(function_root / "build" / "register.mcfunction", register)
 
-    # 6 — Dispatch Office. The destination is reconstructed from four fields.
+    # 6 — Dispatch Office. The destination is reconstructed from evidence carried through the route.
     dispatch = shell(-20, 279, 20, 333)
     dispatch += [opening(279)]
     dispatch += [
@@ -494,25 +504,25 @@ def make_datapack(root: Path) -> None:
     ]
     add_ribs(dispatch, -18, 18, [285, 297, 311, 326])
     fields = [
-        (-12, "PROVIDER", named_item("paper", "COPPERLINE", "dark_aqua")),
-        (-4, "SERVICE", named_item("paper", "HOSTING", "dark_aqua")),
-        (4, "ENDING", named_item("name_tag", "common web", "dark_aqua")),
-        (12, "DIRECTORY", named_item("paper", "1842", "dark_aqua")),
+        (-12, "HOST I", "ARCHIVE", named_item("paper", "return to the archive fragment", "dark_aqua")),
+        (-4, "HOST II", "EMPTY PLACE", named_item("paper", "return to the empty-place fragment", "dark_aqua")),
+        (4, "HOST III", "BELOW WATER", named_item("paper", "return to the water fragment", "dark_aqua")),
+        (12, "HOST IV", "WAKING LAMP", named_item("paper", "return to the lamp fragment", "dark_aqua")),
     ]
-    for x, label, item in fields:
+    for x, label, source, item in fields:
         dispatch += [
             f"setblock {x} 240 303 minecraft:barrel[facing=north]",
-            wall_sign(x, 241, 302, "north", [label, "FIELD COPY"]),
+            wall_sign(x, 241, 302, "north", [label, source]),
             f"item replace block {x} 240 303 container.13 with {item} 1",
             f"setblock {x} 243 303 minecraft:light[level=9]",
         ]
     dispatch += [
         "setblock -9 240 320 minecraft:barrel[facing=east]",
         "setblock 9 240 320 minecraft:barrel[facing=west]",
-        f"item replace block -9 240 320 container.4 with {named_item('paper', 'status: expired / slots: 0 of 7', 'gray')} 1",
-        f"item replace block 9 240 320 container.4 with {named_item('compass', 'row owner: mkept', 'gray')} 1",
-        wall_sign(-8, 242, 320, "east", ["ACCOUNT", "EXPIRED", "0 / 7"]),
-        wall_sign(8, 242, 320, "west", ["ROW OWNER", "MKEPT", "ACTIVITY KEPT"]),
+        f"item replace block -9 240 320 container.4 with {named_item('name_tag', 'ending: common web', 'gray')} 1",
+        f"item replace block 9 240 320 container.4 with {named_item('compass', 'service: sixth mark then first five hands', 'gray')} 1",
+        wall_sign(-8, 242, 320, "east", ["HOST ENDING", "COMMON WEB"]),
+        wall_sign(8, 242, 320, "west", ["SERVICE", "SIXTH MARK", "FIRST FIVE"]),
     ]
     dispatch += lectern(
         0,
@@ -522,11 +532,11 @@ def make_datapack(root: Path) -> None:
         "HANDOFF",
         "m.kept",
         [
-            "this copy does not connect to anything.\n\nthe address was removed before the room was sealed.",
-            "four dispatch fields survived:\n\nprovider\nservice\nending\ndirectory",
-            "assemble the first three as one place.\n\nfind the old server list and open the directory number.",
-            "the row names the hand that filed it. read what that hand left behind.",
-            "bring the others to the address in that row.\n\nwhen all are present, say kept in #the-record.",
+            "the dead directory was the road to this copy.\n\nthe live address is kept inside the walk.",
+            "four host fragments were filed in rooms one through four.\n\njoin them in numeral order without spaces.",
+            "the host ending is common web.",
+            "the sixth hand files the service mark.\n\nplace it before the five digits filed by hands one through five.",
+            "assemble host + ending + service.\n\nbring the others there. when all are present, say kept in #the-record.",
         ],
     )
     for z in [292, 308, 324]:
@@ -580,6 +590,7 @@ def make_datapack(root: Path) -> None:
             "fill -2 241 184 2 241 189 minecraft:campfire[lit=false]",
             "setblock 0 244 187 minecraft:oxidized_copper_bulb[lit=true,powered=true]",
             "setblock 0 243 187 minecraft:light[level=12]",
+            wall_sign(0, 242, 199, "north", ["LAMP RETURNED", "DISPATCH IV", "Z", "FILED"]),
             opening(207),
             'title @s actionbar {text:"the untended lamp wakes. the kept fire dies.",color:"dark_aqua"}',
             "playsound minecraft:block.respawn_anchor.deplete master @s 0 242 187 0.75 0.55",
@@ -594,8 +605,8 @@ def make_datapack(root: Path) -> None:
         "final": [
             "tag @s add hold_done",
             "title @s times 20 80 40",
-            'title @s subtitle {text:"the address is not in this copy.",color:"dark_gray"}',
-            'title @s title {text:"SERVICE 1842",color:"gray",bold:true}',
+            'title @s subtitle {text:"the live address is complete in this copy.",color:"dark_gray"}',
+            'title @s title {text:"ASSEMBLE THE HANDOFF",color:"gray",bold:true}',
             "playsound minecraft:block.respawn_anchor.deplete master @s 0 242 320 0.4 0.5",
         ],
     }

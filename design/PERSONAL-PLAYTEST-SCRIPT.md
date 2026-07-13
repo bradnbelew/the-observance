@@ -83,9 +83,9 @@ Pass criteria:
 
 ## Pass 3 - The Old Listing And Record Elsewhere
 
-1. Complete the Hold copy handoff and follow its front-door/common-web/root-path clue.
-2. Confirm `/` reads as an abandoned server/map listing, not a dashboard menu.
-3. Confirm the listing exposes `the-hold.zip`, Record links, and a withheld or configured server address.
+1. Begin from `/` and follow Copperline service `1842` through mkept's account activity to the recovered Hold copy.
+2. Confirm `/` reads as an abandoned hosting company, not a dashboard menu.
+3. Confirm the listing withholds the server address while the account trail exposes `the-hold.zip` and the understated Record bridge.
 4. Find the founder note about the record being kept in more than one place.
 5. Read the warning that the elsewhere is not a shrine, bearing, or coordinate.
 6. Decode the old-script line:
@@ -100,7 +100,7 @@ Pass criteria:
 
 - the web jump is logically forced by the text
 - the listing and Record page feel like places in the ARG, not website menus
-- the server address appears only on the listing, not inside `the-hold.zip`
+- the website never exposes the live endpoint; the completed map fairly reconstructs `snoikerz.com:25569`
 - no live lure points to missing media unless intentionally staged
 
 ## Pass 4 - Side Story Sampling

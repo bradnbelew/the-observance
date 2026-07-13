@@ -392,7 +392,7 @@ export const archive: Record<string, string> = {
   // surface-record-elsewhere → the off-world page (A13). The record is kept in more than one
   // place, against the loss of the first; found when the group walks the decoded path.
   cardSurfaceRecordElsewhere:
-    'a founder’s line: the record is kept in more than one place, against the loss of the first. the copy names an old provider and a service number, not a live address: copperline hosting, common web, service 1842. the provider directory keeps the dead public row. the row names the hand that filed it. that hand’s ordinary community post keeps the world copy, and the keyed name keeps the colder notes beside it. no live endpoint was written into the map.',
+    'a founder’s line: the record is kept in more than one place, against the loss of the first. copperline hosting, common web, service 1842 is the dead provider row that led to the recovered copy. the row names the hand that filed it; that hand’s ordinary community post keeps the world copy, and the keyed name keeps the colder notes beside it. the live endpoint survives only as ordered fragments inside the walk, never as one printed line.',
 
   // -------------------------------------------------------------------------
   // THE TRUE WALK — coord found-markers (A7 `coords-to-real-place`, INV-14). The Threshold

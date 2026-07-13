@@ -38,4 +38,4 @@ if ($LASTEXITCODE -ne 0) {
 $siteHost = ($PublicSiteHost -replace '^https?://', '').TrimEnd('/')
 Write-Host "hold rebuild: public listing = https://$siteHost/"
 Write-Host "hold rebuild: route = six contained rooms; five controlled gates; one lamp interaction"
-Write-Host "hold rebuild: destination grammar = copperline + hosting + common web + service 1842; no server endpoint"
+Write-Host "hold rebuild: destination grammar = host fragments I-IV + common-web ending + service digits 25569; no assembled raw server endpoint"

@@ -257,9 +257,6 @@ export default async function AuthorPage() {
   const hasHoldZip = existsSync(
     join(process.cwd(), "public", "the-hold", "the-hold.zip"),
   );
-  const serverAddressConfigured = Boolean(
-    process.env.NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS?.trim(),
-  );
 
   return (
     <div className="director-console space-y-8">
@@ -283,7 +280,7 @@ export default async function AuthorPage() {
       <div className="director-group" id="overview">
         <div className="director-group-title"><span>01</span><div><h2>Launch and live overview</h2><p>Readiness, immediate risks, and recommended next intervention.</p></div></div>
         <DirectorRunPanel watcherAsleep={watcherAsleep} pendingBeats={pendingBeats} approvedBeats={approvedBeats} failedBeats={failedBeats} />
-        <DirectorStateReport currentAct={arc?.current_act ?? 1} flags={flags} players={players} compliance={compliance} beats={beats} watcherAsleep={watcherAsleep} activeRosterSize={activeRosterSize} hasHoldZip={hasHoldZip} serverAddressConfigured={serverAddressConfigured} />
+        <DirectorStateReport currentAct={arc?.current_act ?? 1} flags={flags} players={players} compliance={compliance} beats={beats} watcherAsleep={watcherAsleep} activeRosterSize={activeRosterSize} hasHoldZip={hasHoldZip} />
         <SetupFlow />
       </div>
 

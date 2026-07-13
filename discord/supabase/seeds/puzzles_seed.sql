@@ -1232,7 +1232,7 @@ values
 -- record-url — the Record website (A13). The Hold-copy handoff reconstructs the
 -- ordinary provider name and expired directory entry: Copperline Hosting on the common web,
 -- service 1842. That row names the account hand; its community post leads to the recovered
--- Record slug. Pure lore, GATES NOTHING. The zip never carries a raw server endpoint.
+-- Record slug. Pure lore, GATES NOTHING. The zip carries ordered endpoint fragments, never an assembled raw endpoint.
 ( 'record-url',
   'copperline service 1842 keeps the record',
   array[

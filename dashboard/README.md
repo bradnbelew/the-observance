@@ -2,7 +2,7 @@
 
 Public web surface and operator dashboard for The Observance, an emergent-horror Minecraft server backed by Supabase.
 
-The public root (`/`) is the retired Copperline Hosting company site. It contains ordinary product, support, announcement, community, and server-directory pages. The Observance is buried at `/server.php?id=1842`; that row owns the configured live address and leads through its account activity to the world copy and Record. The Minecraft plugin writes live state into Supabase, while `/author` is the authenticated director console.
+The public root (`/`) is the retired Copperline Hosting company site. It contains ordinary product, support, announcement, community, and server-directory pages. The Observance is buried at `/server.php?id=1842`; that expired row names the filing account and leads through its activity to the recovered world copy and Record. The listing deliberately withholds the live endpoint: the downloaded Hold walk reconstructs it. The Minecraft plugin writes live state into Supabase, while `/author` is the authenticated director console.
 
 ## Modes
 
@@ -38,12 +38,10 @@ Required variables:
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon/publishable key>
 SUPABASE_SERVICE_ROLE_KEY=<service_role secret key>
-NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS=<host:port shown on the public listing>
 ADMIN_EMAILS=<comma-separated operator email addresses>
 ```
 
-The dashboard and Minecraft plugin should point at the same Supabase project.
-Leave `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` blank until the live Paper address is safe to reveal; Copperline service `1842` will render its old address row as unavailable.
+The dashboard and Minecraft plugin should point at the same Supabase project. The public website never receives the live Paper endpoint; the production Hold artifact owns that reveal as an ordered cipher.
 
 ## Local Development
 

@@ -109,12 +109,12 @@ Current production state:
 
 - source zip: rebuilt from the dashboard artifact by `tools\rebuild_hold_invitation.ps1`
 - dashboard zip: `dashboard/public/the-hold/the-hold.zip`
-- size: 17468 bytes (the datapack constructs the world on first load)
-- SHA1: `69d227914501508c382952706c1f154e5e71152f`
+- size: 17756 bytes (the datapack constructs the world on first load)
+- SHA1: `c85cc6509477d8b51fd06142f088a98621c8f73f`
 - zip cleanliness check: 22 entries; no README/spoiler/backup entries; no pre-generated region files
 - runtime check: all functions parse on Paper 1.21.11; first/final lecterns store structured written-book pages
 - route check: six roofed rooms, five controlled gates, dry accessible walkways, one lever interaction
-- final room handoff: copperline + hosting + common web + service 1842; no server port and no raw server endpoint
+- final room handoff: host fragments I-IV + common-web ending + service digits 25569; no assembled raw server endpoint
 
 Format:
 
@@ -123,7 +123,7 @@ Format:
 - adventure mode
 - 10-15 minutes
 - one route, no survival grind
-- final room points to the abandoned public listing through a small reconstruction puzzle, not a raw address
+- final room assembles the live address from evidence earned throughout the walk
 
 Minimum build:
 
@@ -132,12 +132,12 @@ Minimum build:
 3. Reed Cistern: six dry posts and the seventh answer below the water.
 4. Lampworks: six tended lamps, one untended lamp, and the lever that changes the room.
 5. Register Gallery: six complete depositions, one intentionally empty shelf, and `the record keeps`.
-6. Dispatch Office: Copperline, Hosting, common web, service 1842, expired status, and owner mkept.
+6. Dispatch Office: host-fragment source index, common-web ending, service-order instruction, and final gathering handoff.
 
 Payload:
 
 - emotional payload: this place had ordinary people in it
-- functional payload: the public listing handoff, then the live server address on the website
+- functional payload: the map reconstruction yields `snoikerz.com:25569`, then gathers the group on the server
 - recognition payload: the plain phrase `the record keeps`, not a required early cipher
 
 Integration:

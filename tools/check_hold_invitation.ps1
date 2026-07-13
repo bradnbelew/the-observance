@@ -93,12 +93,19 @@ try {
     "REGISTER 0 / 7",
     "the record keeps",
     "HANDOFF",
-    "COPPERLINE",
-    "HOSTING",
-    "common web",
-    "1842",
-    "status: expired / slots: 0 of 7",
-    "row owner: mkept",
+    "dispatch fragment i:\n\nSN",
+    "dispatch fragment ii:\n\nOI",
+    "dispatch fragment iii:\n\nKER",
+    "DISPATCH IV",
+    'text:"Z"',
+    "service digit 1 / 2",
+    "service digit 2 / 5",
+    "service digit 3 / 5",
+    "service digit 4 / 6",
+    "service digit 5 / 9",
+    "service separator / :",
+    "ending: common web",
+    "assemble host + ending + service",
     "when all are present, say kept",
     "#the-record"
   )) {
@@ -124,6 +131,9 @@ try {
 
   if ($functionText -match 'pages:\s*\[\s*[''"]\s*\{\s*\\?"text\\?"') {
     Fail "written-book pages still contain quoted JSON and will render literal {text:...}"
+  }
+  if ($functionText.Contains('\\n')) {
+    Fail "written-book text still contains double-escaped newlines and may render literal \\n in Minecraft"
   }
   if (($functionText | Select-String -Pattern "pages:\[\{text:" -AllMatches).Matches.Count -lt 14) {
     Fail "expected at least 14 complete structured written-book components"
@@ -246,7 +256,7 @@ try {
     $staging = Get-Content -LiteralPath $stagingFile -Raw
     $sha1 = (Get-FileHash -LiteralPath $zipFile -Algorithm SHA1).Hash.ToLowerInvariant()
     RequireText $staging $sha1 "current Hold SHA1 receipt"
-    RequireText $staging "copperline + hosting + common web + service 1842; no server port" "destination receipt"
+    RequireText $staging "host fragments I-IV + common-web ending + service digits 25569; no assembled raw server endpoint" "destination receipt"
   } else {
     Fail "missing design\MANUAL-MEDIA-STAGING.md"
   }

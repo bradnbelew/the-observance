@@ -168,6 +168,12 @@ function auditCopperlineArtifacts(
   if (!serverDetailsSource.includes('/community/2011/02/08/world-backup/') || !serverDetailsSource.includes('/support/ticket.php?id=1851')) {
     issues.push('Service 1842 must lead naturally to its owner post and archived support request');
   }
+  if (!serverDetailsSource.includes('removed from directory export')) {
+    issues.push('Service 1842 must withhold the live Minecraft endpoint and send players through the recovered-file trail');
+  }
+  if (serverDetailsSource.includes('NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS') || serverDetailsSource.includes('liveAddress')) {
+    issues.push('Copperline must never own the live Minecraft endpoint; the recovered map owns that reveal');
+  }
   if (serverDetailsSource.includes('href="/record/')) {
     issues.push('The customer listing must never link directly to a Record surface');
   }
@@ -299,8 +305,8 @@ function auditWebArtifacts(publicPageSource: string, recordPageSource: string): 
   if (!publicPageSource.includes('_minecraft", "removed"')) {
     issues.push('Public root DNS cache must explicitly withhold the Minecraft SRV record until the live address is intentionally listed');
   }
-  if (!publicPageSource.includes('NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS')) {
-    issues.push('Public root must own the live server address reveal via NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS');
+  if (publicPageSource.includes('NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS')) {
+    issues.push('Public root must not own the live server address reveal; the recovered map owns it');
   }
   if (!publicPageSource.includes('address withheld until the host is awake')) {
     issues.push('Public root must render an in-fiction withheld server-address state before launch');

@@ -107,10 +107,10 @@ that points at it** (or the trail dead-ends / a link 404s).
 
 ### B2 — `the-hold.zip` — the downloadable lure vignette PRODUCED
 - **Current state:** the clean sendable zip is present at `dashboard/public/the-hold/the-hold.zip`.
-  It is 17468 bytes, SHA1 `69d227914501508c382952706c1f154e5e71152f`, and its 22 zip entries were checked
+  It is 17756 bytes, SHA1 `c85cc6509477d8b51fd06142f088a98621c8f73f`, and its 22 zip entries were checked
   for README/spoiler/backup files. The compact payload is intentional: its datapack constructs six roofed,
-  bounded rooms on first load. The final room splits the destination into Copperline,
-  Hosting, common web, and service 1842, pointing to the public directory without exposing a server port or raw endpoint.
+  bounded rooms on first load. Rooms one through four file `SN` / `OI` / `KER` / `Z`; the Register files
+  the separator and digits for `:25569`; the final room supplies the common-web ending and assembly rule.
 - **What it is:** a small, offline, **single-player Minecraft world + datapack** (a "cursed map"): a linear
   ~10–15 min walk through a cold stone hold that ends by pointing at the server. It's the discovered
   download on mkept's preserved static file mirror (`/record/the-record-keeps`).
@@ -126,9 +126,9 @@ that points at it** (or the trail dead-ends / a link 404s).
 - **Shipped form:** the complete six-room build is the release artifact. The retired one-room cut and
   decorative rune-string proposal are not present in the production zip.
 
-**Current handoff rule:** the map points to the abandoned public listing first. The live Paper address is
-shown by the website only when `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS` is configured; the zip should never
-contain the server port.
+**Current handoff rule:** Copperline and service `1842` lead to the recovered map. The listing never shows
+the live Paper endpoint. The zip contains only the separated, ordered components; completing the walk yields
+`snoikerz.com:25569`.
 
 ### B3 — The recovered Drive folder + the spectrogram image PRODUCED + LOCAL-STAGED
 - **Current state:** the archive packet is produced and recorded in `design/MANUAL-MEDIA-STAGING.md` with

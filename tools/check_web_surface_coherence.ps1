@@ -60,6 +60,12 @@ $listing = Read-Source "app\server-list.php\page.tsx"
 Require "server list" $listing "Directory snapshot:"
 Forbid "server list" $listing "<button type=\"button\">Filter"
 
+$serverDetail = Read-Source "app\server.php\page.tsx"
+Require "server detail" $serverDetail "removed from directory export"
+Require "server detail" $serverDetail "/community/2011/02/08/world-backup/"
+Forbid "server detail" $serverDetail "NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS"
+Forbid "server detail" $serverDetail "snoikerz.com:25569"
+
 $support = Read-Source "app\support\index.php\page.tsx"
 foreach ($anchor in @("#ftp", "#backups", "#jars", "#packs", "#billing", "#tickets")) {
   Require "support" $support $anchor

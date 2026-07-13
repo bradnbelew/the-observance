@@ -10,7 +10,6 @@ type DirectorStateReportProps = {
   watcherAsleep: boolean;
   activeRosterSize: number;
   hasHoldZip: boolean;
-  serverAddressConfigured: boolean;
 };
 
 const THEORY_FLAGS = [
@@ -142,7 +141,6 @@ function buildNextCommand({
   theoryCount,
   priorCount,
   hasHoldZip,
-  serverAddressConfigured,
   flags,
 }: {
   watcherAsleep: boolean;
@@ -151,11 +149,9 @@ function buildNextCommand({
   theoryCount: number;
   priorCount: number;
   hasHoldZip: boolean;
-  serverAddressConfigured: boolean;
   flags: Record<string, unknown>;
 }) {
   if (!hasHoldZip) return "tools\\rebuild_hold_invitation.ps1";
-  if (!serverAddressConfigured) return "set NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS before planting record-url";
   if (failedBeats > 0) return "/obs status, then inspect failed beat payloads";
   if (pendingBeats > 0) return "review pending beats in this dashboard";
   if (watcherAsleep) return "/obs sleep off when the rehearsal is ready";
@@ -179,7 +175,6 @@ export function DirectorStateReport({
   watcherAsleep,
   activeRosterSize,
   hasHoldZip,
-  serverAddressConfigured,
 }: DirectorStateReportProps) {
   const theoryCount = THEORY_FLAGS.filter(([key]) => isTrue(flags, key)).length;
   const priorCount = PRIOR_FLAGS.filter(([key]) => isTrue(flags, key)).length;
@@ -195,7 +190,6 @@ export function DirectorStateReport({
     theoryCount,
     priorCount,
     hasHoldZip,
-    serverAddressConfigured,
     flags,
   });
 
@@ -208,7 +202,6 @@ export function DirectorStateReport({
 
   const risks = [
     !hasHoldZip ? "Hold zip is missing from the deployed public path." : null,
-    !serverAddressConfigured ? "Public listing is still withholding the live server address." : null,
     watcherAsleep ? "Watcher is asleep; automatic run beats are muted." : null,
     pendingBeats > 0 ? `${pendingBeats} beat approval(s) waiting.` : null,
     failedBeats > 0 ? `${failedBeats} beat failure(s) need inspection.` : null,
@@ -260,13 +253,13 @@ export function DirectorStateReport({
           <StatusPill tone={hasHoldZip ? "good" : "warn"}>
             {hasHoldZip ? "the-hold.zip present" : "the-hold.zip missing"}
           </StatusPill>
-          <StatusPill tone={serverAddressConfigured ? "good" : "warn"}>
-            {serverAddressConfigured ? "server address listed" : "server address withheld"}
+          <StatusPill tone={hasHoldZip ? "good" : "warn"}>
+            {hasHoldZip ? "address cipher packaged" : "address cipher missing"}
           </StatusPill>
         </div>
         <p className="mt-3 text-sm text-neutral-400">
-          Plant the Record URL only after the deployed public root works in a private browser,
-          the recovered file is downloadable, and the listing shows the live address intentionally.
+          Plant the Copperline URL only after the public directory leads to mkept&apos;s recovered
+          file, the listing withholds the live endpoint, and the map&apos;s complete address cipher is downloadable.
         </p>
       </div>
 

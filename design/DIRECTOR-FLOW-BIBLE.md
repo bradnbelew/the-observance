@@ -56,10 +56,10 @@ Current hard rules:
 
 ## Phase 0 - Hold Copy
 
-Players receive `the-hold.zip` before the server. It must not simply hand them
-the IP. It now behaves as a contained invitation puzzle that resolves to the
-abandoned public directory: Copperline, Hosting, common web, and service 1842. The customer row,
-not the zip, owns the live Paper address reveal.
+Players receive the Copperline URL before the server. The ordinary expired service row leads through
+mkept's account activity to `the-hold.zip`. The contained invitation walk then reconstructs the live
+Paper endpoint from ordered host fragments, a common-web ending, and five service digits. The map,
+not the dead customer row, owns the live address reveal.
 
 Players should infer:
 
@@ -69,15 +69,15 @@ Players should infer:
 
 Onward vector:
 
-- The final room points to Copperline Hosting on the common web and service `1842`.
-- The company homepage exposes no ARG menu. Service 1842 owns the live address and links to the
+- The company homepage exposes no ARG menu. Service `1842` withholds its old address and links to the
   account owner’s ordinary community post; that post carries the world copy and quiet Record bridge.
+- The final room assembles `snoikerz.com:25569` from evidence filed across rooms one through five.
 - First server arrival confirms the web trail resolved to something real.
 
 Director watch:
 
-- If a player can extract a raw endpoint from the zip, this phase fails.
-- If the final room exposes a server port, this phase fails.
+- If the website exposes the live endpoint before the map is completed, this phase fails.
+- If the zip prints the endpoint as one raw line instead of requiring the authored reconstruction, this phase fails.
 - If the listing looks like a modern dashboard or menu, the frame breaks before
   the server ever gets to be strange.
 

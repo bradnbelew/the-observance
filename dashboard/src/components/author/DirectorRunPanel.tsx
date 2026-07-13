@@ -10,7 +10,7 @@ const COMMAND_GROUPS = [
     title: "Server + Web",
     commands: [
       "/obs status",
-      "NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS=<host-row-address>",
+      "tools\\check_hold_invitation.ps1",
       "tools\\set_resource_pack_config.ps1 -Url <hosted-https-zip-url>",
       "tools\\prepare_server_test.ps1 -ResourcePackUrl <hosted-https-zip-url> -Force",
     ],

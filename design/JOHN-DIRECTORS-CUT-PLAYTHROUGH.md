@@ -112,10 +112,10 @@ John uses the alphabet he built from the Rosetta ring. He decodes the line:
 
 > the-record-keeps
 
-This is not the first web door anymore. The Hold copy already taught him a rougher address shape: front
-provider `COPPERLINE`, service `HOSTING`, common web, directory number `1842`. John reaches a dead game
-hosting company, not an ARG menu. He searches its ordinary public directory for service 1842, finds the
-expired Observance row and its owner activity, then follows the backup post to the file and plain mirror page.
+The first object John receives is the Copperline URL. He reaches a dead game-hosting company, not an ARG
+menu, searches its ordinary public directory, finds expired service `1842` and its owner activity, then follows
+the backup post to the recovered Hold file and plain mirror. The listing's address is gone. Completing the
+downloaded walk yields four ordered host fragments, the common-web ending, and service sequence `:25569`.
 
 The hyphens make `the-record-keeps` look like a route, not a sentence. The note said it was a name to call
 the kept-place by, not a place to walk to. John tries it on the same site:

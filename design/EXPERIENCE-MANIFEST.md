@@ -165,17 +165,17 @@ John decodes the old-script line with the Rosetta literacy:
 
 > the-record-keeps
 
-The opening Hold copy also teaches a blunter web door:
+The Copperline trail that leads into the Hold copy is:
 
 > provider: COPPERLINE
-> service: HOSTING
-> ending: common web
-> directory number 1842
+> service 1842: expired; address removed
+> owner: mkept
+> recovered copy: attached to account activity
 
 John reaches an ordinary abandoned hosting company first. The homepage contains no ARG menu.
-The public directory entry for service 1842 contains the configured Paper address and names the
-account hand; its activity trail reaches a community backup post, which carries the Hold download
-and one understated link to the Record page.
+The public directory entry for service 1842 withholds its old address and names the account hand;
+its activity trail reaches a community backup post, which carries the Hold download and one
+understated link to the Record page. The completed Hold reconstructs the live endpoint.
 
 The decoded Record route remains the deeper receipt:
 
@@ -188,15 +188,15 @@ What John learns:
 
 - off-world content is canonical
 - the record preserves copies outside Minecraft
-- the server address is hosted by the old listing, not hidden in the zip
+- the old listing is the route to the recovered copy; the completed copy owns the live address reconstruction
 - hyphenated decoded phrases may be route slugs, not coordinates
 
 Launch rule:
 
 - do not plant the live in-world lure until `/`, `/the-hold/the-hold.zip`, and
   `/record/the-record-keeps` work from the deployed site
-- do not put the live Paper port inside `the-hold.zip`; configure it on the
-  listing with `NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS`
+- do not print the assembled live Paper endpoint anywhere in the website or zip; distribute its authored
+  host fragments and service digits through the Hold walk
 
 ### 5. Side Destinations: Longevity and World Truth
 
@@ -411,7 +411,7 @@ Spectrogram:
 
 - the readme is not fully trustworthy
 - John compares the hold's count against the world
-- the final room points to the old listing instead of exposing a server port
+- the final room assembles the host, common-web ending, and service sequence earned across the walk
 - absence and redaction become evidence
 
 ### 11. The Seventh Below and the Final Reading
@@ -471,7 +471,7 @@ Required before a real launch run:
 - stage cold open
 - run `/observance reading`
 - run `/observance finale`
-- verify deployed website root `/` renders the old listing and configured server address
+- verify deployed website root `/` leads to service `1842`, mkept, and the recovered copy without rendering the live endpoint
 - verify deployed `the-hold.zip`
 - verify hosted found footage, Drive folder, waveform/spectrogram
 - rotate exposed credentials
