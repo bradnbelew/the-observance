@@ -98,11 +98,7 @@ public final class TheClosingBeat extends AbstractBeat {
             int kicked = 0;
             for (Player pl : Bukkit.getOnlinePlayers()) {
                 if (pl == null || !pl.isOnline()) continue;
-                try { pl.kick(reason); kicked++; }
-                catch (Throwable t) {
-                    // Older API fallback: the deprecated string kick. Never let one client fault strand the rest.
-                    try { pl.kickPlayer(kickLine); kicked++; } catch (Throwable ignored) { }
-                }
+                try { pl.kick(reason); kicked++; } catch (Throwable ignored) { }
             }
             if (whitelistAfter) {
                 // Turn the whitelist ON so the group cannot rejoin until the operator re-opens it. NOT a ban.

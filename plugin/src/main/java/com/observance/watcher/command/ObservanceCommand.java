@@ -14,6 +14,8 @@ import com.observance.watcher.structure.DeepHoldV4Geometry;
 import com.observance.watcher.structure.DeepHoldV4Plan;
 import com.observance.watcher.structure.StructureTemplates;
 import com.observance.watcher.util.Safety;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -6308,7 +6310,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 return "surface Return Mouth sign has no floor at " + sign.getX() + "," + sign.getY() + "," + sign.getZ() + ".";
             }
             boolean hasText = false;
-            for (String line : state.getLines()) if (line != null && !line.isBlank()) hasText = true;
+            for (Component line : state.getSide(Side.FRONT).lines()) {
+                if (!PlainTextComponentSerializer.plainText().serialize(line).isBlank()) hasText = true;
+            }
             if (!hasText) return "surface Return Mouth sign is blank at " + sign.getX() + "," + sign.getY() + "," + sign.getZ() + ".";
         }
         return null;
@@ -8688,8 +8692,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private String auditHoldReadableSign(Block block, Set<HoldWalkNode> visited) {
         if (block == null || !(block.getState() instanceof Sign sign)) return "Hold sign is missing.";
         boolean hasText = false;
-        for (String line : sign.getLines()) {
-            if (line != null && !line.isBlank()) {
+        for (Component line : sign.getSide(Side.FRONT).lines()) {
+            if (!PlainTextComponentSerializer.plainText().serialize(line).isBlank()) {
                 hasText = true;
                 break;
             }
@@ -8738,8 +8742,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 loc.getBlockY() + 2, loc.getBlockZ() - span.doorHalf() - 2);
         if (!(label.getState() instanceof Sign sign)) return "gate " + gate.id() + " label is missing.";
         boolean named = false;
-        for (String line : sign.getLines()) {
-            if (line != null && line.toLowerCase(Locale.ROOT).contains(gate.label().toLowerCase(Locale.ROOT))) {
+        for (Component line : sign.getSide(Side.FRONT).lines()) {
+            String text = PlainTextComponentSerializer.plainText().serialize(line);
+            if (text.toLowerCase(Locale.ROOT).contains(gate.label().toLowerCase(Locale.ROOT))) {
                 named = true;
                 break;
             }
@@ -8894,7 +8899,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         + (title == null ? "none" : title) + ".";
             }
             if (requiredFragment != null && !requiredFragment.isBlank()) {
-                String pages = String.join("\n", meta.getPages());
+                String pages = meta.pages().stream()
+                        .map(PlainTextComponentSerializer.plainText()::serialize)
+                        .collect(java.util.stream.Collectors.joining("\n"));
                 if (!pages.toLowerCase(Locale.ROOT).contains(requiredFragment.toLowerCase(Locale.ROOT))) {
                     return "record " + label + " lectern book is missing required text fragment: "
                             + requiredFragment + ".";
@@ -9494,10 +9501,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             meta.setAuthor("field record");
             String text = body == null ? "" : body;
             if (text.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
-                meta.addPage(text);
+                meta.addPages(Component.text(text));
             } else {
                 for (String page : com.observance.watcher.util.TextFit.paginate(text)) {
-                    meta.addPage(page);
+                    meta.addPages(Component.text(page));
                 }
             }
             book.setItemMeta(meta);
@@ -9525,10 +9532,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             for (String page : realPages) {
                 String body = page == null ? "" : page;
                 if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
-                    meta.addPage(body);
+                    meta.addPages(Component.text(body));
                 } else {
                     for (String real : com.observance.watcher.util.TextFit.paginate(body)) {
-                        meta.addPage(real);
+                        meta.addPages(Component.text(real));
                     }
                 }
             }
@@ -11828,7 +11835,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 meta.setTitle(com.observance.watcher.util.TextFit.clampLine(title, 32));
                 meta.setAuthor("the lab");
                 for (int i = 1; i <= Math.max(1, pages); i++) {
-                    meta.addPage("page " + i + "\n\n" + title + "\n\nturn me for page-lock testing.");
+                    meta.addPages(Component.text("page " + i + "\n\n" + title + "\n\nturn me for page-lock testing."));
                 }
                 book.setItemMeta(meta);
             }
@@ -11959,10 +11966,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 for (String page : realPages) {
                     String body = page == null ? "" : page;
                     if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
-                        meta.addPage(body);
+                        meta.addPages(Component.text(body));
                     } else {
                         for (String real : com.observance.watcher.util.TextFit.paginate(body)) {
-                            meta.addPage(real);
+                            meta.addPages(Component.text(real));
                         }
                     }
                 }
@@ -12303,8 +12310,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 var front = sign.getSide(Side.FRONT);
                 for (int i = 0; i < 4; i++) {
                     String line = (lines != null && i < lines.length && lines[i] != null) ? lines[i] : "";
-                    front.setLine(i, com.observance.watcher.util.TextFit.clampLine(line,
-                            com.observance.watcher.util.TextFit.SIGN_LINE_CHARS));
+                    front.line(i, Component.text(com.observance.watcher.util.TextFit.clampLine(line,
+                            com.observance.watcher.util.TextFit.SIGN_LINE_CHARS)));
                 }
                 try { sign.setWaxed(waxed); } catch (Throwable ignored) { }
                 sign.update(true, false);
@@ -14219,7 +14226,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private static boolean hasOperatorLabel(Sign sign) {
         if (sign == null) return false;
         for (int i = 0; i < 4; i++) {
-            String line = sign.getLine(i);
+            String line = PlainTextComponentSerializer.plainText().serialize(sign.getSide(Side.FRONT).line(i));
             if (line == null) continue;
             String s = line.toLowerCase(Locale.ROOT);
             if (s.contains("dread route")

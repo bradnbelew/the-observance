@@ -9,8 +9,8 @@ import type { BeatStatus, Json } from "@/lib/database.types";
 /**
  * Server actions — the dashboard's write surface.
  *
- * Author mode is an operator console: actions use the server-only service-role
- * client directly, with no Supabase magic-link gate.
+ * Author mode is an operator console: middleware.ts authenticates every
+ * /author request and server-action POST before these service-role actions run.
  *
  * Each action revalidates /author so the server-rendered control surface
  * reflects the new state on the next paint.

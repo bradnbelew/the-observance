@@ -8,6 +8,7 @@ import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -100,7 +101,7 @@ public final class AnswerSignListener implements Listener {
             if (site == null) return;   // an ordinary sign — not a submission slot, ignore entirely
 
             // Read the typed lines on the MAIN thread (event thread) and join them into one answer.
-            String raw = joinLines(event.getLines());
+            String raw = joinLines(event.lines());
 
             // Blank the sign so the guess never persists (input slot, not billboard). Done on the
             // event itself = main thread, safe. Even an empty/gibberish submission clears cleanly.
@@ -166,10 +167,11 @@ public final class AnswerSignListener implements Listener {
     }
 
     /** Join the four sign lines with spaces; normalization happens in the resolver. Null-safe. */
-    private static String joinLines(String[] lines) {
+    private static String joinLines(java.util.List<Component> lines) {
         if (lines == null) return "";
         StringBuilder sb = new StringBuilder();
-        for (String line : lines) {
+        for (Component component : lines) {
+            String line = component == null ? "" : PlainTextComponentSerializer.plainText().serialize(component);
             if (line == null || line.isBlank()) continue;
             if (sb.length() > 0) sb.append(' ');
             sb.append(line);
@@ -180,9 +182,7 @@ public final class AnswerSignListener implements Listener {
     /** Clear the typed lines so the submitted guess never persists on the sign. */
     private static void blank(SignChangeEvent event) {
         try {
-            for (int i = 0; i < 4; i++) {
-                event.setLine(i, "");
-            }
+            for (int i = 0; i < 4; i++) event.line(i, Component.empty());
         } catch (Throwable ignored) {
             // a quirky sign impl must never crash the listener
         }

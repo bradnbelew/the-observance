@@ -89,12 +89,14 @@ function CountTile({
   tone,
 }: {
   label: string;
-  count: number;
+  count: number | null;
   tone: string;
 }) {
   return (
     <div className="rounded-md border border-neutral-800 bg-ash/40 px-3 py-2">
-      <div className={`font-mono text-2xl tabular-nums ${tone}`}>{count}</div>
+      <div className={`font-mono text-2xl tabular-nums ${tone}`}>
+        {count === null ? "—" : count}
+      </div>
       <div className="mt-0.5 text-xs uppercase tracking-wide text-neutral-500">
         {label}
       </div>
@@ -102,17 +104,24 @@ function CountTile({
   );
 }
 
-export default function HealthPanel({ health }: { health: HealthView | null }) {
+export default function HealthPanel({
+  health,
+  unavailable = false,
+}: {
+  health: HealthView | null;
+  unavailable?: boolean;
+}) {
   const lastBeatAt = health?.last_beat_at ?? null;
-  const info = health?.info_24h ?? 0;
-  const warn = health?.warn_24h ?? 0;
-  const error = health?.error_24h ?? 0;
+  const info = unavailable ? null : (health?.info_24h ?? 0);
+  const warn = unavailable ? null : (health?.warn_24h ?? 0);
+  const error = unavailable ? null : (health?.error_24h ?? 0);
 
-  const sleeping = isWatcherSleeping(health?.watcher_sleep ?? false);
+  const sleeping = unavailable ? null : isWatcherSleeping(health?.watcher_sleep ?? false);
   const apiStatus = statusLabel(health?.api_status ?? null);
   const whisperStatus = statusLabel(health?.whisper_status ?? null);
 
-  const misfiring = error > 0;
+  const misfiring = error !== null && error > 0;
+  const overall = unavailable ? "unavailable" : misfiring ? "misfiring" : "nominal";
 
   return (
     <section className="rounded-lg border border-neutral-800 bg-slate-850 p-5">
@@ -122,12 +131,14 @@ export default function HealthPanel({ health }: { health: HealthView | null }) {
         </h2>
         <span
           className={`rounded-full px-2 py-0.5 font-mono text-xs ${
-            misfiring
+            unavailable
+              ? "bg-neutral-500/15 text-neutral-300"
+              : misfiring
               ? "bg-rose-500/15 text-rose-300"
               : "bg-emerald-500/15 text-emerald-300"
           }`}
         >
-          {misfiring ? "misfiring" : "nominal"}
+          {overall}
         </span>
       </div>
 
@@ -138,10 +149,10 @@ export default function HealthPanel({ health }: { health: HealthView | null }) {
         </div>
         <div className="mt-1 flex items-baseline gap-2">
           <span className="font-mono text-lg text-neutral-100">
-            {relativeTime(lastBeatAt)}
+            {unavailable ? "unavailable" : relativeTime(lastBeatAt)}
           </span>
           <span className="font-mono text-xs text-neutral-500">
-            {absoluteTime(lastBeatAt)}
+            {unavailable ? "—" : absoluteTime(lastBeatAt)}
           </span>
         </div>
       </div>
@@ -156,12 +167,12 @@ export default function HealthPanel({ health }: { health: HealthView | null }) {
           <CountTile
             label="warn"
             count={warn}
-            tone={warn > 0 ? "text-amber-300" : "text-neutral-200"}
+            tone={warn !== null && warn > 0 ? "text-amber-300" : "text-neutral-200"}
           />
           <CountTile
             label="error"
             count={error}
-            tone={error > 0 ? "text-rose-300" : "text-neutral-200"}
+            tone={error !== null && error > 0 ? "text-rose-300" : "text-neutral-200"}
           />
         </div>
       </div>
@@ -175,12 +186,12 @@ export default function HealthPanel({ health }: { health: HealthView | null }) {
           <span className="flex items-center gap-2">
             <span
               className={`h-2 w-2 rounded-full ${
-                sleeping ? "bg-neutral-500" : "bg-emerald-500"
+                sleeping === null ? "bg-neutral-500" : sleeping ? "bg-neutral-500" : "bg-emerald-500"
               }`}
               aria-hidden
             />
             <span className="font-mono text-sm text-neutral-200">
-              {sleeping ? "sleeping" : "awake"}
+              {sleeping === null ? "unknown" : sleeping ? "sleeping" : "awake"}
             </span>
           </span>
         </div>

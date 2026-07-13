@@ -4,7 +4,6 @@ main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
 description: The Observance — deterministic soft-pressure haunting engine (Phase 0).
-website: https://the-observance.local
 # Phase 0 is self-contained. Every entry below is an OPTIONAL softdepend — each enables one beat's
 # richer branch when present, and EVERY branch degrades to a deterministic vanilla path when the
 # plugin is absent or throws (the anti-jank fallback law). softdepend only orders load (so the

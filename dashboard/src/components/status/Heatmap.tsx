@@ -137,7 +137,13 @@ function Legend() {
   );
 }
 
-export default function Heatmap({ cells }: { cells: HeatmapView[] }) {
+export default function Heatmap({
+  cells,
+  unavailable = false,
+}: {
+  cells: HeatmapView[];
+  unavailable?: boolean;
+}) {
   const groups = groupByWorld(cells);
 
   return (
@@ -147,11 +153,13 @@ export default function Heatmap({ cells }: { cells: HeatmapView[] }) {
           Traffic heatmap
         </h2>
         <span className="font-mono text-xs text-neutral-500">
-          {groups.length} {groups.length === 1 ? "world" : "worlds"}
+          {unavailable ? "unavailable" : `${groups.length} ${groups.length === 1 ? "world" : "worlds"}`}
         </span>
       </div>
 
-      {groups.length === 0 ? (
+      {unavailable ? (
+        <p className="mt-4 text-sm text-neutral-500">Traffic data unavailable.</p>
+      ) : groups.length === 0 ? (
         <p className="mt-4 text-sm text-neutral-500">No traffic recorded yet.</p>
       ) : (
         <>

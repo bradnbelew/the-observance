@@ -66,15 +66,15 @@ function Muster({ ledger }: { ledger: LedgerProjection }) {
   return (
     <div className="mb-8 flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
       <div className="flex items-baseline gap-2">
-        <span className="text-3xl tabular-nums text-neutral-300">{ledger.totalKept}</span>
+        <span className="text-3xl tabular-nums text-neutral-300">{ledger.sealed ? "—" : ledger.totalKept}</span>
         <span className="text-[11px] uppercase tracking-wide text-neutral-700">marks kept</span>
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-xl tabular-nums text-neutral-400">{ledger.names.length}</span>
+        <span className="text-xl tabular-nums text-neutral-400">{ledger.sealed ? "—" : ledger.names.length}</span>
         <span className="text-[11px] uppercase tracking-wide text-neutral-700">hands entered</span>
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-xl tabular-nums text-neutral-500">{ledger.openPuzzles}</span>
+        <span className="text-xl tabular-nums text-neutral-500">{ledger.sealed ? "—" : ledger.openPuzzles}</span>
         <span className="text-[11px] uppercase tracking-wide text-neutral-700">marks unkept</span>
       </div>
     </div>
@@ -91,7 +91,11 @@ function Ledger({ ledger }: { ledger: LedgerProjection }) {
         <span>ledger of hands</span>
         <span className="text-neutral-800">{"// who is kept"}</span>
       </div>
-      {ledger.names.length === 0 ? (
+      {ledger.sealed ? (
+        <p className="font-mono text-[12px] lowercase text-neutral-700">
+          the ledger could not be read. <Redaction width={12} />
+        </p>
+      ) : ledger.names.length === 0 ? (
         <p className="font-mono text-[12px] lowercase text-neutral-700">
           no hand is entered yet. the ledger is cold. <Redaction width={12} />
         </p>
@@ -157,14 +161,18 @@ function Threads({ ledger }: { ledger: LedgerProjection }) {
 }
 
 /** The integrity check / error log — the hint rail as escalating warnings the longer a thread stalls. */
-function IntegrityLog({ warnings }: { warnings: IntegrityWarning[] }) {
+function IntegrityLog({ warnings, unavailable }: { warnings: IntegrityWarning[]; unavailable: boolean }) {
   return (
     <section className="mb-10">
       <div className="mb-3 flex items-baseline gap-3 border-b border-neutral-900 pb-1 font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-600">
         <span>integrity check</span>
         <span className="text-neutral-800">{"// cross-reference log"}</span>
       </div>
-      {warnings.length === 0 ? (
+      {unavailable ? (
+        <p className="font-mono text-[12px] lowercase text-neutral-700">
+          integrity: unavailable. the record is not reading.
+        </p>
+      ) : warnings.length === 0 ? (
         <p className="font-mono text-[12px] lowercase text-neutral-700">
           integrity: nominal. no entry is stalled long enough to flag.
         </p>
@@ -206,7 +214,7 @@ export default async function RecordTerminalPage() {
         <Muster ledger={ledger} />
         <Ledger ledger={ledger} />
         <Threads ledger={ledger} />
-        <IntegrityLog warnings={warnings} />
+        <IntegrityLog warnings={warnings} unavailable={ledger.sealed} />
 
         {/* the inscription lectern — write an answer INTO the record. */}
         <section className="mb-10">
@@ -217,7 +225,7 @@ export default async function RecordTerminalPage() {
           <p className="mb-2 font-mono text-[11px] lowercase leading-relaxed text-neutral-700">
             a hand. a mark. what belongs is kept. what does not is not read back.
           </p>
-          <InscribeForm />
+          <InscribeForm unavailable={ledger.sealed} />
         </section>
 
         <footer className="mt-8 border-t border-neutral-900 pt-4 text-center font-mono text-[10px] lowercase tracking-wide text-neutral-700">

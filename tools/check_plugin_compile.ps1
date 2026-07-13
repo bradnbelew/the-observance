@@ -6,13 +6,16 @@ $ErrorActionPreference = "Stop"
 
 $pluginRoot = Join-Path $RepoRoot "plugin"
 $srcRoot = Join-Path $pluginRoot "src\main\java"
+$testSrcRoot = Join-Path $pluginRoot "src\test\java"
 $pluginSource = Join-Path $srcRoot "com\observance\watcher\ObservancePlugin.java"
 $beatEngineSource = Join-Path $srcRoot "com\observance\watcher\beats\BeatEngine.java"
 $beatLibrarySource = Join-Path $srcRoot "com\observance\watcher\beats\BeatLibrary.java"
 $packTrackerSource = Join-Path $srcRoot "com\observance\watcher\signal\ResourcePackTracker.java"
 $buildRoot = Join-Path $pluginRoot "build"
 $classesDir = Join-Path $buildRoot "check-plugin-classes"
+$testClassesDir = Join-Path $buildRoot "check-plugin-test-classes"
 $argsFile = Join-Path $buildRoot "check-plugin-javac.args"
+$testArgsFile = Join-Path $buildRoot "check-plugin-test-javac.args"
 $gradleCache = Join-Path $env:USERPROFILE ".gradle\caches\modules-2\files-2.1"
 
 if (!(Test-Path $srcRoot)) {
@@ -45,10 +48,12 @@ if (!$classesFull.StartsWith($repoFull, [System.StringComparison]::OrdinalIgnore
 }
 
 New-Item -ItemType Directory -Force -Path $buildRoot | Out-Null
-if (Test-Path $classesDir) {
-  Remove-Item -LiteralPath $classesDir -Recurse -Force
+foreach ($dir in @($classesDir, $testClassesDir)) {
+  if (Test-Path $dir) {
+    Remove-Item -LiteralPath $dir -Recurse -Force
+  }
+  New-Item -ItemType Directory -Force -Path $dir | Out-Null
 }
-New-Item -ItemType Directory -Force -Path $classesDir | Out-Null
 
 $javaFiles = Get-ChildItem $srcRoot -Recurse -Filter *.java | Sort-Object FullName
 if ($javaFiles.Count -eq 0) {
@@ -69,7 +74,9 @@ $lines = @(
   "-encoding", "UTF-8",
   "--release", "21",
   "-proc:none",
-  "-nowarn",
+  "-Xlint:deprecation",
+  "-Xlint:unchecked",
+  "-Werror",
   "-classpath", "`"$classpath`"",
   "-d", "`"$(Convert-JavacPath $classesDir)`""
 )
@@ -85,6 +92,46 @@ $ErrorActionPreference = $oldErrorActionPreference
 if ($compileExit -ne 0) {
   $compileOutput | ForEach-Object { Write-Host $_ }
   exit $compileExit
+}
+
+$testFiles = Get-ChildItem $testSrcRoot -Recurse -Filter *.java | Sort-Object FullName
+if ($testFiles.Count -eq 0) {
+  throw "No plugin self-test sources found under $testSrcRoot"
+}
+$testClasspath = "$(Convert-JavacPath $classesDir);$classpath"
+$testLines = @(
+  "-encoding", "UTF-8",
+  "--release", "21",
+  "-proc:none",
+  "-Xlint:deprecation",
+  "-Xlint:unchecked",
+  "-Werror",
+  "-classpath", "`"$testClasspath`"",
+  "-d", "`"$(Convert-JavacPath $testClassesDir)`""
+)
+$testLines += $testFiles | ForEach-Object { "`"$(Convert-JavacPath $_.FullName)`"" }
+[System.IO.File]::WriteAllLines($testArgsFile, $testLines, [System.Text.UTF8Encoding]::new($false))
+
+$ErrorActionPreference = "Continue"
+$testCompileOutput = & javac "@$testArgsFile" 2>&1
+$testCompileExit = $LASTEXITCODE
+$ErrorActionPreference = $oldErrorActionPreference
+if ($testCompileExit -ne 0) {
+  $testCompileOutput | ForEach-Object { Write-Host $_ }
+  exit $testCompileExit
+}
+
+$selfTestClasspath = "$(Convert-JavacPath $testClassesDir);$testClasspath"
+$selfTests = @(
+  "com.observance.watcher.oracle.FlagGateSelfTest",
+  "com.observance.watcher.signal.Tier0SelectorSelfTest",
+  "com.observance.watcher.util.TextFitSelfTest"
+)
+foreach ($selfTest in $selfTests) {
+  & java -cp $selfTestClasspath $selfTest
+  if ($LASTEXITCODE -ne 0) {
+    throw "Plugin self-test failed: $selfTest"
+  }
 }
 
 $pluginText = Get-Content -LiteralPath $pluginSource -Raw
@@ -130,4 +177,4 @@ foreach ($statusSurface in @("sendPackStatus(sender)", "pack readiness:", "pack 
   }
 }
 
-Write-Host "plugin compile check: OK - $($javaFiles.Count) source files compiled with $versionText, real beat enactor wiring, and signature beat registration verified"
+Write-Host "plugin compile check: OK - $($javaFiles.Count) sources compile warning-free with $versionText; $($selfTests.Count) self-tests, runtime wiring, and signature beat registration verified"

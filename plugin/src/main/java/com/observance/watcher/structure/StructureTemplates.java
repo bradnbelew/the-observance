@@ -1,5 +1,6 @@
 package com.observance.watcher.structure;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -2140,7 +2141,7 @@ public final class StructureTemplates {
                 // Leave blank + UNWAXED so AnswerSignListener resolves a player's overwrite as a submission.
                 if (b.getState() instanceof Sign sign) {
                     var front = sign.getSide(Side.FRONT);
-                    for (int i = 0; i < 4; i++) front.setLine(i, "");
+                    for (int i = 0; i < 4; i++) front.line(i, Component.empty());
                     try { sign.setWaxed(false); } catch (Throwable ignored) { }
                     try { sign.update(true, false); } catch (Throwable ignored) { }
                 }
@@ -2164,7 +2165,7 @@ public final class StructureTemplates {
                 if (b.getBlockData() instanceof Directional d) { d.setFacing(facing); b.setBlockData(d, false); }
                 if (b.getState() instanceof Sign sign) {
                     var front = sign.getSide(Side.FRONT);
-                    for (int i = 0; i < 4; i++) front.setLine(i, clamp(lines, i));
+                    for (int i = 0; i < 4; i++) front.line(i, Component.text(clamp(lines, i)));
                     try { sign.setWaxed(true); } catch (Throwable ignored) { }
                     try { sign.update(true, false); } catch (Throwable ignored) { }
                 }
@@ -2250,7 +2251,7 @@ public final class StructureTemplates {
                 }
                 if (b.getState() instanceof Sign sign) {
                     var front = sign.getSide(Side.FRONT);
-                    for (int i = 0; i < 4; i++) front.setLine(i, clamp(lines, i));
+                    for (int i = 0; i < 4; i++) front.line(i, Component.text(clamp(lines, i)));
                     try { sign.setWaxed(true); } catch (Throwable ignored) { } // way-marks are labels, not slots
                     try { sign.update(true, false); } catch (Throwable ignored) { }
                 }
@@ -2289,10 +2290,10 @@ public final class StructureTemplates {
                     meta.setAuthor("the kept");
                     String body = page == null ? "" : page;
                     if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
-                        meta.addPage(body);
+                        meta.addPages(Component.text(body));
                     } else {
                         for (String real : com.observance.watcher.util.TextFit.paginate(body)) {
-                            meta.addPage(real);
+                            meta.addPages(Component.text(real));
                         }
                     }
                     book.setItemMeta(meta);
@@ -2320,10 +2321,10 @@ public final class StructureTemplates {
                     for (String page : authored) {
                         String body = page == null ? "" : page;
                         if (body.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
-                            meta.addPage(body);
+                            meta.addPages(Component.text(body));
                         } else {
                             for (String fitted : com.observance.watcher.util.TextFit.paginate(body)) {
-                                meta.addPage(fitted);
+                                meta.addPages(Component.text(fitted));
                             }
                         }
                     }
@@ -2384,10 +2385,10 @@ public final class StructureTemplates {
                 meta.setAuthor("the record");
                 String text = body == null ? "" : body;
                 if (text.length() <= com.observance.watcher.util.TextFit.BOOK_PAGE_CHARS) {
-                    meta.addPage(text);
+                    meta.addPages(Component.text(text));
                 } else {
                     for (String page : com.observance.watcher.util.TextFit.paginate(text)) {
-                        meta.addPage(page);
+                        meta.addPages(Component.text(page));
                     }
                 }
                 book.setItemMeta(meta);

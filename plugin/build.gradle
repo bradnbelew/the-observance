@@ -45,6 +45,39 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 21
+    options.compilerArgs.addAll(['-Xlint:deprecation', '-Xlint:unchecked', '-Werror'])
+}
+
+def pluginSelfTests = [
+    flagGate: 'com.observance.watcher.oracle.FlagGateSelfTest',
+    tier0Selector: 'com.observance.watcher.signal.Tier0SelectorSelfTest',
+    textFit: 'com.observance.watcher.util.TextFitSelfTest'
+]
+
+def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
+    tasks.register("${testName}SelfTest", JavaExec) {
+        group = 'verification'
+        description = "Runs ${testClass}."
+        dependsOn tasks.named('testClasses')
+        classpath = sourceSets.test.runtimeClasspath
+        mainClass = testClass
+    }
+}
+
+tasks.register('selfTest') {
+    group = 'verification'
+    description = 'Runs the dependency-free plugin parity and text-fit self-tests.'
+    dependsOn pluginSelfTestTasks
+}
+
+// These sources are main()-driven contract tests, not JUnit tests. Disable the
+// empty discovery task so Gradle 9 does not turn its current warning into a failure.
+tasks.named('test') {
+    enabled = false
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('selfTest')
 }
 
 // processResources expands ${version} etc. in plugin.yml if you ever templatize it.

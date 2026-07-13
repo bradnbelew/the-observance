@@ -116,7 +116,7 @@ public final class ResourcePackPusher implements Listener {
         safety.warn("pack.push", "pushing pack to " + p.getName() + " WITHOUT a sha1 hash "
                 + "(set resource-pack.sha1 to a 40-char hex digest for cache + integrity).");
         // safety.run reports any throwable via its swallow path — a failed push degrades to no pack.
-        safety.run("pack.push.urlOnly", () -> p.setResourcePack(url));
+        safety.run("pack.push.urlOnly", () -> p.addResourcePack(packId, url, null, prompt, required));
     }
 
     /* ------------------------------------------------------------------ */

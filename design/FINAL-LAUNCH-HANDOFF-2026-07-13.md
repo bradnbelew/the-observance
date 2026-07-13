@@ -11,10 +11,10 @@ Target: Paper 1.21.11, Java 21, Observance 0.3.29.
 
 | Artifact | SHA-1 |
 | --- | --- |
-| `plugin/build/libs/observance-0.3.29.jar` | `cad99d4282ab965f457d729b257a08e598371166` |
-| `observance-datapack.zip` | `2b8563889735e82d3ed26ac8e94537c7b2c08c19` |
+| `plugin/build/libs/observance-0.3.29.jar` | `eda0e218d7a074a5c150b4781161e2da01c60ead` |
+| `observance-datapack.zip` | `e056783e9829d25a6965c7cf04b16e58afcb1969` |
 | `observance-resourcepack.zip` | `fdc15d25e1cc5811269a3405091f7b5a143ac6db` |
-| `discord/supabase/apply-all.sql` | `01749aacbca5187fe5bbfe8f6467fc056ad012b8` |
+| `discord/supabase/apply-all.sql` | `4e0e923fc10ae7049388baa173cd706568f191ca` |
 
 The configured public resource-pack URL was downloaded and byte-verified against the resource-pack SHA-1
 on 2026-07-13. Re-run `tools\check_hosted_resource_pack.ps1` if the URL or file changes.

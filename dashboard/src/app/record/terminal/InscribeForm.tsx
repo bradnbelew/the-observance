@@ -14,7 +14,7 @@ import type { RecordOutcome } from "@/lib/record/resolve";
  * The register is the archive's: a lectern you inscribe a hand + a name into. Styled as a decayed
  * terminal input, not a web form.
  */
-export function InscribeForm() {
+export function InscribeForm({ unavailable = false }: { unavailable?: boolean }) {
   const [name, setName] = useState("");
   const [answer, setAnswer] = useState("");
   const [outcome, setOutcome] = useState<RecordOutcome | null>(null);
@@ -56,6 +56,7 @@ export function InscribeForm() {
         <label className="flex items-baseline gap-3 border-b border-neutral-900 px-3 py-2">
           <span className="w-16 shrink-0 text-[11px] lowercase tracking-wide text-neutral-600">hand</span>
           <input
+            disabled={unavailable}
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoComplete="off"
@@ -69,6 +70,7 @@ export function InscribeForm() {
         <label className="flex items-baseline gap-3 px-3 py-2">
           <span className="w-16 shrink-0 text-[11px] lowercase tracking-wide text-neutral-600">mark</span>
           <input
+            disabled={unavailable}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             autoComplete="off"
@@ -83,7 +85,7 @@ export function InscribeForm() {
       <div className="mt-3 flex items-center gap-4">
         <button
           type="submit"
-          disabled={busy || answer.trim() === "" || name.trim() === ""}
+          disabled={unavailable || busy || answer.trim() === "" || name.trim() === ""}
           className="border border-neutral-700 px-4 py-1.5 text-[11px] uppercase tracking-[0.3em] text-neutral-400 transition-colors hover:border-neutral-500 hover:text-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {busy ? "reading…" : "inscribe"}
@@ -100,6 +102,11 @@ export function InscribeForm() {
             }
           >
             {line}
+          </span>
+        )}
+        {unavailable && (
+          <span role="status" className="text-[12px] text-neutral-500">
+            the record is not reachable.
           </span>
         )}
       </div>

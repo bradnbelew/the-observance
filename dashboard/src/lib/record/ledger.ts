@@ -81,18 +81,19 @@ interface ThreadRow {
   sort_order: number;
 }
 
-/** Read the live arc flags (single row id=1). Missing/error → {} (everything gated stays CLOSED). */
-async function readFlags(client: NonNullable<ReturnType<typeof getOracleClient>>): Promise<Record<string, unknown>> {
+/** Read live arc flags. A missing row is fresh state; a read error seals the whole projection. */
+async function readFlags(client: NonNullable<ReturnType<typeof getOracleClient>>): Promise<Record<string, unknown> | null> {
   try {
     const { data, error } = await client
       .from("arc_state")
       .select("flags")
       .eq("id", 1)
       .maybeSingle<{ flags: Record<string, unknown> | null }>();
-    if (error || !data) return {};
+    if (error) return null;
+    if (!data) return {};
     return data.flags ?? {};
   } catch {
-    return {};
+    return null;
   }
 }
 
@@ -100,7 +101,7 @@ async function readFlags(client: NonNullable<ReturnType<typeof getOracleClient>>
 async function readOpenPuzzles(
   client: NonNullable<ReturnType<typeof getOracleClient>>,
   flags: Record<string, unknown>,
-): Promise<RecordPuzzle[]> {
+): Promise<RecordPuzzle[] | null> {
   try {
     const { data, error } = await client
       .from("puzzles")
@@ -109,10 +110,10 @@ async function readOpenPuzzles(
       )
       .eq("active", true)
       .returns<RecordPuzzle[]>();
-    if (error || !data) return [];
+    if (error || !data) return null;
     return data.filter((p) => flagsSatisfied(p.requires_flags, flags));
   } catch {
-    return [];
+    return null;
   }
 }
 
@@ -126,6 +127,7 @@ export async function readLedger(): Promise<LedgerProjection> {
 
   try {
     const flags = await readFlags(client);
+    if (flags === null) return EMPTY;
 
     const [solvesRes, threadsRes, openPuzzles] = await Promise.all([
       client.from("solves").select("puzzle_key, player_id").returns<SolveRow[]>(),
@@ -137,6 +139,7 @@ export async function readLedger(): Promise<LedgerProjection> {
       readOpenPuzzles(client, flags),
     ]);
 
+    if (solvesRes.error || threadsRes.error || openPuzzles === null) return EMPTY;
     const solves = solvesRes.data ?? [];
     const threadRows = threadsRes.data ?? [];
 
@@ -150,11 +153,12 @@ export async function readLedger(): Promise<LedgerProjection> {
     const enteredIds = [...solvesByPlayer.keys()];
     let names: LedgerName[] = [];
     if (enteredIds.length > 0) {
-      const { data: people } = await client
+      const { data: people, error: peopleError } = await client
         .from("players")
         .select("id, name")
         .in("id", enteredIds)
         .returns<PlayerRow[]>();
+      if (peopleError) return EMPTY;
       const byId = new Map((people ?? []).map((p) => [p.id, p.name]));
       names = enteredIds
         .map((id) => ({

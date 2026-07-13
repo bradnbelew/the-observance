@@ -7,13 +7,13 @@ not turn the live world into a rehearsal grid and does not advance the live stor
 
 - Server: Paper 1.21.11 on Java 21
 - Plugin: `plugin/build/libs/observance-0.3.29.jar`
-- Plugin SHA1: `a22a0989ee918b50004f008f2b28177d5aae5d49`
+- Plugin SHA1: `eda0e218d7a074a5c150b4781161e2da01c60ead`
 - Datapack: `observance-datapack.zip`
-- Datapack SHA1: `2b8563889735e82d3ed26ac8e94537c7b2c08c19`
+- Datapack SHA1: `e056783e9829d25a6965c7cf04b16e58afcb1969`
 - Resource pack: `observance-resourcepack.zip`
 - Resource-pack SHA1: `fdc15d25e1cc5811269a3405091f7b5a143ac6db`
 - Database bundle: `discord/supabase/apply-all.sql`
-- Database bundle SHA1: `36a8045951b30273ad49646629a79ee2975aec24`
+- Database bundle SHA1: `4e0e923fc10ae7049388baa173cd706568f191ca`
 
 Re-read `observance-deploy-manifest.json` if any artifact is rebuilt. The manifest, not this copied
 receipt, wins.

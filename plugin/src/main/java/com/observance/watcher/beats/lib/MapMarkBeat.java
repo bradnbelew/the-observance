@@ -23,7 +23,7 @@ import org.bukkit.map.MapView;
  *
  * <p>Payload:
  * <pre>{@code
- * { "dest":"inventory", "mark_x":64, "mark_z":64, "mark_color":18,
+ * { "dest":"inventory", "mark_x":64, "mark_z":64, "mark_rgb":8323072,
  *   "cursor_world":"world", "cursor_x":120, "cursor_z":-340, "cursor_type":"RED_X" }
  * }</pre>
  * mark_x / mark_z are pixel coords on the 128x128 canvas. A coarse blob is drawn around them.
@@ -66,7 +66,7 @@ public final class MapMarkBeat extends AbstractBeat {
 
         final int markX = clampByte(p.integer("mark_x", 64));
         final int markZ = clampByte(p.integer("mark_z", 64));
-        final byte color = (byte) p.integer("mark_color", 18); // 18 ≈ dark red in legacy map palette
+        final java.awt.Color color = new java.awt.Color(p.integer("mark_rgb", 0x7f0000) & 0x00ffffff);
         final MapCursor.Type cursorType = cursorType(p.string("cursor_type", null));
         final boolean hasCursor = p.has("cursor_x") && p.has("cursor_z");
         final int cursorPx = clampByte(p.integer("cursor_px", markX));
@@ -84,7 +84,7 @@ public final class MapMarkBeat extends AbstractBeat {
                         if (Math.abs(dx) + Math.abs(dz) > 3) continue;
                         int x = markX + dx, z = markZ + dz;
                         if (x >= 0 && x < 128 && z >= 0 && z < 128) {
-                            try { canvas.setPixel(x, z, color); } catch (Throwable ignored) { }
+                            try { canvas.setPixelColor(x, z, color); } catch (Throwable ignored) { }
                         }
                     }
                 }

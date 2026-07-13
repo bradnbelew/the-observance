@@ -49,10 +49,11 @@ const ARCHIVE_KINDS = new Set(["rumor", "explore", "verified", "contradicted"]);
 /**
  * Read the revealed cards from the one anon-safe view. `v_archive` is owned by the SQL lane; we read it
  * defensively (the dashboard's typed Database does not declare it yet — that regen is the SQL lane's) and
- * collapse ANY failure/absence to an empty archive, so the reading-room can never error or over-reveal.
+ * collapse ANY failure/absence to an explicitly unreadable archive, so the room never errors,
+ * over-reveals, or claims that live progress is empty when it simply could not be read.
  * Every field is clamped to the contract; a malformed row cannot widen what is shown.
  */
-async function readArchive(): Promise<ArchiveCard[]> {
+async function readArchive(): Promise<{ cards: ArchiveCard[]; unavailable: boolean }> {
   try {
     const supabase = await createClient();
     // Untyped read: `v_archive` is not in the generated Database type yet (SQL lane owns the regen).
@@ -67,7 +68,7 @@ async function readArchive(): Promise<ArchiveCard[]> {
       .from("v_archive")
       .select(ARCHIVE_COLS);
 
-    if (error || !Array.isArray(data)) return [];
+    if (error || !Array.isArray(data)) return { cards: [], unavailable: true };
 
     // Coerce each row to the contract. Anything off-shape is skipped, never guessed — the view is the
     // authority on what exists, and the projection re-checks references against the revealed set anyway.
@@ -95,10 +96,10 @@ async function readArchive(): Promise<ArchiveCard[]> {
         card_sort: typeof row.card_sort === "number" ? row.card_sort : 0,
       });
     }
-    return cards;
+    return { cards, unavailable: false };
   } catch {
     // No view, no env, no DB — the sealed baseline. The archive a fresh world shows.
-    return [];
+    return { cards: [], unavailable: true };
   }
 }
 
@@ -185,8 +186,8 @@ function Thread({ thread }: { thread: ArchiveThread }) {
   );
 }
 
-/** The sealed shell — nothing recovered yet. The cold "nothing kept" tone, never an error. */
-function SealedShell() {
+/** The sealed shell — distinguishes a real empty archive from an unreadable backend. */
+function SealedShell({ unavailable }: { unavailable: boolean }) {
   return (
     <main className="record-site archive-site">
       <div className="record-page archive-page">
@@ -197,7 +198,7 @@ function SealedShell() {
           <p>no indexed material</p>
         </header>
         <p className="record-empty">
-          nothing has been recovered yet.
+          {unavailable ? "the archive could not be read." : "nothing has been recovered yet."}
         </p>
       </div>
     </main>
@@ -205,10 +206,10 @@ function SealedShell() {
 }
 
 export default async function ArchivePage() {
-  const cards = await readArchive();
+  const { cards, unavailable } = await readArchive();
   const archive = projectArchive(cards);
 
-  if (archive.empty) return <SealedShell />;
+  if (archive.empty) return <SealedShell unavailable={unavailable} />;
 
   return (
     <main className="record-site archive-site">

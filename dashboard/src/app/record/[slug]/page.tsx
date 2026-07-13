@@ -89,9 +89,10 @@ export const revalidate = 300;
  * Read the one anon-safe coarse signal. The `v_record` view is owned by the SQL lane (see RETURN); it
  * exposes exactly { movement, stones_read, accepted } and nothing wider. We read it defensively (the
  * dashboard's typed Database does not yet declare it — that regen is the SQL lane's) and collapse ANY
- * failure to the sealed baseline so the Record can never error or over-reveal.
+ * failure to an explicitly unreadable sealed baseline so the Record never errors, over-reveals,
+ * or misstates an unavailable count as zero.
  */
-async function readSignal(): Promise<RecordSignal> {
+async function readSignal(): Promise<{ signal: RecordSignal; unavailable: boolean }> {
   try {
     const supabase = await createClient();
     // Untyped read: `v_record` is not in the generated Database type yet (SQL lane owns the regen).
@@ -110,8 +111,8 @@ async function readSignal(): Promise<RecordSignal> {
       .select("movement, stones_read, accepted, theories")
       .maybeSingle();
 
-    if (error || !data) return {};
-    return {
+    if (error || !data) return { signal: {}, unavailable: true };
+    return { signal: {
       movement: typeof data.movement === "number" ? data.movement : null,
       stonesRead: typeof data.stones_read === "number" ? data.stones_read : null,
       accepted: data.accepted === true,
@@ -120,10 +121,10 @@ async function readSignal(): Promise<RecordSignal> {
       theories: Array.isArray(data.theories) && data.theories.every((t) => typeof t === "string")
         ? (data.theories as string[])
         : null,
-    };
+    }, unavailable: false };
   } catch {
     // No view, no env, no DB — the sealed baseline. The archive a fresh world shows.
-    return {};
+    return { signal: {}, unavailable: true };
   }
 }
 
@@ -227,7 +228,7 @@ export default async function RecordPage({
     );
   }
 
-  const signal = await readSignal();
+  const { signal, unavailable } = await readSignal();
   const rec = project(signal);
   // Discoverability for the deeper layer (/record/archive), gated on the ALREADY-READ coarse signal (no
   // second DB round-trip): at least one stone read ⇒ the recovery archive has something to show. The link
@@ -241,12 +242,12 @@ export default async function RecordPage({
           <div><span>recordsrv/0.7</span><span>projection: public</span><span>mode: read-only</span></div>
           <RuneGlyphs text="THE RECORD" className="mx-auto my-3 text-amber-700/70" height={22} />
           <h1>THE RECORD</h1>
-          <p>{rec.season}</p>
+          <p>{unavailable ? "the record could not be read." : rec.season}</p>
         </header>
 
         {/* The one number — a muster, not a clock. */}
         <div className="record-muster">
-          <span className="text-3xl tabular-nums text-neutral-300">{rec.kept}</span>
+          <span className="text-3xl tabular-nums text-neutral-300">{unavailable ? "—" : rec.kept}</span>
           <span className="text-sm text-neutral-700">/</span>
           <span className="text-sm tabular-nums text-neutral-600">{rec.total}</span>
           <span className="ml-2 text-xs uppercase tracking-wide text-neutral-700">
@@ -263,7 +264,7 @@ export default async function RecordPage({
 
         {/* The standing footer — a count, then the iceberg. */}
         <footer className="record-footer">
-          {rec.footer}
+          {unavailable ? "the count is unavailable. the entries remain struck." : rec.footer}
           {/* The quiet link to the deeper layer — shown only once something is kept there (a stone read).
               A plain underlined mono line in-register, never a CTA. */}
           {archiveHasContent && (

@@ -1,5 +1,8 @@
 package com.observance.watcher.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.Title.Times;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -16,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Duration;
 
 /**
  * Per-player targeting (anti-jank: "it knows ME"). Sends sounds/particles/titles/fake-blocks
@@ -88,16 +92,20 @@ public final class PerPlayer {
     public static void title(Player player, String title, String subtitle,
                              int fadeInTicks, int stayTicks, int fadeOutTicks) {
         if (!usable(player)) return;
-        player.sendTitle(
-                title == null ? "" : title,
-                subtitle == null ? "" : subtitle,
-                Math.max(0, fadeInTicks), Math.max(0, stayTicks), Math.max(0, fadeOutTicks));
+        player.showTitle(Title.title(
+                Component.text(title == null ? "" : title),
+                Component.text(subtitle == null ? "" : subtitle),
+                Times.times(ticks(fadeInTicks), ticks(stayTicks), ticks(fadeOutTicks))));
     }
 
     /** Send an action-bar message to one player (transient, above the hotbar). */
     public static void actionBar(Player player, String message) {
         if (!usable(player) || message == null) return;
-        player.sendActionBar(message);
+        player.sendActionBar(Component.text(message));
+    }
+
+    private static Duration ticks(int ticks) {
+        return Duration.ofMillis(Math.max(0, ticks) * 50L);
     }
 
     /* --------------------------- fake block --------------------------- */

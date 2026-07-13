@@ -39,14 +39,75 @@ if (Test-Path $jarPath) {
   Remove-Item -LiteralPath $jarPath -Force
 }
 
-& jar --create --file $jarPath -C $classesDir . -C $resourcesDir . -C $holdD05Dir "deep-hold-d05-shelf.json"
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+function Write-DeterministicJar([string]$OutPath) {
+  if (Test-Path $OutPath) {
+    Remove-Item -LiteralPath $OutPath -Force
+  }
+  $fixedTimestamp = [System.DateTimeOffset]::new(2026, 1, 1, 0, 0, 0, [System.TimeSpan]::Zero)
+  $entries = [ordered]@{}
+  foreach ($root in @($classesDir, $resourcesDir)) {
+    $rootFull = [System.IO.Path]::GetFullPath($root).TrimEnd('\', '/')
+    foreach ($file in Get-ChildItem -LiteralPath $rootFull -Recurse -File) {
+      $relative = $file.FullName.Substring($rootFull.Length).TrimStart('\', '/').Replace('\', '/')
+      if ($entries.Contains($relative)) {
+        throw "Duplicate plugin JAR entry '$relative' from $($file.FullName)"
+      }
+      $entries[$relative] = $file.FullName
+    }
+  }
+  if ($entries.Contains("deep-hold-d05-shelf.json")) {
+    throw "Duplicate plugin JAR entry 'deep-hold-d05-shelf.json'"
+  }
+  $entries["deep-hold-d05-shelf.json"] = $holdD05File
+
+  $stream = [System.IO.File]::Open($OutPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite)
+  try {
+    $archive = [System.IO.Compression.ZipArchive]::new($stream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
+    try {
+      $manifestEntry = $archive.CreateEntry("META-INF/MANIFEST.MF", [System.IO.Compression.CompressionLevel]::Optimal)
+      $manifestEntry.LastWriteTime = $fixedTimestamp
+      $manifestStream = $manifestEntry.Open()
+      try {
+        $manifestBytes = [System.Text.Encoding]::UTF8.GetBytes("Manifest-Version: 1.0`r`nCreated-By: Observance deterministic packager`r`n`r`n")
+        $manifestStream.Write($manifestBytes, 0, $manifestBytes.Length)
+      } finally {
+        $manifestStream.Dispose()
+      }
+
+      foreach ($relative in ($entries.Keys | Sort-Object)) {
+        $entry = $archive.CreateEntry($relative, [System.IO.Compression.CompressionLevel]::Optimal)
+        $entry.LastWriteTime = $fixedTimestamp
+        $entryStream = $entry.Open()
+        try {
+          $input = [System.IO.File]::OpenRead([string]$entries[$relative])
+          try { $input.CopyTo($entryStream) } finally { $input.Dispose() }
+        } finally {
+          $entryStream.Dispose()
+        }
+      }
+    } finally {
+      $archive.Dispose()
+    }
+  } finally {
+    $stream.Dispose()
+  }
 }
 
+Write-DeterministicJar $jarPath
+$reproPath = "$jarPath.repro-check"
+Write-DeterministicJar $reproPath
 $sha1 = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA1).Hash.ToLowerInvariant()
+$reproSha1 = (Get-FileHash -LiteralPath $reproPath -Algorithm SHA1).Hash.ToLowerInvariant()
+Remove-Item -LiteralPath $reproPath -Force
+if ($sha1 -ne $reproSha1) {
+  throw "Plugin packaging is not reproducible: $sha1 != $reproSha1"
+}
+
 Write-Host "plugin packaged: $jarPath"
-Write-Host "plugin sha1: $sha1"
+Write-Host "plugin sha1: $sha1 (reproducible)"
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\write_deploy_manifest.ps1") -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {

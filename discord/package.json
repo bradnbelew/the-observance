@@ -21,6 +21,7 @@
     "namespacecheck": "python ../tools/check_namespace_collisions.py",
     "voicecheck": "python ../tools/check_voice_register.py",
     "onboardingcheck": "python ../tools/check_discord_onboarding.py",
+    "typecheck": "tsc --noEmit --pretty false",
     "audit": "npm run -s seedcheck && npm run -s webaudit && npm run -s sidequestaudit && npm run -s puzzlefairness && npm run -s experiencecheck && npm run -s namespacecheck && npm run -s voicecheck && npm run -s onboardingcheck && npm run -s db:bundlecheck && npm run -s specscheck && npm run -s resolvecheck",
     "gatecheck": "tsx src/oracle/gate.selftest.ts",
     "resolvecheck": "tsx src/oracle/resolve.selftest.ts",
@@ -65,5 +66,8 @@
     "opusscript": "^0.0.8",
     "prism-media": "^1.3.5",
     "tweetnacl": "^1.0.3"
+  },
+  "overrides": {
+    "undici": "^6.27.0"
   }
 }

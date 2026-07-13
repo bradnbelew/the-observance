@@ -9,6 +9,7 @@ import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -353,7 +354,7 @@ public final class ThresholdVaultListener implements Listener {
             Site vault = nearestPlacedOfType(sites, VAULT_TYPE, world, loc.getX(), loc.getY(), loc.getZ());
             if (vault == null || !isVaultSite(vault)) return;   // an ordinary sign / a non-vault coop plate
 
-            String raw = joinLines(event.getLines());
+            String raw = joinLines(event.lines());
             blank(event);                                       // input slot, not billboard — never persist the guess
             if (raw.isBlank()) return;
 
@@ -528,10 +529,11 @@ public final class ThresholdVaultListener implements Listener {
         return best;
     }
 
-    private static String joinLines(String[] lines) {
+    private static String joinLines(List<Component> lines) {
         if (lines == null) return "";
         StringBuilder sb = new StringBuilder();
-        for (String line : lines) {
+        for (Component component : lines) {
+            String line = component == null ? "" : PlainTextComponentSerializer.plainText().serialize(component);
             if (line == null || line.isBlank()) continue;
             if (sb.length() > 0) sb.append(' ');
             sb.append(line);
@@ -541,7 +543,7 @@ public final class ThresholdVaultListener implements Listener {
 
     private static void blank(SignChangeEvent event) {
         try {
-            for (int i = 0; i < 4; i++) event.setLine(i, "");
+            for (int i = 0; i < 4; i++) event.line(i, Component.empty());
         } catch (Throwable ignored) { }
     }
 

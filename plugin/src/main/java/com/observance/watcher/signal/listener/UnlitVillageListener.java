@@ -12,7 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.GameRule;
+import org.bukkit.GameRules;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -213,7 +213,7 @@ public final class UnlitVillageListener implements Listener {
         if (player == null || !isActive(player)) return;
         PlayerTeleportEvent.TeleportCause cause = event.getCause();
         if (cause == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
-                || cause == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
+                || cause == PlayerTeleportEvent.TeleportCause.CONSUMABLE_EFFECT) {
             event.setCancelled(true);
         }
     }
@@ -743,7 +743,7 @@ public final class UnlitVillageListener implements Listener {
         ItemStack stack = new ItemStack(Material.SOUL_LANTERN, Math.max(1, Math.min(64, amount)));
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("Borrowed lantern");
+            meta.displayName(Component.text("Borrowed lantern"));
             meta.getPersistentDataContainer().set(lightKey, PersistentDataType.BYTE, (byte) 1);
             stack.setItemMeta(meta);
         }
@@ -754,7 +754,7 @@ public final class UnlitVillageListener implements Listener {
         ItemStack stack = new ItemStack(Material.ECHO_SHARD, 1);
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName("A way back");
+            meta.displayName(Component.text("A way back"));
             meta.getPersistentDataContainer().set(returnKey, PersistentDataType.BYTE, (byte) 1);
             stack.setItemMeta(meta);
         }
@@ -841,7 +841,7 @@ public final class UnlitVillageListener implements Listener {
         if (world == null) return;
         forceUnlitNight(world);
         if (plugin.getConfig().getBoolean("unlit.disable-regular-mob-spawns", true)) {
-            world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            world.setGameRule(GameRules.SPAWN_MOBS, false);
         }
     }
 

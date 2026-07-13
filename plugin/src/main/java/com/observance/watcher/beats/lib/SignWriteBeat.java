@@ -7,6 +7,7 @@ import com.observance.watcher.beats.BeatRequest;
 import com.observance.watcher.beats.BeatResult;
 import com.observance.watcher.util.Placement;
 import com.observance.watcher.util.TextFit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -76,7 +77,7 @@ public final class SignWriteBeat extends AbstractBeat {
             var sideText = sign.getSide(side);
             for (int i = 0; i < 4; i++) {
                 String text = i < lines.size() && lines.get(i) != null ? lines.get(i) : "";
-                sideText.setLine(i, clampLine(text));
+                sideText.line(i, Component.text(clampLine(text)));
             }
             try { sideText.setGlowingText(glowing); } catch (Throwable ignored) { }
             sign.setWaxed(true);  // anti-grief: waxed signs can't be edited by players

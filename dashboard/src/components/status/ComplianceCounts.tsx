@@ -15,13 +15,13 @@ function Stat({
   hint,
 }: {
   label: string;
-  value: number;
+  value: number | null;
   hint: string;
 }) {
   return (
     <div className="rounded-md border border-neutral-800 bg-ash/40 px-4 py-3">
       <div className="font-mono text-3xl tabular-nums text-neutral-100">
-        {value.toLocaleString()}
+        {value === null ? "—" : value.toLocaleString()}
       </div>
       <div className="mt-1 text-xs uppercase tracking-wide text-neutral-500">
         {label}
@@ -33,13 +33,17 @@ function Stat({
 
 export default function ComplianceCounts({
   counts,
+  unavailable = false,
 }: {
   counts: ComplianceCountsView | null;
+  unavailable?: boolean;
 }) {
-  const totalRecords = counts?.total_records ?? 0;
-  const totalFlags = counts?.total_flags ?? 0;
+  const totalRecords = unavailable ? null : (counts?.total_records ?? 0);
+  const totalFlags = unavailable ? null : (counts?.total_flags ?? 0);
   const flagRate =
-    totalRecords > 0 ? Math.round((totalFlags / totalRecords) * 100) : 0;
+    totalRecords !== null && totalFlags !== null && totalRecords > 0
+      ? Math.round((totalFlags / totalRecords) * 100)
+      : unavailable ? null : 0;
 
   return (
     <section className="rounded-lg border border-neutral-800 bg-slate-850 p-5">
@@ -48,7 +52,7 @@ export default function ComplianceCounts({
           Compliance
         </h2>
         <span className="font-mono text-xs text-neutral-500">
-          {flagRate}% flagged
+          {flagRate === null ? "unavailable" : `${flagRate}% flagged`}
         </span>
       </div>
 

@@ -96,22 +96,22 @@ async function getOpenPuzzles(
   return data.filter((p) => flagsSatisfied(p.requires_flags, flags));
 }
 
-/** attempts by this player within the window — the rate-limit substrate. Fails OPEN. */
+/** Attempts by this player within the window. A read fault returns null and fails closed. */
 async function countRecentAttempts(
   client: NonNullable<ReturnType<typeof getOracleClient>>,
   opts: { playerId: string | null; windowMs: number; puzzleKey?: string },
-): Promise<number> {
+): Promise<number | null> {
   try {
     const since = new Date(Date.now() - opts.windowMs).toISOString();
     let q = client.from("answer_attempts").select("id", { count: "exact", head: true }).gte("at", since);
     if (opts.playerId) q = q.eq("player_id", opts.playerId);
-    else return 0;
+    else return null;
     if (opts.puzzleKey) q = q.eq("puzzle_key", opts.puzzleKey);
     const { count, error } = await q;
-    if (error) return 0;
+    if (error) return null;
     return count ?? 0;
   } catch {
-    return 0;
+    return null;
   }
 }
 
@@ -124,14 +124,13 @@ function hashIp(ip: string): string {
  * Attempts within the window from an unresolved (no player_id) submitter sharing this IP hash — the
  * throttle an unknown name otherwise skips entirely (INV: unresolved names can't be rate-keyed by
  * player_id, so without this an anonymous prober could hammer the endpoint at zero cost beyond a DB
- * write). Scoped to player_id IS NULL so it can never merge with a known keeper's own bucket. Fails OPEN
- * (same contract as countRecentAttempts) — including when migration 0010 (the ip_hash column) hasn't
- * been applied yet, since the query then simply never finds a match.
+ * write). Scoped to player_id IS NULL so it can never merge with a known keeper's own bucket. Read
+ * errors fail closed, including when migration 0010 has not been applied.
  */
 async function countRecentAttemptsByIp(
   client: NonNullable<ReturnType<typeof getOracleClient>>,
   opts: { ipHash: string; windowMs: number },
-): Promise<number> {
+): Promise<number | null> {
   try {
     const since = new Date(Date.now() - opts.windowMs).toISOString();
     const { count, error } = await client
@@ -140,10 +139,10 @@ async function countRecentAttemptsByIp(
       .is("player_id", null)
       .eq("ip_hash", opts.ipHash)
       .gte("at", since);
-    if (error) return 0;
+    if (error) return null;
     return count ?? 0;
   } catch {
-    return 0;
+    return null;
   }
 }
 
@@ -265,8 +264,8 @@ async function applyOutcome(
  *
  * @param clientIp best-effort caller IP (from the route handler's request headers), used ONLY to throttle
  *   unresolved-name submissions (see countRecentAttemptsByIp); never stored raw, never used to identify
- *   a real keeper. Optional — if omitted (or unavailable behind whatever proxy fronts this), an unknown
- *   name simply isn't IP-throttled, exactly as before this was added (fails open, never fails closed).
+ *   a real keeper. If omitted (or unavailable behind the proxy), an unknown name is withheld because
+ *   there is no safe durable bucket for the public write path.
  */
 export async function resolveInscription(
   rawName: string,
@@ -293,16 +292,19 @@ export async function resolveInscription(
     // keeper's bucket, and vice versa).
     if (playerId) {
       const recent = await countRecentAttempts(client, { playerId, windowMs: RATE_WINDOW_MS });
-      if (recent >= RATE_MAX_IN_WINDOW) {
+      if (recent === null || recent >= RATE_MAX_IN_WINDOW) {
         await logAttempt(client, { puzzleKey: null, playerId, mcUuid: keeper?.mc_uuid ?? null, raw: rawCapped, normalized, matched: false });
         return "withheld";
       }
     } else if (ipHash) {
       const recent = await countRecentAttemptsByIp(client, { ipHash, windowMs: RATE_WINDOW_MS });
-      if (recent >= RATE_MAX_IN_WINDOW) {
+      if (recent === null || recent >= RATE_MAX_IN_WINDOW) {
         await logAttempt(client, { puzzleKey: null, playerId: null, mcUuid: null, raw: rawCapped, normalized, matched: false, ipHash });
         return "withheld";
       }
+    } else {
+      // Without a stable caller bucket an unresolved name would be an unlimited public write path.
+      return "withheld";
     }
 
     const flags = await readFlags(client);
@@ -338,7 +340,7 @@ export async function resolveInscription(
     // Per-puzzle cap (on top of the global bucket).
     if (target.max_attempts !== null) {
       const onThis = await countRecentAttempts(client, { playerId: keeper.id, windowMs: RATE_WINDOW_MS, puzzleKey: target.puzzle_key });
-      if (onThis >= target.max_attempts) {
+      if (onThis === null || onThis >= target.max_attempts) {
         await logAttempt(client, { puzzleKey: target.puzzle_key, playerId: keeper.id, mcUuid: keeper.mc_uuid, raw: rawCapped, normalized, matched: true });
         return "withheld";
       }
@@ -351,7 +353,8 @@ export async function resolveInscription(
     }
 
     // Idempotent record FIRST (double-fire guard under a race).
-    const recent = playerId ? await countRecentAttempts(client, { playerId, windowMs: RATE_WINDOW_MS }) : 0;
+    const recent = playerId ? await countRecentAttempts(client, { playerId, windowMs: RATE_WINDOW_MS }) : null;
+    if (recent === null) return "withheld";
     const isNew = await recordSolve(client, target.puzzle_key, keeper, recent + 1);
     if (!isNew) {
       await logAttempt(client, { puzzleKey: target.puzzle_key, playerId: keeper.id, mcUuid: keeper.mc_uuid, raw: rawCapped, normalized, matched: true });

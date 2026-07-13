@@ -45,7 +45,7 @@ public final class DarkHoursListener implements Listener {
     public void onBedEnter(PlayerBedEnterEvent event) {
         safety.run("signal.DarkHours.bedEnter", () -> {
             // Only count a bed-enter that the server is actually going to honor.
-            if (event.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK) return;
+            if (!event.enterAction().canSleep().success()) return;
 
             Player p = event.getPlayer();
             if (p == null) return;

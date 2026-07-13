@@ -254,7 +254,7 @@ function validateInputContracts(
     ['answerSign', 'TYPE_CASE_BOARD', 'the absence case board is not an answer-bearing site'],
     ['answerSign', 'TYPE_PRIOR_CAMP', 'prior repair files are not answer-bearing sites'],
     ['answerSign', 'TYPE_FAILED_ACCEPTING', 'Failed Accepting is not an answer-bearing site'],
-    ['answerSign', 'setLine(i, "")', 'submitted guesses are not cleared from filing signs'],
+    ['answerSign', 'event.line(i, Component.empty())', 'submitted guesses are not cleared from filing signs'],
     ['structures', 'blank unwaxed submission slot', 'structure templates do not author editable answer signs'],
     ['command', 'no editable answer surface', 'world visual audit does not fail missing answer surfaces'],
     ['command', 'no editable answer sign found inside answer radius', 'world proof does not enforce a reachable input sign'],

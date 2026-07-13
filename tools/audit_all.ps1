@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $discord = Join-Path $RepoRoot "discord"
 $dashboard = Join-Path $RepoRoot "dashboard"
 $pluginCheck = Join-Path $RepoRoot "tools\check_plugin_compile.ps1"
+$pluginPackage = Join-Path $RepoRoot "tools\package_plugin.ps1"
 $pluginDbContractCheck = Join-Path $RepoRoot "tools\check_plugin_db_contracts.ps1"
 $companionArcContractCheck = Join-Path $RepoRoot "tools\check_companion_arc_contracts.ps1"
 $pluginJarCheck = Join-Path $RepoRoot "tools\check_plugin_jar.ps1"
@@ -56,6 +57,10 @@ try {
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
   }
+  npm.cmd run typecheck
+  if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+  }
 } finally {
 Pop-Location
 }
@@ -66,10 +71,9 @@ try {
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
   }
-  npx.cmd tsc --noEmit --pretty false
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
-  }
+  # Build before the standalone compiler pass so Next regenerates `.next/types`
+  # from the current route tree. Otherwise routes removed since the previous build
+  # can leave stale generated imports that make an unchanged source tree fail.
   npm.cmd run selftest
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
@@ -78,11 +82,23 @@ try {
   if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
   }
+  npx.cmd tsc --noEmit --pretty false
+  if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+  }
 } finally {
   Pop-Location
 }
 
 & powershell -NoProfile -ExecutionPolicy Bypass -File $pluginCheck -RepoRoot $RepoRoot
+if ($LASTEXITCODE -ne 0) {
+  exit $LASTEXITCODE
+}
+
+# Several downstream launch/rehearsal validators inspect the deployable JAR.
+# Build it before those checks so a clean checkout can pass the audit without a
+# stale or manually prebuilt artifact.
+& powershell -NoProfile -ExecutionPolicy Bypass -File $pluginPackage -RepoRoot $RepoRoot
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }

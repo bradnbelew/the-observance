@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import com.observance.watcher.util.TextFit;
+import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
@@ -84,7 +85,7 @@ public final class LecternFillBeat extends AbstractBeat {
                 // vanilla page does not scroll or auto-paginate — overflow is simply invisible).
                 // Re-wrap every authored page into 1+ real, client-legible pages before writing them.
                 for (String page : pages) {
-                    for (String real : TextFit.paginate(page == null ? "" : page)) meta.addPage(real);
+                    for (String real : TextFit.paginate(page == null ? "" : page)) meta.addPages(Component.text(real));
                 }
                 book.setItemMeta(meta);
             }

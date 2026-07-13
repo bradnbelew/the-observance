@@ -57,7 +57,11 @@ public final class LensItem {
             if (meta != null) {
                 meta.getPersistentDataContainer().set(
                         key(namespace), PersistentDataType.INTEGER, VERSION);
-                try { meta.setCustomModelData(MODEL_DATA); } catch (Throwable ignored) { }
+                try {
+                    var model = meta.getCustomModelDataComponent();
+                    model.setFloats(List.of((float) MODEL_DATA));
+                    meta.setCustomModelDataComponent(model);
+                } catch (Throwable ignored) { }
                 meta.displayName(Component.text("The Lens")
                         .color(NamedTextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, false));

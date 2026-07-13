@@ -51,7 +51,7 @@ from the expected output. Do not advance merely because a command ran.
 
 - Repository: `D:\the-observance`
 - Target server: Paper 1.21.11 on Java 21
-- Current plugin version: 0.3.24
+- Current plugin version: 0.3.29
 - Artifact truth: `observance-deploy-manifest.json`
 - Database bundle: `discord/supabase/apply-all.sql`
 - Public site: `https://copperlinehosting.com`
