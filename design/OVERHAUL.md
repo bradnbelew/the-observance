@@ -1,5 +1,9 @@
 # THE OBSERVANCE — THE OVERHAUL (single source of truth)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — IT IS NO LONGER A SOURCE OF TRUTH.** Current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED PRE-V5 ARCHIVE — IT IS NO LONGER A SOURCE OF TRUTH.** Current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
 > Canonical STRATEGY doc (the why + the direction). Part of the canonical set (all 2026-06-29):
 > **[BUILD-PLAN.md](BUILD-PLAN.md)** = the operative start→finish build skeleton + status + the
 > Seventh/"kept" story repair (open that first when building); **[PUZZLES.md](PUZZLES.md)** = the

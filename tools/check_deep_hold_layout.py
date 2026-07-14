@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Fail-fast static contract check for the Deep Hold V4 implementation."""
+"""Fail-closed static V5 Deep Hold geometry/runtime integration check."""
 
 from __future__ import annotations
 
+import csv
 import re
 import subprocess
 import sys
@@ -12,125 +13,140 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "plugin/src/main/java/com/observance/watcher/structure/DeepHoldV4Plan.java"
 GEOMETRY = ROOT / "plugin/src/main/java/com/observance/watcher/structure/DeepHoldV4Geometry.java"
+MANIFEST = ROOT / "plugin/src/main/java/com/observance/watcher/structure/DeepHoldV5Manifest.java"
+AUTHORITY = ROOT / "plugin/src/main/java/com/observance/watcher/structure/V5AuthorityManifest.java"
 COMMAND = ROOT / "plugin/src/main/java/com/observance/watcher/command/ObservanceCommand.java"
-ANSWER = ROOT / "plugin/src/main/java/com/observance/watcher/signal/listener/AnswerSignListener.java"
 PROTECTION = ROOT / "plugin/src/main/java/com/observance/watcher/signal/listener/HoldProtectionListener.java"
-PUZZLES = ROOT / "discord/supabase/seeds/puzzles_seed.sql"
-METAPUZZLE = ROOT / "discord/supabase/seeds/metapuzzle_seed.sql"
-HINTS = ROOT / "discord/supabase/seeds/hints_seed.sql"
-DASHBOARD = ROOT / "dashboard/src/components/author/PriorAcceptingProgress.tsx"
 
 
 def read(path: Path, failures: list[str]) -> str:
-    if not path.exists():
+    if not path.is_file():
         failures.append(f"missing {path.relative_to(ROOT)}")
         return ""
     return path.read_text(encoding="utf-8")
+
+
+def csv_rows(relative: str, failures: list[str]) -> list[dict[str, str]]:
+    path = ROOT / relative
+    if not path.is_file():
+        failures.append(f"missing {relative}")
+        return []
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def require(text: str, label: str, tokens: tuple[str, ...], failures: list[str]) -> None:
+    for token in tokens:
+        if token not in text:
+            failures.append(f"{label} missing {token}")
 
 
 def main() -> int:
     failures: list[str] = []
     plan = read(PLAN, failures)
     geometry = read(GEOMETRY, failures)
+    manifest = read(MANIFEST, failures)
+    authority = read(AUTHORITY, failures)
     command = read(COMMAND, failures)
-    answer = read(ANSWER, failures)
     protection = read(PROTECTION, failures)
-    puzzles = read(PUZZLES, failures)
-    metapuzzle = read(METAPUZZLE, failures)
-    hints = read(HINTS, failures)
-    dashboard = read(DASHBOARD, failures)
 
-    manifest_check = subprocess.run(
+    content_check = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_v5_content.py")],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    if content_check.returncode:
+        failures.append("V5 content checker failed:\n" + content_check.stdout.rstrip())
+
+    predicate_check = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_v5_physical_predicates.py")],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    if predicate_check.returncode:
+        failures.append("V5 physical predicate checker failed:\n" + predicate_check.stdout.rstrip())
+
+    fixture_check = subprocess.run(
         [sys.executable, str(ROOT / "tools/check_deep_hold_fixture_manifest.py")],
         cwd=ROOT, text=True, capture_output=True, check=False,
     )
-    if manifest_check.returncode:
-        failures.append("fixture manifest checker failed:\n" + manifest_check.stdout.rstrip())
+    if fixture_check.returncode:
+        failures.append("fixture manifest checker failed:\n" + fixture_check.stdout.rstrip())
 
-    counts = {
-        "rooms": len(re.findall(r'new Room\(', plan)),
-        "fixtures": len(re.findall(r'^\s*fixture\("', plan, re.MULTILINE)),
-        "gates": len(re.findall(r'new Gate\(', plan)),
-        "records": len(re.findall(r'new RecordStation\(', plan)),
-    }
+    rooms = csv_rows("design/DEEP-HOLD-ROOM-BOXES.csv", failures)
+    fixtures = csv_rows("design/DEEP-HOLD-FIXTURE-MANIFEST.csv", failures)
+    gates = csv_rows("design/DEEP-HOLD-GATE-MANIFEST.csv", failures)
+    records = csv_rows("design/DEEP-HOLD-RECORD-STATION-MANIFEST.csv", failures)
+    counts = {"rooms": len(rooms), "fixtures": len(fixtures), "gates": len(gates), "records": len(records)}
     expected = {"rooms": 32, "fixtures": 76, "gates": 8, "records": 7}
-    for key, value in expected.items():
-        if counts[key] != value:
-            failures.append(f"expected {value} V4 {key}, found {counts[key]}")
+    for label, count in expected.items():
+        if counts[label] != count:
+            failures.append(f"expected {count} {label}, found {counts[label]}")
 
-    required_plan = (
+    java_counts = {
+        "rooms": len(re.findall(r"new Room\(", plan)),
+        "fixtures": len(re.findall(r'^\s*fixture\("', plan, re.MULTILINE)),
+        "gates": len(re.findall(r"new Gate\(", plan)),
+        "records": len(re.findall(r"new RecordStation\(", plan)),
+    }
+    if java_counts != expected:
+        failures.append(f"Java spatial counts {java_counts} do not match {expected}")
+
+    require(plan, "spatial plan", (
         "MIN_SURFACE_COVER = 12", "MIN_BOTTOM_BUFFER = 12", "MIN_Y = -104",
         "MAX_Z = 378", 'new Link("unwriting", "release")',
         'new Gate("g1"', 'new Gate("g6"', 'new Gate("prior"', 'new Gate("dread"',
         "public static List<String> validate()", "overlapsOwnership", "unreachable rooms",
-        "prior_witness_ready_and_accepting_onramp", "bowed_as_one",
-    )
-    for needle in required_plan:
-        if needle not in plan:
-            failures.append(f"V4 plan missing contract token: {needle}")
-
-    required_geometry = (
+        "v5_case_c02_complete", "v5_case_c09_complete",
+    ), failures)
+    require(geometry, "geometry builder", (
         "buildSurfaceMouthAndGrandStair", "buildRoomShell", "carveAuthoredCirculation",
         "buildUpperToCivicSwitchback", "buildCivicToLowerSwitchback", "dressRoom",
         "dressKeeperNave", "dressArchiveNave", "dressPuzzleWorks", "dressLowerWorks",
         "dressAccepting", "dressCoda", "buildGatehouse", "finishSurfaceMouth",
-    )
-    for needle in required_geometry:
-        if needle not in geometry:
-            failures.append(f"V4 geometry missing: {needle}")
+    ), failures)
+    require(manifest, "V5 manifest", (
+        'CANONICAL_ORIENTATION = "+Z"', "EXPECTED_ROOMS = 32", "EXPECTED_FIXTURES = 76",
+        "EXPECTED_GATES = 8", "EXPECTED_NODES = 82", "EXPECTED_BOOKS = 44",
+        "V5AuthorityManifest.inspect()", "contentHash()",
+        "v5_case_c02_complete", "v5_case_c04_complete", "v5_case_c05_complete",
+        "v5_case_c06_complete", "v5_a01_location", "v5_case_c07_complete",
+        "v5_case_c08_complete", "v5_case_c09_complete",
+    ), failures)
+    require(authority, "authority loader", (
+        "ARG-V5-NODE-MANIFEST.csv", "ARG-V5-ROOM-ASSIGNMENTS.csv",
+        "ARG-V5-FIXTURE-OWNERSHIP.csv", "ARG-V5-PHYSICAL-PREDICATES.json",
+        "DEEP-HOLD-GATE-MANIFEST.csv",
+        "minecraft-books.json", "npc-dialogue.json", "media-manifest.json",
+    ), failures)
+    require(command, "operator runtime", (
+        "DeepHoldV5Manifest.validate()", "DeepHoldV5Manifest.contentHash()",
+        "handlePlaceHoldPlan", "startDeepHoldV5Build", "finishDeepHoldV5Build", "auditV4OpenRoute",
+        "handlePlaceHoldRepair", "item recover", "finale",
+    ), failures)
+    require(protection, "Hold protection", (
+        "HOLD_REGION_TYPE", "insideHold", "BlockBreakEvent", "BlockPlaceEvent",
+        "PlayerBucketEmptyEvent", "EntityExplodeEvent", "HangingBreakEvent",
+    ), failures)
 
-    required_runtime = (
-        "buildDeepHoldV4", "DeepHoldV4Plan.validate()", "DeepHoldV4Geometry",
-        "deep_hold_entry_stair", "auditV4OpenRoute", "isV4AuditStandable",
-        "hasHoldGateOverBypass", "syncPlaceHoldGatesAutomatically",
-        'case "keeper", "archive"', 'case "accepting", "coda"',
-        "loadHoldLockBooks();", "loadHoldD05Books();",
-    )
-    for needle in required_runtime:
-        if needle not in command:
-            failures.append(f"runtime missing V4 integration: {needle}")
     if "int depth = 392" in command or "Math.max(340, Math.min(520" in command:
-        failures.append("legacy caller-selected Hold depth is still active")
+        failures.append("legacy caller-selected Hold depth is active")
+    for old in ("rosetta_known", "prior_witness_ready_and_accepting_onramp", "bowed_as_one"):
+        if old in manifest:
+            failures.append(f"V5 gate manifest still contains retired gate condition {old}")
 
-    for needle in ("TYPE_CASE_BOARD", "TYPE_PRIOR_CAMP", "TYPE_FAILED_ACCEPTING", "ANSWER_SITE_TYPES"):
-        if needle not in answer:
-            failures.append(f"answer listener missing {needle}")
-    for needle in ("HOLD_REGION_TYPE", "insideHold"):
-        if needle not in protection:
-            failures.append(f"protection listener missing region {needle}")
+    for visual in (
+        ROOT / "design/visuals/deep-hold-v5-blueprint.svg",
+        ROOT / "design/visuals/deep-hold-v5-blueprint.png",
+    ):
+        if not visual.is_file() or visual.stat().st_size == 0:
+            failures.append(f"missing generated layout visual {visual.relative_to(ROOT)}")
 
-    expected_puzzles = {
-        "prior-absence": ("no witness", "prior_absence_known"),
-        "prior-camp-refusal": ("answers are not witness", "prior_camp_read"),
-        "prior-vaun-correction": ("return first before count", "prior_vaun_corrected"),
-        "prior-mara-correction": ("walk it before filing it", "prior_mara_corrected"),
-        "prior-sella-correction": ("count the seventh before the six", "prior_sella_corrected"),
-        "prior-orin-correction": ("bowing is proof not payment", "prior_orin_corrected"),
-        "prior-brann-correction": ("the watch must be kept", "prior_brann_corrected"),
-        "prior-iss-correction": ("test warmth against the land", "prior_iss_corrected"),
-        "prior-witness-before-accepting": ("witness before accepting", "prior_witness_ready"),
-    }
-    for puzzle_id, (answer_text, flag) in expected_puzzles.items():
-        for label, text, token in (("puzzle seed", puzzles, puzzle_id),
-                                   ("puzzle seed", puzzles, answer_text),
-                                   ("puzzle seed", puzzles, flag),
-                                   ("hint seed", hints, puzzle_id),
-                                   ("dashboard", dashboard, flag)):
-            if token not in text:
-                failures.append(f"{label} missing {token}")
-    for flag in ("prior_camp_read", "prior_vaun_corrected", "prior_mara_corrected",
-                 "prior_sella_corrected", "prior_orin_corrected", "prior_brann_corrected",
-                 "prior_iss_corrected", "prior_witness_ready"):
-        if flag not in metapuzzle:
-            failures.append(f"metapuzzle seed missing {flag}")
-
-    print("Deep Hold V4 layout check: " + ("FAILED" if failures else "PASS"))
+    print("Deep Hold V5 layout check: " + ("FAILED" if failures else "PASS"))
     if failures:
         for failure in failures:
             print("  FAIL " + failure)
         return 1
-    print("  32 owned rooms / 76 canonical fixtures / 8 persistent gates / 7 district records")
-    print("  one Mouth, reversible three-stratum route, protected entry, and canonical Prior chain wired")
+    print("  32 rooms / 76 fixtures / 8 persistent gates / 7 Record stations")
+    print("  fixed +Z Mouth, three buried strata, complete reverse route, V5 authority and recovery wired")
     return 0
 
 

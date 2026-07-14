@@ -2,7 +2,7 @@
 id: thread-archive
 title: THE RECOVERY ARCHIVE — the place-anchored cards under the five threads
 kind: design/draft (content authoring; NOT the live seed)
-status: DRAFT — integrate under the build guards (0005 thread_cards + voice.ts) afterward
+status: SUPERSEDED_PRE_V5_ARCHIVE_DO_NOT_IMPLEMENT
 binds:
   - discord/supabase/migrations/0005_threads.sql   # thread_cards / threads schema this authors FOR
   - discord/src/forge/canon.ts                     # THREADS, KEEPERS, CUSTOM_KEYS (closed registries)

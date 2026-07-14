@@ -1,6 +1,8 @@
 # Java / Gradle
 .gradle/
 build/
+__pycache__/
+*.py[cod]
 *.class
 *.jar
 !gradle/wrapper/gradle-wrapper.jar
@@ -33,11 +35,11 @@ dashboard/public/the-hold/*.bak
 *.iml
 out/
 
-# build-artifact zips (packaged resourcepack/datapack — outputs, never source)
+# Build-artifact ZIPs (packaged resource pack/datapack outputs, never source)
 observance-*.zip
 observance-deploy-manifest.json
 
-# generated launch/rehearsal packets
+# retired local pre-V5 launch/rehearsal outputs; never production authority
 rehearsals/
 
 .vercel

@@ -1,4 +1,6 @@
 ---
+status: SUPERSEDED_V4_ARCHIVE_DO_NOT_IMPLEMENT
+superseded_by: arc/WORLD-BIBLE.md and arc/v5/
 id: the-copy-i-kept
 title: the copy i kept
 kind: margin-note (a lampwright's hand, found loose)

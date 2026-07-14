@@ -1,5 +1,7 @@
 ﻿# THE OBSERVANCE — MINECRAFT INTEGRATION CATALOG
 
+> **SUPERSEDED PRE-V5 ARCHIVE — IT IS NO LONGER CANONICAL OR OPERATIONAL.** Current integration ownership is in the V5 node/runtime manifests and runbooks.
+
 > Canonical (replaces the old drifted integration plan). Companion to [OVERHAUL.md](OVERHAUL.md)
 > and [PUZZLES.md](PUZZLES.md). The full menu of what can be built into the world, by **layer**
 > (resource pack · datapack · plugin · command-tier · external · recording), each tagged with what

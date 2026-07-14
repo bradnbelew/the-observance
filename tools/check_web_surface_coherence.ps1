@@ -58,13 +58,49 @@ foreach ($needle in @(
 
 $listing = Read-Source "app\server-list.php\page.tsx"
 Require "server list" $listing "Directory snapshot:"
+Require "server list" $listing 'server.listingLabel ?? `Listing #${server.id}`'
 Forbid "server list" $listing "<button type=\"button\">Filter"
+
+$legacyContent = Read-Source "lib\legacy-content.ts"
+Require "server directory data" $legacyContent "chi-ret-7f0a"
+Require "server directory data" $legacyContent "Docket reference damaged"
+Forbid "server directory data" $legacyContent 'id: "1842"'
 
 $serverDetail = Read-Source "app\server.php\page.tsx"
 Require "server detail" $serverDetail "removed from directory export"
-Require "server detail" $serverDetail "/community/2011/02/08/world-backup/"
+Require "server detail" $serverDetail "LS02_DOCKET_CIPHER"
+Require "server detail" $serverDetail "LS02_TEACHING_STRIP"
+Require "server detail" $serverDetail "ServiceDocketForm"
+Require "server detail" $serverDetail "v5_ls02_service_1842"
+Require "server detail" $serverDetail "/support/ticket.php?id=9137"
+Forbid "server detail" $serverDetail "['LS02']"
+Forbid "server detail" $serverDetail "answer: '1842'"
 Forbid "server detail" $serverDetail "NEXT_PUBLIC_OBSERVANCE_SERVER_ADDRESS"
 Forbid "server detail" $serverDetail "snoikerz.com:25569"
+
+$docketAction = Read-Source "app\server.php\actions.ts"
+foreach ($needle in @(
+  "formData.get('serviceDocket')",
+  "isCorrectLs02DocketAnswer",
+  "recordV5WebSequence",
+  "['LS02']",
+  "copperline_service_1842",
+  "docket_verified: true"
+)) { Require "LS02 dedicated action" $docketAction $needle }
+foreach ($forbidden in @("formData.get('node", "formData.get('completion", "SUPABASE_SERVICE_ROLE_KEY")) {
+  Forbid "LS02 dedicated action" $docketAction $forbidden
+}
+
+$docketForm = Read-Source "app\server.php\ServiceDocketForm.tsx"
+Require "LS02 client form" $docketForm "useActionState"
+Require "LS02 client form" $docketForm "resolveLs02ServiceDocket"
+foreach ($forbidden in @("recordV5WebSequence", "SUPABASE", "1842", "ONE EIGHT FOUR TWO")) {
+  Forbid "LS02 client form" $docketForm $forbidden
+}
+
+$status = Read-Source "app\status\page.tsx"
+Require "status" $status "Retired Minecraft accounts"
+Forbid "status" $status "1842"
 
 $support = Read-Source "app\support\index.php\page.tsx"
 foreach ($anchor in @("#ftp", "#backups", "#jars", "#packs", "#billing", "#tickets")) {
@@ -74,8 +110,9 @@ Forbid "support" $support "<Link href=\"/support/index.php\">Connecting"
 
 $post = Read-Source "app\community\2011\02\08\world-backup\page.tsx"
 foreach ($needle in @(
-  "Do not install the zip as a datapack",
-  "do not merge it into an older copy",
+  "It does not contain a playable world",
+  "Do not install this archive into Minecraft",
+  "byte-for-byte as recovered",
   "static file mirror"
 )) { Require "world backup post" $post $needle }
 foreach ($retired in @("included text file", "walk north", "first stone stair", "plain mirror page")) {
@@ -87,21 +124,22 @@ foreach ($needle in @(
   "mirror-site",
   "static user mirror",
   "/home/mkept/public_html/record/",
-  "copy-register.txt",
+  "recovery-roster.txt",
   "uploader-note.txt",
   "record-system-header",
-  "recordsrv/0.7",
-  "record-error-site"
+  "recordsrv/0.9",
+  "record-error-site",
+  "RuneGlyphs",
+  "v5_ls03_directory_trail"
 )) { Require "record slug" $record $needle }
-Forbid "record slug" $record "RuneGlyphs"
 Forbid "record slug" $record "mirror fragment / uploader copy"
 
 $archive = Read-Source "app\record\archive\page.tsx"
 $terminal = Read-Source "app\record\terminal\page.tsx"
 foreach ($pair in @(@("archive", $archive), @("terminal", $terminal))) {
   Require $pair[0] $pair[1] "record-system-header"
-  Require $pair[0] $pair[1] "recordsrv/0.7"
-  Forbid $pair[0] $pair[1] "RuneGlyphs"
+  Require $pair[0] $pair[1] "recordsrv/0.9"
+  Require $pair[0] $pair[1] "RuneGlyphs"
 }
 
 $bareRecord = Read-Source "app\record\page.tsx"

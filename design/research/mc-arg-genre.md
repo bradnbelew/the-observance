@@ -1,5 +1,7 @@
 # Research Note: Minecraft Horror / ARG / "Haunted Server" Genre
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Any project-specific recommendation below is superseded by the V5 manifests and runbooks.
+
 Lane: `mc-arg-genre`. For **The Observance** — an autonomous, per-player, soft-pressure
 server-side haunting. North star: "From The Fog, but it knows your name."
 

@@ -1,5 +1,7 @@
 # Visual Rescue Pass
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A BUILD PUNCH LIST.** Current visual/layout authority is `design/visuals/deep-hold-v5-blueprint.*` plus V5 room/fixture manifests.
+
 This is the new art-direction gate for The Observance.
 
 The plugin can already place and rehearse a large amount of content. That is no longer the hard part. The hard part is making every visible place feel like a discovered part of the same dead civic/religious world instead of a cluster of useful Minecraft test props.

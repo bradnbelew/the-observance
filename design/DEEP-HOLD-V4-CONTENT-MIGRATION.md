@@ -1,5 +1,8 @@
 # Deep Hold V4 - Content Migration Ledger
 
+> **SUPERSEDED V4 ARCHIVE.** Do not migrate content from this ledger into V5. Use
+> `design/V5-SUPERSESSION-MAP.md`.
+
 Status: preservation inventory for the V4 redesign. Geometry remains draft until the spatial plan and
 vertical slice are approved.
 

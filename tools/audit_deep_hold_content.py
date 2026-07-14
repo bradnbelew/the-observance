@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COMMAND = ROOT / "plugin/src/main/java/com/observance/watcher/command/ObservanceCommand.java"
 CONFIG = ROOT / "plugin/src/main/resources/config.yml"
 DOCUMENT = ROOT / "arc/lore/documents/page-line-word.md"
+BOOK_MANUSCRIPTS = ROOT / "design/DEEP-HOLD-BOOK-MANUSCRIPTS.md"
 REFLECTION = ROOT / "plugin/src/main/java/com/observance/watcher/beats/lib/ReflectionBeat.java"
 LECTERN_LISTENER = ROOT / "plugin/src/main/java/com/observance/watcher/signal/listener/LecternLockListener.java"
 LISTENERS = ROOT / "plugin/src/main/java/com/observance/watcher/signal/listener"
@@ -53,6 +54,7 @@ def main() -> int:
     command = COMMAND.read_text(encoding="utf-8")
     config = CONFIG.read_text(encoding="utf-8")
     document = DOCUMENT.read_text(encoding="utf-8")
+    book_manuscripts = BOOK_MANUSCRIPTS.read_text(encoding="utf-8")
     reflection = REFLECTION.read_text(encoding="utf-8")
     lectern_listener = LECTERN_LISTENER.read_text(encoding="utf-8")
     plugin = PLUGIN.read_text(encoding="utf-8")
@@ -95,14 +97,41 @@ def main() -> int:
             blockers.append(f'Sella lock books still contain repeated scaffold text: "{phrase.strip()}"')
 
     mara_code = re.search(r"int\[\]\s+markedPages\s*=\s*\{([^}]+)}", placement)
-    mara_cfg = re.search(r"mara-lectern-lock:[\s\S]*?marked-pages:\s*\[([^]]+)]", config)
-    if not mara_code or not mara_cfg or ints(mara_code.group(1)) != ints(mara_cfg.group(1)):
-        blockers.append("Mara book-builder marked pages do not match live config")
-
     sella_code = re.search(r"int\[\]\s+ringPages\s*=\s*\{([^}]+)}", placement)
-    sella_cfg = re.search(r"sella-overlay-lake:[\s\S]*?ring-pages:\s*\[([^]]+)]", config)
-    if not sella_code or not sella_cfg or ints(sella_code.group(1)) != ints(sella_cfg.group(1)):
-        blockers.append("Sella book-builder ring pages do not match live config")
+    v5_operations_only = (
+        "The Observance V5 production runtime" in config
+        and "this file contains operations only" in config
+    )
+    if v5_operations_only:
+        # V5 deliberately removed puzzle authority from config.yml. Keep this legacy executable-content
+        # audit useful by comparing its still-packaged fallback builders with the manuscript contract,
+        # instead of requiring retired V4 puzzle configuration to be reintroduced into production.
+        mara_authority = re.search(
+            r"Mara volumes[^\n]*marked pages are exactly\s*`([^`]+)`", book_manuscripts
+        )
+        sella_authority = re.search(
+            r"Sella gatherings[^\n]*ring pages are exactly\s*`([^`]+)`", book_manuscripts
+        )
+        if (
+            not mara_code
+            or not mara_authority
+            or ints(mara_code.group(1)) != ints(mara_authority.group(1))
+        ):
+            blockers.append("Mara book-builder marked pages do not match the manuscript contract")
+        if (
+            not sella_code
+            or not sella_authority
+            or ints(sella_code.group(1)) != ints(sella_authority.group(1))
+        ):
+            blockers.append("Sella book-builder ring pages do not match the manuscript contract")
+    else:
+        mara_cfg = re.search(r"mara-lectern-lock:[\s\S]*?marked-pages:\s*\[([^]]+)]", config)
+        if not mara_code or not mara_cfg or ints(mara_code.group(1)) != ints(mara_cfg.group(1)):
+            blockers.append("Mara book-builder marked pages do not match live config")
+
+        sella_cfg = re.search(r"sella-overlay-lake:[\s\S]*?ring-pages:\s*\[([^]]+)]", config)
+        if not sella_code or not sella_cfg or ints(sella_code.group(1)) != ints(sella_cfg.group(1)):
+            blockers.append("Sella book-builder ring pages do not match live config")
 
     if 'placeReadableLectern(b, BlockFace.SOUTH)' in placement or 'placeReadableLectern(b, BlockFace.NORTH)' in placement:
         blockers.append("production lectern facing is hardcoded, not derived from an authored player-standing zone")

@@ -13,7 +13,7 @@
  * upstream solve sets the flag → gate-opens → downstream becomes matchable, and the
  * shared bound word resolves past the already-solved upstream owner.
  */
-import { flagsSatisfied, matchPuzzle, matchPuzzles } from './gate.js';
+import { flagsSatisfied, matchPuzzle, matchPuzzles, scopeOpenPuzzles } from './gate.js';
 import type { Puzzle } from '../db/types.js';
 
 let failures = 0;
@@ -24,6 +24,17 @@ function check(label: string, cond: boolean): void {
     failures += 1;
     console.error(`  FAIL ${label}`);
   }
+}
+
+// /answer's optional puzzle selector is semantic and cannot expose a closed/future row.
+{
+  const rows = [
+    puz({ puzzle_key: 'v5-open-a', accepted_answers: ['shared'] }),
+    puz({ puzzle_key: 'v5-open-b', accepted_answers: ['shared'] }),
+  ];
+  check('answer scope absent searches the open set', scopeOpenPuzzles(rows, null).length === 2);
+  check('answer scope narrows to one exact open key', scopeOpenPuzzles(rows, 'V5-OPEN-B').map((p) => p.puzzle_key).join() === 'v5-open-b');
+  check('answer scope guessed/closed key yields no candidates', scopeOpenPuzzles(rows, 'v5-future').length === 0);
 }
 
 /** Minimal Puzzle factory — only the fields the gate/match logic reads matter. */

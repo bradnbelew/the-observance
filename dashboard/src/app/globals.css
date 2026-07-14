@@ -174,17 +174,24 @@ button, input, select, textarea { font: inherit; }
 .legacy-content { min-height:680px; }
 .directory-snapshot { margin-bottom:10px;padding:7px 9px;background:#eef3f5;border:1px solid #c2ced3;color:#63717a;font-size:10px; }
 .directory-snapshot b { color:#405b68; }
+.service-docket { margin-top:16px;padding:12px;border:1px solid #b7b7b7;background:#f7f7f4; }
+.service-docket > h2 { margin:0 0 5px;color:#405b68;font:bold 14px Georgia,serif; }
+.service-docket > p { margin:0 0 10px;color:#666;font-size:10px;line-height:1.55; }
+.docket-paper { padding:10px;border:1px solid #b4ad96;background:#f3eedc;box-shadow:inset 0 0 18px #897b5520;color:#575144; }
+.docket-paper b,.docket-paper span { display:block;font:9px Arial,Helvetica,sans-serif;letter-spacing:.08em; }
+.docket-paper span { margin-top:10px;color:#81775f; }
+.docket-paper code { display:block;margin-top:5px;overflow-wrap:anywhere;color:#34312a;font:11px/1.6 "Courier New",monospace; }
+.docket-resolver-form { display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:10px; }
+.docket-resolver-form label { display:grid;gap:3px;color:#59666c;font:bold 9px Arial,Helvetica,sans-serif;text-transform:uppercase; }
+.docket-resolver-form input { min-width:0;height:27px;padding:4px 6px;border:1px solid #9ba5a9;background:#fff;color:#333;font:11px "Courier New",monospace; }
+.docket-resolver-form button { height:27px;padding:0 11px;border:1px solid #5f7780;background:#dbe7ea;color:#294b57;font:bold 10px Arial,Helvetica,sans-serif;cursor:pointer; }
+.docket-resolver-form button:disabled { cursor:wait;opacity:.65; }
+.docket-submit-result { min-height:16px;grid-column:1/-1;margin:0;color:#824844;font-size:10px; }
 .support-articles { margin-top:16px;border:1px solid #bbb;background:#fafafa; }
 .support-articles section { padding:10px 12px;border-top:1px dotted #bbb;scroll-margin-top:12px; }
 .support-articles section:first-child { border-top:0; }
 .support-articles h2 { margin:0 0 4px;color:#3d6070;font:bold 13px Georgia,serif; }
 .support-articles p { margin:0;color:#686d70;font-size:10px;line-height:1.55; }
-.relay-form { margin-top:12px;padding:12px;border:1px solid #a8afb2;background:#e8ecee; }
-.relay-form label { display:block;margin-bottom:5px;color:#4f575a;font-size:9px;font-weight:bold;text-transform:uppercase; }
-.relay-form > div { display:flex;gap:6px; }
-.relay-form input { width:150px;height:25px;padding:3px 6px;border:1px solid #899398;background:#fff;color:#25292b;font:12px "Courier New",monospace;letter-spacing:.12em; }
-.relay-form button { padding:3px 12px;border:1px solid #77858b;background:linear-gradient(#f6f7f7,#cbd2d5);color:#35464d;font-size:10px;cursor:pointer; }
-.relay-form small { display:block;margin-top:6px;color:#747d81;font-size:9px; }
 .relay-result { margin-top:12px;padding:13px;border:1px solid #80969f;background:#edf4f5; }
 .relay-result h2 { margin:0 0 5px;color:#34515c;font:bold 15px Georgia,serif; }
 .relay-result > p { margin:0 0 9px; }
@@ -194,6 +201,14 @@ button, input, select, textarea { font: inherit; }
 .relay-linking p { margin:5px 0 0;color:#4c575b;font-size:10px;line-height:1.5; }
 .relay-linking code { padding:1px 3px;background:#d2dcdf;color:#24383f;font-family:"Courier New",monospace; }
 .dead-link { color:#999;font-size:10px; }
+.archive-resolver { margin-top:16px;padding:12px;border:1px solid #b7b7b7;background:#f7f7f4; }
+.archive-resolver > h2 { margin:0 0 5px;color:#405b68;font:bold 14px Georgia,serif; }
+.archive-resolver > p { margin:0 0 10px;color:#666;font-size:10px;line-height:1.55; }
+.archive-resolver-form { display:grid;grid-template-columns:1fr 120px 1fr auto;gap:8px;align-items:end; }
+.archive-resolver-form label { display:grid;gap:3px;color:#59666c;font:bold 9px Arial,Helvetica,sans-serif;text-transform:uppercase; }
+.archive-resolver-form input { min-width:0;height:27px;padding:4px 6px;border:1px solid #9ba5a9;background:#fff;color:#333;font:11px "Courier New",monospace; }
+.archive-resolver-form button { height:27px;padding:0 11px;border:1px solid #5f7780;background:#dbe7ea;color:#294b57;font:bold 10px Arial,Helvetica,sans-serif;cursor:pointer; }
+.archive-resolver .old-message { margin-top:10px; }
 
 /* Static user mirror: deliberately crude. It is outside the restored WHMCS
    template because only the user's file index survived. */
@@ -249,6 +264,7 @@ button, input, select, textarea { font: inherit; }
 
 @media (max-width:820px) {
   .legacy-preservation { width:100%; }
+  .archive-resolver-form { grid-template-columns:1fr 1fr; }
 }
 @media (max-width:560px) {
   .legacy-preservation { padding:5px 7px;font-size:9px; }
@@ -257,5 +273,7 @@ button, input, select, textarea { font: inherit; }
   .mirror-file-row > span:nth-child(2),.mirror-file-row > span:nth-child(3) { display:none; }
   .record-site { padding:9px 6px 42px; }
   .record-page,.record-page.narrow,.archive-page,.terminal-page { padding:10px; }
+  .archive-resolver-form { grid-template-columns:1fr; }
+  .docket-resolver-form { grid-template-columns:1fr; }
   .record-system-header > div { display:grid;gap:2px; }
 }

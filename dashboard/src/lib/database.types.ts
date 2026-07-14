@@ -281,6 +281,7 @@ export interface Database {
         Row: {
           id: number;
           current_act: number;
+          phase_key: string;
           gates: Json;
           flags: Json;
           updated_at: string;
@@ -288,6 +289,7 @@ export interface Database {
         Insert: {
           id?: number;
           current_act?: number;
+          phase_key?: string;
           gates?: Json;
           flags?: Json;
           updated_at?: string;
@@ -295,10 +297,35 @@ export interface Database {
         Update: {
           id?: number;
           current_act?: number;
+          phase_key?: string;
           gates?: Json;
           flags?: Json;
           updated_at?: string;
         };
+        Relationships: [];
+      };
+      investigations: {
+        Row: { case_key: string; ordinal: number; title: string; summary: string; phase_key: string; unlock_flag: string | null; completion_flag: string; required: boolean; active: boolean; expected_nodes: number; created_at: string; updated_at: string };
+        Insert: { case_key: string; ordinal: number; title: string; summary: string; phase_key: string; unlock_flag?: string | null; completion_flag: string; required?: boolean; active?: boolean; expected_nodes: number; created_at?: string; updated_at?: string };
+        Update: { case_key?: string; ordinal?: number; title?: string; summary?: string; phase_key?: string; unlock_flag?: string | null; completion_flag?: string; required?: boolean; active?: boolean; expected_nodes?: number; created_at?: string; updated_at?: string };
+        Relationships: [];
+      };
+      investigation_nodes: {
+        Row: { node_key: string; case_key: string; ordinal: number; title: string; room_id: string; modality: string; input_surface: string; prerequisite_flags: string[]; completion_flag: string; reward: string; recovery: string; oracle_puzzle_key: string | null; required: boolean; active: boolean; metadata: Json; created_at: string; updated_at: string };
+        Insert: { node_key: string; case_key: string; ordinal: number; title: string; room_id: string; modality: string; input_surface: string; prerequisite_flags?: string[]; completion_flag: string; reward: string; recovery: string; oracle_puzzle_key?: string | null; required?: boolean; active?: boolean; metadata?: Json; created_at?: string; updated_at?: string };
+        Update: { node_key?: string; case_key?: string; ordinal?: number; title?: string; room_id?: string; modality?: string; input_surface?: string; prerequisite_flags?: string[]; completion_flag?: string; reward?: string; recovery?: string; oracle_puzzle_key?: string | null; required?: boolean; active?: boolean; metadata?: Json; created_at?: string; updated_at?: string };
+        Relationships: [];
+      };
+      evidence_receipts: {
+        Row: { receipt_key: string; node_key: string; player_id: string | null; source: string; idempotency_key: string; payload: Json; received_at: string };
+        Insert: { receipt_key: string; node_key: string; player_id?: string | null; source: string; idempotency_key: string; payload?: Json; received_at?: string };
+        Update: { receipt_key?: string; node_key?: string; player_id?: string | null; source?: string; idempotency_key?: string; payload?: Json; received_at?: string };
+        Relationships: [];
+      };
+      required_media: {
+        Row: { media_key: string; case_key: string; node_key: string; media_kind: string; title: string; delivery_url: string; filename: string; sha1: string; expected_payload: string; prerequisite_flags: string[]; delivery_state: string; last_verified_at: string | null; active: boolean; created_at: string; updated_at: string };
+        Insert: { media_key: string; case_key: string; node_key: string; media_kind: string; title: string; delivery_url: string; filename: string; sha1: string; expected_payload: string; prerequisite_flags?: string[]; delivery_state?: string; last_verified_at?: string | null; active?: boolean; created_at?: string; updated_at?: string };
+        Update: { media_key?: string; case_key?: string; node_key?: string; media_kind?: string; title?: string; delivery_url?: string; filename?: string; sha1?: string; expected_payload?: string; prerequisite_flags?: string[]; delivery_state?: string; last_verified_at?: string | null; active?: boolean; created_at?: string; updated_at?: string };
         Relationships: [];
       };
       puzzles: {
@@ -592,7 +619,23 @@ export interface Database {
         Relationships: [];
       };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      observance_merge_arc_flags: {
+        Args: { p_flags: Json };
+        Returns: undefined;
+      };
+      observance_record_evidence: {
+        Args: {
+          p_receipt_key: string;
+          p_node_key: string;
+          p_source: string;
+          p_idempotency_key: string;
+          p_player_id?: string | null;
+          p_payload?: Json;
+        };
+        Returns: boolean;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

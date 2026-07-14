@@ -1,5 +1,9 @@
 # THE OBSERVANCE — THE BUILD PLAN (start → finish, build-ready skeleton)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE FOR SETUP, STORY, OR RUNTIME.** Current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE FOR SETUP, STORY, OR RUNTIME.** Current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
 > **The "resume entrypoint" role below is now held by `NEXT-SESSION.md`** (read that first) — kept for
 > history as the original build skeleton.
 

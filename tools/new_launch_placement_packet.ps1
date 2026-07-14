@@ -7,6 +7,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: V5 has no generated placement-packet workflow. The plugin
+# owns Hold planning, collision refusal, build, persistence, repair, and audit.
+throw "RETIRED PRE-V5 TOOL: new_launch_placement_packet.ps1 is disabled. Use design/V5-WORLD-SETUP-AND-TESTING.md."
+
 $repoFull = (Resolve-Path $RepoRoot).Path
 $packetDir = Join-Path $OutRoot $Date
 $packetFull = [System.IO.Path]::GetFullPath($packetDir)

@@ -1,5 +1,7 @@
 # THE OBSERVANCE — CONCRETE PUZZLE DESIGNS (the diverse expansion)
 
+> **SUPERSEDED V4 ARCHIVE.** These concepts are not a V5 implementation source.
+
 > **DESIGN doc, not a seed.** Concrete enough that a later pass can wire these directly into
 > `puzzles_seed.sql` (+ the `answer_kind` column from migration 0007, PUZZLES.md §4) and the plugin
 > listeners. Nothing here is wired yet. Every puzzle is authored to obey the canon set:

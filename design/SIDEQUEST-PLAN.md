@@ -1,5 +1,7 @@
 # THE OBSERVANCE — THE SIDE-QUEST WEB (triage + designs)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT IMPLEMENT OPTIONAL STORY LANES.** V5 substantial content is mandatory and owned by the 82-node graph.
+
 > **DESIGN doc, not a seed.** Triages the raw backlog in [`design/ideas/`](ideas/) (28 files) and
 > designs the KEEP-as-sidequest ones as cohesive side-quests. Obeys the canon set (OVERHAUL.md,
 > PUZZLES.md, WORLD-BIBLE.md, canon-spine.md, the-seventh-below.md, the-companion.md). Honors the

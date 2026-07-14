@@ -1,5 +1,7 @@
 # THE OBSERVANCE — RESEARCH DOSSIER (distilled, prioritized, project-applied)
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Any project-specific recommendation below is superseded by the V5 manifests and runbooks.
+
 Research lead synthesis of all seven lane notes (`arg-craft`, `mc-arg-genre`,
 `mc-displays-particles-packets`, `mc-pack-fog-sound`, `mc-structures`, `mc-build-visualize`,
 `self-directed`), aimed at the real failures named in `design/TEARDOWN.md`. This is the brief

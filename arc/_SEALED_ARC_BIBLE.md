@@ -1,4 +1,6 @@
-# ⚠️ SEALED — STORY SPOILERS — DO NOT READ IF YOU WANT TO PLAY UNSPOILED ⚠️
+# ⚠️ SEALED V4 ARCHIVE — SUPERSEDED STORY ⚠️
+
+> **DO NOT IMPLEMENT OR SHIP THIS VERSION.** The only V5 spoiler truth authority is `arc/WORLD-BIBLE.md`.
 
 > **SUPERSEDED (2026-07-05 audit note).** `arc/WORLD-BIBLE.md` explicitly supersedes this file (Setting C,
 > the Deep Hold rewrite), and `arc/lore/canon-spine.md` is the binding internal canon for keeper

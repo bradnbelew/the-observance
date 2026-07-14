@@ -2,7 +2,7 @@
 id: customs-punishment
 title: discover-by-punishment — the seven ways, their tolls, their teaching surfaces
 kind: design/draft (content authoring; NOT live code)
-status: DRAFT — proposes voice keys for voice.ts + seed notes for punishment_state; integrates under build guards afterward
+status: SUPERSEDED_PRE_V5_ARCHIVE_DO_NOT_IMPLEMENT
 movement: I→V (the loop runs the whole descent; tolls cluster in I–III where the ways are being learned)
 grounded_in:
   - arc/WORLD-BIBLE.md                         # §5 the seven ways; the Dark takes the unlit/unwitnessed

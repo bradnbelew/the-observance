@@ -14,7 +14,7 @@ import type { Database } from "@/lib/database.types";
  * NEVER import this into a Client Component or expose the key to the browser.
  * Author routes and every privileged server action must authenticate the
  * operator before constructing this client.
- * The /author route and its server-action POSTs are also guarded by middleware.ts.
+ * The /author route and its server-action POSTs are also guarded by proxy.ts.
  * Hosting/network access controls remain useful as a second layer.
  *
  * No session persistence / auto-refresh: this is a stateless privileged client.

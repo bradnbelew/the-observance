@@ -1,9 +1,15 @@
-"""Build self-contained, double-click-openable HTML from the design artifacts.
+"""RETIRED_PRE_V5_TOOL: old V2/V4 visualization renderer retained as history.
+
+Build self-contained, double-click-openable HTML from the design artifacts.
 Outputs (offline, no CDN):
   design/PLAYTHROUGH-SCRIPT.html  - the literal shooting-script, styled + searchable + collapsible
   design/STORY-WEB.html           - the full 104-node interactive lore-web graph
 Run:  python tools/build_viz.py
 """
+raise SystemExit(
+    "RETIRED PRE-V5 TOOL: build_viz.py renders superseded playthrough/story artifacts. "
+    "Use design/visuals/deep-hold-v5-blueprint.* and the V5 node manifest."
+)
 import json, re, pathlib, datetime
 import markdown
 

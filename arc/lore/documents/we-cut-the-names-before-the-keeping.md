@@ -1,4 +1,6 @@
 ---
+status: SUPERSEDED_V4_ARCHIVE_DO_NOT_IMPLEMENT
+superseded_by: arc/WORLD-BIBLE.md and arc/v5/
 id: we-cut-the-names-before-the-keeping
 title: we cut the names before the keeping
 kind: margin-note

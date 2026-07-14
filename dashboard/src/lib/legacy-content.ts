@@ -1,4 +1,15 @@
-export const publicServers = [
+export interface PublicServer {
+  id: string;
+  name: string;
+  version: string;
+  players: string;
+  location: string;
+  status: string;
+  listingLabel?: string;
+  recoveredDocket?: boolean;
+}
+
+export const publicServers: PublicServer[] = [
   { id: "112", name: "Cedar Valley SMP", version: "1.6.4", players: "0/24", location: "Chicago, IL", status: "offline" },
   { id: "386", name: "Block Party Creative", version: "1.7.2", players: "0/40", location: "Dallas, TX", status: "offline" },
   { id: "522", name: "Kingdoms of Aster", version: "1.5.2", players: "0/18", location: "Chicago, IL", status: "offline" },
@@ -6,7 +17,7 @@ export const publicServers = [
   { id: "906", name: "Red County Tekkit", version: "Tekkit 3", players: "0/30", location: "Dallas, TX", status: "offline" },
   { id: "1174", name: "Oak & Iron", version: "1.7.10", players: "0/20", location: "Chicago, IL", status: "offline" },
   { id: "1439", name: "Little Harbor", version: "1.7.9", players: "0/16", location: "Atlanta, GA", status: "offline" },
-  { id: "1842", name: "The Observance", version: "unknown", players: "0/7", location: "Chicago, IL", status: "expired" },
+  { id: "chi-ret-7f0a", name: "The Observance", version: "unknown", players: "0/7", location: "Chicago, IL", status: "expired", listingLabel: "Docket reference damaged", recoveredDocket: true },
   { id: "1911", name: "FamilyCraft East", version: "1.7.10", players: "0/10", location: "New York, NY", status: "offline" },
 ];
 

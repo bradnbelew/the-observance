@@ -1,5 +1,9 @@
 # Deep Hold V4 and ARG Production Setup
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT OPERATE FROM THIS FILE.** V5 setup is
+> `design/V5-WORLD-SETUP-AND-TESTING.md`; production deployment is
+> `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.
+
 This is the authoritative operator order for Observance `0.3.29`. Commands beginning with `/obs`
 are run in Minecraft as an op unless a console form is shown. Keep the server whitelisted and empty
 during placement. Do not deploy rejected Hold jars `0.3.25` through `0.3.28`.

@@ -13,14 +13,14 @@ import java.util.Set;
 /**
  * Immutable, dependency-free construction plan for the clean-sheet Deep Hold rebuild.
  *
- * <p>The rejected V3 generator mixed room ownership, fixtures, and corridors in one command class.
- * V4 keeps the spatial contract here so it can be validated without loading Bukkit or changing a
- * world. Coordinates are local to the single public Surface Mouth: X/Z are horizontal offsets and
- * Y is the offset below the sampled mouth surface.</p>
+ * <p>The compatibility class name is retained for old operator scripts. This is the V5 spatial
+ * contract: narrative payloads come only from the packaged V5 authorities. Coordinates are local
+ * to the single public Surface Mouth: X/Z are horizontal offsets and Y is the offset below the
+ * sampled mouth surface.</p>
  */
 public final class DeepHoldV4Plan {
 
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
     public static final int MIN_SURFACE_COVER = 12;
     public static final int MIN_BOTTOM_BUFFER = 12;
     public static final int ENVELOPE = 5;
@@ -47,6 +47,14 @@ public final class DeepHoldV4Plan {
                           String front, int standX, int standY, int standZ,
                           String contentRole) { }
 
+    /**
+     * One player-body column reserved by a fixture's authored standing frame. The first cell is
+     * always the declared standing position; later cells trace toward the fixture but stop before
+     * entering its protected footprint. Builders use this same dependency-free contract as audits,
+     * so decorative dressing cannot consume a route that the manifest promises to players.
+     */
+    public record ApproachCell(int x, int y, int z) { }
+
     public record Gate(String id, String label, int x, int y, int z,
                        boolean acrossX, int halfAcross, int height, int depth,
                        String openCondition, boolean mainSequence) { }
@@ -58,7 +66,7 @@ public final class DeepHoldV4Plan {
 
     public static final List<Room> ROOMS = List.of(
             new Room("orientation", -42, 42, -40, -20, 106, 154,
-                    "literacy, first record, and customs"),
+                    "entry registry and founding survey office"),
             new Room("keeper_nave", -30, 30, -40, -16, 160, 248,
                     "monumental Keeper investigation court"),
             new Room("keeper_vaun", -98, -34, -40, -22, 160, 188, "audit and sort"),
@@ -72,16 +80,26 @@ public final class DeepHoldV4Plan {
                     "orientation landmark and civic evidence spine"),
             new Room("archive_school", -98, -48, -68, -52, 110, 142, "school and copy trail"),
             new Room("archive_markers", -98, -48, -68, -52, 146, 170, "physical chronology"),
-            new Room("archive_cistern", -98, -48, -68, -52, 174, 208, "seventh-count water proof"),
-            new Room("archive_watch", -98, -48, -68, -52, 212, 242, "dark-hours watch proof"),
-            new Room("archive_shelf", -98, -48, -68, -52, 246, 270, "edited-record proof"),
-            new Room("archive_water", -102, -44, -68, -50, 274, 300, "far-water reflection"),
-            new Room("archive_market", 48, 98, -68, -50, 110, 142, "social keeping and exchange"),
-            new Room("archive_ration", 48, 98, -68, -52, 146, 170, "scarcity and debt"),
-            new Room("archive_breach", 48, 98, -68, -50, 174, 208, "broken Deep Line"),
-            new Room("archive_warm", 48, 102, -68, -50, 212, 242, "physical contradiction of comfort"),
-            new Room("archive_stall", 48, 98, -68, -52, 246, 270, "authored failed route"),
-            new Room("archive_coops", 48, 98, -68, -52, 274, 300, "preserved witness custom"),
+            new Room("archive_cistern", -98, -48, -68, -52, 174, 208,
+                    "complaints samples valve roster and filing seal"),
+            new Room("archive_watch", -98, -48, -68, -52, 212, 242,
+                    "visual toll rota and timestamp corroboration"),
+            new Room("archive_shelf", -98, -48, -68, -52, 246, 270,
+                    "protected shelves and edition provenance"),
+            new Room("archive_water", -102, -44, -68, -50, 274, 300,
+                    "reeds footage cache and shoreline alignment"),
+            new Room("archive_market", 48, 98, -68, -50, 110, 142,
+                    "invoice grid and ordinary trade evidence"),
+            new Room("archive_ration", 48, 98, -68, -52, 146, 170,
+                    "heat issue and stores reconciliation"),
+            new Room("archive_breach", 48, 98, -68, -50, 174, 208,
+                    "Unlit docket maps and synthesis board"),
+            new Room("archive_warm", 48, 102, -68, -50, 212, 242,
+                    "surface sample and heat-load contradiction"),
+            new Room("archive_stall", 48, 98, -68, -52, 246, 270,
+                    "original and counterfeit filter stock"),
+            new Room("archive_coops", 48, 98, -68, -52, 274, 300,
+                    "feed cage watch chronology and civic witness origin"),
             new Room("puzzle_works", -64, 64, -68, -48, 40, 96,
                     "cross-Keeper mechanics and deep on-ramp"),
 
@@ -93,12 +111,16 @@ public final class DeepHoldV4Plan {
             new Room("prior_camp", -112, -48, -96, -74, 158, 218, "prior expedition corrections"),
             new Room("lower_threshold", 34, 70, -96, -74, 118, 154, "true walk and grave"),
             new Room("lower_vault", 34, 70, -96, -74, 158, 218, "dynamic-roster vault"),
-            new Room("dread", 74, 114, -96, -74, 118, 220, "controlled optional dread branch"),
-            new Room("accepting", -58, 58, -96, -74, 226, 292, "group rite at Unbroken Light"),
-            new Room("unwriting", -72, 72, -96, -74, 298, 350, "Seventh treatment and final reading"),
-            new Room("release", -52, 52, -96, -74, 354, 378, "release receipt and reversible exit"));
+            new Room("dread", 74, 114, -96, -74, 118, 220,
+                    "required elsewhere relay and Wren investigation"),
+            new Room("accepting", -58, 58, -96, -74, 226, 292,
+                    "recovered archive and Averyn evidence gallery"),
+            new Room("unwriting", -72, 72, -96, -74, 298, 350,
+                    "release configuration name treatment and group readiness"),
+            new Room("release", -52, 52, -96, -74, 354, 378,
+                    "durable severance coda and reversible exit"));
 
-    /** All 76 canonical Deep Hold fixture ids, each with one V4 owner and standing frame. */
+    /** All 76 canonical Deep Hold fixture ids, each with one V5 owner and standing frame. */
     public static final List<Fixture> FIXTURES = List.of(
             fixture("undercroft_seal", "undercroft_seal", "orientation", -28, -40, 120, 11, 7, "NORTH", -28, -40, 114, "corroboration"),
             fixture("forgotten_mouth", "forgotten_mouth", "orientation", 28, -40, 120, 11, 7, "NORTH", 28, -40, 114, "corroboration"),
@@ -108,7 +130,7 @@ public final class DeepHoldV4Plan {
             fixture("kept_light_home_01", "kept_light", "orientation", 28, -40, 142, 5, 4, "NORTH", 28, -40, 137, "tutorial"),
 
             fixture("stone_vaun", "keeper_stone", "keeper_vaun", -82, -40, 176, 8, 7, "EAST", -72, -40, 176, "required"),
-            fixture("vaun_hoard_chest", "vaun_hoard_chest", "keeper_vaun", -58, -40, 168, 2, 3, "EAST", -54, -40, 168, "mechanic"),
+            fixture("vaun_hoard_chest", "vaun_hoard_chest", "keeper_vaun", -58, -40, 168, 3, 3, "EAST", -54, -40, 168, "mechanic"),
             fixture("vaun_bookshelf", "vaun_bookshelf", "keeper_vaun", -58, -40, 180, 2, 3, "EAST", -54, -40, 180, "mechanic"),
 
             fixture("stone_mara", "keeper_stone", "keeper_mara", 82, -40, 176, 8, 7, "WEST", 72, -40, 176, "required"),
@@ -141,7 +163,7 @@ public final class DeepHoldV4Plan {
             fixture("brann_corridor_end", "brann_corridor_end", "keeper_brann", -42, -40, 242, 3, 4, "WEST", -46, -40, 242, "mechanic"),
 
             fixture("stone_orin", "keeper_stone", "keeper_orin", 84, -40, 238, 8, 7, "WEST", 74, -40, 238, "required"),
-            fixture("orin_marker_1", "orin_marker", "keeper_orin", 42, -40, 232, 3, 4, "SOUTH", 42, -40, 236, "mechanic"),
+            fixture("orin_marker_1", "orin_marker", "keeper_orin", 42, -40, 232, 4, 4, "SOUTH", 42, -40, 236, "mechanic"),
             fixture("orin_marker_2", "orin_marker", "keeper_orin", 54, -40, 232, 3, 4, "SOUTH", 54, -40, 236, "mechanic"),
             fixture("orin_marker_3", "orin_marker", "keeper_orin", 66, -40, 232, 3, 4, "SOUTH", 66, -40, 236, "mechanic"),
             fixture("orin_marker_4", "orin_marker", "keeper_orin", 42, -40, 240, 3, 4, "NORTH", 42, -40, 236, "mechanic"),
@@ -190,21 +212,22 @@ public final class DeepHoldV4Plan {
 
     public static final List<Gate> GATES = List.of(
             new Gate("g1", "G1 ROSETTA", 0, -40, 157, true, 12, 20, 3,
-                    "rosetta_known", true),
+                    "v5_case_c02_complete", true),
             new Gate("g2", "G2 INVESTIGATION", 0, -40, 251, true, 12, 20, 3,
-                    "keeper_investigation_begun", true),
+                    "v5_kv03_affidavit_and_v5_km03_affidavit_and_v5_ks03_affidavit_and_"
+                            + "v5_ko03_affidavit_and_v5_kb03_affidavit_and_v5_ki03_affidavit", true),
             new Gate("g3", "G3 UNDERCROFT", 0, -68, 99, true, 12, 18, 3,
-                    "undercroft_open", true),
+                    "v5_case_c04_complete_and_v5_case_c05_complete", true),
             new Gate("g4", "G4 DEEP", 0, -96, 111, true, 12, 20, 3,
-                    "deep_gate_open", true),
+                    "v5_case_c06_complete", true),
             new Gate("prior", "PRIOR CAMP", -80, -96, 156, true, 8, 16, 3,
-                    "prior_absence_known", false),
+                    "v5_a01_location", false),
             new Gate("dread", "DREAD PROCESSION", 72, -96, 132, false, 7, 16, 3,
-                    "iss_caught_or_seventh_suspected", false),
+                    "v5_case_c07_complete", false),
             new Gate("g5", "G5 ACCEPTING", 0, -96, 223, true, 14, 22, 3,
-                    "prior_witness_ready_and_accepting_onramp", true),
+                    "v5_case_c08_complete", true),
             new Gate("g6", "G6 CODA", 0, -96, 295, true, 14, 22, 3,
-                    "bowed_as_one", true));
+                    "v5_case_c09_complete", true));
 
     public static final List<Link> LINKS = List.of(
             new Link("orientation", "keeper_nave"),
@@ -240,13 +263,13 @@ public final class DeepHoldV4Plan {
             new Link("unwriting", "release"));
 
     public static final List<RecordStation> RECORD_STATIONS = List.of(
-            new RecordStation("orientation_register", "orientation", 12, -40, 112, "WEST", "first register"),
-            new RecordStation("court_census", "keeper_nave", -18, -40, 170, "EAST", "court census"),
-            new RecordStation("archive_index", "archive_nave", -18, -68, 116, "EAST", "archive index"),
-            new RecordStation("archive_closure", "archive_nave", 18, -68, 222, "WEST", "closure docket"),
-            new RecordStation("prior_docket", "prior_case", -60, -96, 124, "WEST", "absence docket"),
-            new RecordStation("threshold_hands", "lower_spine", 18, -96, 124, "WEST", "threshold hands"),
-            new RecordStation("release_record", "release", 0, -96, 366, "NORTH", "release record"));
+            new RecordStation("orientation_register", "orientation", 12, -40, 112, "WEST", "entry register"),
+            new RecordStation("court_census", "keeper_nave", -18, -40, 170, "EAST", "inquiry census"),
+            new RecordStation("archive_index", "archive_nave", -18, -68, 116, "EAST", "civic case index"),
+            new RecordStation("archive_closure", "archive_nave", 18, -68, 222, "WEST", "Break inquest"),
+            new RecordStation("prior_docket", "prior_case", -60, -96, 124, "WEST", "company docket"),
+            new RecordStation("threshold_hands", "lower_spine", 18, -96, 124, "WEST", "reckoning docket"),
+            new RecordStation("release_record", "release", 0, -96, 366, "NORTH", "closure receipt"));
 
     private static Fixture fixture(String id, String type, String roomId,
                                    int x, int y, int z, int radius, int vertical,
@@ -266,6 +289,31 @@ public final class DeepHoldV4Plan {
         if (id == null) return null;
         for (Fixture fixture : FIXTURES) if (id.equals(fixture.id())) return fixture;
         return null;
+    }
+
+    /** Returns the exact standing/approach body columns reserved for a fixture. */
+    public static List<ApproachCell> approachCells(Fixture fixture) {
+        if (fixture == null) return List.of();
+        List<ApproachCell> cells = new ArrayList<>();
+        cells.add(new ApproachCell(fixture.standX(), fixture.standY(), fixture.standZ()));
+
+        int steps = Math.max(Math.abs(fixture.x() - fixture.standX()),
+                Math.abs(fixture.z() - fixture.standZ()));
+        int previousX = fixture.standX();
+        int previousZ = fixture.standZ();
+        for (int i = 1; i < steps; i++) {
+            int x = (int) Math.round(fixture.standX()
+                    + ((fixture.x() - fixture.standX()) * (i / (double) steps)));
+            int z = (int) Math.round(fixture.standZ()
+                    + ((fixture.z() - fixture.standZ()) * (i / (double) steps)));
+            if (x == previousX && z == previousZ) continue;
+            previousX = x;
+            previousZ = z;
+            if (Math.max(Math.abs(x - fixture.x()), Math.abs(z - fixture.z()))
+                    <= Math.max(1, fixture.radius())) break;
+            cells.add(new ApproachCell(x, fixture.standY(), z));
+        }
+        return List.copyOf(cells);
     }
 
     /** Returns every static defect. An empty list is required before a world build may begin. */
@@ -304,6 +352,12 @@ public final class DeepHoldV4Plan {
             }
             if (!frontMatchesStandingZone(fixture)) {
                 errors.add("fixture " + fixture.id() + " front does not face standing zone");
+            }
+            for (ApproachCell cell : approachCells(fixture)) {
+                if (!owner.contains(cell.x(), cell.y(), cell.z(), 2)) {
+                    errors.add("fixture " + fixture.id() + " approach outside owner " + owner.id());
+                    break;
+                }
             }
         }
         if (fixtureIds.size() != 76) {
@@ -361,7 +415,7 @@ public final class DeepHoldV4Plan {
 
     private static boolean overlapsOwnership(Room a, Room b) {
         boolean x = a.minX() <= b.maxX() && b.minX() <= a.maxX();
-        // V4 shells own three foundation layers below floor and three roof layers beginning at
+        // V5 shells own three foundation layers below floor and three roof layers beginning at
         // ceilingY. Adjacent stacked shells may touch neither block range; a one-block geology gap
         // is sufficient here because the separate five-block exterior envelope is not a room owner.
         boolean y = a.floorY() - 3 <= b.ceilingY() + 2 && b.floorY() - 3 <= a.ceilingY() + 2;

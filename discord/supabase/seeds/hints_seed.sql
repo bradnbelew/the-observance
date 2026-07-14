@@ -172,9 +172,9 @@ insert into public.hints (puzzle_key, tier, body) values
 
 -- prior-absence — the prior-run roster before the failed camp gate.
 ('prior-absence', 2, 'do not start inside the camp. read the roster before it. the old group had the stones, the answers, and the tokens. one condition is named by its absence.'),
-('prior-absence', 3, 'the roster says six names, six keeper answers, six tokens prepared, then the correction line: no witness. file that condition plainly before you try to enter the old camp.'),
+('prior-absence', 3, 'the roster says six names, every keeper verdict, six tokens prepared, then the correction line: no witness. file that condition plainly before you try to enter the old camp.'),
 
--- prior-camp-refusal — the camp proves why six answers were not enough.
+-- prior-camp-refusal — the camp proves why completed Keeper verdicts were not enough.
 ('prior-camp-refusal', 2, 'the camp did not fail because they lacked solutions. read both lecterns and the blank place. the room is separating finished answers from something that can stand outside the finish.'),
 ('prior-camp-refusal', 3, 'the failed record says the floor took their tokens and returned nothing because no one outside the circle could say what was true. answers are not a witness.'),
 
@@ -315,7 +315,7 @@ insert into public.hints (puzzle_key, tier, body) values
 
 ,
 
--- MISSING-RESCUE FLOOR (puzzlefairness). These are live lore/dead-end/payoff rows that
+-- LEGACY RESCUE FLOOR. These pre-V5 rows are retired by the final V5 seed; retained only for history.
 -- can still stall, mislead, or feel ignored if the group cannot ask the Watcher for the
 -- second and third rail. Kept in one late block so the launch audit has a clear owner.
 -- m1-record-opens - the buried base lectern line; lore acknowledgement, not a gate.

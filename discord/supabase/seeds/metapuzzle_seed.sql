@@ -159,7 +159,7 @@ begin
       where puzzle_key in ('m2-rhyme', 'difficulty-mara');
     update public.puzzles set requires_flags = jsonb_build_object('seventh_suspected', true)
       where puzzle_key = 'name-where';
-    -- Optional external archive: never surface the Drive/spectrogram trail until
+    -- Retired external archive: never surface the Drive/spectrogram trail until
     -- the real artifact exists and the operator explicitly marks it ready.
     update public.puzzles set requires_flags = jsonb_build_object('media_clip_01_ready', true, 'record_received', true)
       where puzzle_key = 'media-prior-base';

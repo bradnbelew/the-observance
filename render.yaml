@@ -9,6 +9,8 @@ services:
     envVars: &observanceEnv
       - key: NODE_VERSION
         value: "22"
+      - key: OBSERVANCE_CAMPAIGN_VERSION
+        value: v5
       - key: DISCORD_BOT_TOKEN
         sync: false
       - key: DISCORD_APP_ID
@@ -21,24 +23,16 @@ services:
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
-      - key: ANTHROPIC_API_KEY
-        sync: false
-      - key: DISCORD_VOICE_CHANNEL_ID
-        sync: false
-      - key: WHISPER_API_URL
-        sync: false
-      - key: WHISPER_API_KEY
-        sync: false
-      - key: WHISPER_MODEL
-        value: whisper-1
-      - key: WHISPER_LANG
-        value: en
+      - key: SHOWRUNNER_TICK_MS
+        value: "12000"
+      - key: SHOWRUNNER_LEASE_SECONDS
+        value: "300"
 
   - type: cron
     name: observance-showrunner
     runtime: node
     rootDir: discord
-    schedule: "0 * * * *"
+    schedule: "*/5 * * * *"
     buildCommand: npm ci
     startCommand: npm run showrunner
     envVars: *observanceEnv

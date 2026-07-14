@@ -241,7 +241,7 @@ export const voice = {
 
   /** the discord user is not yet bound to a name in the world. */
   notLinked(): string {
-    return 'i do not yet know which of them you are. run /link with your exact minecraft username first.';
+    return 'i do not yet know which of them you are. enter minecraft, run /obslink, then file /link with your exact minecraft username, the callback recovered from Copperline, and that one-time code.';
   },
 
   /** act 3 — the summons. collective; all of them; what is owed. */
@@ -249,17 +249,34 @@ export const voice = {
     return 'the way is open. come — all of you — at the dark hour. bring what is owed.';
   },
 
-  /**
-   * confirmation that a name has been bound. fond, certain, lowercase.
-   * spoken once the world's record acknowledges the name.
-   */
-  linked(name: string): string {
-    return `you are ${name}. the record knows you now. when every hand is bound and present in #the-record, write kept once.`;
+  /** C01's idempotent identity-handoff receipt. */
+  handoffReceipt(): string {
+    return 'the handoff receipt is filed. enter the village and follow the broad drainage cut to the surface mouth.';
   },
 
-  /** A Discord voice already belongs to one keeper and cannot silently move to another identity. */
-  linkFixed(name: string): string {
-    return `this voice is already entered as ${name}. the record does not exchange one hand for another.`;
+  /** Invalid callbacks never claim a Minecraft identity. */
+  handoffRejected(): string {
+    return 'that is not the handoff Copperline retained. nothing has been entered. return to the diagnostic archive and file /link again.';
+  },
+
+  /** A closed LS04 gate never claims a Minecraft identity. */
+  handoffBlocked(): string {
+    return 'no recovered handoff is open for filing yet. nothing has been entered. finish the Copperline archive trail, then file /link again.';
+  },
+
+  /** A transaction failure rolls back both identity and receipt. */
+  handoffUnavailable(): string {
+    return 'the handoff ledger did not answer. nothing new was entered. file /link again when the watcher is steady.';
+  },
+
+  /** Unknown names, private conflicts, and proof failures deliberately share one response. */
+  handoffProofRejected(): string {
+    return 'that hand and mark do not meet in the ledger. nothing has been entered. return to minecraft, run /obslink, then file /link again before the code fades.';
+  },
+
+  /** Confirmation after an atomic correction of this Discord account's accidental prior name. */
+  handoffRecovered(name: string): string {
+    return `the mistaken entry is closed. this voice is now filed as ${name}; the handoff receipt is whole.`;
   },
 
   /**

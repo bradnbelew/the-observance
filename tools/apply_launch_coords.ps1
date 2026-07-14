@@ -9,6 +9,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: this applied coordinates from the obsolete placement-packet
+# workflow. V5 binds sites and builds/audits the Hold with the commands in
+# design/V5-WORLD-SETUP-AND-TESTING.md.
+throw "RETIRED PRE-V5 TOOL: apply_launch_coords.ps1 cannot be used for V5. Follow design/V5-WORLD-SETUP-AND-TESTING.md."
+
 function Resolve-UnderRepo([string]$Root, [string]$Path) {
   if ([System.IO.Path]::IsPathRooted($Path)) {
     return [System.IO.Path]::GetFullPath($Path)

@@ -8,6 +8,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: this orchestration path calls obsolete packet generators.
+throw "RETIRED PRE-V5 TOOL: prepare_friend_launch.ps1 is disabled. Run tools/audit_all.ps1, then follow the V5 launch runbook."
+
 function Invoke-Step([string]$Name, [string]$ScriptPath, [string[]]$ArgsList, [switch]$AllowNotReady) {
   Write-Host ""
   Write-Host "== $Name =="

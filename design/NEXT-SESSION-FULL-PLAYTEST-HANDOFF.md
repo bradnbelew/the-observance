@@ -1,5 +1,7 @@
 # Next Session: Complete Setup And Playtest Handoff
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT RUN THESE COMMANDS.** Current setup and acceptance procedures are the two V5 runbooks and live-test matrix.
+
 Use this handoff to start a new Codex session whose job is to guide the operator through The
 Observance from an installed repository to a genuinely clean, fully placed, fully tested live ARG.
 The session must use plain English, give exact commands and locations, wait for real results, and

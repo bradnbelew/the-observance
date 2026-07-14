@@ -1,5 +1,8 @@
 # The Observance - Director Setup Guide
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT OPERATE FROM THIS FILE.** Use
+> `design/V5-WORLD-SETUP-AND-TESTING.md`.
+
 This is the start-here operator handoff for turning the current repo into a
 playable setup. It does not replace `design/RUNBOOK.md`,
 `design/MANUAL-LAUNCH-PLAN.md`, or `design/DIRECTOR-FLOW-BIBLE.md`; it tells

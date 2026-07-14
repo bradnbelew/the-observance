@@ -1,5 +1,9 @@
 # THE OBSERVANCE — COHESION & FRESHNESS AUDIT (2026-07-05)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A CURRENT VERDICT.** Current release tests and authorities are indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A CURRENT VERDICT.** Current release tests and authorities are indexed by `design/V5-SUPERSESSION-MAP.md`.
+
 > **Method:** five independent fresh-eyes passes run in parallel (story/lore, puzzles/mechanics,
 > visual/audio, tech integration) plus a sixth pass mining every prior cohesion audit this project has
 > ever produced for complaints that keep recurring. Each pass read the live corpus/code directly, not

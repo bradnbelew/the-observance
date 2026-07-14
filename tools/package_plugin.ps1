@@ -4,22 +4,22 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$pluginRoot = Join-Path $RepoRoot "plugin"
+$repoFull = [System.IO.Path]::GetFullPath($RepoRoot)
+$pluginRoot = Join-Path $repoFull "plugin"
 $buildFile = Join-Path $pluginRoot "build.gradle"
-$classesDir = Join-Path $pluginRoot "build\check-plugin-classes"
+$gradlew = Join-Path $pluginRoot "gradlew.bat"
 $resourcesDir = Join-Path $pluginRoot "src\main\resources"
-$holdD05Dir = Join-Path $RepoRoot "design"
-$holdD05File = Join-Path $holdD05Dir "deep-hold-d05-shelf.json"
 $libsDir = Join-Path $pluginRoot "build\libs"
+$jarVerifier = Join-Path $repoFull "tools\check_plugin_jar.ps1"
+$deployManifestWriter = Join-Path $repoFull "tools\write_deploy_manifest.ps1"
 
-if (!(Test-Path $buildFile)) {
-  throw "Plugin build.gradle not found: $buildFile"
+foreach ($required in @($buildFile, $gradlew, $jarVerifier, $deployManifestWriter)) {
+  if (!(Test-Path -LiteralPath $required -PathType Leaf)) {
+    throw "Plugin production package prerequisite is missing: $required"
+  }
 }
-if (!(Test-Path (Join-Path $resourcesDir "plugin.yml"))) {
-  throw "Plugin resources missing plugin.yml: $resourcesDir"
-}
-if (!(Test-Path -LiteralPath $holdD05File)) {
-  throw "Plugin resources missing Deep Hold D05 shelf: $holdD05File"
+if (!(Test-Path -LiteralPath (Join-Path $resourcesDir "plugin.yml") -PathType Leaf)) {
+  throw "Plugin resources are missing plugin.yml: $resourcesDir"
 }
 
 $versionMatch = [regex]::Match((Get-Content -LiteralPath $buildFile -Raw), "(?m)^version\s*=\s*'([^']+)'")
@@ -27,89 +27,53 @@ if (!$versionMatch.Success) {
   throw "Could not read plugin version from $buildFile"
 }
 $version = $versionMatch.Groups[1].Value
+if ($version -ne "0.5.0") {
+  throw "Production package requires plugin version 0.5.0; build.gradle declares $version"
+}
 $jarPath = Join-Path $libsDir "observance-$version.jar"
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\check_plugin_compile.ps1") -RepoRoot $RepoRoot
+foreach ($retiredName in @("deep-hold-d05-shelf.json", "deep-hold-lock-books.json")) {
+  if (Test-Path -LiteralPath (Join-Path $resourcesDir $retiredName)) {
+    throw "Retired V4 resource must not ship: $retiredName"
+  }
+}
+
+# The Gradle project is the sole production compiler and packager. It pins the Java 21 toolchain,
+# exact compile dependencies, complete V5 self-test graph, processed resources, and reproducible JAR
+# ordering/timestamps. Run the wrapper from its project root; never replace this with a cache-wide
+# javac classpath or manually re-zip classes.
+Push-Location $pluginRoot
+try {
+  & $gradlew clean check build --no-daemon
+  if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+  }
+} finally {
+  Pop-Location
+}
+
+$deployJars = @(Get-ChildItem -LiteralPath $libsDir -Filter "observance-*.jar" -File -ErrorAction SilentlyContinue)
+if ($deployJars.Count -ne 1 -or $deployJars[0].Name -ne "observance-0.5.0.jar") {
+  throw "Deploy jar invariant failed: expected only observance-0.5.0.jar, found $($deployJars.Name -join ', ')"
+}
+if (!(Test-Path -LiteralPath $jarPath -PathType Leaf)) {
+  throw "Gradle reported success but the production plugin JAR is missing: $jarPath"
+}
+
+# Read the exact Gradle output back. This independently enforces byte parity for every authority,
+# including the 108 evidence appearances and all nine manifest-owned map PNGs, and rejects extras.
+& powershell -NoProfile -ExecutionPolicy Bypass -File $jarVerifier -RepoRoot $repoFull
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
-New-Item -ItemType Directory -Force -Path $libsDir | Out-Null
-if (Test-Path $jarPath) {
-  Remove-Item -LiteralPath $jarPath -Force
-}
-
-Add-Type -AssemblyName System.IO.Compression
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-
-function Write-DeterministicJar([string]$OutPath) {
-  if (Test-Path $OutPath) {
-    Remove-Item -LiteralPath $OutPath -Force
-  }
-  $fixedTimestamp = [System.DateTimeOffset]::new(2026, 1, 1, 0, 0, 0, [System.TimeSpan]::Zero)
-  $entries = [ordered]@{}
-  foreach ($root in @($classesDir, $resourcesDir)) {
-    $rootFull = [System.IO.Path]::GetFullPath($root).TrimEnd('\', '/')
-    foreach ($file in Get-ChildItem -LiteralPath $rootFull -Recurse -File) {
-      $relative = $file.FullName.Substring($rootFull.Length).TrimStart('\', '/').Replace('\', '/')
-      if ($entries.Contains($relative)) {
-        throw "Duplicate plugin JAR entry '$relative' from $($file.FullName)"
-      }
-      $entries[$relative] = $file.FullName
-    }
-  }
-  if ($entries.Contains("deep-hold-d05-shelf.json")) {
-    throw "Duplicate plugin JAR entry 'deep-hold-d05-shelf.json'"
-  }
-  $entries["deep-hold-d05-shelf.json"] = $holdD05File
-
-  $stream = [System.IO.File]::Open($OutPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite)
-  try {
-    $archive = [System.IO.Compression.ZipArchive]::new($stream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
-    try {
-      $manifestEntry = $archive.CreateEntry("META-INF/MANIFEST.MF", [System.IO.Compression.CompressionLevel]::Optimal)
-      $manifestEntry.LastWriteTime = $fixedTimestamp
-      $manifestStream = $manifestEntry.Open()
-      try {
-        $manifestBytes = [System.Text.Encoding]::UTF8.GetBytes("Manifest-Version: 1.0`r`nCreated-By: Observance deterministic packager`r`n`r`n")
-        $manifestStream.Write($manifestBytes, 0, $manifestBytes.Length)
-      } finally {
-        $manifestStream.Dispose()
-      }
-
-      foreach ($relative in ($entries.Keys | Sort-Object)) {
-        $entry = $archive.CreateEntry($relative, [System.IO.Compression.CompressionLevel]::Optimal)
-        $entry.LastWriteTime = $fixedTimestamp
-        $entryStream = $entry.Open()
-        try {
-          $input = [System.IO.File]::OpenRead([string]$entries[$relative])
-          try { $input.CopyTo($entryStream) } finally { $input.Dispose() }
-        } finally {
-          $entryStream.Dispose()
-        }
-      }
-    } finally {
-      $archive.Dispose()
-    }
-  } finally {
-    $stream.Dispose()
-  }
-}
-
-Write-DeterministicJar $jarPath
-$reproPath = "$jarPath.repro-check"
-Write-DeterministicJar $reproPath
 $sha1 = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA1).Hash.ToLowerInvariant()
-$reproSha1 = (Get-FileHash -LiteralPath $reproPath -Algorithm SHA1).Hash.ToLowerInvariant()
-Remove-Item -LiteralPath $reproPath -Force
-if ($sha1 -ne $reproSha1) {
-  throw "Plugin packaging is not reproducible: $sha1 != $reproSha1"
-}
+$sha256 = (Get-FileHash -LiteralPath $jarPath -Algorithm SHA256).Hash.ToLowerInvariant()
+Write-Host "plugin packaged by verified Gradle build: $jarPath"
+Write-Host "plugin sha1: $sha1"
+Write-Host "plugin sha256: $sha256"
 
-Write-Host "plugin packaged: $jarPath"
-Write-Host "plugin sha1: $sha1 (reproducible)"
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $RepoRoot "tools\write_deploy_manifest.ps1") -RepoRoot $RepoRoot
+& powershell -NoProfile -ExecutionPolicy Bypass -File $deployManifestWriter -RepoRoot $repoFull
 if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }

@@ -1,5 +1,7 @@
 # THE OBSERVANCE — NEXT SESSION START HERE (the director's handoff)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT RESUME FROM THIS HANDOFF.** Current work and launch authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
 > 🔴 **You are the director.** Ethan's standing mandate: *"you're the director. figure out what all you
 > need to do, pass over, bug fix, integrate, audit, enhance, expand, add more of, remove some of, etc to
 > make this amazing, but just literally build it all. this is your /goal. think as a top 1% famous genius

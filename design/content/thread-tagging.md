@@ -1,5 +1,7 @@
 # thread-tagging — the 24 puzzle nodes mapped to the Recovery Archive
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT APPLY THESE TAGS OR SEEDS.** Current ownership is the 82-node V5 runtime manifest.
+
 > **What this file is.** Every one of the 24 seeded nodes in `discord/supabase/seeds/puzzles_seed.sql`
 > tagged to a `thread_key` (which of the five reconstruction questions its *payoff* advances) and,
 > where the node teaches or turns on one of the seven ways, a `teaches_custom` (a canon `CUSTOM_KEYS`

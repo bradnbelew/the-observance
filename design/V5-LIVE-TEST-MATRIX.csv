@@ -1,0 +1,101 @@
+test_id,area,procedure,expected,evidence,release_blocker
+B001,server,"Boot a clean clone on Java 21 and exact Paper 1.21.11 with one Observance jar","Plugin 0.5.0 enables with no severe error and reports V5 authority hash","startup log plus /obs status screenshot",yes
+B002,server,"List plugins and inspect plugins directory","Exactly one Observance jar is present and no stale version loads","directory listing and plugins output",yes
+B003,plan,"Run /obs placehold prepare to PREPARE PASS then /obs placehold plan at the identical proposed Mouth","Preparation asynchronously tickets the complete footprint without Hold mutation; read-only plan prints +Z bounds chunks cover bottom buffer manifest hash and PLAN PASS","full preparation and plan console transcript",yes
+B004,plan,"Inspect every printed Hold bound in spectator before build","Envelope misses the village well player builds portals NPCs protected regions and other ARG sites","six boundary screenshots and coordinates",yes
+B005,plan,"Prepare then run plan at a point with inadequate surface cover","Plan fails closed and changes no Hold block site or file; preparation tickets are released","before and after screenshots plus log",yes
+B006,plan,"Prepare then run plan where the foundation would exceed the world floor","Plan fails closed with bottom-buffer explanation and releases preparation tickets","console transcript",yes
+B007,plan,"Attempt any orientation except +Z","Command refuses rotation and changes nothing","console transcript",yes
+B008,build,"Build on a fresh approved clone during a no-player maintenance window","Build reaches a verified receipt with 32 rooms 76 fixtures 8 gates and authority hash","build transcript and receipt",yes
+B009,build,"Interrupt a disposable build and inspect reported state","No false success receipt is printed and operator is told to use a fresh site or verified recovery path","interruption transcript",yes
+B010,persistence,"Restart immediately after a successful build; run /obs placehold prepare to PREPARE PASS at the persisted Mouth, then audit and preflight","Coordinates block entities entities content and gate latches reload without drift; verification never forces unloaded chunks onto the main thread","post-restart preparation and audit transcript",yes
+B011,repair,"Damage one disposable fixture; run /obs placehold prepare to PREPARE PASS, then targeted repair","Only that fixture is restored and solved state inventories and gates are preserved","preparation plus before and after fixture proof",yes
+B012,repair,"Run /obs placehold prepare to PREPARE PASS, then repair all on a solved disposable Hold","No shell excavation progress reset artifact duplication or gate reseal occurs","preparation transcript audit diff and inventory proof",yes
+R001,traversal,"Walk from Surface Mouth down the complete Grand Stair as a non-op Adventure player","Continuous safe stair has headroom guardrails landings and no fall trap","uncut client video",yes
+R002,traversal,"Walk Mouth to Orientation and back to Mouth","Same entrance supports departure with G1 sealed","uncut client video",yes
+R003,traversal,"Open G1 and visit every Keeper bay then return to Mouth","All six bays connect visibly to the nave with no dead end or blocked doorway","route video",yes
+R004,traversal,"Open G2 and walk both Civic Archive loops in both directions","Both evidence streets reconnect and every owned room has a doorway","route video",yes
+R005,traversal,"Use the Hold-to-Unlit handoff then return through the village well","The only Unlit entrance remains the established well and return is understandable","route video",yes
+R006,traversal,"Open G3 and traverse Puzzle Works then backtrack to Mouth","Gatehouse and mechanics never block the archive loop or reverse route","route video",yes
+R007,traversal,"Open G4 and traverse the lower stair in both directions","Wide stair is safe for a seven-player group and remains reversible","group video",yes
+R008,traversal,"Open the Camp Ash subgate and inspect all four stations and Locker 13","Camp branch returns clearly to Prior Case and has no accidental exit","route video",yes
+R009,traversal,"Complete C07 and walk the mandatory Dread evidence passage","Route is bounded legible non-maze and cannot be skipped","route video",yes
+R010,traversal,"Complete Wren reckoning and walk Accepting Unwriting and Release","G5 and G6 order is linear and every chamber remains backtrackable before commit","route video",yes
+R011,crowding,"Repeat the complete route with seven non-op players","No one is trapped pushed into hazards or unable to reach an interaction stand cell","group video",yes
+R012,accessibility,"Traverse without sprinting jumping precision movement sound or resource-pack-only cues","Every mandatory instruction has a stable visual/text path","accessibility notes and video",yes
+F001,signs,"Inspect every authored sign from its declared standing cell","Front faces player text is legible backing exists and no sign clips a wall","fixture screenshot set",yes
+F002,signs,"Inspect the rear of every sign and each nearby route","No reversed clue appears authoritative and no decorative sign resembles an input","fixture screenshot set",yes
+F003,books,"Open all 44 written books on a real 1.21.11 client","Title author page order wrapping glyphs and final lines render correctly with no blank page","book proof checklist",yes
+F004,lecterns,"Use every lectern as non-op","Lectern faces its stand cell contains the exact book and book cannot be removed","fixture checklist",yes
+F005,bookshelves,"Use each chiseled bookshelf","Only declared mechanic slots accept interaction and decorative shelves cannot consume evidence","interaction video",yes
+F006,frames,"Inspect and rotate every mechanic item frame","Facing backing item and legal rotations match the manifest and frames cannot be broken","fixture checklist",yes
+F007,containers,"Inspect every authored barrel chest and hopper-like fixture","Exact slots labels and PDC items exist with no empty required payload","inventory screenshots",yes
+F008,displays,"Inspect armor stands displays paintings and hanging entities","Entities face intended sightlines have correct PDC and cannot be moved equipped or destroyed","entity checklist",yes
+F009,lighting,"Walk every room on default brightness and no night vision","Required text is readable while atmosphere remains intentional and no hostile spawn can invalidate a puzzle","lighting video",yes
+F010,visuals,"Compare every room to its real-place function in room assignments","Rooms read as civic school stores pump works camp archive or release space rather than generic sign rooms","art-direction review",yes
+F011,orientation,"Inspect east and west Keeper reliquaries","Each sits behind its stone relative to local fixture front regardless of world X","paired screenshots",yes
+F012,content,"Run /obs placehold audit after all fixture interactions","All expected blocks states inventories books signs entities PDC payloads gates and stand cells pass","audit transcript",yes
+P001,progression,"Attempt every gate before its condition","All eight gates stay sealed and communicate a discoverable unmet condition without spoilers","gate checklist",yes
+P002,progression,"Complete C02 then synchronize G1","Only G1 opens and it stays open across departure reconnect and restart","state transcript",yes
+P003,progression,"Return five of six affidavits then all six","G2 stays sealed at five and opens exactly at six","gate video",yes
+P004,progression,"Complete only C04 then only C05 on separate clones","G3 requires both cases and cannot be bypassed by either alone","two clone transcripts",yes
+P005,progression,"Complete C06 with required physical systems","G4 opens only after synchronization and issues Deep Access Plate exactly once","gate and inventory proof",yes
+P006,progression,"Derive A01 before and after its prerequisites","Camp subgate rejects guessing and opens on the earned location receipt","gate transcript",yes
+P007,progression,"Complete nine of ten C07 nodes then all ten","Dread remains sealed until full prior-company reconstruction","gate transcript",yes
+P008,progression,"Choose each Wren branch on restored clones","Every branch completes C08 and opens G5 without erasing the chosen moral state","three transcripts",yes
+P009,progression,"Assemble five then all six AVERYN fragments","G6 stays sealed until the exact name and C09 completion","gate video",yes
+P010,answers,"Submit wrong partial normalized correct duplicate and guessed-future answers on every input type","Misses are neutral correct solve is idempotent duplicates reveal nothing and future guesses do not unlock","answer receipt matrix",yes
+P011,mechanics,"Disconnect one participant during each group or container mechanic","State remains recoverable and no group is permanently locked out","disconnect checklist",yes
+P012,persistence,"Restart after every gate on separate checkpoints","Every open gate remains open every sealed gate remains sealed and no case rolls back","eight restart receipts",yes
+U001,Unlit,"Bind entry spawn exit and all eight house anchors to the copied Unlit world","/obs unlit audit recognizes all required placed sites","audit transcript",yes
+U002,Unlit,"Enter exclusively through the established village well","No second public entrance or unexplained teleport is visible","client video",yes
+U003,Unlit,"Play BI01 through BI08 in order","Every house supplies distinct evidence and all eight are mandatory","case checklist",yes
+U004,Unlit,"Attempt each house with the wrong item action or order","Wrong interactions preserve evidence and give non-spoiler feedback","interaction checklist",yes
+U005,Unlit,"Run darkening and border setup then audit","Stray light is removed safe zones remain and border cannot strand a player","audit and night screenshots",yes
+U006,Unlit,"Test retreat during each house and return later","Progress persists and the well return remains reachable","eight retreat videos",yes
+U007,NPC,"Speak to Aro Wenna Coll Dob and Old Pell at arrival midgame and Coda","Exact V5 state lines play synchronously and refer to real nearby places","dialogue transcript",yes
+U008,NPC,"Interact while Supabase and Render are unavailable","Critical local NPC reply is immediate and never waits for a showrunner tick","outage video",yes
+U009,NPC,"Confront Wren then reload and restart","Confession and chosen reckoning state remain exact and cannot branch twice","dialogue transcript",yes
+U010,protection,"Try to break place burn explode drain piston or teleport through every Unlit protected site","No authored evidence route or exit can be damaged or bypassed","grief checklist",yes
+S001,Discord,"Register guild commands and inspect autocomplete with a newly linked account","Only link answer and whisper contract surfaces appear; link requires name callback and code; only open nodes autocomplete","Discord screenshots",yes
+S002,Discord,"Prove offline-mode preflight and /obslink fail closed; restore online-mode=true; as authenticated non-op run /obslink then test /link with bad callback pre-LS04 wrong expired reused other-player valid repeated recovered and conflicting identity proofs","Offline mode issues and transmits no proof; only SHA-256 is stored online; one durable identity bind is made; rejected paths do not mutate or leak; recovery adds the new hand and revokes the old on authoritative refresh","Minecraft and Discord transcript plus database receipt",yes
+S003,Discord,"Run /answer unscoped and scoped against open closed solved and unknown nodes","Resolver scopes correctly and returns spoiler-safe neutral misses","command transcript",yes
+S004,Discord,"Send the same correct Discord answer concurrently from seven accounts","Exactly one completion and one downstream effect are durably recorded","database receipt and transcript",yes
+S005,Discord,"Use /whisper at every hint tier and budget edge","Hints follow authored tiers and never reveal unopened-case answers","hint transcript",yes
+S006,showrunner,"Run persistent worker and recovery cron simultaneously","Lease permits one effect per tick and duplicate delivery is idempotent","Render and database logs",yes
+S007,showrunner,"Stop worker for six minutes then restore it","Cron recovery advances eligible durable work without replaying completed effects","timeline and logs",yes
+S008,website,"Visit every Copperline C01 route from a clean browser","The mundane trail is navigable and supplies LS01 through LS04 without stale lore","screen recording",yes
+S009,website,"Visit Record archive terminal ticket media and Coda routes at each prerequisite state","Each route is gated accurately and no future payload or operator secret leaks","route matrix",yes
+S010,website,"Test author console as unauthenticated player wrong admin and configured admin","Players are denied admin data and exact admin can inspect V5 cases and finale state","auth screenshots",yes
+S011,media,"Open all four fixed clips and the spectrogram through their earned routes","Assets load and yield exactly ASH-13 WHERE THE REEDS FOLD BACK STAY AWAKE SIX RETURN ONE IS NOT KEPT and I WAS NOT KEPT","playback receipts",yes
+S012,media,"Request every media route before its prerequisite","Route fails closed without claiming media is optional or exposing payload","route transcript",yes
+S013,cross-surface,"Complete one node on each authorized surface and inspect Minecraft Discord site and database","All consumers converge on one completion flag without duplicate story beats","cross-surface receipt",yes
+S014,production,"Verify Vercel deployment DNS TLS Render worker cron Discord commands and production Supabase health","Every public service is current reachable and points at the same V5 data","dated external-service receipt",yes
+X001,protection,"Attempt block break and place throughout all Hold bounds as non-op","Ordinary blocks remain immutable while exact puzzle interactions still work","grief video",yes
+X002,protection,"Attempt bucket fire flint explosion piston and water-flow damage","No authored block entity entity gate or corridor changes","grief checklist",yes
+X003,protection,"Attempt pearl chorus fruit boat minecart bed portal and plugin teleport bypasses","No sealed gate or mandatory passage can be skipped","bypass checklist",yes
+X004,protection,"Attempt hopper minecart hopper and container automation against evidence fixtures","Protected evidence cannot transfer outside its exact mechanic","automation video",yes
+X005,protection,"Attempt to remove lectern books frames paintings armor stands and displays","All authored entities and books remain intact","grief checklist",yes
+X006,recovery,"Destroy each of the 21 artifacts on a disposable clone then run its recovery command","Earned missing item is restored once with exact material name and PDC","artifact receipt set",yes
+X007,recovery,"Place each artifact in inventory ender chest loaded container and loaded dropped entity then recover","Duplicate scan refuses every second copy","artifact matrix",yes
+X008,recovery,"Fill target inventory then recover a missing artifact","Command refuses without displacement or ground drop","video and inventory diff",yes
+X009,recovery,"Attempt to recover every artifact before its earning flag","Every request fails closed and reveals no puzzle solution","command transcript",yes
+X010,failure,"Disable Supabase after opening each gate then synchronize","No open gate reseals and local protection and theater continue","eight outage receipts",yes
+X011,failure,"Return Supabase stale false values after local progress","Monotonic latches and completion receipts do not regress","database and gate receipt",yes
+X012,failure,"Send duplicate and delayed showrunner events after completion","No duplicate item NPC line gate opening or finale trigger occurs","event log",yes
+X013,failure,"Kill disconnect and reconnect players with artifacts in dangerous locations","Durable recovery restores play without resetting cases or duplicating artifacts","failure matrix",yes
+X014,security,"Inspect client downloads website bundles logs and public API responses","No service-role key bot token admin password unpublished solution or hidden branch payload is exposed","security review",yes
+E001,finale,"Run /obs finale markers in Unwriting","All exact release interactions are present facing correctly and reachable","marker transcript and screenshots",yes
+E002,finale,"Attempt commit without an explicitly armed branch","Finale refuses and changes no durable or world state","command transcript",yes
+E003,finale,"Arm each branch with a cancel window then cancel","Countdown visibly cancels before safe cutoff and server remains playable","three rehearsal videos",yes
+E004,finale,"Test condemn plus publish from the same pre-choice backup once for each conduct verdict: solo unanimous divided persistent","Choice persists before theater and each run produces matching conduct clause chamber copy website Discord goodbye kick shutdown and Coda","four conduct-specific branch evidence packets",yes
+E005,finale,"Test condemn plus release unnamed from the same pre-choice backup once for each conduct verdict","Ending frees Averyn closes Record lands dramatically preserves both choices and renders all four conduct clauses","four conduct-specific branch evidence packets",yes
+E006,finale,"Test understand plus publish from the same pre-choice backup once for each conduct verdict","Ending frees Averyn closes Record lands dramatically preserves both choices and renders all four conduct clauses","four conduct-specific branch evidence packets",yes
+E007,finale,"Test understand plus release unnamed from the same pre-choice backup once for each conduct verdict","Ending frees Averyn closes Record lands dramatically preserves both choices and renders all four conduct clauses","four conduct-specific branch evidence packets",yes
+E008,finale,"Test free plus publish from the same pre-choice backup once for each conduct verdict","Ending frees Averyn closes Record lands dramatically preserves both choices and renders all four conduct clauses","four conduct-specific branch evidence packets",yes
+E009,finale,"Test free plus release unnamed from the same pre-choice backup once for each conduct verdict","Ending frees Averyn closes Record lands dramatically preserves both choices and renders all four conduct clauses","four conduct-specific branch evidence packets",yes
+E010,finale,"Disconnect one player during armed countdown and reconnect before commit","Player receives coherent state and cannot duplicate or cancel the group choice","rehearsal video",yes
+E011,finale,"Interrupt a rehearsal after durable commit at each theater phase","Restart resumes or enters terminal Coda idempotently without replay corruption","phase checkpoint receipts",yes
+E012,finale,"Corrupt finale-state.properties on a disposable clone","Plugin boots finale in fault mode and does not treat it as fresh","startup transcript",yes
+E013,Coda,"Restart after each of six branch combinations and join as non-op","Coda is terminal branch-specific quiet traversable and cannot refire finale","six Coda videos",yes
+E014,finale,"Perform full real-time finale with seven clients on a clone","District lights fall Averyn goodbye is readable worlds save all players kick Paper shuts down and nobody reacts as if content simply stopped","uncut seven-client video and shutdown log",yes

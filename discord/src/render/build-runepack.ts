@@ -86,7 +86,7 @@ async function main(): Promise<void> {
   // 3) the manifest. Resource-pack format is pinned to the current launch server (MC 1.21.11).
   const mcmeta = {
     pack: {
-      description: 'The Observance — the keepers’ alphabet, and the dark that keeps them. Target: 1.21.11 (format [75,0]).',
+      description: 'The Observance V5 — field archive, Keeper testimony, and Deep Hold systems. Target: 1.21.11 (format [75,0]).',
       min_format: [75, 0],
       max_format: [75, 0],
     },

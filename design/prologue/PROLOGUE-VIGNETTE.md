@@ -1,5 +1,7 @@
 # THE HOLD — PRODUCTION INVITATION PROLOGUE
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT REBUILD OR PUBLISH THIS DOWNLOADABLE WORLD.** The V5 Hold is constructed only by the Paper plugin; the web download is diagnostic only.
+
 Status: built, packaged, runtime-smoked, and wired to the Copperline web trail.
 
 This describes the artifact that was actually generated and tested. The executable source is

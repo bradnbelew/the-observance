@@ -1,5 +1,7 @@
 # RESHAPE AUDIT — live-state findings feeding the add/change/cut pass
 
+> **SUPERSEDED PRE-V5 ARCHIVE — NOT A CURRENT AUDIT.** Current failures come from the V5 automated checks and live-test receipts.
+
 > **Superseded — fully absorbed into `CHANGE-MANIFEST.md` / `THE-RESHAPE.md`** — kept for history.
 > Historical below.
 

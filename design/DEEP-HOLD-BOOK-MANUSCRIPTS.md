@@ -1,5 +1,7 @@
 # Deep Hold Book Manuscripts
 
+> **SUPERSEDED V4 ARCHIVE.** Exact V5 pages live in `arc/v5/minecraft-books.json`; integration authority is `design/V5-BOOKS.md`.
+
 Status: exact rebuild payload for the two five-lectern locks. Page labels below are editorial labels and
 are not part of the Minecraft page body. Preserve page order, title, author, punctuation, and line breaks.
 Do not prepend a site id, shelf number, or repeated in-page page number.

@@ -1,5 +1,7 @@
 # THE SEVENTH'S NAME — a plan for a *traceable* name (not a handed-over string)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT IMPLEMENT THIS SEVENTH/RESTORE/ERASE MODEL.** V5 name treatment and Averyn release are defined in `design/V5-FINALE.md`.
+
 > Ethan's ask (2026-07-03): can the Seventh's name be something the players can **trace back to
 > something they'd recognize**, rather than an arbitrary word we invent? Yes — and it makes the finale
 > hit far harder. This plan makes *restoring the name* an earned DERIVATION the players perform, and ties

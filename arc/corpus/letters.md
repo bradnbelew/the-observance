@@ -1,4 +1,6 @@
 ---
+status: SUPERSEDED_V4_ARCHIVE_DO_NOT_IMPLEMENT
+superseded_by: arc/WORLD-BIBLE.md and arc/v5/
 id: letters
 title: letters and notes between the Kept
 kind: corpus (collected correspondence)

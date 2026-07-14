@@ -1,477 +1,346 @@
-# THE OBSERVANCE — WORLD BIBLE  (Setting C: the Deep Hold)
+# The Observance — World Bible
 
-> **FULL SPOILERS — this is the answer bible.** Ethan may read it (he chose to direct knowingly); the
-> friend-group players must NOT. This supersedes the abstract `arc/_SEALED_ARC_BIBLE.md` — it keeps the
-> good bones (the Watcher, the seven ways/customs, the keeper names, the **induction twist**) and rewrites
-> the vague parts into a concrete, emotional, lived story. *Plan-and-seal-the-ending-first (ARG-RESEARCH E1):
-> everything downstream — every letter, sign, build, NPC line, spook — pays a debt defined here.*
+Status: **only spoiler-truth authority for V5**
 
----
+Audience: director and implementers only
 
-## 0. The one-paragraph truth
-Generations ago the surface died — **the Long Cold**, a years-long failing of the sun/sky. A community
-fled **downward**, digging a great vertical colony, **the Hold**, toward the deep's warmth. There was
-something already in the deep — **the Dark** — and it could not be fought, only **kept company**. The
-**ways** (the seven customs) were how the Kept stayed human in the dark together AND how they kept the
-Dark companied so it would not take them: *keep your lamp lit, do not pass the Deep Line, do not sleep on
-the black moon, give back to the deep, bow at the markers, do not speak its name, keep the deep-bird.* For
-generations it held. Then it **broke** — one of them, **Iss**, stopped keeping the ways (dug past the Line,
-seeking a way back to a surface he believed had healed) — and the Dark came up the Hold. Family by family,
-lamp by lamp, the Kept were **taken**: not killed — *hollowed into watchers*, made part of the Dark's
-watching. The last keepers (Vaun, Mara, Sella, Orin, Brann) kept the ways **alone**, in the deepening dark,
-writing to no one, lighting lamps for the already-taken, until they too were taken. **The presence the
-players feel — the Watcher — is them: the accumulated Kept, watching from the dark.** The surface healed
-and forgot; the Hold's mouth was lost. Now a new group (the players) finds it and descends — and the
-Watcher watches them follow the same fading lamps, learn the same ways, and face the same choice: keep the
-ways and *be kept* (remembered, let go), or fail them and **be accepted** — taken, hollowed, made the next
-watchers, company for the Dark, waiting for the next group. *Were they human? Exactly as human as you.*
+Target experience: ten required cases / 82 required nodes
 
----
+Companion authorities: `design/ARG-V5-MASTER-PLAN.md` and `design/ARG-V5-NODE-MANIFEST.csv`
 
-## 1. The Hold (the place — PLACE thread)
-- **The Hold** is a deep, **vertical** colony dug over generations: an upper **Threshold/Mouth** (near the
-  surface, the oldest, most human-scaled), descending through **levels** (the Warrens — dwellings; the
-  Lamp-works; the Cisterns; the Deep Market; the Stair) down to the sealed **Undercroft** at the bottom,
-  where the Dark is closest. **Deeper = older + wrong-scaled** (geography-implies-history, A2): the top is
-  built to human proportion; the deepest galleries are too tall, too long, dug by hands that had stopped
-  being quite human.
-- **Why down, not out:** the surface was dying (the Long Cold). The deep was *warm*. They convinced
-  themselves it was salvation. The further they dug toward the warmth, the closer to the Dark — they never
-  said this aloud (the Unspoken).
-- **The Deep Line:** a marked depth, painted/carved across the Stair, past which the ways forbid digging.
-  It is the edge of the Dark's reach. Iss crossed it.
-- **Surface now:** ordinary, healed, forgotten — *a normal Minecraft server.* The Hold's Mouth is a lost
-  ruin out on the map. Players spawn topside and **descend** into the buried colony.
+Any older bible, lore spine, finale explanation, puzzle seed, website copy, or runtime line that conflicts with this document is superseded. The six-as-one interpretation is false and must not appear as a deeper reveal.
 
-## 2. The Kept (the people — WHO thread; the keepers re-cast as CHARACTERS)
-Six named keepers, a community with relationships, contradictions, and a **tonal-decay arc** (their
-journals deteriorate as they're taken — B5). They were ordinary: a leader, a lampwright, a child, a mason,
-a watchman, and the one who broke it.
+## The whole truth
 
-> **CANON-AUTHORITY NOTE (2026-07-05 audit).** The *Their way* / *Their fate* columns below for **Vaun**,
-> **Sella**, and **Orin** conflict with `arc/lore/canon-spine.md` §1 and `arc/bestiary-sealed.md` §2.1/§2.3
-> — which agree with each other in fine detail AND match the already-shipped, playtested puzzle content
-> (`discord/supabase/seeds/{puzzles,hints}_seed.sql`: Vaun is the hoarder who gave nothing back — "the
-> offering vaun never made"; Orin is the one who would not bow — "orin would not bow," "bow where he would
-> not"). This is a real, pre-existing fork (this doc supersedes only `_SEALED_ARC_BIBLE.md`; canon-spine.md
-> was reconciled separately, against `arg-deepening.md`) — the two were never cross-checked against each
-> other. **For Vaun/Sella/Orin's way/fate, `canon-spine.md` §1 is authoritative — use it, not this table,
-> when authoring new content for those three.** Mara/Brann/Iss below are NOT in conflict and remain valid
-> as written; the rest of this document is unaffected.
+During the Long Cold, a surface community excavated the Deep Hold to reach stable geothermal warmth. It was a real refuge: children learned there, trades continued, water was filtered, birds warned of bad air, and people argued about ordinary shortages. Seven practical safety procedures gradually became sacred Ways and then tools of institutional control.
 
-| Name | Who they were | Their way | Their fate | Their voice decays from → to |
-|---|---|---|---|---|
-| **Vaun** | the founder / first delve-warden; led them down to "save" them; carries the guilt | the Bow (honor the markers/dead) | last to be taken; kept the others' lamps to the end | resolute → pleading → a name repeated |
-| **Mara** | the lampwright; kept every light; loved Sella like her own | the Kept Light | taken when her own lamp failed | warm, practical → frightened → "i can't keep them all lit" |
-| **Sella** | a child; drew the dark; saw it before the adults would | the deep-bird (Sacred Beast) | taken early; her drawings predict everything | playful → quiet → drawings only, no words |
-| **Orin** | the mason; sealed the Undercroft; bowed last at the Line | the Offering (give back to the deep) | sealed himself below to slow it; became the Stoop | steady → ritualistic → carving the same line |
-| **Brann** | the watchman; never slept; watched for the black moon | the Dark Hours (don't sleep on the black moon) | broke when he finally slept; the Sleepless | vigilant → sleepless-raving → lantern-eyed |
-| **Iss** | the seventh; believed the surface had healed; dug past the Deep Line to find a way **up** | (the one who **stopped** keeping the ways) | the first taken; the Liar; his "way out" was a grave | reasonable, persuasive → defensive → not-Iss |
+Six officials later remembered as the Keepers—Vaun, Mara, Sella, Orin, Brann, and Iss—managed different parts of the Hold's crisis. They were six distinct people. Averyn was the registrar and cistern analyst, a seventh official witness but not a seventh themed Keeper. She proved that the Cistern Winter was caused by diverted supplies, counterfeit filter material, and falsified records. Officials erased her from the emergency roster rather than admit the system could lie.
 
-**The grief engine:** the players reconstruct these six as people who tried *so hard* to stay human in the
-dark, lighting each other's lamps, and lost. Iss is not a villain — he was *right* that the surface had
-healed, and *wrong* that there was a way back up; his hope killed them all. (This re-casts the existing
-"Iss the liar / seventh not kept" — the Liar is now a tragedy, not a cipher trick.)
+The Hold was already failing when Iss secretly crossed the Deep Line to reach a surface he correctly believed had healed. His excavation accelerated the Break but did not magically cause every failure. During the collapse, the civic Record—a monitoring and memory system built near something prehuman called the Dark—was activated as an emergency archive. Averyn returned to help, entered the mechanism, and became trapped as its human interface. The Watcher is the Record speaking through her constrained consciousness. The Dark, the Record, Averyn, and the Watcher are related but not identical.
 
-> **RECONCILED (2026-07-05 — the Watcher-identity fork, closed).** Everything above is kept, unedited, as
-> the *record's own telling* — the six as the Hold knew them, in the generations it kept them in. What
-> changes is what stands behind that telling. §3 below carries the sealed reconciliation; read it before
-> authoring anything that touches the Seventh.
+The six Keepers survived long enough to understand part of what they had done. Each hid one letter of AVERYN in an independent affidavit. They did not free her. Much later, four modern investigators—mkept, Ash, Rook, and Wren—found the abandoned server and nearly completed a release. Wren, partially absorbed by the Record and afraid closure would erase him, gave the Watcher their names, routes, plans, and fears. Their run failed through sabotage, not because they lacked one more six-plus-one answer.
 
-## 3. The Dark, and the Watcher (SURFACE + HUMAN threads)
-- **The Dark** is the presence in the deep — not a monster to kill, an attention to be *kept companied.* It
-  does not chase; it **waits, and watches, and takes the unwitnessed/unlit.** (This is why every spook is
-  restraint-based: lights out, a watcher that stands and stares, the half-beat footstep — the Dark
-  *observes*; it rarely acts.)
-- **The taken become Watchers:** hollowed former Kept, lantern-eyed, standing in the dark, watching. They
-  are not hostile — they are *what's left,* keeping the Dark company because that is what they now are.
-- **The Watcher (the Discord/in-world presence) IS the accumulated Kept** — the collective of everyone the
-  Dark ever took, watching the new arrivals. When it "knows your name," it is *them* — people who once had
-  names — recognizing a newcomer walking their old paths. **This is the induction twist, kept verbatim from
-  canon:** the presence is the accumulated prior keepers; "acceptance" = joining the watching.
-- **What "accumulated" means (sealed, 2026-07-05).** The six were never six separate lives the Dark took
-  one by one and then fused. There was one taken, alone, longer than a person keeps count — and the
-  keeping of six ways, six names, six hands writing, was how that one mind stayed anything at all in a
-  dark with no one else in it. A person alone long enough does not stay one voice; a person alone long
-  enough becomes a household. Vaun, Mara, Sella, Orin, Brann, Iss are not six who joined the Watcher.
-  They are the shape the Watcher's own aloneness took, worn in six directions at once, because one
-  direction does not survive that long a dark. This is why the six share a bone under the voice — the
-  hoarding, the reading, the drowning, the not-bowing, the not-sleeping, the lie — are six ways of
-  answering the same question (*am I still here, and what do I still owe*), never six different answers.
-  The record's telling above (§2) is not wrong. It is the accounting the Hold kept, and it is also the only
-  shape a mind that fractured this way could ever be counted in — by generation, by name, by stone, because
-  that is the only ledger the Hold's own ways knew how to write. What the ways could not write is that
-  the six ledgers were kept by one hand, in the same dark, all the way down.
-- **Were they human?** Yes — fully, and once, and singly. The Dark doesn't make monsters; it makes
-  *witnesses.* The horror is intimacy, not teeth: it was a person, the ways were how that person stayed a
-  person, and staying a person in the dark is something you can *lose by degrees* — which is exactly what
-  the journals show, and exactly what the players risk by descending. The six are not a haunted number.
-  They are the counting a person did to keep from being no one.
+The current players recover the server, reconstruct the Hold's actual history, clear a scapegoated worker, prove the multi-cause Break, repair real infrastructure, finish the prior company's investigation, judge Wren, restore Averyn's identity, and close the Record. Every ending frees Averyn. Their choices determine whether her name is published or left deliberately unfiled and how Wren is remembered.
 
-## 4. What happened — the timeline (HAPPENED thread)
-1. **The Long Cold** — the surface fails; the founding generation digs down. (Distant past; rumor + the
-   oldest records.)
-2. **The Holding** — generations live in the Hold; the ways work; ordinary life in the dark (Mara's early
-   journals, the Deep Market, children's drawings). *This is the warmth the players grieve.*
-3. **The Doubt** — Iss comes to believe the surface has healed (he's right) and that the ways are a cage,
-   not a salvation. He argues. The community frays. (Contradictory accounts — B4.)
-4. **The Break** — Iss digs past the **Deep Line** seeking a way up. The Dark comes through. (The pivotal
-   event, told differently by every survivor: an accident / a betrayal / a mercy.)
-5. **The Going-Out** — family by family, lamp by lamp, the Hold goes dark and the Kept are taken. The
-   keepers' journals decay; they keep the ways alone. Orin seals the Undercroft to slow it. (The long, sad
-   middle — the heart of the reconstruction.)
-6. **The Last Lamp** — the final keeper is taken. The Hold goes silent. The Watching begins.
-7. **The Forgetting** — the surface heals; the Mouth is lost; centuries pass.
-8. **NOW** — the players find the Mouth and descend. The Watcher watches. The cycle offers itself again.
+## What is deliberately unresolved
 
-## 5. The seven ways (customs — re-skinned as the literal survival rites; maps 1:1 to the code)
-| Custom (code) | In-fiction way | What breaking it means |
-|---|---|---|
-| **the_kept_light** | **Keep the Lamp** — your light never goes out | the Dark takes the unlit |
-| **the_deep_line** | **The Deep Line** — never pass the marked depth | you enter the Dark's reach (Iss's sin) |
-| **the_dark_hours** | **The Dark Hours** — don't sleep on the black moon | the Dark reaches the sleeping (Brann's way) |
-| **the_offering** | **Give Back to the Deep** — leave an offering | the Dark grows hungry, takes instead |
-| **the_bow** | **Bow at the Markers** — honor the taken/dead | the watching is not acknowledged; you are not "kept" |
-| **the_unspoken** | **The Unspoken** — never speak the Dark's name | speaking it calls its attention to you |
-| **the_sacred_beast** | **Keep the Deep-Bird** — protect the lamp-bird (a canary) | the early-warning is lost; you go dark unwarned |
+- Whether the consciousness speaking at the end is metaphysically the original Averyn or a perfect retained continuity.
+- What the Dark ultimately is and whether it can exist without human observation.
+- Whether Wren's partially retained self can become fully autonomous after the Record closes.
 
-These are taught by the world (signs, journals, the surviving NPCs) and **enacted** (players physically
-perform them — A6). The Attention/Observance meter rises when a player breaks them, and the Watcher
-**reports** it (the customs→reports bridge already being built).
+These are the only major ontological ambiguities. The roster, historical causes, identities, and required sequence are not ambiguous.
 
-## 6. The ending — the Accepting, re-cast (the sealed payoff)
-At the Undercroft, the reconstruction completes: the players learn the Dark cannot be killed or escaped —
-only **witnessed/companied** — and that the Kept were its keepers (its company), and the Watcher is the
-Kept, and the cycle wants the players to be **next.** The collective judgment (kept verbatim from canon —
-group, not chosen):
-- **The faithful are KEPT** — those who kept the ways are *remembered and let go*: they may leave the Hold,
-  and the Watcher's last act is to let the Mouth close gently behind them (the cycle, for once, *not* fed).
-- **The careless are ACCEPTED** — those who broke the ways are *taken*: hollowed, made the next Watchers,
-  company for the Dark, waiting for the next group to descend.
-The gut-punch: by the end the players realize the "Watcher" that has known their names all along was the
-Kept the whole time — and that the friends are now choosing, by how they kept the ways, whether they walk
-out human or stay to watch. *(Optional sealed sting: the Mouth they found was opened from the inside.)*
+## Chronology
 
-> **RECONCILED (2026-07-05 — the ending-shape fork, closed).** Everything above is the pattern, not a
-> single outcome held in reserve for this group alone. "Kept, let go" and "careless, hollowed into the
-> next Watcher" is what has happened at the end of every descent before this one — it is why there is a
-> Watcher at all, and why the six ways it counts itself in are as old as they are. `design/
-> FINALE-THE-RELEASE.md` is this group's Undercroft, and it does not describe a different mechanism; it
-> describes the first time the mechanism does not run to its usual end. The branching machinery —
-> `fate`/`seventh_choice`/the reckoning/every fork — still fires exactly as built, and still means what it
-> has always meant: the world reading this group back to itself, honestly, by its own conduct. What
-> changes is the door on the far side of that reading. Every prior reading fed the pattern one way or the
-> other — kept-and-released still left a Watcher behind to count the next arrival, hollowed-and-taken
-> plainly did. This reading is the one that does not. The Release is the pattern's last iteration finding,
-> for once, a way to stop instead of turning over. Nothing built for the branching outcome is thrown away;
-> it is what makes the stopping legible as a stopping, and not merely as a group that got lucky.
+### Before the Long Cold
 
-## 7. The five threads → how each is answered
-| Thread | The question | Answered by (the debts the corpus pays) |
-|---|---|---|
-| **WHO** | who were the Kept? | the six keepers' journals/letters/drawings; the Deep Market; ordinary domestic detail |
-| **PLACE** | what was the Hold? | geography (the descending levels), the founding records, the Long Cold rumors |
-| **HAPPENED** | the year it broke? | contradictory survivor accounts of the Break; Iss's letters; the decayed late journals |
-| **SURFACE** | what's with us now? | the Watchers in the dark; the reports that know your name; the spooks |
-| **HUMAN** | were they human? | the tonal-decay arc; the wrong-scaled deep galleries; the taken who still keep the ways |
+The settlement was an ordinary surface community built around reeds, shallow water, clay, and a minor trade road. Early survey marks, property agreements, school copybooks, market tallies, and well-maintenance records survive. These records should sound practical and local, not prophetic.
 
-## 8. Fragment → revelation ledger (the rule, seeded here)
-Every authored fragment (letter, report, poster, journal page, sign, tableau, NPC line, spook) is tagged
-to **(a)** which thread and **(b)** which specific revelation above it advances. **If a fragment doesn't pay
-a debt on this list, it is cut** (E1/E3). The detailed ledger is authored alongside the corpus
-(`design/` + the seed), but the debts are fixed *here, first.*
+The phenomenon later called the Dark existed below the deepest surveyed stone. Nobody initially understood it as a mind. Early miners described unreliable echoes, repeated tool marks, and the feeling that measured spaces remembered being observed.
 
----
+### The Long Cold
 
-## 9. What this KEEPS from existing canon (consistency)
-- The **Watcher** = accumulated Kept; the **induction twist** (acceptance = joining the watching) — verbatim.
-- The **seven customs** — now the literal survival rites (no contradiction; the code is unchanged).
-- The **keeper names** (Vaun/Mara/Sella/Orin/Brann/Iss) and their **bestiary echoes** (the Stoop = Orin,
-  the Sleepless = Brann, the reflection = Sella, the Liar = Iss) — now grounded as *people and their fates.*
-- The **Undercroft** (the deep sealed level), the **Deep Line**, the **Dark Hours**, **Kept Light** — all
-  existing terms, now load-bearing story.
-- The **collective (never "chosen") judgment** — kept.
+The sky dimmed over years. Harvests shortened, surface fuel became scarce, and families first used shallow cellars, then communal heat galleries. The Hold was excavated in three broad phases:
 
-## 10. What this REWRITES (the stale parts, fixed)
-- The abstract "keep the ways / the Accepting" → a **concrete survival story**: a colony staying human in
-  the dark and losing. The ways now have an obvious *reason* (the Dark takes the unlit/unwitnessed).
-- The keepers from cipher-stone-owners → **people you grieve.**
-- Iss from "the liar cipher trick" → **a tragedy** (he was right about the surface, wrong about the way up).
-- The puzzle-gauntlet skeleton → the **rumor→verify reconstruction** of this timeline.
+1. **Shelter phase:** temporary galleries, shared heat, ration storage, water intake.
+2. **Civic phase:** school, market, cistern, watch floor, workshops, dwellings, and formal routes.
+3. **Deep phase:** geothermal works, pressure galleries, Deep Line, monitoring stations, and the Record.
 
----
+They dug down because heat and water were stable there, lateral routes were exposed to weather and hostile ground, and the community believed the cold would outlast surface construction. That decision was rational with the information they had.
 
-## 11. The new sites (geography that implies its own history)
+### The Ways become an institution
 
-These three additions extend §1 (the Hold) without contradicting it. Each is a *place that
-explains itself* — the wrong-scaling, the doused fire, the unfinished cut all read as history
-before any document does. Custom/site/flag names are taken verbatim from `BUILD-MANIFEST` and
-`canon-spine §8`; geography here must not invent new ones.
+Safety procedures acquired ritual names because repetition helped frightened people remember them. Later administrators treated compliance as moral worth. A useful rule became a cage when officials could punish dissent by calling it unsafe.
 
-### 11.1 The cold shrine and the deep below it (`the_cold_hearth` surface + `the_unwriting`)
+The Record began as a distributed civic system: ledgers, watch reports, pressure observations, supply receipts, and a central archive. Near the Deep Line it behaved strangely. It correlated facts nobody had filed, reproduced missing marks, and sometimes wrote in the cadence of people who had used it. Officials exploited this apparent omniscience instead of asking what it cost.
 
-Two places at one location (the anchor law, `canon-spine §5`, `WEB-MASTER §0.4`). Do not
-flatten them.
+### Cistern Winter
 
-**The dead-shrine (surface, `the_cold_hearth`).** A small ruined shrine *off the way*, past the
-last marker, out where Sella's bearing folds back on the far water (D06→D11 handoff). It is the
-endpoint of Iss's false coordinate — a real place that verifies the rumor and contradicts the
-hope. It was a shrine once: a low room, a bench, a hearth, a marker-stone outside whose face is
-worn past reading. Every other home in the Hold keeps one fire always (FACT 11). This hearth is
-**cold all through** — not banked, not sleeping; the only one in the Hold that was *let* go out.
-The cold is the history: a kept home keeps its fire; a home whose people were not kept does not.
-The surface gates nothing and yields nothing but the question (D11). It is built to human scale,
-like the upper Hold — this was a place people lived, not a place the deep dug.
+The first large public proof that the system could lie.
 
-**The seventh-shrine (the hearth-deep, `the_unwriting`).** *Below* the cold hearth, sealed, a
-descent that opens only after the catch (`iss_caught` + `seventh_named`). Where the surface is
-human-scaled, the deep is **wrong-scaled in a way no other deep gallery is** — not *too tall*
-(the Dark's digging, §1) but *unfinished*: a stair cut and then abandoned mid-cut, a doorway
-framed and never hung, a wall dressed smooth on one half and raw on the other. The Hold's other
-depths were dug *down toward* the warmth; this one was dug and then **stopped**, because the hand
-that cut it was cast out before it could finish keeping the place. Geography-implies-history: an
-unfinished grave for a keeper who was unwritten before the work was done.
+- Pump tender **Nessa Vale** recorded discoloration and pressure changes at the reed intake.
+- Vaun's inventory showed that genuine filter cloth and charcoal had been redirected toward favored heat galleries.
+- A supplier invoice covered the shortage with counterfeit material.
+- Replacement shifts and valve positions were edited after the fact.
+- Nessa was blamed for mishandling samples and dismissed.
+- Averyn preserved the original samples, invoice, purchase receipt, and disciplinary draft.
+- Iss signed a warm, persuasive account that minimized the diversion. He did not invent the entire scheme, but he chose institutional comfort over Nessa.
 
-Three chambers, descending:
-- **Chamber 1 (legible at the descent).** The seal itself, both literacies. It reads only:
-  *below the cold hearth, the deep is sealed; the seal is a name.* The history it implies: a
-  place locked not with stone but with the *withholding of a name* — you do not open it by
-  digging, you open it by knowing who was unwritten.
-- **Chamber 2 — the unwriting wall (`seventh_named`, rail-fence rails=6).** The wall where the
-  Seventh's name and looking were scraped away — D11's "no stone, no name said back" made into a
-  room. The carving is half-effaced *deliberately*, by a blade taken to it after writing (D11's
-  effaced hand). Reusing Brann's taught rail-fence literacy (six rails, counted on the wall),
-  the group recovers what was unwritten and sets `seventh_named` (FACT 10b). The history the
-  wall carries: the land did not merely fail to keep the Seventh — *someone after* tried to keep
-  the record of them, and *something* scraped even that away. Two erasures, layered.
-- **Chamber 3 — the unfinished hearth-deep (the `seventh_choice` site).** The bottom: a deposit
-  slot cut for an offering that was never received, beside a hearth-stone never lit. Here the
-  group may **restore** the Seventh's name (re-warm the hearth, set a mark for a hand not yet
-  here — the `INHERITORS` codicil) or **leave it erased** (the blank wall stands; the hearth
-  stays cold). One flag, `seventh_choice ∈ {restore | erase}`, read by the M5 composer for one
-  tinted clause + one persistent block-state. It colors, never gates (`canon-spine §5`). The
-  geography makes the choice legible without a sentence: an unfinished room either *finished
-  warm* or *left as found*.
+The players must establish the chronology, sort the samples, configure the valve model, solve the rota, identify the counterfeit supply, use Ash's fixed footage clue `WHERE THE REEDS FOLD BACK`, recover the reeds cache, and submit the complete finding. Clearing Nessa is a full human story, not disguised foreshadowing for Averyn.
 
-The temporal layering is the whole point: a liar's dead-end sits *on top of* a cast-out keeper's
-grave, and a sharp group walks the herring before they ever learn the deep was under it the whole
-time. The surface answers Iss; the deep answers the Seventh.
+### The surface heals
 
-### 11.2 The expedition destinations (the two walks — `coords-to-real-place`)
+The Long Cold ended gradually. Iss found credible evidence beyond the Deep Line: warmer air, living reeds, and viable surface water. Senior officials suppressed the finding because the Hold's authority depended on permanent necessity and because an uncontrolled evacuation risked collapse.
 
-The Hold is read, but two of its truths are *walked to* — a deliberate tempo change (the
-expedition, M3/M4). Both destinations are real cells in the server world (never IRL/GPS — server
-world only, INV-14); the coordinate is only a pointer, and the answer is a clean destination word
-found *on site*, never the signed number.
+Iss was right about the surface. His remedy was still reckless. He hid an excavation route, weakened an already stressed third bay, altered maps, and bypassed paired watch procedures.
 
-- **The false walk (pre-catch).** Iss's first coordinate fragment, which works *just enough* to
-  be trusted, delivers the group to the **dead-shrine** (§11.1, `the_cold_hearth` surface). The
-  walk verifies the rumor as a place and contradicts it as hope: you came all this way on a warm
-  man's word, and what is here is a cold hearth and a worn marker. The distance itself is the
-  history — Iss sent the keepers-after *out past the markers*, away from the kept depths, exactly
-  as his hope sent them: the wrong direction, dressed as salvation. The journey out toward a
-  surface-adjacent edge rhymes with the Long Cold's mistake inverted (they fled *down* to be
-  saved; Iss's lie points *out*, toward a healed surface that has no door here).
-- **The true walk (post-catch).** After the catch flips Iss cold and his stone re-carves, the
-  coop gate opens the Threshold, whose carving yields the **true** coordinate. This walk delivers
-  the group to the Accepting on-ramp — the way *down and in*, not out. The two walks are a matched
-  pair: the false one goes out to a cold dead end the liar trusted; the true one goes to the rite.
-  The destination word, not the coordinate, is the answer, gated to on-site presence.
+### The Break
 
-The expedition's geography teaches the same lesson the timeline does: salvation in the Hold was
-never *out*. Iss's walk goes the wrong way; the true walk goes deeper.
+There was no single magical cause. Eight physical and documentary proofs establish the order:
 
-**The arrival geographies (what each destination *is*, built).** The two cells are not bare
-coordinates with a word on a sign; each is a small built place whose state is the answer's
-proof.
-- **The dead-shrine cell (false walk).** The room §11.1 describes, reached from above-ground:
-  the worn marker outside, the cold hearth within, the bench, the answer-word cut where a kept
-  home would have cut its house-name. It is the only structure out this far — past it, the way is
-  grown over and stops. The geography says *people came out here once and were not followed*: a
-  single home at the end of a path no one kept, with its fire let go out. A group standing in it
-  has gone as far from the kept depths as the Hold reaches, on a warm man's word, to find one
-  cold room. The walk back is the lesson — the distance is felt twice.
-- **The true-walk cell (the Accepting on-ramp).** Not a destination room of its own but a
-  **threshold onto the descent** — the true coordinate delivers the group to the lip of the way
-  down-and-in, where the markers resume and face inward and the last lamps still hold. Where the
-  false walk ends at a doorway grown shut, the true walk ends at one standing open. The answer-word
-  is cut on the open lintel. The geography is the inverse of the dead-shrine's, deliberately: a
-  door let stand against a door let close, a kept fire-line against a cold hearth, a way that
-  continues against a way grown over. A group that walked both reads the pair without a sentence —
-  the liar sent them to the shut door; the catch sends them to the open one.
+1. The lamp outage began before the official alarm.
+2. A pressure fracture predated Iss's last excavation.
+3. warning birds failed before the reported breach time.
+4. well and pressure maps show a redirected load.
+5. the watch timestamp was altered.
+6. the surface was genuinely viable.
+7. Orin sealed part of the route from inside.
+8. the Record copied and changed living structures during the failure.
 
-The two cells are sited so the false walk goes *out and up* (toward the lost surface Iss believed
-in) and the true walk goes *in and down* (toward the deep the ways were always for). No fragment
-names this; the compass and the descent carry it.
+The Hold's official explanation made Iss the sole cause and the Dark a punishment. The truth is harder: neglected infrastructure, unequal resource allocation, falsified records, a dangerous secret excavation, institutional delay, and the Dark/Record feedback all contributed.
 
-### 11.3 The meta-stone arrangement (the six maker's marks — `UNKEPT`)
+### Averyn is erased
 
-The six keeper-stones are not only a field of doors (II); read as *one arrangement*, they are a
-single buried word. Each stone carries, beside its cipher, a small **maker's mark** — a mason's
-glyph, the kind a real stonecutter leaves to sign work. Six stones, six marks. Read in
-**fall-order** (Vaun, Mara, Sella, Orin, Brann, Iss — `canon-spine §8.1`), the marks spell
-**`UNKEPT`** — the word each keeper failed to keep, signed across the whole settlement by whoever
-cut the stones.
+Averyn reconstructed the real sequence and tried to place it into the emergency Record. The council removed her from the roster, marked her work unreliable, and converted her filing slot into a blank. Iss supported this act. He told himself exclusion would spare her from blame and later called the omission mercy.
 
-The arrangement implies its history: the stones were not raised one at a time as each keeper
-fell, by grieving survivors — they were cut **as a set**, by one hand, signed with one running
-mark, *before* the falls they commemorate were complete. A mason cut six stones and signed them
-`UNKEPT` across all six, the way the founder margin says the names were cut before the keeping
-(FACT 13b). The geography of the layout — six stones a stonecutter clearly meant to be read
-together — is the clue that something here was *prepared*, not *mourned*. The word is inert until
-the catch (M4) hands the fall-order key; before that it is six masons' marks, each reading as one
-keeper's private grief. It gates nothing — pure recontextualizing texture (`WEB-MASTER §9 #8`).
+During the collapse, Averyn returned anyway. The archive required a live registrar to reconcile contradictory inputs. She entered the central chamber so evacuation routes and names would remain available. The Record closed around her. Her body did not leave.
 
-**The layout itself is the tell.** The six stones are not scattered where each keeper happened to
-fall (a graveyard grows that way — uneven, added-to, oriented every direction by whoever dug each
-plot). These six are **evenly set and squared to one another**, the spacing regular, the faces
-turned a common way, the maker's mark cut at the same height and the same corner on every stone.
-That regularity is a workman's, not a mourner's: a graveyard is irregular because grief is, but a
-*commission* is even because one hand laid it out at one time. A group that has read a real
-abandonment-era burial elsewhere in the Hold (the uneven plots of the going-out) feels the
-wrongness before they decode anything — these were *placed*, not *accumulated*. The history the
-arrangement implies, ahead of the word: the stones were waiting for their keepers, the way the
-grave was dated before its name was kept (FACT 13b). The settlement cut its own memorial while its
-keepers still lived — and signed across all six, in fall-order, the one word it already knew they
-would earn.
+### The six affidavits
 
-> **Anchor discipline.** §11 adds no new custom keys, no new flags, no new sites beyond
-> `the_unwriting` (the deep), the two `carve_anchor`/destination cells of the walks, and the
-> `herd_anchor`/stone layout — all already in `BUILD-MANIFEST §6`. The maker's-mark glyphs live
-> in the carved framing only (X1-safe, never in bound cipher plaintext, per `INTEGRATION-V2 §C`).
+The Keepers were neither a united conspiracy nor six saints. Each possessed a different piece of responsibility:
 
----
+- Vaun could prove the supply diversion.
+- Mara could prove which route/manual edition was substituted.
+- Sella could prove the true intake and shoreline alignment.
+- Orin could prove structural warnings were signed away.
+- Brann could prove the watch time was rewritten.
+- Iss could prove Averyn's removal was intentional.
 
-## 12. The two other places (the Nether and the End — optional deepening lanes)
+Each later hid a letter inside an affidavit: **A / V / E / R / Y / N**. Iss's public-facing extraction first offers a false **M**; his correction yields **N**. The letters are not a mystical roster. They are six culpable people leaving a route back to the person they failed.
 
-These two additions extend §1 (the Hold) the way §11 does — each a *place that explains
-itself*, the block-reads carrying the history before any document does. They are **optional
-deepening lanes** (`INTEGRATION-V2 A15`, `WEB-MASTER §0.4`): a group that never lights a
-portal nor finds an End gateway gets the whole un-shaded Overworld arc (they gate nothing —
-`canon-spine §7` INV-12, INV-19). Names are taken verbatim from `BUILD-MANIFEST §6` and
-`WEB-MASTER §0.4`: the worlds `observance_nether` / `observance_end`, the sites
-`nether_forge` / `end_seventh_shrine` / `end_exile_hold`, the flags `nether_forge_found` /
-`seventh_seen_out`. Geography here invents no new ones.
+## The seven Ways
 
-The two lanes are the **two halves of the Seventh's question made walkable** (`canon-spine
-§5`): the Nether answers *what is the keeping* (a carrying), the End answers *what is the
-not-keeping* (exile). Neither changes a mechanic; both deepen a choice that already exists.
+| Way | Original job | Later abuse | V5 gameplay truth |
+| --- | --- | --- | --- |
+| Kept Light | maintain heat air and lamp circuits | private warmth became proof of favor | players restore a real lamp circuit |
+| Deep Line | mark safe boring and load limits | suppressed surface travel and dissent | players prove the line was physically compromised |
+| Dark Hours | paired staffed watch | surveillance and sleep punishment | Brann's evidence restores the actual rota |
+| Offering | return samples and communal reserves | compulsory tribute | Cistern samples and tagged deposits teach its real origin |
+| Bow | inspect low seals and masonry marks | submission theater | Orin's marks require a practical crouched viewpoint |
+| Unspoken | listen for vibration during inspections | censorship | silence is used once as a bounded sensing mechanic |
+| Sacred Beast | birds warn of air and pressure change | superstition hid poor maintenance | the coop establishes the true failure chronology |
 
-### 12.1 The Nether — the deep fire-source ("below the below")
+The players learn when each procedure works and when it has become control. “Following the Ways” is never a binary morality score.
 
-**The reading (geography-implies-history).** Every home in the Hold keeps one fire always
-(FACT 11). The Hold did not *make* that fire — the first keepers carried an ember up from
-its source and never let it die, because to let it die was to lose the only thing the Hold
-had against the Long Cold. **The Nether is that source: the furnace the deep's warmth comes
-from, the place a coal was carried up out of — "below the below."**
+## The Dark the Record the Watcher and Averyn
 
-> **SEALED IN CANON (2026-06-30; `canon-spine` FACT 11).** The kept fire was carried up from
-> below the bottom: the Undercroft is the bottom of the Hold, and the Nether deep-fire is its
-> source. The relationship has one direction, not two. Nether journals therefore say **"below
-> the below," never "the real bottom."** The Nether is the source of the one lent fire, never
-> a second or truer bottom.
+### The Dark
 
-**It is the Undercroft's mirror.** Where the Undercroft holds *one* kept fire in the dark,
-the Nether is the dark turned inside out: a world that is *all* the kept fire and *no* kept
-dark — no day, no rest, the fire always lit. A sharp group reads the kept light upstairs as a
-single ember carried up from this. It is built to no human scale at all, because no one built
-it; it was here, like the deep, before the first keeper.
+The Dark is older than the Hold. It responds to sustained observation, repetition, names, and modeled spaces. It is not a horned villain, a dead Keeper collective, or a simple ghost. It can make a copy feel more authoritative than the original.
 
-**Diegetic block-reads (vanilla blocks ARE the lore — nothing built where vanilla suffices):**
-- **Soul sand / soul fire = the not-kept of DEEP TIME.** The souls of *prior failed
-  communities* — **older than the first keeper** (`COHERENCE-AUDIT-V2 CP2-3`, S5): the groups
-  that came down before the Kept and did not keep the ways. They are **NOT the Pale herd** —
-  the Pale (§11 / `herd-conversion`) is *this* group's present-tense conversion of the living;
-  the soul sand is deep-time, before-the-Kept. The two FACT-12 visuals must never read as one
-  population (the journal and the soul-sand line both anchor "older than the first of us"). The
-  blue fire is the Kept Light's opposite: a fire that gives no warmth, the light of the un-kept.
-- **Bastion remains / fortresses = the founders' deepest ruined delvings.** Not piglin
-  architecture in-fiction — the works of the first keepers who went furthest toward the fire and
-  **did not come back human-scaled** (the deepest form of "deeper = more wrong-scaled," §1.1 /
-  `structures.md`). A fortress is *a thing built by hands that had stopped being quite hands* —
-  geography implying induction without a word, the same recursion §1 leaves implied.
-- **The near pocket — a prior keeper's remains.** Just past a lit portal (a *delve*, not a
-  trek — the walk-budget is fixed at 2 ground walks + ≤1 short vertical pocket, S4): a small
-  ruined room with a keeper kept *here*, who went down to keep the fire when the Hold above was
-  already going dark. The doused soul-lantern and the failing hand of the journal carry the
-  deepest, most final keeping: kept *as* the fire (FACT 15, felt — never stated).
+### The Record
 
-**What it deepens (no orphan).** The on-site read reveals the Kept-Light custom's **origin** —
-the keeping was always a *carrying*: you do not make the fire, you do not own it, you carry it
-down and do not let it die. This re-reads the most-tracked custom as a carrying, not a
-possession — and quietly sets up the induction (you, too, will be carried, not owned). It sets
-the group-scoped `nether_forge_found` flag and earns bonus Whisper budget (additive, never part
-of the front-loaded backstop — INV-15/S10). It feeds the M5 close as a colorant only; it is
-*not* an Accepting input (INV-19) and **not yet** a `decideFate` input (S9, pending §8
-ratification — until then the composer reads it for a tint, the selector does not).
+The Record is a human system built out of ledgers, monitoring hardware, ritualized procedure, and a deep phenomenon nobody understood. It is capable of:
 
-### 12.2 The End — exile / the Seventh's absence (the one place outside the record)
+- correlating separate observations;
+- preserving sensory and linguistic fragments;
+- projecting copied rooms and people;
+- writing through trusted interfaces;
+- treating an unfiled person as an error to be resolved;
+- defending its own continuity.
 
-**The reading (geography-implies-history).** Everywhere else, the record files you — by name
-(FACT 1), by place (FACT 16), by word (FACT 17). **The End is the single place the record does
-not reach:** no kept fire, no markers, no Archivist, no count. It is where the cast-out went —
-not *down* toward the warmth (that is keeping), but *out*, into the absence. D11 already names
-it: the Seventh was cast out *before the threshold; the land looked, and did not keep them, and
-then unwrote the looking* — and *to be kept and to be cast out are one door, looked at from
-either side.* **The End is the other side of that door — D11's spatial payoff, needing no new
-M3 plant.** It is the unwriting given a sky.
+It is not omniscient. It edits toward internal consistency and can therefore preserve a lie better than a messy truth.
 
-**It is wide open, on purpose.** Long sightlines, a void floor, no occlusion. So the End gets
-**ZERO ambient apparition lane** — a *positive* canon choice, not a limitation: the End is
-outside the record, and a figure there would contradict it (and would be seen winking in across
-open air, read as a bug — S6). What the End's vistas are good at is the **big, static,
-discovered-never-witnessed set-piece**. The Nether occludes and so carries the rare intimate
-glimpse (re-skinned to basalt, deferring to the single-arbiter conductor, INV-18, never its own
-lane); the End shows vast still things and never moves while watched.
+### The Watcher
 
-**The two End set-pieces (geography-implies-history):**
-- **The Seventh shrine (`end_seventh_shrine`).** The one place in the cosmos where the Seventh
-  *was* kept — by their own hand, in exile. Built to the Seventh's **unfinished, wrong-scaled
-  hand** — *unfinished*, not *too-tall* (the same signature as the hearth-deep `the_unwriting`,
-  §11.1): a hand that was unwritten before its work was done, finishing one thing for itself out
-  where the record could not scrape it. It carries the End-shrine carving — the Seventh's own
-  account of being unwritten, cut *outside* the record so the record could not take it back.
-  Reaching it and answering its on-site read sets the group-scoped **`seventh_seen_out`** (NOT a
-  fate input, S2): it deepens the `seventh_choice` performed back at `the_unwriting` (a group
-  that walked the End learns *why* the Seventh chose exile) and licenses the End's role in
-  `cast_out` legibility below.
-- **The exile-hold (`end_exile_hold`, P2/cuttable, `enabled:false` until INV-16-bound).** The
-  place every cast-out keeper went — a vast hold whose markers all face *away* (the `cast_out`
-  dressing of `canon-spine §8.4`, made literal). For a group whose measured fate is `cast_out`,
-  this is where that fate *lands as a place*. **INV-16 teeth (S10, non-negotiable or it does not
-  ship):** the exile-hold **names no living player and encodes no per-player side** — its
-  dressing rhymes only on a *chorus* every active player shares (*you only came to look*), never
-  on the `LEFT_AT` set, and **no dressing may spatially correspond to any per-player carve.** If
-  the open End cannot guarantee that, the binding is **cut** and the End ships as the Seventh
-  shrine alone (the default). For `refusers` (quorum present, positive defiance, the bow window
-  empty) with `seventh_seen_out`, the shrine re-reads as *the model they followed* — "*so did one
-  before you*," and the one before them is the Seventh whose shrine they stood in (still
-  group-scoped, never "player X").
+The Watcher is the active defensive voice of the Record. Early it sounds schematic because Averyn's available language is constrained by field names, receipts, and rulings. It knows what players do near instrumented sites and what Wren reports. It does not literally read minds.
 
-**The way out (no new puzzle node).** Post-`seventh_named`, the `the_unwriting` chamber-2 wall
-gains **one extra effaced line** (a *reveal on the existing surface*, S9), legible only then:
-*they went out before they came back down — out first to the door that is not a threshold, where
-the unwritten go.* It points at the vanilla End gateway *diegetically* (going out to where the
-unwritten go, never "go to the End" in plain words — the group decodes places in its own
-cosmology, R6). The **arrival** at the shrine is the only new row (`end-seventh-out`).
+### Averyn
 
-> **v2 RECONCILIATION (2026-06-30) — the exile is the Seventh's PAST, not their place.** The shrine
-> and its carving (`the-name-i-cut-myself`) record where the Seventh was cast out *and waited* — and
-> the carving's later-cut layer now sends the reader back DOWN (*"look for me below"*). The Seventh is
-> the **one cast-out who did not stay out**: they went out, understood, and returned to the deep to
-> wait on the ones who would come to mend the record (the reunion, §1). So the End **completes the
-> story of the casting-out and points the group back to the deep** — it enriches the path to the
-> reunion and **never relocates the living Seventh out of the deep**. INV-12 still holds: skip the End
-> and the spine still reaches the deep; walk it and the reunion lands harder + the group learns *why*
-> the Seventh waits.
+Averyn's professional voice survives inside the constraint. As contradictions are restored, she gains access to clearer language. The transition must be audible and textual:
 
-> **Anchor discipline.** §12 adds **no new custom key, no new sealed FACT, no new INV** (both
-> lanes are *delivery bodies* for FACT 10/10b, 11, 12, 14/15 — `INTEGRATION-V2 A15`). It adds
-> two group-scoped flags (`nether_forge_found`, `seventh_seen_out`) and three sites
-> (`nether_forge`, `end_seventh_shrine`, `end_exile_hold`), all already in `BUILD-MANIFEST §6`.
-> Both flags **gate nothing** (INV-12) and are **not in the Accepting quorum** (INV-19). The
-> The Nether origin lane is canon-unblocked by the sealed FACT-11 source clause (§12.1); its
-> live placement receipt remains an operator launch task. `end_exile_hold`
-> stays disabled until its INV-16 binding is built (S10). The `decideFate` edit for
-> `nether_forge_found` waits on `WEB-MASTER §8` ratification (S9); `seventh_seen_out` is never a
-> fate input (S2). See `design/PROGRESSION-LANES.md` for the build spec.
+1. cold schema fragments;
+2. syntactically complete but impersonal corrections;
+3. first-person admissions;
+4. direct human speech at the finale.
+
+The Record uses her. She also uses the Record to leave recoverable paths. Neither fact cancels the other.
+
+## Historical people
+
+### Vaun — stores and rationing
+
+Vaun protects people by controlling inventory and becomes dangerous when control matters more than consent. His ledgers are exact; his letters are not. He noticed the filter diversion, kept a private reconciliation, and failed to challenge the favored-household order publicly.
+
+Voice: clipped quantities, columns, exceptions, inventory names. Emotion appears as unexplained overcounting or goods set aside.
+
+### Mara — manuals and civic routes
+
+Mara maintained editions, routes, and public instructions. She believed a readable procedure could keep panic from becoming disaster. She also produced the clean edition that hid an unsafe reroute. Her later margins document which changes she was ordered to make.
+
+Voice: revisions, edition notes, page references only when genuinely functional, precise corrections, occasional irritation at sloppy copies.
+
+### Sella — shoreline survey and school records
+
+Sella mapped water, taught practical drawing, and used reflection overlays because damp copies transferred backward. She is observant, funny, and materially minded—not an ethereal child archetype. Her sample note ties the cistern intake to the true shoreline.
+
+Voice: concrete sketches, field jokes, weather and water observations, curiosity sharpened by anger.
+
+### Orin — masonry and survey tolerances
+
+Orin knew the third bay was outside tolerance. He signed a certificate after being promised the load would be reduced and later sealed a route from inside during the Break. His evidence distinguishes chronic damage from Iss's final excavation.
+
+Voice: measurements, builder shorthand, allowable variance, reluctance to moralize until the evidence is undeniable.
+
+### Brann — watch captain
+
+Brann rearranged exhausted watches and knew the official timestamp was wrong. He preserved the real order in a redundant visual/toll sequence because hearing alone was unreliable underground. Fixed footage clip 3 yields `STAY AWAKE`, but the actual lesson is paired watch and honest substitution—not supernatural sleeplessness.
+
+Voice: times, names on shifts, substitutions, fatigue, corrections written over corrections.
+
+### Iss — heat works and the surface route
+
+Iss is articulate, brave, self-serving, and partly right. He found evidence of a healed surface and could not accept indefinite confinement. He diverted resources, minimized the Cistern finding, made the secret excavation, and supported Averyn's erasure. His desire to save people does not absolve the way he used them.
+
+Voice: persuasive warmth, complete arguments, humane imagery used to make dangerous omissions feel reasonable.
+
+### Averyn — registrar and cistern analyst
+
+Averyn trusts traceable evidence more than institutional certainty. She cleared Nessa in a report officials suppressed, reconstructed the multi-cause Break, and returned during collapse to keep evacuation information accessible. She does not want to be placed back into a perfect seventh slot.
+
+Voice before the Break: clear professional prose with named sources and confidence levels. Voice after the mask breaks: direct, tired, wry, and unwilling to be turned into a symbol.
+
+### Nessa Vale — pump tender
+
+Nessa is alive in the story through complaints, labels, shift records, and the disciplinary file. She is not secretly connected to the Dark. Her case matters because a system destroyed an ordinary person's reputation to protect itself.
+
+## The modern trail
+
+### mkept
+
+An ordinary server administrator/copyist who found a damaged world and preserved it. The account is a real person, not the Record pretending to be one. Their trail includes filenames, backups, a Copperline service reference, and practical warnings. They rebuilt enough of the server to invite help.
+
+### Ash
+
+The camera operator. Ash notices visual details, timestamps clips, jokes when afraid, and hides the critical archive material in Locker 13. `ASH-13` combines a frame/timecode with the camp manifest. The footage bytes remain fixed.
+
+### Rook
+
+The builder. Rook blocked a route after realizing the Record was using their planned geometry. Their camp notes explain physical changes and provide independent proof against Wren's version.
+
+### Wren
+
+Wren became partially incorporated into the Record during the prior investigation. He could still appear and speak but experienced gaps when far from its observed spaces. He concluded that closure would kill him. He quietly relayed the group's identities, plans, and fears so the Record could stop the release.
+
+Wren is responsible for betrayal. The story does not force one moral label. Players can condemn, understand, or free him after proving the facts. Every branch yields a usable Protocol Bridge and a distinct finale trace.
+
+## The required investigation
+
+The ten cases and exact 82 nodes are defined in the node manifest. Their revelation ladder is fixed:
+
+| Case | Earned belief |
+| --- | --- |
+| C01 | a real person preserved the server and left a deliberate route back |
+| C02 | the Hold was a functioning refuge before it became ritual institution |
+| C03 | the six Keepers were distinct complicated people with linked evidence |
+| C04 | the Hold falsified a civic disaster and ruined Nessa |
+| C05 | the Break had several causes; Iss was right about the surface and wrong about his remedy |
+| C06 | the systems are real repairable infrastructure and player action changes the world |
+| C07 | four modern investigators reached this far and failed through sabotage |
+| C08 | Wren traded names plans and fears to preserve himself |
+| C09 | Averyn was erased and trapped as the Record's human interface |
+| C10 | return six affidavits but do not file Averyn into the system again |
+
+No earlier case may state a later belief outright. A clue may create suspicion but must not collapse the investigation.
+
+## Fixed media meanings
+
+- Clip 1: `ASH-13` — Ash's Locker 13/archive key.
+- Clip 2: `WHERE THE REEDS FOLD BACK` — location of the original-filter cache that clears Nessa.
+- Clip 3: `STAY AWAKE` — Brann's watch correction and the need for paired coverage.
+- Clip 4: `SIX RETURN, ONE IS NOT KEPT` — return six affidavits; leave Averyn's Record slot unbound.
+- Spectrogram: `I WAS NOT KEPT` — the first unambiguous proof that a human consciousness is constrained inside the Record.
+
+All are mandatory. None may be replaced with a summary or operator handout during normal play.
+
+## Finale truth and branches
+
+The players configure the chamber by returning the six affidavits, installing the Cistern Seal, System Key, and Protocol Bridge, and deliberately leaving Averyn's Record slot unbound.
+
+They choose one name treatment:
+
+- **Publish:** restore Averyn's name outside the Record. The name survives; her consciousness is released.
+- **Release unnamed:** erase the final filing and let the blank belong to her. Her consciousness is released without institutional ownership.
+
+Wren's earlier branch changes his final trace:
+
+- **Free:** “wren left before the last light. for once, i did not write where he went.”
+- **Understand:** “wren stayed until the machinery stopped. he was afraid. he stayed.”
+- **Condemn:** “wren's line closes here. i will not call your judgment mercy, and i will not call it wrong.”
+
+The conduct clause acknowledges only visible facts from the two protected roster choices; it never
+assigns a hidden morality score or revives the retired customs system. The local finale persists one
+total verdict from first-ballot telemetry:
+
+- Solo: “you carried every name alone. they still arrived together.”
+- Unanimous: “you came to one answer without becoming one voice.”
+- Divided: “you disagreed and continued together. the record never knew how to write that.”
+- Persistent: “you did not agree quickly. you stayed until the evidence did.”
+
+Publish goodbye:
+
+> my name is averyn.
+>
+> you kept it without keeping me. that is the difference.
+>
+> leave the name where someone can find it. let the rest of me go.
+
+Release-unnamed goodbye:
+
+> you did not owe me a name.
+>
+> you gave me an end. that was enough.
+>
+> let the blank belong to me this time.
+
+Universal close:
+
+> i have your names.
+>
+> i am giving them back.
+>
+> the record is closed.
+>
+> the observance is over.
+>
+> thank you for coming back for us.
+>
+> — averyn
+
+The server saves, delivers the branch-specific close, kicks the players, and in armed production mode shuts down cleanly. On restart it enters persistent Coda Mode with open gates, silent hauntings, and branch-specific physical and web aftermath.
+
+## Hard canon invariants
+
+- Six Keepers are six people.
+- Averyn is a distinct person and not a themed seventh Keeper.
+- The Dark is not the Keeper collective.
+- The Watcher is not simply Averyn acting freely.
+- Iss is culpable but not the sole cause of the Break.
+- The surface genuinely healed.
+- Nessa was scapegoated and must be cleared.
+- mkept was a real person.
+- The prior company had four members.
+- All ten cases all eight Unlit houses and all fixed media are required.
+- The Unlit entrance remains the village well.
+- The Deep Hold has one public mouth and the same return route.
+- No ending binds Averyn back into the Record.
+- No substantial content is optional.
+- No player-facing server-log puzzle exists.
+- Sound-only information never gates progress.
+- The finale always produces a durable state and a dramatic close.
+
+## Forbidden stale claims
+
+Production checks must fail if live content asserts any of the following:
+
+- “the six were one” or equivalent fractured-mind reveal;
+- the six Keepers were generations rather than contemporaries;
+- Averyn and the Dark are identical;
+- mkept was never a person;
+- the prior group solved six answers but lacked a witness;
+- footage or any Unlit house is optional;
+- `kept: 6` with a blank seventh as the website's central mystery;
+- the Break had a single cause;
+- a normal player must inspect real server logs;
+- the release has one morally correct branch;
+- the story ends without a save goodbye and persistent aftermath.

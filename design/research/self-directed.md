@@ -1,5 +1,7 @@
 # Self-Directed Research — Personalization, Small-Group Mystery, Cross-Surface, Stego, Consent, Resilience, Payoffs
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Any project-specific recommendation below is superseded by the V5 manifests and runbooks.
+
 **Lane:** self-directed. **For:** The Observance (server-side Minecraft ARG, Paper 1.21.x + Discord bot + Supabase/Vercel dashboard, veteran friend group, Path A = one auto-pushed resource pack). North star: *"From The Fog, but it knows your name."*
 
 This note is the **psychology + systems-design companion** to the existing corpus (`ARG-RESEARCH.md`, `research/arg-craft.md`, `research/mc-arg-genre.md`). Those cover environmental-storytelling technique, the genre's authored rules, and the Minecraft realization layer. This note deliberately does **not** repeat them. It chases the eight self-directed threads: (1) making "it knows me" uncanny not invasive; (2) what changes for a *small known group*; (3) hint/rescue + dynamic difficulty; (4) cross-surface integration & pitfalls; (5) steganography that survives Discord; (6) consent/care-ethics for profiling friends; (7) arc resilience to erratic play; (8) seeding payoffs that actually get noticed.

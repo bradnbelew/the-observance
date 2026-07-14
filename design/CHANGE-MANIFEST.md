@@ -1,5 +1,9 @@
 # THE OBSERVANCE — CHANGE MANIFEST (pass 1 of the fold)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE FOR SETUP, STORY, OR RUNTIME.** This is change history only; current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE FOR SETUP, STORY, OR RUNTIME.** This is change history only; current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
 > **CURRENT STATUS OVERRIDE — 2026-07-13.** This file is implementation history. Phrases such as
 > "not yet wired" below describe the pass in which they were written, not the current release.
 > The integrated runtime/DB paths, V4 Deep Hold, physical gates, content surfaces, Keeper/Wren paths,

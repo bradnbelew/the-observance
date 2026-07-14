@@ -1,5 +1,7 @@
 # gather-events — the four GROUP summons-night sequences
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT INTEGRATE THESE EVENTS OR VOICE KEYS.** Current group rites are exact V5 predicates.
+
 > **DRAFT / DESIGN ONLY.** Authoring file, not a live seed. Nothing here edits the
 > plugin, `voice.ts`, the migrations, or `puzzles_seed.sql` — the voice keys and the
 > beat-payloads below get integrated **under the build guards afterward** (the keys go

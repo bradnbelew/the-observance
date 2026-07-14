@@ -1,5 +1,7 @@
 # THE OBSERVANCE - MANUAL MEDIA STAGING RECEIPT
 
+> **SUPERSEDED PRE-V5 ARCHIVE — NOT A CURRENT MEDIA RECEIPT.** Use `design/V5-EXTERNAL-MEDIA-RECEIPT.md` and the dated V5 rehearsal receipt.
+
 Date recorded: 2026-07-08
 
 This file records production, hosting, and gate state for the manual media artifacts. Hosted does not mean launch-live: each artifact still stays behind its matching readiness flag until the operator flips it intentionally at the right story gate.

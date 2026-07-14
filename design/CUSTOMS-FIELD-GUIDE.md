@@ -1,5 +1,7 @@
 # The Observance - Customs Field Guide
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** The former seven-Ways puzzle system is not V5 progression; use `design/ARG-V5-NODE-MANIFEST.csv`.
+
 This is the source-of-truth guide for the seven ways. It exists because the
 customs cannot be decoration. Each one must give players something to compare,
 remember, test, or use later.

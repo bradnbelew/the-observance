@@ -1,5 +1,7 @@
 # RESHAPE RESEARCH — the full cited evidence base
 
+> **SUPERSEDED PRE-V5 RESEARCH ARCHIVE — NOT A PRODUCTION AUTHORITY.** It may explain past decisions but cannot override a V5 manifest.
+
 > 2026-07-02. The complete deep-research corpus behind `THE-RESHAPE.md`. ~15 shipped games + the ARG canon
 > + insight psychology + tabletop clue theory + a verified Minecraft-affordances inventory, all
 > web-sourced and cited. This is the LIBRARY; `THE-RESHAPE.md` is the PLAN. Preserved here so the reshape

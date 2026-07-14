@@ -5,9 +5,11 @@ param(
 $ErrorActionPreference = "Stop"
 
 function Assert-WithinRepo([string]$Path, [string]$RepoRoot) {
-  $repoFull = [System.IO.Path]::GetFullPath($RepoRoot)
+  $repoFull = [System.IO.Path]::GetFullPath($RepoRoot).TrimEnd('\', '/')
   $pathFull = [System.IO.Path]::GetFullPath($Path)
-  if (!$pathFull.StartsWith($repoFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+  $prefix = $repoFull + [System.IO.Path]::DirectorySeparatorChar
+  if (!$pathFull.Equals($repoFull, [System.StringComparison]::OrdinalIgnoreCase) -and
+      !$pathFull.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
     throw "Refusing to write outside repo: $pathFull"
   }
 }
@@ -17,9 +19,11 @@ function Write-PackZip([string]$SourceDir, [string]$ZipPath, [string]$Label) {
     throw "$Label source missing pack.mcmeta: $SourceDir"
   }
   Assert-WithinRepo $ZipPath $RepoRoot
-  if (Test-Path $ZipPath) {
-    Remove-Item -LiteralPath $ZipPath -Force
-  }
+  $zipFull = [System.IO.Path]::GetFullPath($ZipPath)
+  $zipParent = Split-Path -Parent $zipFull
+  New-Item -ItemType Directory -Force -Path $zipParent | Out-Null
+  $tempZip = Join-Path $zipParent ("." + [System.IO.Path]::GetFileName($zipFull) + "." + [Guid]::NewGuid().ToString("N") + ".tmp")
+  Assert-WithinRepo $tempZip $RepoRoot
   $files = [System.Collections.Generic.List[System.IO.FileInfo]]::new()
   foreach ($name in @("pack.mcmeta", "pack.png", "assets", "data")) {
     $path = Join-Path $SourceDir $name
@@ -41,7 +45,7 @@ function Write-PackZip([string]$SourceDir, [string]$ZipPath, [string]$Label) {
   Add-Type -AssemblyName System.IO.Compression.FileSystem
   $sourceFull = [System.IO.Path]::GetFullPath($SourceDir).TrimEnd('\', '/')
   $fixedTimestamp = [System.DateTimeOffset]::new(2026, 1, 1, 0, 0, 0, [System.TimeSpan]::Zero)
-  $zipStream = [System.IO.File]::Open($ZipPath, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite)
+  $zipStream = [System.IO.File]::Open($tempZip, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::ReadWrite)
   try {
     $archive = [System.IO.Compression.ZipArchive]::new($zipStream, [System.IO.Compression.ZipArchiveMode]::Create, $false)
     try {
@@ -68,9 +72,33 @@ function Write-PackZip([string]$SourceDir, [string]$ZipPath, [string]$Label) {
   } finally {
     $zipStream.Dispose()
   }
-  $sha1 = (Get-FileHash -LiteralPath $ZipPath -Algorithm SHA1).Hash.ToLowerInvariant()
-  Write-Host "$Label packaged: $ZipPath"
+
+  try {
+    # Publish only a complete archive. File.Replace keeps the previous good artifact intact until
+    # the deterministic temporary zip has closed successfully.
+    if (Test-Path -LiteralPath $zipFull -PathType Leaf) {
+      $backupZip = $tempZip + ".previous"
+      [System.IO.File]::Replace($tempZip, $zipFull, $backupZip)
+      if (Test-Path -LiteralPath $backupZip -PathType Leaf) {
+        Remove-Item -LiteralPath $backupZip -Force
+      }
+    } else {
+      [System.IO.File]::Move($tempZip, $zipFull)
+    }
+  } finally {
+    if (Test-Path -LiteralPath $tempZip -PathType Leaf) {
+      Remove-Item -LiteralPath $tempZip -Force
+    }
+    if ($null -ne $backupZip -and (Test-Path -LiteralPath $backupZip -PathType Leaf)) {
+      Remove-Item -LiteralPath $backupZip -Force
+    }
+  }
+
+  $sha1 = (Get-FileHash -LiteralPath $zipFull -Algorithm SHA1).Hash.ToLowerInvariant()
+  $sha256 = (Get-FileHash -LiteralPath $zipFull -Algorithm SHA256).Hash.ToLowerInvariant()
+  Write-Host "$Label packaged: $zipFull"
   Write-Host "$Label sha1: $sha1"
+  Write-Host "$Label sha256: $sha256"
 }
 
 $datapackSource = Join-Path $RepoRoot "datapack\observance"

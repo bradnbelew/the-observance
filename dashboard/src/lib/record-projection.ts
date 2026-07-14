@@ -1,152 +1,101 @@
-// record-projection.ts — the pure, spoiler-free projection behind The Record (A13 `arg-leaves-the-game`).
-//
-// THE GAP THIS CLOSES. The Record (/record) is a PUBLIC, anon-served keepers' archive that "reads the
-// Supabase state read-only ... updates with progress" (BUILD-MANIFEST §7, INTEGRATION-V2 §A13). The
-// security model (dashboard 0001_init / 0003_lockdown) is absolute: anon can read ONLY the SECURITY
-// DEFINER spoiler-free views — never a raw table, never a sealed flag, never a player name or custom
-// label. So The Record can show only what the *in-world record* would show: a count of entries, a
-// coarse season, and whether the keeping has closed. Everything else is a redaction.
-//
-// This module is that mapping, and ONLY that mapping. It is PURE + DETERMINISTIC (no DB, no clock, no
-// LLM — there is no language to author; the redactions ARE the artifact), so the route can render it on
-// the server with no client JS and a `.selftest` can pin every redaction. The route does the I/O (reads
-// the neutral view); this decides what the keepers are allowed to have kept of it.
-//
-// THE LAWS THIS HONORS:
-//   - CROSS-SURFACE TRUTH: the Record never contradicts Minecraft/Discord. It shows a *subset* of the
-//     same truth in the same cold keeper register (lowercase, declarative, counts and stops — WEB-MASTER
-//     §6 Set-B). It never claims a state the game has not reached.
-//   - PRIVACY / PRECISION over recall: it personalizes NOTHING. No "it knows you" line lives here — the
-//     Record measures only the group's coarse progress, so it can only ever speak of the group.
-//   - REVEAL DISCIPLINE: entries un-redact in lockstep with progress (a stone read → an entry legible),
-//     never ahead of it. A redacted line is the omission/iceberg; nothing is announced before earned.
-//   - ANTI-JANK: total + side-effect-free; an absent/zero input degrades to the fully-sealed baseline
-//     (the archive a fresh world shows), never to an error or a leaked default.
-
-/**
- * The neutral, anon-readable shape the route passes in. Every field is a COARSE public signal — the
- * same things the spoiler-free views already expose (a max movement, a count, a closed-flag), NEVER a
- * sealed flag, a player, or a custom label. The SQL lane owns the `v_record` view that produces this
- * (see RETURN); until it lands the route synthesizes it from the existing neutral views, so the contract
- * is the small, deliberately-blunt set below and nothing wider.
- */
 export interface RecordSignal {
-  /** the highest movement the group has reached (1..5), coarse season only. 0/absent = not begun. */
   movement?: number | null;
-  /** how many of the six keeper-stones have been read (0..6). drives entry legibility, in lockstep. */
-  stonesRead?: number | null;
-  /** the keeping has closed (the Accepting resolved). the ONLY arc-end signal the Record may know. */
-  accepted?: boolean | null;
-  /**
-   * S-D (reward-the-theory): the keeper ids whose evidence-CLUSTER is coherent (`<keeper>_theory` locked
-   * in arc_state.flags, surfaced coarsely by v_record). When present, a keeper's fate un-redacts on its
-   * assembled THEORY — not on a single stone read. Absent/null → fall back to the stonesRead lockstep
-   * (progressive: preserves the pre-S-D behavior until the v_record theories column is deployed).
-   */
-  theories?: string[] | null;
+  phaseKey?: string | null;
+  currentCaseKey?: string | null;
+  currentCaseTitle?: string | null;
+  casesCompleted?: number | null;
+  nodesCompleted?: number | null;
+  totalNodes?: number | null;
+  closed?: boolean | null;
+  endingBranch?: string | null;
+  nameTreatment?: string | null;
+  wrenOutcome?: string | null;
 }
 
-/** A single archive entry. `legible` lines are shown plain; redacted lines render as a struck block. */
-export interface RecordEntry {
-  /** stable key for React + the selftest. never shown. */
-  id: string;
-  /** the cold keeper line, shown only when `legible`. lowercase, declarative (Set-B register). */
-  line: string;
-  /** whether the keeping has reached this entry. false → the line is withheld (a redaction). */
-  legible: boolean;
-}
-
-/** The whole projection the route renders. Nothing here is sealed; everything is a coarse public fact. */
 export interface RecordProjection {
-  /** the count of entries already kept (legible). the Record's one number — a muster, not a clock. */
-  kept: number;
-  /** the total entries in the archive (legible + withheld). */
-  total: number;
-  /** the coarse season label, cold register. */
-  season: string;
-  /** the keeping has closed. */
+  movement: number;
+  phaseKey: string;
+  currentCaseKey: string | null;
+  currentCaseTitle: string;
+  casesCompleted: number;
+  nodesCompleted: number;
+  totalNodes: number;
   closed: boolean;
-  /** the ordered archive — earned entries legible, the rest withheld. */
-  entries: RecordEntry[];
-  /** the standing footer line (always shown; states the count + that the rest is withheld). */
+  endingBranch: string | null;
+  nameTreatment: string | null;
+  wrenOutcome: string | null;
   footer: string;
 }
 
-/** Clamp an untrusted coarse signal to its valid band (defends against a malformed/early view row). */
-function clampInt(v: number | null | undefined, lo: number, hi: number): number {
-  const n = Math.trunc(Number(v));
-  if (!Number.isFinite(n)) return lo;
-  return Math.max(lo, Math.min(hi, n));
+export const REDACTED_GLYPH = '████████';
+export const OPEN_DOCKET_SUMMARY = 'Docket open. Recover and file evidence at its named surface.';
+
+export interface PublicDocketSource {
+  caseKey?: string | null;
+  title?: string | null;
+  summary?: string | null;
+  complete?: boolean | null;
+}
+
+export interface PublicDocketProjection {
+  caseKey: string | null;
+  title: string;
+  summary: string;
+  complete: boolean;
 }
 
 /**
- * The fixed archive spine. Six keeper-stone entries (un-redact one-per-stone-read, REVEAL DISCIPLINE),
- * then the closing entry (un-redacts only on `accepted`). The lines are the cold record register — they
- * state what is kept and stop; no warmth, no second person, no named feeling (WEB-MASTER §6 Set-B). They
- * are a deliberate SUBSET of the in-world record, carrying nothing the game has not already shown.
- *
- * NB: these are the keepers' OWN dead names (canon, not the living players) — the Record files the dead
- * by place; it never files a living player here (that lives in-world only; INV-16 / the privacy law).
+ * Keep the public progress UI useful without publishing the answer-bearing internal case labels.
+ * Canonical titles and summaries become safe only after the case that they describe is complete.
  */
-// Each entry carries its keeper id (fall-order: vaun/mara/sella/orin/brann/iss) so the projection can
-// un-redact a fate on that keeper's assembled THEORY (S-D), matching the six lines to the six clusters.
-const STONE_ENTRIES: ReadonlyArray<{ id: string; keeper: string; line: string }> = [
-  { id: 'stone-1', keeper: 'vaun',  line: 'the first was kept. the offering was not made.' },
-  { id: 'stone-2', keeper: 'mara',  line: 'the second was kept. the light was read too long.' },
-  { id: 'stone-3', keeper: 'sella', line: 'the third was kept. the far water kept her.' },
-  { id: 'stone-4', keeper: 'orin',  line: 'the fourth was kept. the threshold was not crossed.' },
-  { id: 'stone-5', keeper: 'brann', line: 'the fifth was kept. the black moon was slept through.' },
-  { id: 'stone-6', keeper: 'iss',   line: 'the sixth was kept. the name was spoken.' },
-];
+export function projectPublicDocket(source: PublicDocketSource): PublicDocketProjection {
+  const rawKey = typeof source.caseKey === 'string' ? source.caseKey.trim().toUpperCase() : '';
+  const caseKey = /^C(?:0[1-9]|10)$/.test(rawKey) ? rawKey : null;
+  const complete = source.complete === true;
+  const genericTitle = caseKey ? `Docket ${caseKey}` : 'Docket unavailable';
+  const canonicalTitle = typeof source.title === 'string' && source.title.trim()
+    ? source.title.trim()
+    : genericTitle;
+  const canonicalSummary = typeof source.summary === 'string' && source.summary.trim()
+    ? source.summary.trim()
+    : OPEN_DOCKET_SUMMARY;
+  return {
+    caseKey,
+    title: complete ? canonicalTitle : genericTitle,
+    summary: complete ? canonicalSummary : OPEN_DOCKET_SUMMARY,
+    complete,
+  };
+}
 
-const CLOSING_ENTRY = {
-  id: 'closing',
-  line: 'the present hands are entered. the count holds.',
-} as const;
+function bounded(value: number | null | undefined, max: number): number {
+  const parsed = Math.trunc(Number(value));
+  return Number.isFinite(parsed) ? Math.max(0, Math.min(max, parsed)) : 0;
+}
 
-const SEASONS: Record<number, string> = {
-  0: 'the record is not yet opened.',
-  1: 'the notice.',
-  2: 'the ways.',
-  3: 'the descent.',
-  4: 'the catch.',
-  5: 'the accepting.',
-};
-
-/** The withheld-line glyph block render hint — a struck count, never the hidden text. */
-export const REDACTED_GLYPH = '████████';
-
-/**
- * project — the pure mapping. Given a coarse public signal, return the redacted archive. Total +
- * deterministic: same signal → same archive. An absent/zero signal degrades to the sealed baseline
- * (an opened-but-empty record), never an error.
- */
 export function project(signal: RecordSignal): RecordProjection {
-  const movement = clampInt(signal.movement, 0, 5);
-  const stonesRead = clampInt(signal.stonesRead, 0, STONE_ENTRIES.length);
-  const closed = signal.accepted === true;
-  // S-D: when the coarse theory set is present, a fate un-redacts on its assembled THEORY (reward the
-  // theory, not the lookup). Absent → the pre-S-D stonesRead lockstep (progressive, backward-compatible).
-  const theories = Array.isArray(signal.theories) ? signal.theories : null;
-
-  const entries: RecordEntry[] = STONE_ENTRIES.map((e, i) => ({
-    id: e.id,
-    line: e.line,
-    // REVEAL DISCIPLINE (never ahead of progress): by assembled theory when known, else by stone-read count.
-    legible: theories ? theories.includes(e.keeper) : i < stonesRead,
-  }));
-
-  // The closing entry is withheld until the keeping has closed (the one arc-end signal we may know).
-  entries.push({ ...CLOSING_ENTRY, legible: closed });
-
-  const kept = entries.filter((e) => e.legible).length;
-  const total = entries.length;
-  const season = SEASONS[closed ? 5 : movement] ?? SEASONS[0];
-
-  // The footer is the Record's one self-statement: a count, then the iceberg. Cold register, no warmth.
-  const footer = closed
-    ? `${kept} of ${total} kept. the record is closed.`
-    : `${kept} of ${total} kept. the rest is not yet kept.`;
-
-  return { kept, total, season, closed, entries, footer };
+  const totalNodes = bounded(signal.totalNodes, 82) || 82;
+  const nodesCompleted = bounded(signal.nodesCompleted, totalNodes);
+  const casesCompleted = bounded(signal.casesCompleted, 10);
+  const closed = signal.closed === true;
+  const currentDocket = projectPublicDocket({
+    caseKey: signal.currentCaseKey,
+    title: signal.currentCaseTitle,
+    complete: closed,
+  });
+  return {
+    movement: Math.max(1, bounded(signal.movement, 5)),
+    phaseKey: typeof signal.phaseKey === 'string' && signal.phaseKey ? signal.phaseKey : 'unavailable',
+    currentCaseKey: currentDocket.caseKey,
+    currentCaseTitle: currentDocket.title,
+    casesCompleted,
+    nodesCompleted,
+    totalNodes,
+    closed,
+    endingBranch: closed && typeof signal.endingBranch === 'string' ? signal.endingBranch : null,
+    nameTreatment: closed && typeof signal.nameTreatment === 'string' ? signal.nameTreatment : null,
+    wrenOutcome: closed && typeof signal.wrenOutcome === 'string' ? signal.wrenOutcome : null,
+    footer: closed
+      ? 'the record is closed. the names were returned.'
+      : `${nodesCompleted} of ${totalNodes} required findings entered. no case is optional.`,
+  };
 }

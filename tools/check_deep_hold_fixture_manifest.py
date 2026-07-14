@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Cross-check the Deep Hold V4 CSV manifests against its executable plan."""
+"""Cross-check the V5 Deep Hold spatial CSVs against the executable 32-room plan.
+
+The Java plan class keeps its historical name for binary/source compatibility; this validator treats
+only the V5 ownership, gate-condition, and content authorities as production semantics.
+"""
 
 from __future__ import annotations
 
@@ -75,6 +79,8 @@ def main() -> int:
         for m in record_pattern.finditer(source)
     }
     plan_gate_ids = set(re.findall(r'new Gate\("([^"]+)"', source))
+    # Serialized spatial gate IDs predate V5. They are geometry identifiers only;
+    # role/open_condition in the current CSV own the player-facing semantics.
     runtime_to_plan = {
         "keeper": "g1", "archive": "g2", "undercroft": "g3", "deep": "g4",
         "prior": "prior", "dread": "dread", "accepting": "g5", "coda": "g6",
@@ -150,7 +156,7 @@ def main() -> int:
             if int(row[f"min_{axis}"]) > int(row[f"max_{axis}"]):
                 failures.append(f"gate {row['gate_id']}: inverted {axis} bounds")
 
-    print(f"Deep Hold V4 manifest: {len(fixture_rows)} fixtures, {len(room_rows)} rooms, "
+    print(f"Deep Hold V5 spatial manifest: {len(fixture_rows)} fixtures, {len(room_rows)} rooms, "
           f"{len(record_rows)} records, {len(gate_rows)} gates")
     if failures:
         for failure in failures:

@@ -1,12 +1,17 @@
 -- 0010_answer_attempts_web_rate_limit.sql — a real anonymous-flood guard for the record website.
 --
--- WHY. dashboard/src/lib/record/resolve.ts (the record website's answer-inscribe endpoint) rate-limits
+-- HISTORICAL WHY. The retired record website answer-inscribe endpoint rate-limited
 -- a KNOWN keeper by player_id (countRecentAttempts), but an UNRESOLVED name has no player_id to key on —
 -- so unknown-name submissions were completely unthrottled (a cheap DB-write-spam vector on a public,
 -- unauthenticated POST route; not a spoiler leak, since the response is uniform regardless). The web
 -- resolver also logged every attempt under surface='discord' (the CHECK constraint's only non-'world'
 -- option at the time), which its own comment already flagged as a stopgap: "A future migration could
 -- add a 'web' surface." This is that migration.
+--
+-- V5 STATUS. The arbitrary-name website inscription endpoint is permanently closed (HTTP 410), and
+-- the six fixed Copperline website nodes use the prerequisite-guarded V5 recording RPC instead. Keep
+-- this additive migration in the ordered bundle so existing databases and historical audit rows remain
+-- schema-compatible; it does not re-enable the retired endpoint.
 --
 -- WHAT. (1) Widen the surface CHECK to add 'web', so the record website's attempts are logged under
 -- their own real surface instead of borrowing 'discord' (which the Discord bot's own unlinked-user

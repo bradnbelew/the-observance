@@ -1,5 +1,7 @@
 # THE OBSERVANCE — WORLD-BUILD BRIEF (the Minimum-Amazing region, concrete)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT BUILD THE RETIRED DIMENSION OR SITES FROM THIS FILE.** Current world setup is the V5 operator guide.
+
 > The world is the #1 thing that decides "amazing," and it's the biggest manual task (yours alone).
 > This turns BUILD-PLAN §11–§12 from principles into a concrete build you can sit down and make.
 > Build THIS region first (it IS the Minimum-Amazing world); everything else is extension.

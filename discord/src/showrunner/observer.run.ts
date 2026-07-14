@@ -16,8 +16,7 @@
 import { readSetting, readState, writeState } from './state.js';
 import { readUnweaponizedObservations, markObservationWeaponized, logEvent, getArcFlags } from '../db/repo.js';
 import { postToTheRecord } from './discord.js';
-import { decideWeaponization, MIN_QUOTE_LEN, type CapturedObservation } from './observer.js';
-import { selectSalientObservationId } from './observer.llm.js';
+import { decideWeaponization, type CapturedObservation } from './observer.js';
 import { voice } from '../voice.js';
 
 /** How rarely the record echoes a captured word — sparse by design (at most once per ~12h window). */
@@ -61,17 +60,7 @@ export async function runObserverPass(): Promise<{ echoed: boolean }> {
   const decision = decideWeaponization(eligible, nowMs, state.observer_last_ms ?? null, OBSERVER_MIN_INTERVAL_MS);
   if (!decision.observation) return { echoed: false }; // too soon / nothing substantial → silence
 
-  // Tier-2 (W4.2): the LLM archivist may pick a MORE uncanny real utterance from the same substantial,
-  // grounded candidate set. Only runs now that an echo is already going to happen (≤ once/12h → cost-minimal).
-  // It returns null (→ keep the deterministic Tier-1 pick) on no key / error / timeout / out-of-set pick, and
-  // only ever returns an id already in the set — so the echo stays the player's verbatim words, never composed.
-  let o = decision.observation;
-  const substantial = eligible.filter((e) => e.text.trim().length >= MIN_QUOTE_LEN);
-  const salientId = await selectSalientObservationId(substantial);
-  if (salientId != null) {
-    const picked = substantial.find((e) => e.id === salientId);
-    if (picked) o = picked;
-  }
+  const o = decision.observation;
   const nowIso = new Date(nowMs).toISOString();
   // Render register: post-reckoning UNDERSTAND → sorrow; a voice capture → "heard aloud"; else the read echo.
   const line = understood

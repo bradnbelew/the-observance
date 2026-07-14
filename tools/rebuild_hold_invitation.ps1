@@ -8,6 +8,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: the downloadable six-room prologue is not the Deep Hold
+# and must never overwrite the V5 diagnostic web artifact.
+throw "RETIRED PRE-V5 TOOL: rebuild_hold_invitation.ps1 is disabled. The V5 Hold is built only by the Paper plugin."
+
 $repoFull = [System.IO.Path]::GetFullPath($RepoRoot)
 $builder = Join-Path $repoFull "tools\build_hold_prologue.py"
 if (-not (Test-Path -LiteralPath $builder)) {

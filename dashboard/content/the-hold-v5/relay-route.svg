@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#d8ddd8"/>
+  <rect x="42" y="42" width="876" height="456" fill="#edf0eb" stroke="#58645e" stroke-width="3"/>
+  <g fill="none" stroke="#7f8983" stroke-width="2">
+    <path d="M210 270H750M480 100V440" stroke-dasharray="9 8"/>
+    <circle cx="480" cy="270" r="104"/>
+    <circle cx="480" cy="270" r="24"/>
+  </g>
+  <g font-family="Courier New, monospace" fill="#38433e">
+    <text x="72" y="82" font-size="18">A /community/</text>
+    <text x="698" y="82" font-size="18">B remote-</text>
+    <text x="706" y="474" font-size="18">C room.</text>
+    <text x="72" y="474" font-size="18">D php</text>
+    <text x="480" y="252" text-anchor="middle" font-size="22">FIELD RELAY ROUTE COPY</text>
+    <text x="480" y="286" text-anchor="middle" font-size="15">read corners by jacket age</text>
+    <text x="480" y="314" text-anchor="middle" font-size="13">service 1842 / ticket 9137</text>
+  </g>
+</svg>

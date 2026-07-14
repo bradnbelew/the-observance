@@ -1,5 +1,7 @@
 # Research: Display Entities, Particles & Packet Illusions (Paper 1.20.5–1.21.x)
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Version-specific claims require fresh verification against Paper 1.21.11.
+
 Lane: `mc-displays-particles-packets`. Goal — render runes/holograms/apparitions with NO resource pack, drive per-player illusions (a block/mob only one client sees), and make a vanilla mob *read* as the Watcher. Direct inputs to `NamedMobBeat`, `FakeBlockBeat`, `Private*` beats, and rune rendering as a pack-free fallback.
 
 Stack already in play: PacketEvents (v2.x), Citizens2/ZNPCsPlus, FAWE, Multiverse, Paper 1.21.x / Java 21. Everything below is callable from a Paper plugin.

@@ -1,4 +1,6 @@
-# ⚠️ SPOILER — SEALED — DO NOT READ IF YOU WANT TO PLAY UNSPOILED ⚠️
+# ⚠️ SPOILER — SEALED V4 BESTIARY ARCHIVE ⚠️
+
+> **SUPERSEDED.** V5 retains the Dark but not this file's old six/seventh ontology. Use `arc/WORLD-BIBLE.md`.
 
 This is the twist-bearing design for the bestiary of *The Observance*. It names the
 sealed truth in plain words. Ethan intends to play unspoiled — **close this file.**

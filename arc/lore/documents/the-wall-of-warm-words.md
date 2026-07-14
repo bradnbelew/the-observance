@@ -1,4 +1,6 @@
 ---
+status: SUPERSEDED_V4_ARCHIVE_DO_NOT_IMPLEMENT
+superseded_by: arc/WORLD-BIBLE.md and arc/v5/
 id: the-wall-of-warm-words
 title: the wall of warm words
 kind: inscription

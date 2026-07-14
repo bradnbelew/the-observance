@@ -1,5 +1,7 @@
 # THE OBSERVANCE — THE RELEASE (the unified finale)
 
+> **SUPERSEDED V4 ARCHIVE.** Current finale state machine and copy are in `design/V5-FINALE.md`.
+
 > The brave-change ending (Ethan, 2026-07-03). The finale is no longer a *reading* posted to a channel —
 > it is an *event* that reaches out of the fiction. **One universal spine for every group** (the reveal →
 > the release → the world dies → the mask comes off → the kick), and the four systems we already built

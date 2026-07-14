@@ -1,5 +1,7 @@
 # THE OBSERVANCE - IMPROVEMENT AUDIT (red-team + prioritization)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — NOT A CURRENT DEFECT OR READINESS LIST.** Use only the V5 checks and live receipts for release decisions.
+
 > **2026-07-07 status note:** this is a historical July 1 red-team snapshot, not the current launch
 > verdict. Several findings below have since been fixed or superseded. Use `design/CURRENT-READINESS-VERDICT.md`
 > and `design/RUNBOOK.md` for current go/no-go status; keep this file as provenance for why the fixes

@@ -11,7 +11,7 @@ import type { Database } from "@/lib/database.types";
  * For privileged Author-mode reads/writes that must bypass RLS, use the
  * service-role client in `./admin`.
  *
- * Note: `cookies()` is async in Next.js 15, so this helper is async.
+ * Note: `cookies()` is async in current Next.js, so this helper is async.
  */
 export async function createClient() {
   const cookieStore = await cookies();

@@ -1,266 +1,145 @@
 param(
-  [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+  [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path,
+  [switch]$SkipLiveExternalMedia,
+  [switch]$SkipLiveHostedResourcePack
 )
 
 $ErrorActionPreference = "Stop"
 
-$discord = Join-Path $RepoRoot "discord"
-$dashboard = Join-Path $RepoRoot "dashboard"
-$pluginCheck = Join-Path $RepoRoot "tools\check_plugin_compile.ps1"
-$pluginPackage = Join-Path $RepoRoot "tools\package_plugin.ps1"
-$pluginDbContractCheck = Join-Path $RepoRoot "tools\check_plugin_db_contracts.ps1"
-$companionArcContractCheck = Join-Path $RepoRoot "tools\check_companion_arc_contracts.ps1"
-$pluginJarCheck = Join-Path $RepoRoot "tools\check_plugin_jar.ps1"
-$assetCheck = Join-Path $RepoRoot "tools\check_assets.ps1"
-$deployManifestCheck = Join-Path $RepoRoot "tools\check_deploy_manifest.ps1"
-$resourcePackConfigToolCheck = Join-Path $RepoRoot "tools\check_resource_pack_config_tools.ps1"
-$friendLaunchPrepCheck = Join-Path $RepoRoot "tools\check_friend_launch_prep.ps1"
-$serverTestPrepCheck = Join-Path $RepoRoot "tools\check_server_test_prep.ps1"
-$brandSurfaceCheck = Join-Path $RepoRoot "tools\check_brand_surfaces.ps1"
-$mediaCheck = Join-Path $RepoRoot "tools\check_media_readiness.ps1"
-$externalMediaCheck = Join-Path $RepoRoot "tools\check_external_media_readiness.ps1"
-$holdInvitationCheck = Join-Path $RepoRoot "tools\check_hold_invitation.ps1"
-$operatorDocsCheck = Join-Path $RepoRoot "tools\check_operator_docs.ps1"
-$minecraftTextCheck = Join-Path $RepoRoot "tools\check_minecraft_text_surfaces.ps1"
-$rehearsalCheck = Join-Path $RepoRoot "tools\check_rehearsal_consistency.ps1"
-$dialogueContractCheck = Join-Path $RepoRoot "tools\check_dialogue_contracts.ps1"
-$scareImmersionCheck = Join-Path $RepoRoot "tools\check_scare_immersion.ps1"
-$motifFreshnessCheck = Join-Path $RepoRoot "tools\check_motif_freshness.ps1"
-$clueLedgerCheck = Join-Path $RepoRoot "tools\check_clue_ledger.ps1"
-$structureQualityCheck = Join-Path $RepoRoot "tools\check_structure_quality.ps1"
-$structureSurfaceIntegrityCheck = Join-Path $RepoRoot "tools\check_structure_surface_integrity.ps1"
-$sideLoreCohesionCheck = Join-Path $RepoRoot "tools\check_side_lore_cohesion.ps1"
-$keeperInvestigationCheck = Join-Path $RepoRoot "tools\check_keeper_investigations.ps1"
-$customsRosettaCheck = Join-Path $RepoRoot "tools\check_customs_rosetta.ps1"
-$directorToolsCheck = Join-Path $RepoRoot "tools\check_director_tools.ps1"
-$directorConcernClosureCheck = Join-Path $RepoRoot "tools\check_director_concern_closure.ps1"
-$liveRehearsalCheck = Join-Path $RepoRoot "tools\check_live_rehearsal_evidence.ps1"
-$launchPlacementCheck = Join-Path $RepoRoot "tools\check_launch_placement_packet.ps1"
-$launchCoordQualityCheck = Join-Path $RepoRoot "tools\check_launch_coord_quality.ps1"
-$worldBuildCheck = Join-Path $RepoRoot "tools\check_world_build_readiness.ps1"
-$unlitReadinessCheck = Join-Path $RepoRoot "tools\check_unlit_readiness.ps1"
-$launchManualBlockerCheck = Join-Path $RepoRoot "tools\check_launch_manual_blockers.ps1"
-$repositoryIntegrityCheck = Join-Path $RepoRoot "tools\check_repository_integrity.py"
-
-python $repositoryIntegrityCheck
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-Push-Location $discord
-try {
-  npm.cmd run audit
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+function Invoke-External(
+  [string]$Name,
+  [string]$WorkingDirectory,
+  [string]$Executable,
+  [string[]]$Arguments
+) {
+  Write-Host ""
+  Write-Host "== $Name =="
+  Push-Location $WorkingDirectory
+  try {
+    & $Executable @Arguments
+    $code = $LASTEXITCODE
+  } finally {
+    Pop-Location
   }
-  npm.cmd run runtimecheck
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+  if ($code -ne 0) {
+    throw "$Name failed with exit code $code"
   }
-  npm.cmd run typecheck
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+}
+
+$root = [System.IO.Path]::GetFullPath($RepoRoot)
+$tools = Join-Path $root "tools"
+$discord = Join-Path $root "discord"
+$dashboard = Join-Path $root "dashboard"
+$plugin = Join-Path $root "plugin"
+
+foreach ($required in @(
+  (Join-Path $tools "check_repository_integrity.py"),
+  (Join-Path $tools "check_v5_freshness.py"),
+  (Join-Path $tools "check_v5_content.py"),
+  (Join-Path $tools "check_v5_physical_predicates.py"),
+  (Join-Path $tools "render_v5_map_art.py"),
+  (Join-Path $tools "check_deep_hold_layout.py"),
+  (Join-Path $tools "simulate_v5_scenarios.py"),
+  (Join-Path $tools "package_assets.ps1"),
+  (Join-Path $tools "check_assets.ps1"),
+  (Join-Path $tools "check_resource_pack_config_tools.ps1"),
+  (Join-Path $tools "check_hosted_resource_pack.ps1"),
+  (Join-Path $tools "publish_resource_pack_to_supabase.ps1"),
+  (Join-Path $tools "backup_supabase_v5.ps1"),
+  (Join-Path $tools "check_external_media_readiness.ps1"),
+  (Join-Path $plugin "gradlew.bat")
+)) {
+  if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
+    throw "V5 audit prerequisite is missing: $required"
   }
-} finally {
-Pop-Location
 }
 
-Push-Location $dashboard
-try {
-  npm.cmd run lint
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
-  }
-  # Build before the standalone compiler pass so Next regenerates `.next/types`
-  # from the current route tree. Otherwise routes removed since the previous build
-  # can leave stale generated imports that make an unchanged source tree fail.
-  npm.cmd run selftest
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
-  }
-  npm.cmd run build
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
-  }
-  npx.cmd tsc --noEmit --pretty false
-  if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
-  }
-} finally {
-  Pop-Location
+# Repository and authority checks run before any build so malformed or stale inputs
+# cannot be copied into SQL, JAR, datapack, or resource-pack outputs.
+Invoke-External "repository integrity (source)" $root "python" @((Join-Path $tools "check_repository_integrity.py"))
+Invoke-External "V5 freshness and supersession" $root "python" @((Join-Path $tools "check_v5_freshness.py"))
+Invoke-External "V5 canonical/runtime content" $root "python" @((Join-Path $tools "check_v5_content.py"), "--runtime")
+Invoke-External "V5 executable physical predicates" $root "python" @((Join-Path $tools "check_v5_physical_predicates.py"))
+Invoke-External "V5 exact Minecraft map art" $root "python" @((Join-Path $tools "render_v5_map_art.py"))
+Invoke-External "V5 Deep Hold layout/runtime integration" $root "python" @((Join-Path $tools "check_deep_hold_layout.py"))
+Invoke-External "V5 deterministic failure simulation" $root "python" @((Join-Path $tools "simulate_v5_scenarios.py"))
+
+# Generate the database bundle from source before testing it. Never audit a hand-edited
+# or stale apply-all.sql file.
+Invoke-External "Discord V5 SQL bundle" $discord "npm.cmd" @("run", "db:seed")
+Invoke-External "Discord V5 audit" $discord "npm.cmd" @("run", "audit")
+Invoke-External "Discord V5 runtime tests" $discord "npm.cmd" @("run", "runtimecheck")
+Invoke-External "Discord TypeScript" $discord "npm.cmd" @("run", "typecheck")
+Invoke-External "resource-pack glyph generation" $discord "npm.cmd" @("run", "pack:build")
+Invoke-External "resource-pack glyph proof" $discord "npm.cmd" @("run", "pack:proof")
+
+Invoke-External "dashboard lint" $dashboard "npm.cmd" @("run", "lint")
+Invoke-External "dashboard V5 self-tests" $dashboard "npm.cmd" @("run", "selftest")
+Invoke-External "dashboard production build" $dashboard "npm.cmd" @("run", "build")
+
+# Gradle clean is deliberate: it prevents an older Observance JAR from surviving in
+# build/libs and being mistaken for the V5 deployable.
+Invoke-External "Paper plugin clean/check/build" $plugin (Join-Path $plugin "gradlew.bat") @("clean", "check", "build", "--no-daemon")
+Invoke-External "V5 plugin JAR contents" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "check_plugin_jar.ps1"), "-RepoRoot", $root
+)
+
+# Package only after every source/project build succeeds, then read the exact ZIP/JAR
+# bytes back through the release validators.
+Invoke-External "deterministic datapack/resource-pack packaging" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "package_assets.ps1"), "-RepoRoot", $root
+)
+Invoke-External "V5 datapack/resource-pack assets" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "check_assets.ps1"), "-RepoRoot", $root
+)
+Invoke-External "V5 deploy manifest" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "check_deploy_manifest.ps1"), "-RepoRoot", $root
+)
+Invoke-External "resource-pack config tools" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "check_resource_pack_config_tools.ps1"), "-RepoRoot", $root
+)
+Invoke-External "resource-pack publisher self-test" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "publish_resource_pack_to_supabase.ps1"), "-RepoRoot", $root, "-SelfTest"
+)
+Invoke-External "Supabase backup self-test" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "backup_supabase_v5.ps1"), "-RepoRoot", $root, "-SelfTest"
+)
+
+if (-not $SkipLiveHostedResourcePack) {
+  Invoke-External "hosted resource-pack exact bytes" $root "powershell" @(
+    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+    (Join-Path $tools "check_hosted_resource_pack.ps1"), "-RepoRoot", $root
+  )
+} else {
+  Write-Warning "Hosted resource-pack verification was explicitly skipped. This run is not a production launch receipt."
 }
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File $pluginCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
+Invoke-External "V5 external media manifest/receipt" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "check_external_media_readiness.ps1"), "-RepoRoot", $root
+)
+if (-not $SkipLiveExternalMedia) {
+  Invoke-External "V5 external media live sources" $root "powershell" @(
+    "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+    (Join-Path $tools "check_external_media_readiness.ps1"), "-RepoRoot", $root, "-Live"
+  )
+} else {
+  Write-Warning "Live external-media verification was explicitly skipped. This run is not a production launch receipt."
 }
 
-# Several downstream launch/rehearsal validators inspect the deployable JAR.
-# Build it before those checks so a clean checkout can pass the audit without a
-# stale or manually prebuilt artifact.
-& powershell -NoProfile -ExecutionPolicy Bypass -File $pluginPackage -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
+Invoke-External "repository integrity (release outputs)" $root "python" @((Join-Path $tools "check_repository_integrity.py"))
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File $pluginDbContractCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
+Write-Host ""
+if ($SkipLiveExternalMedia -or $SkipLiveHostedResourcePack) {
+  Write-Host "V5 audit: PASS (static/build checks passed; one or more live checks deliberately skipped)"
+} else {
+  Write-Host "V5 audit: PASS (repository, 82-node content, predicates, Hold, simulation, all projects, deploy artifacts, hosted pack, and live media)"
 }
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $companionArcContractCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $operatorDocsCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $externalMediaCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $holdInvitationCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $minecraftTextCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $dialogueContractCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $scareImmersionCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $motifFreshnessCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $clueLedgerCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $structureQualityCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $structureSurfaceIntegrityCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $sideLoreCohesionCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $keeperInvestigationCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $customsRosettaCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $directorToolsCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $directorConcernClosureCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $rehearsalCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $liveRehearsalCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $launchPlacementCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $launchCoordQualityCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $worldBuildCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $unlitReadinessCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $launchManualBlockerCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $pluginJarCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $assetCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $deployManifestCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $resourcePackConfigToolCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $friendLaunchPrepCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $serverTestPrepCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $brandSurfaceCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-& powershell -NoProfile -ExecutionPolicy Bypass -File $mediaCheck -RepoRoot $RepoRoot
-if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
-}
-
-Write-Host "observance audit: OK - automated repo checks passed; see the launch manual blocker section above for live-server tasks that still prevent a true launch-ready verdict"
+Write-Host "This does not replace the Paper/client/world/service receipts in design/V5-LIVE-TEST-MATRIX.csv."

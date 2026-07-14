@@ -180,6 +180,22 @@ public final class TownsfolkNpc {
         return false;
     }
 
+    /** Current marked body for one townsperson, or null when absent/unloaded. */
+    public Entity body(String id) {
+        Townsperson who = byId(id);
+        if (who == null) return null;
+        try {
+            for (org.bukkit.World world : Bukkit.getWorlds()) {
+                for (Entity entity : world.getEntities()) {
+                    if (who.id().equals(idOf(entity)) && entity.isValid()) return entity;
+                }
+            }
+        } catch (Throwable ignored) {
+            // World iteration is best effort; an unloaded body is treated as absent.
+        }
+        return null;
+    }
+
     /** Count how many of the five townsfolk currently have a live body. */
     public int spawnedCount() {
         int n = 0;

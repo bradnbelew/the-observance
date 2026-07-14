@@ -6,6 +6,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: the generated director packet describes the previous
+# campaign state and is not a production source.
+throw "RETIRED PRE-V5 TOOL: new_director_packet.ps1 is disabled. Use the V5 setup guide, launch runbook, and live-test matrix."
+
 function Code([string]$Value) {
   return [string]([char]0x60) + $Value + [string]([char]0x60)
 }

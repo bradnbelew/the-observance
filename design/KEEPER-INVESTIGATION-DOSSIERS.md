@@ -1,5 +1,7 @@
 # The Observance - Keeper Investigation Dossiers
 
+> **SUPERSEDED V4 ARCHIVE.** Do not implement the dossier text below. Current V5 authority is `design/V5-KEEPER-DOSSIERS.md`.
+
 This is the source-of-truth guide for the six keeper investigations. It exists
 to keep the keeper field from collapsing back into six similar stones, six stock
 ciphers, and six typed receipts.

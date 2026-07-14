@@ -1,5 +1,8 @@
 # THE OBSERVANCE - PERSONAL PLAYTEST SCRIPT
 
+> **SUPERSEDED V4 ARCHIVE.** Use all 100 required rows in
+> `design/V5-LIVE-TEST-MATRIX.csv`; V5 has no optional shortened playtest.
+
 > Use this when Ethan does the solo/personal pre-launch playtest. The goal is not to prove every puzzle
 > by brute force. The goal is to verify that the first hour feels haunted, the clue chain is retrace-fair,
 > side stories are findable, and manual media slots are ready to receive real files.

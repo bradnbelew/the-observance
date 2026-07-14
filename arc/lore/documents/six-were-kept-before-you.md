@@ -1,4 +1,6 @@
 ---
+status: SUPERSEDED_V4_ARCHIVE_DO_NOT_IMPLEMENT
+superseded_by: arc/WORLD-BIBLE.md and arc/v5/
 id: six-were-kept-before-you
 title: six were kept before you
 kind: record (the Archivist / the count of the openings)

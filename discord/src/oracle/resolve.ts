@@ -29,6 +29,7 @@ import {
   countRecentAttempts,
   logAttempt,
   logEvent,
+  recordOracleEvidence,
 } from '../db/repo.js';
 import { voice } from '../voice.js';
 import type { OracleVoiceKey, DeadEndKind } from '../voice.js';
@@ -45,6 +46,7 @@ import type {
 // (seedcheck.ts) can import it without the DB/config chain. Re-exported here so the resolver's
 // public surface is unchanged.
 import { normalizeAnswer, MAX_RAW_LEN } from './normalize.js';
+import { scopeOpenPuzzles } from './gate.js';
 export { normalizeAnswer, MAX_RAW_LEN };
 
 const SOURCE = 'the-watcher/oracle';
@@ -140,6 +142,7 @@ export async function resolveAnswer(
   answerer: Answerer,
   raw: string,
   surface: AnswerSurface,
+  selectedPuzzleKey?: string | null,
 ): Promise<ResolveResult> {
   // 0. defensively bound the input length BEFORE any work. A real answer is short;
   //    a giant paste is abuse — cap it so it can't bloat answer_attempts.raw or feed
@@ -186,7 +189,7 @@ export async function resolveAnswer(
   //    plaintext legitimately shared by a SEQUENCED pair (an already-solved upstream owner
   //    that stays open + its freshly-open downstream consumer — e.g. the bound word on
   //    `stone-iss-wall` then `bound-word`). We pick the player's first UNSOLVED candidate.
-  const open = await getOpenPuzzles();
+  const open = scopeOpenPuzzles(await getOpenPuzzles(), selectedPuzzleKey);
   const candidates = matchPuzzles(open, normalized);
 
   // 4. true miss → log, stay silent. NEVER reveal it matched nothing-close.
@@ -290,6 +293,13 @@ export async function resolveAnswer(
   // 9. apply the outcome. From here the solve is durable; do reward work, then
   //    log the matched attempt and return the line to speak.
   const result = await applyOutcome(puzzle, player);
+
+  try {
+    await recordOracleEvidence(puzzle.puzzle_key, player, surface);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    void logEvent('error', SOURCE, `V5 evidence receipt failed for ${puzzle.puzzle_key}: ${message}`);
+  }
 
   await logAttempt({
     puzzleKey: puzzle.puzzle_key,

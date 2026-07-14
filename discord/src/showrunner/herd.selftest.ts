@@ -104,7 +104,7 @@ function inp(over: Partial<HerdInput> = {}): HerdInput {
 // ===========================================================================
 // STATIC GUARDS — the two real PDC-touching call sites stay wired the way this
 // selftest's precision assumptions depend on. No server / Bukkit needed: these
-// are textual checks against the source, mirroring forge/specs.selftest.ts's guard idiom.
+// are textual checks against the source, retaining the legacy forge guard idiom.
 // ===========================================================================
 {
   const here = path.dirname(fileURLToPath(import.meta.url));

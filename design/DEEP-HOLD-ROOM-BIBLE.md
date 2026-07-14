@@ -1,5 +1,11 @@
 # The Deep Hold Room Bible
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT IMPLEMENT OR BUILD FROM THIS FILE.** Current spatial/content authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED V4 ARCHIVE — DO NOT IMPLEMENT OR BUILD FROM THIS FILE.** Current spatial/content authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED V4 CONTENT MAP.** Geometry remains in the V4 room-box CSV; current case/room ownership is `design/ARG-V5-ROOM-ASSIGNMENTS.csv`.
+
 Status: rebuild specification. This document maps the dimensioned construction concept to executable
 Java listeners, SQL gates, and Minecraft interaction rules. It is not evidence that the current
 generator satisfies the specification.

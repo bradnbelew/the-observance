@@ -107,6 +107,13 @@ public final class KeptNeedleBeat extends AbstractBeat {
             List<Component> comps = new ArrayList<>(lore.size());
             for (String line : lore) comps.add(Component.text(clamp(line == null ? "" : line, TextFit.TOOLTIP_LINE_CHARS)));
             meta.lore(comps);
+            meta.getPersistentDataContainer().set(
+                    new org.bukkit.NamespacedKey("observance", "kept_needle"),
+                    org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
+            meta.getPersistentDataContainer().set(
+                    new org.bukkit.NamespacedKey("observance",
+                            com.observance.watcher.structure.CanonicalArtifactRegistry.PDC_ARTIFACT_ID),
+                    org.bukkit.persistence.PersistentDataType.STRING, "kept_needle");
             needle.setItemMeta(meta);
         }
         return needle;

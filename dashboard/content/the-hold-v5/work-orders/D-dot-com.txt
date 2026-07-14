@@ -1,0 +1,6 @@
+COPPERLINE FIELD RELAY / WORKSTATION D
+assigned: Wren
+copper jacket stamped: 2013
+single test pulse: 7
+route image corner: D
+note: callback order is oldest jacket to newest jacket. Rack letters are inventory only.

@@ -1,4 +1,6 @@
 # THE OBSERVANCE — LAUNCH READINESS (2026-07-03)
+> **SUPERSEDED V4 ARCHIVE.** V5 readiness is determined only by
+> `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md` and its 100-case live matrix.
 > CURRENT STATUS OVERRIDE (2026-07-13): this document is historical context, not the current go/no-go
 > verdict. The current repository state is **not launch-ready** until
 > `tools\check_launch_manual_blockers.ps1 -Launch -CaptureCsv <packet>\coords-capture.csv -RehearsalPacket <packet-dir>`

@@ -148,7 +148,7 @@ export interface OutcomePayload {
   next_puzzle_key?: string;
   /** optional arc_state.flags to set on solve. */
   set_flags?: Record<string, unknown>;
-  /** optional in-world reward to enqueue (status 'approved' — fires immediately). */
+  /** conditional in-world reward to enqueue (status 'approved' — fires immediately). */
   beat?: OutcomeBeat;
 }
 

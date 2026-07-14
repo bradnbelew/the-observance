@@ -1,236 +1,46 @@
-import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { RuneGlyphs } from "@/lib/RuneGlyphs";
-import {
-  projectArchive,
-  type ArchiveCard,
-  type ArchiveThread,
-  type ArchiveCardView,
-} from "@/lib/archive-projection";
+import type { Metadata } from 'next';
+import { createClient } from '@/lib/supabase/server';
+import { RuneGlyphs } from '@/lib/RuneGlyphs';
+import { projectArchive, type ArchiveEvidence } from '@/lib/archive-projection';
 
-/**
- * The Recovery Archive — the reading-room, one stratum below The Record (A13 `arg-leaves-the-game`, §7).
- *
- * The Record (/record/[slug]) shows the coarse MUSTER — a count kept, a season, the rest struck. This is
- * its DEEPER LAYER: the same artifact, further down, showing the actual RECOVERED MATERIAL of the cards
- * the group has already un-earthed, arranged under the five threads so the shape of what's-not-yet-found
- * stays legible (the iceberg). It reads as the same cold keeper register, never a new app.
- *
- * THE SECURITY MODEL (absolute, mirrors the Record). anon has NO table grants and NO base-table RLS; it
- * reads ONLY the spoiler-free SECURITY DEFINER views. This route reads exactly one — `v_archive` — which
- * returns ONE ROW PER REVEALED CARD (the reveal-gating is done in SQL; a card is present IFF the group
- * revealed it). It NEVER touches the admin client. The projection then drops any reference to a card that
- * is NOT in the returned set, so a revealed card can point only at other revealed cards (no leak, no dead
- * link). If the view is absent/unreadable (not shipped yet, or a fresh world), it degrades to the SEALED
- * BASELINE — an archive with nothing recovered — never an error, never a leaked default.
- *
- * ANTI-JANK: server component, no client JS, no polling. Static-per-build of the live revealed set — it
- * un-redacts in lockstep with progress (revalidate). The card bodies are authored recovered material; we
- * render them verbatim and author only the exposed recordsrv chrome (section frame, withheld line, kind
- * tags, citation links) — lowercase, cold, and shared with every deeper Record route.
- */
+export const metadata: Metadata = { robots: { index: false, follow: false }, title: 'recordsrv / recovered evidence' };
+export const revalidate = 120;
 
-export const metadata: Metadata = {
-  // Found in-world, never by a crawler. (The segment layout sets this too; pinned here for the route.)
-  robots: { index: false, follow: false },
-  title: "recordsrv / recovery archive",
-};
+interface DeliveredMedia { media_key: string; case_key: string; node_key: string; media_kind: string; title: string; delivery_url: string; filename: string; delivery_state: string }
 
-// Static-per-build of the live revealed set: revalidate periodically so the archive un-redacts with
-// progress WITHOUT any client polling. No request-time spoiler surface; just the neutral view, cached.
-export const revalidate = 300;
-
-/** The exact columns of the `v_archive` SECURITY DEFINER view (one row per revealed card). */
-const ARCHIVE_COLS =
-  "card_key, thread_key, thread_label, thread_color, thread_sort, title, body, card_kind, references_card_key, card_sort";
-
-const ARCHIVE_KINDS = new Set(["rumor", "explore", "verified", "contradicted"]);
-
-/**
- * Read the revealed cards from the one anon-safe view. `v_archive` is owned by the SQL lane; we read it
- * defensively (the dashboard's typed Database does not declare it yet — that regen is the SQL lane's) and
- * collapse ANY failure/absence to an explicitly unreadable archive, so the room never errors,
- * over-reveals, or claims that live progress is empty when it simply could not be read.
- * Every field is clamped to the contract; a malformed row cannot widen what is shown.
- */
-async function readArchive(): Promise<{ cards: ArchiveCard[]; unavailable: boolean }> {
+async function readRecovered(): Promise<{ rows: ArchiveEvidence[]; media: DeliveredMedia[]; unavailable: boolean }> {
   try {
     const supabase = await createClient();
-    // Untyped read: `v_archive` is not in the generated Database type yet (SQL lane owns the regen).
-    const { data, error } = await (supabase as unknown as {
-      from: (rel: string) => {
-        select: (cols: string) => Promise<{
-          data: Record<string, unknown>[] | null;
-          error: { message: string } | null;
-        }>;
-      };
-    })
-      .from("v_archive")
-      .select(ARCHIVE_COLS);
-
-    if (error || !Array.isArray(data)) return { cards: [], unavailable: true };
-
-    // Coerce each row to the contract. Anything off-shape is skipped, never guessed — the view is the
-    // authority on what exists, and the projection re-checks references against the revealed set anyway.
-    const cards: ArchiveCard[] = [];
-    for (const row of data) {
-      const card_key = typeof row.card_key === "string" ? row.card_key : "";
-      const thread_key = typeof row.thread_key === "string" ? row.thread_key : "";
-      if (!card_key || !thread_key) continue;
-      const kind = typeof row.card_kind === "string" && ARCHIVE_KINDS.has(row.card_kind)
-        ? (row.card_kind as ArchiveCard["card_kind"])
-        : "explore";
-      const refs = Array.isArray(row.references_card_key)
-        ? row.references_card_key.filter((r): r is string => typeof r === "string")
-        : [];
-      cards.push({
-        card_key,
-        thread_key,
-        thread_label: typeof row.thread_label === "string" ? row.thread_label : "",
-        thread_color: typeof row.thread_color === "string" ? row.thread_color : "",
-        thread_sort: typeof row.thread_sort === "number" ? row.thread_sort : 0,
-        title: typeof row.title === "string" ? row.title : "",
-        body: typeof row.body === "string" ? row.body : "",
-        card_kind: kind,
-        references_card_key: refs,
-        card_sort: typeof row.card_sort === "number" ? row.card_sort : 0,
-      });
-    }
-    return { cards, unavailable: false };
-  } catch {
-    // No view, no env, no DB — the sealed baseline. The archive a fresh world shows.
-    return { cards: [], unavailable: true };
-  }
-}
-
-/** The withheld line for an empty thread — the iceberg. States the shape is not yet found, never its text. */
-function WithheldThread() {
-  return (
-    <p className="border-t border-neutral-900 py-3 font-mono text-xs lowercase tracking-wide text-neutral-700">
-      <span aria-label="withheld" title="withheld" className="select-none tracking-widest">
-        ████
-      </span>
-      <span className="ml-3">not yet recovered.</span>
-    </p>
-  );
-}
-
-/** A single recovered card — title + verbatim body, styled by evidentiary standing, anchored by card_key. */
-function Card({ card }: { card: ArchiveCardView }) {
-  // 'rumor' reads faintly (unverified); 'contradicted' is struck-through-but-legible; the rest are plain.
-  const rumor = card.card_kind === "rumor";
-  const contradicted = card.card_kind === "contradicted";
-  return (
-    <li id={card.card_key} className="scroll-mt-16 border-t border-neutral-900 py-4">
-      <h3
-        className={[
-          "font-mono text-sm leading-relaxed",
-          contradicted ? "text-neutral-500 line-through decoration-neutral-700" : "text-neutral-300",
-          rumor ? "italic text-neutral-500" : "",
-        ].join(" ")}
-      >
-        {card.title}
-        {rumor && (
-          <span className="ml-2 align-baseline text-xs not-italic text-neutral-700">— unverified</span>
-        )}
-      </h3>
-      <p
-        className={[
-          "mt-2 whitespace-pre-line font-mono text-sm leading-relaxed",
-          contradicted ? "text-neutral-600 line-through decoration-neutral-800" : "text-neutral-400",
-          rumor ? "text-neutral-600" : "",
-        ].join(" ")}
-      >
-        {card.body}
-      </p>
-      {card.references.length > 0 && (
-        <p className="mt-3 font-mono text-xs lowercase tracking-wide text-neutral-700">
-          see also{" "}
-          {card.references.map((ref, i) => (
-            <span key={ref.card_key}>
-              {i > 0 && <span className="text-neutral-800">, </span>}
-              <a
-                href={`#${ref.card_key}`}
-                className="text-neutral-500 underline decoration-neutral-800 underline-offset-4 hover:text-neutral-400"
-              >
-                {ref.title}
-              </a>
-            </span>
-          ))}
-        </p>
-      )}
-    </li>
-  );
-}
-
-/** A thread column — its cold label, then its recovered cards, or a single withheld line when empty. */
-function Thread({ thread }: { thread: ArchiveThread }) {
-  return (
-    <section className="mb-12">
-      <header className="mb-3 flex items-baseline gap-3">
-        <h2 className="font-mono text-xs uppercase tracking-[0.3em] text-neutral-500">{thread.label}</h2>
-        <span className="font-mono text-xs tabular-nums text-neutral-700">
-          {thread.revealed > 0 ? thread.revealed : ""}
-        </span>
-      </header>
-      {thread.cards.length > 0 ? (
-        <ol className="border-b border-neutral-900">
-          {thread.cards.map((c) => (
-            <Card key={c.card_key} card={c} />
-          ))}
-        </ol>
-      ) : (
-        <WithheldThread />
-      )}
-    </section>
-  );
-}
-
-/** The sealed shell — distinguishes a real empty archive from an unreadable backend. */
-function SealedShell({ unavailable }: { unavailable: boolean }) {
-  return (
-    <main className="record-site archive-site">
-      <div className="record-page archive-page">
-        <header className="record-system-header">
-          <div><span>recordsrv/0.7</span><span>projection: recovered</span><span>mode: sealed</span></div>
-          <RuneGlyphs text="RECOVERY ARCHIVE" className="mx-auto my-3 text-amber-700/70" height={22} />
-          <h1>RECOVERY ARCHIVE</h1>
-          <p>no indexed material</p>
-        </header>
-        <p className="record-empty">
-          {unavailable ? "the archive could not be read." : "nothing has been recovered yet."}
-        </p>
-      </div>
-    </main>
-  );
+    const client = supabase as unknown as { from: (relation: string) => { select: (columns: string) => Promise<{ data: Record<string, unknown>[] | null; error: unknown }> } };
+    const [archiveResult, mediaResult] = await Promise.all([
+      client.from('v_archive').select('node_key,case_key,case_ordinal,case_title,node_ordinal,title,modality,reward,recovered_at'),
+      client.from('v_required_media_delivery').select('media_key,case_key,node_key,media_kind,title,delivery_url,filename,delivery_state'),
+    ]);
+    if (archiveResult.error || !Array.isArray(archiveResult.data)) return { rows: [], media: [], unavailable: true };
+    const rows = archiveResult.data.filter((row) => typeof row.node_key === 'string' && typeof row.case_key === 'string').map((row) => ({
+      node_key: String(row.node_key), case_key: String(row.case_key), case_ordinal: Number(row.case_ordinal) || 0,
+      case_title: typeof row.case_title === 'string' ? row.case_title : '', node_ordinal: Number(row.node_ordinal) || 0,
+      title: typeof row.title === 'string' ? row.title : '', modality: typeof row.modality === 'string' ? row.modality : '',
+      reward: typeof row.reward === 'string' ? row.reward : '', recovered_at: typeof row.recovered_at === 'string' ? row.recovered_at : null,
+    }));
+    const media = !mediaResult.error && Array.isArray(mediaResult.data) ? mediaResult.data.filter((row) => typeof row.media_key === 'string' && typeof row.delivery_url === 'string').map((row) => ({
+      media_key: String(row.media_key), case_key: String(row.case_key), node_key: String(row.node_key), media_kind: String(row.media_kind), title: String(row.title), delivery_url: String(row.delivery_url), filename: String(row.filename), delivery_state: String(row.delivery_state),
+    })) : [];
+    return { rows, media, unavailable: false };
+  } catch { return { rows: [], media: [], unavailable: true }; }
 }
 
 export default async function ArchivePage() {
-  const { cards, unavailable } = await readArchive();
-  const archive = projectArchive(cards);
-
-  if (archive.empty) return <SealedShell unavailable={unavailable} />;
-
+  const { rows, media, unavailable } = await readRecovered();
+  const archive = projectArchive(rows);
   return (
-    <main className="record-site archive-site">
-      <div className="record-page archive-page">
-        <header className="record-system-header">
-          <div><span>recordsrv/0.7</span><span>projection: recovered</span><span>mode: read-only</span></div>
-          <RuneGlyphs text="RECOVERY ARCHIVE" className="mx-auto my-3 text-amber-700/70" height={22} />
-          <h1>RECOVERY ARCHIVE</h1>
-          <p>indexed material grouped under five heads</p>
-        </header>
-
-        {/* The five threads, canonical order — recovered cards where found, a withheld line where not. */}
-        {archive.threads.map((t) => (
-          <Thread key={t.key} thread={t} />
-        ))}
-
-        {/* The standing footer — a count, then the iceberg. Cold register, no warmth. */}
-        <footer className="mt-4 text-center font-mono text-xs lowercase tracking-wide text-neutral-700">
-          {archive.total} recovered. the rest is not yet found.
-        </footer>
-      </div>
-    </main>
+    <main className="record-site archive-site"><div className="record-page archive-page">
+      <header className="record-system-header"><div><span>recordsrv/0.9</span><span>projection: earned evidence</span><span>mode: read-only</span></div><RuneGlyphs text="RECOVERED EVIDENCE" className="mx-auto my-3 text-amber-700/70" height={22} /><h1>RECOVERED EVIDENCE</h1><p>{unavailable ? 'index unavailable' : `${archive.total} required findings entered`}</p></header>
+      {archive.empty ? <p className="record-empty">{unavailable ? 'the archive could not be read.' : 'no evidence has been entered yet.'}</p> : archive.cases.map((caseFile) => (
+        <section key={caseFile.key} className="mb-12"><header className="mb-3 flex items-baseline gap-3"><h2 className="font-mono text-xs uppercase tracking-[0.3em] text-neutral-500">{caseFile.key} · {caseFile.title}</h2><span className="text-xs text-neutral-700">{caseFile.evidence.length}</span></header><ol className="border-b border-neutral-900">{caseFile.evidence.map((entry) => <li key={entry.node_key} className="border-t border-neutral-900 py-4"><h3 className="font-mono text-sm text-neutral-300">{entry.node_key} · {entry.title}</h3><p className="mt-2 font-mono text-xs text-neutral-600">{entry.modality}</p><p className="mt-2 font-mono text-sm text-neutral-400">{entry.reward}</p></li>)}</ol></section>
+      ))}
+      {media.length > 0 && <section className="mb-12"><h2 className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-neutral-500">delivered media</h2><ul className="border-b border-neutral-900">{media.map((asset) => <li key={asset.media_key} className="border-t border-neutral-900 py-4 font-mono text-sm"><a href={asset.delivery_url} rel="noreferrer" className="text-neutral-300 underline decoration-neutral-700 underline-offset-4">{asset.title}</a><p className="mt-1 text-xs text-neutral-700">{asset.case_key} · {asset.node_key} · {asset.filename} · {asset.delivery_state}</p></li>)}</ul></section>}
+      <footer className="mt-4 text-center font-mono text-xs lowercase tracking-wide text-neutral-700">only earned evidence is indexed. unresolved cases are not listed here.</footer>
+    </div></main>
   );
 }

@@ -1,5 +1,7 @@
 # THE SEVENTH READING — the capstone cipher (the six keepers spell the name)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE THIS CAPSTONE OR ITS FLAGS.** Current AVERYN synthesis and finale are defined in the V5 casebook and finale authority.
+
 > The final puzzle. The Seventh's name — **AVERYN** — was cut from the record, but the six keepers each
 > hid one letter of it before they fell, and each could keep it only the one way they knew: **in their
 > own technique.** To read the name the group returns to all six and reads each *in their own tongue* one

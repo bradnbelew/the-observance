@@ -1,4 +1,6 @@
-# The Observance — CANON SPINE (internal source of truth)
+# The Observance — CANON SPINE (V4 archive)
+
+> **SUPERSEDED V4 ARCHIVE — NOT A SOURCE OF TRUTH.** Use `arc/WORLD-BIBLE.md` for V5 canon.
 
 > Internal canon. Not a player document. The rest of the corpus (reports, stone
 > carvings, journal pages, Discord lines, dialogue trees) MUST obey this file and

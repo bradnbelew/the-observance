@@ -740,25 +740,17 @@ public final class UnlitVillageListener implements Listener {
     }
 
     private ItemStack borrowedLightStack(int amount) {
-        ItemStack stack = new ItemStack(Material.SOUL_LANTERN, Math.max(1, Math.min(64, amount)));
-        ItemMeta meta = stack.getItemMeta();
-        if (meta != null) {
-            meta.displayName(Component.text("Borrowed lantern"));
-            meta.getPersistentDataContainer().set(lightKey, PersistentDataType.BYTE, (byte) 1);
-            stack.setItemMeta(meta);
-        }
+        ItemStack stack = com.observance.watcher.structure.CanonicalArtifactRegistry.create(
+                "unlit_light", null);
+        if (stack == null) stack = new ItemStack(Material.SOUL_LANTERN, 1);
+        stack.setAmount(Math.max(1, Math.min(64, amount)));
         return stack;
     }
 
     private ItemStack returnToken() {
-        ItemStack stack = new ItemStack(Material.ECHO_SHARD, 1);
-        ItemMeta meta = stack.getItemMeta();
-        if (meta != null) {
-            meta.displayName(Component.text("A way back"));
-            meta.getPersistentDataContainer().set(returnKey, PersistentDataType.BYTE, (byte) 1);
-            stack.setItemMeta(meta);
-        }
-        return stack;
+        ItemStack stack = com.observance.watcher.structure.CanonicalArtifactRegistry.create(
+                "unlit_return", null);
+        return stack == null ? new ItemStack(Material.ECHO_SHARD, 1) : stack;
     }
 
     private boolean isBannedItem(ItemStack item) {

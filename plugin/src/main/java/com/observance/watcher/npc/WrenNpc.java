@@ -40,6 +40,7 @@ public final class WrenNpc {
     public static final String DISPLAY_NAME = "Wren";
 
     private final NamespacedKey markerKey;
+    private final NamespacedKey v5NpcKey;
     private final boolean citizensAvailable;
     private final CitizensBridge citizens;   // null unless Citizens is present
 
@@ -49,6 +50,7 @@ public final class WrenNpc {
     public WrenNpc(String namespace) {
         String ns = (namespace == null || namespace.isBlank()) ? "observance" : namespace;
         this.markerKey = new NamespacedKey(ns, PDC_WREN);
+        this.v5NpcKey = new NamespacedKey(ns, "v5_npc_id");
         this.citizensAvailable = probeCitizens();
         this.citizens = citizensAvailable ? new CitizensBridge() : null;
     }
@@ -177,6 +179,9 @@ public final class WrenNpc {
         try {
             e.getPersistentDataContainer().set(markerKey, PersistentDataType.STRING,
                     nodeHint == null ? "" : nodeHint);
+            // V5's dialogue rite uses one exact, story-versioned identity. Keep the historical
+            // body marker only as a body-manager compatibility tag; it is never a solve surface.
+            e.getPersistentDataContainer().set(v5NpcKey, PersistentDataType.STRING, "wren");
         } catch (Throwable ignored) {
             // some entity impls reject PDC — the fallback armor stand does not
         }
@@ -186,7 +191,9 @@ public final class WrenNpc {
     public boolean isWren(Entity e) {
         if (e == null) return false;
         try {
-            return e.getPersistentDataContainer().has(markerKey, PersistentDataType.STRING);
+            return e.getPersistentDataContainer().has(markerKey, PersistentDataType.STRING)
+                    || "wren".equals(e.getPersistentDataContainer().get(
+                    v5NpcKey, PersistentDataType.STRING));
         } catch (Throwable t) {
             return false;
         }

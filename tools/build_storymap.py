@@ -1,7 +1,13 @@
-"""Render design/story-map.json into a readable, interactive, offline STORY-WEB.html.
+"""RETIRED_PRE_V5_TOOL: old story-map renderer retained only as implementation history.
+
+Render design/story-map.json into a readable, interactive, offline STORY-WEB.html.
 The old node-graph (if present) is preserved as STORY-WEB-GRAPH.html.
 Run: python tools/build_storymap.py
 """
+raise SystemExit(
+    "RETIRED PRE-V5 TOOL: build_storymap.py renders the superseded story graph. "
+    "Use design/ARG-V5-NODE-MANIFEST.csv and the V5 blueprint."
+)
 import json, html, pathlib, shutil, datetime
 
 ROOT = pathlib.Path(r"D:/the-observance")

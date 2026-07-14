@@ -29,14 +29,9 @@ import java.util.function.Supplier;
  * and firing the climax beat. The token is NEVER typeable (it is not a phrase a player could guess or
  * read off a wiki); only THIS detector — a real synchronized group bow, witnessed by the server — can
  * produce it. That is the entire point of the opaque token (B-5): the climax cannot be spoofed at a
- * sign or in Discord; it must be PERFORMED, together. The detector posting the same token the seed
- * stores is enforced byte-for-byte by a build-time self-test — NOT in this repo: it's
- * {@code discord/src/forge/specs.selftest.ts} (the "rite token" check in {@code npm run specscheck}),
- * which cross-repo-reads THIS class's {@code config.yml} token and diffs it against the seed's
- * {@code accepting-crouch} row. (2026-07-05 audit: this docstring named a Java method,
- * {@code riteTokenSelfTest}, that has never existed — the guard is real and runs in CI/the verify-green
- * pipeline, just not where this comment said. Corrected here rather than left to mislead the next
- * person who goes looking for it in this file.)
+ * sign or in Discord; it must be PERFORMED, together. This detector belonged to the retired V4
+ * oracle, and V5 safe mode leaves it unreachable. Current production fairness is enforced by the V5
+ * node manifest, runtime bindings, and surface checks.
  *
  * <p>Detection (anti-cheese):
  * <ul>

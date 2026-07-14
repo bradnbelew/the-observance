@@ -10,8 +10,10 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Stairs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
@@ -28,19 +30,138 @@ public final class DeepHoldV4Geometry {
     private final int ox;
     private final int oy;
     private final int oz;
-    private long changed;
+    private final OperationBuffer operations;
 
-    private DeepHoldV4Geometry(World world, Location mouth) {
+    private DeepHoldV4Geometry(World world, Location mouth, OperationBuffer operations) {
         this.world = world;
         this.ox = mouth.getBlockX();
         this.oy = mouth.getBlockY();
         this.oz = mouth.getBlockZ();
+        this.operations = operations;
     }
 
     public record Survey(boolean safe, List<String> issues, int minimumSurfaceY,
                          int highestAuthoredRoofY, int lowestAuthoredFoundationY) { }
 
+    public record ChunkCoordinate(int x, int z) { }
+
     public record BuildResult(long changedBlocks, int rooms, int gates, int fixturesReserved) { }
+
+    public record BatchResult(int processedOperations, int cursor, int totalOperations,
+                              long changedBlocks, boolean complete) { }
+
+    /**
+     * Deterministic primitive-only shell plan.  Planning performs no block mutation; callers apply a
+     * bounded number of operations per server tick and may persist/restore {@link #cursor()} after a
+     * restart. Duplicate writes remain ordered because later circulation passes intentionally reopen
+     * room-shell walls.
+     */
+    public static final class BuildPlan {
+        private final World world;
+        private final UUID worldId;
+        private final int ox;
+        private final int oy;
+        private final int oz;
+        private final int[] coordinates;
+        private final short[] materials;
+        private int cursor;
+        private long changed;
+
+        private BuildPlan(World world, int ox, int oy, int oz, OperationBuffer operations) {
+            this.world = world;
+            this.worldId = world.getUID();
+            this.ox = ox;
+            this.oy = oy;
+            this.oz = oz;
+            this.coordinates = operations.coordinates();
+            this.materials = operations.materials();
+        }
+
+        public UUID worldId() { return worldId; }
+        public int originX() { return ox; }
+        public int originY() { return oy; }
+        public int originZ() { return oz; }
+        public int totalOperations() { return coordinates.length; }
+        public int cursor() { return cursor; }
+        public long changedBlocks() { return changed; }
+        public boolean complete() { return cursor >= coordinates.length; }
+
+        /** Restore a durable checkpoint. Replaying operations after an older checkpoint is safe. */
+        public void restoreCursor(int savedCursor) {
+            if (savedCursor < 0 || savedCursor > coordinates.length) {
+                throw new IllegalArgumentException("Hold build cursor " + savedCursor
+                        + " is outside 0.." + coordinates.length);
+            }
+            cursor = savedCursor;
+        }
+
+        /** Apply at most maxOperations and maxNanos of work on the current thread. */
+        public BatchResult applyBatch(int maxOperations, long maxNanos) {
+            if (maxOperations <= 0) throw new IllegalArgumentException("maxOperations must be positive");
+            if (world == null || !world.getUID().equals(worldId)) {
+                throw new IllegalStateException("Deep Hold build world changed while applying its plan");
+            }
+            long started = System.nanoTime();
+            int processed = 0;
+            Material[] palette = Material.values();
+            while (cursor < coordinates.length && processed < maxOperations
+                    && (maxNanos <= 0L || System.nanoTime() - started < maxNanos)) {
+                int packed = coordinates[cursor];
+                int x = (packed & 0xff) - 128;
+                int y = ((packed >>> 8) & 0xff) - 128;
+                int z = ((packed >>> 16) & 0x1ff) - 16;
+                int ordinal = Short.toUnsignedInt(materials[cursor]);
+                if (ordinal >= palette.length) throw new IllegalStateException("Unknown material ordinal " + ordinal);
+                int blockX = ox + x;
+                int blockZ = oz + z;
+                if (!world.isChunkLoaded(blockX >> 4, blockZ >> 4)) {
+                    throw new IllegalStateException("Deep Hold footprint chunk " + (blockX >> 4) + ","
+                            + (blockZ >> 4) + " lost its preparation ticket during build");
+                }
+                Block block = world.getBlockAt(blockX, oy + y, blockZ);
+                Material material = palette[ordinal];
+                if (block.getType() != material) {
+                    block.setType(material, false);
+                    changed++;
+                }
+                cursor++;
+                processed++;
+            }
+            return new BatchResult(processed, cursor, coordinates.length, changed, complete());
+        }
+
+        public BuildResult result() {
+            if (!complete()) throw new IllegalStateException("Deep Hold plan is not completely applied");
+            return new BuildResult(changed, DeepHoldV4Plan.ROOMS.size(), DeepHoldV4Plan.GATES.size(),
+                    DeepHoldV4Plan.FIXTURES.size());
+        }
+    }
+
+    private static final class OperationBuffer {
+        private int[] coordinates = new int[1 << 18];
+        private short[] materials = new short[1 << 18];
+        private int size;
+
+        void add(int x, int y, int z, Material material) {
+            if (x < -128 || x > 127 || y < -128 || y > 127 || z < -16 || z > 495) {
+                throw new IllegalStateException("Deep Hold write outside packed bounds: "
+                        + x + "," + y + "," + z);
+            }
+            int ordinal = material.ordinal();
+            if (ordinal > 0xffff) throw new IllegalStateException("Material palette exceeds packed range");
+            if (size == coordinates.length) {
+                int next = Math.multiplyExact(size, 2);
+                coordinates = Arrays.copyOf(coordinates, next);
+                materials = Arrays.copyOf(materials, next);
+            }
+            coordinates[size] = (x + 128) | ((y + 128) << 8) | ((z + 16) << 16);
+            materials[size] = (short) ordinal;
+            size++;
+        }
+
+        int[] coordinates() { return Arrays.copyOf(coordinates, size); }
+        short[] materials() { return Arrays.copyOf(materials, size); }
+    }
 
     /** Read-only survey. A failed survey must never be followed by a partial build. */
     public static Survey survey(World world, Location mouth) {
@@ -62,20 +183,21 @@ public final class DeepHoldV4Geometry {
         }
 
         int highestRoof = mouthY - 14; // keeper nave ceiling -16 plus its three roof layers
-        int minSurface = Integer.MAX_VALUE;
-        // Paper can return placeholder heightmap values for never-generated chunks.  A stale low
-        // value makes a safe site fail, while a stale high value could approve a roof that later
-        // reaches daylight.  Generate/load precisely the surveyed footprint before reading any
-        // heightmap column; this still occurs before a single Hold block is changed.
-        int minChunkX = (mouth.getBlockX() + DeepHoldV4Plan.MIN_X) >> 4;
-        int maxChunkX = (mouth.getBlockX() + DeepHoldV4Plan.MAX_X) >> 4;
-        int minChunkZ = (mouth.getBlockZ() + 36) >> 4;
-        int maxChunkZ = (mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z) >> 4;
-        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
-            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
-                world.getChunkAt(chunkX, chunkZ).load(true);
-            }
+        int ungenerated = 0;
+        int unloaded = 0;
+        for (ChunkCoordinate chunk : requiredChunks(mouth)) {
+            if (!world.isChunkGenerated(chunk.x(), chunk.z())) ungenerated++;
+            else if (!world.isChunkLoaded(chunk.x(), chunk.z())) unloaded++;
         }
+        if (ungenerated > 0 || unloaded > 0) {
+            if (ungenerated > 0) issues.add(ungenerated + " Hold footprint chunks are not generated");
+            if (unloaded > 0) issues.add(unloaded + " Hold footprint chunks are not loaded/ticketed");
+            issues.add("run /obs placehold prepare at this exact Mouth before plan/build");
+            return new Survey(false, List.copyOf(issues), Integer.MIN_VALUE, highestRoof, lowest);
+        }
+        int minSurface = Integer.MAX_VALUE;
+        // The explicit preparation command generated and ticketed every footprint chunk. Survey
+        // therefore reads real columns without ever hiding synchronous generation inside a plan.
         // Survey the authored footprint at an eight-block grid. The first 36 Z blocks are the
         // deliberate Mouth/descent earthwork; everything beyond must remain deeply buried.
         for (int x = DeepHoldV4Plan.MIN_X; x <= DeepHoldV4Plan.MAX_X; x += 8) {
@@ -98,6 +220,20 @@ public final class DeepHoldV4Geometry {
         return new Survey(issues.isEmpty(), List.copyOf(issues), minSurface, highestRoof, lowest);
     }
 
+    /** Complete build envelope, used by the asynchronous preparation phase and read-only survey. */
+    public static List<ChunkCoordinate> requiredChunks(Location mouth) {
+        if (mouth == null) return List.of();
+        int minChunkX = (mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE) >> 4;
+        int maxChunkX = (mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE) >> 4;
+        int minChunkZ = (mouth.getBlockZ() + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE) >> 4;
+        int maxChunkZ = (mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE) >> 4;
+        List<ChunkCoordinate> chunks = new ArrayList<>();
+        for (int x = minChunkX; x <= maxChunkX; x++) {
+            for (int z = minChunkZ; z <= maxChunkZ; z++) chunks.add(new ChunkCoordinate(x, z));
+        }
+        return List.copyOf(chunks);
+    }
+
     /** Heightmap caches can be stale on newly generated Paper chunks; inspect the real column. */
     private static int actualSurfaceY(World world, int x, int z) {
         for (int y = world.getMaxHeight() - 1; y >= world.getMinHeight(); y--) {
@@ -108,42 +244,38 @@ public final class DeepHoldV4Geometry {
         return world.getMinHeight();
     }
 
-    public static BuildResult build(World world, Location mouth, Consumer<String> progress) {
+    public static BuildPlan plan(World world, Location mouth, Consumer<String> progress) {
         Survey survey = survey(world, mouth);
         if (!survey.safe()) {
-            throw new IllegalStateException("Unsafe Deep Hold V4 placement: " + String.join("; ", survey.issues()));
+            throw new IllegalStateException("Unsafe Deep Hold V5 placement: " + String.join("; ", survey.issues()));
         }
-        DeepHoldV4Geometry builder = new DeepHoldV4Geometry(world, mouth);
-        builder.loadFootprintChunks();
-        builder.message(progress, "building the single Surface Mouth and four-flight Grand Stair");
+        OperationBuffer operations = new OperationBuffer();
+        DeepHoldV4Geometry builder = new DeepHoldV4Geometry(world, mouth, operations);
+        builder.message(progress, "planning the single Surface Mouth and four-flight Grand Stair");
         builder.buildSurfaceMouthAndGrandStair();
 
-        builder.message(progress, "building 32 isolated authored room shells across three strata");
+        builder.message(progress, "planning 32 isolated authored room shells across three strata");
         for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) builder.buildRoomShell(room);
 
-        builder.message(progress, "carving the reversible main route and district loops");
+        builder.message(progress, "planning the reversible main route and district loops");
         builder.carveAuthoredCirculation();
 
-        builder.message(progress, "adding room-specific civic architecture and sightline dressing");
+        builder.message(progress, "planning room-specific civic architecture and sightline dressing");
         for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) builder.dressRoom(room);
 
-        builder.message(progress, "building six main gatehouses and two controlled branch gates");
+        builder.message(progress, "planning six main gatehouses and two controlled branch gates");
         for (DeepHoldV4Plan.Gate gate : DeepHoldV4Plan.GATES) builder.buildGatehouse(gate);
 
-        builder.message(progress, "finishing burial envelope and surface seal");
+        builder.message(progress, "planning the burial envelope and surface seal");
         builder.finishSurfaceMouth();
-        return new BuildResult(builder.changed, DeepHoldV4Plan.ROOMS.size(),
-                DeepHoldV4Plan.GATES.size(), DeepHoldV4Plan.FIXTURES.size());
+        return new BuildPlan(world, mouth.getBlockX(), mouth.getBlockY(), mouth.getBlockZ(), operations);
     }
 
-    private void loadFootprintChunks() {
-        int minChunkX = (ox + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE) >> 4;
-        int maxChunkX = (ox + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE) >> 4;
-        int minChunkZ = (oz + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE) >> 4;
-        int maxChunkZ = (oz + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE) >> 4;
-        for (int cx = minChunkX; cx <= maxChunkX; cx++) {
-            for (int cz = minChunkZ; cz <= maxChunkZ; cz++) world.getChunkAt(cx, cz).load(true);
-        }
+    /** Compatibility path for tests/tools. Production commands use {@link #plan} in bounded ticks. */
+    public static BuildResult build(World world, Location mouth, Consumer<String> progress) {
+        BuildPlan plan = plan(world, mouth, progress);
+        while (!plan.complete()) plan.applyBatch(Integer.MAX_VALUE, 0L);
+        return plan.result();
     }
 
     private void buildSurfaceMouthAndGrandStair() {
@@ -702,15 +834,8 @@ public final class DeepHoldV4Geometry {
         return false;
     }
 
-    private Block at(int x, int y, int z) {
-        return world.getBlockAt(ox + x, oy + y, oz + z);
-    }
-
     private void set(int x, int y, int z, Material material) {
-        Block block = at(x, y, z);
-        if (block.getType() == material) return;
-        block.setType(material, false);
-        changed++;
+        operations.add(x, y, z, material);
     }
 
     private void message(Consumer<String> progress, String text) {

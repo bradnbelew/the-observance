@@ -3,7 +3,7 @@
  *
  * A discord.js v14 client that:
  *   - wears the presence: Watching "the ways" (BOT_PRESENCE from voice.ts).
- *   - ensures the guild's slash commands (/whisper, /link) are registered.
+ *   - ensures the guild's slash commands (/whisper, /link, /answer) are registered.
  *   - routes interactions to the command handlers under ./commands.
  *
  * The Watcher is the record-keeping facet of the presence — the land's memory.
@@ -21,35 +21,23 @@ import {
   type Message,
 } from 'discord.js';
 import { config } from '../config.js';
-import { ensurePrologueIgnited, getPlayerByDiscordId, insertObservation, logEvent, observerOptedOut } from '../db/repo.js';
-import { readSetting, readState, writeState } from '../showrunner/state.js';
+import { getPlayerByDiscordId, logEvent } from '../db/repo.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
-import { startVoiceCapture } from '../voice/receiver.js';
-import { maybeCloseCoopGate } from '../showrunner/coop-gate.js';
 import { handleWhisper, handleWhisperAutocomplete } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
-import { handleAnswer } from './commands/answer.js';
+import { handleAnswer, handleAnswerAutocomplete } from './commands/answer.js';
 import { resolveAnswer } from '../oracle/resolve.js';
+import { startPersistentShowrunner } from '../showrunner/persistent.js';
 
 /** Source tag for every row this process writes to event_log. */
 const SOURCE = 'the-watcher';
-
-/**
- * In-process latch for the cold-start ignition (B4 / OVERHAUL §3). Once a keeper has
- * been seen in #the-record, `prologue_ignited` is set in arc_state and this flips true
- * so we never re-read the flag on every subsequent message. Re-derives from the DB on a
- * cold boot (the first keeper post simply re-confirms the already-set flag, a no-op).
- */
-let prologueIgnited = false;
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
-    // voice tier (W5) — needed to see who is in voice + receive audio. Harmless when the tier is off.
-    GatewayIntentBits.GuildVoiceStates,
   ],
 });
 
@@ -75,15 +63,22 @@ client.once('clientReady', (c) => {
     void logEvent('error', SOURCE, `discord surface audit failed: ${message}`);
   });
 
-  // voice tier (W5) — "it heard you say it". Off unless voice_capture + a voice channel + a Whisper
-  // backend are all configured; a clean no-op otherwise. Fully fault-isolated (never blocks the bot).
-  void startVoiceCapture(c);
+  // The live showrunner belongs to the persistent worker. It pulses every 10-15 seconds, skips
+  // local overlap, and still takes the SQL lease shared with the recovery cron before every mutation.
+  startPersistentShowrunner({
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[the-watcher] persistent showrunner tick failed:', err);
+      void logEvent('error', SOURCE, `persistent showrunner tick failed: ${message}`);
+    },
+  });
 });
 
 client.on('interactionCreate', async (interaction: Interaction) => {
   if (interaction.isAutocomplete()) {
     try {
       if (interaction.commandName === 'whisper') await handleWhisperAutocomplete(interaction);
+      if (interaction.commandName === 'answer') await handleAnswerAutocomplete(interaction);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       console.error(`[the-watcher] ${interaction.commandName} autocomplete stumbled:`, err);
@@ -154,37 +149,6 @@ client.on('messageCreate', async (message: Message) => {
     // rate-limits an unlinked author by discord_id and stays silent on a hit).
     const player = await getPlayerByDiscordId(message.author.id);
 
-    // IGNITION (B4 / OVERHAUL §3): the first time a KEEPER is seen acting in #the-record,
-    // fire the cold-start so the next autonomy tick speaks the frame-break ack. Latched
-    // in-process after it fires (and gated on a bound keeper) so it costs nothing on the
-    // steady-state scan. Fault-isolated: an ignition stumble never blocks the answer path.
-    if (player && !prologueIgnited) {
-      try {
-        const fired = await ensurePrologueIgnited(Date.now());
-        prologueIgnited = true; // either we set it, or it was already set — stop checking.
-        if (fired) {
-          void logEvent('info', SOURCE, `prologue ignited by ${player.name} in #the-record`);
-          await postImmediateIgnitionAck(message);
-        }
-      } catch (err) {
-        // leave the latch unset so a later message retries; never speak an error.
-        const m = err instanceof Error ? err.message : String(err);
-        void logEvent('warn', SOURCE, `prologue ignition stumbled: ${m}`);
-      }
-    }
-
-    // THREE-HANDS COOP GATE (m4-three-hands): the WORD leg. If a linked keeper posts the convergence word
-    // while the plugin's world-legs marker is fresh, the Threshold opens. Runs alongside the normal scan
-    // (posting the word can also solve bound-word if still open). Fault-isolated — never blocks the scan.
-    if (player) {
-      try {
-        const coopReply = await maybeCloseCoopGate(player, raw);
-        if (coopReply) await message.reply({ content: coopReply });
-      } catch {
-        /* a missed coop close is silence too — never touches the scan */
-      }
-    }
-
     const result = await resolveAnswer(
       { player, discordId: message.author.id },
       raw,
@@ -203,22 +167,6 @@ client.on('messageCreate', async (message: Message) => {
         return;
       case 'silent':
         // ordinary chat, a true miss, an empty line, or a replay → say NOTHING.
-        // Observer Tier-1 capture (W4): ordinary chat is the material worth echoing — a puzzle answer
-        // lands in solved/withheld, so this never captures answers. Store verbatim ONLY when the global
-        // switch is on, the speaker is linked, and the per-player opt-out permits capture before storage.
-        // Fault-isolated: a capture stumble never touches the scan (silence-is-canon).
-        if (player) {
-          try {
-            const t = raw.trim();
-            if (t.length >= 4 && t.length <= 512
-                && (await readSetting<boolean>('observer_capture', false)) === true
-                && !(await observerOptedOut(player.mc_uuid))) {
-              await insertObservation({ mc_uuid: player.mc_uuid, source: 'discord', text: t, context: 'the-record' });
-            }
-          } catch {
-            /* a missing capture is always safer than a broken scan */
-          }
-        }
         return;
     }
   } catch (err) {
@@ -252,22 +200,6 @@ async function auditDiscordSurface(readyClient: Client<true>): Promise<void> {
   console.log(`[the-watcher] discord surface ready: ${guild.name} / #${'name' in channel ? channel.name : config.channels.theRecord}`);
 }
 
-/**
- * Close the "first post feels dead" gap. The showrunner still owns the richer scheduled prologue
- * path, but a Discord ignition should have an immediate in-channel receipt; otherwise the first
- * supernatural handshake can look like an offline bot until the next scheduled tick. This writes the
- * same one-shot latch the showrunner uses, so a successful immediate ack is never repeated later.
- */
-async function postImmediateIgnitionAck(message: Message): Promise<void> {
-  const nowIso = new Date().toISOString();
-  const state = await readState();
-  if (state.prologue_acked === true) return;
-  await message.reply({ content: voice.recordOpened() });
-  state.prologue_acked = true;
-  await writeState(state, nowIso);
-  await logEvent('info', SOURCE, 'prologue ack posted immediately from #the-record ignition');
-}
-
 client.on('error', (err) => {
   console.error('[the-watcher] client error:', err);
   void logEvent('error', SOURCE, `client error: ${err.message}`);
@@ -279,7 +211,7 @@ client.on('error', (err) => {
  * operation — but without them, ANY future `void somePromise()` call site whose promise rejects
  * outside its own try/catch, or a third-party library callback that throws synchronously, crashes
  * the whole Node process with no log line (Node's default behavior), taking down every surface
- * (whisper, link, answer, the-record scan, voice tier) at once with zero record of why.
+ * (whisper, link, answer, the-record scan) at once with zero record of why.
  *
  * unhandledRejection is logged but does NOT exit — a stray rejection is a bug to fix, not
  * necessarily evidence of a corrupted process, and the bot staying up matters more here than

@@ -1,5 +1,7 @@
 # Next Session: Deep Hold Redesign Handoff
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT RESUME WORK FROM THIS HANDOFF.** The redesign is represented by the V5 blueprint, manifests, and operator guide.
+
 ## Read this first
 
 The generated Deep Hold builds through plugin versions `0.3.25`-`0.3.28` are **rejected**. Do not deploy them, polish them incrementally, or treat their layouts as a foundation. Version `0.3.28` passed automated checks but still failed the live visual review badly; those checks proved only internal coordinate consistency, not architectural quality.

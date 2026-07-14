@@ -1,70 +1,73 @@
 # The Observance
 
-A server-side **Paper plugin + small cloud brain** that runs a slow-burn, personalized
-horror/mystery ARG for a veteran Minecraft friend group.
+The Observance is a production Minecraft ARG for Paper `1.21.11`: a ten-case, 82-node investigation spanning a protected command-built Deep Hold, the village-well Unlit, a legacy-hosting website, Discord, fixed found footage, and a branch-specific cinematic server close.
 
-**North star:** *"From The Fog, but it knows your name."*
+The campaign is designed for ordinary Minecraft clients in Adventure mode. Players do not manually build ARG structures, break puzzle blocks, inspect real server logs, install client mods, or depend on an operator moving rooms during play.
 
-It watches how people actually play, forms a per-player read, and authors an
-emergent, **soft-pressure** mystery delivered through vanilla surfaces — signs,
-books, sounds, named mobs, structures — plus a Discord layer. The land has
-**customs** players must discover and perform; an unseen presence keeps a record
-of who honors them; and the campaign builds to a collective **ritual** that
-either makes the group *kept* or casts them out.
+## Current V5 premise
 
-> Two reading levels:
-> - **`DESIGN.md`** — the full technical build (safe to read; no story spoilers).
-> - **`arc/`** — the *sealed* story bible. **Do not open if you want to play unspoiled.**
+During the Long Cold, a real community built the Hold as a refuge. Six distinct officials later hid evidence of a falsified civic disaster and the erased registrar Averyn, whose consciousness became trapped as the human interface of the Record. Four modern investigators reached the same archive and failed after Wren betrayed their routes. The current group must reconstruct both histories, repair the Hold, decide Wren's fate, and close the Record without binding Averyn into it again.
 
----
+The story is not a six-plus-one repetition or a “six were secretly one” retcon. Every substantial case and every fixed media asset is required.
 
-## Architecture (where everything lives)
+## Repository map
 
-| Piece | Home | Role |
-|---|---|---|
-| World + plugin | **Crafty-managed Paper 1.21.11 server** | the deterministic engine — Phase 0 needs **zero** AI |
-| Shared state | **Supabase** (Postgres) | dossiers, heatmap, Whisper ledger, custom + arc state |
-| Live model | **Claude API** | rare, validated "scalpel" beats (text only) |
-| Discord bot | **cheap cloud VPS** | the Whisper/hint surface + reports |
-| Autonomous *showrunner* | **same VPS, scheduled** | authors/tunes content **between** sessions (not a live puppeteer) |
-| Spoiler-free dashboard | **Vercel** | health / heatmap / jank metrics — no story |
+| Path | Authority |
+| --- | --- |
+| `arc/WORLD-BIBLE.md` | only spoiler-truth authority |
+| `design/ARG-V5-NODE-MANIFEST.csv` | exactly 82 required nodes and their graph |
+| `design/EXPERIENCE-MANIFEST.md` | player order and surface responsibilities |
+| `arc/v5/` | exact books, NPC dialogue, media receipts, solutions, and hints |
+| `design/ARG-V5-BOOK-PLACEMENT.csv` | exact holder, mount, facing, unlock, and PDC for every book |
+| `design/ARG-V5-ROOM-ASSIGNMENTS.csv` | 32-room case ownership |
+| `design/ARG-V5-FIXTURE-OWNERSHIP.csv` | 76-fixture node ownership |
+| `design/ARG-V5-ARTIFACT-MANIFEST.csv` | 21 critical item/recovery contracts |
+| `plugin/` | Paper plugin and deterministic world builder/runtime |
+| `discord/` | Discord bot, showrunner worker, Supabase migrations/seeds |
+| `dashboard/` | Copperline website, public Record, and author console |
+| `datapack/` | inert V5 deployment/version marker; no story state or retired dimension |
+| `resourcepack/` | auto-pushed client assets |
+| `tools/` | content, build, deployment, and rehearsal checks |
 
-**Core principle:** a deterministic *haunting engine* is the spine; the LLM is a
-**scalpel** used rarely, for the one thing only it can do (personalized text),
-always with a deterministic fallback. The world never breaks if the model is
-slow, weird, or offline. See `DESIGN.md`.
+Every pre-V5 design/lore document carries an explicit archive header and is retained only as development history. It is not an implementation, setup, or readiness source.
 
----
+## Runtime architecture
 
-## Provisioning checklist (do these to stand it up)
+- **Minecraft / Paper 1.21.11 / Java 21:** authoritative physical gameplay, protection, gates, NPC responses, recovery, and immediate finale.
+- **Supabase:** durable group/node/evidence/finale state and safe public projections.
+- **Discord worker:** identity linking, answers, hints, mirrored receipts, and a fast lease-safe showrunner tick.
+- **Vercel dashboard/site:** Copperline trail, required media routes, public Record, author controls, and coda.
+- **Render:** persistent Discord worker plus low-frequency recovery cron.
 
-1. **VPS** — spin up a small Linux box (e.g. Hetzner CPX11 ~€4/mo, or DigitalOcean
-   $6). Ubuntu LTS. This hosts the Discord bot + the scheduled showrunner.
-2. **Supabase** — create a project; grab the connection string + service key.
-3. **Discord** — create an application + bot, invite it to the server, grab the token.
-4. **Claude API** — you have keys; set `ANTHROPIC_API_KEY`.
-5. **Local dev** — JDK 21 + IntelliJ IDEA (you have it) + a local Paper jar for testing.
-6. **Crafty/Paper server** — confirm Paper 1.21.11, plugin-upload access, datapack access, and resource-pack URL support.
+External services enhance delivery but never hold Minecraft theater hostage. Critical NPC replies and the finale run locally and synchronously.
 
-Phase 0 (below) needs **only #5 + #6**. The VPS/Supabase/Discord/Claude come online for Phase 1.
+## Build
 
----
+Windows production candidate (live media is checked by default):
 
-## Build phases (each phase is also the in-game escalation)
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File tools\audit_all.ps1
+```
 
-- **Phase 0 — The Haunting + The Customs.** Deterministic engine: signal tracker,
-  traffic/territory map, drama budget, curated beat library, the custom-detection
-  system, and the Archivist **reports**. No AI, no Discord. Ships first, proves the world.
-- **Phase 1 — The Scalpel + Whispers.** The one validated LLM beat type
-  (personalized reports/journals) + the Discord **Whisper** hint economy + the bridge.
-- **Phase 2 — The Body & World.** Citizens2 Keeper NPC, FAWE structures, per-player
-  PacketEvents surfaces, the ending ritual ("The Accepting").
-- **Phase 3 — The Ear.** Simple Voice Chat → Whisper STT feeding the slow dossier.
+Install Node dependencies with `npm.cmd ci` in `discord/` and `dashboard/` before the first clean run. The exact active/retired tool boundary is documented in `tools/README.md`. `-SkipLiveExternalMedia` is for offline development only and cannot produce a launch receipt.
 
----
+The release pipeline must select one plugin jar, remove/refuse stale Observance jars, rebuild the SQL bundle rather than hand-editing it, and record hashes for every deployed artifact.
 
-## Build / run
+## World and launch setup
 
-- Java 21, Paper API dependencies resolved by the plugin Gradle wrapper. Open in IntelliJ.
-- `cd plugin && gradlew.bat build` on Windows, or `cd plugin && ./gradlew build` elsewhere, then drop the jar in the Paper server `plugins/` folder and restart.
-- Local test: run a Paper jar locally, hot-reload during dev.
+Use `design/V5-WORLD-SETUP-AND-TESTING.md` and `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`. Do not use an older rehearsal/status document as a live command authority.
+
+High-level order:
+
+1. snapshot production data/world and rehearse on a clone;
+2. apply the V5 migration and explicit stale-row retirement;
+3. install exactly one V5 plugin jar plus current datapack/resource pack;
+4. bind the real village well and individual NPC anchors;
+5. preview, survey, build, persist, and audit the Deep Hold at a fresh site;
+6. verify all external media, Discord commands, Render worker, Vercel routes, and DNS;
+7. complete non-op and failure/restart rehearsals;
+8. arm the finale only for the real run.
+
+## Release standard
+
+“Build succeeded” is not play readiness. Release requires 82/82 content validation, exact books/signs/items/NPC parity, full Hold/Unlit traversal, every gate/restart/recovery scenario, clean Paper `1.21.11` evidence, all three Wren branches, both name treatments, real-client typography/hitbox checks, production service verification, and a branch-specific save/goodbye/kick/shutdown/Coda sequence.

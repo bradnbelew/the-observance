@@ -1,5 +1,7 @@
 # ARG Design Craft — The Genre's Real Rules
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Any project-specific recommendation below is superseded by the V5 manifests and runbooks.
+
 **Lane:** arg-craft. **For:** The Observance (server-side Minecraft ARG, Paper 1.21.x + Discord bot + Supabase/Vercel dashboard, veteran friend group, Path A = one auto-pushed resource pack). North star: *"From The Fog, but it knows your name."*
 
 This note is the **design-craft companion** to `design/ARG-RESEARCH.md` (which covers environmental-storytelling technique and the Minecraft realization layer). Here the focus is the *genre's authored rules*: TINAG, trailheads/rabbit holes, hard-but-fair puzzle design, hint/curtain economies, multi-week pacing under irregular play, solo-vs-collective design, red herrings, and the curtain. Every lesson is pulled from a named case study and tagged **→ Observance:**.

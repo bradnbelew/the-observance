@@ -22,8 +22,8 @@
   BOTH keys. Verbatim:
   ```
   NEXT_PUBLIC_SUPABASE_URL=https://fdnmhbpxnodrnbrzrlqq.supabase.co
-  NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...a9nznhUt_lmlS6uBeDEtxF3O3mdDTay93SeDTNXd8Vg
-  SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...6L9bDyreEGMO4O7Y2NEaVNcZmhz91VM5n9i1W89j_d0
+  NEXT_PUBLIC_SUPABASE_ANON_KEY=<redacted; retired credential removed>
+  SUPABASE_SERVICE_ROLE_KEY=<redacted; retired credential removed>
   ADMIN_EMAILS=bradnbelew@gmail.com
   ```
   The `service_role` key bypasses RLS. The same project ref (`fdnmhbpxnodrnbrzrlqq`) is also hardcoded in

@@ -1,0 +1,105 @@
+export interface RequiredMediaAsset {
+  key: string;
+  caseKey: string;
+  nodeKey: string;
+  solveNodeKey?: string;
+  kind: 'video' | 'audio';
+  url: string;
+  canonicalFilename: string;
+  hostedFilename?: string;
+  acceptedAliases: readonly string[];
+  sourceBytes: number;
+  sha1: string;
+  payload: string;
+  prerequisiteFlag: string;
+  completionFlag: string;
+  narrativeUse: string;
+}
+
+/**
+ * Fixed V5 media contract, byte-for-byte mirrored from arc/v5/media-manifest.json.
+ * These five assets already exist and are never regenerated or re-recorded.
+ * canon.selftest.ts compares every field to the JSON owner so a hand edit cannot drift silently.
+ */
+export const REQUIRED_MEDIA: readonly RequiredMediaAsset[] = [
+  {
+    key: 'clip_01_ash_locker',
+    caseKey: 'C07',
+    nodeKey: 'A07',
+    solveNodeKey: 'A08',
+    kind: 'video',
+    url: 'https://youtu.be/du-qp_clP7c',
+    canonicalFilename: 'clip_01_prior_base.mp4',
+    hostedFilename: 'base_check_06.mp4',
+    acceptedAliases: ['ash 13', 'ash thirteen', 'ash-13'],
+    sourceBytes: 421443427,
+    sha1: '844c2aaf8fb51836add4b59e81abe4131c8d6d0a',
+    payload: 'ASH-13',
+    prerequisiteFlag: 'v5_a06_route',
+    completionFlag: 'v5_a08_ash13',
+    narrativeUse: "Ash's Locker 13 key after the camp and Copperline route investigation",
+  },
+  {
+    key: 'clip_02_reeds_cache',
+    caseKey: 'C04',
+    nodeKey: 'CW06',
+    kind: 'video',
+    url: 'https://youtu.be/iKqvPMHjR74',
+    canonicalFilename: 'clip_02_far_water_count.mp4',
+    hostedFilename: 'shore_copy_unlisted.mp4',
+    acceptedAliases: ['where the reeds fold back', 'the reeds fold back', 'reeds fold back'],
+    sourceBytes: 132001373,
+    sha1: '9b979e349c7a0d7497fd0fe76d0450e744dc39d0',
+    payload: 'WHERE THE REEDS FOLD BACK',
+    prerequisiteFlag: 'v5_cw05_counterfeit',
+    completionFlag: 'v5_cw06_reeds',
+    narrativeUse: "locates Averyn's original-filter cache and clears Nessa",
+  },
+  {
+    key: 'clip_03_watch_correction',
+    caseKey: 'C03',
+    nodeKey: 'KB01',
+    kind: 'video',
+    url: 'https://youtu.be/pSPhBYMGIRc',
+    canonicalFilename: 'clip_03_black_moon_toll.mp4',
+    hostedFilename: 'watch_floor_9_lit.mp4',
+    acceptedAliases: ['stay awake'],
+    sourceBytes: 108195021,
+    sha1: '9b6552e21ec01e6f046027247a689c8dd78b8ce1',
+    payload: 'STAY AWAKE',
+    prerequisiteFlag: 'v5_case_c02_complete',
+    completionFlag: 'v5_kb01_stay_awake',
+    narrativeUse: "restores Brann's paired-watch order and altered timestamp",
+  },
+  {
+    key: 'clip_04_release_instruction',
+    caseKey: 'C10',
+    nodeKey: 'RP01',
+    kind: 'video',
+    url: 'https://youtu.be/DtZizx5QIEs',
+    canonicalFilename: 'clip_04_release_room_late.mp4',
+    hostedFilename: 'room_below_noaudio.mp4',
+    acceptedAliases: ['six return one is not kept', 'six return and one is not kept', 'six return one not kept'],
+    sourceBytes: 15065612,
+    sha1: '1cb3e600d3e16e9bb1434fa65ddbdff04f512fbd',
+    payload: 'SIX RETURN, ONE IS NOT KEPT',
+    prerequisiteFlag: 'v5_case_c09_complete',
+    completionFlag: 'v5_rp01_instruction',
+    narrativeUse: "return six affidavits while leaving Averyn's Record slot unbound",
+  },
+  {
+    key: 'spectrogram_averyn_voice',
+    caseKey: 'C09',
+    nodeKey: 'AR01',
+    kind: 'audio',
+    url: 'https://www.dropbox.com/scl/fo/72dz7n8lpa1gtiymtkyjl/AMbzcJsSm0x2_TkUq1Bzkv4?rlkey=tsom0g4z87qqxv7jo6cr989v5&st=014v4y3g&dl=0',
+    canonicalFilename: 'field_audio_03.wav',
+    acceptedAliases: ['i was not kept', 'was not kept'],
+    sourceBytes: 58256,
+    sha1: '2003f0151c1ba643c649b5ed0e19d1b31bb68319',
+    payload: 'I WAS NOT KEPT',
+    prerequisiteFlag: 'v5_case_c08_complete',
+    completionFlag: 'v5_ar01_not_kept',
+    narrativeUse: 'first unambiguous proof of a constrained human voice inside the Record',
+  },
+] as const;

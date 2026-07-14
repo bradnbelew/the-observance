@@ -1,5 +1,7 @@
 # The Observance - Director Concern Closure
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A READINESS VERDICT.** Current release gates are in the V5 runbooks and live-test matrix.
+
 This file exists to answer the original director concerns directly. It is not a
 victory lap. It is the guard against drifting back into a polished version of
 the same problems: six keeper stations, irrelevant side lore, brittle answer

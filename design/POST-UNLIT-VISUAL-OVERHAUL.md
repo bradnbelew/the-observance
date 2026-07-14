@@ -1,5 +1,7 @@
 # Post-Unlit Visual / World-Build Overhaul
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A SESSION PROMPT OR BUILD BRIEF.** Use the generated V5 blueprint and setup guide.
+
 Use this as the next-session prompt after the Unlit dimension work lands.
 
 ```text

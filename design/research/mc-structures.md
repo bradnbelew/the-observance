@@ -1,5 +1,7 @@
 # mc-structures — World & Structure tech for The Observance (Paper 1.21.x / Java 21)
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Version-specific claims require fresh verification against Paper 1.21.11.
+
 Research lane: code-level world mutation via FastAsyncWorldEdit (FAWE) + WorldEdit API, with
 "reveal discipline" (only mutate when unobserved). Target consumers: `SmallStructureBeat`,
 the FAWE branch, and the showrunner's between-session structure spawns.

@@ -1,5 +1,7 @@
 # npc-and-watcher-voice — TWO VOICE SETS, KEPT APART
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** Current V5 dialogue lives in `arc/v5/npc-dialogue.json`.
+
 > Authoring file for spoken lines, not a player document. Two sets live here and they
 > must never bleed into one another. **SET A** is the surface — living, modern-rough
 > people who never went deep, or went and came back wrong, or won't go at all. They

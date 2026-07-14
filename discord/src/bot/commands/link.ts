@@ -1,17 +1,12 @@
 /**
- * /link <name> — bind a discord voice to a name worn in the world.
+ * /link <name> <callback> <code> — prove the online Minecraft hand, then atomically bind it.
  *
- * The watcher matches the offered name against the keepers it has already seen
- * (repo.linkDiscord, case-insensitive on players.name) and sets discord_id.
- *   - matched  -> voice.linked(name), confirming in the watcher's tongue.
- *   - no match -> voice.linkUnknown(name): walk the ways once where it can see
- *     you, then offer the name again.
- *
- * Replies are ephemeral — a binding is between the keeper and the record.
- * Every player-facing string comes from voice.ts.
+ * The service-role RPC validates the Copperline callback and LS04 prerequisite before it can touch
+ * players.discord_id. It also owns concurrency, idempotent replay, conflict privacy, and recovery
+ * from this Discord account's accidental prior name. Replies remain ephemeral.
  */
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
-import { getPlayerByDiscordId, linkDiscord, logEvent } from '../../db/repo.js';
+import { claimIdentityHandoff, logEvent } from '../../db/repo.js';
 import { voice } from '../../voice.js';
 
 const SOURCE = 'the-watcher/link';
@@ -20,33 +15,48 @@ export async function handleLink(
   interaction: ChatInputCommandInteraction,
 ): Promise<void> {
   const name = interaction.options.getString('name', true).trim();
+  const callback = interaction.options.getString('callback', true).trim();
+  const code = interaction.options.getString('code', true).trim();
 
-  // CRITICAL (audit): defer ephemeral before the linkDiscord DB lookup so a slow round-trip can't
-  // trip Discord's 3s "did not respond". Linking is always a private interaction → ephemeral.
+  // Defer before any network I/O so a slow database round trip cannot exceed Discord's response
+  // deadline. Identity responses are private even when a name is unknown or already claimed.
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-  const existing = await getPlayerByDiscordId(interaction.user.id);
-  if (existing) {
+  try {
+    const result = await claimIdentityHandoff(interaction.user.id, name, callback, code);
+    if (result.state === 'invalid') {
+      await interaction.editReply({ content: voice.handoffRejected() });
+      return;
+    }
+    if (result.state === 'blocked') {
+      await interaction.editReply({ content: voice.handoffBlocked() });
+      return;
+    }
+    if (result.state === 'unknown' || result.state === 'conflict'
+      || result.state === 'challenge' || !result.player) {
+      // One response covers absent, ambiguous, privately claimed, expired, consumed, and wrong proof.
+      await interaction.editReply({ content: voice.handoffProofRejected() });
+      return;
+    }
+
+    const action = result.recovered
+      ? 'recovered'
+      : result.inserted
+        ? 'filed'
+        : 'replayed';
+    await logEvent(
+      'info',
+      SOURCE,
+      `${action} LS05 identity handoff for ${result.player.name} (${result.player.id})`,
+    );
     await interaction.editReply({
-      content: existing.name.toLowerCase() === name.toLowerCase()
-        ? voice.linked(existing.name)
-        : voice.linkFixed(existing.name),
+      content: result.recovered
+        ? voice.handoffRecovered(result.player.name)
+        : voice.handoffReceipt(),
     });
-    return;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    void logEvent('error', SOURCE, `LS05 atomic identity handoff failed: ${message}`);
+    await interaction.editReply({ content: voice.handoffUnavailable() });
   }
-
-  const player = await linkDiscord(interaction.user.id, name);
-
-  if (!player) {
-    await interaction.editReply({ content: voice.linkUnknown(name) });
-    return;
-  }
-
-  await logEvent(
-    'info',
-    SOURCE,
-    `bound discord ${interaction.user.id} -> ${player.name} (${player.id})`,
-  );
-
-  await interaction.editReply({ content: voice.linked(player.name) });
 }

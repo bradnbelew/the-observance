@@ -18,22 +18,32 @@
  *                    wrong answer never reveals closeness and a replay never
  *                    re-rewards. (ephemeral, so public chat isn't spammed.)
  *
- * The `[puzzle]` option is an author/debug convenience only: the resolver matches
- * the whole OPEN web regardless, so naming a puzzle does NOT narrow the match (it
- * is logged for context). Every player-facing string comes from voice.ts.
+ * The optional `[puzzle]` is a real scope. Autocomplete exposes only currently-open V5
+ * Discord/media nodes; selecting one prevents a shared plaintext from resolving a different mark.
+ * A manually guessed future key behaves exactly like a miss and reveals nothing.
  */
-import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
-import { getPlayerByDiscordId, logEvent } from '../../db/repo.js';
+import { MessageFlags, type AutocompleteInteraction, type ChatInputCommandInteraction } from 'discord.js';
+import { getPlayerByDiscordId, logEvent, searchAnswerablePuzzles } from '../../db/repo.js';
 import { resolveAnswer } from '../../oracle/resolve.js';
 import { voice } from '../../voice.js';
 import { postToTheRecord } from '../../showrunner/discord.js';
 
 const SOURCE = 'the-watcher/answer';
 
+export async function handleAnswerAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
+  const focused = interaction.options.getFocused();
+  const choices = await searchAnswerablePuzzles(typeof focused === 'string' ? focused : '');
+  await interaction.respond(choices.map((choice) => ({
+    name: `${choice.caseKey} · ${choice.nodeKey} · ${choice.title}`.slice(0, 100),
+    value: choice.puzzleKey,
+  })));
+}
+
 export async function handleAnswer(
   interaction: ChatInputCommandInteraction,
 ): Promise<void> {
   const raw = interaction.options.getString('text', true);
+  const puzzleKey = interaction.options.getString('puzzle', false);
 
   // CRITICAL (audit): defer IMMEDIATELY. resolveAnswer does ~8-10 serial Supabase round-trips that
   // can exceed Discord's 3s ack window and fire a red "application did not respond" on camera. We
@@ -54,6 +64,7 @@ export async function handleAnswer(
     { player, discordId: interaction.user.id },
     raw,
     'discord',
+    puzzleKey,
   );
 
   // 3. speak per the result.
@@ -61,9 +72,8 @@ export async function handleAnswer(
     case 'solved': {
       // the watcher answers in the open — its words are public, the world heard.
       // The resolver already picked the ONE in-register line for this outcome
-      // (next_clue says "the way goes on"; side_quest says "this is not the way";
-      // main_beat says "it turns"). We do NOT append a second line: appending the
-      // next_clue nudge to a side_quest/main_beat would contradict its own voice,
+      // The seeded outcome voice owns the full acknowledgement. We do NOT append a second line:
+      // doing so could contradict the node's authored result or leak a future route,
       // and the next clue itself is surfaced in-world (the forged carving / beat),
       // never by doubling a line here. Speak the single resolved line, verbatim.
       // The ephemeral editReply is the solver's ack; the PUBLIC record of the solve goes to

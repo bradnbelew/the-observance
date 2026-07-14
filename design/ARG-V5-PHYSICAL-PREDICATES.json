@@ -1,0 +1,1549 @@
+{
+  "schema_version": 1,
+  "authority": "Executable predicate authority for every ARG-V5-RUNTIME-BINDINGS.csv row owned by plugin, plugin_unlit, or plugin_finale. A runtime implementation may be stricter for safety but may not weaken, auto-complete, or substitute a generic interaction for these predicates.",
+  "coordinate_convention": {
+    "offset_order": ["right", "up", "front"],
+    "origin": "the site anchor in DEEP-HOLD-FIXTURE-MANIFEST.csv or the registered external site anchor",
+    "front": "the fixture expected_front direction toward its documented player standing cell",
+    "rotation": "Bukkit ItemFrame Rotation ordinal 0..7; quarter turns are 0,2,4,6"
+  },
+  "durability_profiles": {
+    "minecraft_local_primary": {
+      "authoritative": "local_plugin_data",
+      "local_commit": "atomic replace of the local V5 progress record before rewards, gates, or theater; protected world state is a readback, not the only record",
+      "supabase": "asynchronous idempotent mirror; outage or stale remote state never rolls back a locally committed physical solve",
+      "reconcile": "local completion wins for plugin-owned flags; a remote true may hydrate local state only after prerequisite and manifest-version validation"
+    },
+    "finale_local_primary": {
+      "authoritative": "local_finale_state_file",
+      "local_commit": "fsync temporary file and atomic replace before any finale presentation, kick, save, or shutdown",
+      "supabase": "asynchronous coda mirror after the local commit; never a condition for theater",
+      "reconcile": "COMMITTED or CODA local state is terminal and cannot be reset by remote state"
+    }
+  },
+  "global_rules": {
+    "protection": "Players cannot break, place, rotate, extract, or insert blocks/items except components explicitly exposed by the active handler.",
+    "item_identity": "Every required evidence or artifact item must match material and all listed PDC pairs. Display name or vanilla material alone never satisfies a predicate.",
+    "atomicity": "A completion flag, branch value, inventory escrow, and reward delivery are one serialized transaction. On any persistence failure the world is restored to its pre-attempt state.",
+    "wrong_items": "A rejected item is returned to the same inventory slot when possible, then player inventory, then protected recovery escrow; it is never deleted or dropped into an unprotected world cell.",
+    "recovery": "Recovery scans online inventories, ender chests, protected fixture inventories, and recovery escrow before reissuing any unique artifact.",
+    "no_touch_completion": "No predicate may complete merely because a player entered a radius, clicked an arbitrary block, or touched the named site. Every completion below requires all enumerated evidence, state, answer, route, or quorum conditions.",
+    "answer_normalization": "Answer-sign text is Unicode NFKC, color/control stripped, trimmed, uppercased with Locale.ROOT, punctuation converted to spaces, and internal whitespace collapsed. Only explicit accepted values below pass.",
+    "prerequisites": "All listed flags must be true before inputs are accepted. A locked interaction reports the first missing case/node without consuming or changing anything.",
+    "conduct_verdict": {
+      "source": "only durable first-ballot telemetry from WR05 and RP03; retired customs, bowing, compliance, and hidden morality scores are forbidden inputs",
+      "recorded_inputs_per_vote": ["initial_roster_count", "maximum_visible_roster_count", "first_ballot_eligible_count", "first_ballot_cast_count", "first_ballot_distinct_choices", "first_ballot_tied", "resolution_rounds", "disconnect_resnap_count"],
+      "first_ballot": "the first durable vote window snapshot, closed when its initial visible roster all votes, its 45-second window ends, or a disconnect resnapshot becomes necessary; it is recorded before any tiebreak/revote and may be valid but incomplete",
+      "precedence": [
+        "SOLO when max(WR05.maximum_visible_roster_count, RP03.maximum_visible_roster_count) == 1",
+        "DIVIDED when either first ballot has first_ballot_distinct_choices > 1 or first_ballot_tied=true",
+        "UNANIMOUS when both first ballots have cast_count == eligible_count, distinct_choices == 1, and the maximum visible roster is > 1",
+        "PERSISTENT otherwise, including an incomplete first ballot followed by a valid disconnect resnapshot or later resolution round"
+      ],
+      "totality": "RP03 cannot commit without valid WR05 and RP03 first-ballot telemetry plus eventual resolved branches. For every valid committed pair exactly one precedence branch applies; null/unknown is rejected, not defaulted.",
+      "persisted_field": "v5_conduct_verdict",
+      "allowed_values": ["solo", "divided", "unanimous", "persistent"]
+    }
+  },
+  "nodes": [
+    {
+      "node_id": "LS06",
+      "owner": "plugin",
+      "prerequisites": ["v5_ls05_bound"],
+      "site_id": "forgotten_mouth",
+      "handler": "tagged_deposit",
+      "completion_flag": "v5_case_c01_complete",
+      "predicate": {
+        "kind": "exact_tagged_deposit",
+        "evaluation_trigger": "right-click the protected filing handle at offset [1,1,0]",
+        "components": [
+          {"id": "orientation_key_source", "block": "BARREL", "offset": [-1,0,-1], "slot": 13, "revealed_when": "v5_ls05_bound", "protected_unique_source": true},
+          {"id": "orientation_file", "block": "BARREL", "offset": [0,0,0], "slot": 13},
+          {"id": "orientation_key", "material": "COMPASS", "pdc": {"v5_artifact_id": "orientation_key"}}
+        ],
+        "all_of": [
+          {"op": "slot_exact_item", "component": "orientation_file", "item": "orientation_key", "amount": 1},
+          {"op": "unique_item_absent_from_source_after_claim", "component": "orientation_key_source", "item": "orientation_key"},
+          {"op": "linked_actor_matches_handoff", "source_flag": "v5_ls05_bound"}
+        ],
+        "commit": "remove the key from slot 13, set the flag, and return the same UUID-tagged item to the filing actor; only then expose C02"
+      },
+      "wrong_input": {"policy": "return_atomically", "feedback": "The filing label asks for the Orientation Key; no answer or tag detail is disclosed.", "state_effect": "none"},
+      "reward": {"description": "Orientation Key and C01 receipt", "artifact_ids": ["orientation_key"], "delivery": "return the validated key plus an idempotent receipt message"},
+      "reset_repair_recovery": {"reset": "return an uncommitted filed key to its protected source slot", "repair": "restore source/file barrels, handle, backing, and standing cell; while unsolved restore the original source item only after a world/player/escrow duplicate scan", "recovery": "reissue orientation_key to a player only when v5_case_c01_complete is true and duplicate scan is empty"},
+      "concurrency_replay": {"scope": "site mutex plus player UUID", "lock": "one deposit transaction at a time", "replay_policy": "return_wrong_and_idempotent", "disconnect": "item remains in protected escrow and is returned on next join", "after_complete": "never duplicate the key; report already filed"},
+      "durability_profile": "minecraft_local_primary"
+    },
+    {
+      "node_id": "LC01",
+      "owner": "plugin",
+      "prerequisites": ["v5_case_c01_complete"],
+      "site_id": "orientation_register",
+      "handler": "item_frame_overlay",
+      "completion_flag": "v5_lc01_phases",
+      "predicate": {
+        "kind": "ordered_tagged_frames",
+        "evaluation_trigger": "pull the brass comparison handle at [2,1,0]",
+        "components": [
+          {"id": "phase_frames", "block": "ITEM_FRAME", "offsets": [[-1,1,0],[0,1,0],[1,1,0]], "required_items": [
+            {"material": "MAP", "pdc": {"v5_evidence_id": "lc01_rough_shelter"}},
+            {"material": "MAP", "pdc": {"v5_evidence_id": "lc01_civic_ring"}},
+            {"material": "MAP", "pdc": {"v5_evidence_id": "lc01_deep_works"}}
+          ], "required_rotations": [0,0,0]}
+        ],
+        "all_of": [
+          {"op": "frame_sequence_exact", "component": "phase_frames", "item_order": ["lc01_rough_shelter","lc01_civic_ring","lc01_deep_works"], "rotations": [0,0,0]}
+        ],
+        "commit": "latch the three frames and write the shelter-civic-deep receipt"
+      },
+      "wrong_input": {"policy": "preserve_frame_state", "feedback": "The register reports only EARLY/LATE adjacency conflicts, not the correct order.", "state_effect": "no flag and no item loss"},
+      "reward": {"description": "phase ordering receipt", "artifact_ids": [], "delivery": "unlock LC02 source ledger"},
+      "reset_repair_recovery": {"reset": "restore the three movable maps to the shuffled staging rail", "repair": "recreate exact PDC maps and frame facings without changing a true flag", "recovery": "if solved, relatch canonical order from the flag"},
+      "concurrency_replay": {"scope": "site mutex", "lock": "serialize frame rotation/move and handle checks", "replay_policy": "idempotent_state_match", "disconnect": "leave visible frame state intact", "after_complete": "frames remain latched"},
+      "durability_profile": "minecraft_local_primary"
+    },
+    {
+      "node_id": "LC02",
+      "owner": "plugin",
+      "prerequisites": ["v5_lc01_phases"],
+      "site_id": "offering_cairn_01",
+      "handler": "answer_sign",
+      "completion_flag": "v5_lc02_rations",
+      "predicate": {
+        "kind": "answer_sign_oracle",
+        "evaluation_trigger": "finish editing the PDC-marked answer sign at [0,1,1]",
+        "components": [{"id": "answer_sign", "block": "OAK_SIGN", "pdc": {"v5_answer_node": "LC02"}}],
+        "answer_route": "local:LC02",
+        "normalization": "global answer_normalization",
+        "accepted": ["87 PEOPLE 174 BASKETS", "87 PEOPLE AND 174 BASKETS", "87 174", "87 PEOPLE 174"],
+        "all_of": [{"op": "normalized_answer_in", "values_ref": "accepted"}],
+        "commit": "clear submitted text, seal the answer receipt, and unlock the daily-life records"
+      },
+      "wrong_input": {"policy": "clear_submission_keep_sources", "feedback": "The public issue and private-room issue have been mixed, or one required number is absent.", "state_effect": "log rate-limited attempt only"},
+      "reward": {"description": "correct population and heat estimate", "artifact_ids": [], "delivery": "C02 receipt"},
+      "reset_repair_recovery": {"reset": "clear only editable answer text", "repair": "restore the marked sign and both immutable ledgers", "recovery": "reopen source ledgers; never reveal accepted strings"},
+      "concurrency_replay": {"scope": "per-player edit lease, site-wide completion CAS", "lock": "one sign editor at a time for 30 seconds", "replay_policy": "oracle_idempotent", "disconnect": "release edit lease and discard unsubmitted text", "after_complete": "show solved receipt, do not re-evaluate"},
+      "durability_profile": "minecraft_local_primary"
+    },
+    {
+      "node_id": "LC03",
+      "owner": "plugin",
+      "prerequisites": ["v5_lc02_rations"],
+      "site_id": "orientation_register",
+      "handler": "source_inspection",
+      "completion_flag": "v5_lc03_daily_life",
+      "predicate": {
+        "kind": "three_source_receipt_set",
+        "evaluation_trigger": "insert all three source receipts into the register and pull its filing handle",
+        "components": [
+          {"id": "school_source", "block": "LECTERN", "offset": [-2,0,0], "book_pdc": {"v5_book_id": "lc_school_day"}, "issues_receipt": "lc03_school"},
+          {"id": "market_source", "block": "BARREL", "offset": [0,0,0], "source_item": {"material":"PAPER","pdc":{"v5_evidence_id":"lc03_market_tally"}}, "issues_receipt": "lc03_market"},
+          {"id": "dwelling_source", "block": "BARREL", "offset": [2,0,0], "source_item": {"material":"PAPER","pdc":{"v5_evidence_id":"lc03_dwelling_repair"}}, "issues_receipt": "lc03_dwelling"},
+          {"id": "receipt_register", "block": "BARREL", "offset": [0,0,2], "slots": {"lc03_school": 11, "lc03_market": 13, "lc03_dwelling": 15}}
+        ],
+        "all_of": [
+          {"op": "actor_read_or_inspected_exact_sources", "components": ["school_source","market_source","dwelling_source"]},
+          {"op": "slots_contain_unique_pdc_receipts", "component": "receipt_register", "receipt_ids": ["lc03_school","lc03_market","lc03_dwelling"]}
+        ],
+        "commit": "consume only the three generated receipt tokens and preserve all source books"
+      },
+      "wrong_input": {"policy": "return_nonreceipt_items", "feedback": "The register names the missing category: SCHOOL, TRADE, or HOME.", "state_effect": "inspection bits persist; completion remains false"},
+      "reward": {"description": "school, market, and dwelling receipt", "artifact_ids": [], "delivery": "unlocks LC04"},
+      "reset_repair_recovery": {"reset": "clear generated receipt slots for an incomplete attempt", "repair": "restore exact hashed books, lectern facings, register, and receipt dispenser", "recovery": "reissue only a receipt whose exact source-open bit exists"},
+      "concurrency_replay": {"scope": "inspection bits per linked player, completion site-wide", "lock": "receipt issuance is compare-and-set per source/player", "replay_policy": "idempotent_receipt", "disconnect": "inspection bits and issued-receipt escrow persist", "after_complete": "source books remain readable; no new receipts"},
+      "durability_profile": "minecraft_local_primary"
+    },
+    {
+      "node_id": "LC04",
+      "owner": "plugin",
+      "prerequisites": ["v5_lc03_daily_life"],
+      "site_id": "rune_rosetta",
+      "handler": "answer_sign",
+      "completion_flag": "v5_lc04_safety_script",
+      "predicate": {
+        "kind": "answer_sign_oracle",
+        "evaluation_trigger": "finish editing the marked slate at [0,1,1]",
+        "components": [{"id": "answer_sign", "block": "DARK_OAK_SIGN", "pdc": {"v5_answer_node": "LC04"}}],
+        "answer_route": "local:LC04",
+        "normalization": "global answer_normalization",
+        "accepted": ["VENT EAST BEFORE SECOND BELL", "VENT EAST BEFORE THE SECOND BELL"],
+        "all_of": [{"op": "normalized_answer_in", "values_ref": "accepted"}],
+        "commit": "clear the slate and write the full direction-and-time receipt"
+      },
+      "wrong_input": {"policy": "clear_submission_keep_sources", "feedback": "A valid filing must contain both a direction and a bell time.", "state_effect": "none"},
+      "reward": {"description": "decoded evacuation instruction", "artifact_ids": [], "delivery": "unlock LC05 website/record conclusion"},
+      "reset_repair_recovery": {"reset": "clear sign text", "repair": "restore answer sign, backing, taught script card, and sightline", "recovery": "show the taught direct alphabet, never the plaintext"},
+      "concurrency_replay": {"scope": "per-player edit lease, site-wide completion CAS", "lock": "single sign editor", "replay_policy": "oracle_idempotent", "disconnect": "release edit lease", "after_complete": "receipt only"},
+      "durability_profile": "minecraft_local_primary"
+    },
+    {
+      "node_id": "LC06",
+      "owner": "plugin",
+      "prerequisites": ["v5_lc05_motive"],
+      "site_id": "undercroft_seal",
+      "handler": "frame_and_tagged_lever",
+      "completion_flag": "v5_case_c02_complete",
+      "predicate": {
+        "kind": "four_dials_plus_key_and_handle",
+        "evaluation_trigger": "pull the protected model handle at [2,1,0]",
+        "components": [
+          {"id": "phase", "block": "ITEM_FRAME", "offset": [-2,1,0], "material": "PAPER", "pdc": {"v5_control_id": "lc06_phase"}, "legend": {"0":"SHELTER","2":"CIVIC","4":"DEEP"}, "required_rotation": 2},
+          {"id": "heat", "block": "ITEM_FRAME", "offset": [-1,1,0], "material": "MAGMA_CREAM", "pdc": {"v5_control_id": "lc06_heat"}, "legend": {"0":"SURFACE","2":"BRAZIER","4":"GEOTHERMAL"}, "required_rotation": 4},
+          {"id": "evacuation", "block": "ITEM_FRAME", "offset": [0,1,0], "material": "COMPASS", "pdc": {"v5_control_id": "lc06_evac"}, "legend": {"0":"NORTH","2":"EAST","4":"SOUTH","6":"WEST"}, "required_rotation": 2},
+          {"id": "bell", "block": "ITEM_FRAME", "offset": [1,1,0], "material": "CLOCK", "pdc": {"v5_control_id": "lc06_bell"}, "legend": {"0":"FIRST","2":"SECOND","4":"THIRD","6":"FOURTH"}, "required_rotation": 2},
+          {"id": "key_housing", "block": "BARREL", "offset": [0,0,1], "slot": 13, "required_item": {"material":"COMPASS","pdc":{"v5_artifact_id":"orientation_key"}}}
+        ],
+        "all_of": [
+          {"op": "frame_rotations_exact", "values": {"phase":2,"heat":4,"evacuation":2,"bell":2}},
+          {"op": "slot_exact_item", "component": "key_housing", "item_pdc": {"v5_artifact_id":"orientation_key"}, "amount": 1}
+        ],
+        "commit": "escrow the Orientation Key, set C02 complete, open G1, and deliver the Survey Seal atomically"
+      },
+      "wrong_input": {"policy": "preserve_dials_return_wrong_key", "feedback": "The model names only mismatched categories: PHASE, HEAT, ROUTE, BELL, or KEY.", "state_effect": "no flag, gate, or reward"},
+      "reward": {"description": "Survey Seal and G1 open", "artifact_ids": ["survey_seal"], "delivery": "one PAPER with v5_artifact_id=survey_seal to actor or recovery escrow"},
+      "reset_repair_recovery": {"reset": "restore unsolved dials to [0,0,0,0] and return housed key", "repair": "rebuild exact frames, labels, barrel, handle, and G1 linkage", "recovery": "reissue survey_seal only from v5_case_c02_complete after duplicate scan"},
+      "concurrency_replay": {"scope": "site mutex", "lock": "serialize frame events, inventory event, handle, reward, and gate latch", "replay_policy": "idempotent_state_match", "disconnect": "housed key remains protected; reward goes to escrow", "after_complete": "canonical dials and open gate read back from flag; no duplicate seal"},
+      "durability_profile": "minecraft_local_primary"
+    },
+
+    {
+      "node_id": "KV01",
+      "owner": "plugin",
+      "prerequisites": ["v5_case_c02_complete"],
+      "site_id": "vaun_hoard_chest",
+      "handler": "container_inspection",
+      "completion_flag": "v5_kv01_audit",
+      "predicate": {
+        "kind": "two_balance_audit",
+        "evaluation_trigger": "place the two numbered audit slips into the comparison tray and pull the audit handle",
+        "components": [
+          {"id": "stores_ledger", "block": "LECTERN", "offset": [-1,0,0], "book_pdc": {"v5_book_id":"vaun_quartermaster_ledger"}, "values": {"cloth_received":12,"charcoal_received":16}},
+          {"id": "cistern_receipts", "block": "BARREL", "offset": [1,0,0], "source_items": [{"material":"PAPER","pdc":{"v5_evidence_id":"kv01_cloth_cistern_receipt"},"value":7},{"material":"PAPER","pdc":{"v5_evidence_id":"kv01_charcoal_cistern_receipt"},"value":10}]},
+          {"id": "audit_tray", "block": "BARREL", "offset": [0,0,1], "slots": {"cloth":11,"charcoal":15}, "required": [
+            {"material":"PAPER","pdc":{"v5_audit_field":"cloth_missing","v5_audit_value":"5"}},
+            {"material":"PAPER","pdc":{"v5_audit_field":"charcoal_missing","v5_audit_value":"6"}}
+          ]}
+        ],
+        "all_of": [
+          {"op":"actor_read_or_inspected_exact_sources","components":["stores_ledger","cistern_receipts"]},
+          {"op":"slots_match_fields","component":"audit_tray","values":{"cloth_missing":"5","charcoal_missing":"6"}}
+        ],
+        "commit": "consume generated audit slips and persist missing 5 cloth / 6 charcoal"
+      },
+      "wrong_input": {"policy":"return_non_audit_items_preserve_values","feedback":"The tray identifies CLOTH or CHARCOAL as an incorrect balance without showing the number.","state_effect":"none"},
+      "reward": {"description":"shortage table: 5 cloth and 6 charcoal missing","artifact_ids":[],"delivery":"unlock Vaun sort"},
+      "reset_repair_recovery": {"reset":"clear incomplete generated audit slips","repair":"restore exact ledger hashes, number-strip dispenser, tray, and handle","recovery":"reissue a generated number slip only while unsolved; solved state restores receipt"},
+      "concurrency_replay": {"scope":"audit tray mutex; read bits per player","lock":"single handle transaction","replay_policy":"idempotent_receipt","disconnect":"protect tray contents and retain read bits","after_complete":"read-only ledgers and receipt"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"A02",
+      "owner":"plugin",
+      "prerequisites":["v5_a01_location"],
+      "site_id":"prior_camp",
+      "handler":"tagged_station_inspection",
+      "completion_flag":"v5_a02_stations",
+      "predicate": {
+        "kind":"four_station_inspection_plus_roster_file",
+        "evaluation_trigger":"file all four station receipts in the camp roster barrel and pull the roster handle",
+        "components":[
+          {"id":"mkept_station","offset":[-6,0,2],"anchor_material":"COMPARATOR","pdc":{"v5_station_id":"mkept_admin"},"source_book":"mkept_admin_notebook","issues_receipt":"A02_MKEPT"},
+          {"id":"ash_station","offset":[-2,0,2],"anchor_material":"SPYGLASS","pdc":{"v5_station_id":"ash_camera"},"source_label":"ASH / CAMERA / CACHE SHEET","issues_receipt":"A02_ASH"},
+          {"id":"rook_station","offset":[2,0,2],"anchor_material":"BRICKS","pdc":{"v5_station_id":"rook_builder"},"source_label":"ROOK / BUILDER / ROUTE BOARD","issues_receipt":"A02_ROOK"},
+          {"id":"wren_station","offset":[6,0,2],"anchor_material":"GRAY_BED","pdc":{"v5_station_id":"wren_bedroll"},"source_item":{"material":"NAME_TAG","pdc":{"v5_evidence_id":"a02_wren_companion_tag"}},"issues_receipt":"A02_WREN"},
+          {"id":"roster","block":"BARREL","offset":[0,0,4],"slots":{"A02_MKEPT":10,"A02_ASH":11,"A02_ROOK":12,"A02_WREN":13}}
+        ],
+        "all_of":[{"op":"actor_opened_or_inspected_exact_station_source","components":["mkept_station","ash_station","rook_station","wren_station"]},{"op":"slots_contain_receipts_in_exact_order","component":"roster","ids":["A02_MKEPT","A02_ASH","A02_ROOK","A02_WREN"]}],
+        "commit":"consume generated station receipts and persist mkept / Ash / Rook / Wren roster"
+      },
+      "wrong_input":{"policy":"return_nonreceipt_items","feedback":"Roster names the missing station role ADMIN, CAMERA, BUILDER, or COMPANION.","state_effect":"station inspection bits persist"},
+      "reward":{"description":"mkept, Ash, Rook, Wren roster","artifact_ids":[],"delivery":"unlock supply barrels"},
+      "reset_repair_recovery":{"reset":"clear incomplete generated roster receipts","repair":"restore four anchors/sources/PDC, station spacing, roster barrel, and handle","recovery":"reissue only receipts backed by exact station inspection bits"},
+      "concurrency_replay":{"scope":"inspection bits per player; roster mutex site-wide","lock":"receipt issuance CAS and one filing transaction","replay_policy":"idempotent_receipt","disconnect":"bits persist and receipts escrow","after_complete":"stations remain inspectable; no new receipts"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"A03",
+      "owner":"plugin",
+      "prerequisites":["v5_a02_stations"],
+      "site_id":"prior_camp",
+      "handler":"container_order",
+      "completion_flag":"v5_a03_supplies",
+      "predicate": {
+        "kind":"twelve_lot_category_then_receipt_order",
+        "evaluation_trigger":"pull the manifest audit handle after all twelve unique lots occupy slots 0..11",
+        "components":[
+          {"id":"manifest_barrel","block":"BARREL","offset":[-4,0,4],"ordered_slots":[0,1,2,3,4,5,6,7,8,9,10,11]},
+          {"id":"lots","unique_pdc":"v5_evidence_id","required":[
+            {"id":"light_102","material":"TORCH","category":"LIGHT","receipt":102},{"id":"light_109","material":"TORCH","category":"LIGHT","receipt":109},{"id":"light_117","material":"TORCH","category":"LIGHT","receipt":117},
+            {"id":"food_203","material":"BREAD","category":"FOOD","receipt":203},{"id":"food_208","material":"BREAD","category":"FOOD","receipt":208},{"id":"food_219","material":"BREAD","category":"FOOD","receipt":219},
+            {"id":"build_301","material":"BRICKS","category":"BUILD","receipt":301},{"id":"build_314","material":"BRICKS","category":"BUILD","receipt":314},{"id":"build_326","material":"BRICKS","category":"BUILD","receipt":326},
+            {"id":"record_401","material":"PAPER","category":"RECORD","receipt":401},{"id":"record_407","material":"PAPER","category":"RECORD","receipt":407},{"id":"record_413","material":"PAPER","category":"RECORD","receipt":413}
+          ],"pdc_fields":["v5_lot_category","v5_receipt_number"]}
+        ],
+        "all_of":[{"op":"slots_contain_exact_evidence_ids","component":"manifest_barrel","ids":["light_102","light_109","light_117","food_203","food_208","food_219","build_301","build_314","build_326","record_401","record_407","record_413"]},{"op":"all_manifest_items_present_once","unique_count":12}],
+        "commit":"latch ordered barrel and reveal the column key ROOK under its protected lid"
+      },
+      "wrong_input":{"policy":"keep_sort_editable_return_invalid_tags","feedback":"Audit reports CATEGORY ORDER, RECEIPT ORDER, or MISSING count only.","state_effect":"none"},
+      "reward":{"description":"notebook key ROOK","artifact_ids":[],"delivery":"uncover immutable ROOK strip and unlock A04 sign"},
+      "reset_repair_recovery":{"reset":"return all 12 lots to deterministic shuffled staging","repair":"duplicate-scan 12 IDs, restore missing only, barrel/labels/lid/handle and clear standing cell","recovery":"solved flag restores canonical order and ROOK strip"},
+      "concurrency_replay":{"scope":"camp inventory mutex","lock":"serialize moves/handle","replay_policy":"return_wrong_and_idempotent","disconnect":"lots remain protected","after_complete":"barrel locked"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"A04",
+      "owner":"plugin",
+      "prerequisites":["v5_a03_supplies"],
+      "site_id":"prior_camp",
+      "handler":"answer_sign",
+      "completion_flag":"v5_a04_notebook",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked notebook answer sign",
+        "components":[{"id":"answer_sign","block":"OAK_SIGN","offset":[0,1,4],"pdc":{"v5_answer_node":"A04"}}],
+        "answer_route":"local:A04",
+        "normalization":"global answer_normalization",
+        "accepted":["ACCOUNT COMMUNITY POST TICKET ARCHIVE"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist all five transposition route words in order"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_cipher","feedback":"All five path words in order are required; partial route strings are rejected.","state_effect":"none"},
+      "reward":{"description":"archive route fragment","artifact_ids":[],"delivery":"unlock Cardan overlay"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign/backing/cipher notebook/ROOK strip","recovery":"tiered hint may name four columns and duplicate-O ordering, not plaintext"},
+      "concurrency_replay":{"scope":"per-player edit lease; global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"A05",
+      "owner":"plugin",
+      "prerequisites":["v5_a04_notebook"],
+      "site_id":"prior_camp",
+      "handler":"item_frame_overlay",
+      "completion_flag":"v5_a05_overlay",
+      "predicate": {
+        "kind":"two_piece_cardan_alignment",
+        "evaluation_trigger":"pull the map projection handle",
+        "components":[
+          {"id":"grille","block":"ITEM_FRAME","offset":[-1,1,6],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"a05_cardan_grille"},"required_rotation":0},
+          {"id":"route","block":"ITEM_FRAME","offset":[1,1,6],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"a05_route_corner"},"required_rotation":6},
+          {"id":"landmarks","required_overlap":["drain_notch","north_mark"],"reveals":["1842","9137","13","ARCHIVE"]}
+        ],
+        "all_of":[{"op":"frame_rotations_exact","values":{"grille":0,"route":6}},{"op":"map_cutouts_reveal_exact","values":["1842","9137","13","ARCHIVE"]}],
+        "commit":"latch overlay and persist service/ticket/locker/archive fragment"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"Projection reports DRAIN NOTCH or NORTH MARK as unaligned.","state_effect":"none"},
+      "reward":{"description":"1842 / 9137 / 13 / ARCHIVE route fragment","artifact_ids":[],"delivery":"unlock A06 website route"},
+      "reset_repair_recovery":{"reset":"restore rotations [2,2]","repair":"restore exact maps/frames/backing/handle and sightline","recovery":"solved flag restores [0,6]"},
+      "concurrency_replay":{"scope":"camp puzzle mutex","lock":"serialize frames/handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"A09",
+      "owner":"plugin",
+      "prerequisites":["v5_a08_ash13"],
+      "site_id":"prior_camp",
+      "handler":"tagged_locker",
+      "completion_flag":"v5_a09_spool",
+      "predicate": {
+        "kind":"receipt_gated_unique_locker_claim",
+        "evaluation_trigger":"open Locker 13 and take its exact protected item",
+        "components":[
+          {"id":"locker","block":"BARREL","offset":[6,0,6],"pdc":{"v5_container_id":"locker_13"},"slot":13},
+          {"id":"spool","material":"STRING","pdc":{"v5_artifact_id":"witness_spool"}},
+          {"id":"remote_receipt","flag":"v5_a08_ash13","accepted_payload":"ASH-13"}
+        ],
+        "all_of":[{"op":"prior_receipt_true","flag":"v5_a08_ash13"},{"op":"slot_exact_item","component":"locker","item":"spool","amount":1},{"op":"destination_inventory_has_capacity","amount":1}],
+        "commit":"atomically transfer the same Witness Spool and set flag"
+      },
+      "wrong_input":{"policy":"deny_locked_or_unrelated_extraction","feedback":"Before A08: LOCKER 13 AWAITS A VERIFIED ASH RECEIPT. Afterward only the tagged spool is claimable.","state_effect":"none"},
+      "reward":{"description":"Witness Spool","artifact_ids":["witness_spool"],"delivery":"STRING with v5_artifact_id=witness_spool"},
+      "reset_repair_recovery":{"reset":"return uncommitted spool to slot 13","repair":"restore locker/barrier/number/readable approach; recreate spool only after duplicate scan","recovery":"reissue only from v5_a09_spool after duplicate scan"},
+      "concurrency_replay":{"scope":"unique artifact CAS","lock":"one claim globally","replay_policy":"artifact_idempotent","disconnect":"committed spool to recovery escrow","after_complete":"never respawn while a copy exists"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"WR01",
+      "owner":"plugin",
+      "prerequisites":["v5_case_c07_complete"],
+      "site_id":"dread_route_start",
+      "handler":"answer_sign",
+      "completion_flag":"v5_wr01_quotes",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked source sign after the three quotation cards are revealed",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"WR01"}},{"id":"quotation_cards","required_ids":["wr01_private_bridge","wr01_private_names","wr01_private_disappearance"],"must_be_opened":true}],
+        "answer_route":"local:WR01",
+        "normalization":"global answer_normalization",
+        "accepted":["WREN"],
+        "all_of":[{"op":"player_opened_exact_sources","ids":["wr01_private_bridge","wr01_private_names","wr01_private_disappearance"]},{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist Wren as the only hearer of all three private phrases"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"A source is rejected unless it could hear all three private questions; no candidate table is printed.","state_effect":"none"},
+      "reward":{"description":"leak-source proof","artifact_ids":[],"delivery":"unlock spool reader"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore three exact cards/sign/backing/route lighting","recovery":"cards remain available; hint points to who-heard-it table"},
+      "concurrency_replay":{"scope":"source bits per player; sign lease; global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"source bits persist; lease released","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"WR02",
+      "owner":"plugin",
+      "prerequisites":["v5_wr01_quotes"],
+      "site_id":"dread_route_elsewhere",
+      "handler":"tagged_spool_reader",
+      "completion_flag":"v5_wr02_index",
+      "predicate": {
+        "kind":"unique_spool_plus_four_packet_receipts",
+        "evaluation_trigger":"insert Witness Spool, read all four indexed packets, file their receipts, and pull reader eject",
+        "components":[
+          {"id":"reader","block":"BARREL","offset":[0,0,0],"slot":13,"required_item":{"material":"STRING","pdc":{"v5_artifact_id":"witness_spool"}}},
+          {"id":"packets","required_ids":["wr02_mkept_login","wr02_ash_cache","wr02_rook_bridge","wr02_player_fears"],"categories":["NAMES","PLANS","ROUTES","FEARS"]},
+          {"id":"packet_receipts","block":"BARREL","offset":[0,0,2],"slots":{"wr02_mkept_login":10,"wr02_ash_cache":11,"wr02_rook_bridge":12,"wr02_player_fears":13}}
+        ],
+        "all_of":[{"op":"slot_exact_item","component":"reader","item_pdc":{"v5_artifact_id":"witness_spool"},"amount":1},{"op":"player_opened_exact_sources","ids":["wr02_mkept_login","wr02_ash_cache","wr02_rook_bridge","wr02_player_fears"]},{"op":"slots_contain_receipts_in_exact_order","component":"packet_receipts","ids":["wr02_mkept_login","wr02_ash_cache","wr02_rook_bridge","wr02_player_fears"]}],
+        "commit":"return the same Witness Spool, consume generated packet receipts, and persist names/plans/routes/fears transmission index"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_valid_spool","feedback":"Reader names missing packet numbers or asks for the tagged spool; it never consumes wrong items.","state_effect":"packet read bits persist"},
+      "reward":{"description":"names, plans, routes, and fears ledger","artifact_ids":[],"delivery":"unlock Wren dialogue"},
+      "reset_repair_recovery":{"reset":"return housed spool and clear incomplete generated receipts","repair":"restore reader/books/receipt barrel/eject; recover spool only through A09 duplicate scan","recovery":"reissue packet receipt only from exact read bit; solved state returns spool"},
+      "concurrency_replay":{"scope":"reader inventory mutex; read bits per player; completion global","lock":"single spool/receipt transaction","replay_policy":"idempotent_receipt","disconnect":"spool and receipts remain in escrow","after_complete":"reader is read-only; no duplicate spool"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"WR03",
+      "owner":"plugin",
+      "prerequisites":["v5_wr02_index"],
+      "site_id":"npc_wren_anchor",
+      "handler":"npc_choice",
+      "completion_flag":"v5_wr03_confession",
+      "predicate": {
+        "kind":"stateful_three_topic_confrontation",
+        "evaluation_trigger":"select the closing confrontation after hearing all three evidence-topic replies",
+        "components":[{"id":"wren","entity_pdc":{"v5_npc_id":"wren"},"max_distance":6.0,"required_topics":["BRIDGE_REVISION","NAMES_AND_FEARS","PRIOR_COMPANY_DISAPPEARANCE"],"closing_choice":"YOU_CHOSE_TO_SEND_THEM"}],
+        "all_of":[{"op":"dialogue_topics_heard","values":["BRIDGE_REVISION","NAMES_AND_FEARS","PRIOR_COMPANY_DISAPPEARANCE"]},{"op":"dialogue_choice_selected","value":"YOU_CHOSE_TO_SEND_THEM"},{"op":"npc_reply_completed","value":"ADMISSION_AND_FEAR_WITHOUT_COERCION_EXCUSE"}],
+        "commit":"persist Wren's admission; no moral judgment branch is chosen here"
+      },
+      "wrong_input":{"policy":"keep_dialogue_state_offer_missing_topics","feedback":"Leaving early preserves heard-topic bits and offers only still-unheard evidence prompts on return.","state_effect":"no completion until closing reply finishes"},
+      "reward":{"description":"Wren confession receipt","artifact_ids":[],"delivery":"unlock Protocol Bridge proof"},
+      "reset_repair_recovery":{"reset":"clear only transient open UI, not heard-topic bits","repair":"respawn/rebind exact Wren NPC at anchor and restore dialogue from canonical npc-dialogue.json","recovery":"resume at first missing topic; solved state uses post-confession dialogue"},
+      "concurrency_replay":{"scope":"dialogue session per player; completion global CAS","lock":"each player has one synchronous session; NPC serves multiple independent sessions","replay_policy":"idempotent_dialogue","disconnect":"heard-topic bits persist","after_complete":"stable post-confession dialogue; no duplicate reward"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"WR04",
+      "owner":"plugin",
+      "prerequisites":["v5_wr03_confession"],
+      "site_id":"the_threshold",
+      "handler":"blocked_route",
+      "completion_flag":"v5_wr04_bridge",
+      "predicate": {
+        "kind":"three_reverse_marks_then_unique_claim",
+        "evaluation_trigger":"pull the reverse-face correction handle, then claim the revealed Bridge",
+        "components":[
+          {"id":"rook_marks","block":"ITEM_FRAME","offsets":[[-1,1,-1],[0,1,-1],[1,1,-1]],"material":"BRICK","pdc_values":["wr04_rook_left","wr04_rook_center","wr04_rook_right"],"required_rotations":[2,6,0],"must_be_viewed_from":"reverse_face"},
+          {"id":"barrier","block_set":["POLISHED_DEEPSLATE"],"offset_volume":[[-1,0,0],[1,2,0]]},
+          {"id":"bridge_cache","block":"BARREL","offset":[0,0,-3],"slot":13},
+          {"id":"bridge","material":"COPPER_INGOT","pdc":{"v5_artifact_id":"protocol_bridge"}}
+        ],
+        "all_of":[{"op":"frame_rotations_exact","component":"rook_marks","values":[2,6,0]},{"op":"actor_view_side","value":"reverse_face"},{"op":"slot_exact_item","component":"bridge_cache","item":"bridge","amount":1},{"op":"destination_inventory_has_capacity","amount":1}],
+        "commit":"open only the documented route volume, atomically transfer Protocol Bridge, and set flag"
+      },
+      "wrong_input":{"policy":"preserve_marks_keep_barrier_closed","feedback":"Correction reports the number of unmatched Rook marks; unrelated blocks/items do nothing.","state_effect":"no barrier/reward change"},
+      "reward":{"description":"Protocol Bridge","artifact_ids":["protocol_bridge"],"delivery":"COPPER_INGOT with v5_artifact_id=protocol_bridge"},
+      "reset_repair_recovery":{"reset":"restore unsolved marks [0,0,0] and barrier; return uncommitted bridge to cache","repair":"restore reverse approach/sightline/frames/barrier/cache; recreate bridge only after duplicate scan","recovery":"reissue only from v5_wr04_bridge after duplicate scan; solved flag keeps route open"},
+      "concurrency_replay":{"scope":"site mutex plus unique artifact CAS","lock":"serialize marks/barrier/claim","replay_policy":"artifact_idempotent","disconnect":"committed bridge to escrow","after_complete":"route open; no duplicate bridge"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"WR05",
+      "owner":"plugin",
+      "prerequisites":["v5_wr04_bridge"],
+      "site_id":"threshold_vault",
+      "handler":"tagged_group_rite",
+      "completion_flag":"v5_case_c08_complete",
+      "predicate": {
+        "kind":"visible_active_roster_three_branch_vote",
+        "evaluation_trigger":"insert Protocol Bridge, start the visible roster window, and resolve every eligible player's protected branch marker",
+        "components":[
+          {"id":"bridge_housing","block":"BARREL","offset":[0,0,0],"slot":13,"required_item":{"material":"COPPER_INGOT","pdc":{"v5_artifact_id":"protocol_bridge"}}},
+          {"id":"branches","markers":[
+            {"value":"CONDEMN","offset":[-3,0,2],"material":"BLACK_CANDLE"},
+            {"value":"UNDERSTAND","offset":[0,0,3],"material":"ORANGE_CANDLE"},
+            {"value":"FREE","offset":[3,0,2],"material":"WHITE_CANDLE"}
+          ],"pdc_key":"v5_wren_vote"},
+          {"id":"roster","eligibility":"linked, non-spectator, online, inside threshold_vault radius at window start","minimum":1,"window_seconds":45,"disconnect_grace_seconds":20},
+          {"id":"first_ballot_telemetry","durable_fields":["initial_roster_count","maximum_visible_roster_count","first_ballot_eligible_count","first_ballot_cast_count","first_ballot_distinct_choices","first_ballot_tied","resolution_rounds","disconnect_resnap_count"],"write_before_tiebreak_or_revote":true}
+        ],
+        "quorum": {
+          "required":"one valid vote from 100% of the visible eligible roster",
+          "changing_vote":"allowed until every eligible player has a valid vote",
+          "resolution":"strict plurality",
+          "tie":"30-second visible tiebreak among tied branches by the Protocol Bridge depositor; if absent after grace, lowest lexical UUID still present becomes tiebreaker",
+          "solo":"the sole eligible player resolves directly"
+        },
+        "all_of":[{"op":"slot_exact_item","component":"bridge_housing","item_pdc":{"v5_artifact_id":"protocol_bridge"},"amount":1},{"op":"all_roster_members_voted_once"},{"op":"branch_resolved_by_quorum_rule"}],
+        "commit":"atomically persist v5_wren_outcome=condemn, understand, or free plus immutable WR05 first-ballot telemetry; retag and return the same Bridge with v5_wren_outcome=<branch>; set C08 complete and open G5"
+      },
+      "wrong_input":{"policy":"reject_unlinked_or_out_of_roster_votes_return_wrong_bridge","feedback":"Board continuously displays eligible count, received count, disconnect grace, tie state, and branch labels.","state_effect":"no hidden votes; abort before resolution returns Bridge and clears only this window"},
+      "reward":{"description":"branch-marked Protocol Bridge, C08 receipt, and G5 open","artifact_ids":[],"delivery":"return same protocol_bridge with immutable v5_wren_outcome branch"},
+      "reset_repair_recovery":{"reset":"before resolution cancel window, clear votes, and return Bridge; never reset a committed branch","repair":"restore three markers/labels/housing/roster board/G5 linkage and reconcile branch from local state","recovery":"reissue Protocol Bridge only from WR04; if branch committed, restore its exact judgment PDC"},
+      "concurrency_replay":{"scope":"one site-wide rite lease","lock":"single active window and branch CAS","replay_policy":"branch_locked_idempotent","disconnect":"20-second visible grace then deterministic roster resnapshot before resolution","after_complete":"branch immutable; no revote or duplicate Bridge"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"AR02",
+      "owner":"plugin",
+      "prerequisites":["v5_ar01_not_kept","v5_kv03_affidavit"],
+      "site_id":"keeper_altar",
+      "handler":"affidavit_reader",
+      "completion_flag":"v5_ar02_a",
+      "predicate": {
+        "kind":"affidavit_plus_first_unfiled_column_selection",
+        "evaluation_trigger":"insert Vaun affidavit, select FIRST UNFILED COLUMN, and pull the reader handle",
+        "components":[{"id":"affidavit_slot","block":"BARREL","offset":[-5,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_vaun"}}},{"id":"column_selector","block":"ITEM_FRAME","offset":[-5,1,0],"material":"PAPER","pdc":{"v5_control_id":"ar02_column"},"legend":{"0":"FILED_1","2":"UNFILED_1","4":"UNFILED_2","6":"UNFILED_3"},"required_rotation":2}],
+        "all_of":[{"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_vaun"},"amount":1},{"op":"frame_rotation_exact","component":"column_selector","value":2}],
+        "commit":"return same affidavit and deliver A Fragment"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_selector","feedback":"Reader reports AFFIDAVIT or COLUMN mismatch only.","state_effect":"none"},
+      "reward":{"description":"A fragment","artifact_ids":["averyn_fragment_a"],"delivery":"PAPER with v5_artifact_id=averyn_fragment_a"},
+      "reset_repair_recovery":{"reset":"return uncommitted affidavit and selector to 0","repair":"restore slot/frame/legend/handle and recover affidavit via KV03 only","recovery":"reissue A Fragment only from v5_ar02_a after duplicate scan"},
+      "concurrency_replay":{"scope":"altar mutex plus unique fragment CAS","lock":"single reader transaction","replay_policy":"fragment_idempotent","disconnect":"affidavit/fragment to escrow","after_complete":"no duplicate fragment; affidavit returned"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"AR03",
+      "owner":"plugin",
+      "prerequisites":["v5_ar02_a","v5_km03_affidavit"],
+      "site_id":"keeper_altar",
+      "handler":"affidavit_reader",
+      "completion_flag":"v5_ar03_v",
+      "predicate": {
+        "kind":"affidavit_plus_verified_revision_selection",
+        "evaluation_trigger":"insert Mara affidavit, set edition E3 and revision mark, then pull reader",
+        "components":[{"id":"affidavit_slot","block":"BARREL","offset":[-3,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_mara"}}},{"id":"edition","block":"ITEM_FRAME","offset":[-3,1,0],"material":"BOOK","pdc":{"v5_control_id":"ar03_edition"},"legend":{"0":"E1","2":"E2","4":"E3","6":"E4"},"required_rotation":4},{"id":"revision","block":"ITEM_FRAME","offset":[-2,1,0],"material":"INK_SAC","pdc":{"v5_control_id":"ar03_revision"},"required_rotation":2,"reveals":"V"}],
+        "all_of":[{"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_mara"},"amount":1},{"op":"frame_rotations_exact","values":{"edition":4,"revision":2}}],
+        "commit":"return affidavit and deliver V Fragment"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_frames","feedback":"Reader reports AFFIDAVIT, EDITION, or REVISION mismatch.","state_effect":"none"},
+      "reward":{"description":"V fragment","artifact_ids":["averyn_fragment_v"],"delivery":"PAPER with v5_artifact_id=averyn_fragment_v"},
+      "reset_repair_recovery":{"reset":"return affidavit; frames to 0","repair":"restore reader/frames/legends/handle and Mara affidavit recovery path","recovery":"reissue V Fragment only from v5_ar03_v after duplicate scan"},
+      "concurrency_replay":{"scope":"altar mutex plus unique fragment CAS","lock":"single transaction","replay_policy":"fragment_idempotent","disconnect":"items to escrow","after_complete":"no duplicate; affidavit returned"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"AR04",
+      "owner":"plugin",
+      "prerequisites":["v5_ar03_v","v5_ks03_affidavit"],
+      "site_id":"keeper_altar",
+      "handler":"affidavit_reader",
+      "completion_flag":"v5_ar04_e",
+      "predicate": {
+        "kind":"affidavit_plus_backwater_intake_alignment",
+        "evaluation_trigger":"insert Sella affidavit, align BACK / INTAKE A, and pull reader",
+        "components":[{"id":"affidavit_slot","block":"BARREL","offset":[-1,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_sella"}}},{"id":"back","block":"ITEM_FRAME","offset":[-1,1,0],"material":"PAPER","pdc":{"v5_control_id":"ar04_back"},"required_rotation":4},{"id":"intake","block":"ITEM_FRAME","offset":[0,1,0],"material":"FILLED_MAP","pdc":{"v5_control_id":"ar04_intake"},"legend":{"0":"B","2":"A","4":"C","6":"D"},"required_rotation":2,"reveals":"E"}],
+        "all_of":[{"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_sella"},"amount":1},{"op":"frame_rotations_exact","values":{"back":4,"intake":2}}],
+        "commit":"return affidavit and deliver E Fragment"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_frames","feedback":"Reader reports AFFIDAVIT, FACE, or INTAKE mismatch.","state_effect":"none"},
+      "reward":{"description":"E fragment","artifact_ids":["averyn_fragment_e"],"delivery":"PAPER with v5_artifact_id=averyn_fragment_e"},
+      "reset_repair_recovery":{"reset":"return affidavit; frames to 0","repair":"restore reader/frames/waterline labels/handle and Sella affidavit recovery","recovery":"reissue E Fragment only from v5_ar04_e after duplicate scan"},
+      "concurrency_replay":{"scope":"altar mutex plus unique fragment CAS","lock":"single transaction","replay_policy":"fragment_idempotent","disconnect":"items to escrow","after_complete":"no duplicate; affidavit returned"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"AR05",
+      "owner":"plugin",
+      "prerequisites":["v5_ar04_e","v5_ko03_affidavit"],
+      "site_id":"keeper_altar",
+      "handler":"affidavit_reader",
+      "completion_flag":"v5_ar05_r",
+      "predicate": {
+        "kind":"affidavit_plus_six_bearings_and_crouch",
+        "evaluation_trigger":"insert Orin affidavit, set six mini-dials, crouch in the center cut for 10 ticks, and pull reader",
+        "components":[{"id":"affidavit_slot","block":"BARREL","offset":[1,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_orin"}}},{"id":"dials","block":"ITEM_FRAME","offsets":[[1,2,0],[2,2,0],[3,2,0],[1,1,0],[2,1,0],[3,1,0]],"material":"COMPASS","pdc_prefix":"ar05_dial_","required_rotations":[0,2,4,6,0,2]},{"id":"crouch_cell","offset":[2,0,2],"posture":"SNEAKING","hold_ticks":10,"reveals":"R"}],
+        "all_of":[{"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_orin"},"amount":1},{"op":"frame_rotations_exact","component":"dials","values":[0,2,4,6,0,2]},{"op":"player_in_cell_posture_for_ticks","component":"crouch_cell"}],
+        "commit":"return affidavit and deliver R Fragment"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_frames_reset_hold","feedback":"Reader reports AFFIDAVIT, BEARINGS, or POSTURE mismatch.","state_effect":"none"},
+      "reward":{"description":"R fragment","artifact_ids":["averyn_fragment_r"],"delivery":"PAPER with v5_artifact_id=averyn_fragment_r"},
+      "reset_repair_recovery":{"reset":"return affidavit, frames to deterministic wrong state, clear hold timer","repair":"restore reader/six frames/crouch cell/headroom/handle and affidavit recovery","recovery":"reissue R Fragment only from v5_ar05_r after duplicate scan"},
+      "concurrency_replay":{"scope":"altar mutex plus hold timer per player; fragment CAS","lock":"single reader commit","replay_policy":"fragment_idempotent","disconnect":"timer clears, items escrow","after_complete":"no duplicate; affidavit returned"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"AR06",
+      "owner":"plugin",
+      "prerequisites":["v5_ar05_r","v5_kb03_affidavit"],
+      "site_id":"keeper_altar",
+      "handler":"affidavit_reader",
+      "completion_flag":"v5_ar06_y",
+      "predicate": {
+        "kind":"affidavit_plus_bell_nine_empty_hour_pair",
+        "evaluation_trigger":"insert Brann affidavit, set bell nine and leave the paired hour slot empty, then pull reader",
+        "components":[{"id":"affidavit_slot","block":"BARREL","offset":[3,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_brann"}}},{"id":"bell","block":"CHISELED_BOOKSHELF","offset":[3,0,1],"slot":2,"required_item":{"material":"CLOCK","pdc":{"v5_evidence_id":"ar06_bell_9"}}},{"id":"empty_hour","block":"CHISELED_BOOKSHELF","offset":[3,0,1],"slot":3,"required_empty":true},{"id":"pair_selector","block":"ITEM_FRAME","offset":[3,1,1],"material":"PAPER","pdc":{"v5_control_id":"ar06_pair"},"required_rotation":2,"reveals":"Y"}],
+        "all_of":[{"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_brann"},"amount":1},{"op":"bookshelf_slot_exact_item","component":"bell","slot":2,"item_pdc":{"v5_evidence_id":"ar06_bell_9"}},{"op":"bookshelf_slot_empty","component":"empty_hour","slot":3},{"op":"frame_rotation_exact","component":"pair_selector","value":2}],
+        "commit":"return affidavit and deliver Y Fragment"
+      },
+      "wrong_input":{"policy":"return_wrong_items_preserve_valid_bell","feedback":"Reader reports AFFIDAVIT, NINE, EMPTY HOUR, or PAIR mismatch.","state_effect":"none"},
+      "reward":{"description":"Y fragment","artifact_ids":["averyn_fragment_y"],"delivery":"PAPER with v5_artifact_id=averyn_fragment_y"},
+      "reset_repair_recovery":{"reset":"return affidavit and bell token, clear paired slots, selector to 0","repair":"restore reader/shelf/token/frame/handle and affidavit recovery","recovery":"reissue Y Fragment only from v5_ar06_y after duplicate scan"},
+      "concurrency_replay":{"scope":"altar inventory mutex plus fragment CAS","lock":"single transaction","replay_policy":"fragment_idempotent","disconnect":"items escrow","after_complete":"no duplicate; affidavit returned"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"AR07",
+      "owner":"plugin",
+      "prerequisites":["v5_ar06_y","v5_ki03_affidavit"],
+      "site_id":"keeper_altar",
+      "handler":"affidavit_reader",
+      "completion_flag":"v5_ar07_n",
+      "predicate": {
+        "kind":"affidavit_plus_explicit_false_initial_rejection",
+        "evaluation_trigger":"insert Iss affidavit, physically reject M/MERCY, select N/NAME-NOT-MERCY, and pull reader",
+        "components":[{"id":"affidavit_slot","block":"BARREL","offset":[5,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_iss"}}},{"id":"false_m","block":"STONE_BUTTON","offset":[4,1,0],"pdc":{"v5_control_id":"ar07_false_m"},"must_have_been_pressed":true},{"id":"correct_n","block":"ITEM_FRAME","offset":[5,1,0],"material":"PAPER","pdc":{"v5_control_id":"ar07_initial"},"legend":{"0":"M_MERCY","2":"N_NAME_NOT_MERCY"},"required_rotation":2,"reveals":"N"}],
+        "all_of":[{"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_iss"},"amount":1},{"op":"session_event_seen","component":"false_m"},{"op":"frame_rotation_exact","component":"correct_n","value":2}],
+        "commit":"return affidavit and deliver N Fragment"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_explicit_rejection_bit","feedback":"M alone is explicitly rejected as MERCY; reader asks for the physical correction cut.","state_effect":"no completion"},
+      "reward":{"description":"N fragment","artifact_ids":["averyn_fragment_n"],"delivery":"PAPER with v5_artifact_id=averyn_fragment_n"},
+      "reset_repair_recovery":{"reset":"return affidavit, clear transient rejection bit, frame to 0","repair":"restore reader/M button/N frame/legend/handle and affidavit recovery","recovery":"reissue N Fragment only from v5_ar07_n after duplicate scan"},
+      "concurrency_replay":{"scope":"session bit per player; altar mutex; fragment CAS","lock":"single reader commit","replay_policy":"fragment_idempotent","disconnect":"transient rejection bit clears; items escrow","after_complete":"no duplicate; affidavit returned"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"RP02",
+      "owner":"plugin",
+      "prerequisites":["v5_rp01_instruction"],
+      "site_id":"the_unwriting",
+      "handler":"tagged_release_configuration",
+      "completion_flag":"v5_rp02_configured",
+      "predicate": {
+        "kind":"six_named_testimonies_empty_averyn_plus_three_artifacts",
+        "evaluation_trigger":"pull the release configuration audit handle",
+        "components":[
+          {"id":"testimony_bank","containers":[
+            {"name":"VAUN","offset":[-6,0,0],"slot":13,"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_vaun"}},
+            {"name":"MARA","offset":[-4,0,0],"slot":13,"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_mara"}},
+            {"name":"SELLA","offset":[-2,0,0],"slot":13,"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_sella"}},
+            {"name":"ORIN","offset":[2,0,0],"slot":13,"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_orin"}},
+            {"name":"BRANN","offset":[4,0,0],"slot":13,"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_brann"}},
+            {"name":"ISS","offset":[6,0,0],"slot":13,"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_iss"}}
+          ]},
+          {"id":"averyn_slot","block":"BARREL","offset":[0,0,0],"slot":13,"required_empty":true,"label":"AVERYN — DO NOT KEEP"},
+          {"id":"cistern","block":"BARREL","offset":[-2,0,2],"slot":13,"required_item":{"material":"PRISMARINE_SHARD","pdc":{"v5_artifact_id":"cistern_seal"}}},
+          {"id":"system","block":"BARREL","offset":[0,0,2],"slot":13,"required_item":{"material":"TRIPWIRE_HOOK","pdc":{"v5_artifact_id":"system_key"}}},
+          {"id":"bridge","block":"BARREL","offset":[2,0,2],"slot":13,"required_item":{"material":"COPPER_INGOT","pdc":{"v5_artifact_id":"protocol_bridge"}}}
+        ],
+        "all_of":[
+          {"op":"named_slots_match_exact_affidavit_pdc","names":["VAUN","MARA","SELLA","ORIN","BRANN","ISS"]},
+          {"op":"slot_empty","component":"averyn_slot"},
+          {"op":"slot_exact_item","component":"cistern","item_pdc":{"v5_artifact_id":"cistern_seal"},"amount":1},
+          {"op":"slot_exact_item","component":"system","item_pdc":{"v5_artifact_id":"system_key"},"amount":1},
+          {"op":"slot_exact_item","component":"bridge","item_pdc":{"v5_artifact_id":"protocol_bridge"},"amount":1}
+        ],
+        "commit":"atomically escrow exactly these nine items, keep Averyn empty, and persist release configuration; no other artifact is a deposit requirement"
+      },
+      "wrong_input":{"policy":"return_wrong_or_misnamed_item_atomically","feedback":"Audit names only the wrong/missing labeled housing and states AVERYN MUST REMAIN EMPTY.","state_effect":"valid installed items remain protected; no partial flag"},
+      "reward":{"description":"six affidavits plus Cistern Seal, System Key, and Protocol Bridge installed; Averyn unbound","artifact_ids":[],"delivery":"unlock name-treatment choice"},
+      "reset_repair_recovery":{"reset":"before completion return all valid deposits to original actors/escrow; after completion never silently dismantle","repair":"restore ten labeled housings/handle/standing cells; recover each item only from its earned flag after duplicate scan, then replace escrow exactly","recovery":"operator command reports each missing housing and provides manifest-authorized reissue path"},
+      "concurrency_replay":{"scope":"release-room inventory mutex","lock":"serialize all ten housings and audit commit","replay_policy":"return_wrong_and_idempotent","disconnect":"deposits stay in protected escrow","after_complete":"configuration locked and read back from local flag plus item escrow"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"RP03",
+      "owner":"plugin",
+      "prerequisites":["v5_rp02_configured"],
+      "site_id":"the_unwriting",
+      "handler":"protected_choice_markers",
+      "completion_flag":"v5_rp03_name_choice",
+      "predicate": {
+        "kind":"visible_two_branch_active_roster_choice",
+        "evaluation_trigger":"resolve the visible roster's protected publish/release-unnamed markers after the consequence text is opened",
+        "components":[
+          {"id":"consequence_book","book_pdc":{"v5_book_id":"release_protocol"},"required_open_before_vote":true},
+          {"id":"branches","markers":[{"value":"PUBLISH","offset":[-3,0,2],"material":"WRITABLE_BOOK"},{"value":"RELEASE_UNNAMED","offset":[3,0,2],"material":"PAPER"}],"pdc_key":"v5_name_treatment"},
+          {"id":"roster","eligibility":"linked, non-spectator, online, inside the_unwriting radius when first marker is operated","minimum":1,"window_seconds":45,"disconnect_grace_seconds":20},
+          {"id":"first_ballot_telemetry","durable_fields":["initial_roster_count","maximum_visible_roster_count","first_ballot_eligible_count","first_ballot_cast_count","first_ballot_distinct_choices","first_ballot_tied","resolution_rounds","disconnect_resnap_count"],"write_before_tiebreak_or_revote":true},
+          {"id":"conduct_derivation","source_votes":["WR05","RP03"],"precedence_ref":"global_rules.conduct_verdict","output_field":"v5_conduct_verdict","allowed_values":["solo","divided","unanimous","persistent"]}
+        ],
+        "quorum":{"required":"one vote from 100% of visible roster","resolution":"strict plurality","tie":"no branch commits; board opens a visible revote until one branch has a strict plurality","solo":"sole player resolves directly","change_vote":"allowed before resolution only"},
+        "all_of":[{"op":"every_roster_member_opened_consequence_book"},{"op":"all_roster_members_voted_once"},{"op":"strict_plurality_exists"}],
+        "commit":"atomically persist v5_name_treatment=publish or release_unnamed, immutable RP03 first-ballot telemetry, and exactly one total v5_conduct_verdict derived by global precedence; both name branches release Averyn and neither creates a seventh slot"
+      },
+      "wrong_input":{"policy":"ignore_unlinked_or_out_of_roster_vote_keep_window_visible","feedback":"Board shows roster/vote/tie counts and exact branch consequences; ties never auto-select.","state_effect":"abort before resolution clears only current votes"},
+      "reward":{"description":"publish or release-unnamed branch","artifact_ids":[],"delivery":"unlock active-roster floor"},
+      "reset_repair_recovery":{"reset":"before commit clear current vote window; never reset a committed branch","repair":"restore two markers/consequence book/labels/roster board and reconcile local branch","recovery":"operator status reports immutable chosen branch"},
+      "concurrency_replay":{"scope":"one site-wide choice lease","lock":"single active window and branch CAS","replay_policy":"branch_locked_idempotent","disconnect":"20-second visible grace then resnapshot before resolution","after_complete":"branch immutable; no revote"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"RP04",
+      "owner":"plugin",
+      "prerequisites":["v5_rp03_name_choice"],
+      "site_id":"coop_plate",
+      "handler":"group_presence_bridge",
+      "completion_flag":"v5_rp04_collective",
+      "predicate": {
+        "kind":"all_visible_active_players_presence_and_confirmation",
+        "evaluation_trigger":"start the 45-second floor window; every eligible player must occupy a distinct lit sector and operate their sector handle",
+        "components":[
+          {"id":"roster","eligibility":"linked, non-spectator, online, inside release/coop_plate radius at window start","minimum":1,"window_seconds":45,"disconnect_grace_seconds":20},
+          {"id":"sectors","block":"LIGHT_WEIGHTED_PRESSURE_PLATE","dynamic_count":"eligible roster size","one_player_per_sector":true,"confirmation_handle_pdc":"v5_rp04_sector"},
+          {"id":"bridge_marker","material":"COPPER_INGOT","pdc":{"v5_rite_marker":"protocol_bridge","v5_wren_outcome":"<committed WR05 branch>"},"branch_operation":{"CONDEMN":"marker stays in the black fixed housing while all sectors confirm","UNDERSTAND":"marker is passed once between two distinct eligible players before amber housing; solo accessibility override is a five-second self-hold","FREE":"marker is carried from center to the open white release trough before sectors confirm"}}
+        ],
+        "quorum":{"required":"100% of visible eligible roster simultaneously on distinct sectors and each handle confirmation within 45 seconds","accessibility_override":"operator-enabled, explicitly logged replacement of an unreachable sector; it cannot reduce eligible roster count or auto-confirm a player"},
+        "all_of":[{"op":"all_eligible_players_on_distinct_sectors"},{"op":"all_eligible_players_confirmed_within_window"},{"op":"branch_specific_bridge_operation_complete"}],
+        "commit":"persist finale-ready receipt and active roster UUID snapshot"
+      },
+      "wrong_input":{"policy":"reset_window_not_story_choices","feedback":"Floor shows missing present count, unconfirmed count, disconnect grace, and branch-specific Bridge step.","state_effect":"no damage/teleport; Wren/name choices unchanged"},
+      "reward":{"description":"finale-ready receipt","artifact_ids":[],"delivery":"enable RP05 player confirmation when operator-armed"},
+      "reset_repair_recovery":{"reset":"clear only transient presence/confirmation window","repair":"restore accessible sectors/handles/lighting/bridge marker path and reconstruct marker from escrow without duplicating artifact","recovery":"rearm presence window without changing any branch"},
+      "concurrency_replay":{"scope":"one site-wide presence lease","lock":"single window","replay_policy":"idempotent_receipt","disconnect":"20-second visible grace then deterministic resnapshot; no committed branch loss","after_complete":"receipt remains true; rerun is diagnostic only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"RP05",
+      "owner":"plugin_finale",
+      "prerequisites":["v5_rp04_collective"],
+      "site_id":"release_record",
+      "handler":"armed_confirmation",
+      "completion_flag":"v5_rp05_severed",
+      "predicate": {
+        "kind":"operator_armed_single_player_commit_confirmation",
+        "evaluation_trigger":"a linked player sneaks in the marked cell for 60 ticks and right-clicks the PDC-marked sever control once while finale phase is ARMED",
+        "components":[
+          {"id":"sever_control","block":"SCULK_CATALYST","offset":[0,0,0],"pdc":{"v5_finale_control":"sever_record"}},
+          {"id":"confirm_cell","offset":[0,0,2],"posture":"SNEAKING","hold_ticks":60},
+          {"id":"operator_arm","command":"/obs finale arm [15-600 seconds]","default_seconds":120,"branch_arguments_allowed":false,"cancel_command":"/obs finale cancel","safe_cutoff":"before local phase COMMITTED","armed_expiry":"ARMED expires fail-closed to IDLE at cancel-cutoff-at and never auto-commits"},
+          {"id":"required_local_state","schema":2,"receipt_chain":"exact C10 prerequisites through v5_rp04_collective","values":{"v5_wren_outcome":["condemn","understand","free"],"v5_name_treatment":["publish","release_unnamed"],"v5_conduct_verdict":["solo","divided","unanimous","persistent"]},"retired_inputs_forbidden":["ending_fate","customs","bow_window","compliance_score"],"must_be_local_committed":true},
+          {"id":"durable_fields","schema":2,"fields":["phase","wren-outcome","name-treatment","conduct-verdict","armed-by","armed-at","cancel-cutoff-at","committed-at"]}
+        ],
+        "all_of":[{"op":"prior_receipt_true","flag":"v5_rp04_collective"},{"op":"finale_phase","value":"ARMED"},{"op":"before_cancel_cutoff"},{"op":"exact_local_dimensions_valid","values":["v5_wren_outcome","v5_name_treatment","v5_conduct_verdict"]},{"op":"player_in_cell_posture_for_ticks","component":"confirm_cell"},{"op":"actor_operates_once","component":"sever_control"}],
+        "commit":"CAS first confirmation; fsync and atomic-replace schema 2 phase/wren-outcome/name-treatment/conduct-verdict/actor/timestamps before any title, sound, light, kick, or shutdown; set v5_rp05_severed in the same local transaction"
+      },
+      "wrong_input":{"policy":"fail_closed_no_theater","feedback":"UNARMED or a named missing receipt is operator/setup feedback, not a puzzle. A second interaction after commit is ignored.","state_effect":"persistence failure aborts presentation and leaves cancel/retry safe"},
+      "reward":{"description":"durable ending state and start of closing theater","artifact_ids":[],"delivery":"trigger RP06 only after durable commit"},
+      "reset_repair_recovery":{"reset":"/obs finale cancel only while ARMED and before COMMITTED; never clear COMMITTED/CODA","repair":"restore sever control/standing cell/readback and inspect durable state file; corrupt file enters FAULT maintenance lock","recovery":"/obs finale status exposes phase/branch/receipts; resume only from exact durable phase"},
+      "concurrency_replay":{"scope":"global finale CAS","lock":"one confirmation globally","replay_policy":"durable_before_theater","disconnect":"after durable commit theater continues for all; before commit hold timer clears","after_complete":"all later clicks ignored"},
+      "durability_profile":"finale_local_primary"
+    },
+    {
+      "node_id":"RP06",
+      "owner":"plugin_finale",
+      "prerequisites":["v5_rp05_severed"],
+      "site_id":"release_record",
+      "handler":"automatic_finale",
+      "completion_flag":"v5_case_c10_complete",
+      "predicate": {
+        "kind":"durable_phase_driven_automatic_cinematic",
+        "evaluation_trigger":"automatic only from durable COMMITTED RP05 state; no player answer or extra interaction",
+        "components":[
+          {"id":"phase_1","phase":"DARKENING","at_ticks":0,"action":"extinguish documented fixture-light groups from upper Hold to Release; apply darkness/title without changing structural blocks"},
+          {"id":"phase_2","phase":"SYNTAX_BREAK","at_ticks":40,"action":"emit branch-safe Record syntax breaks and prevent new puzzle input"},
+          {"id":"phase_3","phase":"GOODBYE","at_ticks":80,"action":"deliver the exact name-treatment clause, Wren-outcome clause, conduct clause, and universal goodbye"},
+          {"id":"ending_matrix","six_combinations":[
+            {"wren_outcome":"condemn","name_treatment":"publish","composition":"publish_goodbye + wren_condemn + conduct_clause + universal_close","coda":"publish_condemn"},
+            {"wren_outcome":"condemn","name_treatment":"release_unnamed","composition":"release_unnamed_goodbye + wren_condemn + conduct_clause + universal_close","coda":"release_unnamed_condemn"},
+            {"wren_outcome":"understand","name_treatment":"publish","composition":"publish_goodbye + wren_understand + conduct_clause + universal_close","coda":"publish_understand"},
+            {"wren_outcome":"understand","name_treatment":"release_unnamed","composition":"release_unnamed_goodbye + wren_understand + conduct_clause + universal_close","coda":"release_unnamed_understand"},
+            {"wren_outcome":"free","name_treatment":"publish","composition":"publish_goodbye + wren_free + conduct_clause + universal_close","coda":"publish_free"},
+            {"wren_outcome":"free","name_treatment":"release_unnamed","composition":"release_unnamed_goodbye + wren_free + conduct_clause + universal_close","coda":"release_unnamed_free"}
+          ]},
+          {"id":"name_clauses","publish":["my name is averyn.","you kept it without keeping me. that is the difference.","leave the name where someone can find it. let the rest of me go."],"release_unnamed":["you did not owe me a name.","you gave me an end. that was enough.","let the blank belong to me this time."]},
+          {"id":"wren_clauses","free":"wren left before the last light. for once, i did not write where he went.","understand":"wren stayed until the machinery stopped. he was afraid. he stayed.","condemn":"wren's line closes here. i will not call your judgment mercy, and i will not call it wrong."},
+          {"id":"conduct_clauses","solo":"you carried every name alone. they still arrived together.","unanimous":"you came to one answer without becoming one voice.","divided":"you disagreed and continued together. the record never knew how to write that.","persistent":"you did not agree quickly. you stayed until the evidence did."},
+          {"id":"universal_lines","exact":["i have your names.","i am giving them back.","the record is closed.","the observance is over.","thank you for coming back for us.","— averyn"]},
+          {"id":"phase_4","phase":"SAVE_AND_CODA","at_ticks":140,"action":"write CODA and v5_case_c10_complete locally, save players, save every world, kick players with complete goodbye, request production shutdown"},
+          {"id":"restart","phase":"CODA","action":"keep story schedulers asleep; show branch/name coda receipt on join; never replay theater"}
+        ],
+        "all_of":[{"op":"finale_phase","value":"COMMITTED"},{"op":"durable_schema_2_dimensions_present","values":["wren-outcome","name-treatment","conduct-verdict"]},{"op":"local_prerequisite_chain_revalidated","through":"v5_rp04_collective"},{"op":"exact_ending_matrix_entry_exists"},{"op":"exact_conduct_clause_exists"},{"op":"sequence_monotonic_and_idempotent","phases":["DARKENING","SYNTAX_BREAK","GOODBYE","SAVE_AND_CODA","CODA"]}],
+        "commit":"before shutdown atomically persist schema 2 CODA with the same wren-outcome/name-treatment/conduct-verdict plus v5_case_c10_complete; Supabase/Discord/website coda mirrors are asynchronous and cannot delay save/kick/shutdown"
+      },
+      "wrong_input":{"policy":"no_player_input; fail_closed_resume_from_durable_phase","feedback":"If stalled, operator uses /obs finale status/resume diagnostics; players are never asked for another answer.","state_effect":"effect failure logs and advances only when durable phase rules permit; structural world remains safe"},
+      "reward":{"description":"save, complete goodbye, kick, production shutdown, and persistent Coda Mode","artifact_ids":[],"delivery":"branch/name-specific coda book and mirrored web/Discord coda"},
+      "reset_repair_recovery":{"reset":"none after COMMITTED; test harness may use an isolated disposable world only","repair":"restart reads durable phase; COMMITTED promotes to CODA without replay, CODA remains terminal, corrupt state enters FAULT","recovery":"resume idempotently from durable phase and never emit a second reward/shutdown sequence"},
+      "concurrency_replay":{"scope":"global terminal state machine","lock":"single scheduled phase runner","replay_policy":"terminal_coda_idempotent","disconnect":"theater continues; all online players receive kick; late joins in CODA get receipt only","after_complete":"terminal Coda Mode"},
+      "durability_profile":"finale_local_primary"
+    },
+    {
+      "node_id":"CW01",
+      "owner":"plugin",
+      "prerequisites":["v5_kv03_affidavit","v5_km03_affidavit","v5_ks03_affidavit","v5_ko03_affidavit","v5_kb03_affidavit","v5_ki03_affidavit"],
+      "site_id":"cistern_7",
+      "handler":"source_inspection",
+      "completion_flag":"v5_cw01_complaints",
+      "predicate": {
+        "kind":"three_document_chronology",
+        "evaluation_trigger":"file the three exact complaint receipts in chronology slots and pull the cycle handle",
+        "components":[
+          {"id":"complaints","block":"LECTERN","offset":[0,0,0],"book_pdc":{"v5_book_id":"cistern_complaints"},"page_receipts":[{"page_key":"pressure_sediment_cycle3","pdc":{"v5_receipt_id":"cw01_pressure_sediment_c3"}},{"page_key":"shedding_cloth_cycle4","pdc":{"v5_receipt_id":"cw01_shedding_cloth_c4"}},{"page_key":"removed_before_cycle5","pdc":{"v5_receipt_id":"cw01_removed_before_c5"}}]},
+          {"id":"chronology","block":"BARREL","offset":[0,0,2],"slots":{"cw01_pressure_sediment_c3":11,"cw01_shedding_cloth_c4":13,"cw01_removed_before_c5":15}}
+        ],
+        "all_of":[{"op":"player_opened_exact_book","component":"complaints"},{"op":"slots_contain_receipts_in_exact_order","component":"chronology","ids":["cw01_pressure_sediment_c3","cw01_shedding_cloth_c4","cw01_removed_before_c5"]}],
+        "commit":"consume only generated receipt slips and persist cycle 3 -> cycle 4 -> removal before cycle 5"
+      },
+      "wrong_input":{"policy":"return_nonreceipt_items_preserve_order","feedback":"The rail names the first chronology slot that conflicts with its cycle, without giving the correct cycle.","state_effect":"read bits persist; no completion"},
+      "reward":{"description":"complaint chronology","artifact_ids":[],"delivery":"unlock sample sort"},
+      "reset_repair_recovery":{"reset":"clear incomplete generated receipts from rail","repair":"restore three exact books, lecterns, rail slots, and handle","recovery":"reissue a source receipt only from its read bit; solved flag restores chronology"},
+      "concurrency_replay":{"scope":"read bits per player; rail mutex site-wide","lock":"single filing transaction","replay_policy":"idempotent_receipt","disconnect":"receipts remain in protected escrow","after_complete":"sources readable, no new receipts"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"CW02",
+      "owner":"plugin",
+      "prerequisites":["v5_cw01_complaints"],
+      "site_id":"cistern_7",
+      "handler":"tagged_barrel_sort",
+      "completion_flag":"v5_cw02_samples",
+      "predicate": {
+        "kind":"eight_sample_three_axis_sort",
+        "evaluation_trigger":"pull the sample audit handle after all eight unique vials are filed",
+        "components":[
+          {"id":"sample_set","material":"POTION","unique_pdc":"v5_evidence_id","required_ids":["A3T","A3L","A4T","A4L","B3T","B3L","B4T","B4L"]},
+          {"id":"A_top","block":"BARREL","offset":[-3,0,0],"slots":{"A3T":3,"A4T":4},"required_pdc":{"v5_intake":"A","v5_depth":"TOP"}},
+          {"id":"A_lower","block":"BARREL","offset":[-1,0,0],"slots":{"A3L":3,"A4L":4},"required_pdc":{"v5_intake":"A","v5_depth":"LOWER"}},
+          {"id":"B_top","block":"BARREL","offset":[1,0,0],"slots":{"B3T":3,"B4T":4},"required_pdc":{"v5_intake":"B","v5_depth":"TOP"}},
+          {"id":"B_lower","block":"BARREL","offset":[3,0,0],"slots":{"B3L":3,"B4L":4},"required_pdc":{"v5_intake":"B","v5_depth":"LOWER"}}
+        ],
+        "all_of":[{"op":"all_manifest_items_present_once","unique_count":8},{"op":"every_sample_matches_container_intake_depth_and_slot_cycle"},{"op":"disputed_pair_present","ids":["A3L","A4L"]}],
+        "commit":"latch barrels and persist A-lower cycles 3 and 4 as the disputed pair"
+      },
+      "wrong_input":{"policy":"keep_sort_editable_return_invalid_tags","feedback":"Audit reports INTAKE, CYCLE, DEPTH, or MISSING count only.","state_effect":"no sample deleted or auto-moved"},
+      "reward":{"description":"Intake A lower-sample date sequence","artifact_ids":[],"delivery":"unlock valve model"},
+      "reset_repair_recovery":{"reset":"return all eight unique samples to shuffled protected input","repair":"duplicate-scan eight evidence IDs, escrow duplicates, recreate only missing IDs, restore barrels/labels","recovery":"solved flag relatches canonical sample sort"},
+      "concurrency_replay":{"scope":"site inventory mutex","lock":"serialize all sample moves and audit","replay_policy":"return_wrong_and_idempotent","disconnect":"samples remain protected","after_complete":"barrels read-only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"CW03",
+      "owner":"plugin",
+      "prerequisites":["v5_cw02_samples"],
+      "site_id":"cistern_7",
+      "handler":"item_frame_valves",
+      "completion_flag":"v5_cw03_valves",
+      "predicate": {
+        "kind":"five_static_valve_states",
+        "evaluation_trigger":"pull the flush-test handle",
+        "components":[{"id":"valves","block":"ITEM_FRAME","offsets":[[-2,1,0],[-1,1,0],[0,1,0],[1,1,0],[2,1,0]],"material":"TRIPWIRE_HOOK","pdc_values":["cw03_intake_a","cw03_intake_b","cw03_main_filter","cw03_reed_bypass","cw03_washout"],"legend":{"0":"OPEN_WITH_FLOW","2":"CLOSED_ACROSS_FLOW"},"required_rotations":[0,2,0,2,0]}],
+        "all_of":[{"op":"frame_rotations_exact","component":"valves","values":[0,2,0,2,0]}],
+        "commit":"persist A open / B closed / main open / bypass closed / washout open"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"The model reports only the number of wrong flow states; no timing or item is consumed.","state_effect":"none"},
+      "reward":{"description":"flow-path receipt","artifact_ids":[],"delivery":"unlock relief roster"},
+      "reset_repair_recovery":{"reset":"restore deterministic [2,0,2,0,2]","repair":"restore five unique hooks, frames, pipe arrows, handle, and backing","recovery":"solved flag restores [0,2,0,2,0]"},
+      "concurrency_replay":{"scope":"site mutex","lock":"serialize frame and handle events","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"CW04",
+      "owner":"plugin",
+      "prerequisites":["v5_cw03_valves"],
+      "site_id":"watch_floor",
+      "handler":"answer_sign",
+      "completion_flag":"v5_cw04_roster",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked relief-roster sign",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"CW04"}}],
+        "answer_route":"local:CW04",
+        "normalization":"global answer_normalization",
+        "accepted":["TOMA RILL"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist Toma Rill as cycle-five relief"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"The clean roster is not sufficient; an unavailable worker name is rejected.","state_effect":"none"},
+      "reward":{"description":"missing-shift identity: Toma Rill","artifact_ids":[],"delivery":"unlock invoice/media chain"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, roster, meal chit, stair mark, and backing","recovery":"tiered hint names availability comparison, not answer"},
+      "concurrency_replay":{"scope":"per-player edit lease; global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"CW07",
+      "owner":"plugin",
+      "prerequisites":["v5_cw06_reeds"],
+      "site_id":"the_far_water",
+      "handler":"tagged_cache",
+      "completion_flag":"v5_cw07_cache",
+      "predicate": {
+        "kind":"three_item_claim_and_file",
+        "evaluation_trigger":"file all three recovered cache items into their exact evidence slots and pull the cache seal",
+        "components":[
+          {"id":"cache","block":"CHEST","offset":[0,0,0],"slots":{"cw07_genuine_filter":11,"cw07_purchase_receipt":13,"cw07_discipline_drafts":15}},
+          {"id":"filter","material":"WHITE_WOOL","pdc":{"v5_evidence_id":"cw07_genuine_filter","v5_selvage":"blue_both"}},
+          {"id":"receipt","material":"PAPER","pdc":{"v5_evidence_id":"cw07_purchase_receipt","v5_provenance":"original"}},
+          {"id":"drafts","material":"WRITTEN_BOOK","pdc":{"v5_evidence_id":"cw07_discipline_drafts","v5_drafts":"A_B"}},
+          {"id":"filing_barrel","block":"BARREL","offset":[0,0,2],"slots":{"cw07_genuine_filter":11,"cw07_purchase_receipt":13,"cw07_discipline_drafts":15}}
+        ],
+        "all_of":[{"op":"same_linked_player_held_each_unique_item","ids":["cw07_genuine_filter","cw07_purchase_receipt","cw07_discipline_drafts"]},{"op":"slots_contain_exact_evidence_ids","component":"filing_barrel","ids":["cw07_genuine_filter","cw07_purchase_receipt","cw07_discipline_drafts"]}],
+        "commit":"escrow all three evidence items in the sealed filing barrel and persist cache receipt"
+      },
+      "wrong_input":{"policy":"return_atomically","feedback":"The seal names the missing category FILTER, RECEIPT, or DRAFTS; wrong items are returned.","state_effect":"held-evidence bits persist"},
+      "reward":{"description":"original filter, purchase receipt, and discipline drafts A/B","artifact_ids":[],"delivery":"unlock CW08 Discord conclusion"},
+      "reset_repair_recovery":{"reset":"return incomplete filed evidence to cache staging","repair":"duplicate-scan three IDs, restore cache route/barriers/chest/barrel, recreate only missing IDs","recovery":"solved state keeps one protected readable copy of each; no portable duplicates"},
+      "concurrency_replay":{"scope":"site inventory mutex; held bits per player","lock":"single seal transaction","replay_policy":"idempotent_receipt","disconnect":"items remain in protected fixture/escrow","after_complete":"sealed evidence remains readable"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"BI01",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_case_c04_complete"],
+      "site_id":"unlit_house_lamp",
+      "handler":"house_mechanism",
+      "completion_flag":"v5_bi01_lamp",
+      "predicate": {
+        "kind":"residue_clock_alignment",
+        "evaluation_trigger":"pull the soot-blackened lamp handle",
+        "components":[
+          {"id":"residue_segments","block":"CHISELED_BOOKSHELF","offset":[-1,0,0],"required_mask":"111000","pdc_book_prefix":"bi01_wick_segment_"},
+          {"id":"bell_dial","block":"ITEM_FRAME","offset":[1,1,0],"material":"CLOCK","pdc":{"v5_control_id":"bi01_first_outage"},"legend":{"0":"BELL_0","1":"BELL_1","2":"BELL_2","3":"BELL_3","4":"BELL_4","5":"BELL_5","6":"BELL_6","7":"BELL_7"},"required_rotation":7}
+        ],
+        "all_of":[{"op":"bookshelf_mask_exact","component":"residue_segments","value":"111000"},{"op":"frame_rotation_exact","component":"bell_dial","value":7}],
+        "commit":"persist first outage at bell seven"
+      },
+      "wrong_input":{"policy":"preserve_state","feedback":"Lamp reports RESIDUE or BELL mismatch only.","state_effect":"none"},
+      "reward":{"description":"true outage chronology: bell seven","artifact_ids":[],"delivery":"unlock cairn house"},
+      "reset_repair_recovery":{"reset":"restore supplied wick books to input shelf and dial to 0","repair":"restore exact wick tags, shelf, clock, handle, lighting, and safe doorway","recovery":"solved flag restores mask 111000 and rotation 7"},
+      "concurrency_replay":{"scope":"house mutex","lock":"serialize shelf/frame/handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"BI02",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_bi01_lamp"],
+      "site_id":"unlit_house_cairn",
+      "handler":"tagged_fragments",
+      "completion_flag":"v5_bi02_cairn",
+      "predicate": {
+        "kind":"four_fragment_stratigraphy",
+        "evaluation_trigger":"pull the cairn section handle after ordering all four unique fragments",
+        "components":[
+          {"id":"rail","block":"BARREL","offset":[0,0,0],"slots":{"bi02_layer_old1":10,"bi02_layer_old2":11,"bi02_layer_old3":12,"bi02_drill_dust":13}},
+          {"id":"old1","material":"CALCITE","pdc":{"v5_evidence_id":"bi02_layer_old1","v5_age":"old_1"}},
+          {"id":"old2","material":"DRIPSTONE_BLOCK","pdc":{"v5_evidence_id":"bi02_layer_old2","v5_age":"old_2"}},
+          {"id":"old3","material":"OXIDIZED_COPPER","pdc":{"v5_evidence_id":"bi02_layer_old3","v5_age":"old_3"}},
+          {"id":"dust","material":"GRAVEL","pdc":{"v5_evidence_id":"bi02_drill_dust","v5_age":"fresh"}}
+        ],
+        "all_of":[{"op":"slots_contain_exact_evidence_ids","component":"rail","ids":["bi02_layer_old1","bi02_layer_old2","bi02_layer_old3","bi02_drill_dust"]},{"op":"all_manifest_items_present_once","unique_count":4}],
+        "commit":"seal the cross-section and persist fracture >= three service cycles before the cut"
+      },
+      "wrong_input":{"policy":"keep_sort_editable_return_invalid_tags","feedback":"The cairn reports OLDER/FRESH adjacency conflict or missing fragment count.","state_effect":"none"},
+      "reward":{"description":"pre-breach fracture proof","artifact_ids":[],"delivery":"unlock coop house"},
+      "reset_repair_recovery":{"reset":"return four fragments to shuffled protected tray","repair":"duplicate-scan four IDs, restore missing only, rail, handle, and safe floor","recovery":"solved flag restores sealed order"},
+      "concurrency_replay":{"scope":"house inventory mutex","lock":"serialize moves and handle","replay_policy":"return_wrong_and_idempotent","disconnect":"fragments remain protected","after_complete":"rail read-only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"BI03",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_bi02_cairn"],
+      "site_id":"unlit_house_coop",
+      "handler":"item_arrangement",
+      "completion_flag":"v5_bi03_coop",
+      "predicate": {
+        "kind":"three_instrument_tags_plus_time",
+        "evaluation_trigger":"pull the coop chronology handle",
+        "components":[
+          {"id":"instrument_tray","block":"BARREL","offset":[0,0,0],"slots":{"bi03_feed":11,"bi03_water":12,"bi03_cover":13}},
+          {"id":"feed","material":"WHEAT_SEEDS","pdc":{"v5_evidence_id":"bi03_feed","v5_last_response":"before_bell_8"}},
+          {"id":"water","material":"POTION","pdc":{"v5_evidence_id":"bi03_water","v5_last_response":"before_bell_8"}},
+          {"id":"cover","material":"BLACK_CARPET","pdc":{"v5_evidence_id":"bi03_cover","v5_cage":"covered"}},
+          {"id":"time_dial","block":"ITEM_FRAME","offset":[1,1,0],"material":"CLOCK","pdc":{"v5_control_id":"bi03_last_response"},"required_rotation":7,"meaning":"before bell eight"}
+        ],
+        "all_of":[{"op":"slots_contain_exact_evidence_ids","component":"instrument_tray","ids":["bi03_feed","bi03_water","bi03_cover"]},{"op":"all_manifest_items_present_once","unique_count":3},{"op":"frame_rotation_exact","component":"time_dial","value":7}],
+        "commit":"persist warning birds failed before bell eight"
+      },
+      "wrong_input":{"policy":"preserve_valid_items_return_invalid","feedback":"Coop reports FEED/WATER/COVER or TIME mismatch.","state_effect":"none"},
+      "reward":{"description":"bird-failure timing","artifact_ids":[],"delivery":"unlock well house"},
+      "reset_repair_recovery":{"reset":"return three items to staging and dial to 0","repair":"restore exact items, tray, clock, cages, handle, and headroom","recovery":"solved flag restores arrangement"},
+      "concurrency_replay":{"scope":"house mutex","lock":"serialize inventory/frame/handle","replay_policy":"idempotent_state_match","disconnect":"state remains protected","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"BI04",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_bi03_coop"],
+      "site_id":"unlit_house_well",
+      "handler":"reflection_frames",
+      "completion_flag":"v5_bi04_well",
+      "predicate": {
+        "kind":"three_map_reflection_trace",
+        "evaluation_trigger":"pull the well projection handle",
+        "components":[
+          {"id":"village","block":"ITEM_FRAME","offset":[-1,1,0],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"bi04_village_pressure"},"required_rotation":0},
+          {"id":"hold","block":"ITEM_FRAME","offset":[0,1,0],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"bi04_hold_pressure"},"required_rotation":4},
+          {"id":"trace","block":"ITEM_FRAME","offset":[1,1,0],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"bi04_load_trace"},"required_rotation":2}
+        ],
+        "all_of":[{"op":"frame_rotations_exact","values":{"village":0,"hold":4,"trace":2}},{"op":"water_present_below_frames","offsets":[[-1,0,0],[0,0,0],[1,0,0]]}],
+        "commit":"persist heat shaft -> third bay load redirection"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"Projection names VILLAGE, HOLD, or TRACE as unaligned.","state_effect":"none"},
+      "reward":{"description":"pressure-map alignment and redirected load proof","artifact_ids":[],"delivery":"unlock watch house"},
+      "reset_repair_recovery":{"reset":"restore [2,0,6]","repair":"restore exact maps/frames/water/handle/backing and clear approach","recovery":"solved flag restores [0,4,2]"},
+      "concurrency_replay":{"scope":"house mutex","lock":"serialize frames/handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"BI05",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_bi04_well"],
+      "site_id":"unlit_house_watch",
+      "handler":"answer_sign",
+      "completion_flag":"v5_bi05_watch",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked watch slate",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"BI05"}}],
+        "answer_route":"local:BI05",
+        "normalization":"global answer_normalization",
+        "accepted":["BELL EIGHT","BELL 8","EIGHT","8","FIRST ALARM BELL EIGHT","FIRST ALARM BELL 8"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist first alarm bell eight and edited official bell nine"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"Bell nine is rejected as the overwritten Record.","state_effect":"none"},
+      "reward":{"description":"altered-watch proof","artifact_ids":[],"delivery":"unlock warm house"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, copied watch surface, light control, and backing","recovery":"source remains inspectable under altered light"},
+      "concurrency_replay":{"scope":"per-player edit lease; global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"BI06",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_bi05_watch"],
+      "site_id":"unlit_house_warm",
+      "handler":"tagged_sample_deposit",
+      "completion_flag":"v5_bi06_warm",
+      "predicate": {
+        "kind":"three_dated_viability_samples",
+        "evaluation_trigger":"pull the date-comparison handle after filing all three samples",
+        "components":[
+          {"id":"tray","block":"BARREL","offset":[0,0,0],"slots":{"bi06_living_reed":11,"bi06_viable_water":13,"bi06_surface_air":15}},
+          {"id":"reed","material":"VINE","pdc":{"v5_evidence_id":"bi06_living_reed","v5_date_relation":"before_iss_cut"}},
+          {"id":"water","material":"POTION","pdc":{"v5_evidence_id":"bi06_viable_water","v5_date_relation":"before_iss_cut"}},
+          {"id":"air","material":"GLASS_BOTTLE","pdc":{"v5_evidence_id":"bi06_surface_air","v5_date_relation":"before_iss_cut"}}
+        ],
+        "all_of":[{"op":"slots_contain_exact_evidence_ids","component":"tray","ids":["bi06_living_reed","bi06_viable_water","bi06_surface_air"]},{"op":"every_item_pdc_equals","key":"v5_date_relation","value":"before_iss_cut"}],
+        "commit":"escrow samples and persist the surface had healed before Iss excavated"
+      },
+      "wrong_input":{"policy":"return_atomically","feedback":"The tray names REED, WATER, AIR, or DATE as missing/mismatched; ordinary items never pass.","state_effect":"none"},
+      "reward":{"description":"healed-surface proof","artifact_ids":[],"delivery":"unlock threshold house"},
+      "reset_repair_recovery":{"reset":"return incomplete valid samples to protected staging","repair":"duplicate-scan three IDs, restore missing only, tray/handle/labels and safe floor","recovery":"solved state retains one protected sample set"},
+      "concurrency_replay":{"scope":"house inventory mutex","lock":"single filing transaction","replay_policy":"return_wrong_and_idempotent","disconnect":"items remain protected","after_complete":"sealed readback, no duplicates"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"BI07",
+      "owner":"plugin_unlit",
+      "prerequisites":["v5_bi06_warm"],
+      "site_id":"unlit_house_threshold",
+      "handler":"bounded_group_walk",
+      "completion_flag":"v5_bi07_threshold",
+      "predicate": {
+        "kind":"bounded_inner_seal_reachability_proof",
+        "evaluation_trigger":"operate the inner lever after completing the exact safe walk and crouched sightline",
+        "components":[
+          {"id":"route","cells":[
+            {"step":1,"offset":[-2,0,4],"posture":"ANY"},
+            {"step":2,"offset":[-1,0,3],"posture":"ANY"},
+            {"step":3,"offset":[0,0,2],"posture":"SNEAKING","hold_ticks":10},
+            {"step":4,"offset":[0,0,1],"posture":"SNEAKING","look_target":"inner_lever","yaw_tolerance":5.0}
+          ],"cell_tolerance":0.35,"step_timeout_seconds":20},
+          {"id":"outer_lever","block":"LEVER","offset":[2,1,0],"pdc":{"v5_control_id":"bi07_outer"},"must_be_unreachable_from_route":true},
+          {"id":"inner_lever","block":"LEVER","offset":[0,1,0],"pdc":{"v5_control_id":"bi07_inner"},"must_be_reachable_from_final_cell":true}
+        ],
+        "all_of":[{"op":"route_sequence_exact","component":"route"},{"op":"actor_operates","component":"inner_lever"},{"op":"actor_did_not_operate","component":"outer_lever"}],
+        "commit":"persist Orin sealed from inside after outer control failure"
+      },
+      "wrong_input":{"policy":"reset_actor_attempt_only","feedback":"A wrong cell/lever resets only that walker with a dull seal pulse; no teleport/damage.","state_effect":"other walkers and global state unchanged"},
+      "reward":{"description":"inner-seal and already-underway collapse proof","artifact_ids":[],"delivery":"unlock BI08 Discord synthesis"},
+      "reset_repair_recovery":{"reset":"clear transient route cursors and reset both levers","repair":"restore exact safe cells, headroom, barrier, levers, PDC, sightline, and well exit","recovery":"solved state leaves route safely traversable"},
+      "concurrency_replay":{"scope":"route cursor per player; global completion CAS","lock":"none between walkers; lever commit serialized","replay_policy":"idempotent_receipt","disconnect":"discard transient cursor only","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"HS01",
+      "owner":"plugin",
+      "prerequisites":["v5_case_c05_complete","v5_case_c04_complete"],
+      "site_id":"dead_stall",
+      "handler":"tagged_item_claim",
+      "completion_flag":"v5_hs01_filter",
+      "predicate": {
+        "kind":"atomic_unique_artifact_claim",
+        "evaluation_trigger":"take the revealed cartridge from protected slot 13",
+        "components":[{"id":"source","block":"BARREL","offset":[0,0,0],"slot":13},{"id":"cartridge","material":"COPPER_INGOT","pdc":{"v5_artifact_id":"filter_cartridge"}}],
+        "all_of":[{"op":"slot_exact_item","component":"source","item":"cartridge","amount":1},{"op":"destination_inventory_has_capacity","amount":1}],
+        "commit":"in one transaction remove source item, add the same tagged item to actor/escrow, and set flag"
+      },
+      "wrong_input":{"policy":"deny_unrelated_extraction","feedback":"Only the revealed tagged cartridge is claimable.","state_effect":"none"},
+      "reward":{"description":"Filter Cartridge","artifact_ids":["filter_cartridge"],"delivery":"same COPPER_INGOT with v5_artifact_id=filter_cartridge"},
+      "reset_repair_recovery":{"reset":"return uncommitted cartridge to slot 13","repair":"restore barrel/barrier/label; recreate only if no duplicate exists and flag false","recovery":"reissue only from v5_hs01_filter after duplicate scan"},
+      "concurrency_replay":{"scope":"unique artifact CAS","lock":"one claim globally","replay_policy":"artifact_idempotent","disconnect":"delivery to protected recovery escrow","after_complete":"never respawn source while a copy exists"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"HS02",
+      "owner":"plugin",
+      "prerequisites":["v5_hs01_filter"],
+      "site_id":"offering_cairn_01",
+      "handler":"exact_tagged_deposit",
+      "completion_flag":"v5_hs02_installed",
+      "predicate": {
+        "kind":"exact_artifact_install",
+        "evaluation_trigger":"pull the cartridge housing latch",
+        "components":[{"id":"housing","block":"BARREL","offset":[0,0,0],"slot":13},{"id":"cartridge","material":"COPPER_INGOT","pdc":{"v5_artifact_id":"filter_cartridge"}}],
+        "all_of":[{"op":"slot_exact_item","component":"housing","item":"cartridge","amount":1}],
+        "commit":"escrow the cartridge in its housing, persist restored water, and change only documented water visuals"
+      },
+      "wrong_input":{"policy":"return_atomically","feedback":"Housing rejects every item without the exact artifact PDC.","state_effect":"none"},
+      "reward":{"description":"restored water state","artifact_ids":[],"delivery":"activate water readback and unlock lamps"},
+      "reset_repair_recovery":{"reset":"return cartridge only if solve not committed","repair":"restore housing/latch/water path; solved flag reinstalls recovered cartridge or protected proxy after duplicate scan","recovery":"artifact recovery uses v5_hs01_filter; never clear v5_hs02_installed"},
+      "concurrency_replay":{"scope":"site inventory mutex","lock":"single install transaction","replay_policy":"return_wrong_and_idempotent","disconnect":"item remains protected","after_complete":"housing locked and reports installed"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"HS03",
+      "owner":"plugin",
+      "prerequisites":["v5_hs02_installed"],
+      "site_id":"lampworks_stair",
+      "handler":"item_frame_lamps",
+      "completion_flag":"v5_hs03_lamps",
+      "predicate": {
+        "kind":"twenty_binary_lamp_frames",
+        "evaluation_trigger":"pull the lamp circuit handle",
+        "components":[{"id":"lamps","block":"ITEM_FRAME","count":20,"ordered_offsets":[[-4,2,0],[-3,2,0],[-2,2,0],[-1,2,0],[0,2,0],[1,2,0],[2,2,0],[3,2,0],[4,2,0],[5,2,0],[-4,1,0],[-3,1,0],[-2,1,0],[-1,1,0],[0,1,0],[1,1,0],[2,1,0],[3,1,0],[4,1,0],[5,1,0]],"material":"REDSTONE_TORCH","pdc_prefix":"hs03_lamp_","legend":{"0":"A_DIM","4":"B_LIT"},"required_symbols":"ABBBAABBBBAABAAABBAB","required_rotations":[0,4,4,4,0,0,4,4,4,4,0,0,4,0,0,0,4,4,0,4]}],
+        "all_of":[{"op":"frame_rotations_exact","component":"lamps","values":[0,4,4,4,0,0,4,4,4,4,0,0,4,0,0,0,4,4,0,4]}],
+        "commit":"persist four Bacon groups ABBBA / ABBBB / AABAA / ABBAB and light the service lane"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"Panel reports the wrong five-bit group numbers only, not their letters.","state_effect":"none"},
+      "reward":{"description":"OPEN lamp circuit and lit service lane","artifact_ids":[],"delivery":"unlock pressure register"},
+      "reset_repair_recovery":{"reset":"set deterministic alternating A/B state","repair":"restore 20 unique tagged torches/frames, labels, handle, backing, and stair clearance","recovery":"solved flag restores canonical 20-state pattern"},
+      "concurrency_replay":{"scope":"site mutex","lock":"serialize 20 frames and handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched; lighting readback restored from flag"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"HS04",
+      "owner":"plugin",
+      "prerequisites":["v5_hs03_lamps"],
+      "site_id":"third_lamp_stand",
+      "handler":"chiseled_bookshelf_pattern",
+      "completion_flag":"v5_hs04_pressure",
+      "predicate": {
+        "kind":"four_six_slot_pressure_masks",
+        "evaluation_trigger":"pull the pressure calibration handle",
+        "components":[
+          {"id":"shelf1","block":"CHISELED_BOOKSHELF","offset":[-3,0,0],"required_mask":"110010"},
+          {"id":"shelf2","block":"CHISELED_BOOKSHELF","offset":[-1,0,0],"required_mask":"101100"},
+          {"id":"shelf3","block":"CHISELED_BOOKSHELF","offset":[1,0,0],"required_mask":"011001"},
+          {"id":"shelf4","block":"CHISELED_BOOKSHELF","offset":[3,0,0],"required_mask":"001111"},
+          {"id":"calibration_books","material":"WRITTEN_BOOK","required_unique_count":13,"pdc_prefix":"hs04_calibration_","only_allowed_in_shelves":true}
+        ],
+        "all_of":[{"op":"bookshelf_masks_exact","values":{"shelf1":"110010","shelf2":"101100","shelf3":"011001","shelf4":"001111"}},{"op":"all_manifest_items_present_once","unique_count":13}],
+        "commit":"latch shelves and persist pressure calibration"
+      },
+      "wrong_input":{"policy":"reject_ordinary_books_preserve_tagged_layout","feedback":"Panel reports wrong shelf numbers, not masks; ordinary books are returned.","state_effect":"none"},
+      "reward":{"description":"pressure calibration","artifact_ids":[],"delivery":"unlock survey dial restoration"},
+      "reset_repair_recovery":{"reset":"return all 13 supplied books to protected input tray","repair":"duplicate-scan 13 IDs, restore missing only, shelves/facings/labels/handle","recovery":"solved flag restores exact four masks"},
+      "concurrency_replay":{"scope":"site inventory mutex","lock":"serialize shelf inserts/removals/handle","replay_policy":"idempotent_state_match","disconnect":"books stay protected","after_complete":"shelves locked"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"HS05",
+      "owner":"plugin",
+      "prerequisites":["v5_hs04_pressure"],
+      "site_id":"orin_frame_dial_1",
+      "handler":"item_frame_dials",
+      "completion_flag":"v5_hs05_dials",
+      "predicate": {
+        "kind":"six_verified_survey_rotations",
+        "evaluation_trigger":"pull the restoration survey handle",
+        "components":[{"id":"dials","site_series":["orin_frame_dial_1","orin_frame_dial_2","orin_frame_dial_3","orin_frame_dial_4","orin_frame_dial_5","orin_frame_dial_6"],"block":"ITEM_FRAME","material":"COMPASS","pdc_prefix":"hs05_dial_","required_rotations":[0,2,4,6,0,2]}],
+        "all_of":[{"op":"frame_rotations_exact","component":"dials","values":[0,2,4,6,0,2]},{"op":"prior_receipt_true","flag":"v5_ko02_dials"}],
+        "commit":"persist restored survey alignment"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"Handle reports misaligned bearing count only.","state_effect":"none"},
+      "reward":{"description":"alignment receipt","artifact_ids":[],"delivery":"arm painted pressure line"},
+      "reset_repair_recovery":{"reset":"restore deterministic [2,6,0,4,2,6] only if unsolved","repair":"restore exact six frames/compasses/handle and route clearance","recovery":"solved flag restores [0,2,4,6,0,2]"},
+      "concurrency_replay":{"scope":"six-site puzzle mutex","lock":"serialize frames/handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"HS06",
+      "owner":"plugin",
+      "prerequisites":["v5_hs05_dials"],
+      "site_id":"painted_line",
+      "handler":"bounded_route",
+      "completion_flag":"v5_hs06_passage",
+      "predicate": {
+        "kind":"six_color_cell_route",
+        "evaluation_trigger":"cross the white final cell after exact ordered traversal",
+        "components":[{"id":"route","cells":[
+          {"step":1,"offset":[0,0,5],"block":"BLUE_CONCRETE","posture":"ANY"},
+          {"step":2,"offset":[0,0,4],"block":"BLUE_CONCRETE","posture":"ANY"},
+          {"step":3,"offset":[1,0,3],"block":"CUT_COPPER","posture":"ANY"},
+          {"step":4,"offset":[1,0,2],"block":"GRAY_CONCRETE","posture":"SNEAKING","hold_ticks":10},
+          {"step":5,"offset":[0,0,1],"block":"CUT_COPPER","posture":"ANY"},
+          {"step":6,"offset":[0,0,0],"block":"WHITE_CONCRETE","posture":"ANY"}
+        ],"cell_tolerance":0.35,"step_timeout_seconds":20}],
+        "all_of":[{"op":"route_sequence_exact","component":"route","colors":["BLUE","BLUE","COPPER","GREY","COPPER","WHITE"],"crouch_step":4}],
+        "commit":"set flag, open the service passage, and deliver System Key atomically"
+      },
+      "wrong_input":{"policy":"reset_actor_attempt_only","feedback":"A wrong tile produces a pressure sigh and resets only that walker; no teleport/damage.","state_effect":"other players unchanged"},
+      "reward":{"description":"System Key and service passage","artifact_ids":["system_key"],"delivery":"TRIPWIRE_HOOK with v5_artifact_id=system_key to actor or recovery escrow"},
+      "reset_repair_recovery":{"reset":"clear transient route cursors only","repair":"restore exact floor cells/headroom/barriers/standing cells and key escrow","recovery":"reissue system_key only from v5_hs06_passage after duplicate scan"},
+      "concurrency_replay":{"scope":"route cursor per player; reward CAS global","lock":"walkers independent; completion serialized","replay_policy":"artifact_idempotent","disconnect":"cursor discarded; committed key to escrow","after_complete":"passage open, no duplicate key"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"HS07",
+      "owner":"plugin",
+      "prerequisites":["v5_hs06_passage"],
+      "site_id":"stone_of_reckoning",
+      "handler":"tagged_key_console",
+      "completion_flag":"v5_case_c06_complete",
+      "predicate": {
+        "kind":"five_subsystem_flags_plus_key",
+        "evaluation_trigger":"pull the synchronization handle",
+        "components":[{"id":"key_console","block":"BARREL","offset":[0,0,0],"slot":13},{"id":"system_key","material":"TRIPWIRE_HOOK","pdc":{"v5_artifact_id":"system_key"}},{"id":"handle","block":"LEVER","offset":[1,1,0],"pdc":{"v5_control_id":"hs07_sync"}}],
+        "all_of":[
+          {"op":"flags_all_true","flags":["v5_hs02_installed","v5_hs03_lamps","v5_hs04_pressure","v5_hs05_dials","v5_hs06_passage"]},
+          {"op":"slot_exact_item","component":"key_console","item":"system_key","amount":1}
+        ],
+        "commit":"return the System Key, set C06 complete, open G4, and deliver Deep Access Plate atomically"
+      },
+      "wrong_input":{"policy":"return_wrong_item_preserve_valid_key","feedback":"Console names missing subsystem WATER, LAMPS, PRESSURE, SURVEY, PASSAGE, or KEY.","state_effect":"no gate/reward"},
+      "reward":{"description":"Deep Access Plate and G4 open","artifact_ids":["deep_access_plate"],"delivery":"ECHO_SHARD with v5_artifact_id=deep_access_plate; return same System Key for RP02"},
+      "reset_repair_recovery":{"reset":"return housed key if completion not committed","repair":"restore console/handle/backing/G4 linkage and rebuild subsystem visual readbacks from flags","recovery":"reissue Deep Access Plate only from v5_case_c06_complete; System Key only from v5_hs06_passage, each after duplicate scan"},
+      "concurrency_replay":{"scope":"site mutex plus two unique-artifact CAS operations","lock":"serialize key, flags, gate, reward","replay_policy":"artifact_idempotent","disconnect":"returned key and reward go to escrow","after_complete":"G4 stays open; no duplicate plate/key"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id": "KV02",
+      "owner": "plugin",
+      "prerequisites": ["v5_kv01_audit"],
+      "site_id": "vaun_hoard_chest",
+      "handler": "tagged_container_sort",
+      "completion_flag": "v5_kv02_sort",
+      "predicate": {
+        "kind": "complete_unique_item_sort",
+        "evaluation_trigger": "pull the sort audit handle after distributing all 36 evidence items from both source barrels",
+        "components": [
+          {"id":"input_lot_a","block":"BARREL","offset":[-1,0,2],"unique_pdc":"v5_evidence_id","required_unique_count":18,"manifest_slice":{"start":0,"count":18}},
+          {"id":"input_lot_b","block":"BARREL","offset":[1,0,2],"unique_pdc":"v5_evidence_id","required_unique_count":18,"manifest_slice":{"start":18,"count":18}},
+          {"id":"cistern","block":"BARREL","offset":[-3,0,0],"class_pdc":{"v5_sort_class":"cistern"},"required_counts":{"WHITE_WOOL":7,"CHARCOAL":10},"allowed_slots":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},
+          {"id":"public_heat","block":"BARREL","offset":[-2,0,0],"class_pdc":{"v5_sort_class":"public_heat"},"required_counts":{"COAL":4},"allowed_slots":[0,1,2,3]},
+          {"id":"private_heat","block":"BARREL","offset":[2,0,0],"class_pdc":{"v5_sort_class":"private_heat","v5_staple":"brass","v5_destination":"hearth_row_three"},"required_counts":{"WHITE_WOOL":5,"CHARCOAL":6},"allowed_slots":[0,1,2,3,4,5,6,7,8,9,10]},
+          {"id":"condemned","block":"BARREL","offset":[3,0,0],"class_pdc":{"v5_sort_class":"condemned"},"required_counts":{"FLINT":4},"allowed_slots":[0,1,2,3]}
+        ],
+        "all_of": [
+          {"op":"all_manifest_items_present_once","unique_count":36,"containers":["cistern","public_heat","private_heat","condemned"]},
+          {"op":"every_item_in_matching_pdc_container"},
+          {"op":"container_material_counts_exact"}
+        ],
+        "commit": "latch all four barrels and persist the brass-staple Hearth Row Three diversion proof"
+      },
+      "wrong_input": {"policy":"keep_sort_editable","feedback":"Report only the number of misplaced or missing tags; never auto-move or destroy an item.","state_effect":"no partial completion"},
+      "reward": {"description":"diverted-filter proof: five cloth and six charcoal to Hearth Row Three","artifact_ids":[],"delivery":"unlock Vaun reconciliation"},
+      "reset_repair_recovery": {"reset":"return all 36 unique evidence items to the two protected shuffled input lots, 18 in each","repair":"duplicate-scan both source and four destination barrels by v5_evidence_id, remove only manifest-proven duplicates to escrow, recreate missing IDs in their authored source-barrel slice, restore barrels/labels","recovery":"solved flag relatches canonical distribution without issuing portable artifacts"},
+      "concurrency_replay": {"scope":"site inventory mutex","lock":"serialize all four barrel and input-lot moves","replay_policy":"return_wrong_and_idempotent","disconnect":"items stay in protected barrels","after_complete":"barrels read-only; report solved"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id": "KV03",
+      "owner": "plugin",
+      "prerequisites": ["v5_kv02_sort"],
+      "site_id": "stone_vaun",
+      "handler": "answer_sign",
+      "completion_flag": "v5_kv03_affidavit",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked slate",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"KV03"}}],
+        "answer_route":"local:KV03",
+        "normalization":"global answer_normalization",
+        "accepted":["CHECK HEARTH THREE AGAINST PUMP RECEIPT","HEARTH THREE RECEIVED THE MISSING CISTERN GOODS","HEARTH ROW THREE RECEIVED THE MISSING CISTERN GOODS"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"set flag and deliver the exact authored Vaun affidavit book"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_cipher","feedback":"The filing must identify Hearth Three and the pump/cistern receipt; a weak 'Vaun stole it' theory is rejected.","state_effect":"none"},
+      "reward":{"description":"Vaun sealed affidavit","artifact_ids":["affidavit_vaun"],"delivery":"WRITTEN_BOOK with v5_artifact_id=affidavit_vaun and v5_book_id=vaun_sealed_affidavit"},
+      "reset_repair_recovery":{"reset":"clear sign only","repair":"restore sign/backing/cipher lectern","recovery":"reissue exact affidavit only from v5_kv03_affidavit after duplicate scan"},
+      "concurrency_replay":{"scope":"per-player edit lease, global completion CAS","lock":"single editor","replay_policy":"oracle_and_artifact_idempotent","disconnect":"release lease; reward escrow if commit completed","after_complete":"never duplicate affidavit"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"KM01",
+      "owner":"plugin",
+      "prerequisites":["v5_case_c02_complete"],
+      "site_id":"mara_lectern_1",
+      "handler":"lectern_page_comparison",
+      "completion_flag":"v5_km01_editions",
+      "predicate": {
+        "kind":"read_all_then_select_exact_edition",
+        "evaluation_trigger":"pull the verification handle beside the selected lectern",
+        "components":[
+          {"id":"e1","site_id":"mara_lectern_1","book_pdc":{"v5_book_id":"mara_manual_edition_1"}},
+          {"id":"e2","site_id":"mara_lectern_2","book_pdc":{"v5_book_id":"mara_manual_edition_2"}},
+          {"id":"e3","site_id":"mara_lectern_3","book_pdc":{"v5_book_id":"mara_manual_edition_3"},"selector_pdc":{"v5_selection":"KM01_E3"}},
+          {"id":"e4","site_id":"mara_lectern_4","book_pdc":{"v5_book_id":"mara_manual_edition_4"}}
+        ],
+        "all_of":[
+          {"op":"player_opened_exact_book","components":["e1","e2","e3","e4"]},
+          {"op":"handle_belongs_to","component":"e3"}
+        ],
+        "commit":"persist Edition 3 as the verified route manual and latch only its brass selector"
+      },
+      "wrong_input":{"policy":"preserve_read_bits","feedback":"The selected copy fails provenance, permanence, route-check, or load-check; the failed criterion is named.","state_effect":"no completion"},
+      "reward":{"description":"correct manual edition: E3","artifact_ids":[],"delivery":"unlock Mara extraction slips"},
+      "reset_repair_recovery":{"reset":"clear selector latches but keep immutable books","repair":"restore four exact book hashes, lectern facings, and distinct selectors","recovery":"solved state relatches E3"},
+      "concurrency_replay":{"scope":"read bits per player; selector CAS site-wide","lock":"one selector transaction","replay_policy":"idempotent_state_match","disconnect":"read bits persist","after_complete":"all editions remain readable, E3 visibly verified"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KM02",
+      "owner":"plugin",
+      "prerequisites":["v5_km01_editions"],
+      "site_id":"stone_mara",
+      "handler":"answer_sign",
+      "completion_flag":"v5_km02_extraction",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked route slate",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"KM02"}}],
+        "answer_route":"local:KM02",
+        "normalization":"global answer_normalization",
+        "accepted":["WEST TWO LOW ONE EAST THREE","W2 LOW1 E3","WEST 2 LOW 1 EAST 3"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist the exact W W / LOW / E E E route instruction"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"A valid route must include west count, low count/posture, and east count.","state_effect":"none"},
+      "reward":{"description":"verified route sequence","artifact_ids":[],"delivery":"arm Mara route start"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, five comparison slips, and E3 linkage","recovery":"tiered hint points back to marks 1/2/4/4/6 without exposing words"},
+      "concurrency_replay":{"scope":"per-player edit lease, global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KM03",
+      "owner":"plugin",
+      "prerequisites":["v5_km02_extraction"],
+      "site_id":"mara_route_marker_1",
+      "handler":"bounded_route",
+      "completion_flag":"v5_km03_affidavit",
+      "predicate": {
+        "kind":"per_player_exact_cell_route",
+        "evaluation_trigger":"cross the final marked cell while following the armed sequence",
+        "components":[
+          {"id":"route","site_series":["mara_route_marker_1","mara_route_marker_2","mara_route_marker_3","mara_route_marker_4"],"start":"brass post","cells":[
+            {"step":1,"move":"WEST","offset":[-1,0,0],"posture":"ANY"},
+            {"step":2,"move":"WEST","offset":[-2,0,0],"posture":"ANY"},
+            {"step":3,"move":"LOW","offset":[-2,0,-1],"posture":"SNEAKING","hold_ticks":10},
+            {"step":4,"move":"EAST","offset":[-1,0,-1],"posture":"ANY"},
+            {"step":5,"move":"EAST","offset":[0,0,-1],"posture":"ANY"},
+            {"step":6,"move":"EAST","offset":[1,0,-1],"posture":"ANY"}
+          ],"cell_tolerance":0.35,"step_timeout_seconds":20}
+        ],
+        "all_of":[{"op":"route_sequence_exact","component":"route","wrong_cell_resets":true}],
+        "commit":"persist the actor's completed route, set the global flag, and deliver Mara's affidavit"
+      },
+      "wrong_input":{"policy":"reset_actor_attempt_only","feedback":"A low bell and brass-post pulse return that actor to step 0; no teleport or damage.","state_effect":"other players' attempts and solved state unchanged"},
+      "reward":{"description":"Mara sealed affidavit","artifact_ids":["affidavit_mara"],"delivery":"WRITTEN_BOOK with v5_artifact_id=affidavit_mara and v5_book_id=mara_sealed_affidavit"},
+      "reset_repair_recovery":{"reset":"clear transient per-player route cursors","repair":"restore six walk cells, brass start, safe headroom, markers, and no-block corridor","recovery":"reissue affidavit only from v5_km03_affidavit after duplicate scan"},
+      "concurrency_replay":{"scope":"route cursor per player; global completion CAS","lock":"none between walkers; reward transaction serialized","replay_policy":"artifact_idempotent","disconnect":"drop only transient cursor; no item at risk","after_complete":"route remains traversable; no duplicate reward"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"KS01",
+      "owner":"plugin",
+      "prerequisites":["v5_case_c02_complete"],
+      "site_id":"sella_pool",
+      "handler":"reflection_alignment",
+      "completion_flag":"v5_ks01_bearing",
+      "predicate": {
+        "kind":"mirrored_strip_alignment",
+        "evaluation_trigger":"pull the waterline handle after aligning all six word strips",
+        "components":[{"id":"strips","block":"ITEM_FRAME","offsets":[[-3,1,0],[-2,1,0],[-1,1,0],[0,1,0],[1,1,0],[2,1,0]],"required_items":["ks01_dzgvi","ks01_pvvkh","ks01_gsv","ks01_yzxp","ks01_lu","ks01_gsv_kztv"],"item_material":"PAPER","pdc_key":"v5_evidence_id","required_rotations":[4,4,4,4,4,4]}],
+        "all_of":[
+          {"op":"frame_ids_exact_in_order","ids":["ks01_dzgvi","ks01_pvvkh","ks01_gsv","ks01_yzxp","ks01_lu","ks01_gsv_kztv"]},
+          {"op":"frame_rotations_exact","values":[4,4,4,4,4,4]},
+          {"op":"water_present_below_frames","offsets":[[-3,0,0],[-2,0,0],[-1,0,0],[0,0,0],[1,0,0],[2,0,0]]}
+        ],
+        "commit":"latch the reflected line and persist WATER KEEPS THE BACK OF THE PAGE as the bearing receipt"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"The pool reports how many strips are reversed or out of order, never their identities.","state_effect":"none"},
+      "reward":{"description":"shoreline bearing","artifact_ids":[],"delivery":"unlock shoreline overlay"},
+      "reset_repair_recovery":{"reset":"return strips to deterministic shuffled order with rotations [0,2,6,0,2,6]","repair":"restore exact PDC strips, frames, water source blocks, backing, and handle","recovery":"solved flag restores canonical latched line"},
+      "concurrency_replay":{"scope":"site mutex","lock":"serialize frame changes and handle evaluation","replay_policy":"idempotent_state_match","disconnect":"visible state remains","after_complete":"frames latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KS02",
+      "owner":"plugin",
+      "prerequisites":["v5_ks01_bearing"],
+      "site_id":"sella_anchor",
+      "handler":"item_frame_overlay",
+      "completion_flag":"v5_ks02_overlay",
+      "predicate": {
+        "kind":"three_map_landmark_alignment",
+        "evaluation_trigger":"pull the shoreline projection handle",
+        "components":[
+          {"id":"school","block":"ITEM_FRAME","offset":[-1,1,0],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"ks02_school_roof"},"required_rotation":0},
+          {"id":"reeds","block":"ITEM_FRAME","offset":[0,1,0],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"ks02_long_reed_bed"},"required_rotation":4},
+          {"id":"intake","block":"ITEM_FRAME","offset":[1,1,0],"material":"FILLED_MAP","pdc":{"v5_evidence_id":"ks02_intake_transfer"},"required_rotation":6}
+        ],
+        "all_of":[{"op":"frame_rotations_exact","values":{"school":0,"reeds":4,"intake":6}},{"op":"landmark_relation","north_of":["school","reeds"],"reveals":"INTAKE_A_BEHIND_FOLDED_REEDS"}],
+        "commit":"latch maps and persist Intake A / folded reeds"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"Projection reports SCHOOL or REEDS as unanchored; it does not reveal Intake A.","state_effect":"none"},
+      "reward":{"description":"cistern Intake A behind folded reeds","artifact_ids":[],"delivery":"unlock Sella sample comparison"},
+      "reset_repair_recovery":{"reset":"restore frames to [2,0,2]","repair":"restore exact maps, frames, handle, backing, and viewing cell","recovery":"solved flag restores canonical overlay"},
+      "concurrency_replay":{"scope":"site mutex","lock":"serialize frame and handle events","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KS03",
+      "owner":"plugin",
+      "prerequisites":["v5_ks02_overlay"],
+      "site_id":"stone_sella",
+      "handler":"answer_sign",
+      "completion_flag":"v5_ks03_affidavit",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked sample slate",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"KS03"}}],
+        "answer_route":"local:KS03",
+        "normalization":"global answer_normalization",
+        "accepted":["THE HEARING HID THE LOWER SAMPLE","HEARING HID THE LOWER SAMPLE","A LOWER SAMPLE WAS HIDDEN","THE A LOWER SAMPLE WAS HIDDEN"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist the omitted A-lower evidence conclusion and deliver Sella's affidavit"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"The answer must identify the hidden lower/A-lower sample, not merely say the water was dirty.","state_effect":"none"},
+      "reward":{"description":"Sella sealed affidavit","artifact_ids":["affidavit_sella"],"delivery":"WRITTEN_BOOK with v5_artifact_id=affidavit_sella and v5_book_id=sella_sealed_affidavit"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, sample books, and backing","recovery":"reissue exact affidavit only from v5_ks03_affidavit after duplicate scan"},
+      "concurrency_replay":{"scope":"per-player edit lease; global completion CAS","lock":"single editor","replay_policy":"oracle_and_artifact_idempotent","disconnect":"release lease; committed reward to escrow","after_complete":"no duplicate affidavit"},
+      "durability_profile":"minecraft_local_primary"
+    },
+
+    {
+      "node_id":"KO01",
+      "owner":"plugin",
+      "prerequisites":["v5_case_c02_complete"],
+      "site_id":"orin_marker_1",
+      "handler":"crouched_sightline",
+      "completion_flag":"v5_ko01_marks",
+      "predicate": {
+        "kind":"posture_gated_six_mark_sightline",
+        "evaluation_trigger":"hold the exact crouched sightline for 20 consecutive ticks",
+        "components":[
+          {"id":"view_cell","offset":[0,0,4],"stance":"SNEAKING","eye_y_range":[1.15,1.35]},
+          {"id":"marks","site_series":["orin_marker_1","orin_marker_2","orin_marker_3","orin_marker_4","orin_marker_5","orin_marker_6"],"pdc_sequence":["N","E","S","W","N","E"],"visible_order":[0,2,4,6,0,2]},
+          {"id":"target","offset":[0,1,0],"max_yaw_error_degrees":4.0,"max_pitch_error_degrees":3.0,"required_clear_ray":true}
+        ],
+        "all_of":[{"op":"player_in_cell","component":"view_cell"},{"op":"player_posture","value":"SNEAKING"},{"op":"ray_intersects_mark_sequence","values":["N","E","S","W","N","E"]},{"op":"continuous_ticks","value":20}],
+        "commit":"persist the six compass-mark sequence; no click alone can complete"
+      },
+      "wrong_input":{"policy":"reset_hold_timer_only","feedback":"Standing or looking outside tolerance gives a low masonry scrape; no sequence is printed.","state_effect":"no teleport, damage, or global reset"},
+      "reward":{"description":"survey rank order N/E/S/W/N/E","artifact_ids":[],"delivery":"unlock Orin dials"},
+      "reset_repair_recovery":{"reset":"clear per-player 20-tick hold timers","repair":"restore crouch cell, headroom, six marks, clear ray, and bow tutorial marker","recovery":"solved state leaves the sightline readable"},
+      "concurrency_replay":{"scope":"timer per player; global completion CAS","lock":"none between viewers","replay_policy":"idempotent_receipt","disconnect":"timer discarded","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KO02",
+      "owner":"plugin",
+      "prerequisites":["v5_ko01_marks"],
+      "site_id":"orin_frame_dial_1",
+      "handler":"item_frame_dials",
+      "completion_flag":"v5_ko02_dials",
+      "predicate": {
+        "kind":"six_exact_compass_rotations",
+        "evaluation_trigger":"pull the survey projection handle after setting all six frames",
+        "components":[{"id":"dials","site_series":["orin_frame_dial_1","orin_frame_dial_2","orin_frame_dial_3","orin_frame_dial_4","orin_frame_dial_5","orin_frame_dial_6"],"block":"ITEM_FRAME","material":"COMPASS","pdc_key":"v5_control_id","pdc_values":["ko02_1","ko02_2","ko02_3","ko02_4","ko02_5","ko02_6"],"required_rotations":[0,2,4,6,0,2]}],
+        "all_of":[{"op":"frame_rotations_exact","component":"dials","values":[0,2,4,6,0,2]}],
+        "commit":"latch the projection and persist the verified bearing"
+      },
+      "wrong_input":{"policy":"preserve_frames","feedback":"The projector reports only the count of misaligned bearings.","state_effect":"none"},
+      "reward":{"description":"physical crack-map projection and verified bearing","artifact_ids":[],"delivery":"unlock KO03 Discord conclusion and later HS05 readback"},
+      "reset_repair_recovery":{"reset":"set rotations to deterministic [2,6,0,4,2,6]","repair":"restore all six unique compasses, frames, facings, and projection handle","recovery":"solved flag restores [0,2,4,6,0,2]"},
+      "concurrency_replay":{"scope":"six-site puzzle mutex","lock":"serialize rotations across the site series","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"frames latched"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KB02",
+      "owner":"plugin",
+      "prerequisites":["v5_kb01_stay_awake"],
+      "site_id":"brann_toll_tower",
+      "handler":"visual_dial_answer",
+      "completion_flag":"v5_kb02_toll",
+      "predicate": {
+        "kind":"three_rail_state_plus_answer",
+        "evaluation_trigger":"submit the marked answer sign while the three visual rails are grouped top/middle/bottom",
+        "components":[
+          {"id":"rails","block":"ITEM_FRAME","offsets":[[-1,2,0],[0,1,0],[1,0,0]],"material":"PAPER","pdc_values":["kb02_rail_top","kb02_rail_middle","kb02_rail_bottom"],"required_rotations":[0,2,4]},
+          {"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"KB02"}}
+        ],
+        "answer_route":"local:KB02",
+        "normalization":"global answer_normalization",
+        "accepted":["PAIR NINE WITH EMPTY HOUR","PAIR 9 WITH EMPTY HOUR"],
+        "all_of":[{"op":"frame_rotations_exact","component":"rails","values":[0,2,4]},{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist the rail decode and illuminate the ninth/empty-hour comparison"
+      },
+      "wrong_input":{"policy":"clear_sign_preserve_rails","feedback":"The tower names RAIL GROUPING or PHRASE as incomplete, not the plaintext.","state_effect":"none"},
+      "reward":{"description":"PAIR NINE WITH EMPTY HOUR","artifact_ids":[],"delivery":"unlock KB03 Discord deduction"},
+      "reset_repair_recovery":{"reset":"clear sign and restore rails to [2,0,6]","repair":"restore three strips, lamp redundancy, sign, and backing","recovery":"visual redundancy card remains available; solved state latches rails"},
+      "concurrency_replay":{"scope":"site mutex plus per-player sign lease","lock":"serialize rails and submission","replay_policy":"oracle_idempotent","disconnect":"release sign lease; rails remain","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KI01",
+      "owner":"plugin",
+      "prerequisites":["v5_case_c02_complete"],
+      "site_id":"stone_iss",
+      "handler":"answer_sign",
+      "completion_flag":"v5_ki01_vigenere",
+      "predicate": {
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the marked cipher slate",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"KI01"}}],
+        "answer_route":"local:KI01",
+        "normalization":"global answer_normalization",
+        "accepted":["THE SURFACE BREATHES BUT THE THIRD BAY CANNOT"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"persist the complete Vigenere plaintext, including both surface and third-bay clauses"
+      },
+      "wrong_input":{"policy":"clear_submission_keep_cipher","feedback":"Partial answers such as SURFACE BREATHES are rejected; both clauses are required.","state_effect":"none"},
+      "reward":{"description":"decoded warm account","artifact_ids":[],"delivery":"unlock Iss keepsake"},
+      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, REEDS key source, ciphertext, and backing","recovery":"tiered hint may name Vigenere and REEDS, not plaintext"},
+      "concurrency_replay":{"scope":"per-player edit lease; global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
+      "durability_profile":"minecraft_local_primary"
+    },
+    {
+      "node_id":"KI02",
+      "owner":"plugin",
+      "prerequisites":["v5_ki01_vigenere"],
+      "site_id":"the_cold_hearth",
+      "handler":"tagged_item_inspection",
+      "completion_flag":"v5_ki02_keepsake",
+      "predicate": {
+        "kind":"physical_item_vs_record_comparison",
+        "evaluation_trigger":"insert the reed knot into the comparison cradle and pull the CONTRADICTION handle after opening the filed receipt",
+        "components":[
+          {"id":"reed_knot","material":"VINE","pdc":{"v5_evidence_id":"ki02_reed_knot","v5_recovery_condition":"living_green"}},
+          {"id":"filed_receipt","block":"LECTERN","offset":[-1,0,0],"book_pdc":{"v5_book_id":"iss_keepsake_record"},"filed_condition":"dry_brown"},
+          {"id":"cradle","block":"BARREL","offset":[1,0,0],"slot":13},
+          {"id":"selector","block":"LEVER","offset":[1,1,0],"pdc":{"v5_selection":"CONTRADICTION"}}
+        ],
+        "all_of":[{"op":"player_opened_exact_book","component":"filed_receipt"},{"op":"slot_exact_item","component":"cradle","item":"reed_knot","amount":1},{"op":"selector_value","component":"selector","value":"CONTRADICTION"}],
+        "commit":"return the same reed knot, persist living-green versus dry-brown contradiction"
+      },
+      "wrong_input":{"policy":"return_atomically","feedback":"The cradle asks for the original tagged keepsake and a comparison state; it never accepts an ordinary vine.","state_effect":"none"},
+      "reward":{"description":"physical contradiction receipt","artifact_ids":[],"delivery":"unlock KI03 Discord conclusion"},
+      "reset_repair_recovery":{"reset":"return any incomplete cradle item and reset selector","repair":"restore unique reed knot only after duplicate scan, exact receipt book, cradle, and handle","recovery":"reissue inspection item while unsolved; after solve preserve one readable copy in protected cradle"},
+      "concurrency_replay":{"scope":"site inventory mutex; read bit per player","lock":"single cradle transaction","replay_policy":"idempotent_receipt","disconnect":"item remains in protected escrow","after_complete":"no duplicate knot; readable receipt"},
+      "durability_profile":"minecraft_local_primary"
+    }
+  ]
+}

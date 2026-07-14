@@ -1,5 +1,8 @@
 # Deep Hold Executable Content Audit
 
+> **SUPERSEDED V4 ARCHIVE.** Current executable content is owned by the V5 node, runtime-binding,
+> mechanic-predicate, book, artifact, fixture, record, NPC, and media manifests.
+
 Status: pre-rebuild blocker register. This is derived from runtime Java, live plugin configuration,
 SQL puzzle definitions, and canonical found-document payloads. It is not a claim that the current world
 matches the intended design.

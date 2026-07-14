@@ -1,4 +1,6 @@
-# The Observance — LORE BIBLE (operator's index to the corpus)
+# The Observance — LORE BIBLE (V4 archive)
+
+> **SUPERSEDED V4 ARCHIVE — NOT AN OPERATOR AUTHORITY.** Use `arc/WORLD-BIBLE.md`, `design/ARG-V5-MASTER-PLAN.md`, and `design/ARG-V5-NODE-MANIFEST.csv`.
 
 > Operator-facing index. Maps the 12 authored fragments in
 > `arc/lore/documents/` against `canon-spine.md` and the `found-documents.md`

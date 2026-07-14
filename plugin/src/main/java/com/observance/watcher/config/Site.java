@@ -61,6 +61,10 @@ public final class Site {
     public String id() { return id; }
     public String type() { return type; }
     public String worldName() { return worldName; }
+    /** Persisted raw coordinates; nullable for an unplaced placeholder and safe off the Bukkit thread. */
+    public Double x() { return x; }
+    public Double y() { return y; }
+    public Double z() { return z; }
     public int radius() { return radius; }
     public int verticalRadius() { return verticalRadius; }
     public boolean protect() { return protect; }

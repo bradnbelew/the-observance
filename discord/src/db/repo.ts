@@ -10,6 +10,7 @@ import { supabase } from './client.js';
 // build self-tests can exercise it without the DB/config chain. Imported for local use here
 // (getOpenPuzzles) and re-exported below so repo.ts's public surface is unchanged.
 import { flagsSatisfied, matchPuzzle, matchPuzzles } from '../oracle/gate.js';
+import { hashIdentityLinkCode, isCopperlineCallback } from '../v5/identity.js';
 import type {
   AnswerSurface,
   ArcState,
@@ -48,44 +49,6 @@ export async function getPlayerByDiscordId(
 
   if (error) throw error;
   return data ?? null;
-}
-
-/**
- * Link a Discord user to an existing Minecraft player, matched by case-insensitive
- * in-game name. Sets `players.discord_id`. Returns the updated player, or null if
- * no player with that name exists.
- */
-export async function linkDiscord(
-  discordId: string,
-  mcName: string,
-): Promise<Player | null> {
-  // SECURITY (audit): mcName is player-supplied. A raw `.ilike` treats % and _ as wildcards, so
-  // `/link %` would match the FIRST player row and hijack their identity. Escape the LIKE
-  // metacharacters for the (case-insensitive) lookup, then ASSERT the matched name equals the
-  // input case-insensitively — belt-and-suspenders against any wildcard slipping through.
-  const escaped = mcName.replace(/([\\%_])/g, '\\$1');
-  const { data: found, error: findErr } = await supabase
-    .from('players')
-    .select('id, mc_uuid, name, discord_id')
-    .ilike('name', escaped)
-    .maybeSingle<Player>();
-
-  if (findErr) throw findErr;
-  if (!found) return null;
-  if (found.name?.toLowerCase() !== mcName.trim().toLowerCase()) return null;
-  // Never let a second Discord account seize a keeper name that is already bound. Returning null
-  // deliberately does not disclose whether the offered name was absent or privately bound.
-  if (found.discord_id && found.discord_id !== discordId) return null;
-
-  const { data, error } = await supabase
-    .from('players')
-    .update({ discord_id: discordId })
-    .eq('id', found.id)
-    .select('id, mc_uuid, name, discord_id')
-    .single<Player>();
-
-  if (error) throw error;
-  return data;
 }
 
 /** Current act number from the single-row arc_state (id = 1). Defaults to 1. */
@@ -271,6 +234,149 @@ export async function searchHintedPuzzles(
     puzzleKey,
     title: openByKey.get(puzzleKey)?.title ?? null,
   }));
+}
+
+export interface AnswerablePuzzleChoice {
+  puzzleKey: string;
+  nodeKey: string;
+  title: string;
+  caseKey: string;
+}
+
+/**
+ * Spoiler-safe /answer autocomplete. It starts from the resolver's exact active+flag-gated set, then
+ * intersects that set with V5 nodes explicitly assigned to Discord or media-payload input. A future
+ * title, retired legacy key, answer, prerequisite, or recovery note can therefore never autocomplete.
+ */
+export async function searchAnswerablePuzzles(query: string, limit = 25): Promise<AnswerablePuzzleChoice[]> {
+  let open: Puzzle[];
+  try { open = await getOpenPuzzles(); } catch { return []; }
+  const keys = open.map((p) => p.puzzle_key).filter((k) => k.startsWith('v5-'));
+  if (keys.length === 0) return [];
+
+  const { data, error } = await supabase
+    .from('investigation_nodes')
+    .select('node_key,case_key,title,input_surface,oracle_puzzle_key')
+    .eq('active', true)
+    .in('oracle_puzzle_key', keys)
+    .order('case_key', { ascending: true })
+    .order('ordinal', { ascending: true })
+    .returns<Array<{ node_key: string; case_key: string; title: string; input_surface: string; oracle_puzzle_key: string }>>();
+  if (error || !data) return [];
+
+  const needle = query.trim().toLowerCase();
+  return data
+    .filter((row) => /discord|media payload/i.test(row.input_surface))
+    .filter((row) => !needle || `${row.node_key} ${row.case_key} ${row.title} ${row.oracle_puzzle_key}`.toLowerCase().includes(needle))
+    .slice(0, limit)
+    .map((row) => ({ puzzleKey: row.oracle_puzzle_key, nodeKey: row.node_key, title: row.title, caseKey: row.case_key }));
+}
+
+/** Record the durable V5 evidence receipt behind a successful oracle solve. Failures are thrown to the
+ * resolver's isolated logging path; the solve remains durable and can be recovered idempotently. */
+export async function recordOracleEvidence(
+  puzzleKey: string,
+  player: Player,
+  surface: AnswerSurface,
+): Promise<void> {
+  const { data: node, error } = await supabase
+    .from('investigation_nodes')
+    .select('node_key')
+    .eq('oracle_puzzle_key', puzzleKey)
+    .eq('active', true)
+    .maybeSingle<{ node_key: string }>();
+  if (error) throw error;
+  if (!node) return;
+  const idempotencyKey = `oracle:${puzzleKey}:${player.id}`;
+  const { error: rpcError } = await supabase.rpc('observance_record_evidence', {
+    p_receipt_key: idempotencyKey,
+    p_node_key: node.node_key,
+    p_source: surface,
+    p_idempotency_key: idempotencyKey,
+    p_player_id: player.id,
+    p_payload: { puzzle_key: puzzleKey },
+  });
+  if (rpcError) throw rpcError;
+}
+
+export type IdentityClaimState = 'complete' | 'invalid' | 'blocked' | 'unknown' | 'conflict' | 'challenge';
+
+export interface IdentityClaimResult {
+  state: IdentityClaimState;
+  player: Player | null;
+  /** False on a successful idempotent replay; no duplicate receipt or reward was created. */
+  inserted: boolean;
+  /** True only when this transaction corrected this Discord account's prior accidental binding. */
+  recovered: boolean;
+}
+
+interface IdentityClaimRpcRow {
+  claim_state: IdentityClaimState;
+  player_id: string | null;
+  mc_uuid: string | null;
+  minecraft_name: string | null;
+  linked_discord_id: string | null;
+  receipt_inserted: boolean;
+  recovered: boolean;
+}
+
+/**
+ * Validate, bind, and file C01's identity handoff in one database transaction.
+ *
+ * The RPC checks the Copperline callback and LS04 prerequisite before touching players.discord_id,
+ * locks concurrent claims, refuses an identity owned by another Discord account, and atomically
+ * moves this account from an accidental prior choice. Any receipt failure rolls the move back.
+ */
+export async function claimIdentityHandoff(
+  discordId: string,
+  mcName: string,
+  callback: string,
+  proofCode: string,
+): Promise<IdentityClaimResult> {
+  // Cheap local rejection avoids a database round trip. The RPC repeats this check and remains the
+  // security boundary, so no alternate service-role caller can bypass callback validation.
+  if (!isCopperlineCallback(callback)) {
+    return { state: 'invalid', player: null, inserted: false, recovered: false };
+  }
+  const codeHash = hashIdentityLinkCode(proofCode);
+  if (!codeHash) {
+    return { state: 'challenge', player: null, inserted: false, recovered: false };
+  }
+
+  const { data, error } = await supabase.rpc('observance_claim_identity_handoff', {
+    p_discord_id: discordId,
+    p_mc_name: mcName.trim(),
+    p_callback: callback,
+    p_code_hash: codeHash,
+  });
+  if (error) throw error;
+
+  const row = (Array.isArray(data) ? data[0] : data) as IdentityClaimRpcRow | null | undefined;
+  if (!row || !['complete', 'invalid', 'blocked', 'unknown', 'conflict', 'challenge'].includes(row.claim_state)) {
+    throw new Error('identity handoff RPC returned no valid claim state');
+  }
+  if (row.claim_state !== 'complete') {
+    return {
+      state: row.claim_state,
+      player: null,
+      inserted: false,
+      recovered: false,
+    };
+  }
+  if (!row.player_id || !row.mc_uuid || !row.minecraft_name || row.linked_discord_id !== discordId) {
+    throw new Error('identity handoff RPC returned an incomplete bound player');
+  }
+  return {
+    state: 'complete',
+    player: {
+      id: row.player_id,
+      mc_uuid: row.mc_uuid,
+      name: row.minecraft_name,
+      discord_id: row.linked_discord_id,
+    },
+    inserted: row.receipt_inserted === true,
+    recovered: row.recovered === true,
+  };
 }
 
 /**

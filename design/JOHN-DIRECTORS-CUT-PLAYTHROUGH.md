@@ -1,5 +1,7 @@
 # THE OBSERVANCE - JOHN'S DIRECTOR'S-CUT PLAYTHROUGH
 
+> **SUPERSEDED PRE-V5 ARCHIVE — NOT A PLAYTEST OR SETUP AUTHORITY.** Use `design/EXPERIENCE-MANIFEST.md` and the V5 live-test matrix.
+
 > Plain-language canonical playthrough draft. John is smart, patient, and thorough, but he only knows what
 > a real player can know at the time. Production uncertainty is kept out of the story body and placed at
 > the end.

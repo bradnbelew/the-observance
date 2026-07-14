@@ -1,5 +1,7 @@
 # SESSION ZERO — the out-of-fiction consent + onboarding (read to the group BEFORE anything starts)
 
+> **SUPERSEDED PRE-V5 ARCHIVE / SESSION SCRIPT — DO NOT READ THIS VERSION TO PLAYERS.** Launch-facing onboarding must follow the V5 production runbook.
+
 > v2 canon. Required by the grounding+consent invariant (OVERHAUL §4). For a veteran friend group,
 > "being watched / surveilled / isolated" can land harder than intended — so the **existence** of the
 > personalized surprise is disclosed up front, out of fiction, and opt-out is real and easy. Disclosing

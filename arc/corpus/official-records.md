@@ -1,5 +1,7 @@
 # The Observance — OFFICIAL RECORDS (the clinical / bureaucratic layer)
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** Current V5 records live in `arc/v5/minecraft-books.json` and the 82-node manifest.
+
 > The administrative corpus of the Hold: ledgers, posted notices and ordinances, depth-survey
 > records, and "observed" reports authored by ROLES, not names — the Lamp-Registrar, the Counter
 > of the Kept, WARDEN-3, the Survey of the Deep Line, the Quartermaster of Cistern 7. Flat clinical

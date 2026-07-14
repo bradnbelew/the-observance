@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "renderContract": {
+    "size": [128, 128],
+    "storedOrientation": "inverse quarter-turn of required ItemFrame rotation",
+    "runtime": "immutable MapView renderer; tracking and unlimited tracking disabled; map identity also stamped in item PDC",
+    "repair": "duplicate-scan by map identity; restore only an absent authored frame item; blank maps are blockers"
+  },
+  "maps": [
+    {"id":"a05_cardan_grille","nodeId":"A05","componentId":"grille","file":"arc/v5/map-art/a05_cardan_grille.png","requiredFrameRotation":0,"sha256":"e59296e1cc366fe7a95c447a8dd23882bb5c31e9ada1b8287211b76b620d4388"},
+    {"id":"a05_route_corner","nodeId":"A05","componentId":"route","file":"arc/v5/map-art/a05_route_corner.png","requiredFrameRotation":6,"sha256":"4ee21e6af3e73d46ae8fcaa0e3e0464aa80cdf7efbce0677abb1ba32b6b4356e"},
+    {"id":"ks02_school_roof","nodeId":"KS02","componentId":"school","file":"arc/v5/map-art/ks02_school_roof.png","requiredFrameRotation":0,"sha256":"97d758d5feaa59138ff479f1b94ceae764d492b2926b7ce93e1f3dda115d710f"},
+    {"id":"ks02_long_reed_bed","nodeId":"KS02","componentId":"reeds","file":"arc/v5/map-art/ks02_long_reed_bed.png","requiredFrameRotation":4,"sha256":"7a8f8bbb498fa7ef072b77d6fab9ec99986af2883da8c963f5d8dd91868555e6"},
+    {"id":"ks02_intake_transfer","nodeId":"KS02","componentId":"intake","file":"arc/v5/map-art/ks02_intake_transfer.png","requiredFrameRotation":6,"sha256":"7578a11f7bbc858f1acdd2924b84b6358243d89e625d338407933bf359e3f528"},
+    {"id":"bi04_village_pressure","nodeId":"BI04","componentId":"village","file":"arc/v5/map-art/bi04_village_pressure.png","requiredFrameRotation":0,"sha256":"d39ab7c63e86f08a2b7b7384fa0430c309cfc6687bb6cf246c2f585520a9d123"},
+    {"id":"bi04_hold_pressure","nodeId":"BI04","componentId":"hold","file":"arc/v5/map-art/bi04_hold_pressure.png","requiredFrameRotation":4,"sha256":"44c99a41dfce65f833d2ec70820e43018255c97ea69c3c1f543bef65043cad75"},
+    {"id":"bi04_load_trace","nodeId":"BI04","componentId":"trace","file":"arc/v5/map-art/bi04_load_trace.png","requiredFrameRotation":2,"sha256":"148124631d5ca608ab57c0fbf059d9888ae914be3710f6985908c5b3dd2c984f"},
+    {"id":"ar04_intake_a","nodeId":"AR04","componentId":"intake","file":"arc/v5/map-art/ar04_intake_a.png","requiredFrameRotation":2,"sha256":"7ad8ff133c9faed02c1cd3cfbcbcace39876463445577c07873c553037c9b7e6"}
+  ]
+}

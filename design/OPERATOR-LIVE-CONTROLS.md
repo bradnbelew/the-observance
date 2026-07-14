@@ -1,5 +1,7 @@
 # THE OBSERVANCE - OPERATOR LIVE CONTROLS
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE THESE CONTROLS ON A V5 SERVER.** Current commands and safety rules are in the V5 runbooks.
+
 > Launch-facing guide. This file separates live operator controls from design/spec notes so the server
 > runner does not tune a knob that no runtime reads.
 

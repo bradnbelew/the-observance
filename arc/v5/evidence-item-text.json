@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "wr01_private_bridge",
+      "nodeId": "WR01",
+      "material": "WRITTEN_BOOK",
+      "title": "Voice Card 04",
+      "author": "Witness Spool",
+      "pages": [
+        "EAST THROAT / 23:16. Rook, off camera: If the route closes behind us, will three cuts on its reverse face still mean return? No written copy was made.",
+        "Later Watcher output: THREE CUTS STILL MEAN RETURN. Compare the camp chronology. Who could hear the unwritten question and later reach the recorder?"
+      ]
+    },
+    {
+      "id": "wr01_private_names",
+      "nodeId": "WR01",
+      "material": "WRITTEN_BOOK",
+      "title": "Voice Card 07",
+      "author": "Witness Spool",
+      "pages": [
+        "LOW FIRE / 01:42. mkept, after the cameras were bagged: If it learns our names, can it follow those names home? The sentence was omitted from the typed log.",
+        "Later Watcher output: NAMES GO HOME BEFORE BODIES. Compare the night roster with the packet index. Who heard the question and controlled an outbound channel?"
+      ]
+    },
+    {
+      "id": "wr01_private_disappearance",
+      "nodeId": "WR01",
+      "material": "WRITTEN_BOOK",
+      "title": "Voice Card 11",
+      "author": "Witness Spool",
+      "pages": [
+        "WELL ROPE / 04:03. Ash, recorder paused: If one of us vanishes, will the rest remember the shape they left? Only the nearby monitor retained the waveform.",
+        "Later Watcher output: THE SHAPE LEFT BEHIND IS ALSO A PERSON. Cross-check the exit ledger and spool custody. One hearer is common to all three cards."
+      ]
+    },
+    {
+      "id": "bi01_wick_segment_1",
+      "nodeId": "BI01",
+      "material": "WRITTEN_BOOK",
+      "title": "Wick Layer A",
+      "author": "Lamp House",
+      "pages": [
+        "RESIDUE LAYER A / oldest surviving char. File in the first marked cell. The three recovered layers are consecutive and end at the first dark bell.",
+        "Maintenance comparison: clean through bell six; first outage recorded at the next bell, two bells before the public alarm copy."
+      ]
+    },
+    {
+      "id": "bi01_wick_segment_2",
+      "nodeId": "BI01",
+      "material": "WRITTEN_BOOK",
+      "title": "Wick Layer B",
+      "author": "Lamp House",
+      "pages": [
+        "RESIDUE LAYER B / middle surviving char. File immediately after Layer A. Empty cells are not missing evidence; they are intervals after the wick went dark.",
+        "The clean Record calls bell nine the beginning. This wick had already stopped taking oil."
+      ]
+    },
+    {
+      "id": "bi01_wick_segment_3",
+      "nodeId": "BI01",
+      "material": "WRITTEN_BOOK",
+      "title": "Wick Layer C",
+      "author": "Lamp House",
+      "pages": [
+        "RESIDUE LAYER C / newest surviving char. File after Layer B, then leave the remaining three marked cells empty.",
+        "Set the clock frame to the first unlit bell, not the later alarm bell. Pull the soot-blackened handle only after both records agree."
+      ]
+    },
+    {
+      "id": "cw07_discipline_drafts",
+      "nodeId": "CW07",
+      "material": "WRITTEN_BOOK",
+      "title": "Discipline Drafts A/B",
+      "author": "Civic Office",
+      "pages": [
+        "DRAFT A / Finding: lower-draw procedure followed. Replacement cloth sheds under load. Quarantine Invoice 44, suspend the public tap, and open a supplier inquiry. Nessa Vale remains a witness.",
+        "DRAFT B / Finding: worker mishandled samples and failed to maintain pressure. Remove the supplier inquiry and lower-draw exhibit. Terminate Nessa Vale before cycle 5.",
+        "COPY AUDIT / The Nessa mark on Draft B is lifted from her cycle-2 receipt. Its revision ink matches the Heat Office copy, not the Cistern desk. Draft A has the original filing cuts."
+      ]
+    },
+    {
+      "id": "hs04_calibration_1",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P1 Gauge 1 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 1 / gauge 1 / verified HIGH. File in the matching line and gauge cell; an empty cell means LOW."]
+    },
+    {
+      "id": "hs04_calibration_2",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P1 Gauge 2 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 1 / gauge 2 / verified HIGH. Six cells read left to right. Do not file by the order in the source tray."]
+    },
+    {
+      "id": "hs04_calibration_3",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P1 Gauge 5 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 1 / gauge 5 / verified HIGH. Line 1 must reproduce its measured high and low bands exactly."]
+    },
+    {
+      "id": "hs04_calibration_4",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P2 Gauge 1 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 2 / gauge 1 / verified HIGH. File in shelf 2, cell 1; other cells remain empty unless their own copy says HIGH."]
+    },
+    {
+      "id": "hs04_calibration_5",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P2 Gauge 3 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 2 / gauge 3 / verified HIGH. Occupied means HIGH; empty means LOW."]
+    },
+    {
+      "id": "hs04_calibration_6",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P2 Gauge 4 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 2 / gauge 4 / verified HIGH. Preserve all thirteen numbered copies; a duplicate invalidates the calibration."]
+    },
+    {
+      "id": "hs04_calibration_7",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P3 Gauge 2 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 3 / gauge 2 / verified HIGH. File by line and gauge, not by title alphabetization."]
+    },
+    {
+      "id": "hs04_calibration_8",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P3 Gauge 3 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 3 / gauge 3 / verified HIGH. The six shelf cells are the six gauges in order."]
+    },
+    {
+      "id": "hs04_calibration_9",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P3 Gauge 6 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 3 / gauge 6 / verified HIGH. Leave unlisted gauge cells empty."]
+    },
+    {
+      "id": "hs04_calibration_10",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P4 Gauge 3 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 4 / gauge 3 / verified HIGH. This is the first high band on line 4."]
+    },
+    {
+      "id": "hs04_calibration_11",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P4 Gauge 4 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 4 / gauge 4 / verified HIGH. File adjacent to the line 4 gauge 3 copy."]
+    },
+    {
+      "id": "hs04_calibration_12",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P4 Gauge 5 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 4 / gauge 5 / verified HIGH. The rising band continues through the final gauge."]
+    },
+    {
+      "id": "hs04_calibration_13",
+      "nodeId": "HS04",
+      "material": "WRITTEN_BOOK",
+      "title": "P4 Gauge 6 HIGH",
+      "author": "Hydraulics",
+      "pages": ["PRESSURE REGISTER / line 4 / gauge 6 / verified HIGH. When all four six-cell lines match their copies, pull the calibration handle."]
+    }
+  ]
+}

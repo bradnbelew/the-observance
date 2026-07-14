@@ -1,5 +1,8 @@
 # The Observance - Live Launch Runbook
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT OPERATE FROM THIS FILE.** Use
+> `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.
+
 This is the canonical production install order. It uses the same server for validation, but it does
 not turn the live world into a rehearsal grid and does not advance the live story while testing.
 

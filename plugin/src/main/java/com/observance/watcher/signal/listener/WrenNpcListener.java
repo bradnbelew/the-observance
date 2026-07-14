@@ -2,14 +2,15 @@ package com.observance.watcher.signal.listener;
 
 import com.google.gson.JsonObject;
 import com.observance.watcher.data.SupabaseClient;
-import com.observance.watcher.data.rows.ArcStateRow;
 import com.observance.watcher.data.rows.EventLogRow;
+import com.observance.watcher.npc.V5DialogueCatalog;
 import com.observance.watcher.npc.WrenNpc;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -19,76 +20,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * THE COMPANION FLAG PRODUCERS (the missing piece — audit #5). A player right-clicks Wren's body →
- * this drives his arc forward, idempotently, via {@code arc_state.flags}:
- *
- * <ul>
- *   <li>{@code companion_introduced} — set true on the FIRST interaction with Wren.</li>
- *   <li>{@code companion_trust} (int) — incremented each interaction, hard-capped at {@link #TRUST_CAP}.
- *       Read-then-merge (the RPC merge is shallow, so we compute the next value from the current
- *       {@code arc_state} and write it back). Group-scoped: trust is one shared number.</li>
- *   <li>{@code reckoning_condemn | reckoning_understand | reckoning_free} — a right-click on one of the
- *       three PDC-tagged reckoning-choice markers ({@link com.observance.watcher.npc.WrenNpc} stamps
- *       them via {@code /observance wren reckoning}) sets EXACTLY ONE, ONCE, and only after
- *       {@code companion_revealed}. Choosing again is a no-op (a decision, once entered into the record,
- *       is final).</li>
- * </ul>
- *
- * <p><b>Dialogue delivery — reuse the Keeper path.</b> Wren's SEEDED lines are the showrunner's to
- * bind (exactly like the Keeper's — no story in the engine, INV-1). So a valid Wren open ALSO posts one
- * {@code event_log} row (type {@code companion}, context {@code npc.open}) that the showrunner reads to
- * resolve which {@code companion.*} node opens and enqueue the {@link
- * com.observance.watcher.beats.lib.KeeperNpcBeat} with the bound lines — the same NPC-dialogue delivery
- * path the Keeper uses. To guarantee Wren *speaks in-world even before that DB branch is wired*, this
- * listener ALSO speaks a restrained built-in companion line to the interacting player (private chat,
- * per-player, reveal-trivially-safe). These fallback lines are launch-grade companion beats; the
- * showrunner's bound lines remain the richer canonical branch when available.
- *
- * <p>Mirrors {@link KeeperNpcListener} / {@link IgnitionListener}: Safety-wrapped body, MONITOR
- * priority, a {@link RateLimiter} guard, all writes hopped ASYNC, silent on any DB failure. Never
- * cancels the event, never mutates the world.
- */
+/** Exact V5 Wren dialogue and one-once WR05 reckoning choice. */
 public final class WrenNpcListener implements Listener {
 
-    public static final String FLAG_INTRODUCED = "companion_introduced";
-    public static final String FLAG_TRUST      = "companion_trust";
-    public static final String FLAG_REVEALED   = "companion_revealed";
-    public static final String FLAG_CONDEMN    = "reckoning_condemn";
+    public static final String FLAG_CONDEMN = "reckoning_condemn";
     public static final String FLAG_UNDERSTAND = "reckoning_understand";
-    public static final String FLAG_FREE       = "reckoning_free";
-
-    /** Hard cap on trust so repeated clicking can't run it away. */
-    private static final int TRUST_CAP = 10;
-
-    /** Per-player interaction cooldown (also long enough for the async round-trip). */
-    private static final long OPEN_COOLDOWN_MS = 4_000L;
-
-    /** Cadence between name attribution and the fallback line (matches townsfolk / Keeper feel). */
-    private static final int LINE_DELAY_TICKS = 35;
-
-    /**
-     * PDC sub-key marking a reckoning-choice marker entity; its STRING value is one of
-     * {@code condemn|understand|free}.
-     */
+    public static final String FLAG_FREE = "reckoning_free";
     public static final String PDC_RECKONING = "wren_reckoning";
 
-    /** Warm, present-tense companion beats so Wren speaks even pre-showrunner-binding. */
-    private static final List<String> INTRO_LINES = List.of(
-            "hey. keep your voices low on the stair. not quiet because it listens. quiet because people make worse choices when they hear themselves panic.",
-            "i know the short way down. i am not taking it. every short way i ever trusted asked for something after.",
-            "here. spare flint. no speech, no debt. if your lamp goes out, use it before you start arguing about whose fault it was.",
-            "if i say i know a place, ask me how i know it. if i cannot answer, do not follow me there. fair?",
-            "i marked the turns with charcoal once. came back and half the marks were still mine. half were not. i do not mark turns anymore.",
-            "i stepped away for a second. sorry. thought i heard someone behind us and went to count. it was only the stair settling. i still counted twice.");
-
-    /** Per-player fallback speech cursor so Wren advances instead of repeating a packet every click. */
-    private final Map<UUID, Integer> speechCursors = new ConcurrentHashMap<>();
+    private static final long OPEN_COOLDOWN_MS = 1_500L;
+    private static final int LINE_DELAY_TICKS = 35;
 
     private final SupabaseClient supabase;
     private final WrenNpc wren;
@@ -96,6 +45,9 @@ public final class WrenNpcListener implements Listener {
     private final Scheduler scheduler;
     private final Safety safety;
     private final NamespacedKey reckoningKey;
+    private final AtomicBoolean refreshInFlight = new AtomicBoolean(false);
+    private final AtomicBoolean choiceInFlight = new AtomicBoolean(false);
+    private volatile Map<String, Object> arcFlags = Map.of();
 
     public WrenNpcListener(SupabaseClient supabase, WrenNpc wren, RateLimiter rateLimiter,
                            Scheduler scheduler, Safety safety, String namespace) {
@@ -104,212 +56,189 @@ public final class WrenNpcListener implements Listener {
         this.rateLimiter = rateLimiter;
         this.scheduler = scheduler;
         this.safety = safety;
-        String ns = (namespace == null || namespace.isBlank()) ? "observance" : namespace;
+        String ns = namespace == null || namespace.isBlank() ? "observance" : namespace;
         this.reckoningKey = new NamespacedKey(ns, PDC_RECKONING);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteract(PlayerInteractEntityEvent event) {
-        safety.run("signal.Wren.interact", () -> {
-            Player p = event.getPlayer();
-            if (p == null) return;
+        safety.run("signal.wren.v5.interact", () -> {
+            Player player = event.getPlayer();
             Entity clicked = event.getRightClicked();
-            if (clicked == null) return;
-
-            // Reckoning marker takes precedence (a marker is not Wren himself).
+            if (player == null || clicked == null) return;
             String choice = readReckoning(clicked);
             if (choice != null) {
-                handleReckoning(p, choice);
+                handleReckoning(player, choice);
                 return;
             }
+            if (wren == null || !wren.isWren(clicked)) return;
+            if (rateLimiter == null || !rateLimiter.tryCooldown(
+                    "wren:v5:" + player.getUniqueId(), OPEN_COOLDOWN_MS)) return;
 
-            if (wren == null || !wren.isWren(clicked)) return;   // not Wren — ignore silently
-
-            String cdKey = "wrenopen:" + p.getUniqueId();
-            if (!rateLimiter.tryCooldown(cdKey, OPEN_COOLDOWN_MS)) return;
-
-            // Speak in-world immediately (restrained fallback); the showrunner can still deliver richer
-            // bound companion lines from the event_log signal.
-            speakBuiltIn(p);
-
-            // Advance the arc + signal the showrunner (async, fault-isolated).
-            advanceTrust(p);
-        });
-    }
-
-    /* ------------------------------------------------------------------ */
-    /*  Introduced + trust                                                 */
-    /* ------------------------------------------------------------------ */
-
-    /**
-     * Read current arc_state, compute {@code companion_introduced=true} and the next capped
-     * {@code companion_trust}, and merge them in one shallow RPC write. Also posts the open signal for
-     * the showrunner. Idempotent at the cap (trust stops climbing; the merge is a cheap no-op-ish write).
-     */
-    private void advanceTrust(Player p) {
-        if (supabase == null) return;
-        final String name = p.getName();
-        final String uuid = p.getUniqueId().toString();
-
-        scheduler.runAsyncSafe("signal.wren.advance", () -> {
-            int current = readTrust();
-            int next = Math.min(TRUST_CAP, current + 1);
-
-            JsonObject flags = new JsonObject();
-            flags.addProperty(FLAG_INTRODUCED, true);
-            flags.addProperty(FLAG_TRUST, next);
-            supabase.mergeArcFlags(flags);
-
-            // Signal the showrunner to resolve + enqueue Wren's bound dialogue node (the Keeper path).
-            String detail = "{\"surface\":\"companion_open\",\"trust\":" + next + "}";
-            supabase.insertEventLog(new EventLogRow(
-                    "companion", "npc.open",
-                    name + " spoke with Wren (trust=" + next + ")",
-                    uuid, detail, SupabaseClient.timestampNow()));
-
-            safety.info("companion.trust", name + " → companion_trust=" + next);
-        });
-    }
-
-    /** Current {@code companion_trust} as an int (0 if unset / unreadable). Async-safe (DB read). */
-    private int readTrust() {
-        try {
-            var r = supabase.fetchArcState();
-            if (r == null || !r.ok() || r.value() == null) return 0;
-            ArcStateRow row = r.value();
-            Map<String, Object> flags = row.flagsMap();
-            Object v = flags.get(FLAG_TRUST);
-            if (v instanceof Number n) return n.intValue();
-            if (v instanceof String s) {
-                try { return (int) Double.parseDouble(s.trim()); } catch (NumberFormatException ignored) { return 0; }
+            String state = dialogueState(arcFlags);
+            V5DialogueCatalog.Npc npc = V5DialogueCatalog.wren();
+            List<String> lines = npc.lines(state);
+            if (lines.isEmpty()) lines = npc.lines("before_c07");
+            speak(player, npc.displayName(), lines);
+            if ("confession".equals(state) && !truthy(arcFlags.get("v5_wr03_confession"))) {
+                mergeFlag("v5_wr03_confession");
             }
-            return 0;
-        } catch (Throwable t) {
-            return 0;
+            refreshFlags();
+        });
+    }
+
+    private String dialogueState(Map<String, Object> flags) {
+        String choice = selectedChoice(flags);
+        if (truthy(flags.get("v5_case_c10_complete")) && choice != null) return "coda_" + choice;
+        if (choice != null) return "reckoning_" + choice;
+        if (truthy(flags.get("v5_wr02_index")) || truthy(flags.get("v5_wr03_confession"))) {
+            return "confession";
+        }
+        if (truthy(flags.get("v5_wr01_quotes"))) return "evidence_names";
+        if (truthy(flags.get("v5_case_c07_complete"))) return "evidence_bridge";
+        return "before_c07";
+    }
+
+    private void handleReckoning(Player player, String choice) {
+        if (supabase == null || scheduler == null || rateLimiter == null) return;
+        if (!rateLimiter.tryCooldown("wren:v5:choice:" + player.getUniqueId(), OPEN_COOLDOWN_MS)) return;
+        if (!choiceInFlight.compareAndSet(false, true)) {
+            player.sendMessage(Component.text("another hand is already writing.", NamedTextColor.DARK_GRAY));
+            return;
+        }
+        String flag = choiceFlag(choice);
+        if (flag == null) {
+            choiceInFlight.set(false);
+            return;
+        }
+        UUID uuid = player.getUniqueId();
+        String name = player.getName();
+        scheduler.runAsyncSafe("wren.v5.reckoning", () -> {
+            try {
+                var state = supabase.fetchArcState();
+                Map<String, Object> flags = state.ok() && state.value() != null
+                        ? state.value().flagsMap() : Map.of();
+                if (!truthy(flags.get("v5_wr04_bridge"))) {
+                    notify(uuid, "the Protocol Bridge has not reached this room.");
+                    return;
+                }
+                if (selectedChoice(flags) != null) {
+                    notify(uuid, "the reckoning is already entered.");
+                    return;
+                }
+                JsonObject write = new JsonObject();
+                write.addProperty(flag, true);
+                write.addProperty("v5_wren_outcome", choice);
+                write.addProperty("v5_case_c08_complete", true);
+                var saved = supabase.mergeArcFlags(write);
+                if (!saved.ok()) {
+                    notify(uuid, "the reckoning did not persist. choose again when the record is reachable.");
+                    return;
+                }
+                supabase.insertEventLog(new EventLogRow("companion", "reckoning." + choice,
+                        name + " entered the V5 Wren reckoning: " + choice,
+                        uuid.toString(), "{\"choice\":\"" + choice + "\"}",
+                        SupabaseClient.timestampNow()));
+                Map<String, Object> updated = new HashMap<>(flags);
+                updated.put(flag, true);
+                updated.put("v5_wren_outcome", choice);
+                updated.put("v5_case_c08_complete", true);
+                arcFlags = Collections.unmodifiableMap(updated);
+                notify(uuid, V5DialogueCatalog.wren().lines("reckoning_" + choice).get(0));
+            } finally {
+                choiceInFlight.set(false);
+            }
+        });
+    }
+
+    private String readReckoning(Entity entity) {
+        try {
+            String value = entity.getPersistentDataContainer().get(reckoningKey, PersistentDataType.STRING);
+            String choice = value == null ? null : value.trim().toLowerCase(Locale.ROOT);
+            return choiceFlag(choice) == null ? null : choice;
+        } catch (RuntimeException ignored) {
+            return null;
         }
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Reckoning                                                          */
-    /* ------------------------------------------------------------------ */
-
-    /**
-     * Enter EXACTLY ONE reckoning line into the record — but only once the reveal has happened, and only
-     * if no reckoning flag is already set. All checks are done against a fresh arc_state read so the
-     * "one, once" contract holds across restarts and multiple players.
-     */
-    private void handleReckoning(Player p, String choice) {
-        if (supabase == null) return;
-        String flagKey = switch (choice) {
+    private static String choiceFlag(String choice) {
+        return switch (choice == null ? "" : choice) {
             case "condemn" -> FLAG_CONDEMN;
             case "understand" -> FLAG_UNDERSTAND;
             case "free" -> FLAG_FREE;
             default -> null;
         };
-        if (flagKey == null) return;
+    }
 
-        String cdKey = "wrenreckon:" + p.getUniqueId();
-        if (!rateLimiter.tryCooldown(cdKey, OPEN_COOLDOWN_MS)) return;
+    private static String selectedChoice(Map<String, Object> flags) {
+        Object canonical = flags.get("v5_wren_outcome");
+        if (canonical != null) {
+            String value = canonical.toString().trim().toLowerCase(Locale.ROOT);
+            if (choiceFlag(value) != null) return value;
+        }
+        if (truthy(flags.get(FLAG_CONDEMN))) return "condemn";
+        if (truthy(flags.get(FLAG_UNDERSTAND))) return "understand";
+        if (truthy(flags.get(FLAG_FREE))) return "free";
+        return null;
+    }
 
-        final String name = p.getName();
-        final String uuid = p.getUniqueId().toString();
+    private void speak(Player player, String displayName, List<String> lines) {
+        UUID uuid = player.getUniqueId();
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            Runnable send = () -> {
+                Player live = Bukkit.getPlayer(uuid);
+                if (live == null || !live.isOnline()) return;
+                live.sendMessage(Component.text(displayName, NamedTextColor.YELLOW));
+                live.sendMessage(Component.text(line, NamedTextColor.WHITE));
+            };
+            if (i == 0) send.run();
+            else scheduler.runLaterSafe("wren.v5.line", (long) i * LINE_DELAY_TICKS, send);
+        }
+    }
 
-        scheduler.runAsyncSafe("signal.wren.reckoning", () -> {
-            Map<String, Object> flags = readFlags();
-            boolean revealed = truthy(flags.get(FLAG_REVEALED));
-            if (!revealed) {
-                // The reckoning is not available until the reveal; a marker touched early does nothing.
-                notify(p, Component.text("the stone is cold. it is not time.", NamedTextColor.DARK_GRAY));
-                return;
+    private void notify(UUID uuid, String message) {
+        scheduler.runMainSafe("wren.v5.notify", () -> {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null && player.isOnline()) {
+                player.sendMessage(Component.text(message, NamedTextColor.DARK_GRAY));
             }
-            boolean alreadyChosen = truthy(flags.get(FLAG_CONDEMN))
-                    || truthy(flags.get(FLAG_UNDERSTAND))
-                    || truthy(flags.get(FLAG_FREE));
-            if (alreadyChosen) {
-                notify(p, Component.text("the record is already written. it does not take a second hand.",
-                        NamedTextColor.DARK_GRAY));
-                return;
-            }
+        });
+    }
 
+    private void mergeFlag(String key) {
+        if (supabase == null || scheduler == null) return;
+        scheduler.runAsyncSafe("wren.v5.flag." + key, () -> {
             JsonObject write = new JsonObject();
-            write.addProperty(flagKey, true);
-            supabase.mergeArcFlags(write);
-
-            supabase.insertEventLog(new EventLogRow(
-                    "companion", "reckoning." + choice,
-                    name + " entered the reckoning: " + choice,
-                    uuid, "{\"choice\":\"" + choice + "\"}", SupabaseClient.timestampNow()));
-
-            safety.info("companion.reckoning", name + " chose reckoning=" + choice);
+            write.addProperty(key, true);
+            var saved = supabase.mergeArcFlags(write);
+            if (saved.ok()) {
+                Map<String, Object> updated = new HashMap<>(arcFlags);
+                updated.put(key, true);
+                arcFlags = Collections.unmodifiableMap(updated);
+            }
         });
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Built-in in-world speech (KeeperNpc cadence)                        */
-    /* ------------------------------------------------------------------ */
-
-    /** Speak the next built-in warm line to one player on the speech cadence (private chat). */
-    private void speakBuiltIn(Player p) {
-        final UUID id = p.getUniqueId();
-        int idx = speechCursors.merge(id, 1, Integer::sum) - 1;
-        final String line = INTRO_LINES.get(Math.floorMod(idx, INTRO_LINES.size()));
-        scheduler.runLaterSafe("signal.wren.name", 0, () -> {
-            Player pl = org.bukkit.Bukkit.getPlayer(id);
-            if (pl == null || !pl.isOnline()) return;
-            pl.sendMessage(Component.text(WrenNpc.DISPLAY_NAME, NamedTextColor.YELLOW));
-        });
-        scheduler.runLaterSafe("signal.wren.line", LINE_DELAY_TICKS, () -> {
-            Player pl = org.bukkit.Bukkit.getPlayer(id);
-            if (pl == null || !pl.isOnline()) return;   // logout mid-speech -> just ends
-            pl.sendMessage(Component.text(line, NamedTextColor.GRAY));
+    private void refreshFlags() {
+        if (supabase == null || scheduler == null || !refreshInFlight.compareAndSet(false, true)) return;
+        scheduler.runAsyncSafe("wren.v5.flags", () -> {
+            try {
+                var state = supabase.fetchArcState();
+                if (state.ok() && state.value() != null) {
+                    arcFlags = Collections.unmodifiableMap(new HashMap<>(state.value().flagsMap()));
+                }
+            } finally {
+                refreshInFlight.set(false);
+            }
         });
     }
 
-    /* ------------------------------------------------------------------ */
-    /*  Helpers                                                            */
-    /* ------------------------------------------------------------------ */
-
-    /** Read the reckoning-choice value off a clicked entity, or null if it isn't a marker. */
-    private String readReckoning(Entity e) {
-        try {
-            var pdc = e.getPersistentDataContainer();
-            if (!pdc.has(reckoningKey, PersistentDataType.STRING)) return null;
-            String v = pdc.get(reckoningKey, PersistentDataType.STRING);
-            return v == null ? null : v.trim().toLowerCase(java.util.Locale.ROOT);
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    /** Read the full arc flags map (empty on any failure). Async-safe. */
-    private Map<String, Object> readFlags() {
-        try {
-            var r = supabase.fetchArcState();
-            if (r == null || !r.ok() || r.value() == null) return java.util.Collections.emptyMap();
-            return r.value().flagsMap();
-        } catch (Throwable t) {
-            return java.util.Collections.emptyMap();
-        }
-    }
-
-    /** A tiny truthiness helper matching how the arc gate reads a flag. */
-    static boolean truthy(Object v) {
-        if (v == null) return false;
-        if (v instanceof Boolean b) return b;
-        if (v instanceof Number n) return n.doubleValue() != 0;
-        if (v instanceof String s) {
-            String t = s.trim();
-            return t.equalsIgnoreCase("true") || t.equals("1");
-        }
-        return false;
-    }
-
-    /** Hop a chat line back to the main thread for a player (async caller). Null-safe. */
-    private void notify(Player p, Component msg) {
-        final java.util.UUID id = p.getUniqueId();
-        scheduler.runMainSafe("signal.wren.notify", () -> {
-            Player pl = org.bukkit.Bukkit.getPlayer(id);
-            if (pl != null && pl.isOnline()) pl.sendMessage(msg);
-        });
+    private static boolean truthy(Object value) {
+        if (value instanceof Boolean bool) return bool;
+        if (value instanceof Number number) return number.doubleValue() != 0.0;
+        if (value == null) return false;
+        return java.util.Set.of("true", "1", "yes", "on")
+                .contains(value.toString().trim().toLowerCase(Locale.ROOT));
     }
 }

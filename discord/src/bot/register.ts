@@ -5,7 +5,7 @@
  *
  * Three rites:
  *   /whisper <puzzle>        — ask the watcher for a hint, and pay the toll.
- *   /link    <name>          — bind your discord voice to a name worn in the world.
+ *   /link    <name> <callback> <code> — prove the Minecraft hand and file the handoff.
  *   /answer  <text> [puzzle] — submit a solved clue; the world answers, or stays silent.
  *
  * Command names + option names are machine identifiers (discord requires
@@ -28,15 +28,30 @@ export const whisperCommand = new SlashCommandBuilder()
       .setAutocomplete(true),
   );
 
-/** /link <name> — bind your discord voice to your name in the world. */
+/** /link <name> <callback> <code> — prove the world identity and file C01's durable handoff. */
 export const linkCommand = new SlashCommandBuilder()
   .setName('link')
-  .setDescription('tell the watcher the name you wear in the world.')
+  .setDescription('bind your minecraft name and file the Copperline callback.')
   .addStringOption((opt) =>
     opt
       .setName('name')
       .setDescription('the name you wear in the world.')
       .setRequired(true),
+  )
+  .addStringOption((opt) =>
+    opt
+      .setName('callback')
+      .setDescription('the four-digit callback recovered from the diagnostic archive.')
+      .setRequired(true)
+      .setMaxLength(24),
+  )
+  .addStringOption((opt) =>
+    opt
+      .setName('code')
+      .setDescription('the one-time code shown by /obslink in minecraft (expires in five minutes).')
+      .setRequired(true)
+      .setMinLength(12)
+      .setMaxLength(20),
   );
 
 /**
@@ -57,7 +72,8 @@ export const answerCommand = new SlashCommandBuilder()
     opt
       .setName('puzzle')
       .setDescription('the mark you worked, if you would name it. (optional)')
-      .setRequired(false),
+      .setRequired(false)
+      .setAutocomplete(true),
   );
 
 /** Every rite, in registration order. */
@@ -67,7 +83,7 @@ export const commands = [whisperCommand, linkCommand, answerCommand] as const;
 export const commandsJSON = commands.map((c) => c.toJSON());
 
 /**
- * (Re)register the two rites to DISCORD_GUILD_ID. Guild-scoped = instant. Safe to
+ * (Re)register the three rites to DISCORD_GUILD_ID. Guild-scoped = instant. Safe to
  * call on every boot — `put` overwrites the full set idempotently.
  */
 export async function registerGuildCommands(): Promise<void> {

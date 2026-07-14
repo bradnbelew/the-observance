@@ -1,5 +1,8 @@
 # The Observance — Final Launch Handoff (2026-07-13)
 
+> **SUPERSEDED V4 ARCHIVE.** This handoff predates the V5 rewrite. Use
+> `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.
+
 This is the current operator handoff. The repository, deploy artifacts, Deep Hold V4 generator, and isolated
 Paper rehearsal are green. A public/friend launch is intentionally still gated on live-world placement,
 live Supabase application, a real non-op client rehearsal, consent, and credential rotation. Those receipts

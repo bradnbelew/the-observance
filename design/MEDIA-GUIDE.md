@@ -1,5 +1,7 @@
 # THE OBSERVANCE — MEDIA PRODUCTION GUIDE (everything you, Ethan, have to make)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A PRODUCTION ASSET LIST.** The fixed V5 media manifest is authoritative.
+
 > The one checklist of every human-made asset the game wants. The **code is done and green**; this is the
 > "magic behind the curtain" that the code already has wiring + graceful fallbacks for. Verified against
 > the live repo 2026-07-03. Each item says: what it is · where it lives / what wires to it · format specs ·

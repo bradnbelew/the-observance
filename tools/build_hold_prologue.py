@@ -8,6 +8,11 @@ level.dat and replaces every old generated function with the production map.
 
 from __future__ import annotations
 
+raise SystemExit(
+    "RETIRED PRE-V5 TOOL: build_hold_prologue.py cannot generate a production artifact. "
+    "The V5 Deep Hold is built only by the Paper plugin; see design/V5-WORLD-SETUP-AND-TESTING.md."
+)
+
 import argparse
 import hashlib
 import json

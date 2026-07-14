@@ -7,6 +7,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: this generator embeds pre-V5 versions, sites, and test
+# assumptions. Keeping it executable could create a plausible but unsafe launch sheet.
+throw "RETIRED PRE-V5 TOOL: new_rehearsal_packet.ps1 is disabled. Execute design/V5-LIVE-TEST-MATRIX.csv against the V5 runbooks."
+
 function Resolve-UnderRepo([string] $Root, [string] $Path) {
   if ([System.IO.Path]::IsPathRooted($Path)) {
     return [System.IO.Path]::GetFullPath($Path)

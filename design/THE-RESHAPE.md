@@ -1,5 +1,7 @@
 # THE RESHAPE — from cipher chain to a mysterious world you learn to read
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** The V5 master plan incorporates the accepted investigation principles with new canon.
+
 > 2026-07-02. The applied synthesis of the Perplexity ARG brief + deep research into the best
 > discovery/mystery/ARG design (Outer Wilds, Tunic, Fez, The Witness, Return of the Obra Dinn, Her Story,
 > The Case of the Golden Idol, Shadows of Doubt, Paradise Killer, Environmental Station Alpha; and the ARG

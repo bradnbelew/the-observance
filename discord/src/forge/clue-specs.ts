@@ -16,7 +16,7 @@
  *   world-placement step and the showrunner drip render ONE plaintext IDENTICALLY on
  *   both surfaces (the carved stone and the Discord clue card are the same artifact).
  *
- * THE INVARIANT (specsSelfTest, mirrored in specs.selftest.ts):
+ * THE LEGACY INVARIANT (`specsSelfTest`, called by the retired forge harness):
  *   For every entry:  decode(forge(spec).ciphertext) === spec.plaintext (uppercased
  *   forge-canonical form)  AND  normalizeAnswer(spec.plaintext) ∈ that seed row's
  *   accepted_answers.  This makes it structurally impossible for the carving and the
@@ -378,9 +378,9 @@ export const NON_CIPHER_KEYS: Readonly<Record<string, string>> = {
   'prior-iss-correction': 'prior-run Iss correction file (answer_kind phrase); cross-check comfort against land, not a cipher',
   'prior-witness-before-accepting': 'failed accepting synthesis (answer_kind phrase); names the final pre-rite condition, not a cipher',
   'media-prior-base': 'found-footage frame/audio/metadata payload ASH-13 (answer_kind phrase); external media observation, not a Discord cipher',
-  'media-far-water': 'found-footage place phrase "where the reeds fold back" (answer_kind phrase); optional Sella media evidence, not a Discord cipher',
-  'media-black-moon-toll': 'found-footage toll rhythm "stay awake" (answer_kind phrase); optional Brann media evidence, not a Discord cipher',
-  'media-release-room': 'late found-footage release-room checksum "six return one is not kept" (answer_kind phrase); optional media evidence, not a Discord cipher',
+  'media-far-water': 'found-footage place phrase "where the reeds fold back" (answer_kind phrase); retired Sella evidence row, not a Discord cipher',
+  'media-black-moon-toll': 'found-footage toll rhythm "stay awake" (answer_kind phrase); retired Brann evidence row, not a Discord cipher',
+  'media-release-room': 'late found-footage release-room checksum "six return one is not kept" (answer_kind phrase); retired evidence row, not a Discord cipher',
   'spine-recovered-archive': 'a salvaged Drive folder + audio-spectrogram sentence "i was not kept" (answer_kind phrase); external research, not a Discord cipher',
   'spine-threshold-vault': 'asymmetric co-op vault; per-player rune fragments assemble a combination (answer_kind code); a plugin illusion + vault, not a cipher',
   'spine-spoken-name': 'the Observer Engine hears the spoken truth and quotes it back (answer_kind spoken); voice-scan token, not a cipher',
@@ -447,8 +447,8 @@ export function forgeablePuzzleKeys(): readonly string[] {
 //   (3) normalizeAnswer(plaintext) ∈ entry.acceptedAnswers          (the player's
 //       decoded answer actually matches the seed row — the bind that closes A3/B5).
 //
-// Also exposed via the dedicated specs.selftest.ts so it runs in the same harness as
-// forgeSelfTest. THROWS on any violation (build fails, not the player).
+// Retained for the retired forge harness. V5 production fairness is enforced by the 82-node
+// runtime-binding and surface checks instead. THROWS on any violation when called.
 // ---------------------------------------------------------------------------
 
 export function specsSelfTest(): { passed: number; cases: string[] } {

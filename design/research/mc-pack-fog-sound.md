@@ -1,5 +1,7 @@
 # Research Lane: mc-pack-fog-sound
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** The custom-dimension recommendations below are retired; V5 uses no custom Undercroft dimension.
+
 **Plugin tech — resource pack push, custom fonts (rune alphabet), custom sounds (spatial), custom_model_data, datapack fog/dimensions, dynamic lighting.**
 Target stack: Paper 1.21.x / Java 21. Path A = friends accept ONE auto-pushed pack. Scope: the `[PACK]` and the Undercroft fog world.
 

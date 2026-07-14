@@ -17,6 +17,8 @@ export interface PendingDrip {
 export interface ShowrunnerState {
   /** ISO of the last tick (health: "showrunner last ran"). */
   last_run_iso?: string;
+  /** Runtime campaign guard. V5 keeps only a heartbeat; retired autonomy producers never execute. */
+  campaign_mode?: 'v5-safe' | 'legacy';
   /** epoch ms of the last drip (posted OR staged) — the drip cadence anchor. */
   last_drip_at_ms?: number | null;
   /** puzzle_keys already announced (posted or staged) — each clue drips once. */
@@ -166,6 +168,27 @@ export async function readState(): Promise<ShowrunnerState> {
 
 export async function writeState(state: ShowrunnerState, nowIso: string): Promise<void> {
   return writeSetting(STATE_KEY, state, nowIso);
+}
+
+/**
+ * Detect the V5 investigation schema. Any database uncertainty fails into V5 safe mode: silence is
+ * safer than letting a retired autonomy producer speak into the production rewrite.
+ */
+export async function isV5CampaignActive(): Promise<boolean> {
+  // V5 is the production default. The retired engine can run only when an operator explicitly asks
+  // for `legacy` AND the database has no active V5 cases.
+  if ((process.env.OBSERVANCE_CAMPAIGN_VERSION ?? 'v5').trim().toLowerCase() !== 'legacy') return true;
+  try {
+    const { count, error } = await supabase
+      .from('investigations')
+      .select('case_key', { count: 'exact', head: true })
+      .eq('active', true)
+      .eq('required', true);
+    if (error) return true;
+    return (count ?? 0) > 0;
+  } catch {
+    return true;
+  }
 }
 
 /**

@@ -5,18 +5,31 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.config.Site;
+import com.observance.watcher.npc.V5DialogueCatalog;
 import com.observance.watcher.data.rows.AnswerAttemptReadRow;
 import com.observance.watcher.data.rows.HintRow;
 import com.observance.watcher.data.rows.PuzzleRow;
 import com.observance.watcher.data.rows.SolveReadRow;
 import com.observance.watcher.oracle.FlagGate;
+import com.observance.watcher.finale.FinaleStateMachine;
+import com.observance.watcher.structure.CanonicalArtifactRegistry;
 import com.observance.watcher.structure.DeepHoldV4Geometry;
 import com.observance.watcher.structure.DeepHoldV4Plan;
+import com.observance.watcher.structure.DeepHoldV5Manifest;
+import com.observance.watcher.structure.V5AuthorityManifest;
+import com.observance.watcher.structure.V5RuntimePredicateRegistry;
 import com.observance.watcher.structure.StructureTemplates;
 import com.observance.watcher.util.Safety;
+import com.observance.watcher.v5runtime.FixtureTransform;
+import com.observance.watcher.v5runtime.install.V5PhysicalComponentInstaller;
+import com.observance.watcher.v5runtime.install.V5EvidenceItemTextAuthority;
+import com.observance.watcher.v5runtime.install.V5PhysicalComponentInstaller.Mode;
+import com.observance.watcher.v5runtime.install.V5PhysicalComponentInstaller.Report;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
@@ -33,15 +46,24 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -49,12 +71,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 /**
  * {@code /observance} admin command. Read-only status + safe controls (reload, local sleep
@@ -62,16 +86,55 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
+    /**
+     * Mutation-heavy V4 rehearsal/build surfaces retained only so old worlds still compile. V5
+     * production must never reach StructureTemplates through these commands because those templates
+     * contain retired story copy and retired flag assumptions.
+     */
+    private static final Set<String> V5_RETIRED_COMMANDS = Set.of(
+            "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns",
+            "placelab", "fullrun", "prepworld", "descentproof", "sidepass", "puzzlepass",
+            "dreadpass", "rehearse", "placeprologue", "placerelay", "keeper", "test",
+            "reading", "visit", "lens", "needle", "director", "coverage", "flag", "site"
+    );
+
     private final ObservancePlugin plugin;
     private final Safety safety;
     private final Map<String, Integer> rehearsalProgress = new HashMap<>();
     private final Map<String, Integer> visitProgress = new HashMap<>();
-    private final AtomicBoolean automaticHoldSyncInFlight = new AtomicBoolean(false);
-    private Map<String, HoldBookPayload> holdLockBooks;
-    private List<HoldShelfBook> holdD05Books;
+    /** In-memory, exact-Mouth approval produced only by a passing read-only `/obs placehold plan`. */
+    private String approvedHoldPlanKey;
+    /** Non-null only while the architecture plan is being applied in watchdog-safe tick batches. */
+    private DeepHoldV4Geometry.BuildPlan activeHoldBuild;
+    /** Durable fixture-shell milestone: recovery must not replay retired template mutations past it. */
+    private boolean activeHoldFixtureShellReady;
+    /** Non-null while Paper is asynchronously generating/loading one Hold footprint chunk at a time. */
+    private HoldChunkPreparation activeHoldPreparation;
+    /** Exact Mouth/authority identity whose complete footprint is held by plugin chunk tickets. */
+    private String preparedHoldPlanKey;
+    /** Tickets acquired by the explicit preparation phase; never leave them resident after a build. */
+    private final Set<Chunk> holdChunkTickets = new LinkedHashSet<>();
 
-    private record HoldBookPayload(String title, String author, int markedPage, List<String> pages) {}
-    private record HoldShelfBook(String title, String author, int page, int line, int word, List<String> pages) {}
+    private static final int HOLD_BUILD_MAX_OPERATIONS_PER_TICK = 6_000;
+    private static final long HOLD_BUILD_MAX_NANOS_PER_TICK = 12_000_000L;
+    private static final long HOLD_PREPARATION_TTL_TICKS = 20L * 60L * 30L;
+
+    private static final class HoldChunkPreparation {
+        private final Location mouth;
+        private final String planKey;
+        private final List<DeepHoldV4Geometry.ChunkCoordinate> chunks;
+        private final CommandSender sender;
+        private int cursor;
+
+        private HoldChunkPreparation(Location mouth, String planKey,
+                                     List<DeepHoldV4Geometry.ChunkCoordinate> chunks,
+                                     CommandSender sender) {
+            this.mouth = mouth.clone();
+            this.planKey = planKey;
+            this.chunks = List.copyOf(chunks);
+            this.sender = sender;
+        }
+    }
 
     public ObservanceCommand(ObservancePlugin plugin, Safety safety) {
         this.plugin = plugin;
@@ -90,13 +153,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
         String sub = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "status";
+        if (V5_RETIRED_COMMANDS.contains(sub)) {
+            sender.sendMessage("Observance V5: /obs " + sub + " is retired and made no changes.");
+            sender.sendMessage("  Use placehold, unlit, townsfolk, wren, item, preflight, or finale."
+                    + " Retired templates are intentionally unreachable in production.");
+            return;
+        }
         switch (sub) {
             case "status" -> sendStatus(sender);
             case "audit" -> handleAudit(sender);
             case "visualaudit" -> handleVisualAudit(sender);
             case "preflight" -> handlePreflight(sender);
             case "dialogueaudit" -> handleDialogueAudit(sender);
-            case "repair" -> handleRepair(sender);
+            case "repair" -> handlePlaceHoldRepair(sender, new String[]{"placehold", "repair", "all"});
             case "coverage" -> handleCoverage(sender);
             case "visit" -> handleVisit(sender, args);
             case "director" -> handleDirectorStart(sender, args);
@@ -132,7 +201,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "puzzlepass" -> handlePuzzlePass(sender, args);
             case "dreadpass" -> handleDreadPass(sender, args);
             case "unlit" -> handleUnlit(sender, args);
-            case "runbook" -> handleRunbook(sender, args);
+            case "runbook" -> sendV5Runbook(sender);
             case "rehearse" -> handleRehearse(sender, args);
             case "placeprologue" -> handlePlacePrologue(sender, args);
             case "placerelay" -> handlePlaceRelay(sender);
@@ -142,11 +211,184 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "townsfolk" -> handleTownsfolk(sender, args);
             case "test" -> handleTest(sender, args);
             case "needle" -> handleNeedle(sender, args);
-            case "finale" -> handleFinaleMarkers(sender);
+            case "item" -> handleItem(sender, args);
+            case "finale" -> handleFinale(sender, args);
             case "reading" -> handleReadingCarvings(sender);
-            default -> sender.sendMessage("Unknown subcommand. Use: status | director <state|progress|world|lab> [spacing] | audit | visualaudit | dialogueaudit | preflight | repair | coverage | visit <next|back|list|siteId|lane> | runbook [setup|spine|side|puzzle|scare|unlit|ops] | rehearse <start|status|done|next|back|reset|list> | reload | sleep <on|off> | flag <set|clear|list> | site <todo|next|plan|launch|list|set> [siteId|lane] | unlit <site|clue|pass|audit|darken|border|buildmode|ready> | placeworld | placeroom <keeperId> | placeregion | placedeep | placelecterns | placehold <build|audit|seal|open|sync> | placerelay | placelab | fullrun | prepworld | descentproof | sidepass | puzzlepass [gates] | dreadpass [stage|run] [player] | placeprologue | lens give [player] | wren <spawn|despawn|reckoning> | keeper <spawn|despawn> [node] | townsfolk <spawn|despawn> [id] | test <menu|preset> [player] | needle [player] | finale | reading");
+            default -> sender.sendMessage("Unknown V5 subcommand. Use: status | audit | visualaudit | "
+                    + "dialogueaudit | preflight | repair | reload | sleep <on|off> | "
+                    + "unlit <site|audit|darken|border|buildmode|ready> | "
+                    + "placehold <prepare|plan|build|repair|audit|seal|open|sync> | item recover <artifact> [player] | "
+                    + "wren <spawn|despawn> | townsfolk <spawn|despawn> [id] | "
+                    + "finale <arm|cancel|status|markers> | runbook");
         }
     }
+
+    private void sendV5Runbook(CommandSender sender) {
+        sender.sendMessage("== Observance V5 production runbook ==");
+        sender.sendMessage("  1) At the exact Mouth run /obs placehold prepare, then /obs placehold plan.");
+        sender.sendMessage("  2) Only after PLAN PASS run /obs placehold build, audit, and preflight.");
+        sender.sendMessage("  3) Configure the well-based Unlit anchors/houses with /obs unlit; keep buildmode off.");
+        sender.sendMessage("  4) Spawn the five fixed townsfolk and Wren only at their persisted V5 anchors.");
+        sender.sendMessage("  5) Sync gates/books from durable state, repeat preflight, then test from a clean player.");
+        sender.sendMessage("  Full plain-English commands and expected observations: plugin/V5-RUNBOOK.md.");
+    }
+
+    /** Idempotent operator recovery for V5's canonical PDC-backed key items. */
+    private void handleItem(CommandSender sender, String[] args) {
+        String op = args.length >= 2 ? args[1].trim().toLowerCase(Locale.ROOT) : "";
+        if (!"recover".equals(op) || args.length < 3) {
+            sender.sendMessage("Usage: /observance item recover <artifact> [player]");
+            sender.sendMessage("Artifacts: " + String.join(", ", CanonicalArtifactRegistry.ids()));
+            return;
+        }
+        String artifact = CanonicalArtifactRegistry.resolveId(args[2]);
+        if (artifact == null) {
+            sender.sendMessage("Observance: unknown artifact '" + args[2] + "'.");
+            sender.sendMessage("Artifacts: " + String.join(", ", CanonicalArtifactRegistry.ids()));
+            return;
+        }
+        Player target = null;
+        if (args.length >= 4) target = Bukkit.getPlayerExact(args[3]);
+        if (target == null && sender instanceof Player player && args.length < 4) target = player;
+        if (target == null) {
+            sender.sendMessage("Observance: choose an online player: /obs item recover "
+                    + artifact + " <player>.");
+            return;
+        }
+
+        V5AuthorityManifest.ArtifactEntry v5Artifact = V5AuthorityManifest.artifact(artifact);
+        if (v5Artifact != null) {
+            var runtime = plugin.v5Runtime();
+            if (runtime != null && runtime.snapshot().isComplete(v5Artifact.recoveryFlag())) {
+                sender.sendMessage("Observance: local V5 record verifies "
+                        + v5Artifact.recoveryFlag() + "; checking for duplicates...");
+                performArtifactRecovery(sender, target, artifact);
+                return;
+            }
+            var sb = plugin.supabase();
+            if (sb == null || !sb.isConfigured()) {
+                sender.sendMessage("Observance: recovery refused; the local V5 record does not contain "
+                        + v5Artifact.recoveryFlag() + " and the optional remote mirror is unavailable.");
+                return;
+            }
+            Player recoveryTarget = target;
+            sender.sendMessage("Observance: local entitlement is absent; checking the remote mirror for "
+                    + v5Artifact.recoveryFlag() + "...");
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                var result = sb.fetchArcState();
+                boolean remoteEntitled = result.ok() && result.value() != null
+                        && directorFlag(result.value().flagsMap(), v5Artifact.recoveryFlag());
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    var currentRuntime = plugin.v5Runtime();
+                    boolean entitled = remoteEntitled || (currentRuntime != null
+                            && currentRuntime.snapshot().isComplete(v5Artifact.recoveryFlag()));
+                    if (!entitled) {
+                        sender.sendMessage("Observance: recovery refused; " + v5Artifact.recoveryFlag()
+                                + " is not durably complete.");
+                        return;
+                    }
+                    if (!recoveryTarget.isOnline()) {
+                        sender.sendMessage("Observance: recovery target left before verification; issued nothing.");
+                        return;
+                    }
+                    performArtifactRecovery(sender, recoveryTarget, artifact);
+                });
+            });
+            return;
+        }
+        performArtifactRecovery(sender, target, artifact);
+    }
+
+    private void performArtifactRecovery(CommandSender sender, Player target, String artifact) {
+
+        if (inventoryContainsArtifact(target.getInventory(), artifact)
+                || inventoryContainsArtifact(target.getEnderChest(), artifact)) {
+            sender.sendMessage("Observance: " + target.getName() + " already has " + artifact
+                    + "; recovery is idempotent and issued nothing.");
+            return;
+        }
+        ArtifactPresence existing = findLoadedArtifact(artifact);
+        if (existing != null) {
+            sender.sendMessage("Observance: recovery issued nothing; the live " + artifact
+                    + " already exists at " + existing.description() + ".");
+            sender.sendMessage("  Retrieve that copy first. This guard prevents accidental canonical duplicates.");
+            return;
+        }
+        if (target.getInventory().firstEmpty() < 0) {
+            sender.sendMessage("Observance: " + target.getName()
+                    + " has no empty inventory slot; nothing was displaced or dropped.");
+            return;
+        }
+
+        Location keptLight = null;
+        Site kept = plugin.sites() == null ? null : plugin.sites().get("unbroken_light");
+        if (kept != null) keptLight = kept.location();
+        if ("kept_needle".equals(artifact) && keptLight == null) {
+            sender.sendMessage("Observance: kept_needle recovery refused; unbroken_light is not placed/loaded.");
+            return;
+        }
+        ItemStack item = CanonicalArtifactRegistry.create(artifact, keptLight);
+        List<String> issues = CanonicalArtifactRegistry.audit(item, artifact);
+        if (item == null || !issues.isEmpty()) {
+            sender.sendMessage("Observance: recovery factory failed exact audit: " + String.join("; ", issues));
+            return;
+        }
+        int slot = target.getInventory().firstEmpty();
+        target.getInventory().setItem(slot, item);
+        if (!CanonicalArtifactRegistry.isArtifact(target.getInventory().getItem(slot), artifact)) {
+            target.getInventory().setItem(slot, null);
+            sender.sendMessage("Observance: inventory verification failed; recovery was rolled back.");
+            return;
+        }
+        sender.sendMessage("Observance: recovered canonical " + artifact + " to " + target.getName()
+                + " in slot " + slot + ". A repeat command will issue nothing.");
+        if (!target.equals(sender)) target.sendMessage("The record returned " + artifact.replace('_', ' ') + ".");
+        String atmosphere = CanonicalArtifactRegistry.atmosphereSound(artifact);
+        if (atmosphere != null) {
+            target.playSound(target.getLocation(), atmosphere, org.bukkit.SoundCategory.VOICE, 0.85f, 1.0f);
+            target.sendActionBar(Component.text("The affidavit is present; the voice is atmosphere, not a clue."));
+        }
+    }
+
+    private boolean inventoryContainsArtifact(Inventory inventory, String artifact) {
+        if (inventory == null) return false;
+        for (ItemStack item : inventory.getContents()) {
+            if (CanonicalArtifactRegistry.isArtifact(item, artifact)) return true;
+        }
+        return false;
+    }
+
+    private ArtifactPresence findLoadedArtifact(String artifact) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (inventoryContainsArtifact(player.getInventory(), artifact)) {
+                return new ArtifactPresence("player " + player.getName() + "'s inventory");
+            }
+            if (inventoryContainsArtifact(player.getEnderChest(), artifact)) {
+                return new ArtifactPresence("player " + player.getName() + "'s ender chest");
+            }
+        }
+        for (World world : Bukkit.getWorlds()) {
+            for (org.bukkit.entity.Item dropped : world.getEntitiesByClass(org.bukkit.entity.Item.class)) {
+                if (CanonicalArtifactRegistry.isArtifact(dropped.getItemStack(), artifact)) {
+                    Location at = dropped.getLocation();
+                    return new ArtifactPresence(world.getName() + " " + at.getBlockX() + ","
+                            + at.getBlockY() + "," + at.getBlockZ() + " (dropped item)");
+                }
+            }
+            for (org.bukkit.Chunk chunk : world.getLoadedChunks()) {
+                for (org.bukkit.block.BlockState state : chunk.getTileEntities()) {
+                    if (!(state instanceof InventoryHolder holder)) continue;
+                    if (!inventoryContainsArtifact(holder.getInventory(), artifact)) continue;
+                    Location at = state.getLocation();
+                    return new ArtifactPresence(world.getName() + " " + at.getBlockX() + ","
+                            + at.getBlockY() + "," + at.getBlockZ() + " (loaded container)");
+                }
+            }
+        }
+        return null;
+    }
+
+    private record ArtifactPresence(String description) { }
 
     /**
      * {@code /observance flag <set|clear|list> [key] [true|false]} — the storylet-gate admin control
@@ -774,7 +1016,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      */
     private void handleSite(CommandSender sender, String[] args) {
         String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
-        if (op.equals("todo") || op.equals("launch") || op.equals("list")) {
+        if (op.equals("launch")) {
+            handlePreflight(sender);
+            return;
+        }
+        if (op.equals("todo") || op.equals("list")) {
             handleSiteTodo(sender);
             return;
         }
@@ -851,6 +1097,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
                 String siteId = unlitSiteId(args[2]);
                 handleSite(sender, new String[]{"site", "set", siteId});
+                if (sender instanceof Player player) {
+                    recordUnlitOrientation(player.getLocation(), siteId);
+                }
             }
             case "audit" -> handleUnlitAudit(sender);
             case "border" -> handleUnlitBorder(sender, args);
@@ -858,8 +1107,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "buildmode", "build" -> handleUnlitBuildMode(sender, args);
             case "clue" -> handleUnlitClue(sender, args);
             case "pass" -> handleUnlitPass(sender, args);
+            case "repair" -> handleUnlitRepair(sender);
             case "ready", "playtest" -> handleUnlitReady(sender);
-            default -> sender.sendMessage("Usage: /observance unlit <site|clue|pass|audit|darken|border|buildmode|ready>");
+            default -> sender.sendMessage("Usage: /observance unlit <site|clue|pass|repair|audit|darken|border|buildmode|ready>");
         }
     }
 
@@ -904,7 +1154,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         handleSite(sender, new String[]{"site", "set", siteId});
         String note = stampUnlitClue(player.getLocation(), siteId);
+        recordUnlitOrientation(player.getLocation(), siteId);
         sender.sendMessage("Observance: stamped " + unlitShortId(siteId) + " clue fixture. " + note);
+        reconcileUnlitWhenComplete(sender);
     }
 
     private void handleUnlitPass(CommandSender sender, String[] args) {
@@ -1008,6 +1260,31 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(strayLightIssue == null
                 ? " stray light: OK"
                 : " stray light: WARN - " + strayLightIssue);
+        Report physical = new V5PhysicalComponentInstaller(plugin).auditUnlit();
+        if (physical.clean()) {
+            sender.sendMessage(" exact mechanics: OK (" + physical.addressesConsidered()
+                    + " physical authority addresses)");
+        } else {
+            sender.sendMessage(" exact mechanics: BLOCKED (" + physical.blockerMessages().size() + " fault(s))");
+            for (String fault : physical.blockerMessages().stream().limit(8).toList()) {
+                sender.sendMessage("   - " + fault);
+            }
+        }
+        var runtime = plugin.v5Runtime();
+        // The physical pass above may load previously dormant Hold chunks. Bind those exact
+        // fixtures before evaluating readiness so a cold restart audit reflects the now-loaded
+        // controls instead of the intentionally deferred startup index.
+        if (runtime != null) runtime.rebindAllLoadedFixtures();
+        List<String> runtimeFindings = runtime == null
+                ? List.of("V5 runtime coordinator is unavailable") : runtime.readinessFindings();
+        if (runtimeFindings.isEmpty()) {
+            sender.sendMessage(" runtime binding: OK");
+        } else {
+            sender.sendMessage(" runtime binding: BLOCKED (" + runtimeFindings.size() + " fault(s))");
+            for (String fault : runtimeFindings.stream().limit(8).toList()) {
+                sender.sendMessage("   - " + fault);
+            }
+        }
         sender.sendMessage(" placed: " + placed + "/" + required.length
                 + "; fixture proof: " + proven + "/" + required.length
                 + ". House order is intentionally non-linear.");
@@ -1116,11 +1393,36 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage("  1) Run /obs unlit buildmode off before any player-facing test.");
         sender.sendMessage("  2) Confirm /obs unlit darken all has been run and audit says stray light: OK.");
-        sender.sendMessage("  3) Fill a live rehearsal packet: tools\\new_rehearsal_packet.ps1");
-        sender.sendMessage("  4) Include Unlit clip + house screenshots: approach, borrowed lantern route, light radius, clue readable, exit, failed-cheese.");
-        sender.sendMessage("  5) Include proof that the figure breaks an exposed borrowed lantern and retreat remains readable.");
-        sender.sendMessage("  6) Run: tools\\check_unlit_playtest_ready.ps1 -PacketDir rehearsals\\<date>");
-        sender.sendMessage("  Finish line: when it prints 'unlit playtest readiness: OK', stop building and let Nano playtest.");
+        sender.sendMessage("  3) Record the matching rows in design/V5-LIVE-TEST-MATRIX.csv.");
+        sender.sendMessage("  4) Capture approach, route, light radius, readable clue, exit, and failed-cheese evidence.");
+        sender.sendMessage("  5) Confirm the figure can extinguish exposed light while the return route stays readable.");
+        sender.sendMessage("  6) Run /obs unlit audit, /obs unlit ready, then /obs preflight.");
+        sender.sendMessage("  Finish line: every required V5 live-test row has a dated PASS receipt.");
+    }
+
+    private void handleUnlitRepair(CommandSender sender) {
+        List<String> missing = new ArrayList<>();
+        for (String siteId : unlitPhysicalSites()) {
+            Site site = plugin.sites() == null ? null : plugin.sites().get(siteId);
+            Location location = site == null ? null : site.location();
+            if (site == null || !site.isPlaced() || location == null || location.getWorld() == null) {
+                missing.add(siteId);
+            }
+        }
+        if (!missing.isEmpty()) {
+            sender.sendMessage("Observance: Unlit repair made no changes; place these houses first: "
+                    + String.join(", ", missing));
+            return;
+        }
+        V5PhysicalComponentInstaller physical = new V5PhysicalComponentInstaller(plugin);
+        Report repair = physical.reconcileUnlit(Mode.STATE_PRESERVING_REPAIR);
+        requireCleanPhysical("Unlit state-preserving repair", repair);
+        Report audit = physical.auditUnlit();
+        requireCleanPhysical("Unlit repair audit", audit);
+        var runtime = plugin.v5Runtime();
+        if (runtime != null) runtime.rebindAllLoadedFixtures();
+        sender.sendMessage("Observance: Unlit state-preserving repair is clean across "
+                + audit.addressesConsidered() + " exact authority addresses.");
     }
 
     private static String unlitSiteId(String raw) {
@@ -1166,6 +1468,53 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         };
     }
 
+    private static String[] unlitPhysicalSites() {
+        return new String[]{
+                "unlit_house_lamp",
+                "unlit_house_cairn",
+                "unlit_house_coop",
+                "unlit_house_well",
+                "unlit_house_watch",
+                "unlit_house_warm",
+                "unlit_house_threshold"
+        };
+    }
+
+    private void recordUnlitOrientation(Location loc, String siteId) {
+        if (loc == null || loc.getWorld() == null || siteId == null || siteId.isBlank()) return;
+        V5PhysicalComponentInstaller physical = new V5PhysicalComponentInstaller(plugin);
+        if (!physical.recordExternalOrientation(siteId, cardinalFacing(loc.getYaw()))) {
+            plugin.getLogger().warning("Could not persist V5 approach orientation for " + siteId);
+        }
+    }
+
+    /**
+     * The exact house predicates span seven separately surveyed fixtures. Reconcile only after
+     * all seven anchors exist so placing the first house does not report six false failures. The
+     * final clue command is the atomic point where decorative staging becomes a complete, audited
+     * V5 puzzle lane.
+     */
+    private void reconcileUnlitWhenComplete(CommandSender sender) {
+        for (String siteId : unlitPhysicalSites()) {
+            Site site = plugin.sites() == null ? null : plugin.sites().get(siteId);
+            Location location = site == null ? null : site.location();
+            if (site == null || !site.isPlaced() || location == null || location.getWorld() == null) {
+                return;
+            }
+        }
+        V5PhysicalComponentInstaller physical = new V5PhysicalComponentInstaller(plugin);
+        Report install = physical.reconcileUnlit(Mode.FRESH_INSTALL);
+        requireCleanPhysical("Unlit physical install", install);
+        Report audit = physical.auditUnlit();
+        requireCleanPhysical("Unlit second-pass physical audit", audit);
+        var runtime = plugin.v5Runtime();
+        if (runtime != null) runtime.rebindAllLoadedFixtures();
+        if (sender != null) {
+            sender.sendMessage("Observance: all seven Unlit houses are exact, functional, and audited ("
+                    + install.addressesConsidered() + " authority addresses).");
+        }
+    }
+
     private UnlitAuditSnapshot collectUnlitAuditSnapshot() {
         String[] required = unlitRequiredSites();
         int placed = 0;
@@ -1199,6 +1548,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (loaded == null) blockers.add("world " + worldName + " is not loaded/imported");
         if (borderIssue != null) blockers.add("border: " + borderIssue);
         if (strayLightIssue != null) blockers.add("stray light: " + strayLightIssue);
+        Report physical = new V5PhysicalComponentInstaller(plugin).auditUnlit();
+        for (String fault : physical.blockerMessages()) {
+            blockers.add("exact mechanics: " + fault);
+        }
+        var runtime = plugin.v5Runtime();
+        if (runtime == null) {
+            blockers.add("V5 runtime coordinator is unavailable");
+        } else {
+            for (String fault : runtime.readinessFindings()) {
+                blockers.add("runtime binding: " + fault);
+            }
+        }
 
         return new UnlitAuditSnapshot(required.length, placed, proven, enabled, buildmode,
                 worldName, loaded != null, borderIssue, strayLightIssue, blockers);
@@ -1220,34 +1581,43 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int radius = 4;
         String house = unlitShortId(siteId);
         return switch (house) {
-            case "lamp" -> (!hasMaterialNear(loc, radius, Material.LECTERN)
-                    || !hasMaterialNear(loc, radius, Material.BLACK_CANDLE))
-                    ? "expected ledger lectern and black candle evidence" : null;
-            case "cairn" -> (!hasMaterialNear(loc, radius, Material.CAULDRON)
+            case "lamp" -> (!hasMaterialNear(loc, radius, Material.CHISELED_BOOKSHELF)
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CANDLE)
+                    || !hasMaterialNear(loc, radius, Material.LEVER))
+                    ? "expected wick shelf, black candle, and outage handle" : null;
+            case "cairn" -> (!hasMaterialNear(loc, radius, Material.BARREL)
+                    || !hasMaterialNear(loc, radius, Material.CAULDRON)
                     || !hasMaterialNear(loc, radius, Material.COBBLED_DEEPSLATE)
-                    || !hasMaterialNear(loc, radius, Material.POLISHED_DEEPSLATE))
-                    ? "expected offering bowl and deepslate return stones" : null;
-            case "coop" -> (!hasMaterialNear(loc, radius, Material.HAY_BLOCK)
+                    || !hasMaterialNear(loc, radius, Material.LEVER))
+                    ? "expected fragment rail, offering bowl, return stones, and handle" : null;
+            case "coop" -> (!hasMaterialNear(loc, radius, Material.BARREL)
+                    || !hasMaterialNear(loc, radius, Material.HAY_BLOCK)
                     || !hasMaterialNear(loc, radius, Material.IRON_BARS)
-                    || !hasMaterialNear(loc, radius, Material.OAK_FENCE))
-                    ? "expected silent perch, cage bars, and hay" : null;
-            case "well" -> (!hasMaterialNear(loc, radius, Material.WATER_CAULDRON)
+                    || !hasMaterialNear(loc, radius, Material.OAK_FENCE)
+                    || !hasMaterialNear(loc, radius, Material.LEVER))
+                    ? "expected instrument rail, silent perch, cage bars, hay, and handle" : null;
+            case "well" -> (!hasMaterialNear(loc, radius, Material.WATER)
                     || !hasMaterialNear(loc, radius, Material.DARK_PRISMARINE)
-                    || !hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
-                    || !hasMaterialNear(loc, radius, Material.LECTERN))
-                    ? "expected water/reflection bowl, dark prismarine, blackstone, and a written well note" : null;
+                    || !hasMaterialNear(loc, radius, Material.WATER_CAULDRON)
+                    || !hasMaterialNear(loc, radius, Material.LEVER))
+                    ? "expected exact water trough, copied well bowl, and projection handle" : null;
             case "watch" -> (!hasMaterialNear(loc, radius, Material.BELL)
                     || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
-                    || !hasMaterialNear(loc, radius, Material.LECTERN))
-                    ? "expected bell, dark watch marks, and a written watch log" : null;
-            case "warm" -> (!hasMaterialNear(loc, radius, Material.CAMPFIRE)
+                    || !hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
+                    || !hasMaterialNear(loc, radius, Material.DARK_OAK_SIGN))
+                    ? "expected bell, dark watch marks, and editable official slate" : null;
+            case "warm" -> (!hasMaterialNear(loc, radius, Material.BARREL)
+                    || !hasMaterialNear(loc, radius, Material.CAMPFIRE)
                     || !hasMaterialNear(loc, radius, Material.RED_WOOL)
-                    || !hasMaterialNear(loc, radius, Material.BLUE_ICE))
-                    ? "expected unlit campfire and false warmth/cold contrast" : null;
+                    || !hasMaterialNear(loc, radius, Material.BLUE_ICE)
+                    || !hasMaterialNear(loc, radius, Material.LEVER))
+                    ? "expected sample tray, unlit hearth, warmth/cold contrast, and handle" : null;
             case "threshold" -> (!hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
                     || !hasMaterialNear(loc, radius, Material.DEEPSLATE_BRICK_SLAB)
-                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET))
-                    ? "expected low lintel and black threshold marks" : null;
+                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
+                    || !hasMaterialNear(loc, radius, Material.TINTED_GLASS)
+                    || !hasMaterialNear(loc, radius, Material.LEVER))
+                    ? "expected safe route, low lintel, black marks, inner lever, and sealed outer decoy" : null;
             case "base" -> (!hasMaterialNear(loc, radius, Material.BARREL)
                     || !hasMaterialNear(loc, radius, Material.LECTERN))
                     ? "expected copied-base barrel and docket lectern" : null;
@@ -1476,28 +1846,21 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         String house = unlitShortId(siteId);
         switch (house) {
             case "lamp" -> {
-                setBlock(base, Material.LECTERN);
-                faceDirectional(base, facing);
-                fillWrittenLecternBook(base.getBlock(), "borrowed lantern", "the record", List.of(
-                        "oil is counted here.",
-                        "names are counted here.",
-                        "borrowed lanterns are counted last.",
-                        "what burns in the copy is never returned."
-                ));
+                setBlock(base, Material.CHISELED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CANDLE);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
-                return "Reads as a ledger and a burnt accounting mark, not a signboard.";
+                return "The exact wick shelf, outage clock, and pull handle now carry the lamp proof.";
             }
             case "cairn" -> {
-                setBlock(base, Material.CAULDRON);
+                setBlock(offsetFrom(base, facing, 0, -1, 0), Material.CAULDRON);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.COBBLED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.COBBLED_DEEPSLATE);
-                setBlock(offsetFrom(base, facing, 0, -1, 0), Material.POLISHED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.COBBLED_DEEPSLATE_SLAB);
                 return "Use as an offering bowl; the return is a shape, not written instructions.";
             }
             case "coop" -> {
                 setBlock(base, Material.HAY_BLOCK);
+                setBlock(offsetFrom(base, facing, 0, -1, 0), Material.HAY_BLOCK);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.IRON_BARS);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.IRON_BARS);
                 setBlock(base.clone().add(0, 1, 0), Material.OAK_FENCE);
@@ -1505,35 +1868,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 return "Sacred-beast clue; the untouched perch and missing call are the evidence.";
             }
             case "well" -> {
-                setBlock(base, Material.WATER_CAULDRON);
-                setBlock(offsetFrom(base, facing, 1, 0, 0), Material.DARK_PRISMARINE);
-                setBlock(offsetFrom(base, facing, -1, 0, 0), Material.DARK_PRISMARINE);
-                setBlock(offsetFrom(base, facing, 0, -1, 0), Material.POLISHED_BLACKSTONE);
-                placeUnlitEvidenceBook(base, facing, "well copy", List.of(
-                        "the upper line is always the liar.",
-                        "read what the water keeps under it.",
-                        "one copy came back wrong."
-                ));
-                return "Reflection clue; the readable surface is now a found well note.";
+                setBlock(offsetFrom(base, facing, 0, -2, 0), Material.WATER_CAULDRON);
+                setBlock(offsetFrom(base, facing, 1, -2, 0), Material.POLISHED_BLACKSTONE);
+                return "The exact three-map water trough is the readable reflection proof.";
             }
             case "watch" -> {
                 setBlock(base, Material.BELL);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
-                placeUnlitEvidenceBook(base, facing, "watch floor", List.of(
-                        "no moon entered the count.",
-                        "no bed relieved the watch.",
-                        "four names slept. one name stood."
-                ));
-                return "Dark-hours clue now lives in a watch log.";
+                setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE);
+                return "The exact editable watch slate sits above the official blackstone pedestal.";
             }
             case "warm" -> {
-                setBlock(base, Material.CAMPFIRE);
+                Location hearth = offsetFrom(base, facing, 0, -1, 0);
+                setBlock(hearth, Material.CAMPFIRE);
                 try {
-                    org.bukkit.block.data.BlockData data = base.getBlock().getBlockData();
+                    org.bukkit.block.data.BlockData data = hearth.getBlock().getBlockData();
                     if (data instanceof org.bukkit.block.data.Lightable lit) {
                         lit.setLit(false);
-                        base.getBlock().setBlockData(lit, false);
+                        hearth.getBlock().setBlockData(lit, false);
                     }
                 } catch (Throwable ignored) { }
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.RED_WOOL);
@@ -1552,15 +1905,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "base" -> {
                 setBlock(base, Material.BARREL);
                 Location lectern = offsetFrom(base, facing, 1, 0, 0);
-                setBlock(lectern, Material.LECTERN);
-                faceDirectional(lectern, facing);
-                fillWrittenLecternBook(lectern.getBlock(), "copy docket", "the record", List.of(
-                        "the copy keeps the player-made marks.",
-                        "a fence turned, a stair repaired, a door left open.",
-                        "the village remembers the surface without carrying its warmth."
-                ));
+                placeReadableLectern(lectern.getBlock(), facing);
+                if (lectern.getBlock().getState() instanceof Lectern state) {
+                    state.getInventory().clear();
+                    state.update(true, false);
+                }
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.CALIBRATED_SCULK_SENSOR);
-                return "Surface-copy clue; anchors the mirror-village premise without a signboard.";
+                return "Surface-copy clue; the exact Eight House Docket mounts here when C04 opens.";
             }
             default -> {
                 placeStandingSign(base, facing,
@@ -1570,16 +1921,26 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void placeUnlitEvidenceBook(Location base, BlockFace facing, String title, List<String> pages) {
-        Location lectern = offsetFrom(base, facing, 0, 1, 0);
-        placeEvidenceLectern(lectern, facing, title, pages);
-    }
-
     private void placeEvidenceLectern(Location loc, BlockFace facing, String title, List<String> pages) {
         if (loc == null || loc.getWorld() == null) return;
-        setBlock(loc, Material.LECTERN);
-        faceDirectional(loc, facing);
-        fillWrittenLecternBook(loc.getBlock(), title, "the record", pages);
+        // Production narrative never comes from these historical template literals.  The exact V5
+        // authority synchronizer owns title, author, pages, PDC id, availability, and removal.
+        Block block = loc.getBlock();
+        org.bukkit.block.BlockState existing = block.getState();
+        if (activeHoldBuild != null && existing instanceof org.bukkit.block.TileState tile
+                && tile.getPersistentDataContainer().has(
+                new org.bukkit.NamespacedKey("observance", "v5_node_ids"),
+                org.bukkit.persistence.PersistentDataType.STRING)) {
+            // A resumed geometry-complete pass may encounter the exact installer projection from a
+            // prior interrupted fixture pass. Never replace that tagged V5 container/mount with a
+            // retired template lectern; the later reconcile pass will audit and preserve it.
+            return;
+        }
+        placeReadableLectern(block, facing);
+        if (block.getState() instanceof Lectern lectern) {
+            lectern.getInventory().clear();
+            lectern.update(true, false);
+        }
     }
 
     private static Location offsetFrom(Location base, BlockFace facing, int right, int forward, int up) {
@@ -1637,6 +1998,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
                 radius, verticalRadius, true, true);
         plugin.registerRuntimeSite(site);
+        recordUnlitOrientation(loc, siteId);
     }
 
     private void buildUnlitPassLane(Location base, int length) {
@@ -2888,38 +3250,64 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void handlePlaceHold(CommandSender sender, String[] args) {
         String action = args.length >= 2 ? args[1].trim().toLowerCase(Locale.ROOT) : "build";
         switch (action) {
+            case "prepare" -> handlePlaceHoldPrepare(sender, args);
+            case "plan" -> handlePlaceHoldPlan(sender, args);
             case "build" -> {
                 HoldBuildAnchor anchor = resolvePlaceHoldAnchor(sender, args);
                 if (anchor == null || anchor.base() == null) return;
                 Location base = anchor.base();
-                sender.sendMessage("== Observance Deep Hold ==");
+                String planKey = holdPlanKey(anchor.surfaceMouth() == null ? base : anchor.surfaceMouth());
+                if (activeHoldPreparation != null) {
+                    sender.sendMessage("Observance: build refused while Hold chunk preparation is still running ("
+                            + activeHoldPreparation.cursor + "/" + activeHoldPreparation.chunks.size() + ").");
+                    return;
+                }
+                if (!planKey.equals(preparedHoldPlanKey)
+                        || !holdFootprintChunksReady(anchor.surfaceMouth() == null ? base : anchor.surfaceMouth())) {
+                    approvedHoldPlanKey = null;
+                    sender.sendMessage("Observance: build refused before mutation. Run /obs placehold prepare, then "
+                            + "/obs placehold plan, at this exact Mouth.");
+                    return;
+                }
+                if (approvedHoldPlanKey == null || !approvedHoldPlanKey.equals(planKey)) {
+                    sender.sendMessage("Observance: build refused before mutation. Run /obs placehold plan "
+                            + "at this exact Mouth in this server session first.");
+                    return;
+                }
+                if (args.length >= 7 && !"+z".equalsIgnoreCase(args[6])) {
+                    sender.sendMessage("Observance: build refused. V5 has one canonical orientation: +Z only.");
+                    sender.sendMessage("  Run /obs placehold plan first; rotation is intentionally unsupported.");
+                    return;
+                }
+                sender.sendMessage("== Observance Deep Hold V5 ==");
                 sender.sendMessage("Building production underground hold at "
                         + base.getWorld().getName() + " "
                         + base.getBlockX() + "," + base.getBlockY() + "," + base.getBlockZ() + ".");
+                sender.sendMessage("  Enforced orientation: +Z from the Mouth. Player facing is ignored.");
                 if (anchor.surfaceMouth() != null) {
                     Location mouth = anchor.surfaceMouth();
                     sender.sendMessage("  Surface mouth: " + mouth.getBlockX() + ","
                             + mouth.getBlockY() + "," + mouth.getBlockZ()
-                            + " (all V4 coordinates descend from this one public entrance).");
+                            + " (all V5 coordinates descend from this one public entrance).");
                 }
-                int placed;
                 try {
-                    placed = buildDeepHoldV4(base, anchor.surfaceMouth(), sender);
+                    startDeepHoldV5Build(base, anchor.surfaceMouth(), sender);
                 } catch (IllegalStateException rejected) {
+                    approvedHoldPlanKey = null;
+                    releaseHoldChunkTickets();
                     String message = rejected.getMessage() == null ? "unknown placement failure" : rejected.getMessage();
-                    if (message.contains("survey rejected this Mouth")) {
-                        sender.sendMessage("Observance: Deep Hold build refused before block placement.");
-                        sender.sendMessage("  " + message);
-                        return;
-                    }
-                    throw rejected;
+                    sender.sendMessage("Observance: Deep Hold V5 build FAILED; it is not production-ready.");
+                    sender.sendMessage("  " + message);
+                    if (rejected.getCause() != null) sender.sendMessage("  cause: "
+                            + rejected.getCause().getClass().getSimpleName() + ": "
+                            + rejected.getCause().getMessage());
+                    return;
                 }
-                sender.sendMessage("Observance: Deep Hold build complete - " + placed + "/"
-                        + DeepHoldV4Plan.FIXTURES.size() + " canonical ARG sites registered inside the V4 Hold.");
-                sender.sendMessage("  Initial gates: G1-G6 plus Prior and Dread are sealed; the Mouth and Grand Stair always remain open.");
-                sender.sendMessage("  First report / first marker remain prologue setup, not production Hold rooms.");
-                sender.sendMessage("  Next: /obs placehold audit, then /obs placehold sync once Supabase flags are live.");
+                sender.sendMessage("  Geometry is now applying in bounded tick batches. You may watch progress in chat/console.");
+                sender.sendMessage("  A durable checkpoint is written every second; a restart can replay safely from it.");
+                approvedHoldPlanKey = null;
             }
+            case "repair" -> handlePlaceHoldRepair(sender, args);
             case "audit", "status" -> handlePlaceHoldAudit(sender);
             case "seal", "open" -> {
                 String gate = args.length >= 3 ? args[2].trim().toLowerCase(Locale.ROOT) : "all";
@@ -2929,8 +3317,358 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         + changed + " gate(s).");
             }
             case "sync" -> syncPlaceHoldGates(sender);
-            default -> sender.sendMessage("Usage: /observance placehold <build|audit|seal|open|sync> "
-                    + "[gate]  (player build: stand at Mouth; console build: <world> <x> <y> <z>)");
+            default -> sender.sendMessage("Usage: /observance placehold <prepare|plan|build|repair|audit|seal|open|sync> "
+                    + "[site|gate]  (canonical build orientation is +Z only)");
+        }
+    }
+
+    /**
+     * Generate/load the complete authored envelope through Paper's asynchronous chunk API and keep
+     * each result ticketed until the matching plan/build finishes. This is deliberately separate
+     * from the read-only survey: neither plan nor build may hide synchronous terrain generation.
+     */
+    private void handlePlaceHoldPrepare(CommandSender sender, String[] args) {
+        HoldBuildAnchor anchor = resolvePlaceHoldAnchor(sender, args);
+        if (anchor == null || anchor.base() == null || anchor.base().getWorld() == null) return;
+        Location mouth = anchor.surfaceMouth() == null ? anchor.base() : anchor.surfaceMouth();
+        String planKey = holdPlanKey(mouth);
+        if (activeHoldBuild != null) {
+            sender.sendMessage("Observance: preparation refused while a Deep Hold build is applying.");
+            return;
+        }
+        if (activeHoldPreparation != null) {
+            sender.sendMessage("Observance: Hold chunk preparation is already running at "
+                    + activeHoldPreparation.mouth.getWorld().getName() + " "
+                    + activeHoldPreparation.mouth.getBlockX() + ","
+                    + activeHoldPreparation.mouth.getBlockY() + ","
+                    + activeHoldPreparation.mouth.getBlockZ() + " ("
+                    + activeHoldPreparation.cursor + "/" + activeHoldPreparation.chunks.size() + ").");
+            return;
+        }
+        if (planKey.equals(preparedHoldPlanKey) && holdFootprintChunksReady(mouth)) {
+            sender.sendMessage("Observance: this exact Hold footprint is already prepared and ticketed. "
+                    + "Run /obs placehold plan.");
+            return;
+        }
+
+        releaseHoldChunkTickets();
+        approvedHoldPlanKey = null;
+        List<DeepHoldV4Geometry.ChunkCoordinate> chunks = DeepHoldV4Geometry.requiredChunks(mouth);
+        if (chunks.isEmpty()) {
+            sender.sendMessage("Observance: preparation failed; the Hold footprint could not be resolved.");
+            return;
+        }
+        HoldChunkPreparation preparation = new HoldChunkPreparation(mouth, planKey, chunks, sender);
+        activeHoldPreparation = preparation;
+        sender.sendMessage("== Observance Deep Hold V5 asynchronous preparation ==");
+        sender.sendMessage(" Preparing " + chunks.size() + " footprint chunks one at a time at "
+                + mouth.getWorld().getName() + " " + mouth.getBlockX() + ","
+                + mouth.getBlockY() + "," + mouth.getBlockZ() + ".");
+        sender.sendMessage(" No Hold blocks or site registrations are changed during preparation.");
+        prepareNextHoldChunk(preparation);
+    }
+
+    private void prepareNextHoldChunk(HoldChunkPreparation preparation) {
+        if (preparation == null || activeHoldPreparation != preparation) return;
+        if (preparation.cursor >= preparation.chunks.size()) {
+            activeHoldPreparation = null;
+            preparedHoldPlanKey = preparation.planKey;
+            preparation.sender.sendMessage("Observance: PREPARE PASS - all " + preparation.chunks.size()
+                    + " chunks are generated, loaded, and ticketed for this exact Mouth.");
+            preparation.sender.sendMessage("  Run /obs placehold plan, then build within 30 minutes.");
+            String expiryKey = preparedHoldPlanKey;
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                if (expiryKey.equals(preparedHoldPlanKey) && activeHoldBuild == null
+                        && activeHoldPreparation == null) {
+                    int released = releaseHoldChunkTickets();
+                    plugin.getLogger().info("Expired unused Deep Hold preparation and released "
+                            + released + " chunk tickets.");
+                }
+            }, HOLD_PREPARATION_TTL_TICKS);
+            return;
+        }
+
+        DeepHoldV4Geometry.ChunkCoordinate coordinate = preparation.chunks.get(preparation.cursor);
+        World world = preparation.mouth.getWorld();
+        if (world == null) {
+            failHoldPreparation(preparation, "the selected world unloaded during preparation", null);
+            return;
+        }
+        try {
+            world.getChunkAtAsync(coordinate.x(), coordinate.z(), true).whenComplete((chunk, failure) ->
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (activeHoldPreparation != preparation) return;
+                        if (failure != null || chunk == null) {
+                            failHoldPreparation(preparation, "chunk " + coordinate.x() + ","
+                                    + coordinate.z() + " could not be generated/loaded", failure);
+                            return;
+                        }
+                        try {
+                            chunk.addPluginChunkTicket(plugin);
+                            holdChunkTickets.add(chunk);
+                        } catch (Throwable ticketFailure) {
+                            failHoldPreparation(preparation, "chunk " + coordinate.x() + ","
+                                    + coordinate.z() + " could not be ticketed", ticketFailure);
+                            return;
+                        }
+                        preparation.cursor++;
+                        if (preparation.cursor % 25 == 0
+                                || preparation.cursor == preparation.chunks.size()) {
+                            preparation.sender.sendMessage("  prepared " + preparation.cursor + "/"
+                                    + preparation.chunks.size() + " Hold chunks...");
+                        }
+                        // Always return through the scheduler between chunks; never recurse through an
+                        // already-completed future on the server thread.
+                        Bukkit.getScheduler().runTask(plugin, () -> prepareNextHoldChunk(preparation));
+                    }));
+        } catch (Throwable submissionFailure) {
+            failHoldPreparation(preparation, "chunk " + coordinate.x() + ","
+                    + coordinate.z() + " could not be submitted to Paper's async loader", submissionFailure);
+        }
+    }
+
+    private void failHoldPreparation(HoldChunkPreparation preparation, String message, Throwable failure) {
+        if (activeHoldPreparation == preparation) activeHoldPreparation = null;
+        int released = releaseHoldChunkTickets();
+        preparation.sender.sendMessage("Observance: PREPARE FAILED - " + message + ".");
+        preparation.sender.sendMessage("  Released " + released + " chunk tickets; no Hold build was started.");
+        if (failure != null) plugin.getLogger().severe("Deep Hold chunk preparation failed: "
+                + failure.getClass().getSimpleName() + ": " + failure.getMessage());
+    }
+
+    private boolean holdFootprintChunksReady(Location mouth) {
+        if (mouth == null || mouth.getWorld() == null) return false;
+        World world = mouth.getWorld();
+        for (DeepHoldV4Geometry.ChunkCoordinate chunk : DeepHoldV4Geometry.requiredChunks(mouth)) {
+            if (!world.isChunkGenerated(chunk.x(), chunk.z())
+                    || !world.isChunkLoaded(chunk.x(), chunk.z())) return false;
+        }
+        return true;
+    }
+
+    private int releaseHoldChunkTickets() {
+        int released = 0;
+        for (Chunk chunk : List.copyOf(holdChunkTickets)) {
+            try {
+                chunk.removePluginChunkTicket(plugin);
+                released++;
+            } catch (Throwable failure) {
+                plugin.getLogger().warning("Could not release Deep Hold chunk ticket at "
+                        + chunk.getX() + "," + chunk.getZ() + ": " + failure.getMessage());
+            }
+        }
+        holdChunkTickets.clear();
+        preparedHoldPlanKey = null;
+        approvedHoldPlanKey = null;
+        return released;
+    }
+
+    /** Read-only V5 bounds, orientation, terrain, collision, and manifest preview. */
+    private void handlePlaceHoldPlan(CommandSender sender, String[] args) {
+        HoldBuildAnchor anchor = resolvePlaceHoldAnchor(sender, args);
+        if (anchor == null || anchor.base() == null || anchor.base().getWorld() == null) return;
+        Location mouth = anchor.surfaceMouth() == null ? anchor.base() : anchor.surfaceMouth();
+        World world = mouth.getWorld();
+        String planKey = holdPlanKey(mouth);
+        if (activeHoldPreparation != null) {
+            sender.sendMessage("Observance: plan deferred until asynchronous preparation finishes ("
+                    + activeHoldPreparation.cursor + "/" + activeHoldPreparation.chunks.size() + ").");
+            return;
+        }
+        if (!planKey.equals(preparedHoldPlanKey) || !holdFootprintChunksReady(mouth)) {
+            approvedHoldPlanKey = null;
+            sender.sendMessage("Observance: PLAN REFUSED without mutation. Run /obs placehold prepare "
+                    + "at this exact Mouth first; plan never loads or generates chunks.");
+            return;
+        }
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        List<String> manifestIssues = DeepHoldV5Manifest.validate();
+        DeepHoldV4Geometry.Survey survey = DeepHoldV4Geometry.survey(world, mouth);
+        List<String> collisionIssues = surveyDeepHoldV4SiteCollisions(mouth);
+
+        sender.sendMessage("== Observance Deep Hold V5 plan (READ ONLY) ==");
+        sender.sendMessage(" Mouth: " + world.getName() + " " + bx + "," + by + "," + bz);
+        sender.sendMessage(" Orientation: +Z ONLY; forward reaches world Z "
+                + (bz + DeepHoldV4Plan.MAX_Z) + ". Player yaw is ignored.");
+        sender.sendMessage(" Bounds: X " + (bx + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE)
+                + ".." + (bx + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE)
+                + ", Y " + (by + DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE)
+                + ".." + (by + DeepHoldV4Plan.MAX_Y + DeepHoldV4Plan.ENVELOPE)
+                + ", Z " + (bz + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE)
+                + ".." + (bz + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE) + ".");
+        sender.sendMessage(" Manifest: " + DeepHoldV4Plan.ROOMS.size() + " rooms, "
+                + DeepHoldV4Plan.FIXTURES.size() + " fixtures, " + DeepHoldV4Plan.GATES.size()
+                + " gates, hash=" + DeepHoldV5Manifest.contentHash());
+        sender.sendMessage(" Terrain: minSurface=" + survey.minimumSurfaceY()
+                + ", highestRoof=" + survey.highestAuthoredRoofY()
+                + ", lowestFoundation=" + survey.lowestAuthoredFoundationY() + ".");
+        for (String issue : manifestIssues) sender.sendMessage("  MANIFEST FAIL: " + issue);
+        for (String issue : survey.issues()) sender.sendMessage("  TERRAIN FAIL: " + issue);
+        for (String issue : collisionIssues) sender.sendMessage("  COLLISION FAIL: " + issue);
+        boolean safe = manifestIssues.isEmpty() && survey.safe() && collisionIssues.isEmpty();
+        approvedHoldPlanKey = safe ? planKey : null;
+        if (!safe) {
+            int released = releaseHoldChunkTickets();
+            sender.sendMessage("  Released " + released + " preparation tickets after the refused plan.");
+        }
+        sender.sendMessage(safe
+                ? " PLAN PASS: no blocks or registrations changed. Build with the exact same Mouth."
+                : " PLAN REFUSED: no blocks or registrations changed; choose/fix a different Mouth.");
+    }
+
+    private String holdPlanKey(Location mouth) {
+        if (mouth == null || mouth.getWorld() == null) return "";
+        return mouth.getWorld().getUID() + ":" + mouth.getBlockX() + ":" + mouth.getBlockY() + ":"
+                + mouth.getBlockZ() + ":" + DeepHoldV5Manifest.contentHash() + ":"
+                + DeepHoldV5Manifest.CANONICAL_ORIENTATION;
+    }
+
+    /**
+     * Rebuild fixture dressing without re-excavating the shell, clearing solved inventories, resetting
+     * dial/shelf/sign state, reissuing consumed artifacts, or resealing an open progression gate.
+     */
+    private void handlePlaceHoldRepair(CommandSender sender, String[] args) {
+        Location mouth = resolveDeepHoldV4Mouth();
+        if (mouth == null || mouth.getWorld() == null) {
+            sender.sendMessage("Observance: V5 Hold Mouth cannot be reconstructed; run placehold plan/build first.");
+            return;
+        }
+        String requested = args.length >= 3 ? args[2].trim().toLowerCase(Locale.ROOT) : "all";
+        List<DeepHoldV4Plan.Fixture> fixtures;
+        if ("all".equals(requested)) {
+            fixtures = DeepHoldV4Plan.FIXTURES;
+        } else {
+            DeepHoldV4Plan.Fixture fixture = DeepHoldV4Plan.fixture(requested);
+            if (fixture == null) {
+                sender.sendMessage("Observance: unknown V5 fixture '" + requested + "'.");
+                return;
+            }
+            fixtures = List.of(fixture);
+        }
+
+        World world = mouth.getWorld();
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        int repaired = 0;
+        plugin.beginRuntimeSiteBatch();
+        boolean repairComplete = false;
+        try {
+            List<String> manifestIssues = DeepHoldV5Manifest.validate();
+            if (!manifestIssues.isEmpty()) throw new IllegalStateException(String.join("; ", manifestIssues));
+            for (DeepHoldV4Plan.Fixture fixture : fixtures) {
+                Location loc = new Location(world, bx + fixture.x(), by + fixture.y(), bz + fixture.z());
+                HoldSite row = v4HoldSite(fixture);
+                Site live = configuredHoldSite(row, loc, world.getName());
+                // V5 repair never invokes legacy fixture writers: they contain retired books,
+                // selectors and item-frame state. Architecture is repaired by the shell builder;
+                // exact stateful surfaces are reconciled conservatively below.
+                ensureHoldAnchorVisual(live, loc);
+                plugin.registerRuntimeSite(live);
+                repaired++;
+            }
+
+            if ("all".equals(requested)) {
+                // Preserve each physical latch while restoring gate walls/labels and canonical site metadata.
+                for (HoldGate gate : DEEP_HOLD_GATES) {
+                    boolean open = holdGateLatchedOpen(gate.id());
+                    Location gateLoc = new Location(world, bx + gate.x(), by + gate.y(), bz + gate.z());
+                    setHoldGate(gate, gateLoc, !open);
+                    placeHoldGateLabel(gate, gateLoc);
+                    HoldGateSpan span = holdGateSpan(gate);
+                    plugin.registerRuntimeSite(new Site(holdGateSiteId(gate.id()), "hold_gate", world.getName(),
+                            gateLoc.getX(), gateLoc.getY(), gateLoc.getZ(), Math.max(8, span.halfAcross()),
+                            span.height() + 2, true, true, null, false));
+                }
+                registerHoldRegionV4(world.getName(), bx, by, bz);
+                Location sever = new Location(world, bx, by - 96, bz + 362);
+                placeV5SeverControl(sever);
+                plugin.registerRuntimeSite(new Site("release_record", "v5_finale_control",
+                        world.getName(), sever.getX(), sever.getY(), sever.getZ(),
+                        5, 4, true, true, null, false));
+            }
+            String routeIssue = auditV4OpenRoute(world, mouth);
+            if (routeIssue != null) throw new IllegalStateException(routeIssue);
+            V5PhysicalComponentInstaller physical = new V5PhysicalComponentInstaller(plugin);
+            requireCleanPhysical("state-preserving repair",
+                    physical.reconcileHold(mouth, Mode.STATE_PRESERVING_REPAIR));
+            requireCleanPhysical("repair readback", physical.auditHold(mouth));
+            repairComplete = true;
+        } catch (Throwable failure) {
+            sender.sendMessage("Observance: V5 state-preserving repair FAILED after " + repaired + " fixture(s): "
+                    + failure.getClass().getSimpleName() + ": " + failure.getMessage());
+        } finally {
+            if (!repairComplete) {
+                plugin.abortRuntimeSiteBatch();
+            } else {
+                boolean persisted = plugin.endRuntimeSiteBatch();
+                if (!persisted) {
+                    repairComplete = false;
+                    sender.sendMessage("Observance: repair changes exist in-world but sites.yml failed atomic verification.");
+                }
+            }
+        }
+        if (repairComplete) {
+            var runtime = plugin.v5Runtime();
+            if (runtime != null) runtime.rebindAllLoadedFixtures();
+            sender.sendMessage("Observance: V5 repair complete for " + repaired + " fixture(s). Existing block-entity, "
+                    + "container, shelf, sign, and frame state was restored; no consumed key item was reissued.");
+            sender.sendMessage("  Run /obs placehold audit. Use /obs item recover only for a confirmed lost artifact.");
+        }
+    }
+
+    private List<org.bukkit.block.BlockState> snapshotHoldTileState(Location loc,
+                                                                    DeepHoldV4Plan.Fixture fixture) {
+        List<org.bukkit.block.BlockState> out = new ArrayList<>();
+        if (loc == null || loc.getWorld() == null || fixture == null) return out;
+        int horizontal = Math.max(3, Math.min(12, fixture.radius() + 3));
+        int vertical = Math.max(3, Math.min(10, fixture.verticalRadius() + 2));
+        for (int dx = -horizontal; dx <= horizontal; dx++) {
+            for (int dy = -2; dy <= vertical; dy++) {
+                for (int dz = -horizontal; dz <= horizontal; dz++) {
+                    org.bukkit.block.BlockState state = loc.getWorld().getBlockAt(
+                            loc.getBlockX() + dx, loc.getBlockY() + dy, loc.getBlockZ() + dz).getState();
+                    if (state instanceof org.bukkit.block.TileState) out.add(state);
+                }
+            }
+        }
+        return out;
+    }
+
+    private void restoreHoldTileState(List<org.bukkit.block.BlockState> snapshots) {
+        if (snapshots == null) return;
+        for (org.bukkit.block.BlockState snapshot : snapshots) {
+            try { snapshot.update(true, false); } catch (Throwable ignored) { }
+        }
+    }
+
+    private record HoldFrameSnapshot(Location location, BlockFace facing, Rotation rotation,
+                                     ItemStack item, boolean visible, boolean fixed, boolean invulnerable) { }
+
+    private List<HoldFrameSnapshot> snapshotHoldFrames(Location loc, DeepHoldV4Plan.Fixture fixture) {
+        if (loc == null || loc.getWorld() == null || fixture == null) return List.of();
+        double radius = Math.max(3.0, Math.min(12.0, fixture.radius() + 3.0));
+        List<HoldFrameSnapshot> out = new ArrayList<>();
+        for (ItemFrame frame : loc.getWorld().getNearbyEntitiesByType(ItemFrame.class, loc, radius)) {
+            out.add(new HoldFrameSnapshot(frame.getLocation().clone(), frame.getFacing(), frame.getRotation(),
+                    frame.getItem().clone(), frame.isVisible(), frame.isFixed(), frame.isInvulnerable()));
+        }
+        return out;
+    }
+
+    private void restoreHoldFrames(List<HoldFrameSnapshot> snapshots) {
+        if (snapshots == null) return;
+        for (HoldFrameSnapshot snapshot : snapshots) {
+            if (snapshot.location() == null || snapshot.location().getWorld() == null) continue;
+            ItemFrame frame = snapshot.location().getWorld().getNearbyEntitiesByType(
+                    ItemFrame.class, snapshot.location(), 0.6).stream().findFirst().orElse(null);
+            if (frame == null) {
+                frame = snapshot.location().getWorld().spawn(snapshot.location(), ItemFrame.class);
+            }
+            frame.setFacingDirection(snapshot.facing(), true);
+            frame.setItem(snapshot.item().clone(), false);
+            frame.setRotation(snapshot.rotation());
+            frame.setVisible(snapshot.visible());
+            frame.setFixed(snapshot.fixed());
+            frame.setInvulnerable(snapshot.invulnerable());
         }
     }
 
@@ -2945,14 +3683,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             Integer y = parseHoldInt(args[4]);
             Integer z = parseHoldInt(args[5]);
             if (x == null || y == null || z == null) {
-                sender.sendMessage("Usage: /observance placehold build <world> <x> <y> <z>");
+                sender.sendMessage("Usage: /observance placehold " + args[1] + " <world> <x> <y> <z>");
                 return null;
             }
             Location mouth = new Location(world, x, clampHoldY(world, y), z);
             return new HoldBuildAnchor(mouth, mouth.clone());
         }
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("Observance: console build needs /observance placehold build <world> <x> <y> <z>.");
+            sender.sendMessage("Observance: console needs /observance placehold " + args[1]
+                    + " <world> <x> <y> <z>.");
             return null;
         }
         Location here = player.getLocation();
@@ -2985,81 +3724,351 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return Math.max(min, Math.min(max, y));
     }
 
-    /** Production V4 build. Geometry is clean-sheet; canonical fixtures and runtime ids are preserved. */
-    private int buildDeepHoldV4(Location base, Location surfaceMouth, CommandSender sender) {
+    /**
+     * Plan the complete shell without mutating blocks, then apply it in bounded main-thread slices.
+     * The checkpoint is deliberately conservative: a crash can replay up to one second of ordered,
+     * idempotent block writes, never skip writes that were not durably acknowledged.
+     */
+    private void startDeepHoldV5Build(Location base, Location surfaceMouth, CommandSender sender) {
         Location mouth = surfaceMouth == null ? base : surfaceMouth;
+        if (mouth == null || mouth.getWorld() == null) {
+            throw new IllegalStateException("Deep Hold Mouth has no loaded world");
+        }
+        if (activeHoldBuild != null) {
+            throw new IllegalStateException("a Deep Hold build is already applying; wait for its receipt");
+        }
+        World world = mouth.getWorld();
+        String planKey = holdPlanKey(mouth);
+        if (!planKey.equals(preparedHoldPlanKey) || !holdFootprintChunksReady(mouth)) {
+            throw new IllegalStateException("the exact Hold footprint is not prepared and ticketed; run "
+                    + "/obs placehold prepare, then plan, at this Mouth");
+        }
+        DeepHoldV4Geometry.Survey survey = DeepHoldV4Geometry.survey(world, mouth);
+        if (!survey.safe()) {
+            throw new IllegalStateException("Deep Hold V5 survey rejected this Mouth: "
+                    + String.join("; ", survey.issues()));
+        }
+        List<String> collisionIssues = surveyDeepHoldV4SiteCollisions(mouth);
+        if (!collisionIssues.isEmpty()) {
+            throw new IllegalStateException("Deep Hold V5 site-envelope survey rejected this Mouth: "
+                    + String.join("; ", collisionIssues));
+        }
+        if (sender != null) {
+            sender.sendMessage("  V5 survey passed: minimum surface Y=" + survey.minimumSurfaceY()
+                    + ", highest buried roof Y=" + survey.highestAuthoredRoofY()
+                    + ", lowest foundation Y=" + survey.lowestAuthoredFoundationY()
+                    + "; registered-site envelope clear.");
+        }
+
+        List<String> planIssues = DeepHoldV5Manifest.validate();
+        if (!planIssues.isEmpty()) {
+            throw new IllegalStateException("Deep Hold V5 static manifest failed: " + String.join("; ", planIssues));
+        }
+        DeepHoldV4Geometry.BuildPlan plan = DeepHoldV4Geometry.plan(world, mouth,
+                line -> { if (sender != null) sender.sendMessage("  " + line + "..."); });
+        String resumeStatus = restoreHoldBuildCheckpoint(plan);
+        persistHoldBuildCheckpoint(plan, activeHoldFixtureShellReady ? "fixtures_ready" : "applying",
+                activeHoldFixtureShellReady ? "resuming exact physical install" : null);
+        activeHoldBuild = plan;
+        if (sender != null) {
+            sender.sendMessage("  architecture plan contains " + plan.totalOperations() + " ordered writes"
+                    + (plan.cursor() > 0 ? "; resumed at durable cursor " + plan.cursor() : ""));
+            if (resumeStatus != null && !resumeStatus.isBlank()) sender.sendMessage("  " + resumeStatus);
+        }
+
+        new BukkitRunnable() {
+            private int ticks;
+            private int lastPercent = -1;
+
+            @Override
+            public void run() {
+                DeepHoldV4Geometry.BuildPlan current = activeHoldBuild;
+                if (current != plan) {
+                    cancel();
+                    return;
+                }
+                try {
+                    DeepHoldV4Geometry.BatchResult batch = current.applyBatch(
+                            HOLD_BUILD_MAX_OPERATIONS_PER_TICK, HOLD_BUILD_MAX_NANOS_PER_TICK);
+                    ticks++;
+                    int percent = batch.totalOperations() == 0 ? 100
+                            : (int) ((100L * batch.cursor()) / batch.totalOperations());
+                    if (sender != null && (lastPercent < 0 || percent >= lastPercent + 5 || batch.complete())) {
+                        lastPercent = percent;
+                        sender.sendMessage("  Hold architecture " + percent + "% (" + batch.cursor() + "/"
+                                + batch.totalOperations() + " writes; " + batch.changedBlocks() + " changed)");
+                    }
+                    if (ticks % 20 == 0 || batch.complete()) {
+                        String checkpointStatus = batch.complete()
+                                ? (activeHoldFixtureShellReady ? "fixtures_ready" : "geometry_complete")
+                                : "applying";
+                        persistHoldBuildCheckpoint(current, checkpointStatus, null);
+                    }
+                    if (!batch.complete()) return;
+
+                    int placed = finishDeepHoldV5Build(mouth, sender, current);
+                    persistHoldBuildCheckpoint(current, "complete", "fixtures=" + placed);
+                    activeHoldFixtureShellReady = false;
+                    activeHoldBuild = null;
+                    cancel();
+                    releaseHoldChunkTickets();
+                    try {
+                        announceDeepHoldV5Complete(sender, placed);
+                    } catch (Throwable announcementFailure) {
+                        plugin.getLogger().log(Level.WARNING,
+                                "Deep Hold completed, but its optional completion announcement failed: "
+                                        + describeFailureChain(announcementFailure), announcementFailure);
+                        if (sender != null) sender.sendMessage("Observance: Deep Hold build receipt is COMPLETE; "
+                                + "the optional Wren/announcement step needs an operator check.");
+                    }
+                    return;
+                } catch (Throwable failure) {
+                    String causeChain = describeFailureChain(failure);
+                    // Log the complete throwable before attempting checkpoint I/O or replying to the
+                    // command sender. An RCON socket can disappear during this long build; its failed
+                    // send must never be able to hide the fixture/cause that stopped production.
+                    plugin.getLogger().log(Level.SEVERE,
+                            "Deep Hold V5 build failed; no readiness receipt was published. Cause chain: "
+                                    + causeChain, failure);
+                    try {
+                        persistHoldBuildCheckpoint(current,
+                                activeHoldFixtureShellReady ? "fixtures_ready"
+                                        : (current.complete() ? "geometry_complete" : "applying"),
+                                "failure=" + causeChain);
+                    } catch (Throwable checkpointFailure) {
+                        plugin.getLogger().log(Level.SEVERE,
+                                "Deep Hold failure checkpoint also failed: "
+                                        + describeFailureChain(checkpointFailure), checkpointFailure);
+                    }
+                    activeHoldBuild = null;
+                    cancel();
+                    releaseHoldChunkTickets();
+                    if (sender != null) {
+                        try {
+                            sender.sendMessage("Observance: Deep Hold V5 build FAILED; no readiness receipt was published.");
+                            sender.sendMessage("  " + causeChain);
+                            sender.sendMessage("  Full cause/stack: server log. Durable checkpoint: "
+                                    + holdBuildCheckpointPath());
+                            sender.sendMessage("  Fix the cause, then rerun placehold prepare, plan, and build "
+                                    + "at the same Mouth to resume.");
+                        } catch (Throwable replyFailure) {
+                            plugin.getLogger().log(Level.WARNING,
+                                    "Deep Hold failure was logged, but the command sender disconnected: "
+                                            + describeFailureChain(replyFailure), replyFailure);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
+    }
+
+    private static String describeFailureChain(Throwable failure) {
+        if (failure == null) return "unknown failure";
+        List<String> parts = new ArrayList<>();
+        Set<Throwable> seen = Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        Throwable cursor = failure;
+        while (cursor != null && parts.size() < 10 && seen.add(cursor)) {
+            String message = cursor.getMessage();
+            String clean = message == null || message.isBlank() ? "(no message)"
+                    : message.replace('\r', ' ').replace('\n', ' ').replaceAll("\\s+", " ").trim();
+            parts.add(cursor.getClass().getSimpleName() + ": " + clean);
+            cursor = cursor.getCause();
+        }
+        if (cursor != null) parts.add("... additional/cyclic cause omitted");
+        return String.join(" <- ", parts);
+    }
+
+    private Path holdBuildCheckpointPath() {
+        return plugin.getDataFolder().toPath().resolve("hold-build-state.properties");
+    }
+
+    private String restoreHoldBuildCheckpoint(DeepHoldV4Geometry.BuildPlan plan) {
+        activeHoldFixtureShellReady = false;
+        Path path = holdBuildCheckpointPath();
+        if (!Files.isRegularFile(path)) return null;
+        Properties state = new Properties();
+        try (InputStream input = Files.newInputStream(path)) {
+            state.load(input);
+        } catch (IOException failure) {
+            throw new IllegalStateException("cannot read durable Hold checkpoint " + path, failure);
+        }
+        String status = state.getProperty("status", "").trim();
+        if ("complete".equals(status)) {
+            throw new IllegalStateException("this exact Hold already has a completed build receipt; use "
+                    + "/obs placehold audit or repair, not build");
+        }
+        String expectedIdentity = plan.worldId() + ":" + plan.originX() + ":" + plan.originY() + ":"
+                + plan.originZ() + ":" + DeepHoldV5Manifest.contentHash() + ":" + plan.totalOperations();
+        String actualIdentity = state.getProperty("world-id", "") + ":"
+                + state.getProperty("origin-x", "") + ":" + state.getProperty("origin-y", "") + ":"
+                + state.getProperty("origin-z", "") + ":" + state.getProperty("authority-hash", "") + ":"
+                + state.getProperty("total-operations", "");
+        if (!expectedIdentity.equals(actualIdentity)) {
+            throw new IllegalStateException("a partial Hold checkpoint belongs to a different Mouth, world, "
+                    + "authority hash, or operation plan. Preserve and resolve " + path
+                    + " before attempting another placement");
+        }
+        if (!"applying".equals(status) && !"geometry_complete".equals(status)
+                && !"fixtures_ready".equals(status)) {
+            throw new IllegalStateException("Hold checkpoint has unsupported status '" + status + "'");
+        }
+        int cursor;
+        try {
+            cursor = Integer.parseInt(state.getProperty("cursor", "-1"));
+        } catch (NumberFormatException badCursor) {
+            throw new IllegalStateException("Hold checkpoint cursor is not an integer", badCursor);
+        }
+        plan.restoreCursor(cursor);
+        if (("geometry_complete".equals(status) || "fixtures_ready".equals(status)) && !plan.complete()) {
+            throw new IllegalStateException("Hold checkpoint claims complete geometry before its final cursor");
+        }
+        activeHoldFixtureShellReady = "fixtures_ready".equals(status);
+        return "RESUME: durable " + status + " checkpoint verified; already acknowledged "
+                + cursor + " ordered writes.";
+    }
+
+    private void persistHoldBuildCheckpoint(DeepHoldV4Geometry.BuildPlan plan, String status, String note) {
+        Path target = holdBuildCheckpointPath();
+        Path temporary = target.resolveSibling(target.getFileName() + ".tmp");
+        Properties state = new Properties();
+        state.setProperty("schema", "1");
+        state.setProperty("status", status);
+        state.setProperty("world-id", plan.worldId().toString());
+        state.setProperty("origin-x", Integer.toString(plan.originX()));
+        state.setProperty("origin-y", Integer.toString(plan.originY()));
+        state.setProperty("origin-z", Integer.toString(plan.originZ()));
+        state.setProperty("authority-hash", DeepHoldV5Manifest.contentHash());
+        state.setProperty("orientation", DeepHoldV5Manifest.CANONICAL_ORIENTATION);
+        state.setProperty("total-operations", Integer.toString(plan.totalOperations()));
+        state.setProperty("cursor", Integer.toString(plan.cursor()));
+        state.setProperty("changed-this-process", Long.toString(plan.changedBlocks()));
+        state.setProperty("updated-at", Instant.now().toString());
+        if (note != null && !note.isBlank()) state.setProperty("note", note.replace('\n', ' '));
+        try {
+            Files.createDirectories(target.getParent());
+            try (FileOutputStream output = new FileOutputStream(temporary.toFile())) {
+                state.store(output, "Observance V5 resumable Deep Hold build receipt");
+                output.getFD().sync();
+            }
+            try {
+                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException unavailable) {
+                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException failure) {
+            throw new IllegalStateException("cannot atomically persist Hold build checkpoint " + target, failure);
+        }
+    }
+
+    private void announceDeepHoldV5Complete(CommandSender sender, int placed) {
+        if (sender == null) return;
+        sender.sendMessage("Observance: Deep Hold build complete - " + placed + "/"
+                + DeepHoldV4Plan.FIXTURES.size() + " canonical ARG sites registered inside the V5 Hold.");
+        sender.sendMessage("  V5 content hash: " + DeepHoldV5Manifest.contentHash());
+        sender.sendMessage("  Initial gates: G1-G6 plus Prior and Dread are sealed; the Mouth and Grand Stair remain open.");
+        sender.sendMessage("  First report / first marker remain prologue setup, not production Hold rooms.");
+        Site wrenAnchor = plugin.sites() == null ? null : plugin.sites().get("npc_wren_anchor");
+        Location wrenAt = wrenAnchor == null ? null : wrenAnchor.location();
+        if (plugin.wren() != null && plugin.wren().body() == null
+                && wrenAt != null && wrenAt.getWorld() != null) {
+            plugin.wren().spawn(wrenAt);
+            sender.sendMessage("  Wren anchored in the lower-vault chamber from npc_wren_anchor.");
+        }
+        sender.sendMessage("  Next: /obs placehold audit, then /obs placehold sync once Supabase flags are live.");
+    }
+
+    /** Final synchronous fixture pass after the shell has completely reached its durable cursor. */
+    private int finishDeepHoldV5Build(Location mouth, CommandSender sender,
+                                      DeepHoldV4Geometry.BuildPlan plan) {
         if (mouth == null || mouth.getWorld() == null) return 0;
+        DeepHoldV4Geometry.BuildResult shell = plan.result();
         World world = mouth.getWorld();
         String worldName = world.getName();
         int bx = mouth.getBlockX();
         int by = mouth.getBlockY();
         int bz = mouth.getBlockZ();
 
-        DeepHoldV4Geometry.Survey survey = DeepHoldV4Geometry.survey(world, mouth);
-        if (!survey.safe()) {
-            throw new IllegalStateException("Deep Hold V4 survey rejected this Mouth: "
-                    + String.join("; ", survey.issues()));
-        }
-        List<String> collisionIssues = surveyDeepHoldV4SiteCollisions(mouth);
-        if (!collisionIssues.isEmpty()) {
-            throw new IllegalStateException("Deep Hold V4 site-envelope survey rejected this Mouth: "
-                    + String.join("; ", collisionIssues));
-        }
-        if (sender != null) {
-            sender.sendMessage("  V4 survey passed: minimum surface Y=" + survey.minimumSurfaceY()
-                    + ", highest buried roof Y=" + survey.highestAuthoredRoofY()
-                    + ", lowest foundation Y=" + survey.lowestAuthoredFoundationY()
-                    + "; registered-site envelope clear.");
-        }
-
         plugin.beginRuntimeSiteBatch();
+        boolean buildComplete = false;
         try {
             // Fail before changing blocks when a packaged manuscript or static plan is incomplete.
-            loadHoldLockBooks();
-            loadHoldD05Books();
-            List<String> planIssues = DeepHoldV4Plan.validate();
+            List<String> planIssues = DeepHoldV5Manifest.validate();
             if (!planIssues.isEmpty()) {
-                throw new IllegalStateException("Deep Hold V4 static plan failed: " + String.join("; ", planIssues));
+                throw new IllegalStateException("Deep Hold V5 static manifest failed: " + String.join("; ", planIssues));
             }
 
-            DeepHoldV4Geometry.BuildResult shell = DeepHoldV4Geometry.build(world, mouth,
-                    line -> { if (sender != null) sender.sendMessage("  " + line + "..."); });
             if (sender != null) sender.sendMessage("  architecture changed " + shell.changedBlocks()
                     + " blocks across " + shell.rooms() + " owned rooms.");
 
-            placeHoldPrologueEchoV4(world, bx, by, bz);
-            placeHoldDistrictRecordsV4(world, bx, by, bz);
-
             int placed = 0;
             List<Site> pendingSites = new ArrayList<>();
-            for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
-                HoldSite row = v4HoldSite(fixture);
-                Location loc = new Location(world, bx + fixture.x(), by + fixture.y(), bz + fixture.z());
-                try {
-                    loc.getChunk().load(true);
-                    Site live = configuredHoldSite(row, loc, worldName);
-                    placeHoldFixture(live, loc, row);
-                    ensureHoldAnchorVisual(live, loc);
-                    String fixtureIssue = auditPlacedSite(live, loc);
-                    if (fixtureIssue != null) throw new IllegalStateException(fixtureIssue);
-                    String frameIssue = auditV4FixtureFrame(world, mouth, fixture);
-                    if (frameIssue != null) throw new IllegalStateException(frameIssue);
-                    pendingSites.add(live);
-                    placed++;
-                    if (sender != null && (placed % 10 == 0 || placed == DeepHoldV4Plan.FIXTURES.size())) {
-                        sender.sendMessage("  placed and framed " + placed + "/"
-                                + DeepHoldV4Plan.FIXTURES.size() + " canonical fixtures...");
+            if (!activeHoldFixtureShellReady) {
+                for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+                    HoldSite row = v4HoldSite(fixture);
+                    Location loc = new Location(world, bx + fixture.x(), by + fixture.y(), bz + fixture.z());
+                    try {
+                        if (!world.isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4)) {
+                            throw new IllegalStateException("prepared footprint chunk unloaded before fixture placement");
+                        }
+                        Site live = configuredHoldSite(row, loc, worldName);
+                        placeHoldFixture(live, loc, row);
+                        carveV4FixtureFrame(world, mouth, fixture);
+                        ensureHoldAnchorVisual(live, loc);
+                        String fixtureIssue = auditPlacedSite(live, loc);
+                        if (fixtureIssue != null) throw new IllegalStateException(fixtureIssue);
+                        String freshIssue = auditV5FreshFixtureContent(live, loc);
+                        if (freshIssue != null) throw new IllegalStateException(freshIssue);
+                        String frameIssue = auditV4FixtureFrame(world, mouth, fixture);
+                        if (frameIssue != null) throw new IllegalStateException(frameIssue);
+                        // Legacy builders retain excellent room-scale dressing but also emit retired
+                        // books, signs, controls, and frames. Fresh V5 builds keep the architecture
+                        // and strip every old readable/mechanical payload before exact authority is
+                        // installed below.
+                        stripRetiredV4FixtureContent(loc, fixture);
+                        pendingSites.add(live);
+                        placed++;
+                        if (sender != null && (placed % 10 == 0
+                                || placed == DeepHoldV4Plan.FIXTURES.size())) {
+                            sender.sendMessage("  placed and framed " + placed + "/"
+                                    + DeepHoldV4Plan.FIXTURES.size() + " canonical fixtures...");
+                        }
+                    } catch (Throwable t) {
+                        if (sender != null) sender.sendMessage("  [!] V5 stopped at fixture " + fixture.id()
+                                + "; this fresh-location build is NOT production-ready.");
+                        throw new IllegalStateException("Deep Hold V5 fixture failed: " + fixture.id(), t);
                     }
-                } catch (Throwable t) {
-                    if (sender != null) sender.sendMessage("  [!] V4 stopped at fixture " + fixture.id()
-                            + "; this fresh-location build is NOT production-ready.");
-                    throw new IllegalStateException("Deep Hold V4 fixture failed: " + fixture.id(), t);
                 }
+
+                // These two V5-neutral civic surfaces are placed only after every fixture's retired
+                // payload has been stripped, so later cleanup cannot erase their wayfinding/mounts.
+                placeHoldPrologueEchoV4(world, bx, by, bz);
+                placeHoldDistrictRecordsV4(world, bx, by, bz);
+
+                placeHoldWayfindingV4(world, bx, by, bz);
+                String routeIssue = auditV4OpenRoute(world, mouth);
+                if (routeIssue != null) throw new IllegalStateException(routeIssue);
+            } else {
+                // The prior pass durably completed all legacy/civic mutations. Reconstruct only
+                // registration objects; replaying builders here could overwrite exact V5 items.
+                for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+                    HoldSite row = v4HoldSite(fixture);
+                    Location loc = new Location(world, bx + fixture.x(), by + fixture.y(), bz + fixture.z());
+                    pendingSites.add(configuredHoldSite(row, loc, worldName));
+                    placed++;
+                }
+                if (sender != null) sender.sendMessage("  resumed after durable fixtures_ready milestone; "
+                        + "legacy fixture mutations were not replayed.");
             }
 
-            placeHoldWayfindingV4(world, bx, by, bz);
-            String routeIssue = auditV4OpenRoute(world, mouth);
-            if (routeIssue != null) throw new IllegalStateException(routeIssue);
+            DeepHoldV4Plan.Fixture wrenOwner = DeepHoldV4Plan.fixture("threshold_vault");
+            if (wrenOwner == null) throw new IllegalStateException("V5 Wren owner fixture is missing");
+            pendingSites.add(new Site("npc_wren_anchor", "npc_anchor", worldName,
+                    (double) (bx + wrenOwner.standX()), (double) (by + wrenOwner.standY()),
+                    (double) (bz + wrenOwner.standZ()), 2, 3, true, true, null, false));
+            pendingSites.add(new Site("release_record", "v5_finale_control", worldName,
+                    (double) bx, (double) (by - 96), (double) (bz + 362),
+                    5, 4, true, true, null, false));
 
             // Stamp progression gates only after the complete open route and every standing frame pass.
             for (HoldGate gate : DEEP_HOLD_GATES) {
@@ -3069,18 +4078,218 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         gateLoc.getX(), gateLoc.getY(), gateLoc.getZ(),
                         Math.max(8, span.halfAcross()), span.height() + 2,
                         true, true, null, false));
-                setHoldGate(gate, gateLoc, true);
-                placeHoldGateLabel(gate, gateLoc);
+                if (!activeHoldFixtureShellReady) {
+                    setHoldGate(gate, gateLoc, true);
+                    placeHoldGateLabel(gate, gateLoc);
+                }
                 String issue = auditHoldGateIntegrity(gate, gateLoc);
                 if (issue != null) throw new IllegalStateException(issue);
             }
 
+            // From this point forward only exact-authority reconciliation and registration remain.
+            // Persist before either can fail so recovery never replays legacy blocks over a partial
+            // exact install or duplicates a protected source item.
+            activeHoldFixtureShellReady = true;
+            persistHoldBuildCheckpoint(plan, "fixtures_ready", "legacy fixture shell and gates complete");
+
             registerHoldRegionV4(worldName, bx, by, bz);
-            registerHoldFocusedAnswerSlotsV4(worldName, bx, by, bz);
             for (Site pending : pendingSites) plugin.registerRuntimeSite(pending);
+            if (plugin.wren() != null && plugin.wren().body() == null) {
+                Site wrenSite = pendingSites.stream()
+                        .filter(site -> "npc_wren_anchor".equals(site.id())).findFirst().orElse(null);
+                if (wrenSite != null && wrenSite.location() != null) plugin.wren().spawn(wrenSite.location());
+            }
+            // This build has not admitted players yet. Legacy fixture writers and an interrupted
+            // exact pass can both leave readable/source payloads in obsolete containers. Clear
+            // only authority-bearing inventory items inside the managed Hold envelope, then let
+            // the deterministic physical installer and book projection issue one exact copy.
+            clearPreAdmissionHoldInventoryPayloads(world, mouth);
+            V5PhysicalComponentInstaller physical = new V5PhysicalComponentInstaller(plugin);
+            Report install = physical.reconcileHold(mouth, Mode.FRESH_INSTALL);
+            requireCleanPhysical("fresh physical install", install);
+            Set<String> protectedBookCells = physical.protectedBookMountCells(mouth);
+            Set<String> exactPhysicalCells = physical.exactPhysicalComponentCells(mouth);
+            List<String> mountIssues = ensureV5BookMounts(mouth, protectedBookCells, exactPhysicalCells);
+            if (!mountIssues.isEmpty()) throw new IllegalStateException("V5 exact book mount install failed: "
+                    + String.join("; ", mountIssues));
+            // The physical authority owns each lectern block while syncV5Books owns only the
+            // authored book inside it. Install and tag those mounts before asking the book
+            // projection to resolve them; otherwise a genuinely fresh world reports every
+            // locked book as missing even though its mount is about to be created below.
+            BookSyncResult initialBooks = syncV5Books(Map.of());
+            List<String> holdBookIssues = initialBooks.issues().stream()
+                    .filter(issue -> !issue.startsWith("unlit_house_docket"))
+                    .toList();
+            if (!holdBookIssues.isEmpty()) throw new IllegalStateException("V5 exact book mounts failed: "
+                    + String.join("; ", holdBookIssues));
+            if (sender != null) sender.sendMessage("  bound " + initialBooks.resolved()
+                    + "/38 physical V5 book placements; locked books remain absent until their flags open.");
+            Report stabilized = physical.reconcileHold(mouth, Mode.FRESH_INSTALL);
+            requireCleanPhysical("post-mount stabilization", stabilized);
+            List<String> stabilizedMountIssues = ensureV5BookMounts(
+                    mouth, protectedBookCells, exactPhysicalCells);
+            if (!stabilizedMountIssues.isEmpty()) throw new IllegalStateException(
+                    "V5 stabilized book mount install failed: " + String.join("; ", stabilizedMountIssues));
+            BookSyncResult stabilizedBooks = syncV5Books(Map.of());
+            List<String> stabilizedBookIssues = stabilizedBooks.issues().stream()
+                    .filter(issue -> !issue.startsWith("unlit_house_docket"))
+                    .toList();
+            if (!stabilizedBookIssues.isEmpty()) throw new IllegalStateException(
+                    "V5 stabilized exact book mounts failed: " + String.join("; ", stabilizedBookIssues));
+            clearRetiredHoldWrittenBooks(world, mouth);
+            Report physicalAudit = physical.auditHold(mouth);
+            requireCleanPhysical("second-pass physical audit", physicalAudit);
+            String finalRouteIssue = auditV4OpenRoute(world, mouth);
+            if (finalRouteIssue != null) throw new IllegalStateException(finalRouteIssue);
+            List<String> postPlacementIssues = auditV5PostPlacement(world, mouth);
+            if (!postPlacementIssues.isEmpty()) {
+                throw new IllegalStateException("V5 final world readback failed: "
+                        + String.join("; ", postPlacementIssues));
+            }
+            if (sender != null) sender.sendMessage("  exact V5 physical pass installed/audited "
+                    + install.addressesConsidered() + " authority addresses with "
+                    + install.seeded() + " protected source items; no retired written book survived.");
+            buildComplete = true;
             return placed;
         } finally {
-            plugin.endRuntimeSiteBatch();
+            if (!buildComplete) {
+                plugin.abortRuntimeSiteBatch();
+            } else {
+                boolean persisted = plugin.endRuntimeSiteBatch();
+                if (!persisted) {
+                    throw new IllegalStateException("Deep Hold V5 blocks were placed, but sites.yml did not "
+                            + "persist and verify. Do not admit players; fix storage and run placehold repair.");
+                }
+                var runtime = plugin.v5Runtime();
+                if (runtime != null) runtime.rebindAllLoadedFixtures();
+            }
+        }
+    }
+
+    private void requireCleanPhysical(String phase, Report report) {
+        if (report != null && report.clean()) return;
+        List<String> faults = report == null ? List.of("physical report was null")
+                : report.blockerMessages().stream().limit(12).toList();
+        throw new IllegalStateException("V5 " + phase + " failed: " + String.join("; ", faults));
+    }
+
+    private void stripRetiredV4FixtureContent(Location center, DeepHoldV4Plan.Fixture fixture) {
+        if (center == null || center.getWorld() == null || fixture == null) return;
+        World world = center.getWorld();
+        int radius = Math.max(4, Math.min(12, fixture.radius() + 2));
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -2; dy <= Math.min(8, fixture.verticalRadius() + 2); dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    Block block = world.getBlockAt(center.getBlockX() + dx,
+                            center.getBlockY() + dy, center.getBlockZ() + dz);
+                    org.bukkit.block.BlockState state = block.getState();
+                    if (state instanceof Sign) {
+                        block.setType(Material.AIR, false);
+                        continue;
+                    }
+                    if (state instanceof InventoryHolder holder) {
+                        holder.getInventory().clear();
+                        state.update(true, false);
+                    }
+                    Material material = block.getType();
+                    String name = material.name();
+                    if (material == Material.LEVER || material == Material.TRIPWIRE_HOOK
+                            || material == Material.REPEATER || material == Material.COMPARATOR
+                            || material == Material.TARGET || material == Material.DAYLIGHT_DETECTOR
+                            || name.endsWith("_BUTTON") || name.endsWith("_PRESSURE_PLATE")) {
+                        block.setType(Material.AIR, false);
+                    }
+                }
+            }
+        }
+        for (Entity entity : new ArrayList<>(world.getNearbyEntities(center,
+                radius + 1.0, Math.min(9.0, fixture.verticalRadius() + 3.0), radius + 1.0))) {
+            if (entity instanceof ItemFrame || entity instanceof org.bukkit.entity.ItemDisplay
+                    || entity instanceof org.bukkit.entity.Interaction
+                    || entity instanceof org.bukkit.entity.Marker) {
+                entity.remove();
+            }
+        }
+    }
+
+    private void clearPreAdmissionHoldInventoryPayloads(World world, Location mouth) {
+        if (world == null || mouth == null) return;
+        int minX = mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE;
+        int maxX = mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE;
+        int minY = mouth.getBlockY() + DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE;
+        int maxY = mouth.getBlockY() + DeepHoldV4Plan.MAX_Y + DeepHoldV4Plan.ENVELOPE;
+        int minZ = mouth.getBlockZ() + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE;
+        int maxZ = mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE;
+        List<String> identityKeys = List.of("v5_artifact_id", "artifact_id", "v5_evidence_id",
+                "v5_receipt_id", "book_id", "v5_book_id");
+        for (org.bukkit.Chunk chunk : world.getLoadedChunks()) {
+            for (org.bukkit.block.BlockState state : chunk.getTileEntities()) {
+                int x = state.getX(), y = state.getY(), z = state.getZ();
+                if (x < minX || x > maxX || y < minY || y > maxY || z < minZ || z > maxZ
+                        || !(state instanceof InventoryHolder holder)) continue;
+                Inventory inventory = holder.getInventory();
+                boolean changed = false;
+                for (int slot = 0; slot < inventory.getSize(); slot++) {
+                    ItemStack item = inventory.getItem(slot);
+                    if (item == null || item.getType().isAir()) continue;
+                    boolean authorityPayload = item.getType() == Material.WRITTEN_BOOK;
+                    if (!authorityPayload && item.hasItemMeta()) {
+                        var pdc = item.getItemMeta().getPersistentDataContainer();
+                        authorityPayload = identityKeys.stream().anyMatch(key -> pdc.has(
+                                new org.bukkit.NamespacedKey(plugin, key),
+                                org.bukkit.persistence.PersistentDataType.STRING));
+                    }
+                    if (authorityPayload) {
+                        inventory.setItem(slot, null);
+                        changed = true;
+                    }
+                }
+                if (changed) state.update(true, false);
+            }
+        }
+    }
+
+    /** Remove only legacy/unidentified written books after exact V5 sources and mounts settle. */
+    private void clearRetiredHoldWrittenBooks(World world, Location mouth) {
+        if (world == null || mouth == null) return;
+        V5EvidenceItemTextAuthority.Catalog evidenceTexts = V5EvidenceItemTextAuthority.loadDefault();
+        int minX = mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE;
+        int maxX = mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE;
+        int minY = mouth.getBlockY() + DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE;
+        int maxY = mouth.getBlockY() + DeepHoldV4Plan.MAX_Y + DeepHoldV4Plan.ENVELOPE;
+        int minZ = mouth.getBlockZ() + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE;
+        int maxZ = mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE;
+        for (org.bukkit.Chunk chunk : world.getLoadedChunks()) {
+            for (org.bukkit.block.BlockState snapshot : chunk.getTileEntities()) {
+                int x = snapshot.getX(), y = snapshot.getY(), z = snapshot.getZ();
+                if (x < minX || x > maxX || y < minY || y > maxY || z < minZ || z > maxZ) continue;
+                org.bukkit.block.BlockState live = snapshot.getBlock().getState();
+                if (!(live instanceof InventoryHolder holder)) continue;
+                Inventory inventory = holder.getInventory();
+                boolean changed = false;
+                for (int slot = 0; slot < inventory.getSize(); slot++) {
+                    ItemStack item = inventory.getItem(slot);
+                    if (item == null || item.getType() != Material.WRITTEN_BOOK || !item.hasItemMeta()) continue;
+                    var pdc = item.getItemMeta().getPersistentDataContainer();
+                    String bookId = currentV5BookId(item);
+                    String artifactId = pdc.get(new org.bukkit.NamespacedKey(plugin, "artifact_id"),
+                            org.bukkit.persistence.PersistentDataType.STRING);
+                    if (artifactId == null) artifactId = pdc.get(
+                            new org.bukkit.NamespacedKey(plugin, "v5_artifact_id"),
+                            org.bukkit.persistence.PersistentDataType.STRING);
+                    String evidenceId = pdc.get(new org.bukkit.NamespacedKey(plugin, "v5_evidence_id"),
+                            org.bukkit.persistence.PersistentDataType.STRING);
+                    boolean recognized = bookId != null && V5AuthorityManifest.book(bookId) != null;
+                    recognized |= artifactId != null
+                            && CanonicalArtifactRegistry.resolveId(artifactId) != null;
+                    recognized |= evidenceId != null && evidenceTexts.get(evidenceId) != null;
+                    if (!recognized) {
+                        inventory.setItem(slot, null);
+                        changed = true;
+                    }
+                }
+                if (changed) live.update(true, false);
+            }
         }
     }
 
@@ -3133,33 +4342,224 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private String auditV4FixtureFrame(World world, Location mouth, DeepHoldV4Plan.Fixture fixture) {
-        if (world == null || mouth == null || fixture == null) return "missing V4 fixture frame input";
-        int sx = mouth.getBlockX() + fixture.standX();
-        int sy = mouth.getBlockY() + fixture.standY();
-        int sz = mouth.getBlockZ() + fixture.standZ();
-        Block floor = world.getBlockAt(sx, sy - 1, sz);
-        Block feet = world.getBlockAt(sx, sy, sz);
-        Block head = world.getBlockAt(sx, sy + 1, sz);
-        if (floor.isPassable() || !feet.isPassable() || !head.isPassable()) {
-            return fixture.id() + " has a blocked or unsupported player standing zone at "
-                    + sx + "," + sy + "," + sz;
+        if (world == null || mouth == null || fixture == null) return "missing V5 fixture frame input";
+        List<DeepHoldV4Plan.ApproachCell> cells = DeepHoldV4Plan.approachCells(fixture);
+        for (int i = 0; i < cells.size(); i++) {
+            DeepHoldV4Plan.ApproachCell cell = cells.get(i);
+            int x = mouth.getBlockX() + cell.x();
+            int y = mouth.getBlockY() + cell.y();
+            int z = mouth.getBlockZ() + cell.z();
+            Block floor = world.getBlockAt(x, y - 1, z);
+            Block feet = world.getBlockAt(x, y, z);
+            Block head = world.getBlockAt(x, y + 1, z);
+            if (floor.isPassable() || !feet.isPassable() || !head.isPassable()) {
+                String zone = i == 0 ? "player standing zone" : "approach";
+                return fixture.id() + " has a blocked or unsupported " + zone + " at "
+                        + x + "," + y + "," + z + " [floor=" + floor.getType()
+                        + ", feet=" + feet.getType() + ", head=" + head.getType() + "]";
+            }
         }
-        int fx = mouth.getBlockX() + fixture.x();
-        int fy = mouth.getBlockY() + fixture.y();
-        int fz = mouth.getBlockZ() + fixture.z();
-        int dx = Integer.compare(fx, sx);
-        int dz = Integer.compare(fz, sz);
-        int steps = Math.max(Math.abs(fx - sx), Math.abs(fz - sz));
-        // Prove the approach outside the authored fixture footprint. Multi-block fixtures such as
-        // Vaun's five-wide shelf intentionally occupy cells before the anchor; those cells are the
-        // exhibit, not a blocked sightline.
-        for (int i = 1; i < steps; i++) {
-            int ex = sx + dx * i;
-            int ez = sz + dz * i;
-            if (Math.max(Math.abs(ex - fx), Math.abs(ez - fz)) <= Math.max(1, fixture.radius())) break;
-            Block eye = world.getBlockAt(ex, sy + 1, ez);
-            if (!eye.isPassable()) return fixture.id() + " sightline is blocked at "
-                    + eye.getX() + "," + eye.getY() + "," + eye.getZ();
+        return null;
+    }
+
+    /**
+     * Reassert the manifest-owned player body lane after a fixture is dressed. This clears only
+     * feet/head cells outside the fixture's own footprint; floor support remains architecture-owned
+     * and therefore still fails the readback instead of being silently synthesized here.
+     */
+    private void carveV4FixtureFrame(World world, Location mouth, DeepHoldV4Plan.Fixture fixture) {
+        if (world == null || mouth == null || fixture == null) return;
+        for (DeepHoldV4Plan.ApproachCell cell : DeepHoldV4Plan.approachCells(fixture)) {
+            int x = mouth.getBlockX() + cell.x();
+            int y = mouth.getBlockY() + cell.y();
+            int z = mouth.getBlockZ() + cell.z();
+            Block feet = world.getBlockAt(x, y, z);
+            Block head = world.getBlockAt(x, y + 1, z);
+            if (!feet.isPassable()) feet.setType(Material.AIR, false);
+            if (!head.isPassable()) head.setType(Material.AIR, false);
+        }
+    }
+
+    /** Exact V5 fresh-build checks for stateful/key-content surfaces; later audits tolerate consumed items. */
+    private String auditV5FreshFixtureContent(Site site, Location loc) {
+        if (site == null || loc == null || loc.getWorld() == null) return "V5 content audit has no fixture location";
+        String id = site.id();
+        // These anchors are intentionally replaced by exact predicate components during the later
+        // installer pass. At builder time, however, require the authored visual focal block so a
+        // broken builder cannot be masked by the final overlay.
+        Material freshAnchor = switch (id) {
+            case "vaun_hoard_chest" -> Material.POLISHED_DEEPSLATE;
+            case "stone_of_reckoning" -> Material.CHISELED_TUFF;
+            case "threshold_vault" -> Material.STONE_PRESSURE_PLATE;
+            case "the_unwriting" -> Material.SCULK_SHRIEKER;
+            default -> null;
+        };
+        if (freshAnchor != null && loc.getBlock().getType() != freshAnchor) {
+            return "V5 " + id + " fresh builder anchor expected " + freshAnchor
+                    + ", found " + loc.getBlock().getType();
+        }
+        if ("mara_lectern".equals(site.type()) || "sella_lectern".equals(site.type())) {
+            Block block = loc.getBlock();
+            if (block.getType() != Material.LECTERN || !(block.getState() instanceof Lectern lectern)) {
+                return "V5 " + id + " is not an exact lectern";
+            }
+            if (!(block.getBlockData() instanceof Directional directional)
+                    || directional.getFacing() != holdFixtureFront(id)) {
+                return "V5 " + id + " lectern facing does not match its manifest front";
+            }
+            ItemStack book = lectern.getInventory().getItem(0);
+            String expectedBook = id.startsWith("mara_lectern_")
+                    ? "mara_manual_edition_" + trailingIndex(id, 1)
+                    : switch (trailingIndex(id, 1)) {
+                        case 1 -> "sella_shore_copybook";
+                        case 4 -> "sella_sample_note";
+                        default -> null;
+                    };
+            if (expectedBook == null) {
+                if (book != null && book.getType() != Material.AIR) return "V5 " + id
+                        + " must remain available for its non-book overlay/reward mechanic";
+            } else {
+                String issue = auditV5BookItem(book, expectedBook);
+                if (issue != null) return "V5 " + id + ": " + issue;
+            }
+        }
+        if ("vaun_bookshelf".equals(id)) {
+            Block shelf = loc.getBlock();
+            if (shelf.getType() != Material.CHISELED_BOOKSHELF
+                    || !(shelf.getBlockData() instanceof Directional directional)
+                    || directional.getFacing() != holdFixtureFront(id)) {
+                return "V5 Vaun mechanic shelf is missing or incorrectly oriented";
+            }
+        }
+        if (id.startsWith("orin_frame_dial_")) {
+            int index = trailingIndex(id, 1);
+            int[] initialRotations = {2, 6, 0, 4, 2, 6};
+            Location framePlane = v5FramePlane(loc.clone().add(0, 1, 0), holdFixtureFront(id));
+            List<ItemFrame> frames = new ArrayList<>(loc.getWorld().getNearbyEntitiesByType(
+                    ItemFrame.class, framePlane, 0.35));
+            if (frames.size() != 1) return "V5 " + id + " expected exactly one frame, found " + frames.size();
+            ItemFrame frame = frames.get(0);
+            ItemStack compass = frame.getItem();
+            String control = compass.hasItemMeta() ? compass.getItemMeta().getPersistentDataContainer().get(
+                    new org.bukkit.NamespacedKey("observance", "v5_control_id"),
+                    org.bukkit.persistence.PersistentDataType.STRING) : null;
+            Rotation expected = Rotation.values()[initialRotations[Math.max(0, Math.min(5, index - 1))]];
+            if (frame.getFacing() != BlockFace.NORTH || frame.getRotation() != expected
+                    || compass.getType() != Material.COMPASS || !("ko02_" + index).equals(control)) {
+                return "V5 " + id + " frame requires NORTH + unique COMPASS/PDC + deterministic wrong rotation";
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Re-read the completed world after every fixture, wayfinding sign, gate, and book reconciliation
+     * has run. This catches later templates overwriting an earlier fixture that already passed its
+     * immediate audit.
+     */
+    private List<String> auditV5PostPlacement(World world, Location mouth) {
+        if (world == null || mouth == null) return List.of("second-pass audit has no world/Mouth");
+        List<String> issues = new ArrayList<>();
+        Set<String> seenSigns = new HashSet<>();
+        for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+            Location loc = mouth.clone().add(fixture.x(), fixture.y(), fixture.z());
+            Site live = plugin.sites() == null ? null : plugin.sites().get(fixture.id());
+            if (live == null || live.location() == null || live.location().getWorld() != world
+                    || live.location().getBlockX() != loc.getBlockX()
+                    || live.location().getBlockY() != loc.getBlockY()
+                    || live.location().getBlockZ() != loc.getBlockZ()) {
+                issues.add(fixture.id() + " registration moved or disappeared after placement");
+                continue;
+            }
+            // Exact V5 physical reconciliation intentionally replaces several V4-era answer
+            // signs, focal blocks, and the single co-op plate. Their authoritative replacement
+            // was just audited address-by-address; retain registration/frame/sign checks here.
+            String frame = auditV4FixtureFrame(world, mouth, fixture);
+            if (frame != null) issues.add(frame);
+            auditV5SignsNear(loc, Math.max(3, Math.min(12, fixture.radius() + 2)), seenSigns, issues);
+            if (issues.size() >= 16) return List.copyOf(issues);
+        }
+
+        Set<String> claimed = new HashSet<>();
+        int physicalMounts = 0;
+        int expectedPhysicalMounts = 0;
+        for (V5AuthorityManifest.BookPlacement placement : V5AuthorityManifest.bookPlacements()) {
+            if ("earned_artifact".equals(placement.holderKind())) continue;
+            if (placement.holderId().startsWith("unlit_house_")) continue;
+            expectedPhysicalMounts++;
+            Block mount = resolveV5BookLectern(placement, mouth, claimed);
+            if (mount == null || mount.getType() != Material.LECTERN
+                    || !v5BookFacingMatches(mount, placement.expectedFront())) {
+                issues.add("book mount changed after binding: " + placement.bookId());
+            } else {
+                physicalMounts++;
+            }
+        }
+        if (physicalMounts != expectedPhysicalMounts) issues.add("expected "
+                + expectedPhysicalMounts + " in-Hold V5 book mounts, found " + physicalMounts);
+
+        for (DeepHoldV4Plan.RecordStation station : DeepHoldV4Plan.RECORD_STATIONS) {
+            Block mount = world.getBlockAt(mouth.getBlockX() + station.x(),
+                    mouth.getBlockY() + station.y(), mouth.getBlockZ() + station.z());
+            // Some V5 record-station anchors are exact mechanic controls rather than lecterns;
+            // their readable mounts are verified through the placement manifest above.
+            auditV5SignsNear(mount.getLocation(), 8, seenSigns, issues);
+        }
+        Site release = plugin.sites() == null ? null : plugin.sites().get("release_record");
+        if (release == null || release.location() == null || !hasV5SeverControlNear(release.location())) {
+            issues.add("release_record sever control failed final readback");
+        }
+        for (HoldGate gate : DEEP_HOLD_GATES) {
+            Site site = plugin.sites() == null ? null : plugin.sites().get(holdGateSiteId(gate.id()));
+            String gateIssue = auditHoldGateIntegrity(gate, site == null ? null : site.location());
+            if (gateIssue != null) issues.add(gateIssue);
+        }
+        String route = auditV4OpenRoute(world, mouth);
+        if (route != null) issues.add(route);
+        return List.copyOf(issues);
+    }
+
+    private void auditV5SignsNear(Location center, int radius, Set<String> seen, List<String> issues) {
+        if (center == null || center.getWorld() == null || issues.size() >= 16) return;
+        World world = center.getWorld();
+        int r = Math.max(2, Math.min(12, radius));
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dy = -1; dy <= 5; dy++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    Block block = world.getBlockAt(center.getBlockX() + dx,
+                            center.getBlockY() + dy, center.getBlockZ() + dz);
+                    if (!(block.getState() instanceof Sign)) continue;
+                    String key = blockKey(block);
+                    if (!seen.add(key)) continue;
+                    String material = block.getType().name();
+                    if (block.getBlockData() instanceof Directional directional
+                            && material.contains("WALL_SIGN")) {
+                        Block support = block.getRelative(directional.getFacing().getOppositeFace());
+                        Block front = block.getRelative(directional.getFacing());
+                        if (support.isPassable()) issues.add("wall sign has no backing at " + key);
+                        if (!front.isPassable()) issues.add("wall sign faces into a blocked cell at " + key);
+                    }
+                    if (issues.size() >= 16) return;
+                }
+            }
+        }
+    }
+
+    private String auditV5BookItem(ItemStack item, String expectedId) {
+        V5AuthorityManifest.BookEntry expected = V5AuthorityManifest.book(expectedId);
+        if (expected == null) return "unknown authority book " + expectedId;
+        if (item == null || item.getType() != Material.WRITTEN_BOOK
+                || !(item.getItemMeta() instanceof BookMeta meta)) return "missing written book " + expectedId;
+        String bookId = meta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(plugin, "book_id"),
+                org.bukkit.persistence.PersistentDataType.STRING);
+        String story = meta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(plugin, "story_version"),
+                org.bukkit.persistence.PersistentDataType.STRING);
+        if (!expected.id().equals(bookId) || !"5.0.0".equals(story)) return "book PDC/version mismatch";
+        if (!expected.title().equals(meta.getTitle()) || !expected.author().equals(meta.getAuthor())
+                || meta.getPageCount() != expected.pages().size()) return "title/author/page-count mismatch";
+        for (int page = 1; page <= meta.getPageCount(); page++) {
+            String actual = PlainTextComponentSerializer.plainText().serialize(meta.page(page));
+            if (!expected.pages().get(page - 1).equals(actual)) return "page " + page + " text mismatch";
         }
         return null;
     }
@@ -3173,123 +4573,71 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 72, 34, true, true, null, false));
     }
 
-    private void registerHoldFocusedAnswerSlotsV4(String worldName, int bx, int by, int bz) {
-        Object[][] slots = {
-                {"hold_answer_prior_absence", bx - 80, by - 96, bz + 140, "prior-absence"},
-                {"hold_answer_prior_camp", bx - 80, by - 96, bz + 181, "prior-camp-refusal"},
-                {"hold_answer_prior_vaun", bx - 92, by - 96, bz + 190, "prior-vaun-correction"},
-                {"hold_answer_prior_mara", bx - 90, by - 96, bz + 193, "prior-mara-correction"},
-                {"hold_answer_prior_sella", bx - 84, by - 96, bz + 194, "prior-sella-correction"},
-                {"hold_answer_prior_orin", bx - 76, by - 96, bz + 194, "prior-orin-correction"},
-                {"hold_answer_prior_brann", bx - 70, by - 96, bz + 193, "prior-brann-correction"},
-                {"hold_answer_prior_iss", bx - 68, by - 96, bz + 190, "prior-iss-correction"},
-                {"hold_answer_witness", bx + 3, by - 96, bz + 212, "prior-witness-before-accepting"}
-        };
-        for (Object[] slot : slots) {
-            plugin.registerRuntimeSite(new Site((String) slot[0], "answer_sign", worldName,
-                    ((Number) slot[1]).doubleValue(), ((Number) slot[2]).doubleValue(),
-                    ((Number) slot[3]).doubleValue(), 1, 2, true, true, (String) slot[4], false));
-        }
-    }
-
     private void placeHoldPrologueEchoV4(World world, int bx, int by, int bz) {
         if (world == null) return;
-        placeEvidenceLectern(new Location(world, bx - 14, by - 40, bz + 112), BlockFace.EAST,
-                "covered copy", List.of(
-                        "This is a copy, not the first report.\n\nThe real first report remains above, where the living first allowed themselves to be counted.",
-                        "The Hold kept only a cover mark. The record was carried underground after the opening, never before it.",
-                        "A descent without the first report is a descent without a name. Return through the same Mouth before reading the city."
-                ));
+        // The V5 covered copy is authored and unlock-controlled at forgotten_mouth.  This nearby
+        // dressing must stay text-free so a stale V4 book can never survive a rebuild or repair.
         placeDecorativeBookshelf(world.getBlockAt(bx - 16, by - 40, bz + 112), 83, BlockFace.EAST);
         placeStandingSign(new Location(world, bx - 10, by - 40, bz + 112), BlockFace.EAST,
-                new String[]{"COVERED COPY", "original stays", "above", ""});
+                new String[]{"ORIENTATION", "record mounts", "unlock in order", ""});
     }
 
     private void placeHoldDistrictRecordsV4(World world, int bx, int by, int bz) {
         if (world == null) return;
-        placeHoldRecordStation(world, bx + 12, by - 40, bz + 112, BlockFace.WEST,
-                "first register", List.of(
-                        "Entry register.\n\nSix signed before the covered descent. A seventh mark was added later in grey ink and matched no hand.",
-                        "Do not call the grey line prophecy. It is a correction made after the stair was sealed.",
-                        "Later copies turned six hand marks into seven rows. One row stayed blank, but the lock still counted it.",
-                        "The first report stays above because the first count was public. This copy proves the public story changed."
-                ), 101);
+        // These are physical stations only. V5AuthorityManifest owns every page and syncV5Books()
+        // inserts or removes the exact book for the current durable unlock flags.
+        placeHoldEmptyRecordStation(world, bx + 12, by - 40, bz + 112, BlockFace.WEST, 101);
+        // LC03's school-day docket is a distinct locked mount at the exact predicate offset
+        // orientation_register[-2,0,0]; it must never drift back to the retired surface bow marker.
+        Block schoolDay = world.getBlockAt(bx + 10, by - 40, bz + 112);
+        placeReadableLectern(schoolDay, BlockFace.WEST);
+        if (schoolDay.getState() instanceof Lectern lectern) {
+            lectern.getInventory().clear();
+            lectern.update(true, false);
+        }
         placeStandingSign(new Location(world, bx + 8, by - 40, bz + 112), BlockFace.WEST,
-                new String[]{"FIRST COUNT", "above", "copy below", ""});
+                new String[]{"ENTRY REGISTER", "controlled", "record mount", ""});
 
-        placeHoldRecordStation(world, bx - 18, by - 40, bz + 170, BlockFace.EAST,
-                "court census", List.of(
-                        "Keeper court seating.\n\nVaun, Mara, Sella, Orin, Brann, Iss. Six chairs were cut before any lower work began.",
-                        "Margin correction: one place was not cut. It was reserved by leaving the count unfinished.",
-                        "When seven appears where six were built, trust the physical room over the speech. Each Keeper leaves a different kind of proof."
-                ), 117);
+        placeHoldEmptyRecordStation(world, bx - 18, by - 40, bz + 170, BlockFace.EAST, 117);
         placeStandingSign(new Location(world, bx - 14, by - 40, bz + 170), BlockFace.EAST,
-                new String[]{"SIX SEATS", "one margin", "count stone", ""});
+                new String[]{"INQUIRY CENSUS", "controlled", "record mount", ""});
 
-        placeHoldRecordStation(world, bx - 18, by - 68, bz + 116, BlockFace.EAST,
-                "archive index", List.of(
-                        "Archive intake: school, markers, cistern, watch, shelf, water; market, ration, breach, warm room, dead stall, coops.",
-                        "The records were split so no one reader could see the lower pattern at once. Treat every room as evidence, never scenery.",
-                        "Compare physical counts to written counts. Compare what moved before the collapse to what the public story says moved after it.",
-                        "Mara filed copies by consequence. Brann filed doors by convenience. Iss filed blame before either was complete."
-                ), 131);
+        placeHoldEmptyRecordStation(world, bx - 18, by - 68, bz + 116, BlockFace.EAST, 131);
         placeStandingSign(new Location(world, bx - 14, by - 68, bz + 116), BlockFace.EAST,
-                new String[]{"ARCHIVE INDEX", "twelve rooms", "two loops", ""});
+                new String[]{"CIVIC CASE FILE", "controlled", "record mount", ""});
 
-        placeHoldRecordStation(world, bx + 18, by - 68, bz + 222, BlockFace.WEST,
-                "closure docket", List.of(
-                        "Market closure docket WARDEN-3.\n\nPublic reason: unsafe wall. Private reason: the ration account proved light moved before the collapse.",
-                        "The warm-town story depends on smoke. The ledgers depend on delivery. Compare which one had to be rewritten.",
-                        "A dark stand is not a missing stand. Do not break the wall for it. Bring light to the cup and let the third account answer."
-                ), 149);
+        placeHoldEmptyRecordStation(world, bx + 18, by - 68, bz + 222, BlockFace.WEST, 149);
         placeStandingSign(new Location(world, bx + 14, by - 68, bz + 222), BlockFace.WEST,
-                new String[]{"WARDEN-3", "goods before", "smoke", ""});
+                new String[]{"BREAK INQUEST", "controlled", "record mount", ""});
 
-        placeHoldRecordStation(world, bx - 60, by - 96, bz + 124, BlockFace.WEST,
-                "absence docket", List.of(
-                        "Prior accepting roster.\n\nSix names copied clean. Six Keeper answers filed. Six tokens prepared.",
-                        "Seventh line: no witness.\n\nDo not correct this to no seventh. The failed run had no one outside the finish.",
-                        "The camp is sealed because the same mistake should not be rehearsed twice. File the absence before opening it.",
-                        "Open condition: NO WITNESS. Then compare every correction in camp against the six living methods."
-                ), 139);
+        placeHoldEmptyRecordStation(world, bx - 60, by - 96, bz + 124, BlockFace.WEST, 139);
         placeStandingSign(new Location(world, bx - 64, by - 96, bz + 124), BlockFace.WEST,
-                new String[]{"PRIOR RUN", "six ready", "no witness", ""});
+                new String[]{"COMPANY DOCKET", "controlled", "record mount", ""});
 
-        placeHoldRecordStation(world, bx + 18, by - 96, bz + 124, BlockFace.WEST,
-                "threshold hands", List.of(
-                        "Threshold work note.\n\nThree actions were required so no single Keeper could make the last door look like consent.",
-                        "Plate. Name. Word. The order matters less than the fact that the room hears more than one person.",
-                        "A group should argue here. If everyone agrees too quickly, the earlier contradiction was probably missed.",
-                        "The optional dread procession may corroborate Iss. It must never be required to leave, resume, or finish."
-                ), 191);
+        placeHoldEmptyRecordStation(world, bx + 18, by - 96, bz + 124, BlockFace.WEST, 191);
         placeStandingSign(new Location(world, bx + 14, by - 96, bz + 124), BlockFace.WEST,
-                new String[]{"THREE HANDS", "plate name", "word", ""});
+                new String[]{"RECKONING FILE", "controlled", "record mount", ""});
 
-        placeHoldRecordStation(world, bx, by - 96, bz + 366, BlockFace.NORTH,
-                "release record", List.of(
-                        "Release receipt.\n\nThe group reached the end with a witness outside the finish and a route still open behind them.",
-                        "Nothing below grants a second entrance. Return through Unwriting, Accepting, the lower works, both archives, and the Grand Stair.",
-                        "The well still leads only to the Unlit. The Mouth still leads only to the Hold. Do not merge the two stories for convenience.",
-                        "Record who bowed, who refused, and which claim survived comparison. Then leave by the same Mouth you entered."
-                ), 211);
-        placeStandingSign(new Location(world, bx, by - 96, bz + 362), BlockFace.NORTH,
-                new String[]{"RELEASE", "same route", "same Mouth", ""});
+        placeHoldEmptyRecordStation(world, bx, by - 96, bz + 366, BlockFace.NORTH, 211);
+        placeStandingSign(new Location(world, bx + 3, by - 96, bz + 364), BlockFace.WEST,
+                new String[]{"CLOSURE RECEIPT", "controlled", "record mount", ""});
+        placeV5SeverControl(new Location(world, bx, by - 96, bz + 362));
     }
 
     private void placeHoldWayfindingV4(World world, int bx, int by, int bz) {
         if (world == null) return;
         Object[][] signs = {
                 {-9, 0, 3, BlockFace.EAST, new String[]{"THE DEEP HOLD", "one Mouth", "return here", "to leave"}},
-                {-8, -40, 108, BlockFace.EAST, new String[]{"ORIENTATION", "read the copy", "then count", ""}},
-                {-8, -40, 164, BlockFace.EAST, new String[]{"KEEPER COURT", "six methods", "one margin", ""}},
+                {-8, -40, 108, BlockFace.EAST, new String[]{"ORIENTATION", "records unlock", "in sequence", ""}},
+                {-8, -40, 164, BlockFace.EAST, new String[]{"KEEPER COURT", "six inquiries", "file each", ""}},
                 {-8, -40, 246, BlockFace.EAST, new String[]{"G2", "archive below", "return stair", "behind"}},
                 {-8, -68, 104, BlockFace.EAST, new String[]{"CIVIC ARCHIVE", "west + east", "loops rejoin", ""}},
                 {8, -68, 294, BlockFace.WEST, new String[]{"PUZZLE WORKS", "third lamp", "then descend", ""}},
                 {-8, -96, 42, BlockFace.EAST, new String[]{"LOWER WORKS", "reckon first", "return north", ""}},
                 {-18, -96, 136, BlockFace.EAST, new String[]{"WEST", "absence case", "prior camp", ""}},
-                {18, -96, 136, BlockFace.WEST, new String[]{"EAST", "threshold", "vault + dread", ""}},
-                {-8, -96, 218, BlockFace.EAST, new String[]{"G5", "accepting", "requires witness", ""}},
-                {-8, -96, 290, BlockFace.EAST, new String[]{"G6", "unwriting", "bowed as one", ""}},
+                {18, -96, 136, BlockFace.WEST, new String[]{"EAST", "threshold", "relay required", ""}},
+                {-8, -96, 218, BlockFace.EAST, new String[]{"G5", "accepting", "case required", ""}},
+                {-8, -96, 290, BlockFace.EAST, new String[]{"G6", "unwriting", "case required", ""}},
                 {-8, -96, 358, BlockFace.EAST, new String[]{"RELEASE", "no second exit", "turn back", ""}}
         };
         for (Object[] row : signs) {
@@ -3299,7 +4647,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private String auditV4OpenRoute(World world, Location mouth) {
-        if (world == null || mouth == null) return "V4 route audit has no world or Mouth.";
+        if (world == null || mouth == null) return "V5 route audit has no world or Mouth.";
         int bx = mouth.getBlockX();
         int by = mouth.getBlockY();
         int bz = mouth.getBlockZ();
@@ -3319,7 +4667,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        if (seed == null) return "V4 Surface Mouth has no Adventure-mode walk seed.";
+        if (seed == null) return "V5 Surface Mouth has no Adventure-mode walk seed.";
         queue.add(seed);
         int minX = bx + DeepHoldV4Plan.MIN_X - 4;
         int maxX = bx + DeepHoldV4Plan.MAX_X + 4;
@@ -3332,7 +4680,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             HoldWalkNode node = queue.removeFirst();
             if (!visited.add(node)) continue;
             if (visited.size() > hardLimit) {
-                return "V4 walk graph escaped the authored envelope (over " + hardLimit + " nodes).";
+                return "V5 walk graph escaped the authored envelope (over " + hardLimit + " nodes).";
             }
             for (int[] step : new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) {
                 int nx = node.x() + step[0];
@@ -3360,19 +4708,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) {
-            if (!reachedRooms.contains(room.id())) return "V4 room " + room.id()
+            if (!reachedRooms.contains(room.id())) return "V5 room " + room.id()
                     + " is not reachable from the one Surface Mouth; "
                     + nearestV4WalkDiagnostic(visited, mouth, room) + ".";
         }
         for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
             HoldWalkNode stand = new HoldWalkNode(bx + fixture.standX(), by + fixture.standY(), bz + fixture.standZ());
-            if (!visited.contains(stand)) return "V4 fixture " + fixture.id()
+            if (!visited.contains(stand)) return "V5 fixture " + fixture.id()
                     + " has a valid standing frame but no Mouth-reachable route; "
                     + nearestV4FixtureDiagnostic(visited, mouth, fixture) + ".";
         }
         for (DeepHoldV4Plan.RecordStation station : DeepHoldV4Plan.RECORD_STATIONS) {
             if (!hasHoldReachableNode(visited, bx + station.x(), by + station.y(), bz + station.z(), 6, 6, 2)) {
-                return "V4 record station " + station.id() + " has no Mouth-reachable reading position.";
+                return "V5 record station " + station.id() + " has no Mouth-reachable reading position.";
             }
         }
 
@@ -3555,7 +4903,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         if (authored < DeepHoldV4Plan.RECORD_STATIONS.size() + 12) {
-            return "V4 sign audit found only " + authored + " authored signs.";
+            return "V5 sign audit found only " + authored + " authored signs.";
         }
         return null;
     }
@@ -3576,8 +4924,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         // Load every external manuscript before changing a single block. A missing packaged resource
         // must fail cleanly, not after leaving a city shell and nineteen registered fixtures behind.
-        loadHoldLockBooks();
-        loadHoldD05Books();
         validateDeepHoldPlan();
         if (sender != null) sender.sendMessage("  carving V2 owned rooms, roofed corridors, and the 24-block descent...");
         buildHoldV2Shells(world, bx, by, bz);
@@ -3790,10 +5136,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private Site configuredHoldSite(HoldSite row, Location loc, String worldName) {
         Site cfg = plugin.sites() == null ? null : plugin.sites().get(row.id());
-        String type = cfg == null ? row.type() : cfg.type();
-        int radius = cfg == null ? row.radius() : cfg.radius();
-        int vertical = cfg == null ? row.vertical() : cfg.verticalRadius();
-        boolean protect = cfg == null || cfg.protect();
+        // Managed Hold geometry and protection are executable V5 manifest data. A stale sites.yml
+        // may carry an answer binding forward, but it must never resize, retype, or unprotect a room.
+        String type = row.type();
+        int radius = row.radius();
+        int vertical = row.vertical();
+        boolean protect = true;
         String puzzleKey = cfg == null ? null : cfg.puzzleKey();
         return new Site(row.id(), type, worldName,
                 loc.getX(), loc.getY(), loc.getZ(), radius, vertical, protect, true, puzzleKey, false);
@@ -3878,7 +5226,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return true;
         } else if (Set.of("stone_vaun", "stone_mara", "stone_sella", "stone_orin", "stone_brann", "stone_iss").contains(id)) {
             buildHoldKeeperStoneCore(world, bx, by, bz, id, holdFixtureFront(id));
-            placeKeeperRiteToken(loc, id.substring("stone_".length()));
             return true;
         } else if ("stone_of_reckoning".equals(id)) {
             buildHoldReckoningCore(world, bx, by, bz);
@@ -3929,7 +5276,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
             case "mara_map_marker" -> {
                 buildHoldSmallEvidenceCore(world, bx, by, bz, Material.CHISELED_DEEPSLATE, Material.BLACK_CANDLE);
-                buildMaraD05Shelf(loc);
                 yield true;
             }
             case "orin_marker" -> {
@@ -4431,48 +5777,45 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldVaunHoardCore(World world, int bx, int by, int bz) {
-        Block chest = world.getBlockAt(bx, by, bz);
-        chest.setType(Material.CHEST, false);
-        if (chest.getBlockData() instanceof Directional d) {
-            d.setFacing(holdFixtureFront("vaun_hoard_chest"));
-            chest.setBlockData(d, false);
+        // KV01 is an audit, not the retired return-the-first-stone rite. These local offsets match
+        // the physical predicate authority and remain empty/neutral until its prerequisite opens.
+        world.getBlockAt(bx, by - 1, bz).setType(Material.CHISELED_TUFF, false);
+        world.getBlockAt(bx, by, bz).setType(Material.POLISHED_DEEPSLATE, false);
+        Block ledger = world.getBlockAt(bx - 1, by, bz);
+        placeReadableLectern(ledger, BlockFace.EAST);
+        if (ledger.getState() instanceof Lectern lectern) {
+            lectern.getInventory().clear();
+            lectern.update(true, false);
         }
-        if (chest.getState() instanceof InventoryHolder holder) holder.getInventory().clear();
-        int sourceIndex = 0;
-        // Source barrels flank the chest north/south; the east-facing approach and sightline stay
-        // completely clear for Adventure-mode players.
-        for (int dz : new int[]{-3, 3}) {
-            Block source = world.getBlockAt(bx, by, bz + dz);
-            source.setType(Material.BARREL, false);
-            if (source.getState() instanceof InventoryHolder holder) {
-                holder.getInventory().clear();
-                if (sourceIndex++ == 0) {
-                    ItemStack relic = new ItemStack(Material.DEEPSLATE, 1);
-                    org.bukkit.inventory.meta.ItemMeta meta = relic.getItemMeta();
-                    meta.displayName(net.kyori.adventure.text.Component.text("the first stone taken below"));
-                    meta.lore(List.of(
-                            net.kyori.adventure.text.Component.text("VAUN — ENTRY I"),
-                            net.kyori.adventure.text.Component.text("filed as communal; never returned"),
-                            net.kyori.adventure.text.Component.text("once returned, it may be carried but never owned")));
-                    meta.getPersistentDataContainer().set(
-                            new org.bukkit.NamespacedKey("observance", "vaun_first_deep"),
-                            org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
-                    relic.setItemMeta(meta);
-                    holder.getInventory().setItem(13, relic);
-                } else {
-                    holder.getInventory().setItem(13, new ItemStack(Material.COBBLED_DEEPSLATE, 8));
-                }
-            }
-            world.getBlockAt(bx, by + 1, bz + dz).setType(Material.DEEPSLATE_BRICK_WALL, false);
-            world.getBlockAt(bx, by + 2, bz + dz).setType(Material.SOUL_LANTERN, false);
+        Block receipts = world.getBlockAt(bx + 1, by, bz);
+        receipts.setType(Material.BARREL, false);
+        faceDirectional(receipts.getLocation(), BlockFace.EAST);
+        if (receipts.getState() instanceof InventoryHolder holder) {
+            holder.getInventory().clear();
+            holder.getInventory().setItem(11, v5EvidencePaper(
+                    "kv01_cloth_cistern_receipt", "Cistern cloth receipt", 7));
+            holder.getInventory().setItem(15, v5EvidencePaper(
+                    "kv01_charcoal_cistern_receipt", "Cistern charcoal receipt", 10));
         }
-        placeStandingSign(new Location(world, bx - 2, by, bz + 1), BlockFace.NORTH,
-                new String[]{"GIVEN BACK", "what was first", "must return", "then close"});
-        placeEvidenceLectern(new Location(world, bx - 2, by, bz + 3), BlockFace.NORTH,
-                "hoard tally", List.of(
-                        "One stone in the source barrels still bears Vaun's entry. Return that first taking to the empty GIVEN BACK chest.",
-                        "Vaun's guilt begins as inventory, not greed."
-                ));
+        Block tray = world.getBlockAt(bx, by, bz + 1);
+        tray.setType(Material.BARREL, false);
+        faceDirectional(tray.getLocation(), BlockFace.NORTH);
+        if (tray.getState() instanceof InventoryHolder holder) holder.getInventory().clear();
+        world.getBlockAt(bx, by + 1, bz + 1).setType(Material.POLISHED_BLACKSTONE_BUTTON, false);
+        placeStandingSign(new Location(world, bx - 2, by, bz + 2), BlockFace.EAST,
+                new String[]{"QUARTERMASTER", "compare stores", "file shortages", "pull audit"});
+    }
+
+    private ItemStack v5EvidencePaper(String evidenceId, String displayName, int value) {
+        ItemStack item = new ItemStack(Material.PAPER, 1);
+        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text(displayName).color(NamedTextColor.GRAY));
+        meta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey("observance", "v5_evidence_id"),
+                org.bukkit.persistence.PersistentDataType.STRING, evidenceId);
+        meta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey("observance", "v5_evidence_value"),
+                org.bukkit.persistence.PersistentDataType.INTEGER, value);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private void buildHoldVaunShelfCore(World world, int bx, int by, int bz) {
@@ -4493,11 +5836,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             holder.getInventory().setItem(10, new ItemStack(Material.BOOK, 6));
             supply.getState().update(true, false);
         }
-        placeEvidenceLectern(new Location(world, bx - 3, by, bz + 1), BlockFace.EAST,
-                "shelf tally", List.of(
-                        "three shelf marks agree with the hoard.",
-                        "one useful thing was filed as sacred after it was missing."
-                ));
+        placeStandingSign(new Location(world, bx - 3, by, bz + 1), BlockFace.EAST,
+                new String[]{"RECONCILIATION", "use return tags", "set six marks", "then submit"});
     }
 
     private void buildHoldWaterMirrorCore(World world, int bx, int by, int bz) {
@@ -4547,9 +5887,93 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldFrameDialCore(World world, int bx, int by, int bz, int index) {
-        placeFrameDial(new Location(world, bx, by, bz));
+        placeV5FrameDial(new Location(world, bx, by, bz), index);
         world.getBlockAt(bx - 2, by, bz + 1).setType(index % 2 == 0 ? Material.GRAY_CARPET : Material.BLACK_CARPET, false);
         world.getBlockAt(bx + 2, by, bz + 1).setType(Material.DARK_OAK_BUTTON, false);
+    }
+
+    private void placeV5FrameDial(Location base, int index) {
+        World world = base.getWorld();
+        if (world == null) return;
+        int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = -1; dz <= 2; dz++) {
+                world.getBlockAt(x + dx, y - 1, z + dz).setType(
+                        Math.abs(dx) == 2 || dz == 2 ? Material.POLISHED_DEEPSLATE : Material.DEEPSLATE_TILES,
+                        false);
+            }
+        }
+        for (int dx = -1; dx <= 1; dx++) {
+            world.getBlockAt(x + dx, y, z).setType(Material.CHISELED_DEEPSLATE, false);
+            world.getBlockAt(x + dx, y + 1, z).setType(Material.POLISHED_DEEPSLATE, false);
+        }
+        Block backing = world.getBlockAt(x, y + 1, z);
+        if (!backing.getType().isSolid()) {
+            throw new IllegalStateException("Orin dial backing is not solid at "
+                    + x + "," + (y + 1) + "," + z);
+        }
+        BlockFace facing = BlockFace.NORTH;
+        Location frameLoc = v5FramePlane(backing.getLocation(), facing);
+        for (ItemFrame frame : world.getNearbyEntitiesByType(ItemFrame.class, frameLoc, 0.6)) {
+            frame.remove();
+        }
+        int dial = Math.max(1, Math.min(6, index));
+        ItemStack compass = new ItemStack(Material.COMPASS, 1);
+        org.bukkit.inventory.meta.ItemMeta meta = compass.getItemMeta();
+        meta.displayName(Component.text("survey bearing " + dial).color(NamedTextColor.GRAY));
+        meta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey("observance", "v5_control_id"),
+                org.bukkit.persistence.PersistentDataType.STRING, "ko02_" + dial);
+        meta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey("observance", "v5_restoration_id"),
+                org.bukkit.persistence.PersistentDataType.STRING, "hs05_dial_" + dial);
+        compass.setItemMeta(meta);
+        Location frameSpawnAt = v5FrameSpawnAnchor(backing.getLocation(), facing);
+        ItemFrame frame = world.spawn(frameSpawnAt, ItemFrame.class, spawned -> {
+            if (!spawned.setFacingDirection(facing, true)) {
+                throw new IllegalStateException("Paper refused the Orin dial's NORTH mount");
+            }
+            spawned.setFixed(false);
+            spawned.setInvulnerable(true);
+            spawned.setPersistent(true);
+        });
+        frame.setItem(compass, false);
+        int[] initialRotations = {2, 6, 0, 4, 2, 6};
+        frame.setRotation(Rotation.values()[initialRotations[dial - 1]]);
+    }
+
+    /** Exact front-face entity plane for an item frame mounted on a solid supporting block. */
+    private static Location v5FramePlane(Location supportingBlock, BlockFace facing) {
+        if (supportingBlock == null || supportingBlock.getWorld() == null) {
+            throw new IllegalArgumentException("item-frame supporting block has no world");
+        }
+        BlockFace cardinalFacing = switch (facing) {
+            case NORTH, EAST, SOUTH, WEST -> facing;
+            default -> BlockFace.NORTH;
+        };
+        FixtureTransform.FramePlane plane = FixtureTransform.framePlane(
+                new FixtureTransform.BlockPos(supportingBlock.getBlockX(), supportingBlock.getBlockY(),
+                        supportingBlock.getBlockZ()),
+                FixtureTransform.Cardinal.valueOf(cardinalFacing.name()));
+        return new Location(supportingBlock.getWorld(), plane.x(), plane.y(), plane.z());
+    }
+
+    /**
+     * Center of the adjacent air cell Paper must floor when constructing a hanging entity. This is
+     * deliberately separate from {@link #v5FramePlane(Location, BlockFace)}: spawning on the
+     * rendered face boundary floors back into the supporting block and Paper removes the frame.
+     */
+    private static Location v5FrameSpawnAnchor(Location supportingBlock, BlockFace facing) {
+        if (supportingBlock == null || supportingBlock.getWorld() == null) {
+            throw new IllegalArgumentException("item-frame supporting block has no world");
+        }
+        BlockFace cardinalFacing = switch (facing) {
+            case NORTH, EAST, SOUTH, WEST -> facing;
+            default -> BlockFace.NORTH;
+        };
+        FixtureTransform.FrameSpawnAnchor anchor = FixtureTransform.frameSpawnAnchor(
+                new FixtureTransform.BlockPos(supportingBlock.getBlockX(), supportingBlock.getBlockY(),
+                        supportingBlock.getBlockZ()),
+                FixtureTransform.Cardinal.valueOf(cardinalFacing.name()));
+        return new Location(supportingBlock.getWorld(), anchor.x(), anchor.y(), anchor.z());
     }
 
     private void buildHoldBrannCorridorCore(World world, int bx, int by, int bz, boolean end) {
@@ -5174,27 +6598,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 new String[]{"whole room", "one lowering", "no hero", ""});
     }
 
-    private void placeKeeperRiteToken(Location stone, String keeper) {
-        if (stone == null || stone.getWorld() == null || keeper == null) return;
-        int outward = stone.getBlockX() < 0 ? -8 : 8;
-        Block reliquary = stone.clone().add(outward, 0, 0).getBlock();
-        reliquary.setType(Material.BARREL, false);
-        faceDirectional(reliquary.getLocation(), outward < 0 ? BlockFace.EAST : BlockFace.WEST);
-        if (!(reliquary.getState() instanceof InventoryHolder holder)) return;
-        holder.getInventory().clear();
-        ItemStack token = new ItemStack(Material.ECHO_SHARD, 1);
-        org.bukkit.inventory.meta.ItemMeta meta = token.getItemMeta();
-        meta.displayName(net.kyori.adventure.text.Component.text("salt of " + keeper));
-        meta.lore(List.of(net.kyori.adventure.text.Component.text(
-                "one keeper's remainder; pair it with a signed living page")));
-        meta.getPersistentDataContainer().set(
-                new org.bukkit.NamespacedKey("observance", "rite_token"),
-                org.bukkit.persistence.PersistentDataType.STRING, keeper);
-        token.setItemMeta(meta);
-        holder.getInventory().setItem(13, token);
-        reliquary.getState().update(true, false);
-    }
-
     private void buildHoldKeeperAltarCore(World world, int bx, int by, int bz) {
         buildHoldStoneReadingFloor(world, bx, by, bz, Material.POLISHED_DEEPSLATE);
         for (int dx = -3; dx <= 3; dx++) {
@@ -5233,14 +6636,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (Math.abs(dx) == 6) world.getBlockAt(bx + dx, by + 1, bz - 3).setType(Material.SOUL_LANTERN, false);
         }
         world.getBlockAt(bx, by, bz).setType(Material.SCULK_SHRIEKER, false);
-        placeEvidenceLectern(new Location(world, bx - 6, by, bz + 4), BlockFace.EAST,
-                "unwriting", List.of(
-                        "The missing name was not lost. It was made administratively blank.",
-                        "Restore is not forgiveness. Erase is not mercy. Both are records.",
-                        "After the choice, the last act is whether the record is allowed to stop."
-                ));
+        Location protocolMount = new Location(world, bx - 6, by, bz + 4);
+        setBlock(protocolMount, Material.LECTERN);
+        faceDirectional(protocolMount, BlockFace.EAST);
+        if (protocolMount.getBlock().getState() instanceof Lectern lectern) {
+            lectern.getInventory().clear();
+            lectern.update(true, false);
+        }
         placeStandingSign(new Location(world, bx + 6, by, bz + 4), BlockFace.WEST,
-                new String[]{"restore", "erase", "then release", ""});
+                new String[]{"PUBLISH", "RELEASE UNNAMED", "BOTH RELEASE", "THEN SEVER"});
         placeHoldFinaleMarkers(new Location(world, bx, by, bz + 1));
     }
 
@@ -5264,43 +6668,73 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void placeHoldFinaleMarkers(Location base) {
         if (base == null || base.getWorld() == null) return;
-        var seventhKey = new org.bukkit.NamespacedKey("observance",
+        var nameKey = new org.bukkit.NamespacedKey(plugin, "v5_name_treatment");
+        var visualKey = new org.bukkit.NamespacedKey(plugin, "finale_visual");
+        var retiredSeventhKey = new org.bukkit.NamespacedKey("observance",
                 com.observance.watcher.signal.listener.SeventhChoiceListener.PDC_SEVENTH_CHOICE);
-        var releaseKey = new org.bukkit.NamespacedKey("observance",
+        var retiredReleaseKey = new org.bukkit.NamespacedKey("observance",
                 com.observance.watcher.signal.listener.ReleaseRiteListener.PDC_RELEASE);
-        var visualKey = new org.bukkit.NamespacedKey("observance", "finale_visual");
         for (org.bukkit.entity.Entity old : base.getWorld().getNearbyEntities(base, 12.0, 6.0, 8.0)) {
             try {
                 var pdc = old.getPersistentDataContainer();
-                if (pdc.has(seventhKey, org.bukkit.persistence.PersistentDataType.STRING)
-                        || pdc.has(releaseKey, org.bukkit.persistence.PersistentDataType.STRING)
+                if (pdc.has(nameKey, org.bukkit.persistence.PersistentDataType.STRING)
+                        || pdc.has(retiredSeventhKey, org.bukkit.persistence.PersistentDataType.STRING)
+                        || pdc.has(retiredReleaseKey, org.bukkit.persistence.PersistentDataType.STRING)
                         || pdc.has(visualKey, org.bukkit.persistence.PersistentDataType.BYTE)) {
                     old.remove();
                 }
             } catch (Throwable ignored) { }
         }
         Object[][] markers = {
-                {seventhKey, "restore", "READ THE BLANK BACK", Material.QUARTZ_BLOCK, -6.0},
-                {seventhKey, "erase", "LEAVE THE BLANK BLANK", Material.CRYING_OBSIDIAN, 0.0},
-                {releaseKey, "release", "LET THE RECORD STOP", Material.SCULK_CATALYST, 6.0}
+                {"publish", "PUBLISH — keep Averyn's name outside the Record; release her", Material.QUARTZ_BLOCK, -4.0},
+                {"release_unnamed", "RELEASE UNNAMED — let the blank belong to Averyn; release her", Material.CRYING_OBSIDIAN, 4.0}
         };
-        for (int i = 0; i < markers.length; i++) {
-            Location at = base.clone().add((Double) markers[i][4], 0, 0);
+        for (Object[] marker : markers) {
+            Location at = base.clone().add((Double) marker[3], 0, 0);
             try {
-                at.getBlock().setType((Material) markers[i][3], false);
+                at.getBlock().setType((Material) marker[2], false);
                 var interaction = at.getWorld().spawn(at.clone().add(0.5, 1.0, 0.5),
                         org.bukkit.entity.Interaction.class);
                 interaction.setInteractionWidth(2.5f);
                 interaction.setInteractionHeight(2.5f);
                 interaction.setResponsive(true);
                 interaction.customName(net.kyori.adventure.text.Component.text(
-                        (String) markers[i][2], net.kyori.adventure.text.format.NamedTextColor.GRAY));
+                        (String) marker[1], net.kyori.adventure.text.format.NamedTextColor.GRAY));
                 interaction.setCustomNameVisible(true);
                 interaction.setPersistent(true);
-                interaction.getPersistentDataContainer().set((org.bukkit.NamespacedKey) markers[i][0],
-                        org.bukkit.persistence.PersistentDataType.STRING, (String) markers[i][1]);
+                interaction.getPersistentDataContainer().set(nameKey,
+                        org.bukkit.persistence.PersistentDataType.STRING, (String) marker[0]);
+                interaction.getPersistentDataContainer().set(visualKey,
+                        org.bukkit.persistence.PersistentDataType.BYTE, (byte) 1);
             } catch (Throwable ignored) { }
         }
+    }
+
+    private void placeV5SeverControl(Location control) {
+        if (control == null || control.getWorld() == null) return;
+        var key = new org.bukkit.NamespacedKey(plugin,
+                com.observance.watcher.finale.FinaleController.PDC_FINALE_CONTROL);
+        for (org.bukkit.entity.Interaction old : control.getWorld().getNearbyEntitiesByType(
+                org.bukkit.entity.Interaction.class, control, 4.0)) {
+            if (old.getPersistentDataContainer().has(key, org.bukkit.persistence.PersistentDataType.STRING)) {
+                old.remove();
+            }
+        }
+        control.getBlock().setType(Material.SCULK_CATALYST, false);
+        Location cell = control.clone().add(0, -1, 2);
+        cell.getBlock().setType(Material.CHISELED_DEEPSLATE, false);
+        placeStandingSign(control.clone().add(2, 0, 0), BlockFace.WEST,
+                new String[]{"SEVER RECORD", "ARMED ONLY", "SNEAK 3 SEC", "THEN OPERATE"});
+        var interaction = control.getWorld().spawn(control.clone().add(0.5, 1.0, 0.5),
+                org.bukkit.entity.Interaction.class);
+        interaction.setInteractionWidth(1.5f);
+        interaction.setInteractionHeight(2.0f);
+        interaction.setResponsive(true);
+        interaction.setPersistent(true);
+        interaction.customName(Component.text("SEVER RECORD", NamedTextColor.DARK_RED));
+        interaction.setCustomNameVisible(true);
+        interaction.getPersistentDataContainer().set(key, org.bukkit.persistence.PersistentDataType.STRING,
+                com.observance.watcher.finale.FinaleController.CONTROL_SEVER);
     }
 
     private void shapeHoldKeeperApse(Location loc, HoldSite row) {
@@ -6548,6 +7982,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (world == null) return;
         BlockFace front = facing == null ? BlockFace.SOUTH : facing;
         placeEvidenceLectern(new Location(world, x, y, z), front, title, pages);
+        placeHoldRecordShelves(world, x, y, z, front, shelfSeed);
+    }
+
+    private void placeHoldEmptyRecordStation(World world, int x, int y, int z, BlockFace facing,
+                                             int shelfSeed) {
+        if (world == null) return;
+        BlockFace front = facing == null ? BlockFace.SOUTH : facing;
+        Location mount = new Location(world, x, y, z);
+        setBlock(mount, Material.LECTERN);
+        faceDirectional(mount, front);
+        if (mount.getBlock().getState() instanceof Lectern lectern) {
+            lectern.getInventory().setItem(0, null);
+            lectern.update(true, false);
+        }
+        placeHoldRecordShelves(world, x, y, z, front, shelfSeed);
+    }
+
+    private void placeHoldRecordShelves(World world, int x, int y, int z, BlockFace front,
+                                        int shelfSeed) {
         BlockFace back = front.getOppositeFace();
         BlockFace side = holdLeftOf(front);
         for (int s : new int[]{-1, 1}) {
@@ -7974,95 +9427,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void syncPlaceHoldGates(CommandSender sender) {
-        var sb = plugin.supabase();
-        if (sb == null || !sb.isConfigured()) {
-            sender.sendMessage("Observance: Supabase is not configured; use /obs placehold open|seal manually.");
+        var runtime = plugin.v5Runtime();
+        if (runtime == null) {
+            sender.sendMessage("Observance: V5 local runtime is unavailable; no gate or book was changed.");
             return;
         }
-        sender.sendMessage("Observance: syncing Deep Hold gates from arc_state.flags...");
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            var r = sb.fetchArcState();
-            Map<String, Object> flags = (r.ok() && r.value() != null)
-                    ? r.value().flagsMap() : Collections.emptyMap();
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                int changed = 0;
-                boolean keeperOpen = holdGateLatchedOpen("keeper") || directorFlag(flags, "rosetta_known");
-                boolean archiveOpen = holdGateLatchedOpen("archive") || keeperInvestigationBegun(flags);
-                boolean undercroftOpen = holdGateLatchedOpen("undercroft") || directorFlag(flags, "undercroft_open");
-                boolean priorOpen = directorFlag(flags, "prior_absence_known")
-                        || directorFlag(flags, "prior_camp_read")
-                        || directorFlag(flags, "prior_witness_ready") || holdGateLatchedOpen("prior");
-                boolean deepOpen = directorFlag(flags, "deep_gate_open")
-                        || (directorFlag(flags, "iss_caught") && directorFlag(flags, "seventh_suspected"))
-                        || holdGateLatchedOpen("deep");
-                boolean dreadOpen = directorFlag(flags, "iss_caught") || directorFlag(flags, "seventh_suspected")
-                        || holdGateLatchedOpen("dread");
-                boolean acceptingReady = directorFlag(flags, "prior_witness_ready");
-                boolean acceptingOpen = acceptingReady && (directorFlag(flags, "accepting_onramp_open")
-                        || directorFlag(flags, "threshold_open"));
-                acceptingOpen = acceptingOpen || holdGateLatchedOpen("accepting");
-                boolean codaOpen = directorFlag(flags, "bowed_as_one") || holdGateLatchedOpen("coda");
-                changed += applyHoldGateByName(sender, "keeper", !keeperOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "archive", !archiveOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "undercroft", !undercroftOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "prior", !priorOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "deep", !deepOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "dread", !dreadOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "accepting", !acceptingOpen) ? 1 : 0;
-                changed += applyHoldGateByName(sender, "coda", !codaOpen) ? 1 : 0;
-                sender.sendMessage("Observance: Deep Hold sync applied to " + changed + " gate(s).");
-                sender.sendMessage("  keeper=" + yesNo(keeperOpen) + ", archive=" + yesNo(archiveOpen)
-                        + ", undercroft=" + yesNo(undercroftOpen) + ", prior=" + yesNo(priorOpen)
-                        + ", deep=" + yesNo(deepOpen) + ", dread=" + yesNo(dreadOpen)
-                        + ", accepting=" + yesNo(acceptingOpen) + ", coda=" + yesNo(codaOpen));
-            });
-        });
+        runtime.projectLocalState();
+        sender.sendMessage("Observance: projected gates and books from the durable local V5 record.");
     }
 
     /** Periodic, silent live sync used by the plugin scheduler. It is inert until a Hold is placed. */
     public void syncPlaceHoldGatesAutomatically() {
-        if (!isDeepHoldBuilt() || !automaticHoldSyncInFlight.compareAndSet(false, true)) return;
-        var sb = plugin.supabase();
-        if (sb == null || !sb.isConfigured()) {
-            automaticHoldSyncInFlight.set(false);
-            return;
-        }
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            var result = sb.fetchArcState();
-            Map<String, Object> flags = (result.ok() && result.value() != null)
-                    ? result.value().flagsMap() : null;
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                try {
-                    if (flags == null) return; // fail closed and preserve the last known physical state
-                    boolean keeperOpen = holdGateLatchedOpen("keeper") || directorFlag(flags, "rosetta_known");
-                    boolean archiveOpen = holdGateLatchedOpen("archive") || keeperInvestigationBegun(flags);
-                    boolean undercroftOpen = holdGateLatchedOpen("undercroft") || directorFlag(flags, "undercroft_open");
-                    boolean priorOpen = directorFlag(flags, "prior_absence_known")
-                            || directorFlag(flags, "prior_camp_read")
-                            || directorFlag(flags, "prior_witness_ready") || holdGateLatchedOpen("prior");
-                    boolean deepOpen = directorFlag(flags, "deep_gate_open")
-                            || (directorFlag(flags, "iss_caught") && directorFlag(flags, "seventh_suspected"))
-                            || holdGateLatchedOpen("deep");
-                    boolean dreadOpen = directorFlag(flags, "iss_caught") || directorFlag(flags, "seventh_suspected")
-                            || holdGateLatchedOpen("dread");
-                    boolean acceptingOpen = directorFlag(flags, "prior_witness_ready")
-                            && (directorFlag(flags, "accepting_onramp_open")
-                            || directorFlag(flags, "threshold_open"));
-                    acceptingOpen = acceptingOpen || holdGateLatchedOpen("accepting");
-                    boolean codaOpen = directorFlag(flags, "bowed_as_one") || holdGateLatchedOpen("coda");
-                    applyHoldGateByName(null, "keeper", !keeperOpen);
-                    applyHoldGateByName(null, "archive", !archiveOpen);
-                    applyHoldGateByName(null, "undercroft", !undercroftOpen);
-                    applyHoldGateByName(null, "prior", !priorOpen);
-                    applyHoldGateByName(null, "deep", !deepOpen);
-                    applyHoldGateByName(null, "dread", !dreadOpen);
-                    applyHoldGateByName(null, "accepting", !acceptingOpen);
-                    applyHoldGateByName(null, "coda", !codaOpen);
-                } finally {
-                    automaticHoldSyncInFlight.set(false);
-                }
-            });
-        });
+        if (!isDeepHoldBuilt()) return;
+        var runtime = plugin.v5Runtime();
+        if (runtime != null) runtime.projectLocalState();
     }
 
     private void handlePlaceHoldAudit(CommandSender sender) {
@@ -8075,6 +9453,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         int recordStations = 0;
         List<String> notes = new ArrayList<>();
         Location mouth = resolveDeepHoldV4Mouth();
+        for (String manifestIssue : DeepHoldV5Manifest.validate()) {
+            critical++;
+            addAuditIssue(notes, "V5 manifest: " + manifestIssue);
+        }
 
         for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
             Site site = plugin.sites().get(fixture.id());
@@ -8085,10 +9467,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 continue;
             }
             placed++;
-            String issue = auditPlacedSite(site, loc);
-            if (issue != null) {
+            if (!fixture.type().equals(site.type()) || fixture.radius() != site.radius()
+                    || fixture.verticalRadius() != site.verticalRadius() || !site.protect()) {
                 critical++;
-                addAuditIssue(notes, issue);
+                addAuditIssue(notes, fixture.id() + " runtime metadata differs from canonical V5 contract");
             }
             if (mouth != null) {
                 String frameIssue = auditV4FixtureFrame(loc.getWorld(), mouth, fixture);
@@ -8143,37 +9525,39 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         if (mouth == null || mouth.getWorld() == null) {
             critical++;
-            addAuditIssue(notes, "V4 Surface Mouth cannot be reconstructed from placed fixtures");
+            addAuditIssue(notes, "V5 Surface Mouth cannot be reconstructed from placed fixtures");
         } else {
             World world = mouth.getWorld();
-            int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
             String routeIssue = auditV4OpenRoute(world, mouth);
             if (routeIssue != null) {
                 critical++;
                 addAuditIssue(notes, routeIssue);
             }
-            String prologueIssue = auditV4PrologueEcho(world, bx, by, bz);
-            if (prologueIssue == null) {
-                recordStations++;
-            } else {
+            // V5 intentionally ships its controlled record mounts empty. Their geometry and
+            // reachability are owned by the physical-authority audit below; requiring the
+            // retired V4 written books here turns the correct locked state into a false blocker.
+            recordStations = DeepHoldV4Plan.RECORD_STATIONS.size() + 1;
+            Report physical = new V5PhysicalComponentInstaller(plugin).auditHold(mouth);
+            for (String fault : physical.blockerMessages()) {
                 critical++;
-                addAuditIssue(notes, prologueIssue);
-            }
-            for (DeepHoldV4Plan.RecordStation station : DeepHoldV4Plan.RECORD_STATIONS) {
-                String recordIssue = auditV4RecordStation(world, mouth, station);
-                if (recordIssue == null) {
-                    recordStations++;
-                } else {
-                    critical++;
-                    addAuditIssue(notes, recordIssue);
-                }
+                addAuditIssue(notes, "physical: " + fault);
             }
         }
+        var runtime = plugin.v5Runtime();
+        List<String> runtimeFindings = runtime == null
+                ? List.of("V5 runtime coordinator is unavailable") : runtime.readinessFindings();
+        for (String fault : runtimeFindings) {
+            critical++;
+            addAuditIssue(notes, "runtime: " + fault);
+        }
 
-        sender.sendMessage("== Observance Deep Hold V4 audit ==");
+        sender.sendMessage("== Observance Deep Hold V5 audit ==");
+        sender.sendMessage(" manifest:    " + DeepHoldV5Manifest.contentHash()
+                + " (+Z only, " + DeepHoldV5Manifest.ARTIFACTS.size() + " recovery contracts)");
         sender.sendMessage(" hold sites: " + placed + "/" + DeepHoldV4Plan.FIXTURES.size());
         sender.sendMessage(" gates:      " + gates + "/" + DEEP_HOLD_GATES.length + " (" + sealed + " sealed)");
-        sender.sendMessage(" records:    " + recordStations + "/" + (DeepHoldV4Plan.RECORD_STATIONS.size() + 1));
+        sender.sendMessage(" records:    " + recordStations + "/" + (DeepHoldV4Plan.RECORD_STATIONS.size() + 1)
+                + " controlled mounts (locked absence valid)");
         sender.sendMessage(" region:     " + (regionLoc == null ? "missing" : "protected")
                 + (entryRegion == null ? "" : " + entry stair"));
         sender.sendMessage(" route:      " + (mouth == null ? "missing Mouth" : "virtual-open full traversal"));
@@ -8184,8 +9568,32 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             if (notes.size() >= 12) sender.sendMessage("  - ...showing first 12 findings only.");
         }
         sender.sendMessage(critical == 0
-                ? " Deep Hold V4 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
+                ? " Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
                 : " Fix findings, then rerun /obs placehold audit and /obs preflight.");
+    }
+
+    /** Exact built Hold origin used by the V5 installer/runtime lifecycle. */
+    public Location v5HoldMouth() {
+        return resolveDeepHoldV4Mouth();
+    }
+
+    /** Monotonic, local-primary gate and authored-book projection for the production runtime. */
+    public void projectV5LocalState(
+            com.observance.watcher.v5runtime.ProgressSnapshot snapshot) {
+        if (snapshot == null || !Bukkit.isPrimaryThread()) return;
+        Map<String, Object> facts = new LinkedHashMap<>();
+        snapshot.booleans().forEach(facts::put);
+        snapshot.branches().forEach(facts::put);
+        snapshot.conductVerdict().ifPresent(
+                value -> facts.put("v5_conduct_verdict", value.wireValue()));
+        for (HoldGate gate : DEEP_HOLD_GATES) {
+            List<String> required = DeepHoldV5Manifest.gateRequiredFlags(gate.id());
+            if (!required.isEmpty() && required.stream().allMatch(snapshot::isComplete)) {
+                // Projection is deliberately one-way: a false/missing mirror can never reseal a gate.
+                applyHoldGateByName(null, gate.id(), false);
+            }
+        }
+        syncV5Books(facts, false);
     }
 
     private Location resolveDeepHoldV4Mouth() {
@@ -8202,9 +9610,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private String auditV4PrologueEcho(World world, int bx, int by, int bz) {
         Location lectern = new Location(world, bx - 14, by - 40, bz + 112);
-        if (countFilledLecternsNear(lectern, 1) < 1) return "V4 covered-copy prologue lectern is missing or empty.";
+        if (countFilledLecternsNear(lectern, 1) < 1) return "V5 covered-copy prologue lectern is missing or empty.";
         if (!hasSignNear(new Location(world, bx - 10, by - 40, bz + 112), 1)) {
-            return "V4 covered-copy prologue sign is missing.";
+            return "V5 covered-copy prologue sign is missing.";
         }
         return null;
     }
@@ -8212,8 +9620,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private String auditV4RecordStation(World world, Location mouth,
                                         DeepHoldV4Plan.RecordStation station) {
         Location loc = mouth.clone().add(station.x(), station.y(), station.z());
-        if (countFilledLecternsNear(loc, 1) < 1) return "V4 record " + station.id() + " is missing or empty.";
-        if (!hasSignNear(loc, 6)) return "V4 record " + station.id() + " has no readable station sign.";
+        if (countFilledLecternsNear(loc, 1) < 1) return "V5 record " + station.id() + " is missing or empty.";
+        if (!hasSignNear(loc, 6)) return "V5 record " + station.id() + " has no readable station sign.";
         return null;
     }
 
@@ -9073,7 +10481,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Step 3/8: placing Wren reckoning and finale choice markers at your feet...");
         placeReckoningMarkers(player, sender);
-        handleFinaleMarkers(sender);
+        handleFinaleMarkersV5(sender);
 
         sender.sendMessage("Step 4/8: giving tester tools...");
         handleLens(sender, new String[]{"lens", "give", player.getName()});
@@ -9174,7 +10582,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage("Step 7/9: carving reading/finale markers...");
         handleReadingCarvings(sender);
-        handleFinaleMarkers(sender);
+        handleFinaleMarkersV5(sender);
 
         sender.sendMessage("Step 8/9: spawning NPC row where possible...");
         Location npc = origin.clone().add(0, 1, -spacing);
@@ -11425,7 +12833,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("[setup]");
         sender.sendMessage("  1) Production Hold: stand at the surface mouth, /obs placehold build, then /obs placehold audit.");
         sender.sendMessage("  2) Rehearsal lab: /obs director lab or /obs prepworld only in a disposable test area.");
-        sender.sendMessage("  3) Proof packets: run tools\\new_launch_placement_packet.ps1 and tools\\new_rehearsal_packet.ps1 before surveying.");
+        sender.sendMessage("  3) Record every placement and proof in design/V5-LIVE-TEST-MATRIX.csv.");
         sender.sendMessage("  4) Lane plan: /obs site plan lanes, then place outside-Hold prologue/surface/Nether/End/Unlit anchors.");
         sender.sendMessage("  5) Bespoke placement: read one lane brief, stand at one anchor, /obs site set <siteId>, then /obs placeworld.");
         sender.sendMessage("  6) Underground rule: placehold owns clustered Hold pockets; use judgment on entrances, sightlines, and surface context.");
@@ -11499,7 +12907,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  5) Remove inherited village light: /obs unlit darken all [radius].");
         sender.sendMessage("  6) Fence it: /obs unlit border [radius]. Then verify: /obs unlit audit.");
         sender.sendMessage("  7) Rehearse pieces: /obs unlit pass light, stalker, extinguish, house, extract.");
-        sender.sendMessage("  8) Handoff check: /obs unlit ready, then tools\\check_unlit_playtest_ready.ps1 -PacketDir rehearsals\\<date>.");
+        sender.sendMessage("  8) Handoff check: /obs unlit ready, /obs preflight, then fill the V5 live-test receipt rows.");
         sender.sendMessage("  Fixture rule: required houses read through ledgers/books/objects. Plain signs are fallback markers, not the house language.");
         sender.sendMessage("  Rule: houses are non-linear. Do not write clue text that assumes expedition numbers.");
     }
@@ -11819,7 +13227,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void placeReadableLectern(Block b, BlockFace facing) {
         if (b == null) return;
-        b.setType(Material.LECTERN, false);
+        // A geometry-complete fixture pass is intentionally replayable after interruption. Avoid
+        // asking Paper to replace an already-correct lectern: 1.21.11 runs lectern block-entity
+        // removal hooks even for some same-cell transitions, and a prior partial pass can otherwise
+        // leave its HAS_BOOK property paired with the replacement state. When replacing another
+        // inventory block on a genuinely fresh cell, empty and persist it before changing type.
+        if (b.getType() != Material.LECTERN) {
+            org.bukkit.block.BlockState previous = b.getState();
+            if (previous instanceof InventoryHolder holder) {
+                holder.getInventory().clear();
+                previous.update(true, false);
+            }
+            b.setType(Material.LECTERN, false);
+        }
         if (b.getBlockData() instanceof Directional d) {
             d.setFacing(facing == null ? BlockFace.SOUTH : facing);
             b.setBlockData(d, false);
@@ -11844,105 +13264,46 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void fillMaraLockBook(Block b, int index, int markedPage) {
-        fillHoldLockBook(b, "mara_" + index, markedPage, 10);
+        fillV5AuthorityBook(b, "mara_manual_edition_" + index);
     }
 
     private void fillSellaLockBook(Block b, int index, int markedPage) {
-        fillHoldLockBook(b, "sella_" + index, markedPage, 12);
+        String bookId = switch (index) {
+            case 1 -> "sella_shore_copybook";
+            case 4 -> "sella_sample_note";
+            default -> null;
+        };
+        if (bookId == null) {
+            if (b != null && b.getState() instanceof Lectern lectern) lectern.getInventory().clear();
+            return;
+        }
+        fillV5AuthorityBook(b, bookId);
     }
 
-    private void fillHoldLockBook(Block block, String key, int markedPage, int expectedPages) {
-        HoldBookPayload payload = loadHoldLockBooks().get(key);
-        if (payload == null) {
-            throw new IllegalStateException("Missing production Hold manuscript: " + key);
+    private void fillV5AuthorityBook(Block block, String bookId) {
+        if (block == null || block.getType() != Material.LECTERN
+                || !(block.getState() instanceof Lectern lectern)) {
+            throw new IllegalStateException("V5 book " + bookId + " has no lectern holder");
         }
-        if (payload.markedPage() != markedPage || payload.pages().size() != expectedPages) {
-            throw new IllegalStateException("Invalid production Hold manuscript contract: " + key);
-        }
-        fillWrittenLecternBook(block, payload.title(), payload.author(), payload.pages());
+        V5AuthorityManifest.BookEntry payload = V5AuthorityManifest.book(bookId);
+        if (payload == null) throw new IllegalStateException("Missing packaged V5 book " + bookId);
+        writeLecternBook(block, lectern, createV5Book(payload));
     }
 
-    private Map<String, HoldBookPayload> loadHoldLockBooks() {
-        if (holdLockBooks != null) return holdLockBooks;
-        Map<String, HoldBookPayload> loaded = new LinkedHashMap<>();
-        try (InputStream stream = plugin.getResource("deep-hold-lock-books.json")) {
-            if (stream == null) throw new IllegalStateException("deep-hold-lock-books.json is not packaged");
-            JsonObject root = JsonParser.parseReader(
-                    new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : root.entrySet()) {
-                JsonObject value = entry.getValue().getAsJsonObject();
-                List<String> pages = new ArrayList<>();
-                value.getAsJsonArray("pages").forEach(page -> pages.add(page.getAsString()));
-                loaded.put(entry.getKey(), new HoldBookPayload(
-                        value.get("title").getAsString(),
-                        value.get("author").getAsString(),
-                        value.get("marked_page").getAsInt(),
-                        List.copyOf(pages)));
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot load production Hold manuscripts", e);
+    private ItemStack createV5Book(V5AuthorityManifest.BookEntry payload) {
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        if (!(book.getItemMeta() instanceof BookMeta meta)) {
+            throw new IllegalStateException("Paper did not expose written-book metadata");
         }
-        holdLockBooks = Collections.unmodifiableMap(loaded);
-        return holdLockBooks;
-    }
-
-    private void buildMaraD05Shelf(Location marker) {
-        if (marker == null || marker.getWorld() == null) return;
-        List<HoldShelfBook> books = loadHoldD05Books();
-        if (books.size() != 6) throw new IllegalStateException("D05 shelf must contain exactly six books");
-        int startX = marker.getBlockX() - 15;
-        int y = marker.getBlockY();
-        int z = marker.getBlockZ() - 3;
-        for (int i = 0; i < books.size(); i++) {
-            HoldShelfBook book = books.get(i);
-            int x = startX + (i * 6);
-            Block lectern = marker.getWorld().getBlockAt(x, y, z);
-            placeReadableLectern(lectern, BlockFace.SOUTH);
-            fillWrittenLecternBook(lectern, book.title(), book.author(), book.pages());
-            placeD05ReferencePlaque(marker.getWorld(), x, y + 1, z - 1, book);
-        }
-    }
-
-    private void placeD05ReferencePlaque(World world, int x, int y, int z, HoldShelfBook book) {
-        world.getBlockAt(x, y, z - 1).setType(Material.POLISHED_BLACKSTONE_BRICKS, false);
-        Block signBlock = world.getBlockAt(x, y, z);
-        signBlock.setType(Material.DARK_OAK_WALL_SIGN, false);
-        if (signBlock.getBlockData() instanceof Directional directional) {
-            directional.setFacing(BlockFace.SOUTH);
-            signBlock.setBlockData(directional, false);
-        }
-        if (signBlock.getState() instanceof Sign sign) {
-            sign.getSide(Side.FRONT).line(0, net.kyori.adventure.text.Component.text("index cuts"));
-            sign.getSide(Side.FRONT).line(1, net.kyori.adventure.text.Component.text(
-                    "P" + book.page() + " · L" + book.line() + " · W" + book.word()));
-            sign.getSide(Side.FRONT).line(2, net.kyori.adventure.text.Component.text("left to right"));
-            sign.getSide(Side.FRONT).line(3, net.kyori.adventure.text.Component.empty());
-            sign.update(true, false);
-        }
-    }
-
-    private List<HoldShelfBook> loadHoldD05Books() {
-        if (holdD05Books != null) return holdD05Books;
-        List<HoldShelfBook> loaded = new ArrayList<>();
-        try (InputStream stream = plugin.getResource("deep-hold-d05-shelf.json")) {
-            if (stream == null) throw new IllegalStateException("deep-hold-d05-shelf.json is not packaged");
-            JsonObject root = JsonParser.parseReader(
-                    new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-            for (JsonElement element : root.getAsJsonArray("books")) {
-                JsonObject value = element.getAsJsonObject();
-                JsonObject reference = value.getAsJsonObject("reference");
-                List<String> pages = new ArrayList<>();
-                value.getAsJsonArray("pages").forEach(page -> pages.add(page.getAsString()));
-                loaded.add(new HoldShelfBook(
-                        value.get("title").getAsString(), value.get("author").getAsString(),
-                        reference.get("page").getAsInt(), reference.get("line").getAsInt(),
-                        reference.get("word").getAsInt(), List.copyOf(pages)));
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Cannot load the production D05 shelf", e);
-        }
-        holdD05Books = List.copyOf(loaded);
-        return holdD05Books;
+        meta.setTitle(payload.title());
+        meta.setAuthor(payload.author());
+        for (String page : payload.pages()) meta.addPages(Component.text(page));
+        meta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(plugin, "book_id"),
+                org.bukkit.persistence.PersistentDataType.STRING, payload.id());
+        meta.getPersistentDataContainer().set(new org.bukkit.NamespacedKey(plugin, "story_version"),
+                org.bukkit.persistence.PersistentDataType.STRING, "5.0.0");
+        book.setItemMeta(meta);
+        return book;
     }
 
     private void fillPrologueLecternBook(Location loc) {
@@ -13212,12 +14573,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage("Observance: could not resolve your location.");
                     return;
                 }
+                V5DialogueCatalog.Npc npc = V5DialogueCatalog.wren();
+                Site anchor = new Site(npc.anchorSite(), "npc_anchor", loc.getWorld().getName(),
+                        loc.getX(), loc.getY(), loc.getZ(), 2, 3, true, true, null, false);
+                if (!plugin.registerRuntimeSite(anchor)) {
+                    sender.sendMessage("Observance: Wren anchor persistence failed; he was not moved.");
+                    return;
+                }
                 var body = wren.spawn(loc);
                 if (body == null) {
                     sender.sendMessage("Observance: could not spawn Wren here (world/chunk unavailable?).");
                     return;
                 }
-                sender.sendMessage("Observance: Wren is here (" + wren.backend() + "). Right-click him to speak.");
+                sender.sendMessage("Observance: Wren is anchored at " + npc.anchorSite() + " ("
+                        + wren.backend() + "). Right-click him to hear exact V5 dialogue.");
             }
             case "despawn" -> {
                 wren.despawn();
@@ -13565,49 +14934,467 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 + ". Read in fall-order (vaun·mara·sella·orin·brann·iss) they spell the name; saying it ends it.");
     }
 
-    private void handleFinaleMarkers(CommandSender sender) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Observance: /observance finale must be run by a player (needs a location).");
+    /** Explicitly armed local V5 finale. Marker placement remains available as the `markers` subcommand. */
+    private void handleFinale(CommandSender sender, String[] args) {
+        String op = args.length >= 2 ? args[1].trim().toLowerCase(Locale.ROOT) : "status";
+        if ("markers".equals(op)) {
+            handleFinaleMarkersV5(sender);
             return;
         }
-        Location base = player.getLocation();
-        if (base == null || base.getWorld() == null) {
-            sender.sendMessage("Observance: could not resolve your location.");
+        var runtime = plugin.v5Runtime();
+        if (runtime == null) {
+            sender.sendMessage("Observance: V5 local finale runtime is unavailable; no state changed.");
             return;
         }
-        var seventhKey = new org.bukkit.NamespacedKey("observance",
-                com.observance.watcher.signal.listener.SeventhChoiceListener.PDC_SEVENTH_CHOICE);
-        var releaseKey = new org.bukkit.NamespacedKey("observance",
-                com.observance.watcher.signal.listener.ReleaseRiteListener.PDC_RELEASE);
-        // { pdc-key-selector, pdc-value, label }
-        Object[][] markers = {
-            { seventhKey, "restore", "Restore — read the seventh's name back in" },
-            { seventhKey, "erase",   "Erase — leave the blank a blank" },
-            { releaseKey, "release", "Let it stop — close the record (the last act)" },
-        };
-        int placed = 0;
-        for (int i = 0; i < markers.length; i++) {
-            Location at = base.clone().add(i * 2.0, 0, 0);   // 2-block spacing, east
-            try {
-                var as = (org.bukkit.entity.ArmorStand)
-                        at.getWorld().spawnEntity(at, org.bukkit.entity.EntityType.ARMOR_STAND);
-                as.customName(net.kyori.adventure.text.Component.text(
-                        (String) markers[i][2], net.kyori.adventure.text.format.NamedTextColor.GRAY));
-                as.setCustomNameVisible(true);
-                as.setGravity(false);
-                as.setBasePlate(true);
-                as.setInvulnerable(true);
-                as.setPersistent(true);
-                as.getPersistentDataContainer().set((org.bukkit.NamespacedKey) markers[i][0],
-                        org.bukkit.persistence.PersistentDataType.STRING, (String) markers[i][1]);
-                placed++;
-            } catch (Throwable t) {
-                sender.sendMessage("  [!] could not place finale marker '" + markers[i][1] + "'.");
+        runtime.handleFinaleCommand(sender, args);
+    }
+
+    /** Retained as unreachable migration reference; production dispatch never invokes it. */
+    @SuppressWarnings("unused")
+    private void legacyHandleFinale(CommandSender sender, String[] args) {
+        String op = args.length >= 2 ? args[1].trim().toLowerCase(Locale.ROOT) : "status";
+        if ("markers".equals(op)) {
+            handleFinaleMarkersV5(sender);
+            return;
+        }
+        var runtime = plugin.v5Runtime();
+        if (runtime != null) {
+            runtime.handleFinaleCommand(sender, args);
+            return;
+        }
+        var controller = plugin.finaleController();
+        if (controller == null) {
+            sender.sendMessage("Observance: local finale controller is unavailable; no ending was armed.");
+            return;
+        }
+        switch (op) {
+            case "status" -> sender.sendMessage("Observance finale: " + controller.status());
+            case "cancel" -> sender.sendMessage("Observance: " + controller.cancel().message());
+            case "markers" -> handleFinaleMarkersV5(sender);
+            case "arm" -> {
+                long seconds = args.length >= 3 ? parseSmallInt(args[2], 120) : 120L;
+                if (seconds < 15L || seconds > 600L) {
+                    sender.sendMessage("Usage: /observance finale arm [15-600 seconds]");
+                    sender.sendMessage("The command never accepts a story branch; it reads the players' durable choices.");
+                    return;
+                }
+                Site release = plugin.sites() == null ? null : plugin.sites().get("release_record");
+                Location control = release == null ? null : release.location();
+                if (control == null || !hasV5SeverControlNear(control)) {
+                    sender.sendMessage("Observance: finale arm refused. The canonical release_record "
+                            + "SEVER RECORD control is absent or unverified; run /obs finale markers.");
+                    return;
+                }
+                List<String> infrastructure = auditFinaleArmInfrastructure();
+                if (!infrastructure.isEmpty()) {
+                    sender.sendMessage("Observance: finale arm refused; Hold finale infrastructure failed: "
+                            + String.join("; ", infrastructure));
+                    return;
+                }
+                var sb = plugin.supabase();
+                if (sb == null || !sb.isConfigured()) {
+                    sender.sendMessage("Observance: finale arm refused. Durable V5 progression is unavailable.");
+                    return;
+                }
+                String actor = sender.getName();
+                sender.sendMessage("Observance: validating C10 receipts and the players' recorded choices...");
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    var result = sb.fetchArcState();
+                    Map<String, Object> flags = result.ok() && result.value() != null
+                            ? result.value().flagsMap() : Map.of();
+                    List<String> missing = new ArrayList<>();
+                    for (String required : List.of("v5_case_c08_complete", "v5_case_c09_complete",
+                            "v5_rp01_instruction", "v5_rp02_configured", "v5_rp03_name_choice",
+                            "v5_rp04_collective")) {
+                        if (!directorFlag(flags, required)) missing.add(required);
+                    }
+                    FinaleStateMachine.WrenOutcome wren = FinaleStateMachine.parseWrenOutcome(
+                            flagText(flags.get("v5_wren_outcome")));
+                    FinaleStateMachine.NameTreatment name = FinaleStateMachine.parseNameTreatment(
+                            flagText(flags.get("v5_name_treatment")));
+                    FinaleStateMachine.ConductVerdict conduct = FinaleStateMachine.parseConductVerdict(
+                            flagText(flags.get("v5_conduct_verdict")));
+                    if (wren == null) missing.add("v5_wren_outcome");
+                    if (name == null) missing.add("v5_name_treatment");
+                    if (conduct == null) missing.add("v5_conduct_verdict");
+                    List<String> legacyWren = new ArrayList<>();
+                    for (String choice : List.of("condemn", "understand", "free")) {
+                        if (directorFlag(flags, "v5_wren_choice_" + choice)) legacyWren.add(choice);
+                    }
+                    if (!legacyWren.isEmpty() && (legacyWren.size() != 1 || wren == null
+                            || !legacyWren.get(0).equals(wren.name().toLowerCase(Locale.ROOT)))) {
+                        missing.add("v5_wren_outcome/choice mismatch");
+                    }
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (!missing.isEmpty()) {
+                            sender.sendMessage("Observance: finale arm refused; missing/invalid: "
+                                    + String.join(", ", missing) + ". No local state changed.");
+                            return;
+                        }
+                        var armed = controller.arm(wren, name, conduct, actor, seconds);
+                        sender.sendMessage("Observance: " + armed.message());
+                        if (armed.ok()) sender.sendMessage("  The player choices are copied to local schema-2 "
+                                + "state. Only the protected player sever control can commit theater.");
+                    });
+                });
+            }
+            default -> sender.sendMessage("Usage: /observance finale <arm [15-600 seconds]|cancel|status|markers>");
+        }
+    }
+
+    private static String flagText(Object value) {
+        return value == null ? null : value.toString().trim();
+    }
+
+    /** Exact V5 all-of gate predicate; unknown/missing contracts fail closed, physical opens latch. */
+    private boolean v5GateOpen(Map<String, Object> flags, String gateId) {
+        if (holdGateLatchedOpen(gateId)) return true;
+        List<String> required = DeepHoldV5Manifest.gateRequiredFlags(gateId);
+        return !required.isEmpty() && required.stream().allMatch(flag -> directorFlag(flags, flag));
+    }
+
+    private record BookSyncResult(int resolved, int written, int cleared, List<String> issues) { }
+
+    /** Terminal local world state: every gate open and exactly one branch Coda receipt mounted. */
+    public List<String> applyFinaleCodaWorldState(FinaleStateMachine.Snapshot state) {
+        boolean publish = state != null
+                && state.nameTreatment() == FinaleStateMachine.NameTreatment.PUBLISH;
+        return applyFinaleCodaWorldState(publish);
+    }
+
+    /** Terminal V5 world projection from the locally committed ritual vocabulary. */
+    public List<String> applyV5CodaWorldState(
+            com.observance.watcher.v5runtime.ritual.RitualChoices.NameTreatment treatment) {
+        return applyFinaleCodaWorldState(
+                treatment == com.observance.watcher.v5runtime.ritual.RitualChoices.NameTreatment.PUBLISH);
+    }
+
+    private List<String> applyFinaleCodaWorldState(boolean publish) {
+        List<String> issues = new ArrayList<>();
+        if (!Bukkit.isPrimaryThread()) return List.of("Coda world state was requested off the main thread");
+        Location mouth = resolveDeepHoldV4Mouth();
+        if (mouth == null || mouth.getWorld() == null) return List.of("Coda cannot resolve the built Hold Mouth");
+        for (HoldGate gate : DEEP_HOLD_GATES) {
+            Location gateAt = mouth.clone().add(gate.x(), gate.y(), gate.z());
+            setHoldGate(gate, gateAt, false);
+            placeHoldGateLabel(gate, gateAt);
+            String problem = auditHoldGateIntegrity(gate, gateAt);
+            if (problem != null) issues.add(problem);
+        }
+        String bookId = publish
+                ? "coda_receipt_publish" : "coda_receipt_unfiled";
+        V5AuthorityManifest.BookPlacement placement = V5AuthorityManifest.bookPlacements().stream()
+                .filter(row -> row.bookId().equals(bookId)).findFirst().orElse(null);
+        Block mount = placement == null ? null : resolveV5BookLectern(placement, mouth, new HashSet<>());
+        if (mount == null || mount.getType() != Material.LECTERN
+                || !(mount.getState() instanceof Lectern lectern)) {
+            issues.add("Coda receipt mount is missing for " + bookId);
+        } else {
+            writeLecternBook(mount, lectern, createV5Book(
+                    java.util.Objects.requireNonNull(V5AuthorityManifest.book(bookId))));
+            String problem = auditV5BookItem(lectern.getInventory().getItem(0), bookId);
+            if (problem != null) issues.add("Coda receipt " + problem);
+        }
+        return List.copyOf(issues);
+    }
+
+    private List<String> auditFinaleArmInfrastructure() {
+        List<String> issues = new ArrayList<>();
+        Location mouth = resolveDeepHoldV4Mouth();
+        if (mouth == null || mouth.getWorld() == null) return List.of("built Hold Mouth is unavailable");
+        for (HoldGate gate : DEEP_HOLD_GATES) {
+            Location gateAt = mouth.clone().add(gate.x(), gate.y(), gate.z());
+            String problem = auditHoldGateIntegrity(gate, gateAt);
+            if (problem != null) issues.add(problem);
+        }
+        V5AuthorityManifest.BookPlacement coda = V5AuthorityManifest.bookPlacements().stream()
+                .filter(row -> row.bookId().equals("coda_receipt_publish")).findFirst().orElse(null);
+        Block mount = coda == null ? null : resolveV5BookLectern(coda, mouth, new HashSet<>());
+        if (mount == null || mount.getType() != Material.LECTERN
+                || !(mount.getState() instanceof Lectern)) issues.add("release_record Coda lectern is missing");
+        return List.copyOf(issues);
+    }
+
+    /** Unlock-aware exact-book reconciliation. It only mutates authored lecterns, never geometry. */
+    private BookSyncResult syncV5Books(Map<String, Object> flags) {
+        return syncV5Books(flags, true);
+    }
+
+    /**
+     * Runtime projection never clears an already revealed authored book. This makes remote outage or
+     * a stale false value incapable of revoking a locally earned record.
+     */
+    private BookSyncResult syncV5Books(Map<String, Object> flags, boolean clearUnavailable) {
+        Location mouth = resolveDeepHoldV4Mouth();
+        Map<String, Object> safeFlags = flags == null ? Map.of() : flags;
+        Set<String> claimed = new HashSet<>();
+        List<String> issues = new ArrayList<>();
+        int resolved = 0;
+        int written = 0;
+        int cleared = 0;
+        for (V5AuthorityManifest.BookPlacement placement : V5AuthorityManifest.bookPlacements()) {
+            if ("earned_artifact".equals(placement.holderKind())) continue;
+            Block lectern = resolveV5BookLectern(placement, mouth, claimed);
+            if (lectern == null || lectern.getType() != Material.LECTERN
+                    || !(lectern.getState() instanceof Lectern state)) {
+                issues.add(placement.bookId() + " has no exact lectern at " + placement.holderId()
+                        + "/" + placement.mount());
+                continue;
+            }
+            resolved++;
+            ItemStack current = state.getInventory().getItem(0);
+            boolean available = directorFlag(safeFlags, placement.availabilityFlag());
+            if (available) {
+                String problem = auditV5BookItem(current, placement.bookId());
+                if (problem != null) {
+                    writeLecternBook(lectern, state, createV5Book(
+                            java.util.Objects.requireNonNull(V5AuthorityManifest.book(placement.bookId()))));
+                    written++;
+                }
+            } else if (clearUnavailable && current != null && current.getType() != Material.AIR) {
+                String currentId = currentV5BookId(current);
+                if (currentId == null || currentId.equals(placement.bookId())) {
+                    state.getInventory().clear();
+                    state.update(true, false);
+                    cleared++;
+                }
             }
         }
-        sender.sendMessage("Observance: placed " + placed + "/3 finale markers at your feet. "
-                + "The Seventh-choice pair resolves after deep_gate_open; the release resolves after "
-                + "bowed_as_one — each once. Stand these at the unwriting wall.");
+        cleared += reconcileV5BookCopies(mouth, safeFlags, clearUnavailable);
+        return new BookSyncResult(resolved, written, cleared, List.copyOf(issues));
+    }
+
+    private int reconcileV5BookCopies(Location mouth, Map<String, Object> flags,
+                                      boolean clearUnavailable) {
+        if (mouth == null || mouth.getWorld() == null) return 0;
+        Map<String, V5AuthorityManifest.BookPlacement> placements = V5AuthorityManifest.bookPlacements()
+                .stream().collect(java.util.stream.Collectors.toMap(
+                        V5AuthorityManifest.BookPlacement::bookId, placement -> placement, (a, b) -> a));
+        int minX = mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE;
+        int maxX = mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE;
+        int minY = mouth.getBlockY() + DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE;
+        int maxY = mouth.getBlockY() + DeepHoldV4Plan.MAX_Y + DeepHoldV4Plan.ENVELOPE;
+        int minZ = mouth.getBlockZ() + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE;
+        int maxZ = mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE;
+        int cleared = 0;
+        for (org.bukkit.Chunk chunk : mouth.getWorld().getLoadedChunks()) {
+            for (org.bukkit.block.BlockState tile : chunk.getTileEntities()) {
+                if (tile.getX() < minX || tile.getX() > maxX || tile.getY() < minY
+                        || tile.getY() > maxY || tile.getZ() < minZ || tile.getZ() > maxZ
+                        || !(tile instanceof Lectern lectern)) continue;
+                ItemStack item = lectern.getInventory().getItem(0);
+                String bookId = currentV5BookId(item);
+                V5AuthorityManifest.BookPlacement placement = placements.get(bookId);
+                if (placement == null) continue;
+                if (directorFlag(flags, placement.availabilityFlag())) {
+                    if (auditV5BookItem(item, bookId) != null) {
+                        lectern.getInventory().setItem(0, createV5Book(
+                                java.util.Objects.requireNonNull(V5AuthorityManifest.book(bookId))));
+                        lectern.update(true, false);
+                    }
+                } else if (clearUnavailable) {
+                    lectern.getInventory().setItem(0, null);
+                    lectern.update(true, false);
+                    cleared++;
+                }
+            }
+        }
+        return cleared;
+    }
+
+    private List<String> ensureV5BookMounts(Location mouth, Set<String> protectedCells,
+                                            Set<String> exactPhysicalCells) {
+        if (mouth == null || mouth.getWorld() == null) return List.of("built Hold Mouth is unavailable");
+        Set<String> claimed = new HashSet<>();
+        List<String> issues = new ArrayList<>();
+        for (V5AuthorityManifest.BookPlacement placement : V5AuthorityManifest.bookPlacements()) {
+            if ("earned_artifact".equals(placement.holderKind())) continue;
+            if (placement.holderId().startsWith("unlit_house_")) continue;
+            Block existing = resolveV5BookLectern(placement, mouth, claimed);
+            Location anchor = v5BookHolderAnchor(placement, mouth);
+            BlockFace facing = parseBookFront(placement.expectedFront());
+            if (anchor == null || anchor.getWorld() == null || facing == null) {
+                issues.add(placement.bookId() + " has no resolvable holder/facing");
+                continue;
+            }
+            boolean exactAnchor = "record_lectern".equals(placement.mount())
+                    || "existing_lectern".equals(placement.mount());
+            Block exact = anchor.getBlock();
+            if (existing != null && existing.getType() == Material.LECTERN) {
+                boolean intendedExact = exactPhysicalCells != null
+                        && exactPhysicalCells.contains(blockKey(existing));
+                boolean intendedAnchor = exactAnchor && blockKey(existing).equals(blockKey(exact));
+                boolean occupiesGameplayLane = protectedCells != null
+                        && protectedCells.contains(blockKey(existing));
+                if (intendedExact || intendedAnchor || !occupiesGameplayLane) continue;
+                if (existing.getState() instanceof Lectern stale) {
+                    stale.getInventory().clear();
+                    stale.update(true, false);
+                }
+                existing.setType(Material.AIR, false);
+            }
+            Block target = exactAnchor && (!(exact.getState() instanceof org.bukkit.block.TileState)
+                    || exact.getType() == Material.LECTERN)
+                    ? exact : selectV5BookMountCell(anchor, facing, placement.mount(), claimed,
+                    protectedCells == null ? Set.of() : protectedCells);
+            if (target == null) {
+                issues.add(placement.bookId() + " has no safe lectern cell at " + placement.holderId());
+                continue;
+            }
+            org.bukkit.block.BlockState prior = target.getState();
+            if (prior instanceof InventoryHolder holder) {
+                holder.getInventory().clear();
+                prior.update(true, false);
+            }
+            placeReadableLectern(target, facing);
+            claimed.add(blockKey(target));
+        }
+        return List.copyOf(issues);
+    }
+
+    private Location v5BookHolderAnchor(V5AuthorityManifest.BookPlacement placement, Location mouth) {
+        DeepHoldV4Plan.RecordStation station = DeepHoldV4Plan.RECORD_STATIONS.stream()
+                .filter(candidate -> candidate.id().equals(placement.holderId())).findFirst().orElse(null);
+        if (station != null) return mouth.clone().add(station.x(), station.y(), station.z());
+        DeepHoldV4Plan.Fixture fixture = DeepHoldV4Plan.fixture(placement.holderId());
+        if (fixture != null) return mouth.clone().add(fixture.x(), fixture.y(), fixture.z());
+        Site site = plugin.sites() == null ? null : plugin.sites().get(placement.holderId());
+        return site == null ? null : site.location();
+    }
+
+    private Block selectV5BookMountCell(Location anchor, BlockFace facing, String mount,
+                                        Set<String> claimed, Set<String> protectedCells) {
+        BlockFace side = rightOf(facing.getOppositeFace());
+        int lateral = mount.contains("left") || "mkept_station".equals(mount) ? -2
+                : mount.contains("right") || "rook_station".equals(mount) ? 2 : 0;
+        int[][] offsets = {{lateral, 5}, {lateral, 6}, {lateral, 4},
+                {lateral - 1, 5}, {lateral + 1, 5}, {lateral - 1, 6}, {lateral + 1, 6},
+                {lateral - 2, 5}, {lateral + 2, 5}, {lateral, 7}};
+        for (int[] offset : offsets) {
+            int x = anchor.getBlockX() + side.getModX() * offset[0]
+                    + facing.getOppositeFace().getModX() * offset[1];
+            int z = anchor.getBlockZ() + side.getModZ() * offset[0]
+                    + facing.getOppositeFace().getModZ() * offset[1];
+            Block block = anchor.getWorld().getBlockAt(x, anchor.getBlockY(), z);
+            if (claimed.contains(blockKey(block)) || protectedCells.contains(blockKey(block))
+                    || protectedCells.contains(blockKey(block.getRelative(BlockFace.UP)))
+                    || protectedCells.contains(blockKey(block.getRelative(BlockFace.DOWN)))
+                    || !block.isPassable()
+                    || !block.getRelative(BlockFace.UP).isPassable()
+                    || !block.getRelative(BlockFace.DOWN).getType().isSolid()) continue;
+            return block;
+        }
+        return null;
+    }
+
+    private String currentV5BookId(ItemStack item) {
+        if (item == null || !item.hasItemMeta()) return null;
+        String bookId = item.getItemMeta().getPersistentDataContainer().get(
+                new org.bukkit.NamespacedKey(plugin, "book_id"),
+                org.bukkit.persistence.PersistentDataType.STRING);
+        return bookId != null ? bookId : item.getItemMeta().getPersistentDataContainer().get(
+                new org.bukkit.NamespacedKey(plugin, "v5_book_id"),
+                org.bukkit.persistence.PersistentDataType.STRING);
+    }
+
+    private Block resolveV5BookLectern(V5AuthorityManifest.BookPlacement placement, Location mouth,
+                                       Set<String> claimed) {
+        Location anchor = null;
+        int radius = 10;
+        if (mouth != null && mouth.getWorld() != null) {
+            DeepHoldV4Plan.RecordStation station = DeepHoldV4Plan.RECORD_STATIONS.stream()
+                    .filter(candidate -> candidate.id().equals(placement.holderId())).findFirst().orElse(null);
+            if (station != null) {
+                anchor = mouth.clone().add(station.x(), station.y(), station.z());
+                if ("record_lectern".equals(placement.mount())
+                        && anchor.getBlock().getType() == Material.LECTERN) return anchor.getBlock();
+            }
+            DeepHoldV4Plan.Fixture fixture = DeepHoldV4Plan.fixture(placement.holderId());
+            if (fixture != null) {
+                anchor = mouth.clone().add(fixture.x(), fixture.y(), fixture.z());
+                radius = Math.max(4, Math.min(14, fixture.radius() + 4));
+                if ("existing_lectern".equals(placement.mount())
+                        && anchor.getBlock().getType() == Material.LECTERN) return anchor.getBlock();
+            }
+        }
+        if (anchor == null && plugin.sites() != null) {
+            Site holder = plugin.sites().get(placement.holderId());
+            if (holder != null) {
+                anchor = holder.location();
+                radius = Math.max(3, Math.min(14, holder.radius() + 3));
+            }
+        }
+        if (anchor == null || anchor.getWorld() == null) return null;
+        Location resolvedAnchor = anchor;
+        List<Block> candidates = new ArrayList<>();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -2; dy <= 4; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    Block block = anchor.getWorld().getBlockAt(anchor.getBlockX() + dx,
+                            anchor.getBlockY() + dy, anchor.getBlockZ() + dz);
+                    if (block.getType() != Material.LECTERN) continue;
+                    String key = blockKey(block);
+                    if (!"branch_lectern".equals(placement.holderKind()) && claimed.contains(key)) continue;
+                    if (!v5BookFacingMatches(block, placement.expectedFront())) continue;
+                    candidates.add(block);
+                }
+            }
+        }
+        if (candidates.isEmpty()) return null;
+        BlockFace front = parseBookFront(placement.expectedFront());
+        BlockFace right = rightOf(front == null ? BlockFace.NORTH : front.getOppositeFace());
+        String mount = placement.mount();
+        java.util.Comparator<Block> byDistance = java.util.Comparator.comparingDouble(block ->
+                block.getLocation().distanceSquared(resolvedAnchor));
+        if (mount.contains("left") || "mkept_station".equals(mount)) {
+            candidates.sort(java.util.Comparator.comparingInt((Block block) -> sideProjection(block, resolvedAnchor, right))
+                    .thenComparing(byDistance));
+        } else if (mount.contains("right") || "rook_station".equals(mount)) {
+            candidates.sort(java.util.Comparator.comparingInt((Block block) -> sideProjection(block, resolvedAnchor, right))
+                    .reversed().thenComparing(byDistance));
+        } else {
+            candidates.sort(java.util.Comparator.comparingInt((Block block) ->
+                    Math.abs(sideProjection(block, resolvedAnchor, right))).thenComparing(byDistance));
+        }
+        Block selected = candidates.get(0);
+        claimed.add(blockKey(selected));
+        return selected;
+    }
+
+    private static int sideProjection(Block block, Location anchor, BlockFace right) {
+        int dx = block.getX() - anchor.getBlockX();
+        int dz = block.getZ() - anchor.getBlockZ();
+        return dx * right.getModX() + dz * right.getModZ();
+    }
+
+    private static BlockFace parseBookFront(String raw) {
+        try {
+            return BlockFace.valueOf(raw == null ? "" : raw.trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+    }
+
+    private static boolean v5BookFacingMatches(Block block, String expected) {
+        BlockFace front = parseBookFront(expected);
+        return front == null || !(block.getBlockData() instanceof Directional directional)
+                || directional.getFacing() == front;
+    }
+
+    private void handleFinaleMarkersV5(CommandSender sender) {
+        Site unwriting = plugin.sites() == null ? null : plugin.sites().get("the_unwriting");
+        Site release = plugin.sites() == null ? null : plugin.sites().get("release_record");
+        Location nameAt = unwriting == null ? null : unwriting.location();
+        Location severAt = release == null ? null : release.location();
+        if (nameAt == null || severAt == null || nameAt.getWorld() == null || severAt.getWorld() == null) {
+            sender.sendMessage("Observance: finale marker repair refused; build/register the V5 Hold first.");
+            return;
+        }
+        placeHoldFinaleMarkers(nameAt.clone().add(0, 0, 1));
+        placeV5SeverControl(severAt);
+        sender.sendMessage(hasHoldFinaleMarkersNear(nameAt) && hasV5SeverControlNear(severAt)
+                ? "Observance: exact V5 publish, release-unnamed, and SEVER RECORD controls are installed."
+                : "Observance: finale control verification failed; finale arm remains closed.");
     }
 
     private void placeReckoningMarkers(Player player, CommandSender sender) {
@@ -13664,10 +15451,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("Observance: townsfolk subsystem unavailable.");
             return;
         }
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Observance: /observance townsfolk must be run by a player (needs a location).");
-            return;
-        }
         String op = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "spawn";
         String id = args.length > 2 && !args[2].isBlank() ? args[2].trim().toLowerCase(Locale.ROOT) : null;
         if (id == null && com.observance.watcher.npc.TownsfolkNpc.byId(op) != null) {
@@ -13676,15 +15459,31 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         switch (op) {
             case "spawn" -> {
-                Location loc = player.getLocation();
-                if (loc == null || loc.getWorld() == null) {
-                    sender.sendMessage("Observance: could not resolve your location.");
-                    return;
-                }
                 if (id != null) {
                     if (com.observance.watcher.npc.TownsfolkNpc.byId(id) == null) {
                         sender.sendMessage("Observance: unknown townsperson '" + id
                                 + "'. One of: aro | wenna | coll | dob | old-pell.");
+                        return;
+                    }
+                    if (!(sender instanceof Player player)) {
+                        sender.sendMessage("Observance: stand at " + id
+                                + "'s final village position to persist its V5 anchor.");
+                        return;
+                    }
+                    Location loc = player.getLocation();
+                    if (loc == null || loc.getWorld() == null) {
+                        sender.sendMessage("Observance: could not resolve your location.");
+                        return;
+                    }
+                    V5DialogueCatalog.Npc npc = V5DialogueCatalog.townsperson(id);
+                    if (npc == null) {
+                        sender.sendMessage("Observance: packaged V5 dialogue has no NPC " + id + ".");
+                        return;
+                    }
+                    Site anchor = new Site(npc.anchorSite(), "npc_anchor", loc.getWorld().getName(),
+                            loc.getX(), loc.getY(), loc.getZ(), 2, 3, true, true, null, false);
+                    if (!plugin.registerRuntimeSite(anchor)) {
+                        sender.sendMessage("Observance: anchor persistence failed; NPC was not moved.");
                         return;
                     }
                     var body = townsfolk.spawnOne(id, loc);
@@ -13692,13 +15491,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         sender.sendMessage("Observance: could not spawn '" + id + "' here (world/chunk unavailable?).");
                         return;
                     }
-                    sender.sendMessage("Observance: " + id + " is here (" + townsfolk.backend()
-                            + "). Right-click to talk.");
+                    sender.sendMessage("Observance: " + id + " is anchored at " + npc.anchorSite()
+                            + " (" + townsfolk.backend() + "). Right-click to hear exact V5 dialogue.");
                 } else {
-                    int placed = townsfolk.spawnAll(loc);
-                    sender.sendMessage("Observance: placed " + placed + "/"
-                            + com.observance.watcher.npc.TownsfolkNpc.TOWNSFOLK.size()
-                            + " townsfolk (" + townsfolk.backend() + "). Right-click any to talk.");
+                    int placed = 0;
+                    List<String> missing = new ArrayList<>();
+                    for (var who : com.observance.watcher.npc.TownsfolkNpc.TOWNSFOLK) {
+                        V5DialogueCatalog.Npc npc = V5DialogueCatalog.townsperson(who.id());
+                        Site anchor = npc == null || plugin.sites() == null
+                                ? null : plugin.sites().get(npc.anchorSite());
+                        Location loc = anchor == null ? null : anchor.location();
+                        if (loc == null || loc.getWorld() == null) {
+                            missing.add(npc == null ? who.id() : npc.anchorSite());
+                            continue;
+                        }
+                        if (townsfolk.spawnOne(who.id(), loc) != null) placed++;
+                    }
+                    sender.sendMessage("Observance: spawned " + placed + "/5 townsfolk at persisted V5 anchors.");
+                    if (!missing.isEmpty()) sender.sendMessage("  Missing anchors: " + String.join(", ", missing)
+                            + ". Stand at each final position and run /obs townsfolk spawn <id>.");
                 }
             }
             case "despawn" -> {
@@ -13784,27 +15595,132 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handlePreflight(CommandSender sender) {
-        sender.sendMessage("== Observance preflight ==");
-        handleAudit(sender);
-        handleVisualAudit(sender);
-        handleDialogueAudit(sender);
-        handleCoverage(sender);
-        sender.sendMessage("Preflight rule: hardware green is not enough; visualaudit must not report REPLACE issues, and NPC claims must have world/mechanic proof before live placement.");
-        sender.sendMessage("Setup rule: placehold is the production Deep Hold shortcut; prepworld/fullrun are rehearsal surfaces; bespoke scatter still uses site set + placeworld.");
+        sender.sendMessage("== Observance V5 production preflight ==");
+        List<String> staticIssues = v5ProductionIssues();
+        var sb = plugin.supabase();
+        if (sb == null || !sb.isConfigured()) {
+            staticIssues.add("Supabase progression storage is not configured");
+        }
+        sender.sendMessage("Checking the durable local record and monotonic authored-book state...");
+        var runtime = plugin.v5Runtime();
+        if (runtime == null) {
+            staticIssues.add("V5 local runtime is unavailable");
+            sendV5PreflightResult(sender, staticIssues, null);
+            return;
+        }
+        com.observance.watcher.v5runtime.ProgressSnapshot snapshot = runtime.snapshot();
+        Map<String, Object> facts = new LinkedHashMap<>();
+        snapshot.booleans().forEach(facts::put);
+        snapshot.branches().forEach(facts::put);
+        snapshot.conductVerdict().ifPresent(
+                value -> facts.put("v5_conduct_verdict", value.wireValue()));
+        runtime.projectLocalState();
+        BookSyncResult books = syncV5Books(facts, false);
+        staticIssues.addAll(books.issues());
+        sendV5PreflightResult(sender, staticIssues, books);
+    }
+
+    private List<String> v5ProductionIssues() {
+        List<String> issues = new ArrayList<>(V5AuthorityManifest.inspect().issues());
+        if (!com.observance.watcher.v5runtime.IdentityLinkCode.canIssueForAuthenticatedUuid(
+                plugin.getServer().getOnlineMode())) {
+            issues.add("server.properties online-mode must be true for authenticated /obslink identity proofs");
+        }
+        if (plugin.sites() == null) {
+            issues.add("sites.yml is not loaded");
+            return issues;
+        }
+        Set<String> required = new LinkedHashSet<>();
+        required.add(HOLD_REGION_SITE_ID);
+        required.add(HOLD_ENTRY_REGION_SITE_ID);
+        for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) required.add(fixture.id());
+        for (DeepHoldV5Manifest.GateContract gate : DeepHoldV5Manifest.GATE_CONTRACTS) {
+            required.add(holdGateSiteId(gate.siteId()));
+        }
+        required.add("release_record");
+        required.addAll(List.of("unlit_entry", "unlit_spawn_mirror", "unlit_exit",
+                "unlit_house_lamp", "unlit_house_cairn", "unlit_house_coop", "unlit_house_well",
+                "unlit_house_watch", "unlit_house_warm", "unlit_house_threshold", "unlit_house_base"));
+        for (V5DialogueCatalog.Npc npc : V5DialogueCatalog.townsfolk().values()) required.add(npc.anchorSite());
+        required.add(V5DialogueCatalog.wren().anchorSite());
+        for (String id : required) {
+            Site site = plugin.sites().get(id);
+            if (site == null || !site.enabled() || !site.isPlaced() || site.location() == null) {
+                issues.add("required V5 site is missing/unplaced: " + id);
+            }
+        }
+
+        Location mouth = resolveDeepHoldV4Mouth();
+        if (mouth == null) {
+            issues.add("Deep Hold Mouth cannot be reconstructed");
+        } else {
+            String route = auditV4OpenRoute(mouth.getWorld(), mouth);
+            if (route != null) issues.add(route);
+            for (HoldGate gate : DEEP_HOLD_GATES) {
+                Site site = plugin.sites().get(holdGateSiteId(gate.id()));
+                Location location = site == null ? null : site.location();
+                if (location == null) continue;
+                String gateIssue = auditHoldGateIntegrity(gate, location);
+                if (gateIssue != null) issues.add(gateIssue);
+            }
+        }
+        for (V5DialogueCatalog.Npc npc : V5DialogueCatalog.townsfolk().values()) {
+            String managerId = npc.id().replace('_', '-');
+            Entity body = plugin.townsfolk() == null ? null : plugin.townsfolk().body(managerId);
+            Site anchor = plugin.sites().get(npc.anchorSite());
+            if (!entityAtAnchor(body, anchor)) issues.add("V5 NPC is missing or away from anchor: " + npc.id());
+        }
+        Entity wrenBody = plugin.wren() == null ? null : plugin.wren().body();
+        if (!entityAtAnchor(wrenBody, plugin.sites().get(V5DialogueCatalog.wren().anchorSite()))) {
+            issues.add("V5 NPC is missing or away from anchor: wren");
+        }
+        if (plugin.v5Runtime() == null) {
+            issues.add("V5 local runtime/finale coordinator is unavailable");
+        } else {
+            issues.addAll(plugin.v5Runtime().readinessFindings());
+            issues.addAll(V5RuntimePredicateRegistry.validateAgainst(V5AuthorityManifest.runtimeBindings()));
+        }
+        return issues;
+    }
+
+    private static boolean entityAtAnchor(Entity entity, Site anchor) {
+        if (entity == null || !entity.isValid() || anchor == null) return false;
+        Location expected = anchor.location();
+        Location actual = entity.getLocation();
+        return expected != null && actual.getWorld() == expected.getWorld()
+                && actual.distanceSquared(expected) <= 4.0;
+    }
+
+    private void sendV5PreflightResult(CommandSender sender, List<String> issues, BookSyncResult books) {
+        if (books != null) sender.sendMessage("Books: " + books.resolved() + "/38 physical holders resolved; "
+                + books.written() + " reconciled, " + books.cleared() + " locked/cleared.");
+        sender.sendMessage("Authority: 82 nodes, 32 rooms, 76 fixtures, 8 gates, 44 books, 21 artifacts, "
+                + "6 NPCs, 5 media; hash=" + V5AuthorityManifest.inspect().authorityHash());
+        if (issues.isEmpty()) {
+            sender.sendMessage("V5 PREFLIGHT PASS: only the canonical Hold + Mouth/village NPCs + well-based Unlit are required.");
+            return;
+        }
+        sender.sendMessage("V5 PREFLIGHT FAIL (" + issues.size() + "):");
+        for (String issue : issues) sender.sendMessage(" - " + issue);
+        sender.sendMessage("Legacy Keeper scatter, Nether/End sites, Seventh Reading, errands, and rehearsal lanes are not V5 blockers.");
     }
 
     private void handleDialogueAudit(CommandSender sender) {
-        sender.sendMessage("== Observance dialogue-world audit ==");
-        sender.sendMessage("Rule: NPC factual claims are contracts. Places, routes, marks, rules, and consequences must exist in-world.");
-        sender.sendMessage("For each risky NPC line, prove:");
-        sender.sendMessage("  1) the route/landmark is physically findable from where the player hears it;");
-        sender.sendMessage("  2) the named object or mark exists with a clear visual identity;");
-        sender.sendMessage("  3) doing the implied action matters through a flag, beat, puzzle, scare, reward, or rewrite;");
-        sender.sendMessage("  4) side hints lead to payoff, not flavor that players can safely ignore.");
-        sender.sendMessage("High-risk current checks: school stand, far water, marker row, Cistern 7, watch-floor, set-apart entry 5, undercroft seal, forgotten way-up, the big Stair, painted line, lamp-house/Lamp-works, third lamp stand, dead-stall, bird coops, Deep Market, ration table, third bay, warm-town lie, bowing stones, and black-moon sleep rule.");
-        sender.sendMessage("Example: if an NPC says to cross a painted line down the stairs, there must be stairs, a visible line, and a consequence for crossing it.");
-        sender.sendMessage("Tool: /obs descentproof stages the Stair proof chain plus empty bird coops; /obs prepworld or sidepass stages side-destination proof sites.");
-        sender.sendMessage("Doc: design/DIALOGUE-WORLD-AUDIT.md");
+        sender.sendMessage("== Observance V5 dialogue audit ==");
+        sender.sendMessage("Packaged authority: 5 townsfolk + Wren, 36 states, 69 exact local lines.");
+        for (V5DialogueCatalog.Npc npc : V5DialogueCatalog.townsfolk().values()) {
+            Site anchor = plugin.sites() == null ? null : plugin.sites().get(npc.anchorSite());
+            Entity body = plugin.townsfolk() == null ? null
+                    : plugin.townsfolk().body(npc.id().replace('_', '-'));
+            sender.sendMessage(" " + npc.displayName() + ": " + npc.states().size() + " states, anchor="
+                    + npc.anchorSite() + ", " + (entityAtAnchor(body, anchor) ? "READY" : "MISSING/MISPLACED"));
+        }
+        V5DialogueCatalog.Npc wren = V5DialogueCatalog.wren();
+        sender.sendMessage(" Wren: " + wren.states().size() + " states, anchor=" + wren.anchorSite() + ", "
+                + (entityAtAnchor(plugin.wren() == null ? null : plugin.wren().body(),
+                plugin.sites() == null ? null : plugin.sites().get(wren.anchorSite()))
+                ? "READY" : "MISSING/MISPLACED"));
+        sender.sendMessage("Legacy errands/conduct/seventh dialogue is disabled in V5 production listeners.");
     }
 
     private void handleVisualAudit(CommandSender sender) {
@@ -14437,8 +16353,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 return "FAIL " + site.id() + ": lectern state did not load.";
             }
             ItemStack book = lectern.getInventory().getItem(0);
-            if (book == null || book.getType() != Material.WRITTEN_BOOK) {
-                return "FAIL " + site.id() + ": lectern has no written book.";
+            // V5 books are unlock-controlled. Empty is correct before the exact authority flag opens;
+            // any present book, however, must carry a packaged V5 identity/version.
+            if (book != null && book.getType() != Material.AIR) {
+                String bookId = currentV5BookId(book);
+                if (bookId == null || auditV5BookItem(book, bookId) != null) {
+                    return "FAIL " + site.id() + ": present book is not an exact packaged V5 book.";
+                }
             }
             return null;
         }
@@ -14459,21 +16380,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         if ("stone_of_reckoning".equals(site.id())
                 && (block.getType() != Material.CHISELED_TUFF
+                && block.getType() != Material.BARREL
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
-            return "FAIL " + site.id() + ": expected Hold-native reckoning line, judgement marks, and record lectern.";
+            return "FAIL " + site.id() + ": expected the Hold-native reckoning line, HS07 key console, judgement marks, and record lectern.";
         }
         if ("the_threshold".equals(site.id())
                 && (block.getType() != Material.REINFORCED_DEEPSLATE
+                && block.getType() != Material.POLISHED_DEEPSLATE
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.SCULK)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
-            return "FAIL " + site.id() + ": expected named threshold slab, sculk grave line, and threshold note.";
+            return "FAIL " + site.id() + ": expected the builder-stage threshold slab or final WR04 route barrier, sculk grave line, and threshold note.";
         }
         if ("threshold_vault".equals(site.id())
                 && (block.getType() != Material.STONE_PRESSURE_PLATE
-                || !hasSignNear(loc, Math.max(3, site.radius()))
+                && block.getType() != Material.BARREL
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_TUFF))) {
-            return "FAIL " + site.id() + ": expected vault pressure plate, editable combination sign, and four hand marks.";
+            return "FAIL " + site.id() + ": expected the builder-stage witness plate or final WR05 Bridge housing, plus four hand marks.";
         }
         if ("unbroken_light".equals(site.id())
                 && (block.getType() != Material.SEA_LANTERN
@@ -14483,27 +16406,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         if ("case_board".equals(site.id())
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
-                || !hasSignNear(loc, Math.max(3, site.radius()))
-                || !hasEditableSignNear(loc, Math.max(3, site.radius()))
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF))) {
-            return "FAIL " + site.id() + ": expected case board lecterns, filed storage, shelves, proof-category signs, and editable filing sign.";
+            return "FAIL " + site.id() + ": expected case-board lecterns, filed storage, and shelves; exact V5 books own the readable surfaces.";
         }
         if ("prior_camp".equals(site.id())
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CAMPFIRE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LIGHT_GRAY_CARPET)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CANDLE)
-                || countEditableSignsNear(loc, Math.max(3, site.radius())) < 7)) {
-            return "FAIL " + site.id() + ": expected prior-run campfire, blank witness place, bedroll packets, correction barrels, records, and seven editable filing signs.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CANDLE))) {
+            return "FAIL " + site.id() + ": expected prior-run campfire, blank witness place, bedrolls, exact V5 stations, and record mounts.";
         }
         if ("failed_accepting".equals(site.id())
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_TUFF)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CANDLE)
-                || !hasEditableSignNear(loc, Math.max(3, site.radius())))) {
-            return "FAIL " + site.id() + ": expected failed accepting floor, six old token marks, witness blank, record lecterns, and editable filing sign.";
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CANDLE))) {
+            return "FAIL " + site.id() + ": expected failed accepting floor, six old token marks, witness blank, and V5 record lecterns.";
         }
         if ("keeper_altar".equals(site.id())
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.SOUL_LANTERN)
@@ -14517,15 +16436,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         if ("the_unwriting".equals(site.id())
                 && (block.getType() != Material.SCULK_SHRIEKER
+                && block.getType() != Material.BARREL
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
                 || !hasHoldFinaleMarkersNear(loc))) {
-            return "FAIL " + site.id() + ": expected unwriting wall, finale lectern, and tagged choice/release markers.";
+            return "FAIL " + site.id() + ": expected the RP02 Averyn slot, protocol lectern, and tagged publish/unnamed markers.";
+        }
+        if ("release_record".equals(site.id()) && !hasV5SeverControlNear(loc)) {
+            return "FAIL release_record: exact tagged SEVER RECORD control or confirmation cell is missing.";
         }
         if ("vaun_hoard_chest".equals(type)
-                && block.getType() != Material.CHEST
-                && block.getType() != Material.TRAPPED_CHEST
-                && block.getType() != Material.BARREL) {
-            return "FAIL " + site.id() + ": expected chest/barrel hardware, found " + block.getType() + ".";
+                && (block.getType() != Material.POLISHED_DEEPSLATE
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
+                || countMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL, 2) < 2)) {
+            return "FAIL " + site.id() + ": expected the V5 quartermaster focal stone, ledger lectern, receipts barrel, and audit tray; the registered anchor is intentionally not a chest.";
         }
         if (needsAnswerSurface(site) && !hasEditableSignNear(loc, Math.max(1, site.radius()))) {
             return "FAIL " + site.id() + ": no editable answer sign found inside answer radius.";
@@ -14727,25 +16650,34 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private boolean hasHoldFinaleMarkersNear(Location loc) {
         if (loc == null || loc.getWorld() == null) return false;
-        var seventhKey = new org.bukkit.NamespacedKey("observance",
-                com.observance.watcher.signal.listener.SeventhChoiceListener.PDC_SEVENTH_CHOICE);
-        var releaseKey = new org.bukkit.NamespacedKey("observance",
-                com.observance.watcher.signal.listener.ReleaseRiteListener.PDC_RELEASE);
-        boolean restore = false;
-        boolean erase = false;
-        boolean release = false;
+        var nameKey = new org.bukkit.NamespacedKey(plugin, "v5_name_treatment");
+        boolean publish = false;
+        boolean unnamed = false;
         for (org.bukkit.entity.Interaction stand : loc.getWorld().getNearbyEntitiesByType(
                 org.bukkit.entity.Interaction.class, loc, 8.0)) {
             try {
-                var pdc = stand.getPersistentDataContainer();
-                String choice = pdc.get(seventhKey, org.bukkit.persistence.PersistentDataType.STRING);
-                String rel = pdc.get(releaseKey, org.bukkit.persistence.PersistentDataType.STRING);
-                if ("restore".equalsIgnoreCase(choice)) restore = true;
-                if ("erase".equalsIgnoreCase(choice)) erase = true;
-                if ("release".equalsIgnoreCase(rel)) release = true;
+                String choice = stand.getPersistentDataContainer().get(
+                        nameKey, org.bukkit.persistence.PersistentDataType.STRING);
+                if ("publish".equalsIgnoreCase(choice)) publish = true;
+                if ("release_unnamed".equalsIgnoreCase(choice)) unnamed = true;
             } catch (Throwable ignored) { }
         }
-        return restore && erase && release;
+        return publish && unnamed;
+    }
+
+    private boolean hasV5SeverControlNear(Location loc) {
+        if (loc == null || loc.getWorld() == null || loc.getBlock().getType() != Material.SCULK_CATALYST) {
+            return false;
+        }
+        var key = new org.bukkit.NamespacedKey(plugin,
+                com.observance.watcher.finale.FinaleController.PDC_FINALE_CONTROL);
+        for (org.bukkit.entity.Interaction control : loc.getWorld().getNearbyEntitiesByType(
+                org.bukkit.entity.Interaction.class, loc, 2.5)) {
+            String value = control.getPersistentDataContainer().get(
+                    key, org.bukkit.persistence.PersistentDataType.STRING);
+            if (com.observance.watcher.finale.FinaleController.CONTROL_SEVER.equals(value)) return true;
+        }
+        return false;
     }
 
     private boolean removeRetiredBeaconNear(Location loc) {
@@ -14965,13 +16897,24 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> out = new ArrayList<>();
+        if (args.length > 1 && V5_RETIRED_COMMANDS.contains(args[0].toLowerCase(Locale.ROOT))) {
+            return out;
+        }
         if (args.length == 1) {
-            for (String s : new String[]{"status", "director", "audit", "visualaudit", "dialogueaudit", "preflight", "repair", "coverage", "visit", "runbook", "rehearse", "reload", "sleep", "flag", "site", "unlit", "placeworld", "placeroom", "placeregion", "placedeep", "placelecterns", "placehold", "placerelay", "placelab", "fullrun", "prepworld", "descentproof", "sidepass", "puzzlepass", "dreadpass", "placeprologue", "lens", "wren", "keeper", "townsfolk", "test", "needle", "finale", "reading"}) {
+            for (String s : new String[]{"status", "audit", "visualaudit", "dialogueaudit", "preflight",
+                    "repair", "runbook", "reload", "sleep", "unlit", "placehold",
+                    "item", "wren", "townsfolk", "finale"}) {
                 if (s.startsWith(args[0].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("placehold")) {
-            for (String s : new String[]{"build", "audit", "status", "seal", "open", "sync"}) {
+            for (String s : new String[]{"prepare", "plan", "build", "repair", "audit", "status", "seal", "open", "sync"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("placehold")
+                && args[1].equalsIgnoreCase("repair")) {
+            if ("all".startsWith(args[2].toLowerCase(Locale.ROOT))) out.add("all");
+            for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
+                if (fixture.id().startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(fixture.id());
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("placehold")
                 && (args[1].equalsIgnoreCase("seal") || args[1].equalsIgnoreCase("open"))) {
@@ -14979,6 +16922,29 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("director")) {
             for (String s : new String[]{"state", "progress", "players", "stuck", "hints", "world", "lab"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("item")) {
+            if ("recover".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("recover");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("item")
+                && args[1].equalsIgnoreCase("recover")) {
+            for (String id : CanonicalArtifactRegistry.ids()) {
+                if (id.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(id);
+            }
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("item")
+                && args[1].equalsIgnoreCase("recover")) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getName().toLowerCase(Locale.ROOT).startsWith(args[3].toLowerCase(Locale.ROOT))) {
+                    out.add(player.getName());
+                }
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("finale")) {
+            for (String s : new String[]{"arm", "cancel", "status", "markers"}) {
+                if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
+            }
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("finale")
+                && args[1].equalsIgnoreCase("arm")) {
+            for (String s : new String[]{"120", "60", "300", "600"}) {
+                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("visit")) {
             for (String s : visitSuggestions(args[1])) out.add(s);
@@ -15005,7 +16971,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("unlit")) {
-            for (String s : new String[]{"site", "clue", "pass", "audit", "darken", "border", "buildmode", "ready"}) {
+            for (String s : new String[]{"site", "clue", "audit", "darken", "border", "buildmode", "ready"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit")
@@ -15035,7 +17001,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
-            for (String s : new String[]{"todo", "next", "plan", "launch", "list", "set"}) {
+            for (String s : new String[]{"launch", "set"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 3 && args[0].equalsIgnoreCase("site") && args[1].equalsIgnoreCase("next")) {
@@ -15062,7 +17028,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("lens")) {
             if ("give".startsWith(args[1].toLowerCase(Locale.ROOT))) out.add("give");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("wren")) {
-            for (String s : new String[]{"spawn", "despawn", "reckoning"}) {
+            for (String s : new String[]{"spawn", "despawn"}) {
                 if (s.startsWith(args[1].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("keeper")) {

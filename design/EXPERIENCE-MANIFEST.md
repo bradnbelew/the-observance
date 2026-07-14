@@ -1,487 +1,206 @@
-# THE OBSERVANCE - EXPERIENCE MANIFEST
+# The Observance V5 — Player Experience Manifest
 
-> Director source of truth, created 2026-07-05. This file describes the player-facing ARG as an
-> experience, not as an implementation ledger. When docs, seeds, routes, or comments disagree, use
-> this manifest as the editorial map, then update the underlying source to match.
+Status: **player-order authority**
 
-## Director Standard
+Spoilers: complete
 
-The Observance is a haunted Minecraft world that pulls players into investigation. It is not a
-linear puzzle hallway. A good player experience has four layers running at once:
+Node authority: `design/ARG-V5-NODE-MANIFEST.csv`
 
-1. the world notices the group before it explains itself
-2. the surface people give human, contradictory accounts
-3. the record and archive preserve evidence outside the world
-4. the keeper/finale spine turns scattered evidence into a name
+World truth: `arc/WORLD-BIBLE.md`
 
-Player-facing writing should be certain. Do not use "should," "would," or "accepted answers" in
-canonical playthrough text unless the beat is genuinely not built. Production uncertainty belongs in
-status notes, not inside John's experience.
+## Experience shape
 
-## Production Status Terms
+The Observance is a long-form collaborative investigation delivered through a believable Minecraft server, a mundane legacy hosting site, Discord, fixed media, and a command-built protected megastructure.
 
-- **live** - implemented in code/content and expected in the launch run once ops are applied.
-- **placement-required** - built, but needs in-world placement or operator staging.
-- **media-required** - canonical planned media; play it as finished in editorial review, but do not plant
-  its live lure until the file/route exists.
-- **ops-required** - requires deployment, config, migrations, hosting, credentials, or server setup.
-- **deferred** - intentionally not part of launch.
-- **drift-risk** - current files contain duplicate/stale/spec-only truth that must be reconciled.
+The player rhythm is:
 
-## Runtime Ownership
+```text
+find a lead
+  -> recover or compare evidence
+  -> perform a varied puzzle/mechanic
+  -> submit or physically file a conclusion
+  -> receive a tangible payoff
+  -> update the group's theory
+  -> open the next bounded search space
+```
 
-- **Minecraft plugin:** observes real player behavior, detects physical acts, performs in-world theater,
-  and posts opaque solves/events. It does not own story canon.
-- **Supabase:** stores state, flags, solves, event log rows, archive rows, and content keys. It is the
-  shared ledger.
-- **Showrunner:** decides when authored content appears. It may select from authored lines, but launch
-  canon does not depend on live improvisation.
-- **Website and Discord:** display the record, archive, whispers, cards, off-world media, and social
-  evidence.
+The experience never asks players to repeat a proposition only to make the story feel longer. A second source must corroborate, contradict, humanize, locate, or operationalize the first.
 
-The operator model is: the plugin watches, Supabase remembers, the showrunner answers, and the website
-shows the record.
+## Required length and concurrency
 
-## Canonical Player Path
+- Exactly 82 required nodes across ten cases.
+- Intended for a persistent friend group over multiple sessions.
+- Major cases are sequential; work inside Keeper Court, Civic Archive, and evidence comparison steps can be divided among players.
+- The game must remain finishable with one active player for recovery/testing, but signature collective rites require the current active roster or an explicit operator accessibility override.
+- Leaving the Hold never loses progress. Open gates remain open. Critical items can be recovered.
 
-### 0. Session Zero / Cold Ignition
+## Major movements
 
-Status: **placement-required**, **ops-required**
+### Movement I — The server was left for someone
 
-John begins in an ordinary Minecraft survival context. The first strange event is not a formal puzzle. It
-is an anomaly in or near the group's own base: a cursed map-frame, a lit marker, or a base journal that
-knows a real number it should not know.
+Cases C01–C02. Players begin with mundane internet and village traces, recover the old service number, solve the rebuilt archive, link identities, find the Surface Mouth, and reconstruct the Hold's practical founding.
 
-What John learns:
+Emotional movement: curiosity becomes responsibility. The world was preserved by a person, not spawned as a supernatural test.
 
-- the world is watching before it teaches
-- the record reacts to real play, not only submitted answers
-- the first hook is a screenshot-worthy wrongness, not an instruction plaque
+### Movement II — Six people and one civic lie
 
-Required launch prep:
+Cases C03–C04. Six distinct dossiers teach varied investigative grammars. The Cistern Winter forces the group to apply those skills to an ordinary worker whose life was destroyed by a false official account.
 
-- stage with `/observance placeprologue`
-- resource pack hosted before rune-heavy beats are expected
-- first anomaly must use a grounded real value, never an invented accusation
+Emotional movement: archetypes become people; atmosphere becomes consequence.
 
-### 1. Surface People Before Stones
+### Movement III — The copied disaster
 
-Status: **live**, **placement-required**
+Cases C05–C06. Every Unlit house is required. The mirror village proves the Record copies and edits spaces while the Break evidence establishes multiple causes. Players then repair actual Hold systems and see their work alter traversal and light.
 
-John meets the five surface NPCs before the keeper field dominates the experience.
+Emotional movement: the mystery becomes materially testable. Progress is earned through repair, not only interpretation.
 
-**Aro** is warm, specific, and wrong. He sells the lie that the painted line is safe, the deep may be nice,
-and the old warnings are local superstition.
+### Movement IV — The people who came before
 
-**Wenna** half-remembers the ways as folk charm. She gives John the soft version of real rules: keep a lamp,
-leave a little, do not say the cold's name, stay up on the black moon.
+Cases C07–C08. The group locates Camp Ash, reconstructs four modern lives, works from Minecraft evidence to Copperline to fixed footage and back, opens Locker 13, proves Wren's leak, and makes a physical reckoning choice.
 
-**Coll** cares about trade. He is not mystical, but his business records tell the truth: people who cross
-the line stop buying oil.
+Emotional movement: a guided “prior group” note becomes a causal human investigation with betrayal and agency.
 
-**Dob** descends with the group. His fear is human and useful. As the world gets stranger, Dob gets quieter.
+### Movement V — The person inside the system
 
-**Old Pell** is the surface mirror of the Watcher. He remembers conduct, refuses to hand over his deepest
-memory, and states the horror plainly: it does not chase; it waits and watches.
+Cases C09–C10. The spectrogram and six affidavits restore AVERYN. Players understand the Watcher, configure the release without binding her again, choose the treatment of her name, close the Record, and receive a complete cinematic ending.
 
-What John learns:
+Emotional movement: the voice turns from system to person. The ending is a release and a goodbye, never a content cutoff.
 
-- surface testimony is contradictory but not disposable
-- Aro's confidence is a trap
-- Wenna's folk habits are corrupted survival knowledge
-- Coll and Pell give fair warnings
-- Dob makes the descent feel social, not empty
+## Gate and district contract
 
-Playthrough requirement:
+| Gate | Opens after | What it protects |
+| --- | --- | --- |
+| G1 | C02 model complete | Keeper Court |
+| G2 | all six dossier affidavits and Cistern lead | Civic Archive case completion lane |
+| G3 | Cistern Seal plus Break synthesis | Puzzle Works |
+| G4 | restored systems and Deep Access Plate | Threshold / prior-company district |
+| G5 | Witness Spool plus Wren reckoning | Averyn Archive |
+| G6 | AVERYN synthesis and release readiness | Release Chamber |
 
-- include first conversations, conduct-colored returns, and at least one NPC quest/reaction before the
-  main puzzle spine becomes dominant
+Every gate is visibly present before it opens, gives diegetic state feedback, and becomes permanently traversable once opened. It never edits the floor, roof, side wall, fixture, or another gate volume.
 
-### 2. The World Watches
+## Puzzle grammar
 
-Status: **live**
+Traditional techniques are distributed so no two adjacent major nodes feel identical:
 
-John receives small, sparse hauntings governed by the drama budget:
+- A1Z26/rune teaching rung
+- inventory-keyed Caesar
+- page-line-word extraction
+- reflected/Atbash text
+- rail-fence/watch order
+- Vigenère with an earned key
+- Cardan overlays
+- columnar transposition
+- Polybius-style market grid
+- lamp-state Bacon encoding
+- visually redundant toll/Morse sequence
+- route and map composite extractions
+- acrostic correction
+- final multipart configuration meta
 
-- private lines that name measured habits
-- a book or page changing when unwitnessed
-- a name appearing where it should not
-- a torch gutter or warmth loss after a broken way
-- a pale/cosmetic drift around already-found sites
-- a map mark or world drift that rewards return visits
+Physical mechanisms include exact container sorts, protected item-frame dials, chiseled-bookshelf patterns, reflection overlays, tagged deposits, bounded route walks, crouched sightlines, service-path recovery, NPC interrogation, and active-roster group rites.
 
-What John learns:
+Cross-media nodes never begin with “watch this link.” Players earn the route by combining in-world evidence. Media yields a payload that returns to a Discord or Minecraft input and opens a physical payoff.
 
-- the Watcher is precise only when the world has evidence
-- silence is part of the experience
-- the horror comes from being measured, not spammed
+## Fairness contract
 
-Director rule:
+Every required node contains:
 
-- no haunting may accuse beyond evidence
-- no haunting should explain the system
-- every scare must either deepen mood, confirm conduct, or point attention back to a real clue
+1. a discoverable lead;
+2. all evidence required to solve it;
+3. a taught or inferable operation;
+4. an obvious input surface or physical affordance;
+5. specific correct feedback;
+6. useful wrong/partial feedback without answer leakage;
+7. three hint tiers;
+8. a tangible output;
+9. a recovery path;
+10. a durable completion flag.
 
-### 3. Rosetta Literacy
+Discord answer normalization accepts harmless punctuation/case variants but not semantically different guesses. An optional puzzle selector must constrain resolution to that puzzle rather than being ignored.
 
-Status: **live**, **resource-pack ops-required**
+No answer depends solely on audio, texture-pack installation, a single player's inventory, an unprotected entity, a consumable item, a random event, or operator timing.
 
-John learns the old script by walking the world. The marks are placed beside what they mean. The teaching
-line is:
+## Minecraft traversal contract
 
-> read the ring sunwise from the topmost mark.
+- One public Deep Hold entrance: Surface Mouth.
+- The same stair is the public exit at every stage.
+- Village well is the only Unlit entrance.
+- No one-way drops, finale shafts, hidden return lifts, dynamic mazes, or precision parkour.
+- Corridors and approaches accommodate the full group and remain readable at low light.
+- Doors exist at every intended room transition; no corridor terminates against an accidental shell.
+- All lecterns contain exact books. All shelves have exact facing and occupied slots. All frames have backing and exact rotation. All signs face a declared standing cell. All containers have exact protected contents.
+- Adventure-mode protection remains effective even if a player accidentally arrives in Survival.
 
-John reads the ring clockwise from the top and gets:
+## Story surface contract
 
-> bow offering kept light deep line unspoken sacred beast
+### Minecraft
 
-What John learns:
+Owns place, physical evidence, local mechanisms, NPC conversations, keys/seals, gate state, and the immediate finale. It must finish locally even if Discord/Render is delayed.
 
-- runes are readable language, not decoration
-- the ways are seven
-- the resource pack matters
-- future old-script lines are fair game
+### Copperline website
 
-Drift risk:
+Begins as a credible old hosting company. It owns ordinary listings, tickets, community archives, gated media routes, the public Record projection, and the persistent coda. It does not explain the story in marketing copy.
 
-- older wording in `learn-them-as-we-learned-them.md` references stale symbol names. Current implemented
-  canon is the sequence above.
+### Discord
 
-### 4. The Old Listing And The Record Elsewhere
+Owns identity linking, cross-source conclusion submission, spoiler-safe hint delivery, group receipts, media payload answers, and the fast mirrored ending state. It never becomes a chat-based substitute for Minecraft mechanics.
 
-Status: **live**, **media-required for downstream lure**
+### Fixed media
 
-John finds the damaged founder note beside the first report. It states:
+Owns five exact payloads and distinct story functions. Every media asset is required and automatically revealed from prerequisites.
 
-> the record is kept in more than one place, against the loss of the first.
+### NPCs
 
-It warns:
+Own local memory, practical directions, social texture, and synchronous reactions to case state. Their critical dialogue is generated from one canonical resource and never waits for an hourly showrunner.
 
-> do not look for the elsewhere in the world. it is not a shrine you can walk to.
+## Ending contract
 
-It tells him the way is keyed below, in the script, and is not a bearing or coordinate.
+The final choice is armed by an operator and fail-safe by default. The local server durably records branch state before presentation. A bot or web outage cannot leave the group in silence.
 
-John decodes the old-script line with the Rosetta literacy:
+Final sequence:
 
-> the-record-keeps
+1. validate all required artifacts and active roster;
+2. lock duplicate interaction while leaving the cancel path;
+3. store name treatment Wren outcome and conduct clause;
+4. extinguish the Hold from upper districts toward Release;
+5. replace Record syntax with Averyn's human voice;
+6. show the branch-specific goodbye;
+7. save players and worlds;
+8. post mirrored coda state asynchronously;
+9. kick with the final line;
+10. in production mode shut Paper down cleanly;
+11. on restart enter irreversible Coda Mode.
 
-The Copperline trail that leads into the Hold copy is:
+Every branch answers the investigation and lands emotionally. No branch displays “complete” as its primary payoff.
 
-> provider: COPPERLINE
-> service 1842: expired; address removed
-> owner: mkept
-> recovered copy: attached to account activity
+## Content that is not allowed to ship
 
-John reaches an ordinary abandoned hosting company first. The homepage contains no ARG menu.
-The public directory entry for service 1842 withholds its old address and names the account hand;
-its activity trail reaches a community backup post, which carries the Hold download and one
-understated link to the Record page. The completed Hold reconstructs the live endpoint.
+- six-as-one lore;
+- a blank seventh as the entire mystery;
+- six prior answers/no witness worksheets;
+- claims that mkept was not a person;
+- optional media or optional Unlit houses;
+- generic ominous prose that adds no fact character contradiction instruction or payoff;
+- player-facing server-log puzzles;
+- required sound-only clues;
+- manually filled books/signs/containers/NPCs;
+- a finale dependent on an hourly process;
+- a stale Hold download or stale Observance jar;
+- an ending without durable branch state goodbye kick and aftermath.
 
-The decoded Record route remains the deeper receipt:
+## Acceptance evidence
 
-> /record/the-record-keeps
+Production sign-off requires machine-readable receipts for:
 
-The page opens. The website is now an in-universe place, and not only a Record
-page: it is the old public face of the server that still keeps files.
-
-What John learns:
-
-- off-world content is canonical
-- the record preserves copies outside Minecraft
-- the old listing is the route to the recovered copy; the completed copy owns the live address reconstruction
-- hyphenated decoded phrases may be route slugs, not coordinates
-
-Launch rule:
-
-- do not plant the live in-world lure until `/`, `/the-hold/the-hold.zip`, and
-  `/record/the-record-keeps` work from the deployed site
-- do not print the assembled live Paper endpoint anywhere in the website or zip; distribute its authored
-  host fragments and service digits through the Hold walk
-
-### 5. Side Destinations: Longevity and World Truth
-
-Status: **live content**, **placement/ops-dependent**
-
-Side destinations do not gate the spine. They make the spine emotionally and evidentially rich. John is
-thorough, so he follows them throughout the run.
-
-Required side beats:
-
-- `dest-warm-stair` - the third lamp cold; kept-light grief
-- `dest-empty-cairn` - offering taught by example
-- `dest-warm-town` - Aro's warm-town lie contradicted
-- `dest-school-stand` - domestic proof they were human
-- `dest-bird-coops` - sacred beast and seed-cake
-- `dest-far-water` - Sella's mirror/count evidence
-- `dest-markers-row` - bowing and seventh surplus
-- `dest-cistern-7` - lamp-in-water unease and oil lore
-- `dest-third-bay` - Iss breach and deep-line context
-- `dest-dead-shrine` - the seventh's place distinct from Iss
-- `dest-set-apart` - digit cross-count and warm cold-lamp
-- `dest-watch-floor` - Brann's dark-hours watch log
-- `dest-deep-market` - ordinary life, trade, warmth
-- `dest-ration-table` - hunger, child evidence, humanity
-- `dest-undercroft-seal` - Orin seal and crouch-to-read
-- `dest-pell-mark` - human record mirrored by Pell
-- `dest-way-up` - Iss's forgotten Mouth, true but hollow
-- `dest-gutter-lamps` - continuing the rite after failure
-- `sq-cold-ignition` - base lure anomaly
-- `sq-count-journal` - base journal counting down in Orin's hand
-
-Playthrough requirement:
-
-- side destinations appear in chronological exploration, not as a late appendix
-- each one gets observed content, why John follows it, what it changes, and whether it contradicts a rumor
-
-### 6. Recovery Archive Threads
-
-Status: **live**
-
-The archive clusters evidence under five threads:
-
-- **who** - who they were
-- **place** - what the Hold was
-- **happened** - what broke
-- **surface** - what the surface knows or misremembers
-- **human** - whether the kept were still people
-
-Archive cards are not summaries. They are evidence. The full playthrough must show card bodies when John
-earns them.
-
-Core archive turns:
-
-- Vaun counted and gave nothing back
-- Mara read the rite and did not walk it
-- Sella counted seven where others counted six
-- Orin sealed from inside
-- Brann watched through the black moon
-- Iss was warm, useful, loved, and wrong
-- no wall was ever built here
-- the record writes the living into an open column
-- the surplus names prove the kept were still human enough to be counted wrongly
-
-### 7. Wren, the Companion
-
-Status: **live**, showrunner consumption should remain verified during playtest
-
-Wren is not optional flavor. He is the intimate version of the record's violence.
-
-Trust:
-
-- he warns John off dangerous routes
-- he gives real help
-- he asks personal questions that feel like care
-- he says "stay close"
-
-Crack:
-
-- John notices the Watcher only knows things said near Wren
-- Wren does not fully deny it
-
-Reveal:
-
-- Wren admits he fed the record names, plans, and personal details
-- he claims he did it to keep the group safe
-- the kept-close tally proves the mechanism
-
-Reckoning:
-
-- condemn, understand, or free
-- the choice changes how sharp-quote echoes continue or cease
-
-Director rule:
-
-- Wren must be present early enough to be trusted before he is doubted
-- the reveal must be a betrayal of intimacy, not a lore dump
-
-### 8. The Keeper Field
-
-Status: **live**
-
-Each keeper is both a puzzle mode and a wound.
-
-**Vaun**
-
-- mode: count, hoard, return first-of-the-deep, Caesar final fragment
-- wound: kept and gave none back
-- final letter: A
-
-**Mara**
-
-- mode: books, page-line-word, marked pages, walking the rite she only read
-- wound: knew the way and did not walk it
-- final letter: V
-
-**Sella**
-
-- mode: reflection, water, Atbash, far-water count
-- wound: preserved a count others rejected
-- final letter: E
-
-**Orin**
-
-- mode: bow/crouch, fall-order markers, frame dials, sealed undercroft
-- wound: built the asking stones and resisted the asking
-- final letter: R
-
-**Brann**
-
-- mode: dark hours, silence corridor, black moon, rail-fence/fire count
-- wound: watched, misread, and kept watch too long
-- final letter: Y
-
-**Iss**
-
-- mode: warm lie, acrostic `no wall`, false Vigenere, NBT/lamp falsification, final acrostic correction
-- wound: turned away and wrote mercy over refusal
-- final letter: N, correcting the false M
-
-Final name:
-
-> AVERYN
-
-### 9. Conduct and Customs
-
-Status: **live**, with some visual reward polish deferred
-
-The seven ways are detected as conduct, not only answered as text:
-
-- keep the lamp
-- respect the deep line
-- keep the dark hours
-- return the offering
-- bow
-- keep the unspoken
-- spare the sacred beast
-
-The Unlit Deep is the group latch:
-
-- explicit flame acts below the deep line on the taboo moon are recorded
-- the break is group-scoped and reversible
-- `broken_by` is recorded but not spoken
-
-Director rule:
-
-- customs must feel like survival practices before they feel like rules
-- consequences take warmth, certainty, and comfort, not progress
-
-### 10. Planned Media as Canonical Evidence
-
-Status: **media-required**
-
-The found footage, Drive folder, waveform/spectrogram, and `the-hold.zip` are record copies.
-
-Current staging state:
-
-- found footage is produced/local-staged; see `design/MANUAL-MEDIA-STAGING.md`
-- `the-hold.zip` is produced and present in `dashboard/public/the-hold/`; see `design/MANUAL-MEDIA-STAGING.md`
-- recovered archive/spectrogram is produced/local-staged and hosted on Dropbox; see `design/MANUAL-MEDIA-STAGING.md`
-- found footage is hosted on YouTube and HTTP-reachable; see `design/MANUAL-MEDIA-STAGING.md`
-- YouTube videos, archive contents, and spectrogram payload are operator-checked; do not flip media-ready flags or plant player-facing trails until the matching story gate is ready
-
-Each media artifact must have:
-
-- one concrete payload that John can use
-- one emotional/worldbuilding payload
-- one self-confirming return path into Minecraft or the record site
-
-Found footage:
-
-- John watches normally, then scrubs frame by frame
-- a frame, audio layer, subtitle, or metadata point reveals a real clue
-- the clue confirms a known language: kept, record, wall, seventh, count, light, deep, name
-- clip 1 resolves to `ASH-13` and flags `media_prior_base_read`
-- clip 2 resolves to `where the reeds fold back` and flags `media_far_water_read`
-- clip 3 resolves to `stay awake` and flags `media_black_moon_read`
-- clip 4 is late only; after the name is earned it resolves to `six return one is not kept`
-
-Drive folder:
-
-- filenames, order, images, metadata, and audio all matter
-- the folder feels recovered, not like a puzzle hub
-
-Spectrogram:
-
-- damaged sound becomes record text or glyphs
-- the launch spectrogram phrase is `I WAS NOT KEPT`; it maps to the optional `spine-recovered-archive`
-  answer and flags `media_spectrogram_read`
-- it must not reveal `AVERYN` before the group earns the name in-world
-
-`the-hold.zip`:
-
-- the readme is not fully trustworthy
-- John compares the hold's count against the world
-- the final room assembles the host, common-web ending, and service sequence earned across the walk
-- absence and redaction become evidence
-
-### 11. The Seventh Below and the Final Reading
-
-Status: **live**, **placement-required**
-
-John learns:
-
-> i kept every way... seven ways, and i kept all seven... and i was not kept.
-
-And:
-
-> he carved that i was spared. i was not spared. i was refused.
-
-The final reading gathers six keeper fragments into:
-
-> AVERYN
-
-Iss's last correction matters:
-
-> i told you the last of it was m
-> take the first mark of each line down
-> see what the warm words were laid over
-> n is the letter i cut and called m
-
-The answer is N, not M.
-
-### 12. Accepting and Release
-
-Status: **live**, **placement-required**, **ops-required**
-
-The group performs the Accepting together. The finale is physical and collective, not only typed.
-
-Release language:
-
-> you named me...
-
-> you gave me back my name. AVERYN...
-
-Closing:
-
-> the record is closed. thank you for coming down. - AVERYN, the seventh, kept no longer
-
-Director rule:
-
-- the finale is not "enter password, win"
-- it is the return of a name the record refused to keep correctly
-
-## Launch Manual Checklist
-
-Required before a real launch run:
-
-- apply migrations and reseed
-- host resource pack and set URL/SHA1
-- place world sites and deep sites
-- spawn townsfolk
-- stage cold open
-- run `/observance reading`
-- run `/observance finale`
-- verify deployed website root `/` leads to service `1842`, mkept, and the recovered copy without rendering the live endpoint
-- verify deployed `the-hold.zip`
-- verify hosted found footage, Drive folder, waveform/spectrogram
-- rotate exposed credentials
-- run vertical slice
-
-## Editorial Gaps To Close Next
-
-1. Rewrite the full John playthrough from this manifest, with no internal uncertainty in the story body.
-2. Move spec-only config comments out of live config or label them as non-live in an operator-safe way.
-3. Add a coherence check that verifies route/key/card/NPC coverage.
-4. Re-audit planned media payloads once actual files exist.
-5. Playtest the first hour for feeling: haunted first, puzzle second.
-
+- 82/82 node completeness and graph reachability;
+- exact content hashes for books signs items media and NPC dialogue;
+- room/fixture/gate ownership and no-overlap validation;
+- Adventure-mode route reachability with gates open and correct isolation with gates sealed;
+- exact Paper `1.21.11` clean-server build restart and failure tests;
+- Discord audit/runtime/typecheck and fast-tick latency;
+- dashboard lint/selftest/production build and every public/auth route;
+- database migration stale-row retirement and safe reset rehearsal;
+- Vercel production deployment/domain verification;
+- Render worker/cron verification;
+- a real-client full playthrough including backtracking grief recovery and all finale branches.

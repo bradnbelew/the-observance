@@ -18,10 +18,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -47,10 +43,6 @@ public final class HoardSortedListener implements Listener {
     private static final String CHEST_TYPE = "vaun_hoard_chest";
     private static final long CHECK_COOLDOWN_MS = 3_000L;
 
-    /** Default "first of the deep" if config leaves required-materials empty: raw deepslate ores. */
-    private static final Set<Material> DEFAULT_REQUIRED = EnumSet.of(
-            Material.DEEPSLATE, Material.COBBLED_DEEPSLATE);
-
     private final Supplier<SitesConfig> sitesSupplier;
     private final OracleResolver oracle;
     private final RateLimiter rateLimiter;
@@ -64,8 +56,7 @@ public final class HoardSortedListener implements Listener {
 
     public HoardSortedListener(Supplier<SitesConfig> sitesSupplier, OracleResolver oracle,
                                RateLimiter rateLimiter, Scheduler scheduler, Safety safety,
-                               boolean enabled, String token, String puzzleKey,
-                               List<String> requiredMaterials) {
+                               boolean enabled, String token, String puzzleKey) {
         this.sitesSupplier = sitesSupplier;
         this.oracle = oracle;
         this.rateLimiter = rateLimiter;
@@ -117,23 +108,6 @@ public final class HoardSortedListener implements Listener {
                     .has(relicKey, PersistentDataType.BYTE)) return true;
         }
         return false;
-    }
-
-    /** Parse a config material-name list into a Material set; unknown names skipped; empty ⇒ default. */
-    static Set<Material> parseMaterials(List<String> names) {
-        Set<Material> out = EnumSet.noneOf(Material.class);
-        if (names != null) {
-            for (String n : names) {
-                if (n == null || n.isBlank()) continue;
-                Material m = Material.matchMaterial(n.trim());
-                if (m != null) out.add(m);
-            }
-        }
-        if (out.isEmpty()) {
-            out = EnumSet.noneOf(Material.class);
-            out.addAll(DEFAULT_REQUIRED);
-        }
-        return out;
     }
 
     private Site nearestPlacedOfType(SitesConfig sites, String type,

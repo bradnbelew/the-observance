@@ -1,5 +1,9 @@
 # Deep Hold V4 - Master Plan
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT BUILD FROM THIS FILE.** Current room, fixture, gate, content, and traversal authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **V5 ENGINEERING NOTE:** the non-overlapping room boxes, burial rules, reversible route, and standing-frame geometry remain the approved shell. All V4 story, optional-branch, gate-condition, and content language is superseded by `design/ARG-V5-MASTER-PLAN.md`, `design/ARG-V5-NODE-MANIFEST.csv`, and `arc/WORLD-BIBLE.md`.
+
 Status: authored redesign contract; no geometry from rejected builds `0.3.25` through `0.3.28` is
 approved for reuse.
 

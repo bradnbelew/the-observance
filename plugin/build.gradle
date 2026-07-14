@@ -3,8 +3,8 @@ plugins {
 }
 
 group = 'com.observance'
-version = '0.3.29'
-description = 'The Observance — deterministic soft-pressure haunting engine (Phase 0)'
+version = '0.5.0'
+description = 'The Observance - Deep Hold V5 production ARG runtime'
 
 java {
     toolchain {
@@ -33,6 +33,8 @@ dependencies {
 
     // Gson — Paper bundles Gson on its classpath, so compileOnly is enough to compile.
     compileOnly 'com.google.code.gson:gson:2.11.0'
+    // Main()-driven authority parity tests execute outside Paper, so provide Gson only to tests.
+    testRuntimeOnly 'com.google.code.gson:gson:2.11.0'
 
     // WorldEdit API — compileOnly + softdepend (plugin.yml). The schematic-paste branch of
     // SmallStructureBeat is isolated behind FaweSchematicPaster and only loaded when FAWE/WorldEdit
@@ -48,10 +50,29 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.addAll(['-Xlint:deprecation', '-Xlint:unchecked', '-Werror'])
 }
 
+// Release bytes must not depend on checkout mtimes or filesystem traversal order. The launch
+// packager consumes this Gradle JAR directly and verifies every V5 authority entry afterward.
+tasks.withType(org.gradle.api.tasks.bundling.AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
 def pluginSelfTests = [
     flagGate: 'com.observance.watcher.oracle.FlagGateSelfTest',
     tier0Selector: 'com.observance.watcher.signal.Tier0SelectorSelfTest',
-    textFit: 'com.observance.watcher.util.TextFitSelfTest'
+    textFit: 'com.observance.watcher.util.TextFitSelfTest',
+    deepHoldV4Plan: 'com.observance.watcher.structure.DeepHoldV4PlanSelfTest',
+    deepHoldV5Manifest: 'com.observance.watcher.structure.DeepHoldV5ManifestSelfTest',
+    v5AuthorityManifest: 'com.observance.watcher.structure.V5AuthorityManifestSelfTest',
+    v5DialogueCatalog: 'com.observance.watcher.npc.V5DialogueCatalogSelfTest',
+    finaleStateMachine: 'com.observance.watcher.finale.FinaleStateMachineSelfTest',
+    v5RuntimeCore: 'com.observance.watcher.v5runtime.V5RuntimeCoreSelfTest',
+    identityLinkRefreshState: 'com.observance.watcher.v5runtime.IdentityLinkRefreshStateSelfTest',
+    identityLinkCode: 'com.observance.watcher.v5runtime.IdentityLinkCodeSelfTest',
+    v5PhysicalComponentCatalog: 'com.observance.watcher.v5runtime.install.V5PhysicalComponentCatalogSelfTest',
+    v5MechanicsEngine: 'com.observance.watcher.v5runtime.mechanics.V5MechanicsEngineSelfTest',
+    v5ContainerEngine: 'com.observance.watcher.v5runtime.container.ContainerEngineSelfTest',
+    v5RitualFinale: 'com.observance.watcher.v5runtime.ritual.RitualFinaleSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
@@ -66,7 +87,7 @@ def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
 
 tasks.register('selfTest') {
     group = 'verification'
-    description = 'Runs the dependency-free plugin parity and text-fit self-tests.'
+    description = 'Runs dependency-free plugin, V5 manifest, finale-state, parity, and text-fit self-tests.'
     dependsOn pluginSelfTestTasks
 }
 
@@ -83,11 +104,71 @@ tasks.named('check') {
 // processResources expands ${version} etc. in plugin.yml if you ever templatize it.
 tasks.named('processResources') {
     filteringCharset = 'UTF-8'
-    from('../design/deep-hold-d05-shelf.json')
+    // Package the authored V5 sources verbatim. Runtime preflight validates these exact resources
+    // before a Hold build, so a narrative rewrite cannot silently drift from the plugin JAR.
+    from('../design') {
+        include 'ARG-V5-NODE-MANIFEST.csv'
+        include 'ARG-V5-ROOM-ASSIGNMENTS.csv'
+        include 'ARG-V5-ARTIFACT-MANIFEST.csv'
+        include 'ARG-V5-BOOK-PLACEMENT.csv'
+        include 'ARG-V5-FIXTURE-OWNERSHIP.csv'
+        include 'ARG-V5-RECORD-OWNERSHIP.csv'
+        include 'ARG-V5-RUNTIME-BINDINGS.csv'
+        include 'ARG-V5-PHYSICAL-PREDICATES.json'
+        include 'DEEP-HOLD-GATE-MANIFEST.csv'
+        include 'DEEP-HOLD-RECORD-STATION-MANIFEST.csv'
+        into 'v5/authority'
+    }
+    from('../arc/v5') {
+        include 'minecraft-books.json'
+        include 'npc-dialogue.json'
+        include 'media-manifest.json'
+        include 'evidence-item-text.json'
+        include 'evidence-item-appearance.json'
+        include 'map-art-manifest.json'
+        include 'map-art/*.png'
+        into 'v5/authority'
+    }
+}
+
+// The director answer key is parity-tested but deliberately excluded from the production JAR.
+tasks.named('processTestResources') {
+    from('../arc/v5') {
+        include 'SOLUTION-CASEBOOK.md'
+        into 'v5/authority'
+    }
 }
 
 // The plain `jar` task IS the deployable plugin (our classes + plugin.yml). Paper
 // provides Gson at runtime, so no shading/relocation is needed.
+def cleanStaleObservanceJars = tasks.register('cleanStaleObservanceJars', Delete) {
+    group = 'build'
+    description = 'Removes every previously packaged Observance jar before producing the selected version.'
+    delete fileTree("${layout.buildDirectory.get().asFile}/libs") {
+        include 'observance-*.jar'
+    }
+}
+
 tasks.named('jar') {
     archiveBaseName.set('observance')
+    dependsOn cleanStaleObservanceJars
+}
+
+tasks.register('verifySingleDeployJar') {
+    group = 'verification'
+    description = 'Refuses packaging when stale/multiple Observance jars remain in build/libs.'
+    dependsOn tasks.named('jar')
+    doLast {
+        def jars = fileTree("${layout.buildDirectory.get().asFile}/libs") {
+            include 'observance-*.jar'
+        }.files.sort { it.name }
+        def expected = "observance-${project.version}.jar"
+        if (jars.size() != 1 || jars[0].name != expected) {
+            throw new GradleException("Deploy jar invariant failed: expected only ${expected}, found ${jars*.name}")
+        }
+    }
+}
+
+tasks.named('build') {
+    dependsOn tasks.named('verifySingleDeployJar')
 }

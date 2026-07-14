@@ -1,5 +1,6 @@
 package com.observance.watcher.config;
 
+import com.observance.watcher.structure.DeepHoldV4Plan;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -92,6 +93,56 @@ public final class SitesConfig {
         Map<String, Site> next = new LinkedHashMap<>(byId);
         next.put(site.id(), site);
         return new SitesConfig(next, defaultWorld, warnings);
+    }
+
+    /**
+     * Make executable Deep Hold contracts authoritative over stale sites.yml metadata. Coordinates
+     * remain the operator's persisted placement, but type, radius, vertical extent, enabled state,
+     * and protection cannot be weakened or reshaped outside the V5 manifest/build controller.
+     */
+    public SitesConfig withCanonicalDeepHoldContracts() {
+        Map<String, Site> next = new LinkedHashMap<>(byId);
+        boolean changed = false;
+        for (Site site : byId.values()) {
+            Site canonical = canonicalDeepHoldSite(site);
+            if (canonical == site) continue;
+            next.put(site.id(), canonical);
+            changed = true;
+        }
+        if (!changed) return this;
+        List<String> nextWarnings = new ArrayList<>(warnings);
+        nextWarnings.add("managed Deep Hold site metadata was normalized to the V5 executable contract");
+        return new SitesConfig(next, defaultWorld, nextWarnings);
+    }
+
+    private Site canonicalDeepHoldSite(Site site) {
+        if (site == null || site.id() == null) return site;
+        DeepHoldV4Plan.Fixture fixture = DeepHoldV4Plan.fixture(site.id());
+        if (fixture != null) {
+            return canonical(site, fixture.type(), fixture.radius(), fixture.verticalRadius());
+        }
+        if ("deep_hold_region".equals(site.id())) return canonical(site, "hold_region", 230, 66);
+        if ("deep_hold_entry_stair".equals(site.id())) return canonical(site, "hold_region", 72, 34);
+        if (site.id().startsWith("hold_answer_")) return canonical(site, "answer_sign", 1, 2);
+        if (site.id().startsWith("hold_gate_")) {
+            int[] span = switch (site.id().substring("hold_gate_".length())) {
+                case "keeper", "archive", "deep" -> new int[]{12, 22};
+                case "undercroft" -> new int[]{12, 20};
+                case "prior", "dread" -> new int[]{8, 18};
+                case "accepting", "coda" -> new int[]{14, 24};
+                default -> null;
+            };
+            if (span != null) return canonical(site, "hold_gate", span[0], span[1]);
+        }
+        return site;
+    }
+
+    private Site canonical(Site source, String type, int radius, int vertical) {
+        if (type.equals(source.type()) && radius == source.radius()
+                && vertical == source.verticalRadius() && source.protect() && source.enabled()
+                && !source.beacon()) return source;
+        return new Site(source.id(), type, source.worldName(), source.x(), source.y(), source.z(),
+                radius, vertical, true, true, source.puzzleKey(), false);
     }
 
     /** A site by id, or null. */

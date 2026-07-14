@@ -1,0 +1,22 @@
+artifact_id,earned_node,material,display_name,pdc_key,pdc_value,consumer,recovery_contract
+orientation_key,LS06,COMPASS,Orientation Key,v5_artifact_id,orientation_key,LC06 orientation model,reissue only from v5_case_c01_complete after duplicate scan
+survey_seal,LC06,PAPER,Survey Seal,v5_artifact_id,survey_seal,G1 survey filing and retained case proof,reissue only from v5_case_c02_complete after duplicate scan
+affidavit_vaun,KV03,WRITTEN_BOOK,Vaun Sealed Affidavit,v5_artifact_id,affidavit_vaun,G2 and RP02,reissue exact vaun_sealed_affidavit book only from v5_kv03_affidavit after duplicate scan
+affidavit_mara,KM03,WRITTEN_BOOK,Mara Sealed Affidavit,v5_artifact_id,affidavit_mara,G2 and RP02,reissue exact mara_sealed_affidavit book only from v5_km03_affidavit after duplicate scan
+affidavit_sella,KS03,WRITTEN_BOOK,Sella Sealed Affidavit,v5_artifact_id,affidavit_sella,G2 and RP02,reissue exact sella_sealed_affidavit book only from v5_ks03_affidavit after duplicate scan
+affidavit_orin,KO03,WRITTEN_BOOK,Orin Sealed Affidavit,v5_artifact_id,affidavit_orin,G2 and RP02,reissue exact orin_sealed_affidavit book only from v5_ko03_affidavit after duplicate scan
+affidavit_brann,KB03,WRITTEN_BOOK,Brann Sealed Affidavit,v5_artifact_id,affidavit_brann,G2 and RP02,reissue exact brann_sealed_affidavit book only from v5_kb03_affidavit after duplicate scan
+affidavit_iss,KI03,WRITTEN_BOOK,Iss Sealed Affidavit,v5_artifact_id,affidavit_iss,G2 and RP02,reissue exact iss_sealed_affidavit book only from v5_ki03_affidavit after duplicate scan
+cistern_seal,CW08,PRISMARINE_SHARD,Cistern Seal,v5_artifact_id,cistern_seal,RP02 release configuration,reissue only from v5_case_c04_complete after duplicate scan
+breach_plate,BI08,HEAVY_WEIGHTED_PRESSURE_PLATE,Breach Plate,v5_artifact_id,breach_plate,G3 Break finding and retained case proof,reissue only from v5_case_c05_complete after duplicate scan
+filter_cartridge,HS01,COPPER_INGOT,Filter Cartridge,v5_artifact_id,filter_cartridge,HS02 cartridge housing,return wrong deposits; reissue only from v5_hs01_filter after duplicate scan
+system_key,HS06,TRIPWIRE_HOOK,System Key,v5_artifact_id,system_key,HS07 synchronization then returned for RP02,reissue only from v5_hs06_passage after duplicate scan
+deep_access_plate,HS07,ECHO_SHARD,Deep Access Plate,v5_artifact_id,deep_access_plate,G4 access reader and retained case proof,reissue only from v5_case_c06_complete after duplicate scan
+witness_spool,A09,STRING,Witness Spool,v5_artifact_id,witness_spool,WR02 transmission index reader,reissue only from v5_a09_spool after duplicate scan
+protocol_bridge,WR04,COPPER_INGOT,Protocol Bridge,v5_artifact_id,protocol_bridge,WR05 reckoning and RP02,reissue only from v5_wr04_bridge after duplicate scan
+averyn_fragment_a,AR02,PAPER,A Fragment,v5_artifact_id,averyn_fragment_a,AR08 AVERYN assembly,reissue only from v5_ar02_a after duplicate scan
+averyn_fragment_v,AR03,PAPER,V Fragment,v5_artifact_id,averyn_fragment_v,AR08 AVERYN assembly,reissue only from v5_ar03_v after duplicate scan
+averyn_fragment_e,AR04,PAPER,E Fragment,v5_artifact_id,averyn_fragment_e,AR08 AVERYN assembly,reissue only from v5_ar04_e after duplicate scan
+averyn_fragment_r,AR05,PAPER,R Fragment,v5_artifact_id,averyn_fragment_r,AR08 AVERYN assembly,reissue only from v5_ar05_r after duplicate scan
+averyn_fragment_y,AR06,PAPER,Y Fragment,v5_artifact_id,averyn_fragment_y,AR08 AVERYN assembly,reissue only from v5_ar06_y after duplicate scan
+averyn_fragment_n,AR07,PAPER,N Fragment,v5_artifact_id,averyn_fragment_n,AR08 AVERYN assembly,reissue only from v5_ar07_n after duplicate scan

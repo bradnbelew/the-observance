@@ -1,5 +1,7 @@
 # journals — orin, brann, iss
 
+> **SUPERSEDED V4 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** Current V5 manuscripts live in `arc/v5/minecraft-books.json` and `arc/v5/SOLUTION-CASEBOOK.md`.
+
 > Recovered from three separate finds in the lower Hold and bound here together because
 > their dates run alongside one another and they answer one another across the gap. Three
 > hands, three kinds of paper, one going-dark. The dating is the keepers' own — they

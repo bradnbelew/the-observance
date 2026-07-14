@@ -6,6 +6,7 @@
  *   npm run showrunner        # one live tick
  *   npm run showrunner:dry    # read-only preview
  */
+import { pathToFileURL } from 'node:url';
 import { buildSnapshot } from './snapshot.js';
 import { decide } from './decide.js';
 import { applyDecision } from './apply.js';
@@ -17,11 +18,20 @@ import { materializeArchive } from './archive.run.js';
 import { runReportsPass } from './reports.run.js';
 import { runObserverPass } from './observer.run.js';
 import { readCustomViolations } from '../db/repo.js';
-import { readState, tryAcquireShowrunnerLock, releaseShowrunnerLock } from './state.js';
+import { isV5CampaignActive, readState, tryAcquireShowrunnerLock, releaseShowrunnerLock, writeState } from './state.js';
 
-async function main(): Promise<void> {
-  const dryRun = process.argv.includes('--dry-run');
-  const nowMs = Date.now();
+export interface ShowrunnerTickOptions {
+  dryRun?: boolean;
+  nowMs?: number;
+  leaseSeconds?: number;
+}
+
+export type ShowrunnerTickResult = 'ran' | 'dry-run' | 'locked';
+
+/** One import-safe, database-lease-protected tick for the worker loop or recovery cron. */
+export async function runShowrunnerTick(options: ShowrunnerTickOptions = {}): Promise<ShowrunnerTickResult> {
+  const dryRun = options.dryRun ?? false;
+  const nowMs = options.nowMs ?? Date.now();
   const nowIso = new Date(nowMs).toISOString();
 
   // Overlap guard (migration 0011): a real tick writes the showrunner_state row via a plain
@@ -30,14 +40,19 @@ async function main(): Promise<void> {
   // alongside a live tick), so it never contends for the lock. A tick that can't acquire it simply
   // skips — the next cadence catches up; skipping is always safe, racing is not.
   if (!dryRun) {
-    const acquired = await tryAcquireShowrunnerLock();
+    const acquired = await tryAcquireShowrunnerLock(options.leaseSeconds ?? 300);
     if (!acquired) {
       console.log('[showrunner] another tick holds the lock — skipping this run');
-      return;
+      return 'locked';
     }
   }
   try {
+    if (await isV5CampaignActive()) {
+      await runV5SafeHeartbeat(dryRun, nowIso);
+      return dryRun ? 'dry-run' : 'ran';
+    }
     await runTick(dryRun, nowMs, nowIso);
+    return dryRun ? 'dry-run' : 'ran';
   } finally {
     if (!dryRun) await releaseShowrunnerLock();
   }
@@ -156,9 +171,27 @@ async function runTick(dryRun: boolean, nowMs: number, nowIso: string): Promise<
   );
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((e) => {
-    console.error('[showrunner] FATAL', e);
-    process.exit(1);
-  });
+const isDirectRun = process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (isDirectRun) {
+  runShowrunnerTick({ dryRun: process.argv.includes('--dry-run') })
+    .then(() => process.exit(0))
+    .catch((e) => {
+      console.error('[showrunner] FATAL', e);
+      process.exit(1);
+    });
+}
+
+/**
+ * V5 progression is receipt-driven by the website, Discord oracle, and Paper runtime. The previous
+ * customs, apparition, herd, grave, archive-card, and finale producers belong to the retired campaign
+ * and must never improvise into V5. Keep only the liveness timestamp used by operations.
+ */
+async function runV5SafeHeartbeat(dryRun: boolean, nowIso: string): Promise<void> {
+  if (dryRun) {
+    console.log('[showrunner] V5 SAFE DRY RUN — legacy autonomy is suppressed; no writes');
+    return;
+  }
+  const state = await readState();
+  await writeState({ ...state, last_run_iso: nowIso, campaign_mode: 'v5-safe' }, nowIso);
+  console.log('[showrunner] V5 safe heartbeat — receipt progression active; legacy autonomy suppressed');
+}

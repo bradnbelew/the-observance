@@ -1,5 +1,7 @@
 # mc-build-visualize — Minecraft Building & Visualization research
 
+> **RESEARCH REFERENCE — NOT STORY, SETUP, OR RUNTIME AUTHORITY.** Any project-specific recommendation below is superseded by the V5 manifests and runbooks.
+
 Research lane: **mc-build-visualize** (atmosphere + the YouTube layer) for *The Observance* (Deep Hold build).
 Companion to `design/atmosphere-stack.md` (engine/tool *decisions*) and `design/structures.md` (per-site build spec).
 This note goes **deeper on craft**: how to make carved/ruined/oppressive stone, how to make a space feel *wrong*,

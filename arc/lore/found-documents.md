@@ -1,4 +1,6 @@
-# The Observance — FOUND-DOCUMENT SET (design)
+# The Observance — FOUND-DOCUMENT SET (V4 archive)
+
+> **SUPERSEDED V4 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** Current V5 artifacts live in `arc/v5/`.
 
 > Internal design doc. The artifacts players discover and piece together across
 > the five Movements. Obeys `canon-spine.md` (registers, keeper voices, foreshadow-

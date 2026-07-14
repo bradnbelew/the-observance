@@ -487,7 +487,7 @@ values
 -- prior-absence — after the keeper case is broad enough to reach the archive,
 -- the prior-run roster names the missing condition before the old camp opens.
 -- Typed deduction from the audited Hold record station: not "find another cipher,"
--- but notice that the previous group had six answers and no witness.
+-- but notice that the former group had every Keeper verdict and no witness.
 ( 'prior-absence',
   'what the prior run did not bring',
   array[
@@ -503,7 +503,7 @@ values
   ),
   4, true, 8 ),
 
--- prior-camp-refusal — the camp record explains why the same six answers failed.
+-- prior-camp-refusal — the camp record explains why the same completed verdict set failed.
 -- The answer is not another name; it is the distinction the accepting floor enforces:
 -- solved answers are still inside the desire to finish, so they cannot witness it.
 ( 'prior-camp-refusal',
@@ -1764,7 +1764,7 @@ values
 -- brann-silence-corridor (§6.2) — a calibrated-sculk corridor passable only in silence
 -- (sneak; no vibration). answer_kind 'behavior'; opaque token on reaching the far door
 -- quietly. next_clue → stone-brann (the far door opens onto his watch-record).
--- PRODUCER: SilenceCorridorListener.java (optional voice-chat tie-in later, not built).
+-- PRODUCER: SilenceCorridorListener.java (future voice-chat tie-in, not built).
 ( 'brann-silence-corridor',
   'the corridor that hears you',
   array[
@@ -1871,7 +1871,7 @@ values
 -- ───────────────────────────────────────────────────────────────────────────
 
 -- media-prior-base (§8.media.1) — found-footage clip 1. Frame-scrub payload: hotbar/book
--- evidence and a one-frame route/file token combine to ASH-13. OPTIONAL external surface:
+-- evidence and a one-frame route/file token combine to ASH-13. RETIRED external surface:
 -- no main-spine row depends on this; it is hidden until media_clip_01_ready + record_received.
 ( 'media-prior-base',
   'prior base recovery',
@@ -1892,8 +1892,8 @@ values
   'phrase', 2, true, 8 ),
 
 -- media-far-water (§8.media.2) — found-footage clip 2. The water/map frame gives a
--- place-bearing phrase, not only a count: WHERE THE REEDS FOLD BACK. Optional Sella
--- side-proof reinforcement; hidden until media_clip_02_ready + seventh_suspected.
+-- place-bearing phrase, not only a count: WHERE THE REEDS FOLD BACK. Retired Sella
+-- reinforcement row; hidden until media_clip_02_ready + seventh_suspected.
 ( 'media-far-water',
   'shore copy recovery',
   array[
@@ -1912,7 +1912,7 @@ values
   'phrase', 2, true, 8 ),
 
 -- media-black-moon-toll (§8.media.3) — found-footage clip 3. The nine-lamp/toll rhythm
--- confirms the Brann verb: STAY AWAKE / DO NOT CLOSE YOUR EYES. Optional timing proof,
+-- confirms the Brann verb: STAY AWAKE / DO NOT CLOSE YOUR EYES. Retired timing proof,
 -- not the only black-moon route; hidden until media_clip_03_ready + site_seen_watch_floor.
 ( 'media-black-moon-toll',
   'black moon recovery',
@@ -1934,7 +1934,7 @@ values
 
 -- media-release-room (§8.media.4) — late found-footage clip 4. It carries a physical
 -- approach checksum for the release room after the name is already earned: SIX RETURN,
--- ONE IS NOT KEPT. Optional late confirmation; hidden until media_clip_04_ready + seventh_named.
+-- ONE IS NOT KEPT. Retired late confirmation; hidden until media_clip_04_ready + seventh_named.
 ( 'media-release-room',
   'release room recovery',
   array[
@@ -1954,7 +1954,7 @@ values
 
 -- spine-recovered-archive (§8.1) — a carved string resolves to an unlisted Drive folder;
 -- an image/audio file inside hides I WAS NOT KEPT in its spectrogram. answer_kind
--- 'phrase': the exact hidden phrase. lore + a Whisper-budget grant. Typed. OPTIONAL
+-- 'phrase': the exact hidden phrase. lore + a Whisper-budget grant. Typed. RETIRED
 -- external surface — the spine never depends on it (INV-12). No site (external → web).
 ( 'spine-recovered-archive',
   'the salvaged archive',
@@ -2049,7 +2049,7 @@ values
   'phrase', 4, false, 8 ),
 
 -- spine-cold-hearth-shadow (§8.5) — at the dead-shrine, notice the one thing wrong: the
--- hearth is cold all through, the only fire in the Hold let go out (an optional F3-as-
+-- hearth is cold all through, the only fire in the Hold let go out (a retired F3-as-
 -- instrument layer confirms ash, not fire). answer_kind 'phrase'. dead_end WITH TEETH (the
 -- false walk — the surface answers Iss, the deep answers the Seventh); it yields the
 -- QUESTION, not progress. Typed. Reuses the 'place' dead-end kind (a real place that keeps

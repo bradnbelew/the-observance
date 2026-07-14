@@ -1,9 +1,9 @@
 gate_id,role,min_x,max_x,min_y,max_y,min_z,max_z,initial_state,open_condition
-keeper,G1_rosetta,-12,12,-40,-21,157,160,sealed,rosetta_known
-archive,G2_investigation,-12,12,-40,-21,251,254,sealed,keeper_investigation_begun
-undercroft,G3_archive_to_puzzle_works,-12,12,-68,-51,99,102,sealed,undercroft_open
-deep,G4_puzzle_works_to_lower,-12,12,-96,-77,111,114,sealed,deep_gate_open
-prior,prior_case_to_camp,-88,-72,-96,-81,156,159,sealed,prior_absence_known
-dread,optional_dread_procession,72,75,-96,-81,125,139,sealed,iss_caught_or_seventh_suspected
-accepting,G5_accepting,-14,14,-96,-75,223,226,sealed,prior_witness_ready_and_accepting_onramp
-coda,G6_coda,-14,14,-96,-75,295,298,sealed,bowed_as_one
+keeper,G1_orientation_to_keeper,-12,12,-40,-21,157,160,sealed,v5_case_c02_complete
+archive,G2_keeper_to_civic,-12,12,-40,-21,251,254,sealed,v5_kv03_affidavit_and_v5_km03_affidavit_and_v5_ks03_affidavit_and_v5_ko03_affidavit_and_v5_kb03_affidavit_and_v5_ki03_affidavit
+undercroft,G3_archive_to_puzzle_works,-12,12,-68,-51,99,102,sealed,v5_case_c04_complete_and_v5_case_c05_complete
+deep,G4_puzzle_works_to_lower,-12,12,-96,-77,111,114,sealed,v5_case_c06_complete
+prior,Camp_Ash_subgate,-88,-72,-96,-81,156,159,sealed,v5_a01_location
+dread,mandatory_Record_relay,72,75,-96,-81,125,139,sealed,v5_case_c07_complete
+accepting,G5_Wren_to_Averyn,-14,14,-96,-75,223,226,sealed,v5_case_c08_complete
+coda,G6_Averyn_to_Release,-14,14,-96,-75,295,298,sealed,v5_case_c09_complete

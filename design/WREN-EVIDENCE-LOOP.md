@@ -1,5 +1,7 @@
 # The Observance - Wren Evidence Loop
 
+> **SUPERSEDED V4 ARCHIVE.** Current four-person prior company and betrayal authority is `design/V5-WREN-EVIDENCE.md`.
+
 This is the source-of-truth guide for Wren as a companion, witness, and leak.
 It exists to stop Wren from becoming a quest giver who explains the plot.
 

@@ -1,5 +1,7 @@
 # Director Simplification Pass
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** Current progression is the required 82-node V5 graph.
+
 This pass changes the operating rule for The Observance:
 
 > If a feature cannot be rehearsed from one compact test world, it is not launch-ready yet.

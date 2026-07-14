@@ -65,3 +65,18 @@ export function matchPuzzles(
   if (normalized === '') return [];
   return openPuzzles.filter((p) => p.accepted_answers.includes(normalized));
 }
+
+/**
+ * Apply the optional /answer puzzle selector before matching. A selected key is a real scope, not
+ * decorative debug metadata: only that currently-open row can match. An absent selector preserves
+ * passive #the-record behavior by searching the entire open set. A guessed closed/future key yields
+ * an empty set, which is deliberately indistinguishable from a miss.
+ */
+export function scopeOpenPuzzles(
+  openPuzzles: readonly Puzzle[],
+  selectedPuzzleKey: string | null | undefined,
+): Puzzle[] {
+  const selected = selectedPuzzleKey?.trim().toLowerCase();
+  if (!selected) return [...openPuzzles];
+  return openPuzzles.filter((p) => p.puzzle_key.toLowerCase() === selected);
+}

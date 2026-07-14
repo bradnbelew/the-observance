@@ -1,5 +1,8 @@
 # structures - the Deep Hold world-build spec
 
+> **SUPERSEDED V4 ARCHIVE.** V5 spatial authority is the 32-room/76-fixture manifests, generated
+> blueprint, current plugin builder, and `design/V5-WORLD-SETUP-AND-TESTING.md`.
+
 The build instructions for every load-bearing site. **Current implementation note (2026-07-13):** the Deep Hold itself is no longer a manual placeholder. `/observance placehold build` generates the protected V4 Hold, its 32-room linear/retraceable route, eight physical gates, books, signs, filing surfaces, and proof metadata. The isolated Paper 1.21.11 rehearsal exercised every gate open/reseal path, restart persistence, rebuild idempotence, collision refusal, route/door/fixture audits, and the return path to the one village-well entrance. Outside-Hold sites remain deliberately manual and must receive real `sites.yml` coordinates plus launch receipts.
 
 The optional paste pipeline is also wired (`FaweSchematicPaster` to `SchematicPaster` to `SmallStructureBeat`, isolated so a missing FAWE degrades to "no paste" instead of a crash). This document remains the visual and placement authority for those outside sites.

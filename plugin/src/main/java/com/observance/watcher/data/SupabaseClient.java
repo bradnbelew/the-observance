@@ -14,6 +14,7 @@ import com.observance.watcher.data.rows.DossierRow;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.data.rows.HeatmapCellRow;
 import com.observance.watcher.data.rows.HintRow;
+import com.observance.watcher.data.rows.IdentityLinkChallengeRow;
 import com.observance.watcher.data.rows.NpcQuestRow;
 import com.observance.watcher.data.rows.ObservationRow;
 import com.observance.watcher.data.rows.PlayerLookupRow;
@@ -92,6 +93,8 @@ public final class SupabaseClient {
             new TypeToken<List<PlayerLookupRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_NPC_QUEST =
             new TypeToken<List<NpcQuestRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_IDENTITY_LINK_CHALLENGE =
+            new TypeToken<List<IdentityLinkChallengeRow>>() {}.getType();
 
     private record QueuedWrite(String description, Supplier<SupabaseResult<Void>> attempt) { }
 
@@ -439,6 +442,30 @@ public final class SupabaseClient {
     }
 
     /**
+     * Issue one short-lived Minecraft proof for Discord linking. The caller generated the plaintext
+     * with {@code SecureRandom}; only its lowercase SHA-256 digest crosses this boundary. This
+     * security token is never queued offline because a delayed issue could make an unseen code live.
+     */
+    public SupabaseResult<IdentityLinkChallengeRow> issueIdentityLinkChallenge(
+            String mcUuid, String codeHash) {
+        if (!config.isConfigured()) return SupabaseResult.fail(0, "not-configured");
+        if (mcUuid == null || mcUuid.isBlank() || codeHash == null
+                || !codeHash.matches("[0-9a-f]{64}")) {
+            return SupabaseResult.fail(0, "invalid-identity-challenge");
+        }
+        com.google.gson.JsonObject args = new com.google.gson.JsonObject();
+        args.addProperty("p_mc_uuid", mcUuid.trim());
+        args.addProperty("p_code_hash", codeHash);
+        SupabaseResult<List<IdentityLinkChallengeRow>> result = doRpcRead(
+                "observance_issue_identity_link_challenge", gson.toJson(args),
+                LIST_IDENTITY_LINK_CHALLENGE, "issueIdentityLinkChallenge");
+        if (!result.ok()) return SupabaseResult.fail(result.httpStatus(), result.error());
+        List<IdentityLinkChallengeRow> rows = result.value();
+        return SupabaseResult.ok(result.httpStatus(),
+                rows == null || rows.isEmpty() ? null : rows.get(0));
+    }
+
+    /**
      * Consent floor for Observer capture. Returns true when the player has opted out, cannot be found, or
      * Supabase cannot be read. Capture is privacy-sensitive, so uncertainty means skip before storage.
      */
@@ -774,6 +801,35 @@ public final class SupabaseClient {
                 }
                 markSuccess();
                 return SupabaseResult.ok(code, parsed == null ? Collections.<T>emptyList() : parsed);
+            }
+            markFailure();
+            logFailure(ctx, "http-" + code);
+            return SupabaseResult.<List<T>>fail(code, "http-" + code);
+        }, SupabaseResult.fail(0, "exhausted"));
+    }
+
+    /** POST a service-role RPC and parse its table-return JSON. Security tokens are never queued. */
+    private <T> SupabaseResult<List<T>> doRpcRead(String function, String body,
+                                                  java.lang.reflect.Type listType, String ctx) {
+        return withRetries(ctx, () -> {
+            HttpRequest req = baseRequest("rpc/" + function, "")
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(
+                            body == null ? "{}" : body, StandardCharsets.UTF_8))
+                    .build();
+            HttpResponse<String> resp = http.send(req, HttpResponse.BodyHandlers.ofString());
+            int code = resp.statusCode();
+            if (code >= 200 && code < 300) {
+                try {
+                    List<T> parsed = gson.fromJson(resp.body(), listType);
+                    markSuccess();
+                    return SupabaseResult.ok(code,
+                            parsed == null ? Collections.<T>emptyList() : parsed);
+                } catch (JsonSyntaxException parseFailure) {
+                    markFailure();
+                    logFailure(ctx, "parse-error (http " + code + ")");
+                    return SupabaseResult.<List<T>>fail(code, "parse-error");
+                }
             }
             markFailure();
             logFailure(ctx, "http-" + code);

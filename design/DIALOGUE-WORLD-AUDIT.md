@@ -1,5 +1,7 @@
 # Dialogue-World Audit
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A DIALOGUE OR SITE AUTHORITY.** Canonical NPC text is `arc/v5/npc-dialogue.json`.
+
 NPC dialogue is not flavor copy unless it is clearly throwaway color. If a character names a place, route, object, rule, ritual, danger, reward, or consequence, that line becomes a world contract.
 
 The launch standard is simple: the player must be able to look at the world and believe the NPC was talking about a real thing.

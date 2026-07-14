@@ -1,5 +1,7 @@
 # THE OBSERVANCE — PLANNED-LAYER LEDGER (the anti-forgetting sweep)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS CURRENT STATUS.** Current cross-surface ownership is in the V5 node/runtime manifests.
+
 > **Pre-deploy snapshot — badly stale.** Written before the server/bot/dashboard were ever live; its "not
 > one beat has been SEEN firing live" no longer holds. Current status:
 > `FINAL-LAUNCH-HANDOFF-2026-07-13.md` and `CURRENT-READINESS-VERDICT.md`. Kept for

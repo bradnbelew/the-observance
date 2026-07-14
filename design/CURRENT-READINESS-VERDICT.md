@@ -1,5 +1,8 @@
 # THE OBSERVANCE - CURRENT READINESS VERDICT
 
+> **SUPERSEDED V4 ARCHIVE.** The current V5 verdict is produced by the release checks and live
+> evidence required in `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.
+
 Date: 2026-07-13
 
 > **CURRENT RELEASE-CANDIDATE OVERRIDE.** The release candidate is **repo-ready but not

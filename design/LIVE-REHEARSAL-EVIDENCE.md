@@ -1,5 +1,7 @@
 # THE OBSERVANCE - LIVE REHEARSAL EVIDENCE PACKET
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT RECORD V5 EVIDENCE HERE.** Execute and retain receipts against `design/V5-LIVE-TEST-MATRIX.csv`.
+
 > Static audits prove the build is wired. This packet proves the experience is worth showing to friends.
 > Do not treat a green `audit_all.ps1` as launch approval until this pass has evidence attached.
 > Also run `powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_world_build_readiness.ps1 -Launch`

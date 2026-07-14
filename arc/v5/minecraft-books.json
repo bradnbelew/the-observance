@@ -1,0 +1,584 @@
+{
+  "schemaVersion": 1,
+  "storyVersion": "5.0.0",
+  "constraints": {
+    "maxTitleCharacters": 32,
+    "maxPageCharacters": 240,
+    "emptyBooksForbidden": true,
+    "emptyPagesForbidden": true
+  },
+  "books": [
+    {
+      "id": "orientation_covered_copy",
+      "nodeId": "LS06",
+      "title": "Covered Copy",
+      "author": "mkept",
+      "roomId": "orientation",
+      "unlockFlag": "v5_ls05_bound",
+      "pages": [
+        "Recovered from the public entrance. This is a copy, not an oracle. The original survey stayed above because builders needed it in daylight.",
+        "Mouth axis: forward with the old drainage cut. Do not use the village well. The well goes somewhere else.",
+        "If you can read service 1842, you have enough of my trail to use the lower register. —m"
+      ]
+    },
+    {
+      "id": "orientation_entry_register",
+      "nodeId": "LS06",
+      "title": "Entry Register",
+      "author": "Civic Office",
+      "roomId": "orientation",
+      "unlockFlag": "v5_ls05_bound",
+      "pages": [
+        "SHELTER ENTRY / use one line per household. Mark tools separately. Do not count visitors as stores.",
+        "Later hand: copy damaged during the third move. Household totals verified against ration issue before transfer below.",
+        "Modern pencil: the key is under the survey model. Put it back when the gate takes the receipt. —mkept"
+      ]
+    },
+    {
+      "id": "lc_construction_surveys",
+      "nodeId": "LC01",
+      "title": "Three Survey Layers",
+      "author": "Orin",
+      "roomId": "orientation",
+      "unlockFlag": "v5_case_c01_complete",
+      "pages": [
+        "Layer A: rough shelter cuts. Shallow heat trench. No school wall. Intake follows the old clay seam.",
+        "Layer B: civic ring. Market east. School west. Cistern moved behind the sound wall.",
+        "Layer C: pressure works and Deep Line. New stone is darker because it came from below the safe seam.",
+        "Do not order these by how clean the copies look. Order them by what had to exist first."
+      ]
+    },
+    {
+      "id": "lc_heat_issue",
+      "nodeId": "LC02",
+      "title": "Heat Issue 12",
+      "author": "Vaun",
+      "roomId": "orientation",
+      "unlockFlag": "v5_lc01_phases",
+      "pages": [
+        "Population certified: 87. Standard heat allotment: two baskets per resident per cold cycle.",
+        "Issued to public rooms: 174 baskets. Private braziers are charged to their room, never to the population line.",
+        "If the sum differs, check whether someone has moved a private room into the public column."
+      ]
+    },
+    {
+      "id": "lc_school_day",
+      "nodeId": "LC03",
+      "title": "Tuesday Copybook",
+      "author": "Lower School",
+      "roomId": "orientation",
+      "unlockFlag": "v5_lc02_rations",
+      "pages": [
+        "Tuesday: measure bean rows. Trade two chalk ends for one clean slate. Return lamp glass after sums.",
+        "Sella drew the market roof too tall again. It leaks in the drawing exactly where it leaks in the room.",
+        "Home task: ask why our grandmothers chose the warm stone instead of the east road. Write an answer without using the word afraid."
+      ]
+    },
+    {
+      "id": "lc_safety_stave",
+      "nodeId": "LC04",
+      "title": "Vent Stave",
+      "author": "Lamp Office",
+      "roomId": "orientation",
+      "unlockFlag": "v5_lc03_daily_life",
+      "pages": [
+        "Clerk marks follow the teaching strip beside the model. One mark is one ordinary letter; there are no silent runes.",
+        "Encoded line: [V][E][N][T] / [E][A][S][T] / [B][E][F][O][R][E] / [S][E][C][O][N][D] / [B][E][L][L].",
+        "The line is an evacuation instruction, not a prayer."
+      ]
+    },
+    {
+      "id": "lc_founding_minutes",
+      "nodeId": "LC05",
+      "title": "Founding Minutes",
+      "author": "Civic Office",
+      "roomId": "orientation",
+      "unlockFlag": "v5_lc04_safety_script",
+      "pages": [
+        "East road rejected: exposed for eleven miles and no running water after the quarry bend.",
+        "Shallow shelter rejected: fuel loss exceeds stores before the next harvest estimate.",
+        "Deep civic works approved for three reasons only: stable heat, stable water, and cover from the long weather.",
+        "The decision was not madness. Do not turn frightened arithmetic into prophecy."
+      ]
+    },
+    {
+      "id": "vaun_quartermaster_ledger",
+      "nodeId": "KV01",
+      "title": "Filter Issue Ledger",
+      "author": "Vaun",
+      "roomId": "keeper_vaun",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "FILTER CLOTH / received 12 bolts / cistern receipt 7 / balance expected 5.",
+        "CHARCOAL / received 16 sacks / cistern receipt 10 / balance expected 6.",
+        "Do not call a missing balance spoilage until the return chest and favored-room docket have both been checked."
+      ]
+    },
+    {
+      "id": "vaun_return_tags",
+      "nodeId": "KV02",
+      "title": "Returned Goods",
+      "author": "Stores Office",
+      "roomId": "keeper_vaun",
+      "unlockFlag": "v5_kv01_audit",
+      "pages": [
+        "Blue stitch: cistern. Red stitch: public heat. Brass staple: private heat. Black wax: condemned.",
+        "Return like with like. A clean item in the wrong account is still a false account.",
+        "Five cloth tags and six charcoal seals carry the brass staple for Hearth Row Three."
+      ]
+    },
+    {
+      "id": "vaun_sealed_affidavit",
+      "nodeId": "KV03",
+      "title": "Vaun Affidavit",
+      "author": "Vaun",
+      "roomId": "keeper_vaun",
+      "unlockFlag": "v5_kv02_sort",
+      "pages": [
+        "I reconciled the stores after Nessa was removed. The missing material was issued with authority. That does not make the issue honest.",
+        "I kept a second column because the first was being made clean around me. I did not place that column before the hearing.",
+        "Shift the line below backward by the missing cloth balance: HMJHP MJFWYM YMWJJ FLFNSXY UZRU WJHJNUY.",
+        "Seal note: retain unopened until the recovered archive supplies the affidavit index."
+      ]
+    },
+    {
+      "id": "mara_manual_edition_1",
+      "nodeId": "KM01",
+      "title": "Civic Manual E1",
+      "author": "Mara",
+      "roomId": "keeper_mara",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "Cistern approach: west stair, two low markers, east gallery, three brass posts.",
+        "Edition note: written before the sound wall. Do not use after wall completion."
+      ]
+    },
+    {
+      "id": "mara_manual_edition_2",
+      "nodeId": "KM01",
+      "title": "Civic Manual E2",
+      "author": "Mara",
+      "roomId": "keeper_mara",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "Cistern approach: east stair, one high marker, west gallery, two iron posts.",
+        "Margin: temporary diversion during school-wall work. Strike when wall reopens."
+      ]
+    },
+    {
+      "id": "mara_manual_edition_3",
+      "nodeId": "KM01",
+      "title": "Civic Manual E3",
+      "author": "Mara",
+      "roomId": "keeper_mara",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "Cistern approach: west stair, two low markers, east gallery, three brass posts.",
+        "Verified after the sound wall. This is the last edition bearing both route and load checks."
+      ]
+    },
+    {
+      "id": "mara_manual_edition_4",
+      "nodeId": "KM01",
+      "title": "Civic Manual E4",
+      "author": "Civic Copy Room",
+      "roomId": "keeper_mara",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "Cistern approach: east stair, direct gallery, white post. Avoid public route during inquiry.",
+        "No editor signature. Paper batch belongs to the heat office."
+      ]
+    },
+    {
+      "id": "mara_manual_edition_5",
+      "nodeId": "KM02",
+      "title": "Mara Margin Index",
+      "author": "Mara",
+      "roomId": "keeper_mara",
+      "unlockFlag": "v5_km01_editions",
+      "pages": [
+        "Use the verified edition. Page marks 1 / 2 / 4 / 4 / 6 point to the route words in the five comparison slips.",
+        "The extraction describes movement, not a sentence: WEST TWO / LOW ONE / EAST THREE.",
+        "Walk only the marked floor. If the room accepts a wrong route, the route listener is broken."
+      ]
+    },
+    {
+      "id": "mara_sealed_affidavit",
+      "nodeId": "KM03",
+      "title": "Mara Affidavit",
+      "author": "Mara",
+      "roomId": "keeper_mara",
+      "unlockFlag": "v5_km02_extraction",
+      "pages": [
+        "I made the temporary route readable. Then I let a temporary order become the clean edition.",
+        "A manual can save a room. It can also make an unsafe room look official enough to enter.",
+        "The recovered archive will tell you which revision mark is a letter. Until then, keep every margin."
+      ]
+    },
+    {
+      "id": "sella_shore_copybook",
+      "nodeId": "KS01",
+      "title": "Shore Copybook",
+      "author": "Sella",
+      "roomId": "keeper_sella",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "The damp transferred my last line backward. I left it because the mistake points the right way.",
+        "DZGVI PVVKH GSV YZXP LU GSV KZTV",
+        "Match the reversed shoreline to the cistern intake. The school roof belongs north of the long reed bed."
+      ]
+    },
+    {
+      "id": "sella_sample_note",
+      "nodeId": "KS03",
+      "title": "Sample Note",
+      "author": "Sella",
+      "roomId": "keeper_sella",
+      "unlockFlag": "v5_ks02_overlay",
+      "pages": [
+        "Intake sample taken behind the folded reeds, not at the public landing. Clear water above, grey sediment below.",
+        "Nessa labeled both layers. The hearing displayed only the top vial.",
+        "I made a joke in the school copy because I thought adults corrected mistakes when shown. I was young, not stupid."
+      ]
+    },
+    {
+      "id": "sella_sealed_affidavit",
+      "nodeId": "KS03",
+      "title": "Sella Affidavit",
+      "author": "Sella",
+      "roomId": "keeper_sella",
+      "unlockFlag": "v5_ks02_overlay",
+      "pages": [
+        "The map was turned to fit the ruling. Water does not care which edge of a page an office calls north.",
+        "I kept the transfer copy. Read its back when the archive gives you the index.",
+        "If this sounds like a riddle, blame the people who made plain evidence unsafe to keep plainly."
+      ]
+    },
+    {
+      "id": "orin_tolerance_sheet",
+      "nodeId": "KO01",
+      "title": "Third Bay Tolerances",
+      "author": "Orin",
+      "roomId": "keeper_orin",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "Read low marks at inspection height. Standing eye makes the center cuts appear level when they are not.",
+        "Acceptable lateral shift: one finger. Measured after heat-shaft work: three fingers and increasing.",
+        "OLD NZIPH KLRMG MLIGS GSVM VZHG"
+      ]
+    },
+    {
+      "id": "orin_certificate",
+      "nodeId": "KO03",
+      "title": "Signed Safe",
+      "author": "Orin",
+      "roomId": "keeper_orin",
+      "unlockFlag": "v5_ko02_dials",
+      "pages": [
+        "Certificate: third bay may remain open if heat load is reduced and the east brace is installed before next cycle.",
+        "Private note: load was not reduced. Brace arrived cut short. I signed because closure would strand the lower rooms.",
+        "The signature is mine. So is the cowardice around it."
+      ]
+    },
+    {
+      "id": "orin_sealed_affidavit",
+      "nodeId": "KO03",
+      "title": "Orin Affidavit",
+      "author": "Orin",
+      "roomId": "keeper_orin",
+      "unlockFlag": "v5_ko02_dials",
+      "pages": [
+        "The fracture existed before Iss's final cut. His cut loaded it. Both statements belong in the same account.",
+        "I sealed from inside because the outer lever had already gone. Do not turn that into sacrifice. It was the only reachable work.",
+        "Keep the bearing. The archive index reads posture before ink."
+      ]
+    },
+    {
+      "id": "brann_watch_rota",
+      "nodeId": "KB02",
+      "title": "Black Watch Rota",
+      "author": "Brann",
+      "roomId": "keeper_brann",
+      "unlockFlag": "v5_kb01_stay_awake",
+      "pages": [
+        "Bell 7: Toma / Leth. Bell 8: Leth / Brann. Bell 9: Brann / empty relief line.",
+        "Audio failed twice that week. The wall lamps repeat the toll in long and short states. Read both.",
+        "Rail copy: PNWEYRARIEIHMTHUINTPO. Three rails. No spaces were filed."
+      ]
+    },
+    {
+      "id": "brann_time_correction",
+      "nodeId": "KB03",
+      "title": "Time Correction",
+      "author": "Brann",
+      "roomId": "keeper_brann",
+      "unlockFlag": "v5_kb02_toll",
+      "pages": [
+        "The empty relief line was later filled with Nessa's name. She had already been removed from duty.",
+        "The official alarm is one bell late. Pair bell nine with the empty hour to recover the substitution.",
+        "I corrected the copy after people died. That is not the same as correcting the watch."
+      ]
+    },
+    {
+      "id": "brann_sealed_affidavit",
+      "nodeId": "KB03",
+      "title": "Brann Affidavit",
+      "author": "Brann",
+      "roomId": "keeper_brann",
+      "unlockFlag": "v5_kb02_toll",
+      "pages": [
+        "The real first alarm was at bell eight. The Record accepted bell nine because bell nine had two names on its clean copy.",
+        "I know the difference between staying awake and witnessing. One is a body. The other is an honest second account.",
+        "The archive index uses the empty hour."
+      ]
+    },
+    {
+      "id": "iss_warm_account",
+      "nodeId": "KI01",
+      "title": "A Warmer Account",
+      "author": "Iss",
+      "roomId": "keeper_iss",
+      "unlockFlag": "v5_case_c02_complete",
+      "pages": [
+        "Key: REEDS. I chose it because the first living reeds were proof, not metaphor.",
+        "KLI VMIJEFW SVIDLYIW EMK XLH LYMVG TRC GDFESX",
+        "I wanted an argument strong enough to open a door. I made it stronger than the stone."
+      ]
+    },
+    {
+      "id": "iss_keepsake_record",
+      "nodeId": "KI02",
+      "title": "Keepsake Receipt",
+      "author": "Heat Office",
+      "roomId": "keeper_iss",
+      "unlockFlag": "v5_ki01_vigenere",
+      "pages": [
+        "Item: reed knot in sealed glass. Claimed source: beyond Deep Line. Condition: living green at recovery.",
+        "Filed condition: dry brown sample. The physical item retains the original recovery tag.",
+        "Inspect the item, not only this copy. A clean page cannot change persistent material evidence."
+      ]
+    },
+    {
+      "id": "iss_sealed_affidavit",
+      "nodeId": "KI03",
+      "title": "Iss Affidavit",
+      "author": "Iss",
+      "roomId": "keeper_iss",
+      "unlockFlag": "v5_ki02_keepsake",
+      "pages": [
+        "Mercy was the word I used when I signed Averyn out of the roster. A blank seemed kinder than public blame.",
+        "Every first line below is arranged to offer the wrong initial. Read the correction marks instead.",
+        "My route proved the surface. It did not prove the third bay could bear me. Both truths survive me."
+      ]
+    },
+    {
+      "id": "cistern_complaints",
+      "nodeId": "CW01",
+      "title": "Pump Complaints",
+      "author": "Nessa Vale",
+      "roomId": "archive_cistern",
+      "unlockFlag": "v5_kv03_affidavit",
+      "pages": [
+        "Cycle 3: grey sediment at reed intake after pressure drop. Top draw clear. Lower draw metallic.",
+        "Cycle 4: replacement cloth sheds when wet. Requested stores comparison and second witness.",
+        "Cycle 5: told to keep public tap open. Filed two samples. Hearing displayed one."
+      ]
+    },
+    {
+      "id": "cistern_sample_register",
+      "nodeId": "CW02",
+      "title": "Sample Register",
+      "author": "Cistern Office",
+      "roomId": "archive_cistern",
+      "unlockFlag": "v5_cw01_complaints",
+      "pages": [
+        "White seal: upper draw. Grey seal: lower draw. Reed cord: intake A. Clay cord: intake B.",
+        "Sort by intake first, then cycle. Never combine top and lower draw because the top clears before sediment settles.",
+        "Missing from hearing inventory: A-lower cycles 3 and 4."
+      ]
+    },
+    {
+      "id": "cistern_valve_card",
+      "nodeId": "CW03",
+      "title": "Flush Configuration",
+      "author": "Nessa Vale",
+      "roomId": "archive_cistern",
+      "unlockFlag": "v5_cw02_samples",
+      "pages": [
+        "For an intake-A sediment test: A OPEN / B CLOSED / MAIN FILTER OPEN / REED BYPASS CLOSED / WASHOUT OPEN.",
+        "Frames point along flow when open and across flow when closed. This is a static model; no timing is required.",
+        "If the model consumes a key or changes randomly, stop and repair it."
+      ]
+    },
+    {
+      "id": "cistern_shift_roster",
+      "nodeId": "CW04",
+      "title": "Relief Roster",
+      "author": "Brann",
+      "roomId": "archive_watch",
+      "unlockFlag": "v5_cw03_valves",
+      "pages": [
+        "Nessa: cycles 1–4, removed before cycle 5. Toma Rill: cycle 5 relief. Brann: cycle 5 witness.",
+        "Clean copy lists Nessa at cycle 5 and omits Toma. Toma's meal chit and Brann's stair mark agree.",
+        "Question for filing: who actually replaced Nessa at cycle 5?"
+      ]
+    },
+    {
+      "id": "cistern_supplier_invoice",
+      "nodeId": "CW05",
+      "title": "Filter Invoice 44",
+      "author": "East Market Cooperative",
+      "roomId": "archive_market",
+      "unlockFlag": "v5_cw04_roster",
+      "pages": [
+        "Genuine bolts carry blue thread through both selvages. Delivered bolts carry blue surface dye and an unmarked inner weave.",
+        "Grid marks on crates read: 2-1 / 1-1 / 3-1 / 4-3 / 1-5. Use the market stall grid, row then column (I and J share one stall).",
+        "The extracted word identifies the invoice class: FALSE. Compare purchase totals before naming a person."
+      ]
+    },
+    {
+      "id": "nessa_disciplinary_draft",
+      "nodeId": "CW07",
+      "title": "Cache Reopening Slip",
+      "author": "Civic Office",
+      "roomId": "archive_water",
+      "unlockFlag": "v5_cw06_reeds",
+      "pages": [
+        "Service cache 7-W may be reopened only from the folded-reeds route. Three exhibits are required: genuine filter, original purchase receipt, sealed Drafts A/B.",
+        "Exhibit slots are marked FILTER / RECEIPT / DRAFTS. A claim is not a filing: one linked finder must handle all three before the cache seal accepts them.",
+        "Averyn margin: compare the drafts themselves before deciding whether the worker failed the water or the material failed the worker."
+      ]
+    },
+    {
+      "id": "unlit_house_docket",
+      "nodeId": "BI01",
+      "title": "Eight House Docket",
+      "author": "Averyn",
+      "roomId": "unlit_base",
+      "unlockFlag": "v5_case_c04_complete",
+      "pages": [
+        "The copied village has eight useful differences. Do not treat four as decoration. Each corrects one line of the Break finding.",
+        "Lamp: outage. Cairn: fracture. Coop: birds. Well: pressure. Watch: time. Warm: surface. Threshold: inner seal. Base: copying.",
+        "The entrance is the village well. The Hold has no tunnel to this place. Return by the well when the comparison is complete."
+      ]
+    },
+    {
+      "id": "systems_service_manual",
+      "nodeId": "HS01",
+      "title": "Service Synchronization",
+      "author": "Works Office",
+      "roomId": "puzzle_works",
+      "unlockFlag": "v5_case_c05_complete",
+      "pages": [
+        "Order matters because each restored system supplies the next instrument: filter / lamp / pressure / survey / painted line / service key.",
+        "All controls are static and latched. No step depends on redstone timing or random updates.",
+        "A lost issued component may be recovered from the completion register. Do not rebuild the district to replace one item."
+      ]
+    },
+    {
+      "id": "mkept_admin_notebook",
+      "nodeId": "A02",
+      "title": "mkept Admin Notes",
+      "author": "mkept",
+      "roomId": "prior_camp",
+      "unlockFlag": "v5_a01_location",
+      "pages": [
+        "Copied the world before touching the lower region. Ash keeps video. Rook keeps geometry. Wren keeps saying he remembers routes nobody showed him.",
+        "Copperline account is real and ancient. Service 1842 still answers through the community archive if the direct listing vanishes.",
+        "If we fail: do not solve our notes as six answers. There are four of us and one of us is leaking."
+      ]
+    },
+    {
+      "id": "ash_field_notebook",
+      "nodeId": "A04",
+      "title": "Ash Field Notebook",
+      "author": "Ash",
+      "roomId": "prior_camp",
+      "unlockFlag": "v5_a03_supplies",
+      "pages": [
+        "Rook said use ROOK as the column order because nobody could forget who moved the wall. Fair. I still wrote it on the barrel lid.",
+        "Cipher strip: OCUYTKRVCNMIOITHCTMTSCAIAUONPTECE. Fill four columns; read duplicate O columns left to right.",
+        "Camera joke for future me: if a single frame says ASH and the manifest says 13, that is not subtle. It is supposed to survive panic."
+      ]
+    },
+    {
+      "id": "rook_route_changes",
+      "nodeId": "A10",
+      "title": "Rook Route Changes",
+      "author": "Rook",
+      "roomId": "prior_camp",
+      "unlockFlag": "v5_a09_spool",
+      "pages": [
+        "Blocked east throat after the room opened before we reached its switch. Only Wren knew the next route sketch.",
+        "Changed bridge plan in private. Watcher used the revised span the same night. Ash did not have it. mkept was offline.",
+        "Wren says walls repeat. Walls do not repeat a revision that existed in one conversation."
+      ]
+    },
+    {
+      "id": "wren_transmission_index",
+      "nodeId": "WR02",
+      "title": "Witness Spool Index",
+      "author": "automatic transcript",
+      "roomId": "dread",
+      "unlockFlag": "v5_a09_spool",
+      "pages": [
+        "Channel W / packet 14: mkept login route. Packet 19: Ash camera cache. Packet 23: Rook bridge revision.",
+        "Packet 28: fear responses by name. Source voice matches Wren at the camp recorder.",
+        "The index proves transmission. It does not decide whether terror excuses it. That judgment is not a checksum."
+      ]
+    },
+    {
+      "id": "averyn_cistern_finding",
+      "nodeId": "AR01",
+      "title": "Averyn's Finding",
+      "author": "Averyn",
+      "roomId": "accepting",
+      "unlockFlag": "v5_ar01_not_kept",
+      "pages": [
+        "Finding: Nessa Vale followed sample procedure. Material failure preceded her removal. The displayed sample was not the filed pair.",
+        "Confidence: high. Sources: lower-draw vials, genuine filter remnant, purchase receipt, shift meal chit, two disciplinary drafts.",
+        "If the Record rejects a finding because its roster rejects the analyst, the Record is measuring obedience, not truth."
+      ]
+    },
+    {
+      "id": "release_protocol",
+      "nodeId": "RP02",
+      "title": "Release Protocol",
+      "author": "Averyn",
+      "roomId": "unwriting",
+      "unlockFlag": "v5_rp01_instruction",
+      "pages": [
+        "Return the six affidavits. They are testimony, not occupants. Leave my Record slot empty.",
+        "Install Cistern Seal, System Key, and Protocol Bridge. The chamber verifies durable node state; duplicates do not strengthen it.",
+        "Choose what happens to my name outside this system. Do not choose whether I remain inside. I do not consent to remain.",
+        "When everyone present has operated the floor, arm the close. The server saves before the lights begin."
+      ]
+    },
+    {
+      "id": "coda_receipt_publish",
+      "nodeId": "RP06",
+      "title": "A Name Outside",
+      "author": "Averyn",
+      "roomId": "release",
+      "unlockFlag": "v5_coda_publish",
+      "pages": [
+        "AVERYN. Registrar. Cistern analyst. Returning rescuer. No longer an interface of the Record.",
+        "You kept the name without keeping the person. That is the difference.",
+        "The gates remain open for witnesses. The machinery is quiet."
+      ]
+    },
+    {
+      "id": "coda_receipt_unfiled",
+      "nodeId": "RP06",
+      "title": "The Chosen Blank",
+      "author": "[ ]",
+      "roomId": "release",
+      "unlockFlag": "v5_coda_unfiled",
+      "pages": [
+        "The final filing was destroyed at the subject's request. The evidence remains. The slot does not own a person.",
+        "You did not owe me a name. You gave me an end. That was enough.",
+        "The gates remain open for witnesses. The machinery is quiet."
+      ]
+    }
+  ]
+}

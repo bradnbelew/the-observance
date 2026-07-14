@@ -56,7 +56,12 @@ def git_paths() -> list[Path]:
     raw = subprocess.check_output(
         ["git", "ls-files", "-co", "--exclude-standard", "-z"], cwd=ROOT
     )
-    paths = [ROOT / item.decode("utf-8") for item in raw.split(b"\0") if item]
+    # ``git ls-files -c`` also reports tracked paths that are intentionally deleted in
+    # the working tree.  They have no checkout bytes to validate and treating them as
+    # malformed files makes an otherwise valid rewrite fail until it is committed.
+    # Keep broken symlinks so the dedicated check below can still diagnose them.
+    candidates = [ROOT / item.decode("utf-8") for item in raw.split(b"\0") if item]
+    paths = [path for path in candidates if path.exists() or path.is_symlink()]
     release = [
         ROOT / "observance-datapack.zip",
         ROOT / "observance-resourcepack.zip",

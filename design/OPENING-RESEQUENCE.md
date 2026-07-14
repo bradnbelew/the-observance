@@ -1,5 +1,7 @@
 # THE OBSERVANCE — OPENING RE-SEQUENCE + PLAYTHROUGH FRAMING (the vibe audit)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT IMPLEMENT OR SHIP.** Current C01 opening order is in the V5 node and experience manifests.
+
 > 2026-07-02. Ethan's mandate: the game must play like a **mysterious world you're slowly haunted into
 > investigating**, NOT "walk up to a structure and go 'oh, a puzzle.'" You feel *watched* first; you get
 > *curious*; you *dig*; clues *connect*; "oh — there are coordinates in this"; you go there; you *figure

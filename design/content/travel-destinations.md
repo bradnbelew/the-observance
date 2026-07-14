@@ -1,5 +1,7 @@
 # THE OBSERVANCE — TRAVEL DESTINATIONS (the longevity layer · side breadth)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT BUILD OR SEED THESE OPTIONAL DESTINATIONS.** V5 substantial content is mandatory and explicitly manifested.
+
 > **DRAFT / DESIGN — not the live seed.** Authored against LONGEVITY.md §2 (the TRAVEL pillar:
 > "25–35 sited rumor→verify destinations… arriving often *contradicts* the rumor"). This file
 > delivers **18** of them: rumored places out in the Hold/world a group hears about, then must

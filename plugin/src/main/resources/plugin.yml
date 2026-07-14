@@ -1,86 +1,40 @@
 name: Observance
-version: '0.3.29'
+version: '0.5.0'
 main: com.observance.watcher.ObservancePlugin
 api-version: '1.21'
 author: Voxaris
-description: The Observance — deterministic soft-pressure haunting engine (Phase 0).
-# Phase 0 is self-contained. Every entry below is an OPTIONAL softdepend — each enables one beat's
-# richer branch when present, and EVERY branch degrades to a deterministic vanilla path when the
-# plugin is absent or throws (the anti-jank fallback law). softdepend only orders load (so the
-# optional plugin is enabled before us); it NEVER makes us hard-require it. A softdepend name MUST
-# byte-match the dependency's declared `name:` — so only plugins the engine actually probes by name
-# (Bukkit.getPluginManager().isPluginEnabled(...)) are listed here:
-#   - FastAsyncWorldEdit / WorldEdit : SmallStructureBeat / RoomSwapBeat curated-schematic paste
-#       (Schematics.java probes both; D5/D10). Absent ⇒ the inline cairn / block-state path runs unchanged.
-#   - ModelEngine : ModeledMobBeat's R4 rig (ModeledMobBeat.java probes it; D11/P2). Absent/throws ⇒
-#       degrades to exactly NamedMobBeat.
-# GO-LIVE (cross-owner): when the D8 Keeper-NPC beat lands (Citizens / ZNPCsPlus) and the D11 Ear lands
-# (the Simple Voice Chat plugin, declared name `voicechat`), the owning Java engineer adds those names
-# here AND the matching isPluginEnabled() probe — both must use the dep's real `name:`. They are NOT
-# added pre-emptively (an unmatched softdepend name is silently inert, but listing names no code probes
-# invites drift). The Keeper listener already needs no softdepend: it reads the `keeper_npc` PDC tag,
-# never the Citizens API (Path-A self-containment).
-# NOTE (Bukkit): event LISTENERS are registered in code (ObservancePlugin.registerListeners()), NOT here.
-# Citizens : the companion NPC (Wren) passes as a human via a Citizens PLAYER-type NPC when present.
-#   WrenNpc probes it by name ("Citizens") + Class.forName and drives it ENTIRELY by reflection (no
-#   compile-time dependency, no hard import). Absent Citizens ⇒ Wren degrades to a PDC-tagged
-#   armor-stand fallback — the WrenNpcListener reads the `wren_npc` PDC tag either way (Path-A).
-softdepend: [FastAsyncWorldEdit, WorldEdit, ModelEngine, Citizens]
+description: The Observance V5 production ARG runtime for Paper 1.21.11.
 load: POSTWORLD
 
-# NOTE (Bukkit): event LISTENERS are NOT declared here — they are registered in code, in
-# ObservancePlugin.registerListeners(). The Deep-Hold back-half adds these new listeners, which the
-# PLUGIN-Java owner must register there (cross-owner hook, see RETURN): UnlitDeepListener (the group
-# latch), SeventhChoiceListener (the staged unwriting rite), CoopPlateListener (the IV→V hinge), and
-# IgnitionListener (prologue ignition). PresenceListener and DeathListener already exist and are
-# registered — DeathListener is EXTENDED in place (the glowing-beast fork), not newly registered.
-# plugin.yml only carries commands + permissions; the new admin toggles below cover the new knobs.
+# Citizens is optional: Wren and townsfolk fall back to persistent PDC-tagged armor stands.
+softdepend: [Citizens]
+
 commands:
   observance:
-    description: Admin/status command for The Observance plugin.
-    usage: |
-      /observance status        - show plugin health (db, queue, last beat, reckoning state)
-      /observance director [world|lab] [spacing] - one-command rehearsal: place, repair, coverage, and guided start
-      /observance audit         - scan placed sites for missing core anchors, empty lecterns, and obvious hardware problems
-      /observance visualaudit   - scan placed story sites for obvious test-prop visual failures
-      /observance dialogueaudit - list NPC dialogue claims that must have world/mechanic proof
-      /observance preflight     - run audit, visualaudit, dialogueaudit, and coverage together
-      /observance repair        - repair common placed-site failures found by audit
-      /observance coverage      - report launch-lane coverage: main spine, puzzle mechanics, side/lore, dimensions, scare, and ops
-      /observance visit <next|back|list|siteId|lane> - teleport through placed rehearsal sites for fast testing
-      /observance reload        - reload config.yml + sites.yml
-      /observance sleep <on|off>- toggle the local watcher-sleep override
-      /observance flag <set|clear|list> [key] [true|false] - read/drive arc_state.flags (the storylet gate; proves gating in-world)
-      /observance site set <siteId> - bind your current block as any configured story, puzzle, NPC, or keeper site
-      /observance placeworld - survey/place every configured site that isn't placed yet
-      /observance placeroom <keeperId> - place a code-templated keeper stone here + register it as a live answer-sign site
-      /observance placeregion [spacing] - stamp the starter spine (rosetta + keeper evidence sites) here
-      /observance placedeep [spacing] - stamp the six deep-half payoff set-pieces (reckoning, cold hearth, Accepting floor, threshold grave, the unwriting, threshold vault) here
-      /observance placelecterns [spacing] - stamp the five Mara page-lock lecterns here with books already loaded
-      /observance placehold <build|audit|seal|open|sync> - place and operate the production Deep Hold megastructure
-      /observance placerelay - build the surface Copperline callback puzzle that opens the Discord handoff
-      /observance placelab [spacing] - stamp a floating test grid of all enabled sites, puzzle hardware, and NPCs
-      /observance fullrun [spacing] - one-command rehearsal: full lab, side/lore, puzzle grid, dread route, repair, audit, coverage
-      /observance prepworld [spacing] - compact rehearsal-only board: prologue, spine, lecterns, NPCs, finale/readings, tools
-      /observance descentproof [spacing] - stage the Lamp-works stair, third lamp, painted line, and dead-stall around you
-      /observance sidepass - stage all side/lore NPC bodies nearby and print the right-click checklist
-      /observance puzzlepass [gates] [spacing] - stage a compact puzzle-mechanic proof grid and optional rehearsal gate flags
-      /observance dreadpass [stage|run] [player] - stage the Watcher dread route or run the full scare route
-      /observance unlit <site|clue|pass|audit|darken|border|buildmode|ready> - mark, stamp, test, darken, edit, audit, fence, and hand off the Unlit expedition
-      /observance runbook [setup|spine|puzzle|side|scare|ops] - in-world director cheat sheet for each test lane
-      /observance rehearse <start|status|done|next|back|reset|list> - guided in-world rehearsal checklist
-      /observance placeprologue - stage the cold-open anomaly in the group's base
-      /observance lens give [player] - give the Lens (second-sight) item
-      /observance wren <spawn|despawn|reckoning> - place the companion NPC (Wren) here, or the three reckoning-choice markers
-      /observance townsfolk <spawn|despawn> [id] - place/remove the surface townsfolk NPCs
-      /observance test <menu|preset> [player] - force hauntings, story beats, resource-pack checks, and late-game test effects
-      /observance needle [player] - give the recovery-needle first-find aid
-      /observance finale - place the three finale-rite markers at the Seventh's chamber
-      /observance reading - auto-carve the six Seventh-Reading keeper fragments
+    description: Operate and verify The Observance V5 runtime.
     aliases: [obs]
     permission: observance.admin
+    usage: |
+      /obs status
+      /obs preflight
+      /obs audit | visualaudit | dialogueaudit
+      /obs placehold <prepare|plan|build|audit|sync|repair|seal|open>
+      /obs unlit <buildmode|site|clue|repair|border|darken|audit|ready>
+      /obs townsfolk <spawn|despawn> [id]
+      /obs wren <spawn|despawn>
+      /obs item recover <artifact> [player]
+      /obs finale <status|markers|arm [15-600 seconds]|cancel>
+      /obs sleep <on|off> | reload | runbook
+  observancelink:
+    description: Issue a short-lived code proving control of your online Minecraft identity.
+    aliases: [obslink]
+    permission: observance.link
+    usage: /obslink
 
 permissions:
   observance.admin:
-    description: Allows use of the Observance operator command family.
+    description: Allows V5 setup, audit, recovery, and finale operations.
     default: op
+  observance.link:
+    description: Allows a player to request their own one-time Discord identity proof.
+    default: true

@@ -1,5 +1,7 @@
 # THE OBSERVANCE — EDITOR-IN-CHIEF TEARDOWN
 
+> **SUPERSEDED PRE-V5 ARCHIVE — NOT A CURRENT DEFECT OR READINESS LIST.** Current failures come only from V5 checks and live receipts.
+
 > **CURRENT STATUS OVERRIDE — 2026-07-13.** This is a preserved pre-fix adversarial audit, not a
 > description of the current release candidate. Its missing migrations, producers, resolver gates,
 > Record ignition, `v_record`, resource-pack handling, Keeper/Wren paths, and generated-Hold findings

@@ -1,5 +1,9 @@
 # THE OBSERVANCE — BUILD EVERYTHING (the program of record)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE FOR SETUP, STORY, OR RUNTIME.** Current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE FOR SETUP, STORY, OR RUNTIME.** Current authority is indexed by `design/V5-SUPERSESSION-MAP.md`.
+
 > **The wave table below (§ status) is stale — W0-W9 are all shipped/green.** Current status lives in
 > `LAUNCH-READINESS.md` §1 / `NEXT-SESSION.md`. Kept here for the mandate + wave history.
 

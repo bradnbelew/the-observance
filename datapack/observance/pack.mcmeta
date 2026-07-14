@@ -1,6 +1,6 @@
 {
   "pack": {
-    "description": "The Observance — Undercroft dimension + reward toasts. Target: 1.21.11 (format [94,1]).",
+    "description": "The Observance V5 server marker. Target: 1.21.11 (format [94,1]).",
     "min_format": [94, 1],
     "max_format": [94, 1]
   }

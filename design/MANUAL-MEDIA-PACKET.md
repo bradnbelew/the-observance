@@ -1,5 +1,7 @@
 # THE OBSERVANCE - MANUAL MEDIA PRODUCTION PACKET
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT GENERATE OR STAGE MEDIA FROM THIS LIST.** V5 has five immutable required assets in `arc/v5/media-manifest.json`.
+
 This is the current actionable packet for Ethan-made media after the ARG remake pass. It supersedes older,
 looser media-guide language when they disagree. The rule is simple: no in-world clue may point to a
 missing file, and no external artifact may be the only path to a required conclusion. When an artifact is

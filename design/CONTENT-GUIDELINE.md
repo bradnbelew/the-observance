@@ -1,5 +1,9 @@
 # THE OBSERVANCE — CONTENT GUIDELINE (Ethan's field guide for making real artifacts)
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A PRODUCTION CONTENT LIST.** The five fixed media assets and exact V5 content live under `arc/v5/`.
+
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT USE AS A PRODUCTION CONTENT LIST.** The five fixed media assets and exact V5 content live under `arc/v5/`.
+
 > Your guide for producing the *real* content that makes the ARG land — found documents, videos, images,
 > audio, screenshots — the stuff that rewards digging because the data is genuinely hidden *in the file*.
 > The rule of thumb the whole project runs on: **AI-perfect content reads as a game asset; a real,

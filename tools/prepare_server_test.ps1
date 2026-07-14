@@ -8,6 +8,10 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# RETIRED_PRE_V5_TOOL: this orchestration path calls obsolete placement and
+# rehearsal packet generators.
+throw "RETIRED PRE-V5 TOOL: prepare_server_test.ps1 is disabled. Follow design/V5-WORLD-SETUP-AND-TESTING.md."
+
 function Code([string]$Value) {
   return [string]([char]0x60) + $Value + [string]([char]0x60)
 }
@@ -92,7 +96,7 @@ function Write-ServerTestGuide(
   $lines.Add("2. Run repo checks relevant to your changes. Minimum before any server test:")
   $lines.Add("")
   $lines.Add('```powershell')
-  $lines.Add("python tools\check_experience_coherence.py")
+  $lines.Add("python tools\check_v5_content.py --runtime")
   $lines.Add("powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_minecraft_text_surfaces.ps1")
   $lines.Add("powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_operator_docs.ps1")
   $lines.Add("powershell -NoProfile -ExecutionPolicy Bypass -File tools\check_friend_launch_prep.ps1")

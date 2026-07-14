@@ -4,7 +4,6 @@ import com.observance.watcher.config.Site;
 import com.observance.watcher.config.SitesConfig;
 import com.observance.watcher.util.Safety;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ArmorStand;
@@ -16,19 +15,21 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -36,15 +37,12 @@ import java.util.function.Supplier;
 /**
  * Guards production Deep Hold regions. BeatProtectionListener protects authored anchor blocks; this
  * listener protects the whole carved placement so normal players cannot tunnel around gates, flood
- * rooms, or build over evidence. The one deliberate exception is Coll's third-lamp proof, where a
- * player may place a light at the configured lamp stand site.
+ * rooms, or build over evidence. Coll's third-lamp proof is an interaction with the authored copper
+ * bulb, not a radius-wide placement exemption; all player block placement remains denied.
  */
 public final class HoldProtectionListener implements Listener {
 
     private static final String HOLD_REGION_TYPE = "hold_region";
-    private static final String THIRD_LAMP_SITE = "third_lamp_stand";
-    private static final String VAUN_MECHANIC_SHELF = "vaun_bookshelf";
-
     private final Supplier<SitesConfig> sites;
     private final Safety safety;
 
@@ -70,7 +68,6 @@ public final class HoldProtectionListener implements Listener {
             if (canBypass(event.getPlayer())) return;
             Block block = event.getBlockPlaced();
             if (block == null || !insideHold(block.getLocation())) return;
-            if (isAllowedThirdLampPlacement(block)) return;
             event.setCancelled(true);
             deny(event.getPlayer());
         });
@@ -121,6 +118,14 @@ public final class HoldProtectionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onIgnite(BlockIgniteEvent event) {
+        safety.run("hold.protect.ignite", () -> {
+            Block block = event.getBlock();
+            if (block != null && insideHold(block.getLocation())) event.setCancelled(true);
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         safety.run("hold.protect.entityExplode", () -> removeHoldBlocks(event.blockList()));
     }
@@ -137,7 +142,16 @@ public final class HoldProtectionListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (anyInsideHold(event.getBlocks())) event.setCancelled(true);
+            if (anyInsideHold(event.getBlocks())) {
+                event.setCancelled(true);
+                return;
+            }
+            for (Block moved : event.getBlocks()) {
+                if (moved != null && insideHold(moved.getRelative(event.getDirection()).getLocation())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         });
     }
 
@@ -181,6 +195,52 @@ public final class HoldProtectionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onHangingPlace(HangingPlaceEvent event) {
+        safety.run("hold.protect.hangingPlace", () -> {
+            if (event.getEntity() == null || !insideHold(event.getEntity().getLocation())) return;
+            Player player = event.getPlayer();
+            if (canBypass(player)) return;
+            event.setCancelled(true);
+            deny(player);
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent event) {
+        safety.run("hold.protect.armorStand", () -> {
+            if (event.getRightClicked() == null || !insideHold(event.getRightClicked().getLocation())) return;
+            if (canBypass(event.getPlayer())) return;
+            event.setCancelled(true);
+            deny(event.getPlayer());
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInventoryMove(InventoryMoveItemEvent event) {
+        safety.run("hold.protect.inventoryMove", () -> {
+            Location source = event.getSource() == null ? null : event.getSource().getLocation();
+            Location destination = event.getDestination() == null ? null : event.getDestination().getLocation();
+            if ((source != null && insideHold(source)) || (destination != null && insideHold(destination))) {
+                event.setCancelled(true);
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        safety.run("hold.protect.teleport", () -> {
+            if (canBypass(event.getPlayer())) return;
+            if (event.getCause() != PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+                    && !"CHORUS_FRUIT".equals(event.getCause().name())) return;
+            if ((event.getFrom() != null && insideHold(event.getFrom()))
+                    || (event.getTo() != null && insideHold(event.getTo()))) {
+                event.setCancelled(true);
+                deny(event.getPlayer());
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onTakeLecternBook(PlayerTakeLecternBookEvent event) {
         safety.run("hold.protect.lecternBook", () -> {
             if (canBypass(event.getPlayer())) return;
@@ -188,47 +248,6 @@ public final class HoldProtectionListener implements Listener {
             if (lectern == null || !insideHold(lectern.getLocation())) return;
             event.setCancelled(true);
             deny(event.getPlayer());
-        });
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onDecorativeShelfInteract(PlayerInteractEvent event) {
-        safety.run("hold.protect.decorativeShelf", () -> {
-            if (canBypass(event.getPlayer())) return;
-            Block clicked = event.getClickedBlock();
-            if (clicked == null || clicked.getType() != Material.CHISELED_BOOKSHELF) return;
-            if (!insideHold(clicked.getLocation()) || insideNamedSite(VAUN_MECHANIC_SHELF, clicked.getLocation())) return;
-            event.setCancelled(true);
-            deny(event.getPlayer());
-        });
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEvidenceBookClick(InventoryClickEvent event) {
-        safety.run("hold.protect.evidenceBookClick", () -> {
-            Location loc = event.getView().getTopInventory().getLocation();
-            if (loc == null || !insideHold(loc)) return;
-            if (!(event.getWhoClicked() instanceof Player player) || canBypass(player)) return;
-            if (event.getRawSlot() < 0 || event.getRawSlot() >= event.getView().getTopInventory().getSize()) return;
-            if ((event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WRITTEN_BOOK)
-                    || (event.getCursor() != null && event.getCursor().getType() == Material.WRITTEN_BOOK)) {
-                event.setCancelled(true);
-                deny(player);
-            }
-        });
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onEvidenceBookDrag(InventoryDragEvent event) {
-        safety.run("hold.protect.evidenceBookDrag", () -> {
-            Location loc = event.getView().getTopInventory().getLocation();
-            if (loc == null || !insideHold(loc) || event.getOldCursor().getType() != Material.WRITTEN_BOOK) return;
-            if (!(event.getWhoClicked() instanceof Player player) || canBypass(player)) return;
-            int topSize = event.getView().getTopInventory().getSize();
-            if (event.getRawSlots().stream().anyMatch(slot -> slot >= 0 && slot < topSize)) {
-                event.setCancelled(true);
-                deny(player);
-            }
         });
     }
 
@@ -257,22 +276,6 @@ public final class HoldProtectionListener implements Listener {
         return false;
     }
 
-    private boolean insideNamedSite(String siteId, Location loc) {
-        if (siteId == null || loc == null || loc.getWorld() == null) return false;
-        SitesConfig cfg = currentSites();
-        Site site = cfg == null ? null : cfg.get(siteId);
-        return site != null && site.contains(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ());
-    }
-
-    private boolean isAllowedThirdLampPlacement(Block block) {
-        if (block == null || !isLightMaterial(block.getType())) return false;
-        SitesConfig cfg = currentSites();
-        Site thirdLamp = cfg == null ? null : cfg.get(THIRD_LAMP_SITE);
-        Location loc = block.getLocation();
-        return thirdLamp != null && loc.getWorld() != null
-                && thirdLamp.contains(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ());
-    }
-
     private SitesConfig currentSites() {
         try {
             return sites == null ? null : sites.get();
@@ -289,19 +292,4 @@ public final class HoldProtectionListener implements Listener {
         if (player != null) player.sendMessage("The Hold does not give.");
     }
 
-    private static boolean isLightMaterial(Material type) {
-        if (type == null) return false;
-        String n = type.name();
-        return n.contains("TORCH")
-                || n.contains("LANTERN")
-                || n.contains("CANDLE")
-                || n.contains("CAMPFIRE")
-                || n.contains("FIRE")
-                || n.contains("GLOWSTONE")
-                || n.contains("SHROOMLIGHT")
-                || n.contains("FROGLIGHT")
-                || n.contains("COPPER_BULB")
-                || n.equals("END_ROD")
-                || n.equals("LIGHT");
-    }
 }

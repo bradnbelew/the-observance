@@ -1,5 +1,7 @@
 # THE UNLIT - PRE-ARG STARTUP GUIDE
 
+> **SUPERSEDED PRE-V5 ARCHIVE — DO NOT RUN THESE COMMANDS OR DEPLOY THE NAMED JAR.** Current Unlit setup is in `design/V5-WORLD-SETUP-AND-TESTING.md`.
+
 This is the operator path for turning the Unlit from a coded feature into a playable ARG pillar.
 Use it after uploading the fresh plugin jar and before friends enter the fiction.
 

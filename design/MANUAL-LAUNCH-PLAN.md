@@ -1,5 +1,8 @@
 # THE OBSERVANCE - MANUAL LAUNCH PLAN
 
+> **SUPERSEDED V4 ARCHIVE.** All remaining real-world actions are now enumerated in
+> `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.
+
 > Current verdict: the repo automation can be green while launch is still not approved. This plan is the
 > handoff for the work that only a live server, real client, hosted files, and Ethan/operator judgment can
 > prove. The final go/no-go command is:

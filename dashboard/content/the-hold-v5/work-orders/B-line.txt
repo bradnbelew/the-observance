@@ -1,0 +1,6 @@
+COPPERLINE FIELD RELAY / WORKSTATION B
+assigned: Rook
+copper jacket stamped: 2009
+single test pulse: 1
+route image corner: B
+note: temporary route bracing was not part of the customer world export.

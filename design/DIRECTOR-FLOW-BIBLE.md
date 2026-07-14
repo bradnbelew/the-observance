@@ -1,5 +1,8 @@
 # The Observance - Director Flow Bible
 
+> **SUPERSEDED V4 ARCHIVE.** Current player order is `design/EXPERIENCE-MANIFEST.md`; current operator
+> order is `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.
+
 This is the operator-facing player-flow bible for the current overhaul. It is
 not a lore appendix and not a task backlog. Its job is to keep the run legible
 to the director: what players experience, how they know where to pull next, what
@@ -56,8 +59,9 @@ Current hard rules:
 
 ## Phase 0 - Hold Copy
 
-Players receive the Copperline URL before the server. The ordinary expired service row leads through
-mkept's account activity to `the-hold.zip`. The contained invitation walk then reconstructs the live
+Players receive the Copperline URL before the server. The ordinary expired row opens a damaged account
+docket; its printed A1Z26 strip restores the missing service field through a fail-closed website input.
+The resolved service page then leads through mkept's account activity to `the-hold.zip`. The contained invitation walk reconstructs the live
 Paper endpoint from ordered host fragments, a common-web ending, and five service digits. The map,
 not the dead customer row, owns the live address reveal.
 
@@ -69,8 +73,9 @@ Players should infer:
 
 Onward vector:
 
-- The company homepage exposes no ARG menu. Service `1842` withholds its old address and links to the
-  account owner’s ordinary community post; that post carries the world copy and quiet Record bridge.
+- The company homepage exposes no ARG menu or service number. The public row uses an opaque damaged
+  reference; only a correct docket submission reveals service `1842` and its support history. The
+  account owner’s ordinary community post carries the diagnostic copy and quiet Record bridge.
 - The final room assembles `snoikerz.com:25569` from evidence filed across rooms one through five.
 - First server arrival confirms the web trail resolved to something real.
 

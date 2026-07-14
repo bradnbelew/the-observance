@@ -1,5 +1,9 @@
 # THE OBSERVANCE — THE PUZZLE SYSTEM (diversity by design)
 
+> **SUPERSEDED V4 ARCHIVE.** Exact V5 puzzles, solutions, hints, inputs, and runtime owners live in
+> `design/ARG-V5-NODE-MANIFEST.csv`, `design/ARG-V5-RUNTIME-BINDINGS.csv`, and
+> `arc/v5/SOLUTION-CASEBOOK.md`.
+
 > Canonical. Companion to [OVERHAUL.md](OVERHAUL.md). Fixes the project's biggest puzzle
 > weakness: it was **cipher-monotone** — 5 of 6 keepers were "decode this text" with a
 > different letter-method. This doc makes puzzles diverse across **four independent axes** so

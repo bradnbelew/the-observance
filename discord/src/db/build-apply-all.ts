@@ -54,6 +54,9 @@ const ORDER: readonly string[] = [
   'discord/supabase/migrations/0010_answer_attempts_web_rate_limit.sql',
   'discord/supabase/migrations/0011_showrunner_lock.sql',
   'discord/supabase/migrations/0012_world_paste_ledger.sql',
+  'discord/supabase/migrations/0013_v5_investigations.sql',
+  'discord/supabase/migrations/0014_atomic_identity_link.sql',
+  'discord/supabase/migrations/0015_identity_proof_of_control.sql',
   // ---- dashboard public/admin views that depend on the Discord schema ----
   'dashboard/supabase/migrations/0004_v_record.sql',
   'dashboard/supabase/migrations/0005_reconcile_tracker_views.sql',
@@ -61,6 +64,7 @@ const ORDER: readonly string[] = [
   'dashboard/supabase/migrations/0007_v_archive.sql',
   'dashboard/supabase/migrations/0008_v_archive_flag_gate.sql',
   'dashboard/supabase/migrations/0009_beat_queue_failed_status.sql',
+  'dashboard/supabase/migrations/0010_v5_public_record.sql',
   // ---- seeds (puzzles_seed FIRST; metapuzzle + progression LAST — they gate on 0006/0008 columns) ----
   'discord/supabase/seeds/puzzles_seed.sql',
   'discord/supabase/seeds/seventh_seed.sql',
@@ -70,6 +74,8 @@ const ORDER: readonly string[] = [
   'discord/supabase/seeds/hints_seed.sql',
   'discord/supabase/seeds/metapuzzle_seed.sql',
   'discord/supabase/seeds/progression_seed.sql',
+  // V5 must be last: it retires every old authored row after legacy seeds finish their audit-preserving upserts.
+  'discord/supabase/seeds/v5_investigations.sql',
   // ---- plugin<->DB schema reconciliation (adds columns/indexes the plugin upserts need) ----
   'discord/supabase/schema-repair.sql',
 ];

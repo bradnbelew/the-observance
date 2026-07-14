@@ -85,66 +85,31 @@ function Test-PackMetadata([string]$McmetaPath, [int[]]$ExpectedMin, [int[]]$Exp
 }
 
 function Test-DataPack12111([string]$DataPackRoot) {
-  $dimensionPath = Join-Path $DataPackRoot "data\observance\dimension_type\undercroft.json"
-  $dimension = Read-Json $dimensionPath
-  if ($null -ne $dimension) {
-    $legacyDimensionKeys = @(
-      "ultrawarm", "natural", "fixed_time", "bed_works",
-      "respawn_anchor_works", "has_raids", "effects"
-    )
-    foreach ($key in $legacyDimensionKeys) {
-      if ($dimension.PSObject.Properties.Name -contains $key) {
-        Add-Failure "1.21.11 dimension type still uses removed legacy key '$key': $dimensionPath"
-      }
-    }
-    foreach ($key in @("attributes", "has_fixed_time", "skybox", "cardinal_light")) {
-      if ($dimension.PSObject.Properties.Name -notcontains $key) {
-        Add-Failure "1.21.11 dimension type is missing '$key': $dimensionPath"
-      }
-    }
-    if ($null -ne $dimension.attributes) {
-      foreach ($key in @("minecraft:gameplay/bed_rule", "minecraft:gameplay/respawn_anchor_works")) {
-        if ($dimension.attributes.PSObject.Properties.Name -notcontains $key) {
-          Add-Failure "1.21.11 dimension attributes are missing '$key': $dimensionPath"
-        }
+  $loadTagPath = Join-Path $DataPackRoot "data\minecraft\tags\function\load.json"
+  $loadFunctionPath = Join-Path $DataPackRoot "data\observance\function\v5\load.mcfunction"
+  $loadTag = Read-Json $loadTagPath
+  if ($null -eq $loadTag -or @($loadTag.values) -notcontains "observance:v5/load") {
+    Add-Failure "V5 datapack load tag must invoke observance:v5/load: $loadTagPath"
+  }
+  if (!(Test-Path -LiteralPath $loadFunctionPath)) {
+    Add-Failure "V5 datapack marker function is missing: $loadFunctionPath"
+  } else {
+    $functionText = Get-Content -LiteralPath $loadFunctionPath -Raw
+    foreach ($token in @("storage observance:runtime version", "scoreboard players set runtime obs_v5 5")) {
+      if (-not $functionText.Contains($token)) {
+        Add-Failure "V5 datapack marker function is missing '$token'"
       }
     }
   }
 
-  $biomeRoot = Join-Path $DataPackRoot "data\observance\worldgen\biome"
-  Get-ChildItem -LiteralPath $biomeRoot -Filter *.json | ForEach-Object {
-    $biome = Read-Json $_.FullName
-    if ($null -eq $biome) { return }
-    if ($biome.carvers -is [pscustomobject]) {
-      Add-Failure "1.21.11 biome carvers must be a string or array, not the removed step map: $($_.FullName)"
-    }
-    if ($null -eq $biome.attributes) {
-      Add-Failure "1.21.11 biome is missing environment attributes: $($_.FullName)"
-    }
-    if ($null -ne $biome.effects) {
-      foreach ($key in @("fog_color", "water_fog_color", "sky_color", "mood_sound", "additions_sound", "ambient_sound", "music")) {
-        if ($biome.effects.PSObject.Properties.Name -contains $key) {
-          Add-Failure "1.21.11 biome still uses migrated effects key '$key': $($_.FullName)"
-        }
+  foreach ($retired in @("dimension", "dimension_type", "worldgen", "advancement")) {
+    $retiredPath = Join-Path $DataPackRoot "data\observance\$retired"
+    if (Test-Path -LiteralPath $retiredPath) {
+      $files = @(Get-ChildItem -LiteralPath $retiredPath -Recurse -File -ErrorAction SilentlyContinue)
+      if ($files.Count -gt 0) {
+        Add-Failure "V5 datapack contains retired V4 $retired content: $retiredPath"
       }
     }
-    $ambient = $biome.attributes.'minecraft:audio/ambient_sounds'
-    if ($null -ne $ambient) {
-      foreach ($entry in @($ambient.mood, $ambient.additions)) {
-        if ($null -eq $entry) { continue }
-        $sound = [string]$entry.sound
-        if ($sound.StartsWith("observance:")) {
-          Add-Failure "Biome environment attributes cannot reference resource-pack-only sound '$sound'; use a registered server sound event: $($_.FullName)"
-        }
-      }
-    }
-  }
-
-  $noisePath = Join-Path $DataPackRoot "data\observance\worldgen\noise_settings\undercroft.json"
-  $noise = Read-Json $noisePath
-  if ($null -ne $noise -and $null -ne $noise.noise_router -and
-      $noise.noise_router.PSObject.Properties.Name -notcontains "preliminary_surface_level") {
-    Add-Failure "1.21.11 noise router is missing preliminary_surface_level: $noisePath"
   }
 }
 

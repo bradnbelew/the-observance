@@ -1,0 +1,11 @@
+# The linked Vercel project has dashboard/ as its configured monorepo root.
+# Keep local CLI deployments from uploading the Minecraft/plugin/tooling tree.
+/*
+!dashboard
+
+# Defense in depth: never upload local/build-time secrets even if Vercel's defaults change.
+/dashboard/.env*
+!/dashboard/.env.example
+/dashboard/.next/
+/dashboard/node_modules/
+/dashboard/*.log

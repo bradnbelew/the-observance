@@ -9,6 +9,7 @@ import com.observance.watcher.config.Site;
 import com.observance.watcher.config.SitesConfig;
 import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.data.rows.EventLogRow;
+import com.observance.watcher.finale.FinaleController;
 import com.observance.watcher.listener.PresenceListener;
 import com.observance.watcher.oracle.OracleResolver;
 import com.observance.watcher.signal.InventoryScanner;
@@ -30,6 +31,8 @@ import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Reveal;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
+import com.observance.watcher.v5runtime.ProgressSnapshot;
+import com.observance.watcher.v5runtime.V5RuntimeCoordinator;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -40,8 +43,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -54,6 +62,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class ObservancePlugin extends JavaPlugin {
 
+    /**
+     * The 0.5.x server is the V5 production story. Keep the former listener graph in source for
+     * migration/reference, but never register it in a live V5 world: several of those listeners
+     * write retired flags or can complete retired rites merely by touching their old fixtures.
+     */
+    private static final boolean V5_PRODUCTION = true;
+
     // --- core singletons ---
     private Safety safety;
     private Scheduler scheduler;
@@ -62,6 +77,7 @@ public final class ObservancePlugin extends JavaPlugin {
     private SupabaseClient supabase;
     private int runtimeSiteBatchDepth = 0;
     private final List<Site> runtimeSiteBatch = new ArrayList<>();
+    private SitesConfig runtimeSiteBatchBase;
 
     // --- shared utilities exposed to subsystem agents ---
     private Reveal reveal;
@@ -137,6 +153,10 @@ public final class ObservancePlugin extends JavaPlugin {
     private volatile boolean locallyAsleep = false;          // /observance sleep on|off
     private final List<BukkitTask> scheduledTasks = new ArrayList<>();
     private ObservanceCommand observanceCommand;
+    /** Sole owner of all production V5 physical predicate adapters and durable local progression. */
+    private V5RuntimeCoordinator v5Runtime;
+    /** Local durable finale controller; remains available even when the server boots into CODA. */
+    private FinaleController finaleController;
 
     /* ==================================================================== */
     /*  Lifecycle                                                           */
@@ -154,6 +174,9 @@ public final class ObservancePlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        // The retired V4 finale controller must never coexist with the V5 local authority.
+        this.finaleController = null;
 
         // 3. Supabase client.
         this.supabase = new SupabaseClient(config, getLogger());
@@ -224,30 +247,54 @@ public final class ObservancePlugin extends JavaPlugin {
         this.poller = new BeatQueuePoller(config, supabase, scheduler, safety,
                 beatEnactor::get, this::isLocallyAsleep);
 
-        // 8. Register listeners + command.
-        registerListeners();
+        // 8. The command must exist before V5 recovery projects gates/books through it.
         registerCommands();
 
-        // 9. Schedule async poller + maintenance.
-        startSchedulers();
+        try {
+            V5RuntimeCoordinator runtime = new V5RuntimeCoordinator(this);
+            this.v5Runtime = runtime;
+            runtime.start();
+        } catch (Throwable failure) {
+            getLogger().severe("V5 runtime failed closed during startup: " + failure.getMessage());
+            if (v5Runtime != null) v5Runtime.close();
+            v5Runtime = null;
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        registerListeners();
 
-        // 9b. Activate the Haunting Engine: beat library + drama budget + ambient generation +
-        //     anti-grief protection. This installs the REAL beat enactor (replacing the noop), so
-        //     queued beats now realize in-world. Fully fault-isolated: a failure here degrades to
-        //     "no beats" rather than crashing the server.
-        this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
-        beatEngine.activate();
+        if (v5Runtime.storyInputsEnabled()) {
+            // 9. Schedule async poller + maintenance.
+            startSchedulers();
+
+            // V5 is case/predicate driven. The former ambient/remote BeatEngine contains retired
+            // V4 story effects and must remain unreachable even if a stale beat_queue row exists.
+            if (!V5_PRODUCTION) {
+                this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
+                beatEngine.activate();
+            } else {
+                this.beatEngine = null;
+            }
+        } else {
+            this.locallyAsleep = true;
+            getLogger().warning("Observance V5 booted in terminal finale/CODA mode; ordinary ARG "
+                    + "listeners, pollers, and haunting beats remain disabled.");
+        }
 
         // 10. Boot event (async; degrades silently if DB down).
-        logEvent("info", "boot", "Observance enabled (Phase 0). configured="
+        logEvent("info", "boot", "Observance V5 enabled. configured="
                 + supabase.isConfigured() + " sitesPlaced=" + sites.placedCount(), null);
 
-        getLogger().info("The Observance is watching. (Phase 0, configured=" + supabase.isConfigured()
+        getLogger().info("The Observance V5 is watching. (Paper 1.21.11, configured=" + supabase.isConfigured()
                 + ", placed sites=" + sites.placedCount() + ")");
     }
 
     @Override
     public void onDisable() {
+        if (v5Runtime != null) {
+            v5Runtime.close();
+            v5Runtime = null;
+        }
         // Tear down the haunting engine first (cancels ambient task, clears transient beat state).
         if (beatEngine != null) {
             beatEngine.deactivate();
@@ -261,6 +308,7 @@ public final class ObservancePlugin extends JavaPlugin {
             unlitVillage.stop();
             unlitVillage = null;
         }
+        if (finaleController != null) finaleController.stop();
 
         // Cancel our scheduled tasks; flush whatever offline writes we can (best effort, bounded).
         for (BukkitTask t : scheduledTasks) {
@@ -318,7 +366,7 @@ public final class ObservancePlugin extends JavaPlugin {
             } catch (Exception ignored) {
                 // defaults are a nicety; absence is non-fatal
             }
-            return SitesConfig.from(sitesCfg);
+            return SitesConfig.from(sitesCfg).withCanonicalDeepHoldContracts();
         } catch (Throwable t) {
             getLogger().warning("sites.yml load failed (" + t.getClass().getSimpleName()
                     + ") — using empty site set.");
@@ -329,6 +377,12 @@ public final class ObservancePlugin extends JavaPlugin {
     /** Reload config + sites at runtime. Rebuilds dependent singletons that hold config values. */
     public boolean reloadAll() {
         return safety.call("plugin.reload", () -> {
+            if (v5Runtime != null) {
+                v5Runtime.close();
+                v5Runtime = null;
+            }
+            for (BukkitTask task : scheduledTasks) Scheduler.cancel(task);
+            scheduledTasks.clear();
             reloadConfig();
             this.config = ObservanceConfig.from(getConfig(), System::getenv);
             this.sites = loadSites();
@@ -361,21 +415,32 @@ public final class ObservancePlugin extends JavaPlugin {
                 unlitVillage.stop();
                 unlitVillage = null;
             }
+            try {
+                V5RuntimeCoordinator runtime = new V5RuntimeCoordinator(this);
+                this.v5Runtime = runtime;
+                runtime.start();
+            } catch (Throwable failure) {
+                if (v5Runtime != null) v5Runtime.close();
+                v5Runtime = null;
+                throw new IllegalStateException("V5 runtime reload failed closed", failure);
+            }
             registerListeners();
 
             // Rebuild the poller against the new config/client; restart schedulers.
-            for (BukkitTask t : scheduledTasks) Scheduler.cancel(t);
-            scheduledTasks.clear();
             this.poller = new BeatQueuePoller(config, supabase, scheduler, safety,
                     beatEnactor::get, this::isLocallyAsleep);
-            startSchedulers();
+            if (v5Runtime.storyInputsEnabled()) startSchedulers();
 
             // Rebuild the haunting engine against the new config/sites. Its listeners were dropped by
             // the unregisterAll above; activate() re-registers protection + session listeners and
             // re-installs the real enactor + ambient generator.
             if (beatEngine != null) beatEngine.deactivate();
-            this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
-            beatEngine.activate();
+            if (!V5_PRODUCTION && v5Runtime.storyInputsEnabled()) {
+                this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
+                beatEngine.activate();
+            } else {
+                this.beatEngine = null;
+            }
 
             logEvent("info", "reload", "config+sites reloaded; sitesPlaced=" + sites.placedCount(), null);
             return true;
@@ -404,6 +469,15 @@ public final class ObservancePlugin extends JavaPlugin {
 
     private void registerListeners() {
         var pm = getServer().getPluginManager();
+        if (V5_PRODUCTION && v5Runtime != null && !v5Runtime.storyInputsEnabled()) {
+            // Coda keeps only the five ordinary witnesses plus the coordinator's read-only Wren/Coda
+            // surfaces. No puzzle, answer, Unlit, or retired finale input remains reachable.
+            this.townsfolkListener = new com.observance.watcher.signal.listener.TownsfolkNpcListener(
+                    townsfolk, signalTracker, rateLimiter, scheduler, safety, supabase,
+                    this::sites, this::issCaught, this::v5LocalFacts);
+            pm.registerEvents(townsfolkListener, this);
+            return;
+        }
         pm.registerEvents(new PresenceListener(supabase, scheduler, safety, signalTracker, "observance"), this);
 
         // Resource-pack load gate (MF-11) — the SAME instance across reloads (its map is the truth of
@@ -420,6 +494,7 @@ public final class ObservancePlugin extends JavaPlugin {
                 config.resourcePackPrompt(), config.resourcePackDelayTicks());
         pm.registerEvents(resourcePackPusher, this);
 
+        if (!V5_PRODUCTION) {
         // The Lens (INTEGRATION §SIGNATURE #3) — reveals/hides gated per-player runes as the relic is
         // equipped/holstered. Rebuilt each registration so it points at the current shared registry;
         // the registry itself is preserved across reloads (created once in onEnable).
@@ -437,8 +512,10 @@ public final class ObservancePlugin extends JavaPlugin {
         pm.registerEvents(new TerritoryListener(signalTracker, safety), this);
         // The Reads axis (Tier-0 "studies the lore"): opening a lectern/book bumps lectern_reads.
         pm.registerEvents(new LecternReadListener(signalTracker, rateLimiter, safety), this);
-        pm.registerEvents(new CustomComplianceListener(
-                signalTracker, this::sites, rateLimiter, safety), this);
+        }
+        if (!V5_PRODUCTION) {
+            pm.registerEvents(new CustomComplianceListener(
+                    signalTracker, this::sites, rateLimiter, safety), this);
         // The Dark Hours custom — sleeping on a taboo moon phase is a tracked violation
         // (rate-limited per player). Pure tracking; escalation is a downstream beat's job.
         pm.registerEvents(new DarkHoursListener(signalTracker, rateLimiter, safety), this);
@@ -447,7 +524,11 @@ public final class ObservancePlugin extends JavaPlugin {
         // Config-gated (customs.unlit-deep.enabled + restraint.enabled) — a clean no-op when off.
         this.unlitDeep = new UnlitDeepListener(
                 signalTracker, supabase, rateLimiter, scheduler, safety, this::sites);
-        pm.registerEvents(unlitDeep, this);
+            pm.registerEvents(unlitDeep, this);
+        } else {
+            // V4 customs write retired story flags.  Leave no live sampler behind after reload.
+            this.unlitDeep = null;
+        }
         if (unlitVillage != null) { unlitVillage.stop(); unlitVillage = null; }
         this.unlitVillage = new UnlitVillageListener(
                 this, this::sites, supabase, rateLimiter, scheduler, safety, "observance");
@@ -462,9 +543,26 @@ public final class ObservancePlugin extends JavaPlugin {
 
         // The in-world answer verb (the closed clue loop's world surface). Sites resolved live so a
         // reload is picked up; resolver shares the same puzzles table as the Discord surface.
-        pm.registerEvents(new AnswerSignListener(
-                oracleResolver, this::sites, rateLimiter, scheduler, safety,
-                signalTracker.config().answerSignCooldownMs()), this);
+        if (!V5_PRODUCTION) {
+            pm.registerEvents(new AnswerSignListener(
+                    oracleResolver, this::sites, rateLimiter, scheduler, safety,
+                    signalTracker.config().answerSignCooldownMs()), this);
+        }
+
+        if (V5_PRODUCTION) {
+            // Wren is owned exclusively by the exact WR03/Coda runtime adapter. Townsfolk retain one
+            // synchronous, authority-backed listener throughout the active story.
+            this.townsfolkListener = new com.observance.watcher.signal.listener.TownsfolkNpcListener(
+                    townsfolk, signalTracker, rateLimiter, scheduler, safety, supabase,
+                    this::sites, this::issCaught, this::v5LocalFacts);
+            pm.registerEvents(townsfolkListener, this);
+
+            // Explicitly tear down every retired producer with a repeating task or maintenance tick.
+            if (thresholdVault != null) { thresholdVault.stop(); thresholdVault = null; }
+            this.siteDiscoveryListener = null;
+            this.acceptingReady = false;
+            return;
+        }
 
         // Room-swap consumer (D5 rework): teleport a player who crosses a SEALED door (armed by
         // RoomSwapBeat) into the pre-built changed room. Reads only the durable swap_dest PDC the beat
@@ -586,8 +684,7 @@ public final class ObservancePlugin extends JavaPlugin {
                     this::sites, oracleResolver, rateLimiter, scheduler, safety,
                     true,
                     cfg.getString("puzzles.vaun-hoard-sorted.token", ""),
-                    cfg.getString("puzzles.vaun-hoard-sorted.puzzle-key", "vaun-hoard-sorted"),
-                    cfg.getStringList("puzzles.vaun-hoard-sorted.required-materials")), this);
+                    cfg.getString("puzzles.vaun-hoard-sorted.puzzle-key", "vaun-hoard-sorted")), this);
         }
 
         // --- CODE / REDSTONE LOCKS ---
@@ -730,6 +827,7 @@ public final class ObservancePlugin extends JavaPlugin {
     private void registerCommands() {
         ObservanceCommand handler = new ObservanceCommand(this, safety);
         this.observanceCommand = handler;
+        registerIdentityLinkCommand();
         var cmd = getCommand("observance");
         if (cmd != null) {
             cmd.setExecutor(handler);
@@ -739,34 +837,48 @@ public final class ObservancePlugin extends JavaPlugin {
         }
     }
 
+    private void registerIdentityLinkCommand() {
+        var linkCommand = getCommand("observancelink");
+        if (linkCommand != null) {
+            linkCommand.setExecutor(new com.observance.watcher.command.IdentityLinkCodeCommand(this));
+        } else {
+            getLogger().warning("Command 'observancelink' missing from plugin.yml; player identity proof unavailable.");
+        }
+    }
+
     private void startSchedulers() {
-        long pollTicks = Math.max(20L, config.beatPollIntervalSeconds() * 20L);
-        // Beat-queue poller — ASYNC (it does network I/O; it hops to main internally to mutate).
-        scheduledTasks.add(scheduler.runAsyncTimerSafe(
-                "beat.poller", pollTicks, pollTicks, () -> poller.pollOnce()));
+        if (!V5_PRODUCTION) {
+            long pollTicks = Math.max(20L, config.beatPollIntervalSeconds() * 20L);
+            scheduledTasks.add(scheduler.runAsyncTimerSafe(
+                    "beat.poller", pollTicks, pollTicks, () -> poller.pollOnce()));
+        }
 
         // Prime the OBSERVER TIER-1 global switch once at startup (async), so an already-enabled
         // 'observer_capture' is honored without waiting a full maint cycle. Still defaults FALSE.
-        scheduler.runAsyncSafe("observer.capture.prime", this::refreshObserverCapture);
+        if (!V5_PRODUCTION) scheduler.runAsyncSafe("observer.capture.prime", this::refreshObserverCapture);
 
         // Prime the SURFACE-TOWNSFOLK iss_caught arc echo once at startup (async), so Old Pell's
         // iss_cold greet is honored without waiting a full maint cycle. Still defaults FALSE.
-        scheduler.runAsyncSafe("townsfolk.iss.prime", this::refreshIssCaught);
+        if (!V5_PRODUCTION) scheduler.runAsyncSafe("townsfolk.iss.prime", this::refreshIssCaught);
 
         // Offline-queue flush + rate-limiter prune — ASYNC, slower cadence.
         long maintTicks = 60L * 20L; // every 60s
         scheduledTasks.add(scheduler.runAsyncTimerSafe("maint", maintTicks, maintTicks, () -> {
             supabase.flushOfflineQueue();
             rateLimiter.prune();
-            refreshObserverCapture(); // OBSERVER TIER-1 global switch — cheap async refresh, never per-message
-            refreshIssCaught();       // SURFACE-TOWNSFOLK iss_caught echo — cheap async refresh, never per-click
+            if (!V5_PRODUCTION) {
+                refreshObserverCapture();
+                refreshIssCaught();
+            }
         }));
 
         // Companion reveal watcher — reads arc_state and flips companion_revealed once iss_caught (or
         // the kept-close artifact) is true. Pure DB I/O so ASYNC; slow cadence (reuses the maint rhythm).
-        scheduledTasks.add(scheduler.runAsyncTimerSafe("companion.reveal", maintTicks, maintTicks, () -> {
-            if (companionWatcher != null) companionWatcher.pollOnce();
-        }));
+        if (!V5_PRODUCTION) {
+            scheduledTasks.add(scheduler.runAsyncTimerSafe("companion.reveal", maintTicks, maintTicks, () -> {
+                if (companionWatcher != null) companionWatcher.pollOnce();
+            }));
+        }
 
         // Presence heartbeat — touches Bukkit (online players) so it runs on MAIN, then writes async.
         long hbTicks = Math.max(20L, config.presenceHeartbeatSeconds() * 20L);
@@ -778,18 +890,20 @@ public final class ObservancePlugin extends JavaPlugin {
         // Location sampler — reads Bukkit (positions/lights) so MAIN thread. Heatmap + cohesion +
         // solo-mining + Kept-Light scan. NOT PlayerMoveEvent (DESIGN §2.1).
         long sampleTicks = Math.max(20L, config.locationSampleSeconds() * 20L);
-        scheduledTasks.add(scheduler.runTimerSafe("sampler.location", sampleTicks, sampleTicks,
-                () -> locationSampler.sampleTick()));
+        if (!V5_PRODUCTION) {
+            scheduledTasks.add(scheduler.runTimerSafe("sampler.location", sampleTicks, sampleTicks,
+                    () -> locationSampler.sampleTick()));
 
         // Unlit Deep trial sampling shares the position cadence. It persists entry and evaluates the
         // previous taboo night at dawn, making both the kept and broken outcomes restart-safe.
-        scheduledTasks.add(scheduler.runTimerSafe("sampler.unlit_deep", sampleTicks, sampleTicks,
-                () -> { if (unlitDeep != null) unlitDeep.sampleTick(); }));
+            scheduledTasks.add(scheduler.runTimerSafe("sampler.unlit_deep", sampleTicks, sampleTicks,
+                    () -> { if (unlitDeep != null) unlitDeep.sampleTick(); }));
 
         // Inventory/hoard scanner — reads live inventories so MAIN thread.
         long invTicks = Math.max(20L, config.inventoryScanSeconds() * 20L);
-        scheduledTasks.add(scheduler.runTimerSafe("sampler.inventory", invTicks, invTicks,
-                () -> inventoryScanner.scanTick()));
+            scheduledTasks.add(scheduler.runTimerSafe("sampler.inventory", invTicks, invTicks,
+                    () -> inventoryScanner.scanTick()));
+        }
 
         // Townsfolk tracked-quest proximity sweep — reads Bukkit sites/positions so MAIN thread.
         // Light + cheap (only players with an ACTIVE quest are tested); rides the same cadence as the
@@ -813,23 +927,25 @@ public final class ObservancePlugin extends JavaPlugin {
 
         // Dossier/compliance/heatmap flush — network I/O so ASYNC. Cadence = the presence
         // heartbeat (a sensible "write back what changed" rhythm).
-        scheduledTasks.add(scheduler.runAsyncTimerSafe("tracker.flush", hbTicks, hbTicks, () -> {
-            SignalTracker.FlushSummary sum = signalTracker.flushOnce();
-            if (config.debug() && sum.total() > 0) {
-                getLogger().info("[tracker.flush] dossiers=" + sum.dossiers()
-                        + " compliance=" + sum.compliance() + " cells=" + sum.cells());
-            }
-        }));
+        if (!V5_PRODUCTION) {
+            scheduledTasks.add(scheduler.runAsyncTimerSafe("tracker.flush", hbTicks, hbTicks, () -> {
+                SignalTracker.FlushSummary sum = signalTracker.flushOnce();
+                if (config.debug() && sum.total() > 0) {
+                    getLogger().info("[tracker.flush] dossiers=" + sum.dossiers()
+                            + " compliance=" + sum.compliance() + " cells=" + sum.cells());
+                }
+            }));
 
         // Base-detection pass — clustering build + upsert; network I/O so ASYNC, slow cadence.
         long baseTicks = Math.max(20L, config.baseDetectSeconds() * 20L);
-        scheduledTasks.add(scheduler.runAsyncTimerSafe("tracker.bases", baseTicks, baseTicks,
-                () -> {
-                    int n = signalTracker.flushBases();
-                    if (config.debug() && n > 0) {
-                        getLogger().info("[tracker.bases] upserted " + n + " base(s)");
-                    }
-                }));
+            scheduledTasks.add(scheduler.runAsyncTimerSafe("tracker.bases", baseTicks, baseTicks,
+                    () -> {
+                        int n = signalTracker.flushBases();
+                        if (config.debug() && n > 0) {
+                            getLogger().info("[tracker.bases] upserted " + n + " base(s)");
+                        }
+                    }));
+        }
     }
 
     /** MAIN thread: snapshot online players, then upsert last_seen off-thread. */
@@ -857,6 +973,45 @@ public final class ObservancePlugin extends JavaPlugin {
     public SitesConfig sites() { return sites; }
     public SupabaseClient supabase() { return supabase; }
     public Reveal reveal() { return reveal; }
+    public FinaleController finaleController() { return finaleController; }
+    public V5RuntimeCoordinator v5Runtime() { return v5Runtime; }
+
+    public org.bukkit.Location v5HoldMouth() {
+        return observanceCommand == null ? null : observanceCommand.v5HoldMouth();
+    }
+
+    public void projectV5LocalState(ProgressSnapshot snapshot) {
+        if (observanceCommand != null) observanceCommand.projectV5LocalState(snapshot);
+    }
+
+    public List<String> applyV5CodaWorldState(
+            com.observance.watcher.v5runtime.ritual.RitualChoices.NameTreatment treatment) {
+        return observanceCommand == null
+                ? List.of("V5 command controller is unavailable")
+                : observanceCommand.applyV5CodaWorldState(treatment);
+    }
+
+    private Map<String, Object> v5LocalFacts() {
+        V5RuntimeCoordinator runtime = v5Runtime;
+        if (runtime == null) return Map.of();
+        ProgressSnapshot snapshot = runtime.snapshot();
+        Map<String, Object> facts = new LinkedHashMap<>();
+        snapshot.booleans().forEach((key, value) -> {
+            if (Boolean.TRUE.equals(value)) facts.put(key, Boolean.TRUE);
+        });
+        snapshot.branches().forEach(facts::put);
+        snapshot.conductVerdict().ifPresent(
+                value -> facts.put("v5_conduct_verdict", value.wireValue()));
+        return Map.copyOf(facts);
+    }
+
+    /** Main-thread terminal world projection used only after the schema-2 finale is durable. */
+    public List<String> applyFinaleCodaWorldState(
+            com.observance.watcher.finale.FinaleStateMachine.Snapshot state) {
+        return observanceCommand == null
+                ? List.of("V5 command controller is unavailable")
+                : observanceCommand.applyFinaleCodaWorldState(state);
+    }
 
     /** OBSERVER TIER-1 global consent switch (cached). The {@link ChatListener} reads this cheaply on the
      *  chat thread; it is refreshed off-thread by {@link #refreshObserverCapture()} on the maint cadence.
@@ -967,15 +1122,15 @@ public final class ObservancePlugin extends JavaPlugin {
      * reload or restart. If the write fails it logs a warning but still registers the runtime site
      * (the in-session placement is never rolled back over a failed disk write).
      */
-    public void registerRuntimeSite(Site site) {
-        if (site == null || sites == null) return;
+    public boolean registerRuntimeSite(Site site) {
+        if (site == null || sites == null) return false;
         this.sites = sites.withSite(site);
         if (runtimeSiteBatchDepth > 0) {
             runtimeSiteBatch.add(site);
+            return true;
         } else {
-            persistSiteToYml(site);
+            return persistSiteToYml(site);
         }
-
     }
 
     /**
@@ -984,19 +1139,41 @@ public final class ObservancePlugin extends JavaPlugin {
      * for every placed site.
      */
     public void beginRuntimeSiteBatch() {
+        if (runtimeSiteBatchDepth == 0) {
+            runtimeSiteBatch.clear();
+            runtimeSiteBatchBase = sites;
+        }
         runtimeSiteBatchDepth++;
     }
 
-    public void endRuntimeSiteBatch() {
+    public boolean endRuntimeSiteBatch() {
         if (runtimeSiteBatchDepth > 0) runtimeSiteBatchDepth--;
-        if (runtimeSiteBatchDepth == 0) flushRuntimeSiteBatch();
+        if (runtimeSiteBatchDepth == 0) {
+            boolean persisted = flushRuntimeSiteBatch();
+            runtimeSiteBatchBase = null;
+            return persisted;
+        }
+        return true;
     }
 
-    private void flushRuntimeSiteBatch() {
-        if (runtimeSiteBatch.isEmpty()) return;
+    /**
+     * Discard an in-progress registration batch without publishing any of its sites.  The live
+     * immutable {@link SitesConfig} reference is restored as well as the pending disk write.  Mega
+     * structures use this after a failed final readback so listeners can never observe a partial
+     * Hold as production-ready merely because its early fixtures registered successfully.
+     */
+    public void abortRuntimeSiteBatch() {
+        if (runtimeSiteBatchBase != null) this.sites = runtimeSiteBatchBase;
+        runtimeSiteBatch.clear();
+        runtimeSiteBatchDepth = 0;
+        runtimeSiteBatchBase = null;
+    }
+
+    private boolean flushRuntimeSiteBatch() {
+        if (runtimeSiteBatch.isEmpty()) return true;
         List<Site> pending = new ArrayList<>(runtimeSiteBatch);
         runtimeSiteBatch.clear();
-        persistSitesToYml(pending);
+        return persistSitesToYml(pending);
     }
 
     /**
@@ -1007,8 +1184,8 @@ public final class ObservancePlugin extends JavaPlugin {
      *
      * <p>MAIN thread only (called from the command handler, which runs synchronously).
      */
-    public void persistSiteToYml(Site site) {
-        if (site == null) return;
+    public boolean persistSiteToYml(Site site) {
+        if (site == null) return false;
         try {
             File file = new File(getDataFolder(), "sites.yml");
             if (!file.exists()) {
@@ -1036,15 +1213,17 @@ public final class ObservancePlugin extends JavaPlugin {
             sec.set("visual_beacon", null);
             sec.set("visual-beacon", null);
 
-            cfg.save(file);
+            saveSitesAtomically(cfg, file, List.of(site));
+            return true;
         } catch (Throwable t) {
             getLogger().warning("[Observance] Could not persist site '" + site.id()
                     + "' to sites.yml: " + t.getClass().getSimpleName() + ": " + t.getMessage());
+            return false;
         }
     }
 
-    private void persistSitesToYml(List<Site> siteList) {
-        if (siteList == null || siteList.isEmpty()) return;
+    private boolean persistSitesToYml(List<Site> siteList) {
+        if (siteList == null || siteList.isEmpty()) return true;
         try {
             File file = new File(getDataFolder(), "sites.yml");
             if (!file.exists()) {
@@ -1054,11 +1233,57 @@ public final class ObservancePlugin extends JavaPlugin {
             for (Site site : siteList) {
                 writeSiteToYml(cfg, site);
             }
-            cfg.save(file);
+            saveSitesAtomically(cfg, file, siteList);
+            return true;
         } catch (Throwable t) {
             getLogger().warning("[Observance] Could not persist " + siteList.size()
                     + " runtime site(s) to sites.yml: "
                     + t.getClass().getSimpleName() + ": " + t.getMessage());
+            return false;
+        }
+    }
+
+    /** Stage, parse, verify, and atomically install sites.yml. The old file survives every failed save. */
+    private void saveSitesAtomically(YamlConfiguration cfg, File destination, List<Site> expected)
+            throws Exception {
+        if (cfg == null || destination == null) throw new IllegalArgumentException("missing sites save input");
+        File parent = destination.getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs()) {
+            throw new IllegalStateException("could not create plugin data directory");
+        }
+        File staged = new File(parent, destination.getName() + ".tmp");
+        try {
+            cfg.save(staged);
+            YamlConfiguration readBack = YamlConfiguration.loadConfiguration(staged);
+            for (Site site : expected) {
+                if (site == null) continue;
+                String path = "sites." + site.id();
+                if (!readBack.isConfigurationSection(path)
+                        || !site.type().equals(readBack.getString(path + ".type"))
+                        || site.radius() != readBack.getInt(path + ".radius", -1)
+                        || site.verticalRadius() != readBack.getInt(path + ".vertical-radius", -1)
+                        || site.protect() != readBack.getBoolean(path + ".protect")) {
+                    throw new IllegalStateException("staged read-back mismatch for " + site.id());
+                }
+                if (site.location() != null) {
+                    double x = readBack.getDouble(path + ".x", Double.NaN);
+                    double y = readBack.getDouble(path + ".y", Double.NaN);
+                    double z = readBack.getDouble(path + ".z", Double.NaN);
+                    if (Double.compare(x, site.location().getX()) != 0
+                            || Double.compare(y, site.location().getY()) != 0
+                            || Double.compare(z, site.location().getZ()) != 0) {
+                        throw new IllegalStateException("staged coordinate mismatch for " + site.id());
+                    }
+                }
+            }
+            try {
+                Files.move(staged.toPath(), destination.toPath(), StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException unsupported) {
+                Files.move(staged.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            try { Files.deleteIfExists(staged.toPath()); } catch (Throwable ignored) { }
         }
     }
 

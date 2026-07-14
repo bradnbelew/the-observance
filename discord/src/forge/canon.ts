@@ -4,8 +4,7 @@
  * Generalizes the X1 forge-spec bind (clue-specs.ts) into the closed sets everything keys off,
  * plus the build-time self-tests that turn a coherence drift into a FAILING BUILD instead of a
  * silent zero-row join on camera. Pure (no DB / no I/O): every function takes file contents as a
- * string; the runner (specs.selftest.ts) reads the files. Closes red-team blockers B-3, B-5, B-6
- * permanently.
+ * string; the retired forge harness supplied the files. V5 uses its manifest/binding authorities.
  */
 import { parseSeedKeys } from './clue-specs.js';
 
