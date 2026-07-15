@@ -53,6 +53,11 @@ The committed configuration names that variable; it never contains the value. Ve
 Supabase URL, hosted resource-pack URL/SHA-1, `resource-pack.required: true`, V5 mode, and
 `finale.production-shutdown: true` in the generated live config.
 
+The release JAR includes the current `handoff.discord-invite-url`, so there is no separate
+server-local invitation step. Confirm the invitation is still valid before each release and rebuild
+the JAR after changing it. `/obs preflight` must report the LS06 handoff as configured; if it does
+not, keep the server closed and correct the packaged config.
+
 Supabase is a monotonic mirror and cross-surface receipt store. Minecraft completion is local-first:
 a temporary service outage cannot retract a solved node, close an opened gate, duplicate a reward,
 or block the local finale. Production preflight still fails until the remote service and required
@@ -155,6 +160,6 @@ clones.
 
 A green build is not proof of an unseen production world. Launch additionally requires real-client
 Adventure traversal, resource-pack rendering, seven-player crowding, all 100 rows in
-`../design/V5-LIVE-TEST-MATRIX.csv`, live Discord/Vercel/Render/Supabase checks, and six restored-clone
+`../design/V5-LIVE-TEST-MATRIX.csv`, live Discord/Vercel/Railway/Supabase checks, and six restored-clone
 ending rehearsals. The single production authority for those steps is
 `../design/V5-PRODUCTION-LAUNCH-RUNBOOK.md`.

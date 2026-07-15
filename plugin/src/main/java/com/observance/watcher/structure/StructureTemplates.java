@@ -579,34 +579,33 @@ public final class StructureTemplates {
                 }
             }
         }
+        // Perimeter puddles are recessed INTO the floor (water at cy-1 ringed by solid floor
+        // blocks at the same level), so open water can never creep across the walking floor and
+        // drown the authored dry standing frames. Uncontained sources at foot level previously
+        // flooded the whole chamber, including the reader's stand, once physics ticked.
         for (int z = -6; z <= 6; z += 6) {
-            pen.water(cx - 5, cy, cz + z);
-            pen.water(cx + 5, cy, cz + z);
-            pen.set(cx - 5, cy - 1, cz + z, Material.SEA_LANTERN);
-            pen.set(cx + 5, cy - 1, cz + z, Material.SEA_LANTERN);
+            pen.set(cx - 5, cy - 2, cz + z, Material.SEA_LANTERN);
+            pen.set(cx + 5, cy - 2, cz + z, Material.SEA_LANTERN);
+            pen.water(cx - 5, cy - 1, cz + z);
+            pen.water(cx + 5, cy - 1, cz + z);
         }
+        pen.waterlogged(cx - 5, cy - 1, cz, Material.SEAGRASS);
 
-        // 5x5 prismarine surround with a recessed 3x3 reflecting pool at the centre.
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dz = -2; dz <= 2; dz++) {
-                boolean edge = Math.abs(dx) == 2 || Math.abs(dz) == 2;
-                pen.set(cx + dx, cy - 1, cz + dz, edge ? Material.DARK_PRISMARINE : Material.PRISMARINE_BRICKS);
-            }
+        // The reflecting pool is the KS01 waterline itself: a rimmed six-cell trough directly
+        // under the strip-frame row (offsets -3..+2 at the site anchor's Z). KS01 requires
+        // Material.WATER at exactly (cx-3..cx+2, cy, cz), so the trough holds foot-level water
+        // and the one-block rim at cy on every side keeps it inside the trough.
+        for (int dx = -4; dx <= 3; dx++) {
+            pen.set(cx + dx, cy, cz - 1, Material.DARK_PRISMARINE);
+            pen.set(cx + dx, cy, cz + 1, Material.DARK_PRISMARINE);
         }
-        // Carve the pool one deep and fill with water (still reflecting pool).
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                pen.set(cx + dx, cy - 1, cz + dz, Material.PRISMARINE);
-                pen.water(cx + dx, cy, cz + dz);
-            }
+        pen.set(cx - 4, cy, cz, Material.DARK_PRISMARINE);
+        pen.set(cx + 3, cy, cz, Material.DARK_PRISMARINE);
+        for (int dx = -3; dx <= 2; dx++) {
+            pen.set(cx + dx, cy - 1, cz,
+                    (dx == -2 || dx == 1) ? Material.SEA_LANTERN : Material.PRISMARINE);
+            pen.water(cx + dx, cy, cz);
         }
-        // Kelp / seagrass in the pool (a child's water-world).
-        pen.waterlogged(cx - 1, cy, cz - 1, Material.SEAGRASS);
-        pen.set(cx + 1, cy, cz + 1, Material.KELP_PLANT); pen.set(cx + 1, cy + 1, cz + 1, Material.KELP);
-
-        // Dim sea-lanterns set INTO the pool floor (light from below the water — drowned light).
-        pen.set(cx - 1, cy - 1, cz + 1, Material.SEA_LANTERN);
-        pen.set(cx + 1, cy - 1, cz - 1, Material.SEA_LANTERN);
 
         // The child's cairn: a small heap of cobblestone with flowers, off to one side.
         pen.set(cx + 2, cy, cz + 2, Material.MOSSY_COBBLESTONE);
@@ -622,9 +621,10 @@ public final class StructureTemplates {
         // word for the thing a grave-marker holds. crib: the referent is the flowered cairn directly north.
         pen.runeCrib(cx + 2, cy + 1, cz + 3, BlockFace.SOUTH, Material.WARPED_WALL_SIGN, "NAME");
 
-        // The copybook lectern at the pool's edge (a child practicing letters).
-        pen.lectern(cx - 2, cy, cz, BlockFace.EAST);
-        pen.putBook(cx - 2, cy, cz, "sella's copybook",
+        // The copybook lectern beside the waterline's south rim (a child practicing letters).
+        // It must not sit on the trough row itself: KS01 owns every cell of that water line.
+        pen.lectern(cx - 2, cy, cz + 2, BlockFace.EAST);
+        pen.putBook(cx - 2, cy, cz + 2, "sella's copybook",
                 "i drew the dark before\nthey would look at it.\n\na a a  b b b");
 
         // THE ANSWER: the "far marker" at the pool's DRY north rim (outside the 3x3 water). A dark-prismarine

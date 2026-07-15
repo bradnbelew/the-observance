@@ -1,6 +1,0 @@
-COPPERLINE FIELD RELAY / WORKSTATION C
-assigned: Ash
-copper jacket stamped: 2011
-single test pulse: 3
-route image corner: C
-note: camera media remained with the operator and was not copied here.

@@ -19,7 +19,7 @@ import java.util.Set;
 /** Exact player-visible names, lore, and container labels for non-book V5 evidence. */
 public final class V5EvidenceItemAppearanceAuthority {
     public static final String RESOURCE = "v5/authority/evidence-item-appearance.json";
-    public static final int EXPECTED_ITEMS = 111;
+    public static final int EXPECTED_ITEMS = 118;
     public static final int EXPECTED_LABELS = 8;
     public static final int EXPECTED_STATION_LABELS = 4;
 
@@ -105,9 +105,14 @@ public final class V5EvidenceItemAppearanceAuthority {
             }
             if (items.size() != EXPECTED_ITEMS) issues.add("expected " + EXPECTED_ITEMS
                     + " item appearances, found " + items.size());
+            // BI03/BI06 counts include deliberate decoy appearance entries (Unlit de-kiosking pass,
+            // 2026-07-15): plausible-but-wrong field samples dressed near — never inside — the real
+            // evidence tray so filing requires genuine comparison instead of "grab what's present".
+            // BI04's three entries are the pressure-map bearing notes (previously undressed).
             Map<String, Integer> exactCounts = Map.ofEntries(
                     Map.entry("A02", 1), Map.entry("A03", 12), Map.entry("AR06", 1),
-                    Map.entry("BI02", 4), Map.entry("BI03", 3), Map.entry("BI06", 3),
+                    Map.entry("BI02", 4), Map.entry("BI03", 5), Map.entry("BI04", 3),
+                    Map.entry("BI06", 5),
                     Map.entry("CW02", 8), Map.entry("CW07", 2), Map.entry("KI02", 1),
                     Map.entry("KS01", 6), Map.entry("KV01", 22), Map.entry("KV02", 36),
                     Map.entry("LC01", 3), Map.entry("LC03", 2), Map.entry("WR02", 4),

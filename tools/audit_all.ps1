@@ -37,6 +37,7 @@ foreach ($required in @(
   (Join-Path $tools "check_v5_freshness.py"),
   (Join-Path $tools "check_v5_content.py"),
   (Join-Path $tools "check_v5_physical_predicates.py"),
+  (Join-Path $tools "check_hold_invitation.ps1"),
   (Join-Path $tools "render_v5_map_art.py"),
   (Join-Path $tools "check_deep_hold_layout.py"),
   (Join-Path $tools "simulate_v5_scenarios.py"),
@@ -60,6 +61,10 @@ Invoke-External "repository integrity (source)" $root "python" @((Join-Path $too
 Invoke-External "V5 freshness and supersession" $root "python" @((Join-Path $tools "check_v5_freshness.py"))
 Invoke-External "V5 canonical/runtime content" $root "python" @((Join-Path $tools "check_v5_content.py"), "--runtime")
 Invoke-External "V5 executable physical predicates" $root "python" @((Join-Path $tools "check_v5_physical_predicates.py"))
+Invoke-External "playable Hold and private Discord handoff" $root "powershell" @(
+  "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+  (Join-Path $tools "check_hold_invitation.ps1"), "-RepoRoot", $root
+)
 Invoke-External "V5 exact Minecraft map art" $root "python" @((Join-Path $tools "render_v5_map_art.py"))
 Invoke-External "V5 Deep Hold layout/runtime integration" $root "python" @((Join-Path $tools "check_deep_hold_layout.py"))
 Invoke-External "V5 deterministic failure simulation" $root "python" @((Join-Path $tools "simulate_v5_scenarios.py"))

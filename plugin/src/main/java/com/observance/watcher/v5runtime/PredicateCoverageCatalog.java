@@ -91,11 +91,12 @@ public final class PredicateCoverageCatalog {
     private static Map<String, Entry> buildEntries() {
         Map<String, Entry> entries = new LinkedHashMap<>();
         register(entries, ImplementationFamily.S,
-                "LC02", "LC04", "A04", "WR01", "CW04", "BI05", "KV03", "KM02", "KS03", "KI01");
+                "LC02", "LC04", "A04", "WR01", "CW04", "BI05", "KV03", "KM02", "KS03", "KI01",
+                "HS03", "HS04");
         register(entries, ImplementationFamily.I,
                 "LC03", "KV01", "A02", "WR02", "KI02");
         register(entries, ImplementationFamily.F,
-                "LC01", "LC06", "A05", "CW03", "BI01", "BI04", "HS03", "HS04", "HS05",
+                "LC01", "LC06", "A05", "CW03", "BI01", "BI04", "HS05",
                 "KS01", "KS02", "KO02", "KB02");
         register(entries, ImplementationFamily.L,
                 "AR02", "AR03", "AR04", "AR05", "AR06", "AR07", "CW01", "KM01");

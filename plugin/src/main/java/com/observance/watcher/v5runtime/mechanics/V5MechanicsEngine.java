@@ -173,6 +173,13 @@ public final class V5MechanicsEngine {
                 }
             }
             mirror.enqueue(node, progress.snapshot().revision());
+            // The record accepts the filing: a witnessed-solve cue (sound + short confirmation) so a
+            // completed node never commits silently. Fault-isolated — never blocks the outcome.
+            try {
+                feedback.solved(actor);
+            } catch (RuntimeException cueFailure) {
+                // feedback is best-effort; a solve must not fail because a cue could not be shown
+            }
             return MechanicOutcome.of(recoveryPending
                     ? MechanicOutcome.Status.WORLD_RECOVERY_PENDING
                     : MechanicOutcome.Status.COMPLETED);

@@ -2,7 +2,7 @@ station_id,room_id,x,y,z,stand_x,stand_y,stand_z,expected_front,title,required_f
 orientation_register,orientation,12,-40,112,10,-40,112,WEST,entry register,Callback construction layers and ordinary life
 court_census,keeper_nave,-18,-40,170,-16,-40,170,EAST,inquiry census,Six offices six signatures six separate debts
 archive_index,archive_nave,-18,-68,116,-16,-68,116,EAST,civic case index,Complaint sample valve roster invoice filter
-archive_closure,archive_nave,18,-68,222,16,-68,222,WEST,Break inquest,Eight houses and no single cause
+archive_closure,archive_nave,18,-68,222,16,-68,222,WEST,Break inquest,Seven house records one base finding and no single cause
 prior_docket,prior_case,-60,-96,124,-62,-96,124,WEST,company docket,mkept Ash Rook Wren
 threshold_hands,lower_spine,18,-96,124,16,-96,124,WEST,reckoning docket,Spool Bridge confession choice
 release_record,release,0,-96,366,0,-96,364,NORTH,closure receipt,Six affidavits returned and Averyn never rebound

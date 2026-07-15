@@ -12,7 +12,7 @@ The production services are:
 
 - a Paper 1.21.11 server with enough memory and disk for the existing world plus snapshots;
 - Supabase for durable campaign state;
-- a persistent Render worker for Discord, plus its recovery schedule;
+- a persistent Railway worker for Discord, plus its recovery cron;
 - Vercel for the Copperline/Record website;
 - direct HTTPS hosting for the resource-pack ZIP;
 - Discord and the existing media hosts.

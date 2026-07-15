@@ -83,7 +83,7 @@ public final class ContainerEngineSelfTest {
 
     private static void externalPrerequisiteValidation() throws Exception {
         Harness harness = Harness.create("LS06", 1, false);
-        String flag = "v5_ls05_bound";
+        String flag = "v5_ls04_map_handoff";
         check(!harness.store.snapshot().isComplete(flag), "external flag starts local-false");
         harness.externalAuthoritySha = "0".repeat(64);
         check(!harness.service.canModify("LS06"), "wrong authority hash fails closed");
@@ -393,7 +393,7 @@ public final class ContainerEngineSelfTest {
 
                 @Override
                 public boolean matchesHandoff(UUID actor, String sourceFlag) {
-                    return "v5_ls05_bound".equals(sourceFlag) && handoff.contains(actor);
+                    return "v5_ls04_map_handoff".equals(sourceFlag) && handoff.contains(actor);
                 }
             };
             return new ContainerSolveService(CONTRACT, value, new SiteMutexes(), world, facts,

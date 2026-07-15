@@ -57,10 +57,10 @@ public final class AssignedPhysicalNodes {
         Map<ImplementationFamily, List<String>> result = new EnumMap<>(ImplementationFamily.class);
         result.put(ImplementationFamily.S, List.of(
                 "LC02", "LC04", "A04", "WR01", "CW04", "BI05", "KV03", "KM02",
-                "KS03", "KI01"));
+                "KS03", "KI01", "HS03", "HS04"));
         result.put(ImplementationFamily.I, List.of("LC03", "KV01", "A02", "WR02", "KI02"));
         result.put(ImplementationFamily.F, List.of(
-                "LC01", "LC06", "A05", "CW03", "BI01", "BI04", "HS03", "HS04",
+                "LC01", "LC06", "A05", "CW03", "BI01", "BI04",
                 "HS05", "KS01", "KS02", "KO02", "KB02"));
         result.put(ImplementationFamily.L, List.of(
                 "AR02", "AR03", "AR04", "AR05", "AR06", "AR07", "CW01", "KM01"));

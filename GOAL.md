@@ -10,7 +10,7 @@ Deliver a cohesive, difficult, fair, and finishable Minecraft ARG from first Cop
 
 - ten mandatory cases;
 - exactly 82 required nodes;
-- all eight Unlit houses required;
+- seven Unlit evidence houses plus the base-mirror synthesis required;
 - all four fixed videos plus the fixed spectrogram required;
 - one command-built protected Deep Hold using the proven 32-room shell;
 - one public Hold entrance/exit and the village well as the Unlit entrance;
@@ -57,7 +57,7 @@ Deliver a cohesive, difficult, fair, and finishable Minecraft ARG from first Cop
 - [ ] All fixed media URLs are reachable and payloads reverified.
 - [ ] NPC anchor/facing/restart repair and synchronous critical dialogue pass.
 - [ ] Supabase V5 migration retires stale rows without deleting accounts, consent, or event history.
-- [ ] Render persistent worker and recovery cron are live with measured response latency.
+- [ ] Railway persistent worker and ten-minute recovery cron are live with measured response latency.
 - [ ] Vercel production and `copperlinehosting.com` routes/auth/coda are verified.
 - [ ] Full real-client run reaches both name treatments and all Wren outcomes in rehearsal.
 - [ ] Production setup guide contains real coordinates, hashes, environment key names, and screenshots.

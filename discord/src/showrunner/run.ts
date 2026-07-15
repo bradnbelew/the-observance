@@ -1,5 +1,5 @@
 /**
- * run.ts — the showrunner cron entrypoint (Render Cron Job runs this once per schedule; it does one
+ * run.ts — the showrunner cron entrypoint (Railway runs this once per schedule; it does one
  * tick and exits). Deterministic spine: snapshot → decide → apply. No LLM. `--dry-run` reads + decides
  * + prints but writes NOTHING — safe to run against the live DB to see what the next tick would do.
  *

@@ -323,7 +323,7 @@ interface IdentityClaimRpcRow {
 /**
  * Validate, bind, and file C01's identity handoff in one database transaction.
  *
- * The RPC checks the Copperline callback and LS04 prerequisite before touching players.discord_id,
+ * The RPC checks the Copperline callback and LS06 Orientation prerequisite before touching players.discord_id,
  * locks concurrent claims, refuses an identity owned by another Discord account, and atomically
  * moves this account from an accidental prior choice. Any receipt failure rolls the move back.
  */
@@ -630,6 +630,68 @@ export async function getOpenPuzzles(
 // matchPuzzle / matchPuzzles / flagsSatisfied are the PURE gate logic (oracle/gate.ts),
 // imported above for local use and re-exported here so repo.ts's public surface is unchanged.
 export { flagsSatisfied, matchPuzzle, matchPuzzles };
+
+export interface OpenInvestigationNode {
+  nodeKey: string;
+  caseKey: string;
+  ordinal: number;
+  title: string;
+  inputSurface: string;
+}
+
+/**
+ * The standing docket for /progress: every ACTIVE, REQUIRED investigation node whose
+ * prerequisite flags are satisfied and whose own completion flag is not yet set. Same
+ * flags-are-truthy gate as {@link getOpenPuzzles}, applied to the broader node table (which
+ * covers every input surface, not only Discord-answered ones) so a player can ask "what's
+ * open right now" and get every case's live docket, not just the Oracle-backed subset.
+ */
+export async function getOpenInvestigationNodes(
+  flags?: Record<string, unknown>,
+): Promise<OpenInvestigationNode[]> {
+  const liveFlags = flags ?? (await getArcFlags());
+
+  const { data, error } = await supabase
+    .from('investigation_nodes')
+    .select('node_key,case_key,ordinal,title,input_surface,prerequisite_flags,completion_flag')
+    .eq('active', true)
+    .eq('required', true)
+    .order('case_key', { ascending: true })
+    .order('ordinal', { ascending: true })
+    .returns<Array<{
+      node_key: string; case_key: string; ordinal: number; title: string;
+      input_surface: string; prerequisite_flags: string[]; completion_flag: string;
+    }>>();
+  if (error) throw error;
+
+  return (data ?? [])
+    // prerequisite_flags is a text[] of required flag names (schema: investigation_nodes),
+    // a different shape from puzzles.requires_flags (a jsonb object). flagsSatisfied only
+    // reads Object.keys(), so map each name to a truthy placeholder to reuse the same gate.
+    .filter((row) => flagsSatisfied(
+      Object.fromEntries((row.prerequisite_flags ?? []).map((flag) => [flag, true])), liveFlags))
+    .filter((row) => !liveFlags[row.completion_flag])
+    .map((row) => ({
+      nodeKey: row.node_key,
+      caseKey: row.case_key,
+      ordinal: row.ordinal,
+      title: row.title,
+      inputSurface: row.input_surface,
+    }));
+}
+
+/** Case titles keyed by case_key, for grouping the /progress docket under readable headers. */
+export async function getCaseTitles(): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from('investigations')
+    .select('case_key,title')
+    .eq('active', true)
+    .returns<Array<{ case_key: string; title: string }>>();
+  if (error) throw error;
+  const out: Record<string, string> = {};
+  for (const row of data ?? []) out[row.case_key] = row.title;
+  return out;
+}
 
 /** True if this player has already solved this puzzle (the replay guard read). */
 export async function hasSolved(

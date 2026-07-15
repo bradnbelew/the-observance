@@ -1,6 +1,0 @@
-COPPERLINE FIELD RELAY / WORKSTATION A
-assigned: mkept
-copper jacket stamped: 2007
-single test pulse: 9
-route image corner: A
-note: backup slot 3 was removed before this relay was retired.

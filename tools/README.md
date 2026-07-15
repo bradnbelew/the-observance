@@ -41,7 +41,6 @@ The following filenames remain as fail-fast tombstones so an old note or shell h
 silently generate a believable but wrong launch packet:
 
 - `apply_launch_coords.ps1`
-- `build_hold_prologue.py`
 - `build_storymap.py`
 - `build_viz.py`
 - `new_director_packet.ps1`

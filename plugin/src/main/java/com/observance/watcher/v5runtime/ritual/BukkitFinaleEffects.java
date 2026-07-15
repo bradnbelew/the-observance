@@ -50,9 +50,19 @@ public final class BukkitFinaleEffects implements FinaleRite.FinaleEffects {
 
     @Override
     public void goodbye(String idempotencyKey, List<String> exactLines) {
-        Component message = message(exactLines);
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            player.sendMessage(message);
+        // Drip the goodbye one line at a time so it reads as someone speaking, not a wall of text
+        // dumped at once. The kick (SAVE_AND_CODA) is scheduled far enough after this phase that the
+        // drip completes first, and the kick screen still shows the whole message regardless.
+        long stepTicks = 44L; // ~2.2s between lines
+        for (int index = 0; index < exactLines.size(); index++) {
+            String raw = exactLines.get(index);
+            if (raw == null) continue;
+            final Component line = Component.text(raw, NamedTextColor.WHITE);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                for (Player player : plugin.getServer().getOnlinePlayers()) {
+                    player.sendMessage(line);
+                }
+            }, index * stepTicks);
         }
     }
 

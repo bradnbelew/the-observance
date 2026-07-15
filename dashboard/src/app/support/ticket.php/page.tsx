@@ -33,11 +33,11 @@ function Ticket9137() {
       <div className="ticket-thread">
         <article className="customer">
           <header><b>mkept</b><time>November 2, 2014 8:17 PM</time></header>
-          <p>The old account page is empty. I need the off-site relay copy, not a restarted world and not a converted backup.</p>
+          <p>The old account page is empty. I need the North Annex recovery copy we used for remote dispatch, not a restarted customer world.</p>
         </article>
         <article className="staff">
           <header><b>Andrew &mdash; Copperline Support</b><time>November 2, 2014 8:46 PM</time></header>
-          <p>The customer world was not retained. The remaining diagnostic export was attached to the account owner&apos;s existing community archive post. It contains no playable world or live server address.</p>
+          <p>We located the single-player recovery image on the off-site cartridge. It remains attached to the account owner&apos;s community archive post. The dispatch destination was not copied into this ticket.</p>
           <p><Link href="/community/2011/02/08/world-backup/">Open the community archive attachment &raquo;</Link></p>
         </article>
         <article className="customer">

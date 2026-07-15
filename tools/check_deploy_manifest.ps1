@@ -93,6 +93,9 @@ if (!(Test-Path $manifestFull)) {
     if ([string]$manifest.pluginVersion -ne "0.5.0") {
       Add-Failure "Deploy manifest plugin version must be 0.5.0"
     }
+    if ($manifest.source.workingTreeDirty -ne $false) {
+      Add-Failure "Deploy manifest was generated from a dirty working tree"
+    }
     $currentCommit = (& git -C $repoFull rev-parse HEAD 2>$null | Out-String).Trim()
     if ($LASTEXITCODE -ne 0 -or [string]$manifest.source.gitCommit -ne $currentCommit) {
       Add-Failure "Deploy manifest source commit does not match the current checkout"
@@ -109,7 +112,8 @@ if (!(Test-Path $manifestFull)) {
       @("gated Hold archive", $manifest.artifacts.holdArchive),
       @("Hold archive checksum", $manifest.deploymentInputs.holdArchiveSha1),
       @("Supabase verification SQL", $manifest.deploymentInputs.supabaseVerificationSql),
-      @("Render Blueprint", $manifest.deploymentInputs.renderBlueprint),
+      @("Railway worker config", $manifest.deploymentInputs.railwayWorkerConfig),
+      @("Railway recovery cron config", $manifest.deploymentInputs.railwayCronConfig),
       @("Vercel ignore policy", $manifest.deploymentInputs.vercelIgnore),
       @("dashboard lockfile", $manifest.deploymentInputs.dashboardLockfile),
       @("Discord lockfile", $manifest.deploymentInputs.discordLockfile)

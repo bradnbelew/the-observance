@@ -20,21 +20,30 @@ import java.util.Set;
  */
 public final class DeepHoldV4Plan {
 
-    public static final int VERSION = 5;
+    /** Story/runtime remains V5; this revision is the compact, natural-space Hold replacement. */
+    public static final int VERSION = 6;
+    public static final String GEOMETRY_REVISION = "v5-compact-natural-2026-07-15";
     public static final int MIN_SURFACE_COVER = 12;
     public static final int MIN_BOTTOM_BUFFER = 12;
     public static final int ENVELOPE = 5;
-    public static final int MIN_X = -118;
-    public static final int MAX_X = 118;
+    public static final int MIN_X = -76;
+    public static final int MAX_X = 76;
     public static final int MIN_Y = -104;
     public static final int MAX_Y = 12;
     public static final int MIN_Z = -6;
-    public static final int MAX_Z = 378;
+    public static final int MAX_Z = 233;
 
     private DeepHoldV4Plan() {}
 
     public record Room(String id, int minX, int maxX, int floorY, int ceilingY,
                        int minZ, int maxZ, String role) {
+        public Room {
+            minX = compactX(minX);
+            maxX = compactX(maxX);
+            minZ = compactZ(floorY, minZ);
+            maxZ = compactZ(floorY, maxZ);
+        }
+
         public boolean contains(int x, int y, int z, int inset) {
             return x >= minX + inset && x <= maxX - inset
                     && z >= minZ + inset && z <= maxZ - inset
@@ -45,7 +54,21 @@ public final class DeepHoldV4Plan {
     public record Fixture(String id, String type, String roomId,
                           int x, int y, int z, int radius, int verticalRadius,
                           String front, int standX, int standY, int standZ,
-                          String contentRole) { }
+                          String contentRole) {
+        public Fixture {
+            x = compactX(x);
+            z = compactZ(y, z);
+            standX = compactX(standX);
+            standZ = compactZ(standY, standZ);
+            // Preserve the authored approach while keeping dense shelf/marker rows inside their
+            // compact owner alcoves. Only anchors move; the player standing frames remain natural.
+            if ("mara_route_marker_2".equals(id) || "mara_route_marker_3".equals(id)) z--;
+            if (id.startsWith("orin_marker_") && z < 170) z = 170;
+            if (id.startsWith("orin_frame_dial_") && z > 174) z = 174;
+            if (id.startsWith("orin_frame_dial_") && standZ >= z) standZ = z - 1;
+            if ("painted_line".equals(id) && z > 68) z = 68;
+        }
+    }
 
     /**
      * One player-body column reserved by a fixture's authored standing frame. The first cell is
@@ -57,12 +80,52 @@ public final class DeepHoldV4Plan {
 
     public record Gate(String id, String label, int x, int y, int z,
                        boolean acrossX, int halfAcross, int height, int depth,
-                       String openCondition, boolean mainSequence) { }
+                       String openCondition, boolean mainSequence) {
+        public Gate {
+            x = compactX(x);
+            z = compactZ(y, z);
+            halfAcross = Math.max(5, compactDistance(halfAcross));
+        }
+    }
 
     public record Link(String from, String to) { }
 
     public record RecordStation(String id, String roomId, int x, int y, int z,
-                                String front, String title) { }
+                                String front, String title) {
+        public RecordStation {
+            x = compactX(x);
+            z = compactZ(y, z);
+        }
+    }
+
+    /**
+     * Maps the superseded sprawling V5 authoring grid onto the compact physical plan. Keeping the
+     * conversion here preserves every fixture id and narrative contract while making stale literal
+     * coordinates impossible for runtime consumers to observe.
+     */
+    public static int compactX(int legacyX) {
+        return (int) Math.round(legacyX * 0.60d);
+    }
+
+    public static int compactDistance(int legacyDistance) {
+        return Math.max(1, (int) Math.round(legacyDistance * 0.60d));
+    }
+
+    public static int compactZ(int floorY, int legacyZ) {
+        if (floorY >= -54) {
+            return 106 + (int) Math.round((legacyZ - 106) * 0.50d);
+        }
+        if (floorY >= -82) {
+            return legacyZ <= 99
+                    ? 40 + (int) Math.round((legacyZ - 40) * 0.55d)
+                    : 75 + (int) Math.round((legacyZ - 102) * 0.50d);
+        }
+        if (legacyZ <= 111) return 40 + (int) Math.round((legacyZ - 40) * 0.55d);
+        if (legacyZ <= 223) return 82 + (int) Math.round((legacyZ - 114) * 0.55d);
+        if (legacyZ <= 295) return 145 + (int) Math.round((legacyZ - 226) * 0.55d);
+        if (legacyZ <= 350) return 186 + (int) Math.round((legacyZ - 298) * 0.55d);
+        return 219 + (int) Math.round((legacyZ - 354) * 0.55d);
+    }
 
     public static final List<Room> ROOMS = List.of(
             new Room("orientation", -42, 42, -40, -20, 106, 154,

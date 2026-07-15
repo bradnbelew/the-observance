@@ -3,7 +3,7 @@
  *
  * A discord.js v14 client that:
  *   - wears the presence: Watching "the ways" (BOT_PRESENCE from voice.ts).
- *   - ensures the guild's slash commands (/whisper, /link, /answer) are registered.
+ *   - ensures the guild's slash commands (/whisper, /link, /answer, /progress) are registered.
  *   - routes interactions to the command handlers under ./commands.
  *
  * The Watcher is the record-keeping facet of the presence — the land's memory.
@@ -27,6 +27,7 @@ import { registerGuildCommands } from './register.js';
 import { handleWhisper, handleWhisperAutocomplete } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
 import { handleAnswer, handleAnswerAutocomplete } from './commands/answer.js';
+import { handleProgress } from './commands/progress.js';
 import { resolveAnswer } from '../oracle/resolve.js';
 import { startPersistentShowrunner } from '../showrunner/persistent.js';
 
@@ -100,6 +101,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         break;
       case 'answer':
         await handleAnswer(interaction);
+        break;
+      case 'progress':
+        await handleProgress(interaction);
         break;
       default:
         // an unknown rite — the watcher simply goes quiet.
@@ -218,7 +222,7 @@ client.on('error', (err) => {
  * crash-purity. uncaughtException DOES exit (Node's own guidance: continuing after a truly
  * uncaught synchronous exception risks an undefined process state) — logged first on a
  * best-effort basis, with a hard timeout so a stalled log write can never turn a crash into a
- * silent hang. A process supervisor (Railway/Render) restarts the process cleanly on exit.
+ * silent hang. Railway restarts the process cleanly on exit.
  */
 process.on('unhandledRejection', (reason) => {
   const message = reason instanceof Error ? reason.message : String(reason);

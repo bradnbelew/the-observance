@@ -25,14 +25,19 @@ samplers:
   inventory-scan-seconds: 120
   presence-heartbeat-seconds: 60
 
+# The ambient Watcher. V5 runs only the curated, per-player, text-free sensory palette (sound,
+# particle, darkness, dim, private time-shift, and the name-on-wall signature) plus the hint toll —
+# see V5SafeBeatEnactor / AmbientBeatGenerator. Cadence is felt but restrained: the Attention gate
+# keeps calm, grouped moments quiet and draws the Watcher toward the lonely/deep/dark player. These
+# defaults give roughly one considered beat every several minutes, heavily skewed to tense moments.
 drama:
-  enabled: false
-  personalized-cooldown-minutes: 60
-  personalized-max-per-session: 0
-  ambient-cooldown-minutes: 180
-  ambient-global-cooldown-minutes: 60
-  window-minutes: 60
-  window-max-beats: 1
+  enabled: true
+  personalized-cooldown-minutes: 20
+  personalized-max-per-session: 3
+  ambient-cooldown-minutes: 20
+  ambient-global-cooldown-minutes: 3
+  window-minutes: 30
+  window-max-beats: 5
   personalized-confidence-min: 1.0
 
 tracker:
@@ -88,6 +93,11 @@ resource-pack:
   required: true
   prompt: "The Record uses an authored alphabet and soundscape. Accept the pack to enter."
   delay-ticks: 20
+
+# Revealed only after the in-world Surface Dispatch filing (LS06).
+# Keep this current before each release; preflight fails closed when it is blank or malformed.
+handoff:
+  discord-invite-url: "https://discord.gg/z3HTfGvEA3"
 
 # The schema-2 finale persists COMMITTED/CODA before theater. In production it then saves, kicks,
 # and requests a real Paper shutdown. Set false only in an isolated rehearsal server.

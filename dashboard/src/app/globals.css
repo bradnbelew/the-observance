@@ -196,19 +196,16 @@ button, input, select, textarea { font: inherit; }
 .relay-result h2 { margin:0 0 5px;color:#34515c;font:bold 15px Georgia,serif; }
 .relay-result > p { margin:0 0 9px; }
 .relay-result > a { display:inline-block;padding:5px 13px;border:1px solid #59737d;background:#d7e5e9;color:#234854;font-size:10px;font-weight:bold; }
+.archive-stills { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 12px; }
+.archive-stills figure { margin:0;padding:5px;border:1px solid #b4b4aa;background:#f5f3e9; }
+.archive-stills img { display:block;width:100%;height:auto;filter:saturate(.82) contrast(.96); }
+.archive-stills figcaption { padding:5px 2px 1px;color:#666;font-size:9px; }
+@media (max-width:720px) { .archive-stills { grid-template-columns:1fr; } }
 .relay-linking { margin-top:12px;padding:9px;border-top:1px dotted #87999f;background:#e4edef; }
 .relay-linking > b { color:#40545b;font-size:9px;text-transform:uppercase; }
 .relay-linking p { margin:5px 0 0;color:#4c575b;font-size:10px;line-height:1.5; }
 .relay-linking code { padding:1px 3px;background:#d2dcdf;color:#24383f;font-family:"Courier New",monospace; }
 .dead-link { color:#999;font-size:10px; }
-.archive-resolver { margin-top:16px;padding:12px;border:1px solid #b7b7b7;background:#f7f7f4; }
-.archive-resolver > h2 { margin:0 0 5px;color:#405b68;font:bold 14px Georgia,serif; }
-.archive-resolver > p { margin:0 0 10px;color:#666;font-size:10px;line-height:1.55; }
-.archive-resolver-form { display:grid;grid-template-columns:1fr 120px 1fr auto;gap:8px;align-items:end; }
-.archive-resolver-form label { display:grid;gap:3px;color:#59666c;font:bold 9px Arial,Helvetica,sans-serif;text-transform:uppercase; }
-.archive-resolver-form input { min-width:0;height:27px;padding:4px 6px;border:1px solid #9ba5a9;background:#fff;color:#333;font:11px "Courier New",monospace; }
-.archive-resolver-form button { height:27px;padding:0 11px;border:1px solid #5f7780;background:#dbe7ea;color:#294b57;font:bold 10px Arial,Helvetica,sans-serif;cursor:pointer; }
-.archive-resolver .old-message { margin-top:10px; }
 
 /* Static user mirror: deliberately crude. It is outside the restored WHMCS
    template because only the user's file index survived. */
@@ -264,7 +261,6 @@ button, input, select, textarea { font: inherit; }
 
 @media (max-width:820px) {
   .legacy-preservation { width:100%; }
-  .archive-resolver-form { grid-template-columns:1fr 1fr; }
 }
 @media (max-width:560px) {
   .legacy-preservation { padding:5px 7px;font-size:9px; }
@@ -273,7 +269,6 @@ button, input, select, textarea { font: inherit; }
   .mirror-file-row > span:nth-child(2),.mirror-file-row > span:nth-child(3) { display:none; }
   .record-site { padding:9px 6px 42px; }
   .record-page,.record-page.narrow,.archive-page,.terminal-page { padding:10px; }
-  .archive-resolver-form { grid-template-columns:1fr; }
   .docket-resolver-form { grid-template-columns:1fr; }
   .record-system-header > div { display:grid;gap:2px; }
 }

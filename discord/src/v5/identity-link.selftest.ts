@@ -104,7 +104,7 @@ const challengeConsume = migration.indexOf('set consumed_at = v_now');
 const firstIdentityMutation = migration.indexOf('set discord_id = null');
 const evidenceWrite = migration.lastIndexOf('select public.observance_record_evidence(');
 if (!(callbackCheck >= 0 && callbackCheck < firstIdentityMutation)) fail('callback is not validated before identity mutation');
-if (!(prerequisiteCheck >= 0 && prerequisiteCheck < firstIdentityMutation)) fail('LS04 prerequisite is not validated before identity mutation');
+if (!(prerequisiteCheck >= 0 && prerequisiteCheck < firstIdentityMutation)) fail('LS06 Orientation prerequisite is not validated before identity mutation');
 if (!(challengeLookup >= 0 && challengeLookup < firstIdentityMutation)) fail('Minecraft proof is not loaded before identity mutation');
 if (!(challengeConsume >= 0 && challengeConsume < firstIdentityMutation)) fail('Minecraft proof is not consumed before identity mutation');
 if (!(evidenceWrite > firstIdentityMutation)) fail('receipt is not in the same transaction after the claim/recovery');

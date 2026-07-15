@@ -10,13 +10,13 @@ Next.js 16 public ARG surface plus authenticated V5 director console.
   LS02 answer, then reveals the full service page and archived ticket 9137; wrong inputs, missing
   prerequisites, and backend failures share the same non-oracular response.
 - `/support/ticket.php?id=9137` opens only after that service page and links the community attachment.
-- `/community/2011/02/08/world-backup` links the corrected diagnostic archive only after LS03. The
-  archive is explicitly not a Minecraft world or datapack; filenames, the route image, and four work
-  orders derive the host, coordination-room route, and callback independently. Its all-or-nothing
-  archive form owns LS04.
-- `/community/remote-room.php` is read-only and opens only after LS04; it exposes the configured
-  Discord room and teaches players to request `/obslink` in Minecraft, then submit the single
-  `/link <name> <callback> <code>` LS05 input before the code expires.
+- `/community/2011/02/08/world-backup` exposes the private playable world only after LS03. The
+  download Route Handler verifies the checked-in checksum and atomically records LS04 before sending
+  the ZIP. Inside the world, the three-room North Annex investigation reconstructs the Minecraft
+  destination from four register fragments, the ordinary commercial suffix, and five cabinet returns.
+- `/community/remote-room.php` is a permanent fail-closed archive tombstone. The website never renders
+  a Discord invite. Minecraft LS06 owns the private coordination handoff; Discord LS05 follows only
+  after that physical filing succeeds.
 - `/community/archive.php?service=1842&ticket=9137&locker=13` is the exact A06 route. It remains an
   ordinary missing archive until A05 is complete, then atomically receipts A06/A07 and reveals clip 1.
 - `/record/the-record-keeps` is mkept's ordinary static mirror and download index; it stays missing
@@ -54,12 +54,9 @@ NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
 SUPABASE_SERVICE_ROLE_KEY=<service-role secret>
 ADMIN_EMAILS=<comma-separated operator addresses>
-DISCORD_INVITE_URL=https://discord.gg/<invite>
 AUTHOR_USERNAME=<private Basic-auth username>
 AUTHOR_PASSWORD=<unique high-entropy Basic-auth password>
 ```
-
-`DISCORD_INVITE_URL` is validated to `discord.gg` or `discord.com/invite/...` before it is rendered.
 
 ## Database
 
@@ -83,10 +80,13 @@ npm.cmd run selftest
 npm.cmd run build
 ```
 
-The V5 diagnostic archive source, binary, and SHA-1 receipt all live in the server-only
+The selftest runner uses `tsx` from `../discord/node_modules`; run `npm.cmd ci` in `../discord` once
+before the dashboard checks on a fresh checkout.
+
+The V5 playable world, builder, and SHA-1 receipt live in the server-only
 `content/the-hold-v5/` directory. No copy may exist below `public/`: the stable player URL
 `/the-hold/the-hold.zip` is a dynamic, non-cacheable Route Handler that returns the same generic 404
 when LS03 is incomplete, story state is unavailable, or archive integrity fails. Once LS03 is
-recorded, the handler verifies `the-hold.sha1` before returning the ZIP and remains available while
-players solve LS04 from its contents. Rebuild `the-hold.zip` and `the-hold.sha1` together whenever the
-source changes, then rerun the dashboard self-test and Discord web audit.
+recorded, the handler verifies `the-hold.sha1`, records LS04 through the prerequisite-enforcing RPC,
+and returns the ZIP. Rebuild `the-hold.zip` and `the-hold.sha1` together with
+`../tools/build_hold_prologue.py`, then run the dashboard self-test and Hold invitation check.

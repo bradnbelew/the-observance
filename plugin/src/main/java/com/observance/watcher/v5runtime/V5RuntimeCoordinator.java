@@ -156,6 +156,13 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 || phase == FinaleStateStore.Phase.ARMED;
 
         if (storyInputsEnabled) {
+            // One feedback port for both the mechanics engine and the container service: wrong input
+            // → red actionbar (send); a completed node → a witnessed-solve cue (solved).
+            com.observance.watcher.v5runtime.mechanics.MechanicPorts.PlayerFeedback playerFeedback =
+                    new com.observance.watcher.v5runtime.mechanics.MechanicPorts.PlayerFeedback() {
+                        @Override public void send(UUID actor, String message) { feedback(actor, message); }
+                        @Override public void solved(UUID actor) { feedbackSolved(actor); }
+                    };
             BukkitMechanicState live = new BukkitMechanicState();
             BukkitWorldStateEvaluator worldState = new BukkitWorldStateEvaluator(
                     plugin, fixtures, live);
@@ -163,7 +170,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                     plugin, progress, fixtures, custody);
             this.mechanics = new V5MechanicsEngine(
                     authority, progress, remote, worldState, projection, projection,
-                    remote::mirrorAsync, this::feedback);
+                    remote::mirrorAsync, playerFeedback);
             BukkitDurableItemEscrow itemEscrow = new BukkitDurableItemEscrow(
                     plugin, base.resolve("mechanics-escrow"));
             BukkitReceiptService receipts = new BukkitReceiptService(
@@ -304,6 +311,9 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         if (finale.snapshot().phase() == FinaleStateStore.Phase.FAULT) {
             findings.add("V5 finale is locked in FAULT: " + finale.snapshot().faultReason());
         }
+        if (!plugin.v5DiscordHandoffConfigured()) {
+            findings.add("LS06 Discord handoff URL is missing or invalid");
+        }
         return List.copyOf(findings);
     }
 
@@ -323,6 +333,10 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        if (progress.snapshot().isComplete("v5_ls06_relay")) {
+            plugin.getServer().getScheduler().runTaskLater(
+                    plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);
+        }
         if (!isCoda()) return;
         finale.codaReceipt().ifPresent(receipt -> event.getPlayer().sendMessage(
                 joined(receipt.exactGoodbye())));
@@ -376,6 +390,14 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         if (player != null && player.isOnline()) {
             player.sendActionBar(Component.text(message, NamedTextColor.RED));
         }
+    }
+
+    /** A completed node is witnessed: a soft confirming chime and a plain in-register acknowledgement. */
+    private void feedbackSolved(UUID actor) {
+        Player player = Bukkit.getPlayer(actor);
+        if (player == null || !player.isOnline()) return;
+        player.sendActionBar(Component.text("the record takes it.", NamedTextColor.GRAY));
+        player.playSound(player.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, 0.5f, 0.7f);
     }
 
     private void projectCodaBeforeSave() {
@@ -443,6 +465,9 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private final class ExactFinaleTheater implements BukkitFinaleEffects.TheaterVisuals {
         @Override
         public void darkenDocumentedFixtureGroups(String idempotencyKey) {
+            // Collect every currently-lit documented fixture light.
+            record LitCell(World world, int x, int y, int z) { }
+            List<LitCell> lit = new ArrayList<>();
             for (String nodeId : V5RuntimePredicateRegistry.implementedNodeIds()) {
                 for (BukkitFixtureIndex.Binding binding : fixtures.bindingsForNode(nodeId)) {
                     if (binding.kind() != BukkitFixtureIndex.BindingKind.BLOCK) continue;
@@ -450,32 +475,94 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                     if (world == null) continue;
                     var block = world.getBlockAt(binding.x(), binding.y(), binding.z());
                     if (block.getBlockData() instanceof Lightable light && light.isLit()) {
-                        light.setLit(false);
-                        block.setBlockData(light, false);
+                        lit.add(new LitCell(world, binding.x(), binding.y(), binding.z()));
                     }
                 }
             }
+            // The dark rolls outward from where the group is standing (the ritual) and climbs away
+            // up the Hold, so the group watches the light leave rather than having it blink off at
+            // once. With nobody online, fall back to deepest-first so it still climbs.
+            final double[] origin = onlineCentroid();
+            lit.sort((a, b) -> origin == null
+                    ? Integer.compare(a.y(), b.y())
+                    : Double.compare(dist2(a.x(), a.y(), a.z(), origin),
+                                     dist2(b.x(), b.y(), b.z(), origin)));
+
+            // One quiet in-register title as it begins — the record stating its own end, not a
+            // creepypasta warning. A shallow darkness seeds the unease; the wave deepens it.
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.addPotionEffect(new PotionEffect(
-                        PotionEffectType.DARKNESS, 20 * 10, 0, false, false, false));
-                player.playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 0.5f);
                 player.showTitle(Title.title(
-                        Component.text("THE RECORD CLOSES", NamedTextColor.DARK_RED),
-                        Component.text("Do not look away.", NamedTextColor.GRAY)));
+                        Component.text("the record is closing", NamedTextColor.GRAY),
+                        Component.empty()));
+                player.addPotionEffect(new PotionEffect(
+                        PotionEffectType.DARKNESS, 20 * 8, 0, false, false, false));
             }
+
+            // Roll the darkness out in twelve waves over ~24s.
+            final int waves = 12;
+            final int per = Math.max(1, (int) Math.ceil(lit.size() / (double) waves));
+            for (int w = 0; w < waves; w++) {
+                int start = w * per;
+                if (start >= lit.size()) break;
+                int end = Math.min(lit.size(), start + per);
+                final List<LitCell> slice = new ArrayList<>(lit.subList(start, end));
+                final float pitch = 0.85f - (0.5f * (w / (float) waves));
+                plugin.scheduler().runLaterSafe("rp06.darken.wave." + w, (long) w * 40L, () -> {
+                    for (LitCell cell : slice) {
+                        var block = cell.world().getBlockAt(cell.x(), cell.y(), cell.z());
+                        if (block.getBlockData() instanceof Lightable light && light.isLit()) {
+                            light.setLit(false);
+                            block.setBlockData(light, false);
+                        }
+                    }
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.playSound(player.getLocation(),
+                                Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, pitch);
+                    }
+                });
+            }
+            // The settled dark that carries through the record's break and into the goodbye.
+            plugin.scheduler().runLaterSafe("rp06.darken.deepen", (long) waves * 40L, () -> {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.addPotionEffect(new PotionEffect(
+                            PotionEffectType.DARKNESS, 20 * 40, 0, false, false, false));
+                }
+            });
         }
 
         @Override
         public void emitRecordSyntaxBreak(String idempotencyKey) {
+            // The mask comes off: the cold record register cracks and the trapped registrar surfaces
+            // for a moment before the goodbye. Lowercase, human, no meta.
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.playSound(player.getLocation(),
                         Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 1.0f, 0.35f);
                 player.spawnParticle(Particle.ASH, player.getLocation().add(0, 1, 0),
                         80, 2.0, 1.0, 2.0, 0.01);
                 player.showTitle(Title.title(
-                        Component.text("RECORD // SEVERED", NamedTextColor.RED),
-                        Component.text("The server is saying goodbye.", NamedTextColor.WHITE)));
+                        Component.text("i am still here", NamedTextColor.WHITE),
+                        Component.text("for a moment", NamedTextColor.GRAY)));
             }
+        }
+
+        /** Centre of all online players, or null when nobody is online. */
+        private double[] onlineCentroid() {
+            double x = 0, y = 0, z = 0;
+            int n = 0;
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                Location l = p.getLocation();
+                if (l == null) continue;
+                x += l.getX();
+                y += l.getY();
+                z += l.getZ();
+                n++;
+            }
+            return n == 0 ? null : new double[]{x / n, y / n, z / n};
+        }
+
+        private double dist2(int x, int y, int z, double[] origin) {
+            double dx = x - origin[0], dy = y - origin[1], dz = z - origin[2];
+            return dx * dx + dy * dy + dz * dz;
         }
     }
 }

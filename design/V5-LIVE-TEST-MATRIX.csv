@@ -16,7 +16,7 @@ R002,traversal,"Walk Mouth to Orientation and back to Mouth","Same entrance supp
 R003,traversal,"Open G1 and visit every Keeper bay then return to Mouth","All six bays connect visibly to the nave with no dead end or blocked doorway","route video",yes
 R004,traversal,"Open G2 and walk both Civic Archive loops in both directions","Both evidence streets reconnect and every owned room has a doorway","route video",yes
 R005,traversal,"Use the Hold-to-Unlit handoff then return through the village well","The only Unlit entrance remains the established well and return is understandable","route video",yes
-R006,traversal,"Open G3 and traverse Puzzle Works then backtrack to Mouth","Gatehouse and mechanics never block the archive loop or reverse route","route video",yes
+R006,traversal,"Open G3 and traverse Service Works then backtrack to Mouth","Gatehouse and mechanics never block the archive loop or reverse route","route video",yes
 R007,traversal,"Open G4 and traverse the lower stair in both directions","Wide stair is safe for a seven-player group and remains reversible","group video",yes
 R008,traversal,"Open the Camp Ash subgate and inspect all four stations and Locker 13","Camp branch returns clearly to Prior Case and has no accidental exit","route video",yes
 R009,traversal,"Complete C07 and walk the mandatory Dread evidence passage","Route is bounded legible non-maze and cannot be skipped","route video",yes
@@ -47,30 +47,30 @@ P009,progression,"Assemble five then all six AVERYN fragments","G6 stays sealed 
 P010,answers,"Submit wrong partial normalized correct duplicate and guessed-future answers on every input type","Misses are neutral correct solve is idempotent duplicates reveal nothing and future guesses do not unlock","answer receipt matrix",yes
 P011,mechanics,"Disconnect one participant during each group or container mechanic","State remains recoverable and no group is permanently locked out","disconnect checklist",yes
 P012,persistence,"Restart after every gate on separate checkpoints","Every open gate remains open every sealed gate remains sealed and no case rolls back","eight restart receipts",yes
-U001,Unlit,"Bind entry spawn exit and all eight house anchors to the copied Unlit world","/obs unlit audit recognizes all required placed sites","audit transcript",yes
+U001,Unlit,"Bind entry spawn exit seven evidence-house anchors and the base-mirror anchor to the copied Unlit world","/obs unlit audit recognizes all required placed sites","audit transcript",yes
 U002,Unlit,"Enter exclusively through the established village well","No second public entrance or unexplained teleport is visible","client video",yes
-U003,Unlit,"Play BI01 through BI08 in order","Every house supplies distinct evidence and all eight are mandatory","case checklist",yes
+U003,Unlit,"Play the seven BI01-BI07 houses in a deliberately mixed order then submit BI08","Every house is independently available; all seven receipts are mandatory for the synthesis","case checklist",yes
 U004,Unlit,"Attempt each house with the wrong item action or order","Wrong interactions preserve evidence and give non-spoiler feedback","interaction checklist",yes
 U005,Unlit,"Run darkening and border setup then audit","Stray light is removed safe zones remain and border cannot strand a player","audit and night screenshots",yes
-U006,Unlit,"Test retreat during each house and return later","Progress persists and the well return remains reachable","eight retreat videos",yes
+U006,Unlit,"Complete BI06 during a mixed-order run disconnect at sample filing restart Paper then retreat from every Unlit location","Warm-house samples remain protected in escrow without loss or duplication completed receipts persist and the well return remains reachable","post-restart escrow transcript and eight-location retreat videos",yes
 U007,NPC,"Speak to Aro Wenna Coll Dob and Old Pell at arrival midgame and Coda","Exact V5 state lines play synchronously and refer to real nearby places","dialogue transcript",yes
-U008,NPC,"Interact while Supabase and Render are unavailable","Critical local NPC reply is immediate and never waits for a showrunner tick","outage video",yes
+U008,NPC,"Interact while Supabase and Railway are unavailable","Critical local NPC reply is immediate and never waits for a showrunner tick","outage video",yes
 U009,NPC,"Confront Wren then reload and restart","Confession and chosen reckoning state remain exact and cannot branch twice","dialogue transcript",yes
 U010,protection,"Try to break place burn explode drain piston or teleport through every Unlit protected site","No authored evidence route or exit can be damaged or bypassed","grief checklist",yes
 S001,Discord,"Register guild commands and inspect autocomplete with a newly linked account","Only link answer and whisper contract surfaces appear; link requires name callback and code; only open nodes autocomplete","Discord screenshots",yes
-S002,Discord,"Prove offline-mode preflight and /obslink fail closed; restore online-mode=true; as authenticated non-op run /obslink then test /link with bad callback pre-LS04 wrong expired reused other-player valid repeated recovered and conflicting identity proofs","Offline mode issues and transmits no proof; only SHA-256 is stored online; one durable identity bind is made; rejected paths do not mutate or leak; recovery adds the new hand and revokes the old on authoritative refresh","Minecraft and Discord transcript plus database receipt",yes
+S002,Discord,"Prove offline-mode preflight and /obslink fail closed; restore online-mode=true; as authenticated non-op run /obslink, then test /link before LS06 (including after LS04), with a bad callback, wrong, expired, reused, other-player, valid, repeated, recovered, and conflicting identity proofs","Offline mode issues and transmits no proof; only SHA-256 is stored online; one durable identity bind is made; rejected paths do not mutate or leak; recovery adds the new hand and revokes the old on authoritative refresh","Minecraft and Discord transcript plus database receipt",yes
 S003,Discord,"Run /answer unscoped and scoped against open closed solved and unknown nodes","Resolver scopes correctly and returns spoiler-safe neutral misses","command transcript",yes
 S004,Discord,"Send the same correct Discord answer concurrently from seven accounts","Exactly one completion and one downstream effect are durably recorded","database receipt and transcript",yes
 S005,Discord,"Use /whisper at every hint tier and budget edge","Hints follow authored tiers and never reveal unopened-case answers","hint transcript",yes
-S006,showrunner,"Run persistent worker and recovery cron simultaneously","Lease permits one effect per tick and duplicate delivery is idempotent","Render and database logs",yes
-S007,showrunner,"Stop worker for six minutes then restore it","Cron recovery advances eligible durable work without replaying completed effects","timeline and logs",yes
+S006,showrunner,"Run persistent worker and recovery cron simultaneously","Lease permits one effect per tick and duplicate delivery is idempotent","Railway and database logs",yes
+S007,showrunner,"Stop worker for eleven minutes then restore it","Ten-minute cron recovery advances eligible durable work without replaying completed effects","timeline and logs",yes
 S008,website,"Visit every Copperline C01 route from a clean browser","The mundane trail is navigable and supplies LS01 through LS04 without stale lore","screen recording",yes
 S009,website,"Visit Record archive terminal ticket media and Coda routes at each prerequisite state","Each route is gated accurately and no future payload or operator secret leaks","route matrix",yes
 S010,website,"Test author console as unauthenticated player wrong admin and configured admin","Players are denied admin data and exact admin can inspect V5 cases and finale state","auth screenshots",yes
 S011,media,"Open all four fixed clips and the spectrogram through their earned routes","Assets load and yield exactly ASH-13 WHERE THE REEDS FOLD BACK STAY AWAKE SIX RETURN ONE IS NOT KEPT and I WAS NOT KEPT","playback receipts",yes
 S012,media,"Request every media route before its prerequisite","Route fails closed without claiming media is optional or exposing payload","route transcript",yes
 S013,cross-surface,"Complete one node on each authorized surface and inspect Minecraft Discord site and database","All consumers converge on one completion flag without duplicate story beats","cross-surface receipt",yes
-S014,production,"Verify Vercel deployment DNS TLS Render worker cron Discord commands and production Supabase health","Every public service is current reachable and points at the same V5 data","dated external-service receipt",yes
+S014,production,"Verify Vercel deployment DNS TLS Railway worker cron Discord commands and production Supabase health","Every public service is current reachable and points at the same V5 data","dated external-service receipt",yes
 X001,protection,"Attempt block break and place throughout all Hold bounds as non-op","Ordinary blocks remain immutable while exact puzzle interactions still work","grief video",yes
 X002,protection,"Attempt bucket fire flint explosion piston and water-flow damage","No authored block entity entity gate or corridor changes","grief checklist",yes
 X003,protection,"Attempt pearl chorus fruit boat minecart bed portal and plugin teleport bypasses","No sealed gate or mandatory passage can be skipped","bypass checklist",yes

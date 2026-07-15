@@ -1,8 +1,8 @@
 # The Observance Discord service
 
 Production Node 22 service for the V5 Observance campaign. One persistent worker owns the Discord
-client and runs a lease-safe showrunner tick every 10–15 seconds. A Render cron invokes the same
-import-safe tick every five minutes as crash recovery; the Supabase lease prevents overlap.
+client and runs a lease-safe showrunner tick every 10–15 seconds. A Railway cron invokes the same
+import-safe tick every ten minutes as crash recovery; the Supabase lease prevents overlap.
 
 ## Player commands
 
@@ -10,7 +10,7 @@ import-safe tick every five minutes as crash recovery; the Supabase lease preven
   SHA-256 digest is stored; issuance is rate-limited, and the code expires after five minutes.
 - `/link <minecraft name> <callback> <code>` binds one Discord account to an existing Minecraft
   player and files C01's recovered Copperline handoff. One transaction validates the callback,
-  LS04, and unconsumed Minecraft proof before claiming the name; it refuses privately claimed names,
+  the LS06 Orientation filing, and unconsumed Minecraft proof before claiming the name; it refuses privately claimed names,
   safely corrects this account's accidental prior name, and returns the already-filed receipt only
   for an exact short-window replay without a duplicate reward.
 - `/answer <text> [puzzle]` submits a conclusion. The optional puzzle is a real scope, and its
@@ -83,11 +83,15 @@ npm.cmd start
 The worker re-registers guild commands on boot. Enable Discord Message Content Intent. V5 does not
 join voice channels, transcribe speech, or require Guild Voice States; those retired capture paths are absent.
 
-Render uses the repository `render.yaml`:
+Railway uses two services sourced from this repository. Give both services the root directory
+`/discord`, then set these absolute config-file paths in their service settings:
 
-- worker: `npm start` (Discord plus persistent showrunner);
-- recovery cron: `npm run showrunner` every five minutes;
-- both use the same Supabase and Discord environment values.
+- worker: `/discord/railway.worker.json` — Railpack, `npm start`, restart `ON_FAILURE` up to 10 times;
+- recovery cron: `/discord/railway.cron.json` — Railpack, `npm run showrunner`, `*/10 * * * *`, restart `NEVER`.
+
+Set every variable in `.env.example` on both services. Secrets belong in Railway variables, never in
+either config file or Git. Deploy both services from the same Git commit used by Vercel and the release
+receipt.
 
 ## Verification
 

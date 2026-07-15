@@ -2,9 +2,9 @@ node_id,case_id,ordinal,title,room_id,modality,input_surface,prerequisites,compl
 LS01,C01,1,Three mundane traces,Copperline and village,deduction,none,start,v5_ls01_traces,service docket plus uploader reference plus expired listing,reopen public traces
 LS02,C01,2,Service 1842 teaching rung,Copperline,cipher,website answer,v5_ls01_traces,v5_ls02_service_1842,Copperline service page,tiered A1Z26 and rune example
 LS03,C01,3,Ordinary Copperline trail,Copperline,web navigation,none,v5_ls02_service_1842,v5_ls03_directory_trail,support ticket plus community archive,reopen indexed pages
-LS04,C01,4,Rebuilt Hold archive,Copperline,cross-media,website archive input,v5_ls03_directory_trail,v5_ls04_archive_solved,host fragments plus service digits,redownload immutable archive
-LS05,C01,5,Callback and proof-bound identity,Discord,account handoff,Discord command plus in-game /obslink proof,v5_ls04_archive_solved,v5_ls05_bound,durable handoff receipt,reissue receipt from linked account
-LS06,C01,6,Surface Mouth triangulation,orientation,physical recovery,tagged key deposit,v5_ls05_bound,v5_case_c01_complete,Orientation Key and C01 receipt,reissue key from completion flag
+LS04,C01,4,Playable Hold handoff,Copperline and local world,offline investigation,world download,v5_ls03_directory_trail,v5_ls04_map_handoff,live server address,redownload immutable playable world
+LS06,C01,5,Surface dispatch filing,orientation,document and item filing,tagged key deposit,v5_ls04_map_handoff,v5_ls06_relay,Orientation Key and private coordination route,reissue key and replay private route
+LS05,C01,6,Proof-bound identity,Discord,account handoff,Discord command plus in-game /obslink proof,v5_ls06_relay,v5_case_c01_complete,durable handoff receipt,reissue receipt from linked account
 LC01,C02,1,Construction phase overlays,orientation,deduction,item-frame overlay,v5_case_c01_complete,v5_lc01_phases,phase ordering,reset overlay frames
 LC02,C02,2,Rations population and heat,orientation,forensic comparison,answer sign,v5_lc01_phases,v5_lc02_rations,correct population and heat estimate,restore source ledgers
 LC03,C02,3,Ordinary life records,orientation,document synthesis,none,v5_lc02_rations,v5_lc03_daily_life,school market and dwelling receipt,reopen lecterns
@@ -15,7 +15,7 @@ KV01,C03,1,Vaun quartermaster audit,keeper_vaun,forensic comparison,container in
 KV02,C03,2,Vaun returned-goods sort,keeper_vaun,physical Minecraft,tagged container sort,v5_kv01_audit,v5_kv02_sort,diverted-filter proof,return wrong deposits
 KV03,C03,3,Vaun private reconciliation,keeper_vaun,traditional cipher,answer sign,v5_kv02_sort,v5_kv03_affidavit,Vaun sealed affidavit,reissue affidavit from flag
 KM01,C03,4,Mara conflicting editions,keeper_mara,forensic comparison,lectern pages,v5_case_c02_complete,v5_km01_editions,correct manual edition,restore locked lecterns
-KM02,C03,5,Mara page-line-word,keeper_mara,traditional cipher,answer sign,v5_km01_editions,v5_km02_extraction,verified route sequence,tiered index hint
+KM02,C03,5,Mara shelf-line-word,keeper_mara,traditional cipher,answer sign,v5_km01_editions,v5_km02_extraction,verified route sequence,reopen six volumes and bare index
 KM03,C03,6,Mara route configuration,keeper_mara,physical Minecraft,bounded route walk,v5_km02_extraction,v5_km03_affidavit,Mara sealed affidavit,rearm route and reissue affidavit
 KS01,C03,7,Sella reflected bearing,keeper_sella,visual cipher,reflection alignment,v5_case_c02_complete,v5_ks01_bearing,shoreline bearing,restore overlay and water anchor
 KS02,C03,8,Sella shoreline overlay,keeper_sella,physical Minecraft,item-frame map overlay,v5_ks01_bearing,v5_ks02_overlay,cistern intake location,reset frames
@@ -38,17 +38,17 @@ CW06,C04,6,Reeds footage,archive_water,cross-media,media payload answer,v5_cw05_
 CW07,C04,7,Original filter cache,archive_water,physical recovery,tagged cache interaction,v5_cw06_reeds,v5_cw07_cache,original filter plus receipt plus forged report,rebuild cache without duplicating progress
 CW08,C04,8,Clear Nessa,archive_cistern,deduction,Discord conclusion,v5_cw07_cache,v5_case_c04_complete,Cistern Seal and G2 condition,reissue seal from completion flag
 BI01,C05,1,Lamp house chronology,unlit_lamp,forensic comparison,house mechanism,v5_case_c04_complete,v5_bi01_lamp,true outage chronology,reset house evidence
-BI02,C05,2,Cairn pressure fracture,unlit_cairn,physical observation,tagged fragments,v5_bi01_lamp,v5_bi02_cairn,pre-breach fracture proof,reissue fragments
-BI03,C05,3,Coop warning failure,unlit_coop,deduction,item arrangement,v5_bi02_cairn,v5_bi03_coop,bird-failure timing,restore tagged evidence
-BI04,C05,4,Well reflection map,unlit_well,visual overlay,reflection and frames,v5_bi03_coop,v5_bi04_well,pressure-map alignment,reset overlay
-BI05,C05,5,Watch house timestamp,unlit_watch,logic deduction,answer sign,v5_bi04_well,v5_bi05_watch,altered-watch proof,reopen rota
-BI06,C05,6,Warm house surface proof,unlit_warm,forensic comparison,tagged sample deposit,v5_bi05_watch,v5_bi06_warm,healed-surface proof,reissue sample
-BI07,C05,7,Threshold house inside seal,unlit_threshold,spatial deduction,bounded group walk,v5_bi06_warm,v5_bi07_threshold,multi-cause sequence,rearm route
-BI08,C05,8,Base mirror synthesis,unlit_base,cross-source deduction,Discord conclusion,v5_bi07_threshold,v5_case_c05_complete,Breach Plate and Deep Line open,reissue plate from completion flag
+BI02,C05,2,Cairn pressure fracture,unlit_cairn,physical observation,tagged fragments,v5_case_c04_complete,v5_bi02_cairn,pre-breach fracture proof,reissue fragments
+BI03,C05,3,Coop warning failure,unlit_coop,deduction,item arrangement,v5_case_c04_complete,v5_bi03_coop,bird-failure timing,restore tagged evidence
+BI04,C05,4,Well reflection map,unlit_well,visual overlay,reflection and frames,v5_case_c04_complete,v5_bi04_well,pressure-map alignment,reset overlay
+BI05,C05,5,Watch house timestamp,unlit_watch,logic deduction,answer sign,v5_case_c04_complete,v5_bi05_watch,altered-watch proof,reopen rota
+BI06,C05,6,Warm house surface proof,unlit_warm,forensic comparison,tagged sample deposit,v5_case_c04_complete,v5_bi06_warm,healed-surface proof,reissue sample
+BI07,C05,7,Threshold house inside seal,unlit_threshold,spatial deduction,bounded group walk,v5_case_c04_complete,v5_bi07_threshold,multi-cause sequence,rearm route
+BI08,C05,8,Base mirror synthesis,unlit_base,cross-source deduction,Discord conclusion,v5_bi01_lamp;v5_bi02_cairn;v5_bi03_coop;v5_bi04_well;v5_bi05_watch;v5_bi06_warm;v5_bi07_threshold,v5_case_c05_complete,Breach Plate and Deep Line open,reissue plate from completion flag
 HS01,C06,1,Recover filter cartridge,puzzle_works,physical recovery,tagged item claim,v5_case_c05_complete;v5_case_c04_complete,v5_hs01_filter,Filter Cartridge,reissue cartridge
 HS02,C06,2,Install cistern cartridge,puzzle_works,physical Minecraft,exact tagged deposit,v5_hs01_filter,v5_hs02_installed,restored water state,return wrong deposits
-HS03,C06,3,Restore lamp circuit,puzzle_works,physical Minecraft,item-frame lamp states,v5_hs02_installed,v5_hs03_lamps,lit service lane,reset frames without clearing solve
-HS04,C06,4,Calibrate pressure register,puzzle_works,physical Minecraft,chiseled-bookshelf pattern,v5_hs03_lamps,v5_hs04_pressure,pressure calibration,restore shelf slots
+HS03,C06,3,Read the fixed lamp circuit,puzzle_works,traditional cipher,answer sign,v5_hs02_installed,v5_hs03_lamps,lit service lane,reopen fixed panel and service manual
+HS04,C06,4,Find the pressure bypass,puzzle_works,document comparison,answer sign,v5_hs03_lamps,v5_hs04_pressure,pressure calibration,reopen gauge register and service note
 HS05,C06,5,Set survey dials,lower_works,physical Minecraft,item-frame dials,v5_hs04_pressure,v5_hs05_dials,alignment receipt,reset frame rotations
 HS06,C06,6,Walk painted pressure line,lower_works,embodied sequence,bounded route walk,v5_hs05_dials,v5_hs06_passage,System Key and service passage,rearm route and reissue key
 HS07,C06,7,System synchronization,lower_works,composite meta,tagged key console,v5_hs06_passage,v5_case_c06_complete,Deep Access Plate and G4 open,reissue plate from completion flag

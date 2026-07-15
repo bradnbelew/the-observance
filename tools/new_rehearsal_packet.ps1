@@ -631,7 +631,7 @@ evidence:
 
 - [ ] Previously exposed Supabase service-role credentials were rotated or confirmed dead.
 - [ ] Previously exposed Discord bot credentials were rotated or confirmed dead.
-- [ ] Live Render/Vercel/plugin config uses the fresh credentials.
+- [ ] Live Railway/Vercel/plugin config uses the fresh credentials.
 - [ ] `/observance status` still passed after rotation.
 evidence:
 

@@ -10,9 +10,11 @@ Runtime copies in SQL, Java resources, the dashboard, Discord, build artifacts, 
 
 `media-manifest.json` records the five fixed external artifacts, their immutable payloads, production receipts, reveal prerequisites, and new narrative jobs. All five are required.
 
+`generated-image-manifest.json` records the two restrained Copperline frame stills used by A07/A08. Both are required, served only from the earned archive page, and checked byte-for-byte against their production PNGs.
+
 `minecraft-books.json` is the exact 44-book lectern/artifact corpus. `evidence-item-text.json` is
-the separate exact 20-book authority for movable WR01 quotation cards, BI01 wick layers, the CW07
-Drafts A/B exhibit, and HS04 pressure-register copies. The installer must never replace either
+the separate exact 7-book authority for movable WR01 quotation cards, BI01 wick layers, and the CW07
+Drafts A/B exhibit. The installer must never replace either
 corpus with generated filler text.
 
 `evidence-item-appearance.json` is the exact 108-item title/lore authority for every remaining

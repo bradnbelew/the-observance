@@ -78,7 +78,7 @@ receipt: command output, screenshot, observed Minecraft behavior, hash, or expli
 
 1. Read current git status and preserve unrelated/untracked files.
 2. Identify the actual Paper server root, world name, hosting panel, live Supabase project, Vercel
-   project/domain, Render services, Discord guild, and `#the-record` channel.
+   project/domain, Railway services, Discord guild, and `#the-record` channel.
 3. Confirm whether the requested run is an isolated rehearsal, the live setup, or rehearsal followed
    by a controlled live reset.
 4. Back up worlds, plugin data, Supabase state, service environment variables (without printing

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "storyVersion": "5.0.0",
+  "policy": {
+    "allRequired": true,
+    "revealPrerequisite": "v5_a06_route",
+    "findingNode": "A08"
+  },
+  "assets": [
+    {
+      "id": "camp_frame_06",
+      "nodeId": "A07",
+      "publicPath": "/evidence/copperline/camp-frame-06.png",
+      "sourcePath": "dashboard/public/evidence/copperline/camp-frame-06.png",
+      "sha1": "d2bd25141c65afbe5d89d9674e596d56f49d89d6",
+      "narrativeUse": "establishes the four-station camp and north storage row shown in Ash's retained footage"
+    },
+    {
+      "id": "locker_detail_13",
+      "nodeId": "A07",
+      "publicPath": "/evidence/copperline/locker-detail-13.png",
+      "sourcePath": "dashboard/public/evidence/copperline/locker-detail-13.png",
+      "sha1": "fce7165595953abc04f7fa28da382f738007f5e0",
+      "narrativeUse": "supplies the ash-leaf identifier and thirteen grouped tally cuts used with the footage for ASH-13"
+    }
+  ]
+}

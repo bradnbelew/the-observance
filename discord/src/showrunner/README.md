@@ -12,7 +12,7 @@ policy, and releases in `finally`.
 - 300-second default SQL lease, shared with every other process;
 - caught errors logged by the bot without terminating Discord.
 
-Render also runs `npm run showrunner` every five minutes. It is recovery for a dead worker, not a
+Railway also runs `npm run showrunner` every ten minutes. It is recovery for a dead worker, not a
 second authority: if the worker owns the lease, the cron exits cleanly as `locked`.
 
 Useful commands:

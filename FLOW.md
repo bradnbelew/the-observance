@@ -21,8 +21,8 @@ C04 Cistern Winter
   -> fixed reeds footage -> cache -> clear Nessa -> Cistern Seal
 
 C05 Break Inquest / Unlit
-  leave Hold by Mouth -> village well -> all eight copied houses
-  -> multi-cause synthesis -> Breach Plate -> return by well and Mouth -> G3
+  leave Hold by Mouth -> village well -> seven copied evidence houses in any order
+  -> base-mirror multi-cause synthesis -> Breach Plate -> return by well and Mouth -> G3
 
 C06 Restoring the Hold
   filter -> lamps -> pressure shelf -> survey dials -> painted line

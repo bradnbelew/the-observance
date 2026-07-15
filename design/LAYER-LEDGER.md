@@ -73,7 +73,7 @@ the puzzle seed + flag-graph + tiered hints + thread cards (applied live) · the
 1. **ETHAN — DB consistency check.** Regenerate/apply `discord/supabase/apply-all.sql`, then confirm the
    live DB has `puzzles.answer_kind` and the diverse rows. The generated bundle now owns both lineages
    and is checked by `npm run audit`; do not use `apply-tonight.sql`.
-2. **ETHAN — stand up the bot + cron host** (Render instructions delivered) **and deploy the website**
+2. **ETHAN — stand up the bot + cron host** (Railway instructions delivered) **and deploy the website**
    (Vercel). This single move **un-darkens half the game.**
 3. **ETHAN — host the resourcepack + datapack** on the server, then run `/observance placeregion` + `placedeep` (0.2.2).
 4. **CLAUDE + ETHAN — the FIRST vertical-slice playtest:** ignition → one rosetta/keeper solve → flag set →
@@ -98,7 +98,7 @@ end-to-end live. The ledger's lesson is that we already have *more* built than p
   roster; a true cross-platform active roster remains a deferred deep-half design decision, not a bug.
 
 **Director status:** week-one *building* is essentially complete. The remaining path is DEPLOY (bot/cron on
-Render, website on Vercel, packs on the server — all in progress) + the first VERTICAL-SLICE PLAYTEST. Per
+Railway, website on Vercel, packs on the server — all in progress) + the first VERTICAL-SLICE PLAYTEST. Per
 the consistency principle, no new arc is being added until that slice is proven live.
 - **Keeper voices (forgotten #3) — DONE (5cb42e4).** Generated `keeper_voice` (the SpatialVoiceBeat
   fallback that was referenced-but-missing → silent) + 6 per-keeper voices tuned to each keeper's

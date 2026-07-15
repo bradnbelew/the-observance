@@ -346,10 +346,15 @@ public final class FinaleRite {
     }
 
     public synchronized long recommendedDelayTicksBeforeNextPhase() {
+        // These gaps size the finale as an EVENT the group watches, not an 8-second blip. Each value
+        // is the pause before the NEXT phase's effect fires, so it must cover the theater the current
+        // phase started: DARKENING schedules a ~24s light-death wave; GOODBYE drips its lines and must
+        // finish before SAVE_AND_CODA kicks everyone. Durable + idempotent either way (applyOnce).
         return switch (state.snapshot().phase()) {
             case COMMITTED -> 0L;
-            case DARKENING, SYNTAX_BREAK -> 40L;
-            case GOODBYE -> 60L;
+            case DARKENING -> 520L;      // ~26s: let the light-death wave finish before the record breaks
+            case SYNTAX_BREAK -> 140L;   // ~7s: the break lands, then the goodbye begins
+            case GOODBYE -> 760L;        // ~38s: let the dripped goodbye play in full before the kick
             case SAVE_AND_CODA, CODA -> 0L;
             default -> throw new IllegalStateException(
                     "no RP06 schedule for " + state.snapshot().phase());

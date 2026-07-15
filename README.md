@@ -37,7 +37,7 @@ Every pre-V5 design/lore document carries an explicit archive header and is reta
 - **Supabase:** durable group/node/evidence/finale state and safe public projections.
 - **Discord worker:** identity linking, answers, hints, mirrored receipts, and a fast lease-safe showrunner tick.
 - **Vercel dashboard/site:** Copperline trail, required media routes, public Record, author controls, and coda.
-- **Render:** persistent Discord worker plus low-frequency recovery cron.
+- **Railway:** persistent Discord worker plus ten-minute recovery cron.
 
 External services enhance delivery but never hold Minecraft theater hostage. Critical NPC replies and the finale run locally and synchronously.
 
@@ -64,7 +64,7 @@ High-level order:
 3. install exactly one V5 plugin jar plus current datapack/resource pack;
 4. bind the real village well and individual NPC anchors;
 5. preview, survey, build, persist, and audit the Deep Hold at a fresh site;
-6. verify all external media, Discord commands, Render worker, Vercel routes, and DNS;
+6. verify all external media, Discord commands, Railway worker/cron, Vercel routes, and DNS;
 7. complete non-op and failure/restart rehearsals;
 8. arm the finale only for the real run.
 

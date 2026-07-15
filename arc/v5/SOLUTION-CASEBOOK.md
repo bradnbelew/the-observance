@@ -5,7 +5,7 @@ Spoilers: complete. This file owns intended solves, accepted conclusions, and th
 ## Hint law
 
 - **Tier 1 — point:** names the evidence family or room without describing the operation.
-- **Tier 2 — operation:** identifies the comparison/cipher/mechanic and any earned key.
+- **Tier 2 — operation:** identifies the comparison, cipher, or physical procedure and any earned key.
 - **Tier 3 — near-answer:** gives the exact setup and leaves only the final reading or physical action.
 
 A hint never fabricates new evidence. Players can always return to the original source.
@@ -39,30 +39,30 @@ The service page leads to the support ticket; the ticket's public history points
 - H2: the resolved service page reveals its number and references the ticket in account activity.
 - H3: open service 1842, then ticket 9137, then the linked community archive.
 
-### LS04 — Rebuilt Hold archive
+### LS04 — Playable Hold handoff
 
-The new archive contains no playable Minecraft world and no old-story spoiler. Its small text/image/file fragments assemble `copperlinehosting.com`, callback `9137`, and the Discord route.
+The retained attachment is a real Java Edition world. Its compact service annex contains the only fair reconstruction of the live server endpoint. The host is divided across ordinary shelf records; the port is preserved in the dispatch paperwork. The assembled endpoint is `snoikerz.com:25569`, but no player-facing file prints it whole.
 
-- Exact outputs: host `copperlinehosting.com`; callback `9137`.
-- H1: filenames, image corners, and the README each carry different parts.
-- H2: order the work orders by copper-jacket year, oldest to newest; then read host before callback.
-- H3: the callback is the four-digit support ticket number.
+- Exact output: `snoikerz.com:25569`.
+- H1: the desk card is an index for the shelf books, not an address by itself.
+- H2: each bare triple means book, written line, word; keep the results in listed order.
+- H3: the host resolves to `snoikerz.com`; the dispatch receipt supplies `:25569`.
 
-### LS05 — Callback and identity bind
+### LS06 — Surface dispatch filing
 
-Players join Minecraft under their exact name, run `/obslink`, and receive a random 4-4-4 code that expires after five minutes. They then run `/link <minecraft name> 9137 <one-time code>` in Discord and receive a durable Handoff Receipt. The database stores only SHA-256, consumes the proof in the same transaction as the bind, and permits only an exact same-account network replay without duplicating progress.
+Reaching the server proves the local-world handoff. At the first Hold office, the covered survey says the village well and the broad drainage cut are different routes. Players recover the named Orientation Key from the survey chest and file it in the dispatch barrel. The server returns the key and privately displays the configured Discord invitation to the present group.
 
-- H1: the archive gives a callback, not a website password.
-- H2: prove the name from inside Minecraft with `/obslink`; the code is private, single-use, and short-lived.
+- H1: compare the covered survey with the entry register at the first office.
+- H2: the returned-survey filing is the only marked destination for the key.
+- H3: take the Orientation Key from its protected source and place it in slot 13 of the marked dispatch barrel, then use the filing handle.
+
+### LS05 — Proof-bound identity
+
+After entering Discord, each player runs `/obslink` in Minecraft and receives a random 4-4-4 code that expires after five minutes. They then run `/link <minecraft name> 9137 <one-time code>` in Discord and receive a durable Handoff Receipt. The database stores only the code hash, consumes the proof in the same transaction as the bind, and permits only an exact same-account network retry without duplicating progress.
+
+- H1: the old support ticket supplies the callback; the live server supplies proof of the player name.
+- H2: `/obslink` is private, single-use, and short-lived.
 - H3: run `/link <your exact Minecraft name> 9137 <code shown by /obslink>` before it expires.
-
-### LS06 — Surface Mouth
-
-Village dialogue plus the covered survey differentiates two entrances: the well is the Unlit; the broad drainage cut leads to the Hold Mouth. The tagged Orientation Key is recovered and filed at the gate console.
-
-- H1: villagers describe both the well and the drainage cut; they are not the same route.
-- H2: follow the old drainage axis, then look for mkept's survey mark.
-- H3: claim the Orientation Key and place it in the one protected filing barrel.
 
 ## C02 — The Long Cold
 
@@ -163,18 +163,19 @@ Edition 3 is the last route bearing both route and load checks. E1 predates the 
 - H2: choose the latest edition that still has both safety checks.
 - H3: E3.
 
-### KM02 — Mara page-line-word
+### KM02 — Mara shelf-line-word
 
-Use marks `1 / 2 / 4 / 4 / 6` on the five comparison slips tied to verified E3.
+The Margin Index contains six bare references. Read each as shelf-line-word, using Civic Manual E1 through E4 as shelves 1 through 4. Count the written lines exactly as displayed and count words from the left.
 
-- Extraction: `WEST TWO / LOW ONE / EAST THREE`.
-- H1: the numbers select words, not pages in one long book.
-- H2: use one marked word from each of five comparison slips in order.
-- H3: first pair is WEST TWO; final pair is EAST THREE.
+- Extraction: `3-6-2` → `WEST`; `1-4-1` → `TWO`; `4-2-3` → `LOW`; `2-5-2` → `ONE`; `3-3-1` → `EAST`; `4-6-2` → `THREE`.
+- Result: `WEST TWO / LOW ONE / EAST THREE`.
+- H1: the four numbered Civic Manuals are the shelves; preserve the index order.
+- H2: each triple selects shelf, written line, then word.
+- H3: the six selected words are WEST / TWO / LOW / ONE / EAST / THREE.
 
 ### KM03 — Mara route
 
-Walk two west floor marks, one low/crouched inspection mark, then three east marks. The listener uses bounded exact cells and resets harmlessly after a wrong step.
+Walk two west floor marks, one low/crouched inspection mark, then three east marks. A wrong step clears only the current route attempt; it does not remove an item or any earlier progress.
 
 - Reward: Mara Affidavit.
 - H1: perform KM02; do not type it.
@@ -363,7 +364,7 @@ The conclusion must contain two propositions: Nessa followed procedure; counterf
 
 ## C05 — Break Inquest / the Unlit
 
-Every house is required. The eight-house docket is the checklist; the village well is the entrance and exit.
+BI01–BI07 are seven independent house investigations. Their numbers are filing labels, not an unlock order: all seven are open on arrival and may be completed in any order. BI08 is the base-mirror synthesis and accepts a conclusion only after all seven house receipts exist. The village well is both entrance and exit.
 
 ### BI01 — Lamp house
 
@@ -451,21 +452,32 @@ Recover the tagged cartridge from Cistern state and deposit it in the one housin
 
 ### HS03 — Lamp circuit
 
-Twenty stable lamp frames use A=dim / B=lit and spell `OPEN` in five-bit Bacon groups:
+The Works manual gives the full Bacon alphabet and defines dim as A and lit as B. The inspection panel is fixed evidence: twenty lamps arranged as four five-lamp groups. Read it left to right without changing it:
 
 `ABBBA / ABBBB / AABAA / ABBAB`.
 
-- H1: groups of five; two states.
-- H2: A/B Bacon alphabet; use the service manual.
-- H3: configure the four groups above.
+The groups decode to `O / P / E / N`. Enter `OPEN` on the maintenance slate below the panel. No lamp or frame is adjusted.
+
+- Accepted: `OPEN`, `CIRCUIT OPEN`, or `OPEN CIRCUIT`.
+- H1: compare the fixed lamp panel with the Works manual's lamp-code pages.
+- H2: read each five-lamp group as dim=A and lit=B; do not change the panel.
+- H3: the four groups translate to O / P / E / N; file `OPEN` on the maintenance slate.
 
 ### HS04 — Pressure register
 
-The chiseled-shelf occupied-slot masks match sample pressure bands: `110010 / 101100 / 011001 / 001111` left to right. Books are immovable evidence copies supplied by the fixture.
+The pressure card defines two ordinary equipment states. A shut bypass has a return gauge of 0 and an outlet within 2 of its inlet. An open bypass has a rising return gauge while the outlet sits more than 5 below the inlet. Compare that rule with the fixed inspection register:
 
-- H1: lower samples give high/low bands.
-- H2: occupied is high; empty is low; read six slots per shelf.
-- H3: use the four masks above.
+- Line 1: inlet 15, outlet 14, return 0.
+- Line 2: inlet 15, outlet 15, return 0.
+- Line 3: inlet 14, outlet 14, return 0.
+- Line 4: inlet 15, outlet 4, return 13.
+
+Only Line 4 fits the open-bypass signature. Enter `LINE FOUR BYPASS OPEN` on the pressure desk slate.
+
+- Accepted: `LINE FOUR BYPASS OPEN`, `LINE 4 BYPASS OPEN`, or `4 BYPASS OPEN`.
+- H1: compare the pressure card with all four fixed line readings, especially the return gauges.
+- H2: an open bypass requires a nonzero return and an outlet more than 5 below its inlet.
+- H3: only Line 4 matches; file `LINE FOUR BYPASS OPEN`.
 
 ### HS05 — Survey dials
 
@@ -495,7 +507,7 @@ Insert System Key, verify water/lamp/pressure/survey flags, then operate the syn
 
 ### A01 — Locate Camp Ash
 
-Combine village supply entry, torn map corner, and Wren's contradictory distance. Coordinates are generated from the placed camp site; the puzzle uses relative bearings so no hard-coded world coordinate becomes stale.
+Combine village supply entry, torn map corner, and Wren's contradictory distance. Coordinates are generated from the placed camp site; the route uses relative bearings so no hard-coded world coordinate becomes stale.
 
 - H1: three sources describe one journey in different units.
 - H2: convert supply “turns,” map compass, and Wren walking time to the same relative route.
@@ -546,16 +558,16 @@ Assemble the earned route:
 
 ### A07 / A08 — Ash footage
 
-The gated page reveals fixed clip 1. A visible `ASH` frame and camp-manifest/timecode `13` combine to `ASH-13`.
+The gated page reveals fixed clip 1 and two retained frame stills. The wide still establishes the camp's north storage row; its enlargement carries an ash-leaf mark and thirteen tally cuts grouped `5 / 5 / 3`. Compare that mark with Ash's camera station in the footage, then combine the owner and count as `ASH-13`. Both stills are required case evidence and are hash-locked by `generated-image-manifest.json`.
 
 - Exact Discord answer: `ASH-13`.
 - H1: do not treat 13 as another Keeper count.
-- H2: combine the name in the frame with Locker 13 in the camp.
+- H2: identify the painted leaf, then count the grouped cuts beside its latch.
 - H3: ASH-13.
 
 ### A09 — Locker 13
 
-The server receives the solve receipt and opens one protected locker containing the tagged Witness Spool. Repeated solves do not produce a stronger/duplicate key; recovery can reissue it.
+After Discord accepts the answer, Locker 13 opens at the camp and contains the tagged Witness Spool. Repeating the answer does not create another spool; recovery can reissue the same evidence if it is lost.
 
 - H1: return to the camp after Discord confirms the answer.
 - H2: Ash's station has numbered lockers.
@@ -720,7 +732,7 @@ All currently active linked players operate the floor during a visible window. T
 
 The finale must already be explicitly armed. The first confirmation writes durable branch state and finale phase before presentation. A second interaction is ignored. `/obs finale cancel` remains valid until the configured safe cutoff.
 
-- H1: if the console says UNARMED, this is an operator/setup issue, not a puzzle.
+- H1: if the console says UNARMED, this is a setup fault rather than a failed solve.
 - H2: verify all RP01–RP04 receipts and arm status.
 - H3: arm, confirm once, do not repeat commands during theater.
 

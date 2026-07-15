@@ -68,7 +68,7 @@ for (const [nodeId, binding] of bindingByNode) {
 for (const nodeId of manifestByNode.keys()) if (!bindingByNode.has(nodeId)) fail(`${nodeId} has no runtime binding`);
 
 const seed = read('discord/supabase/seeds/v5_investigations.sql');
-const metadataStart = seed.indexOf('from (values\n', seed.indexOf('-- Runtime ownership is seeded'));
+const metadataStart = seed.indexOf('from (values', seed.indexOf('-- Runtime ownership is seeded'));
 const metadataEnd = seed.indexOf(') as binding(node_key, owner, handler, site_id, completion_flag, replay_policy)', metadataStart);
 if (metadataStart < 0 || metadataEnd < 0) fail('seeded runtime metadata block is missing');
 const metadataBlock = seed.slice(metadataStart, metadataEnd);
@@ -110,7 +110,7 @@ const websiteSurfaces: Record<string, [string, ...string[]]> = {
   // rendered page prevents a client-controlled node id and makes the answer boundary auditable.
   LS02: ['dashboard/src/app/server.php/actions.ts', "['LS02']", "'copperline_service_1842'", "handler: 'answer_resolver'", 'resolveLs02ServiceDocket'],
   LS03: ['dashboard/src/app/support/ticket.php/page.tsx', "['LS03']", "'copperline_directory'", "handler: 'route_receipt'"],
-  LS04: ['dashboard/src/app/community/2011/02/08/world-backup/page.tsx', "['LS04']", "'copperline_world_backup'", "handler: 'archive_resolver'", 'name="host"', 'name="callback"', 'name="route"'],
+  LS04: ['dashboard/src/app/the-hold/the-hold.zip/route.ts', "['LS04']", "'copperline_world_backup'", "handler: 'world_download'", 'readValidatedV5HoldArchive'],
   A06: ['dashboard/src/app/community/archive.php/page.tsx', "['A06']", "'copperline_archive_route'", "handler: 'route_resolver'"],
   A07: ['dashboard/src/app/community/archive.php/page.tsx', "['A07']", "'clip_01_ash_locker'", "handler: 'automatic_media_reveal'"],
 };

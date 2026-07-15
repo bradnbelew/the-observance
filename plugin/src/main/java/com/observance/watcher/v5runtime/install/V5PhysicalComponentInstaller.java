@@ -1620,7 +1620,6 @@ public final class V5PhysicalComponentInstaller {
             case "WR02" -> addIdSet(seeds, node, components.get("packets"),
                     "packet_source", "PAPER");
             case "CW02" -> addCw02Samples(seeds, node, components.get("sample_set"));
-            case "HS04" -> addHs04Books(seeds, node);
             case "KV02" -> addKv02InputLot(seeds, node, components);
             default -> { }
         }
@@ -1840,17 +1839,6 @@ public final class V5PhysicalComponentInstaller {
             pdc.addProperty("v5_depth", id.endsWith("T") ? "TOP" : "LOWER");
             spec.add("pdc", pdc);
             seeds.add(seed(node, "sample_set_" + index, "sample_source", shuffled[index], spec));
-        }
-    }
-
-    private void addHs04Books(List<Seed> seeds, NodePlan node) {
-        for (int index = 1; index <= 13; index++) {
-            JsonObject spec = new JsonObject();
-            spec.addProperty("material", "WRITTEN_BOOK");
-            JsonObject pdc = new JsonObject();
-            pdc.addProperty("v5_evidence_id", "hs04_calibration_" + index);
-            spec.add("pdc", pdc);
-            seeds.add(seed(node, "calibration_books_" + index, "calibration_source", index - 1, spec));
         }
     }
 

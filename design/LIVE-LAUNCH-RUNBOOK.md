@@ -234,15 +234,16 @@ not promise to erase test players, solves, attempts, dossiers, or global flags.
 
 ## 7. Discord, Showrunner, And Website
 
-Deploy the repository-root `render.yaml`. Enter the Discord and Supabase secrets in Render; do not
-commit them. The Blueprint creates the persistent Discord worker and hourly showrunner cron. Run
-`npm run register` once from `discord/` with the live Discord application/guild environment configured.
+Create two Railway services rooted at `/discord`. Configure the persistent worker with
+`/discord/railway.worker.json` and the ten-minute recovery cron with
+`/discord/railway.cron.json`. Set every variable in `discord/.env.example` on both services; keep
+secrets in Railway and deploy both from the same release commit. Run `npm run register` once from
+`discord/` with the live Discord application/guild environment configured.
 
-Set the Vercel production secret `DISCORD_INVITE_URL` to the current invitation. Rotate only that
-value when an invite expires; never edit the callback code or rebuild Minecraft for invite rotation.
-Confirm the deployed website root, `/record/the-record`, and `/status` load; ticket `1842` must reject
-a wrong callback and reveal the current invite only for `9137`. Keep `/author` behind a private
-deployment/access wall.
+Set the current invitation only at `handoff.discord-invite-url` in the Paper plugin configuration. It
+is revealed after the in-world LS06 Orientation filing; the website must never expose it. Rotate that
+value and restart Paper when an invite expires. Confirm the deployed website root,
+`/record/the-record`, and `/status` load, and keep `/author` behind a private deployment/access wall.
 
 Start the persistent worker and verify its boot log includes `discord surface ready` for the intended
 guild/channel. In Discord, `/link` must appear. Test with a non-story account only: an unknown name

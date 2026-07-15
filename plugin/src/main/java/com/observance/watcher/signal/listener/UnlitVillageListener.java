@@ -1,10 +1,8 @@
 package com.observance.watcher.signal.listener;
 
-import com.google.gson.JsonObject;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.config.Site;
 import com.observance.watcher.config.SitesConfig;
-import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.util.RateLimiter;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
@@ -19,6 +17,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
@@ -38,6 +37,7 @@ import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -54,14 +54,21 @@ import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -72,23 +79,14 @@ import java.util.function.Supplier;
  */
 public final class UnlitVillageListener implements Listener {
 
+    private static final int SESSION_SCHEMA = 1;
+    private static final String SESSION_DIRECTORY = "unlit-sessions";
     private static final String ENTRY_SITE = "unlit_entry";
     private static final String SPAWN_SITE = "unlit_spawn_mirror";
     private static final String EXIT_SITE = "unlit_exit";
-    private static final Set<String> HOUSE_IDS = Set.of(
-            "unlit_house_lamp",
-            "unlit_house_cairn",
-            "unlit_house_coop",
-            "unlit_house_well",
-            "unlit_house_watch",
-            "unlit_house_warm",
-            "unlit_house_threshold",
-            "unlit_house_base"
-    );
 
     private final ObservancePlugin plugin;
     private final Supplier<SitesConfig> sites;
-    private final SupabaseClient supabase;
     private final RateLimiter rateLimiter;
     private final Scheduler scheduler;
     private final Safety safety;
@@ -102,20 +100,17 @@ public final class UnlitVillageListener implements Listener {
     private final Map<UUID, Integer> figureStage = new HashMap<>();
     private final Map<UUID, Long> lastFigureMs = new HashMap<>();
     private final Map<LightKey, Long> liveLights = new HashMap<>();
-    private final Set<String> reportedDiscoveries = new HashSet<>();
     private final List<Entity> figureBodies = new ArrayList<>();
     private BukkitTask tickTask;
 
     public UnlitVillageListener(ObservancePlugin plugin,
                                 Supplier<SitesConfig> sites,
-                                SupabaseClient supabase,
                                 RateLimiter rateLimiter,
                                 Scheduler scheduler,
                                 Safety safety,
                                 String namespace) {
         this.plugin = plugin;
         this.sites = sites;
-        this.supabase = supabase;
         this.rateLimiter = rateLimiter;
         this.scheduler = scheduler;
         this.safety = safety;
@@ -128,6 +123,7 @@ public final class UnlitVillageListener implements Listener {
     public void start() {
         if (tickTask != null) return;
         tickTask = scheduler.runTimerSafe("unlit.village.tick", 20L, 20L, this::tick);
+        for (Player player : Bukkit.getOnlinePlayers()) recoverPlayer(player);
     }
 
     public void stop() {
@@ -142,11 +138,14 @@ public final class UnlitVillageListener implements Listener {
         }
         figureBodies.clear();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (isActive(player)) restoreAndReturn(player, false, false);
+            if (isActive(player) || sessionFile(player.getUniqueId()).isFile()) {
+                restoreAndReturn(player, true, false);
+            }
         }
         storedInventories.clear();
         darknessExposure.clear();
         figureStage.clear();
+        lastFigureMs.clear();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -170,13 +169,16 @@ public final class UnlitVillageListener implements Listener {
 
         if (isUnlitBuildMode(player)) return;
 
-        if (isUnlitWorld(player.getWorld()) && isBannedItem(item)) {
+        Block clicked = event.getClickedBlock();
+        boolean evidenceContainer = clicked != null
+                && clicked.getType() == Material.BARREL
+                && event.getAction() == Action.RIGHT_CLICK_BLOCK;
+        if (isUnlitWorld(player.getWorld()) && isBannedItem(item) && !evidenceContainer) {
             event.setCancelled(true);
             player.sendActionBar(Component.text("That kind of light does not hold here.", NamedTextColor.DARK_GRAY));
             return;
         }
 
-        Block clicked = event.getClickedBlock();
         if (isUnlitWorld(player.getWorld()) && clicked != null
                 && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.PHYSICAL)
                 && isRouteCheeseBlock(clicked.getType())) {
@@ -199,11 +201,12 @@ public final class UnlitVillageListener implements Listener {
             return;
         }
 
-        for (String houseId : HOUSE_IDS) {
-            if (atSite(to, houseId)) {
-                recordDiscovery(player, houseId);
-            }
-        }
+    }
+
+    // Restore escrow before the V5 custody listeners perform their join-time duplicate/recovery scan.
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onJoin(PlayerJoinEvent event) {
+        recoverPlayer(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -275,7 +278,8 @@ public final class UnlitVillageListener implements Listener {
         if (!isActive(player) && !isUnlitWorld(player.getWorld())) return;
         if (isUnlitBuildMode(player)) return;
         InventoryType type = event.getInventory().getType();
-        if (type == InventoryType.LECTERN || type == InventoryType.PLAYER) return;
+        if (type == InventoryType.LECTERN || type == InventoryType.PLAYER
+                || type == InventoryType.BARREL) return;
         event.setCancelled(true);
         player.sendActionBar(Component.text("The copy keeps its contents.", NamedTextColor.DARK_GRAY));
     }
@@ -303,11 +307,21 @@ public final class UnlitVillageListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (player != null && isActive(player)) restoreAndReturn(player, true, true);
+        if (player != null && (isActive(player) || sessionFile(player.getUniqueId()).isFile())) {
+            restoreAndReturn(player, true, true);
+        }
     }
 
     private void enter(Player player) {
         if (isActive(player)) return;
+        File sessionFile = sessionFile(player.getUniqueId());
+        if (sessionFile.isFile()) {
+            player.sendMessage(Component.text(
+                    "Your earlier crossing is still being recovered. Nothing new was taken.",
+                    NamedTextColor.GRAY));
+            recoverPlayer(player);
+            return;
+        }
         Location spawn = siteLocation(SPAWN_SITE);
         if (spawn == null || spawn.getWorld() == null) {
             player.sendMessage("Observance: unlit_spawn_mirror is not placed or its world is not loaded.");
@@ -315,42 +329,117 @@ public final class UnlitVillageListener implements Listener {
         }
         forceUnlitNight(spawn.getWorld());
         PlayerInventory inv = player.getInventory();
-        storedInventories.put(player.getUniqueId(), StoredInventory.capture(inv, player.getGameMode()));
-        inv.clear();
-        inv.setArmorContents(null);
+        StoredInventory stored = StoredInventory.capture(player);
+        if (!saveSession(player.getUniqueId(), stored)) {
+            player.sendMessage(Component.text(
+                    "The passage is unavailable. Nothing was taken from you.", NamedTextColor.GRAY));
+            return;
+        }
+        storedInventories.put(player.getUniqueId(), stored);
+        inv.setStorageContents(new ItemStack[inv.getStorageContents().length]);
+        inv.setArmorContents(new ItemStack[inv.getArmorContents().length]);
+        inv.setExtraContents(new ItemStack[inv.getExtraContents().length]);
         inv.addItem(borrowedLightStack(lightBudget()));
         inv.setItem(8, returnToken());
         player.setGameMode(GameMode.ADVENTURE);
         darknessExposure.put(player.getUniqueId(), 0);
         figureStage.put(player.getUniqueId(), 0);
-        player.teleport(spawn);
-        mergeFlag("unlit_open", true);
-        mergeFlag("unlit_last_entry", SupabaseClient.timestampNow());
+        if (!player.teleport(spawn)) {
+            restoreAndReturn(player, false, false);
+            player.sendMessage(Component.text(
+                    "The passage did not open. Nothing was taken from you.", NamedTextColor.GRAY));
+            return;
+        }
         player.sendMessage(Component.text("You step into the village unkept.", NamedTextColor.DARK_GRAY));
     }
 
     private void restoreAndReturn(Player player, boolean teleportOut, boolean log) {
         if (player == null) return;
-        StoredInventory stored = storedInventories.remove(player.getUniqueId());
-        if (stored != null) {
+        UUID playerId = player.getUniqueId();
+        StoredInventory stored = storedInventories.get(playerId);
+        if (stored == null) stored = loadSession(playerId);
+        if (stored == null) {
+            if (teleportOut && isUnlitWorld(player.getWorld()) && !isUnlitBuildMode(player)) {
+                rescueOrphan(player);
+            }
+            return;
+        }
+
+        if (teleportOut) {
+            Location destination = returnDestination(stored);
+            if (destination == null || destination.getWorld() == null || !player.teleport(destination)) {
+                safety.warn("unlit.return", "Could not return " + player.getName()
+                        + "; durable inventory escrow was kept for the next join.");
+                if (log) {
+                    player.sendMessage(Component.text(
+                            "The way back did not open. Try the shard again.", NamedTextColor.GRAY));
+                }
+                return;
+            }
+        }
+
+        try {
             PlayerInventory inv = player.getInventory();
             inv.clear();
-            inv.setContents(stored.contents());
-            inv.setArmorContents(stored.armor());
-            inv.setExtraContents(stored.extra());
+            inv.setStorageContents(resize(stored.storage(), inv.getStorageContents().length));
+            inv.setArmorContents(resize(stored.armor(), inv.getArmorContents().length));
+            inv.setExtraContents(resize(stored.extra(), inv.getExtraContents().length));
             player.setGameMode(stored.gameMode());
+            player.updateInventory();
+        } catch (Throwable restoreFailure) {
+            safety.warn("unlit.restore", "Could not restore inventory for " + player.getName()
+                    + ": " + restoreFailure.getClass().getSimpleName() + ": "
+                    + restoreFailure.getMessage() + ". Durable escrow was retained.");
+            return;
         }
-        darknessExposure.remove(player.getUniqueId());
-        figureStage.remove(player.getUniqueId());
-        if (teleportOut) {
-            Location exit = siteLocation(ENTRY_SITE);
-            if (exit == null) exit = siteLocation(EXIT_SITE);
-            if (exit != null && exit.getWorld() != null) player.teleport(exit);
-        }
+
+        storedInventories.remove(playerId);
+        darknessExposure.remove(playerId);
+        figureStage.remove(playerId);
+        lastFigureMs.remove(playerId);
+        deleteSession(playerId);
         if (log) {
-            mergeFlag("unlit_last_exit", SupabaseClient.timestampNow());
             player.sendMessage(Component.text("The dark gives you back.", NamedTextColor.GRAY));
         }
+    }
+
+    private void recoverPlayer(Player player) {
+        if (player == null) return;
+        UUID playerId = player.getUniqueId();
+        File file = sessionFile(playerId);
+        if (file.isFile()) {
+            StoredInventory stored = loadSession(playerId);
+            if (stored != null) {
+                storedInventories.put(playerId, stored);
+                restoreAndReturn(player, true, false);
+                return;
+            }
+        }
+        if (isUnlitWorld(player.getWorld()) && !isUnlitBuildMode(player)) {
+            rescueOrphan(player);
+        }
+    }
+
+    private void rescueOrphan(Player player) {
+        Location destination = siteLocation(ENTRY_SITE);
+        if (destination == null || destination.getWorld() == null) destination = siteLocation(EXIT_SITE);
+        if (destination != null && destination.getWorld() != null && player.teleport(destination)) {
+            removeTemporaryItems(player.getInventory());
+            player.sendMessage(Component.text(
+                    "The crossing was interrupted. You have been returned.", NamedTextColor.GRAY));
+            plugin.getLogger().severe("[unlit] Returned " + player.getName()
+                    + " from the Unlit world without an inventory escrow. Check the latest player backup.");
+        } else {
+            safety.warn("unlit.orphan", "Found " + player.getName()
+                    + " in the Unlit world without an inventory escrow, but no safe return was available.");
+        }
+    }
+
+    private Location returnDestination(StoredInventory stored) {
+        Location destination = stored.returnPoint().resolve();
+        if (destination == null || destination.getWorld() == null) destination = siteLocation(ENTRY_SITE);
+        if (destination == null || destination.getWorld() == null) destination = siteLocation(EXIT_SITE);
+        return destination;
     }
 
     private void tick() {
@@ -418,8 +507,6 @@ public final class UnlitVillageListener implements Listener {
         figureBodies.addAll(figure);
         playFigureSound(player, standAt, stage == 0 ? Sound.BLOCK_SCULK_SENSOR_CLICKING
                 : Sound.ENTITY_ENDERMAN_AMBIENT, stage == 0 ? 0.35f : 0.65f, stage == 0 ? 0.6f : 0.5f);
-        if (stage == 0) mergeFlag("unlit_figure_seen", true);
-        if (stage == 3) mergeFlag("unlit_figure_hunt", true);
 
         if (stage >= 1) {
             scheduler.runLaterSafe("unlit.figure.shift", 14L,
@@ -441,7 +528,6 @@ public final class UnlitVillageListener implements Listener {
                     if (loc != null) {
                         burnOut(loc);
                         playFigureSound(player, loc, Sound.ENTITY_PHANTOM_SWOOP, 0.8f, 0.42f);
-                        mergeFlag("unlit_light_taken", true);
                     }
                 });
             }
@@ -663,30 +749,6 @@ public final class UnlitVillageListener implements Listener {
         return false;
     }
 
-    private void recordDiscovery(Player player, String houseId) {
-        String house = houseId.substring("unlit_house_".length());
-        String key = "unlit_seen_" + house;
-        if (!reportedDiscoveries.add(key)) return;
-        mergeFlag(key, true);
-        if (player != null) {
-            player.sendActionBar(Component.text(discoveryMessage(house), NamedTextColor.GRAY));
-        }
-    }
-
-    private String discoveryMessage(String house) {
-        return switch (house) {
-            case "lamp" -> "The lamp account is recovered.";
-            case "well" -> "The reflection gives back a missing line.";
-            case "watch" -> "The dark hour is recorded.";
-            case "base" -> "The copied village is filed.";
-            case "threshold" -> "The low threshold is remembered.";
-            case "cairn" -> "The bowl records what cannot be kept.";
-            case "coop" -> "The missing call is recorded.";
-            case "warm" -> "The false warmth is marked.";
-            default -> "Something in this house remembers you.";
-        };
-    }
-
     private void burnOut(Location loc) {
         LightKey key = LightKey.of(loc);
         liveLights.remove(key);
@@ -743,6 +805,11 @@ public final class UnlitVillageListener implements Listener {
         ItemStack stack = com.observance.watcher.structure.CanonicalArtifactRegistry.create(
                 "unlit_light", null);
         if (stack == null) stack = new ItemStack(Material.SOUL_LANTERN, 1);
+        ItemMeta meta = stack.getItemMeta();
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(lightKey, PersistentDataType.BYTE, (byte) 1);
+            stack.setItemMeta(meta);
+        }
         stack.setAmount(Math.max(1, Math.min(64, amount)));
         return stack;
     }
@@ -750,7 +817,13 @@ public final class UnlitVillageListener implements Listener {
     private ItemStack returnToken() {
         ItemStack stack = com.observance.watcher.structure.CanonicalArtifactRegistry.create(
                 "unlit_return", null);
-        return stack == null ? new ItemStack(Material.ECHO_SHARD, 1) : stack;
+        if (stack == null) stack = new ItemStack(Material.ECHO_SHARD, 1);
+        ItemMeta meta = stack.getItemMeta();
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(returnKey, PersistentDataType.BYTE, (byte) 1);
+            stack.setItemMeta(meta);
+        }
+        return stack;
     }
 
     private boolean isBannedItem(ItemStack item) {
@@ -784,11 +857,9 @@ public final class UnlitVillageListener implements Listener {
                 || name.contains("FENCE_GATE")
                 || name.endsWith("_BUTTON")
                 || name.contains("PRESSURE_PLATE")
-                || name.equals("LEVER")
                 || name.contains("BED")
                 || name.equals("CHEST")
                 || name.equals("TRAPPED_CHEST")
-                || name.equals("BARREL")
                 || name.equals("ENDER_CHEST")
                 || name.contains("SHULKER_BOX")
                 || name.equals("DISPENSER")
@@ -869,14 +940,186 @@ public final class UnlitVillageListener implements Listener {
                 && a.getWorld() == b.getWorld();
     }
 
-    private void mergeFlag(String key, Object value) {
-        if (supabase == null || key == null || key.isBlank()) return;
-        scheduler.runAsyncSafe("unlit.flag." + key, () -> {
-            JsonObject flags = new JsonObject();
-            if (value instanceof Boolean b) flags.addProperty(key, b);
-            else flags.addProperty(key, String.valueOf(value));
-            supabase.mergeArcFlags(flags);
-        });
+    private File sessionDirectory() {
+        return new File(plugin.getDataFolder(), SESSION_DIRECTORY);
+    }
+
+    private File sessionFile(UUID playerId) {
+        return new File(sessionDirectory(), playerId + ".yml");
+    }
+
+    private boolean saveSession(UUID playerId, StoredInventory stored) {
+        if (playerId == null || stored == null) return false;
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("schema", SESSION_SCHEMA);
+        config.set("state", "escrowed");
+        config.set("player_uuid", playerId.toString());
+        config.set("saved_at_epoch_ms", System.currentTimeMillis());
+        config.set("game_mode", stored.gameMode().name());
+        writeItems(config, "inventory.storage", stored.storage());
+        writeItems(config, "inventory.armor", stored.armor());
+        writeItems(config, "inventory.extra", stored.extra());
+        stored.returnPoint().write(config, "return");
+        return writeYamlAtomically(playerId, config);
+    }
+
+    private StoredInventory loadSession(UUID playerId) {
+        File file = sessionFile(playerId);
+        if (!file.isFile()) return null;
+        try {
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+            if (config.getInt("schema", -1) != SESSION_SCHEMA) {
+                throw new IOException("unsupported session schema");
+            }
+            if (!"escrowed".equals(config.getString("state", ""))) {
+                throw new IOException("session is not escrowed");
+            }
+            if (!playerId.toString().equals(config.getString("player_uuid", ""))) {
+                throw new IOException("player UUID does not match filename");
+            }
+            GameMode mode;
+            try {
+                mode = GameMode.valueOf(config.getString("game_mode", "SURVIVAL")
+                        .trim().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException invalidMode) {
+                throw new IOException("invalid game mode", invalidMode);
+            }
+            return new StoredInventory(
+                    readItems(config, "inventory.storage", 64),
+                    readItems(config, "inventory.armor", 16),
+                    readItems(config, "inventory.extra", 16),
+                    mode,
+                    ReturnPoint.read(config, "return")
+            );
+        } catch (Throwable corrupt) {
+            plugin.getLogger().severe("[unlit] Refusing corrupt inventory escrow "
+                    + file.getAbsolutePath() + ": " + corrupt.getClass().getSimpleName()
+                    + ": " + corrupt.getMessage());
+            return null;
+        }
+    }
+
+    private boolean writeYamlAtomically(UUID playerId, YamlConfiguration config) {
+        File directory = sessionDirectory();
+        if (!directory.isDirectory() && !directory.mkdirs()) {
+            safety.warn("unlit.escrow", "Could not create " + directory.getAbsolutePath());
+            return false;
+        }
+        File destination = sessionFile(playerId);
+        File temporary = new File(directory, playerId + ".yml.tmp");
+        try (FileOutputStream output = new FileOutputStream(temporary);
+             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8)) {
+            writer.write(config.saveToString());
+            writer.flush();
+            output.getFD().sync();
+        } catch (IOException writeFailure) {
+            safeDelete(temporary);
+            safety.warn("unlit.escrow", "Could not write durable inventory escrow: "
+                    + writeFailure.getClass().getSimpleName() + ": " + writeFailure.getMessage());
+            return false;
+        }
+        try {
+            try {
+                Files.move(temporary.toPath(), destination.toPath(), StandardCopyOption.ATOMIC_MOVE,
+                        StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException unsupported) {
+                Files.move(temporary.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+            return true;
+        } catch (IOException moveFailure) {
+            safeDelete(temporary);
+            safety.warn("unlit.escrow", "Could not install durable inventory escrow: "
+                    + moveFailure.getClass().getSimpleName() + ": " + moveFailure.getMessage());
+            return false;
+        }
+    }
+
+    private void deleteSession(UUID playerId) {
+        File active = sessionFile(playerId);
+        File retired = new File(sessionDirectory(), playerId + ".restored");
+        try {
+            if (active.isFile()) {
+                try {
+                    Files.move(active.toPath(), retired.toPath(), StandardCopyOption.ATOMIC_MOVE,
+                            StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException unsupported) {
+                    Files.move(active.toPath(), retired.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+            Files.deleteIfExists(retired.toPath());
+            Files.deleteIfExists(new File(sessionDirectory(), playerId + ".yml.tmp").toPath());
+        } catch (IOException deleteFailure) {
+            safety.warn("unlit.escrow", "Inventory was restored, but its escrow file could not be removed: "
+                    + deleteFailure.getClass().getSimpleName() + ": " + deleteFailure.getMessage());
+        }
+    }
+
+    private static void writeItems(YamlConfiguration config, String path, ItemStack[] items) {
+        ItemStack[] safeItems = items == null ? new ItemStack[0] : items;
+        config.set(path + ".size", safeItems.length);
+        for (int slot = 0; slot < safeItems.length; slot++) {
+            ItemStack item = safeItems[slot];
+            if (item != null && item.getType() != Material.AIR) {
+                config.set(path + ".slots." + slot, item.clone());
+            }
+        }
+    }
+
+    private static ItemStack[] readItems(YamlConfiguration config, String path, int maximumSize)
+            throws IOException {
+        int size = config.getInt(path + ".size", -1);
+        if (size < 0 || size > maximumSize) throw new IOException("invalid " + path + " size " + size);
+        ItemStack[] items = new ItemStack[size];
+        for (int slot = 0; slot < size; slot++) {
+            ItemStack item = config.getItemStack(path + ".slots." + slot);
+            if (item != null && item.getType() != Material.AIR) items[slot] = item;
+        }
+        return items;
+    }
+
+    private static ItemStack[] resize(ItemStack[] source, int size) {
+        ItemStack[] result = new ItemStack[Math.max(0, size)];
+        if (source == null) return result;
+        for (int slot = 0; slot < Math.min(source.length, result.length); slot++) {
+            ItemStack item = source[slot];
+            result[slot] = item == null ? null : item.clone();
+        }
+        return result;
+    }
+
+    private void removeTemporaryItems(PlayerInventory inventory) {
+        if (inventory == null) return;
+        ItemStack[] storage = inventory.getStorageContents();
+        ItemStack[] armor = inventory.getArmorContents();
+        ItemStack[] extra = inventory.getExtraContents();
+        boolean changed = removeTemporaryItems(storage);
+        changed |= removeTemporaryItems(armor);
+        changed |= removeTemporaryItems(extra);
+        if (!changed) return;
+        inventory.setStorageContents(storage);
+        inventory.setArmorContents(armor);
+        inventory.setExtraContents(extra);
+    }
+
+    private boolean removeTemporaryItems(ItemStack[] items) {
+        if (items == null) return false;
+        boolean changed = false;
+        for (int slot = 0; slot < items.length; slot++) {
+            if (isBorrowedLight(items[slot]) || isReturnToken(items[slot])) {
+                items[slot] = null;
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    private static void safeDelete(File file) {
+        if (file == null) return;
+        try {
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException ignored) {
+            // Best effort; the next atomic write replaces the same temporary path.
+        }
     }
 
     private int lightBudget() {
@@ -939,14 +1182,71 @@ public final class UnlitVillageListener implements Listener {
         return Math.max(0.0, Math.min(1.0, plugin.getConfig().getDouble("unlit.figure-swoop-chance", 0.65)));
     }
 
-    private record StoredInventory(ItemStack[] contents, ItemStack[] armor, ItemStack[] extra, GameMode gameMode) {
-        static StoredInventory capture(PlayerInventory inv, GameMode mode) {
+    private record StoredInventory(ItemStack[] storage, ItemStack[] armor, ItemStack[] extra,
+                                   GameMode gameMode, ReturnPoint returnPoint) {
+        static StoredInventory capture(Player player) {
+            PlayerInventory inv = player.getInventory();
             return new StoredInventory(
-                    inv.getContents().clone(),
+                    inv.getStorageContents().clone(),
                     inv.getArmorContents().clone(),
                     inv.getExtraContents().clone(),
-                    mode == null ? GameMode.SURVIVAL : mode
+                    player.getGameMode() == null ? GameMode.SURVIVAL : player.getGameMode(),
+                    ReturnPoint.capture(player.getLocation())
             );
+        }
+    }
+
+    private record ReturnPoint(String worldUuid, String worldName, double x, double y, double z,
+                               float yaw, float pitch) {
+        static ReturnPoint capture(Location location) {
+            World world = location == null ? null : location.getWorld();
+            return new ReturnPoint(
+                    world == null ? "" : world.getUID().toString(),
+                    world == null ? "" : world.getName(),
+                    location == null ? 0.0 : location.getX(),
+                    location == null ? 0.0 : location.getY(),
+                    location == null ? 0.0 : location.getZ(),
+                    location == null ? 0.0f : location.getYaw(),
+                    location == null ? 0.0f : location.getPitch()
+            );
+        }
+
+        static ReturnPoint read(YamlConfiguration config, String path) throws IOException {
+            String worldUuid = config.getString(path + ".world_uuid", "");
+            String worldName = config.getString(path + ".world_name", "");
+            if (worldUuid.isBlank() && worldName.isBlank()) throw new IOException("return world is missing");
+            return new ReturnPoint(
+                    worldUuid,
+                    worldName,
+                    config.getDouble(path + ".x"),
+                    config.getDouble(path + ".y"),
+                    config.getDouble(path + ".z"),
+                    (float) config.getDouble(path + ".yaw"),
+                    (float) config.getDouble(path + ".pitch")
+            );
+        }
+
+        void write(YamlConfiguration config, String path) {
+            config.set(path + ".world_uuid", worldUuid);
+            config.set(path + ".world_name", worldName);
+            config.set(path + ".x", x);
+            config.set(path + ".y", y);
+            config.set(path + ".z", z);
+            config.set(path + ".yaw", yaw);
+            config.set(path + ".pitch", pitch);
+        }
+
+        Location resolve() {
+            World world = null;
+            if (!worldUuid.isBlank()) {
+                try {
+                    world = Bukkit.getWorld(UUID.fromString(worldUuid));
+                } catch (IllegalArgumentException ignored) {
+                    // Fall through to the stable world name.
+                }
+            }
+            if (world == null && !worldName.isBlank()) world = Bukkit.getWorld(worldName);
+            return world == null ? null : new Location(world, x, y, z, yaw, pitch);
         }
     }
 

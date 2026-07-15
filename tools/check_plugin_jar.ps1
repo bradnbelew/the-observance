@@ -129,8 +129,19 @@ if (!(Test-Path $buildFile)) {
             Add-Failure "plugin.yml version inside jar does not match build.gradle version $version"
           }
         }
-        if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "config.yml" } | Select-Object -First 1)) {
+        $configEntry = $zip.Entries | Where-Object { $_.FullName -eq "config.yml" } | Select-Object -First 1
+        if ($null -eq $configEntry) {
           Add-Failure "Plugin jar does not contain config.yml"
+        } else {
+          $reader = New-Object System.IO.StreamReader($configEntry.Open())
+          try {
+            $packagedConfig = $reader.ReadToEnd()
+          } finally {
+            $reader.Dispose()
+          }
+          if ($packagedConfig -notmatch '(?im)^\s{2}discord-invite-url:\s*["'']https://(?:discord\.gg|discord\.com/invite)/[A-Za-z0-9_-]+["'']\s*(?:#.*)?$') {
+            Add-Failure "Plugin jar config.yml does not contain a valid nonblank HTTPS Discord invitation"
+          }
         }
         if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "sites.yml" } | Select-Object -First 1)) {
           Add-Failure "Plugin jar does not contain sites.yml"

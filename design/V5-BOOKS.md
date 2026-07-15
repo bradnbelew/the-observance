@@ -6,8 +6,8 @@ Exact holder/mount/facing/unlock contract: `design/ARG-V5-BOOK-PLACEMENT.csv`
 
 The fixed lectern/artifact registry contains 44 books with stable ID, node, title, author, room,
 unlock flag, and exact page boundaries. A second immutable authority,
-`arc/v5/evidence-item-text.json`, contains 20 movable written evidence items used by WR01, BI01,
-CW07, and HS04. Those items have exact titles, authors, pages, and evidence IDs; generic generated copy is a
+`arc/v5/evidence-item-text.json`, contains 7 movable written evidence items used by WR01, BI01,
+and CW07. Those items have exact titles, authors, pages, and evidence IDs; generic generated copy is a
 launch blocker.
 
 Non-book evidence uses the separate 108-item authority in

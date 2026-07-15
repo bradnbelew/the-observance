@@ -53,7 +53,7 @@ Public website data comes from anon-safe projections/security-definer functions.
 
 ## Discord and showrunner
 
-The persistent bot worker owns slash commands, normalization, linking, hints, receipts, and a lease-safe showrunner tick every 10–15 seconds. The five-minute Render cron is recovery only.
+The persistent bot worker owns slash commands, normalization, linking, hints, receipts, and a lease-safe showrunner tick every 10–15 seconds. The ten-minute Railway cron is recovery only.
 
 Answer resolution is fail-closed on prerequisites and selection. Autocomplete cannot spoil closed node titles/keys. Repeated delivery is idempotent.
 
@@ -86,7 +86,7 @@ Five immutable external assets are listed in `arc/v5/media-manifest.json` with U
 - Unknown prerequisite: do not open/resolve.
 - Missing canonical content: fail before world mutation/build.
 - Database outage: preserve last locally latched gates and queue bounded receipts.
-- Discord/Render outage: Minecraft interactions/NPC/finale continue locally.
+- Discord/Railway outage: Minecraft interactions/NPC/finale continue locally.
 - Website/media unavailable before reveal: launch preflight fails.
 - Lost artifact: recover from durable completion; never reset the case.
 - Partial Hold build: never report ready; use fresh site or verified rollback.
@@ -94,4 +94,4 @@ Five immutable external assets are listed in `arc/v5/media-manifest.json` with U
 
 ## Release verification
 
-Clean builds and unit/self-tests are necessary but insufficient. Production requires exact Paper `1.21.11`, real-client traversal/typography/hitboxes, non-op grief and recovery scenarios, live Supabase/Discord/Render/Vercel/DNS checks, all finale branches, artifact hashes, and a dated launch receipt.
+Clean builds and unit/self-tests are necessary but insufficient. Production requires exact Paper `1.21.11`, real-client traversal/typography/hitboxes, non-op grief and recovery scenarios, live Supabase/Discord/Railway/Vercel/DNS checks, all finale branches, artifact hashes, and a dated launch receipt.

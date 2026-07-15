@@ -43,16 +43,30 @@ public final class AmbientBeatGenerator {
     private final Attention attention;
     private final BooleanSupplier localSleep;
     private final BooleanSupplier dramaEnabled;
+    /**
+     * V5 safety: when true, only the curated, text-free, no-write sensory choices in
+     * {@link #scaryChoices} may fire — the broad {@code library.pickAmbient} fallback (which could
+     * select a durable or authored-text ambient beat) is never used. See {@code V5SafeBeatEnactor}.
+     */
+    private final boolean safeAmbientOnly;
 
     public AmbientBeatGenerator(BeatContext ctx, BeatLibrary library, DramaBudget budget,
                                 Attention attention,
                                 BooleanSupplier localSleep, BooleanSupplier dramaEnabled) {
+        this(ctx, library, budget, attention, localSleep, dramaEnabled, false);
+    }
+
+    public AmbientBeatGenerator(BeatContext ctx, BeatLibrary library, DramaBudget budget,
+                                Attention attention,
+                                BooleanSupplier localSleep, BooleanSupplier dramaEnabled,
+                                boolean safeAmbientOnly) {
         this.ctx = ctx;
         this.library = library;
         this.budget = budget;
         this.attention = attention == null ? new Attention(0.82) : attention;
         this.localSleep = localSleep == null ? () -> false : localSleep;
         this.dramaEnabled = dramaEnabled == null ? () -> true : dramaEnabled;
+        this.safeAmbientOnly = safeAmbientOnly;
     }
 
     /** One ambient consideration. MAIN thread. Never throws (caller wraps in Safety too). */
@@ -95,8 +109,18 @@ public final class AmbientBeatGenerator {
                 BeatPayload.empty());
 
         AmbientChoice choice = pickScaryAmbient(tier, req);
-        Beat beat = choice == null ? library.pickAmbient(ctx, req) : library.get(choice.beatType);
-        BeatPayload payload = choice == null ? req.payload() : BeatPayload.parse(choice.payload);
+        // In V5-safe mode the curated sensory choices are the ONLY thing that may fire; never fall
+        // back to the broad library pool (which can include durable / authored-text ambient beats).
+        Beat beat;
+        BeatPayload payload;
+        if (choice == null) {
+            if (safeAmbientOnly) return; // nothing safe can fire here right now — stay quiet
+            beat = library.pickAmbient(ctx, req);
+            payload = req.payload();
+        } else {
+            beat = library.get(choice.beatType);
+            payload = BeatPayload.parse(choice.payload);
+        }
         if (beat == null) return; // nothing can fire here right now — stay quiet
 
         // Reserve budget keyed to the focus player.
@@ -221,7 +245,11 @@ public final class AmbientBeatGenerator {
                         2),
                 new AmbientChoice("private_sound",
                         "{\"named_sound\":\"observance:stone_breath\",\"volume\":0.25,\"pitch\":0.55,\"behind\":true,\"offset\":9.0}",
-                        dread ? 2 : 0)
+                        dread ? 2 : 0),
+                // The signature "it knows ME": the lonely, deep, high-attention player's own name in
+                // runes on the wall in front of them, seen by no one else, gone the instant they look
+                // away. Derived text (their name), no writes, non-persistent — DREAD tier only.
+                new AmbientChoice("name_on_wall", "{\"seconds\":5}", dread ? 3 : 0)
         };
     }
 

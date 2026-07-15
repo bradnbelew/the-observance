@@ -134,7 +134,7 @@ declare
   v_now timestamptz := now();
 begin
   -- Callback, caller, name, and proof shape are checked before locks or writes. The story callback
-  -- and LS04 gate remain independent requirements; the one-time code does not replace either.
+  -- and LS06 Orientation filing remain independent requirements; the one-time code does not replace either.
   if coalesce(p_discord_id, '') !~ '^[0-9]{5,32}$'
      or coalesce(btrim(p_mc_name), '') !~ '^[A-Za-z0-9_]{3,16}$' then
     return query select 'unknown'::text, null::uuid, null::text, null::text,

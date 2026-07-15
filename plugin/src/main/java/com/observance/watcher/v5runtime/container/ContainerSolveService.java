@@ -140,7 +140,7 @@ public final class ContainerSolveService {
             }
             Set<String> held = heldBits(before, actor);
             boolean linked = actors.linked(actor);
-            boolean handoff = actors.matchesHandoff(actor, "v5_ls05_bound");
+            boolean handoff = false;
             ContainerObservation observation = world.capture(
                     rule, actor, flags, held, linked, handoff);
             ContainerAttempt evaluated = contract.evaluate(
@@ -238,9 +238,8 @@ public final class ContainerSolveService {
                         Status.LOCKED, "The preceding record is not yet complete."));
             }
             boolean linked = actors.linked(actor);
-            boolean handoff = actors.matchesHandoff(actor, "v5_ls05_bound");
-            if (("CW07".equals(nodeId) && !linked)
-                    || ("LS06".equals(nodeId) && !handoff)) {
+            boolean handoff = false;
+            if ("CW07".equals(nodeId) && !linked) {
                 return report(actor, ContainerAttempt.of(
                         Status.LOCKED, "This source does not recognize that linked hand."));
             }

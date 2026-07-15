@@ -108,6 +108,8 @@ public final class ObservancePlugin extends JavaPlugin {
     //     (it spawns display entities that must be cleaned up). ---
     private com.observance.watcher.signal.listener.ThresholdVaultListener thresholdVault;
     private UnlitVillageListener unlitVillage;
+    /** BI08's asymmetric base-mirror dressing (per-player observation fragments). Same lifecycle as unlitVillage. */
+    private com.observance.watcher.signal.listener.BaseMirrorFragmentListener baseMirrorFragments;
     /** Durable kept/broken detector for the black-moon Unlit Deep trial. Rebuilt on reload. */
     private UnlitDeepListener unlitDeep;
 
@@ -264,17 +266,19 @@ public final class ObservancePlugin extends JavaPlugin {
         registerListeners();
 
         if (v5Runtime.storyInputsEnabled()) {
-            // 9. Schedule async poller + maintenance.
-            startSchedulers();
-
-            // V5 is case/predicate driven. The former ambient/remote BeatEngine contains retired
-            // V4 story effects and must remain unreachable even if a stale beat_queue row exists.
-            if (!V5_PRODUCTION) {
-                this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
-                beatEngine.activate();
+            // The ambient Watcher is reawakened for V5, but only its curated text-free sensory palette
+            // fires and the queue enactor is allowlisted to the hint beats — no retired V4 effect is
+            // reachable. Activate BEFORE startSchedulers so the guarded enactor is installed before the
+            // poller is scheduled. The legacy full engine still runs when V5_PRODUCTION is off.
+            this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
+            if (V5_PRODUCTION) {
+                beatEngine.activateV5Safe();
             } else {
-                this.beatEngine = null;
+                beatEngine.activate();
             }
+
+            // 9. Schedule async poller (guarded in V5) + maintenance.
+            startSchedulers();
         } else {
             this.locallyAsleep = true;
             getLogger().warning("Observance V5 booted in terminal finale/CODA mode; ordinary ARG "
@@ -307,6 +311,10 @@ public final class ObservancePlugin extends JavaPlugin {
         if (unlitVillage != null) {
             unlitVillage.stop();
             unlitVillage = null;
+        }
+        if (baseMirrorFragments != null) {
+            baseMirrorFragments.stop();
+            baseMirrorFragments = null;
         }
         if (finaleController != null) finaleController.stop();
 
@@ -415,6 +423,10 @@ public final class ObservancePlugin extends JavaPlugin {
                 unlitVillage.stop();
                 unlitVillage = null;
             }
+            if (baseMirrorFragments != null) {
+                baseMirrorFragments.stop();
+                baseMirrorFragments = null;
+            }
             try {
                 V5RuntimeCoordinator runtime = new V5RuntimeCoordinator(this);
                 this.v5Runtime = runtime;
@@ -429,18 +441,23 @@ public final class ObservancePlugin extends JavaPlugin {
             // Rebuild the poller against the new config/client; restart schedulers.
             this.poller = new BeatQueuePoller(config, supabase, scheduler, safety,
                     beatEnactor::get, this::isLocallyAsleep);
-            if (v5Runtime.storyInputsEnabled()) startSchedulers();
-
-            // Rebuild the haunting engine against the new config/sites. Its listeners were dropped by
-            // the unregisterAll above; activate() re-registers protection + session listeners and
-            // re-installs the real enactor + ambient generator.
+            // Rebuild the haunting engine against the new config/sites BEFORE rescheduling the poller,
+            // so the guarded enactor is installed before the poller can run. Its listeners were dropped
+            // by the unregisterAll above; activation re-registers protection + session listeners and
+            // re-installs the (V5-guarded) enactor + ambient generator.
             if (beatEngine != null) beatEngine.deactivate();
-            if (!V5_PRODUCTION && v5Runtime.storyInputsEnabled()) {
+            if (v5Runtime.storyInputsEnabled()) {
                 this.beatEngine = new com.observance.watcher.beats.BeatEngine(this);
-                beatEngine.activate();
+                if (V5_PRODUCTION) {
+                    beatEngine.activateV5Safe();
+                } else {
+                    beatEngine.activate();
+                }
             } else {
                 this.beatEngine = null;
             }
+
+            if (v5Runtime.storyInputsEnabled()) startSchedulers();
 
             logEvent("info", "reload", "config+sites reloaded; sitesPlaced=" + sites.placedCount(), null);
             return true;
@@ -531,9 +548,17 @@ public final class ObservancePlugin extends JavaPlugin {
         }
         if (unlitVillage != null) { unlitVillage.stop(); unlitVillage = null; }
         this.unlitVillage = new UnlitVillageListener(
-                this, this::sites, supabase, rateLimiter, scheduler, safety, "observance");
+                this, this::sites, rateLimiter, scheduler, safety, "observance");
         pm.registerEvents(unlitVillage, this);
         unlitVillage.start();
+
+        // BI08's asymmetric base-mirror synthesis dressing (Wave 4): per-player observation
+        // fragments near unlit_house_base. Not an event listener (no onXxx handlers), just a
+        // ticking presenter, so it starts directly rather than through registerEvents.
+        if (baseMirrorFragments != null) { baseMirrorFragments.stop(); baseMirrorFragments = null; }
+        this.baseMirrorFragments = new com.observance.watcher.signal.listener.BaseMirrorFragmentListener(
+                this, this::sites, scheduler, safety);
+        baseMirrorFragments.start();
 
         // Production Deep Hold region guard. The beat protection listener protects individual anchors;
         // this protects the whole carved Hold from ordinary player break/place/fluid bypasses while
@@ -847,11 +872,12 @@ public final class ObservancePlugin extends JavaPlugin {
     }
 
     private void startSchedulers() {
-        if (!V5_PRODUCTION) {
-            long pollTicks = Math.max(20L, config.beatPollIntervalSeconds() * 20L);
-            scheduledTasks.add(scheduler.runAsyncTimerSafe(
-                    "beat.poller", pollTicks, pollTicks, () -> poller.pollOnce()));
-        }
+        // The beat-queue poller runs in V5 too: its enactor is wrapped by V5SafeBeatEnactor, so only
+        // the hint beats (whisper_toll / hint_whisper) can ever be realized from the queue. This is
+        // what makes the /whisper toll and in-world hint delivery actually fire.
+        long pollTicks = Math.max(20L, config.beatPollIntervalSeconds() * 20L);
+        scheduledTasks.add(scheduler.runAsyncTimerSafe(
+                "beat.poller", pollTicks, pollTicks, () -> poller.pollOnce()));
 
         // Prime the OBSERVER TIER-1 global switch once at startup (async), so an already-enabled
         // 'observer_capture' is honored without waiting a full maint cycle. Still defaults FALSE.
@@ -1340,6 +1366,55 @@ public final class ObservancePlugin extends JavaPlugin {
             return t.equals("true") || t.equals("1") || t.equals("yes");
         }
         return false;
+    }
+
+    public boolean v5DiscordHandoffConfigured() {
+        return v5DiscordHandoffUrl() != null;
+    }
+
+    /** Private route disclosed by the LS06 filing and replayed on reconnect. */
+    public void sendV5DiscordHandoff(org.bukkit.entity.Player player) {
+        if (player == null || !player.isOnline()) return;
+        String invite = v5DiscordHandoffUrl();
+        if (invite == null) {
+            player.sendMessage(net.kyori.adventure.text.Component.text(
+                    "The dispatch address is missing from the service copy. Tell the server operator.",
+                    net.kyori.adventure.text.format.NamedTextColor.RED));
+            return;
+        }
+        player.sendMessage(net.kyori.adventure.text.Component.text(
+                "Copperline Dispatch", net.kyori.adventure.text.format.NamedTextColor.GRAY));
+        player.sendMessage(net.kyori.adventure.text.Component.text(
+                "The returned survey includes a remote coordination address.",
+                net.kyori.adventure.text.format.NamedTextColor.WHITE));
+        player.sendMessage(net.kyori.adventure.text.Component.text(
+                        "Open coordination room",
+                        net.kyori.adventure.text.format.NamedTextColor.AQUA)
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(invite))
+                .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
+                        net.kyori.adventure.text.Component.text(invite))));
+        player.sendMessage(net.kyori.adventure.text.Component.text(
+                "Once inside, run /obslink here. File your exact Minecraft name, 9137, "
+                        + "and the one-time code with /link.",
+                net.kyori.adventure.text.format.NamedTextColor.GRAY));
+    }
+
+    private String v5DiscordHandoffUrl() {
+        String raw = getConfig().getString("handoff.discord-invite-url", "");
+        if (raw == null || raw.isBlank()) return null;
+        try {
+            java.net.URI uri = java.net.URI.create(raw.trim());
+            if (!"https".equalsIgnoreCase(uri.getScheme())) return null;
+            String host = uri.getHost();
+            if (host == null) return null;
+            host = host.toLowerCase(java.util.Locale.ROOT);
+            if ("discord.gg".equals(host)) return uri.toString();
+            if ("discord.com".equals(host) && uri.getPath() != null
+                    && uri.getPath().startsWith("/invite/")) return uri.toString();
+        } catch (IllegalArgumentException ignored) {
+            // Readiness reports one stable configuration finding without echoing malformed input.
+        }
+        return null;
     }
 
     /** Convenience for subsystems: async event_log write that never throws. */

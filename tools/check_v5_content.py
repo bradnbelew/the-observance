@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import re
+import struct
 import sys
 from collections import Counter, defaultdict, deque
 from pathlib import Path
@@ -18,6 +20,7 @@ EVIDENCE_TEXT_PATH = ROOT / "arc" / "v5" / "evidence-item-text.json"
 EVIDENCE_APPEARANCE_PATH = ROOT / "arc" / "v5" / "evidence-item-appearance.json"
 BOOK_PLACEMENT_PATH = ROOT / "design" / "ARG-V5-BOOK-PLACEMENT.csv"
 MEDIA_PATH = ROOT / "arc" / "v5" / "media-manifest.json"
+GENERATED_IMAGE_PATH = ROOT / "arc" / "v5" / "generated-image-manifest.json"
 NPC_PATH = ROOT / "arc" / "v5" / "npc-dialogue.json"
 ROOM_ASSIGNMENT_PATH = ROOT / "design" / "ARG-V5-ROOM-ASSIGNMENTS.csv"
 ROOM_BOX_PATH = ROOT / "design" / "DEEP-HOLD-ROOM-BOXES.csv"
@@ -28,6 +31,7 @@ RECORD_OWNERSHIP_PATH = ROOT / "design" / "ARG-V5-RECORD-OWNERSHIP.csv"
 RUNTIME_BINDING_PATH = ROOT / "design" / "ARG-V5-RUNTIME-BINDINGS.csv"
 ARTIFACT_PATH = ROOT / "design" / "ARG-V5-ARTIFACT-MANIFEST.csv"
 PHYSICAL_PREDICATE_PATH = ROOT / "design" / "ARG-V5-PHYSICAL-PREDICATES.json"
+V5_SEED_PATH = ROOT / "discord" / "supabase" / "seeds" / "v5_investigations.sql"
 MAP_ART_PATH = ROOT / "arc" / "v5" / "map-art-manifest.json"
 
 EXPECTED_CASE_COUNTS = {
@@ -57,7 +61,6 @@ EXPECTED_EVIDENCE_TEXT_IDS = {
     "wr01_private_bridge", "wr01_private_names", "wr01_private_disappearance",
     "bi01_wick_segment_1", "bi01_wick_segment_2", "bi01_wick_segment_3",
     "cw07_discipline_drafts",
-    *(f"hs04_calibration_{index}" for index in range(1, 14)),
 }
 
 EXPECTED_EVIDENCE_APPEARANCE_IDS = {
@@ -77,6 +80,9 @@ EXPECTED_EVIDENCE_APPEARANCE_IDS = {
     "ar06_bell_9", "cw07_genuine_filter", "cw07_purchase_receipt",
     "bi02_layer_old1", "bi02_layer_old2", "bi02_layer_old3", "bi02_drill_dust",
     "bi03_feed", "bi03_water", "bi03_cover",
+    "bi03_feed_disturbed", "bi03_water_disturbed",
+    "bi04_village_pressure", "bi04_hold_pressure", "bi04_load_trace",
+    "bi06_reed_late", "bi06_water_late",
     "ks01_dzgvi", "ks01_pvvkh", "ks01_gsv", "ks01_yzxp", "ks01_lu",
     "ks01_gsv_kztv",
     "wr02_mkept_login", "wr02_ash_cache", "wr02_rook_bridge", "wr02_player_fears",
@@ -286,7 +292,7 @@ def validate_evidence_appearance(data: dict, node_ids: set[str], errors: list[st
         return
     ids = [str(item.get("id", "")).strip() for item in items]
     if set(ids) != EXPECTED_EVIDENCE_APPEARANCE_IDS or len(ids) != len(EXPECTED_EVIDENCE_APPEARANCE_IDS):
-        fail(errors, "evidence-item appearance authority must contain the exact 111 visible non-book evidence items")
+        fail(errors, "evidence-item appearance authority must contain the exact 118 visible non-book evidence items")
     duplicates = sorted(value for value, count in Counter(ids).items() if count > 1)
     if duplicates:
         fail(errors, f"duplicate evidence-item appearance ids: {duplicates}")
@@ -401,6 +407,56 @@ def validate_media(data: dict, node_ids: set[str], known_flags: set[str], errors
     brann = next((asset for asset in assets if asset.get("id") == "clip_03_watch_correction"), None)
     if brann is None or brann.get("acceptedAliases") != ["stay awake"]:
         fail(errors, "KB01 must accept only exact normalized STAY AWAKE; broad aliases bypass required clip 3")
+
+
+def validate_generated_images(
+    data: dict, node_ids: set[str], known_flags: set[str], errors: list[str]
+) -> None:
+    policy = data.get("policy") or {}
+    if policy.get("allRequired") is not True:
+        fail(errors, "generated-image manifest must mark both evidence stills required")
+    if policy.get("revealPrerequisite") not in known_flags:
+        fail(errors, "generated-image manifest has an unknown reveal prerequisite")
+    if policy.get("findingNode") not in node_ids:
+        fail(errors, "generated-image manifest has an unknown finding node")
+    assets = data.get("assets")
+    if not isinstance(assets, list) or len(assets) != 2:
+        fail(errors, f"expected two required generated evidence stills; found {len(assets or [])}")
+        return
+    expected_ids = {"camp_frame_06", "locker_detail_13"}
+    observed_ids: set[str] = set()
+    for asset in assets:
+        asset_id = str(asset.get("id", "")).strip()
+        observed_ids.add(asset_id)
+        if asset.get("nodeId") != "A07":
+            fail(errors, f"generated image {asset_id} must be owned by A07")
+        public_path = str(asset.get("publicPath", ""))
+        source_path = str(asset.get("sourcePath", ""))
+        if public_path != "/" + source_path.removeprefix("dashboard/public/"):
+            fail(errors, f"generated image {asset_id} public/source paths drift")
+        resolved = (ROOT / source_path).resolve()
+        try:
+            resolved.relative_to(ROOT.resolve())
+        except ValueError:
+            fail(errors, f"generated image {asset_id} escapes the repository")
+            continue
+        if not resolved.is_file():
+            fail(errors, f"generated image {asset_id} is missing at {source_path}")
+            continue
+        payload = resolved.read_bytes()
+        if len(payload) < 100_000 or payload[:8] != b"\x89PNG\r\n\x1a\n":
+            fail(errors, f"generated image {asset_id} is not a full PNG evidence asset")
+            continue
+        width, height = struct.unpack(">II", payload[16:24])
+        if (width, height) != (1448, 1086):
+            fail(errors, f"generated image {asset_id} dimensions {(width, height)} drift from 1448x1086")
+        actual_sha1 = hashlib.sha1(payload).hexdigest()
+        if actual_sha1 != str(asset.get("sha1", "")).lower():
+            fail(errors, f"generated image {asset_id} SHA-1 receipt does not match its bytes")
+        if not str(asset.get("narrativeUse", "")).strip():
+            fail(errors, f"generated image {asset_id} has no required narrative use")
+    if observed_ids != expected_ids:
+        fail(errors, f"generated image ids {sorted(observed_ids)} do not match {sorted(expected_ids)}")
 
 
 def validate_npcs(data: dict, errors: list[str]) -> None:
@@ -659,6 +715,23 @@ def validate_runtime_bindings(node_rows: list[dict[str, str]], errors: list[str]
             fail(errors, f"runtime binding {node_id} lacks an idempotent/durable replay policy")
 
 
+def validate_remote_authority_receipt(errors: list[str]) -> None:
+    expected = hashlib.sha256(PHYSICAL_PREDICATE_PATH.read_bytes()).hexdigest()
+    try:
+        seed = V5_SEED_PATH.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(errors, f"cannot read V5 Supabase seed: {exc}")
+        return
+    match = re.search(
+        r"'v5_physical_authority_sha256'\s*,\s*to_jsonb\('([0-9a-f]{64})'::text\)",
+        seed,
+    )
+    if match is None:
+        fail(errors, "V5 Supabase seed has no exact physical-authority SHA-256 receipt")
+    elif match.group(1) != expected:
+        fail(errors, f"V5 Supabase authority receipt {match.group(1)} != packaged source {expected}")
+
+
 def scan_forbidden_runtime_claims(errors: list[str]) -> None:
     for root in RUNTIME_SCAN_ROOTS:
         if not root.exists():
@@ -696,11 +769,13 @@ def main() -> int:
         load_json(MAP_ART_PATH, errors), errors,
     )
     validate_media(load_json(MEDIA_PATH, errors), node_ids, known_flags, errors)
+    validate_generated_images(load_json(GENERATED_IMAGE_PATH, errors), node_ids, known_flags, errors)
     validate_npcs(load_json(NPC_PATH, errors), errors)
     validate_spatial_ownership(node_ids, errors)
     validate_artifacts(node_ids, errors)
     validate_book_placements(book_data, node_ids, errors)
     validate_runtime_bindings(rows, errors)
+    validate_remote_authority_receipt(errors)
     if "--runtime" in sys.argv:
         scan_forbidden_runtime_claims(errors)
 

@@ -26,7 +26,8 @@ SQL bundle SHA-256:             ________________________________
 Gated Hold archive SHA-256:     ________________________________
 V5 authority/content hash:      ________________________________
 Vercel production deployment:   ________________________________
-Render worker deployment:       ________________________________
+Railway worker deployment:      ________________________________
+Railway cron deployment:        ________________________________
 Supabase backup/SQL receipt:    ________________________________
 World backup:                   ________________________________
 Rehearsal packet:               ________________________________
@@ -61,7 +62,7 @@ Rotate exposed or reused credentials before launch. Never commit them.
 OBSERVANCE_SUPABASE_KEY
 ```
 
-### Discord/Render
+### Discord/Railway
 
 ```text
 DISCORD_BOT_TOKEN
@@ -70,11 +71,12 @@ DISCORD_GUILD_ID
 CHANNEL_THE_RECORD
 SUPABASE_URL
 SUPABASE_SERVICE_ROLE_KEY
+OBSERVANCE_CAMPAIGN_VERSION=v5
 SHOWRUNNER_TICK_MS=12000
 SHOWRUNNER_LEASE_SECONDS=300
 ```
 
-Voice/LLM variables are optional and must fail to silence. No required puzzle may depend on them.
+Voice/LLM variables are optional and must fail to silence. No required solve may depend on them.
 
 ### Vercel
 
@@ -83,7 +85,6 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ADMIN_EMAILS
-DISCORD_INVITE_URL
 AUTHOR_USERNAME
 AUTHOR_PASSWORD
 ```
@@ -141,12 +142,15 @@ Inspect deployed JavaScript, HTML, route payloads, and network responses for ser
 future titles, private player data, or finale branches. Save the deployment ID, Git SHA, production URL,
 route results, and screenshots.
 
-## 6. Render and Discord deployment
+## 6. Railway and Discord deployment
 
-`render.yaml` defines one persistent Discord worker and one five-minute recovery cron. Deploy the same
-commit as Vercel.
+Create two Railway services from the repository and deploy the same commit as Vercel. Set the root
+directory of both services to `/discord`. Set the worker config-file path to
+`/discord/railway.worker.json`; it uses Railpack, runs `npm start`, and restarts `ON_FAILURE` up to 10
+times. Set the recovery service config-file path to `/discord/railway.cron.json`; it uses Railpack,
+runs `npm run showrunner` on `*/10 * * * *`, and has restart policy `NEVER`.
 
-1. Set all required secret environment values.
+1. Set every variable from `discord/.env.example` on both Railway services. Keep secrets in Railway.
 2. Confirm Node 22.
 3. Deploy `observance-discord`.
 4. Deploy/enable `observance-showrunner` cron.
@@ -161,12 +165,12 @@ npm.cmd run register
    intentionally deployed.
 7. Confirm the persistent tick stays between 10 and 15 seconds.
 8. Confirm the cron and worker contend for the same lease and never double-deliver.
-9. Stop the worker for more than five minutes on a test state; verify cron recovery; restore worker.
+9. Stop the worker for more than ten minutes on a test state; verify cron recovery; restore worker.
 10. Confirm `server.properties` has `online-mode=true` and `/obs preflight` treats offline mode as a
     blocker. On a disposable offline-mode clone, verify `/obslink` generates and transmits nothing.
     Restore online mode, then as a non-op player run `/obslink`; confirm a 4-4-4 code appears only to that player, expires after
     five minutes, cannot be replaced within 30 seconds, and plaintext is absent from Supabase/logs.
-    Test `/link <name> <callback> <code>` before LS04, with a bad callback, wrong/expired/reused/other-
+    Test `/link <name> <callback> <code>` before LS06 (including after LS04), with a bad callback, wrong/expired/reused/other-
     player code, valid first claim, exact replay, accidental-name recovery, and a privately claimed-
     name conflict. Every rejected path must leave identity rows unchanged and use the same private
     proof response where account existence could leak. Keep both Minecraft clients online during a
@@ -176,7 +180,7 @@ npm.cmd run register
     `/answer`, autocomplete, `/whisper`,
     passive Record-channel input, seven-user duplicate submission, and spoiler-safe future guesses.
 
-Save Render deploy IDs, worker/cron health, Discord command screenshots, and a database event receipt.
+Save both Railway deploy IDs, worker/cron health, Discord command screenshots, and a database event receipt.
 
 ## 7. External media
 
@@ -210,7 +214,7 @@ Follow `design/V5-WORLD-SETUP-AND-TESTING.md` exactly. Required production evide
 - one current plugin jar and Paper/Java startup log;
 - V5 datapack marker version `5` with no retired custom dimension or story state;
 - resource-pack acceptance and hash receipt;
-- village-well Unlit copy plus 11 anchor coordinates (entry, spawn, exit, eight houses);
+- village-well Unlit copy plus 11 anchor coordinates (entry, spawn, exit, seven evidence houses, base mirror);
 - five surface NPC coordinates/facing and Wren's Hold marker;
 - accepted Mouth plan transcript, world-space bounds, +Z direction, and conflict screenshots;
 - Deep Hold build receipt and authority hash;
@@ -228,7 +232,7 @@ Before Day One:
 
 - whitelist only the intended group;
 - preserve the correct survival inventories and bases;
-- set ordinary server rules and consent boundaries without revealing ARG answers;
+- set ordinary server rules and consent boundaries without revealing case answers;
 - confirm all players can join Paper 1.21.11 and accept the pack;
 - link Discord identities without opening future cases;
 - test accessibility fallbacks and time-zone expectations;
@@ -244,7 +248,7 @@ copy, test commands, or production coordinates beyond what the fiction reveals.
 ### Two hours before
 
 1. Confirm the final commit is still `main` and all deployed services report that commit.
-2. Confirm no new Vercel/Render deploy is pending.
+2. Confirm no new Vercel/Railway deploy is pending.
 3. Back up Supabase and the stopped Minecraft server.
 4. Start Paper; capture the exact startup log.
 5. At the exact persisted Mouth run `/obs placehold prepare` (or use the console form with its saved
@@ -264,7 +268,7 @@ copy, test commands, or production coordinates beyond what the fiction reveals.
 
 7. Join as a non-op, accept the pack, enter/leave the Mouth, use the well, right-click every surface
    NPC, and submit one designated non-story health check.
-8. Confirm Vercel, Render, Discord, Supabase, media, DNS, and TLS externally.
+8. Confirm Vercel, Railway, Discord, Supabase, media, DNS, and TLS externally.
 
 ### Fifteen minutes before
 
@@ -335,13 +339,13 @@ demonstrable technical failure.
 Launch only when all statements are true:
 
 ```text
-[ ] final main commit deployed to Vercel and Render
+[ ] final main commit deployed to Vercel and both Railway services
 [ ] production Supabase backup and V5 apply receipt complete
 [ ] Discord commands/lease/recovery verified
 [ ] all required media reachable and correctly gated
 [ ] Paper 1.21.11 + Java 21 + exactly one Observance 0.5.0 jar
 [ ] resource pack URL/hash/client rendering verified
-[ ] well-based Unlit and all eight houses pass
+[ ] well-based Unlit, seven evidence houses in any order, and base mirror pass
 [ ] five surface NPCs and Wren pass exact V5 dialogue states
 [ ] Deep Hold plan/build/post-restart audits pass
 [ ] 1,588 model scenarios pass

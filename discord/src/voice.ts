@@ -239,6 +239,35 @@ export const voice = {
     return 'there is nothing more i will say of this. not yet.';
   },
 
+  // -------------------------------------------------------------------------
+  // /progress — the standing docket. players asked, more than once, where a
+  // finding is actually filed. this states it plainly: what is open, and which
+  // of the three places takes it (the world itself, this record, or the site).
+  // -------------------------------------------------------------------------
+
+  /** header for the open-docket listing. */
+  progressHeader(caseTitle: string, openCount: number): string {
+    if (openCount === 0) {
+      return `▒  ${caseTitle}: nothing stands open. the next door has not yet unlocked.`;
+    }
+    return `▒  ${caseTitle}: ${openCount} finding${openCount === 1 ? '' : 's'} still stand open.`;
+  },
+
+  /** one open node's line: its name and where it is taken, in plain terms. */
+  progressLine(title: string, channel: 'world' | 'discord' | 'site', detail: string): string {
+    const where = channel === 'discord'
+      ? 'taken here, with /answer'
+      : channel === 'site'
+        ? 'taken on the copperline site'
+        : 'taken in the hold or the village itself';
+    return `${title} — ${where} (${detail}).`;
+  },
+
+  /** no player named/linked yet. */
+  progressNotLinked(): string {
+    return 'i do not yet know which of them you are. run /obslink, then /link, and ask again.';
+  },
+
   /** the discord user is not yet bound to a name in the world. */
   notLinked(): string {
     return 'i do not yet know which of them you are. enter minecraft, run /obslink, then file /link with your exact minecraft username, the callback recovered from Copperline, and that one-time code.';
@@ -256,12 +285,12 @@ export const voice = {
 
   /** Invalid callbacks never claim a Minecraft identity. */
   handoffRejected(): string {
-    return 'that is not the handoff Copperline retained. nothing has been entered. return to the diagnostic archive and file /link again.';
+    return 'that is not the callback Copperline retained. nothing has been entered. check the Copperline ticket and file /link again.';
   },
 
-  /** A closed LS04 gate never claims a Minecraft identity. */
+  /** An incomplete LS06 Orientation filing never claims a Minecraft identity. */
   handoffBlocked(): string {
-    return 'no recovered handoff is open for filing yet. nothing has been entered. finish the Copperline archive trail, then file /link again.';
+    return 'no Orientation filing is on record yet. nothing has been entered. complete it on the live server, then file /link again.';
   },
 
   /** A transaction failure rolls back both identity and receipt. */

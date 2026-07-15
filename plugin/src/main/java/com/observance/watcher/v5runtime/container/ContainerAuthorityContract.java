@@ -120,7 +120,7 @@ public final class ContainerAuthorityContract {
 
     private static final Map<String, List<String>> EXPECTED_OPERATIONS = Map.ofEntries(
             Map.entry("LS06", List.of("slot_exact_item",
-                    "unique_item_absent_from_source_after_claim", "linked_actor_matches_handoff")),
+                    "unique_item_absent_from_source_after_claim")),
             Map.entry("A03", List.of("slots_contain_exact_evidence_ids",
                     "all_manifest_items_present_once")),
             Map.entry("A09", List.of("prior_receipt_true", "slot_exact_item",
@@ -311,8 +311,7 @@ public final class ContainerAuthorityContract {
         }
         boolean valid = switch (nodeId) {
             case "LS06" -> exactAndUnique(rule, observation)
-                    && observation.item("orientation_key_source", 13).isEmpty()
-                    && observation.actorMatchesHandoff();
+                    && observation.item("orientation_key_source", 13).isEmpty();
             case "A03", "CW02", "BI02", "BI06" -> exactAndUnique(rule, observation);
             case "A09", "HS01" -> exactAndUnique(rule, observation)
                     && observation.destinationCapacity() >= 1;

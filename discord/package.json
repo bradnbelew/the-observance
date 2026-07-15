@@ -5,7 +5,7 @@
   "type": "module",
   "description": "The Observance — Discord service: slash commands, whisper hints, and satori-rendered clue cards.",
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "scripts": {
     "register": "tsx src/bot/register.ts",

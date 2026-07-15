@@ -481,9 +481,39 @@ public final class V5AuthorityManifest {
         String[] columns = {"min_x", "max_x", "min_y", "max_y", "min_z", "max_z"};
         for (int i = 0; i < columns.length; i++) {
             Integer actual = integer(row.get(columns[i]), "gate " + id + " " + columns[i], issues);
-            if (actual != null && actual != expected[i]) issues.add("V5 gate " + id + " " + columns[i]
-                    + " drift: " + actual + " != " + expected[i]);
+            if (actual != null) {
+                int runtime = compactLegacyGateBound(row, columns[i], actual, gate, issues);
+                if (runtime != expected[i]) issues.add("V5 gate " + id + " " + columns[i]
+                        + " runtime drift: " + runtime + " != " + expected[i]);
+            }
         }
+    }
+
+    /** Gate CSV coordinates remain the stable legacy authoring grid; runtime plans are compact. */
+    private static int compactLegacyGateBound(Map<String, String> row, String column, int actual,
+                                              DeepHoldV4Plan.Gate gate, List<String> issues) {
+        if ("min_y".equals(column) || "max_y".equals(column)) return actual;
+        if ("min_x".equals(column)) return DeepHoldV4Plan.compactX(actual);
+        if ("max_x".equals(column)) {
+            if (gate.acrossX()) return DeepHoldV4Plan.compactX(actual);
+            Integer legacyMin = integer(row.get("min_x"), "gate legacy min_x", issues);
+            return legacyMin == null ? Integer.MIN_VALUE
+                    : DeepHoldV4Plan.compactX(legacyMin) + gate.depth();
+        }
+        if (!gate.acrossX() && ("min_z".equals(column) || "max_z".equals(column))) {
+            Integer legacyMin = integer(row.get("min_z"), "gate legacy min_z", issues);
+            Integer legacyMax = integer(row.get("max_z"), "gate legacy max_z", issues);
+            if (legacyMin == null || legacyMax == null) return Integer.MIN_VALUE;
+            int center = DeepHoldV4Plan.compactZ(gate.y(), (legacyMin + legacyMax) / 2);
+            return "min_z".equals(column) ? center - gate.halfAcross() : center + gate.halfAcross();
+        }
+        if ("min_z".equals(column)) return DeepHoldV4Plan.compactZ(gate.y(), actual);
+        if (gate.acrossX()) {
+            Integer legacyMin = integer(row.get("min_z"), "gate legacy min_z", issues);
+            return legacyMin == null ? Integer.MIN_VALUE
+                    : DeepHoldV4Plan.compactZ(gate.y(), legacyMin) + gate.depth();
+        }
+        return DeepHoldV4Plan.compactZ(gate.y(), actual);
     }
 
     private static List<BookEntry> validateBooks(byte[] bytes, Set<String> nodeIds,
@@ -614,8 +644,15 @@ public final class V5AuthorityManifest {
             int[] expected = {plan.x(), plan.y(), plan.z()};
             for (int i = 0; i < columns.length; i++) {
                 Integer actual = integer(row.get(columns[i]), "record " + id + " " + columns[i], issues);
-                if (actual != null && actual != expected[i]) issues.add("V5 record " + id + " "
-                        + columns[i] + " drift: " + actual + " != " + expected[i]);
+                if (actual != null) {
+                    int runtime = switch (columns[i]) {
+                        case "x" -> DeepHoldV4Plan.compactX(actual);
+                        case "z" -> DeepHoldV4Plan.compactZ(plan.y(), actual);
+                        default -> actual;
+                    };
+                    if (runtime != expected[i]) issues.add("V5 record " + id + " "
+                            + columns[i] + " runtime drift: " + runtime + " != " + expected[i]);
+                }
             }
             for (String stand : List.of("stand_x", "stand_y", "stand_z")) {
                 integer(row.get(stand), "record " + id + " " + stand, issues);

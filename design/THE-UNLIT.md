@@ -1,6 +1,6 @@
 # THE OBSERVANCE - THE UNLIT
 
-> **SUPERSEDED V4 ARCHIVE.** Current all-eight-houses-required authority is `design/V5-UNLIT.md`.
+> **SUPERSEDED V4 ARCHIVE.** Current seven-houses-plus-base-mirror authority is `design/V5-UNLIT.md`.
 
 > Canon/implementation spec for the dark spawn-village copy. This is a build document, not a mood note:
 > it defines the loop, non-linear clue structure, model requirement, anti-cheese rules, and operator work.

@@ -81,7 +81,7 @@ make/apply, which the code already degrades around safely).
 
 **Turn on the optional tiers (each OFF by default; all degrade to silence)**
 - [ ] Observer capture: flip the `observer_capture` setting on when ready.
-- [ ] Observer Tier-2: set `ANTHROPIC_API_KEY` in the **Render cron** env (the showrunner runs there, not Vercel).
+- [ ] Observer Tier-2: set `ANTHROPIC_API_KEY` in the **Railway cron** env (the showrunner runs there, not Vercel).
 - [ ] Voice tier: set `DISCORD_VOICE_CHANNEL_ID` + a Whisper backend (`WHISPER_API_URL`/`_KEY` or `WHISPER_BIN`)
       + flip the `voice_capture` setting, then restart the bot. (Deps auto-install as optionalDependencies.)
 

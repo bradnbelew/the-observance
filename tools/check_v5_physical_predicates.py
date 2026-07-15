@@ -59,6 +59,8 @@ CANONICAL_ANSWERS = {
     "KI01": "THE SURFACE BREATHES BUT THE THIRD BAY CANNOT",
     "CW04": "TOMA RILL",
     "BI05": "BELL EIGHT",
+    "HS03": "OPEN",
+    "HS04": "LINE FOUR BYPASS OPEN",
     "A04": "ACCOUNT COMMUNITY POST TICKET ARCHIVE",
     "WR01": "WREN",
 }
@@ -66,7 +68,6 @@ CANONICAL_ANSWERS = {
 EXPECTED_ROTATIONS: dict[str, list[int]] = {
     "KO02": [0, 2, 4, 6, 0, 2],
     "CW03": [0, 2, 0, 2, 0],
-    "HS03": [0, 4, 4, 4, 0, 0, 4, 4, 4, 4, 0, 0, 4, 0, 0, 0, 4, 4, 0, 4],
     "HS05": [0, 2, 4, 6, 0, 2],
 }
 
@@ -420,11 +421,6 @@ def validate_critical_predicates(by_id: dict[str, dict[str, Any]], failures: lis
         lists = [value for value in values_for_key(node["predicate"], "required_rotations") if isinstance(value, list)]
         if rotations not in lists:
             failures.append(f"{node_id}: missing exact required rotations {rotations}")
-
-    hs04 = flattened(by_id.get("HS04", {}))
-    for mask in ("110010", "101100", "011001", "001111"):
-        if mask not in hs04:
-            failures.append(f"HS04: missing exact shelf mask {mask}")
 
     hs06 = flattened(by_id.get("HS06", {}))
     for color in ("blue", "copper", "grey", "white"):

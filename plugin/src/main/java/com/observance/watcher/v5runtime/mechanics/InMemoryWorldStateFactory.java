@@ -48,7 +48,6 @@ public final class InMemoryWorldStateFactory {
             result.answer(predicate.getAsJsonArray("accepted").get(0).getAsString());
         }
 
-        int calibrationIndex = 0;
         for (JsonElement operationElement : predicate.getAsJsonArray("all_of")) {
             JsonObject operation = operationElement.getAsJsonObject();
             String op = operation.get("op").getAsString();
@@ -65,14 +64,6 @@ public final class InMemoryWorldStateFactory {
                 case "bookshelf_mask_exact" -> fillMask(
                         shelves.computeIfAbsent(component(operation), ignored -> new HashMap<>()),
                         operation.get("value").getAsString(), "bi01_wick_segment_", 0);
-                case "bookshelf_masks_exact" -> {
-                    JsonObject values = operation.getAsJsonObject("values");
-                    for (Map.Entry<String, JsonElement> mask : values.entrySet()) {
-                        calibrationIndex = fillMask(
-                                shelves.computeIfAbsent(mask.getKey(), ignored -> new HashMap<>()),
-                                mask.getValue().getAsString(), "hs04_calibration_", calibrationIndex);
-                    }
-                }
                 case "actor_read_or_inspected_exact_sources",
                         "actor_opened_or_inspected_exact_station_source" ->
                         operation.getAsJsonArray("components")

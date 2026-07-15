@@ -90,7 +90,6 @@ public final class V5PhysicalComponentCatalog {
             Map.entry("BI02", new SyntheticBlock("fragment_source", new LocalOffset(0, 0, 2))),
             Map.entry("BI03", new SyntheticBlock("instrument_source", new LocalOffset(0, 0, 2))),
             Map.entry("BI06", new SyntheticBlock("sample_source", new LocalOffset(0, 0, 2))),
-            Map.entry("HS04", new SyntheticBlock("calibration_source", new LocalOffset(0, 0, 2))),
             Map.entry("KI02", new SyntheticBlock("reed_source", new LocalOffset(0, 0, 2))));
 
     public enum AddressKind {

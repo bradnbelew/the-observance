@@ -17,7 +17,7 @@ export interface V5HoldArchive {
 }
 
 /**
- * Load the private diagnostic archive only when its checked-in checksum still matches. Returning
+ * Load the private playable-world archive only when its checked-in checksum still matches. Returning
  * null for every I/O or integrity failure lets public callers fail closed without becoming an
  * oracle for server filesystem state.
  */

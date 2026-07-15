@@ -1,7 +1,7 @@
 /**
  * /link <name> <callback> <code> — prove the online Minecraft hand, then atomically bind it.
  *
- * The service-role RPC validates the Copperline callback and LS04 prerequisite before it can touch
+ * The service-role RPC validates the Copperline callback and LS06 Orientation prerequisite before it can touch
  * players.discord_id. It also owns concurrency, idempotent replay, conflict privacy, and recovery
  * from this Discord account's accidental prior name. Replies remain ephemeral.
  */

@@ -1,7 +1,7 @@
 /**
  * Showrunner types — the deterministic, zero-LLM spine.
  *
- * The showrunner is the between-session cron (Render Cron Job) that keeps the mystery alive: it drips
+ * The showrunner is the between-session cron (Railway cron service) that keeps the mystery alive: it drips
  * the next clue on a cadence and auto-gifts a hint to a group that is genuinely stuck. This first
  * layer is 100% DETERMINISTIC — no Claude/LLM call anywhere — so it works even if the AI layer is down
  * (the critics' #1 pacing risk). The pure decision function `decide(Snapshot): Decision` (decide.ts)

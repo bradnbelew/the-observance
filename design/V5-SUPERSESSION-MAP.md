@@ -8,6 +8,7 @@ To prevent stale-story drift, only the files in the **Current authority** table 
 
 | Subject | Authority |
 | --- | --- |
+| **active redesign decisions (V5.1, overrides on conflict)** | `design/V5.1-REDESIGN.md` |
 | spoiler truth | `arc/WORLD-BIBLE.md` |
 | required graph | `design/ARG-V5-NODE-MANIFEST.csv` |
 | player order/surfaces | `design/EXPERIENCE-MANIFEST.md` |
@@ -32,6 +33,7 @@ To prevent stale-story drift, only the files in the **Current authority** table 
 | book integration | `design/V5-BOOKS.md` |
 | setup and testing | `design/V5-WORLD-SETUP-AND-TESTING.md` |
 | production launch | `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md` |
+| launch-night quick sequence | `design/runbooks/V5-LAUNCH-NIGHT-GUIDE.md` (summary; full setup and launch authorities win on conflict) |
 | live acceptance cases | `design/V5-LIVE-TEST-MATRIX.csv` |
 | production toolchain | `tools/README.md` + `tools/audit_all.ps1` |
 | engineering background | `design/research/*` files explicitly labeled research reference |

@@ -17,7 +17,7 @@ The player rhythm is:
 ```text
 find a lead
   -> recover or compare evidence
-  -> perform a varied puzzle/mechanic
+  -> interpret a record or carry out a grounded procedure
   -> submit or physically file a conclusion
   -> receive a tangible payoff
   -> update the group's theory
@@ -34,11 +34,29 @@ The experience never asks players to repeat a proposition only to make the story
 - The game must remain finishable with one active player for recovery/testing, but signature collective rites require the current active roster or an explicit operator accessibility override.
 - Leaving the Hold never loses progress. Open gates remain open. Critical items can be recovered.
 
+For a six-player group, the expected first-playthrough budget is about 15 active play hours:
+
+| Case | Expected time |
+| --- | ---: |
+| C01 — The Lost Server | 1 hour |
+| C02 — The Long Cold | 1 hour |
+| C03 — Keeper Dossiers | 2.5 hours |
+| C04 — Cistern Winter | 1.5 hours |
+| C05 — Break Inquest / the Unlit | 2 hours |
+| C06 — Restoring the Hold | 1.25 hours |
+| C07 — ASH-13 Company | 2.25 hours |
+| C08 — Wren Betrayal | 1 hour |
+| C09 — Averyn / the Unwriting | 1.25 hours |
+| C10 — Release | 1.25 hours |
+| **Total** | **15 hours** |
+
+This includes reading, discussion, ordinary retries, and travel, but not setup, long breaks, or a serious technical fault. Parallel work can shorten C03, C05, and C07; methodical lore discussion can lengthen them.
+
 ## Major movements
 
 ### Movement I — The server was left for someone
 
-Cases C01–C02. Players begin with mundane internet and village traces, recover the old service number, solve the rebuilt archive, link identities, find the Surface Mouth, and reconstruct the Hold's practical founding.
+Cases C01–C02. Players follow mundane Copperline traces, recover service 1842, and reach the retained Java world. Records in that world reconstruct the live server endpoint. On the server, an Orientation filing reveals the private Discord invitation; players then bind their Minecraft and Discord identities before finding the Surface Mouth and reconstructing the Hold's practical founding.
 
 Emotional movement: curiosity becomes responsibility. The world was preserved by a person, not spawned as a supernatural test.
 
@@ -50,7 +68,7 @@ Emotional movement: archetypes become people; atmosphere becomes consequence.
 
 ### Movement III — The copied disaster
 
-Cases C05–C06. Every Unlit house is required. The mirror village proves the Record copies and edits spaces while the Break evidence establishes multiple causes. Players then repair actual Hold systems and see their work alter traversal and light.
+Cases C05–C06. All seven Unlit house investigations are required and can be completed in any order; the base mirror opens only after all seven receipts exist. The copied village proves the Record edits spaces while the Break evidence establishes multiple causes. Players then repair actual Hold systems and see their work alter traversal and light.
 
 Emotional movement: the mystery becomes materially testable. Progress is earned through repair, not only interpretation.
 
@@ -72,33 +90,33 @@ Emotional movement: the voice turns from system to person. The ending is a relea
 | --- | --- | --- |
 | G1 | C02 model complete | Keeper Court |
 | G2 | all six dossier affidavits and Cistern lead | Civic Archive case completion lane |
-| G3 | Cistern Seal plus Break synthesis | Puzzle Works |
+| G3 | Cistern Seal plus Break synthesis | Service Works |
 | G4 | restored systems and Deep Access Plate | Threshold / prior-company district |
 | G5 | Witness Spool plus Wren reckoning | Averyn Archive |
 | G6 | AVERYN synthesis and release readiness | Release Chamber |
 
 Every gate is visibly present before it opens, gives diegetic state feedback, and becomes permanently traversable once opened. It never edits the floor, roof, side wall, fixture, or another gate volume.
 
-## Puzzle grammar
+## Investigation grammar
 
 Traditional techniques are distributed so no two adjacent major nodes feel identical:
 
 - A1Z26/rune teaching rung
 - inventory-keyed Caesar
-- page-line-word extraction
+- shelf-line-word extraction from six ordinary volumes and a bare triple index
 - reflected/Atbash text
 - rail-fence/watch order
 - Vigenère with an earned key
 - Cardan overlays
 - columnar transposition
 - Polybius-style market grid
-- lamp-state Bacon encoding
+- fixed lamp-panel Bacon reading
 - visually redundant toll/Morse sequence
 - route and map composite extractions
 - acrostic correction
 - final multipart configuration meta
 
-Physical mechanisms include exact container sorts, protected item-frame dials, chiseled-bookshelf patterns, reflection overlays, tagged deposits, bounded route walks, crouched sightlines, service-path recovery, NPC interrogation, and active-roster group rites.
+Physical work includes fixed instrument readings, document comparison, limited protected equipment dials, reflection overlays, named evidence filing, bounded route walks, crouched sightlines, service-path recovery, NPC interviews, and active-roster group rites.
 
 Cross-media nodes never begin with “watch this link.” Players earn the route by combining in-world evidence. Media yields a payload that returns to a Discord or Minecraft input and opens a physical payoff.
 
@@ -117,7 +135,7 @@ Every required node contains:
 9. a recovery path;
 10. a durable completion flag.
 
-Discord answer normalization accepts harmless punctuation/case variants but not semantically different guesses. An optional puzzle selector must constrain resolution to that puzzle rather than being ignored.
+Discord answer normalization accepts harmless punctuation/case variants but not semantically different guesses. An optional node selector must constrain resolution to that node rather than being ignored.
 
 No answer depends solely on audio, texture-pack installation, a single player's inventory, an unprotected entity, a consumable item, a random event, or operator timing.
 
@@ -136,7 +154,7 @@ No answer depends solely on audio, texture-pack installation, a single player's 
 
 ### Minecraft
 
-Owns place, physical evidence, local mechanisms, NPC conversations, keys/seals, gate state, and the immediate finale. It must finish locally even if Discord/Render is delayed.
+Owns place, physical evidence, local mechanisms, NPC conversations, keys/seals, gate state, and the immediate finale. It must finish locally even if Discord/Railway is delayed.
 
 ### Copperline website
 
@@ -144,7 +162,7 @@ Begins as a credible old hosting company. It owns ordinary listings, tickets, co
 
 ### Discord
 
-Owns identity linking, cross-source conclusion submission, spoiler-safe hint delivery, group receipts, media payload answers, and the fast mirrored ending state. It never becomes a chat-based substitute for Minecraft mechanics.
+Owns identity linking, cross-source conclusion submission, spoiler-safe hint delivery, group receipts, media payload answers, and the fast mirrored ending state. It never becomes a chat-based substitute for in-world investigation.
 
 ### Fixed media
 
@@ -152,7 +170,7 @@ Owns five exact payloads and distinct story functions. Every media asset is requ
 
 ### NPCs
 
-Own local memory, practical directions, social texture, and synchronous reactions to case state. Their critical dialogue is generated from one canonical resource and never waits for an hourly showrunner.
+Own local memory, practical directions, social texture, and synchronous reactions to case state. Their critical dialogue is generated from one canonical resource and never waits for a scheduled showrunner tick.
 
 ## Ending contract
 
@@ -202,5 +220,5 @@ Production sign-off requires machine-readable receipts for:
 - dashboard lint/selftest/production build and every public/auth route;
 - database migration stale-row retirement and safe reset rehearsal;
 - Vercel production deployment/domain verification;
-- Render worker/cron verification;
+- Railway worker/cron verification;
 - a real-client full playthrough including backtracking grief recovery and all finale branches.

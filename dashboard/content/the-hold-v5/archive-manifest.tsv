@@ -1,5 +1,4 @@
-workstation	owner	copper_jacket_year	file	image_corner	status
-A	mkept	2007	work-orders/A-copper.txt	A	retained
-B	Rook	2009	work-orders/B-line.txt	B	retained
-C	Ash	2011	work-orders/C-hosting.txt	C	retained
-D	Wren	2013	work-orders/D-dot-com.txt	D	retained
+file	kind	status
+the-hold.zip	Minecraft Java single-player recovery image	retained
+the-hold.sha1	SHA-1 integrity receipt	retained
+README-FIRST.txt	recovery instructions	retained

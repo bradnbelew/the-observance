@@ -107,7 +107,7 @@ had no consequence) · **A3 keeper-record wired** (the last orphan).
 - **B — MEDIA (Ethan; optional enrichment):** the found-footage clip + recovered Drive folder + a
   waveform/spectrogram image (feeds `spine-recovered-archive`), and `dashboard/public/the-hold/the-hold.zip`
   (the lure's offline map — don't plant the lure clue until it's hosted). **Wire these when they arrive.**
-- **Optional tiers (off by default):** `ANTHROPIC_API_KEY` in the **Render** cron env (Observer Tier-2);
+- **Optional tiers (off by default):** `ANTHROPIC_API_KEY` in the **Railway** cron env (Observer Tier-2);
   the voice env + `voice_capture`; `observer_capture`. Flip only after session-zero consent is handled.
 - **Deferred enhancements (flagged in LAUNCH-READINESS §3, NOT half-shipped):** `keeper.ts` NPC-rhyme beat
   (low value — keeper-record already delivers the rhyme); REFUSERS ending (Ethan decided OUT); more

@@ -3,10 +3,11 @@
  * the guild. Also exported as registerGuildCommands() so the bot ensures the
  * commands on every boot (guild-scoped registration is instant; global is slow).
  *
- * Three rites:
- *   /whisper <puzzle>        — ask the watcher for a hint, and pay the toll.
- *   /link    <name> <callback> <code> — prove the Minecraft hand and file the handoff.
- *   /answer  <text> [puzzle] — submit a solved clue; the world answers, or stays silent.
+ * Four rites:
+ *   /whisper  <puzzle>        — ask the watcher for a hint, and pay the toll.
+ *   /link     <name> <callback> <code> — prove the Minecraft hand and file the handoff.
+ *   /answer   <text> [puzzle] — submit a solved clue; the world answers, or stays silent.
+ *   /progress                 — the standing docket: what stands open, and where it is taken.
  *
  * Command names + option names are machine identifiers (discord requires
  * lowercase a-z); the descriptions are the only player-visible text here and are
@@ -41,7 +42,7 @@ export const linkCommand = new SlashCommandBuilder()
   .addStringOption((opt) =>
     opt
       .setName('callback')
-      .setDescription('the four-digit callback recovered from the diagnostic archive.')
+      .setDescription('the four-digit callback printed on the Copperline ticket.')
       .setRequired(true)
       .setMaxLength(24),
   )
@@ -76,8 +77,13 @@ export const answerCommand = new SlashCommandBuilder()
       .setAutocomplete(true),
   );
 
+/** /progress — the standing docket of open findings and where each is taken. No options. */
+export const progressCommand = new SlashCommandBuilder()
+  .setName('progress')
+  .setDescription('the standing docket: what stands open, and where it is taken.');
+
 /** Every rite, in registration order. */
-export const commands = [whisperCommand, linkCommand, answerCommand] as const;
+export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand] as const;
 
 /** JSON payloads for the REST registration call. */
 export const commandsJSON = commands.map((c) => c.toJSON());

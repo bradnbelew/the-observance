@@ -20,9 +20,10 @@ for (const nodeKey of V5_WEBSITE_NODE_KEYS) {
 
 check(!isV5WebsiteNodeKey('LC05'), 'a Discord conclusion must not be writable by the website');
 check(!isV5WebsiteNodeKey('LC01'), 'a physical Minecraft node must not be writable by the website');
-check(!isV5WebsiteNodeKey('LS07'), 'a future/unowned node must fail closed');
+check(!isV5WebsiteNodeKey('LS05'), 'the proof-bound Discord identity node must not be writable by the website');
+check(!isV5WebsiteNodeKey('LS06'), 'the Minecraft coordination handoff must not be writable by the website');
 check(!isAllowedV5WebsiteSequence([]), 'an empty sequence must fail closed');
 check(!isAllowedV5WebsiteSequence(['LS01', 'LS01']), 'duplicate receipt sequences must fail closed');
 check(!isAllowedV5WebsiteSequence(['LS01', 'LC05']), 'mixed website/Discord sequences must fail closed');
 
-console.log('V5 web-node policy self-test: OK - six exact web nodes; Discord, physical, future, and duplicate bypasses denied');
+console.log('V5 web-node policy self-test: OK - six exact web nodes; Minecraft, Discord, and duplicate bypasses denied');

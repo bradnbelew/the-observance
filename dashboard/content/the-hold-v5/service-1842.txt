@@ -1,7 +1,0 @@
-service: 1842
-product: Minecraft Java / managed private server
-account owner: mkept
-state: expired
-remote room: removed from customer panel
-recovery method: archived field-relay callback
-retention note: destination disclosed only by the callback form

@@ -86,7 +86,7 @@ the Supabase SQL editor or an authenticated migration job, then verify:
 - anonymous website access is limited to safe projections.
 
 Do not paste a Supabase service-role key into Discord, a screenshot, the website, or Git. The Paper
-host receives it through `OBSERVANCE_SUPABASE_KEY`; Render receives it as a secret environment value;
+host receives it through `OBSERVANCE_SUPABASE_KEY`; Railway receives it as a secret environment value;
 Vercel receives only the server-side secret plus the public anon key required by the dashboard.
 
 ## 4. Install Paper and the release artifacts
@@ -166,7 +166,8 @@ In `observance_unlit`, at the exact mirrored-well arrival and return cells:
 /obs unlit site exit
 ```
 
-Choose eight different readable village houses. Stand where a player should inspect each clue and run:
+Choose seven different readable village houses plus one clear base-mirror location. Stand where a
+player should inspect each clue and run:
 
 ```text
 /obs unlit clue lamp
@@ -189,9 +190,11 @@ Finish the authored area:
 /obs unlit ready
 ```
 
-The audit must find entry, spawn, exit, all eight distinct houses, protected approach cells, safe
-retreat, no unauthorized light, and no dependency on a second entrance. Complete BI01–BI08 and retreat
-from every house on a clone before accepting the Unlit.
+The audit must find entry, spawn, exit, seven distinct evidence houses, the base mirror, protected
+approach cells, safe retreat, no unauthorized light, and no dependency on a second entrance. Across
+restored clones, complete BI01–BI07 in at least two different orders and verify BI08 remains unavailable
+until all seven receipts exist. Then complete BI08 and retreat safely from every location before
+accepting the Unlit.
 
 ## 6. Place the five surface NPCs
 
@@ -367,7 +370,8 @@ must fail closed when it does not. On a disposable offline-mode clone, `/obslink
 code, make no challenge RPC, and create no database row. Restore online mode and have the exact
 authenticated non-op Minecraft player run `/obslink`. Prove the returned
 4-4-4 code expires after five minutes, cannot be replaced inside the 30-second issue cooldown, and
-exists in Supabase only as SHA-256. An invalid callback, a valid callback before LS04, and a wrong,
+exists in Supabase only as SHA-256. An invalid callback, a valid callback before LS06 (including after
+LS04 but before the Orientation filing), and a wrong,
 expired, consumed, or other player's proof must leave `players.discord_id` unchanged and fail
 privately. Then prove valid `/link <name> <callback> <code>`, exact replay, accidental-name correction,
 and a second account's conflict are atomic and spoiler-safe. Keep both old and new identities online
@@ -379,7 +383,7 @@ simulated Supabase outage, the last-known-good link must remain unchanged.
 | --- | --- |
 | G1 | C02 complete |
 | G2 | all six sealed affidavits earned |
-| G3 | C04 and all eight C05/Unlit nodes complete |
+| G3 | C04 complete, BI01–BI07 complete in any order, and BI08 complete |
 | G4 | C06 complete |
 | Camp Ash | A01 complete |
 | Dread | C07 complete |

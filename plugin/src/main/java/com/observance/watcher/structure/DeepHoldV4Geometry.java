@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * Authored V4 Deep Hold shell and circulation builder.
+ * Compact natural-space Deep Hold shell and circulation builder.
  *
  * <p>This class owns architecture only. Canonical puzzle fixtures, books, state listeners, answer
  * sites, and gate synchronization remain owned by the Observance runtime. Keeping those layers
@@ -25,6 +25,22 @@ import java.util.function.Consumer;
  * neighboring room.</p>
  */
 public final class DeepHoldV4Geometry {
+
+    private record PhysicalZone(String id, int minX, int maxX, int floorY, int ceilingY,
+                                int minZ, int maxZ) { }
+
+    private static final List<PhysicalZone> NATURAL_ZONES = List.of(
+            new PhysicalZone("keeper_archive", -62, 62, -40, -16, 132, 179),
+            new PhysicalZone("service_works", -40, 40, -68, -48, 38, 73),
+            new PhysicalZone("civic_library", -66, 66, -68, -48, 75, 176),
+            new PhysicalZone("lower_workroom", -42, 42, -96, -74, 38, 80),
+            new PhysicalZone("lower_spine", -20, 20, -96, -74, 82, 143),
+            new PhysicalZone("prior_camp_wing", -76, -20, -96, -74, 82, 141),
+            new PhysicalZone("threshold_wing", 20, 43, -96, -74, 82, 141),
+            new PhysicalZone("dread_service", 44, 70, -96, -74, 82, 141),
+            new PhysicalZone("accepting_archive", -36, 36, -96, -74, 145, 181),
+            new PhysicalZone("unwriting_chamber", -44, 44, -96, -74, 186, 215),
+            new PhysicalZone("release_office", -32, 32, -96, -74, 219, 233));
 
     private final World world;
     private final int ox;
@@ -62,17 +78,20 @@ public final class DeepHoldV4Geometry {
         private final int ox;
         private final int oy;
         private final int oz;
+        private final boolean replacingSupersededShell;
         private final int[] coordinates;
         private final short[] materials;
         private int cursor;
         private long changed;
 
-        private BuildPlan(World world, int ox, int oy, int oz, OperationBuffer operations) {
+        private BuildPlan(World world, int ox, int oy, int oz, OperationBuffer operations,
+                          boolean replacingSupersededShell) {
             this.world = world;
             this.worldId = world.getUID();
             this.ox = ox;
             this.oy = oy;
             this.oz = oz;
+            this.replacingSupersededShell = replacingSupersededShell;
             this.coordinates = operations.coordinates();
             this.materials = operations.materials();
         }
@@ -84,6 +103,7 @@ public final class DeepHoldV4Geometry {
         public int totalOperations() { return coordinates.length; }
         public int cursor() { return cursor; }
         public long changedBlocks() { return changed; }
+        public boolean replacingSupersededShell() { return replacingSupersededShell; }
         public boolean complete() { return cursor >= coordinates.length; }
 
         /** Restore a durable checkpoint. Replaying operations after an older checkpoint is safe. */
@@ -161,6 +181,48 @@ public final class DeepHoldV4Geometry {
 
         int[] coordinates() { return Arrays.copyOf(coordinates, size); }
         short[] materials() { return Arrays.copyOf(materials, size); }
+        int size() { return size; }
+
+        void assertCompactWritesFrom(int start) {
+            if (start < 0 || start > size) throw new IllegalArgumentException("invalid cleanup boundary " + start);
+            for (int i = start; i < size; i++) {
+                int packed = coordinates[i];
+                int x = (packed & 0xff) - 128;
+                int y = ((packed >>> 8) & 0xff) - 128;
+                int z = ((packed >>> 16) & 0x1ff) - 16;
+                if (x < DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE
+                        || x > DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE
+                        || y < DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE
+                        || y > DeepHoldV4Plan.MAX_Y + DeepHoldV4Plan.ENVELOPE
+                        || z < DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE
+                        || z > DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE) {
+                    throw new IllegalStateException("compact Hold writer escaped authored envelope at "
+                            + x + "," + y + "," + z + " (operation " + i + ")");
+                }
+            }
+        }
+
+        void assertStandable(int x, int y, int z, String label) {
+            Material floor = finalMaterialAt(x, y - 1, z);
+            Material feet = finalMaterialAt(x, y, z);
+            Material head = finalMaterialAt(x, y + 1, z);
+            if (floor == null || !floor.isSolid() || feet == null || !feet.isAir()
+                    || head == null || !head.isAir()) {
+                throw new IllegalStateException("compact circulation regression at " + label + " "
+                        + x + "," + y + "," + z + " floor/feet/head=" + floor + "/" + feet + "/" + head);
+            }
+        }
+
+        private Material finalMaterialAt(int x, int y, int z) {
+            int packedCoordinate = (x + 128) | ((y + 128) << 8) | ((z + 16) << 16);
+            Material[] palette = Material.values();
+            for (int i = size - 1; i >= 0; i--) {
+                if (coordinates[i] != packedCoordinate) continue;
+                int ordinal = Short.toUnsignedInt(materials[i]);
+                return ordinal < palette.length ? palette[ordinal] : null;
+            }
+            return null;
+        }
     }
 
     /** Read-only survey. A failed survey must never be followed by a partial build. */
@@ -223,10 +285,12 @@ public final class DeepHoldV4Geometry {
     /** Complete build envelope, used by the asynchronous preparation phase and read-only survey. */
     public static List<ChunkCoordinate> requiredChunks(Location mouth) {
         if (mouth == null) return List.of();
-        int minChunkX = (mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE) >> 4;
-        int maxChunkX = (mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE) >> 4;
+        // The one-time compact cutover may backfill the prior shell through X +/-117 and Z 381.
+        // Ticket that union before planning so replacement never synchronously loads a legacy wing.
+        int minChunkX = (mouth.getBlockX() - 117) >> 4;
+        int maxChunkX = (mouth.getBlockX() + 117) >> 4;
         int minChunkZ = (mouth.getBlockZ() + DeepHoldV4Plan.MIN_Z - DeepHoldV4Plan.ENVELOPE) >> 4;
-        int maxChunkZ = (mouth.getBlockZ() + DeepHoldV4Plan.MAX_Z + DeepHoldV4Plan.ENVELOPE) >> 4;
+        int maxChunkZ = (mouth.getBlockZ() + 381) >> 4;
         List<ChunkCoordinate> chunks = new ArrayList<>();
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) chunks.add(new ChunkCoordinate(x, z));
@@ -245,30 +309,123 @@ public final class DeepHoldV4Geometry {
     }
 
     public static BuildPlan plan(World world, Location mouth, Consumer<String> progress) {
+        return plan(world, mouth, progress, false);
+    }
+
+    /** Force the stable cleanup prefix when resuming a persisted compact cutover. */
+    public static BuildPlan plan(World world, Location mouth, Consumer<String> progress,
+                                 boolean forceSupersededCleanup) {
         Survey survey = survey(world, mouth);
         if (!survey.safe()) {
             throw new IllegalStateException("Unsafe Deep Hold V5 placement: " + String.join("; ", survey.issues()));
         }
         OperationBuffer operations = new OperationBuffer();
         DeepHoldV4Geometry builder = new DeepHoldV4Geometry(world, mouth, operations);
-        builder.message(progress, "planning the single Surface Mouth and four-flight Grand Stair");
+        boolean replacingOldShell = forceSupersededCleanup || builder.hasSupersededShell();
+        if (replacingOldShell) {
+            builder.message(progress, "backfilling the superseded sprawling Hold so no old wing survives");
+            builder.neutralizeSupersededShell();
+        }
+        int cleanupWrites = operations.size();
+
+        builder.message(progress, "planning the single Surface Mouth and direct archive stair");
         builder.buildSurfaceMouthAndGrandStair();
 
-        builder.message(progress, "planning 32 isolated authored room shells across three strata");
-        for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) builder.buildRoomShell(room);
+        builder.message(progress, "planning Orientation and eleven shared civic work spaces");
+        builder.buildRoomShell(DeepHoldV4Plan.ROOMS.stream()
+                .filter(room -> "orientation".equals(room.id())).findFirst().orElseThrow());
+        for (PhysicalZone zone : NATURAL_ZONES) builder.buildNaturalZone(zone);
 
-        builder.message(progress, "planning the reversible main route and district loops");
-        builder.carveAuthoredCirculation();
+        builder.message(progress, "planning the compact reversible archive route");
+        builder.carveNaturalCirculation();
 
-        builder.message(progress, "planning room-specific civic architecture and sightline dressing");
-        for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) builder.dressRoom(room);
+        builder.message(progress, "planning restrained library, Keeper, camp and service dressing");
+        builder.dressNaturalDistricts();
 
         builder.message(progress, "planning six main gatehouses and two controlled branch gates");
         for (DeepHoldV4Plan.Gate gate : DeepHoldV4Plan.GATES) builder.buildGatehouse(gate);
 
         builder.message(progress, "planning the burial envelope and surface seal");
         builder.finishSurfaceMouth();
-        return new BuildPlan(world, mouth.getBlockX(), mouth.getBlockY(), mouth.getBlockZ(), operations);
+        operations.assertCompactWritesFrom(cleanupWrites);
+        builder.assertCompactStairLandings();
+        return new BuildPlan(world, mouth.getBlockX(), mouth.getBlockY(), mouth.getBlockZ(), operations,
+                replacingOldShell);
+    }
+
+    private void assertCompactStairLandings() {
+        operations.assertStandable(-10, -40, 183, "staff stair upper flight");
+        operations.assertStandable(-10, -54, 211, "staff stair middle landing west");
+        operations.assertStandable(10, -54, 211, "staff stair middle landing east");
+        operations.assertStandable(10, -68, 183, "staff stair civic landing");
+        operations.assertStandable(0, -68, 174, "civic archive connection");
+        operations.assertStandable(-10, -68, 38, "service stair upper flight");
+        operations.assertStandable(-10, -82, 10, "service stair middle landing west");
+        operations.assertStandable(10, -82, 10, "service stair middle landing east");
+        operations.assertStandable(10, -96, 38, "service stair lower landing");
+        operations.assertStandable(0, -96, 42, "lower workroom connection");
+        // Junction cells the primitives fight over; each was found physically walled or
+        // un-floored by a later carve in the 2026-07-14 old-world cutover.
+        operations.assertStandable(-2, -40, 183, "staff stair link line");
+        operations.assertStandable(-10, -50, 204, "staff west flight landing crossing");
+        operations.assertStandable(2, -54, 208, "staff landing east exit");
+        operations.assertStandable(10, -65, 188, "staff east flight link crossing");
+        operations.assertStandable(1, -68, 176, "civic archive doorway lane");
+        operations.assertStandable(-10, -68, 40, "service approach wall punch");
+        operations.assertStandable(-10, -79, 16, "service west flight landing crossing");
+        operations.assertStandable(2, -82, 12, "service landing east exit");
+        operations.assertStandable(10, -93, 32, "service east flight link crossing");
+        operations.assertStandable(1, -96, 45, "lower spine doorway lane");
+        operations.assertStandable(0, -96, 86, "spine north crossing lane");
+        operations.assertStandable(0, -96, 102, "spine mid crossing lane");
+        operations.assertStandable(0, -96, 122, "spine south crossing lane");
+        operations.assertStandable(0, -96, 138, "spine coda crossing lane");
+        operations.assertStandable(-41, -96, 94, "west street north crossing");
+        operations.assertStandable(24, -96, 94, "east street north crossing");
+        operations.assertStandable(-41, -96, 125, "prior camp reach");
+        operations.assertStandable(-31, -96, 125, "prior camp stand");
+        operations.assertStandable(24, -96, 123, "vault witness lane");
+        operations.assertStandable(-17, -96, 58, "west workroom reach");
+    }
+
+    /**
+     * Solidly closes the three old authored excavation bands before the smaller replacement is
+     * carved. This deliberate cleanup is the only operation allowed outside the compact envelope;
+     * it prevents inaccessible old puzzle rooms and corridors remaining beside the new Hold.
+     */
+    private void neutralizeSupersededShell() {
+        fillLegacyBand(-103, 103, -43, -14, 102, 257);
+        fillLegacyBand(-107, 107, -71, -45, 34, 303);
+        fillLegacyBand(-117, 117, -99, -71, 34, 381);
+        // Retired upper-to-civic switchback protruded south of the old upper-room band.
+        fillLegacyBand(-18, 18, -44, -14, 252, 290);
+        // Retired civic-to-lower switchback reached north of the old lower-room band.
+        fillLegacyBand(-19, 19, -99, -55, 6, 42);
+    }
+
+    /** Prepared chunks make these reads non-generating. Natural geology will not satisfy this many
+     * deliberately level, open cells across all three superseded districts. */
+    private boolean hasSupersededShell() {
+        int[][] samples = {
+                {-90, -40, 176}, {90, -40, 176}, {-90, -40, 206}, {90, -40, 210},
+                {-90, -68, 126}, {90, -68, 191}, {-90, -68, 258}, {90, -68, 287},
+                {-100, -96, 136}, {100, -96, 188}, {-80, -96, 260}, {80, -96, 326}
+        };
+        int open = 0;
+        for (int[] sample : samples) {
+            Material feet = world.getBlockAt(ox + sample[0], oy + sample[1], oz + sample[2]).getType();
+            Material head = world.getBlockAt(ox + sample[0], oy + sample[1] + 1, oz + sample[2]).getType();
+            if (feet.isAir() && head.isAir()) open++;
+        }
+        return open >= 5;
+    }
+
+    private void fillLegacyBand(int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                for (int y = minY; y <= maxY; y++) set(x, y, z, Material.DEEPSLATE);
+            }
+        }
     }
 
     /** Compatibility path for tests/tools. Production commands use {@link #plan} in bounded ticks. */
@@ -333,6 +490,203 @@ public final class DeepHoldV4Geometry {
         if (Math.abs(x) <= 1) return Math.floorMod(z, 8) == 0
                 ? Material.OXIDIZED_CUT_COPPER : Material.POLISHED_DEEPSLATE;
         return Math.floorMod(x + z, 11) == 0 ? Material.TUFF_BRICKS : Material.DEEPSLATE_TILES;
+    }
+
+    /** A shared work space has one perimeter and no authored puzzle-room partitions. */
+    private void buildNaturalZone(PhysicalZone zone) {
+        Material wall = zone.floorY() <= -90 ? Material.POLISHED_BLACKSTONE_BRICKS
+                : (zone.floorY() <= -60 ? Material.TUFF_BRICKS : Material.DEEPSLATE_BRICKS);
+        Material floorMaterial = zone.floorY() <= -90 ? Material.POLISHED_BLACKSTONE
+                : (zone.floorY() <= -60 ? Material.POLISHED_TUFF : Material.DEEPSLATE_TILES);
+        for (int x = zone.minX(); x <= zone.maxX(); x++) {
+            for (int z = zone.minZ(); z <= zone.maxZ(); z++) {
+                boolean perimeter = x <= zone.minX() + 2 || x >= zone.maxX() - 2
+                        || z <= zone.minZ() + 2 || z >= zone.maxZ() - 2;
+                for (int y = zone.floorY() - 3; y <= zone.ceilingY() + 2; y++) {
+                    if (y < zone.floorY()) {
+                        set(x, y, z, y == zone.floorY() - 1 ? floorMaterial : Material.DEEPSLATE);
+                    } else if (y >= zone.ceilingY() || perimeter) {
+                        Material material = Math.floorMod(x * 17 + y * 13 + z * 29, 47) == 0
+                                ? Material.CHISELED_TUFF : wall;
+                        set(x, y, z, material);
+                    } else {
+                        set(x, y, z, Material.AIR);
+                    }
+                }
+            }
+        }
+    }
+
+    /** Compact public route: two honest work stairs and a small number of readable junctions. */
+    private void carveNaturalCirculation() {
+        corridorZ(0, -40, 102, 110, 8, 10);
+        corridorZ(0, -40, 128, 134, 6, 10);
+        corridorZ(0, -40, 176, 183, 6, 10);
+
+        // Two-flight staff stair: the lower return never tunnels through upper-flight headspace.
+        corridorX(-5, -40, 183, 0, -10, 5, 9);
+        for (int z = 183; z <= 211; z++) {
+            int drop = Math.min(14, (z - 183) / 2);
+            buildVaultSlice(-10, -40 - drop, z, 6, 9, false);
+            placeSimpleTread(-10, -40 - drop, z, 5, BlockFace.SOUTH);
+        }
+        corridorX(0, -54, 211, -10, 10, 5, 9);
+        for (int z = 211; z >= 183; z--) {
+            int drop = Math.min(14, (211 - z) / 2);
+            buildVaultSlice(10, -54 - drop, z, 6, 9, false);
+            placeSimpleTread(10, -54 - drop, z, 5, BlockFace.NORTH);
+        }
+        corridorZ(0, -68, 174, 183, 6, 9);
+        // Carve the x=10 return landing after the center corridor; reversing this order walls the
+        // completed lower flight back off at its final tread.
+        corridorX(0, -68, 183, 0, 10, 5, 9);
+
+        // Service works and civic library meet only at G3.
+        corridorZ(0, -68, 68, 78, 6, 9);
+
+        // Matching two-flight service stair into the lower workroom. The approach must run to
+        // z=42, not z=38: the service-works shell owns a three-block south perimeter at z=38..40
+        // and stopping at the wall face leaves the stair sealed behind it.
+        corridorZ(-10, -68, 34, 42, 6, 9);
+        for (int z = 38; z >= 10; z--) {
+            int drop = Math.min(14, (38 - z) / 2);
+            buildVaultSlice(-10, -68 - drop, z, 6, 9, false);
+            placeSimpleTread(-10, -68 - drop, z, 5, BlockFace.NORTH);
+        }
+        corridorX(0, -82, 10, -10, 10, 5, 9);
+        for (int z = 10; z <= 38; z++) {
+            int drop = Math.min(14, (z - 10) / 2);
+            buildVaultSlice(10, -82 - drop, z, 6, 9, false);
+            placeSimpleTread(10, -82 - drop, z, 5, BlockFace.SOUTH);
+        }
+        corridorZ(0, -96, 38, 84, 6, 9);
+        corridorX(0, -96, 38, 0, 10, 5, 9);
+
+        // Lower rooms are ordinary work wings branching from a shared spine.
+        corridorX(0, -96, 94, -30, 30, 5, 8);
+        corridorX(0, -96, 130, -30, 30, 5, 8);
+        corridorZ(-48, -96, 82, 141, 5, 8);
+        corridorZ(31, -96, 82, 141, 5, 8);
+        corridorX(43, -96, 92, 36, 49, 5, 8);
+
+        // Prior Camp is a real side office with a controlled internal threshold, not a puzzle box.
+        buildPartitionAcrossX(-76, -20, -96, 105, 10);
+        corridorZ(-48, -96, 101, 109, 5, 8);
+
+        corridorZ(0, -96, 139, 148, 8, 10);
+        corridorZ(0, -96, 179, 188, 8, 10);
+        corridorZ(0, -96, 212, 221, 7, 9);
+
+        // Reopen every lower-level corridor crossing. Each later carve writes its full three-block
+        // sidewall band across the earlier one, so every crossing needs a plaza that covers BOTH
+        // wall bands: the office streets run z 82..141 with x walls at -56..-54/-42..-40 and
+        // 23..25/37..39, and the cross corridors wall z 86..88/100..102 and 122..124/136..138.
+        for (int z : new int[]{94, 130}) {
+            openIntersection(0, -96, z, 7, 9, 8);
+            openIntersection(-48, -96, z, 9, 5, 8);
+            openIntersection(31, -96, z, 9, 5, 8);
+        }
+        // West workroom entry: the central spine corridor's west sidewall isolates the Reckoning
+        // side of the workroom; give it the same doorway the east side gets from the stair link.
+        openIntersection(-10, -96, 72, 4, 6, 9);
+        // Prior Camp south pocket: the west street's east curtain seals the camp floor east of the
+        // street; open one doorway so the camp fixture's standing frame stays reachable.
+        openIntersection(-41, -96, 125, 4, 5, 8);
+        // Vault witness lane: the east street's west curtain crosses the threshold_vault standing
+        // frame at x=24; open the curtain around the authored stand.
+        openIntersection(24, -96, 123, 3, 3, 8);
+
+        repairStairJunctions();
+    }
+
+    /**
+     * The stair primitives above intentionally overlap: every landing corridor and flight writes
+     * its full wall/foundation envelope, so whichever primitive runs later re-walls or un-floors
+     * slices of the route the earlier one carved. Repair each crossing last, cell-exactly, so the
+     * canonical treads, landing exits and doorways always survive regardless of carve order.
+     */
+    private void repairStairJunctions() {
+        // Staff stair: the west flight's first slice walls the G2 landing line at x=-3..-1.
+        clearWalkBody(-3, -1, -40, -35, 183, 183);
+        // Staff west flight where the -54 landing envelope walled or un-floored its final treads.
+        for (int z = 203; z <= 210; z++) {
+            repairTread(-13, -7, -40 - Math.min(14, (z - 183) / 2), z);
+        }
+        // Staff landing east exit past the east flight's shallow side walls.
+        clearWalkBody(1, 3, -54, -49, 206, 211);
+        // Staff east flight where the civic link envelope crossed its final treads.
+        for (int z = 184; z <= 191; z++) {
+            repairTread(7, 13, -54 - Math.min(14, (211 - z) / 2), z);
+        }
+        // Civic archive doorway center lane re-walled by the east link's north sidewall.
+        clearWalkBody(0, 2, -68, -63, 175, 177);
+
+        // Service stair mirrors of the same three crossings.
+        for (int z = 10; z <= 18; z++) {
+            repairTread(-13, -7, -68 - Math.min(14, (38 - z) / 2), z);
+        }
+        clearWalkBody(1, 3, -82, -77, 10, 15);
+        for (int z = 30; z <= 38; z++) {
+            repairTread(7, 13, -82 - Math.min(14, (z - 10) / 2), z);
+        }
+        // Lower spine center lane past the service link's south sidewall.
+        clearWalkBody(0, 2, -96, -91, 44, 46);
+    }
+
+    /** Re-seats one stepped tread row: solid floor under the feet cell, clear body above. */
+    private void repairTread(int x1, int x2, int feetY, int z) {
+        for (int x = x1; x <= x2; x++) {
+            set(x, feetY - 1, z, Material.POLISHED_BLACKSTONE_BRICKS);
+            for (int y = feetY; y <= feetY + 5; y++) set(x, y, z, Material.AIR);
+        }
+    }
+
+    /** Clears a walking body volume without touching its floor, which must already be solid. */
+    private void clearWalkBody(int x1, int x2, int y1, int y2, int z1, int z2) {
+        for (int x = x1; x <= x2; x++) {
+            for (int z = z1; z <= z2; z++) {
+                for (int y = y1; y <= y2; y++) set(x, y, z, Material.AIR);
+            }
+        }
+    }
+
+    private void buildPartitionAcrossX(int minX, int maxX, int floor, int z, int height) {
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = floor; y <= floor + height; y++) {
+                set(x, y, z, Math.floorMod(x + y, 13) == 0
+                        ? Material.CHISELED_TUFF : Material.POLISHED_BLACKSTONE_BRICKS);
+            }
+        }
+    }
+
+    private void dressNaturalDistricts() {
+        // Orientation reads as a registry, not a tutorial chamber.
+        floorInlayZ(0, -40, 110, 128, 1, Material.OXIDIZED_CUT_COPPER);
+        for (int x : new int[]{-24, 24}) pillarLamp(x, -40, 126, 5, Material.CUT_COPPER);
+
+        // The six Keeper inquiries share one archive floor and remain visible from the central aisle.
+        floorInlayZ(0, -40, 134, 176, 1, Material.POLISHED_BASALT);
+        for (int z : new int[]{142, 158, 174}) {
+            floorInlayX(-40, z, -58, 58, 1, Material.CHISELED_TUFF);
+        }
+
+        // One coherent library: shelf walls, open reading floor, no scattered block puzzle décor.
+        floorInlayZ(0, -68, 78, 174, 1, Material.OXIDIZED_CUT_COPPER);
+        for (int z = 84; z <= 168; z += 14) {
+            for (int x : new int[]{-61, 61}) {
+                if (reserved(null, x, -68, z, 2)) continue;
+                for (int y = -68; y <= -65; y++) set(x, y, z, Material.BOOKSHELF);
+            }
+        }
+
+        // Sparse practical lighting in service and lower work areas.
+        for (int z : new int[]{48, 64}) {
+            for (int x : new int[]{-34, 34}) {
+                if (!reserved(null, x, -68, z, 3)) pillarLamp(x, -68, z, 4, Material.EXPOSED_COPPER);
+            }
+        }
+        floorInlayZ(0, -96, 42, 78, 1, Material.POLISHED_BLACKSTONE_BRICKS);
+        floorInlayZ(0, -96, 84, 231, 1, Material.CHISELED_POLISHED_BLACKSTONE);
     }
 
     private void buildRoomShell(DeepHoldV4Plan.Room room) {

@@ -78,6 +78,8 @@ Iss was right about the surface. His remedy was still reckless. He hid an excava
 
 There was no single magical cause. Eight physical and documentary proofs establish the order:
 
+The first seven are independent house findings and may be gathered in any order. The eighth is established at the base mirror after all seven receipts have been filed.
+
 1. The lamp outage began before the official alarm.
 2. A pressure fracture predated Iss's last excavation.
 3. warning birds failed before the reported breach time.
@@ -117,7 +119,7 @@ Each later hid a letter inside an affidavit: **A / V / E / R / Y / N**. Iss's pu
 | Dark Hours | paired staffed watch | surveillance and sleep punishment | Brann's evidence restores the actual rota |
 | Offering | return samples and communal reserves | compulsory tribute | Cistern samples and tagged deposits teach its real origin |
 | Bow | inspect low seals and masonry marks | submission theater | Orin's marks require a practical crouched viewpoint |
-| Unspoken | listen for vibration during inspections | censorship | silence is used once as a bounded sensing mechanic |
+| Unspoken | listen for vibration during inspections | censorship | players use silence once during a bounded inspection |
 | Sacred Beast | birds warn of air and pressure change | superstition hid poor maintenance | the coop establishes the true failure chronology |
 
 The players learn when each procedure works and when it has become control. “Following the Ways” is never a binary morality score.
@@ -320,7 +322,7 @@ The server saves, delivers the branch-specific close, kicks the players, and in 
 - Nessa was scapegoated and must be cleared.
 - mkept was a real person.
 - The prior company had four members.
-- All ten cases all eight Unlit houses and all fixed media are required.
+- All ten cases, all seven Unlit house investigations, the base-mirror synthesis, and all fixed media are required.
 - The Unlit entrance remains the village well.
 - The Deep Hold has one public mouth and the same return route.
 - No ending binds Averyn back into the Record.

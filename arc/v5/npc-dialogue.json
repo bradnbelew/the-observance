@@ -16,28 +16,28 @@
       "facing": "FACE_APPROACH",
       "lines": {
         "arrival": [
-          "Fresh boots. If you're buying a room, take the one away from the kitchen. The chimney ticks all night.",
-          "You're looking for the old server people, aren't you? They asked about drains, not graves. Sensible change, if you ask me."
+          "There's a room free if you need it. Take the one away from the kitchen; the chimney ticks after midnight.",
+          "The four who came before you stayed here. They asked about the old drains and bought enough lamp oil for a week."
         ],
         "mouth_lead": [
-          "The broad cut starts north of the kiln and runs under the gorse. That's the old drainage line. The well is west of it and goes somewhere else.",
-          "Don't climb into the well looking for the Hold. I know they both go down. So does a privy. Direction isn't identity."
+          "The broad cut starts north of the kiln and runs under the gorse. That's the old drainage line. The well is farther west.",
+          "The well is not the Hold entrance. Follow the drain until the first flat slab, then look for the worked arch."
         ],
         "after_c02": [
-          "A whole school under there? Huh. My version had treasure and a king. Yours sounds less profitable and more likely.",
-          "Bring up a market token if you see one. Not cursed. Just old. I can sell old."
+          "A school and a market below. That sounds more like a refuge than the story I was told.",
+          "If you find a market token, show it to Coll. He knows the old issue marks better than I do."
         ],
         "after_c04": [
-          "Pell says Nessa's name like he expects the room to argue. It usually does. Let him finish before you ask what happened.",
-          "Counterfeit filters. That's uglier than a ghost, isn't it? A ghost at least has the manners to be dead."
+          "Pell worked the pumps with Nessa's family. Let him finish when he tells you what she filed.",
+          "Bad filter cloth and a hearing that hid it. People here blamed Nessa for years."
         ],
         "after_c07": [
-          "Four campers bought food here. The quiet one—Wren—never ate much. I called that mysterious. Maybe I should've called it frightened.",
-          "Ash paid for a room and spent the night labeling camera batteries on the floor. Ordinary as rain."
+          "There were four campers. Wren barely ate and checked the door whenever the pipes knocked. I thought he was only nervous.",
+          "Ash rented the back room and labelled camera batteries across the floor. I remember because I nearly stepped on them."
         ],
         "coda": [
-          "It stopped humming last night. The cups didn't rattle once. I slept through until morning and hated how strange that felt.",
-          "I'll tell the story straight this time. Don't look so surprised. I can learn one new trick."
+          "The humming stopped last night. The cups stayed still, and I slept until morning.",
+          "If anyone asks what happened, I'll give them the names and dates. They can make their own story from that."
         ]
       }
     },
@@ -49,24 +49,24 @@
       "facing": "FACE_APPROACH",
       "lines": {
         "arrival": [
-          "Mind the seedlings. They look like weeds because they're currently bad at being anything else.",
-          "If you came about the well, don't drink from it. Not poison. It just tastes like every bucket was washed in pennies."
+          "Mind the seedlings along the wall. I only moved them yesterday.",
+          "If you came about the well, don't drink from it. It isn't poison; the water just tastes strongly of iron."
         ],
         "well_lead": [
-          "My gran tied white thread under the well lip when the reflection looked deeper than the rope. Thread's still there. I checked this morning.",
-          "The old Hold mouth isn't the well. But if the water shows a roof instead of sky, that's when you use the well. Take a friend."
+          "My gran tied white thread beneath the well lip when the reflection looked deeper than the rope. The thread is still there.",
+          "The Hold mouth is elsewhere. If this well reflects a roof instead of the sky, use the well then, and take someone with you."
         ],
         "after_c03": [
-          "Sella taught drawing? That makes more sense than the stories. The old school slates here all put north at the bottom. Damp-transfer habit, maybe.",
-          "Orin marks the bottoms of stones. Builders do that because rain and boots leave the top lying."
+          "Sella taught drawing. The old school slates put north at the bottom because damp copies were read from the reverse.",
+          "Orin cut inspection marks on the undersides of stones. The upper faces were worn smooth by boots and water."
         ],
         "after_c05": [
-          "All eight houses changed? Good. People kept telling me four were enough. Four is enough to make a neat story, not an honest one.",
-          "The well water looks like water again. Still tastes of pennies. Some problems are allowed to be ordinary."
+          "You found a different record in each of the seven houses. Averyn's list only made sense after you compared them at the base.",
+          "The well reflects the sky again. It still tastes of iron, but that part has always been true."
         ],
         "coda": [
-          "The white thread went slack. Same depth as the rope now. I measured twice because I didn't trust being relieved.",
-          "I've planted reeds by the bank. Real ones. If they fold back, it'll be wind this time."
+          "The white thread has gone slack. The reflection and the rope measure the same depth now; I checked twice.",
+          "I've planted reeds along the bank. They should take if the water stays level."
         ]
       }
     },
@@ -78,24 +78,24 @@
       "facing": "FACE_APPROACH",
       "lines": {
         "arrival": [
-          "Torches, rope, food, spare boots. If you want a prophecy, buy all four and live long enough to make one up.",
-          "Write your name on a tab or pay now. No third system. Third systems are how stock disappears."
+          "I have torches, rope, food, and spare boots. Check the soles before you go below.",
+          "Pay now or put your name on the tab. I keep one book for each and no other account."
         ],
         "after_c01": [
-          "mkept bought paper, lamp oil, and a second map case. Paid exactly. Terrible customer for gossip.",
-          "The old Copperline number was on their receipt: 1842. I kept it because the back was good writing paper."
+          "mkept bought paper, lamp oil, and a second map case. Paid in full and kept the receipt.",
+          "The receipt carried the old Copperline service number, 1842. I copied it before using the back for stock totals."
         ],
         "camp_lead": [
-          "Ash's lot took four supply bundles: light, food, building, recording. Rook insisted on that order and then repacked everything by receipt number.",
-          "Their map corner points east-northeast from the old kiln, then turns at the split pine. Wren said it was twice that far. It wasn't."
+          "Ash's group took four bundles: light, food, building, then recording. Rook repacked each bundle by receipt number.",
+          "Their map points east-northeast from the old kiln, then turns at the split pine. Wren's estimate was nearly twice the actual walk."
         ],
         "after_c07": [
-          "Locker thirteen. Of course. Ash wrote thirteen on every camera box, then crossed it out so nobody would notice thirteen.",
-          "Rook returned one coil of rope cut clean through. Said a wall had learned the revised span. I charged them anyway."
+          "Ash used locker thirteen for camera stock. The same number appears on the battery crate and film sheet.",
+          "Rook returned a coil of rope cut clean through. He said the lower room had copied a bridge change made only at camp."
         ],
         "coda": [
-          "Your tab settled itself at dawn. I dislike accounts doing things without me, but the total was right.",
-          "Take a spare striker. Free. There, I've ruined the business."
+          "Your tab showed paid at dawn. I checked the total against my paper copy; it was correct.",
+          "Take a spare striker before you leave. I have enough now that the lower works are quiet."
         ]
       }
     },
@@ -107,24 +107,24 @@
       "facing": "FACE_APPROACH",
       "lines": {
         "arrival": [
-          "You're heading under? Show me your boots. No, really. Loose sole catches on the fourth stair landing.",
-          "I patched the drainage cut once. Stone behind it wasn't village work. Too square. Too patient."
+          "You're going below? Check your boots first. A loose sole catches on the fourth stair landing.",
+          "I patched the drainage cut years ago. The stone behind it was older than the village work and cut much squarer."
         ],
         "mouth_lead": [
-          "From the kiln: follow the cut to the first flat slab, then keep the water on your left. The arch faces the old drain, not the village.",
-          "The stair goes down in four flights. If you find a drop instead, you've left the route. Turn around."
+          "From the kiln, follow the cut to the first flat slab and keep the water on your left. The arch faces the drain.",
+          "The stair descends in four flights. If the floor breaks into a drop, you have passed the turn."
         ],
         "after_c02": [
-          "Three build phases. I can see it now you say it: rough picks, civic chisels, then black pressure stone.",
-          "People built all that to live. Remember that when a room tries to look like it was always a tomb."
+          "There are three hands in the stone: rough shelter cuts, civic chisel work, then the dark pressure blocks.",
+          "The school walls and patched drains matter. People maintained that place for years."
         ],
         "after_c05": [
-          "A crack three cycles old doesn't care who the council wanted to blame. Stone is useful that way.",
-          "Iss loaded a failing bay. That's bad enough. You don't need to pretend he invented the failure."
+          "Three mineral seams crossed that crack before the fresh cut. The fracture was already moving.",
+          "Iss added load to a failing bay. That made it worse, but it did not create the original break."
         ],
         "coda": [
-          "I walked to the first gate this morning. Open. Every one beyond it too, you said. I'll go farther when my hands stop shaking.",
-          "The fourth landing still catches loose soles. Some truths survive the end of the world."
+          "I walked as far as the first gate this morning. It was open. I may go farther tomorrow.",
+          "The fourth landing still catches a loose sole. Mind it on the way out."
         ]
       }
     },
@@ -136,24 +136,24 @@
       "facing": "FACE_APPROACH",
       "lines": {
         "arrival": [
-          "Sit if you're staying. Stand if you're about to ask why the pump tastes of iron. I've answered that one standing for forty years.",
-          "Nessa Vale. Start with the name. Offices like to make a person into 'the tender' before they ruin them."
+          "Sit if you're staying. If you're asking about the pump, the iron taste has been there longer than I have.",
+          "Her name was Nessa Vale. The hearing called her only 'the tender,' and people here followed its lead."
         ],
         "cistern_lead": [
-          "She filed top and lower draw separately. Always. Anyone says she mixed samples either never met her or was paid not to remember.",
-          "Toma Rill took cycle five after they removed her. His meal chit sat in our drawer until the ink went brown."
+          "Nessa filed upper and lower draws separately every time. I watched her seal them at the pump table.",
+          "Toma Rill took cycle five after they removed her. His meal chit stayed in our drawer for years."
         ],
         "after_c04": [
-          "You cleared her? Say the whole finding. Not 'mistakes were made.' Say Nessa followed procedure and they hid bad filters.",
-          "Good. Again tomorrow, when it isn't new and dramatic. That's how a name gets repaired."
+          "If you cleared her, say the complete finding: Nessa followed procedure, the filter cloth failed, and the hearing hid the lower samples.",
+          "Write it down where people can return to it. One correct telling will not undo all the old ones."
         ],
         "after_c09": [
-          "Averyn wrote the finding. I knew there was a registrar, didn't know the name. Funny what a blank can weigh.",
-          "If she asks you not to file her back in, listen. Records are tools. People are not empty lines waiting for tools."
+          "Averyn wrote the original finding. I knew a registrar had objected, but her name was missing from every copy I saw.",
+          "If she asks you not to enter her again, listen. A record is meant to serve the person named in it."
         ],
         "coda": [
-          "Nessa Vale followed procedure. Counterfeit filters failed. The hearing hid the lower samples. There. Still true this morning.",
-          "Averyn's name is on the public copy if that's what you chose. If not, the finding still stands. A blank doesn't erase evidence now."
+          "Nessa Vale followed procedure. Counterfeit filters failed, and the hearing hid the lower samples. That remains the finding.",
+          "Whether Averyn's name is public or not, her evidence is attached now. No one can remove the finding by removing its author."
         ]
       }
     }
@@ -165,41 +165,41 @@
     "facing": "FACE_APPROACH",
     "lines": {
       "before_c07": [
-        "Camp? We slept in too many places. Ash liked ridgelines. Rook liked walls. mkept liked anywhere with a socket that shouldn't still work.",
-        "I don't remember the distance. I remember being tired before we arrived. That's not the same thing."
+        "We moved camp more than once. Ash wanted a clear view, Rook wanted a wall, and mkept wanted a live power line.",
+        "I gave Coll the wrong distance. I knew where the camp was and did not want anyone else finding it."
       ],
       "evidence_bridge": [
-        "Rook changed the bridge after I left the room. That's what I told myself. Then the Watcher used the change and I knew I'd heard it somehow.",
-        "No. That's still not honest. Rook told me. Only me."
+        "I said Rook changed the bridge after I left. That was false. He showed me the revision at camp.",
+        "No one else was there. When the lower room copied it, I knew where it had come from."
       ],
       "evidence_names": [
-        "It asked what to call them. I gave it the names because nameless things were disappearing first. I thought a name would anchor them.",
-        "Then it asked what they feared. I answered that too. There isn't a version where that was kindness."
+        "It asked for their names. I sent them because I believed a named person would be harder for the Record to erase.",
+        "It asked what they feared next. I sent that as well. I knew it could use those answers against them."
       ],
       "confession": [
-        "I sent the route, the bridge, the camera cache, the login, and the things they said when they thought only I was listening.",
-        "I believed the Record closing would close me with it. I still believe that. I don't know whether belief makes betrayal smaller."
+        "I sent the route, the bridge revision, Ash's camera cache, mkept's login, and the private things they said at camp.",
+        "I believed closing the Record would erase me with it. I was afraid, and I chose to endanger them instead."
       ],
       "reckoning_condemn": [
-        "I won't call it unfair. I spent every honest word I had before you arrived.",
-        "Take the Bridge. My line ends where you put it."
+        "I understand your decision. The evidence is mine, and I will not argue with it.",
+        "Take the Bridge. I will remain at the relay."
       ],
       "reckoning_understand": [
-        "Understanding isn't forgiveness. Thank you for not making me pretend it is.",
-        "I'll carry the Bridge to the last threshold. If I run, leave me out."
+        "I know understanding is not forgiveness. I will not treat it as one.",
+        "I will carry the Bridge to the last threshold and follow your direction there."
       ],
       "reckoning_free": [
-        "I don't know how to be away from something that has always known where I am.",
-        "Take the Bridge. If there is an outside for me, don't write where I went."
+        "I do not know what remains of me outside this place, but I want the chance to find out.",
+        "Take the Bridge. If I leave, do not enter a destination for me."
       ],
       "coda_condemn": [
-        "No response. A closed transmission line remains at the relay."
+        "The relay line is closed. Wren left no further message."
       ],
       "coda_understand": [
-        "He stayed until the machinery stopped. His bedroll is folded beside the dead console."
+        "Wren stayed until the machinery stopped. His bedroll is folded beside the console."
       ],
       "coda_free": [
-        "The bedroll and boots are gone. The Record contains no departure route."
+        "Wren's bedroll and boots are gone. No departure was entered in the register."
       ]
     }
   }

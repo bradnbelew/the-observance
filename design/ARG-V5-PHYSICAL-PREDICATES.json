@@ -49,28 +49,27 @@
     {
       "node_id": "LS06",
       "owner": "plugin",
-      "prerequisites": ["v5_ls05_bound"],
+      "prerequisites": ["v5_ls04_map_handoff"],
       "site_id": "forgotten_mouth",
       "handler": "tagged_deposit",
-      "completion_flag": "v5_case_c01_complete",
+      "completion_flag": "v5_ls06_relay",
       "predicate": {
         "kind": "exact_tagged_deposit",
         "evaluation_trigger": "right-click the protected filing handle at offset [1,1,0]",
         "components": [
-          {"id": "orientation_key_source", "block": "BARREL", "offset": [-1,0,-1], "slot": 13, "revealed_when": "v5_ls05_bound", "protected_unique_source": true},
+          {"id": "orientation_key_source", "block": "BARREL", "offset": [-1,0,-1], "slot": 13, "revealed_when": "v5_ls04_map_handoff", "protected_unique_source": true},
           {"id": "orientation_file", "block": "BARREL", "offset": [0,0,0], "slot": 13},
           {"id": "orientation_key", "material": "COMPASS", "pdc": {"v5_artifact_id": "orientation_key"}}
         ],
         "all_of": [
           {"op": "slot_exact_item", "component": "orientation_file", "item": "orientation_key", "amount": 1},
-          {"op": "unique_item_absent_from_source_after_claim", "component": "orientation_key_source", "item": "orientation_key"},
-          {"op": "linked_actor_matches_handoff", "source_flag": "v5_ls05_bound"}
+          {"op": "unique_item_absent_from_source_after_claim", "component": "orientation_key_source", "item": "orientation_key"}
         ],
-        "commit": "remove the key from slot 13, set the flag, and return the same UUID-tagged item to the filing actor; only then expose C02"
+        "commit": "remove the key from slot 13, set the relay flag, return the same UUID-tagged item to the filing actor, and disclose the private coordination route only to players present at the desk"
       },
       "wrong_input": {"policy": "return_atomically", "feedback": "The filing label asks for the Orientation Key; no answer or tag detail is disclosed.", "state_effect": "none"},
-      "reward": {"description": "Orientation Key and C01 receipt", "artifact_ids": ["orientation_key"], "delivery": "return the validated key plus an idempotent receipt message"},
-      "reset_repair_recovery": {"reset": "return an uncommitted filed key to its protected source slot", "repair": "restore source/file barrels, handle, backing, and standing cell; while unsolved restore the original source item only after a world/player/escrow duplicate scan", "recovery": "reissue orientation_key to a player only when v5_case_c01_complete is true and duplicate scan is empty"},
+      "reward": {"description": "Orientation Key and private coordination route", "artifact_ids": ["orientation_key"], "delivery": "return the validated key and show the configured route to the filing group"},
+      "reset_repair_recovery": {"reset": "return an uncommitted filed key to its protected source slot", "repair": "restore source/file barrels, handle, backing, and standing cell; while unsolved restore the original source item only after a world/player/escrow duplicate scan", "recovery": "reissue orientation_key to a player only when v5_ls06_relay is true and duplicate scan is empty; the private route can be replayed from the sealed desk"},
       "concurrency_replay": {"scope": "site mutex plus player UUID", "lock": "one deposit transaction at a time", "replay_policy": "return_wrong_and_idempotent", "disconnect": "item remains in protected escrow and is returned on next join", "after_complete": "never duplicate the key; report already filed"},
       "durability_profile": "minecraft_local_primary"
     },
@@ -904,7 +903,7 @@
         "commit":"persist first outage at bell seven"
       },
       "wrong_input":{"policy":"preserve_state","feedback":"Lamp reports RESIDUE or BELL mismatch only.","state_effect":"none"},
-      "reward":{"description":"true outage chronology: bell seven","artifact_ids":[],"delivery":"unlock cairn house"},
+      "reward":{"description":"true outage chronology: bell seven","artifact_ids":[],"delivery":"record lamp-house receipt; keep all other houses available"},
       "reset_repair_recovery":{"reset":"restore supplied wick books to input shelf and dial to 0","repair":"restore exact wick tags, shelf, clock, handle, lighting, and safe doorway","recovery":"solved flag restores mask 111000 and rotation 7"},
       "concurrency_replay":{"scope":"house mutex","lock":"serialize shelf/frame/handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
       "durability_profile":"minecraft_local_primary"
@@ -912,7 +911,7 @@
     {
       "node_id":"BI02",
       "owner":"plugin_unlit",
-      "prerequisites":["v5_bi01_lamp"],
+      "prerequisites":["v5_case_c04_complete"],
       "site_id":"unlit_house_cairn",
       "handler":"tagged_fragments",
       "completion_flag":"v5_bi02_cairn",
@@ -930,7 +929,7 @@
         "commit":"seal the cross-section and persist fracture >= three service cycles before the cut"
       },
       "wrong_input":{"policy":"keep_sort_editable_return_invalid_tags","feedback":"The cairn reports OLDER/FRESH adjacency conflict or missing fragment count.","state_effect":"none"},
-      "reward":{"description":"pre-breach fracture proof","artifact_ids":[],"delivery":"unlock coop house"},
+      "reward":{"description":"pre-breach fracture proof","artifact_ids":[],"delivery":"record cairn-house receipt; keep all other houses available"},
       "reset_repair_recovery":{"reset":"return four fragments to shuffled protected tray","repair":"duplicate-scan four IDs, restore missing only, rail, handle, and safe floor","recovery":"solved flag restores sealed order"},
       "concurrency_replay":{"scope":"house inventory mutex","lock":"serialize moves and handle","replay_policy":"return_wrong_and_idempotent","disconnect":"fragments remain protected","after_complete":"rail read-only"},
       "durability_profile":"minecraft_local_primary"
@@ -938,7 +937,7 @@
     {
       "node_id":"BI03",
       "owner":"plugin_unlit",
-      "prerequisites":["v5_bi02_cairn"],
+      "prerequisites":["v5_case_c04_complete"],
       "site_id":"unlit_house_coop",
       "handler":"item_arrangement",
       "completion_flag":"v5_bi03_coop",
@@ -956,7 +955,7 @@
         "commit":"persist warning birds failed before bell eight"
       },
       "wrong_input":{"policy":"preserve_valid_items_return_invalid","feedback":"Coop reports FEED/WATER/COVER or TIME mismatch.","state_effect":"none"},
-      "reward":{"description":"bird-failure timing","artifact_ids":[],"delivery":"unlock well house"},
+      "reward":{"description":"bird-failure timing","artifact_ids":[],"delivery":"record coop-house receipt; keep all other houses available"},
       "reset_repair_recovery":{"reset":"return three items to staging and dial to 0","repair":"restore exact items, tray, clock, cages, handle, and headroom","recovery":"solved flag restores arrangement"},
       "concurrency_replay":{"scope":"house mutex","lock":"serialize inventory/frame/handle","replay_policy":"idempotent_state_match","disconnect":"state remains protected","after_complete":"latched"},
       "durability_profile":"minecraft_local_primary"
@@ -964,7 +963,7 @@
     {
       "node_id":"BI04",
       "owner":"plugin_unlit",
-      "prerequisites":["v5_bi03_coop"],
+      "prerequisites":["v5_case_c04_complete"],
       "site_id":"unlit_house_well",
       "handler":"reflection_frames",
       "completion_flag":"v5_bi04_well",
@@ -980,7 +979,7 @@
         "commit":"persist heat shaft -> third bay load redirection"
       },
       "wrong_input":{"policy":"preserve_frames","feedback":"Projection names VILLAGE, HOLD, or TRACE as unaligned.","state_effect":"none"},
-      "reward":{"description":"pressure-map alignment and redirected load proof","artifact_ids":[],"delivery":"unlock watch house"},
+      "reward":{"description":"pressure-map alignment and redirected load proof","artifact_ids":[],"delivery":"record well-house receipt; keep all other houses available"},
       "reset_repair_recovery":{"reset":"restore [2,0,6]","repair":"restore exact maps/frames/water/handle/backing and clear approach","recovery":"solved flag restores [0,4,2]"},
       "concurrency_replay":{"scope":"house mutex","lock":"serialize frames/handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched"},
       "durability_profile":"minecraft_local_primary"
@@ -988,7 +987,7 @@
     {
       "node_id":"BI05",
       "owner":"plugin_unlit",
-      "prerequisites":["v5_bi04_well"],
+      "prerequisites":["v5_case_c04_complete"],
       "site_id":"unlit_house_watch",
       "handler":"answer_sign",
       "completion_flag":"v5_bi05_watch",
@@ -1003,7 +1002,7 @@
         "commit":"persist first alarm bell eight and edited official bell nine"
       },
       "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"Bell nine is rejected as the overwritten Record.","state_effect":"none"},
-      "reward":{"description":"altered-watch proof","artifact_ids":[],"delivery":"unlock warm house"},
+      "reward":{"description":"altered-watch proof","artifact_ids":[],"delivery":"record watch-house receipt; keep all other houses available"},
       "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, copied watch surface, light control, and backing","recovery":"source remains inspectable under altered light"},
       "concurrency_replay":{"scope":"per-player edit lease; global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
       "durability_profile":"minecraft_local_primary"
@@ -1011,7 +1010,7 @@
     {
       "node_id":"BI06",
       "owner":"plugin_unlit",
-      "prerequisites":["v5_bi05_watch"],
+      "prerequisites":["v5_case_c04_complete"],
       "site_id":"unlit_house_warm",
       "handler":"tagged_sample_deposit",
       "completion_flag":"v5_bi06_warm",
@@ -1028,7 +1027,7 @@
         "commit":"escrow samples and persist the surface had healed before Iss excavated"
       },
       "wrong_input":{"policy":"return_atomically","feedback":"The tray names REED, WATER, AIR, or DATE as missing/mismatched; ordinary items never pass.","state_effect":"none"},
-      "reward":{"description":"healed-surface proof","artifact_ids":[],"delivery":"unlock threshold house"},
+      "reward":{"description":"healed-surface proof","artifact_ids":[],"delivery":"record warm-house receipt; keep all other houses available"},
       "reset_repair_recovery":{"reset":"return incomplete valid samples to protected staging","repair":"duplicate-scan three IDs, restore missing only, tray/handle/labels and safe floor","recovery":"solved state retains one protected sample set"},
       "concurrency_replay":{"scope":"house inventory mutex","lock":"single filing transaction","replay_policy":"return_wrong_and_idempotent","disconnect":"items remain protected","after_complete":"sealed readback, no duplicates"},
       "durability_profile":"minecraft_local_primary"
@@ -1036,7 +1035,7 @@
     {
       "node_id":"BI07",
       "owner":"plugin_unlit",
-      "prerequisites":["v5_bi06_warm"],
+      "prerequisites":["v5_case_c04_complete"],
       "site_id":"unlit_house_threshold",
       "handler":"bounded_group_walk",
       "completion_flag":"v5_bi07_threshold",
@@ -1108,19 +1107,22 @@
       "owner":"plugin",
       "prerequisites":["v5_hs02_installed"],
       "site_id":"lampworks_stair",
-      "handler":"item_frame_lamps",
+      "handler":"answer_sign",
       "completion_flag":"v5_hs03_lamps",
       "predicate": {
-        "kind":"twenty_binary_lamp_frames",
-        "evaluation_trigger":"pull the lamp circuit handle",
-        "components":[{"id":"lamps","block":"ITEM_FRAME","count":20,"ordered_offsets":[[-4,2,0],[-3,2,0],[-2,2,0],[-1,2,0],[0,2,0],[1,2,0],[2,2,0],[3,2,0],[4,2,0],[5,2,0],[-4,1,0],[-3,1,0],[-2,1,0],[-1,1,0],[0,1,0],[1,1,0],[2,1,0],[3,1,0],[4,1,0],[5,1,0]],"material":"REDSTONE_TORCH","pdc_prefix":"hs03_lamp_","legend":{"0":"A_DIM","4":"B_LIT"},"required_symbols":"ABBBAABBBBAABAAABBAB","required_rotations":[0,4,4,4,0,0,4,4,4,4,0,0,4,0,0,0,4,4,0,4]}],
-        "all_of":[{"op":"frame_rotations_exact","component":"lamps","values":[0,4,4,4,0,0,4,4,4,4,0,0,4,0,0,0,4,4,0,4]}],
-        "commit":"persist four Bacon groups ABBBA / ABBBB / AABAA / ABBAB and light the service lane"
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the maintenance slate below the fixed lamp panel",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"HS03"}}],
+        "answer_route":"local:HS03",
+        "normalization":"global answer_normalization",
+        "accepted":["OPEN","CIRCUIT OPEN","OPEN CIRCUIT"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"record OPEN and light the restored service lane"
       },
-      "wrong_input":{"policy":"preserve_frames","feedback":"Panel reports the wrong five-bit group numbers only, not their letters.","state_effect":"none"},
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"The maintenance slate remains unchanged.","state_effect":"none"},
       "reward":{"description":"OPEN lamp circuit and lit service lane","artifact_ids":[],"delivery":"unlock pressure register"},
-      "reset_repair_recovery":{"reset":"set deterministic alternating A/B state","repair":"restore 20 unique tagged torches/frames, labels, handle, backing, and stair clearance","recovery":"solved flag restores canonical 20-state pattern"},
-      "concurrency_replay":{"scope":"site mutex","lock":"serialize 20 frames and handle","replay_policy":"idempotent_state_match","disconnect":"state remains","after_complete":"latched; lighting readback restored from flag"},
+      "reset_repair_recovery":{"reset":"clear only the editable maintenance slate","repair":"restore the fixed lamp panel, immutable service manual, slate, backing, and stair clearance","recovery":"solved flag relights the documented service lane"},
+      "concurrency_replay":{"scope":"per-player edit lease, site-wide completion CAS","lock":"single slate editor","replay_policy":"oracle_idempotent","disconnect":"release edit lease","after_complete":"service lane remains lit"},
       "durability_profile":"minecraft_local_primary"
     },
     {
@@ -1128,25 +1130,22 @@
       "owner":"plugin",
       "prerequisites":["v5_hs03_lamps"],
       "site_id":"third_lamp_stand",
-      "handler":"chiseled_bookshelf_pattern",
+      "handler":"answer_sign",
       "completion_flag":"v5_hs04_pressure",
       "predicate": {
-        "kind":"four_six_slot_pressure_masks",
-        "evaluation_trigger":"pull the pressure calibration handle",
-        "components":[
-          {"id":"shelf1","block":"CHISELED_BOOKSHELF","offset":[-3,0,0],"required_mask":"110010"},
-          {"id":"shelf2","block":"CHISELED_BOOKSHELF","offset":[-1,0,0],"required_mask":"101100"},
-          {"id":"shelf3","block":"CHISELED_BOOKSHELF","offset":[1,0,0],"required_mask":"011001"},
-          {"id":"shelf4","block":"CHISELED_BOOKSHELF","offset":[3,0,0],"required_mask":"001111"},
-          {"id":"calibration_books","material":"WRITTEN_BOOK","required_unique_count":13,"pdc_prefix":"hs04_calibration_","only_allowed_in_shelves":true}
-        ],
-        "all_of":[{"op":"bookshelf_masks_exact","values":{"shelf1":"110010","shelf2":"101100","shelf3":"011001","shelf4":"001111"}},{"op":"all_manifest_items_present_once","unique_count":13}],
-        "commit":"latch shelves and persist pressure calibration"
+        "kind":"answer_sign_oracle",
+        "evaluation_trigger":"finish editing the pressure desk slate",
+        "components":[{"id":"answer_sign","block":"DARK_OAK_SIGN","offset":[0,1,1],"pdc":{"v5_answer_node":"HS04"}}],
+        "answer_route":"local:HS04",
+        "normalization":"global answer_normalization",
+        "accepted":["LINE FOUR BYPASS OPEN","LINE 4 BYPASS OPEN","4 BYPASS OPEN"],
+        "all_of":[{"op":"normalized_answer_in","values_ref":"accepted"}],
+        "commit":"record the open line-four bypass and persist pressure calibration"
       },
-      "wrong_input":{"policy":"reject_ordinary_books_preserve_tagged_layout","feedback":"Panel reports wrong shelf numbers, not masks; ordinary books are returned.","state_effect":"none"},
+      "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"The pressure desk does not accept the finding.","state_effect":"none"},
       "reward":{"description":"pressure calibration","artifact_ids":[],"delivery":"unlock survey dial restoration"},
-      "reset_repair_recovery":{"reset":"return all 13 supplied books to protected input tray","repair":"duplicate-scan 13 IDs, restore missing only, shelves/facings/labels/handle","recovery":"solved flag restores exact four masks"},
-      "concurrency_replay":{"scope":"site inventory mutex","lock":"serialize shelf inserts/removals/handle","replay_policy":"idempotent_state_match","disconnect":"books stay protected","after_complete":"shelves locked"},
+      "reset_repair_recovery":{"reset":"clear only the editable pressure slate","repair":"restore the immutable gauge register, service note, slate, and backing","recovery":"solved flag restores the open bypass readback"},
+      "concurrency_replay":{"scope":"per-player edit lease, site-wide completion CAS","lock":"single slate editor","replay_policy":"oracle_idempotent","disconnect":"release edit lease","after_complete":"pressure readback remains available"},
       "durability_profile":"minecraft_local_primary"
     },
     {
@@ -1321,7 +1320,7 @@
       },
       "wrong_input":{"policy":"clear_submission_keep_sources","feedback":"A valid route must include west count, low count/posture, and east count.","state_effect":"none"},
       "reward":{"description":"verified route sequence","artifact_ids":[],"delivery":"arm Mara route start"},
-      "reset_repair_recovery":{"reset":"clear sign","repair":"restore sign, five comparison slips, and E3 linkage","recovery":"tiered hint points back to marks 1/2/4/4/6 without exposing words"},
+      "reset_repair_recovery":{"reset":"clear only the editable route slate","repair":"restore the slate and all six immutable Mara volumes with their bare index triples","recovery":"tiered hint points back to the six shelf-line-word triples without expanding them"},
       "concurrency_replay":{"scope":"per-player edit lease, global completion CAS","lock":"single editor","replay_policy":"oracle_idempotent","disconnect":"release lease","after_complete":"receipt only"},
       "durability_profile":"minecraft_local_primary"
     },

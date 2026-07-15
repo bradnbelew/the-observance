@@ -9,13 +9,16 @@ import com.observance.watcher.v5runtime.mechanics.MechanicItem;
 import com.observance.watcher.v5runtime.mechanics.MechanicObservation;
 import com.observance.watcher.v5runtime.mechanics.MechanicPorts;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
@@ -65,6 +68,44 @@ public final class V5BukkitProjection implements
             MechanicObservation observation) {
         latch(node.nodeId());
         plugin.v5Runtime().projectLocalState();
+        if ("LS06".equals(node.nodeId())) {
+            sendLs06HandoffToPresentGroup(actor);
+        }
+    }
+
+    private void sendLs06HandoffToPresentGroup(UUID actorId) {
+        Player actor = Bukkit.getPlayer(actorId);
+        Location desk = filingDeskLocation();
+        if (desk == null && actor != null && actor.isOnline()) desk = actor.getLocation();
+        if (desk == null || desk.getWorld() == null) return;
+
+        List<Player> online = List.copyOf(Bukkit.getOnlinePlayers());
+        List<FilingGroupSelector.Presence> candidates = new ArrayList<>(online.size());
+        for (Player player : online) {
+            Location location = player.getLocation();
+            World world = location.getWorld();
+            candidates.add(new FilingGroupSelector.Presence(player.getUniqueId(),
+                    world == null ? null : world.getUID(), location.getX(), location.getY(),
+                    location.getZ(), player.isOnline()));
+        }
+        FilingGroupSelector.Point point = new FilingGroupSelector.Point(
+                desk.getWorld().getUID(), desk.getX(), desk.getY(), desk.getZ());
+        Set<UUID> recipients = FilingGroupSelector.select(
+                point, plugin.config().witnessRadius(), candidates);
+        for (Player player : online) {
+            if (recipients.contains(player.getUniqueId())) plugin.sendV5DiscordHandoff(player);
+        }
+    }
+
+    private Location filingDeskLocation() {
+        for (String component : List.of("evaluation_handle", "handle")) {
+            for (BukkitFixtureIndex.Binding binding : fixtures.bindings("LS06", component)) {
+                if (binding.kind() != BukkitFixtureIndex.BindingKind.BLOCK) continue;
+                World world = Bukkit.getWorld(binding.worldId());
+                if (world != null) return binding.location(world).add(0.5, 0.5, 0.5);
+            }
+        }
+        return null;
     }
 
     @Override

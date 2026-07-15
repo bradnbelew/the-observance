@@ -42,8 +42,22 @@ public final class BeatEngine {
         this.plugin = plugin;
     }
 
-    /** Build + wire + schedule everything. Safe to call once on enable / after reload. */
+    /** Build + wire + schedule everything (legacy / non-V5 full engine). */
     public boolean activate() {
+        return activateInternal(false);
+    }
+
+    /**
+     * V5 production activation: the ambient Watcher is reawakened, but restricted to the curated,
+     * text-free, no-write sensory palette, the queue enactor is wrapped so only the hint beats
+     * ({@code whisper_toll} / {@code hint_whisper}) can ever fire, and the durable world-drift clock
+     * is left OFF. No retired V4 story effect is reachable.
+     */
+    public boolean activateV5Safe() {
+        return activateInternal(true);
+    }
+
+    private boolean activateInternal(boolean v5Safe) {
         return plugin.safety().call("beat.engine.activate", () -> {
             ObservanceConfig config = plugin.config();
             this.protectedRegistry = new ProtectedRegistry();
@@ -63,8 +77,12 @@ public final class BeatEngine {
             this.library = new BeatLibrary(plugin.safety());
             this.budget = new DramaBudget(config, plugin.rateLimiter());
 
-            // 1) Install the real enactor so the foundation poller realizes queued beats.
-            plugin.setBeatEnactor(new RealBeatEnactor(ctx, library, budget));
+            // 1) Install the enactor so the foundation poller realizes queued beats. In V5 it is
+            //    wrapped by a strict allowlist so no retired directed beat can ever be realized.
+            RealBeatEnactor real = new RealBeatEnactor(ctx, library, budget);
+            plugin.setBeatEnactor(v5Safe
+                    ? new V5SafeBeatEnactor(real, V5SafeBeatEnactor.v5AllowedTypes())
+                    : real);
 
             // 2) Anti-grief protection listener for beat-placed / protected blocks.
             plugin.getServer().getPluginManager().registerEvents(
@@ -85,7 +103,8 @@ public final class BeatEngine {
             this.ambient = new AmbientBeatGenerator(
                     ctx, library, budget, attention,
                     plugin::isLocallyAsleep,
-                    config::dramaEnabled);
+                    config::dramaEnabled,
+                    v5Safe);
 
             long periodTicks = Math.max(20L, ambientPeriodTicks(config));
             // Stagger the first tick so it doesn't coincide with boot load.
@@ -93,19 +112,19 @@ public final class BeatEngine {
                     "beat.ambient.tick", periodTicks, periodTicks, () -> ambientTick()));
 
             // 5) THE WORLD-DRIFT CLOCK — the world ages on its own between visits (sculk creeps near
-            //    already-found sites, scaled by real elapsed time, hard-capped so an absence never
-            //    carpets a place). Mirrors the ambient cadence but is world-scoped: it drifts a little
-            //    near a rotating subset of PLACED sites each tick and no-ops entirely until a site is
-            //    placed. Persists its one timestamp in arc_state.flags (no new table).
-            this.driftClock = new WorldDriftClock(
-                    ctx, library, plugin::isLocallyAsleep, config::dramaEnabled);
-            long driftTicks = Math.max(20L, driftPeriodTicks(config));
-            tasks.add(plugin.scheduler().runTimerSafe(
-                    "beat.world.drift", driftTicks, driftTicks, () -> driftClock.tick()));
+            //    already-found sites). This edits durable blocks, so V5-safe mode leaves it OFF; only
+            //    the ephemeral, per-player sensory palette runs in production.
+            if (!v5Safe) {
+                this.driftClock = new WorldDriftClock(
+                        ctx, library, plugin::isLocallyAsleep, config::dramaEnabled);
+                long driftTicks = Math.max(20L, driftPeriodTicks(config));
+                tasks.add(plugin.scheduler().runTimerSafe(
+                        "beat.world.drift", driftTicks, driftTicks, () -> driftClock.tick()));
+            }
 
             this.active = true;
             plugin.logEvent("info", "beat.engine",
-                    "activated; beats=" + library.size(), null);
+                    "activated" + (v5Safe ? " (v5-safe)" : "") + "; beats=" + library.size(), null);
             return true;
         }, false);
     }

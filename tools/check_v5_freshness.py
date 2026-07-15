@@ -30,6 +30,8 @@ CURRENT_DESIGN_DOCS = {
     "V5-UNLIT.md",
     "V5-WORLD-SETUP-AND-TESTING.md",
     "V5-WREN-EVIDENCE.md",
+    "V5.1-REDESIGN.md",
+    "CODEX-PROMPT-V5.1-DEPLOY.md",
 }
 
 CURRENT_DOCS = {
@@ -53,6 +55,7 @@ CURRENT_DOCS = {
 
 ACTIVE_TOOLS = {
     "audit_all.ps1",
+    "build_hold_prologue.py",
     "check_assets.ps1",
     "check_deep_hold_fixture_manifest.py",
     "check_deep_hold_layout.py",
@@ -74,7 +77,6 @@ ACTIVE_TOOLS = {
 
 RETIRED_TOOLS = {
     "apply_launch_coords.ps1": "throw",
-    "build_hold_prologue.py": "raise systemexit",
     "build_storymap.py": "raise systemexit",
     "build_viz.py": "raise systemexit",
     "new_director_packet.ps1": "throw",
@@ -92,7 +94,6 @@ RETIRED_RUNTIME = re.compile(
 )
 RETIRED_GENERATOR_NAMES = {
     "apply_launch_coords.ps1",
-    "build_hold_prologue.py",
     "new_director_packet.ps1",
     "new_launch_placement_packet.ps1",
     "new_rehearsal_packet.ps1",

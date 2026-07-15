@@ -16,9 +16,9 @@ const checks: Array<[string, string, string]> = [
   ['import-safe showrunner', 'discord/src/showrunner/run.ts', 'isDirectRun'],
   ['V5 showrunner safe mode', 'discord/src/showrunner/run.ts', 'runV5SafeHeartbeat'],
   ['V5 safe-mode detector', 'discord/src/showrunner/state.ts', 'isV5CampaignActive'],
-  ['production V5 mode', 'render.yaml', 'OBSERVANCE_CAMPAIGN_VERSION'],
-  ['worker cadence env', 'render.yaml', 'SHOWRUNNER_TICK_MS'],
-  ['recovery cron cadence', 'render.yaml', '*/5 * * * *'],
+  ['production V5 mode', 'discord/.env.example', 'OBSERVANCE_CAMPAIGN_VERSION=v5'],
+  ['Railway worker command', 'discord/railway.worker.json', '"startCommand": "npm start"'],
+  ['Railway recovery cadence', 'discord/railway.cron.json', '"cronSchedule": "*/10 * * * *"'],
   ['legacy puzzle retirement', 'discord/supabase/seeds/v5_investigations.sql', 'update public.puzzles set active = false'],
   ['legacy hint retirement', 'discord/supabase/seeds/v5_investigations.sql', 'update public.hints set active = false'],
   ['legacy archive retirement', 'discord/supabase/seeds/v5_investigations.sql', 'update public.thread_cards set active = false'],
@@ -51,15 +51,44 @@ for (const retiredFile of ['discord/src/voice/receiver.ts', 'discord/src/voice/t
   if (existsSync(resolve(repo, retiredFile))) throw new Error(`V5 surface selftest FAILED: retired external-service source remains: ${retiredFile}`);
 }
 const packageJson = read('discord/package.json');
+if (!packageJson.includes('"node": "22.x"')) throw new Error('V5 surface selftest FAILED: Railway Node major is not pinned to 22.x');
 for (const retiredDependency of ['@anthropic-ai/sdk', '@discordjs/voice', 'opusscript', 'prism-media', 'tweetnacl']) {
   if (packageJson.includes(`"${retiredDependency}"`)) throw new Error(`V5 surface selftest FAILED: retired dependency remains: ${retiredDependency}`);
 }
 
-const render = read('render.yaml');
-if (!/OBSERVANCE_CAMPAIGN_VERSION\s*\r?\n\s*value:\s*v5/.test(render)) throw new Error('V5 surface selftest FAILED: Render does not explicitly force V5 safe mode');
+if (existsSync(resolve(repo, 'render.yaml'))) throw new Error('V5 surface selftest FAILED: retired Render blueprint remains');
+type RailwayConfig = {
+  $schema?: string;
+  build?: { builder?: string };
+  deploy?: {
+    startCommand?: string;
+    cronSchedule?: string;
+    restartPolicyType?: string;
+    restartPolicyMaxRetries?: number;
+  };
+};
+const railwayWorker = JSON.parse(read('discord/railway.worker.json')) as RailwayConfig;
+const railwayCron = JSON.parse(read('discord/railway.cron.json')) as RailwayConfig;
+for (const [label, config] of [['worker', railwayWorker], ['recovery cron', railwayCron]] as const) {
+  if (config.$schema !== 'https://railway.com/railway.schema.json' || config.build?.builder !== 'RAILPACK') {
+    throw new Error(`V5 surface selftest FAILED: Railway ${label} does not use the current schema and Railpack`);
+  }
+}
+if (railwayWorker.deploy?.startCommand !== 'npm start'
+  || railwayWorker.deploy.restartPolicyType !== 'ON_FAILURE'
+  || railwayWorker.deploy.restartPolicyMaxRetries !== 10
+  || railwayWorker.deploy.cronSchedule !== undefined) {
+  throw new Error('V5 surface selftest FAILED: Railway worker lifecycle drift');
+}
+if (railwayCron.deploy?.startCommand !== 'npm run showrunner'
+  || railwayCron.deploy.cronSchedule !== '*/10 * * * *'
+  || railwayCron.deploy.restartPolicyType !== 'NEVER'
+  || railwayCron.deploy.restartPolicyMaxRetries !== undefined) {
+  throw new Error('V5 surface selftest FAILED: Railway recovery cron lifecycle drift');
+}
 const exampleEnv = read('discord/.env.example');
 for (const retiredEnv of ['ANTHROPIC_API_KEY', 'DISCORD_VOICE_CHANNEL_ID', 'WHISPER_API_URL', 'WHISPER_API_KEY', 'WHISPER_MODEL', 'WHISPER_LANG', 'WHISPER_BIN']) {
-  if (render.includes(retiredEnv) || exampleEnv.includes(retiredEnv)) throw new Error(`V5 surface selftest FAILED: retired production environment key remains: ${retiredEnv}`);
+  if (JSON.stringify([railwayWorker, railwayCron]).includes(retiredEnv) || exampleEnv.includes(retiredEnv)) throw new Error(`V5 surface selftest FAILED: retired production environment key remains: ${retiredEnv}`);
 }
 const expectedDiscordEnv = [
   'CHANNEL_THE_RECORD', 'DISCORD_APP_ID', 'DISCORD_BOT_TOKEN', 'DISCORD_GUILD_ID',
@@ -68,9 +97,6 @@ const expectedDiscordEnv = [
 ].sort();
 const exampleKeys = [...exampleEnv.matchAll(/^([A-Z][A-Z0-9_]+)=/gm)].map((match) => match[1]!).sort();
 if (JSON.stringify(exampleKeys) !== JSON.stringify(expectedDiscordEnv)) throw new Error(`V5 surface selftest FAILED: Discord .env.example drift: ${exampleKeys.join(',')}`);
-const expectedRenderEnv = [...expectedDiscordEnv, 'NODE_VERSION'].sort();
-const renderKeys = [...render.matchAll(/^\s+- key:\s*([A-Z][A-Z0-9_]+)\s*$/gm)].map((match) => match[1]!).sort();
-if (JSON.stringify(renderKeys) !== JSON.stringify(expectedRenderEnv)) throw new Error(`V5 surface selftest FAILED: Render environment drift: ${renderKeys.join(',')}`);
 const discordReadme = read('discord/README.md');
 for (const key of expectedDiscordEnv) if (!discordReadme.includes(key)) throw new Error(`V5 surface selftest FAILED: Discord README omits ${key}`);
 

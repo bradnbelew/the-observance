@@ -26,7 +26,8 @@ for (const row of answerBearingCases) {
   if (earned.title !== row.title || earned.summary !== row.summary) throw new Error(`${row.caseKey} completed docket stayed redacted`);
 }
 
-const migration = readFileSync(new URL('../../supabase/migrations/0010_v5_public_record.sql', import.meta.url), 'utf8');
+const migration = readFileSync(new URL('../../supabase/migrations/0010_v5_public_record.sql', import.meta.url), 'utf8')
+  .replace(/\r\n?/g, '\n');
 for (const required of [
   "then i.title\n      else 'Docket ' || i.case_key",
   'end as public_title',

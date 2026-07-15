@@ -51,6 +51,13 @@ public final class MechanicPorts {
     @FunctionalInterface
     public interface PlayerFeedback {
         void send(UUID actor, String safeMessage);
+
+        /**
+         * Optional cue that the actor just completed a node — so a solve is witnessed (a sound + a
+         * short in-register confirmation) instead of committing silently. Default no-op keeps
+         * non-Bukkit implementations (tests) unaffected.
+         */
+        default void solved(UUID actor) { }
     }
 
     public enum Trigger {

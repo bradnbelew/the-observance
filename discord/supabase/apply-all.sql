@@ -29,23 +29,24 @@
 --   14. discord/supabase/migrations/0013_v5_investigations.sql
 --   15. discord/supabase/migrations/0014_atomic_identity_link.sql
 --   16. discord/supabase/migrations/0015_identity_proof_of_control.sql
---   17. dashboard/supabase/migrations/0004_v_record.sql
---   18. dashboard/supabase/migrations/0005_reconcile_tracker_views.sql
---   19. dashboard/supabase/migrations/0006_v_record_theories.sql
---   20. dashboard/supabase/migrations/0007_v_archive.sql
---   21. dashboard/supabase/migrations/0008_v_archive_flag_gate.sql
---   22. dashboard/supabase/migrations/0009_beat_queue_failed_status.sql
---   23. dashboard/supabase/migrations/0010_v5_public_record.sql
---   24. discord/supabase/seeds/puzzles_seed.sql
---   25. discord/supabase/seeds/seventh_seed.sql
---   26. discord/supabase/seeds/thread_tags.sql
---   27. discord/supabase/seeds/thread_cards.sql
---   28. discord/supabase/seeds/side_quests.sql
---   29. discord/supabase/seeds/hints_seed.sql
---   30. discord/supabase/seeds/metapuzzle_seed.sql
---   31. discord/supabase/seeds/progression_seed.sql
---   32. discord/supabase/seeds/v5_investigations.sql
---   33. discord/supabase/schema-repair.sql
+--   17. discord/supabase/migrations/0016_security_grants.sql
+--   18. dashboard/supabase/migrations/0004_v_record.sql
+--   19. dashboard/supabase/migrations/0005_reconcile_tracker_views.sql
+--   20. dashboard/supabase/migrations/0006_v_record_theories.sql
+--   21. dashboard/supabase/migrations/0007_v_archive.sql
+--   22. dashboard/supabase/migrations/0008_v_archive_flag_gate.sql
+--   23. dashboard/supabase/migrations/0009_beat_queue_failed_status.sql
+--   24. dashboard/supabase/migrations/0010_v5_public_record.sql
+--   25. discord/supabase/seeds/puzzles_seed.sql
+--   26. discord/supabase/seeds/seventh_seed.sql
+--   27. discord/supabase/seeds/thread_tags.sql
+--   28. discord/supabase/seeds/thread_cards.sql
+--   29. discord/supabase/seeds/side_quests.sql
+--   30. discord/supabase/seeds/hints_seed.sql
+--   31. discord/supabase/seeds/metapuzzle_seed.sql
+--   32. discord/supabase/seeds/progression_seed.sql
+--   33. discord/supabase/seeds/v5_investigations.sql
+--   34. discord/supabase/schema-repair.sql
 -- ============================================================================
 
 
@@ -1231,7 +1232,7 @@ create index if not exists idx_answer_attempts_iphash_at
 -- WHOLE `showrunner_state` jsonb row (every high-water mark this codebase's idempotency depends on —
 -- dripped_keys, reported_customs, unlit_deep_last_reported_at, finale_posted, and a dozen more — lives
 -- on this one row). That is the exact read-modify-write clobber `observance_merge_arc_flags` (0006) was
--- built to kill for `arc_state.flags` — but this row never got the same fix. If Render's cron schedule
+-- built to kill for `arc_state.flags` — but this row never got the same fix. If the recovery cron schedule
 -- is ever shorter than a run's worst-case duration (a slow external call — Observer Tier-2's LLM,
 -- Discord's API), two `main()` invocations can genuinely overlap: both read the same stale state, both
 -- decide independently, and whichever writes last silently discards the other's advances — at best a
@@ -1690,7 +1691,7 @@ declare
   v_now timestamptz := now();
 begin
   -- Callback, caller, name, and proof shape are checked before locks or writes. The story callback
-  -- and LS04 gate remain independent requirements; the one-time code does not replace either.
+  -- and LS06 Orientation filing remain independent requirements; the one-time code does not replace either.
   if coalesce(p_discord_id, '') !~ '^[0-9]{5,32}$'
      or coalesce(btrim(p_mc_name), '') !~ '^[A-Za-z0-9_]{3,16}$' then
     return query select 'unknown'::text, null::uuid, null::text, null::text,
@@ -1881,6 +1882,36 @@ $$;
 revoke all on function public.observance_claim_identity_handoff(text,text,text,text)
   from public, anon, authenticated;
 grant execute on function public.observance_claim_identity_handoff(text,text,text,text) to service_role;
+
+commit;
+
+
+-- ============================================================
+-- FILE: discord/supabase/migrations/0016_security_grants.sql
+-- ============================================================
+
+begin;
+
+-- Trigger helpers run through their owning triggers and should not be callable
+-- directly by public API roles. A fixed search path also prevents object-shadowing.
+alter function public.set_updated_at() set search_path = public, pg_temp;
+revoke execute on function public.set_updated_at() from public, anon, authenticated;
+
+-- These functions mutate campaign-wide state. Only the server-side Discord
+-- runtime may invoke them; players use the narrower evidence/identity RPCs.
+revoke execute on function public.observance_merge_arc_flags(jsonb)
+  from public, anon, authenticated;
+revoke execute on function public.showrunner_try_acquire_lock(integer)
+  from public, anon, authenticated;
+revoke execute on function public.showrunner_release_lock()
+  from public, anon, authenticated;
+
+grant execute on function public.observance_merge_arc_flags(jsonb)
+  to service_role;
+grant execute on function public.showrunner_try_acquire_lock(integer)
+  to service_role;
+grant execute on function public.showrunner_release_lock()
+  to service_role;
 
 commit;
 
@@ -6554,7 +6585,7 @@ $$;
 insert into public.settings (key,value,updated_at) values
   ('v5_campaign_version', to_jsonb('v5'::text), now()),
   ('v5_physical_authority_sha256',
-   to_jsonb('85e5db1d8b72e9bcc29f53177b85d6c730564a4b2dfa1878144ed5383b736a90'::text), now())
+   to_jsonb('37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b'::text), now())
 on conflict (key) do update set value=excluded.value, updated_at=excluded.updated_at;
 
 insert into public.investigations
@@ -6564,7 +6595,7 @@ values
   ('C02',2,'The Long Cold','Reconstruct why the refuge was built and how ordinary life worked underground.','c02-long-cold','v5_case_c01_complete','v5_case_c02_complete',6,true),
   ('C03',3,'Keeper Dossiers','Investigate six distinct contemporaries through audits, contradictions, and private affidavits.','c03-keeper-dossiers','v5_case_c02_complete','v5_case_c03_complete',18,true),
   ('C04',4,'Cistern Winter','Clear Nessa by proving the civic record concealed diverted supplies and counterfeit filters.','c04-cistern-winter','v5_case_c03_complete','v5_case_c04_complete',8,true),
-  ('C05',5,'Break Inquest','Use the eight houses of the Unlit to prove that the Break had multiple causes.','c05-break-inquest','v5_case_c04_complete','v5_case_c05_complete',8,true),
+  ('C05',5,'Break Inquest','Use seven house records and the base mirror to prove that the Break had multiple causes.','c05-break-inquest','v5_case_c04_complete','v5_case_c05_complete',8,true),
   ('C06',6,'Restoring the Hold','Repair the refuge systems and earn safe access to the lower works.','c06-restoring-hold','v5_case_c05_complete','v5_case_c06_complete',7,true),
   ('C07',7,'ASH-13 Company','Find the prior camp, reconstruct four real investigators, and recover Ash''s locker key.','c07-ash-13-company','v5_case_c06_complete','v5_case_c07_complete',10,true),
   ('C08',8,'Wren''s Betrayal','Prove what Wren gave the Record and make a finishable moral judgment.','c08-wren-betrayal','v5_case_c07_complete','v5_case_c08_complete',5,true),
@@ -6590,7 +6621,7 @@ values
   ('v5-cw05-counterfeit','C04 / counterfeit invoice',array['false filters','counterfeit filter material','east market supplied false filters','east market supplied counterfeit filter material'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_cw05_counterfeit":true},"node_key":"CW05"}'::jsonb,2,true,8,'phrase','{"v5_cw04_roster":true}'::jsonb),
   ('v5-cw06-reeds','C04 / reeds footage payload',array['where the reeds fold back','the reeds fold back','reeds fold back'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_cw06_reeds":true},"node_key":"CW06"}'::jsonb,2,true,8,'phrase','{"v5_cw05_counterfeit":true}'::jsonb),
   ('v5-cw08-clear-nessa','C04 / Nessa conclusion',array['nessa followed procedure counterfeit filters were hidden','nessa followed procedure diverted counterfeit supplies caused the failure and the hearing hid evidence','nessa followed procedure counterfeit filters caused the failure and the hearing hid evidence'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_case_c04_complete":true},"node_key":"CW08"}'::jsonb,2,true,8,'phrase','{"v5_cw07_cache":true}'::jsonb),
-  ('v5-bi08-break-inquest','C05 / Break synthesis',array['preexisting fracture resource neglect iss secret cut delayed edited response and record feedback','preexisting heat load diverted resources iss cut falsified timing delayed response and record feedback','the break combined preexisting failure diverted resources iss cut falsified timing delayed response and record feedback','preexisting fracture resource neglect hidden cut delayed edited response record feedback'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_case_c05_complete":true},"node_key":"BI08"}'::jsonb,3,true,8,'phrase','{"v5_bi07_threshold":true}'::jsonb),
+  ('v5-bi08-break-inquest','C05 / Break synthesis',array['preexisting fracture resource neglect iss secret cut delayed edited response and record feedback','preexisting heat load diverted resources iss cut falsified timing delayed response and record feedback','the break combined preexisting failure diverted resources iss cut falsified timing delayed response and record feedback','preexisting fracture resource neglect hidden cut delayed edited response record feedback'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_case_c05_complete":true},"node_key":"BI08"}'::jsonb,3,true,8,'phrase','{"v5_bi01_lamp":true,"v5_bi02_cairn":true,"v5_bi03_coop":true,"v5_bi04_well":true,"v5_bi05_watch":true,"v5_bi06_warm":true,"v5_bi07_threshold":true}'::jsonb),
   ('v5-a01-camp-ash','C07 / Camp Ash bearing contradiction',array['the map and supply entry agree wrens distance is false','the map and supply entry agree use wren only to identify which distance is false','the map and supply route agree wren lied about the distance','follow the map and supply entry not wrens distance'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_a01_location":true},"node_key":"A01"}'::jsonb,4,true,8,'phrase','{"v5_case_c06_complete":true}'::jsonb),
   ('v5-a08-ash-13','C07 / Ash footage payload',array['ash 13','ash thirteen'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_a08_ash13":true},"node_key":"A08"}'::jsonb,4,true,8,'code','{"v5_a07_clip1":true}'::jsonb),
   ('v5-a10-sabotage','C07 / prior-company conclusion',array['wren leaked the plan because he feared record closure would erase him','wren leaked the plan because he feared the record would erase him','wren betrayed the company because he feared closing the record would erase him'],'main_beat','{"voice_key":"oracleMainBeat","set_flags":{"v5_case_c07_complete":true},"node_key":"A10"}'::jsonb,4,true,8,'phrase','{"v5_a09_spool":true}'::jsonb),
@@ -6603,15 +6634,22 @@ on conflict (puzzle_key) do update set
   movement=excluded.movement, active=true, max_attempts=excluded.max_attempts,
   answer_kind=excluded.answer_kind, requires_flags=excluded.requires_flags;
 
+-- LS05 and LS06 exchanged order in V5.1. Park any prior rows outside the live ordinal range so
+-- the unique (case_key, ordinal) constraint cannot make an otherwise idempotent cutover fail.
+update public.investigation_nodes
+set ordinal = case node_key when 'LS05' then 500 when 'LS06' then 600 else ordinal end,
+    updated_at = now()
+where case_key = 'C01' and node_key in ('LS05','LS06');
+
 insert into public.investigation_nodes
   (node_key,case_key,ordinal,title,room_id,modality,input_surface,prerequisite_flags,completion_flag,reward,recovery,oracle_puzzle_key)
 values
   ('LS01','C01',1,'Three mundane traces','Copperline and village','deduction','none',array[]::text[],'v5_ls01_traces','service docket plus uploader reference plus expired listing','reopen public traces',null),
   ('LS02','C01',2,'Service 1842 teaching rung','Copperline','cipher','website answer',array['v5_ls01_traces'],'v5_ls02_service_1842','Copperline service page','tiered A1Z26 and rune example',null),
   ('LS03','C01',3,'Ordinary Copperline trail','Copperline','web navigation','none',array['v5_ls02_service_1842'],'v5_ls03_directory_trail','support ticket plus community archive','reopen indexed pages',null),
-  ('LS04','C01',4,'Rebuilt Hold archive','Copperline','cross-media','website archive input',array['v5_ls03_directory_trail'],'v5_ls04_archive_solved','host fragments plus service digits','redownload immutable archive',null),
-  ('LS05','C01',5,'Callback and proof-bound identity','Discord','account handoff','Discord identity link plus in-game proof',array['v5_ls04_archive_solved'],'v5_ls05_bound','durable handoff receipt','reissue receipt from linked account',null),
-  ('LS06','C01',6,'Surface Mouth triangulation','orientation','physical recovery','tagged key deposit',array['v5_ls05_bound'],'v5_case_c01_complete','Orientation Key and C01 receipt','reissue key from completion flag',null),
+  ('LS04','C01',4,'Playable Hold handoff','Copperline and local world','offline investigation','world download',array['v5_ls03_directory_trail'],'v5_ls04_map_handoff','live server address','redownload immutable playable world',null),
+  ('LS06','C01',5,'Surface dispatch filing','orientation','document and item filing','tagged key deposit',array['v5_ls04_map_handoff'],'v5_ls06_relay','Orientation Key and private coordination route','reissue key and replay private route',null),
+  ('LS05','C01',6,'Proof-bound identity','Discord','account handoff','Discord identity link plus in-game proof',array['v5_ls06_relay'],'v5_case_c01_complete','durable handoff receipt','reissue receipt from linked account',null),
   ('LC01','C02',1,'Construction phase overlays','orientation','deduction','item-frame overlay',array['v5_case_c01_complete'],'v5_lc01_phases','phase ordering','reset overlay frames',null),
   ('LC02','C02',2,'Rations population and heat','orientation','forensic comparison','answer sign',array['v5_lc01_phases'],'v5_lc02_rations','correct population and heat estimate','restore source ledgers',null),
   ('LC03','C02',3,'Ordinary life records','orientation','document synthesis','none',array['v5_lc02_rations'],'v5_lc03_daily_life','school market and dwelling receipt','reopen lecterns',null),
@@ -6622,7 +6660,7 @@ values
   ('KV02','C03',2,'Vaun returned-goods sort','keeper_vaun','physical Minecraft','tagged container sort',array['v5_kv01_audit'],'v5_kv02_sort','diverted-filter proof','return wrong deposits',null),
   ('KV03','C03',3,'Vaun private reconciliation','keeper_vaun','traditional cipher','answer sign',array['v5_kv02_sort'],'v5_kv03_affidavit','Vaun sealed affidavit','reissue affidavit from flag',null),
   ('KM01','C03',4,'Mara conflicting editions','keeper_mara','forensic comparison','lectern pages',array['v5_case_c02_complete'],'v5_km01_editions','correct manual edition','restore locked lecterns',null),
-  ('KM02','C03',5,'Mara page-line-word','keeper_mara','traditional cipher','answer sign',array['v5_km01_editions'],'v5_km02_extraction','verified route sequence','tiered index hint',null),
+  ('KM02','C03',5,'Mara shelf-line-word','keeper_mara','traditional cipher','answer sign',array['v5_km01_editions'],'v5_km02_extraction','verified route sequence','reopen six volumes and bare index',null),
   ('KM03','C03',6,'Mara route configuration','keeper_mara','physical Minecraft','bounded route walk',array['v5_km02_extraction'],'v5_km03_affidavit','Mara sealed affidavit','rearm route and reissue affidavit',null),
   ('KS01','C03',7,'Sella reflected bearing','keeper_sella','visual cipher','reflection alignment',array['v5_case_c02_complete'],'v5_ks01_bearing','shoreline bearing','restore overlay and water anchor',null),
   ('KS02','C03',8,'Sella shoreline overlay','keeper_sella','physical Minecraft','item-frame map overlay',array['v5_ks01_bearing'],'v5_ks02_overlay','cistern intake location','reset frames',null),
@@ -6645,17 +6683,17 @@ values
   ('CW07','C04',7,'Original filter cache','archive_water','physical recovery','tagged cache interaction',array['v5_cw06_reeds'],'v5_cw07_cache','original filter plus receipt plus forged report','rebuild cache without duplicating progress',null),
   ('CW08','C04',8,'Clear Nessa','archive_cistern','deduction','Discord conclusion',array['v5_cw07_cache'],'v5_case_c04_complete','Cistern Seal and G2 condition','reissue seal from completion flag','v5-cw08-clear-nessa'),
   ('BI01','C05',1,'Lamp house chronology','unlit_lamp','forensic comparison','house mechanism',array['v5_case_c04_complete'],'v5_bi01_lamp','true outage chronology','reset house evidence',null),
-  ('BI02','C05',2,'Cairn pressure fracture','unlit_cairn','physical observation','tagged fragments',array['v5_bi01_lamp'],'v5_bi02_cairn','pre-breach fracture proof','reissue fragments',null),
-  ('BI03','C05',3,'Coop warning failure','unlit_coop','deduction','item arrangement',array['v5_bi02_cairn'],'v5_bi03_coop','bird-failure timing','restore tagged evidence',null),
-  ('BI04','C05',4,'Well reflection map','unlit_well','visual overlay','reflection and frames',array['v5_bi03_coop'],'v5_bi04_well','pressure-map alignment','reset overlay',null),
-  ('BI05','C05',5,'Watch house timestamp','unlit_watch','logic deduction','answer sign',array['v5_bi04_well'],'v5_bi05_watch','altered-watch proof','reopen rota',null),
-  ('BI06','C05',6,'Warm house surface proof','unlit_warm','forensic comparison','tagged sample deposit',array['v5_bi05_watch'],'v5_bi06_warm','healed-surface proof','reissue sample',null),
-  ('BI07','C05',7,'Threshold house inside seal','unlit_threshold','spatial deduction','bounded group walk',array['v5_bi06_warm'],'v5_bi07_threshold','multi-cause sequence','rearm route',null),
-  ('BI08','C05',8,'Base mirror synthesis','unlit_base','cross-source deduction','Discord conclusion',array['v5_bi07_threshold'],'v5_case_c05_complete','Breach Plate and Deep Line open','reissue plate from completion flag','v5-bi08-break-inquest'),
+  ('BI02','C05',2,'Cairn pressure fracture','unlit_cairn','physical observation','tagged fragments',array['v5_case_c04_complete'],'v5_bi02_cairn','pre-breach fracture proof','reissue fragments',null),
+  ('BI03','C05',3,'Coop warning failure','unlit_coop','deduction','item arrangement',array['v5_case_c04_complete'],'v5_bi03_coop','bird-failure timing','restore tagged evidence',null),
+  ('BI04','C05',4,'Well reflection map','unlit_well','visual overlay','reflection and frames',array['v5_case_c04_complete'],'v5_bi04_well','pressure-map alignment','reset overlay',null),
+  ('BI05','C05',5,'Watch house timestamp','unlit_watch','logic deduction','answer sign',array['v5_case_c04_complete'],'v5_bi05_watch','altered-watch proof','reopen rota',null),
+  ('BI06','C05',6,'Warm house surface proof','unlit_warm','forensic comparison','tagged sample deposit',array['v5_case_c04_complete'],'v5_bi06_warm','healed-surface proof','reissue sample',null),
+  ('BI07','C05',7,'Threshold house inside seal','unlit_threshold','spatial deduction','bounded group walk',array['v5_case_c04_complete'],'v5_bi07_threshold','multi-cause sequence','rearm route',null),
+  ('BI08','C05',8,'Base mirror synthesis','unlit_base','cross-source deduction','Discord conclusion',array['v5_bi01_lamp','v5_bi02_cairn','v5_bi03_coop','v5_bi04_well','v5_bi05_watch','v5_bi06_warm','v5_bi07_threshold'],'v5_case_c05_complete','Breach Plate and Deep Line open','reissue plate from completion flag','v5-bi08-break-inquest'),
   ('HS01','C06',1,'Recover filter cartridge','puzzle_works','physical recovery','tagged item claim',array['v5_case_c05_complete','v5_case_c04_complete'],'v5_hs01_filter','Filter Cartridge','reissue cartridge',null),
   ('HS02','C06',2,'Install cistern cartridge','puzzle_works','physical Minecraft','exact tagged deposit',array['v5_hs01_filter'],'v5_hs02_installed','restored water state','return wrong deposits',null),
-  ('HS03','C06',3,'Restore lamp circuit','puzzle_works','physical Minecraft','item-frame lamp states',array['v5_hs02_installed'],'v5_hs03_lamps','lit service lane','reset frames without clearing solve',null),
-  ('HS04','C06',4,'Calibrate pressure register','puzzle_works','physical Minecraft','chiseled-bookshelf pattern',array['v5_hs03_lamps'],'v5_hs04_pressure','pressure calibration','restore shelf slots',null),
+  ('HS03','C06',3,'Read the fixed lamp circuit','puzzle_works','traditional cipher','answer sign',array['v5_hs02_installed'],'v5_hs03_lamps','lit service lane','reopen fixed panel and service manual',null),
+  ('HS04','C06',4,'Find the pressure bypass','puzzle_works','document comparison','answer sign',array['v5_hs03_lamps'],'v5_hs04_pressure','pressure calibration','reopen gauge register and service note',null),
   ('HS05','C06',5,'Set survey dials','lower_works','physical Minecraft','item-frame dials',array['v5_hs04_pressure'],'v5_hs05_dials','alignment receipt','reset frame rotations',null),
   ('HS06','C06',6,'Walk painted pressure line','lower_works','embodied sequence','bounded route walk',array['v5_hs05_dials'],'v5_hs06_passage','System Key and service passage','rearm route and reissue key',null),
   ('HS07','C06',7,'System synchronization','lower_works','composite meta','tagged key console',array['v5_hs06_passage'],'v5_case_c06_complete','Deep Access Plate and G4 open','reissue plate from completion flag',null),
@@ -6709,9 +6747,9 @@ from (values
   ('LS01','website','route_receipt','copperline_traces','v5_ls01_traces','idempotent'),
   ('LS02','website','answer_resolver','copperline_service_1842','v5_ls02_service_1842','idempotent'),
   ('LS03','website','route_receipt','copperline_directory','v5_ls03_directory_trail','idempotent'),
-  ('LS04','website','archive_resolver','copperline_world_backup','v5_ls04_archive_solved','idempotent'),
-  ('LS05','discord','identity_link','discord_link','v5_ls05_bound','idempotent'),
-  ('LS06','plugin','tagged_deposit','forgotten_mouth','v5_case_c01_complete','return_wrong_and_idempotent'),
+  ('LS04','website','world_download','copperline_world_backup','v5_ls04_map_handoff','idempotent'),
+  ('LS06','plugin','tagged_deposit','forgotten_mouth','v5_ls06_relay','return_wrong_and_idempotent'),
+  ('LS05','discord','identity_link','discord_link','v5_case_c01_complete','idempotent'),
   ('LC01','plugin','item_frame_overlay','orientation_register','v5_lc01_phases','idempotent_state_match'),
   ('LC02','plugin','answer_sign','offering_cairn_01','v5_lc02_rations','oracle_idempotent'),
   ('LC03','plugin','source_inspection','orientation_register','v5_lc03_daily_life','idempotent_receipt'),
@@ -6754,8 +6792,8 @@ from (values
   ('BI08','discord','conclusion_resolver','discord_answer','v5_case_c05_complete','artifact_idempotent'),
   ('HS01','plugin','tagged_item_claim','dead_stall','v5_hs01_filter','artifact_idempotent'),
   ('HS02','plugin','exact_tagged_deposit','offering_cairn_01','v5_hs02_installed','return_wrong_and_idempotent'),
-  ('HS03','plugin','item_frame_lamps','lampworks_stair','v5_hs03_lamps','idempotent_state_match'),
-  ('HS04','plugin','chiseled_bookshelf_pattern','third_lamp_stand','v5_hs04_pressure','idempotent_state_match'),
+  ('HS03','plugin','answer_sign','lampworks_stair','v5_hs03_lamps','oracle_idempotent'),
+  ('HS04','plugin','answer_sign','third_lamp_stand','v5_hs04_pressure','oracle_idempotent'),
   ('HS05','plugin','item_frame_dials','orin_frame_dial_1','v5_hs05_dials','idempotent_state_match'),
   ('HS06','plugin','bounded_route','painted_line','v5_hs06_passage','artifact_idempotent'),
   ('HS07','plugin','tagged_key_console','stone_of_reckoning','v5_case_c06_complete','artifact_idempotent'),

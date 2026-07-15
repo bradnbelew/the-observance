@@ -33,14 +33,23 @@ const requiredFiles = [
   'dashboard/content/the-hold-v5/the-hold.zip',
   'dashboard/content/the-hold-v5/the-hold.sha1',
   'dashboard/content/the-hold-v5/archive-manifest.tsv',
-  'dashboard/content/the-hold-v5/relay-route.svg',
+  'dashboard/content/the-hold-v5/README-FIRST.txt',
+  'dashboard/public/evidence/copperline/camp-frame-06.png',
+  'dashboard/public/evidence/copperline/locker-detail-13.png',
+  'tools/build_hold_prologue.py',
 ];
 for (const path of requiredFiles) if (!existsSync(resolve(repo, path))) issues.push(`missing V5 web artifact: ${path}`);
+const publicHoldDirectory = resolve(repo, 'dashboard/public/the-hold');
+if (existsSync(publicHoldDirectory)) issues.push('V5 archive bypass directory remains directly public');
 for (const path of [
-  'dashboard/public/the-hold/the-hold.zip',
-  'dashboard/public/the-hold/the-hold.sha1',
+  'dashboard/content/the-hold-v5/relay-route.svg',
+  'dashboard/content/the-hold-v5/service-1842.txt',
+  'dashboard/content/the-hold-v5/work-orders/A-copper.txt',
+  'dashboard/content/the-hold-v5/work-orders/B-line.txt',
+  'dashboard/content/the-hold-v5/work-orders/C-hosting.txt',
+  'dashboard/content/the-hold-v5/work-orders/D-dot-com.txt',
 ]) {
-  if (existsSync(resolve(repo, path))) issues.push(`V5 archive bypass remains directly public: ${path}`);
+  if (existsSync(resolve(repo, path))) issues.push(`retired diagnostic artifact remains: ${path}`);
 }
 
 const record = read('dashboard/src/app/record/[slug]/page.tsx');
@@ -56,6 +65,7 @@ const nextConfig = read('dashboard/next.config.mjs');
 const caseSeed = read('discord/supabase/seeds/v5_investigations.sql');
 const dashboardEnv = read('dashboard/.env.example');
 const dashboardReadme = read('dashboard/README.md');
+const holdBuilder = read('tools/build_hold_prologue.py');
 const dashboardPackage = JSON.parse(read('dashboard/package.json')) as {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
@@ -70,22 +80,46 @@ for (const required of ['v_required_media_delivery', 'only earned evidence is in
 for (const required of ['82', '10 cases', 'this docket is read-only', 'a typed minecraft name is not an identity credential', 'no closeness response']) {
   if (!terminal.includes(required)) issues.push(`Terminal missing V5 contract: ${required}`);
 }
-for (const required of ['Ticket #9137', '/community/2011/02/08/world-backup/']) {
+for (const required of ['Ticket #9137', '/community/2011/02/08/world-backup/', 'single-player recovery image']) {
   if (!support.includes(required)) issues.push(`Copperline ticket trail missing contract: ${required}`);
 }
-for (const required of ['diagnostic export', 'not contain a playable world', 'V5_HOLD_ARCHIVE_DOWNLOAD_PATH', 'name="host"', 'name="callback"', 'name="route"', "'copperline_world_backup'"]) {
-  if (!community.includes(required)) issues.push(`Copperline archive post missing corrected copy: ${required}`);
+for (const required of ['Java Edition 1.21.11 world', 'V5_HOLD_ARCHIVE_DOWNLOAD_PATH', "readV5CompletionFlag('v5_ls03_directory_trail')", 'Download world']) {
+  if (!community.includes(required)) issues.push(`Copperline playable-world post missing contract: ${required}`);
 }
-for (const required of ['/obslink', '/link YourExactMinecraftUsername CallbackFromArchive OneTimeCode', 'readV5CompletionFlag', 'v5_ls04_archive_solved']) {
-  if (!remoteRoom.includes(required)) issues.push(`Copperline remote room missing handoff contract: ${required}`);
+for (const retired of ['diagnostic export', 'not contain a playable world', 'archive-resolver', 'name="host"', 'name="callback"', 'name="route"', '/community/remote-room.php']) {
+  if (community.includes(retired)) issues.push(`Copperline playable-world post retains retired resolver copy: ${retired}`);
 }
-if (remoteRoom.includes('recordV5WebSequence')) issues.push('Copperline remote room still owns progression instead of remaining read-only');
-for (const required of ["params.service === '1842'", "params.ticket === '9137'", "params.locker === '13'", 'https://youtu.be/du-qp_clP7c', "['A06']", "'copperline_archive_route'", "['A07']", "'clip_01_ash_locker'"]) {
+if (!remoteRoom.includes('return <MissingArchiveEntry />')) issues.push('Copperline remote room is not a permanent fail-closed tombstone');
+for (const forbidden of ['DISCORD_INVITE_URL', 'safeDiscordInvite', 'discord.gg', 'discord.com/invite', 'readV5CompletionFlag', 'recordV5WebSequence', '/obslink']) {
+  if (remoteRoom.includes(forbidden)) issues.push(`Copperline remote room can still expose or advance the retired handoff: ${forbidden}`);
+}
+for (const required of [
+  "params.service === '1842'",
+  "params.ticket === '9137'",
+  "params.locker === '13'",
+  'https://youtu.be/du-qp_clP7c',
+  "['A06']",
+  "'copperline_archive_route'",
+  "['A07']",
+  "'clip_01_ash_locker'",
+  "image_ids: ['camp_frame_06', 'locker_detail_13']",
+  '/evidence/copperline/camp-frame-06.png',
+  '/evidence/copperline/locker-detail-13.png',
+]) {
   if (!priorArchive.includes(required)) issues.push(`A06 exact archive route missing contract: ${required}`);
 }
 
 const publicCopy = `${record}\n${archive}\n${terminal}\n${support}\n${community}\n${remoteRoom}\n${priorArchive}`.toLowerCase();
-for (const stale of ['seventh:', 'six plus one', 'type <code>kept</code>', 'optional side']) {
+for (const stale of [
+  'seventh:',
+  'six plus one',
+  'type <code>kept</code>',
+  'optional side',
+  'diagnostic export',
+  'field relay destination check',
+  'callbackfromarchive',
+  'remote room recovered',
+]) {
   if (publicCopy.includes(stale)) issues.push(`public V5 copy retains retired phrase: ${stale}`);
 }
 
@@ -94,6 +128,11 @@ for (const required of [
   'revalidate = 0',
   "readV5CompletionFlag('v5_ls03_directory_trail')",
   'readValidatedV5HoldArchive',
+  'recordV5WebSequence',
+  "['LS04']",
+  "'copperline_world_backup'",
+  "handler: 'world_download'",
+  'if (!handoff.complete) return genericNotFound()',
   'genericNotFound()',
   'status: 404',
   "'Cache-Control': 'private, no-store, max-age=0, must-revalidate'",
@@ -101,8 +140,8 @@ for (const required of [
 ]) {
   if (!holdDownloadRoute.includes(required)) issues.push(`gated Hold download missing contract: ${required}`);
 }
-if (holdDownloadRoute.includes('v5_ls04_archive_solved')) {
-  issues.push('Hold download incorrectly requires LS04 even though LS04 depends on the archive');
+if (holdDownloadRoute.includes("readV5CompletionFlag('v5_ls04")) {
+  issues.push('Hold download incorrectly requires LS04 before its first successful response');
 }
 for (const required of ["'content', 'the-hold-v5'", "createHash('sha1')", 'SHA1_PATTERN']) {
   if (!holdArchiveHelper.includes(required)) issues.push(`private Hold archive helper missing contract: ${required}`);
@@ -113,17 +152,57 @@ for (const required of ['./content/the-hold-v5/the-hold.zip', './content/the-hol
 }
 
 const zipPath = resolve(repo, 'dashboard/content/the-hold-v5/the-hold.zip');
-if (existsSync(zipPath) && statSync(zipPath).size < 1_000) issues.push('V5 diagnostic archive is suspiciously small');
+if (existsSync(zipPath) && statSync(zipPath).size < 8_000) issues.push('V5 playable world is suspiciously small');
 if (existsSync(zipPath)) {
   const actualSha1 = createHash('sha1').update(readFileSync(zipPath)).digest('hex');
   const declaredSha1 = read('dashboard/content/the-hold-v5/the-hold.sha1').trim().split(/\s+/)[0];
-  if (actualSha1 !== declaredSha1) issues.push(`V5 diagnostic archive SHA-1 mismatch: ${declaredSha1} != ${actualSha1}`);
+  if (actualSha1 !== declaredSha1) issues.push(`V5 playable-world SHA-1 mismatch: ${declaredSha1} != ${actualSha1}`);
 }
 const archiveManifest = read('dashboard/content/the-hold-v5/archive-manifest.tsv');
-for (const name of ['mkept', 'Rook', 'Ash', 'Wren']) if (!archiveManifest.includes(name)) issues.push(`V5 diagnostic archive manifest missing ${name}`);
+for (const required of ['the-hold.zip', 'Minecraft Java single-player recovery image', 'the-hold.sha1', 'README-FIRST.txt']) {
+  if (!archiveManifest.includes(required)) issues.push(`V5 playable-world manifest missing ${required}`);
+}
 const archiveReadme = read('dashboard/content/the-hold-v5/README-FIRST.txt');
-for (const required of ['host fragments', 'relay-route.svg', '/obslink', '/link', 'one-time code', 'not a website password']) if (!archiveReadme.includes(required)) issues.push(`V5 diagnostic README missing ${required}`);
-for (const required of ['A-copper.txt', 'B-line.txt', 'C-hosting.txt', 'D-dot-com.txt']) if (!archiveManifest.includes(required)) issues.push(`V5 diagnostic archive host fragment missing ${required}`);
+for (const required of ['Minecraft Java single-player world', 'Minecraft Java Edition 1.21.11', 'No client mods or resource pack']) {
+  if (!archiveReadme.includes(required)) issues.push(`V5 playable-world README missing ${required}`);
+}
+for (const required of [
+  '3-6-2',
+  '1-4-3',
+  '4-2-1',
+  '2-5-4',
+  'Relay tag OI',
+  'Fault moved to Z',
+  'Socket SN failed',
+  'KER line stable',
+  'RETURN 2',
+  'RETURN 5',
+  'RETURN 6',
+  'RETURN 9',
+  'standard host/service separator',
+]) {
+  if (!holdBuilder.includes(required)) issues.push(`playable Hold builder missing evidence contract: ${required}`);
+}
+if (/\b[a-z0-9.-]+\.(?:com|net|org|gg|io)\s*:\s*\d{2,5}\b/i.test(holdBuilder)) {
+  issues.push('playable Hold builder exposes the assembled server endpoint');
+}
+
+for (const [path, label] of [
+  ['dashboard/public/evidence/copperline/camp-frame-06.png', 'camp frame 06'],
+  ['dashboard/public/evidence/copperline/locker-detail-13.png', 'locker detail 13'],
+] as const) {
+  const absolute = resolve(repo, path);
+  if (!existsSync(absolute)) continue;
+  const bytes = readFileSync(absolute);
+  if (bytes.length < 100_000) issues.push(`${label} PNG is suspiciously small`);
+  if (bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') {
+    issues.push(`${label} is not a valid PNG`);
+    continue;
+  }
+  const width = bytes.readUInt32BE(16);
+  const height = bytes.readUInt32BE(20);
+  if (width !== 1448 || height !== 1086) issues.push(`${label} dimensions drifted: ${width}x${height}`);
+}
 
 for (const media of REQUIRED_MEDIA) {
   for (const value of [media.key, media.url, media.canonicalFilename, media.sha1, media.payload]) {
@@ -154,13 +233,23 @@ if (!webProgress.includes('prerequisites not satisfied')) issues.push('website r
 if (!caseSeed.includes("('A06','C07',6,'Copperline archive route'") || !caseSeed.includes("array['v5_a05_overlay'],'v5_a06_route'")) {
   issues.push('A06 is not gated on the earned A05 overlay');
 }
+for (const required of [
+  "('LS04','C01',4,'Playable Hold handoff'",
+  "'world download',array['v5_ls03_directory_trail'],'v5_ls04_map_handoff'",
+  "('LS06','C01',5,'Surface dispatch filing'",
+  "'tagged key deposit',array['v5_ls04_map_handoff'],'v5_ls06_relay'",
+  "('LS05','C01',6,'Proof-bound identity'",
+  "array['v5_ls06_relay'],'v5_case_c01_complete'",
+]) {
+  if (!caseSeed.includes(required)) issues.push(`C01 website-to-Minecraft handoff drift: ${required}`);
+}
 
 for (const stale of ['relayCallbackMatches', 'relay-form', '/support/ticket.php?id=1851', "'recovered-archive'", 'v5-ls05-callback']) {
   if (`${support}\n${remoteRoom}\n${caseSeed}`.includes(stale)) issues.push(`retired Copperline/media surface remains: ${stale}`);
 }
 
 const expectedVercelEnv = [
-  'ADMIN_EMAILS', 'AUTHOR_PASSWORD', 'AUTHOR_USERNAME', 'DISCORD_INVITE_URL',
+  'ADMIN_EMAILS', 'AUTHOR_PASSWORD', 'AUTHOR_USERNAME',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY',
 ].sort();
 const vercelEnvKeys = [...dashboardEnv.matchAll(/^([A-Z][A-Z0-9_]+)=/gm)].map((match) => match[1]!).sort();
@@ -168,6 +257,9 @@ if (JSON.stringify(vercelEnvKeys) !== JSON.stringify(expectedVercelEnv)) {
   issues.push(`Vercel .env.example drift: ${vercelEnvKeys.join(',')}`);
 }
 for (const key of expectedVercelEnv) if (!dashboardReadme.includes(key)) issues.push(`dashboard README omits Vercel variable ${key}`);
+if (dashboardEnv.includes('DISCORD_INVITE_URL') || dashboardReadme.includes('DISCORD_INVITE_URL')) {
+  issues.push('dashboard still configures the Discord invite before Minecraft LS06');
+}
 for (const [name, expected] of Object.entries({
   next: '16.2.10', react: '19.2.7', 'react-dom': '19.2.7',
   'eslint-config-next': '16.2.10', eslint: '9.39.5',
@@ -182,4 +274,4 @@ if (issues.length > 0) {
   for (const issue of issues) console.error(`  - ${issue}`);
   process.exit(1);
 }
-console.log('webaudit: OK - Copperline handoff, V5 Record, earned archive, terminal, and fixed media are coherent');
+console.log('webaudit: OK - playable Hold handoff, LS06-owned Discord reveal, V5 Record, earned archive stills, and media are coherent');

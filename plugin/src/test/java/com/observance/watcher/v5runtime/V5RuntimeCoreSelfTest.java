@@ -30,6 +30,7 @@ public final class V5RuntimeCoreSelfTest {
         PhysicalPredicateAuthority authority = authorityAndCatalogParity();
         normalizationContract();
         fixtureTransforms();
+        filingGroupSelection();
         leaseAndMutexPrimitives();
         conductVerdictTotality();
         atomicProgressReloadCasAndCorruption(authority);
@@ -121,6 +122,32 @@ public final class V5RuntimeCoreSelfTest {
         spawnAnchors.forEach((facing, anchor) -> check(
                 anchor.equals(FixtureTransform.frameSpawnAnchor(origin, facing)),
                 "Paper hanging spawn anchor " + facing));
+    }
+
+    private static void filingGroupSelection() {
+        UUID deskWorld = UUID.randomUUID();
+        UUID otherWorld = UUID.randomUUID();
+        UUID actor = UUID.randomUUID();
+        UUID nearby = UUID.randomUUID();
+        UUID boundary = UUID.randomUUID();
+        UUID far = UUID.randomUUID();
+        UUID offline = UUID.randomUUID();
+        UUID elsewhere = UUID.randomUUID();
+        Set<UUID> selected = FilingGroupSelector.select(
+                new FilingGroupSelector.Point(deskWorld, 10.5, 64.5, 20.5),
+                16.0,
+                List.of(
+                        new FilingGroupSelector.Presence(actor, deskWorld, 10.5, 64.5, 20.5, true),
+                        new FilingGroupSelector.Presence(nearby, deskWorld, 15.5, 64.5, 20.5, true),
+                        new FilingGroupSelector.Presence(boundary, deskWorld, 26.5, 64.5, 20.5, true),
+                        new FilingGroupSelector.Presence(far, deskWorld, 26.6, 64.5, 20.5, true),
+                        new FilingGroupSelector.Presence(offline, deskWorld, 10.5, 64.5, 20.5, false),
+                        new FilingGroupSelector.Presence(elsewhere, otherWorld, 10.5, 64.5, 20.5, true)));
+        check(selected.equals(Set.of(actor, nearby, boundary)),
+                "LS06 filing handoff reaches every online player present at the desk only");
+        check(FilingGroupSelector.select(
+                        new FilingGroupSelector.Point(deskWorld, 0, 0, 0), 0, List.of()).isEmpty(),
+                "LS06 filing handoff fails closed for an invalid radius");
     }
 
     private static void leaseAndMutexPrimitives() throws Exception {
@@ -237,7 +264,7 @@ public final class V5RuntimeCoreSelfTest {
                     EscrowStatus.HELD,
                     Map.of("reason", "disconnect_return"));
             store.transact(editor -> {
-                editor.setBooleanTrue("v5_ls05_bound");
+                editor.setBooleanTrue("v5_ls04_map_handoff");
                 for (PlayerBitDomain domain : PlayerBitDomain.values()) {
                     editor.addPlayerBit(playerId, domain, "bit_" + domain.name().toLowerCase());
                 }

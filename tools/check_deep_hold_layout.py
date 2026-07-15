@@ -92,17 +92,32 @@ def main() -> int:
 
     require(plan, "spatial plan", (
         "MIN_SURFACE_COVER = 12", "MIN_BOTTOM_BUFFER = 12", "MIN_Y = -104",
-        "MAX_Z = 378", 'new Link("unwriting", "release")',
+        "MIN_X = -76", "MAX_X = 76", "MAX_Z = 233",
+        'GEOMETRY_REVISION = "v5-compact-natural-2026-07-15"',
+        "compactX", "compactZ", 'new Link("unwriting", "release")',
         'new Gate("g1"', 'new Gate("g6"', 'new Gate("prior"', 'new Gate("dread"',
         "public static List<String> validate()", "overlapsOwnership", "unreachable rooms",
         "v5_case_c02_complete", "v5_case_c09_complete",
     ), failures)
     require(geometry, "geometry builder", (
-        "buildSurfaceMouthAndGrandStair", "buildRoomShell", "carveAuthoredCirculation",
-        "buildUpperToCivicSwitchback", "buildCivicToLowerSwitchback", "dressRoom",
-        "dressKeeperNave", "dressArchiveNave", "dressPuzzleWorks", "dressLowerWorks",
-        "dressAccepting", "dressCoda", "buildGatehouse", "finishSurfaceMouth",
+        "NATURAL_ZONES", "buildSurfaceMouthAndGrandStair", "buildNaturalZone",
+        "carveNaturalCirculation", "dressNaturalDistricts", "neutralizeSupersededShell",
+        "assertCompactWritesFrom", "replacingSupersededShell", "buildGatehouse",
+        "finishSurfaceMouth",
     ), failures)
+    if len(re.findall(r"new PhysicalZone\(", geometry)) != 11:
+        failures.append("compact geometry must declare exactly 11 shared natural zones plus Orientation")
+    plan_start = geometry.find("public static BuildPlan plan(")
+    plan_end = geometry.find("/** Compatibility path", plan_start)
+    active_builder = geometry[plan_start:plan_end] if plan_start >= 0 and plan_end > plan_start else ""
+    if not active_builder:
+        failures.append("could not isolate active compact geometry plan")
+    for retired_call in (
+        "carveAuthoredCirculation();", "dressRoom(room);",
+        "for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) builder.buildRoomShell(room);",
+    ):
+        if retired_call in active_builder:
+            failures.append(f"active geometry plan still invokes retired sprawling builder: {retired_call}")
     require(manifest, "V5 manifest", (
         'CANONICAL_ORIENTATION = "+Z"', "EXPECTED_ROOMS = 32", "EXPECTED_FIXTURES = 76",
         "EXPECTED_GATES = 8", "EXPECTED_NODES = 82", "EXPECTED_BOOKS = 44",
@@ -120,7 +135,8 @@ def main() -> int:
     require(command, "operator runtime", (
         "DeepHoldV5Manifest.validate()", "DeepHoldV5Manifest.contentHash()",
         "handlePlaceHoldPlan", "startDeepHoldV5Build", "finishDeepHoldV5Build", "auditV4OpenRoute",
-        "handlePlaceHoldRepair", "item recover", "finale",
+        "handlePlaceHoldRepair", 'state.setProperty("geometry-revision"',
+        'state.setProperty("replacement-cutover"', "item recover", "finale",
     ), failures)
     require(protection, "Hold protection", (
         "HOLD_REGION_TYPE", "insideHold", "BlockBreakEvent", "BlockPlaceEvent",
@@ -146,7 +162,8 @@ def main() -> int:
             print("  FAIL " + failure)
         return 1
     print("  32 rooms / 76 fixtures / 8 persistent gates / 7 Record stations")
-    print("  fixed +Z Mouth, three buried strata, complete reverse route, V5 authority and recovery wired")
+    print("  fixed +Z Mouth, compact +/-76 by Z233 footprint, 12 shared spaces, complete reverse route")
+    print("  legacy-shell replacement, restart-safe checkpointing, V5 authority and recovery wired")
     return 0
 
 

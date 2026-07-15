@@ -86,14 +86,17 @@ The exact lead, evidence, input, output, hint, recovery, room, and surface for e
 ## Physical progression
 
 ```text
-Copperline / village leads
+Copperline traces / service 1842
+  -> retained Java world / reconstruct live server endpoint
+  -> live server Orientation filing / receive Discord invitation
+  -> proof-bound Discord identity
   -> village Surface Mouth
   -> Grand Stair / Orientation
   -> G1 Keeper Court
   -> G2 Civic Archive
   -> Cistern Winter
-  -> village well / eight-house Unlit inquest
-  -> G3 Puzzle Works
+  -> village well / seven Unlit houses in any order / base mirror
+  -> G3 Service Works
   -> G4 Threshold
   -> ASH-13 camp + mandatory Dread evidence
   -> Wren reckoning
@@ -126,7 +129,8 @@ V5 intentionally rotates interaction grammar:
 - Discord conclusions for cross-source deductions and media payloads.
 - Editable answer signs only where a physical filing slit or work form makes sense.
 - PDC-tagged items deposited into exact protected containers.
-- Item-frame and bookshelf states for stable equipment configuration.
+- Fixed instrument panels and document comparison for routine diagnostics.
+- Limited protected dials or shelf states only where the setting represents real equipment or records.
 - Bounded route walks, group posture, and collective presence.
 - Opened service paths that reveal a tangible key, seal, plate, spool, or affidavit.
 
@@ -172,7 +176,7 @@ A failed plan changes nothing. A failed build never prints a success receipt. Th
 
 Non-admin players cannot break/place ordinary blocks, burn or explode fixtures, piston-move authored blocks, drain water, remove lectern books, destroy frames/displays/armor stands, equip protected entities, place vehicles/hangings, hopper-transfer protected evidence, or bypass a gate with pearls/teleports.
 
-Only a puzzle's exact listener may exempt an exact cell or inventory action. Broad proximity exceptions are forbidden.
+Only a node's declared handler may exempt an exact cell or inventory action. Broad proximity exceptions are forbidden.
 
 Required scenario coverage includes:
 
@@ -224,5 +228,5 @@ The ARG is ready only when all of these are true:
 - plugin, Discord, dashboard, SQL bundle, resource pack, datapack, and exact-Paper tests pass from clean builds;
 - no stale Observance jar or old Hold ZIP ships in the release bundle;
 - a real client has completed the full route and all backtracking, text, hitbox, crowding, lighting, audio-redundancy, and finale checks;
-- production database, Render worker, Vercel deployment, DNS, Discord commands, Minecraft world, NPC coordinates, and secret names are verified in the launch runbook;
+- production database, Railway worker/cron, Vercel deployment, DNS, Discord commands, Minecraft world, NPC coordinates, and secret names are verified in the launch runbook;
 - the final artifact hashes are recorded and the selected build is committed and pushed to `main`.

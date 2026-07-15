@@ -5,7 +5,7 @@
 -- WHOLE `showrunner_state` jsonb row (every high-water mark this codebase's idempotency depends on —
 -- dripped_keys, reported_customs, unlit_deep_last_reported_at, finale_posted, and a dozen more — lives
 -- on this one row). That is the exact read-modify-write clobber `observance_merge_arc_flags` (0006) was
--- built to kill for `arc_state.flags` — but this row never got the same fix. If Render's cron schedule
+-- built to kill for `arc_state.flags` — but this row never got the same fix. If the recovery cron schedule
 -- is ever shorter than a run's worst-case duration (a slow external call — Observer Tier-2's LLM,
 -- Discord's API), two `main()` invocations can genuinely overlap: both read the same stale state, both
 -- decide independently, and whichever writes last silently discards the other's advances — at best a

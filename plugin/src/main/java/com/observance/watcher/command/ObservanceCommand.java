@@ -925,15 +925,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     };
 
     private static final HoldGate[] DEEP_HOLD_GATES = {
-            new HoldGate("keeper", 0, -40, 157, false, "G1 rosetta"),
-            new HoldGate("archive", 0, -40, 251, false, "G2 investigation"),
-            new HoldGate("undercroft", 0, -68, 99, false, "G3 undercroft"),
-            new HoldGate("deep", 0, -96, 111, false, "G4 deep"),
-            new HoldGate("prior", -80, -96, 156, false, "prior camp"),
-            new HoldGate("dread", 72, -96, 132, false, "dread procession"),
-            new HoldGate("accepting", 0, -96, 223, false, "G5 accepting"),
-            new HoldGate("coda", 0, -96, 295, false, "G6 coda"),
+            compactHoldGate("g1", "keeper", "G1 rosetta"),
+            compactHoldGate("g2", "archive", "G2 investigation"),
+            compactHoldGate("g3", "undercroft", "G3 undercroft"),
+            compactHoldGate("g4", "deep", "G4 deep"),
+            compactHoldGate("prior", "prior", "prior camp"),
+            compactHoldGate("dread", "dread", "dread procession"),
+            compactHoldGate("g5", "accepting", "G5 accepting"),
+            compactHoldGate("g6", "coda", "G6 coda"),
     };
+
+    private static HoldGate compactHoldGate(String planId, String runtimeId, String label) {
+        DeepHoldV4Plan.Gate plan = DeepHoldV4Plan.GATES.stream()
+                .filter(gate -> planId.equals(gate.id())).findFirst()
+                .orElseThrow(() -> new IllegalStateException("missing compact gate " + planId));
+        return new HoldGate(runtimeId, plan.x(), plan.y(), plan.z(), false, label);
+    }
 
     private static final HoldRecordStation[] DEEP_HOLD_RECORD_STATIONS = {
             new HoldRecordStation("mouth_register", 10, -24, 76, BlockFace.WEST,
@@ -1106,10 +1113,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "darken", "scrub" -> handleUnlitDarken(sender, args);
             case "buildmode", "build" -> handleUnlitBuildMode(sender, args);
             case "clue" -> handleUnlitClue(sender, args);
-            case "pass" -> handleUnlitPass(sender, args);
+            case "pass" -> sender.sendMessage(
+                    "Observance V5: /obs unlit pass is retired and made no changes. Use /obs unlit ready.");
             case "repair" -> handleUnlitRepair(sender);
             case "ready", "playtest" -> handleUnlitReady(sender);
-            default -> sender.sendMessage("Usage: /observance unlit <site|clue|pass|repair|audit|darken|border|buildmode|ready>");
+            default -> sender.sendMessage("Usage: /observance unlit <site|clue|repair|audit|darken|border|buildmode|ready>");
         }
     }
 
@@ -1157,70 +1165,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         recordUnlitOrientation(player.getLocation(), siteId);
         sender.sendMessage("Observance: stamped " + unlitShortId(siteId) + " clue fixture. " + note);
         reconcileUnlitWhenComplete(sender);
-    }
-
-    private void handleUnlitPass(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("Observance: /observance unlit pass must be run by a player at the test rig origin.");
-            return;
-        }
-        String variant = args.length > 2 ? args[2].toLowerCase(Locale.ROOT).trim() : "light";
-        if (variant.isBlank()) variant = "light";
-        Location base = player.getLocation().getBlock().getLocation();
-        if (base.getWorld() == null) {
-            sender.sendMessage("Observance: could not resolve your world.");
-            return;
-        }
-        String unlitWorld = plugin.getConfig().getString("unlit.world", "observance_unlit");
-        if (!base.getWorld().getName().equals(unlitWorld)) {
-            sender.sendMessage("Note: this pass is best staged inside " + unlitWorld
-                    + "; the Unlit runtime only pressures players in that world.");
-        }
-
-        switch (variant) {
-            case "light", "dark", "damage" -> {
-                buildUnlitPassLane(base, 14);
-                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
-                registerUnlitSite(base.clone().add(6, 0, 0), "unlit_safe_01", "unlit_safe", 4, 4);
-                registerUnlitSite(base.clone().add(14, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
-                setBlock(base.clone().add(6, 0, 1), Material.SOUL_LANTERN);
-                placeStandingSign(base.clone().add(1, 0, 1), BlockFace.SOUTH,
-                        new String[]{"light pass", "spend lamp", "cross dark", "exit ahead"});
-                sender.sendMessage("Unlit pass staged: light/dark pressure lane with one authored safe pocket.");
-            }
-            case "stalker", "figure" -> {
-                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
-                registerUnlitSite(base.clone().add(8, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
-                sender.sendMessage("Unlit pass staged without blocks/signs: enter at this spawn, stand in the dark, watch the figure stalk and vanish.");
-            }
-            case "extinguish", "breaklight" -> {
-                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
-                registerUnlitSite(base.clone().add(8, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
-                sender.sendMessage("Unlit pass staged without blocks/signs: enter here, place one borrowed lantern nearby, then stand outside safety until the figure breaks it.");
-            }
-            case "house", "clue" -> {
-                Location lamp = base.clone();
-                Location coop = base.clone().add(7, 0, 0);
-                Location threshold = base.clone().add(14, 0, 0);
-                registerUnlitSite(lamp, "unlit_house_lamp", "unlit_house", 6, 5);
-                registerUnlitSite(coop, "unlit_house_coop", "unlit_house", 6, 5);
-                registerUnlitSite(threshold, "unlit_house_threshold", "unlit_house", 6, 5);
-                stampUnlitClue(lamp, "unlit_house_lamp");
-                stampUnlitClue(coop, "unlit_house_coop");
-                stampUnlitClue(threshold, "unlit_house_threshold");
-                sender.sendMessage("Unlit pass staged: three different house clue fixtures, all non-linear.");
-            }
-            case "extract", "retreat" -> {
-                buildUnlitPassLane(base, 10);
-                registerUnlitSite(base, "unlit_spawn_mirror", "unlit_spawn", 5, 4);
-                registerUnlitSite(base.clone().add(10, 0, 0), "unlit_exit", "unlit_exit", 5, 4);
-                setBlock(base.clone().add(10, 0, 0), Material.REINFORCED_DEEPSLATE);
-                placeStandingSign(base.clone().add(9, 0, 1), BlockFace.SOUTH,
-                        new String[]{"exit pass", "walk here", "or use shard", "inventory back"});
-                sender.sendMessage("Unlit pass staged: retreat/extraction and inventory-restore proof.");
-            }
-            default -> sender.sendMessage("Usage: /obs unlit pass <light|stalker|extinguish|house|extract>");
-        }
     }
 
     private void handleUnlitAudit(CommandSender sender) {
@@ -1849,13 +1793,32 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 setBlock(base, Material.CHISELED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CANDLE);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
-                return "The exact wick shelf, outage clock, and pull handle now carry the lamp proof.";
+                // The stopped house clock: a decorative, non-interactive prop set to the exact
+                // required rotation. The player finds it, reads it, and copies it onto the real
+                // dial elsewhere in the house — replacing a blind 8-way guess with observation.
+                placeDecorativeStoppedClock(offsetFrom(base, facing, -2, 1, 1), facing, 7);
+                placeStandingSign(offsetFrom(base, facing, -2, 1, 0), facing,
+                        new String[]{"STOPPED", "", "", ""});
+                placeEvidenceLectern(offsetFrom(base, facing, -1, 0, -1), facing,
+                        "lamp maintenance log", List.of(
+                                "oil draw steady through bell six.",
+                                "next round found the wick cold. no draw logged at all.",
+                                "the house dial was never wound back. it still shows the hour it stopped."
+                        ));
+                return "The exact wick shelf, outage clock, pull handle, stopped-clock prop, and log lectern"
+                        + " now carry the lamp proof.";
             }
             case "cairn" -> {
                 setBlock(offsetFrom(base, facing, 0, -1, 0), Material.CAULDRON);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.COBBLED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.COBBLED_DEEPSLATE);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.COBBLED_DEEPSLATE_SLAB);
+                placeEvidenceLectern(offsetFrom(base, facing, -2, 0, -1), facing,
+                        "reading a cut face", List.of(
+                                "a healed skin means old growth; the stone had years to close over it.",
+                                "raw, unweathered dust took no time at all. it is the newest thing in the cut.",
+                                "read oldest to newest, deepest first. do not trust which piece was closest to hand."
+                        ));
                 return "Use as an offering bowl; the return is a shape, not written instructions.";
             }
             case "coop" -> {
@@ -1865,19 +1828,44 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.IRON_BARS);
                 setBlock(base.clone().add(0, 1, 0), Material.OAK_FENCE);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.LIGHT_GRAY_CARPET);
-                return "Sacred-beast clue; the untouched perch and missing call are the evidence.";
+                placeEvidenceLectern(offsetFrom(base, facing, -2, 0, 0), facing,
+                        "coop caretaker's log", List.of(
+                                "birds answer any real change inside a few minutes. they always have.",
+                                "last confirmed peck and call: well before the alarm.",
+                                "the official alarm reads bell eight. compare the two times yourself."
+                        ));
+                placeUnlitFieldKit(offsetFrom(base, facing, 2, -1, -1), facing,
+                        List.of(new UnlitDecoy("bi03_feed_disturbed", Material.WHEAT_SEEDS),
+                                new UnlitDecoy("bi03_water_disturbed", Material.POTION)),
+                        "coop field samples", "some of these were handled after the fact. sort carefully.");
+                return "Sacred-beast clue; the untouched perch, missing call, caretaker's log, and field"
+                        + " kit are the evidence.";
             }
             case "well" -> {
                 setBlock(offsetFrom(base, facing, 0, -2, 0), Material.WATER_CAULDRON);
                 setBlock(offsetFrom(base, facing, 1, -2, 0), Material.POLISHED_BLACKSTONE);
-                return "The exact three-map water trough is the readable reflection proof.";
+                placeEvidenceLectern(offsetFrom(base, facing, -2, 0, 0), facing,
+                        "reading a survey bearing", List.of(
+                                "DUE means the plotted mark faces true; hang its copy unrotated.",
+                                "QUARTER-TURN means a quarter turn to the right of true.",
+                                "REVERSED means turned full about, mark facing back the way it came.",
+                                "each map is pinned with its own bearing note. read the note, not the others."
+                        ));
+                return "The exact three-map water trough and bearing legend are the readable"
+                        + " reflection proof.";
             }
             case "watch" -> {
                 setBlock(base, Material.BELL);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE);
-                return "The exact editable watch slate sits above the official blackstone pedestal.";
+                placeEvidenceLectern(offsetFrom(base, facing, -2, 0, 0), facing,
+                        "watch floor procedure", List.of(
+                                "the posted copy and the worn original should read the same hour.",
+                                "where they differ, the worn original was written first."
+                        ));
+                return "The exact editable watch slate sits above the official blackstone pedestal,"
+                        + " with the comparison procedure posted beside it.";
             }
             case "warm" -> {
                 Location hearth = offsetFrom(base, facing, 0, -1, 0);
@@ -1892,7 +1880,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.RED_WOOL);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLUE_ICE);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.RED_CONCRETE);
-                return "False-warmth clue; the too-bright red mark is the lie.";
+                placeEvidenceLectern(offsetFrom(base, facing, -2, 0, -1), facing,
+                        "excavation order posting", List.of(
+                                "Iss excavation order: Survey 19 / Cycle 4.",
+                                "every sample dated before this order argues the surface was already viable.",
+                                "a sample dated after it proves nothing about what was true before the cut."
+                        ));
+                placeUnlitFieldKit(offsetFrom(base, facing, 2, -1, 0), facing,
+                        List.of(new UnlitDecoy("bi06_reed_late", Material.VINE),
+                                new UnlitDecoy("bi06_water_late", Material.POTION)),
+                        "later field samples", "check the survey date against the posted order first.");
+                return "False-warmth clue; the too-bright red mark is the lie, and the excavation order"
+                        + " is posted for comparison.";
             }
             case "threshold" -> {
                 setBlock(base, Material.POLISHED_BLACKSTONE);
@@ -1900,7 +1899,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
-                return "Threshold/bow clue; the low lintel teaches the verb without a sign.";
+                // A visible worn path along the exact safe route (matches BI07's route cells) so the
+                // walk is found by observation, not blind repetition against the door.
+                for (int[] cell : new int[][]{{-2, 4}, {-1, 3}, {0, 2}, {0, 1}}) {
+                    setBlock(offsetFrom(base, facing, cell[0], cell[1], -1), Material.POLISHED_DEEPSLATE);
+                }
+                placeStandingSign(offsetFrom(base, facing, 2, 0, 1), facing,
+                        new String[]{"OUTER SEAL", "failed from", "outside.", "do not touch."});
+                return "Threshold/bow clue; the worn floor marks the safe walk, and the outer seal"
+                        + " carries its own warning.";
             }
             case "base" -> {
                 setBlock(base, Material.BARREL);
@@ -1919,6 +1926,79 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 return "Unknown house id; stamped a neutral marker.";
             }
         }
+    }
+
+    /**
+     * A decorative, non-interactive item frame holding a clock fixed at {@code rotationOrdinal}.
+     * Carries no {@code v5_control_id} PDC (never satisfies a predicate); it exists to be READ, not
+     * operated, so the mechanism's own dial stays the only interactive control.
+     */
+    private void placeDecorativeStoppedClock(Location backing, BlockFace facing, int rotationOrdinal) {
+        World world = backing.getWorld();
+        if (world == null) return;
+        setBlock(backing, Material.DEEPSLATE_BRICK_WALL);
+        Location frameSpawnAt = v5FrameSpawnAnchor(backing, facing);
+        try {
+            for (ItemFrame existing : world.getNearbyEntitiesByType(ItemFrame.class, frameSpawnAt, 0.6)) {
+                existing.remove();
+            }
+            ItemFrame frame = world.spawn(frameSpawnAt, ItemFrame.class, spawned -> {
+                spawned.setFacingDirection(facing, true);
+                spawned.setFixed(true);
+                spawned.setInvulnerable(true);
+                spawned.setPersistent(true);
+            });
+            ItemStack clock = new ItemStack(Material.CLOCK, 1);
+            org.bukkit.inventory.meta.ItemMeta meta = clock.getItemMeta();
+            if (meta != null) {
+                meta.displayName(Component.text("a stopped clock").color(NamedTextColor.GRAY));
+                clock.setItemMeta(meta);
+            }
+            frame.setItem(clock, false);
+            frame.setRotation(Rotation.values()[Math.floorMod(rotationOrdinal, Rotation.values().length)]);
+        } catch (Throwable ignored) {
+            // Decorative-only; a placement failure never blocks the required mechanism.
+        }
+    }
+
+    /** A decoy's evidence-appearance id paired with the material it should visually render as. */
+    private record UnlitDecoy(String evidenceId, Material material) { }
+
+    /**
+     * A small, unmanaged crate of plausible-but-wrong field samples near (never inside) a house's
+     * real evidence tray. Purely cosmetic ItemStacks carrying no predicate PDC — the mechanism's own
+     * wrong-item handling already returns them if a player tries to file one, so a decoy only needs
+     * to look right, never to be recognized by the evaluator.
+     */
+    private void placeUnlitFieldKit(Location loc, BlockFace facing, List<UnlitDecoy> decoys,
+                                    String label, String warning) {
+        World world = loc.getWorld();
+        if (world == null) return;
+        Block block = loc.getBlock();
+        block.setType(Material.BARREL, false);
+        if (!(block.getState() instanceof org.bukkit.block.Barrel barrel)) return;
+        com.observance.watcher.v5runtime.install.V5EvidenceItemAppearanceAuthority.Catalog appearance =
+                com.observance.watcher.v5runtime.install.V5EvidenceItemAppearanceAuthority.loadDefault();
+        int slot = 10;
+        for (UnlitDecoy decoy : decoys) {
+            if (slot > 16) break;
+            com.observance.watcher.v5runtime.install.V5EvidenceItemAppearanceAuthority.Entry entry =
+                    appearance.get(decoy.evidenceId());
+            ItemStack stack = new ItemStack(decoy.material(), 1);
+            org.bukkit.inventory.meta.ItemMeta meta = stack.getItemMeta();
+            if (meta != null && entry != null) {
+                meta.displayName(Component.text(entry.title()).color(NamedTextColor.GRAY));
+                meta.lore(entry.lore().stream()
+                        .map(line -> (Component) Component.text(line).color(NamedTextColor.DARK_GRAY))
+                        .toList());
+                stack.setItemMeta(meta);
+            }
+            barrel.getInventory().setItem(slot, stack);
+            slot++;
+        }
+        barrel.update(true, false);
+        placeStandingSign(offsetFrom(loc, facing, 0, -1, 1), facing,
+                new String[]{label.toUpperCase(java.util.Locale.ROOT), warning, "", ""});
     }
 
     private void placeEvidenceLectern(Location loc, BlockFace facing, String title, List<String> pages) {
@@ -1990,31 +2070,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private static void setBlock(Location loc, Material material) {
         if (loc == null || loc.getWorld() == null || material == null) return;
         loc.getBlock().setType(material, false);
-    }
-
-    private void registerUnlitSite(Location loc, String siteId, String type, int radius, int verticalRadius) {
-        if (loc == null || loc.getWorld() == null) return;
-        Site site = new Site(siteId, type, loc.getWorld().getName(),
-                (double) loc.getBlockX(), (double) loc.getBlockY(), (double) loc.getBlockZ(),
-                radius, verticalRadius, true, true);
-        plugin.registerRuntimeSite(site);
-        recordUnlitOrientation(loc, siteId);
-    }
-
-    private void buildUnlitPassLane(Location base, int length) {
-        if (base == null || base.getWorld() == null) return;
-        org.bukkit.World world = base.getWorld();
-        int bx = base.getBlockX();
-        int by = base.getBlockY();
-        int bz = base.getBlockZ();
-        for (int x = 0; x <= length; x++) {
-            for (int z = -1; z <= 1; z++) {
-                world.getBlockAt(bx + x, by - 1, bz + z).setType(Material.POLISHED_BLACKSTONE, false);
-                if (Math.abs(z) == 1 && x % 4 == 0) {
-                    world.getBlockAt(bx + x, by, bz + z).setType(Material.BLACKSTONE_WALL, false);
-                }
-            }
-        }
     }
 
     private void handleSiteTodo(CommandSender sender) {
@@ -3304,7 +3359,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     return;
                 }
                 sender.sendMessage("  Geometry is now applying in bounded tick batches. You may watch progress in chat/console.");
-                sender.sendMessage("  A durable checkpoint is written every second; a restart can replay safely from it.");
+                sender.sendMessage("  Progress is recorded every second; only synchronously saved milestones advance the restart cursor.");
                 approvedHoldPlanKey = null;
             }
             case "repair" -> handlePlaceHoldRepair(sender, args);
@@ -3520,7 +3575,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (mouth == null || mouth.getWorld() == null) return "";
         return mouth.getWorld().getUID() + ":" + mouth.getBlockX() + ":" + mouth.getBlockY() + ":"
                 + mouth.getBlockZ() + ":" + DeepHoldV5Manifest.contentHash() + ":"
-                + DeepHoldV5Manifest.CANONICAL_ORIENTATION;
+                + DeepHoldV5Manifest.CANONICAL_ORIENTATION + ":" + DeepHoldV4Plan.GEOMETRY_REVISION;
     }
 
     /**
@@ -3579,7 +3634,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                             span.height() + 2, true, true, null, false));
                 }
                 registerHoldRegionV4(world.getName(), bx, by, bz);
-                Location sever = new Location(world, bx, by - 96, bz + 362);
+                DeepHoldV4Plan.RecordStation release = holdRecordStation("release_record");
+                if (release == null) throw new IllegalStateException("compact release record is missing");
+                Location sever = new Location(world, bx + release.x(), by + release.y(), bz + release.z() - 4);
                 placeV5SeverControl(sever);
                 plugin.registerRuntimeSite(new Site("release_record", "v5_finale_control",
                         world.getName(), sever.getX(), sever.getY(), sever.getZ(),
@@ -3726,8 +3783,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     /**
      * Plan the complete shell without mutating blocks, then apply it in bounded main-thread slices.
-     * The checkpoint is deliberately conservative: a crash can replay up to one second of ordered,
-     * idempotent block writes, never skip writes that were not durably acknowledged.
+     * The checkpoint is deliberately conservative: in-progress geometry restarts at zero. Only a
+     * synchronous Paper world save may publish a non-zero cursor, so a crash can replay ordered,
+     * idempotent writes but never skip writes that were not durably acknowledged by the world.
      */
     private void startDeepHoldV5Build(Location base, Location surfaceMouth, CommandSender sender) {
         Location mouth = surfaceMouth == null ? base : surfaceMouth;
@@ -3764,8 +3822,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (!planIssues.isEmpty()) {
             throw new IllegalStateException("Deep Hold V5 static manifest failed: " + String.join("; ", planIssues));
         }
+        boolean forceReplacementPrefix = holdCheckpointForcesReplacement(mouth);
         DeepHoldV4Geometry.BuildPlan plan = DeepHoldV4Geometry.plan(world, mouth,
-                line -> { if (sender != null) sender.sendMessage("  " + line + "..."); });
+                line -> { if (sender != null) sender.sendMessage("  " + line + "..."); },
+                forceReplacementPrefix);
         String resumeStatus = restoreHoldBuildCheckpoint(plan);
         persistHoldBuildCheckpoint(plan, activeHoldFixtureShellReady ? "fixtures_ready" : "applying",
                 activeHoldFixtureShellReady ? "resuming exact physical install" : null);
@@ -3779,6 +3839,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         new BukkitRunnable() {
             private int ticks;
             private int lastPercent = -1;
+            private boolean geometryDurable;
 
             @Override
             public void run() {
@@ -3798,15 +3859,23 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         sender.sendMessage("  Hold architecture " + percent + "% (" + batch.cursor() + "/"
                                 + batch.totalOperations() + " writes; " + batch.changedBlocks() + " changed)");
                     }
-                    if (ticks % 20 == 0 || batch.complete()) {
-                        String checkpointStatus = batch.complete()
-                                ? (activeHoldFixtureShellReady ? "fixtures_ready" : "geometry_complete")
-                                : "applying";
-                        persistHoldBuildCheckpoint(current, checkpointStatus, null);
+                    if (batch.complete()) {
+                        // A cursor is not durable until Paper has synchronously flushed the chunks
+                        // containing those writes. Otherwise a forced stop can restore a complete
+                        // cursor over partly-unsaved natural stone.
+                        world.save();
+                        geometryDurable = true;
+                        persistHoldBuildCheckpoint(current,
+                                activeHoldFixtureShellReady ? "fixtures_ready" : "geometry_complete", null);
+                    } else if (ticks % 20 == 0) {
+                        // Applying checkpoints deliberately restore from zero. Ordered writes are
+                        // idempotent and replay is safer than Paper's asynchronous save horizon.
+                        persistHoldBuildCheckpoint(current, "applying", null);
                     }
                     if (!batch.complete()) return;
 
                     int placed = finishDeepHoldV5Build(mouth, sender, current);
+                    world.save();
                     persistHoldBuildCheckpoint(current, "complete", "fixtures=" + placed);
                     activeHoldFixtureShellReady = false;
                     activeHoldBuild = null;
@@ -3833,7 +3902,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     try {
                         persistHoldBuildCheckpoint(current,
                                 activeHoldFixtureShellReady ? "fixtures_ready"
-                                        : (current.complete() ? "geometry_complete" : "applying"),
+                                        : (geometryDurable ? "geometry_complete" : "applying"),
                                 "failure=" + causeChain);
                     } catch (Throwable checkpointFailure) {
                         plugin.getLogger().log(Level.SEVERE,
@@ -3882,6 +3951,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return plugin.getDataFolder().toPath().resolve("hold-build-state.properties");
     }
 
+    /** A started cutover must regenerate the identical cleanup prefix after every restart. */
+    private boolean holdCheckpointForcesReplacement(Location mouth) {
+        Path path = holdBuildCheckpointPath();
+        if (mouth == null || mouth.getWorld() == null || !Files.isRegularFile(path)) return false;
+        Properties state = new Properties();
+        try (InputStream input = Files.newInputStream(path)) {
+            state.load(input);
+        } catch (IOException failure) {
+            throw new IllegalStateException("cannot inspect Hold checkpoint replacement mode", failure);
+        }
+        String origin = state.getProperty("world-id", "") + ":" + state.getProperty("origin-x", "") + ":"
+                + state.getProperty("origin-y", "") + ":" + state.getProperty("origin-z", "");
+        String expected = mouth.getWorld().getUID() + ":" + mouth.getBlockX() + ":" + mouth.getBlockY()
+                + ":" + mouth.getBlockZ();
+        if (!expected.equals(origin)) return false;
+        if ("true".equalsIgnoreCase(state.getProperty("replacement-cutover", ""))) return true;
+        return !DeepHoldV4Plan.GEOMETRY_REVISION.equals(state.getProperty("geometry-revision", "").trim());
+    }
+
     private String restoreHoldBuildCheckpoint(DeepHoldV4Geometry.BuildPlan plan) {
         activeHoldFixtureShellReady = false;
         Path path = holdBuildCheckpointPath();
@@ -3893,8 +3981,38 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             throw new IllegalStateException("cannot read durable Hold checkpoint " + path, failure);
         }
         String status = state.getProperty("status", "").trim();
+        String checkpointOrigin = state.getProperty("world-id", "") + ":"
+                + state.getProperty("origin-x", "") + ":" + state.getProperty("origin-y", "") + ":"
+                + state.getProperty("origin-z", "");
+        String planOrigin = plan.worldId() + ":" + plan.originX() + ":" + plan.originY() + ":" + plan.originZ();
+        if (!planOrigin.equals(checkpointOrigin)) {
+            throw new IllegalStateException("Hold checkpoint belongs to a different Mouth/world; preserve "
+                    + path + " and do not replace it here");
+        }
+        String revision = state.getProperty("geometry-revision", "").trim();
+        if (!DeepHoldV4Plan.GEOMETRY_REVISION.equals(revision)) {
+            if (!plan.replacingSupersededShell()) {
+                throw new IllegalStateException("legacy Hold checkpoint exists at this Mouth, but the prepared world "
+                        + "does not prove the superseded shell; no receipt was archived and no blocks were changed");
+            }
+            Path archived = path.resolveSibling(path.getFileName() + ".superseded-" + System.currentTimeMillis());
+            try {
+                Files.move(path, archived, StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException unavailable) {
+                try {
+                    Files.move(path, archived);
+                } catch (IOException failure) {
+                    throw new IllegalStateException("cannot archive superseded Hold checkpoint " + path,
+                            failure);
+                }
+            } catch (IOException failure) {
+                throw new IllegalStateException("cannot archive superseded Hold checkpoint " + path, failure);
+            }
+            return "REPLACEMENT: archived superseded " + status + " checkpoint as " + archived.getFileName()
+                    + "; compact cutover starts at cursor 0";
+        }
         if ("complete".equals(status)) {
-            throw new IllegalStateException("this exact Hold already has a completed build receipt; use "
+            throw new IllegalStateException("this exact compact Hold already has a completed build receipt; use "
                     + "/obs placehold audit or repair, not build");
         }
         String expectedIdentity = plan.worldId() + ":" + plan.originX() + ":" + plan.originY() + ":"
@@ -3939,8 +4057,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         state.setProperty("origin-z", Integer.toString(plan.originZ()));
         state.setProperty("authority-hash", DeepHoldV5Manifest.contentHash());
         state.setProperty("orientation", DeepHoldV5Manifest.CANONICAL_ORIENTATION);
+        state.setProperty("geometry-revision", DeepHoldV4Plan.GEOMETRY_REVISION);
+        state.setProperty("replacement-cutover", Boolean.toString(plan.replacingSupersededShell()));
         state.setProperty("total-operations", Integer.toString(plan.totalOperations()));
-        state.setProperty("cursor", Integer.toString(plan.cursor()));
+        int durableCursor = "applying".equals(status) ? 0 : plan.cursor();
+        state.setProperty("cursor", Integer.toString(durableCursor));
         state.setProperty("changed-this-process", Long.toString(plan.changedBlocks()));
         state.setProperty("updated-at", Instant.now().toString());
         if (note != null && !note.isBlank()) state.setProperty("note", note.replace('\n', ' '));
@@ -4000,6 +4121,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
             if (sender != null) sender.sendMessage("  architecture changed " + shell.changedBlocks()
                     + " blocks across " + shell.rooms() + " owned rooms.");
+
+            if (plan.replacingSupersededShell()) {
+                int removed = removeSupersededHoldEntities(world, mouth);
+                if (plugin.wren() != null) plugin.wren().despawn();
+                if (sender != null) sender.sendMessage("  compact cutover removed " + removed
+                        + " retired fixture/display entities and closed every old wing.");
+            }
 
             int placed = 0;
             List<Site> pendingSites = new ArrayList<>();
@@ -4066,9 +4194,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             pendingSites.add(new Site("npc_wren_anchor", "npc_anchor", worldName,
                     (double) (bx + wrenOwner.standX()), (double) (by + wrenOwner.standY()),
                     (double) (bz + wrenOwner.standZ()), 2, 3, true, true, null, false));
+            DeepHoldV4Plan.RecordStation release = holdRecordStation("release_record");
+            if (release == null) throw new IllegalStateException("compact release record is missing");
             pendingSites.add(new Site("release_record", "v5_finale_control", worldName,
-                    (double) bx, (double) (by - 96), (double) (bz + 362),
-                    5, 4, true, true, null, false));
+                    (double) (bx + release.x()), (double) (by + release.y()),
+                    (double) (bz + release.z() - 4), 5, 4, true, true, null, false));
 
             // Stamp progression gates only after the complete open route and every standing frame pass.
             for (HoldGate gate : DEEP_HOLD_GATES) {
@@ -4089,8 +4219,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             // From this point forward only exact-authority reconciliation and registration remain.
             // Persist before either can fail so recovery never replays legacy blocks over a partial
             // exact install or duplicates a protected source item.
-            activeHoldFixtureShellReady = true;
+            world.save();
             persistHoldBuildCheckpoint(plan, "fixtures_ready", "legacy fixture shell and gates complete");
+            activeHoldFixtureShellReady = true;
 
             registerHoldRegionV4(worldName, bx, by, bz);
             for (Site pending : pendingSites) plugin.registerRuntimeSite(pending);
@@ -4304,11 +4435,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
      */
     private List<String> surveyDeepHoldV4SiteCollisions(Location mouth) {
         if (mouth == null || mouth.getWorld() == null || plugin.sites() == null) return List.of();
-        Location existingMouth = resolveDeepHoldV4Mouth();
-        boolean samePlacement = existingMouth != null && existingMouth.getWorld() == mouth.getWorld()
-                && existingMouth.getBlockX() == mouth.getBlockX()
-                && existingMouth.getBlockY() == mouth.getBlockY()
-                && existingMouth.getBlockZ() == mouth.getBlockZ();
         int minX = mouth.getBlockX() + DeepHoldV4Plan.MIN_X - DeepHoldV4Plan.ENVELOPE;
         int maxX = mouth.getBlockX() + DeepHoldV4Plan.MAX_X + DeepHoldV4Plan.ENVELOPE;
         int minY = mouth.getBlockY() + DeepHoldV4Plan.MIN_Y - DeepHoldV4Plan.ENVELOPE;
@@ -4318,7 +4444,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         List<String> issues = new ArrayList<>();
         for (Site site : plugin.sites().all()) {
             if (site == null || !site.enabled() || !site.isPlaced()) continue;
-            if (samePlacement && isDeepHoldV4ManagedSite(site.id())) continue;
+            // Managed rows are replacement-owned. Their stale legacy coordinates must not prevent
+            // the operator selecting the same physical Mouth for the compact cutover.
+            if (isDeepHoldV4ManagedSite(site.id())) continue;
             Location loc = site.location();
             if (loc == null || loc.getWorld() != mouth.getWorld()) continue;
             int radius = Math.max(0, site.radius());
@@ -4337,6 +4465,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private boolean isDeepHoldV4ManagedSite(String id) {
         if (id == null) return false;
         if (HOLD_REGION_SITE_ID.equals(id) || HOLD_ENTRY_REGION_SITE_ID.equals(id)
+                || "deep_hold_surface_mouth".equals(id) || "npc_wren_anchor".equals(id)
+                || "release_record".equals(id)
                 || id.startsWith("hold_gate_") || id.startsWith("hold_answer_")) return true;
         return DeepHoldV4Plan.fixture(id) != null;
     }
@@ -4566,8 +4696,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void registerHoldRegionV4(String worldName, int bx, int by, int bz) {
         plugin.registerRuntimeSite(new Site(HOLD_REGION_SITE_ID, "hold_region", worldName,
-                (double) bx, (double) (by - 50), (double) (bz + 186),
-                230, 66, true, true, null, false));
+                (double) bx, (double) (by - 50), (double) (bz + 116),
+                122, 66, true, true, null, false));
         plugin.registerRuntimeSite(new Site(HOLD_ENTRY_REGION_SITE_ID, "hold_region", worldName,
                 (double) bx, (double) (by - 20), (double) (bz + 52),
                 72, 34, true, true, null, false));
@@ -4577,51 +4707,75 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (world == null) return;
         // The V5 covered copy is authored and unlock-controlled at forgotten_mouth.  This nearby
         // dressing must stay text-free so a stale V4 book can never survive a rebuild or repair.
-        placeDecorativeBookshelf(world.getBlockAt(bx - 16, by - 40, bz + 112), 83, BlockFace.EAST);
-        placeStandingSign(new Location(world, bx - 10, by - 40, bz + 112), BlockFace.EAST,
+        int shelfX = DeepHoldV4Plan.compactX(-16);
+        int shelfZ = DeepHoldV4Plan.compactZ(-40, 112);
+        placeDecorativeBookshelf(world.getBlockAt(bx + shelfX, by - 40, bz + shelfZ), 83, BlockFace.EAST);
+        placeStandingSign(new Location(world, bx + shelfX + 4, by - 40, bz + shelfZ), BlockFace.EAST,
                 new String[]{"ORIENTATION", "record mounts", "unlock in order", ""});
+    }
+
+    /** Remove only retired fixture/display entity classes inside the proven legacy excavation. */
+    private int removeSupersededHoldEntities(World world, Location mouth) {
+        if (world == null || mouth == null) return 0;
+        int bx = mouth.getBlockX(), by = mouth.getBlockY(), bz = mouth.getBlockZ();
+        int removed = 0;
+        for (Entity entity : new ArrayList<>(world.getEntities())) {
+            if (!(entity instanceof ItemFrame) && !(entity instanceof org.bukkit.entity.Display)
+                    && !(entity instanceof org.bukkit.entity.Interaction)
+                    && !(entity instanceof org.bukkit.entity.Marker)) continue;
+            Location at = entity.getLocation();
+            int x = at.getBlockX() - bx, y = at.getBlockY() - by, z = at.getBlockZ() - bz;
+            boolean upper = x >= -103 && x <= 103 && y >= -43 && y <= -14 && z >= 102 && z <= 257;
+            boolean civic = x >= -107 && x <= 107 && y >= -71 && y <= -45 && z >= 34 && z <= 303;
+            boolean lower = x >= -117 && x <= 117 && y >= -99 && y <= -71 && z >= 34 && z <= 381;
+            boolean transition = x >= -18 && x <= 18 && y >= -44 && y <= -14 && z >= 252 && z <= 290;
+            boolean lowerTransition = x >= -19 && x <= 19 && y >= -99 && y <= -55
+                    && z >= 6 && z <= 42;
+            if (upper || civic || lower || transition || lowerTransition) {
+                entity.remove();
+                removed++;
+            }
+        }
+        return removed;
     }
 
     private void placeHoldDistrictRecordsV4(World world, int bx, int by, int bz) {
         if (world == null) return;
         // These are physical stations only. V5AuthorityManifest owns every page and syncV5Books()
         // inserts or removes the exact book for the current durable unlock flags.
-        placeHoldEmptyRecordStation(world, bx + 12, by - 40, bz + 112, BlockFace.WEST, 101);
-        // LC03's school-day docket is a distinct locked mount at the exact predicate offset
-        // orientation_register[-2,0,0]; it must never drift back to the retired surface bow marker.
-        Block schoolDay = world.getBlockAt(bx + 10, by - 40, bz + 112);
-        placeReadableLectern(schoolDay, BlockFace.WEST);
-        if (schoolDay.getState() instanceof Lectern lectern) {
-            lectern.getInventory().clear();
-            lectern.update(true, false);
+        int seed = 101;
+        for (DeepHoldV4Plan.RecordStation station : DeepHoldV4Plan.RECORD_STATIONS) {
+            BlockFace facing = BlockFace.valueOf(station.front());
+            int x = bx + station.x(), y = by + station.y(), z = bz + station.z();
+            placeHoldEmptyRecordStation(world, x, y, z, facing, seed);
+            int signX = x + (facing == BlockFace.EAST ? 4 : facing == BlockFace.WEST ? -4 : 3);
+            int signZ = z + (facing == BlockFace.SOUTH ? 4 : facing == BlockFace.NORTH ? -2 : 0);
+            placeStandingSign(new Location(world, signX, y, signZ),
+                    facing == BlockFace.NORTH ? BlockFace.WEST : facing,
+                    new String[]{station.title().toUpperCase(Locale.ROOT), "controlled", "record mount", ""});
+            seed += 18;
         }
-        placeStandingSign(new Location(world, bx + 8, by - 40, bz + 112), BlockFace.WEST,
-                new String[]{"ENTRY REGISTER", "controlled", "record mount", ""});
 
-        placeHoldEmptyRecordStation(world, bx - 18, by - 40, bz + 170, BlockFace.EAST, 117);
-        placeStandingSign(new Location(world, bx - 14, by - 40, bz + 170), BlockFace.EAST,
-                new String[]{"INQUIRY CENSUS", "controlled", "record mount", ""});
+        DeepHoldV4Plan.RecordStation orientation = holdRecordStation("orientation_register");
+        if (orientation != null) {
+            // LC03's school-day docket is the exact predicate offset [-2,0,0].
+            Block schoolDay = world.getBlockAt(bx + orientation.x() - 2,
+                    by + orientation.y(), bz + orientation.z());
+            placeReadableLectern(schoolDay, BlockFace.valueOf(orientation.front()));
+            if (schoolDay.getState() instanceof Lectern lectern) {
+                lectern.getInventory().clear();
+                lectern.update(true, false);
+            }
+        }
 
-        placeHoldEmptyRecordStation(world, bx - 18, by - 68, bz + 116, BlockFace.EAST, 131);
-        placeStandingSign(new Location(world, bx - 14, by - 68, bz + 116), BlockFace.EAST,
-                new String[]{"CIVIC CASE FILE", "controlled", "record mount", ""});
+        DeepHoldV4Plan.RecordStation release = holdRecordStation("release_record");
+        if (release != null) placeV5SeverControl(new Location(world, bx + release.x(),
+                by + release.y(), bz + release.z() - 4));
+    }
 
-        placeHoldEmptyRecordStation(world, bx + 18, by - 68, bz + 222, BlockFace.WEST, 149);
-        placeStandingSign(new Location(world, bx + 14, by - 68, bz + 222), BlockFace.WEST,
-                new String[]{"BREAK INQUEST", "controlled", "record mount", ""});
-
-        placeHoldEmptyRecordStation(world, bx - 60, by - 96, bz + 124, BlockFace.WEST, 139);
-        placeStandingSign(new Location(world, bx - 64, by - 96, bz + 124), BlockFace.WEST,
-                new String[]{"COMPANY DOCKET", "controlled", "record mount", ""});
-
-        placeHoldEmptyRecordStation(world, bx + 18, by - 96, bz + 124, BlockFace.WEST, 191);
-        placeStandingSign(new Location(world, bx + 14, by - 96, bz + 124), BlockFace.WEST,
-                new String[]{"RECKONING FILE", "controlled", "record mount", ""});
-
-        placeHoldEmptyRecordStation(world, bx, by - 96, bz + 366, BlockFace.NORTH, 211);
-        placeStandingSign(new Location(world, bx + 3, by - 96, bz + 364), BlockFace.WEST,
-                new String[]{"CLOSURE RECEIPT", "controlled", "record mount", ""});
-        placeV5SeverControl(new Location(world, bx, by - 96, bz + 362));
+    private static DeepHoldV4Plan.RecordStation holdRecordStation(String id) {
+        return DeepHoldV4Plan.RECORD_STATIONS.stream()
+                .filter(station -> id.equals(station.id())).findFirst().orElse(null);
     }
 
     private void placeHoldWayfindingV4(World world, int bx, int by, int bz) {
@@ -4629,16 +4783,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         Object[][] signs = {
                 {-9, 0, 3, BlockFace.EAST, new String[]{"THE DEEP HOLD", "one Mouth", "return here", "to leave"}},
                 {-8, -40, 108, BlockFace.EAST, new String[]{"ORIENTATION", "records unlock", "in sequence", ""}},
-                {-8, -40, 164, BlockFace.EAST, new String[]{"KEEPER COURT", "six inquiries", "file each", ""}},
-                {-8, -40, 246, BlockFace.EAST, new String[]{"G2", "archive below", "return stair", "behind"}},
-                {-8, -68, 104, BlockFace.EAST, new String[]{"CIVIC ARCHIVE", "west + east", "loops rejoin", ""}},
-                {8, -68, 294, BlockFace.WEST, new String[]{"PUZZLE WORKS", "third lamp", "then descend", ""}},
+                {-8, -40, 134, BlockFace.EAST, new String[]{"KEEPER ARCHIVE", "six inquiries", "one work floor", ""}},
+                {-8, -40, 176, BlockFace.EAST, new String[]{"STAFF STAIR", "civic archive", "below", ""}},
+                {-8, -68, 174, BlockFace.EAST, new String[]{"CIVIC ARCHIVE", "library floor", "index at center", ""}},
+                {-8, -68, 70, BlockFace.EAST, new String[]{"SERVICE WORKS", "lamp records", "lower stair", "north"}},
                 {-8, -96, 42, BlockFace.EAST, new String[]{"LOWER WORKS", "reckon first", "return north", ""}},
-                {-18, -96, 136, BlockFace.EAST, new String[]{"WEST", "absence case", "prior camp", ""}},
-                {18, -96, 136, BlockFace.WEST, new String[]{"EAST", "threshold", "relay required", ""}},
-                {-8, -96, 218, BlockFace.EAST, new String[]{"G5", "accepting", "case required", ""}},
-                {-8, -96, 290, BlockFace.EAST, new String[]{"G6", "unwriting", "case required", ""}},
-                {-8, -96, 358, BlockFace.EAST, new String[]{"RELEASE", "no second exit", "turn back", ""}}
+                {-18, -96, 94, BlockFace.EAST, new String[]{"WEST OFFICE", "absence case", "prior camp", ""}},
+                {18, -96, 94, BlockFace.WEST, new String[]{"EAST OFFICE", "threshold", "relay required", ""}},
+                {-8, -96, 139, BlockFace.EAST, new String[]{"G5", "accepting archive", "case required", ""}},
+                {-8, -96, 179, BlockFace.EAST, new String[]{"G6", "unwriting", "case required", ""}},
+                {-8, -96, 221, BlockFace.EAST, new String[]{"RELEASE OFFICE", "closure record", "return north", ""}}
         };
         for (Object[] row : signs) {
             placeStandingSign(new Location(world, bx + (Integer) row[0], by + (Integer) row[1],
@@ -5841,15 +5995,29 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldWaterMirrorCore(World world, int bx, int by, int bz) {
+        // Open floor pad. The authored standing frame at bz-3 must stay a dry walkable cell, so
+        // no foot-level water may exist outside the rimmed KS01 waterline trough below.
         for (int dx = -5; dx <= 5; dx++) {
             for (int dz = -5; dz <= 5; dz++) {
-                boolean water = Math.abs(dx) <= 3 && Math.abs(dz) <= 3;
                 world.getBlockAt(bx + dx, by - 1, bz + dz)
-                        .setType(water ? ((Math.abs(dx) + Math.abs(dz)) % 2 == 0
-                                ? Material.PRISMARINE_BRICKS : Material.DARK_PRISMARINE)
-                                : Material.DEEPSLATE_TILES, false);
-                world.getBlockAt(bx + dx, by, bz + dz).setType(water ? Material.WATER : Material.AIR, false);
+                        .setType(((Math.abs(dx) + Math.abs(dz)) % 2 == 0 && Math.abs(dx) <= 3
+                                && Math.abs(dz) <= 3)
+                                ? Material.PRISMARINE_BRICKS : Material.DEEPSLATE_TILES, false);
+                world.getBlockAt(bx + dx, by, bz + dz).setType(Material.AIR, false);
             }
+        }
+        // KS01 requires Material.WATER at exactly (bx-3..bx+2, by, bz): a rimmed six-cell trough
+        // holds that water at foot level and the one-block rim keeps it from flooding the room.
+        for (int dx = -4; dx <= 3; dx++) {
+            world.getBlockAt(bx + dx, by, bz - 1).setType(Material.DARK_PRISMARINE, false);
+            world.getBlockAt(bx + dx, by, bz + 1).setType(Material.DARK_PRISMARINE, false);
+        }
+        world.getBlockAt(bx - 4, by, bz).setType(Material.DARK_PRISMARINE, false);
+        world.getBlockAt(bx + 3, by, bz).setType(Material.DARK_PRISMARINE, false);
+        for (int dx = -3; dx <= 2; dx++) {
+            world.getBlockAt(bx + dx, by - 1, bz).setType(
+                    (dx == -2 || dx == 1) ? Material.SEA_LANTERN : Material.PRISMARINE_BRICKS, false);
+            world.getBlockAt(bx + dx, by, bz).setType(Material.WATER, false);
         }
         // Five concentric floor rings establish only the inner-to-outer order. Their corresponding
         // page numbers are discovered from Sella's authored ring drawings, never printed on answer signs.
@@ -6105,12 +6273,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldCisternCore(World world, int bx, int by, int bz) {
+        // Raised basin: foot-level water (the anchor cell itself must stay physical for the site
+        // audit) held inside a one-block curb, so nothing can flood the archive walking floor.
         for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 boolean water = Math.abs(dx) <= 2 && Math.abs(dz) <= 2;
+                boolean curb = !water && Math.abs(dx) <= 3 && Math.abs(dz) <= 3;
                 world.getBlockAt(bx + dx, by - 1, bz + dz)
                         .setType(water ? Material.PRISMARINE_BRICKS : Material.DARK_PRISMARINE, false);
-                world.getBlockAt(bx + dx, by, bz + dz).setType(water ? Material.WATER : Material.AIR, false);
+                if (water) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.WATER, false);
+                } else if (curb) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.DARK_PRISMARINE, false);
+                } else {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.AIR, false);
+                }
+                world.getBlockAt(bx + dx, by + 1, bz + dz).setType(Material.AIR, false);
             }
         }
         for (int dx = -3; dx <= 3; dx++) {
@@ -6167,12 +6345,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void buildHoldFarWaterCore(World world, int bx, int by, int bz) {
+        // Raised shoreline basin: foot-level reed water (the anchor cell must stay physical for
+        // the site audit) held behind a one-block curb so the reading floor stays dry.
         for (int dx = -7; dx <= 7; dx++) {
             for (int dz = -4; dz <= 4; dz++) {
                 boolean water = Math.abs(dx) <= 5 && Math.abs(dz) <= 2;
+                boolean curb = !water && Math.abs(dx) <= 6 && Math.abs(dz) <= 3;
                 world.getBlockAt(bx + dx, by - 1, bz + dz)
                         .setType(water ? Material.DARK_PRISMARINE : Material.POLISHED_BLACKSTONE_BRICKS, false);
-                world.getBlockAt(bx + dx, by, bz + dz).setType(water ? Material.WATER : Material.AIR, false);
+                if (water) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.WATER, false);
+                } else if (curb) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.POLISHED_BLACKSTONE_BRICKS, false);
+                } else {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.AIR, false);
+                }
+                world.getBlockAt(bx + dx, by + 1, bz + dz).setType(Material.AIR, false);
             }
         }
         world.getBlockAt(bx, by, bz - 3).setType(Material.SEA_LANTERN, false);
@@ -9392,15 +9580,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private static HoldGateSpan holdGateSpan(HoldGate gate) {
         if (gate == null) return new HoldGateSpan(true, 7, 9, 1, 4);
-        return switch (gate.id()) {
-            case "keeper", "archive" -> new HoldGateSpan(true, 12, 20, 3, 5);
-            case "undercroft" -> new HoldGateSpan(true, 12, 18, 3, 5);
-            case "deep" -> new HoldGateSpan(true, 12, 20, 3, 5);
-            case "prior" -> new HoldGateSpan(true, 8, 16, 3, 4);
-            case "accepting", "coda" -> new HoldGateSpan(true, 14, 22, 3, 6);
-            case "dread" -> new HoldGateSpan(false, 7, 16, 3, 4);
-            default -> new HoldGateSpan(true, 7, 9, 1, 4);
+        String planId = switch (gate.id()) {
+            case "keeper" -> "g1";
+            case "archive" -> "g2";
+            case "undercroft" -> "g3";
+            case "deep" -> "g4";
+            case "accepting" -> "g5";
+            case "coda" -> "g6";
+            default -> gate.id();
         };
+        DeepHoldV4Plan.Gate plan = DeepHoldV4Plan.GATES.stream()
+                .filter(candidate -> planId.equals(candidate.id())).findFirst().orElse(null);
+        if (plan == null) return new HoldGateSpan(true, 7, 9, 1, 4);
+        int doorHalf = Math.max(3, Math.min(6, plan.halfAcross() / 2));
+        return new HoldGateSpan(plan.acrossX(), plan.halfAcross(), plan.height(), plan.depth(), doorHalf);
     }
 
     private static Material holdGateWallMaterial(int across, int dy, int depth, HoldGateSpan span) {
@@ -9598,6 +9791,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private Location resolveDeepHoldV4Mouth() {
         if (plugin.sites() == null) return null;
+        // This region anchor kept the same offset across the sprawling and compact builders, so it
+        // is the only safe way to recover the Mouth while sites.yml still contains pre-cutover
+        // fixture coordinates. Falling straight through to a transformed fixture would subtract a
+        // compact offset from a legacy location and silently move the inferred origin.
+        Site entry = plugin.sites().get(HOLD_ENTRY_REGION_SITE_ID);
+        Location entryLocation = entry == null ? null : entry.location();
+        if (entryLocation != null && entryLocation.getWorld() != null) {
+            return entryLocation.clone().add(0, 20, -52);
+        }
         for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) {
             Site site = plugin.sites().get(fixture.id());
             Location loc = site == null ? null : site.location();
@@ -12612,7 +12814,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage((unlit.ready ? "[OK] " : "[EXP] ") + "Unlit expansion lane - "
                 + unlit.ok + "/" + unlit.total + " ready");
         if (unlit.firstIssue != null) sender.sendMessage("  first issue: " + unlit.firstIssue);
-        sender.sendMessage("  test: /obs unlit pass light|stalker|extinguish|house|extract");
+        sender.sendMessage("  test: enter through unlit_entry, prove the required house findings, then return by exit and shard");
         sender.sendMessage("  help: /obs runbook unlit");
 
         sender.sendMessage("Required launch lanes ready: " + requiredReady + "/" + requiredTotal + ".");
@@ -12906,8 +13108,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("  4) For edits: /obs unlit buildmode on. Before tests: /obs unlit buildmode off.");
         sender.sendMessage("  5) Remove inherited village light: /obs unlit darken all [radius].");
         sender.sendMessage("  6) Fence it: /obs unlit border [radius]. Then verify: /obs unlit audit.");
-        sender.sendMessage("  7) Rehearse pieces: /obs unlit pass light, stalker, extinguish, house, extract.");
-        sender.sendMessage("  8) Handoff check: /obs unlit ready, /obs preflight, then fill the V5 live-test receipt rows.");
+        sender.sendMessage("  7) Rehearse the real route: enter normally, spend a borrowed lantern, prove every required house finding, and return by both exit and shard.");
+        sender.sendMessage("  8) Restart once during an expedition and confirm the player returns with the exact inventory they carried in.");
+        sender.sendMessage("  9) Handoff check: /obs unlit ready, /obs preflight, then fill the V5 live-test receipt rows.");
         sender.sendMessage("  Fixture rule: required houses read through ledgers/books/objects. Plain signs are fallback markers, not the house language.");
         sender.sendMessage("  Rule: houses are non-linear. Do not write clue text that assumes expedition numbers.");
     }
@@ -13426,20 +13629,25 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         org.bukkit.World world = base.getWorld();
         if (world == null) return;
         int x = base.getBlockX(), y = base.getBlockY(), z = base.getBlockZ();
-        for (int dx = -3; dx <= 3; dx++) {
+        // Same containment contract as buildHoldWaterMirrorCore: the KS01 waterline is a rimmed
+        // six-cell trough at foot level; nothing outside the rim ever holds spreadable water.
+        for (int dx = -4; dx <= 4; dx++) {
             for (int dz = -3; dz <= 3; dz++) {
-                boolean water = Math.abs(dx) <= 1 && Math.abs(dz) <= 1;
-                Material floor = water ? Material.PRISMARINE_BRICKS
-                        : (Math.abs(dx) == 3 || Math.abs(dz) == 3 ? Material.DARK_PRISMARINE : Material.PRISMARINE);
+                Material floor = (Math.abs(dx) >= 3 || Math.abs(dz) == 3)
+                        ? Material.DARK_PRISMARINE : Material.PRISMARINE;
                 world.getBlockAt(x + dx, y - 1, z + dz).setType(floor, false);
-                if (!water) world.getBlockAt(x + dx, y, z + dz).setType(Material.AIR, false);
+                world.getBlockAt(x + dx, y, z + dz).setType(Material.AIR, false);
             }
         }
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                world.getBlockAt(x + dx, y - 1, z + dz).setType(Material.PRISMARINE_BRICKS, false);
-                world.getBlockAt(x + dx, y, z + dz).setType(Material.WATER, false);
-            }
+        for (int dx = -4; dx <= 3; dx++) {
+            world.getBlockAt(x + dx, y, z - 1).setType(Material.DARK_PRISMARINE, false);
+            world.getBlockAt(x + dx, y, z + 1).setType(Material.DARK_PRISMARINE, false);
+        }
+        world.getBlockAt(x - 4, y, z).setType(Material.DARK_PRISMARINE, false);
+        world.getBlockAt(x + 3, y, z).setType(Material.DARK_PRISMARINE, false);
+        for (int dx = -3; dx <= 2; dx++) {
+            world.getBlockAt(x + dx, y - 1, z).setType(Material.PRISMARINE_BRICKS, false);
+            world.getBlockAt(x + dx, y, z).setType(Material.WATER, false);
         }
         world.getBlockAt(x, y, z - 2).setType(Material.DARK_PRISMARINE, false);
         world.getBlockAt(x, y + 1, z - 2).setType(Material.BLUE_CANDLE, false);
@@ -13627,13 +13835,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             for (int dz = -4; dz <= 5; dz++) {
                 boolean shore = Math.abs(dx) == 6 || dz == -4 || dz == 5;
                 boolean still = Math.abs(dx) <= 3 && dz >= -2 && dz <= 2;
-                Material floor = still ? Material.DARK_PRISMARINE
-                        : (shore ? Material.POLISHED_BLACKSTONE_BRICKS : Material.PRISMARINE_BRICKS);
-                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(floor, false);
+                boolean curb = !still && Math.abs(dx) <= 4 && dz >= -3 && dz <= 3;
+                world.getBlockAt(bx + dx, by - 1, bz + dz).setType(still ? Material.DARK_PRISMARINE
+                        : (shore ? Material.POLISHED_BLACKSTONE_BRICKS : Material.PRISMARINE_BRICKS), false);
                 if (still) {
+                    // Foot-level still water held behind a one-block curb: the anchor cell stays
+                    // physical for site audits and the shoreline floor stays dry.
                     world.getBlockAt(bx + dx, by, bz + dz).setType(Material.WATER, false);
-                } else if (!shore) {
-                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.SEAGRASS, false);
+                } else if (curb) {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.PRISMARINE_BRICKS, false);
+                } else {
+                    world.getBlockAt(bx + dx, by, bz + dz).setType(Material.AIR, false);
                 }
                 if (shore && (Math.abs(dx) == 6 || dz == 5)) {
                     supportToGround(world, bx + dx, by - 1, bz + dz, Material.POLISHED_BLACKSTONE_BRICKS);
@@ -15531,67 +15743,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleAudit(CommandSender sender) {
-        if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
-            sender.sendMessage("Observance audit: no sites loaded. Run /obs reload or check sites.yml.");
-            return;
-        }
-
-        int enabled = 0;
-        int placed = 0;
-        int unplaced = 0;
-        int ok = 0;
-        int failed = 0;
-        int coreMissing = 0;
-        List<String> issues = new ArrayList<>();
-
-        for (Site site : plugin.sites().all()) {
-            if (site == null || !site.enabled()) continue;
-            enabled++;
-            if (!site.isPlaced()) {
-                unplaced++;
-                if (isCoreAuditSite(site.id())) {
-                    coreMissing++;
-                    addAuditIssue(issues, "MISSING core site '" + site.id() + "' is not placed.");
-                }
-                continue;
-            }
-
-            Location loc = site.location();
-            if (loc == null || loc.getWorld() == null) {
-                failed++;
-                addAuditIssue(issues, "FAIL " + site.id() + ": world not loaded or location unresolved.");
-                continue;
-            }
-
-            placed++;
-            String issue = auditPlacedSite(site, loc);
-            if (issue == null) {
-                ok++;
-            } else {
-                failed++;
-                addAuditIssue(issues, issue);
-            }
-        }
-
-        sender.sendMessage("== Observance readiness audit ==");
-        sender.sendMessage(" enabled sites: " + enabled);
-        sender.sendMessage(" placed sites:  " + placed);
-        sender.sendMessage(" unplaced:      " + unplaced + " (" + coreMissing + " core)");
-        sender.sendMessage(" hardware ok:   " + ok);
-        sender.sendMessage(" failures:      " + failed);
-        if (issues.isEmpty()) {
-            sender.sendMessage(" Result: no obvious placement hardware problems found.");
-            sender.sendMessage(" Next: run /obs test stalker and /obs test hunt for scare checks.");
-            return;
-        }
-        sender.sendMessage(" Issues:");
-        for (String issue : issues) {
-            sender.sendMessage("  - " + issue);
-        }
-        if (issues.size() >= 12) {
-            sender.sendMessage("  - ...showing first 12 issues only.");
-        }
-        sender.sendMessage(" Repair: /obs placehold build/audit for the production Deep Hold, /obs prepworld for compact rehearsal, or /obs site set <id> + /obs placeworld for bespoke placement.");
+        sender.sendMessage("Observance V5: /obs audit now runs the production preflight.");
+        handlePreflight(sender);
     }
 
     private void handlePreflight(CommandSender sender) {
@@ -15724,58 +15877,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleVisualAudit(CommandSender sender) {
-        if (plugin.sites() == null || plugin.sites().all().isEmpty()) {
-            sender.sendMessage("Observance visualaudit: no sites loaded. Run /obs reload or check sites.yml.");
-            return;
-        }
-
-        int checked = 0;
-        int passed = 0;
-        int reshape = 0;
-        int replace = 0;
-        int skipped = 0;
-        List<String> issues = new ArrayList<>();
-
-        for (Site site : plugin.sites().all()) {
-            if (site == null || !site.enabled() || !site.isPlaced()) {
-                skipped++;
-                continue;
-            }
-            if (!isVisualAuditSite(site)) {
-                skipped++;
-                continue;
-            }
-            Location loc = site.location();
-            if (loc == null || loc.getWorld() == null) {
-                skipped++;
-                continue;
-            }
-            checked++;
-            String issue = visualIssue(site, loc);
-            if (issue == null) {
-                passed++;
-            } else {
-                if (issue.startsWith("REPLACE")) replace++;
-                else reshape++;
-                addAuditIssue(issues, issue);
-            }
-        }
-
-        sender.sendMessage("== Observance visual audit ==");
-        sender.sendMessage(" checked:  " + checked);
-        sender.sendMessage(" keep:     " + passed);
-        sender.sendMessage(" reshape:  " + reshape);
-        sender.sendMessage(" replace:  " + replace);
-        sender.sendMessage(" skipped:  " + skipped + " (minor hardware/unplaced/disabled)");
-        if (issues.isEmpty()) {
-            sender.sendMessage(" Result: no obvious test-prop visual failures found.");
-            sender.sendMessage(" Next: still do a human screenshot pass using design/VISUAL-RESCUE.md.");
-            return;
-        }
-        sender.sendMessage(" Visual issues:");
-        for (String issue : issues) sender.sendMessage("  - " + issue);
-        if (issues.size() >= 12) sender.sendMessage("  - ...showing first 12 visual issues only.");
-        sender.sendMessage(" Rule: REPLACE means the physical form is too weak for launch; RESHAPE means rebuild/scale/light before live placement.");
+        sender.sendMessage("== Observance V5 live-world visual check ==");
+        handlePlaceHoldAudit(sender);
+        sender.sendMessage("Manual pass: walk every Hold room and the full Unlit route in survival view.");
+        sender.sendMessage("Confirm clear doorways and stairs, reachable lecterns and containers, correct block facing, and no fixture embedded in a wall or another block.");
+        sender.sendMessage("Record the room and Unlit screenshots in the V5 live-test matrix; this command does not treat decorative block counts as visual proof.");
     }
 
     private String visualIssue(Site site, Location loc) {
@@ -16803,18 +16909,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         sender.sendMessage(" local sleep:        " + plugin.isLocallyAsleep());
         sender.sendMessage(" sites placed:       " + plugin.placedSiteCount());
-        sender.sendMessage(" drama enabled:      " + (plugin.config() != null && plugin.config().dramaEnabled()));
+        var runtime = plugin.v5Runtime();
+        if (runtime == null) {
+            sender.sendMessage(" V5 runtime:         unavailable");
+        } else if (runtime.isCoda()) {
+            sender.sendMessage(" V5 runtime:         coda (story inputs locked)");
+        } else {
+            sender.sendMessage(" V5 runtime:         "
+                    + (runtime.storyInputsEnabled() ? "active" : "story inputs locked"));
+        }
         sendPackStatus(sender);
-        var wren = plugin.wren();
-        if (wren != null) {
-            sender.sendMessage(" wren:               " + (wren.isSpawned() ? "present" : "not spawned")
-                    + " (" + wren.backend() + ")");
-        }
-        var keeper = plugin.keeper();
-        if (keeper != null) {
-            sender.sendMessage(" keeper:             " + (keeper.isSpawned() ? "present" : "not spawned")
-                    + " (" + keeper.backend() + ")");
-        }
     }
 
     private void sendPackStatus(CommandSender sender) {
@@ -16995,10 +17099,6 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 && (args[2].equalsIgnoreCase("all") || args[2].equalsIgnoreCase("border"))) {
             for (String s : new String[]{"64", "96", "128", "160"}) {
                 if (s.startsWith(args[3].toLowerCase(Locale.ROOT))) out.add(s);
-            }
-        } else if (args.length == 3 && args[0].equalsIgnoreCase("unlit") && args[1].equalsIgnoreCase("pass")) {
-            for (String s : new String[]{"light", "stalker", "extinguish", "house", "extract"}) {
-                if (s.startsWith(args[2].toLowerCase(Locale.ROOT))) out.add(s);
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("site")) {
             for (String s : new String[]{"launch", "set"}) {

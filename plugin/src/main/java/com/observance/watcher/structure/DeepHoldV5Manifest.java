@@ -13,13 +13,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Production metadata wrapped around the proven V4 spatial plan.
+ * Production metadata wrapped around the compact V5 physical plan.
  *
- * <p>The room coordinates intentionally remain in {@link DeepHoldV4Plan}: changing the name of a
- * verified geometry class would add risk without changing a block. This manifest is the V5 runtime
- * contract. It fixes the canonical orientation, declares every recoverable key item, gives the build
- * a stable content fingerprint, and supplies dependency-free validation before the first block is
- * mutated.
+ * <p>The compatibility class name remains {@link DeepHoldV4Plan}, but its current revision is the
+ * smaller shared-library/keeper/camp layout. This manifest fixes the canonical orientation, declares
+ * every recoverable key item, fingerprints both content and physical revision, and validates before
+ * the first block is mutated.
  */
 public final class DeepHoldV5Manifest {
 
@@ -183,6 +182,7 @@ public final class DeepHoldV5Manifest {
     public static String contentHash() {
         List<String> lines = new ArrayList<>();
         lines.add("runtime=" + RUNTIME_VERSION);
+        lines.add("geometry=" + DeepHoldV4Plan.GEOMETRY_REVISION);
         lines.add("orientation=" + CANONICAL_ORIENTATION);
         for (DeepHoldV4Plan.Room room : DeepHoldV4Plan.ROOMS) lines.add("room=" + room);
         for (DeepHoldV4Plan.Fixture fixture : DeepHoldV4Plan.FIXTURES) lines.add("fixture=" + fixture);

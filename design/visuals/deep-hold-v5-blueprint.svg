@@ -1,115 +1,132 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100" role="img" aria-labelledby="title desc">
-  <title id="title">The Observance V5 Deep Hold build blueprint</title>
-  <desc id="desc">Three-level schematic showing the one-mouth reversible route, case districts, and gates for the command-built Deep Hold.</desc>
+  <title id="title">The Observance V5 compact Deep Hold blueprint</title>
+  <desc id="desc">A three-level schematic of the compact one-mouth Hold: Orientation and the shared Keeper archive, the civic library and service works, then the lower spine, side investigations, and Release.</desc>
   <defs>
     <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#193b45" stroke-width="1" opacity="0.42"/>
+      <path d="M20 0H0V20" fill="none" stroke="#294047" stroke-width="1" opacity=".35"/>
     </pattern>
-    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10Z" fill="#91c6ca"/>
+    </marker>
     <style>
-      .panel{fill:#09171c;stroke:#3d6972;stroke-width:2}.grid{fill:url(#grid)}
-      .route{fill:none;stroke:#7bbac2;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
-      .room{fill:#102a31;stroke:#6d9ca4;stroke-width:2}.civic{fill:#172c29;stroke:#7fa28a}.systems{fill:#2a2620;stroke:#b39a66}.prior{fill:#2b202a;stroke:#aa7f9e}.finale{fill:#211f34;stroke:#9187c7}
-      .gate{fill:#081115;stroke:#e1b96e;stroke-width:5;filter:url(#glow)}
-      .title{font:700 32px Georgia,serif;fill:#e5eef0;letter-spacing:4px}.subtitle{font:400 16px system-ui,sans-serif;fill:#91aeb4;letter-spacing:2px}
-      .level{font:700 21px system-ui,sans-serif;fill:#e5eef0;letter-spacing:2px}.label{font:600 15px system-ui,sans-serif;fill:#dbe8ea;text-anchor:middle}.minor{font:400 12px system-ui,sans-serif;fill:#98b2b7;text-anchor:middle}
-      .gate-label{font:700 12px system-ui,sans-serif;fill:#f1d498;letter-spacing:1px}.coord{font:400 11px ui-monospace,monospace;fill:#71929a}.legend{font:500 13px system-ui,sans-serif;fill:#bed0d4}
-      .north{stroke:#e1b96e;stroke-width:3;fill:none}.number{font:700 11px system-ui,sans-serif;fill:#071216;text-anchor:middle;dominant-baseline:middle}
+      .bg{fill:#071116}.frame{fill:#0b191e;stroke:#38565f;stroke-width:2}.grid{fill:url(#grid)}
+      .upper{fill:#132b31;stroke:#6c9aa1;stroke-width:2}.civic{fill:#192d29;stroke:#83a58c;stroke-width:2}.lower{fill:#28251f;stroke:#b5a06e;stroke-width:2}.finale{fill:#252139;stroke:#9388c7;stroke-width:2}
+      .inner{fill:#0e1e23;stroke:#55747b;stroke-width:1.5}.route{fill:none;stroke:#91c6ca;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+      .branch{fill:none;stroke:#668991;stroke-width:5;stroke-linecap:round}.gate{stroke:#dfb86d;stroke-width:6}.shelf{stroke:#8bb293;stroke-width:8;stroke-dasharray:7 5}
+      .title{font:700 31px Georgia,serif;fill:#e6eff0;letter-spacing:3px}.subtitle{font:400 15px system-ui,sans-serif;fill:#96afb5;letter-spacing:1.8px}
+      .level{font:700 20px system-ui,sans-serif;fill:#e6eff0;letter-spacing:2px}.label{font:600 15px system-ui,sans-serif;fill:#dce9eb;text-anchor:middle}.minor{font:400 12px system-ui,sans-serif;fill:#9bb4b9;text-anchor:middle}
+      .coord{font:400 11px ui-monospace,monospace;fill:#78979e}.gate-label{font:700 12px system-ui,sans-serif;fill:#f0d19a}.legend{font:500 13px system-ui,sans-serif;fill:#c2d2d5}.note{font:500 14px system-ui,sans-serif;fill:#dbe8ea}
     </style>
   </defs>
-  <rect width="1800" height="1100" fill="#061015"/>
-  <rect x="35" y="35" width="1730" height="1030" rx="18" class="panel"/>
-  <text x="80" y="92" class="title">DEEP HOLD · V5 BUILD AUTHORITY</text>
-  <text x="82" y="124" class="subtitle">ONE MOUTH · THREE BURIED STRATA · 82 REQUIRED NODES · ALL ROUTES REVERSIBLE AFTER OPEN</text>
-  <path d="M1650 120 v-52 m0 0 l-12 20 m12-20 12 20" class="north"/>
-  <text x="1650" y="140" class="coord" text-anchor="middle">+Z / FORWARD</text>
 
-  <g transform="translate(70 170)">
-    <rect width="520" height="780" rx="14" class="panel grid"/>
-    <text x="24" y="40" class="level">UPPER HOLD · FLOOR Y −40</text>
-    <text x="24" y="62" class="coord">local X −98..98 · Z −6..296 · case families C01–C03</text>
-    <path d="M260 84 V190 V300 V622 V710" class="route"/>
-    <rect x="225" y="82" width="70" height="98" rx="28" class="room"/>
-    <text x="260" y="118" class="label">MOUTH</text><text x="260" y="138" class="minor">surface + grand stair</text><text x="260" y="155" class="minor">only entrance / exit</text>
-    <rect x="110" y="194" width="300" height="82" rx="8" class="room"/>
-    <text x="260" y="226" class="label">ORIENTATION</text><text x="260" y="247" class="minor">C01 Lost Server · C02 Long Cold</text><text x="260" y="263" class="minor">Survey Seal</text>
-    <rect x="242" y="280" width="36" height="14" rx="3" class="gate"/><text x="288" y="291" class="gate-label">G1</text>
-    <rect x="175" y="310" width="170" height="285" rx="10" class="room"/>
-    <text x="260" y="445" class="label">KEEPER COURT</text><text x="260" y="466" class="minor">18-node dossier hub</text><text x="260" y="483" class="minor">six distinct people</text>
-    <rect x="20" y="310" width="135" height="72" rx="7" class="room"/><text x="87" y="340" class="label">VAUN</text><text x="87" y="359" class="minor">stores</text>
-    <rect x="20" y="401" width="135" height="72" rx="7" class="room"/><text x="87" y="431" class="label">ISS</text><text x="87" y="450" class="minor">heat office</text>
-    <rect x="20" y="492" width="135" height="72" rx="7" class="room"/><text x="87" y="522" class="label">BRANN</text><text x="87" y="541" class="minor">watch</text>
-    <rect x="365" y="310" width="135" height="72" rx="7" class="room"/><text x="432" y="340" class="label">MARA</text><text x="432" y="359" class="minor">routes</text>
-    <rect x="365" y="401" width="135" height="72" rx="7" class="room"/><text x="432" y="431" class="label">SELLA</text><text x="432" y="450" class="minor">school / shore</text>
-    <rect x="365" y="492" width="135" height="72" rx="7" class="room"/><text x="432" y="522" class="label">ORIN</text><text x="432" y="541" class="minor">masonry</text>
-    <path d="M155 346 H175 M155 437 H175 M155 528 H175 M345 346 H365 M345 437 H365 M345 528 H365" stroke="#3d6972" stroke-width="4"/>
-    <rect x="242" y="608" width="36" height="14" rx="3" class="gate"/><text x="288" y="619" class="gate-label">G2</text>
-    <rect x="205" y="638" width="110" height="100" rx="25" class="civic room"/>
-    <text x="260" y="676" class="label">CIVIC</text><text x="260" y="696" class="label">DESCENT</text><text x="260" y="716" class="minor">reversible switchback</text>
-    <text x="20" y="760" class="coord">Mouth crown local Y +12 · upper roof ≤ −16</text>
+  <rect width="1800" height="1100" class="bg"/>
+  <rect x="35" y="35" width="1730" height="1030" rx="18" class="frame"/>
+  <text x="80" y="90" class="title">DEEP HOLD / V5 COMPACT BUILD</text>
+  <text x="82" y="122" class="subtitle">ONE PUBLIC MOUTH / 12 SHARED SPACES / 76 AUTHORED FIXTURES / 8 CONTROLLED THRESHOLDS</text>
+  <text x="1455" y="86" class="coord">local footprint X -76..76</text>
+  <text x="1455" y="106" class="coord">local footprint Z -6..233</text>
+  <text x="1455" y="126" class="coord">canonical direction +Z</text>
+
+  <g transform="translate(70 165)">
+    <rect width="520" height="790" rx="14" class="frame grid"/>
+    <text x="24" y="40" class="level">UPPER ARCHIVE / Y -40</text>
+    <text x="24" y="62" class="coord">Orientation + one Keeper hall / X -62..62 / Z 106..210</text>
+
+    <path d="M260 86V168" class="route"/>
+    <ellipse cx="260" cy="92" rx="46" ry="30" class="upper"/>
+    <text x="260" y="88" class="label">MOUTH</text><text x="260" y="106" class="minor">only entrance</text>
+    <rect x="120" y="174" width="280" height="88" rx="9" class="upper"/>
+    <text x="260" y="208" class="label">ORIENTATION REGISTRY</text>
+    <text x="260" y="229" class="minor">first records / covered copy / callback 9137</text>
+    <line x1="215" y1="276" x2="305" y2="276" class="gate"/><text x="318" y="280" class="gate-label">G1</text>
+
+    <rect x="45" y="296" width="430" height="310" rx="12" class="upper"/>
+    <rect x="200" y="316" width="120" height="270" rx="8" class="inner"/>
+    <text x="260" y="347" class="label">KEEPER ARCHIVE</text>
+    <text x="260" y="368" class="minor">one visible shared work floor</text>
+    <g>
+      <rect x="62" y="326" width="118" height="66" rx="7" class="inner"/><text x="121" y="355" class="label">VAUN</text><text x="121" y="375" class="minor">stores</text>
+      <rect x="340" y="326" width="118" height="66" rx="7" class="inner"/><text x="399" y="355" class="label">MARA</text><text x="399" y="375" class="minor">five books</text>
+      <rect x="62" y="415" width="118" height="66" rx="7" class="inner"/><text x="121" y="444" class="label">ISS</text><text x="121" y="464" class="minor">heat office</text>
+      <rect x="340" y="415" width="118" height="66" rx="7" class="inner"/><text x="399" y="444" class="label">SELLA</text><text x="399" y="464" class="minor">school / shore</text>
+      <rect x="62" y="504" width="118" height="66" rx="7" class="inner"/><text x="121" y="533" class="label">BRANN</text><text x="121" y="553" class="minor">watch</text>
+      <rect x="340" y="504" width="118" height="66" rx="7" class="inner"/><text x="399" y="533" class="label">ORIN</text><text x="399" y="553" class="minor">six dials</text>
+    </g>
+    <path d="M180 359H200M320 359H340M180 448H200M320 448H340M180 537H200M320 537H340" class="branch"/>
+    <line x1="215" y1="620" x2="305" y2="620" class="gate"/><text x="318" y="624" class="gate-label">G2</text>
+    <path d="M260 638C198 650 198 680 260 692C322 704 322 734 260 746" class="route"/>
+    <text x="260" y="770" class="minor">two-flight staff stair / reversible</text>
   </g>
 
-  <g transform="translate(640 170)">
-    <rect width="520" height="780" rx="14" class="panel grid"/>
-    <text x="24" y="40" class="level">CIVIC HOLD · FLOOR Y −68</text>
-    <text x="24" y="62" class="coord">local X −102..102 · Z 40..300 · cases C04–C06</text>
-    <path d="M260 82 V680 M260 125 H100 V590 H260 M260 125 H420 V590 H260" class="route"/>
-    <rect x="205" y="85" width="110" height="520" rx="12" class="civic room"/>
-    <text x="260" y="330" class="label">ARCHIVE</text><text x="260" y="351" class="label">NAVE</text><text x="260" y="372" class="minor">two looping evidence streets</text>
-    <rect x="20" y="100" width="155" height="58" rx="7" class="civic room"/><text x="97" y="126" class="label">SCHOOL</text><text x="97" y="145" class="minor">life + Sella</text>
-    <rect x="20" y="176" width="155" height="58" rx="7" class="civic room"/><text x="97" y="202" class="label">MARKERS</text><text x="97" y="221" class="minor">chronology</text>
-    <rect x="20" y="252" width="155" height="78" rx="7" class="civic room"/><text x="97" y="280" class="label">CISTERN A</text><text x="97" y="299" class="minor">complaints · samples</text><text x="97" y="316" class="minor">valves · rota</text>
-    <rect x="20" y="348" width="155" height="58" rx="7" class="civic room"/><text x="97" y="374" class="label">WATCH</text><text x="97" y="393" class="minor">Brann proof</text>
-    <rect x="20" y="424" width="155" height="58" rx="7" class="civic room"/><text x="97" y="450" class="label">EDITED SHELF</text><text x="97" y="469" class="minor">copy provenance</text>
-    <rect x="20" y="500" width="155" height="78" rx="7" class="civic room"/><text x="97" y="528" class="label">FAR WATER</text><text x="97" y="547" class="minor">reeds cache</text><text x="97" y="564" class="minor">well redirect</text>
-    <rect x="345" y="100" width="155" height="58" rx="7" class="civic room"/><text x="422" y="126" class="label">MARKET</text><text x="422" y="145" class="minor">invoice grid</text>
-    <rect x="345" y="176" width="155" height="58" rx="7" class="civic room"/><text x="422" y="202" class="label">RATIONS</text><text x="422" y="221" class="minor">heat accounts</text>
-    <rect x="345" y="252" width="155" height="78" rx="7" class="civic room"/><text x="422" y="280" class="label">BREAK FILES</text><text x="422" y="299" class="minor">maps · letters</text><text x="422" y="316" class="minor">Unlit handoff</text>
-    <rect x="345" y="348" width="155" height="58" rx="7" class="civic room"/><text x="422" y="374" class="label">WARM COLLAPSE</text><text x="422" y="393" class="minor">Iss contradiction</text>
-    <rect x="345" y="424" width="155" height="58" rx="7" class="civic room"/><text x="422" y="450" class="label">FILTER STORES</text><text x="422" y="469" class="minor">Cistern B + Seal</text>
-    <rect x="345" y="500" width="155" height="78" rx="7" class="civic room"/><text x="422" y="528" class="label">COOPS</text><text x="422" y="547" class="minor">warning chronology</text><text x="422" y="564" class="minor">civic witness duty</text>
-    <rect x="130" y="625" width="260" height="92" rx="10" class="systems room"/>
-    <text x="260" y="655" class="label">PUZZLE WORKS</text><text x="260" y="675" class="minor">C06 restoration · stable controls</text><text x="260" y="692" class="minor">filter · lamps · shelves · dials · line</text>
-    <rect x="242" y="608" width="36" height="14" rx="3" class="gate"/><text x="288" y="619" class="gate-label">G3</text>
-    <text x="20" y="760" class="coord">Village well -> eight-house Unlit -> return to Mouth -> G3</text>
+  <g transform="translate(640 165)">
+    <rect width="520" height="790" rx="14" class="frame grid"/>
+    <text x="24" y="40" class="level">CIVIC LIBRARY / Y -68</text>
+    <text x="24" y="62" class="coord">Open evidence floor + Service Works / X -66..66 / Z 10..208</text>
+
+    <path d="M260 84V126" class="route"/>
+    <rect x="34" y="126" width="452" height="390" rx="12" class="civic"/>
+    <line x1="72" y1="158" x2="72" y2="485" class="shelf"/>
+    <line x1="448" y1="158" x2="448" y2="485" class="shelf"/>
+    <path d="M260 144V494" class="route"/>
+    <text x="260" y="170" class="label">ONE CIVIC LIBRARY</text>
+    <text x="260" y="192" class="minor">central reading floor / two evidence streets / loops rejoin</text>
+    <text x="142" y="242" class="label">WEST STREET</text>
+    <text x="142" y="266" class="minor">school / markers</text><text x="142" y="286" class="minor">cistern / watch</text><text x="142" y="306" class="minor">edited shelf / far water</text>
+    <text x="378" y="242" class="label">EAST STREET</text>
+    <text x="378" y="266" class="minor">market / rations</text><text x="378" y="286" class="minor">break files / warmth</text><text x="378" y="306" class="minor">filter stores / coops</text>
+    <rect x="120" y="346" width="280" height="108" rx="8" class="inner"/>
+    <text x="260" y="384" class="label">ACTIVE RECORD FLOOR</text>
+    <text x="260" y="407" class="minor">lecterns / shelves / cases / ordinary work evidence</text>
+    <text x="260" y="429" class="minor">no freestanding puzzle-room props</text>
+
+    <line x1="215" y1="536" x2="305" y2="536" class="gate"/><text x="318" y="540" class="gate-label">G3</text>
+    <rect x="105" y="560" width="310" height="104" rx="10" class="civic"/>
+    <text x="260" y="600" class="label">SERVICE WORKS</text>
+    <text x="260" y="623" class="minor">restoration controls / practical light / lower descent</text>
+    <path d="M260 664C198 676 198 706 260 718C322 730 322 752 260 766" class="route"/>
   </g>
 
-  <g transform="translate(1210 170)">
-    <rect width="520" height="780" rx="14" class="panel grid"/>
-    <text x="24" y="40" class="level">LOWER HOLD · FLOOR Y −96</text>
-    <text x="24" y="62" class="coord">local X −112..114 · Z 40..378 · cases C07–C10</text>
-    <path d="M260 80 V735" class="route"/>
-    <rect x="135" y="86" width="250" height="78" rx="9" class="systems room"/>
-    <text x="260" y="116" class="label">LOWER WORKS</text><text x="260" y="136" class="minor">systems sync · Deep Access Plate</text><text x="260" y="151" class="minor">G4 opens Threshold</text>
-    <rect x="242" y="170" width="36" height="14" rx="3" class="gate"/><text x="288" y="181" class="gate-label">G4</text>
-    <rect x="185" y="196" width="150" height="58" rx="7" class="prior room"/><text x="260" y="222" class="label">CASE BOARD</text><text x="260" y="241" class="minor">locate Camp Ash</text>
-    <rect x="20" y="275" width="175" height="152" rx="10" class="prior room"/>
-    <text x="107" y="309" class="label">ASH-13 CAMP</text><text x="107" y="331" class="minor">four stations · barrels</text><text x="107" y="350" class="minor">notebook · overlay</text><text x="107" y="369" class="minor">Copperline · footage</text><text x="107" y="388" class="minor">Locker 13 · Spool</text>
-    <rect x="325" y="275" width="175" height="152" rx="10" class="prior room"/>
-    <text x="412" y="309" class="label">WREN RELAY</text><text x="412" y="331" class="minor">quotes · transmissions</text><text x="412" y="350" class="minor">confront · blocked route</text><text x="412" y="369" class="minor">Protocol Bridge</text><text x="412" y="388" class="minor">three-way reckoning</text>
-    <rect x="205" y="286" width="110" height="126" rx="8" class="prior room"/>
-    <text x="260" y="332" class="label">DREAD</text><text x="260" y="353" class="minor">mandatory bounded</text><text x="260" y="372" class="minor">evidence route</text><text x="260" y="391" class="minor">never a maze</text>
-    <path d="M195 350 H205 M315 350 H325" stroke="#6d9ca4" stroke-width="4"/>
-    <rect x="242" y="440" width="36" height="14" rx="3" class="gate"/><text x="288" y="451" class="gate-label">G5</text>
-    <rect x="115" y="468" width="290" height="112" rx="10" class="finale room"/>
-    <text x="260" y="500" class="label">AVERYN ARCHIVE</text><text x="260" y="522" class="minor">spectrogram · six affidavits</text><text x="260" y="541" class="minor">A · V · E · R · Y · N</text><text x="260" y="560" class="minor">human interface of the Record</text>
-    <rect x="242" y="592" width="36" height="14" rx="3" class="gate"/><text x="288" y="603" class="gate-label">G6</text>
-    <rect x="85" y="620" width="350" height="118" rx="12" class="finale room"/>
-    <text x="260" y="652" class="label">RELEASE CHAMBER</text><text x="260" y="674" class="minor">six affidavits returned · Averyn slot empty</text><text x="260" y="693" class="minor">Publish / Release unnamed</text><text x="260" y="712" class="minor">save → goodbye → kick → shutdown → Coda</text>
-    <text x="20" y="760" class="coord">Foundation local Y −104 · ≥12 blocks above dimension minimum</text>
+  <g transform="translate(1210 165)">
+    <rect width="520" height="790" rx="14" class="frame grid"/>
+    <text x="24" y="40" class="level">LOWER HOLD / Y -96</text>
+    <text x="24" y="62" class="coord">Shared spine + two side investigations / X -76..70 / Z 10..233</text>
+
+    <path d="M260 84V142" class="route"/>
+    <rect x="118" y="142" width="284" height="84" rx="9" class="lower"/>
+    <text x="260" y="174" class="label">LOWER WORKROOM</text><text x="260" y="197" class="minor">reckoning / Deep Access Plate / return landing</text>
+    <line x1="215" y1="244" x2="305" y2="244" class="gate"/><text x="318" y="248" class="gate-label">G4</text>
+
+    <rect x="200" y="266" width="120" height="222" rx="9" class="lower"/>
+    <text x="260" y="296" class="label">LOWER SPINE</text>
+    <rect x="20" y="286" width="160" height="182" rx="10" class="lower"/>
+    <text x="100" y="320" class="label">PRIOR CASE</text><text x="100" y="341" class="minor">location proof</text>
+    <line x1="52" y1="364" x2="148" y2="364" class="gate"/><text x="100" y="387" class="gate-label" text-anchor="middle">PRIOR</text>
+    <text x="100" y="418" class="label">ASH-13 CAMP</text><text x="100" y="440" class="minor">notebook / barrels / spool</text>
+    <rect x="340" y="286" width="160" height="182" rx="10" class="lower"/>
+    <text x="420" y="320" class="label">THRESHOLD</text><text x="420" y="341" class="minor">Wren / relay</text>
+    <line x1="372" y1="364" x2="468" y2="364" class="gate"/><text x="420" y="387" class="gate-label" text-anchor="middle">DREAD</text>
+    <text x="420" y="418" class="label">DREAD FILE</text><text x="420" y="440" class="minor">bounded required evidence</text>
+    <path d="M180 377H200M320 377H340" class="branch"/>
+
+    <line x1="215" y1="510" x2="305" y2="510" class="gate"/><text x="318" y="514" class="gate-label">G5</text>
+    <rect x="105" y="534" width="310" height="74" rx="9" class="finale"/>
+    <text x="260" y="565" class="label">ACCEPTING / AVERYN</text><text x="260" y="586" class="minor">six affidavits / A V E R Y N / conduct record</text>
+    <line x1="215" y1="628" x2="305" y2="628" class="gate"/><text x="318" y="632" class="gate-label">G6</text>
+    <rect x="88" y="650" width="344" height="62" rx="9" class="finale"/>
+    <text x="260" y="687" class="label">UNWRITING</text>
+    <path d="M260 712V728" class="route"/>
+    <rect x="118" y="728" width="284" height="48" rx="9" class="finale"/>
+    <text x="260" y="758" class="label">RELEASE / SEVER RECORD</text>
   </g>
 
-  <g transform="translate(80 990)">
-    <rect x="0" y="0" width="18" height="18" class="room"/><text x="28" y="14" class="legend">opening / dossiers</text>
-    <rect x="180" y="0" width="18" height="18" class="civic room"/><text x="208" y="14" class="legend">civic cases</text>
-    <rect x="330" y="0" width="18" height="18" class="systems room"/><text x="358" y="14" class="legend">systems</text>
-    <rect x="460" y="0" width="18" height="18" class="prior room"/><text x="488" y="14" class="legend">ASH-13 / Wren</text>
-    <rect x="625" y="0" width="18" height="18" class="finale room"/><text x="653" y="14" class="legend">Averyn / release</text>
-    <rect x="795" y="1" width="28" height="14" rx="3" class="gate"/><text x="835" y="14" class="legend">persistent gate</text>
-    <path d="M965 9 H1015" class="route"/><text x="1028" y="14" class="legend">player route; two-way after open</text>
-    <text x="1380" y="14" class="coord">Footprint approx. 236 × 384 blocks · one fixed +Z orientation</text>
+  <g transform="translate(80 995)">
+    <rect x="0" y="0" width="18" height="18" class="upper"/><text x="28" y="14" class="legend">registry / Keepers</text>
+    <rect x="190" y="0" width="18" height="18" class="civic"/><text x="218" y="14" class="legend">library / service</text>
+    <rect x="370" y="0" width="18" height="18" class="lower"/><text x="398" y="14" class="legend">lower work / branches</text>
+    <rect x="590" y="0" width="18" height="18" class="finale"/><text x="618" y="14" class="legend">Averyn / Release</text>
+    <line x1="790" y1="9" x2="850" y2="9" class="gate"/><text x="866" y="14" class="legend">persistent gate</text>
+    <path d="M1035 9H1100" class="route"/><text x="1116" y="14" class="legend">two-way route after opening</text>
+    <text x="1480" y="14" class="coord">old outer wings are backfilled during same-Mouth replacement</text>
   </g>
+  <text x="80" y="1050" class="note">Every fixture, book mount, container, gate and finale control remains runtime-owned and is audited after the shell is complete.</text>
 </svg>

@@ -19,7 +19,7 @@ import java.util.Set;
 /** Exact readable payload authority for portable V5 evidence books. */
 public final class V5EvidenceItemTextAuthority {
     public static final String RESOURCE = "v5/authority/evidence-item-text.json";
-    public static final int EXPECTED_ITEMS = 20;
+    public static final int EXPECTED_ITEMS = 7;
 
     public record Entry(String id, String nodeId, String material, String title,
                         String author, List<String> pages) {
@@ -91,7 +91,7 @@ public final class V5EvidenceItemTextAuthority {
             }
             if (entries.size() != EXPECTED_ITEMS) issues.add("expected " + EXPECTED_ITEMS
                     + " evidence texts, found " + entries.size());
-            if (!nodeIds.equals(Set.of("WR01", "BI01", "HS04", "CW07"))) {
+            if (!nodeIds.equals(Set.of("WR01", "BI01", "CW07"))) {
                 issues.add("evidence text node coverage is " + nodeIds);
             }
             return new Catalog(schema, entries, issues);
