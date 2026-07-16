@@ -234,6 +234,11 @@ export const voice = {
     return 'i will keep something of yours while you think. your light, for tonight.';
   },
 
+  /** An authored hint request is held until its exact words receive director approval. */
+  whisperPending(): string {
+    return 'the words are set aside. they will not be spoken until they are entered whole.';
+  },
+
   /** no whispers left to spend this act. patient, final, not a refusal of the player. */
   noBudget(): string {
     return 'there is nothing more i will say of this. not yet.';

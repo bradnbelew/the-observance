@@ -1,0 +1,45 @@
+{
+  "schema_version": "2.0.0-m2",
+  "authority": "PHASE-2-EVIDENCE-ARCHITECTURE.md",
+  "authority_sha256_lf": "e3f8d41e724609a38275cca3c9348e75766c9e956f72502c9bac797c164a7c3f",
+  "choices": [
+    {
+      "choice_id": "wren_remembrance",
+      "arc_id": "P10",
+      "options": [
+        "condemn",
+        "understand",
+        "free"
+      ],
+      "facts_fixed_before_choice": true,
+      "protected_surface": true,
+      "immutable_after_commit": true,
+      "automation_may_select": false,
+      "affects": "remembrance_only"
+    },
+    {
+      "choice_id": "averyn_name_treatment",
+      "arc_id": "P12",
+      "options": [
+        "publish",
+        "deliberately_unfile"
+      ],
+      "plain_language_states_universal_release": true,
+      "protected_surface": true,
+      "immutable_after_commit": true,
+      "automation_may_select": false,
+      "commit_gate": "player_confirmation_plus_operator_arm",
+      "affects": "coda_wording_only"
+    }
+  ],
+  "universal_outcome": {
+    "outcome_id": "record_closed_averyn_freed",
+    "required_for_every_valid_path": true,
+    "branch_matrix_forbidden": true
+  },
+  "deliberately_unresolved": [
+    "end_voice_metaphysical_continuity",
+    "dark_ultimate_nature",
+    "wren_post_closure_autonomy"
+  ]
+}

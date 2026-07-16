@@ -79,26 +79,32 @@ public final class AmbientBeatGenerator {
 
         // Update each player's ATTENTION from their situation (alone/deep/dark/night), decaying first so
         // a scared moment fades instead of snowballing into a haywire cascade.
-        attention.decayAll();
-        for (Player p : online) {
-            if (p == null || !p.isOnline()) continue;
-            double delta = situationDelta(p, online);
-            if (delta != 0.0) attention.add(p.getUniqueId(), delta);
+        if (!safeAmbientOnly) {
+            attention.decayAll();
+            for (Player p : online) {
+                if (p == null || !p.isOnline()) continue;
+                double delta = situationDelta(p, online);
+                if (delta != 0.0) attention.add(p.getUniqueId(), delta);
+            }
         }
 
         // Focus = a player chosen WEIGHTED by attention (with a calm floor for fairness), so the lonely
         // deep miner draws the Watcher far more than the group at base — the haunting feels like
         // "it knows me", not a dice roll.
-        Player focus = pickWeightedFocus(online);
+        Player focus = safeAmbientOnly
+                ? online.get(ThreadLocalRandom.current().nextInt(online.size()))
+                : pickWeightedFocus(online);
         if (focus == null || !focus.isOnline()) return;
 
         // RESTRAINT (the upstream "should anything happen at all" gate): at low attention, usually stay
         // quiet — the world must feel almost-normal. The DramaBudget still gates every fire below.
-        Attention.Tier tier = attention.tier(focus.getUniqueId());
-        if (ThreadLocalRandom.current().nextDouble() < Attention.skipProbability(tier)) return;
+        Attention.Tier tier = safeAmbientOnly
+                ? Attention.Tier.CALM : attention.tier(focus.getUniqueId());
+        if (!safeAmbientOnly
+                && ThreadLocalRandom.current().nextDouble() < Attention.skipProbability(tier)) return;
 
         // Optionally anchor to a placed site the player is currently inside (beats land where seen).
-        Site site = siteContaining(focus);
+        Site site = safeAmbientOnly ? null : siteContaining(focus);
 
         BeatRequest req = new BeatRequest(
                 "ambient-" + UUID.randomUUID(),
@@ -108,7 +114,7 @@ public final class AmbientBeatGenerator {
                 site,
                 BeatPayload.empty());
 
-        AmbientChoice choice = pickScaryAmbient(tier, req);
+        AmbientChoice choice = safeAmbientOnly ? pickSafeA1(req) : pickScaryAmbient(tier, req);
         // In V5-safe mode the curated sensory choices are the ONLY thing that may fire; never fall
         // back to the broad library pool (which can include durable / authored-text ambient beats).
         Beat beat;
@@ -154,7 +160,21 @@ public final class AmbientBeatGenerator {
      * over several considerations rather than spiking instantly.
      */
     private AmbientChoice pickScaryAmbient(Attention.Tier tier, BeatRequest baseReq) {
-        AmbientChoice[] choices = scaryChoices(tier, baseReq.site());
+        return pickChoice(scaryChoices(tier, baseReq.site()), baseReq);
+    }
+
+    /** M2 A1 palette: non-personal, text-free, ephemeral, and independent of route/attention. */
+    private AmbientChoice pickSafeA1(BeatRequest baseReq) {
+        return pickChoice(new AmbientChoice[]{
+                new AmbientChoice("private_sound",
+                        "{\"sound\":\"AMBIENT_CAVE\",\"volume\":0.65,\"pitch\":0.7,\"behind\":true,\"offset\":3.0}", 3),
+                new AmbientChoice("private_particle",
+                        "{\"particle\":\"ASH\",\"count\":20,\"spread\":0.6,\"speed\":0.0,\"height\":1.0,\"near_player\":true,\"offset\":2.0}", 2),
+                new AmbientChoice("proximity_dim", "{\"seconds\":4}", 1)
+        }, baseReq);
+    }
+
+    private AmbientChoice pickChoice(AmbientChoice[] choices, BeatRequest baseReq) {
         int total = 0;
         for (AmbientChoice c : choices) {
             if (c.weight <= 0) continue;
@@ -245,11 +265,7 @@ public final class AmbientBeatGenerator {
                         2),
                 new AmbientChoice("private_sound",
                         "{\"named_sound\":\"observance:stone_breath\",\"volume\":0.25,\"pitch\":0.55,\"behind\":true,\"offset\":9.0}",
-                        dread ? 2 : 0),
-                // The signature "it knows ME": the lonely, deep, high-attention player's own name in
-                // runes on the wall in front of them, seen by no one else, gone the instant they look
-                // away. Derived text (their name), no writes, non-persistent — DREAD tier only.
-                new AmbientChoice("name_on_wall", "{\"seconds\":5}", dread ? 3 : 0)
+                        dread ? 2 : 0)
         };
     }
 

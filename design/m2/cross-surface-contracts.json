@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "release_identity": ["git_commit", "manifest_version", "predicate_raw_sha256", "schema_version"],
+  "parity_rule": "Every surface receipt must name the same release identity before cutover; missing or conflicting identity fails closed.",
+  "surfaces": [
+    {
+      "surface": "paper_crafty",
+      "owns": ["physical_world_truth", "protected_regions", "routes", "repairs", "artifacts", "protected_choices", "finale_theater", "local_coda"],
+      "accepts_external": ["identity_link", "approved_exact_hint", "committed_cross_surface_receipt"],
+      "must_not": ["let_remote_state_override_local_physical_truth", "escrow_survival_inventory", "depend_on_railway_for_finale"],
+      "failure_mode": "continue already-open local play; queue bounded projections; fail closed at unacknowledged cross-surface commits"
+    },
+    {
+      "surface": "supabase",
+      "owns": ["cross_surface_identity", "receipt_provenance", "contributors", "hint_approvals", "media_reveals", "leases", "mirrored_choices", "release_receipts"],
+      "must_not": ["select_choices", "clear_local_progress", "store_plaintext_proof_secrets", "become_physical_authority"],
+      "failure_mode": "Paper remains primary; writes retry by stable idempotency key"
+    },
+    {
+      "surface": "vercel",
+      "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+      "owns": ["copperline", "prologue_delivery", "earned_media_wrappers", "help_requests", "public_record", "director_console", "web_coda"],
+      "must_not": ["direct_world_mutation", "second_progression_authority"],
+      "failure_mode": "read-only earned projections may lag; no inferred solve"
+    },
+    {
+      "surface": "railway_worker",
+      "owns": ["discord_client", "identity_commands", "docket", "hint_request_queue", "receipt_media_coda_mirrors", "fast_lease_loop"],
+      "must_not": ["automatic_solution_hint", "automatic_personalized_beat", "choice_selection", "required_timed_story"],
+      "failure_mode": "recovery family may replay the same leased idempotent task only"
+    },
+    {
+      "surface": "railway_recovery",
+      "owns": ["ten_minute_recovery_invocation_of_shared_tasks"],
+      "must_not": ["second_showrunner", "independent_story_schedule", "duplicate_delivery"],
+      "failure_mode": "lease conflict produces no effect"
+    },
+    {
+      "surface": "discord",
+      "owns": ["identity_proof_completion", "open_docket", "pending_hint_request", "approved_delivery", "mirrors"],
+      "must_not": ["auto_escalate_hint", "leak_future_arc", "replace_minecraft_archive"],
+      "failure_mode": "request remains pending or expires; no hint body is delivered without approval"
+    },
+    {
+      "surface": "media",
+      "owns": ["source_and_derivative_hashes", "accessibility_companions", "reveal_routes", "rollback_copies"],
+      "must_not": ["overwrite_original", "premature_index", "untracked_replacement"],
+      "failure_mode": "earned route reports degraded custody; alternative evidence remains investigable"
+    }
+  ],
+  "same_release_receipt": {
+    "required_fields": ["surface", "environment", "git_commit", "manifest_version", "predicate_raw_sha256", "schema_version", "artifact_hashes", "observed_at"],
+    "production_requires_real_platform_confirmation": true,
+    "preview_or_local_never_counts_as_production": true
+  }
+}

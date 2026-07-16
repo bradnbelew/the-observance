@@ -34,6 +34,7 @@ dependencies {
     // Gson — Paper bundles Gson on its classpath, so compileOnly is enough to compile.
     compileOnly 'com.google.code.gson:gson:2.11.0'
     // Main()-driven authority parity tests execute outside Paper, so provide Gson only to tests.
+    testCompileOnly 'com.google.code.gson:gson:2.11.0'
     testRuntimeOnly 'com.google.code.gson:gson:2.11.0'
 
     // WorldEdit API — compileOnly + softdepend (plugin.yml). The schematic-paste branch of
@@ -72,7 +73,10 @@ def pluginSelfTests = [
     v5PhysicalComponentCatalog: 'com.observance.watcher.v5runtime.install.V5PhysicalComponentCatalogSelfTest',
     v5MechanicsEngine: 'com.observance.watcher.v5runtime.mechanics.V5MechanicsEngineSelfTest',
     v5ContainerEngine: 'com.observance.watcher.v5runtime.container.ContainerEngineSelfTest',
-    v5RitualFinale: 'com.observance.watcher.v5runtime.ritual.RitualFinaleSelfTest'
+    v5RitualFinale: 'com.observance.watcher.v5runtime.ritual.RitualFinaleSelfTest',
+    m2AtomicPredicateRuntime: 'com.observance.watcher.m2runtime.AtomicPredicateRuntimeSelfTest',
+    m2AutomationApprovalPolicy: 'com.observance.watcher.m2runtime.AutomationApprovalPolicySelfTest',
+    m2LocalPrimaryJournal: 'com.observance.watcher.m2runtime.LocalPrimaryJournalSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

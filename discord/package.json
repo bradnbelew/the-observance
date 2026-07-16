@@ -22,6 +22,7 @@
     "v5check": "tsx src/v5/canon.selftest.ts",
     "v5bindingcheck": "tsx src/v5/runtime-bindings.selftest.ts",
     "v5surfacecheck": "tsx src/v5/surface.selftest.ts",
+    "m2approvalcheck": "tsx src/v5/approval-gates.selftest.ts",
     "identitycheck": "tsx src/v5/identity-link.selftest.ts",
     "gatecheck": "tsx src/oracle/gate.selftest.ts",
     "resolvecheck": "tsx src/oracle/resolve.selftest.ts",

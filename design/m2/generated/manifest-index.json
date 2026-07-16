@@ -1,0 +1,45 @@
+{
+  "schema_version": "2.0.0-m2",
+  "manifests": [
+    {
+      "path": "arc-manifest.json",
+      "sha256": "3f44d727c33be143e2fcdd1373525c2a5d1f3571ea2117bcf2617b6239c1864e"
+    },
+    {
+      "path": "finding-manifest.json",
+      "sha256": "476795750559730991ba6be2f8ddf71b0b698ca98d14da8ee70368f878cfde33"
+    },
+    {
+      "path": "observation-manifest.json",
+      "sha256": "6823aaed1b5b98e3a4238128b0d85c3227daa6c7819a96c5468209e8213a4e27"
+    },
+    {
+      "path": "artifact-manifest.json",
+      "sha256": "99ed9e486d728f8c8b885da7479bb8a083b4721ef5e7bcb565e64e4a0581b5ca"
+    },
+    {
+      "path": "choice-manifest.json",
+      "sha256": "4b065f0e0aff98094977d6d663ad0eb8df75f58b28e217b1eba377645483c3ca"
+    },
+    {
+      "path": "legacy-import-map.json",
+      "sha256": "7474bbf95de3b30f22bbdb8c4a07b47ccc42c1c2f2537defcd304f1465445ae5"
+    }
+  ],
+  "manifest_set_sha256": "f3fc93dd2886c83b31f4b27c2538a0b5b268da5703f35ce40c9240ab019cd410",
+  "counts": {
+    "arcs": 12,
+    "findings": 68,
+    "observation_sets": 68,
+    "artifacts": 21,
+    "protected_choices": 2,
+    "legacy_dispositions": 82
+  },
+  "invariants": {
+    "ordered_arcs": 12,
+    "legacy_node_quota": false,
+    "any_subset_progress": true,
+    "universal_averyn_release": true,
+    "deliberately_unresolved_ambiguities": 3
+  }
+}

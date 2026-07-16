@@ -32,7 +32,7 @@ $$;
 insert into public.settings (key,value,updated_at) values
   ('v5_campaign_version', to_jsonb('v5'::text), now()),
   ('v5_physical_authority_sha256',
-   to_jsonb('37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b'::text), now())
+   to_jsonb('16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a'::text), now())
 on conflict (key) do update set value=excluded.value, updated_at=excluded.updated_at;
 
 insert into public.investigations

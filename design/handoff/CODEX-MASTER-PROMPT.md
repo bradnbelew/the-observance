@@ -39,6 +39,12 @@ Work in the repo at its root. There is a heavily-modified but committed worktree
 --hard`, `checkout` away, `clean`, or bulk-delete. The `design/` archive is a working, self-enforced
 supersession system, not cruft.**
 
+> **CURRENT CONTINUATION OVERRIDE:** M2 technical contracts and isolated implementation are complete.
+> Read the spine, conformance, continuation/checkpoint ledger, approved Phase 1/2 authorities, and
+> `../m2/M2-TECHNICAL-CONTRACTS.md` plus its routed JSON/SQL authorities. M3 is open under Brad's
+> standing approval: design and prove the coarse adjacency and one private vertical slice for Brad.
+> Do not mutate production, access Crafty, edit media bytes, or begin the full district build.
+
 ## What this is (read before doing anything)
 
 A prior pass added polish — reawakened the ambient Watcher, rebuilt the finale to ~70s, de-kiosked the

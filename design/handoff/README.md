@@ -28,6 +28,12 @@
 > is M2 technical contracts and isolated implementation. Current predicates, schema, cases, media bytes,
 > geometry, and live systems remain unchanged until their later gates.
 
+> **M2 COMPLETE / M3 OPEN:** Read `../m2/M2-TECHNICAL-CONTRACTS.md`, its generated manifests,
+> predicate chain, cross-surface contract, and SQL proposals. M2 reconciled the exact historical
+> `37020...` bytes, established LF authority `16de...`, implemented isolated atomic predicate,
+> local-primary, and approval contracts, and passed the non-live matrix. Production remains untouched.
+> Under Brad's standing approval, M3 is a private vertical slice only, after coarse adjacency/slice gates.
+
 > **AUTONOMOUS CONTINUATION:** Brad authorized the rebuild to continue through all remaining phases on
 > 2026-07-15. Read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`. Every phase must be audited,
 > committed, recorded, and handed to a fresh task from the exact checkpoint before the next phase begins.

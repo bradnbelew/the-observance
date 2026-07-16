@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "contract": "raw bytes identify a deployable authority; canonical JSON identifies semantic equivalence",
+  "hash_algorithm": "sha256",
+  "semantic_canonicalization": "UTF-8 JSON, recursively sorted object keys, no insignificant whitespace, ensure_ascii=false",
+  "versions": [
+    {
+      "version_id": "v5-live-receipt-2026-07-14",
+      "raw_sha256": "37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b",
+      "semantic_sha256": "d2eec35f58cf79a30f2255f429cb0d19a5c1e8b5bd7942604b3bef724272cbf6",
+      "byte_length": 138349,
+      "line_feed_count": 1548,
+      "crlf_count": 1490,
+      "lf_only_line_numbers": [52, 55, 60, 66, 67, 68, 71, 72, 906, 914, 932, 940, 958, 966, 982, 990, 1005, 1013, 1030, 1038, 1105, 1106, 1107, 1108, 1109, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1117, 1118, 1119, 1120, 1121, 1122, 1123, 1124, 1125, 1126, 1127, 1133, 1136, 1137, 1138, 1139, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147, 1148, 1323],
+      "reconstruction": "Start with Git blob 54ccc2e683665260bcf2179354f24e39f122fcdc. Preserve LF on the listed one-based lines and encode every other line terminator as CRLF.",
+      "observed_copies": [
+        "D:/the-observance/design/ARG-V5-PHYSICAL-PREDICATES.json",
+        "D:/the-observance/plugin/build/resources/main/v5/authority/ARG-V5-PHYSICAL-PREDICATES.json"
+      ],
+      "observation_timestamps_local": ["2026-07-14T21:04:35-05:00", "2026-07-15T01:12:46-05:00"],
+      "production_claim": "recorded receipt only; no production read or mutation performed in M2"
+    },
+    {
+      "version_id": "v5-git-lf-3ef5486",
+      "raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+      "semantic_sha256": "d2eec35f58cf79a30f2255f429cb0d19a5c1e8b5bd7942604b3bef724272cbf6",
+      "byte_length": 136859,
+      "line_feed_count": 1548,
+      "crlf_count": 0,
+      "git_commit": "3ef5486a433aadda099b7e094112dc3cb4c36208",
+      "git_blob": "54ccc2e683665260bcf2179354f24e39f122fcdc",
+      "predecessor_raw_sha256": "37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b",
+      "rollback_raw_sha256": "37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b",
+      "transition": "byte-reconciliation-only",
+      "semantic_change": false
+    }
+  ],
+  "release_rules": {
+    "source_checkout_must_hash": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+    "packaged_resource_must_hash": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+    "database_active_hash_must_match_same_release": true,
+    "runtime_load_is_fail_closed": true,
+    "activation_is_compare_and_swap": true,
+    "rollback_requires_preserved_exact_bytes": true,
+    "production_mutation_in_m2": false
+  }
+}

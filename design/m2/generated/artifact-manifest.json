@@ -1,0 +1,364 @@
+{
+  "schema_version": "2.0.0-m2",
+  "authority": "PHASE-2-EVIDENCE-ARCHITECTURE.md",
+  "authority_sha256_lf": "e3f8d41e724609a38275cca3c9348e75766c9e956f72502c9bac797c164a7c3f",
+  "artifacts": [
+    {
+      "artifact_id": "orientation_key",
+      "legacy_source_node": "LS06",
+      "earned_from_findings": [
+        "P3.F3"
+      ],
+      "display_name": "Orientation Key",
+      "physical_material_is_flesh": true,
+      "legacy_material": "COMPASS",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "orientation_key",
+      "consumer": "LC06 orientation model",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_case_c01_complete after duplicate scan"
+    },
+    {
+      "artifact_id": "survey_seal",
+      "legacy_source_node": "LC06",
+      "earned_from_findings": [
+        "P4.F5"
+      ],
+      "display_name": "Survey Seal",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "survey_seal",
+      "consumer": "G1 survey filing and retained case proof",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_case_c02_complete after duplicate scan"
+    },
+    {
+      "artifact_id": "affidavit_vaun",
+      "legacy_source_node": "KV03",
+      "earned_from_findings": [
+        "P6.V"
+      ],
+      "display_name": "Vaun Sealed Affidavit",
+      "physical_material_is_flesh": true,
+      "legacy_material": "WRITTEN_BOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "affidavit_vaun",
+      "consumer": "G2 and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue exact vaun_sealed_affidavit book only from v5_kv03_affidavit after duplicate scan"
+    },
+    {
+      "artifact_id": "affidavit_mara",
+      "legacy_source_node": "KM03",
+      "earned_from_findings": [
+        "P6.M"
+      ],
+      "display_name": "Mara Sealed Affidavit",
+      "physical_material_is_flesh": true,
+      "legacy_material": "WRITTEN_BOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "affidavit_mara",
+      "consumer": "G2 and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue exact mara_sealed_affidavit book only from v5_km03_affidavit after duplicate scan"
+    },
+    {
+      "artifact_id": "affidavit_sella",
+      "legacy_source_node": "KS03",
+      "earned_from_findings": [
+        "P6.S"
+      ],
+      "display_name": "Sella Sealed Affidavit",
+      "physical_material_is_flesh": true,
+      "legacy_material": "WRITTEN_BOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "affidavit_sella",
+      "consumer": "G2 and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue exact sella_sealed_affidavit book only from v5_ks03_affidavit after duplicate scan"
+    },
+    {
+      "artifact_id": "affidavit_orin",
+      "legacy_source_node": "KO03",
+      "earned_from_findings": [
+        "P6.O"
+      ],
+      "display_name": "Orin Sealed Affidavit",
+      "physical_material_is_flesh": true,
+      "legacy_material": "WRITTEN_BOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "affidavit_orin",
+      "consumer": "G2 and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue exact orin_sealed_affidavit book only from v5_ko03_affidavit after duplicate scan"
+    },
+    {
+      "artifact_id": "affidavit_brann",
+      "legacy_source_node": "KB03",
+      "earned_from_findings": [
+        "P6.B"
+      ],
+      "display_name": "Brann Sealed Affidavit",
+      "physical_material_is_flesh": true,
+      "legacy_material": "WRITTEN_BOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "affidavit_brann",
+      "consumer": "G2 and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue exact brann_sealed_affidavit book only from v5_kb03_affidavit after duplicate scan"
+    },
+    {
+      "artifact_id": "affidavit_iss",
+      "legacy_source_node": "KI03",
+      "earned_from_findings": [
+        "P6.I"
+      ],
+      "display_name": "Iss Sealed Affidavit",
+      "physical_material_is_flesh": true,
+      "legacy_material": "WRITTEN_BOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "affidavit_iss",
+      "consumer": "G2 and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue exact iss_sealed_affidavit book only from v5_ki03_affidavit after duplicate scan"
+    },
+    {
+      "artifact_id": "cistern_seal",
+      "legacy_source_node": "CW08",
+      "earned_from_findings": [
+        "P7.F6"
+      ],
+      "display_name": "Cistern Seal",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PRISMARINE_SHARD",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "cistern_seal",
+      "consumer": "RP02 release configuration",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_case_c04_complete after duplicate scan"
+    },
+    {
+      "artifact_id": "breach_plate",
+      "legacy_source_node": "BI08",
+      "earned_from_findings": [
+        "P8.F5"
+      ],
+      "display_name": "Breach Plate",
+      "physical_material_is_flesh": true,
+      "legacy_material": "HEAVY_WEIGHTED_PRESSURE_PLATE",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "breach_plate",
+      "consumer": "G3 Break finding and retained case proof",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_case_c05_complete after duplicate scan"
+    },
+    {
+      "artifact_id": "filter_cartridge",
+      "legacy_source_node": "HS01",
+      "earned_from_findings": [
+        "P8.F6"
+      ],
+      "display_name": "Filter Cartridge",
+      "physical_material_is_flesh": true,
+      "legacy_material": "COPPER_INGOT",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "filter_cartridge",
+      "consumer": "HS02 cartridge housing",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "return wrong deposits; reissue only from v5_hs01_filter after duplicate scan"
+    },
+    {
+      "artifact_id": "system_key",
+      "legacy_source_node": "HS06",
+      "earned_from_findings": [
+        "P8.F7"
+      ],
+      "display_name": "System Key",
+      "physical_material_is_flesh": true,
+      "legacy_material": "TRIPWIRE_HOOK",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "system_key",
+      "consumer": "HS07 synchronization then returned for RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_hs06_passage after duplicate scan"
+    },
+    {
+      "artifact_id": "deep_access_plate",
+      "legacy_source_node": "HS07",
+      "earned_from_findings": [
+        "P8.F8"
+      ],
+      "display_name": "Deep Access Plate",
+      "physical_material_is_flesh": true,
+      "legacy_material": "ECHO_SHARD",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "deep_access_plate",
+      "consumer": "G4 access reader and retained case proof",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_case_c06_complete after duplicate scan"
+    },
+    {
+      "artifact_id": "witness_spool",
+      "legacy_source_node": "A09",
+      "earned_from_findings": [
+        "P9.F6"
+      ],
+      "display_name": "Witness Spool",
+      "physical_material_is_flesh": true,
+      "legacy_material": "STRING",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "witness_spool",
+      "consumer": "WR02 transmission index reader",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_a09_spool after duplicate scan"
+    },
+    {
+      "artifact_id": "protocol_bridge",
+      "legacy_source_node": "WR04",
+      "earned_from_findings": [
+        "P10.F4"
+      ],
+      "display_name": "Protocol Bridge",
+      "physical_material_is_flesh": true,
+      "legacy_material": "COPPER_INGOT",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "protocol_bridge",
+      "consumer": "WR05 reckoning and RP02",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_wr04_bridge after duplicate scan"
+    },
+    {
+      "artifact_id": "averyn_fragment_a",
+      "legacy_source_node": "AR02",
+      "earned_from_findings": [
+        "P11.F2"
+      ],
+      "display_name": "A Fragment",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "averyn_fragment_a",
+      "consumer": "AR08 AVERYN assembly",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_ar02_a after duplicate scan"
+    },
+    {
+      "artifact_id": "averyn_fragment_v",
+      "legacy_source_node": "AR03",
+      "earned_from_findings": [
+        "P11.F3"
+      ],
+      "display_name": "V Fragment",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "averyn_fragment_v",
+      "consumer": "AR08 AVERYN assembly",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_ar03_v after duplicate scan"
+    },
+    {
+      "artifact_id": "averyn_fragment_e",
+      "legacy_source_node": "AR04",
+      "earned_from_findings": [
+        "P11.F4"
+      ],
+      "display_name": "E Fragment",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "averyn_fragment_e",
+      "consumer": "AR08 AVERYN assembly",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_ar04_e after duplicate scan"
+    },
+    {
+      "artifact_id": "averyn_fragment_r",
+      "legacy_source_node": "AR05",
+      "earned_from_findings": [
+        "P11.F5"
+      ],
+      "display_name": "R Fragment",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "averyn_fragment_r",
+      "consumer": "AR08 AVERYN assembly",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_ar05_r after duplicate scan"
+    },
+    {
+      "artifact_id": "averyn_fragment_y",
+      "legacy_source_node": "AR06",
+      "earned_from_findings": [
+        "P11.F6"
+      ],
+      "display_name": "Y Fragment",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "averyn_fragment_y",
+      "consumer": "AR08 AVERYN assembly",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_ar06_y after duplicate scan"
+    },
+    {
+      "artifact_id": "averyn_fragment_n",
+      "legacy_source_node": "AR07",
+      "earned_from_findings": [
+        "P11.F7"
+      ],
+      "display_name": "N Fragment",
+      "physical_material_is_flesh": true,
+      "legacy_material": "PAPER",
+      "stable_identity_key": "v5_artifact_id",
+      "stable_identity_value": "averyn_fragment_n",
+      "consumer": "AR08 AVERYN assembly",
+      "authority": "minecraft_local_primary",
+      "provenance_required": true,
+      "duplicate_scan_before_reissue": true,
+      "recovery_contract": "reissue only from v5_ar07_n after duplicate scan"
+    }
+  ]
+}

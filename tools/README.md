@@ -7,6 +7,11 @@ approved spine prerequisite, twelve-arc/26.5-hour experience map, subset/catch-u
 contracts, preservation of every currently manifested media receipt, single-Crafty-runtime topology,
 M0–M5 migration sequence, and future-agent authority routing. It performs no network or live mutation.
 
+`build_m2_contracts.py` deterministically derives the approved P1-P12 logical manifests and all 82
+legacy import contracts. `check_m2_contracts.py` verifies their hashes, the exact historical predicate
+byte reconstruction, schema/security/rollback proposals, cross-surface parity, and approval boundaries.
+Both are non-live; neither applies a database migration or claims a production receipt.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,

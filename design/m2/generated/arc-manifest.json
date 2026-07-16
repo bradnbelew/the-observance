@@ -1,0 +1,151 @@
+{
+  "schema_version": "2.0.0-m2",
+  "authority": "PHASE-2-EVIDENCE-ARCHITECTURE.md",
+  "authority_sha256_lf": "e3f8d41e724609a38275cca3c9348e75766c9e956f72502c9bac797c164a7c3f",
+  "arcs": [
+    {
+      "arc_id": "P1",
+      "ordinal": 1,
+      "title": "Copperline archaeology",
+      "duration_contract": "1.5h, healthy 1–2h. One to three researchers divide directory, ticket, and archive history, then compare notes.",
+      "core_revelation": "Copperline is an ordinary legacy host; mkept was a real administrator who deliberately preserved a recoverable route.",
+      "required_prior_knowledge": "None beyond ordinary web navigation and the campaign start URL.",
+      "investigation_identity": "Mundane web archaeology: account ownership, service history, timestamps, and link rot—not occult page hunting.",
+      "submission_surface": "Copperline service-recovery form; the page names the fields it accepts.",
+      "emotional_function": "Curiosity earns trust: the first “haunting” is human maintenance and care.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P2",
+      "ordinal": 2,
+      "title": "Gated prologue save",
+      "duration_contract": "1.5h, healthy 1–2h. Any subset can inspect the immutable download; file and open-web tools are valid.",
+      "core_revelation": "The save is evidence that reconstructs one live server endpoint; it is not a second campaign world.",
+      "required_prior_knowledge": "P1.F1–P1.F3 and the earned download route.",
+      "investigation_identity": "Digital/physical provenance reconstruction: hash, dispatch records, shelf addresses, and world geography agree.",
+      "submission_surface": "A local-world dispatch terminal that validates the assembled endpoint and returns a signed handoff receipt.",
+      "emotional_function": "The old backup becomes a threshold: somebody expected another person to finish the route.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P3",
+      "ordinal": 3,
+      "title": "Arrival, settlement, and Discord",
+      "duration_contract": "2h, healthy 1.5–2.5h. Two to six explore settlement work/life; one player can sequence every observation.",
+      "core_revelation": "The surface is inhabited and ordinary; selective disturbances are local evidence; coordination is earned from inside Minecraft.",
+      "required_prior_knowledge": "P2 endpoint and handoff receipt.",
+      "investigation_identity": "Social corroboration and account handoff: place, testimony, and proof-bound identity.",
+      "submission_surface": "The settlement dispatch office, then `/obslink` in Minecraft and `/link` in Discord.",
+      "emotional_function": "Isolation gives way to companionship without making the residents exposition devices.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P4",
+      "ordinal": 4,
+      "title": "Surface Mouth, descent, and intake",
+      "duration_contract": "1.5h, healthy 1–2h. Group arrival is preferred; any subset can replay the reversible route.",
+      "core_revelation": "The Deep Hold was constructed as a rational refuge with heat, water, shelter, and public intake.",
+      "required_prior_knowledge": "P3 dispatch receipt, surface geography, and settlement directions.",
+      "investigation_identity": "Construction-phase and route archaeology: strata, capacity, logistics, and civic intake.",
+      "submission_surface": "Intake survey desk at the bottom of the reversible descent.",
+      "emotional_function": "Awe is disciplined by ordinary labor; the monumental place begins with practical need.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P5",
+      "ordinal": 5,
+      "title": "Refuge life and the seven Ways",
+      "duration_contract": "2.5h, healthy 2–3h. Parallel teams of one to three investigate school/trade/domestic and service/watch lanes, then synthesize.",
+      "core_revelation": "Seven practical safety procedures sustained ordinary life and later became tools of institutional control.",
+      "required_prior_knowledge": "P4 phases, capacity, and founding motive.",
+      "investigation_identity": "Civic ethnography through service archaeology: reconstruct work and compare early procedure with later enforcement.",
+      "submission_surface": "Civic inquiry desk with seven job/abuse pairs and one ordinary-life synthesis.",
+      "emotional_function": "The Hold becomes a home worth mourning; safety and coercion are allowed to coexist.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P6",
+      "ordinal": 6,
+      "title": "Six Keeper dossiers",
+      "duration_contract": "3h, healthy 2.5–3.5h. Six dossier lanes divide naturally; reconvergence is required for the distinction finding.",
+      "core_revelation": "Vaun, Mara, Sella, Orin, Brann, and Iss were six separate, complicated contemporaries with different jobs and culpabilities.",
+      "required_prior_knowledge": "P5 practical Ways and institutional drift.",
+      "investigation_identity": "Six different professional grammars, not six reskinned ciphers or stations.",
+      "submission_surface": "Keeper archive index; each dossier files a professional finding, then the group submits a six-person responsibility matrix.",
+      "emotional_function": "Icons become people; admiration, anger, and sympathy stop aligning neatly.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P7",
+      "ordinal": 7,
+      "title": "Cistern Winter",
+      "duration_contract": "2.5h, healthy 2–3h. Two or three teams follow material, labor/time, and procurement/record lanes before one conclusion.",
+      "core_revelation": "Diverted genuine supplies, counterfeit filters, edited shifts, and falsified records caused the crisis; Nessa followed procedure; Averyn proved it and the institution erased the finding.",
+      "required_prior_knowledge": "P6 Vaun/Sella/Brann/Iss methods and the practical origin of Offering, Dark Hours, and Sacred Beast.",
+      "investigation_identity": "Forensic public inquiry: chain of custody, material comparison, labor chronology, and document redrafting.",
+      "submission_surface": "Cistern inquiry desk for exhibits; final two-proposition conclusion through the shared docket.",
+      "emotional_function": "Institutional horror lands on one ordinary worker before the cosmic system is explained.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P8",
+      "ordinal": 8,
+      "title": "Break, altered region, and repair",
+      "duration_contract": "4h, healthy 3–5h. Broadest split: chronology, structure/load, surface/route, copied-space, then repair crews with periodic synthesis.",
+      "core_revelation": "Neglect, unequal allocation, false records, dangerous excavation, delayed response, and Dark/Record feedback all contributed; Iss accelerated but did not solely cause the Break; infrastructure can be repaired.",
+      "required_prior_knowledge": "P7 falsification, P5 Ways, P6 Orin/Brann/Iss, and the established healed-surface claim.",
+      "investigation_identity": "Incident reconstruction plus engineering intervention: a copied region is evidence, followed by visible repair.",
+      "submission_surface": "Incident board for four cause classes; local deterministic repair housings; final works console.",
+      "emotional_function": "Helpless dread turns into material agency without making repair erase responsibility.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P9",
+      "ordinal": 9,
+      "title": "Failed expedition camp",
+      "duration_contract": "2.5h, healthy 2–3h. Camp-space teams reconstruct four stations while a web/media pair follows the earned archive route.",
+      "core_revelation": "mkept, Ash, Rook, and Wren were four real modern investigators who nearly completed a release; their failure was not a missing answer.",
+      "required_prior_knowledge": "P8 repaired access, mkept from P1, and Copperline service/ticket conventions.",
+      "investigation_identity": "Camp archaeology and media provenance: infer people from spatial traces, then follow their custody chain.",
+      "submission_surface": "Camp reconstruction board, earned Copperline archive route, and Locker 13.",
+      "emotional_function": "The players meet predecessors through ordinary belongings before learning the betrayal.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P10",
+      "ordinal": 10,
+      "title": "Wren sabotage",
+      "duration_contract": "2h, healthy 1.5–2.5h. Evidence pairs build a leak matrix; all available players debate, with any subset able to commit a protected judgment.",
+      "core_revelation": "Wren deliberately gave the Record names, routes, plans, and fears because he feared closure would erase his partially retained self.",
+      "required_prior_knowledge": "P9 four-person reconstruction, Spool, private Rook revision, and near-release plan.",
+      "investigation_identity": "Leak-source attribution, adversarial interview, and moral judgment.",
+      "submission_surface": "Leak matrix, synchronous Wren dialogue, independently opened Bridge route, protected reckoning surface.",
+      "emotional_function": "Proof and empathy collide; understanding motive does not erase responsibility.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P11",
+      "ordinal": 11,
+      "title": "Averyn and the Record",
+      "duration_contract": "2h, healthy 1.5–2.5h. Players distribute six affidavit rereads, then synthesize identity/system relationships together.",
+      "core_revelation": "Averyn is the erased registrar/cistern analyst trapped as the Record’s human interface; the Watcher is constrained speech. Dark, Record, Watcher, and Averyn are related but not identical.",
+      "required_prior_knowledge": "P7 Averyn cache, six P6 affidavits, P8 copied-space evidence, P10 Wren/Record behavior.",
+      "investigation_identity": "Provenance-preserving identity restoration: independent culpable testimony reread against a recovered archive.",
+      "submission_surface": "Recovered-archive workbench, six affidavit readers, one collective identity/relationship filing.",
+      "emotional_function": "The system voice resolves into a tired person without turning her into a symbol or seventh Keeper.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    },
+    {
+      "arc_id": "P12",
+      "ordinal": 12,
+      "title": "Convergence, Release, and Coda",
+      "duration_contract": "1.5h, healthy 1–2h. Preferred whole-group convergence; the explicit accessibility path preserves evidence and choice for an absence.",
+      "core_revelation": "Returning truth without rebinding Averyn permits one release outcome: the Record closes and Averyn is freed. Only name treatment and Wren remembrance vary.",
+      "required_prior_knowledge": "Every P1–P11 arc conclusion, repaired systems, six affidavits, Cistern proof, System Key, Protocol Bridge, and protected Wren judgment.",
+      "investigation_identity": "Readiness audit, restorative configuration, protected choices, and irreversible civic release.",
+      "submission_surface": "Release chamber with named housings, empty Averyn slot, plain-language choices, player confirmation plus operator arm.",
+      "emotional_function": "The group converts investigation into repair, judgment, and goodbye; closure is decisive and persistent.",
+      "progression": "ordered_arc_free_interior_any_subset"
+    }
+  ]
+}
