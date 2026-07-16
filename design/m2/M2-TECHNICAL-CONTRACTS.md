@@ -104,6 +104,11 @@ Before any later branch application: create the executable migration with the th
 apply it to a disposable branch/local database, run database tests and both advisors, prove rollback and
 forward recovery, and record the branch/migration IDs. Never apply this proposal directly to production.
 
+The 2026-07-16 continuation added the local-only, production-blocking harness and database test inputs
+documented in `M2-SUPABASE-VALIDATION.md`. The harness guard self-test passes, but Docker, an executable
+Supabase CLI, and a platform-confirmed disposable branch were unavailable. No real database/advisor
+receipt exists yet, so this external requirement remains open.
+
 ## Hint and automation gates
 
 Only A0 readback/projection and A1 non-personal, text-free, ephemeral ambience may run automatically.

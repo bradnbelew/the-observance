@@ -12,6 +12,15 @@ legacy import contracts. `check_m2_contracts.py` verifies their hashes, the exac
 byte reconstruction, schema/security/rollback proposals, cross-surface parity, and approval boundaries.
 Both are non-live; neither applies a database migration or claims a production receipt.
 
+`validate_m2_supabase.ps1` is the fail-closed disposable database harness for the reviewed M2 SQL. It
+accepts only a local target, rejects every hosted project ref (including production
+`fdnmhbpxnodrnbrzrlqq`), discovers the installed CLI surface through `--help`, creates every executable
+migration with `supabase migration new`, and copies the reviewed up/rollback/forward bytes only into a
+temporary local project. It runs reset, pgTAP database tests, lifecycle assertions, repeated-forward
+idempotency, and both security/performance advisors, then writes exact local CLI/migration receipts.
+Docker and an installed official Supabase CLI are prerequisites. `-SelfTest` exercises only its guards
+and committed inputs and never starts or contacts a database.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,

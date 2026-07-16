@@ -106,6 +106,21 @@ def main() -> None:
     require(not (ROOT / "discord" / "supabase" / "migrations" / "contract-v1.up.sql").exists(),
             "proposal must not masquerade as applied migration")
 
+    validator = (ROOT / "tools" / "validate_m2_supabase.ps1").read_text(encoding="utf-8")
+    require('ValidateSet("local")' in validator and "ProductionProjectRef" in validator,
+            "Supabase validation harness must remain local-only and production-blocked")
+    require('migration", "new"' in validator and 'db", "advisors"' in validator,
+            "Supabase validation harness must use CLI scaffolding and both advisor paths")
+    for test_name in ["local-baseline.sql", "lifecycle-seed.sql", "assert-forward.sql",
+                      "assert-rollback.sql", "assert-final.sql", "contract-v1.test.sql"]:
+        require((ROOT / "design" / "m2" / "sql" / "tests" / test_name).exists(),
+                f"missing disposable database validation input: {test_name}")
+    database_test = (ROOT / "design" / "m2" / "sql" / "tests" / "contract-v1.test.sql").read_text(
+        encoding="utf-8")
+    for term in ["relforcerowsecurity", "anon cannot read", "service_role",
+                 "append-only", "idempotency key", SEMANTIC_HASH]:
+        require(term in database_test, f"database test coverage missing {term}")
+
     ambient = (ROOT / "plugin" / "src" / "main" / "java" / "com" / "observance" / "watcher"
                / "beats" / "AmbientBeatGenerator.java").read_text(encoding="utf-8")
     whisper = (ROOT / "discord" / "src" / "bot" / "commands" / "whisper.ts").read_text(encoding="utf-8")

@@ -28,8 +28,11 @@ because it appears here; its linked authorities and checks must independently pr
   Production still records `37020e...` and remains untouched. A later confirmed same-release cutover
   must migrate source/package/database/runtime together to `16de...` and retain rollback bytes.
 - No disposable Supabase target was available and the official CLI could not be installed in the
-  restricted environment. The additive SQL remains a reviewed proposal outside the migrations folder;
-  branch/local application, database tests, advisors, rollback, and forward receipts remain required.
+  restricted environment. A 2026-07-16 continuation confirmed only the production project was visible,
+  hard-blocked its ref, and added a CLI-scaffolded local-only lifecycle/pgTAP/advisor harness plus an
+  exact blocker record in `design/m2/M2-SUPABASE-VALIDATION.md`. The additive SQL remains a reviewed
+  proposal outside the migrations folder; a real local/branch application, both advisors, and recorded
+  migration/rollback/forward receipts remain required.
 - This isolated task had no Discord/Supabase secrets, so secret-dependent integration runners were not
   executed. Static, type, seed/bundle, approval, and full plugin checks passed without copying secrets.
 - A fresh local-only disposable Paper 1.21.11 build now has exact closed/open structural audits,
