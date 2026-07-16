@@ -1,5 +1,12 @@
 # The Observance — Full Rebuild Handoff (for Codex)
 
+> **⛔ READ `SPINE-LOCK.md` FIRST.** The ground-up rebuild is approved, but the **spine (the story that
+> happened, the shape of the journey, the register) is LOCKED** and is not part of "everything is
+> rewriteable." The rebuild deepens the existing story; it does not replace it with a different one.
+> `SPINE-LOCK.md` defines exactly what is locked (the canon) vs. what is flesh (every room, puzzle, and
+> word — rebuild freely).
+
+
 This folder is the complete, self-contained brief for the **full rebuild of the Deep Hold** —
 **both its physical layout and the puzzle/content inside it** — plus the surrounding polish that
 brings the whole ARG up to Brad's standards. It exists because a handoff breaks when the next agent
