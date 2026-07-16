@@ -24,10 +24,13 @@ To prevent stale-story drift, only the files in the **Current authority** table 
 | **Phase 1 progression/hints/automation governance** | `design/handoff/PHASE-1-PROGRESSION-GOVERNANCE.md` |
 | **Phase 1 media preservation inventory** | `design/handoff/PHASE-1-MEDIA-INVENTORY.md` |
 | **Phase 1 runtime topology and authority migration** | `design/handoff/PHASE-1-TOPOLOGY-AND-MIGRATION.md` |
+| **Phase 2 P1–P12 evidence/provenance architecture** | `design/handoff/PHASE-2-EVIDENCE-ARCHITECTURE.md` |
+| **Phase 2 complete legacy 82-node disposition and deferred contract implications** | `design/handoff/PHASE-2-LEGACY-NODE-DISPOSITION.md` |
+| **Phase 2 media placement and conformance/completion audit** | `design/handoff/PHASE-2-CONFORMANCE-AND-MEDIA-AUDIT.md` |
 | **autonomous continuation and durable phase ledger** | `design/handoff/AUTONOMOUS-CONTINUATION.md` + `design/handoff/PHASE-CHECKPOINTS.md` |
 | active redesign history (V5.1, retained where not superseded) | `design/V5.1-REDESIGN.md` |
 | spoiler truth | `arc/WORLD-BIBLE.md` |
-| required graph | `design/ARG-V5-NODE-MANIFEST.csv` |
+| current deployed required graph (migration source, not rebuild target) | `design/ARG-V5-NODE-MANIFEST.csv` |
 | player order/surfaces | `design/EXPERIENCE-MANIFEST.md` |
 | master implementation contract | `design/ARG-V5-MASTER-PLAN.md` |
 | solutions and hints | `arc/v5/SOLUTION-CASEBOOK.md` |

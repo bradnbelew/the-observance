@@ -21,6 +21,13 @@
 > handoff. M1 evidence architecture is open; implementation, live changes, media editing, and geometry
 > remain closed.
 
+> **PHASE 2 REVIEW ORDER:** `PHASE-2-EVIDENCE-ARCHITECTURE.md` →
+> `PHASE-2-LEGACY-NODE-DISPOSITION.md` → `PHASE-2-CONFORMANCE-AND-MEDIA-AUDIT.md`. Phase 2 defines
+> complete P1–P12 evidence/provenance chains, disposes all legacy 82 IDs, proposes preserved-media
+> placement, and passes the non-live conformance audit. Under Brad's standing approval, the next phase
+> is M2 technical contracts and isolated implementation. Current predicates, schema, cases, media bytes,
+> geometry, and live systems remain unchanged until their later gates.
+
 > **AUTONOMOUS CONTINUATION:** Brad authorized the rebuild to continue through all remaining phases on
 > 2026-07-15. Read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`. Every phase must be audited,
 > committed, recorded, and handed to a fresh task from the exact checkpoint before the next phase begins.

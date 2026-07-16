@@ -15,6 +15,13 @@
 > architecture is open; approval still does not authorize implementation, media editing, live changes,
 > or geometry.
 
+> **Phase 2 / M1 is complete under standing approval.** Read
+> `PHASE-2-EVIDENCE-ARCHITECTURE.md`, `PHASE-2-LEGACY-NODE-DISPOSITION.md`, and
+> `PHASE-2-CONFORMANCE-AND-MEDIA-AUDIT.md` before M2 work. Those authorities replace the legacy
+> 82-node graph as the rebuild design target while leaving it untouched as current executable truth.
+> M2 may design versioned technical contracts and implement only on approved isolated targets; no live
+> mutation, media editing, Hold geometry, deployment, secret change, or Crafty access is implied.
+
 > **Standing continuation approval:** read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`.
 > Complete, verify, commit, and record the current phase; then create a fresh task from that exact
 > checkpoint for the next phase. Repeat until the rebuild and final release evidence are complete.
