@@ -159,6 +159,8 @@ public final class ObservancePlugin extends JavaPlugin {
     private V5RuntimeCoordinator v5Runtime;
     /** Local durable finale controller; remains available even when the server boots into CODA. */
     private FinaleController finaleController;
+    /** Disposable M3 review runtime. Non-null only when the fail-closed private target mode is armed. */
+    private com.observance.watcher.m3runtime.PrivateSliceReviewRuntime m3ReviewRuntime;
 
     /* ==================================================================== */
     /*  Lifecycle                                                           */
@@ -174,6 +176,19 @@ public final class ObservancePlugin extends JavaPlugin {
         if (!loadConfigAndSites()) {
             getLogger().severe("Failed to load configuration — disabling Observance to avoid undefined behavior.");
             getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        if (getConfig().getBoolean("m3-review.enabled", false)) {
+            try {
+                this.m3ReviewRuntime = new com.observance.watcher.m3runtime.PrivateSliceReviewRuntime(this);
+                this.m3ReviewRuntime.start();
+                getLogger().warning("Observance started in DISPOSABLE M3 PRIVATE REVIEW mode; production runtime is disabled.");
+            } catch (Throwable failure) {
+                getLogger().severe("M3 private review mode failed closed: " + failure.getMessage());
+                this.m3ReviewRuntime = null;
+                getServer().getPluginManager().disablePlugin(this);
+            }
             return;
         }
 
@@ -295,6 +310,10 @@ public final class ObservancePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (m3ReviewRuntime != null) {
+            m3ReviewRuntime.close();
+            m3ReviewRuntime = null;
+        }
         if (v5Runtime != null) {
             v5Runtime.close();
             v5Runtime = null;

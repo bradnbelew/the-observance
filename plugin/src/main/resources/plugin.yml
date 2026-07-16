@@ -30,6 +30,11 @@ commands:
     aliases: [obslink]
     permission: observance.link
     usage: /obslink
+  observancem3:
+    description: Operate the disposable private M3 Paper review slice.
+    aliases: [obsm3]
+    permission: observance.admin
+    usage: /obsm3 <status|build|audit|finding|replay>
 
 permissions:
   observance.admin:

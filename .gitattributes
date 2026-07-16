@@ -3,4 +3,5 @@ design/ARG-V5-PHYSICAL-PREDICATES.json text eol=lf
 
 # Generated M2 authorities and SQL are canonical LF text.
 design/m2/** text eol=lf
+design/m3/** text eol=lf
 discord/supabase/seeds/v5_investigations.sql text eol=lf

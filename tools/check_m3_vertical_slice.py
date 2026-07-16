@@ -24,6 +24,11 @@ def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def canonical_package_bytes(path: Path) -> bytes:
+    """Hash committed text authority as LF even on a core.autocrlf checkout."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def overlaps(a: dict, b: dict) -> bool:
     return not (a["max_x"] < b["min_x"] or b["max_x"] < a["min_x"]
                 or a["max_y"] < b["min_y"] or b["max_y"] < a["min_y"]
@@ -194,7 +199,7 @@ def check_package_manifest(manifest: dict) -> None:
     for row in manifest["files"]:
         path = ROOT / row["path"]
         require(path.is_file(), f"package file missing: {row['path']}")
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        actual = hashlib.sha256(canonical_package_bytes(path)).hexdigest()
         require(actual == row["sha256"], f"package file hash drift: {row['path']}")
         canonical.extend((row["path"] + "\n" + actual + "\n").encode("utf-8"))
     require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],

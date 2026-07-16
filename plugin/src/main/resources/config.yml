@@ -112,3 +112,15 @@ closing:
 
 logging:
   debug: false
+
+# Private M3 review mode is deliberately inert in every normal installation. The disposable
+# Paper harness writes a matching target marker before enabling it; the plugin refuses all M3
+# world mutation without both values. Never enable this on Crafty or a player-facing server.
+m3-review:
+  enabled: false
+  target-id: ""
+  world: "m3_private_slice"
+  origin-x: 0
+  origin-y: 80
+  origin-z: 0
+  source-git-commit: ""
