@@ -78,8 +78,17 @@ extend:
 ## 5. The offline reachability sim (your fastest safety net)
 
 A live cutover build takes ~10 minutes and burns tokens on log-reading. An **offline block-level
-simulation** proves reachability in **seconds** and is how you iterate on layout without Paper. Build
-and maintain it (this session used one; keep a repo copy in sync with the builder):
+simulation** proves reachability in **seconds** and is how you iterate on layout without Paper.
+
+> **CORRECTION (per Codex's review): this sim does NOT yet exist in the repo.** An earlier draft of this
+> handoff called it an "existing invariant" — that was wrong; a working version existed only in an
+> ephemeral scratchpad this session. **Build the faithful current sim FIRST, before major geometry
+> work.** A proven *reference* (modelling the OLD compact geometry — adapt its primitive replay to the
+> new coordinate-native plan) is committed at `tools/sim_hold_reachability_REFERENCE.py`; read its
+> header. The node-progression `tools/simulate_v5_scenarios.py` is a different thing and does not prove
+> block-level reachability.
+
+Build and maintain it (keep a repo copy in sync with the builder):
 
 **Algorithm:**
 1. Model the world as `solid[(x,y,z)] = bool`, default *solid* (buried rock).

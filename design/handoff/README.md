@@ -13,6 +13,75 @@ has to guess. Nothing here should require reading the chat history it came from.
 > dressing the current Hold. You are replacing what it is, while keeping the machinery that builds and
 > verifies it safely.
 
+## The governing principle (adopted from Codex's review — the top-line test)
+
+> **Every district should have an ordinary reason to exist, every clue should have a reason to be
+> there, and every deduction should change what the group believes happened.**
+
+That is the line between a believable investigated world and a beautifully furnished escape room. Apply
+it above every other rule below: a room that is dense and pretty but has no *institutional* reason to
+exist still fails.
+
+## Adopted amendments (Codex's first-read refinements — binding, they improve this brief)
+
+Codex reviewed this handoff and its assessment sharpened it. These amendments are **adopted** and
+override the originals where they conflict:
+
+1. **Replace the plan, don't re-compress it (amends doc 1).** The current `DeepHoldV4Plan.java` is legacy
+   V4 coordinates run through `compactX/compactZ` plus per-fixture constructor nudges (`z--`, `z=170`,
+   …) — migration scaffolding, not a spatial authority. Author a **coordinate-native** next revision
+   with **no** legacy transforms and **no** constructor nudges. Model districts, subrooms, doors/
+   thresholds, circulation lanes, furniture volumes, interaction cells/sightlines, gate barriers and
+   their closed/open traversal states, and ordinary service/storage/staff circulation.
+2. **Visual-approval vertical slice BEFORE district work (amends doc 8).** Sequence is: (a) coarse master
+   floorplan + adjacency map → (b) **one exact vertical slice** at a fresh location (Mouth/descent +
+   intake + one hallway + one fully-authored room + one layered investigation + one gate + one Watcher/
+   asymmetric moment) → (c) **Brad walks it in-game in Adventure mode and approves** → (d) then
+   district-by-district. Automation cannot certify scale, atmosphere, or whether a room reads as its
+   fiction on sight — and technically-passing Holds have already been visually rejected. Do not build a
+   whole district before this approval.
+3. **Exact authored compositions, not generic room-type dressers (amends doc 1).** A generic
+   `dressLibrary()` produces twelve algorithmic libraries. The data must say "shelf rank C occupies
+   these exact cells; desk 2 is here; aisle reserved here," with only small reusable primitives for
+   furniture *construction*. Author rooms; don't let the builder invent them.
+4. **82 nodes are contract units, not 82 stations (amends doc 2).** Keep the stable `node_id`s and
+   `completion_flag`s, but organize play around ~10 memorable **case arcs**. Within a case, some nodes
+   are evidence discoveries, some are deductions that re-read earlier evidence, and only a few need an
+   explicit mechanical evaluation. The **case conclusion** is the memorable submission — not six
+   consecutive micro-submissions. *Guardrail (Brad's bar): this must NOT reduce difficulty or length —
+   the removed mechanical stations are replaced by deductive load, enforced by each case's duration
+   target (amendment 6). The night stays very hard and ~15 hours.*
+5. **Broaden the investigative palette (amends doc 2).** Cross-referencing records cannot become the new
+   universal verb (the worked C02 example over-leaned on it). Give each case its own intellectual
+   identity from: spatial reconstruction, witness contradiction / NPC knowledge, environmental
+   measurement, audio/timing evidence, route tracing, physical provenance, construction-phase
+   comparison, remembered social detail, split-party observation, and selective ciphers whose keys arise
+   naturally from prior findings. A player should remember "the camp reconstruction" or "the lamp
+   chronology," not "the third set of ledgers."
+6. **Design whole-night pacing, per case (adds to doc 2).** Before building a case, write its: target
+   duration, expected group split, core revelation, required prior knowledge, hint/recovery path,
+   submission surface, and emotional function in the 15-hour arc. Otherwise every case is "hard" in
+   isolation while the night becomes exhausting and tonally flat.
+7. **Density is multi-measure, not a single % (amends doc 1).** "40–70% furnished" is a warning against
+   empty rooms, not a target — 70% blocking occupancy makes six-person movement miserable. Track
+   separately: blocking-furniture footprint, walkable circulation, non-blocking visual density,
+   evidence-bearing surfaces, and purposeful open space. A busy archive looks full without every floor
+   cell being impassable.
+8. **Multiplayer asymmetry must mean something (amends doc 6).** Per-player-different-view is powerful
+   when it says something about the Watcher, identity, memory, or position — not when it's a rune
+   fragment in every second district. Don't let asymmetry become another mechanism template.
+9. **Build the reachability sim FIRST (corrects doc 4).** It does not exist in the repo yet (only the
+   node-progression `simulate_v5_scenarios.py` does). A proven reference — modelling the OLD geometry,
+   to be adapted — is committed at `tools/sim_hold_reachability_REFERENCE.py`. Build the faithful
+   current one before major geometry work, or the redesign keeps relying on declared graph connectivity
+   + costly live builds, which is exactly how self-walling primitives escaped before.
+10. **Replace KS01, don't repair it (confirms doc 5).** Rebuild Sella's waterline as a static-evidence
+    investigation with an earned reflection reason and a clear bearing submission; remove its
+    fresh-frame permutation contract as part of that case change.
+
+**Recommended first move (Codex's, endorsed): produce the experience map + one exact vertical-slice
+design for Brad's approval — do NOT begin by rewriting all 32 rooms or all 75 nodes.**
+
 ## Read in this order
 
 | # | Doc | What it covers |

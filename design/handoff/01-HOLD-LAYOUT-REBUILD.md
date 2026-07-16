@@ -40,10 +40,25 @@ each room serves:
 | Offices (Iss, Wren, dispatch) | A desk, a chair, a nameplate door, a filing cabinet, personal effects, a window or vent. | Personal records and the "who sat here" deductions come from a real occupied office. |
 | Cistern / water rooms | A real basin with contained water (see doc 4 — water must be curbed), reed beds, sample shelves, a valve roster board. | Reflection/overlay reads off a real still surface; samples sit in a real cold store. |
 
-**Density target: 40–70% of each room's floor footprint is furniture/structure the player moves
-through and around** — not 5%. Aisles and standing cells stay clear (traversability), but the room is
-*full* of believable stuff. A library aisle is 1–2 blocks wide between 1-block-deep shelf runs, not a
-21×21 void with one lectern in the middle.
+**Density is multi-measure, NOT a single percentage** (corrected per Codex's review — a hard "70%
+furnished" target makes six-person movement miserable). The room should be *full of believable stuff*
+while staying comfortably walkable. Track these separately instead of one number:
+- **blocking-furniture footprint** (shelves, cabinets, benches you route around),
+- **walkable circulation** (aisles ≥1 wide, main lanes 2+ wide for a group; never below this),
+- **non-blocking visual density** (wall décor, signage, hanging items, damage/wear — fills the eye
+  without blocking feet),
+- **evidence-bearing surfaces** (the lecterns/shelves/containers the puzzle actually uses),
+- **purposeful open space** (a reading floor, a work apron — emptiness that reads as *use*, not as
+  unfinished).
+A busy archive looks full and lived-in without every floor cell being impassable. The failure to avoid
+is the current one: a 21×21 void with one lectern in the middle (~5% content). The failure to *not
+overcorrect into* is a 70%-blocked room a six-person group can't move through.
+
+**Author exact compositions, not generic dressers** (adopted amendment 3): the data should say "shelf
+rank C occupies these cells, desk 2 is here, this aisle is reserved" — not "role=library, let the
+builder invent shelves." A generic `dressLibrary()` produces twelve identical algorithmic libraries;
+authored room modules produce places. Use small reusable primitives only for the *construction* of a
+shelf/desk/bench, never to invent the room's layout.
 
 **Scale:** the Hold stays large — a believable multi-district underground complex — but "large" is
 *many human-scale rooms connected*, not *a few oversized empty boxes*. Prefer more, smaller, denser
