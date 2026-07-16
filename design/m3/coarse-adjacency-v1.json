@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0.0-m3",
+  "authority_id": "observance-master-adjacency-v1",
+  "status": "coarse-reservation-authority-not-build-geometry",
+  "coordinate_system": {
+    "origin": "center floor cell of the public Surface Mouth threshold",
+    "x_axis": "+X is east",
+    "y_axis": "+Y is up; values are offsets from the sampled Mouth surface",
+    "z_axis": "+Z follows the public descent into the Hold",
+    "unit": "one Minecraft block",
+    "transforms_forbidden": true,
+    "constructor_nudges_forbidden": true
+  },
+  "scope": {
+    "purpose": "reserve one coherent master footprint and ordered adjacency before district geometry",
+    "build_authority": false,
+    "only_exact_buildable_area": "P4_PRIVATE_SLICE",
+    "whole_district_build_before_brad_slice_review": false
+  },
+  "envelope": {"min_x": -84, "max_x": 84, "min_y": -112, "max_y": 12, "min_z": -8, "max_z": 440},
+  "circulation_reservations": [
+    {
+      "route_id": "PUBLIC_SPINE",
+      "kind": "player_circulation",
+      "bounds": {"min_x": -4, "max_x": 4, "min_y": -104, "max_y": -12, "min_z": 85, "max_z": 440},
+      "contract": "monotonic, reversible, no two-block jump, ordered gates remain physical"
+    },
+    {
+      "route_id": "WEST_SERVICE_RUN",
+      "kind": "service_circulation",
+      "bounds": {"min_x": -84, "max_x": -76, "min_y": -108, "max_y": -16, "min_z": 93, "max_z": 400},
+      "contract": "staff maintenance access; never a player bypass around a progression gate"
+    },
+    {
+      "route_id": "EAST_SERVICE_RUN",
+      "kind": "service_circulation",
+      "bounds": {"min_x": 76, "max_x": 84, "min_y": -108, "max_y": -16, "min_z": 93, "max_z": 440},
+      "contract": "staff maintenance access; protected hatches fail closed for non-operators"
+    }
+  ],
+  "district_reservations": [
+    {
+      "district_id": "P4_PRIVATE_SLICE",
+      "arc_span": ["P4"],
+      "bounds": {"min_x": -18, "max_x": 18, "min_y": -20, "max_y": 8, "min_z": -8, "max_z": 84},
+      "program": "Surface Mouth, reversible descent, intake, one hallway, one ordinary copying room, one investigation, one gate, one approved asymmetric Watcher moment",
+      "geometry_status": "exact_authority_in_vertical-slice-v1.json"
+    },
+    {
+      "district_id": "REFUGE_COMMONS",
+      "arc_span": ["P5"],
+      "bounds": {"min_x": -70, "max_x": -6, "min_y": -52, "max_y": -20, "min_z": 93, "max_z": 150},
+      "program": "school, trade, domestic life, early service practice",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "KEEPER_ARCHIVES",
+      "arc_span": ["P6"],
+      "bounds": {"min_x": 6, "max_x": 70, "min_y": -68, "max_y": -24, "min_z": 93, "max_z": 180},
+      "program": "six distinct professional dossiers and Keeper stones",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "CISTERN_INQUIRY",
+      "arc_span": ["P7"],
+      "bounds": {"min_x": -70, "max_x": -6, "min_y": -80, "max_y": -36, "min_z": 181, "max_z": 250},
+      "program": "material, labor, procurement, cache, Nessa exoneration",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "BREAK_WORKS",
+      "arc_span": ["P8"],
+      "bounds": {"min_x": 6, "max_x": 70, "min_y": -104, "max_y": -48, "min_z": 181, "max_z": 280},
+      "program": "multi-cause incident reconstruction, altered comparison, infrastructure repair",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "FAILED_EXPEDITION",
+      "arc_span": ["P9"],
+      "bounds": {"min_x": -70, "max_x": -6, "min_y": -104, "max_y": -64, "min_z": 251, "max_z": 330},
+      "program": "four-person camp and earned Copperline return",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "WREN_BRIDGE",
+      "arc_span": ["P10"],
+      "bounds": {"min_x": 6, "max_x": 70, "min_y": -104, "max_y": -68, "min_z": 281, "max_z": 360},
+      "program": "leak attribution, confrontation, independent Bridge proof, protected judgment",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "RECOVERED_ARCHIVE",
+      "arc_span": ["P11"],
+      "bounds": {"min_x": -45, "max_x": -6, "min_y": -104, "max_y": -72, "min_z": 331, "max_z": 400},
+      "program": "packet custody, six independent affidavits, Averyn and Record relationship",
+      "geometry_status": "reserved_only"
+    },
+    {
+      "district_id": "RELEASE_CODA",
+      "arc_span": ["P12"],
+      "bounds": {"min_x": 6, "max_x": 45, "min_y": -104, "max_y": -72, "min_z": 361, "max_z": 440},
+      "program": "readiness, protected choices, universal release, shutdown, persistent coda",
+      "geometry_status": "reserved_only"
+    }
+  ],
+  "ordered_progression": [
+    "P4_PRIVATE_SLICE",
+    "REFUGE_COMMONS",
+    "KEEPER_ARCHIVES",
+    "CISTERN_INQUIRY",
+    "BREAK_WORKS",
+    "FAILED_EXPEDITION",
+    "WREN_BRIDGE",
+    "RECOVERED_ARCHIVE",
+    "RELEASE_CODA"
+  ],
+  "public_adjacency": [
+    {"from": "P4_PRIVATE_SLICE", "to": "REFUGE_COMMONS", "via": "PUBLIC_SPINE", "gate": "P4_INTAKE_GATE"},
+    {"from": "REFUGE_COMMONS", "to": "KEEPER_ARCHIVES", "via": "PUBLIC_SPINE", "gate": "P5_CONCLUSION"},
+    {"from": "KEEPER_ARCHIVES", "to": "CISTERN_INQUIRY", "via": "PUBLIC_SPINE", "gate": "P6_CONCLUSION"},
+    {"from": "CISTERN_INQUIRY", "to": "BREAK_WORKS", "via": "PUBLIC_SPINE", "gate": "P7_NESSA_EXONERATION"},
+    {"from": "BREAK_WORKS", "to": "FAILED_EXPEDITION", "via": "PUBLIC_SPINE", "gate": "P8_INTEGRATED_REPAIR"},
+    {"from": "FAILED_EXPEDITION", "to": "WREN_BRIDGE", "via": "PUBLIC_SPINE", "gate": "P9_WITNESS_SPOOL"},
+    {"from": "WREN_BRIDGE", "to": "RECOVERED_ARCHIVE", "via": "PUBLIC_SPINE", "gate": "P10_PROTOCOL_BRIDGE"},
+    {"from": "RECOVERED_ARCHIVE", "to": "RELEASE_CODA", "via": "PUBLIC_SPINE", "gate": "P11_RELATIONSHIP_MODEL"}
+  ],
+  "global_contracts": {
+    "one_post_prologue_minecraft_runtime": true,
+    "private_slice_player_facing": false,
+    "any_subset_progress": true,
+    "whole_group_required_before_p12": false,
+    "survival_inventory_retained": true,
+    "protected_regions_not_inventory_escrow": true,
+    "local_physical_truth_primary": true,
+    "all_routes_survive_restart": true,
+    "exactly_three_deliberate_ambiguities": true,
+    "universal_averyn_release": true
+  }
+}

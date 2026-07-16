@@ -39,11 +39,12 @@ Work in the repo at its root. There is a heavily-modified but committed worktree
 --hard`, `checkout` away, `clean`, or bulk-delete. The `design/` archive is a working, self-enforced
 supersession system, not cruft.**
 
-> **CURRENT CONTINUATION OVERRIDE:** M2 technical contracts and isolated implementation are complete.
-> Read the spine, conformance, continuation/checkpoint ledger, approved Phase 1/2 authorities, and
-> `../m2/M2-TECHNICAL-CONTRACTS.md` plus its routed JSON/SQL authorities. M3 is open under Brad's
-> standing approval: design and prove the coarse adjacency and one private vertical slice for Brad.
-> Do not mutate production, access Crafty, edit media bytes, or begin the full district build.
+> **CURRENT CONTINUATION OVERRIDE:** M3's available offline gate is complete. Read the spine,
+> conformance, continuation/checkpoint ledger, approved Phase 1/2 authorities, all M2 contracts, and
+> `../m3/M3-PRIVATE-VERTICAL-SLICE.md` plus its routed JSON/package/review authorities. Continue M3 only
+> on a disposable Paper target: produce fresh-build/restart/non-op/protection/package receipts and
+> obtain Brad's in-game visual approval. Until those real receipts exist, M4 district implementation
+> remains closed. Do not mutate production, access Crafty, edit media bytes, or infer approval.
 
 ## What this is (read before doing anything)
 

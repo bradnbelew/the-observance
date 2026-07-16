@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0-m3",
+  "package_id": "m3-offline-private-slice-proof-v1",
+  "receipt_scope": "offline authority, simulator, and isolated unit proof; not a Paper world package",
+  "files": [
+    {"path": "design/m3/coarse-adjacency-v1.json", "sha256": "fe4e8ab35977a0427dbc0daa0f6695cc23349ba6c0dc68d69e802a37b6f1ccf3"},
+    {"path": "design/m3/vertical-slice-v1.json", "sha256": "d26083ca9fc15ceadab9b77f51a2a65d2d44cf95598ba4e597f2213ffa76b667"},
+    {"path": "design/m3/M3-PRIVATE-VERTICAL-SLICE.md", "sha256": "cf62a29f15d4d499639fd0f02d9a6ac49c8236df6d75a8a12d068cabeb87a48c"},
+    {"path": "design/m3/BRAD-REVIEW-PACKAGE.md", "sha256": "4de72017faf649c00294dec262576601882eb72883f2f4a80e9433dc04a8d796"},
+    {"path": "tools/sim_m3_vertical_slice.py", "sha256": "e191fafc795fe581a4f5bd737956e839475febe49445ce99fa21374c77bf0a50"},
+    {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceState.java", "sha256": "ac07737c8a290a15eb48da35c186eebbcbe2ea5477140602ff650b15f41574db"},
+    {"path": "plugin/src/test/java/com/observance/watcher/m3runtime/PrivateSliceStateSelfTest.java", "sha256": "4996eaf2ba2ec02f6502679df6b9057493100e7fc1c470f89c9d8064284ccffc"}
+  ],
+  "package_set_sha256": "0481cc172c62e2b1386cbb93e88b20335da79fbcc293e140abeec7350d71c722",
+  "paper_world_hash": null,
+  "paper_jar_hash": null,
+  "brad_visual_approval_receipt": null
+}

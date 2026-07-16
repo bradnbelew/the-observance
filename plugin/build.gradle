@@ -76,7 +76,8 @@ def pluginSelfTests = [
     v5RitualFinale: 'com.observance.watcher.v5runtime.ritual.RitualFinaleSelfTest',
     m2AtomicPredicateRuntime: 'com.observance.watcher.m2runtime.AtomicPredicateRuntimeSelfTest',
     m2AutomationApprovalPolicy: 'com.observance.watcher.m2runtime.AutomationApprovalPolicySelfTest',
-    m2LocalPrimaryJournal: 'com.observance.watcher.m2runtime.LocalPrimaryJournalSelfTest'
+    m2LocalPrimaryJournal: 'com.observance.watcher.m2runtime.LocalPrimaryJournalSelfTest',
+    m3PrivateSliceState: 'com.observance.watcher.m3runtime.PrivateSliceStateSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
