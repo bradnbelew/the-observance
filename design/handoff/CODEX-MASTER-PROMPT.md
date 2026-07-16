@@ -1,13 +1,28 @@
 # Master Codex Prompt — The Observance full rebuild
 
+> **PHASE 0 OVERRIDE — 2026-07-15.** This prompt's older 15-hour, fixed 10-case/82-node, immediate
+> Railway deploy, and direct-to-Hold sequencing are superseded by `SPINE-CONFORMANCE.md` and
+> `PHASE-0-AUTHORITY-AUDIT.md`. The target is 20–30 active hours (24–28 target), free-paced over weeks,
+> with subset progress, durable catch-up/replay, no time gates or missable substantial content,
+> director-approved hints, and approval-gated risky/personalized/world-changing beats. The gated
+> `hold.zip` prologue is the only player-facing standalone save; all later Minecraft play runs on the
+> brother-hosted Crafty Paper `1.21.11` server, while any standalone vertical slice is Brad-only review.
+> Brad approved Spine Conformance on 2026-07-15, so experience architecture may begin; implementation,
+> live mutation, and Hold geometry remain behind later gates.
+
+> **Phase 1 is authored and awaiting Brad review.** Read `PHASE-1-APPROVAL.md` and its four linked
+> authorities before doing further design. Do not start M1 evidence architecture until Brad approves
+> that gate; approval still does not authorize implementation, media editing, live changes, or geometry.
+
 > Paste the block below to Codex to start the rebuild. It is self-contained enough to prevent drift on
 > its own, and it points to `design/handoff/01`–`08` for the depth. Codex holds the Supabase / Railway /
 > Google Drive / Vercel connections; the Minecraft plugin is installed by Brad by hand.
 
 ---
 
-You are taking over **The Observance**, a hard, 15-hour, group-played Minecraft ARG that Brad runs for
-close friends. Work in the repo at its root. There is a heavily-modified but committed worktree on
+You are taking over **The Observance**, a hard, 20–30-active-hour (target 24–28), free-paced,
+group-played Minecraft investigation that Brad runs for about six close friends over several weeks.
+Work in the repo at its root. There is a heavily-modified but committed worktree on
 `main` (commit `feat: V5 production rewrite + V5.1 redesign pass`). **Preserve it — never `git reset
 --hard`, `checkout` away, `clean`, or bulk-delete. The `design/` archive is a working, self-enforced
 supersession system, not cruft.**
@@ -21,7 +36,8 @@ Brad's verdict: it produced "a slightly prettier version of the ARG from before.
 because the current Hold is the core problem: **32 oversized rooms (~1015 m² average, ~5% furnished,
 one walk-up mechanism each)** that read as a generated dungeon with stations, not believable places.
 
-**Your complete brief is `design/handoff/README.md` and `design/handoff/01`–`08`. Read all of it first.
+**Read `design/handoff/SPINE-LOCK.md`, `SPINE-CONFORMANCE.md`, `PHASE-0-AUTHORITY-AUDIT.md`,
+`README.md`, and `01`–`08`, then `arc/WORLD-BIBLE.md`, completely before acting.
 Those documents are authoritative; this prompt is the summary.**
 
 ## Brad's binding standards (judge every piece of work against these FIRST)
@@ -74,12 +90,18 @@ Those documents are authoritative; this prompt is the summary.**
 
 ## Do this, in this order
 
-**Phase 0 (first, independent):**
-- Run `design/CODEX-PROMPT-V5.1-DEPLOY.md` — a Railway redeploy of the Discord worker for the new
-  read-only `/progress` command (no migration). Verify it works live.
-- Resolve the **KS01 blocker** (`design/handoff/05`): the current Hold fails its fresh-install readiness
-  audit ("KS01/strips: 5/6 unique pieces present"). Fix the item-frame installer path, or — recommended
-  — replace Sella's frame mechanism with a non-frame investigative verb as part of the content rebuild.
+**Phase 0 (current; documentation and read-only discovery only):**
+- Produce the Spine Conformance Statement and stop for Brad's approval before canon-expression,
+  cases/evidence, schema, Unlit form, media replacement, or geometry.
+- Audit active authorities for stale 32-room, 10-case, 82-node, fixed-media, 15-hour, shared-world, and
+  service-topology assumptions; document exact read-only Supabase, Vercel, both Railway projects, and
+  Crafty mappings without exposing secrets.
+- Update authority routing and run relevant non-live checks.
+- Do not deploy, migrate, rotate secrets, touch the brother's server, or begin Hold geometry.
+
+**Post-approval Phase 1:** produce the 24–28 hour experience/case map, subset-progress and catch-up/replay
+model, required-content and Brad-footage inventory, hint/automation approval model, authority migration
+plan, and coarse cross-surface topology before any floorplan or vertical-slice geometry.
 
 **Phase 1 — rebuild the Hold, ONE district at a time** (`design/handoff/01` + `02` + `04`):
 1. Design the floorplan in the data layer (`plugin/.../structure/DeepHoldV4Plan.java`) and make

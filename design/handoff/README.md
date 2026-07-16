@@ -1,5 +1,25 @@
 # The Observance — Full Rebuild Handoff (for Codex)
 
+> **PHASE 0 OVERRIDE — 2026-07-15.** After `SPINE-LOCK.md`, read `SPINE-CONFORMANCE.md` and
+> `PHASE-0-AUTHORITY-AUDIT.md`. Brad approved the conformance statement on 2026-07-15, opening the
+> experience-architecture phase; case/evidence implementation, schema changes, Unlit-form implementation,
+> live changes, and geometry remain behind later gates. The rebuild targets about six friends, 20–30
+> active hours (24–28 target), free-paced over weeks, with subset progress, durable catch-up/replay,
+> no time gates or missable substantial content, director-approved hints, and approval-gated risky,
+> personalized, or world-changing beats. Old 15-hour, 32-room, 10-case, 82-node, and fixed-media
+> statements describe the current implementation, not the rebuild target.
+
+> **Runtime topology is fixed.** The gated `hold.zip` prologue is the only player-facing standalone
+> Minecraft save and exists to derive the live IP. After onboarding, every campaign location and beat
+> runs on the brother-hosted, Crafty-managed Paper `1.21.11` server. A standalone vertical-slice save is
+> private review material for Brad only. Players keep survival gear in protected ARG regions; bypass
+> prevention comes from region enforcement, not inventory escrow.
+
+> **PHASE 1 REVIEW ORDER:** `PHASE-1-APPROVAL.md` → `PHASE-1-EXPERIENCE-ARCHITECTURE.md` →
+> `PHASE-1-PROGRESSION-GOVERNANCE.md` → `PHASE-1-MEDIA-INVENTORY.md` →
+> `PHASE-1-TOPOLOGY-AND-MIGRATION.md`. Phase 1 is complete and awaiting Brad approval; that approval
+> opens evidence architecture only, not implementation, live changes, media editing, or geometry.
+
 > **⛔ READ `SPINE-LOCK.md` FIRST.** The ground-up rebuild is approved, but the **spine (the story that
 > happened, the shape of the journey, the register) is LOCKED** and is not part of "everything is
 > rewriteable." The rebuild deepens the existing story; it does not replace it with a different one.

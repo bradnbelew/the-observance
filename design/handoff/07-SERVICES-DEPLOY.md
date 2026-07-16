@@ -1,5 +1,12 @@
 # 07 — Services & Deploy (Codex's domain)
 
+> **PHASE 0 OVERRIDE — NO DEPLOYMENT.** `PHASE-0-AUTHORITY-AUDIT.md` records the read-only mapping of
+> Supabase, Vercel, both Railway service families, and the Crafty-managed Minecraft runtime. Do not
+> redeploy, migrate, rotate secrets, or change live state until the relevant post-conformance phase is
+> approved. The eventual release must carry parity, migration, deployment, rollback, and launch receipts
+> for Supabase, Vercel, the Railway persistent worker, the Railway recovery/cron service, and the
+> brother-hosted Crafty Paper server.
+
 Railway (Discord bot), Supabase (database), Google Drive (media), and Vercel (website) are **yours,
 Codex** — Brad runs the plugin on the Minecraft server by hand, but every service change goes through
 you. This doc is the discipline that keeps the four layers in sync so a content/puzzle change doesn't
@@ -14,8 +21,9 @@ desync production.
 
 | Layer | What | Owner | Deploy |
 |---|---|---|---|
-| Minecraft plugin | `plugin/build/libs/observance-0.5.0.jar` | Brad installs by hand | after a clean fresh-cutover + restart audit |
-| Discord bot | `discord/` (worker + cron) | **you (Railway)** | pull commit → redeploy worker; slash commands re-register on boot |
+| Minecraft plugin | `plugin/build/libs/observance-0.5.0.jar` | Brad/Crafty on brother-hosted Paper | after an approved clean fresh-cutover + restart audit; only live post-prologue Minecraft runtime |
+| Discord persistent worker | `discord/` + `railway.worker.json` | **you (worker-family Railway project; exact live ID pending authenticated read-only discovery)** | persistent `npm start`; slash commands and fast lease-safe showrunner loop |
+| Discord recovery service | `discord/` + `railway.cron.json` | **you (recovery-family Railway project; exact live ID pending authenticated read-only discovery)** | `npm run showrunner` every ten minutes; recovery, not a second authority |
 | Database | Supabase project `fdnmhbpxnodrnbrzrlqq` | **you (Supabase)** | incremental migrations only; never re-apply the whole bundle |
 | Website | `dashboard/` (Next.js) | **you (Vercel)** — project `the-observance-kjxn`, domain `copperlinehosting.com` | git push → Vercel builds |
 | Media | video/audio payloads | **you (Google Drive)** | host + link from the DB `required_media` / dashboard |
@@ -79,6 +87,9 @@ add/remove a node, every counter moves together and it's a schema change; surfac
   behavior. The bot re-registers commands on every boot.
 
 ## 5. The immediate deploy already teed up
+
+> **Superseded sequencing:** do not run this deployment during Phase 0. Retain the prompt as provenance
+> and reassess it after Spine Conformance approval and an authenticated Railway mapping.
 
 `design/CODEX-PROMPT-V5.1-DEPLOY.md` is a ready-to-run prompt for the one service change the V5.1 pass
 needs: a **Railway redeploy of the Discord worker** to ship the new `/progress` command (read-only, no

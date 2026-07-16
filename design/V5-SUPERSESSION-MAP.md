@@ -6,9 +6,25 @@ To prevent stale-story drift, only the files in the **Current authority** table 
 
 ## Current authority
 
+> **Ground-up rebuild override (Phase 0, 2026-07-15):** Read
+> `design/handoff/SPINE-LOCK.md`, then `design/handoff/SPINE-CONFORMANCE.md`, then
+> `design/handoff/PHASE-0-AUTHORITY-AUDIT.md` before using this table. The spine is locked; Brad's
+> approved 20–30 hour free-paced experience and Crafty/single-runtime topology supersede flesh-level
+> 15-hour, 32-room, 10-case, 82-node, fixed-media-delivery, shared-world, and generic-server assumptions.
+> Existing manifests remain the authority for the currently deployed V5 implementation only, not target
+> counts or geometry for the rebuild. No canon-expression, case, schema, Unlit-form, or geometry work may
+> start until Brad approves the Spine Conformance Statement; Brad approved it on 2026-07-15, opening
+> experience architecture while leaving implementation, live-state, and geometry gates in force.
+
 | Subject | Authority |
 | --- | --- |
-| **active redesign decisions (V5.1, overrides on conflict)** | `design/V5.1-REDESIGN.md` |
+| **active ground-up rebuild decisions (overrides flesh-level V5/V5.1 assumptions)** | `design/handoff/README.md` + `design/handoff/PHASE-0-AUTHORITY-AUDIT.md` |
+| **spine conformance gate (approved 2026-07-15)** | `design/handoff/SPINE-CONFORMANCE.md` |
+| **Phase 1 approval gate and experience architecture** | `design/handoff/PHASE-1-APPROVAL.md` + `design/handoff/PHASE-1-EXPERIENCE-ARCHITECTURE.md` |
+| **Phase 1 progression/hints/automation governance** | `design/handoff/PHASE-1-PROGRESSION-GOVERNANCE.md` |
+| **Phase 1 media preservation inventory** | `design/handoff/PHASE-1-MEDIA-INVENTORY.md` |
+| **Phase 1 runtime topology and authority migration** | `design/handoff/PHASE-1-TOPOLOGY-AND-MIGRATION.md` |
+| active redesign history (V5.1, retained where not superseded) | `design/V5.1-REDESIGN.md` |
 | spoiler truth | `arc/WORLD-BIBLE.md` |
 | required graph | `design/ARG-V5-NODE-MANIFEST.csv` |
 | player order/surfaces | `design/EXPERIENCE-MANIFEST.md` |

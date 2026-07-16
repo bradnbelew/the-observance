@@ -2,6 +2,11 @@
 
 Status: current tooling authority.
 
+`check_phase1_architecture.py` is the non-live Phase 1 rebuild-architecture gate. It validates the
+approved spine prerequisite, twelve-arc/26.5-hour experience map, subset/catch-up and hint/automation
+contracts, preservation of every currently manifested media receipt, single-Crafty-runtime topology,
+M0–M5 migration sequence, and future-agent authority routing. It performs no network or live mutation.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,

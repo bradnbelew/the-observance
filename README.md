@@ -1,5 +1,17 @@
 # The Observance
 
+> **Ground-up rebuild Phase 0 (2026-07-15):** Start with
+> `design/handoff/SPINE-LOCK.md`, `design/handoff/SPINE-CONFORMANCE.md`, and
+> `design/handoff/PHASE-0-AUTHORITY-AUDIT.md`. The spine is locked and the conformance statement requires
+> Brad approved it on 2026-07-15, opening experience architecture while later implementation, live-state,
+> and geometry gates remain closed. The approved rebuild
+> is free-paced for about six friends over 20–30 active hours (24–28 target). Existing 10-case, 82-node,
+> 32-room, and five-media counts below describe the current V5 implementation, not rebuild constraints.
+
+> After the gated player-facing `hold.zip` prologue, the brother-hosted Crafty-managed Paper `1.21.11`
+> server is the only live Minecraft campaign runtime. A standalone vertical slice is Brad-only review;
+> players keep survival gear in protected ARG regions, with bypass prevention enforced by region rules.
+
 The Observance is a production Minecraft ARG for Paper `1.21.11`: a ten-case, 82-node investigation spanning a protected command-built Deep Hold, the village-well Unlit, a legacy-hosting website, Discord, fixed found footage, and a branch-specific cinematic server close.
 
 The campaign is designed for ordinary Minecraft clients in Adventure mode. Players do not manually build ARG structures, break puzzle blocks, inspect real server logs, install client mods, or depend on an operator moving rooms during play.

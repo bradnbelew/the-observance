@@ -9,14 +9,37 @@ half-landed.
 
 ## 1. The order
 
-**Phase 0 — unblock and deploy what's ready (do first, independent of the rebuild).**
+**Phase 0 — conformance and authority control (current; no implementation or live mutation).**
+1. Produce `SPINE-CONFORMANCE.md`, obtain Brad's explicit approval, and treat any requested locked-story
+   change as an isolated spine-change request.
+2. Maintain `PHASE-0-AUTHORITY-AUDIT.md`: record stale 32/10/82/fixed-media/15-hour/topology assumptions
+   and the read-only Supabase, Vercel, two-Railway-project, and Crafty mappings without exposing secrets.
+3. Update authority routing so future agents encounter the conformance gate and single-runtime topology
+   before implementation, then run documentation/static checks only.
+4. Do **not** deploy services, migrate Supabase, touch the brother's server, replace media, rewrite canon
+   expression/cases, or begin a Hold floorplan or geometry before the gate is approved.
+
+**Post-approval Phase 1 — experience architecture (next).**
+Build the 20–30 hour free-paced experience map (24–28 target), subset-progress/catch-up/replay model,
+required-content and Brad-footage inventory, hint/automation approval model, authority replacement plan,
+and coarse cross-surface topology. This phase precedes any Hold geometry.
+
+**Phase 1 completion — 2026-07-15:** the required artifacts are authored in
+`PHASE-1-EXPERIENCE-ARCHITECTURE.md`, `PHASE-1-PROGRESSION-GOVERNANCE.md`,
+`PHASE-1-MEDIA-INVENTORY.md`, and `PHASE-1-TOPOLOGY-AND-MIGRATION.md`, with the decision summary and
+approval boundary in `PHASE-1-APPROVAL.md`. Brad approval opens M1 evidence architecture only.
+
+The legacy sequence below is retained as implementation history and must be re-planned against those
+approved Phase 1 artifacts; its phase numbers and immediate deploy instructions are not current.
+
+**Legacy Phase 0 — unblock and deploy what's ready (superseded; do not execute now).**
 1. Run `design/CODEX-PROMPT-V5.1-DEPLOY.md` — Railway redeploy of the Discord worker for `/progress`
    (read-only; no migration). Verify `/progress` works live.
 2. Resolve the **KS01 blocker** (doc 5): either fix the installer's frame-set path, or (recommended)
    let the content rebuild replace Sella's frame mechanism with a non-frame verb. The current Hold
    cannot reach a clean fresh-install receipt until this is done.
 
-**Phase 1 — the Hold rebuild, district by district (the substance).**
+**Legacy Phase 1 — the Hold rebuild, district by district (requires resequencing and approvals).**
 For each district (start with one, e.g. the Keeper library that serves C02/C03):
 1. **Design the floorplan in data** (`DeepHoldV4Plan.java`) — rooms/fixtures/gates/links records +
    `validate()` proving non-overlap, standing frames, connectivity (doc 1 §3A, doc 4 §3-4).
