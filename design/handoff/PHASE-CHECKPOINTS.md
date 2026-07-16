@@ -17,10 +17,18 @@ because it appears here; its linked authorities and checks must independently pr
 
 ## Known external gaps carried forward
 
-- Authenticated Railway project/service/deployment IDs for the worker and recovery families.
-- Source custody and audiovisual review for Brad's four videos and recovered archive packet.
-- Crafty/brother-host access and live-server operations remain unavailable until the relevant phase and
-  platform confirmation.
+- `../m3/EXTERNAL-GAP-AUDIT-2026-07-16.md` records the latest read-only discovery receipts. Railway's
+  dashboard was unauthenticated and no CLI/token/IDs were available, so authenticated project,
+  environment, service, deployment, and configuration-parity evidence remains open for both families.
+- The exact four receipted video byte sets and full five-file recovered packet were located at the
+  previously recorded local staging paths and hash-match the committed receipts. Best-master/ownership
+  confirmation, human audiovisual/accessibility review, and Brad's keep/re-edit/replace decisions remain
+  open; authenticated Drive searches returned no matching video, audio, or packet files.
+- Vercel team/project and current production deployment identity were reconfirmed read-only, but that
+  deployment predates M2/M3 and no exact-checkpoint preview exists in the 20 newest deployments. The M2
+  preview readiness receipt remains open; production was untouched.
+- Crafty/brother-host access remains unavailable. Public DNS resolved the declared endpoint, but TCP
+  `25569` did not answer, so no live Paper/Crafty version or runtime metadata was obtained.
 - Phase 2 timing and evidence fairness are architecture findings; human playtest, source AV review, and
   live client/route/restart receipts remain for their owning later phases.
 - The predicate discrepancy is resolved: `37020e...` is the exact historical mixed-EOL build byte set
