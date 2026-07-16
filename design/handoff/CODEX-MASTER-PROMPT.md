@@ -39,11 +39,12 @@ Work in the repo at its root. There is a heavily-modified but committed worktree
 --hard`, `checkout` away, `clean`, or bulk-delete. The `design/` archive is a working, self-enforced
 supersession system, not cruft.**
 
-> **CURRENT CONTINUATION OVERRIDE:** M3's available offline gate is complete. Read the spine,
+> **CURRENT CONTINUATION OVERRIDE:** M3's offline and disposable Paper structural gates are complete.
+> Read the spine,
 > conformance, continuation/checkpoint ledger, approved Phase 1/2 authorities, all M2 contracts, and
 > `../m3/M3-PRIVATE-VERTICAL-SLICE.md` plus its routed JSON/package/review authorities. Continue M3 only
-> on a disposable Paper target: produce fresh-build/restart/non-op/protection/package receipts and
-> obtain Brad's in-game visual approval. Until those real receipts exist, M4 district implementation
+> on the disposable Paper target: obtain real-client non-op/protection/two-client/solo/UX receipts and
+> Brad's in-game visual approval. Until those receipts exist, M4 district implementation
 > remains closed. Do not mutate production, access Crafty, edit media bytes, or infer approval.
 
 ## What this is (read before doing anything)

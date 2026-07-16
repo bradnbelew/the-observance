@@ -1,0 +1,43 @@
+{
+  "brad_visual_approval": null,
+  "coarse_authority_sha256": "fe4e8ab35977a0427dbc0daa0f6695cc23349ba6c0dc68d69e802a37b6f1ccf3",
+  "client_receipts": {
+    "non_op_adventure_survival_inventory": null,
+    "protected_region_bypass": null,
+    "reason": "No authenticated Minecraft clients were available to this local harness.",
+    "solo_accessibility": null,
+    "two_client_asymmetry": null
+  },
+  "first_start_log_sha256": "8f81e81f5b9668a3cc892242004f61b2341e2f1da3da2035d8799d9bfa4de477",
+  "journal_sha256": "b63484826d1b0b1d8a7a53a0e4979617d4ecc14e5dd3872ba2c57f6458b3e86d",
+  "evidence": {
+    "build": "[08:23:08 INFO]: M3_BUILD_COMPLETE target=m3-local-16a712c-corrected-20260716 writes=94630 cells=99789 gate=closed world_state_sha256=0263a2735d2f93b442c79ddf97380d85a51ada1fc155fba24dfb0497f8c35eea findings=0",
+    "closed_audit": "[08:23:08 INFO]: M3_AUDIT PASS target=m3-local-16a712c-corrected-20260716 cells=99789 gate=closed world_state_sha256=0263a2735d2f93b442c79ddf97380d85a51ada1fc155fba24dfb0497f8c35eea findings=0",
+    "final_audit": "[08:23:22 INFO]: M3_AUDIT PASS target=m3-local-16a712c-corrected-20260716 cells=99789 gate=open world_state_sha256=1b803d31acdf31c52341d2ebe60f26f7eac77fad5cd3249a556ce0040ebbf8b8 findings=0",
+    "open_audit": "[08:23:08 INFO]: M3_AUDIT PASS target=m3-local-16a712c-corrected-20260716 cells=99789 gate=open world_state_sha256=1b803d31acdf31c52341d2ebe60f26f7eac77fad5cd3249a556ce0040ebbf8b8 findings=0",
+    "platform_confirmation": "[08:23:05 INFO]: [Observance] M3_TARGET_CONFIRMED target=m3-local-16a712c-corrected-20260716 commit=16a712c08566135635fdfe383a42a85ed9320db5 paper=1.21.11-132-c5eb079 (MC: 1.21.11)",
+    "replay": "[08:23:08 INFO]: M3_REPLAY_PASS gate=open receipts=12",
+    "restart_audit": "[08:23:22 INFO]: M3_AUDIT PASS target=m3-local-16a712c-corrected-20260716 cells=99789 gate=open world_state_sha256=1b803d31acdf31c52341d2ebe60f26f7eac77fad5cd3249a556ce0040ebbf8b8 findings=0",
+    "restart_confirmation": "[08:23:21 INFO]: [Observance] M3_TARGET_CONFIRMED target=m3-local-16a712c-corrected-20260716 commit=16a712c08566135635fdfe383a42a85ed9320db5 paper=1.21.11-132-c5eb079 (MC: 1.21.11)",
+    "restart_replay": "[08:23:22 INFO]: M3_REPLAY_PASS gate=open receipts=12",
+    "status": "[08:23:06 INFO]: M3_STATUS target=m3-local-16a712c-corrected-20260716 commit=16a712c08566135635fdfe383a42a85ed9320db5 gate=closed paper=1.21.11-132-c5eb079 (MC: 1.21.11)"
+  },
+  "m4_authority": "closed",
+  "manifest_version": "2.0.0-m2",
+  "paper": {
+    "build": 132,
+    "jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "version": "1.21.11"
+  },
+  "plugin_jar_sha256": "c7fe8e2b4b40ab0954f04c3ae3caa7d9737507d9b4d401b71baa415692e1e2eb",
+  "predicate_raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+  "restart_log_sha256": "737d124076b1d6ae5b43b181e8e5a81d9c490de2a8f41da7defd1da645cda558",
+  "schema_version": "1.0.0-m3-paper-receipt",
+  "scope": "disposable local private Paper target; never player-facing or production",
+  "source_git_commit": "16a712c08566135635fdfe383a42a85ed9320db5",
+  "slice_authority_sha256": "d26083ca9fc15ceadab9b77f51a2a65d2d44cf95598ba4e597f2213ffa76b667",
+  "target_id": "m3-local-16a712c-corrected-20260716",
+  "world_package_name": "m3-private-slice-world.zip",
+  "world_package_sha256": "5b0da4e920a1cdc1fd085bbed5a3053bb3a696d480798312c505aca47b89c676",
+  "world_tree_sha256": "82135b9cf73c205eeb131238a3900a0264eb5299d1ac9cf385b45338b446a353"
+}

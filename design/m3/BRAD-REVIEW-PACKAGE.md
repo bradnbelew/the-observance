@@ -1,6 +1,6 @@
 # Brad Review Package — M3 Private P4 Slice
 
-Status: **READY FOR A FUTURE DISPOSABLE PAPER BUILD; NOT YET VISUALLY APPROVED**
+Status: **STRUCTURAL PAPER TARGET PACKAGED; CLIENT WALK AND VISUAL APPROVAL OPEN**
 
 This package is for one private review only. It is not a campaign save and must not be linked or given
 to players.
@@ -46,15 +46,18 @@ cosmology or resemble an escape-room station.
 
 ## Required machine receipts before the walk counts
 
-- fresh disposable Paper target identity and Paper version;
-- exact Git commit, manifest `2.0.0-m2`, predicate raw `16de527…`, schema version, JAR hash, and slice
+- [x] fresh disposable Paper target identity and Paper version;
+- [x] exact Git commit, manifest `2.0.0-m2`, predicate raw `16de527…`, JAR hash, and slice
   package hash;
-- complete build receipt and zero-finding audit;
-- stop/restart and identical re-audit;
-- non-op Adventure walk with ordinary survival inventory retained;
-- block/entity/container/teleport/gate bypass rejection in the protected region;
-- two-client asymmetric-view read and solo/accessibility readback;
-- confirmation that no player-facing route exposes this private target.
+- [x] exact structural build receipt and zero-finding 99,789-cell audit;
+- [x] stop/restart and identical open-state re-audit;
+- [ ] non-op Adventure walk with ordinary survival inventory retained;
+- [ ] block/entity/container/teleport/gate bypass rejection in the protected region;
+- [ ] two-client asymmetric-view read and solo/accessibility readback;
+- [x] local-only bind, whitelist, and no player-facing route for this disposable target.
+
+The checked receipts are in `PAPER-DISPOSABLE-RECEIPT.json`. They prove the Paper projection and
+local-primary state path, not the unchecked real-client behaviors or the visual checklist above.
 
 ## Decision record
 

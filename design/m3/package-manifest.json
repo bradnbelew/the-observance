@@ -1,18 +1,28 @@
 {
-  "schema_version": "1.0.0-m3",
-  "package_id": "m3-offline-private-slice-proof-v1",
-  "receipt_scope": "offline authority, simulator, and isolated unit proof; not a Paper world package",
+  "schema_version": "2.0.0-m3",
+  "package_id": "m3-private-slice-paper-structural-proof-v2",
+  "receipt_scope": "offline authority plus disposable Paper structural proof; not a real-client or visual approval receipt",
   "files": [
     {"path": "design/m3/coarse-adjacency-v1.json", "sha256": "fe4e8ab35977a0427dbc0daa0f6695cc23349ba6c0dc68d69e802a37b6f1ccf3"},
-    {"path": "design/m3/vertical-slice-v1.json", "sha256": "d26083ca9fc15ceadab9b77f51a2a65d2d44cf95598ba4e597f2213ffa76b667"},
-    {"path": "design/m3/M3-PRIVATE-VERTICAL-SLICE.md", "sha256": "cf62a29f15d4d499639fd0f02d9a6ac49c8236df6d75a8a12d068cabeb87a48c"},
-    {"path": "design/m3/BRAD-REVIEW-PACKAGE.md", "sha256": "4de72017faf649c00294dec262576601882eb72883f2f4a80e9433dc04a8d796"},
+    {"path": "design/m3/vertical-slice-v1.json", "sha256": "b87a5ce328d310dec641032c77be83e787ce58dd3e8c3c65611379bf1fa7377c"},
+    {"path": "design/m3/M3-PRIVATE-VERTICAL-SLICE.md", "sha256": "23c4a52aa2dcf8df8f7224b5bd8aef3a981aef7d8275a22c6ce9d55aa1d3db08"},
+    {"path": "design/m3/BRAD-REVIEW-PACKAGE.md", "sha256": "831f15ea452312e91d108eb47b23ba9709d5249ed05cea367a7e198aeefff806"},
+    {"path": "design/m3/PAPER-DISPOSABLE-RECEIPT.json", "sha256": "8a9285d6487e68cd19d464f834b479449d0fc55a5d3e9eea1045b11c6a948900"},
     {"path": "tools/sim_m3_vertical_slice.py", "sha256": "e191fafc795fe581a4f5bd737956e839475febe49445ce99fa21374c77bf0a50"},
+    {"path": "tools/run_m3_disposable_paper.py", "sha256": "18cf283bdddc5a552b07b1d4338d8103f686192f0810d4dc1d552f19635414ea"},
+    {"path": "plugin/src/main/java/com/observance/watcher/ObservancePlugin.java", "sha256": "06af2a46a5763866e09eb0bdace3b526f07a315317901b93f1f41ab25331782a"},
     {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceState.java", "sha256": "ac07737c8a290a15eb48da35c186eebbcbe2ea5477140602ff650b15f41574db"},
-    {"path": "plugin/src/test/java/com/observance/watcher/m3runtime/PrivateSliceStateSelfTest.java", "sha256": "4996eaf2ba2ec02f6502679df6b9057493100e7fc1c470f89c9d8064284ccffc"}
+    {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java", "sha256": "169175250f1f2fdfc811a8b8b1e0f235ca686aead50d627463f946d508e85c0f"},
+    {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceProtectionListener.java", "sha256": "3d4069691c7600b2fe868c728a6a92f55727766ddbfae4784a91e6bc0d434478"},
+    {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceReviewRuntime.java", "sha256": "c2c8f84912517c174101fcae8acd999027df7b6e6bfe773a4cc844832e34ed60"},
+    {"path": "plugin/src/test/java/com/observance/watcher/m3runtime/PrivateSliceStateSelfTest.java", "sha256": "4996eaf2ba2ec02f6502679df6b9057493100e7fc1c470f89c9d8064284ccffc"},
+    {"path": "plugin/src/main/resources/config.yml", "sha256": "811d52824e2be5c987d471089acc55061f85b12d8095b422e3af96106b201107"},
+    {"path": "plugin/src/main/resources/plugin.yml", "sha256": "5347a465c50f8f90fa2c626494071e2b8f2c2ede3cc9bf822768707f4e16e8c9"}
   ],
-  "package_set_sha256": "0481cc172c62e2b1386cbb93e88b20335da79fbcc293e140abeec7350d71c722",
-  "paper_world_hash": null,
-  "paper_jar_hash": null,
+  "package_set_sha256": "64522abfba4a521be12239266340fa01c0727cae45b409c91f8918ccc6397cf6",
+  "paper_server_jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_jar_sha256": "c7fe8e2b4b40ab0954f04c3ae3caa7d9737507d9b4d401b71baa415692e1e2eb",
+  "paper_world_tree_sha256": "82135b9cf73c205eeb131238a3900a0264eb5299d1ac9cf385b45338b446a353",
+  "paper_world_package_sha256": "5b0da4e920a1cdc1fd085bbed5a3053bb3a696d480798312c505aca47b89c676",
   "brad_visual_approval_receipt": null
 }

@@ -25,6 +25,8 @@ PAPER_VERSION = "1.21.11"
 PAPER_BUILD = 132
 PREDICATE_RAW_SHA256 = "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a"
 MANIFEST_VERSION = "2.0.0-m2"
+COARSE_AUTHORITY_SHA256 = "fe4e8ab35977a0427dbc0daa0f6695cc23349ba6c0dc68d69e802a37b6f1ccf3"
+SLICE_AUTHORITY_SHA256 = "d26083ca9fc15ceadab9b77f51a2a65d2d44cf95598ba4e597f2213ffa76b667"
 
 
 def sha256(path: Path) -> str:
@@ -201,11 +203,16 @@ def main() -> None:
         "source_git_commit": args.commit,
         "manifest_version": MANIFEST_VERSION,
         "predicate_raw_sha256": PREDICATE_RAW_SHA256,
+        "coarse_authority_sha256": COARSE_AUTHORITY_SHA256,
+        "slice_authority_sha256": SLICE_AUTHORITY_SHA256,
         "paper": {"version": PAPER_VERSION, "build": PAPER_BUILD, "jar_sha256": sha256(paper)},
         "plugin_jar_sha256": sha256(plugin),
         "world_tree_sha256": world_hash,
         "world_package_sha256": package_hash,
         "world_package_name": package.name,
+        "journal_sha256": sha256(target / "plugins" / "Observance" / "m3-private-slice.journal"),
+        "first_start_log_sha256": sha256(target / "m3-first-start.log"),
+        "restart_log_sha256": sha256(target / "m3-restart.log"),
         "evidence": evidence,
         "client_receipts": {
             "non_op_adventure_survival_inventory": None,

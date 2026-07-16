@@ -1,6 +1,6 @@
 # M3 — Coarse Master Adjacency and Private P4 Vertical Slice
 
-Status: **AVAILABLE OFFLINE GATE COMPLETE; EXTERNAL PAPER AND BRAD VISUAL GATES OPEN**
+Status: **DISPOSABLE PAPER STRUCTURAL GATE COMPLETE; CLIENT AND BRAD VISUAL GATES OPEN**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
 architecture → M2 technical contracts → this file. The machine authorities are
@@ -107,14 +107,36 @@ player using the review readback loses no evidence.
 
 These are offline receipts. They are not Paper, client, Crafty, production, or human visual evidence.
 
+## Disposable Paper structural receipt
+
+`PAPER-DISPOSABLE-RECEIPT.json` records a fresh local-only Paper `1.21.11` build 132 target. The
+review runtime is disabled by default and refuses mutation unless a creation-only harness supplies a
+matching disposable-target marker, target ID, and source commit. The target bound only to
+`127.0.0.1`, used a whitelist, loaded no production credentials, and never contacted Crafty or any
+campaign service.
+
+From source commit `16a712c08566135635fdfe383a42a85ed9320db5`, the exact plugin JAR built the
+closed slice, read back all 99,789 envelope cells with zero findings, committed P4.F1-P4.F5 through
+the M2 local-primary journal, opened the one gate, and read back the open state with zero findings.
+Paper then saved and stopped cleanly. A fresh process loaded the same target and journal, returned the
+identical open-state hash, and accepted the same synthesis replay without adding a receipt. The
+receipt records exact Paper/JAR/journal/log/world-tree/world-package hashes.
+
+This is a structural/runtime receipt, not a client play receipt. The Paper projection contains the
+authority's exact solid/air envelope and authored blocking composition, while finding commits are an
+operator harness surface. It does not yet prove player-facing books/signs/submission UX, Adventure
+movement, inventory retention, event-level protection, or the visual standard.
+
 ## Honest external gaps
 
-This clean worktree contained no disposable Paper clone, root build target, or prebuilt plugin JAR.
-Accordingly, M3 does not claim a fresh Paper build, complete build receipt, restart/re-audit, non-op
-Adventure/survival-region check, live asymmetric client read, or world-package hash. Production
-Crafty, Supabase, Vercel, both Railway families, Discord secrets, and media bytes remain untouched.
+The disposable Paper structural build, exact audit, gate open, stop/restart, re-audit, replay, and
+world-package receipts now exist. No authenticated Minecraft client was available, so M3 still does
+not claim a non-op Adventure/survival-inventory walk, live block/entity/container/teleport/gate bypass
+test, two-client asymmetric view, solo accessibility readback, or player-facing investigation UX.
+Production Crafty, Supabase, Vercel, both Railway families, Discord secrets, and media bytes remain
+untouched.
 
 Brad has not walked the slice. `BRAD-REVIEW-PACKAGE.md` is ready, but the visual approval gate remains
-explicitly open. Under the approved sequencing, M4 district implementation must not start until a
-disposable Paper build produces the missing receipts and Brad approves the in-game read.
+explicitly open. Under the approved sequencing, M4 district implementation must not start until the
+remaining client receipts exist and Brad approves the in-game read.
 

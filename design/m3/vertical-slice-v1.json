@@ -178,10 +178,12 @@
     "remote_projection_cannot_open_gate": true
   },
   "external_gaps": {
-    "disposable_paper_clone": "unavailable in this worktree",
-    "fresh_build_receipt": null,
-    "restart_reaudit_receipt": null,
+    "disposable_paper_clone": "local-only receipt in PAPER-DISPOSABLE-RECEIPT.json",
+    "fresh_build_receipt": "structural 99789-cell zero-finding audit",
+    "restart_reaudit_receipt": "identical open-state hash after clean stop/restart",
     "non_op_survival_region_receipt": null,
+    "two_client_asymmetry_receipt": null,
+    "solo_accessibility_receipt": null,
     "brad_visual_approval": null
   }
 }

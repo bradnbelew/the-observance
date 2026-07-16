@@ -28,13 +28,15 @@
 > is M2 technical contracts and isolated implementation. Current predicates, schema, cases, media bytes,
 > geometry, and live systems remain unchanged until their later gates.
 
-> **M3 OFFLINE GATE COMPLETE / EXTERNAL REVIEW OPEN:** After the M2 authorities, read
+> **M3 PAPER STRUCTURAL GATE COMPLETE / CLIENT AND VISUAL REVIEW OPEN:** After the M2 authorities, read
 > `../m3/M3-PRIVATE-VERTICAL-SLICE.md`, `../m3/coarse-adjacency-v1.json`,
-> `../m3/vertical-slice-v1.json`, `../m3/package-manifest.json`, and
+> `../m3/vertical-slice-v1.json`, `../m3/package-manifest.json`,
+> `../m3/PAPER-DISPOSABLE-RECEIPT.json`, and
 > `../m3/BRAD-REVIEW-PACKAGE.md`. M3 now has coordinate-native coarse reservations, one exact private
-> P4 slice, faithful closed/open reachability, and isolated local-primary/approval evidence. No
-> disposable Paper target or JAR existed in the checkpoint worktree, and Brad has not walked it, so
-> fresh-build/restart/non-op/visual receipts remain open and M4 district implementation remains closed.
+> P4 slice, faithful closed/open reachability, isolated local-primary/approval evidence, and a fresh
+> local-only Paper 1.21.11 structural build that passed exact closed/open audit and restart/replay.
+> Real-client non-op/protection/asymmetry/solo/UX evidence and Brad's walk remain open, so M4 district
+> implementation remains closed.
 
 > **AUTONOMOUS CONTINUATION:** Brad authorized the rebuild to continue through all remaining phases on
 > 2026-07-15. Read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`. Every phase must be audited,

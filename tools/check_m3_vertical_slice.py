@@ -187,14 +187,18 @@ def check_exact_slice(authority: dict) -> None:
     require(expected == actual, "Watcher exact payload hash drift")
 
     gaps = authority["external_gaps"]
-    require(gaps["disposable_paper_clone"] == "unavailable in this worktree", "Paper availability fabricated")
-    for key in ("fresh_build_receipt", "restart_reaudit_receipt",
-                "non_op_survival_region_receipt", "brad_visual_approval"):
-        require(gaps[key] is None, f"external receipt fabricated: {key}")
+    require(gaps["disposable_paper_clone"].endswith("PAPER-DISPOSABLE-RECEIPT.json"),
+            "Paper receipt is not routed")
+    require(gaps["fresh_build_receipt"] and gaps["restart_reaudit_receipt"],
+            "structural Paper receipts are missing")
+    for key in ("non_op_survival_region_receipt", "two_client_asymmetry_receipt",
+                "solo_accessibility_receipt", "brad_visual_approval"):
+        require(gaps[key] is None, f"client/human receipt fabricated: {key}")
 
 
 def check_package_manifest(manifest: dict) -> None:
-    require(manifest["receipt_scope"].startswith("offline authority"), "offline package scope drift")
+    require(manifest["receipt_scope"].startswith("offline authority plus disposable Paper structural"),
+            "package scope drift")
     canonical = bytearray()
     for row in manifest["files"]:
         path = ROOT / row["path"]
@@ -204,8 +208,17 @@ def check_package_manifest(manifest: dict) -> None:
         canonical.extend((row["path"] + "\n" + actual + "\n").encode("utf-8"))
     require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],
             "M3 offline package-set hash drift")
-    for key in ("paper_world_hash", "paper_jar_hash", "brad_visual_approval_receipt"):
-        require(manifest[key] is None, f"external package receipt fabricated: {key}")
+    receipt = load(M3 / "PAPER-DISPOSABLE-RECEIPT.json")
+    require(receipt["m4_authority"] == "closed" and receipt["brad_visual_approval"] is None,
+            "Paper receipt improperly opens M4/visual approval")
+    require(all(receipt["client_receipts"][key] is None for key in (
+        "non_op_adventure_survival_inventory", "protected_region_bypass",
+        "two_client_asymmetry", "solo_accessibility")), "client receipt fabricated")
+    require(manifest["paper_server_jar_sha256"] == receipt["paper"]["jar_sha256"], "Paper JAR drift")
+    require(manifest["plugin_jar_sha256"] == receipt["plugin_jar_sha256"], "plugin JAR drift")
+    require(manifest["paper_world_tree_sha256"] == receipt["world_tree_sha256"], "world tree drift")
+    require(manifest["paper_world_package_sha256"] == receipt["world_package_sha256"], "world package drift")
+    require(manifest["brad_visual_approval_receipt"] is None, "visual approval fabricated")
 
 
 def main() -> None:
