@@ -17,8 +17,13 @@
 
 > **PHASE 1 REVIEW ORDER:** `PHASE-1-APPROVAL.md` → `PHASE-1-EXPERIENCE-ARCHITECTURE.md` →
 > `PHASE-1-PROGRESSION-GOVERNANCE.md` → `PHASE-1-MEDIA-INVENTORY.md` →
-> `PHASE-1-TOPOLOGY-AND-MIGRATION.md`. Phase 1 is complete and awaiting Brad approval; that approval
-> opens evidence architecture only, not implementation, live changes, media editing, or geometry.
+> `PHASE-1-TOPOLOGY-AND-MIGRATION.md`. Brad approved Phase 1 on 2026-07-15 by requesting the Phase 2
+> handoff. M1 evidence architecture is open; implementation, live changes, media editing, and geometry
+> remain closed.
+
+> **AUTONOMOUS CONTINUATION:** Brad authorized the rebuild to continue through all remaining phases on
+> 2026-07-15. Read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`. Every phase must be audited,
+> committed, recorded, and handed to a fresh task from the exact checkpoint before the next phase begins.
 
 > **⛔ READ `SPINE-LOCK.md` FIRST.** The ground-up rebuild is approved, but the **spine (the story that
 > happened, the shape of the journey, the register) is LOCKED** and is not part of "everything is

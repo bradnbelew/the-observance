@@ -20,10 +20,11 @@ To prevent stale-story drift, only the files in the **Current authority** table 
 | --- | --- |
 | **active ground-up rebuild decisions (overrides flesh-level V5/V5.1 assumptions)** | `design/handoff/README.md` + `design/handoff/PHASE-0-AUTHORITY-AUDIT.md` |
 | **spine conformance gate (approved 2026-07-15)** | `design/handoff/SPINE-CONFORMANCE.md` |
-| **Phase 1 approval gate and experience architecture** | `design/handoff/PHASE-1-APPROVAL.md` + `design/handoff/PHASE-1-EXPERIENCE-ARCHITECTURE.md` |
+| **Phase 1 approval gate (approved 2026-07-15) and experience architecture** | `design/handoff/PHASE-1-APPROVAL.md` + `design/handoff/PHASE-1-EXPERIENCE-ARCHITECTURE.md` |
 | **Phase 1 progression/hints/automation governance** | `design/handoff/PHASE-1-PROGRESSION-GOVERNANCE.md` |
 | **Phase 1 media preservation inventory** | `design/handoff/PHASE-1-MEDIA-INVENTORY.md` |
 | **Phase 1 runtime topology and authority migration** | `design/handoff/PHASE-1-TOPOLOGY-AND-MIGRATION.md` |
+| **autonomous continuation and durable phase ledger** | `design/handoff/AUTONOMOUS-CONTINUATION.md` + `design/handoff/PHASE-CHECKPOINTS.md` |
 | active redesign history (V5.1, retained where not superseded) | `design/V5.1-REDESIGN.md` |
 | spoiler truth | `arc/WORLD-BIBLE.md` |
 | required graph | `design/ARG-V5-NODE-MANIFEST.csv` |

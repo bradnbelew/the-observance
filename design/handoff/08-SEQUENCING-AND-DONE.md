@@ -27,7 +27,8 @@ and coarse cross-surface topology. This phase precedes any Hold geometry.
 **Phase 1 completion — 2026-07-15:** the required artifacts are authored in
 `PHASE-1-EXPERIENCE-ARCHITECTURE.md`, `PHASE-1-PROGRESSION-GOVERNANCE.md`,
 `PHASE-1-MEDIA-INVENTORY.md`, and `PHASE-1-TOPOLOGY-AND-MIGRATION.md`, with the decision summary and
-approval boundary in `PHASE-1-APPROVAL.md`. Brad approval opens M1 evidence architecture only.
+approval boundary in `PHASE-1-APPROVAL.md`. Brad approved Phase 1 on 2026-07-15 by requesting the
+Phase 2 handoff, opening M1 evidence architecture only.
 
 The legacy sequence below is retained as implementation history and must be re-planned against those
 approved Phase 1 artifacts; its phase numbers and immediate deploy instructions are not current.

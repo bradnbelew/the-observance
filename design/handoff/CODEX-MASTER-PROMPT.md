@@ -10,9 +10,14 @@
 > Brad approved Spine Conformance on 2026-07-15, so experience architecture may begin; implementation,
 > live mutation, and Hold geometry remain behind later gates.
 
-> **Phase 1 is authored and awaiting Brad review.** Read `PHASE-1-APPROVAL.md` and its four linked
-> authorities before doing further design. Do not start M1 evidence architecture until Brad approves
-> that gate; approval still does not authorize implementation, media editing, live changes, or geometry.
+> **Phase 1 was approved by Brad on 2026-07-15 through his request to hand off Phase 2.** Read
+> `PHASE-1-APPROVAL.md` and its four linked authorities before doing further design. M1 evidence
+> architecture is open; approval still does not authorize implementation, media editing, live changes,
+> or geometry.
+
+> **Standing continuation approval:** read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`.
+> Complete, verify, commit, and record the current phase; then create a fresh task from that exact
+> checkpoint for the next phase. Repeat until the rebuild and final release evidence are complete.
 
 > Paste the block below to Codex to start the rebuild. It is self-contained enough to prevent drift on
 > its own, and it points to `design/handoff/01`–`08` for the depth. Codex holds the Supabase / Railway /

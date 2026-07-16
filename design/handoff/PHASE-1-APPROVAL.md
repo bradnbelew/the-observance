@@ -1,6 +1,6 @@
 # Phase 1 Approval Gate
 
-Status: **READY FOR BRAD REVIEW**
+Status: **APPROVED BY BRAD — 2026-07-15**
 
 Phase 1 translates the approved spine and experience contract into four design authorities:
 
@@ -54,5 +54,5 @@ duration/group/recovery/submission design, old-node disposition, and media place
 not authorize schema work, case implementation, media editing, geometry, deployment, secrets, or the
 brother's server.
 
-Brad approval: **PENDING**
-Approval date: **PENDING**
+Brad approval: **APPROVED — Brad requested the Phase 2 handoff**
+Approval date: **2026-07-15**
