@@ -7,8 +7,8 @@ because it appears here; its linked authorities and checks must independently pr
 
 The canonical pre-revision integration lineage is `CANONICAL-LINEAGE.json`. It preserves the original
 source commits, their linear incorporation commits, exact receipt scope, unresolved gaps, supersession,
-the failed v1 decision, the v2 Paper receipts, and Brad's active v2 review overlay as current M3
-authority. `python tools/check_continuation_lineage.py`
+the failed v1/v2 decisions, their Paper receipts, the v2 clean-stop evidence, and the current authored
+v3 Paper/restart candidate. `python tools/check_continuation_lineage.py`
 validates that chain. The integration checkpoint is the commit containing that lineage file.
 
 | Phase | Status | Durable evidence | Verification | Checkpoint |
@@ -17,7 +17,7 @@ validates that chain. The integration checkpoint is the commit containing that l
 | Phase 1 — Experience architecture | Complete; Brad explicitly approved 2026-07-15 and authorized autonomous continuation | `PHASE-1-APPROVAL.md` and four Phase 1 authorities | `python tools/check_phase1_architecture.py` plus existing non-live checks | Branch `codex/phase-1-architecture`; approval and continuation checkpoint `e18d502` |
 | Phase 2 / M1 — Evidence architecture | Complete under Brad's standing approval | `PHASE-2-EVIDENCE-ARCHITECTURE.md`, `PHASE-2-LEGACY-NODE-DISPOSITION.md`, `PHASE-2-CONFORMANCE-AND-MEDIA-AUDIT.md` | Phase 2, Phase 1, freshness, integrity, predicate, voice, book, scenario, content-audit, and fixture checks pass; current V5 content/layout checks expose the carried `37020…` vs `16de…` predicate-receipt mismatch recorded in the audit | Branch `codex/phase-2-evidence-architecture`; evidence commit `fae8b26`; continuation checkpoint is the commit containing this ledger row |
 | M2 — Technical contracts and isolated implementation | Complete under Brad's standing approval | `design/m2/M2-TECHNICAL-CONTRACTS.md`; six generated manifests; all 82 import contracts; exact predicate byte chain; schema/rollback/forward and seven-surface parity contracts; isolated Paper/Discord implementation | M2 static gate; full plugin clean/check; Discord type/approval/voice/seed/bundle; Phase 1/2, integrity, freshness, content, 60 predicates, Hold, and 1,588-scenario checks pass. Secret-dependent and external platform receipts remain open. | Branch `codex/m2-technical-contracts`; evidence commit `2aedeca9198db36b029aaa39f364e7688fbba171`; continuation checkpoint is the commit containing this ledger row |
-| M3 — Private vertical slice | V2 review complete: NOT APPROVED / REVISION REQUIRED; review server cleanly saved/stopped; focused v3 next | V1/v2 history; active and final Brad decision authorities; Paper validation/review/stop receipts; canonical lineage | V2 materially improved palette/detail and its 11×8 gate is the preservation baseline. Twelve mandatory v3 checks route every combined finding. SirNan disconnected at 21:46:14; save/flush and normal Paper stop completed at 21:57:03–05; PID 28448 and port 25580 ended. Brad approval null; M4 closed. | Branch `codex/m3-disposable-paper-gate`; automated receipt checkpoint `60a0c899c23533dc4fdc8040260ac7fd9352b24c`; first active-review checkpoint `069f2fd719a4e5d7ff7ccfe689f7ff95a5f9db09`; complete v2 rejection checkpoint is the commit containing this row |
+| M3 — Private vertical slice | V3 automated and fresh Paper/restart gates pass; pristine closed Brad target prepared; visual re-review pending | Preserved v1/v2 history and rejection/stop authorities; `vertical-slice-v3.json`; v3 passing/failed-attempt/review receipts; canonical lineage | Twelve mandatory v3 checks pass. Paper 1.21.11 build 132 audited 248,745 cells with zero findings closed/open/restart; gate remains 11×8 and `88 → 0`; eight observations, five findings, 28 replay receipts, and security passed. Separate pristine target passed closed with no journal. Brad approval null; M4 closed. | Branch `codex/m3-disposable-paper-gate`; clean v2 rejection `18da113f097fffa8ac489ea684e2dc139c8c3af1`; passing v3 source `ebc731ff3bfc0eb42572246b814ac541811190f2`; final receipt checkpoint is the commit containing this row |
 | M4 — Incremental campaign build and parity rehearsal | Closed pending remaining M3 real-client receipts and Brad's in-game approval | All required arcs/districts, services, content, assets, migrations, packages | Full non-live/live clone matrix, catch-up/replay/outage/region tests | Do not start district implementation from the structural-only M3 Paper checkpoint |
 | M5 — Production cutover and final release | Pending | GitHub/Vercel/Railway/Supabase/Crafty/media parity, final JAR/package, hashes, backups, rollback and launch receipts | Aggregate release gate plus real production readback and post-restart/coda evidence | Final checkpoint and handoff |
 
@@ -47,20 +47,22 @@ validates that chain. The integration checkpoint is the commit containing that l
   exact blocker record in `design/m2/M2-SUPABASE-VALIDATION.md`. The additive SQL remains a reviewed
   proposal outside the migrations folder; a real local/branch application, both advisors, and recorded
   migration/rollback/forward receipts remain required.
-- This isolated task had no Discord/Supabase secrets, so secret-dependent integration runners were not
-  executed. Static, type, seed/bundle, approval, and full plugin checks passed without copying secrets.
-- The authored v2 replacement now has a fresh local-only disposable Paper 1.21.11 build with exact
+- This isolated task had no Discord/Supabase secrets. The aggregate routed run honestly stopped at the
+  secret-dependent Discord resolve check after every preceding source/M3/layout/scenario/SQL audit
+  passed; no credentials were fabricated or copied. Discord TypeScript and pack checks, dashboard
+  lint/self-tests/build, the full plugin build, deterministic packaging/readback, publisher/backup
+  guards, non-live media, and repository integrity passed separately.
+- The authored v3 replacement now has a fresh local-only disposable Paper 1.21.11 build with exact
   closed/open structural audits, stop/restart/re-audit, journal replay/idempotency, and
   Paper/plugin/world/package hashes. No
   authenticated Minecraft clients were available, so non-op Adventure with retained survival gear,
   event-level protected-region bypasses, two-client asymmetry, solo readback, and player-facing
   investigation UX remain external M3 gates.
-- Brad walked v1 on 2026-07-16 and explicitly rejected it. The exact findings and `FAILED / REVISION
-  REQUIRED` decision remain preserved in `design/m3/BRAD-REVIEW-PACKAGE.md`. V2 addresses those
-  findings and is ready for a new walk, but has no Brad approval; M4 remains closed.
-- Brad's v2 walk is now in progress. Interim findings establish that the technical state machine is not
-  yet a fully authored or naturally legible in-world investigation. The live review server must remain
-  unchanged, and revision work must wait for Brad's complete feedback pass.
+- Brad explicitly rejected both v1 and v2 on 2026-07-16. Their exact findings and decisions remain
+  preserved. V3 addresses the combined v2 decision and has a separately prepared pristine review
+  target, but no Brad approval; M4 remains closed.
+- Automated v3 success does not prove investigation legibility, general visual polish, or client UX.
+  Brad's actual v3 visual walk and explicit decision remain the controlling M3 gate.
 
 These gaps must be resolved before their owning implementation/release gates; they do not justify losing
 or postponing safe work in earlier phases.

@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0-m3-v3-failed-attempts",
+  "scope": "disposable localhost Paper targets only; preserved fail-closed evidence",
+  "production_mutated": false,
+  "attempts": [
+    {
+      "target_id": "m3-v3-validation-0aac448-20260717-a",
+      "source_git_commit": "0aac448199948b0582b4a729e245d716446d13dc",
+      "plugin_jar_sha256": "2276fffb5e408cf075ea2138d739e34e1006a832e982d4511b9542d98a3523ee",
+      "paper": "1.21.11 build 132 c5eb079",
+      "port": 25581,
+      "result": "failed_before_world_application",
+      "findings": ["cluster purpose drift: BINDING_ISLAND"],
+      "remediation_commit": "46ba9806e0def207afea477ff8da1268a5f093df",
+      "stop": "JVM console interrupt invoked the normal Paper shutdown hook; all dimensions saved; PID 34596 ended; port listener count zero",
+      "latest_log_sha256": "3dd3ba0db0ed214a111e321c6485ecd18e6a30a78b76193dec08c926cd5469e1",
+      "target_reused": false
+    },
+    {
+      "target_id": "m3-v3-validation-46ba980-20260717-b",
+      "configured_source_git_commit": "46ba980480c78d1933f8ee496923cae4aef2c857",
+      "actual_plugin_source_commit": "46ba9806e0def207afea477ff8da1268a5f093df",
+      "plugin_jar_sha256": "b1ed7728e1ec093247952745fb84368a6662e1e6a37e133b781db63c3c041931",
+      "paper": "1.21.11 build 132 c5eb079",
+      "port": 25581,
+      "result": "failed_closed_audit",
+      "findings": [
+        "Cell[x=0, y=4, z=16] expected=AIR actual=LANTERN",
+        "SURVEY_REVISIONS reader standing cell blocked: Cell[x=29, y=-20, z=67]",
+        "COMMONS_SEAL_PLAQUE reader standing cell blocked: Cell[x=-6, y=-20, z=85]"
+      ],
+      "remediation_commit": "5025d735d5e74cdb9d8c7e2a01da5e9adea4c664",
+      "stop": "runner finally block issued normal Paper stop; all dimensions saved; port listener count zero",
+      "latest_log_sha256": "6d272fb4b8685cb3a59c39b1fa8ed85d0cbbd53e62d39bb82fffde9d2bde628c",
+      "target_reused": false
+    },
+    {
+      "target_id": "m3-v3-validation-5025d73-20260717-c",
+      "source_git_commit": "5025d735d5e74cdb9d8c7e2a01da5e9adea4c664",
+      "plugin_jar_sha256": "41a52d49a18d831d489e0dd590268e8f64d116390ee876f9522cb73ed2594b5c",
+      "paper": "1.21.11 build 132 c5eb079",
+      "port": 25581,
+      "result": "failed_closed_audit",
+      "findings": [
+        "RECORD_OFFICE_PLAQUE reader sightline blocked at Cell[x=16, y=-19, z=66]",
+        "COMMONS_SEAL_PLAQUE reader sightline blocked at Cell[x=-6, y=-18, z=87]"
+      ],
+      "remediation_commit": "ebc731ff3bfc0eb42572246b814ac541811190f2",
+      "stop": "runner finally block issued normal Paper stop; all dimensions saved; port listener count zero",
+      "latest_log_sha256": "5e483218486c17f33f7236a3ca8e784fea377e91089ed5ac14fdec08013bd0a6",
+      "target_reused": false
+    }
+  ],
+  "current_passing_target": "m3-v3-validation-ebc731f-20260717-d",
+  "brad_visual_approval": null,
+  "m4_authority": "closed"
+}

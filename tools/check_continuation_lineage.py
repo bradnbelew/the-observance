@@ -24,7 +24,7 @@ def git(*args: str) -> str:
 
 def main() -> None:
     data = json.loads(LINEAGE.read_text(encoding="utf-8"))
-    require(data["schema_version"] == "1.1.0-continuation-lineage", "lineage schema drift")
+    require(data["schema_version"] == "1.2.0-continuation-lineage", "lineage schema drift")
     checkpoint = data["checkpoint_identity"]
     require(checkpoint["branch"] == "codex/m3-disposable-paper-gate", "canonical branch drift")
     require(checkpoint["production_mutated"] is False, "integration cannot claim production mutation")
@@ -111,16 +111,66 @@ def main() -> None:
             and (ROOT / final["review_server_stop_receipt"]).is_file(),
             "review-server stop receipt missing")
 
+    v3 = data["v3_revision_evidence"]
+    require(v3["v2_rejection_checkpoint"] == "18da113f097fffa8ac489ea684e2dc139c8c3af1"
+            and v3["passing_source_commit"] == "ebc731ff3bfc0eb42572246b814ac541811190f2",
+            "v3 source/rejection checkpoint lineage drift")
+    for commit in (v3["v2_rejection_checkpoint"], v3["authored_source_commit"],
+                   v3["composition_purpose_fix_commit"], v3["reader_sightline_fix_commit"],
+                   v3["passing_source_commit"]):
+        git("cat-file", "-e", f"{commit}^{{commit}}")
+        require(subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+                               cwd=ROOT).returncode == 0,
+                f"M3 v3 checkpoint is not an ancestor: {commit}")
+    require(v3["authority_sha256"] == "0181b5566ea49a653b9cc95a650246c52ce670735d6ec2d6e4b1f6b9bc2a7ae5",
+            "v3 authority hash lineage drift")
+    require(v3["paper_result"] == {
+        "version": "1.21.11", "build": 132, "cells": 248745,
+        "findings_closed_open_restart": 0, "closed_gate_collision_cells": 88,
+        "open_gate_collision_cells": 0, "evidence_books": 8, "filing_surfaces": 6,
+        "reference_books": 1, "eye_level_signs": 4, "water_cells": 62,
+        "restart_replay_receipts": 28, "validation_status": "passed",
+    }, "M3 v3 Paper result lineage drift")
+    require(v3["preserved_failed_targets"] == [
+        "m3-v3-validation-0aac448-20260717-a",
+        "m3-v3-validation-46ba980-20260717-b",
+        "m3-v3-validation-5025d73-20260717-c",
+    ] and bool(v3["unresolved"]), "v3 failure provenance or unresolved client gates lost")
+    routed = v3["routed_regression"]
+    require(routed["aggregate_status"] == "honestly_blocked_at_secret_dependent_discord_resolvecheck"
+            and len(routed["missing_environment"]) == 6
+            and "27-task Paper plugin clean/check/build" in routed["separate_local_passes"]
+            and routed["production_credentials_loaded"] is False
+            and routed["production_mutated"] is False,
+            "routed regression boundary or local-pass provenance drift")
+    for authority in (v3["current_authority"], v3["failed_attempts_receipt"],
+                      v3["validation_receipt"], v3["review_target_receipt"]):
+        require((ROOT / authority).is_file(), f"missing M3 v3 lineage authority: {authority}")
+    validation = json.loads((ROOT / v3["validation_receipt"]).read_text(encoding="utf-8"))
+    review_receipt = json.loads((ROOT / v3["review_target_receipt"]).read_text(encoding="utf-8"))
+    require(validation["source_git_commit"] == v3["passing_source_commit"]
+            and validation["evidence"]["closed_audit"].find("findings=0") >= 0
+            and validation["evidence"]["open_audit"].find("gate_collision=0") >= 0
+            and validation["evidence"]["restart_audit"].find("findings=0") >= 0,
+            "v3 passing closed/open/restart receipt drift")
+    require(review_receipt["source_git_commit"] == v3["passing_source_commit"]
+            and review_receipt["journal_state"] == "absent_pristine_review_target"
+            and review_receipt["evidence"]["closed_audit"].find("findings=0") >= 0,
+            "v3 pristine review-target receipt drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "focused v3 revision implementing all mandatory machine checks without regressing the v2 gate"
+            and "actual non-op Adventure v3 walk and protection/accessibility receipts"
                 in gate["required_next_evidence"]
             and "Brad's explicit v3 visual approval" in gate["required_next_evidence"],
-            "M3 v2 rejection / v3 checks / approval gate weakened")
+            "M3 v3 client/approval gate weakened")
     review = (ROOT / "design" / "m3" / "BRAD-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("FAILED / REVISION REQUIRED" in review and "M4 district implementation authority: **CLOSED" in review,
             "Brad rejection authority missing")
-    print("CONTINUATION LINEAGE: PASS (v1/v2 history preserved, v2 NOT APPROVED, clean server stop receipted, v3 next, M4 closed)")
+    v3_review = (ROOT / "design" / "m3" / "BRAD-V3-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
+    require("VISUAL APPROVAL PENDING" in v3_review and "M4 is **closed**" in v3_review,
+            "v3 review package approval/M4 gate drift")
+    print("CONTINUATION LINEAGE: PASS (v1/v2 rejections preserved, v3 Paper/restart passes, Brad approval null, M4 closed)")
 
 
 if __name__ == "__main__":

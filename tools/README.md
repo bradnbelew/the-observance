@@ -23,7 +23,12 @@ and committed inputs and never starts or contacts a database.
 
 `check_continuation_lineage.py` validates the canonical M3 continuation ledger: both completed sibling
 evidence commits and their linear incorporation commits, preserved unresolved gaps and supersession,
-the failed Brad visual decision as current authority, and the still-closed M4 gate.
+the failed v1/v2 Brad visual decisions, the clean v2 stop, the current v3 Paper/restart receipts, and the
+still-closed M4 gate. `check_m3_v3_revision.py` is the focused v3 authority/implementation/receipt gate;
+it runs alongside the preserved v2 checker so historical evidence is verified rather than rewritten.
+The matching `run_m3_v3_disposable_paper.py` imports the preserved v2 process harness but owns v3
+authority, journal, package, and receipt identities; `run_m3_disposable_paper.py` remains byte-identical
+to its v2 package provenance.
 
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,

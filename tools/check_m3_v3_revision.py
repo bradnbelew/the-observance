@@ -19,8 +19,13 @@ WORLD_SOURCE = ROOT / "plugin" / "src" / "main" / "java" / "com" / "observance" 
 INTERACTION_SOURCE = WORLD_SOURCE.with_name("PrivateSliceInteractionListener.java")
 STATE_SOURCE = WORLD_SOURCE.with_name("PrivateSliceState.java")
 RUNTIME_SOURCE = WORLD_SOURCE.with_name("PrivateSliceReviewRuntime.java")
-RUNNER = ROOT / "tools" / "run_m3_disposable_paper.py"
+RUNNER = ROOT / "tools" / "run_m3_v3_disposable_paper.py"
+VALIDATION_RECEIPT = M3 / "PAPER-V3-DISPOSABLE-RECEIPT.json"
+REVIEW_RECEIPT = M3 / "PAPER-V3-REVIEW-SERVER-RECEIPT.json"
+FAILED_ATTEMPTS = M3 / "PAPER-V3-FAILED-ATTEMPTS.json"
+PACKAGE_MANIFEST = M3 / "PACKAGE-MANIFEST-V3.json"
 EXPECTED_SLICE_SHA256 = "0181b5566ea49a653b9cc95a650246c52ce670735d6ec2d6e4b1f6b9bc2a7ae5"
+PASSING_SOURCE_COMMIT = "ebc731ff3bfc0eb42572246b814ac541811190f2"
 
 
 def require(value: bool, message: str) -> None:
@@ -214,6 +219,88 @@ def check_implementation() -> None:
             "disposable Paper runner is not pinned to v3 authority")
 
 
+def check_paper_receipts() -> None:
+    validation = load(VALIDATION_RECEIPT)
+    review = load(REVIEW_RECEIPT)
+    failed = load(FAILED_ATTEMPTS)
+    require(validation["schema_version"] == "3.0.0-m3-paper-receipt"
+            and validation["authority_id"] == "observance-p4-private-slice-v3"
+            and validation["source_git_commit"] == PASSING_SOURCE_COMMIT,
+            "v3 validation receipt identity drift")
+    require(validation["slice_authority_sha256"] == EXPECTED_SLICE_SHA256
+            and validation["paper"] == {
+                "version": "1.21.11", "build": 132,
+                "jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+            }, "v3 Paper/authority pin drift")
+    evidence = validation["evidence"]
+    require("findings=0" in evidence["closed_audit"] and "gate_collision=88" in evidence["closed_audit"]
+            and "findings=0" in evidence["open_audit"] and "gate_collision=0" in evidence["open_audit"]
+            and "findings=0" in evidence["restart_audit"] and "gate_collision=0" in evidence["restart_audit"]
+            and evidence["replay"].endswith("receipts=28")
+            and evidence["restart_replay"].endswith("receipts=28")
+            and len(evidence["observations"]) == 8,
+            "v3 closed/open/restart/replay Paper evidence incomplete")
+    require(all("M3_SECURITY_PASS" in evidence[key]
+                for key in ("security_closed", "security_open", "restart_security")),
+            "v3 security readback incomplete")
+    require(validation["journal_state"] == "present" and validation["journal_sha256"]
+            and validation["world_tree_sha256"] == "ea62fc688dd4d9ed2f0675b1754039e8d6f87846624b050610757b73d5fc90e3"
+            and validation["world_package_sha256"] == "7a4cf0aeb985bae625a75b9f39e267bcc57f06fdbc019911adb5ee313e147ff7",
+            "v3 validation journal/world/package hash drift")
+    require(review["schema_version"] == "3.0.0-m3-review-server-receipt"
+            and review["authority_id"] == "observance-p4-private-slice-v3"
+            and review["source_git_commit"] == PASSING_SOURCE_COMMIT
+            and review["journal_state"] == "absent_pristine_review_target",
+            "v3 pristine review receipt identity/state drift")
+    require("findings=0" in review["evidence"]["closed_audit"]
+            and "gate_collision=88" in review["evidence"]["closed_audit"]
+            and "M3_SECURITY_PASS" in review["evidence"]["security"]
+            and review["world_tree_sha256"] == "a7740d2ca618a91b1a6c87555b0e16a9a76aa8c553f2ded26622d051b93c5227"
+            and review["world_package_sha256"] == "06efb8142ddfae814888f5b3608b1ab948033c3c398447591569fb268ee8a84b",
+            "v3 pristine review Paper/world/package evidence drift")
+    for receipt in (validation, review):
+        require(receipt["brad_visual_approval"] is None and receipt["m4_authority"] == "closed"
+                and receipt["server_configuration"]["bind"] == "127.0.0.1"
+                and receipt["server_configuration"]["default_op"] is False
+                and receipt["server_configuration"]["gamemode"] == "adventure",
+                "v3 receipt fabricates approval or weakens localhost/non-op containment")
+    attempts = failed["attempts"]
+    require(failed["schema_version"] == "1.0.0-m3-v3-failed-attempts"
+            and len(attempts) == 3 and all(row["target_reused"] is False for row in attempts),
+            "v3 failed-target provenance incomplete")
+    require([row["remediation_commit"] for row in attempts] == [
+        "46ba9806e0def207afea477ff8da1268a5f093df",
+        "5025d735d5e74cdb9d8c7e2a01da5e9adea4c664",
+        PASSING_SOURCE_COMMIT,
+    ] and failed["current_passing_target"] == validation["target_id"],
+            "v3 failed-attempt remediation lineage drift")
+    require(failed["brad_visual_approval"] is None and failed["m4_authority"] == "closed",
+            "failed-attempt receipt opens approval/M4")
+
+
+def check_package_manifest() -> None:
+    manifest = load(PACKAGE_MANIFEST)
+    require(manifest["schema_version"] == "4.0.0-m3"
+            and manifest["package_id"] == "m3-private-slice-authored-revision-v3",
+            "v3 package manifest identity drift")
+    canonical = bytearray()
+    for row in manifest["files"]:
+        path = ROOT / row["path"]
+        require(path.is_file(), f"v3 package file missing: {row['path']}")
+        actual = hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+        require(actual == row["sha256"], f"v3 package file hash drift: {row['path']}")
+        canonical.extend((row["path"] + "\n" + actual + "\n").encode("utf-8"))
+    require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],
+            "v3 package-set hash drift")
+    require(manifest["passing_source_git_commit"] == PASSING_SOURCE_COMMIT
+            and manifest["paper_server_jar_sha256"] == load(VALIDATION_RECEIPT)["paper"]["jar_sha256"]
+            and manifest["plugin_jar_sha256"] == load(VALIDATION_RECEIPT)["plugin_jar_sha256"]
+            and manifest["brad_visual_approval_receipt"] is None
+            and manifest["brad_visual_status"] == "pending_v3_re_review"
+            and manifest["m4_authority"] == "closed",
+            "v3 package provenance/approval gate drift")
+
+
 def main() -> None:
     authority, decision, stop = load(AUTHORITY), load(DECISION), load(STOP_RECEIPT)
     check_identity(authority, decision, stop)
@@ -224,6 +311,8 @@ def main() -> None:
     check_circulation(authority)
     check_required_predicates(authority, decision)
     check_implementation()
+    check_paper_receipts()
+    check_package_manifest()
     print("M3 v3 revision gate PASS — exact books/signs/supports/waterworks/corridors/gate authority verified; M4 closed; Brad approval null")
 
 

@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.1.0-continuation-lineage",
+  "schema_version": "1.2.0-continuation-lineage",
   "checkpoint_identity": {
     "branch": "codex/m3-disposable-paper-gate",
     "commit": "the commit containing this lineage file",
-    "purpose": "canonical linear chain through sibling integration, preserved v1 rejection, and authored M3 v2 Paper receipts",
+    "purpose": "canonical linear chain through sibling integration, preserved v1/v2 rejections, and authored M3 v3 Paper/restart receipts",
     "production_mutated": false,
     "m4_authority": "closed"
   },
@@ -129,6 +129,87 @@
     "required_v3_machine_check_count": 12,
     "m4_authority": "closed"
   },
+  "v3_revision_evidence": {
+    "v2_rejection_checkpoint": "18da113f097fffa8ac489ea684e2dc139c8c3af1",
+    "authored_source_commit": "0aac448199948b0582b4a729e245d716446d13dc",
+    "composition_purpose_fix_commit": "46ba9806e0def207afea477ff8da1268a5f093df",
+    "reader_sightline_fix_commit": "5025d735d5e74cdb9d8c7e2a01da5e9adea4c664",
+    "passing_source_commit": "ebc731ff3bfc0eb42572246b814ac541811190f2",
+    "current_authority": "design/m3/vertical-slice-v3.json",
+    "authority_sha256": "0181b5566ea49a653b9cc95a650246c52ce670735d6ec2d6e4b1f6b9bc2a7ae5",
+    "preserved_prior_authorities": [
+      "design/m3/vertical-slice-v1.json",
+      "design/m3/vertical-slice-v2.json",
+      "design/m3/BRAD-V2-REVIEW-DECISION.json",
+      "design/m3/PAPER-V2-REVIEW-STOP-RECEIPT.json"
+    ],
+    "failed_attempts_receipt": "design/m3/PAPER-V3-FAILED-ATTEMPTS.json",
+    "validation_receipt": "design/m3/PAPER-V3-DISPOSABLE-RECEIPT.json",
+    "review_target_receipt": "design/m3/PAPER-V3-REVIEW-SERVER-RECEIPT.json",
+    "paper_result": {
+      "version": "1.21.11",
+      "build": 132,
+      "cells": 248745,
+      "findings_closed_open_restart": 0,
+      "closed_gate_collision_cells": 88,
+      "open_gate_collision_cells": 0,
+      "evidence_books": 8,
+      "filing_surfaces": 6,
+      "reference_books": 1,
+      "eye_level_signs": 4,
+      "water_cells": 62,
+      "restart_replay_receipts": 28,
+      "validation_status": "passed"
+    },
+    "routed_regression": {
+      "aggregate_command": "tools/audit_all.ps1 -SkipLiveExternalMedia -SkipLiveHostedResourcePack",
+      "aggregate_status": "honestly_blocked_at_secret_dependent_discord_resolvecheck",
+      "passed_before_boundary": [
+        "repository integrity",
+        "V5 freshness and canonical/runtime content",
+        "60 executable physical predicates",
+        "M3 v2 historical package and reachability",
+        "M3 v3 authored revision and receipts",
+        "Hold handoff and exact map art",
+        "Deep Hold layout",
+        "1588 deterministic scenarios",
+        "Discord SQL generation and all pre-resolve non-secret audits"
+      ],
+      "missing_environment": [
+        "DISCORD_BOT_TOKEN",
+        "DISCORD_APP_ID",
+        "DISCORD_GUILD_ID",
+        "CHANNEL_THE_RECORD",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY"
+      ],
+      "separate_local_passes": [
+        "Discord TypeScript",
+        "resource-pack glyph build and proof",
+        "dashboard lint/self-tests/production build",
+        "27-task Paper plugin clean/check/build",
+        "plugin JAR readback",
+        "deterministic asset packaging and archive readback",
+        "resource-pack configuration/publisher guards",
+        "Supabase backup guard",
+        "non-live five-asset media manifest",
+        "M2/Phase1/Phase2/current repository integrity"
+      ],
+      "production_credentials_loaded": false,
+      "production_mutated": false
+    },
+    "preserved_failed_targets": [
+      "m3-v3-validation-0aac448-20260717-a",
+      "m3-v3-validation-46ba980-20260717-b",
+      "m3-v3-validation-5025d73-20260717-c"
+    ],
+    "unresolved": [
+      "Brad has not visually reviewed or approved v3",
+      "actual non-op client protection attempts remain unreceipted",
+      "solo accessibility and optional approved two-client A2 presentation remain unreceipted"
+    ],
+    "supersession": "v3 is the current re-review candidate and preserves v2 gate/palette improvements; v1/v2 rejection history and all failed disposable attempts remain evidence; no automated receipt opens M4"
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -142,6 +223,11 @@
     "design/m3/PAPER-DISPOSABLE-RECEIPT.json",
     "design/m3/PAPER-REVIEW-SERVER-RECEIPT.json",
     "design/m3/PAPER-V2-REVIEW-STOP-RECEIPT.json",
+    "design/m3/vertical-slice-v3.json",
+    "design/m3/PAPER-V3-FAILED-ATTEMPTS.json",
+    "design/m3/PAPER-V3-DISPOSABLE-RECEIPT.json",
+    "design/m3/PAPER-V3-REVIEW-SERVER-RECEIPT.json",
+    "design/m3/BRAD-V3-REVIEW-PACKAGE.md",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -163,6 +249,11 @@
       "effect": "v2 Paper receipts remain historical structural evidence; v2 improvements and gate baseline must be preserved; v3 is blocked until disconnect confirmation and clean review-server stop; M4 remains closed"
     },
     {
+      "older": "rejected M3 v2 revision candidate",
+      "newer": "authored M3 v3 revision candidate and fresh Paper/restart receipts",
+      "effect": "v3 becomes current for re-review while v1/v2 rejections, the improved v2 gate baseline, and all failed v3 attempts remain historical evidence; M4 stays closed until Brad explicitly approves v3"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -174,11 +265,10 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v2 rejected and review server cleanly stopped; v3 next",
+    "phase": "M3 v3 automated and disposable Paper/restart gates pass; Brad visual re-review next",
     "m4_open": false,
     "required_next_evidence": [
-      "focused v3 revision implementing all mandatory machine checks without regressing the v2 gate",
-      "fresh disposable Paper v3 closed/open/restart/client receipts",
+      "actual non-op Adventure v3 walk and protection/accessibility receipts",
       "Brad's explicit v3 visual approval"
     ]
   }
