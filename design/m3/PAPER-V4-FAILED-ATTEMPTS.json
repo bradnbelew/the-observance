@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0-m3-v4-failed-attempts",
+  "scope": "disposable localhost Paper targets only; preserved fail-closed evidence",
+  "production_mutated": false,
+  "attempts": [
+    {
+      "target_id": "m3-v4-validation-2a456ef-20260717-a",
+      "source_git_commit": "2a456ef61d2933b561903defc66ca708bf22d7dd",
+      "plugin_jar_sha256": "4752696a5daf2cc87bf93a92d393a02f3c262ca239ac3d2db855ae7c304651ba",
+      "paper": "1.21.11 build 132 c5eb079",
+      "port": 25583,
+      "result": "failed_before_world_application",
+      "findings": ["cluster purpose drift: INTAKE_ACTIVE_FILES"],
+      "remediation_commit": "754b4ae1af19818345e06b00f0aacb198e912435",
+      "stop": "runner issued the normal Paper stop after fail-closed startup; all dimensions saved; port listener ended",
+      "latest_log_sha256": "cebdb4d560b078f35a3399f924abc78c3dde812f1f943576dbb5ac09c901e34a",
+      "target_reused": false
+    },
+    {
+      "target_id": "m3-v4-validation-754b4ae-20260717-b",
+      "source_git_commit": "754b4ae1af19818345e06b00f0aacb198e912435",
+      "plugin_jar_sha256": "389c71c2d350aed9a998e522ec194dc2764e9a76674f2e0c4b51b4b8c735f310",
+      "paper": "1.21.11 build 132 c5eb079",
+      "port": 25584,
+      "result": "failed_before_world_application",
+      "findings": ["cluster purpose drift: EXAMINER_SIDE_TRAYS"],
+      "remediation_commit": "233b16947a513a97c661f12980906c2a99f4301f",
+      "stop": "runner issued the normal Paper stop after fail-closed startup; all dimensions saved; port listener ended",
+      "latest_log_sha256": "e568160c7373e45ceac786f20a20a22b46e93f9485814f3136767e22769771d8",
+      "target_reused": false
+    }
+  ],
+  "current_passing_target": "m3-v4-validation-233b169-20260717-c",
+  "brad_visual_approval": null,
+  "m4_authority": "closed"
+}

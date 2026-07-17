@@ -212,10 +212,12 @@ def check_receipts() -> None:
         M3 / "PACKAGE-MANIFEST-V4.json",
         M3 / "V4-BLOCK-STATE-VISUAL-AUDIT.json",
         M3 / "V4-COLD-READ-PREFLIGHT.json",
+        M3 / "V4-ROUTED-REGRESSION-RECEIPT.json",
     ]
     missing = [path.relative_to(ROOT).as_posix() for path in required if not path.is_file()]
     require(not missing, f"v4 live/package/human preflight receipts missing: {missing}")
-    validation, review, manifest, visual, cold = map(load, required)
+    validation, review, manifest, visual, cold, routed = map(load, required)
+    failed = load(M3 / "PAPER-V4-FAILED-ATTEMPTS.json")
     for receipt in (validation, review):
         require(receipt["authority_id"] == "observance-p4-private-slice-v4"
                 and receipt["slice_authority_sha256"] == EXPECTED_AUTHORITY_SHA256
@@ -247,10 +249,39 @@ def check_receipts() -> None:
             and "M3_AUDIT PASS" in review["evidence"]["closed_audit"]
             and "gate_collision=88" in review["evidence"]["closed_audit"],
             "v4 pristine review target drift")
-    require(manifest["authority_id"] == "observance-p4-private-slice-v4"
+    require(manifest["schema_version"] == "5.0.0-m3"
+            and manifest["package_id"] == "m3-private-slice-content-dependent-revision-v4"
+            and manifest["authority_id"] == "observance-p4-private-slice-v4"
             and manifest["slice_authority_sha256"] == EXPECTED_AUTHORITY_SHA256
             and manifest["brad_visual_approval"] is None and manifest["m4_authority"] == "closed",
             "v4 package manifest identity/approval drift")
+    canonical = bytearray()
+    for row in manifest["files"]:
+        path = ROOT / row["path"]
+        require(path.is_file(), f"v4 package file missing: {row['path']}")
+        require(canonical_sha256(path) == row["sha256"],
+                f"v4 package file hash drift: {row['path']}")
+        canonical.extend((row["path"] + "\n" + row["sha256"] + "\n").encode("utf-8"))
+    require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],
+            "v4 package-set hash drift")
+    require(manifest["passing_source_git_commit"] == validation["source_git_commit"]
+            and manifest["paper_server_jar_sha256"] == validation["paper"]["jar_sha256"]
+            and manifest["plugin_jar_sha256"] == validation["plugin_jar_sha256"]
+            and manifest["paper_world_tree_sha256"] == validation["world_tree_sha256"]
+            and manifest["paper_world_package_sha256"] == validation["world_package_sha256"]
+            and manifest["review_world_tree_sha256"] == review["world_tree_sha256"]
+            and manifest["review_world_package_sha256"] == review["world_package_sha256"],
+            "v4 package/JAR/world provenance drift")
+    require(failed["schema_version"] == "1.0.0-m3-v4-failed-attempts"
+            and len(failed["attempts"]) == 2
+            and all(row["target_reused"] is False for row in failed["attempts"])
+            and [row["remediation_commit"] for row in failed["attempts"]] == [
+                "754b4ae1af19818345e06b00f0aacb198e912435",
+                "233b16947a513a97c661f12980906c2a99f4301f",
+            ] and failed["current_passing_target"] == validation["target_id"]
+            and failed["brad_visual_approval"] is None
+            and failed["m4_authority"] == "closed",
+            "v4 failed-target provenance/remediation drift")
     require(visual["result"] == "passed_internal_exact_composition_audit"
             and visual["unclassified_floating_blocks"] == 0
             and visual["blocked_reader_or_route_cells"] == 0
@@ -259,6 +290,14 @@ def check_receipts() -> None:
     require(cold["result"] == "passed_internal_preflight_not_brad_approval"
             and cold["brad_visual_approval"] is None and cold["m4_authority"] == "closed",
             "v4 cold-read preflight overclaims or is incomplete")
+    require(routed["aggregate_status"]
+                == "honestly_blocked_at_secret_dependent_discord_resolvecheck"
+            and len(routed["missing_environment"]) == 6
+            and routed["production_credentials_loaded"] is False
+            and routed["production_mutated"] is False
+            and routed["brad_visual_approval"] is None
+            and routed["m4_authority"] == "closed",
+            "v4 routed regression boundary or approval gate drift")
 
 
 def main() -> None:

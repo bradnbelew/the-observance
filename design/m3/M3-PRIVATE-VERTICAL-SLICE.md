@@ -1,21 +1,21 @@
 # M3 — Authored P4 Private Vertical Slice Revision
 
-Status: **V2 NOT APPROVED / REVISION REQUIRED; M4 CLOSED; V3 BLOCKED UNTIL REVIEW SERVER CLEAN STOP**
+Status: **V4 AUTOMATED GATES PASS; BRAD APPROVAL NULL; M4 CLOSED**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
-architecture → M2 technical contracts → this file. `vertical-slice-v1.json` remains the exact rejected
-first pass. `vertical-slice-v2.json` is the current authored replacement. Brad's 2026-07-16 rejection
-is historical and binding; no revision can turn it into approval. M4 remains closed until Brad walks v2
-and explicitly approves it.
+architecture → M2 technical contracts → this file. `vertical-slice-v1.json`,
+`vertical-slice-v2.json`, and `vertical-slice-v3.json` remain the exact rejected candidates with their
+decisions and Paper receipts. `vertical-slice-v4.json` is the current authored review candidate. No
+revision rewrites a prior decision, no automated receipt implies Brad approval, and M4 remains closed.
 
 ## Scope and containment
 
-V2 changes only the Brad-private P4 slice. It does not build P5 or any later district, touch production,
+V4 changes only the Brad-private P4 slice. It does not build P5 or any later district, touch production,
 connect to Crafty, mutate Supabase, contact Railway/Vercel, load credentials, alter media, or become a
 second campaign runtime. P4 expands inside the unused pre-P5 depth to X `-34..34`, Y `-24..10`, Z
 `-10..92`; P5 still begins at Z `93` and remains reservation-only.
 
-The v2 slice contains the same bounded program:
+The bounded slice contains the same program:
 
 - one civic Surface Mouth and reversible descent;
 - one large intake/public-works hall;
@@ -24,7 +24,7 @@ The v2 slice contains the same bounded program:
 - the five-finding P4 investigation, physical evidence, filing, replay, and catch-up;
 - one restrained, approval-gated A2 positional discrepancy.
 
-## Brad-rejection response
+## Historical V2 rejection response
 
 | Binding finding | Authored v2 response | Machine authority |
 | --- | --- | --- |
@@ -144,3 +144,45 @@ embedded and reverse-facing signs remain broken; and general polish remains open
 and M4 is closed. Brad's disconnect and the review server's clean save/flush/stop are now proven by
 `PAPER-V2-REVIEW-STOP-RECEIPT.json`; the focused v3 revision may begin only after this complete v2
 rejection record is committed as a clean checkpoint.
+
+## V3 rejection and preserved baseline
+
+Brad completed V3's mechanic but rejected the candidate. Touching every evidence lectern and every
+filing docket could open the gate without reading or deduction, so V3 proved a functional checklist,
+not the required investigation. `BRAD-V3-REVIEW-DECISION.json` is binding. Its native book UI,
+directional/support fixes, reduced brokenness, clean persistence/security path, and full 88-cell gate
+remain the V4 baseline. The confirmed disconnect and clean save/flush/stop are preserved in
+`PAPER-V3-REVIEW-STOP-RECEIPT.json`.
+
+Brad's final room, artifact, and copy direction is cross-phase authority in
+`../handoff/PLAYER-FACING-EXPERIENCE-STANDARD.*`. It requires ordinary-job-first rooms, functionally
+justified scale and negative space, exceptional purpose-specific lecterns, naturally situated artifacts,
+grounded human medium-specific prose, exact Minecraft composition, and independent human cold-read
+judgment. Static inventories support that judgment and never replace it.
+
+## Current V4 authored investigation
+
+V4 uses exactly two lecterns: Mara Venn's work order and one findings ledger. Its eight evidence sources
+are distributed across an annotated plan table, a road inspector's field tag and physical ruts, a
+mason's annotation across the construction seam, a personal cover letter with marginalia, an official
+refuge register, a posted supply tally, a maintenance gauge beside the hydraulic train, and an engineer's
+letter retained with works minutes. Every format, author, placement, provenance, evidentiary role, and
+text hash is bound by `PLAYER-FACING-INVENTORY-V4.json`.
+
+Each of P4.F1–P4.F4 requires one exact defensible conclusion derived from its paired records. Observation
+custody never commits a finding. The one findings ledger evaluates all four clauses atomically; a wrong
+report gives no lane-specific hint, clears the draft, commits no finding, and contributes to a durable
+three-refusal/five-minute throttle. After endorsement, a separate exact synthesis combines all four
+findings; only that synthesis releases the gate. Filing uses a native book choice interface at the public
+counter, not crouch-right-click or chat-delivered evidence.
+
+The fresh disposable Paper 1.21.11 validation at source commit
+`233b16947a513a97c661f12980906c2a99f4301f` passed the closed audit, eight-observation naive negative,
+bounded brute-force negative, durable throttle restart, correct report with gate still closed, correct
+synthesis with gate open, replay, second restart, protection, and exact collision chain `88 → 0 → 0`.
+Both earlier V4 targets failed closed on purpose-classification drift, were cleanly stopped, and were
+never reused. A separate pristine closed review target passed with no interaction journal.
+
+`V4-BLOCK-STATE-VISUAL-AUDIT.json` and `V4-COLD-READ-PREFLIGHT.json` are internal gates only. An
+independent cold human, authenticated client checks, and Brad's explicit visual decision remain open.
+`BRAD-V4-REVIEW-PACKAGE.md` carries that boundary. M4 remains closed.

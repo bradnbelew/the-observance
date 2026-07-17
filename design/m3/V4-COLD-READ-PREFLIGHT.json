@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0-m3-v4-authorial-preflight",
+  "authority_id": "observance-p4-private-slice-v4",
+  "result": "passed_internal_preflight_not_brad_approval",
+  "review_type": "authorial cold-read preflight against the binding criteria; an independent cold human and Brad remain required",
+  "source_git_commit": "233b16947a513a97c661f12980906c2a99f4301f",
+  "solution_key_withheld_from_future_observer": true,
+  "criteria": [
+    {"criterion":"ordinary institutional job","internal_result":"pass","evidence":"each of the three spaces has one stated civic job embodied by its furniture, circulation, storage, and negative space"},
+    {"criterion":"disputed civic question","internal_result":"pass","evidence":"Mara Venn's work order asks for road use, construction campaigns, refuge capacity, and the reason for the down-cut before the seal can be released"},
+    {"criterion":"evidence versus filing affordance","internal_result":"pass","evidence":"records open at situated tables, tags, cabinets, and shelves; the only findings ledger sits at a composed public counter and the in-world work order names it"},
+    {"criterion":"natural interaction instruction","internal_result":"pass","evidence":"the work order instructs the player to enter one clause under each heading and lodge the whole report; no crouch metaphor, chat tutorial, or navigation label is used"},
+    {"criterion":"content-dependent deduction","internal_result":"pass","evidence":"each conclusion combines two records and is not equal to either observation; all four exact clauses are evaluated atomically"},
+    {"criterion":"combined synthesis","internal_result":"pass","evidence":"the endorsed report precedes a separate account combining the road, campaigns, capacity, and service-route findings; only that account opens the gate"},
+    {"criterion":"naive touch resistance","internal_result":"pass","evidence":"Paper M3_NAIVE_NEGATIVE_PASS records zero findings and a closed gate after every source is observed"},
+    {"criterion":"bounded brute-force resistance","internal_result":"pass","evidence":"Paper M3_BRUTE_NEGATIVE_PASS records zero findings, no solution feedback, durable throttling, and a closed gate across restart"},
+    {"criterion":"believable workplace rather than puzzle chamber","internal_result":"pass","evidence":"two exceptional lecterns serve a work order and findings ledger; all other evidence uses job-specific tables, tags, signs, cabinet volumes, and hydraulic infrastructure"},
+    {"criterion":"grounded voices and media","internal_result":"pass","evidence":"the exact inventory binds unique prose to surveyor, inspector, mason, clerk, registrar, quartermaster, engineer, examiner, and office voices with plausible provenance"}
+  ],
+  "independent_cold_human_status": "pending_next_localhost_review",
+  "authenticated_client_receipts_status": "pending",
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "production_mutated": false
+}

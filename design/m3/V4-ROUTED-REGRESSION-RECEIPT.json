@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0-m3-v4-routed-regression",
+  "recorded_at": "2026-07-17T00:05:09-05:00",
+  "source_git_commit": "233b16947a513a97c661f12980906c2a99f4301f",
+  "aggregate_command": "tools/audit_all.ps1 -SkipLiveExternalMedia -SkipLiveHostedResourcePack",
+  "aggregate_status": "honestly_blocked_at_secret_dependent_discord_resolvecheck",
+  "passed_before_boundary": [
+    "repository integrity source readback",
+    "V5 freshness and canonical/runtime content",
+    "60 executable physical predicates",
+    "M3 v2 historical structural and reachability receipts",
+    "M3 v3 historical rejection/Paper receipts",
+    "M3 v4 authority, Paper/restart/negative/package/preflight receipts",
+    "cross-phase player-facing experience authority",
+    "playable Hold and private Discord handoff",
+    "nine exact Minecraft map-art clues",
+    "Deep Hold layout/runtime integration",
+    "1588 deterministic failure/replay/recovery scenarios",
+    "34-file Discord SQL bundle generation",
+    "Discord V5 canon, runtime binding, surface, identity, seed, web, and database-bundle checks"
+  ],
+  "missing_environment": [
+    "DISCORD_BOT_TOKEN",
+    "DISCORD_APP_ID",
+    "DISCORD_GUILD_ID",
+    "CHANNEL_THE_RECORD",
+    "SUPABASE_URL",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ],
+  "separate_safe_passes_after_boundary": [
+    "Discord TypeScript",
+    "resource-pack glyph generation and proof",
+    "dashboard lint, self-tests, and production build",
+    "27-task Paper plugin clean/check/build",
+    "plugin JAR exact content readback",
+    "deterministic datapack/resource-pack packaging and asset readback",
+    "resource-pack configuration tools",
+    "resource-pack publisher guard self-test",
+    "Supabase backup guard self-test",
+    "non-live five-asset media manifest",
+    "repository integrity release-output readback"
+  ],
+  "expected_guard_events": [
+    "deploy-manifest readback refused a manifest generated while the V4 receipt tree was intentionally dirty; no launch receipt was claimed"
+  ],
+  "live_checks_skipped": ["hosted resource-pack exact bytes", "external media live sources"],
+  "production_credentials_loaded": false,
+  "production_mutated": false,
+  "brad_visual_approval": null,
+  "m4_authority": "closed"
+}

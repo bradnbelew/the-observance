@@ -24,7 +24,7 @@ def git(*args: str) -> str:
 
 def main() -> None:
     data = json.loads(LINEAGE.read_text(encoding="utf-8"))
-    require(data["schema_version"] == "1.3.0-continuation-lineage", "lineage schema drift")
+    require(data["schema_version"] == "1.4.0-continuation-lineage", "lineage schema drift")
     checkpoint = data["checkpoint_identity"]
     require(checkpoint["branch"] == "codex/m3-disposable-paper-gate", "canonical branch drift")
     require(checkpoint["production_mutated"] is False, "integration cannot claim production mutation")
@@ -209,20 +209,88 @@ def main() -> None:
             and precedence.index(player_facing["machine_authority"]) == 3,
             "cross-phase authority is not routed immediately after the spine authorities")
 
+    v4 = data["v4_revision_evidence"]
+    require(v4["v3_rejection_and_cross_phase_checkpoint"]
+                == "e3a044582ead6f6536ec528cdc56f5960128af33"
+            and v4["authored_source_commit"]
+                == "2a456ef61d2933b561903defc66ca708bf22d7dd"
+            and v4["fast_fail_and_active_files_purpose_commit"]
+                == "754b4ae1af19818345e06b00f0aacb198e912435"
+            and v4["passing_source_commit"]
+                == "233b16947a513a97c661f12980906c2a99f4301f",
+            "v4 clean rejection/source/remediation lineage drift")
+    for commit in (v4["v3_rejection_and_cross_phase_checkpoint"],
+                   v4["authored_source_commit"],
+                   v4["fast_fail_and_active_files_purpose_commit"],
+                   v4["passing_source_commit"]):
+        git("cat-file", "-e", f"{commit}^{{commit}}")
+        require(subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+                               cwd=ROOT).returncode == 0,
+                f"M3 v4 checkpoint is not an ancestor: {commit}")
+    require(v4["authority_sha256"]
+                == "444926db844dfd5e06bd131a3c941a23b85a575c1b56ce09673f690aa5d88b3f"
+            and v4["preserved_failed_targets"] == [
+                "m3-v4-validation-2a456ef-20260717-a",
+                "m3-v4-validation-754b4ae-20260717-b",
+            ] and bool(v4["unresolved"]),
+            "v4 authority/failure provenance/unresolved gates drift")
+    require(v4["paper_result"] == {
+        "version": "1.21.11", "build": 132, "cells": 248745,
+        "findings_closed_open_restart": 0, "closed_gate_collision_cells": 88,
+        "open_gate_collision_cells": 0, "evidence_surfaces": 8,
+        "purposeful_lecterns": 2, "reference_surfaces": 2,
+        "submission_surfaces": 1, "eye_level_signs": 6, "water_cells": 62,
+        "classified_clusters": 28, "supported_furnishing_addresses": 103,
+        "validation_status": "passed",
+    }, "M3 v4 Paper result lineage drift")
+    for authority in (v4["current_authority"], v4["player_facing_inventory"],
+                      v4["failed_attempts_receipt"], v4["validation_receipt"],
+                      v4["review_target_receipt"], v4["block_state_visual_audit"],
+                      v4["cold_read_preflight"], v4["routed_regression_receipt"],
+                      v4["review_package"]):
+        require((ROOT / authority).is_file(), f"missing M3 v4 lineage authority: {authority}")
+    v4_validation = json.loads((ROOT / v4["validation_receipt"]).read_text(encoding="utf-8"))
+    v4_review = json.loads((ROOT / v4["review_target_receipt"]).read_text(encoding="utf-8"))
+    require(v4_validation["source_git_commit"] == v4["passing_source_commit"]
+            and "findings=0 gate=closed" in v4_validation["evidence"]["naive_negative"]
+            and "throttled=true" in v4_validation["evidence"]["brute_negative"]
+            and "findings=4 gate=closed" in v4_validation["evidence"]["report_correct"]
+            and "gate=open" in v4_validation["evidence"]["synthesis_correct"]
+            and "gate_collision=0" in v4_validation["evidence"]["restart_audit"],
+            "v4 content-dependent Paper receipt drift")
+    require(v4_review["source_git_commit"] == v4["passing_source_commit"]
+            and v4_review["journal_state"] == "absent_pristine_review_target"
+            and "findings=0" in v4_review["evidence"]["closed_audit"],
+            "v4 pristine review-target receipt drift")
+    v4_routed = json.loads((ROOT / v4["routed_regression_receipt"]).read_text(encoding="utf-8"))
+    require(v4_routed["aggregate_status"]
+                == "honestly_blocked_at_secret_dependent_discord_resolvecheck"
+            and len(v4_routed["missing_environment"]) == 6
+            and "27-task Paper plugin clean/check/build"
+                in v4_routed["separate_safe_passes_after_boundary"]
+            and v4_routed["production_credentials_loaded"] is False
+            and v4_routed["production_mutated"] is False
+            and v4_routed["brad_visual_approval"] is None
+            and v4_routed["m4_authority"] == "closed",
+            "v4 routed regression boundary/provenance drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "clean committed v3 rejection and cross-phase player-facing-standard checkpoint"
+            and "independent cold player states the room job and civic question without external explanation"
                 in gate["required_next_evidence"]
-            and "cold-player comprehension plus naive-click-through and brute-force negative receipts"
-                in gate["required_next_evidence"],
-            "M3 v3 client/approval gate weakened")
+            and "Brad's explicit approval of v4" in gate["required_next_evidence"],
+            "M3 v4 human/client/approval gate weakened")
     review = (ROOT / "design" / "m3" / "BRAD-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("FAILED / REVISION REQUIRED" in review and "M4 district implementation authority: **CLOSED" in review,
             "Brad rejection authority missing")
     v3_review = (ROOT / "design" / "m3" / "BRAD-V3-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("VISUAL APPROVAL PENDING" in v3_review and "M4 is **closed**" in v3_review,
             "v3 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (V3 NOT APPROVED; clean stop receipted; cross-phase player-facing authority bound; M4 closed)")
+    v4_review_package = (ROOT / "design" / "m3" / "BRAD-V4-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
+    require("COLD HUMAN/VISUAL APPROVAL PENDING" in v4_review_package
+            and "M4 is **closed**" in v4_review_package,
+            "v4 review package approval/M4 gate drift")
+    print("CONTINUATION LINEAGE: PASS (V4 Paper/negative-flow evidence current; Brad approval null; M4 closed)")
 
 
 if __name__ == "__main__":

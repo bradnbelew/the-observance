@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0-m3-v4-internal-composition-audit",
+  "authority_id": "observance-p4-private-slice-v4",
+  "audit_scope": "internal exact bounded Minecraft composition, block-state, attachment, circulation, sightline, support, and functional-legibility audit; not Brad visual approval",
+  "method": [
+    "source review of every classified composition cluster and its authored purpose",
+    "exhaustive Paper audit of the 248745-cell bounded envelope",
+    "exact directional block-data readback for signs, lecterns, shelves, gate, and fixtures",
+    "collision and standing-cell traversal readback in closed and open states",
+    "manual authorial review of the three room jobs, furnishing density, material zoning, and evidence placement against the v4 inventory"
+  ],
+  "result": "passed_internal_exact_composition_audit",
+  "source_git_commit": "233b16947a513a97c661f12980906c2a99f4301f",
+  "paper_validation_target": "m3-v4-validation-233b169-20260717-c",
+  "paper_version": "1.21.11 build 132 c5eb079",
+  "slice_authority_sha256": "444926db844dfd5e06bd131a3c941a23b85a575c1b56ce09673f690aa5d88b3f",
+  "closed_world_state_sha256": "9ddd7c567bd1af8c3949902028b1392903dd418b508b10eca7d0d98a30f0a193",
+  "open_world_state_sha256": "1433e4c225c7059f0af8f81dcc07438f894c2bf0f98ae9de91055ac19c8ee20d",
+  "bounded_cells_audited": 248745,
+  "paper_findings": 0,
+  "unclassified_floating_blocks": 0,
+  "blocked_reader_or_route_cells": 0,
+  "lectern_count": 2,
+  "evidence_surfaces": 8,
+  "reference_surfaces": 2,
+  "submission_surfaces": 1,
+  "eye_level_sign_surfaces": 6,
+  "supported_furnishing_addresses": 103,
+  "classified_composition_clusters": 28,
+  "chiseled_bookshelf_blocks": 57,
+  "water_cells": 62,
+  "waterworks_sequence": ["HEADWALL_INLET", "SILT_SETTLING_BAYS", "RATED_GAUGING_FLUME", "GRATED_FILTER_SUMP"],
+  "route_clear_widths": {"public": 3, "staff": 3},
+  "gate_collision_cells": {"closed": 88, "open": 0, "restart_open": 0},
+  "room_findings": {
+    "MOUTH_CARRIAGE_HALL": "pass: shared cart crown, drained shoulders, waiting benches, plan desk, and examiner arrival point support the room job",
+    "INTAKE_WORKS_HALL": "pass: hydraulic train, clerical bay, filing counter, maintenance clearance, gate queue, and distinct routes support the room job",
+    "RECORD_COPY_OFFICE": "pass: copy desks, binding island, active shelves, cabinet ranks, public counter, and staff aisle support the room job"
+  },
+  "limitations": [
+    "This internal audit does not substitute for a cold human player or Brad's visual judgment.",
+    "Authenticated Minecraft client protection, accessibility, and two-client A2 receipts remain pending."
+  ],
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "production_mutated": false
+}

@@ -37,6 +37,14 @@ provenance, medium fit, human review, unexplained repeated fixtures, duplicate-t
 and meta tutorial copy. Counts remain diagnostics only: the checker explicitly cannot replace human
 editorial judgment or cold-player acceptance.
 
+`check_m3_v4_revision.py` validates the exact V4 authority, its qualitative player-facing inventory,
+the two-purposeful-lectern implementation, content-dependent four-clause report and synthesis, naive and
+bounded-brute-force negative flows, exact Paper closed/open/restart receipts, internal block-state audit,
+authorial cold-read preflight, pristine review target, and package hashes. The matching
+`run_m3_v4_disposable_paper.py` creates fresh localhost-only Paper 1.21.11 targets, fails fast on plugin
+startup drift, exercises negative and correct flows across three lifecycles, and prepares a separate
+pristine closed review world. Neither tool can manufacture Brad approval or open M4.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,
