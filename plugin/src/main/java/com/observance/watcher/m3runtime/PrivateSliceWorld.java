@@ -462,9 +462,9 @@ public final class PrivateSliceWorld {
     private void thresholdSigns() {
         addSign(0,2,1,"south",new Cell(0,2,0),new Cell(0,0,3),"MOUTH_COMMISSION_PLAQUE",
                 "municipal commission identity","INTAKE WORKS","COMMISSION 14","EXAMINER DUE","");
-        addSign(17,-18,66,"west",new Cell(18,-18,66),new Cell(15,-20,66),"RECORD_OFFICE_PLAQUE",
+        addSign(19,-18,66,"east",new Cell(18,-18,66),new Cell(21,-20,66),"RECORD_OFFICE_PLAQUE",
                 "credible office identity","RECORD OFFICE","COPIES + SURVEYS","BELL AT DESK","");
-        addSign(-6,-18,88,"north",new Cell(-6,-18,89),new Cell(-5,-20,85),"COMMONS_SEAL_PLAQUE",
+        addSign(-6,-18,88,"north",new Cell(-6,-18,89),new Cell(-5,-20,87),"COMMONS_SEAL_PLAQUE",
                 "controlled civic seal identity","COMMONS SEAL","WICKET No. 3","CLERK RELEASE","");
         addSign(-14,-18,61,"north",new Cell(-14,-18,62),new Cell(-14,-20,59),"RUNOFF_GAUGE_PLAQUE",
                 "works gauge identity and rated capacity","RUNOFF WORKS","GAUGE No. 7","300 BERTH MAX","");

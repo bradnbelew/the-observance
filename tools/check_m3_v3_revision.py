@@ -20,7 +20,7 @@ INTERACTION_SOURCE = WORLD_SOURCE.with_name("PrivateSliceInteractionListener.jav
 STATE_SOURCE = WORLD_SOURCE.with_name("PrivateSliceState.java")
 RUNTIME_SOURCE = WORLD_SOURCE.with_name("PrivateSliceReviewRuntime.java")
 RUNNER = ROOT / "tools" / "run_m3_disposable_paper.py"
-EXPECTED_SLICE_SHA256 = "316cedac5c1673e8fba913957d4c0c71bd899da47d8d95613f5e81da88c7ae2b"
+EXPECTED_SLICE_SHA256 = "0181b5566ea49a653b9cc95a650246c52ce670735d6ec2d6e4b1f6b9bc2a7ae5"
 
 
 def require(value: bool, message: str) -> None:
