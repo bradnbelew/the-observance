@@ -395,7 +395,7 @@ def main() -> None:
     require(vnext["authored_source_commit"] == "8a51f26814914e89fe857a929266e807b2c96586"
             and all((ROOT / vnext[key]).is_file() for key in (
                 "case_authority", "inventory", "validation_receipt", "review_target_receipt",
-                "failed_attempts", "block_state_visual_audit"))
+                "failed_attempts", "block_state_visual_audit", "routed_regression_receipt"))
             and vnext["paper_result"]["closed_open_restart_findings"] == 0
             and vnext["paper_result"]["closed_gate_collision_cells"] == 88
             and vnext["paper_result"]["open_gate_collision_cells"] == 0

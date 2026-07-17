@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0-private-launch-routed-regression",
+  "run_time": "2026-07-17T02:42:00-05:00",
+  "source_checkpoint": "9861dad1f866396ed593c6cc05c81e46143c8b68",
+  "branch": "codex/m3-disposable-paper-gate",
+  "result": "offline_and_disposable_private_gates_passed_external_authenticated_integrations_blocked",
+  "routed_chain": {
+    "passed_before_external_boundary": [
+      "repository integrity",
+      "V5 freshness and supersession",
+      "82-node canonical/runtime content",
+      "60 executable physical predicates",
+      "historical M3 v2/v3/v4 authority and receipts",
+      "cross-phase player-facing authority",
+      "private-slice reachability",
+      "playable prologue Hold archive and Discord handoff",
+      "nine exact Minecraft map-art assets",
+      "32-room/76-fixture/8-gate Deep Hold layout",
+      "1,588 deterministic failure scenarios",
+      "34-file ordered SQL bundle",
+      "Discord canon, binding, surface, identity, seed, web, and SQL-bundle self-tests"
+    ],
+    "expected_fail_closed_boundary": {
+      "stage": "Discord resolve check and persistent service runtime",
+      "missing_environment_variables": [
+        "DISCORD_BOT_TOKEN",
+        "DISCORD_APP_ID",
+        "DISCORD_GUILD_ID",
+        "CHANNEL_THE_RECORD",
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY"
+      ],
+      "effect": "No Discord registration, message, guild/channel mutation, Railway service start, Supabase query, or hosted receipt was attempted or claimed."
+    },
+    "independent_post_boundary_passes": [
+      "Discord TypeScript typecheck",
+      "36-glyph/11-sound resource-pack generation and rune proof",
+      "dashboard lint, self-tests, TypeScript, static generation, and production build",
+      "full Gradle build with 22 main-driven plugin self-test tasks",
+      "plugin JAR content and physical-predicate parity",
+      "deterministic datapack/resource-pack packaging and readback",
+      "deploy-manifest parity",
+      "resource-pack configuration/publisher guards",
+      "Supabase backup guard self-test",
+      "M2 local-only Supabase target/input self-test",
+      "five-entry external-media manifest/receipt static readiness",
+      "P4 vNext source, story, Copperline, Paper, negative, restart, replay, and review-target checks",
+      "final repository integrity"
+    ]
+  },
+  "p4_vnext": {
+    "authored_source_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+    "paper_validation_receipt_sha256": "1818f3d2f7d4f7d38c0c91648c23f422d3b08fb124d9ea4fece45afd6e78b3df",
+    "paper_review_receipt_sha256": "14daa0d19d1c52c4cfb67b9019ab7ede911e9413e6208d884c266a57ecfa9e29",
+    "validation_world_package_sha256": "1646fe8bbe01f59b0db1af116d668006ec912fdd92b95584aac1854ecf6c4bc2",
+    "pristine_review_world_package_sha256": "fcc0d8dd0bf530b628133bf4f670a8a23d7e8e916922c1528004b67c64e6317f",
+    "paper_version": "1.21.11 build 132",
+    "automated_findings": 0,
+    "brad_visual_approval": null
+  },
+  "deployable_artifacts": [
+    {"path":"plugin/build/libs/observance-0.5.0.jar","bytes":1980880,"sha256":"cd1e92dc94ef6bbb4e6c63049ca2b83ef50821a3c22099ef19ab00d2ce58ef85"},
+    {"path":"observance-datapack.zip","bytes":783,"sha256":"dabbeb89551ad5600253dfd2ff021ddce8d31935f92fd451d4d35993015e5719"},
+    {"path":"observance-resourcepack.zip","bytes":307663,"sha256":"4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb"},
+    {"path":"discord/supabase/apply-all.sql","bytes":415096,"sha256":"da705cab9631a89beb4f56acf65e4ab8d0f7844815e756d055b1b3dde4caab92"},
+    {"path":"dashboard/content/the-hold-v5/the-hold.zip","bytes":10492,"sha256":"ddeaa3e88c6030a36150cf2a534ec85914f57b4f09191059e96c04a3bee9a4ed"}
+  ],
+  "external_private_target_blockers": {
+    "vercel": "No .vercel/project.json, project identity, team identity, or authentication is configured; no preview was created.",
+    "railway_worker_and_cron": "Deployable configs exist but no project/service identity or authentication is configured; neither family was deployed.",
+    "discord": "No exact staging guild/channel identity or credentials are configured; no command registration or message mutation occurred.",
+    "supabase": "No disposable/local runtime or exact authorized private hosted target is available. Proposal, rollback/forward SQL, guards, and static self-tests pass; no SQL was applied and advisors were not fabricated.",
+    "media": "Five exact asset identities are receipted, but their source bytes are absent from this checkout; no packaging/upload/custody receipt was fabricated.",
+    "public_or_production": "Closed by authority; production Supabase, public domain, brother/Crafty, public Discord, and media originals were untouched."
+  },
+  "supabase_july_2026": {
+    "explicit_data_api_grants_reviewed_separately_from_rls": true,
+    "service_role_server_only": true,
+    "user_metadata_authorization_absent": true,
+    "real_security_and_performance_advisors": "blocked_without_disposable_target"
+  },
+  "not_launch_ready": [
+    "P5-P12 still require current-standard experiential reauthoring and human review beyond reusable legacy runtime breadth.",
+    "No authenticated Vercel, Railway, Discord, or disposable Supabase receipt exists.",
+    "Exact source media bytes are unavailable in this checkout.",
+    "Brad has not accepted vNext or completed the full morning campaign playthrough."
+  ],
+  "production_mutated": false,
+  "public_launch": false
+}

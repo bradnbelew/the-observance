@@ -459,6 +459,7 @@
     "review_target_receipt": "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json",
     "failed_attempts": "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json",
     "block_state_visual_audit": "design/m3/VNEXT-BLOCK-STATE-VISUAL-AUDIT.json",
+    "routed_regression_receipt": "design/handoff/PRIVATE-LAUNCH-ROUTED-REGRESSION-RECEIPT.json",
     "paper_result": {
       "version": "1.21.11",
       "build": 132,
@@ -499,6 +500,7 @@
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.md",
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
     "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
+    "design/handoff/PRIVATE-LAUNCH-ROUTED-REGRESSION-RECEIPT.json",
     "design/m3/P4-VNEXT-CASE-BRIEF.json",
     "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json",
     "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json",
