@@ -36,6 +36,10 @@ def validate_authority() -> dict:
             "player-facing authority schema drift")
     require(data["authority_id"] == "observance-cross-phase-player-facing-experience"
             and data["status"] == "binding", "player-facing authority identity drift")
+    require(data["cross_media_investigation_authority"]
+                == "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json"
+            and (ROOT / data["cross_media_investigation_authority"]).is_file(),
+            "player-facing authority lost cross-media investigation routing")
     scope = data["scope"]
     require(scope["phases"] == ["M3-v4-and-later", "M4", "M5"],
             "cross-phase scope drift")

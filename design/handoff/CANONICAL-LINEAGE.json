@@ -419,6 +419,9 @@
     "machine_review_overlay": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
     "experiential_concern": "V5 remains too close to explicit fact retrieval and matching-clause selection to prove P4's authored construction-phase and route archaeology experience",
     "progression_correction": "correct answers, reports, and syntheses must pass with zero observed-source interaction receipts; custody and contribution receipts remain durable but non-gating",
+    "cross_media_correction": "Minecraft is one evidence surface; P4 and the full campaign combine consequential lore clues across website/community, NPC memory, callbacks, footage/video, files, images, audio, metadata, documents, and social activity while avoiding fragile mandatory bespoke-block geometry",
+    "cross_media_authority": "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "next_revision_plan": "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json",
     "global_diversity": "P1-P12 preserve distinct web, provenance, social, archaeological, ethnographic, professional, forensic, engineering, media, interview, identity, and release-audit grammars rather than converging on clause retrieval",
     "live_server_directive": "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation",
     "implementation_state": "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
@@ -430,6 +433,8 @@
     "design/handoff/SPINE-CONFORMANCE.md",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
+    "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "approved Phase 1 authorities",
     "approved Phase 2 evidence authorities",
     "design/m2/M2-TECHNICAL-CONTRACTS.md",
@@ -467,6 +472,7 @@
     "design/m3/V5-BLOCK-STATE-VISUAL-AUDIT.json",
     "design/m3/PACKAGE-MANIFEST-V5.json",
     "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+    "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -523,6 +529,11 @@
       "effect": "exact correct answers must pass with zero observation receipts, including shared or externally known deductions; source interactions retain provenance, contribution, replay, catch-up, hint, changed-place, accessibility, and director value but cannot gate acceptance. Wrong-answer predicates and throttling may remain; implementation waits for disconnect"
     },
     {
+      "older": "a P4 revision plan centered on mandatory literal Minecraft route or material tracing",
+      "newer": "Brad's active V5 robust cross-media investigation correction",
+      "effect": "the next bounded Minecraft slice uses compact stable geometry while investigation depth comes from consequential cross-surface and cross-time lore evidence, discoverable grounded mechanisms, callbacks, provenance, and synthesis. Unavailable media, hosting, community, and social content remains an explicit future integration gate rather than a fabricated receipt"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -541,6 +552,8 @@
       "Brad completes the remaining V5 feedback pass and disconnects before revision",
       "human review confirms player-view polish, complete clickable clauses, occupied-shelf affordance, and seat composition",
       "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",
+      "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation",
+      "exact unavailable media, hosting, community, NPC, and cross-media player receipts are obtained only at their real future integration gates",
       "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
       "Brad's explicit approval of a later M3 revision"

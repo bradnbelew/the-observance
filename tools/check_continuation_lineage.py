@@ -348,6 +348,13 @@ def main() -> None:
             and active_v5["machine_review_overlay"] == "design/m3/BRAD-V5-ACTIVE-REVIEW.json"
             and (ROOT / active_v5["machine_review_overlay"]).is_file()
             and "zero observed-source" in active_v5["progression_correction"]
+            and active_v5["cross_media_authority"]
+                == "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json"
+            and (ROOT / active_v5["cross_media_authority"]).is_file()
+            and active_v5["next_revision_plan"]
+                == "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json"
+            and (ROOT / active_v5["next_revision_plan"]).is_file()
+            and "Minecraft is one evidence surface" in active_v5["cross_media_correction"]
             and active_v5["live_server_directive"]
                 == "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation"
             and active_v5["implementation_state"]
@@ -361,6 +368,8 @@ def main() -> None:
             and "Brad completes the V5 supported-client visual and filing-path walk"
                 in gate["required_next_evidence"]
             and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"
+                in gate["required_next_evidence"]
+            and "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation"
                 in gate["required_next_evidence"]
             and "Brad's explicit approval of a later M3 revision"
                 in gate["required_next_evidence"],

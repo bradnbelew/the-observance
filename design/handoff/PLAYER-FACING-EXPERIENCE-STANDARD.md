@@ -2,6 +2,9 @@
 
 Status: **BINDING CROSS-PHASE AUTHORITY**
 
+The companion `CROSS-MEDIA-INVESTIGATION-STANDARD.*` is co-binding for puzzle mechanics, evidence
+surfaces, robust Minecraft geometry, cross-arc modality diversity, and external receipt honesty.
+
 Brad issued this standard after the M3 v3 review on 2026-07-16. It applies to M3 v4 and every later
 player-facing implementation in M4 and M5. It sits immediately after the locked spine and spine
 conformance authorities: it changes neither canon nor the approved evidence model, but governs how

@@ -42,6 +42,20 @@ and director value, but they may not become answer prerequisites or touch quotas
 must prove the zero-observation correct path, wrong-answer failure/throttling, and intact non-gating
 custody. No implementation begins until Brad finishes and disconnects.
 
+Brad further prohibited a brittle geometry-heavy interpretation of P4. Mandatory answers may not
+depend on literal cart-path tracing, block-by-block archaeology, or long coordinate-perfect material
+simulations. The next slice keeps compact, achievable Minecraft architecture while treating Minecraft
+as one surface in a true cross-media ARG: website/community, remembered NPC dialogue, callbacks,
+footage/video, files, images, audio, metadata, recovered documents, and social activity can combine
+across time. Lore evidence must be consequential, spooky, uncanny, human, emotionally relevant, and
+connected to the central mystery; administrative records may remain texture but cannot dominate.
+
+`CROSS-MEDIA-INVESTIGATION-STANDARD.*` and `M3-VNEXT-CROSS-MEDIA-PLAN.json` separate work that can be
+authored and tested offline after disconnect from real future integration gates. Offline work may define
+clue graphs, fair keys, accessibility equivalents, exact predicates, robust room-scale geometry, and
+deterministic test fixtures. It may not claim new footage, video, image, audio, file, NPC performance,
+website/community deployment, social activity, hosted unlock, or human cross-media receipt exists.
+
 ## Known external gaps carried forward
 
 - `../m3/EXTERNAL-GAP-AUDIT-2026-07-16.md` records the latest read-only discovery receipts. Railway's

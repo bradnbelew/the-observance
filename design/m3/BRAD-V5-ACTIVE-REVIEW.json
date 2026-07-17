@@ -101,6 +101,17 @@
     ],
     "implementation_hold": "Do not change the live V5 runtime or implement this supersession until Brad finishes the review and disconnects."
   },
+  "binding_cross_media_and_geometry_correction": {
+    "status": "binding_cross_phase_plan_authority_not_yet_implemented",
+    "cross_phase_authority": "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "next_revision_plan": "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json",
+    "minecraft_boundary": "Do not hardcode P4 around literal cart-path tracing, block-by-block archaeology, or fragile mandatory bespoke-block geometry.",
+    "cross_media_identity": "Minecraft is one evidence surface among website/community, remembered NPC dialogue, callbacks, footage/video, files, images, audio, metadata, recovered documents, and social activity.",
+    "lore_direction": "Evidence must be consequential, spooky, uncanny, human, emotionally relevant, and connected to the central mystery; administrative matching may be texture or one layer but may not dominate.",
+    "approved_reference": "Mara/library coordinates such as 3-1-4 / 2-1-5 / 6-3-1 may establish a discoverable shelf-line-word or related indexing grammar; other mechanisms must be distinct and grounded.",
+    "receipt_honesty": "Separate offline-authored authorities, clue graphs, test fixtures, and specifications from unavailable external media, hosting, community, social, and player receipts.",
+    "implementation_hold": "Record and plan now; do not mutate or stop the live V5 server and do not implement before explicit disconnect."
+  },
   "preserve_pending_final_feedback": [
     "V5's exact client render and click-path proof",
     "occupied-shelf and seat-orientation fixes",

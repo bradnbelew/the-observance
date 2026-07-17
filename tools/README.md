@@ -51,6 +51,12 @@ create-only V5 runner: it adds exact 1.21.11 UI and guided-path model receipts w
 naive, brute, report, synthesis, replay, security, restart, and packaging chain. It also cannot imply
 Brad approval or open M4.
 
+`check_cross_media_investigation_standard.py` validates Brad's binding robust-Minecraft/cross-media
+investigation authority, the approved Mara/library reference pattern, distinct P1â€“P12 grammars, the
+offline-versus-future integration boundary, and the held M3 next-revision plan. It rejects fabricated
+media/hosting receipts and any plan that makes fragile bespoke block geometry or source-touch receipts
+mandatory for a correct answer.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,

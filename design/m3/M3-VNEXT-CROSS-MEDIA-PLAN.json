@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0.0-m3-vnext-cross-media-plan",
+  "plan_id": "observance-p4-vnext-cross-media-revision-plan",
+  "status": "authored_plan_only_implementation_held_for_active_review_and_disconnect",
+  "binding_authorities": [
+    "design/handoff/SPINE-LOCK.md",
+    "design/handoff/SPINE-CONFORMANCE.md",
+    "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+    "approved Phase 2 P4 evidence and ambiguity authority",
+    "M2 technical, security, restart, replay, and idempotency contracts"
+  ],
+  "scope": {
+    "phase": "M3",
+    "arc": "P4",
+    "target_active_hours": {"min":1,"max":2},
+    "minecraft_envelope": "compact bounded disposable Paper slice",
+    "m4_authority": "closed",
+    "brad_visual_approval": null,
+    "production_mutation": false
+  },
+  "experience_reframe": {
+    "from": "explicit civic fact retrieval followed by matching-clause selection",
+    "to": "cross-media construction-phase and route archaeology whose clues are remembered, compared, reindexed, reinterpreted, and synthesized across time",
+    "emotional_lore_job": "establish why the rational refuge matters to people and the central mystery without resolving locked ambiguities early",
+    "minecraft_role": "a consequential physical evidence surface, atmospheric anchor, optional corroboration site, and final civic threshold; not the complete puzzle container"
+  },
+  "compact_minecraft_plan": {
+    "preserve": [
+      "bounded authored civic rooms",
+      "functional waterworks and controlled gate",
+      "native readable artifacts and visible affordances",
+      "non-op Adventure protection",
+      "local-primary persistence and replay"
+    ],
+    "simplify_for_robustness": [
+      "use a small number of stable room-scale landmarks and artifact placements",
+      "avoid mandatory long exact cart paths, material traces, and coordinate-perfect decorative sequences",
+      "keep environmental evidence legible under harmless block-level composition changes",
+      "move overlays, route comparison, crop alignment, and detailed indexing into stable supplied books, images, or files"
+    ],
+    "interaction_semantics": "clue interactions may record custody and provide accessible descriptions but never unlock answer acceptance",
+    "submission_semantics": "exact correct conclusions pass with zero observation receipts; wrong exact predicates and bounded throttle remain"
+  },
+  "candidate_p4_mechanism_mix_not_final_until_full_feedback": [
+    {
+      "mechanism": "one grounded indexed-library clue",
+      "reference_pattern": "Mara coordinates such as 3-1-4 / 2-1-5 / 6-3-1 establish a discoverable shelf-line-word or related grammar",
+      "constraint": "use once for a lore-bearing phrase or provenance pointer, not as the whole investigation and not as a recurring campaign template"
+    },
+    {
+      "mechanism": "layered revision or redaction comparison",
+      "operation": "separate document/image/file versions expose different portions, omissions, or provenance",
+      "constraint": "perform detailed alignment on stable supplied artifacts rather than bespoke Minecraft block geometry"
+    },
+    {
+      "mechanism": "remembered dialogue or earlier-book callback",
+      "operation": "a previously ordinary phrase becomes an indexing key, ordering rule, or contradiction detector",
+      "constraint": "catch-up and accessibility equivalents must preserve any-subset participation"
+    },
+    {
+      "mechanism": "future hosted or media corroboration",
+      "operation": "a community post, image detail, filename/metadata fact, or footage frame corroborates or recontextualizes the P4 conclusion",
+      "constraint": "remains a named future integration gate until exact bytes, hosting, and player-visible receipts exist"
+    }
+  ],
+  "clue_graph_requirements": {
+    "mandatory_conclusions": "to be frozen only after Brad's complete V5 feedback, against locked Phase 2 P4 authority",
+    "multi_surface_rule": "each substantial deduction uses materially distinct evidence roles or documents an approved exception",
+    "out_of_order_safe": true,
+    "shared_memory_safe": true,
+    "correct_answer_zero_receipt_safe": true,
+    "any_subset_and_catch_up_safe": true,
+    "no_single_asset_outage_dead_end": true,
+    "locked_ambiguities_preserved": true
+  },
+  "offline_authoring_and_tests_after_disconnect": [
+    "replace source-possession predicates with exact answer-only acceptance while retaining non-gating custody",
+    "add correct-report and correct-synthesis zero-observation tests",
+    "retain wrong-report, throttle, replay, restart, contribution, and catch-up tests",
+    "author and statically validate the P4 clue graph, keys, operations, solutions, corroboration, lore role, and accessibility equivalents",
+    "author stable text, book, document, metadata, image-layout, transcript, and media specifications without claiming unavailable bytes exist",
+    "test indexed-book and other selected mechanisms as pure deterministic functions",
+    "test multiple any-subset and out-of-order deduction routes",
+    "keep Minecraft geometry predicates room-scale, classified, collision-safe, and independent of fragile decorative traces",
+    "perform internal lore, voice, fairness, and cross-arc mechanism-duplication review"
+  ],
+  "real_future_integration_gates": [
+    "exact hosted website/community content and change/unlock behavior",
+    "actual NPC dialogue performance or authoritative player-visible conversation surface",
+    "exact found-footage, unlisted-video, image, audio, and recovered-file bytes",
+    "metadata/EXIF/checksum provenance from those exact bytes",
+    "accessibility equivalents for actual audio/video/image mechanisms",
+    "external hosting, URL, permission, cache, outage, replay, and catch-up receipts",
+    "supported-client cross-media guided and any-subset playtests",
+    "cold human 1-2 hour P4 investigation and lore/emotional comprehension receipt",
+    "Brad's explicit in-game approval"
+  ],
+  "receipt_honesty": {
+    "currently_available": "authority, plan, committed canon/text sources, local deterministic code tests, disposable Paper structure, and specification-level fixtures",
+    "not_currently_claimed": "new external media bytes, uploads, community posts, unlisted videos, NPC performances, live unlocks, or cross-media human playtest receipts",
+    "rule": "No specification, placeholder, or local fixture may be reported as a real asset, hosting, community, media, or player receipt."
+  },
+  "implementation_hold": "Do not implement, mutate, or stop the live V5 review target until Brad explicitly disconnects."
+}

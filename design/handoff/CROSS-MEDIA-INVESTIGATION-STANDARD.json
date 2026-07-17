@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0.0-cross-media-investigation",
+  "authority_id": "observance-cross-media-investigation-standard",
+  "issued_by": "Brad",
+  "issued_date": "2026-07-17",
+  "status": "binding",
+  "authority_precedence": "after_spine_lock_spine_conformance_and_approved_phase_2_before_phase_specific_puzzle_implementation",
+  "source_review_authority": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+  "scope": ["M3-next-revision", "M4", "M5", "P1-P12 player-facing investigations"],
+  "m4_authority": "closed",
+  "brad_visual_approval": null,
+  "core_identity": {
+    "statement": "The Observance is a cross-media ARG; Minecraft is one evidence surface rather than the universal puzzle container.",
+    "evidence_surfaces": [
+      "Minecraft",
+      "hosted website and community tab",
+      "NPC dialogue and remembered conversations",
+      "earlier and later clue callbacks",
+      "found footage and unlisted videos",
+      "files, images, audio, and metadata",
+      "recovered documents",
+      "social and community activity"
+    ],
+    "lore_requirement": "Evidence must be consequential, spooky, uncanny, human, and connected to the central mystery; administrative records may support texture or one layer but may not dominate the investigation grammar."
+  },
+  "minecraft_geometry_guard": {
+    "compact_robust_authored_geometry_required": true,
+    "mandatory_bespoke_block_simulation_forbidden": true,
+    "mandatory_literal_cart_path_tracing_forbidden": true,
+    "mandatory_block_by_block_archaeology_forbidden": true,
+    "spatial_environmental_evidence_role": "atmosphere, corroboration, optional inference, robust landmark, or one layer of a cross-media deduction",
+    "brittleness_rule": "A mandatory conclusion may not depend on fragile generated placement of a long exact route, material sequence, or coordinate-perfect decorative simulation."
+  },
+  "preferred_challenge_model": {
+    "cross_surface_and_time_combination": true,
+    "examples": [
+      "an NPC line combines with a community post",
+      "a found-footage frame recontextualizes a Minecraft artifact",
+      "a filename or image detail combines with an earlier book passage",
+      "separate clues discovered out of order combine into one exact conclusion"
+    ],
+    "rewarded_player_practices": [
+      "notebooks",
+      "callbacks",
+      "provenance tracking",
+      "pattern recognition",
+      "cipher work",
+      "reinterpretation",
+      "group synthesis"
+    ],
+    "correct_answer_without_receipts": true,
+    "shared_or_remembered_clue_use": true
+  },
+  "approved_reference_pattern": {
+    "name": "Mara library cipher",
+    "sample_coordinates": ["3-1-4", "2-1-5", "6-3-1"],
+    "valid_inferable_grammars": ["shelf-line-word", "page-line-word", "another clearly discoverable indexed-book grammar"],
+    "reuse_rule": "This establishes fairness and grounding, not a template to repeat across arcs. Other mechanisms must differ in evidentiary job and player operation."
+  },
+  "candidate_mechanism_families": [
+    "transcript timestamps indexing words spoken at matching found-footage moments",
+    "community usernames or post dates aligned with book acrostics or archive order",
+    "image crop or contact-sheet coordinates arranged by an in-world sequence",
+    "audio spectrogram, Morse, DTMF, or reversed room tone with fair corroboration and accessibility equivalents",
+    "file metadata, revision history, filenames, EXIF, checksums, or corrupted manifests used for provenance",
+    "substitution alphabets derived from an established NPC habit, emblem, hymn, roster, or recurring typographical error",
+    "layered redaction where separate copies expose different portions",
+    "route or map overlays performed on supplied images or files rather than fragile Minecraft geometry",
+    "book cipher variants using page-line-word, shelf-spine-letter, catalog number, marginal marks, or deliberate mis-shelving",
+    "video-frame callbacks reinterpreted after an NPC conversation",
+    "conflicting witness accounts whose shared omissions or identical phrasing expose coordination",
+    "website or community content changing after an in-world event with catch-up and any-subset recovery"
+  ],
+  "guardrails": {
+    "discoverable_key_required": true,
+    "arbitrary_uncorroborated_cipher_forbidden": true,
+    "answer_touch_receipt_gate_forbidden": true,
+    "single_surface_mandatory_path_forbidden_when_any_subset_requires_alternatives": true,
+    "ui_friction_as_difficulty_forbidden": true,
+    "purple_or_meta_instruction_copy_forbidden": true,
+    "high_difficulty_preserved": true,
+    "p4_active_hour_target": {"min": 1, "max": 2},
+    "lore_relevance_and_emotional_consequence_required": true,
+    "distinct_p1_p12_grammars_preserved": true,
+    "locked_spine_and_exact_ambiguities_preserved": true,
+    "m2_security_restart_idempotency_preserved": true
+  },
+  "arc_grammar_diversity": [
+    {"arc":"P1","grammar":"web archaeology"},
+    {"arc":"P2","grammar":"provenance"},
+    {"arc":"P3","grammar":"social corroboration"},
+    {"arc":"P4","grammar":"construction-phase and route archaeology across robust cross-media evidence"},
+    {"arc":"P5","grammar":"civic ethnography"},
+    {"arc":"P6","grammar":"six professional grammars"},
+    {"arc":"P7","grammar":"forensic chain of custody"},
+    {"arc":"P8","grammar":"incident reconstruction and engineering intervention"},
+    {"arc":"P9","grammar":"camp and media archaeology"},
+    {"arc":"P10","grammar":"leak attribution and adversarial interview"},
+    {"arc":"P11","grammar":"identity restoration"},
+    {"arc":"P12","grammar":"release audit"}
+  ],
+  "receipt_integrity": {
+    "unavailable_assets_may_not_be_claimed": true,
+    "external_media_receipts_may_not_be_fabricated": true,
+    "authored_specification_is_not_an_asset_receipt": true,
+    "local_test_fixture_is_not_a_hosting_or_player_receipt": true
+  },
+  "required_static_checks": [
+    "every mandatory conclusion declares at least two materially distinct evidence roles or a documented Phase-2 exception",
+    "every cipher declares its discoverable key, derivation, operation, answer, corroboration, and accessibility equivalent",
+    "every cross-media dependency declares any-subset, out-of-order, replay, catch-up, and outage behavior",
+    "no mandatory answer depends on observed-source interaction receipts",
+    "no mandatory Minecraft predicate depends on fragile bespoke decorative geometry",
+    "each arc preserves its primary grammar and does not reuse a mechanism without a distinct evidentiary job",
+    "unavailable media, hosting, community, and social dependencies remain explicit integration gates"
+  ]
+}
