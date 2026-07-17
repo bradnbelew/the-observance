@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.2.0-continuation-lineage",
+  "schema_version": "1.3.0-continuation-lineage",
   "checkpoint_identity": {
     "branch": "codex/m3-disposable-paper-gate",
     "commit": "the commit containing this lineage file",
-    "purpose": "canonical linear chain through sibling integration, preserved v1/v2 rejections, and authored M3 v3 Paper/restart receipts",
+    "purpose": "canonical linear chain through sibling integration, preserved v1/v2/v3 rejections, authored M3 v3 Paper/restart receipts, clean v3 review stop, and binding cross-phase player-facing authority",
     "production_mutated": false,
     "m4_authority": "closed"
   },
@@ -212,7 +212,7 @@
   },
   "active_brad_v3_review": {
     "date": "2026-07-16",
-    "status": "in_progress_decision_not_approved_revision_required",
+    "status": "complete_not_approved_revision_required",
     "brad_visual_approval": null,
     "m4_authority": "closed",
     "machine_review_overlay": "design/m3/BRAD-V3-ACTIVE-REVIEW.json",
@@ -230,12 +230,13 @@
       "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
       "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION"
     ],
-    "implementation_state": "paused_until_full_v3_visual_pass_and_disconnect",
-    "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects"
+    "implementation_state": "v4_ready_only_after_complete_rejection_checkpoint",
+    "live_server_directive": "disconnect_confirmed_clean_save_flush_stop_complete",
+    "review_server_stop_receipt": "design/m3/PAPER-V3-REVIEW-STOP-RECEIPT.json"
   },
   "brad_v3_decisive_mechanic_finding": {
     "date": "2026-07-16",
-    "review_state": "mechanic_complete_visual_pass_and_disconnect_pending",
+    "review_state": "complete_not_approved_disconnect_and_clean_stop_receipted",
     "decision": "not_approved_revision_required",
     "brad_visual_approval": null,
     "m4_authority": "closed",
@@ -254,12 +255,36 @@
       "naive click-through commits no unsupported finding and leaves the gate closed",
       "wrong, repeated, reordered, default, and bounded exhaustive submissions do not advance or reveal solutions"
     ],
-    "implementation_authority": "blocked_until_full_visual_pass_completes_brad_disconnects_clean_stop_is_receipted_and_rejection_is_checkpointed",
-    "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects"
+    "implementation_authority": "opens_only_after_complete_v3_rejection_and_cross_phase_standard_are_committed_as_a_clean_checkpoint",
+    "live_server_directive": "disconnect_confirmed_clean_save_flush_stop_complete"
+  },
+  "cross_phase_player_facing_standard": {
+    "date": "2026-07-16",
+    "status": "binding",
+    "human_authority": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
+    "machine_authority": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "routed_checker": "tools/check_player_facing_experience_standard.py",
+    "scope": ["M3-v4-and-later", "M4", "M5"],
+    "binding_direction": [
+      "rooms must read as believable places with ordinary jobs rather than puzzle chambers",
+      "room scale and furnishing density must be justified by function",
+      "lecterns are exceptional and repeated identical evidence furniture is rejected",
+      "copy is immersive, realistic, grounded, human, and medium-specific rather than purple, cryptic, or puzzle sounding",
+      "evidence uses fictionally earned format and voice diversity without monotonous exposition or repeated docket prose",
+      "static inventory and diversity checks support but never replace human editorial and cold-read judgment",
+      "expert Minecraft composition, block-state, support, circulation, attachment, sightline, and negative-space authorship is mandatory"
+    ],
+    "v4_demonstration": "smaller purposeful lectern set, multiple natural evidence formats and situated voices, content-dependent paired-record conclusions and synthesis, cold-player comprehension, and naive-click-through resistance",
+    "locked_canon_preserved": true,
+    "approved_evidence_model_preserved": true,
+    "brad_visual_approval": null,
+    "m4_authority": "closed"
   },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
+    "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
+    "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
     "approved Phase 1 authorities",
     "approved Phase 2 evidence authorities",
     "design/m2/M2-TECHNICAL-CONTRACTS.md",
@@ -277,6 +302,7 @@
     "design/m3/BRAD-V3-REVIEW-PACKAGE.md",
     "design/m3/BRAD-V3-ACTIVE-REVIEW.json",
     "design/m3/BRAD-V3-REVIEW-DECISION.json",
+    "design/m3/PAPER-V3-REVIEW-STOP-RECEIPT.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -308,6 +334,11 @@
       "effect": "v3 receipts remain valid platform evidence but checklist completion is rejected as an investigation; the next revision must require four content-dependent conclusions, combined synthesis, cold-player comprehension, and naive/brute-force negative tests; M4 remains closed"
     },
     {
+      "older": "phase-local assumptions about player-facing copy, evidence furniture, and room composition",
+      "newer": "Brad's cross-phase player-facing experience standard after the complete v3 rejection",
+      "effect": "M3 v4 and all M4/M5 player-facing work must use grounded human medium-specific writing, functionally justified rooms, restrained purposeful lecterns, varied natural artifacts, exact Minecraft composition, static inventory, and human cold-read gates; quality is not reduced to quotas"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -319,12 +350,12 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v3 NOT APPROVED; mechanic works but checklist gating permits completion without reasoning; server held unchanged pending disconnect",
+    "phase": "M3 v3 NOT APPROVED; disconnect and clean stop are receipted; v4 may begin only from the clean rejection/cross-phase-standard checkpoint",
     "m4_open": false,
     "required_next_evidence": [
-      "Brad's complete v3 visual pass and confirmed disconnect while the live target remains unchanged",
-      "clean save/flush/stop receipt after disconnect",
-      "only afterward, a grounded civic investigation requiring four content-dependent conclusions and combined synthesis",
+      "clean committed v3 rejection and cross-phase player-facing-standard checkpoint",
+      "a grounded civic investigation requiring four content-dependent conclusions and combined synthesis",
+      "a functionally composed workplace with a smaller purposeful lectern set and diverse naturally placed artifacts and voices",
       "cold-player comprehension plus naive-click-through and brute-force negative receipts",
       "Brad's explicit approval of the next revision"
     ]

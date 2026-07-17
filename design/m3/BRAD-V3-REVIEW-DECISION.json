@@ -2,14 +2,31 @@
   "schema_version": "1.0.0-m3-brad-v3-decision",
   "authority_id": "observance-p4-private-slice-v3-brad-decision",
   "review_date": "2026-07-16",
-  "review_status": "mechanic_complete_visual_pass_and_disconnect_pending",
+  "review_status": "complete_not_approved_disconnect_and_clean_stop_receipted",
   "decision": "not_approved_revision_required",
   "brad_visual_approval": null,
   "m4_authority": "closed",
-  "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects",
+  "live_server_directive": "disconnect_confirmed_clean_save_flush_stop_complete",
+  "review_server_stop_receipt": "design/m3/PAPER-V3-REVIEW-STOP-RECEIPT.json",
   "mechanic_completion_result": "Brad completed the v3 mechanic successfully and the functional state, persistence, filing, and gate path worked",
   "decisive_binding_finding": "A player can right-click every lectern, then crouch-right-click every filing docket, stamp all findings, and open the gate without reading, comparing, understanding, or deducing anything",
   "binding_interpretation": "V3 is evidence-collection and checklist gating rather than the required layered investigation or puzzle; the room still reads as many lecterns instead of natural civic records embedded in an investigation",
+  "final_visual_and_player_facing_direction": [
+    "room scale and composition still read as a large space populated by too many lecterns",
+    "reduce lectern density and avoid repeated identical evidence furniture",
+    "architecture, furniture, circulation, and negative space must make every room feel like a believable place with a job rather than a puzzle chamber",
+    "all copywriting, subtitles, labels, and text must be immersive, realistic, grounded, and human rather than ultra-mysterious, purple, cryptic-for-cryptic's-sake, or overtly puzzle sounding",
+    "player-facing evidence requires substantial format and voice diversity including conversations, workplace notes, personal letters, official records, ledgers, marginalia, transcriptions, notices, diagrams, physical environmental evidence, and genuine lore or written books where fictionally appropriate",
+    "puzzle text must not become monotonous exposition or repeated docket prose",
+    "Minecraft composition and polish must be expert, and room size must be justified by function and furnishing density"
+  ],
+  "cross_phase_experience_authority": {
+    "human": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
+    "machine": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "checker": "tools/check_player_facing_experience_standard.py",
+    "scope": "M3-v4-and-later, M4, and M5",
+    "quality_not_quota": true
+  },
   "preserve_from_v3": [
     "native written-book UI",
     "exact directional block-state and support fixes",
@@ -27,7 +44,11 @@
     "the investigation remains any-subset, replay, restart, catch-up, accessibility, and idempotency safe",
     "the interaction uses grounded civic filing rather than escape-room stations",
     "the objective and interaction are taught diegetically without chat tutorial scaffolding, immersion-breaking signs, or handholding labels",
-    "records read as natural municipal evidence embedded in a clerical investigation rather than a room of lecterns"
+    "records read as natural municipal evidence embedded in a clerical investigation rather than a room of lecterns",
+    "use a smaller set of purposeful lecterns and multiple naturally placed evidence formats and situated human voices",
+    "room scale, architecture, furniture, circulation, and negative space are justified by the office's ordinary civic job",
+    "all player-facing prose is grounded, realistic, medium-specific human writing without purple or puzzle-setter voice",
+    "static inventory and diversity evidence support but never replace human editorial judgment and cold-read acceptance"
   ],
   "required_next_revision_checks": [
     {
@@ -76,5 +97,14 @@
       "current_v3_compliance": false
     }
   ],
-  "implementation_authority": "blocked_until_full_visual_pass_completes_brad_disconnects_the_server_is_cleanly_saved_and_stopped_and_this_rejection_is_checkpointed"
+  "v4_design_demonstration": {
+    "smaller_purposeful_lectern_set": true,
+    "multiple_naturally_placed_evidence_formats": true,
+    "multiple_situated_human_voices": true,
+    "locked_canon_preserved": true,
+    "approved_evidence_model_preserved": true,
+    "human_cold_read_required": true,
+    "naive_click_through_negative_required": true
+  },
+  "implementation_authority": "opens_only_after_this_complete_v3_rejection_and_cross_phase_standard_are_committed_as_a_clean_checkpoint"
 }

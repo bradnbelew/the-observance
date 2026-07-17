@@ -15,6 +15,13 @@
 > private review material for Brad only. Players keep survival gear in protected ARG regions; bypass
 > prevention comes from region enforcement, not inventory escrow.
 
+> **CROSS-PHASE PLAYER-FACING AUTHORITY — 2026-07-16.** After `SPINE-LOCK.md` and
+> `SPINE-CONFORMANCE.md`, read `PLAYER-FACING-EXPERIENCE-STANDARD.md` and its JSON companion before any
+> M3 v4, M4, or M5 player-facing work. Brad's complete v3 rejection makes grounded human medium-specific
+> writing, believable function-first room composition, restrained purposeful lecterns, diverse natural
+> artifact formats and voices, exact Minecraft craft, static inventories, and human cold-read acceptance
+> binding across phases. Quality is not a prop/format quota. V3 is not approved and M4 remains closed.
+
 > **PHASE 1 REVIEW ORDER:** `PHASE-1-APPROVAL.md` → `PHASE-1-EXPERIENCE-ARCHITECTURE.md` →
 > `PHASE-1-PROGRESSION-GOVERNANCE.md` → `PHASE-1-MEDIA-INVENTORY.md` →
 > `PHASE-1-TOPOLOGY-AND-MIGRATION.md`. Brad approved Phase 1 on 2026-07-15 by requesting the Phase 2

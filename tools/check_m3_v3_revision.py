@@ -316,13 +316,14 @@ def check_package_manifest() -> None:
 def check_active_review() -> None:
     review = load(ACTIVE_REVIEW)
     require(review["schema_version"] == "1.0.0-m3-brad-v3-active-review"
-            and review["review_status"] == "in_progress_decision_not_approved_revision_required"
+            and review["review_status"] == "complete_not_approved_revision_required"
             and review["brad_visual_approval"] is None and review["m4_authority"] == "closed",
-            "active v3 review approval/M4 status drift")
-    require(review["live_server_directive"] == "do_not_stop_or_mutate_until_brad_disconnects"
-            and review["implementation_state"] == "paused_until_full_v3_visual_pass_and_disconnect"
-            and review["revision_authority"] == "blocked_until_full_v3_visual_pass_completes_and_brad_disconnects",
-            "active v3 server/revision hold weakened")
+            "complete v3 review approval/M4 status drift")
+    require(review["live_server_directive"] == "disconnect_confirmed_clean_save_flush_stop_complete"
+            and review["implementation_state"] == "v4_blocked_only_until_complete_rejection_checkpoint_is_committed"
+            and review["revision_authority"] == "blocked_until_complete_v3_rejection_and_cross_phase_standard_are_committed_as_a_clean_checkpoint"
+            and review["review_server_stop_receipt"] == "design/m3/PAPER-V3-REVIEW-STOP-RECEIPT.json",
+            "complete v3 clean-stop/checkpoint gate weakened")
     require(len(review["binding_finding_verbatim"]) == 4
             and "not acceptable as final legibility" in review["binding_interpretation"],
             "active v3 discoverability finding incomplete")
@@ -338,10 +339,14 @@ def check_active_review() -> None:
             and decision["decision"] == "not_approved_revision_required"
             and decision["brad_visual_approval"] is None and decision["m4_authority"] == "closed",
             "decisive v3 rejection or M4 gate drift")
-    require(decision["review_status"] == "mechanic_complete_visual_pass_and_disconnect_pending"
-            and decision["live_server_directive"] == "do_not_stop_or_mutate_until_brad_disconnects"
+    require(decision["review_status"] == "complete_not_approved_disconnect_and_clean_stop_receipted"
+            and decision["live_server_directive"] == "disconnect_confirmed_clean_save_flush_stop_complete"
             and "without reading, comparing, understanding, or deducing" in decision["decisive_binding_finding"],
             "v3 mechanic-success/checklist-rejection finding drift")
+    require(len(decision["final_visual_and_player_facing_direction"]) == 7
+            and decision["cross_phase_experience_authority"]["quality_not_quota"] is True
+            and decision["v4_design_demonstration"]["human_cold_read_required"] is True,
+            "v3 final visual/cross-phase direction incomplete")
     next_checks = decision["required_next_revision_checks"]
     require(len(next_checks) == 9 and all(row["current_v3_compliance"] is False for row in next_checks)
             and {row["check_id"] for row in next_checks} >= {
@@ -366,7 +371,7 @@ def main() -> None:
     check_paper_receipts()
     check_package_manifest()
     check_active_review()
-    print("M3 v3 structural/Paper receipts PASS — V3 NOT APPROVED: blind checklist completion bypasses reasoning; live server held; revision blocked; M4 closed")
+    print("M3 v3 structural/Paper receipts PASS — V3 NOT APPROVED: checklist bypass rejected; clean review stop receipted; v4 requires clean checkpoint; M4 closed")
 
 
 if __name__ == "__main__":

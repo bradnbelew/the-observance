@@ -2,12 +2,13 @@
   "schema_version": "1.0.0-m3-brad-v3-active-review",
   "authority_id": "observance-p4-private-slice-v3-active-review",
   "review_date": "2026-07-16",
-  "review_status": "in_progress_decision_not_approved_revision_required",
+  "review_status": "complete_not_approved_revision_required",
   "decision_authority": "design/m3/BRAD-V3-REVIEW-DECISION.json",
   "brad_visual_approval": null,
   "m4_authority": "closed",
-  "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects",
-  "implementation_state": "paused_until_full_v3_visual_pass_and_disconnect",
+  "live_server_directive": "disconnect_confirmed_clean_save_flush_stop_complete",
+  "implementation_state": "v4_blocked_only_until_complete_rejection_checkpoint_is_committed",
+  "review_server_stop_receipt": "design/m3/PAPER-V3-REVIEW-STOP-RECEIPT.json",
   "positive_observation": "V3 is visibly improved and substantially less broken-looking",
   "binding_finding_verbatim": [
     "the difference between ordinary right-click and crouch-right-click is not discoverable",
@@ -19,6 +20,20 @@
   "mechanic_completion_result": "completed_successfully_but_does_not_prove_investigation_acceptance",
   "decisive_binding_finding": "touching every readable surface and then every filing docket commits all findings and opens the gate without reading, comparison, understanding, or deduction",
   "decisive_interpretation": "functional checklist gating is not the required layered investigation; record possession cannot substitute for content-dependent conclusions",
+  "final_visual_direction": [
+    "room scale and composition still feel like a large space populated by too many lecterns",
+    "reduce lectern density and avoid repeated identical evidence furniture",
+    "make architecture, furniture, circulation, and negative space communicate a believable workplace job rather than a puzzle chamber",
+    "keep all player-facing prose immersive, realistic, grounded, human, and medium-specific rather than purple, cryptic, or overtly puzzle sounding",
+    "use substantial format and voice diversity without turning quality into a quota",
+    "avoid monotonous exposition and repeated docket prose",
+    "justify room size by function and furnishing density and apply expert Minecraft composition"
+  ],
+  "cross_phase_experience_authority": {
+    "human": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
+    "machine": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "checker": "tools/check_player_facing_experience_standard.py"
+  },
   "preserve_during_active_review": [
     "current live mechanics for the remainder of Brad's verification",
     "passing v3 structural, Paper, restart, security, and package receipts",
@@ -49,5 +64,5 @@
     }
   ],
   "next_revision_acceptance_authority": "design/m3/BRAD-V3-REVIEW-DECISION.json",
-  "revision_authority": "blocked_until_full_v3_visual_pass_completes_and_brad_disconnects"
+  "revision_authority": "blocked_until_complete_v3_rejection_and_cross_phase_standard_are_committed_as_a_clean_checkpoint"
 }

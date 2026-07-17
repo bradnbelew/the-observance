@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0-m3-v3-review-stop-receipt",
+  "scope": "disposable localhost Paper review target only",
+  "target_id": "m3-v3-brad-review-ebc731f-20260717-a",
+  "target_source_git_commit": "ebc731ff3bfc0eb42572246b814ac541811190f2",
+  "paper": {
+    "version": "1.21.11",
+    "build": 132,
+    "implementation": "c5eb079"
+  },
+  "bind": "127.0.0.1",
+  "port": 25582,
+  "review_process_id": 31192,
+  "disconnect_evidence": [
+    "[23:06:16] [Server thread/INFO]: SirNan lost connection: Disconnected",
+    "[23:06:16] [Server thread/INFO]: SirNan left the game"
+  ],
+  "save_flush_evidence": [
+    "[23:09:57] [Server thread/INFO]: Saving the game (this may take a moment!)",
+    "[23:09:57] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved",
+    "[23:09:57] [Server thread/INFO]: Saved the game"
+  ],
+  "stop_evidence": [
+    "[23:10:00] [Server thread/INFO]: Stopping the server",
+    "[23:10:00] [Server thread/INFO]: [Observance] Disabling Observance v0.5.0",
+    "[23:10:00] [Server thread/INFO]: [Observance] The Observance sleeps.",
+    "[23:10:00] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved",
+    "[23:10:00] [Server thread/INFO]: All RegionFile I/O tasks to complete"
+  ],
+  "post_stop_readback": {
+    "pid_31192_alive": false,
+    "port_25582_listener_count": 0
+  },
+  "review_log_sha256": "2af79facaf6957f2a75e0337056658a184eee40361b69aec19b5ce3763cd8119",
+  "post_review_journal_sha256": "b991243e7338ef775c7d0bff6060a0ad778bccb3c6e1d17db06aa04676e45da1",
+  "post_review_world_tree_file_count": 46,
+  "post_review_world_tree_sha256": "721dcf036813a3b346bfb60423d7445b1a48b0cdaf6f0dc28fc09a72819071b0",
+  "production_mutated": false,
+  "brad_visual_approval": null,
+  "brad_v3_decision": "not_approved_revision_required",
+  "m4_authority": "closed",
+  "result": "clean_save_flush_stop_verified"
+}

@@ -5,11 +5,16 @@ Status: **CURRENT CONTINUATION LEDGER**
 This file is updated and committed at every autonomous phase boundary. A phase is not complete merely
 because it appears here; its linked authorities and checks must independently prove the claim.
 
-The canonical pre-revision integration lineage is `CANONICAL-LINEAGE.json`. It preserves the original
-source commits, their linear incorporation commits, exact receipt scope, unresolved gaps, supersession,
-the failed v1/v2 decisions, their Paper receipts, the v2 clean-stop evidence, and the current authored
-v3 Paper/restart candidate. `python tools/check_continuation_lineage.py`
-validates that chain. The integration checkpoint is the commit containing that lineage file.
+The canonical continuation lineage is `CANONICAL-LINEAGE.json`. It preserves the original source
+commits, their linear incorporation commits, exact receipt scope, unresolved gaps, supersession, all
+three failed M3 review decisions, their Paper receipts, both clean-stop receipts, and the binding
+cross-phase player-facing authority. `python tools/check_continuation_lineage.py` validates that chain.
+The checkpoint is the commit containing that lineage file.
+
+`PLAYER-FACING-EXPERIENCE-STANDARD.md` and its JSON companion apply after the locked spine to M3 v4 and
+every later M4/M5 player-facing room, artifact, interaction, subtitle, label, and copy surface. Static
+inventory/diversity checks are required, but human editorial and cold-read quality cannot be replaced
+by quotas.
 
 | Phase | Status | Durable evidence | Verification | Checkpoint |
 | --- | --- | --- | --- | --- |
@@ -17,7 +22,7 @@ validates that chain. The integration checkpoint is the commit containing that l
 | Phase 1 — Experience architecture | Complete; Brad explicitly approved 2026-07-15 and authorized autonomous continuation | `PHASE-1-APPROVAL.md` and four Phase 1 authorities | `python tools/check_phase1_architecture.py` plus existing non-live checks | Branch `codex/phase-1-architecture`; approval and continuation checkpoint `e18d502` |
 | Phase 2 / M1 — Evidence architecture | Complete under Brad's standing approval | `PHASE-2-EVIDENCE-ARCHITECTURE.md`, `PHASE-2-LEGACY-NODE-DISPOSITION.md`, `PHASE-2-CONFORMANCE-AND-MEDIA-AUDIT.md` | Phase 2, Phase 1, freshness, integrity, predicate, voice, book, scenario, content-audit, and fixture checks pass; current V5 content/layout checks expose the carried `37020…` vs `16de…` predicate-receipt mismatch recorded in the audit | Branch `codex/phase-2-evidence-architecture`; evidence commit `fae8b26`; continuation checkpoint is the commit containing this ledger row |
 | M2 — Technical contracts and isolated implementation | Complete under Brad's standing approval | `design/m2/M2-TECHNICAL-CONTRACTS.md`; six generated manifests; all 82 import contracts; exact predicate byte chain; schema/rollback/forward and seven-surface parity contracts; isolated Paper/Discord implementation | M2 static gate; full plugin clean/check; Discord type/approval/voice/seed/bundle; Phase 1/2, integrity, freshness, content, 60 predicates, Hold, and 1,588-scenario checks pass. Secret-dependent and external platform receipts remain open. | Branch `codex/m2-technical-contracts`; evidence commit `2aedeca9198db36b029aaa39f364e7688fbba171`; continuation checkpoint is the commit containing this ledger row |
-| M3 — Private vertical slice | V3 NOT APPROVED / REVISION REQUIRED; mechanic completed, but blind checklist completion bypasses all reasoning; live server held pending disconnect | Preserved v1/v2 history; v3 structural/Paper receipts and useful implementation gains; `BRAD-V3-ACTIVE-REVIEW.json`; `BRAD-V3-REVIEW-DECISION.json`; canonical lineage | Brad completed the functional path, proving state/persistence/gate operation, but right-click-all then file-all opens the gate without reading or deduction. Next revision requires four content-dependent conclusions, combined synthesis, natural civic records/filing, cold-player comprehension, and naive-click/brute-force negative tests while retaining subset/replay/accessibility safety. Brad approval null; M4 closed; implementation and stop blocked pending full pass/disconnect. | Branch `codex/m3-disposable-paper-gate`; passing v3 receipt `a30f1301046819e88c8029d604c00703b055cc2e`; first active finding `0d897f553c347ea36c349d9be01898e4fc29bedc`; decisive rejection checkpoint is the commit containing this row |
+| M3 — Private vertical slice | V3 NOT APPROVED / REVISION REQUIRED; mechanic completed but blind checklist completion bypasses reasoning; disconnect, save/flush, and clean stop receipted; v4 opens only after this clean checkpoint | Preserved v1/v2/v3 history; v3 structural/Paper receipts and useful implementation gains; `BRAD-V3-ACTIVE-REVIEW.json`; `BRAD-V3-REVIEW-DECISION.json`; `PAPER-V3-REVIEW-STOP-RECEIPT.json`; cross-phase player-facing standard; canonical lineage | V4 must preserve native books, directional/support fixes, persistence/security, and the improved gate while adding four content-dependent conclusions, combined synthesis, natural filing, fewer purposeful lecterns, diverse credible artifact formats/voices, grounded prose, functionally justified spatial composition, cold-player comprehension, and naive-click/brute-force negative gates. Brad approval null; M4 closed. | Branch `codex/m3-disposable-paper-gate`; passing v3 receipt `a30f1301046819e88c8029d604c00703b055cc2e`; first active finding `0d897f553c347ea36c349d9be01898e4fc29bedc`; decisive rejection `1ce0c7b83264b49b4d822d2ff0f1f4c775e6b5ea`; complete rejection/cross-phase checkpoint is the commit containing this row |
 | M4 — Incremental campaign build and parity rehearsal | Closed pending remaining M3 real-client receipts and Brad's in-game approval | All required arcs/districts, services, content, assets, migrations, packages | Full non-live/live clone matrix, catch-up/replay/outage/region tests | Do not start district implementation from the structural-only M3 Paper checkpoint |
 | M5 — Production cutover and final release | Pending | GitHub/Vercel/Railway/Supabase/Crafty/media parity, final JAR/package, hashes, backups, rollback and launch receipts | Aggregate release gate plus real production readback and post-restart/coda evidence | Final checkpoint and handoff |
 
@@ -63,10 +68,17 @@ validates that chain. The integration checkpoint is the commit containing that l
   target, but no Brad approval; M4 remains closed.
 - Brad completed the v3 mechanic and confirmed the functional state/persistence/gate path, but rejected
   it: a player can touch every record and filing docket to open the gate without reading, comparing, or
-  deducing. The live server stays unchanged through the remaining visual pass and disconnect. Future
-  acceptance requires distinct natural filing affordance, diegetic objective/instruction, four exact
-  content-dependent conclusions, combined synthesis, natural civic records, subset/replay/accessibility
-  safety, cold-player comprehension, and naive-click/brute-force negative tests.
+  deducing. His disconnect was independently confirmed, and the disposable server then logged a clean
+  save/flush and orderly stop; PID 31192 and port 25582 ended. Future acceptance requires distinct
+  natural filing affordance, diegetic objective/instruction, four exact content-dependent conclusions,
+  combined synthesis, natural civic records, subset/replay/accessibility safety, cold-player
+  comprehension, and naive-click/brute-force negative tests.
+- Brad's final v3 direction is now cross-phase authority, not a local v4 note. Rooms must be believable
+  workplaces with functionally justified scale, furnishing, circulation, and negative space; lecterns
+  must be fewer and purpose-specific; artifacts must use fictionally earned formats and situated human
+  voices; all prose must be grounded and medium-specific rather than purple, cryptic, meta, or repeated
+  docket exposition. `PLAYER-FACING-EXPERIENCE-STANDARD.*` and its routed checker prevent M4/M5 regressions
+  while explicitly preserving human quality judgment over quotas.
 
 These gaps must be resolved before their owning implementation/release gates; they do not justify losing
 or postponing safe work in earlier phases.

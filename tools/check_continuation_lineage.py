@@ -24,7 +24,7 @@ def git(*args: str) -> str:
 
 def main() -> None:
     data = json.loads(LINEAGE.read_text(encoding="utf-8"))
-    require(data["schema_version"] == "1.2.0-continuation-lineage", "lineage schema drift")
+    require(data["schema_version"] == "1.3.0-continuation-lineage", "lineage schema drift")
     checkpoint = data["checkpoint_identity"]
     require(checkpoint["branch"] == "codex/m3-disposable-paper-gate", "canonical branch drift")
     require(checkpoint["production_mutated"] is False, "integration cannot claim production mutation")
@@ -159,7 +159,7 @@ def main() -> None:
             "v3 pristine review-target receipt drift")
 
     active_v3 = data["active_brad_v3_review"]
-    require(active_v3["status"] == "in_progress_decision_not_approved_revision_required"
+    require(active_v3["status"] == "complete_not_approved_revision_required"
             and active_v3["brad_visual_approval"] is None and active_v3["m4_authority"] == "closed",
             "active Brad v3 review approval/M4 gate drift")
     require(active_v3["machine_review_overlay"] == "design/m3/BRAD-V3-ACTIVE-REVIEW.json"
@@ -172,25 +172,46 @@ def main() -> None:
                 "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
                 "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION",
             ], "active Brad v3 finding/check overlay drift")
-    require(active_v3["implementation_state"] == "paused_until_full_v3_visual_pass_and_disconnect"
+    require(active_v3["implementation_state"] == "v4_ready_only_after_complete_rejection_checkpoint"
             and active_v3["live_server_directive"]
-                == "do_not_stop_or_mutate_until_brad_disconnects",
-            "active Brad v3 revision/server hold weakened")
+                == "disconnect_confirmed_clean_save_flush_stop_complete"
+            and active_v3["review_server_stop_receipt"]
+                == "design/m3/PAPER-V3-REVIEW-STOP-RECEIPT.json"
+            and (ROOT / active_v3["review_server_stop_receipt"]).is_file(),
+            "complete Brad v3 review/clean stop authority drift")
 
     decisive = data["brad_v3_decisive_mechanic_finding"]
     require(decisive["decision"] == "not_approved_revision_required"
-            and decisive["review_state"] == "mechanic_complete_visual_pass_and_disconnect_pending"
+            and decisive["review_state"] == "complete_not_approved_disconnect_and_clean_stop_receipted"
             and decisive["brad_visual_approval"] is None and decisive["m4_authority"] == "closed",
             "decisive Brad v3 rejection state drift")
     require(decisive["decision_authority"] == active_v3["decision_authority"]
             and decisive["required_next_revision_check_count"] == 9
             and len(decisive["required_negative_tests"]) == 2
-            and decisive["live_server_directive"] == "do_not_stop_or_mutate_until_brad_disconnects",
-            "v3 reasoning/negative-test/server-hold authority drift")
+            and decisive["live_server_directive"]
+                == "disconnect_confirmed_clean_save_flush_stop_complete",
+            "v3 reasoning/negative-test/clean-stop authority drift")
+
+    player_facing = data["cross_phase_player_facing_standard"]
+    require(player_facing["status"] == "binding"
+            and player_facing["scope"] == ["M3-v4-and-later", "M4", "M5"]
+            and len(player_facing["binding_direction"]) == 7
+            and player_facing["locked_canon_preserved"] is True
+            and player_facing["approved_evidence_model_preserved"] is True
+            and player_facing["brad_visual_approval"] is None
+            and player_facing["m4_authority"] == "closed",
+            "cross-phase player-facing authority weakened")
+    for authority in (player_facing["human_authority"], player_facing["machine_authority"],
+                      player_facing["routed_checker"]):
+        require((ROOT / authority).is_file(), f"missing cross-phase authority: {authority}")
+    precedence = data["authority_precedence"]
+    require(precedence.index(player_facing["human_authority"]) == 2
+            and precedence.index(player_facing["machine_authority"]) == 3,
+            "cross-phase authority is not routed immediately after the spine authorities")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "Brad's complete v3 visual pass and confirmed disconnect while the live target remains unchanged"
+            and "clean committed v3 rejection and cross-phase player-facing-standard checkpoint"
                 in gate["required_next_evidence"]
             and "cold-player comprehension plus naive-click-through and brute-force negative receipts"
                 in gate["required_next_evidence"],
@@ -201,7 +222,7 @@ def main() -> None:
     v3_review = (ROOT / "design" / "m3" / "BRAD-V3-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("VISUAL APPROVAL PENDING" in v3_review and "M4 is **closed**" in v3_review,
             "v3 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (V3 NOT APPROVED; functional receipts preserved; checklist bypass rejected; disconnect/server hold; M4 closed)")
+    print("CONTINUATION LINEAGE: PASS (V3 NOT APPROVED; clean stop receipted; cross-phase player-facing authority bound; M4 closed)")
 
 
 if __name__ == "__main__":

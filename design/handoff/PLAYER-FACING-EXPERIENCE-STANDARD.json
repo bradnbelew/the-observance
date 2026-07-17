@@ -1,0 +1,165 @@
+{
+  "schema_version": "1.0.0-cross-phase-player-facing",
+  "authority_id": "observance-cross-phase-player-facing-experience",
+  "issued_by": "Brad",
+  "issued_date": "2026-07-16",
+  "status": "binding",
+  "authority_precedence": "after_spine_lock_and_spine_conformance_before_phase_specific_player_facing_implementation",
+  "scope": {
+    "phases": ["M3-v4-and-later", "M4", "M5"],
+    "surfaces": [
+      "Minecraft architecture and room composition",
+      "Minecraft furniture and physical evidence",
+      "written books and lore books",
+      "signs, labels, subtitles, notices, and instructions",
+      "Discord, dashboard, media, and catch-up copy that players encounter",
+      "investigation objectives, filing affordances, and submission feedback"
+    ],
+    "locked_canon_preserved": true,
+    "approved_evidence_model_preserved": true,
+    "m4_authority": "closed",
+    "brad_visual_approval": null
+  },
+  "human_quality_rule": "Static inventory and diversity evidence support review but cannot convert writing, room composition, or puzzle legibility into a quota; human cold-read acceptance remains mandatory.",
+  "room_standard": {
+    "ordinary_job_first": true,
+    "scale_must_be_functionally_justified": true,
+    "architecture_furniture_circulation_and_negative_space_must_support_job": true,
+    "repeated_identical_evidence_furniture_forbidden_without_authored_rationale": true,
+    "lecterns_are_exceptional_and_purpose_specific": true,
+    "architecture_must_teach_circulation_without_meta_labels": true,
+    "decorative_clusters_require_authored_purpose": true,
+    "unclassified_floating_or_misplaced_blocks_forbidden": true,
+    "expert_minecraft_composition_required": true
+  },
+  "copy_standard": {
+    "required_register": ["immersive", "realistic", "grounded", "human", "medium-specific"],
+    "forbidden_register": [
+      "ultra-mysterious",
+      "purple",
+      "cryptic-for-cryptic's-sake",
+      "overtly puzzle sounding",
+      "meta tutorial",
+      "monotonous exposition",
+      "repeated docket prose"
+    ],
+    "format_examples_not_quotas": [
+      "conversation between people",
+      "workplace note",
+      "personal letter",
+      "official record",
+      "ledger",
+      "marginalia",
+      "transcription",
+      "notice",
+      "diagram",
+      "physical environmental evidence",
+      "genuine lore book",
+      "written book"
+    ],
+    "format_selection_rule": "Each form must be plausible for its author, recipient, workplace, placement, and evidentiary job; different containers may not disguise duplicated prose.",
+    "voice_selection_rule": "Artifacts must differ where the fiction supplies different knowledge, motive, relationship, register, or reliability; diversity is qualitative rather than a minimum count."
+  },
+  "required_inventory_fields": {
+    "room": [
+      "room_id",
+      "institutional_job",
+      "scale_justification",
+      "circulation",
+      "negative_space_purpose",
+      "furniture_clusters",
+      "lectern_purposes",
+      "repeated_fixture_rationale",
+      "evidence_formats",
+      "cold_read_receipt"
+    ],
+    "artifact": [
+      "artifact_id",
+      "physical_format",
+      "placement",
+      "voice_owner",
+      "voice_relationship",
+      "register",
+      "evidentiary_role",
+      "provenance",
+      "canon_refs",
+      "medium_fit",
+      "human_editor_review",
+      "text_sha256"
+    ]
+  },
+  "static_checks": [
+    {
+      "check_id": "CROSS.PF.ROOM_JOB",
+      "predicate": "every inventoried room declares a specific ordinary institutional job supported by its compositions"
+    },
+    {
+      "check_id": "CROSS.PF.SCALE_FUNCTION",
+      "predicate": "every room's dimensions and negative space have a functional rationale tied to circulation, work, storage, or civic use"
+    },
+    {
+      "check_id": "CROSS.PF.LECTERN_RESTRAINT",
+      "predicate": "every lectern has an artifact-specific natural purpose and rooms do not read as repeated lectern stations"
+    },
+    {
+      "check_id": "CROSS.PF.REPEATED_FURNITURE_RATIONALE",
+      "predicate": "repeated fixtures are fictionally justified, purpose-classified, and compositionally varied"
+    },
+    {
+      "check_id": "CROSS.PF.ARTIFACT_FORMAT_PROVENANCE",
+      "predicate": "every artifact declares plausible format, placement, provenance, canon references, and medium fit"
+    },
+    {
+      "check_id": "CROSS.PF.VOICE_DIVERSITY",
+      "predicate": "the selected artifacts demonstrate situated human voices and evidence roles without treating a minimum count as quality"
+    },
+    {
+      "check_id": "CROSS.PF.NO_META_PUZZLE_COPY",
+      "predicate": "player-facing text contains no chat tutorial scaffolding, handholding labels, or puzzle-setter address"
+    },
+    {
+      "check_id": "CROSS.PF.NO_MONOTONOUS_DOCKET_PROSE",
+      "predicate": "duplicate text hashes, repeated templates, and medium-inappropriate exposition are rejected rather than counted as variety"
+    },
+    {
+      "check_id": "CROSS.PF.COLD_READ_HUMAN_GATE",
+      "predicate": "a recorded cold human review proves workplace, objective, artifact, interaction, and deduction comprehension before visual review"
+    }
+  ],
+  "cold_read_criteria": [
+    "cold player can state the room's ordinary institutional job",
+    "cold player can state the disputed civic question without external explanation",
+    "cold player distinguishes readable evidence from conclusion filing",
+    "cold player explains why each sampled artifact plausibly exists in its placement",
+    "cold player recognizes materially different human voices and artifact formats",
+    "cold player derives and submits one defensible finding from record content",
+    "cold player explains that four findings combine into the final synthesis",
+    "naive touching of every surface commits no unsupported finding and leaves the gate closed",
+    "cold player navigates public and staff circulation without chat or tutorial labels",
+    "cold player describes the space as a believable workplace or civic facility rather than a puzzle chamber or room of lecterns",
+    "observer judges prose plausible for its stated human author, relationship, workplace, and medium",
+    "observer records every moment that required out-of-world explanation"
+  ],
+  "v4_demonstration": {
+    "preserve": [
+      "native written-book UI",
+      "exact directional block states and support fixes",
+      "local-primary persistence, restart, replay, protection, and idempotency",
+      "full-height full-width controlled gate baseline",
+      "locked spine and approved evidence model"
+    ],
+    "required": [
+      "smaller set of purposeful lecterns",
+      "multiple naturally placed evidence formats",
+      "multiple situated human voices",
+      "grounded medium-specific prose",
+      "functionally justified room scale and furnishing density",
+      "four content-dependent paired-record conclusions",
+      "one content-dependent combined synthesis",
+      "distinct natural record-reading and finding-filing affordances",
+      "cold-player objective and interaction comprehension",
+      "naive-click-through and bounded brute-force resistance"
+    ],
+    "quality_not_quota": true
+  }
+}

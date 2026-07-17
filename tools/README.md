@@ -30,6 +30,13 @@ The matching `run_m3_v3_disposable_paper.py` imports the preserved v2 process ha
 authority, journal, package, and receipt identities; `run_m3_disposable_paper.py` remains byte-identical
 to its v2 package provenance.
 
+`check_player_facing_experience_standard.py` validates Brad's binding cross-phase copy, artifact, room
+composition, and cold-read authority; the complete v3 rejection and clean review-server stop; and every
+present `PLAYER-FACING-INVENTORY*.json`. It rejects missing room jobs, scale rationales, artifact
+provenance, medium fit, human review, unexplained repeated fixtures, duplicate-text pseudo-diversity,
+and meta tutorial copy. Counts remain diagnostics only: the checker explicitly cannot replace human
+editorial judgment or cold-player acceptance.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,
