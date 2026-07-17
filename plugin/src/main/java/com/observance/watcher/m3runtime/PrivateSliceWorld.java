@@ -279,7 +279,7 @@ public final class PrivateSliceWorld {
                 expected.put(new Cell(5, y, z), wallMaterial);
             }
             for (int x = -5; x <= 5; x++) expected.put(new Cell(x, floor + 5, z), wallMaterial);
-            if ((z - 16) % 6 == 0) {
+            if (z != 16 && (z - 16) % 6 == 0) {
                 for (int y = floor; y < floor + 5; y++) {
                     expected.put(new Cell(-4, y, z), Material.POLISHED_BASALT);
                     expected.put(new Cell(4, y, z), Material.POLISHED_BASALT);
@@ -397,7 +397,7 @@ public final class PrivateSliceWorld {
             directional(new Cell(25, -20, z), Material.SPRUCE_STAIRS,
                     "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]");
         }
-        for (int z : new int[]{64, 67, 79, 82}) {
+        for (int z : new int[]{64, 75, 79, 82}) {
             Cell lower = new Cell(29, -20, z);
             Cell upper = new Cell(29, -19, z);
             expected.put(lower, Material.BOOKSHELF);
@@ -464,7 +464,7 @@ public final class PrivateSliceWorld {
                 "municipal commission identity","INTAKE WORKS","COMMISSION 14","EXAMINER DUE","");
         addSign(17,-18,66,"west",new Cell(18,-18,66),new Cell(15,-20,66),"RECORD_OFFICE_PLAQUE",
                 "credible office identity","RECORD OFFICE","COPIES + SURVEYS","BELL AT DESK","");
-        addSign(-6,-18,88,"north",new Cell(-6,-18,89),new Cell(-6,-20,85),"COMMONS_SEAL_PLAQUE",
+        addSign(-6,-18,88,"north",new Cell(-6,-18,89),new Cell(-5,-20,85),"COMMONS_SEAL_PLAQUE",
                 "controlled civic seal identity","COMMONS SEAL","WICKET No. 3","CLERK RELEASE","");
         addSign(-14,-18,61,"north",new Cell(-14,-18,62),new Cell(-14,-20,59),"RUNOFF_GAUGE_PLAQUE",
                 "works gauge identity and rated capacity","RUNOFF WORKS","GAUGE No. 7","300 BERTH MAX","");
@@ -619,6 +619,29 @@ public final class PrivateSliceWorld {
         String data = expectedBlockData.get(surface);
         if (data != null && !facesReader(surface, reader, data)) {
             findings.add(surfaceId + " directional face does not address reader " + reader + ": " + data);
+        }
+        checkSightline(findings, surface, reader, surfaceId);
+    }
+
+    private void checkSightline(List<String> findings, Cell surface, Cell reader, String surfaceId) {
+        double startX = reader.x + 0.5;
+        double startY = reader.y + 1.62;
+        double startZ = reader.z + 0.5;
+        double endX = surface.x + 0.5;
+        double endY = surface.y + 0.65;
+        double endZ = surface.z + 0.5;
+        int steps = Math.max(1, (int) Math.ceil(Math.sqrt(
+                Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2)
+                        + Math.pow(endZ - startZ, 2)) * 8));
+        for (int step = 1; step < steps; step++) {
+            double ratio = (double) step / steps;
+            Cell sample = new Cell((int) Math.floor(startX + (endX - startX) * ratio),
+                    (int) Math.floor(startY + (endY - startY) * ratio),
+                    (int) Math.floor(startZ + (endZ - startZ) * ratio));
+            if (!sample.equals(reader) && !sample.equals(surface) && block(sample).getType().isSolid()) {
+                findings.add(surfaceId + " reader sightline blocked at " + sample);
+                return;
+            }
         }
     }
 

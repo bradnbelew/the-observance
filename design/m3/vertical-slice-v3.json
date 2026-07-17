@@ -45,7 +45,7 @@
   "signage": [
     {"surface_id":"MOUTH_COMMISSION_PLAQUE","cell":[0,2,1],"block_data":"minecraft:oak_wall_sign[facing=south,waterlogged=false]","support_cell":[0,2,0],"reader_standing_cell":[0,0,3],"purpose":"municipal commission identity"},
     {"surface_id":"RECORD_OFFICE_PLAQUE","cell":[17,-18,66],"block_data":"minecraft:oak_wall_sign[facing=west,waterlogged=false]","support_cell":[18,-18,66],"reader_standing_cell":[15,-20,66],"purpose":"credible office identity"},
-    {"surface_id":"COMMONS_SEAL_PLAQUE","cell":[-6,-18,88],"block_data":"minecraft:oak_wall_sign[facing=north,waterlogged=false]","support_cell":[-6,-18,89],"reader_standing_cell":[-6,-20,85],"purpose":"controlled civic seal identity"},
+    {"surface_id":"COMMONS_SEAL_PLAQUE","cell":[-6,-18,88],"block_data":"minecraft:oak_wall_sign[facing=north,waterlogged=false]","support_cell":[-6,-18,89],"reader_standing_cell":[-5,-20,85],"purpose":"controlled civic seal identity"},
     {"surface_id":"RUNOFF_GAUGE_PLAQUE","cell":[-14,-18,61],"block_data":"minecraft:oak_wall_sign[facing=north,waterlogged=false]","support_cell":[-14,-18,62],"reader_standing_cell":[-14,-20,59],"purpose":"works gauge identity and rated capacity"}
   ],
   "waterworks": {

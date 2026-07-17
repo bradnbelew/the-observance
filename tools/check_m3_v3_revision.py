@@ -20,7 +20,7 @@ INTERACTION_SOURCE = WORLD_SOURCE.with_name("PrivateSliceInteractionListener.jav
 STATE_SOURCE = WORLD_SOURCE.with_name("PrivateSliceState.java")
 RUNTIME_SOURCE = WORLD_SOURCE.with_name("PrivateSliceReviewRuntime.java")
 RUNNER = ROOT / "tools" / "run_m3_disposable_paper.py"
-EXPECTED_SLICE_SHA256 = "3f7c7924b6905f9f58dc43332f9dfb6ae19cfed853759a5e63f278de2438c320"
+EXPECTED_SLICE_SHA256 = "316cedac5c1673e8fba913957d4c0c71bd899da47d8d95613f5e81da88c7ae2b"
 
 
 def require(value: bool, message: str) -> None:
@@ -107,6 +107,7 @@ def check_investigation(authority: dict) -> None:
     surface_cells = [cell(row) for row in surfaces]
     reader_cells = [cell(row, "reader_standing_cell") for row in surfaces]
     require(len(surface_cells) == len(set(surface_cells)), "lectern footprints overlap")
+    require(len(reader_cells) == len(set(reader_cells)), "reader standing cells overlap")
     require(not set(surface_cells).intersection(reader_cells), "reader cell overlaps a lectern footprint")
     for row in evidence + submissions:
         require(faces(cell(row), cell(row, "reader_standing_cell"), row["facing"]),
@@ -191,7 +192,7 @@ def check_implementation() -> None:
     runner = RUNNER.read_text(encoding="utf-8")
     required_world_tokens = (
         "expectedBlockData", "checkReader", "checkInvestigationTopology", "checkWaterworks",
-        "checkCorridor", "checkImmersiveText", "unclassified floating furnishing",
+        "checkCorridor", "checkImmersiveText", "checkSightline", "unclassified floating furnishing",
         "minecraft:chiseled_bookshelf[facing=west]", "minecraft:lectern[facing=",
         "minecraft:lantern[hanging=true,waterlogged=false]", "GATE_CLOSED_COLLISION_CELLS = 88",
         'checkCorridor(findings, 12, 27, 69, 71', 'checkCorridor(findings, 12, 27, 80, 82',
