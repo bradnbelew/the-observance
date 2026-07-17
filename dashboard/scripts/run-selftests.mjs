@@ -17,6 +17,7 @@ if (!existsSync(tsx)) {
 }
 
 const tests = [
+  'src/lib/copperline-p4-archive.selftest.ts',
   'src/lib/v5-cases.selftest.ts',
   'src/lib/v5-web-node-policy.selftest.ts',
   'src/lib/v5-ls02-docket.selftest.ts',

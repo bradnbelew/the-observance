@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0-m3-vnext-cross-media-plan",
   "plan_id": "observance-p4-vnext-cross-media-revision-plan",
-  "status": "authored_plan_only_implementation_held_for_active_review_and_disconnect",
+  "status": "implementation_active_under_overnight_private_staging_authority",
   "binding_authorities": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -11,6 +11,8 @@
     "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
     "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+    "design/m3/BRAD-V5-REVIEW-DECISION.json",
+    "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
     "approved Phase 2 P4 evidence and ambiguity authority",
     "M2 technical, security, restart, replay, and idempotency contracts"
   ],
@@ -19,7 +21,7 @@
     "arc": "P4",
     "target_active_hours": {"min":1,"max":2},
     "minecraft_envelope": "compact bounded disposable Paper slice",
-    "m4_authority": "closed",
+    "phase_progression": "automated private staging progression authorized; interim human approval deferred",
     "brad_visual_approval": null,
     "production_mutation": false
   },
@@ -119,5 +121,6 @@
     "not_currently_claimed": "new external media bytes, uploads, community posts, unlisted videos, NPC performances, live unlocks, or cross-media human playtest receipts",
     "rule": "No specification, placeholder, or local fixture may be reported as a real asset, hosting, community, media, or player receipt."
   },
-  "implementation_hold": "Do not implement, mutate, or stop the live V5 review target until Brad explicitly disconnects."
+  "implementation_hold": null,
+  "supersession_note": "The V5 server was independently confirmed empty and gracefully stopped. Overnight authority now permits offline implementation and exact private staging, but does not convert V5 or any unseen revision into a Brad-approved build."
 }

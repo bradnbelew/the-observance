@@ -45,6 +45,10 @@ def historical_bytes(path: Path) -> bytes:
     return result.stdout
 
 
+def historical_text(path: Path) -> str:
+    return historical_bytes(path).decode("utf-8")
+
+
 def check_authority() -> dict:
     data = load(AUTHORITY)
     require(data["schema_version"] == "1.0.0-m3-private-slice-v5"
@@ -102,11 +106,12 @@ def check_inventory() -> None:
 
 
 def check_source(authority: dict) -> None:
-    world = WORLD.read_text(encoding="utf-8")
-    layout = LAYOUT.read_text(encoding="utf-8")
-    state = STATE.read_text(encoding="utf-8")
-    runtime = RUNTIME.read_text(encoding="utf-8")
-    self_test = SELF_TEST.read_text(encoding="utf-8")
+    # V5 is an immutable historical proof. Current vNext source is deliberately different.
+    world = historical_text(WORLD)
+    layout = historical_text(LAYOUT)
+    state = historical_text(STATE)
+    runtime = historical_text(RUNTIME)
+    self_test = historical_text(SELF_TEST)
     for token in ("PAGE_PIXEL_WIDTH = 114", "MAX_RENDERED_LINES = 13",
                   "each filing heading requires four clauses", "OptionPage", "duplicate filing command"):
         require(token in layout, f"book-page executable budget missing {token}")

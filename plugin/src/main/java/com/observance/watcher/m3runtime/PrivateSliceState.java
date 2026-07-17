@@ -4,62 +4,61 @@ import com.observance.watcher.m2runtime.LocalPrimaryJournal;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/** Local-primary evidence, content-dependent report, synthesis, and A2 state for M3 v5. */
+/** Local-primary evidence custody, exact conclusions, synthesis, and A2 state for M3 vNext. */
 public final class PrivateSliceState {
     public static final List<String> BASE_FINDINGS = List.of("P4.F1", "P4.F2", "P4.F3", "P4.F4");
     public static final String SYNTHESIS = "P4.F5";
-    public static final String GATE_IDEMPOTENCY = "m3:p4:gate:P4_INTAKE_GATE:open:v5";
+    public static final String GATE_IDEMPOTENCY = "m3:p4:gate:P4_INTAKE_GATE:open:vnext";
     public static final int REFUSAL_WINDOW_SECONDS = 300;
     public static final int MAX_REFUSALS_PER_WINDOW = 3;
     public static final String WATCHER_PAYLOAD_SHA256 =
             "3a2187bdc752b583d92ae47cb0a718b15c02ea2684b2b8fd2c2c8ccf88d9c10a";
 
+    /** Custody surfaces are useful but never answer prerequisites. */
     public static final Map<String, Set<String>> ALLOWED_SOURCES = Map.of(
-            "P4.F1", Set.of("drainage_plan", "cart_rut_tag"),
-            "P4.F2", Set.of("mason_mark", "revision_letter"),
-            "P4.F3", Set.of("berth_register", "ration_tally"),
-            "P4.F4", Set.of("pump_gauge", "engineer_letter"));
-
-    public static final Map<String, List<String>> CONCLUSION_OPTIONS = Map.of(
-            "P4.F1", List.of(
-                    "two_separate_public_roads",
-                    "one_road_loaded_down_empty_return",
-                    "drainage_crews_only",
-                    "no_cart_road_crossed"),
-            "P4.F2", List.of(
-                    "single_emergency_build",
-                    "two_campaigns_shelter_and_office",
-                    "four_unrelated_repairs",
-                    "three_campaigns_shelter_intake_commons"),
-            "P4.F3", List.of(
-                    "328_people_including_work_berths",
-                    "294_refuge_places_work_berths_excluded",
-                    "286_people_no_infirmary",
-                    "300_people_equal_to_water_gauge"),
-            "P4.F4", List.of(
-                    "concealment_from_public_road",
-                    "access_to_a_second_entrance",
-                    "downcut_for_stable_cover_shorter_winter_service",
-                    "accidental_quarry_breakthrough"),
-            "P4.F5", List.of(
-                    "temporary_quarry_shelter_abandoned_after_one_winter",
-                    "planned_civic_intake_for_294_not_single_emergency_shelter",
-                    "private_archive_with_no_public_refuge_role",
-                    "natural_cave_later_mistaken_for_civic_works"));
+            "P4.F1", Set.of("child_copybook", "early_smoke_notice"),
+            "P4.F2", Set.of("hinge_repair", "market_note"),
+            "P4.F3", Set.of("early_smoke_notice", "late_attendance_ruling"),
+            "P4.F4", Set.of("bell_register", "node_clock_extract"));
 
     public static final Map<String, String> EXACT_CONCLUSIONS = Map.of(
-            "P4.F1", "one_road_loaded_down_empty_return",
-            "P4.F2", "three_campaigns_shelter_intake_commons",
-            "P4.F3", "294_refuge_places_work_berths_excluded",
-            "P4.F4", "downcut_for_stable_cover_shorter_winter_service",
-            "P4.F5", "planned_civic_intake_for_294_not_single_emergency_shelter");
+            "P4.F1", "THE MOUTH MARKS WERE SHIFT INSTRUCTIONS",
+            "P4.F2", "THE HOLD SHELTERED FAMILIES NOT INITIATES",
+            "P4.F3", "THE LATER COPY TURNED ADVICE INTO DUTY",
+            "P4.F4", "THE REGISTER REPEATED BEFORE THE BELL",
+            "P4.F5", "REFUGE BEFORE RITE SAFETY BECAME OBEDIENCE");
+
+    public static final Map<String, Set<String>> ACCEPTED_CONCLUSIONS = Map.of(
+            "P4.F1", normalizedSet("THE MOUTH MARKS WERE SHIFT INSTRUCTIONS",
+                    "THE MARKS WERE WORK INSTRUCTIONS", "THE MARKS WERE SAFETY INSTRUCTIONS"),
+            "P4.F2", normalizedSet("THE HOLD SHELTERED FAMILIES NOT INITIATES",
+                    "THE HOLD WAS A LIVED IN REFUGE", "FAMILIES LIVED IN THE HOLD"),
+            "P4.F3", normalizedSet("THE LATER COPY TURNED ADVICE INTO DUTY",
+                    "SAFETY ADVICE BECAME ENFORCED DUTY", "THE WAYS TURNED SAFETY INTO OBEDIENCE"),
+            "P4.F4", normalizedSet("THE REGISTER REPEATED BEFORE THE BELL",
+                    "THE RECORD COPIED THE ENTRY BEFORE IT WAS WRITTEN", "THE COPY PREDATES THE SOURCE"),
+            "P4.F5", normalizedSet("REFUGE BEFORE RITE SAFETY BECAME OBEDIENCE",
+                    "THE HOLD WAS A REFUGE BEFORE IT WAS A RITE SAFETY BECAME OBEDIENCE",
+                    "THE HOLD WAS A RATIONAL REFUGE BEFORE RITUAL INSTITUTION"));
+
+    public static final Map<String, String> MEANINGFUL_NON_DOOR_READS = Map.of(
+            normalizeAnswer("THE MOUTH WAS A PUBLIC ROAD"),
+            "The road is real. It does not explain the children, the altered duty, or the impossible copy.",
+            normalizeAnswer("VENT EAST BEFORE SECOND BELL"),
+            "That instruction survives. The inquiry asks what kind of language it was, and what later hands made it do.",
+            normalizeAnswer("THE HOLD HAD 294 PLACES"),
+            "The count belongs to the refuge. A capacity does not explain what the Mouth became.",
+            normalizeAnswer("THE REGISTER CLOCK WAS WRONG"),
+            "A reasonable fault theory. The independent node and cartridge sequence do not move with that clock.");
 
     private final LocalPrimaryJournal journal;
     private final Map<String, Set<String>> observationsByFinding = new LinkedHashMap<>();
@@ -94,23 +93,22 @@ public final class PrivateSliceState {
             throw new IllegalArgumentException("source is not authored for " + findingId + ": " + sourceId);
         }
         LocalPrimaryJournal.Receipt observation = journal.append(
-                "m3:p4:observation:" + sourceId + ":v5", "observation_committed",
+                "m3:p4:observation:" + findingId + ":" + sourceId + ":vnext", "observation_committed",
                 bytes(findingId + "\n" + sourceId));
-        journal.append("m3:p4:observation-contribution:" + sourceId + ":" + contributorId + ":v5",
+        journal.append("m3:p4:observation-contribution:" + findingId + ":" + sourceId + ":" + contributorId + ":vnext",
                 "observation_contribution_recorded", bytes(findingId + "\n" + sourceId + "\n" + contributorId));
-        resetDerivedState();
-        replay(journal.after(0));
+        reload();
         return observation;
     }
 
-    public synchronized void selectDraft(String findingId, String conclusionId, String contributorId) {
+    /** Stores working wording only; it does not require or infer source observations. */
+    public synchronized void selectDraft(String findingId, String answer, String contributorId) {
         requireFinding(findingId);
         requireContributor(contributorId);
-        if (!CONCLUSION_OPTIONS.get(findingId).contains(conclusionId)) {
-            throw new IllegalArgumentException("conclusion is not printed in the examiner ledger");
-        }
+        String normalized = normalizeAnswer(answer);
+        if (normalized.isBlank()) throw new IllegalArgumentException("a concise conclusion is required");
         draftsByContributor.computeIfAbsent(contributorId, ignored -> new LinkedHashMap<>())
-                .put(findingId, conclusionId);
+                .put(findingId, normalized);
     }
 
     public synchronized Map<String, String> draft(String contributorId) {
@@ -118,32 +116,48 @@ public final class PrivateSliceState {
         return Map.copyOf(draftsByContributor.getOrDefault(contributorId, Map.of()));
     }
 
+    /** Files one defensible conclusion. Correct wording passes even with zero observation receipts. */
+    public synchronized LocalPrimaryJournal.Receipt lodgeFinding(
+            String findingId, String answer, String contributorId, long nowEpochSecond) throws IOException {
+        requireBaseFinding(findingId);
+        requireContributor(contributorId);
+        if (findingCommitted(findingId)) throw new IllegalStateException("that finding is already on file");
+        enforceRefusalThrottle(contributorId, nowEpochSecond);
+        String normalized = normalizeAnswer(answer);
+        if (!ACCEPTED_CONCLUSIONS.get(findingId).contains(normalized)) {
+            recordRefusal(contributorId, nowEpochSecond, "finding:" + findingId);
+            throw new ReportRefusedException(refusalMessage(normalized));
+        }
+        LocalPrimaryJournal.Receipt receipt = appendFinding(findingId,
+                observationsByFinding.getOrDefault(findingId, Set.of()),
+                EXACT_CONCLUSIONS.get(findingId), contributorId);
+        reload();
+        return receipt;
+    }
+
+    /** Atomic harness path for all four findings; still independent of observation custody. */
     public synchronized List<LocalPrimaryJournal.Receipt> lodgeReport(
             String contributorId, long nowEpochSecond) throws IOException {
         requireContributor(contributorId);
-        requireObservedPairs();
         enforceRefusalThrottle(contributorId, nowEpochSecond);
         Map<String, String> draft = draftsByContributor.getOrDefault(contributorId, Map.of());
-        Map<String, String> submitted = new LinkedHashMap<>();
-        for (String finding : BASE_FINDINGS) {
-            String conclusion = draft.get(finding);
-            if (conclusion != null) submitted.put(finding, conclusion);
-        }
-        if (submitted.size() != BASE_FINDINGS.size()
-                || BASE_FINDINGS.stream().anyMatch(finding -> !EXACT_CONCLUSIONS.get(finding)
-                        .equals(submitted.get(finding)))) {
-            recordRefusal(contributorId, nowEpochSecond, "four_clause_report");
+        boolean correct = BASE_FINDINGS.stream().allMatch(finding ->
+                ACCEPTED_CONCLUSIONS.get(finding).contains(draft.getOrDefault(finding, "")));
+        if (!correct) {
+            recordRefusal(contributorId, nowEpochSecond, "four_finding_report");
             draftsByContributor.remove(contributorId);
-            throw new ReportRefusedException("report returned without endorsement; compare all four record pairs");
+            throw new ReportRefusedException("The report is returned as one account. A retrieved phrase is not yet an explanation.");
         }
-
         List<LocalPrimaryJournal.Receipt> committed = new ArrayList<>();
         for (String finding : BASE_FINDINGS) {
-            committed.add(appendFinding(finding, ALLOWED_SOURCES.get(finding), submitted.get(finding), contributorId));
+            if (!findingCommitted(finding)) {
+                committed.add(appendFinding(finding,
+                        observationsByFinding.getOrDefault(finding, Set.of()),
+                        EXACT_CONCLUSIONS.get(finding), contributorId));
+            }
         }
         draftsByContributor.remove(contributorId);
-        resetDerivedState();
-        replay(journal.after(0));
+        reload();
         return List.copyOf(committed);
     }
 
@@ -151,46 +165,37 @@ public final class PrivateSliceState {
             String contributorId, long nowEpochSecond) throws IOException {
         requireContributor(contributorId);
         if (!sourcesByFinding.keySet().containsAll(BASE_FINDINGS)) {
-            throw new IllegalStateException("the four-clause report has not been endorsed");
+            throw new IllegalStateException("four findings must be on file before the account can close");
         }
         enforceRefusalThrottle(contributorId, nowEpochSecond);
-        String submitted = draftsByContributor.getOrDefault(contributorId, Map.of()).get(SYNTHESIS);
-        if (!EXACT_CONCLUSIONS.get(SYNTHESIS).equals(submitted)) {
+        String submitted = draftsByContributor.getOrDefault(contributorId, Map.of()).getOrDefault(SYNTHESIS, "");
+        if (!ACCEPTED_CONCLUSIONS.get(SYNTHESIS).contains(submitted)) {
             recordRefusal(contributorId, nowEpochSecond, "synthesis");
             Map<String, String> draft = draftsByContributor.get(contributorId);
             if (draft != null) draft.remove(SYNTHESIS);
-            throw new ReportRefusedException("seal endorsement returned; the report does not support that account");
+            throw new ReportRefusedException(refusalMessage(submitted));
         }
-        LocalPrimaryJournal.Receipt receipt = appendFinding(SYNTHESIS, new LinkedHashSet<>(BASE_FINDINGS),
-                submitted, contributorId);
+        LocalPrimaryJournal.Receipt receipt = appendFinding(SYNTHESIS,
+                new LinkedHashSet<>(BASE_FINDINGS), EXACT_CONCLUSIONS.get(SYNTHESIS), contributorId);
         journal.append(GATE_IDEMPOTENCY, "gate_opened", bytes("P4_INTAKE_GATE"));
         draftsByContributor.remove(contributorId);
-        resetDerivedState();
-        replay(journal.after(0));
+        reload();
         return receipt;
     }
 
     private LocalPrimaryJournal.Receipt appendFinding(String findingId, Set<String> sources,
-            String conclusionId, String contributorId) throws IOException {
-        if (!EXACT_CONCLUSIONS.get(findingId).equals(conclusionId)) {
+            String canonicalConclusion, String contributorId) throws IOException {
+        if (!EXACT_CONCLUSIONS.get(findingId).equals(canonicalConclusion)) {
             throw new IllegalArgumentException("unsupported conclusion");
         }
         List<String> sorted = new ArrayList<>(sources);
         sorted.sort(String::compareTo);
-        byte[] findingPayload = bytes(findingId + "\n" + String.join(",", sorted) + "\n" + conclusionId);
         LocalPrimaryJournal.Receipt finding = journal.append(
-                "m3:p4:finding:" + findingId + ":v5", "finding_committed", findingPayload);
-        journal.append("m3:p4:contribution:" + findingId + ":" + contributorId + ":v5",
+                "m3:p4:finding:" + findingId + ":vnext", "finding_committed",
+                bytes(findingId + "\n" + String.join(",", sorted) + "\n" + canonicalConclusion));
+        journal.append("m3:p4:contribution:" + findingId + ":" + contributorId + ":vnext",
                 "contribution_recorded", bytes(findingId + "\n" + contributorId));
         return finding;
-    }
-
-    private void requireObservedPairs() {
-        for (String finding : BASE_FINDINGS) {
-            if (!observationsByFinding.getOrDefault(finding, Set.of()).containsAll(ALLOWED_SOURCES.get(finding))) {
-                throw new IllegalStateException("the examiner report is incomplete; surviving records remain unentered");
-            }
-        }
     }
 
     private void enforceRefusalThrottle(String contributorId, long nowEpochSecond) {
@@ -198,16 +203,20 @@ public final class PrivateSliceState {
         long recent = refusalsByContributor.getOrDefault(contributorId, List.of()).stream()
                 .filter(epoch -> epoch >= floor).count();
         if (recent >= MAX_REFUSALS_PER_WINDOW) {
-            throw new FilingThrottleException("returned papers are under examiner review; the desk will reopen shortly");
+            throw new FilingThrottleException("Returned papers are under review; the desk will reopen shortly.");
         }
     }
 
     private void recordRefusal(String contributorId, long nowEpochSecond, String stage) throws IOException {
         long ordinal = journal.after(0).size() + 1L;
-        journal.append("m3:p4:report-refused:" + contributorId + ":" + ordinal + ":v5",
+        journal.append("m3:p4:report-refused:" + contributorId + ":" + ordinal + ":vnext",
                 "report_refused", bytes(contributorId + "\n" + nowEpochSecond + "\n" + stage));
-        resetDerivedState();
-        replay(journal.after(0));
+        reload();
+    }
+
+    public static String refusalMessage(String answer) {
+        return MEANINGFUL_NON_DOOR_READS.getOrDefault(normalizeAnswer(answer),
+                "That account may fit one surviving detail, but it does not yet explain the disagreement between copies.");
     }
 
     public synchronized WatcherApproval approveWatcher(String approvalId, String westTarget,
@@ -217,16 +226,15 @@ public final class PrivateSliceState {
         requireToken(eastTarget, "east target");
         if (westTarget.equalsIgnoreCase(eastTarget)) throw new IllegalArgumentException("A2 targets must be distinct");
         if (!findingCommitted("P4.F3") || findingCommitted(SYNTHESIS)) {
-            throw new IllegalStateException("A2 approval requires the endorsed report and an unreleased seal");
+            throw new IllegalStateException("A2 approval requires the changed-copy finding and an unreleased seal");
         }
         long duration = expiresAtEpochSecond - nowEpochSecond;
         if (duration < 60 || duration > 1800) throw new IllegalArgumentException("A2 approval must expire in 1-30 minutes");
         WatcherApproval approval = new WatcherApproval(approvalId, WATCHER_PAYLOAD_SHA256,
-                "m3-private-slice-v5/named-test-players", westTarget, eastTarget, expiresAtEpochSecond);
-        journal.append("m3:p4:watcher-approval:" + approvalId + ":v5", "watcher_approval_recorded",
+                "m3-private-slice-vnext/named-test-players", westTarget, eastTarget, expiresAtEpochSecond);
+        journal.append("m3:p4:watcher-approval:" + approvalId + ":vnext", "watcher_approval_recorded",
                 bytes(approval.serialize()));
-        resetDerivedState();
-        replay(journal.after(0));
+        reload();
         return approval;
     }
 
@@ -243,38 +251,25 @@ public final class PrivateSliceState {
         if (!findingCommitted("P4.F3") || findingCommitted(SYNTHESIS)) {
             throw new IllegalStateException("A2 prerequisite no longer holds");
         }
-        journal.append("m3:p4:watcher-approval:" + approvalId + ":consumed:v5",
+        journal.append("m3:p4:watcher-approval:" + approvalId + ":consumed:vnext",
                 "watcher_approval_consumed", bytes(approval.serialize()));
-        resetDerivedState();
-        replay(journal.after(0));
+        reload();
         return approval;
     }
 
-    public synchronized boolean findingCommitted(String findingId) {
-        return sourcesByFinding.containsKey(findingId);
-    }
-
-    public synchronized String committedConclusion(String findingId) {
-        return conclusionsByFinding.get(findingId);
-    }
-
+    public synchronized boolean findingCommitted(String findingId) { return sourcesByFinding.containsKey(findingId); }
+    public synchronized String committedConclusion(String findingId) { return conclusionsByFinding.get(findingId); }
     public synchronized boolean gateOpen() { return gateOpen; }
-
     public synchronized Set<String> observedSources(String findingId) {
         return Set.copyOf(observationsByFinding.getOrDefault(findingId, Set.of()));
     }
-
     public synchronized Set<String> contributors(String findingId) {
         return Set.copyOf(contributorsByFinding.getOrDefault(findingId, Set.of()));
     }
-
     public synchronized int refusalCount(String contributorId) {
         return refusalsByContributor.getOrDefault(contributorId, List.of()).size();
     }
-
-    public synchronized List<LocalPrimaryJournal.Receipt> catchUpAfter(long sequence) {
-        return journal.after(sequence);
-    }
+    public synchronized List<LocalPrimaryJournal.Receipt> catchUpAfter(long sequence) { return journal.after(sequence); }
 
     private void replay(List<LocalPrimaryJournal.Receipt> receipts) throws IOException {
         for (LocalPrimaryJournal.Receipt receipt : receipts) {
@@ -317,20 +312,25 @@ public final class PrivateSliceState {
 
     private void replayFinding(String payload) throws IOException {
         String[] fields = payload.split("\n", -1);
-        if (fields.length != 3) throw new IOException("invalid M3 v5 finding receipt");
+        if (fields.length != 3) throw new IOException("invalid M3 vNext finding receipt");
         requireFinding(fields[0]);
-        Set<String> sources = normalizeSources(List.of(fields[1].split(",", -1)));
+        Set<String> sources = fields[1].isBlank() ? new LinkedHashSet<>()
+                : normalizeSources(List.of(fields[1].split(",", -1)));
         if (!EXACT_CONCLUSIONS.get(fields[0]).equals(fields[2])) {
-            throw new IOException("finding conclusion is not the authored content-dependent conclusion");
+            throw new IOException("finding conclusion is not the authored exact conclusion");
         }
         if (SYNTHESIS.equals(fields[0])) {
             if (!sources.equals(new LinkedHashSet<>(BASE_FINDINGS))
                     || !sourcesByFinding.keySet().containsAll(BASE_FINDINGS)) {
                 throw new IOException("invalid M3 synthesis ordering/provenance");
             }
-        } else if (!sources.equals(new LinkedHashSet<>(normalizeSources(new ArrayList<>(ALLOWED_SOURCES.get(fields[0])))))
-                || !observationsByFinding.getOrDefault(fields[0], Set.of()).containsAll(sources)) {
-            throw new IOException("invalid M3 observed-source finding receipt");
+        } else {
+            if (!ALLOWED_SOURCES.get(fields[0]).containsAll(sources)) {
+                throw new IOException("finding cites an unauthored source");
+            }
+            if (!observationsByFinding.getOrDefault(fields[0], Set.of()).containsAll(sources)) {
+                throw new IOException("finding cites custody that was never observed");
+            }
         }
         Set<String> previous = sourcesByFinding.putIfAbsent(fields[0], sources);
         if (previous != null && !previous.equals(sources)) throw new IOException("conflicting M3 finding receipt");
@@ -353,7 +353,8 @@ public final class PrivateSliceState {
         long epoch;
         try { epoch = Long.parseLong(fields[1]); }
         catch (NumberFormatException failure) { throw new IOException("invalid refusal epoch", failure); }
-        if (!Set.of("four_clause_report", "synthesis").contains(fields[2])) {
+        if (!(fields[2].equals("four_finding_report") || fields[2].equals("synthesis")
+                || fields[2].startsWith("finding:P4.F"))) {
             throw new IOException("invalid refusal stage");
         }
         refusalsByContributor.computeIfAbsent(fields[0], ignored -> new ArrayList<>()).add(epoch);
@@ -365,6 +366,11 @@ public final class PrivateSliceState {
         WatcherApproval previous = watcherApprovals.putIfAbsent(approval.approvalId(), approval);
         if (previous != null && !previous.equals(approval)) throw new IOException("conflicting A2 approval");
         if (consumed) consumedWatcherApprovals.add(approval.approvalId());
+    }
+
+    private void reload() throws IOException {
+        resetDerivedState();
+        replay(journal.after(0));
     }
 
     private void resetDerivedState() {
@@ -389,6 +395,18 @@ public final class PrivateSliceState {
         return new LinkedHashSet<>(sorted);
     }
 
+    public static String normalizeAnswer(String answer) {
+        if (answer == null) return "";
+        String normalized = Normalizer.normalize(answer, Normalizer.Form.NFKC).toUpperCase(Locale.ROOT);
+        return normalized.replaceAll("[^A-Z0-9]+", " ").trim().replaceAll(" +", " ");
+    }
+
+    private static Set<String> normalizedSet(String... answers) {
+        LinkedHashSet<String> set = new LinkedHashSet<>();
+        for (String answer : answers) set.add(normalizeAnswer(answer));
+        return Set.copyOf(set);
+    }
+
     private static void requireBaseFinding(String findingId) {
         if (!BASE_FINDINGS.contains(findingId)) {
             throw new IllegalArgumentException("finding is not an evidence lane: " + findingId);
@@ -401,9 +419,7 @@ public final class PrivateSliceState {
         }
     }
 
-    private static void requireContributor(String contributorId) {
-        requireToken(contributorId, "contributor identity");
-    }
+    private static void requireContributor(String contributorId) { requireToken(contributorId, "contributor identity"); }
 
     private static void requireToken(String token, String label) {
         if (token == null || token.isBlank() || token.indexOf(',') >= 0 || token.indexOf('\n') >= 0

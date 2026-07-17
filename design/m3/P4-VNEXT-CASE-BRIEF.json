@@ -1,0 +1,124 @@
+{
+  "schema_version": "1.0.0-p4-vnext-case-brief",
+  "case_id": "P4-C02-MOUTH-COPIES",
+  "status": "authored_offline_case_authority_under_overnight_private_staging_build",
+  "binding_authorities": [
+    "design/handoff/SPINE-LOCK.md",
+    "design/handoff/SPINE-CONFORMANCE.md",
+    "arc/WORLD-BIBLE.md",
+    "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+    "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
+    "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+    "design/m3/BRAD-V5-REVIEW-DECISION.json",
+    "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json"
+  ],
+  "scope": {
+    "phase": "M3 vNext",
+    "case": "C02",
+    "active_hour_target": {"min": 1, "max": 2},
+    "difficulty": "high",
+    "minecraft": "compact bounded disposable Paper 1.21.11 evidence surface",
+    "copperline": "offline localhost fixture and exact authored source only until real deployment receipts exist",
+    "brad_visual_approval": null,
+    "phase_progression": "automated private staging progression authorized; human visual approval deferred to Brad's morning end-to-end playthrough",
+    "production_mutation": false
+  },
+  "case_authoring_contract": {
+    "player_facing_mystery_or_question": "What was the Mouth built to do, why do its repeated marks read like ritual commands, and why do the surviving copies disagree?",
+    "plausible_initial_belief_or_misread": "The Mouth is the ceremonial entrance to an occult institution and its repeated marks are rites imposed from the beginning.",
+    "human_stake_and_character_relationship": "Families, children, clerks, repair workers, and neighbors survived together; the language that kept them alive was gradually used to record and punish compliance.",
+    "exact_canon_belief_earned_at_the_fixed_revelation_ladder": "C02 only: the Hold was a functioning rational refuge before ritual institution.",
+    "evidence_roles_distributed_across_surfaces": "Minecraft supplies lived place, physical records, altered notices, ordinary wear, and the impossible register; Copperline supplies mkept's modern custody, version comparison, node-clock corroboration, unrelated community texture, and immutable archive context.",
+    "what_players_must_infer_rather_than_retrieve": "The marks began as practical shift and emergency instructions; ordinary households used the Hold; a later office copy converted contingent advice into enforceable duty; an exact duplicated entry predates its stated source without ordinary clock failure; together these establish refuge-before-rite and safety-becoming-obedience.",
+    "meaningful_recontextualization_or_callback": "mkept's mundane C01 backup warning—compare copies by cartridge sequence, not filename or modified time—becomes the provenance key for the Mouth copies. A repeated mark first read as rite becomes a child's work exercise, then an attendance rule.",
+    "consequence_world_npc_or_media_response_after_conclusion": "The controlled gate opens onto a quiet civic readback: household repairs and names remain visible while the later attendance stamp is left physically separate. Copperline's fixture exposes a read-only comparison receipt without rewriting its older pages.",
+    "fair_alternate_and_catch_up_routes_without_source_touch_gating": "The exact conclusions accept remembered or shared wording with zero source observations. Each belief has a Minecraft-first route and a Copperline-first route; immutable readback and a director-approved H1-H3 matrix can restore context without adding evidence.",
+    "accessibility_outage_replay_restart_and_any_subset_behavior": "All visual records have text equivalents; color is never the only distinction; no sound/time/debug/voice gate exists; Copperline outage has an in-world archive-copy fallback; journal state is local-primary, idempotent, replayable, and independent of participant touch parity.",
+    "novelty_comparison_against_adjacent_and_prior_cases": "Unlike C01 web address/provenance recovery and P5 civic ethnography, P4 uses a modern backup rule to compare ancient versions, sustains a cult-to-refuge-to-control reversal, includes one pre-copy anomaly, and ends in institutional reinterpretation rather than endpoint recovery or seven-Way classification. It does not reuse V5's four nearby fact pairs and matching clauses.",
+    "cold_human_target_time_likely_theory_paths_and_plausible_wrong_theories": "Target 60-120 active minutes. Likely paths: ritual-origin, emergency-bunker-only, ordinary refuge, benevolent safety office, then safety/control reversal. Plausible wrong theories include clock failure, later forgery, a private cult school, evacuation-only use, and mkept fabricating the copies."
+  },
+  "dramaturgical_shape": [
+    "explore an imposing Mouth whose repeated marks suggest rite",
+    "find ordinary work, school, home, and waiting-room traces that do not behave like puzzle stations",
+    "use mkept's mundane backup practice to order two disagreeing copies",
+    "gain false confidence that the discrepancy is ordinary bureaucratic editing",
+    "corroborate that the later wording records attendance and household penalty",
+    "discover a register copy whose preserved sequence predates the bell entry it duplicates",
+    "debate clock failure, forgery, copying, or observation pressure",
+    "file four concise defensible findings and one unprinted synthesis",
+    "open the civic threshold and receive quiet human readback plus institutional unease"
+  ],
+  "generic_primitives": {
+    "mechanism_type_field": false,
+    "evidence": "id, roles, surface, content reference, provenance, availability, accessibility equivalent, non-gating custody",
+    "state": "finding conclusions, player theory, recontextualization, refusal throttle, gate consequence, replay",
+    "exact_answer": "normalized accepted meanings, meaningful true-but-not-door reads, bounded non-solution feedback, zero-observation acceptance",
+    "content": "author, relationship, medium, version, time, voice, lore boundary, human job",
+    "event": "submission or consequence trigger, idempotent journal event, world projection, catch-up readback"
+  },
+  "findings": [
+    {
+      "id": "P4.F1",
+      "question": "What were the repeated Mouth marks before they were treated as rites?",
+      "canonical_answer": "THE MOUTH MARKS WERE SHIFT INSTRUCTIONS",
+      "accepted_normalized_answers": ["THE MOUTH MARKS WERE SHIFT INSTRUCTIONS", "THE MARKS WERE WORK INSTRUCTIONS", "THE MARKS WERE SAFETY INSTRUCTIONS"],
+      "required_inference": "children copied the same sequence used by vent crews and bell wardens; it is an operational grammar, not an invocation",
+      "roles": ["seed", "key", "corroboration", "false_plausible_read"]
+    },
+    {
+      "id": "P4.F2",
+      "question": "Who was the Mouth and intake built to receive?",
+      "canonical_answer": "THE HOLD SHELTERED FAMILIES NOT INITIATES",
+      "accepted_normalized_answers": ["THE HOLD SHELTERED FAMILIES NOT INITIATES", "THE HOLD WAS A LIVED IN REFUGE", "FAMILIES LIVED IN THE HOLD"],
+      "required_inference": "school practice, pram and hinge repair, market debt, household berths, and public waiting space describe durable ordinary residence rather than selected ritual entrants",
+      "roles": ["emotional_witness", "corroboration", "quiet_reward", "synthesis"]
+    },
+    {
+      "id": "P4.F3",
+      "question": "What changed between the early smoke notice and the later office copy?",
+      "canonical_answer": "THE LATER COPY TURNED ADVICE INTO DUTY",
+      "accepted_normalized_answers": ["THE LATER COPY TURNED ADVICE INTO DUTY", "SAFETY ADVICE BECAME ENFORCED DUTY", "THE WAYS TURNED SAFETY INTO OBEDIENCE"],
+      "required_inference": "conditional mutual-aid wording becomes universal attendance, household entry, and penalty; provenance proves direction of change",
+      "roles": ["contradiction", "provenance", "recontextualization", "synthesis"]
+    },
+    {
+      "id": "P4.F4",
+      "question": "Why can the duplicated bell entry not be dismissed as an ordinary copy or bad clock?",
+      "canonical_answer": "THE REGISTER REPEATED BEFORE THE BELL",
+      "accepted_normalized_answers": ["THE REGISTER REPEATED BEFORE THE BELL", "THE RECORD COPIED THE ENTRY BEFORE IT WAS WRITTEN", "THE COPY PREDATES THE SOURCE"],
+      "required_inference": "cartridge sequence, stable node clock, ink order, and identical correction establish a copy preserved before its stated source event; the cause remains unresolved",
+      "roles": ["uncanny_pressure", "contradiction", "provenance", "false_plausible_read"]
+    },
+    {
+      "id": "P4.F5",
+      "question": "What history do the four findings establish together?",
+      "canonical_answer": "REFUGE BEFORE RITE SAFETY BECAME OBEDIENCE",
+      "accepted_normalized_answers": ["REFUGE BEFORE RITE SAFETY BECAME OBEDIENCE", "THE HOLD WAS A REFUGE BEFORE IT WAS A RITE SAFETY BECAME OBEDIENCE", "THE HOLD WAS A RATIONAL REFUGE BEFORE RITUAL INSTITUTION"],
+      "required_inference": "ordinary refuge and practical procedures predate ritual institution; the same need for legible safety enabled control while early anomalous preservation applied pressure",
+      "roles": ["synthesis", "canon_belief", "emotional_reversal", "consequence"]
+    }
+  ],
+  "meaningful_non_door_reads": [
+    {"answer":"THE MOUTH WAS A PUBLIC ROAD","response":"The road is real. It does not explain the children, the altered duty, or the impossible copy."},
+    {"answer":"VENT EAST BEFORE SECOND BELL","response":"That instruction survives. The inquiry asks what kind of language it was, and what later hands made it do."},
+    {"answer":"THE HOLD HAD 294 PLACES","response":"The count belongs to the refuge. A capacity does not explain what the Mouth became."},
+    {"answer":"THE REGISTER CLOCK WAS WRONG","response":"A reasonable fault theory. The independent node and cartridge sequence do not move with that clock."}
+  ],
+  "evidence_graph": [
+    {"id":"MC_CHILD_COPYBOOK","surface":"Minecraft","roles":["seed","emotional_witness","key"],"supports":["P4.F1","P4.F2"],"content_job":"a child's copied vent/bell sequence beside an ordinary arithmetic correction"},
+    {"id":"MC_HINGE_REPAIR","surface":"Minecraft","roles":["quiet_reward","corroboration"],"supports":["P4.F2"],"content_job":"repair slip for a pram wheel, dwelling hinge, and shared warming bench"},
+    {"id":"MC_EARLY_SMOKE_NOTICE","surface":"Minecraft","roles":["seed","provenance"],"supports":["P4.F1","P4.F3"],"content_job":"conditional neighbor-help and evacuation wording"},
+    {"id":"MC_LATE_ATTENDANCE_RULING","surface":"Minecraft","roles":["contradiction","recontextualization"],"supports":["P4.F3"],"content_job":"later copy makes attendance universal and absence chargeable to a household"},
+    {"id":"MC_BELL_REGISTER","surface":"Minecraft","roles":["uncanny_pressure","contradiction"],"supports":["P4.F4"],"content_job":"entry and correction duplicated with an impossible earlier copy sequence"},
+    {"id":"CL_MKEPT_RESTORE_TICKET","surface":"Copperline offline fixture","roles":["callback","provenance_key"],"supports":["P4.F3","P4.F4"],"content_job":"C01-era mundane warning to order recovered copies by cartridge sequence, not filename or modified time"},
+    {"id":"CL_MOUTH_COPY_DIFF","surface":"Copperline offline fixture","roles":["provenance","contradiction"],"supports":["P4.F3"],"content_job":"exact early/later text and custody comparison"},
+    {"id":"CL_NODE_CLOCK_LOG","surface":"Copperline offline fixture","roles":["corroboration","false_theory_elimination"],"supports":["P4.F4"],"content_job":"unrelated service and backup rows show the node clock remained stable around the preserved sequence"},
+    {"id":"CL_COMMUNITY_TEXTURE","surface":"Copperline offline fixture","roles":["lived_texture","human_context"],"supports":[],"content_job":"ordinary support, jokes, builds, downtime, and unrelated posts make clue-bearing rows a minority"}
+  ],
+  "receipt_boundary": {
+    "real_now_after_commit": ["authored authority", "committed text fixtures", "deterministic static and runtime tests", "local dashboard build", "disposable Paper receipts once produced"],
+    "not_yet_real": ["production deployment", "public Copperline URL", "CDN/cache behavior", "external media", "NPC performance", "authenticated non-op client", "human 1-2 hour solve", "Brad approval"],
+    "rule": "A localhost page or deterministic fixture is never reported as production hosting or a human review receipt."
+  }
+}

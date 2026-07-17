@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0-private-launch-candidate-inventory",
+  "authority": "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
+  "inventory_time": "2026-07-17T02:20:00-05:00",
+  "source_checkpoint": "810c210",
+  "interpretation": "The existing 82-node V5 implementation is reusable technical breadth, not proof that the newer P1-P12 experiential authority is fully authored or human-approved.",
+  "legacy_runtime_inventory": {
+    "node_manifest": "design/ARG-V5-NODE-MANIFEST.csv",
+    "runtime_bindings": "design/ARG-V5-RUNTIME-BINDINGS.csv",
+    "artifact_manifest": "design/ARG-V5-ARTIFACT-MANIFEST.csv",
+    "node_count": 82,
+    "binding_count": 82,
+    "artifact_count": 21,
+    "owners": {"website": 6, "plugin": 51, "discord": 16, "plugin_unlit": 7, "plugin_finale": 2},
+    "case_counts": {"C01": 6, "C02": 6, "C03": 18, "C04": 8, "C05": 8, "C06": 7, "C07": 10, "C08": 5, "C09": 8, "C10": 6},
+    "current_authority_disposition": "design/handoff/PHASE-2-LEGACY-NODE-DISPOSITION.md",
+    "stale_patterns_not_reaccepted": [
+      "source-touch or possession prerequisites for correct answers",
+      "repeated answer-sign and clause-retrieval grammar",
+      "brittle exact-block route simulations",
+      "decorative interactions presented as deductions",
+      "fixed mechanism enums or keeper-stone cipher ladders"
+    ]
+  },
+  "p1_p12": [
+    {"phase":"P1","experience":"Copperline archaeology","authority":"Phase 2 authored","implementation":"legacy website routes and local fixtures exist; recurring lived-in archive expansion begun for P4","gap":"full current-standard content density, responsive review, immutable hosted history, and private deployment receipt"},
+    {"phase":"P2","experience":"gated prologue save","authority":"Phase 2 authored","implementation":"playable Hold handoff, local archive manifest, download/hash runtime exist","gap":"current private end-to-end client and package parity receipt"},
+    {"phase":"P3","experience":"arrival, settlement, Discord","authority":"Phase 2 authored","implementation":"Paper, identity-link, Discord docket, and local-primary runtime components exist","gap":"private authenticated Discord guild/service target and cold player review"},
+    {"phase":"P4","experience":"Mouth, descent, intake","authority":"vNext case brief frozen for offline build","implementation":"compact authored Paper slice, free-text zero-receipt deductions, Copperline comparison fixture, gate/security/replay runtime in progress","gap":"fresh disposable Paper/restart receipt, deployed cross-surface route, and Brad morning acceptance"},
+    {"phase":"P5","experience":"refuge life and seven Ways","authority":"Phase 2 authored","implementation":"legacy civic/archive nodes, structures, and runtime predicates exist","gap":"current-standard civic ethnography prose, natural evidence placement, novelty audit, and human timing"},
+    {"phase":"P6","experience":"six Keeper dossiers","authority":"Phase 2 authored","implementation":"six legacy Keeper lanes, artifacts, dialogue, structures, and affidavit runtime exist","gap":"profession-specific reauthoring, reduction of repetitive cipher/sign mechanics, current voice and visual audit"},
+    {"phase":"P7","experience":"Cistern Winter","authority":"Phase 2 authored","implementation":"legacy records, sample/valve mechanics, Nessa and media bindings exist","gap":"forensic chain-of-custody reauthoring and full exoneration experience review"},
+    {"phase":"P8","experience":"Break, altered region, repair","authority":"Phase 2 authored","implementation":"legacy failure/repair nodes and physical predicate engine exist","gap":"case-scale incident reconstruction, world-change polish, crash/restart and player timing receipt"},
+    {"phase":"P9","experience":"failed expedition camp","authority":"Phase 2 authored","implementation":"legacy camp/media archaeology nodes and four-person materials exist","gap":"exact source media bytes are absent from this checkout; custody review and current-standard human scenes remain"},
+    {"phase":"P10","experience":"Wren sabotage","authority":"Phase 2 authored","implementation":"legacy leak, dialogue, judgment, and Protocol Bridge runtime exist","gap":"adversarial interview reauthoring, asymmetric discussion review, and protected private Discord target"},
+    {"phase":"P11","experience":"Averyn and the Record","authority":"Phase 2 authored","implementation":"six affidavit provenance paths, relationship synthesis, and finale prerequisites exist","gap":"recovered media bytes absent; current identity-restoration presentation and accessibility review remain"},
+    {"phase":"P12","experience":"convergence, release, coda","authority":"Phase 2 authored","implementation":"protected ritual/finale state machine, ballots, durable-before-theater release, shutdown and coda code exist","gap":"whole-campaign readiness projection, exact media bytes, private end-to-end rehearsal, rollback, and Brad acceptance"}
+  ],
+  "surfaces": {
+    "minecraft": {"source":"plugin, datapack, resourcepack, structure manifests","status":"substantial existing runtime plus active P4 vNext; localhost disposable target is authorized","production":"forbidden"},
+    "web": {"source":"dashboard Next.js application","status":"local buildable application and Copperline fixture; no exact Vercel project binding found","deployment":"blocked_without_project_identity_and_authentication"},
+    "discord": {"source":"discord TypeScript services and railway.worker.json/railway.cron.json","status":"local buildable worker/cron and runtime bindings; no token, guild, channel, Railway project identity, or authenticated target present","deployment":"blocked_without_exact_private_targets_and_authentication"},
+    "supabase": {"source":"dashboard/supabase, discord/supabase, design/m2/sql","status":"migration proposals, rollback SQL, explicit grants/RLS work, and disposable validation tooling exist; no authenticated disposable or exact private project target present","deployment":"production unapplied; external validation blocked, local/disposable validation remains permitted"},
+    "media": {"source":"arc/v5/media-manifest.json and custody authorities","status":"five exact source-byte identities are recorded (four clips and one WAV), but none of those media bytes is present in this checkout","deployment":"blocked; never fabricate, redownload, replace, or claim custody"},
+    "director_dashboard": {"source":"dashboard author routes and read-only projections","status":"local implementation exists; required credentials absent; private deployment blocked"}
+  },
+  "supabase_july_2026_boundary": {
+    "explicit_grants_separate_from_rls": true,
+    "service_role_server_only": true,
+    "user_metadata_authorization_forbidden": true,
+    "advisors_required_when_target_available": true,
+    "production_sql_applied": false
+  },
+  "external_target_discovery": {
+    "vercel_project_binding": "absent",
+    "railway_project_binding": "absent",
+    "supabase_project_binding": "absent",
+    "discord_private_target_identity": "absent",
+    "relevant_environment_variable_names_present": [],
+    "rule": "Do not infer a project, account, guild, channel, database, or public hostname. Continue offline packages and localhost proof."
+  },
+  "approval": {
+    "v5_experiential_proof": "rejected_incomplete",
+    "unseen_later_builds": "not_human_approved",
+    "automated_private_staging": "authorized_subject_to_gates",
+    "final_human_gate": "Brad morning end-to-end playthrough"
+  }
+}

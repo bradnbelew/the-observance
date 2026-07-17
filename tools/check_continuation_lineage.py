@@ -419,7 +419,7 @@ def main() -> None:
     require("COLD HUMAN/VISUAL APPROVAL PENDING" in v4_review_package
             and "M4 is **closed**" in v4_review_package,
             "v4 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (V5 Paper/UI/negative/restart evidence current; Brad approval null; M4 closed)")
+    print("CONTINUATION LINEAGE: PASS (V5 historical human gate closed; private automated M4+ staging open; Brad approval null)")
 
 
 if __name__ == "__main__":

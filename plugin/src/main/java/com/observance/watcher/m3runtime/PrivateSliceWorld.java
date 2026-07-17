@@ -512,9 +512,9 @@ public final class PrivateSliceWorld {
 
     private void referenceSurfaces() {
         addReference(0, 0, 5, "south", new Cell(0, 0, 7), "INTAKE_EXAMINER_DOCKET",
-                "Examiner Mara Venn", "official work order", "Intake Examiner's Docket",
-                "COMMISSION 14 — MARA VENN\nThe refuge register does not agree with the works file. Before I release the Commons seal, establish the public road, the building campaigns, the supported refuge places, and the reason for the down-cut.\f"
-                + "I left one findings ledger on the Intake counter. Enter one clause under each heading, then lodge the whole report. Returned papers are not marked by section. Once endorsed, add the account that all four findings support.",
+                "Intake copy office", "official copy inquiry", "Mouth Copy Inquiry",
+                "COPY INQUIRY 14\nThe Mouth marks, household papers, smoke notice, and bell register do not belong to one account of this place. Establish what the marks did, who lived here, what changed between copies, and why the repeated register cannot be an ordinary clock fault.\f"
+                + "The open findings ledger accepts concise conclusions. Reading a record adds custody to the archive, but custody marks are not a condition of a correct filing. File what the evidence means, not a phrase copied from it.",
                 Material.LECTERN, Presentation.NATIVE_BOOK, "briefing");
         addReferenceArtifact(31, -19, 83, "west", new Cell(28, -20, 83), "FIELD_ARCHIVE_READBACK",
                 "Intake record office", "bound field archive", "Examiner's Field Archive", "archive",
@@ -522,38 +522,38 @@ public final class PrivateSliceWorld {
     }
 
     private void evidenceSurfaces() {
-        addEvidenceArtifact(-8,0,6,"south",new Cell(-8,0,8),"DRAINAGE_PLAN_TABLE","P4.F1","drainage_plan",
-                "Neri Holt, works surveyor", "annotated drainage diagram", "Drainage Sheet 14-A",
-                "NORTH: quarry drain — stops at headwall\nSOUTH: well drain — stops outside crown\nCENTER: one graded road through the Mouth\f"
-                + "Holt's red pencil: 'Keep both gutters off the cart crown. Loaded side east; empty return west. Do not cut a second approach.'",
-                Material.CARTOGRAPHY_TABLE, Presentation.NATIVE_BOOK);
-        addEvidenceSign(8,2,1,"south",new Cell(8,2,0),new Cell(8,0,3),"CART_RUT_INSPECTION_TAG",
-                "P4.F1","cart_rut_tag","Orris Pell, road inspector","field tag fixed beside the physical ruts",
-                "ROAD CHECK 18","EAST: LOAD","WEST: RETURN","ONE CROWN");
-        addEvidenceSign(-5,-18,56,"south",new Cell(-5,-18,55),new Cell(-5,-20,59),"THREE_CAMPAIGN_MASON_MARK",
-                "P4.F2","mason_mark","Toma Rusk, municipal mason","chalk annotation across the physical construction seam",
-                "RUSK — JOINT","A TUFF SHELL","B CIVIC STONE","C DEEP TILE");
-        addEvidenceArtifact(31,-19,65,"west",new Cell(28,-20,65),"SURVEY_REVISION_LETTER","P4.F2","revision_letter",
-                "Eda Sorn to Mara Venn", "personal cover letter with office marginalia", "Eda's Revision Cover",
-                "Mara—\nI found the three rolls you asked for. A ends at the storm shell. B adds Intake and the copy office. C carries the Commons spine beneath the seal.\f"
-                + "In the margin, in Mara's hand: 'Not repairs. Three appropriations, three crews, one continuing plan.'",
+        addEvidenceArtifact(-8,0,6,"south",new Cell(-8,0,8),"CHILD_COPYBOOK","P4.F1","child_copybook",
+                "Tavi Fen, school copy", "child's reused arithmetic copybook", "Tavi's Second-Bell Copy",
+                "six and four make ten\nthree baskets leave two\n\nvent east before second bell\ncheck the next door\nbring the small ones\f"
+                + "Teacher's margin: 'The words belong to the vent shift, not prayer. Copy them in the order the bell warden calls them.'",
                 Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
-        addEvidenceArtifact(24,-19,66,"south",new Cell(24,-20,68),"BERTH_REGISTER","P4.F3","berth_register",
-                "Lio Marr, refuge registrar", "official refuge register", "Refuge Register — East Leaf",
-                "Assigned sleeping places ........ 286\nInfirmary reserve cots ............. 8\nSupported refuge places .......... 294\f"
-                + "Work berths in pump, copy, and watch rooms: 42. These are shifts, not sleeping places, and are excluded from the refuge total.",
+        addEvidenceSign(8,2,1,"south",new Cell(8,2,0),new Cell(8,0,3),"EARLY_SMOKE_NOTICE",
+                "P4.F1","early_smoke_notice","Mouth neighbors","early smoke notice fixed at child eye level",
+                "IF SMOKE HOLDS","EAST, 2ND BELL","TAKE SMALL ONES","CHECK NEXT DOOR");
+        addEvidenceSign(-5,-18,56,"south",new Cell(-5,-18,55),new Cell(-5,-20,59),"HINGE_REPAIR_SLIP",
+                "P4.F2","hinge_repair","Pel Dorr, repair desk","ordinary dwelling and common-room repair slip",
+                "DORR, ROW 6","PRAM WHEEL","DOOR HINGE","WARM BENCH");
+        addEvidenceArtifact(31,-19,65,"west",new Cell(28,-20,65),"MARKET_DEBT_NOTE","P4.F2","market_note",
+                "Ila and Ren", "folded neighbor note retained in the market copy shelf", "Beans Owed After Thaw",
+                "Ren—\nI took your blue beans for the school pot because Fen's room was short again. Put two marks against me at market. The little ones ate before night shift.\f"
+                + "If the upper thaw comes Sunday, I will mend the green coat and call us even. —Ila",
                 Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
-        addEvidenceSign(19,-18,75,"east",new Cell(18,-18,75),new Cell(21,-20,75),"RATION_TALLY_NOTICE",
-                "P4.F3","ration_tally","Sela Orr, quartermaster","posted seven-day supply tally",
-                "7-DAY TALLY","294 FULL SHARES","WATER GAUGE 300","42 SHIFTS OMIT");
+        addEvidenceArtifact(24,-19,66,"south",new Cell(24,-20,68),"LATE_ATTENDANCE_RULING","P4.F3","late_attendance_ruling",
+                "Intake copy office", "later stamped office copy", "Household Attendance Copy",
+                "ALL HOUSEHOLDS SHALL ATTEND EAST HALL BEFORE SECOND BELL.\n\nABSENCE SHALL BE ENTERED TO THE HOUSEHOLD.\f"
+                + "Copy note: words above replace 'if smoke holds,' 'take the small ones,' and 'check the next door.' No reason for replacement is entered.",
+                Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
+        addEvidenceSign(19,-18,75,"east",new Cell(18,-18,75),new Cell(21,-20,75),"COPY_SEQUENCE_CARD",
+                "P4.F3","copy_sequence_card","mkept recovery copy","modern cartridge-order card placed with recovered copies",
+                "CARTRIDGE 03","BEFORE 04","IGNORE MTIME","COMPARE WORDS");
         expected.put(new Cell(-15, -18, 72), Material.WEATHERED_CUT_COPPER);
-        addEvidenceSign(-14,-18,72,"east",new Cell(-15,-18,72),new Cell(-11,-20,72),"PUMP_GAUGE_CARD",
-                "P4.F4","pump_gauge","Iven Quill, pump engineer","maintenance gauge card beside the working hydraulic train",
-                "PUMP CARD 7","LOWER: 11 LIFT","WARM + STEADY","WINTER ROUTE");
-        addEvidenceArtifact(29,-19,79,"west",new Cell(26,-20,79),"FOUNDING_ENGINEER_LETTER","P4.F4","engineer_letter",
-                "Iven Quill to Councillor Meve", "personal engineering letter retained with works minutes", "Quill's Winter Letter",
-                "Councillor—\nA level gallery saves digging but costs us every winter: longer pipe, colder wall, and another exposed haul.\f"
-                + "Drive down beside the sump. The cover is stable, the pump lift shortens, and stores reach the Commons without crossing the runoff walk. —I. Quill",
+        addEvidenceSign(-14,-18,72,"east",new Cell(-15,-18,72),new Cell(-11,-20,72),"BELL_REGISTER",
+                "P4.F4","bell_register","Brin Holt, bell desk","register leaf beside the working hydraulic train",
+                "2ND BELL: CLEAR","FEN: NEXT DOOR","INK: CORRECTED","COPY: EARLIER");
+        addEvidenceArtifact(29,-19,79,"west",new Cell(26,-20,79),"NODE_CLOCK_EXTRACT","P4.F4","node_clock_extract",
+                "Copperline archive", "modern node-clock and cartridge read extract", "chi-ret-2 Read Extract",
+                "00:12:08 — cartridge 03 read complete; node offset +01.4s\n00:19:41 — unrelated service 1174 backup complete; offset +01.6s\f"
+                + "00:27:03 — cartridge 04 read complete; offset +01.5s\n\nThe copy on 03 already carries the correction later entered on 04.",
                 Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
     }
 
@@ -563,7 +563,7 @@ public final class PrivateSliceWorld {
 
     private void thresholdSigns() {
         addSign(0,2,1,"south",new Cell(0,2,0),new Cell(0,0,3),"MOUTH_COMMISSION_PLAQUE",
-                "municipal commission identity","INTAKE WORKS","COMMISSION 14","MARA VENN","");
+                "municipal commission identity","INTAKE WORKS","COPY INQUIRY","PUBLIC OFFICE","");
         addSign(19,-18,66,"east",new Cell(18,-18,66),new Cell(21,-20,66),"RECORD_OFFICE_PLAQUE",
                 "credible office identity","RECORD OFFICE","SURVEYS + COPIES","BELL AT DESK","");
     }
@@ -641,12 +641,12 @@ public final class PrivateSliceWorld {
             List<Component> pages = new ArrayList<>();
             List<String> entered = new ArrayList<>();
             for (String finding : PrivateSliceState.BASE_FINDINGS) {
-                entered.add(finding + ": " + state.observedSources(finding).size() + "/2 records; finding "
-                        + (state.findingCommitted(finding) ? "endorsed" : "open"));
+                entered.add(finding + ": custody " + state.observedSources(finding).size() + "/2; finding "
+                        + (state.findingCommitted(finding) ? "on file" : "open"));
             }
             pages.add(Component.text("FIELD ARCHIVE\n\n" + String.join("\n", entered)));
             pages.add(Component.text("Changed place\n\nCommons seal: " + (state.gateOpen() ? "released" : "held")
-                    + "\n\nThe filed report is durable. Unentered drafts are working paper and are not retained."));
+                    + "\n\nFiled conclusions are durable. Custody counts describe discovery only and never decide acceptance."));
             pages.add(Component.text("ACCESS COPY\n\nWest view: one capacity digit appears freshly overwritten.\n\n"
                     + "East view: the same digit remains worn.\n\nNeither view is evidence for the report."));
             player.openBook(authoredBook(surface.title(), surface.author(), pages));
@@ -657,24 +657,15 @@ public final class PrivateSliceWorld {
 
     public void openFilingLedger(Player player, PrivateSliceState state) {
         String contributor = player.getUniqueId().toString();
-        Map<String, String> draft = state.draft(contributor);
         List<Component> pages = new ArrayList<>();
-        pages.add(Component.text("EXAMINER'S FINDINGS\n\nOne clause must be marked under each heading. The whole report is examined together; returned papers are not marked by section."));
-        addChoicePages(pages, heading("P4.F1"), "P4.F1", draft, choicesFor("P4.F1"));
-        addChoicePages(pages, heading("P4.F2"), "P4.F2", draft, choicesFor("P4.F2"));
-        addChoicePages(pages, heading("P4.F3"), "P4.F3", draft, choicesFor("P4.F3"));
-        addChoicePages(pages, heading("P4.F4"), "P4.F4", draft, choicesFor("P4.F4"));
-        Component lodge = Component.text("LODGE FOUR-CLAUSE REPORT")
-                .clickEvent(ClickEvent.runCommand("/obsfile lodge"));
-        pages.add(Component.text("REPORT ENDORSEMENT\n\nWhen all four clauses are marked, lodge the report at this counter.\n\n")
-                .append(lodge));
-        if (PrivateSliceState.BASE_FINDINGS.stream().allMatch(state::findingCommitted)) {
-            addChoicePages(pages, heading("P4.F5"), "P4.F5", draft, choicesFor("P4.F5"));
-            pages.add(Component.text("COMMONS SEAL\n\nThe four endorsed findings support one account of the Mouth. Mark it, then lodge the seal endorsement.\n\n")
-                    .append(Component.text("LODGE SEAL ENDORSEMENT")
-                            .clickEvent(ClickEvent.runCommand("/obsfile seal"))));
+        pages.add(Component.text("MOUTH COPY INQUIRY\n\nEnter a short conclusion under each heading. The office examines meaning, not whether every surviving copy passed through your hands. A copied phrase is not an explanation."));
+        for (String finding : PrivateSliceState.BASE_FINDINGS) {
+            addFilingEntry(pages, state, contributor, finding);
         }
-        player.openBook(authoredBook("Examiner's Findings", "Mara Venn", pages));
+        if (PrivateSliceState.BASE_FINDINGS.stream().allMatch(state::findingCommitted)) {
+            addFilingEntry(pages, state, contributor, PrivateSliceState.SYNTHESIS);
+        }
+        player.openBook(authoredBook("Mouth Findings", "Intake copy office", pages));
     }
 
     public boolean nearFilingLedger(Location location) {
@@ -683,77 +674,54 @@ public final class PrivateSliceWorld {
         return Math.abs(c.x) <= 4 && c.y >= -20 && c.y <= -18 && c.z >= 72 && c.z <= 77;
     }
 
-    private static Choice choice(String label, String id) { return new Choice(label, id); }
-
     private static String heading(String finding) {
         return switch (finding) {
-            case "P4.F1" -> "PUBLIC ROAD";
-            case "P4.F2" -> "WORKS CAMPAIGNS";
-            case "P4.F3" -> "SUPPORTED PLACES";
-            case "P4.F4" -> "THE DOWN-CUT";
-            case "P4.F5" -> "ACCOUNT SUPPORTED";
+            case "P4.F1" -> "THE MOUTH MARKS";
+            case "P4.F2" -> "THE PEOPLE RECEIVED";
+            case "P4.F3" -> "THE ALTERED COPY";
+            case "P4.F4" -> "THE EARLY REPEAT";
+            case "P4.F5" -> "THE ACCOUNT";
             default -> throw new IllegalArgumentException("unknown filing heading: " + finding);
         };
     }
 
-    private static List<Choice> choicesFor(String finding) {
+    private static String question(String finding) {
         return switch (finding) {
-            case "P4.F1" -> List.of(
-                    choice("Two separate public roads served the Mouth.", "two_separate_public_roads"),
-                    choice("One road carried loaded descent and empty return.", "one_road_loaded_down_empty_return"),
-                    choice("The road served drainage crews only.", "drainage_crews_only"),
-                    choice("No cart road crossed the threshold.", "no_cart_road_crossed"));
-            case "P4.F2" -> List.of(
-                    choice("One emergency build produced every room.", "single_emergency_build"),
-                    choice("Shelter and office were the only campaigns.", "two_campaigns_shelter_and_office"),
-                    choice("Four unrelated repairs made the visible joints.", "four_unrelated_repairs"),
-                    choice("Shelter, Intake, and Commons were three campaigns.", "three_campaigns_shelter_intake_commons"));
-            case "P4.F3" -> List.of(
-                    choice("328 people, including every work berth.", "328_people_including_work_berths"),
-                    choice("294 refuge places; work berths are excluded.", "294_refuge_places_work_berths_excluded"),
-                    choice("286 people; infirmary cots do not count.", "286_people_no_infirmary"),
-                    choice("300 people, equal to the water gauge.", "300_people_equal_to_water_gauge"));
-            case "P4.F4" -> List.of(
-                    choice("It concealed the works from the public road.", "concealment_from_public_road"),
-                    choice("It reached a second entrance.", "access_to_a_second_entrance"),
-                    choice("Stable cover and shorter winter service required it.", "downcut_for_stable_cover_shorter_winter_service"),
-                    choice("It followed an accidental quarry break.", "accidental_quarry_breakthrough"));
-            case "P4.F5" -> List.of(
-                    choice("A temporary quarry shelter abandoned after one winter.", "temporary_quarry_shelter_abandoned_after_one_winter"),
-                    choice("A planned civic intake for 294, not one emergency shelter.", "planned_civic_intake_for_294_not_single_emergency_shelter"),
-                    choice("A private archive with no refuge role.", "private_archive_with_no_public_refuge_role"),
-                    choice("A natural cave mistaken for civic works.", "natural_cave_later_mistaken_for_civic_works"));
-            default -> throw new IllegalArgumentException("unknown filing choices: " + finding);
+            case "P4.F1" -> "What were the repeated marks before they were treated as rites?";
+            case "P4.F2" -> "Who was the Mouth and intake built to receive?";
+            case "P4.F3" -> "What changed between the early notice and the later office copy?";
+            case "P4.F4" -> "Why is the repeated register not an ordinary copy or clock fault?";
+            case "P4.F5" -> "What history do the four findings establish together?";
+            default -> throw new IllegalArgumentException("unknown filing question: " + finding);
         };
     }
 
-    public BookPageLayout.Audit bookUiAudit() {
-        List<BookPageLayout.OptionPage> pages = new ArrayList<>();
-        for (String finding : List.of("P4.F1", "P4.F2", "P4.F3", "P4.F4", "P4.F5")) {
-            List<BookPageLayout.Option> options = choicesFor(finding).stream()
-                    .map(choice -> new BookPageLayout.Option(choice.label(), choice.id())).toList();
-            pages.addAll(BookPageLayout.optionPages(heading(finding), finding, null, options));
-        }
-        Set<String> commands = pages.stream().map(BookPageLayout.OptionPage::command)
-                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
-        return new BookPageLayout.Audit(List.copyOf(pages), pages.size(), commands.size(),
-                pages.stream().allMatch(page -> page.budget().fits()));
+    private static BookPageLayout.EntryPage filingEntry(String finding) {
+        return BookPageLayout.entryPage(heading(finding), finding, question(finding), false);
     }
 
-    private static void addChoicePages(List<Component> pages, String heading, String finding,
-            Map<String, String> draft,
-            List<Choice> choices) {
-        List<BookPageLayout.Option> options = choices.stream()
-                .map(choice -> new BookPageLayout.Option(choice.label(), choice.id())).toList();
-        for (BookPageLayout.OptionPage optionPage : BookPageLayout.optionPages(
-                heading, finding, draft.get(finding), options)) {
-            ClickEvent mark = ClickEvent.runCommand(optionPage.command());
-            Component page = Component.text(optionPage.heading() + "\n" + optionPage.folio() + "\n\n")
-                    .append(Component.text(optionPage.marker() + optionPage.choice().label()).clickEvent(mark))
-                    .append(Component.text("\n\n"))
-                    .append(Component.text("MARK THIS CLAUSE").clickEvent(mark));
-            pages.add(page);
+    public BookPageLayout.EntryAudit bookUiAudit() {
+        List<BookPageLayout.EntryPage> pages = new ArrayList<>();
+        for (String finding : List.of("P4.F1", "P4.F2", "P4.F3", "P4.F4", "P4.F5")) {
+            pages.add(filingEntry(finding));
         }
+        Set<String> commands = pages.stream().map(BookPageLayout.EntryPage::command)
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+        return new BookPageLayout.EntryAudit(List.copyOf(pages), pages.size(), commands.size(),
+                pages.stream().allMatch(page -> page.budget().fits() && page.command().length() <= 256));
+    }
+
+    private static void addFilingEntry(List<Component> pages, PrivateSliceState state,
+            String contributor, String finding) {
+        if (state.findingCommitted(finding)) {
+            pages.add(Component.text(heading(finding) + "\n\nRETAINED ON FILE\n\n" + state.committedConclusion(finding)));
+            return;
+        }
+        BookPageLayout.EntryPage entry = filingEntry(finding);
+        ClickEvent suggest = ClickEvent.suggestCommand(entry.command());
+        pages.add(Component.text(entry.heading() + "\n\n" + entry.question() + "\n\n")
+                .append(Component.text(finding.equals(PrivateSliceState.SYNTHESIS)
+                        ? "BEGIN ACCOUNT" : "BEGIN ENTRY").clickEvent(suggest)));
     }
 
     private static ItemStack authoredBook(String title, String author, List<Component> pages) {
@@ -1200,7 +1168,6 @@ public final class PrivateSliceWorld {
                 .map(Cell::toString).toList(); }
     }
 
-    private record Choice(String label, String id) { }
 
     public record Audit(int cellsChecked, List<String> findings, String worldHash,
             Map<Material, Integer> materialCounts, int evidenceSurfaceCount, int submissionSurfaceCount,

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** Review-only Bukkit adapter for the authored M3 v5 authority. */
+/** Review-only Bukkit adapter for the authored M3 vNext authority. */
 public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoCloseable {
     private static final String MARKER = ".observance-disposable-paper-target";
     private final JavaPlugin plugin;
@@ -42,7 +42,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         String worldName = plugin.getConfig().getString("m3-review.world", "m3_private_slice");
         World world = Bukkit.getWorld(worldName);
         if (world == null) throw new IllegalStateException("configured disposable world is not loaded: " + worldName);
-        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-v5.journal");
+        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-vnext.journal");
         Files.createDirectories(journal.getParent());
         state = PrivateSliceState.open(journal);
         slice = new PrivateSliceWorld(world,
@@ -60,7 +60,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         plugin.getCommand("observancem3").setExecutor(this);
         plugin.getCommand("observancefile").setExecutor(this);
         plugin.getLogger().info("M3_TARGET_CONFIRMED target=" + targetId + " commit=" + sourceCommit
-                + " authority=observance-p4-private-slice-v5 paper=" + Bukkit.getVersion());
+                + " authority=observance-p4-private-slice-vnext paper=" + Bukkit.getVersion());
     }
 
     @Override
@@ -104,18 +104,18 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
             String action = args.length == 0 ? "open" : args[0].toLowerCase(Locale.ROOT);
             switch (action) {
                 case "open" -> slice.openFilingLedger(player, state);
-                case "mark" -> {
-                    if (args.length != 3) throw new IllegalArgumentException("invalid ledger clause");
-                    state.selectDraft(args[1], args[2], contributor);
-                    player.sendActionBar(Component.text("Clause marked in the working report."));
+                case "file" -> {
+                    if (args.length < 3) throw new IllegalArgumentException("enter a concise finding after its docket number");
+                    String finding = args[1];
+                    String answer = String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length));
+                    state.lodgeFinding(finding, answer, contributor, Instant.now().getEpochSecond());
+                    player.sendActionBar(Component.text("Finding retained."));
                     reopenLedger(player);
                 }
-                case "lodge" -> {
-                    state.lodgeReport(contributor, Instant.now().getEpochSecond());
-                    player.sendActionBar(Component.text("Four-clause report endorsed. The seal account remains."));
-                    reopenLedger(player);
-                }
-                case "seal" -> {
+                case "conclude" -> {
+                    if (args.length < 2) throw new IllegalArgumentException("enter the inquiry's final account");
+                    String answer = String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length));
+                    state.selectDraft(PrivateSliceState.SYNTHESIS, answer, contributor);
                     state.lodgeSynthesis(contributor, Instant.now().getEpochSecond());
                     slice.setGate(true);
                     player.sendActionBar(Component.text("Commons seal released."));
@@ -140,8 +140,8 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
 
     private void status(CommandSender sender) {
         sender.sendMessage("M3_STATUS target=" + targetId + " commit=" + sourceCommit
-                + " authority=v5 gate=" + (state.gateOpen() ? "open" : "closed")
-                + " evidence_surfaces=8 submissions=1 references=2 signs=6 lecterns=2 paper=" + Bukkit.getVersion());
+                + " authority=vnext gate=" + (state.gateOpen() ? "open" : "closed")
+                + " evidence_surfaces=8 findings=5 submission_desks=1 observation_gating=false paper=" + Bukkit.getVersion());
     }
 
     private void build(CommandSender sender) throws IOException {
@@ -206,9 +206,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         if (args.length != 3) throw new IllegalArgumentException("naive-negative requires <contributor> <epoch>");
         String contributor = args[1];
         for (String finding : PrivateSliceState.BASE_FINDINGS) {
-            for (String option : PrivateSliceState.CONCLUSION_OPTIONS.get(finding)) {
-                state.selectDraft(finding, option, contributor);
-            }
+            state.selectDraft(finding, "COPY THE NEAREST PHRASE", contributor);
         }
         try {
             state.lodgeReport(contributor, Long.parseLong(args[2]));
@@ -278,7 +276,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
 
     private void selectWrongReport(String contributor) {
         PrivateSliceState.BASE_FINDINGS.forEach(finding -> state.selectDraft(
-                finding, PrivateSliceState.CONCLUSION_OPTIONS.get(finding).get(0), contributor));
+                finding, "THE REGISTER CLOCK WAS WRONG", contributor));
     }
 
     private void security(CommandSender sender) {
@@ -290,30 +288,31 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
     }
 
     private void uiAudit(CommandSender sender) {
-        BookPageLayout.Audit audit = slice.bookUiAudit();
+        BookPageLayout.EntryAudit audit = slice.bookUiAudit();
         int maxLines = audit.pages().stream().mapToInt(page -> page.budget().renderedLines()).max().orElse(0);
         int maxWidth = audit.pages().stream().mapToInt(page -> page.budget().maximumLinePixels()).max().orElse(0);
-        if (!audit.allFit() || audit.pages().size() != 20 || audit.uniqueOptions() != 20
-                || audit.uniqueCommands() != 20) {
-            throw new IllegalStateException("filing book render/click inventory drift");
+        if (!audit.allFit() || audit.pages().size() != 5 || audit.uniqueFindings() != 5
+                || audit.uniqueCommands() != 5) {
+            throw new IllegalStateException("filing book entry inventory drift");
         }
-        sender.sendMessage("M3_UI_AUDIT_PASS client=1.21.11 pages=20 options=20 visible=20 clickable=20"
+        sender.sendMessage("M3_UI_AUDIT_PASS client=1.21.11 pages=5 prompts=5 visible=5 suggest_commands=5"
                 + " width_budget=" + BookPageLayout.PAGE_PIXEL_WIDTH
                 + " line_budget=" + BookPageLayout.MAX_RENDERED_LINES
                 + " max_width=" + maxWidth + " max_lines=" + maxLines);
     }
 
     private void guidedClientModel(CommandSender sender) {
-        BookPageLayout.Audit audit = slice.bookUiAudit();
+        BookPageLayout.EntryAudit audit = slice.bookUiAudit();
         boolean stateParity = audit.pages().stream().allMatch(page ->
-                PrivateSliceState.CONCLUSION_OPTIONS.getOrDefault(page.finding(), List.of())
-                        .contains(page.choice().id()));
-        if (!audit.allFit() || !stateParity || audit.uniqueCommands() != 20) {
-            throw new IllegalStateException("guided client model cannot reach every authored state option");
+                PrivateSliceState.EXACT_CONCLUSIONS.containsKey(page.finding())
+                        && page.command().startsWith(page.finding().equals(PrivateSliceState.SYNTHESIS)
+                                ? "/obsfile conclude " : "/obsfile file " + page.finding() + " "));
+        if (!audit.allFit() || !stateParity || audit.uniqueCommands() != 5) {
+            throw new IllegalStateException("guided client model cannot reach every authored free-text entry");
         }
-        sender.sendMessage("M3_GUIDED_CLIENT_MODEL_PASS client=1.21.11 clause_pages=20"
-                + " full_clause_click_targets=20 action_click_targets=20 state_options=20"
-                + " report_path=reachable synthesis_path=reachable replay_path=reachable");
+        sender.sendMessage("M3_GUIDED_CLIENT_MODEL_PASS client=1.21.11 prompt_pages=5"
+                + " free_text_entries=5 observation_receipts_required=0"
+                + " finding_path=reachable synthesis_path=reachable replay_path=reachable");
     }
 
     private void watcherApprove(CommandSender sender, String[] args) throws IOException {

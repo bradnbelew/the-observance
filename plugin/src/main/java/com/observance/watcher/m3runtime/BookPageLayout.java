@@ -6,13 +6,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Conservative Minecraft 1.21.11 written-book layout authority for selectable ledger clauses. */
+/** Conservative Minecraft 1.21.11 written-book layout authority for filing prompts and legacy clauses. */
 public final class BookPageLayout {
     public static final int PAGE_PIXEL_WIDTH = 114;
     public static final int LINE_HEIGHT_PIXELS = 9;
     public static final int MAX_RENDERED_LINES = 13;
 
     private BookPageLayout() { }
+
+    public static EntryPage entryPage(String heading, String finding, String question, boolean filed) {
+        String status = filed ? "ON FILE" : "OPEN";
+        String visibleText = heading + "\n" + status + "\n\n" + question + "\n\n"
+                + (filed ? "Finding retained." : "BEGIN ENTRY");
+        PageBudget budget = measure(visibleText);
+        if (!budget.fits()) {
+            throw new IllegalArgumentException("filing prompt exceeds written-book render budget: "
+                    + finding + " lines=" + budget.renderedLines() + " width=" + budget.maximumLinePixels());
+        }
+        String command = "/obsfile " + ("P4.F5".equals(finding) ? "conclude " : "file " + finding + " ");
+        return new EntryPage(heading, finding, question, filed, visibleText, command, budget);
+    }
 
     public static List<OptionPage> optionPages(String heading, String finding, String selected,
             List<Option> choices) {
@@ -108,8 +121,23 @@ public final class BookPageLayout {
     }
 
     public record Option(String label, String id) { }
+    public record EntryPage(String heading, String finding, String question, boolean filed,
+            String visibleText, String command, PageBudget budget) { }
+    public record EntryAudit(List<EntryPage> pages, int uniqueFindings, int uniqueCommands,
+            boolean allFit) { }
     public record PageBudget(int characters, int renderedLines, int maximumLinePixels, boolean fits) { }
     public record OptionPage(String heading, String finding, int index, Option choice, String marker,
             String folio, String visibleText, String command, PageBudget budget) { }
     public record Audit(List<OptionPage> pages, int uniqueOptions, int uniqueCommands, boolean allFit) { }
+
+    public static EntryAudit entryAudit(List<EntryPage> pages) {
+        Set<String> findings = new LinkedHashSet<>();
+        Set<String> commands = new LinkedHashSet<>();
+        for (EntryPage page : pages) {
+            findings.add(page.finding());
+            commands.add(page.command());
+        }
+        return new EntryAudit(List.copyOf(pages), findings.size(), commands.size(),
+                pages.stream().allMatch(page -> page.budget().fits()));
+    }
 }
