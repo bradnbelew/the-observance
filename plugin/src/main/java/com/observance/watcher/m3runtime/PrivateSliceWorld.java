@@ -485,9 +485,9 @@ public final class PrivateSliceWorld {
                     "composed stacks of working copies around the central findings ledger");
         }
         clusterBlock("EXAMINER_SIDE_TRAYS", new Cell(5, -20, 75), Material.DARK_OAK_PLANKS,
-                "side table carrying the weighted civic seal press");
+                "paired side tables carrying the examiner's seal and ink tools");
         clusterBlock("EXAMINER_SIDE_TRAYS", new Cell(-5, -20, 75), Material.DARK_OAK_PLANKS,
-                "side table carrying ink and blotting materials");
+                "paired side tables carrying the examiner's seal and ink tools");
         directionalCluster("EXAMINER_SEAL_PRESS", new Cell(5, -19, 75), Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
                 "minecraft:heavy_weighted_pressure_plate[power=0]",
                 "weighted civic seal press beside the findings ledger");
@@ -873,7 +873,18 @@ public final class PrivateSliceWorld {
         if (lecterns != 2) findings.add("v4 requires exactly two purpose-specific lecterns actual=" + lecterns);
         Set<String> formats = new LinkedHashSet<>();
         evidence.values().forEach(surface -> formats.add(surface.format()));
-        if (formats.size() < 7) findings.add("artifact format diversity is not authored: " + formats);
+        Set<String> exactFormats = Set.of(
+                "annotated drainage diagram",
+                "field tag fixed beside the physical ruts",
+                "chalk annotation across the physical construction seam",
+                "personal cover letter with office marginalia",
+                "official refuge register",
+                "posted seven-day supply tally",
+                "maintenance gauge card beside the working hydraulic train",
+                "personal engineering letter retained with works minutes");
+        if (!formats.equals(exactFormats)) {
+            findings.add("authored evidence format inventory drift expected=" + exactFormats + " actual=" + formats);
+        }
         long nativeBooks = evidence.values().stream()
                 .filter(surface -> surface.presentation() == Presentation.NATIVE_BOOK).count();
         long environmental = evidence.size() - nativeBooks;

@@ -146,8 +146,13 @@ def check_inventory(authority: dict) -> None:
         require(artifact["medium_fit"]["plausible"] is True
                 and artifact["human_editor_review"]["status"] in {"required", "passed"},
                 f"medium/editor review missing: {artifact['artifact_id']}")
-    require(len(voices) >= 7 and len(formats) == len(artifacts),
-            "declared v4 situated voices/formats do not match the authored inventory")
+    expected_voices = {
+        "Mara Venn", "Neri Holt", "Orris Pell", "Toma Rusk",
+        "Eda Sorn, with Mara Venn's marginalia", "Lio Marr", "Sela Orr",
+        "Iven Quill", "Intake record office",
+    }
+    require(voices == expected_voices and len(formats) == len(artifacts),
+            "declared v4 situated voices/formats do not match the exact authored inventory")
     require(inventory["cold_read_gate"]["observer_must_not_receive_solution_key"] is True
             and inventory["cold_read_gate"]["brad_approval_not_implied"] is True,
             "cold-read or Brad-approval boundary weakened")
@@ -185,7 +190,7 @@ def check_implementation(authority: dict) -> None:
             and "openEvidenceBook" in interaction and "openFilingLedger" in interaction,
             "v4 interaction regressed to chat/crouch or lost physical affordances")
     for token in (
-        "exactly two purpose-specific lecterns", "formats.size()", "choicePage",
+        "exactly two purpose-specific lecterns", "exactFormats", "choicePage",
         "nearFilingLedger", "MOUTH_LOADED_RUT", "INTAKE_CLERK_DESKS",
         "EXAMINER_FILING_COUNTER", "BINDING_ISLAND", "GATE_CLOSED_COLLISION_CELLS = 88",
         "minecraft:copper_grate[waterlogged=false]", "checkSightline", "checkWaterworks",
