@@ -460,9 +460,9 @@ public final class PrivateSliceWorld {
                     "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]");
         for (int z : new int[]{64, 76}) {
             clusterBlock("INTAKE_ACTIVE_FILES", new Cell(15, -20, z), Material.BOOKSHELF,
-                    "floor-supported active berth and supply files beside the clerk desks");
+                    "supported active berth and supply files beside the clerk desks");
             clusterBlock("INTAKE_ACTIVE_FILES", new Cell(15, -19, z), Material.CHISELED_BOOKSHELF,
-                    "frequently consulted active files above the floor-supported shelf");
+                    "supported active berth and supply files beside the clerk desks");
             support(new Cell(15, -20, z), new Cell(15, -21, z), "floor-supported intake file shelf");
             support(new Cell(15, -19, z), new Cell(15, -20, z), "stacked active-file shelf");
             directional(new Cell(15, -19, z), Material.CHISELED_BOOKSHELF,

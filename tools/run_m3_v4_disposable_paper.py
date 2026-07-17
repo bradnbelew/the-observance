@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import queue
+import time
 
 import run_m3_disposable_paper as base
 
@@ -12,6 +14,22 @@ import run_m3_disposable_paper as base
 ROOT = Path(__file__).resolve().parents[1]
 SLICE_AUTHORITY_SHA256 = "444926db844dfd5e06bd131a3c941a23b85a575c1b56ce09673f690aa5d88b3f"
 AUTHORITY_ID = "observance-p4-private-slice-v4"
+
+
+def wait_for_confirmation(process: base.PaperProcess, timeout: float = 300.0) -> str:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if process.process.poll() is not None:
+            raise RuntimeError(f"Paper exited before M3 authority confirmation; exit={process.process.returncode}")
+        try:
+            line = process.events.get(timeout=0.5)
+        except queue.Empty:
+            continue
+        if "M3_TARGET_CONFIRMED" in line:
+            return line
+        if "M3 private review mode failed closed:" in line:
+            raise RuntimeError(line)
+    raise TimeoutError("timed out waiting for M3 authority confirmation")
 
 
 def verify_authorities() -> None:
@@ -40,7 +58,7 @@ def exercise_validation(target: Path, java: str) -> tuple[dict[str, object], lis
     epoch = 1_789_000_000
     first = base.PaperProcess(target, java)
     try:
-        confirmation = first.wait_for("M3_TARGET_CONFIRMED", 300)
+        confirmation = wait_for_confirmation(first)
         first.wait_for("Done (", 300)
         status = first.command("obsm3 status", "M3_STATUS")
         build = first.command("obsm3 build", "M3_BUILD_COMPLETE", 300)
@@ -67,7 +85,7 @@ def exercise_validation(target: Path, java: str) -> tuple[dict[str, object], lis
 
     second = base.PaperProcess(target, java)
     try:
-        negative_restart_confirmation = second.wait_for("M3_TARGET_CONFIRMED", 300)
+        negative_restart_confirmation = wait_for_confirmation(second)
         second.wait_for("Done (", 300)
         negative_restart_audit = second.command("obsm3 audit", "M3_AUDIT PASS")
         persistent_throttle = second.command(
@@ -89,7 +107,7 @@ def exercise_validation(target: Path, java: str) -> tuple[dict[str, object], lis
 
     third = base.PaperProcess(target, java)
     try:
-        restart_confirmation = third.wait_for("M3_TARGET_CONFIRMED", 300)
+        restart_confirmation = wait_for_confirmation(third)
         third.wait_for("Done (", 300)
         restarted = third.command("obsm3 audit", "M3_AUDIT PASS")
         restart_security = third.command("obsm3 security", "M3_SECURITY_PASS")
@@ -134,7 +152,7 @@ def exercise_validation(target: Path, java: str) -> tuple[dict[str, object], lis
 def prepare_review(target: Path, java: str) -> tuple[dict[str, object], list[str], list[str]]:
     process = base.PaperProcess(target, java)
     try:
-        confirmation = process.wait_for("M3_TARGET_CONFIRMED", 300)
+        confirmation = wait_for_confirmation(process)
         process.wait_for("Done (", 300)
         status = process.command("obsm3 status", "M3_STATUS")
         build = process.command("obsm3 build", "M3_BUILD_COMPLETE", 300)
