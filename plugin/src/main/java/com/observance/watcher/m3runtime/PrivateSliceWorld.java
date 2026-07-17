@@ -513,7 +513,8 @@ public final class PrivateSliceWorld {
     private void referenceSurfaces() {
         addReference(0, 0, 5, "south", new Cell(0, 0, 7), "INTAKE_EXAMINER_DOCKET",
                 "Intake copy office", "official copy inquiry", "Mouth Copy Inquiry",
-                "COPY INQUIRY 14\nThe Mouth marks, household papers, smoke notice, and bell register do not belong to one account of this place. Establish what the marks did, who lived here, what changed between copies, and why the repeated register cannot be an ordinary clock fault.\f"
+                "COPY INQUIRY 14\nThe Mouth marks, household papers, smoke notice, and bell register do not belong to one account of this place.\f"
+                + "Establish what the marks did, who lived here, what changed between copies, and why the repeated register cannot be an ordinary clock fault.\f"
                 + "The open findings ledger accepts concise conclusions. Reading a record adds custody to the archive, but custody marks are not a condition of a correct filing. File what the evidence means, not a phrase copied from it.",
                 Material.LECTERN, Presentation.NATIVE_BOOK, "briefing");
         addReferenceArtifact(31, -19, 83, "west", new Cell(28, -20, 83), "FIELD_ARCHIVE_READBACK",
