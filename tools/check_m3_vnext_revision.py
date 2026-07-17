@@ -15,6 +15,10 @@ WORLD = STATE.with_name("PrivateSliceWorld.java")
 RUNTIME = STATE.with_name("PrivateSliceReviewRuntime.java")
 SELF_TEST = ROOT / "plugin/src/test/java/com/observance/watcher/m3runtime/PrivateSliceStateSelfTest.java"
 COPPERLINE = ROOT / "dashboard/src/lib/copperline-p4-archive.ts"
+VALIDATION = ROOT / "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json"
+REVIEW = ROOT / "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json"
+FAILED = ROOT / "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json"
+VISUAL = ROOT / "design/m3/VNEXT-BLOCK-STATE-VISUAL-AUDIT.json"
 
 
 def require(condition: bool, message: str) -> None:
@@ -84,7 +88,42 @@ def main() -> None:
     require("mkept" in copperline and "cl_amy" in copperline and "not a production deployment" in copperline,
             "Copperline human voice or receipt boundary missing")
     require(case["receipt_boundary"]["not_yet_real"], "external integration gaps were concealed")
-    print("M3 vNext story/zero-receipt/Copperline checks PASS")
+
+    if VALIDATION.is_file():
+        validation = load(VALIDATION)
+        review = load(REVIEW)
+        failed = load(FAILED)
+        visual = load(VISUAL)
+        evidence = validation["evidence"]
+        require(validation["source_git_commit"] == "8a51f26814914e89fe857a929266e807b2c96586"
+                and validation["paper"] == {"build": 132,
+                    "jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+                    "version": "1.21.11"}
+                and "findings=0" in evidence["closed_audit"]
+                and "gate_collision=88" in evidence["closed_audit"]
+                and "findings=0" in evidence["final_audit"]
+                and "gate_collision=0" in evidence["final_audit"],
+                "fresh Paper structural/restart receipt drift")
+        require("findings=0 gate=closed" in evidence["naive_zero_receipt_negative"]
+                and "throttled=true" in evidence["brute_zero_receipt_negative"]
+                and "findings=4 gate=closed" in evidence["zero_observation_report_correct"]
+                and "gate=open" in evidence["zero_observation_synthesis_correct"]
+                and "observation_receipts_required=0" in evidence["guided_client_model"],
+                "Paper negative or zero-observation proof drift")
+        require(review["journal_state"] == "absent_pristine_review_target"
+                and review["brad_visual_approval"] is None
+                and review["server_configuration"]["bind"] == "127.0.0.1"
+                and review["server_configuration"]["port"] == 25591,
+                "pristine private review target drift")
+        require(len(failed["attempts"]) == 3
+                and all(row.get("journal_created") is False for row in failed["attempts"])
+                and visual["paper_findings_closed_open_restart"] == 0
+                and visual["physical_affordance"]["unclassified_floating_blocks"] == 0
+                and visual["limits"]["brad_visual_approval"] is None,
+                "failed-attempt or internal visual audit history drift")
+        print("M3 vNext story/zero-receipt/Copperline/Paper checks PASS")
+    else:
+        print("M3 vNext story/zero-receipt/Copperline source checks PASS; Paper receipt pending")
 
 
 if __name__ == "__main__":

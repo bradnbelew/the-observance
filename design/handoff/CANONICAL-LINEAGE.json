@@ -450,6 +450,40 @@
     "public_or_production_launch": false,
     "production_mutation": false
   },
+  "vnext_private_candidate": {
+    "status": "automated_source_paper_restart_negative_and_pristine_review_preparation_passed_human_acceptance_pending",
+    "authored_source_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+    "case_authority": "design/m3/P4-VNEXT-CASE-BRIEF.json",
+    "inventory": "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
+    "validation_receipt": "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json",
+    "review_target_receipt": "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json",
+    "failed_attempts": "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json",
+    "block_state_visual_audit": "design/m3/VNEXT-BLOCK-STATE-VISUAL-AUDIT.json",
+    "paper_result": {
+      "version": "1.21.11",
+      "build": 132,
+      "cells": 248745,
+      "closed_open_restart_findings": 0,
+      "closed_gate_collision_cells": 88,
+      "open_gate_collision_cells": 0,
+      "free_text_prompts": 5,
+      "observation_receipts_required": 0,
+      "world_package_sha256": "1646fe8bbe01f59b0db1af116d668006ec912fdd92b95584aac1854ecf6c4bc2"
+    },
+    "reasoning_result": {
+      "naive_and_brute_wrong_reports": "zero findings and closed gate",
+      "throttle_restart": "durable",
+      "zero_observation_correct_report": "four findings; gate remains closed",
+      "zero_observation_correct_synthesis": "gate opens",
+      "optional_custody_after_solution": "eight receipts retained without becoming answer prerequisites",
+      "replay_second_restart": "open state re-derived with zero audit findings"
+    },
+    "external_blockers": "No exact authenticated Vercel, Railway, Discord, or disposable Supabase target is configured; five receipted media source-byte sets are absent from this checkout. Offline packages remain honest and production remains untouched.",
+    "brad_visual_approval": null,
+    "final_human_gate": "Brad's morning end-to-end private playthrough",
+    "public_or_production_launch": false,
+    "production_mutation": false
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -464,6 +498,12 @@
     "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.md",
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
+    "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
+    "design/m3/P4-VNEXT-CASE-BRIEF.json",
+    "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json",
+    "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json",
+    "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json",
+    "design/m3/VNEXT-BLOCK-STATE-VISUAL-AUDIT.json",
     "approved Phase 1 authorities",
     "approved Phase 2 evidence authorities",
     "design/m2/M2-TECHNICAL-CONTRACTS.md",
@@ -596,12 +636,13 @@
     }
   ],
   "current_gate": {
-    "phase": "V5 NOT APPROVED and cleanly stopped; full private launch-candidate automated staging authorized across M3/M4+; final human gate deferred; public/production closed",
+    "phase": "V5 remains rejected historical proof; P4 vNext automated source/Paper/restart/negative/pristine-review gates pass; broader private launch-candidate remains incomplete; final human gate deferred; public/production closed",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,
     "final_human_gate": "Brad's morning end-to-end private playthrough",
     "required_next_evidence": [
+      "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval",
       "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
       "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",
       "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation",

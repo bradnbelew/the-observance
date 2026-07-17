@@ -1,0 +1,56 @@
+{
+  "authority_id": "observance-p4-private-slice-vnext",
+  "brad_visual_approval": null,
+  "case_authority_sha256": "33a29766c1c43189fb18584ad30cac419a0ea4ceb17aeea32b2401ee65559c55",
+  "client_receipts": {
+    "human_player_view_polish": null,
+    "non_op_adventure_join": null,
+    "reason": "Automated Paper paths pass; no unseen build is human-approved.",
+    "server_side_prompt_budget": "passed_for_five_free_text_prompts"
+  },
+  "coarse_authority_sha256": "564225c0d9a2d015437f9722e5741e509b46837b6e194e6ca1cda860cea7f962",
+  "evidence": {
+    "build": "[02:35:50 INFO]: M3_BUILD_COMPLETE target=m3-vnext-brad-review-8a51f26-20260717-a writes=234551 cells=248745 gate=closed world_state_sha256=1c009eb52bc838c4562404c85f44a7de3603af6fb152489d8696a815442e4bfd findings=0 composition=evidence=8 submissions=1 references=2 signs=6 water=62 bookshelves=58 supports=103 clusters=30 seats=22 gate_collision=88",
+    "closed_audit": "[02:35:50 INFO]: M3_AUDIT PASS target=m3-vnext-brad-review-8a51f26-20260717-a cells=248745 gate=closed world_state_sha256=1c009eb52bc838c4562404c85f44a7de3603af6fb152489d8696a815442e4bfd findings=0 composition=evidence=8 submissions=1 references=2 signs=6 water=62 bookshelves=58 supports=103 clusters=30 seats=22 gate_collision=88",
+    "guided_client_model": "[02:35:51 INFO]: M3_GUIDED_CLIENT_MODEL_PASS client=1.21.11 prompt_pages=5 free_text_entries=5 observation_receipts_required=0 finding_path=reachable synthesis_path=reachable replay_path=reachable",
+    "platform_confirmation": "[02:35:48 INFO]: [Observance] M3_TARGET_CONFIRMED target=m3-vnext-brad-review-8a51f26-20260717-a commit=8a51f26814914e89fe857a929266e807b2c96586 authority=observance-p4-private-slice-vnext paper=1.21.11-132-c5eb079 (MC: 1.21.11)",
+    "security": "[02:35:51 INFO]: M3_SECURITY_PASS target=m3-vnext-brad-review-8a51f26-20260717-a bind=127.0.0.1 gamemode=ADVENTURE force_gamemode=true non_op=true inventory_escrow=false denies=block_break,block_place,bucket,entity,container,teleport,gate filing_command=counter_proximity_only gate_collision=88",
+    "status": "[02:35:49 INFO]: M3_STATUS target=m3-vnext-brad-review-8a51f26-20260717-a commit=8a51f26814914e89fe857a929266e807b2c96586 authority=vnext gate=closed evidence_surfaces=8 findings=5 submission_desks=1 observation_gating=false paper=1.21.11-132-c5eb079 (MC: 1.21.11)",
+    "ui_audit": "[02:35:51 INFO]: M3_UI_AUDIT_PASS client=1.21.11 pages=5 prompts=5 visible=5 suggest_commands=5 width_budget=114 line_budget=13 max_width=114 max_lines=9"
+  },
+  "journal_sha256": null,
+  "journal_state": "absent_pristine_review_target",
+  "log_sha256": "48a175eb37caf78e7205fef0c4e27fa118900b1617d905b99650108d370013b6",
+  "manifest_version": "2.0.0-m2",
+  "mode": "prepare-review",
+  "paper": {
+    "build": 132,
+    "jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "version": "1.21.11"
+  },
+  "plugin_jar_sha256": "cd1e92dc94ef6bbb4e6c63049ca2b83ef50821a3c22099ef19ab00d2ce58ef85",
+  "predicate_raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+  "private_automated_staging": "authorized",
+  "production_mutated": false,
+  "public_or_production_launch": false,
+  "restart_log_sha256": null,
+  "schema_version": "1.0.0-m3-vnext-paper-receipt",
+  "scope": "disposable local private Paper target; never production",
+  "server_configuration": {
+    "bind": "127.0.0.1",
+    "default_op": false,
+    "force_gamemode": true,
+    "gamemode": "adventure",
+    "inventory_escrow": false,
+    "online_mode": false,
+    "port": 25591,
+    "production_credentials_loaded": false,
+    "whitelist": false
+  },
+  "source_git_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+  "target_id": "m3-vnext-brad-review-8a51f26-20260717-a",
+  "target_path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-vnext-brad-review-8a51f26-20260717-a",
+  "world_package_name": "m3-private-slice-vnext-world.zip",
+  "world_package_sha256": "fcc0d8dd0bf530b628133bf4f670a8a23d7e8e916922c1528004b67c64e6317f",
+  "world_tree_sha256": "be2eda3e14b0936b00766acf2ca6a0da980d188cf41d40662162e0ed108a6b3d"
+}

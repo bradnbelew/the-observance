@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0-m3-vnext-failed-attempts",
+  "authority_id": "observance-p4-private-slice-vnext",
+  "preservation_rule": "Every create-only target remains intact; none was reused, reset, cleaned, or deleted.",
+  "attempts": [
+    {
+      "target_id": "m3-vnext-validation-f6d27d1-20260717-a",
+      "source_git_commit": "f6d27d1eb86a8f7b1e7d6d998a2534daeeef2c80",
+      "result": "failed_before_Paper_start",
+      "finding": "fresh Paper target required the pinned Mojang 1.21.11 runtime; sandbox network denied the download",
+      "paper_log": null,
+      "journal_created": false,
+      "world_or_receipt_claimed": false
+    },
+    {
+      "target_id": "m3-vnext-validation-f6d27d1-20260717-b",
+      "source_git_commit": "f6d27d1eb86a8f7b1e7d6d998a2534daeeef2c80",
+      "result": "failed_closed_during_build",
+      "finding": "the first inquiry-docket page was 266 characters and exceeded the enforced 238-character native-book page ceiling",
+      "paper_log_sha256": "6b8e317d3f9c4dae750709291a43c1bb2c153ebd2e143b535a2c6f94b9d88f5e",
+      "journal_created": false,
+      "graceful_stop": true,
+      "port_25590_released": true,
+      "fix_checkpoint": "4016b3437ff6c8064b042acf82f514e65ffe6045"
+    },
+    {
+      "target_id": "m3-vnext-validation-4016b34-20260717-c",
+      "source_git_commit": "4016b3437ff6c8064b042acf82f514e65ffe6045",
+      "result": "build_completed_structural_audit_failed_closed",
+      "finding": "the world contained the intended eight vNext formats, but the audit allowlist still named V5's superseded drainage/rut/capacity formats",
+      "world_state_sha256": "1c009eb52bc838c4562404c85f44a7de3603af6fb152489d8696a815442e4bfd",
+      "paper_log_sha256": "cf89be7a2e3de9ac913e75e3befa332972551a65b7fcc691880729d2ff12af05",
+      "journal_created": false,
+      "graceful_stop": true,
+      "port_25590_released": true,
+      "fix_checkpoint": "8a51f26814914e89fe857a929266e807b2c96586"
+    }
+  ],
+  "successful_successor": "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json",
+  "brad_visual_approval": null,
+  "production_mutated": false
+}

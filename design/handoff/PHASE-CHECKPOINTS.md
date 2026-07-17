@@ -169,3 +169,26 @@ and brute flows still commit zero findings, exact report plus synthesis remain r
 closed/open/restart audits pass across 248,745 cells. Brad visual approval, human client polish,
 independent interface-affordance discovery, authenticated non-op/accessibility, and optional A2 remain
 open; M4 is still closed.
+
+## 2026-07-17 — P4 vNext private automated candidate
+
+- Overnight authority supersedes the interim human pause only for private automated staging. V5 remains
+  NOT APPROVED historical technical proof; no unseen build is recorded as Brad-approved.
+- Source checkpoint `8a51f26814914e89fe857a929266e807b2c96586` replaces V5's closed four-choice
+  catalog with five concise free-text findings, exact/alias meaning predicates, authored true-but-not-door
+  responses, and correct-answer acceptance with zero observation receipts. Custody, contribution,
+  catch-up, replay, and accessibility records remain durable but non-gating.
+- The P4 case authority begins with the C02 revelation and emotional reversal: apparent occult Mouth,
+  ordinary refuge life, then practical safety language becoming institutional control under an early
+  unresolved copy anomaly. The bounded Minecraft build remains robust; Copperline supplies a committed
+  offline comparison/provenance fixture with sixteen ordinary/mixed entries and four direct entries.
+- Three failed create-only targets are preserved: sandbox-denied Mojang runtime download; a 266-character
+  book page rejected by the 238-character limit; and a stale V5 format allowlist rejected after build.
+  Their successor passed on fresh Paper 1.21.11 build 132: 248,745 cells, zero closed/open/restart
+  findings, gate collision `88 -> 0`, five render-safe prompts, naive/brute zero-progress negatives,
+  restart-persistent throttle, zero-observation correct report/synthesis, optional later custody, replay,
+  and a second restart.
+- A separate pristine closed review target is packaged for `127.0.0.1:25591`; its journal is absent.
+  Client polish, human 1–2 hour solve, authenticated external targets, source media bytes, and Brad's
+  morning acceptance remain open. Production, Crafty, public domains, and production Supabase remain
+  untouched.

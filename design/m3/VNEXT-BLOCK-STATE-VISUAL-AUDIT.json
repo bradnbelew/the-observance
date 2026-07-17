@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0-m3-vnext-internal-player-view-audit",
+  "authority_id": "observance-p4-private-slice-vnext",
+  "source_git_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+  "scope": "internal exact block-state, composition, written-book budget, sightline, circulation, collision, and prose inventory audit; not a human client or Brad visual receipt",
+  "paper_version": "1.21.11 build 132",
+  "cells_checked": 248745,
+  "paper_findings_closed_open_restart": 0,
+  "closed_world_state_sha256": "1c009eb52bc838c4562404c85f44a7de3603af6fb152489d8696a815442e4bfd",
+  "open_world_state_sha256": "526b0995fe899e8ce0458e0db35425e99cfe151be7820cc195504ace39a52b86",
+  "composition": {
+    "evidence_surfaces": 8,
+    "submission_surfaces": 1,
+    "reference_surfaces": 2,
+    "immersive_signs": 6,
+    "water_cells": 62,
+    "bookshelf_blocks": 58,
+    "classified_supports": 103,
+    "authored_clusters": 30,
+    "classified_seats": 22
+  },
+  "physical_affordance": {
+    "native_evidence_books": 4,
+    "visible_environmental_records": 4,
+    "purpose_specific_lecterns": 2,
+    "interactive_chiseled_shelves_visibly_occupied": true,
+    "reader_standing_cells_and_sightlines": "passed",
+    "seat_work_or_waiting_target_orientation": "passed",
+    "furnishing_support_and_non_overlap": "passed",
+    "unclassified_floating_blocks": 0,
+    "gate_collision_closed": 88,
+    "gate_collision_open": 0
+  },
+  "filing_interface": {
+    "free_text_prompts": 5,
+    "multiple_choice_options": 0,
+    "maximum_rendered_lines": 9,
+    "maximum_line_width_pixels": 114,
+    "budget_lines": 13,
+    "budget_width_pixels": 114,
+    "unique_suggest_commands": 5,
+    "source_observations_required": 0
+  },
+  "content_inventory": [
+    "child's reused arithmetic copybook",
+    "early smoke notice fixed at child eye level",
+    "ordinary dwelling and common-room repair slip",
+    "folded neighbor note retained in the market copy shelf",
+    "later stamped office copy",
+    "modern cartridge-order card placed with recovered copies",
+    "register leaf beside the working hydraulic train",
+    "modern node-clock and cartridge read extract"
+  ],
+  "limits": {
+    "authenticated_non_op_client": null,
+    "human_player_view_polish": null,
+    "cold_human_target_time": null,
+    "cross_media_human_solve": null,
+    "brad_visual_approval": null
+  },
+  "production_mutated": false
+}

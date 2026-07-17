@@ -391,11 +391,27 @@ def main() -> None:
             and overnight["production_mutation"] is False,
             "overnight private automated staging/public-production boundary drift")
 
+    vnext = data["vnext_private_candidate"]
+    require(vnext["authored_source_commit"] == "8a51f26814914e89fe857a929266e807b2c96586"
+            and all((ROOT / vnext[key]).is_file() for key in (
+                "case_authority", "inventory", "validation_receipt", "review_target_receipt",
+                "failed_attempts", "block_state_visual_audit"))
+            and vnext["paper_result"]["closed_open_restart_findings"] == 0
+            and vnext["paper_result"]["closed_gate_collision_cells"] == 88
+            and vnext["paper_result"]["open_gate_collision_cells"] == 0
+            and vnext["paper_result"]["observation_receipts_required"] == 0
+            and vnext["brad_visual_approval"] is None
+            and vnext["public_or_production_launch"] is False
+            and vnext["production_mutation"] is False,
+            "vNext private candidate lineage drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
             and gate["m4_private_automated_staging_open"] is True
             and gate["m4_public_or_production_open"] is False
             and "morning" in gate["final_human_gate"]
+            and "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval"
+                in gate["required_next_evidence"]
             and "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline"
                 in gate["required_next_evidence"]
             and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"
