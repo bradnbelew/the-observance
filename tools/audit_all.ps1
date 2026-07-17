@@ -41,6 +41,7 @@ foreach ($required in @(
   (Join-Path $tools "check_m3_v3_revision.py"),
   (Join-Path $tools "check_m3_v4_revision.py"),
   (Join-Path $tools "check_player_facing_experience_standard.py"),
+  (Join-Path $tools "check_supabase_security_proposal.py"),
   (Join-Path $tools "sim_m3_vertical_slice.py"),
   (Join-Path $tools "check_hold_invitation.ps1"),
   (Join-Path $tools "render_v5_map_art.py"),
@@ -70,6 +71,7 @@ Invoke-External "M3 private-slice authority/security" $root "python" @((Join-Pat
 Invoke-External "M3 v3 authored revision/receipt gate" $root "python" @((Join-Path $tools "check_m3_v3_revision.py"))
 Invoke-External "M3 v4 content-dependent revision/receipt gate" $root "python" @((Join-Path $tools "check_m3_v4_revision.py"))
 Invoke-External "cross-phase player-facing experience authority" $root "python" @((Join-Path $tools "check_player_facing_experience_standard.py"))
+Invoke-External "Supabase production-baseline hardening proposal" $root "python" @((Join-Path $tools "check_supabase_security_proposal.py"))
 Invoke-External "M3 private-slice block reachability" $root "python" @((Join-Path $tools "sim_m3_vertical_slice.py"))
 Invoke-External "playable Hold and private Discord handoff" $root "powershell" @(
   "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",

@@ -3,7 +3,7 @@
   "run_time": "2026-07-17T02:42:00-05:00",
   "source_checkpoint": "9861dad1f866396ed593c6cc05c81e46143c8b68",
   "branch": "codex/m3-disposable-paper-gate",
-  "result": "offline_and_disposable_private_gates_passed_external_authenticated_integrations_blocked",
+  "result": "offline_and_disposable_private_gates_passed; historical generic external blockers superseded by exact target discovery receipt",
   "routed_chain": {
     "passed_before_external_boundary": [
       "repository integrity",
@@ -66,10 +66,10 @@
     {"path":"dashboard/content/the-hold-v5/the-hold.zip","bytes":10492,"sha256":"ddeaa3e88c6030a36150cf2a534ec85914f57b4f09191059e96c04a3bee9a4ed"}
   ],
   "external_private_target_blockers": {
-    "vercel": "No .vercel/project.json, project identity, team identity, or authentication is configured; no preview was created.",
-    "railway_worker_and_cron": "Deployable configs exist but no project/service identity or authentication is configured; neither family was deployed.",
-    "discord": "No exact staging guild/channel identity or credentials are configured; no command registration or message mutation occurred.",
-    "supabase": "No disposable/local runtime or exact authorized private hosted target is available. Proposal, rollback/forward SQL, guards, and static self-tests pass; no SQL was applied and advisors were not fabricated.",
+    "vercel": "Exact team/project is verified and preview-authorized; an exact-candidate preview receipt remains pending. Production promotion stays closed.",
+    "railway_worker_and_cron": "Both exact production families are verified. Each has only a production environment; no safe isolated staging environment exists and production was not redeployed.",
+    "discord": "Required secret variable names exist in both production services, but no distinct staging guild/channel is identified; production Discord remains untouched.",
+    "supabase": "Exact production baseline and advisor findings are verified. No development branch is established; production SQL remains unapplied and branch creation requires connector permission plus cost confirmation.",
     "media": "Five exact asset identities are receipted, but their source bytes are absent from this checkout; no packaging/upload/custody receipt was fabricated.",
     "public_or_production": "Closed by authority; production Supabase, public domain, brother/Crafty, public Discord, and media originals were untouched."
   },
@@ -77,11 +77,11 @@
     "explicit_data_api_grants_reviewed_separately_from_rls": true,
     "service_role_server_only": true,
     "user_metadata_authorization_absent": true,
-    "real_security_and_performance_advisors": "blocked_without_disposable_target"
+    "real_security_and_performance_advisors": "production_baseline_read_only_receipted; post-remediation development-target advisors still required"
   },
   "not_launch_ready": [
     "P5-P12 still require current-standard experiential reauthoring and human review beyond reusable legacy runtime breadth.",
-    "No authenticated Vercel, Railway, Discord, or disposable Supabase receipt exists.",
+    "Vercel and both Railway production identities are authenticated, but Railway/Discord and Supabase still lack isolated non-production targets.",
     "Exact source media bytes are unavailable in this checkout.",
     "Brad has not accepted vNext or completed the full morning campaign playthrough."
   ],

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/server';
+import { getPublicProjectionClient } from '@/lib/supabase/public-projection';
 import { RuneGlyphs } from '@/lib/RuneGlyphs';
 import { project, REDACTED_GLYPH, type RecordSignal } from '@/lib/record-projection';
 import { readValidatedV5HoldArchive, V5_HOLD_ARCHIVE_DOWNLOAD_PATH } from '@/lib/v5-hold-archive';
@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug?: st
 
 async function readSignal(): Promise<{ signal: RecordSignal; unavailable: boolean }> {
   try {
-    const supabase = await createClient();
+    const supabase = getPublicProjectionClient();
+    if (!supabase) return { signal: {}, unavailable: true };
     const { data, error } = await (supabase as unknown as {
       from: (relation: string) => { select: (columns: string) => { maybeSingle: () => Promise<{ data: Record<string, unknown> | null; error: unknown }> } };
     }).from('v_record').select('movement,phase_key,current_case_key,current_case_title,cases_completed,nodes_completed,total_nodes,closed,ending_branch,name_treatment,wren_outcome').maybeSingle();

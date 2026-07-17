@@ -1,0 +1,139 @@
+{
+  "schema_version": "1.0.0-external-target-discovery-receipt",
+  "observed_at": "2026-07-17T08:30:13-05:00",
+  "branch": "codex/m3-disposable-paper-gate",
+  "source_checkpoint": "c2361ff36b09fae9f107b68a04959ec7e504c403",
+  "authority": "Brad overnight private-launch authority plus verified control-room target discovery",
+  "supabase": {
+    "project_ref": "fndmhbpxnodrnbrzrlqq",
+    "organization_id": "yaenkbhruvrgkxqvngbk",
+    "display_name": "bradnbelew@gmail.com's Project",
+    "region": "us-east-2",
+    "status": "ACTIVE_HEALTHY",
+    "postgres": "17 / 17.6.1.127",
+    "production_baseline_only": true,
+    "observed_counts": {
+      "investigations": 10,
+      "investigation_nodes": 82,
+      "puzzles": 96,
+      "hints": 201,
+      "event_log": 6858,
+      "required_media": 5
+    },
+    "all_listed_public_tables_rls_enabled": true,
+    "visible_migrations": ["20260715020218 security_grants"],
+    "branch_list_control_room_failure": "Project reference is missing when validating permissions",
+    "branch_list_interpretation": "connector failure; not evidence that no development branch exists",
+    "current_task_connector_result": "all project, migration, branch, and advisor reads returned MCP -32600 permission denied",
+    "current_task_connector_interpretation": "task-scoped connector permission failure; target identity and control-room read-only receipts remain authoritative",
+    "security_advisor": {
+      "errors": [
+        "SECURITY DEFINER public.v_archive",
+        "SECURITY DEFINER public.v_required_media_delivery",
+        "SECURITY DEFINER public.v_case_progress",
+        "SECURITY DEFINER public.v_heatmap",
+        "SECURITY DEFINER public.v_compliance_counts",
+        "SECURITY DEFINER public.v_health",
+        "SECURITY DEFINER public.v_record"
+      ],
+      "info": "many RLS-enabled public tables have no policies",
+      "warn": "leaked-password protection disabled"
+    },
+    "performance_advisor": {
+      "findings": ["several unindexed foreign keys", "public.dossiers lacks a primary key", "unused-index notices"],
+      "unused_index_disposition": "no index is dropped without a representative workload window and a verified development-target replay"
+    },
+    "legacy_repository_ref_spelling": "fdnmhbpxnodrnbrzrlqq",
+    "ref_reconciliation": "both spellings are hard-blocked by local/preview mutation guards; only the connected-app ref is treated as verified",
+    "production_mutated": false,
+    "development_target": "not established; no branch/project creation without platform cost confirmation",
+    "proposal": [
+      "design/m2/sql/production-security-hardening-v2.up.sql",
+      "design/m2/sql/production-security-hardening-v2.rollback.sql",
+      "design/m2/sql/production-security-hardening-v2.forward.sql",
+      "design/m2/sql/tests/production-security-hardening-v2.assert.sql"
+    ]
+  },
+  "vercel": {
+    "team_name": "Braden's projects",
+    "team_id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "team_slug": "bradens-projects-c5e41066",
+    "project_name": "the-observance-kjxn",
+    "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "framework": "nextjs",
+    "node_version": "24.x",
+    "newest_ready_production_deployment_id": "dpl_26tawqUKuod6bVCqakmS2mEw1wdz",
+    "newest_ready_production_commit": "ca5416e477597b6e38f1dc82c9007c814184c980",
+    "newest_ready_production_is_rebuild_candidate": false,
+    "preview_authorized": true,
+    "production_promotion_authorized": false,
+    "preview_write_policy": "all external writes fail closed unless a verified non-production Supabase ref is explicitly bound"
+  },
+  "railway": {
+    "cli": "5.26.2",
+    "account": "bradnbelew@gmail.com",
+    "workspace_name": "bradnbelew's Projects",
+    "workspace_id": "20811515-27dd-4d3d-af8f-57c656a120d1",
+    "families": [
+      {
+        "role": "recovery_cron",
+        "project_name": "distinguished-balance",
+        "project_id": "462b0f7f-a98a-4cd7-9641-01b5704375c9",
+        "environment_name": "production",
+        "environment_id": "769978d7-28c3-4a4b-a586-e8378c80ac71",
+        "service_id": "06c1fdec-ab9d-44f7-ad70-96feea84023e",
+        "service_name": "the-observance",
+        "latest_deployment_id": "80782ef4-9dd5-402f-b736-01dacbe0426c",
+        "latest_commit": "ca5416e477597b6e38f1dc82c9007c814184c980",
+        "schedule": "*/10 * * * *",
+        "start_command": "npm run showrunner",
+        "deployment_stopped_between_cron_invocations": true
+      },
+      {
+        "role": "persistent_worker",
+        "project_name": "aware-playfulness",
+        "project_id": "e8158c1a-259b-4079-b51d-df7a2bb654e6",
+        "environment_name": "production",
+        "environment_id": "b6cbdbfd-e0ae-4977-bdb5-94d1c20f932a",
+        "service_id": "ea488e14-1c46-4ecf-8448-5c7842247dd1",
+        "service_name": "the-observance",
+        "latest_deployment_id": "904bdad1-c107-44c2-9ea3-296ced8f54ba",
+        "start_command": "npm start",
+        "deployment_state": "RUNNING"
+      }
+    ],
+    "environment_inventory": "each project exposes only one non-ephemeral environment named production",
+    "required_secret_variable_names_present_in_both": [
+      "CHANNEL_THE_RECORD",
+      "DISCORD_APP_ID",
+      "DISCORD_BOT_TOKEN",
+      "DISCORD_GUILD_ID",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "SUPABASE_URL"
+    ],
+    "secret_values_printed_or_committed": false,
+    "redacted_log_findings": [
+      "cron invocations repeatedly emit npm warn config production Use --omit=dev instead",
+      "persistent worker warns that Discord Administrator permission is unnecessary"
+    ],
+    "private_staging_result": "not_created",
+    "private_staging_residue": "no existing non-production environment, no distinct staging Discord guild/channel, no verified non-production Supabase ref, and a duplicated running environment may consume paid resources",
+    "production_mutated": false
+  },
+  "paper_review_target": {
+    "expected_pid": 20708,
+    "expected_address": "127.0.0.1:25591",
+    "read_only_reaudit": "PID absent and port closed; latest.log ends after successful startup and contains no graceful stop record",
+    "interpretation": "the old review target is no longer live; do not fabricate a clean-stop receipt; prepare a fresh final target after the new candidate passes"
+  },
+  "remaining_exact_external_residue": [
+    "Supabase task-scoped connector permission and development-branch/cost confirmation",
+    "distinct private Discord guild/channel and non-production Supabase binding for Railway staging",
+    "potential paid Railway environment/runtime confirmation",
+    "five exact source media byte sets absent from this checkout",
+    "Crafty/brother target intentionally unavailable",
+    "public production promotion deferred to Brad's acceptance"
+  ],
+  "production_mutated": false,
+  "public_launch": false
+}

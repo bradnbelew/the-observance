@@ -87,16 +87,20 @@ live unlocks, outage recovery, player visibility, or Brad approval. Production r
 
 ## Known external gaps carried forward
 
-- `../m3/EXTERNAL-GAP-AUDIT-2026-07-16.md` records the latest read-only discovery receipts. Railway's
-  dashboard was unauthenticated and no CLI/token/IDs were available, so authenticated project,
-  environment, service, deployment, and configuration-parity evidence remains open for both families.
+- `EXTERNAL-TARGET-DISCOVERY-RECEIPT-2026-07-17.json` supersedes the older generic identity gaps. It
+  verifies the exact Supabase production baseline, Vercel team/project, and both Railway production
+  families. It also preserves the narrower residue: there is no distinct Railway/Discord staging guild
+  or non-production database, no existing non-production Railway environment, and no Supabase
+  development branch confirmed without connector permission and cost confirmation. Production remains
+  read-only and the old services are not rebuild receipts.
 - The exact four receipted video byte sets and full five-file recovered packet were located at the
   previously recorded local staging paths and hash-match the committed receipts. Best-master/ownership
   confirmation, human audiovisual/accessibility review, and Brad's keep/re-edit/replace decisions remain
   open; authenticated Drive searches returned no matching video, audio, or packet files.
-- Vercel team/project and current production deployment identity were reconfirmed read-only, but that
-  deployment predates M2/M3 and no exact-checkpoint preview exists in the 20 newest deployments. The M2
-  preview readiness receipt remains open; production was untouched.
+- Vercel project `prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ` is authenticated and preview deployment is open.
+  The current READY production deployment is still old commit `ca5416e...`; it is not the rebuild.
+  Preview writes now fail closed unless an exact non-production Supabase ref is explicitly verified.
+  The exact-checkpoint preview/readback receipt remains open; production aliases remain untouched.
 - Crafty/brother-host access remains unavailable. Public DNS resolved the declared endpoint, but TCP
   `25569` did not answer, so no live Paper/Crafty version or runtime metadata was obtained.
 - Phase 2 timing and evidence fairness are architecture findings; human playtest, source AV review, and
@@ -105,12 +109,14 @@ live unlocks, outage recovery, player visibility, or Brad approval. Production r
   and `16de...` is its LF-normalized Git authority; both canonicalize to semantic hash `d2eec3...`.
   Production still records `37020e...` and remains untouched. A later confirmed same-release cutover
   must migrate source/package/database/runtime together to `16de...` and retain rollback bytes.
-- No disposable Supabase target was available and the official CLI could not be installed in the
-  restricted environment. A 2026-07-16 continuation confirmed only the production project was visible,
-  hard-blocked its ref, and added a CLI-scaffolded local-only lifecycle/pgTAP/advisor harness plus an
-  exact blocker record in `design/m2/M2-SUPABASE-VALIDATION.md`. The additive SQL remains a reviewed
-  proposal outside the migrations folder; a real local/branch application, both advisors, and recorded
-  migration/rollback/forward receipts remain required.
+- Supabase production project `fndmhbpxnodrnbrzrlqq` is now the verified read-only baseline. Its real
+  advisors report seven SECURITY DEFINER public views, many RLS tables without policies, disabled
+  leaked-password protection, unindexed foreign keys, and a missing `dossiers` primary key. The
+  repository's older `fdnm...` spelling is not a second inferred target; both forms are mutation-blocked.
+  `design/m2/sql/production-security-hardening-v2.*` contains the staged security/grant/PK/index and
+  exact rollback proposal. A disposable/development application, rollback, forward replay, both
+  post-change advisors, and Auth leaked-password configuration receipt remain required before any
+  production DDL.
 - This isolated task had no Discord/Supabase secrets. The aggregate routed run honestly stopped at the
   secret-dependent Discord resolve check after every preceding source/M3/layout/scenario/SQL audit
   passed; no credentials were fabricated or copied. Discord TypeScript and pack checks, dashboard

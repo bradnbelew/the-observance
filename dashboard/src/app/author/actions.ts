@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { assertAuthor } from '@/lib/author-auth';
+import { assertExternalMutationAllowed } from '@/lib/deployment-target';
 import type { BeatStatus } from '@/lib/database.types';
 
 export type ActionResult = { ok: boolean; error?: string };
@@ -10,6 +11,7 @@ const refresh = () => revalidatePath('/author');
 
 async function decideBeat(id: number, status: Extract<BeatStatus, 'approved' | 'skipped'>): Promise<ActionResult> {
   await assertAuthor();
+  assertExternalMutationAllowed('author.decideBeat');
   if (!Number.isSafeInteger(id) || id <= 0) return { ok: false, error: 'Invalid beat id.' };
   const supabase = createAdminClient();
   const { error } = await supabase.from('beat_queue').update({ status, decided_at: new Date().toISOString() }).eq('id', id).eq('status', 'pending');
@@ -30,6 +32,7 @@ const nonnegativeInt = (value: FormDataEntryValue | null): number | null => {
 
 export async function updateWhisperBudget(formData: FormData): Promise<ActionResult> {
   await assertAuthor();
+  assertExternalMutationAllowed('author.updateWhisperBudget');
   const id = Number(formData.get('id'));
   const budget = nonnegativeInt(formData.get('budget'));
   const spent = nonnegativeInt(formData.get('spent'));
@@ -46,6 +49,7 @@ export async function updateWhisperBudgetForm(formData: FormData): Promise<void>
 
 export async function setWatcherSleep(asleep: boolean): Promise<ActionResult> {
   await assertAuthor();
+  assertExternalMutationAllowed('author.setWatcherSleep');
   const supabase = createAdminClient();
   const { error } = await supabase.from('settings').upsert({ key: 'watcher_sleep', value: asleep, updated_at: new Date().toISOString() }, { onConflict: 'key' });
   if (error) return { ok: false, error: error.message };

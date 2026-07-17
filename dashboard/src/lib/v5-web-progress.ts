@@ -3,6 +3,7 @@ import 'server-only';
 import type { Json } from '@/lib/database.types';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { isAllowedV5WebsiteSequence } from '@/lib/v5-web-node-policy';
+import { externalMutationsAllowed } from '@/lib/deployment-target';
 
 export type V5WebProgressState = 'complete' | 'blocked' | 'unavailable';
 
@@ -55,6 +56,9 @@ export async function recordV5WebSequence(
   // service-role client into a bypass for a Discord conclusion, physical mechanism, ritual, or
   // unauthored node merely by passing a different key.
   if (!isAllowedV5WebsiteSequence(nodeKeys)) {
+    return { complete: false, state: 'unavailable' };
+  }
+  if (!externalMutationsAllowed()) {
     return { complete: false, state: 'unavailable' };
   }
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {

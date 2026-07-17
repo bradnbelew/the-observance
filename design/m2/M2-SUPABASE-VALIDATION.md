@@ -1,8 +1,24 @@
 # M2 Disposable Supabase Validation
 
-Status: **BLOCKED ON DISPOSABLE DATABASE RUNTIME — SAFE LOCAL HARNESS READY**
+Status: **PRODUCTION BASELINE VERIFIED READ-ONLY; DEVELOPMENT TARGET STILL REQUIRED**
 
 Date: 2026-07-16 (America/Chicago)
+
+## 2026-07-17 superseding target receipt
+
+Brad's control-room connector receipt verifies production project `fndmhbpxnodrnbrzrlqq` in organization
+`yaenkbhruvrgkxqvngbk`, with the existing Observance row set and real security/performance advisor
+findings. The older repository spelling `fdnmhbpxnodrnbrzrlqq` is not treated as another project; both
+strings are now rejected by local and Vercel-preview mutation guards until the historical spelling is
+fully reconciled. In this task, project/advisor connector calls return MCP `-32600` permission denied;
+that is recorded as task-scoped connector failure, not target absence.
+
+The new proposal set `production-security-hardening-v2.{up,rollback,forward}.sql` and its assertion SQL
+address the named SECURITY DEFINER views, direct Data API grants, missing `dossiers` primary key, and
+known foreign-key index surface. It remains outside hosted migrations and has not been applied. The
+branch-list connector failure does not prove no branches exist; creating a branch still requires the
+platform cost flow. Full details are in
+`../handoff/EXTERNAL-TARGET-DISCOVERY-RECEIPT-2026-07-17.json`.
 
 This record closes no production, M4, or platform gate. It documents the attempt to execute the reviewed
 M2 proposal from checkpoint `d63c48cca3b2964aea1513f704574855b4bf8a72` and the safe validation tooling

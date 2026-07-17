@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { getPublicProjectionClient } from '@/lib/supabase/public-projection';
 import { RuneGlyphs } from '@/lib/RuneGlyphs';
 import { projectArchive, type ArchiveEvidence } from '@/lib/archive-projection';
 
@@ -10,7 +10,8 @@ interface DeliveredMedia { media_key: string; case_key: string; node_key: string
 
 async function readRecovered(): Promise<{ rows: ArchiveEvidence[]; media: DeliveredMedia[]; unavailable: boolean }> {
   try {
-    const supabase = await createClient();
+    const supabase = getPublicProjectionClient();
+    if (!supabase) return { rows: [], media: [], unavailable: true };
     const client = supabase as unknown as { from: (relation: string) => { select: (columns: string) => Promise<{ data: Record<string, unknown>[] | null; error: unknown }> } };
     const [archiveResult, mediaResult] = await Promise.all([
       client.from('v_archive').select('node_key,case_key,case_ordinal,case_title,node_ordinal,title,modality,reward,recovered_at'),

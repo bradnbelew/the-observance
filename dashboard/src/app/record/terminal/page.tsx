@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { getPublicProjectionClient } from '@/lib/supabase/public-projection';
 import { RuneGlyphs } from '@/lib/RuneGlyphs';
 import { projectPublicDocket } from '@/lib/record-projection';
 
@@ -11,7 +11,8 @@ interface RecordStatus { phase_key: string; nodes_completed: number; total_nodes
 
 async function readStatus(): Promise<{ status: RecordStatus | null; cases: CaseProgress[] }> {
   try {
-    const supabase = await createClient();
+    const supabase = getPublicProjectionClient();
+    if (!supabase) return { status: null, cases: [] };
     const client = supabase as unknown as { from: (relation: string) => { select: (columns: string) => Promise<{ data: Record<string, unknown>[] | null; error: unknown }> & { maybeSingle?: never } } };
     const recordPromise = (supabase as unknown as { from: (relation: string) => { select: (columns: string) => { maybeSingle: () => Promise<{ data: Record<string, unknown> | null; error: unknown }> } } }).from('v_record').select('phase_key,nodes_completed,total_nodes,closed').maybeSingle();
     const casesPromise = client.from('v_case_progress').select('case_key,ordinal,title,summary,total_nodes,completed_nodes,complete');

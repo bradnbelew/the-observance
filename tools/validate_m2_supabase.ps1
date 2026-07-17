@@ -9,7 +9,10 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$script:ProductionProjectRef = "fdnmhbpxnodrnbrzrlqq"
+$script:ProductionProjectRefs = @(
+  "fndmhbpxnodrnbrzrlqq", # verified connected-app project ref, 2026-07-17
+  "fdnmhbpxnodrnbrzrlqq"  # legacy repository spelling; fail closed until reconciled
+)
 $script:Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $script:ProposalDir = Join-Path $script:Root "design\m2\sql"
 $script:HarnessDir = Join-Path $script:ProposalDir "tests"
@@ -21,7 +24,7 @@ function Assert-True([bool]$Condition, [string]$Message) {
 function Assert-SafeTarget {
   Assert-True ($Target -eq "local") "Only a local Supabase target is supported by this harness."
   Assert-True ([string]::IsNullOrWhiteSpace($ProjectRef)) "Local validation refuses every project ref; do not link a hosted project."
-  Assert-True ($ProjectRef -ne $script:ProductionProjectRef) "Production project $script:ProductionProjectRef is forbidden."
+  Assert-True ($ProjectRef -notin $script:ProductionProjectRefs) "Production/legacy project ref is forbidden."
 }
 
 function Invoke-Cli([string[]]$Arguments, [string]$WorkingDirectory) {
@@ -72,12 +75,14 @@ function Invoke-SelfTest {
   )) {
     Assert-True (Test-Path -LiteralPath (Join-Path $script:HarnessDir $name)) "missing validation input: $name"
   }
-  $blocked = $false
-  try {
-    $script:ProjectRef = $script:ProductionProjectRef
-    Assert-SafeTarget
-  } catch { $blocked = $true }
-  Assert-True $blocked "production-ref guard did not fail closed"
+  foreach ($productionRef in $script:ProductionProjectRefs) {
+    $blocked = $false
+    try {
+      $script:ProjectRef = $productionRef
+      Assert-SafeTarget
+    } catch { $blocked = $true }
+    Assert-True $blocked "production-ref guard did not fail closed for $productionRef"
+  }
   $script:ProjectRef = ""
   Write-Host "validate_m2_supabase self-test: PASS - local-only target guard and validation inputs"
 }
@@ -150,7 +155,7 @@ try {
     status = "passed"
     target_kind = "local"
     hosted_project_ref = $null
-    production_project_ref_forbidden = $script:ProductionProjectRef
+    production_project_refs_forbidden = $script:ProductionProjectRefs
     cli_version = $cliVersion
     git_commit = $gitCommit
     started_at = $startedAt.ToString("o")

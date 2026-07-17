@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
+import { getPublicProjectionClient } from "@/lib/supabase/public-projection";
 import type { HealthView } from "@/lib/database.types";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
 
@@ -7,8 +7,10 @@ export const metadata: Metadata = { title: "Network Status - Copperline Hosting"
 export const dynamic = "force-dynamic";
 
 export default async function StatusPage() {
-  const supabase = await createClient();
-  const result = await supabase.from("v_health").select("*").maybeSingle();
+  const supabase = getPublicProjectionClient();
+  const result = supabase
+    ? await supabase.from("v_health").select("*").maybeSingle()
+    : { data: null, error: new Error('projection unavailable') };
   const health = result.data as HealthView | null;
   const mirrorReachable = !result.error;
   const lastContact = health?.last_beat_at

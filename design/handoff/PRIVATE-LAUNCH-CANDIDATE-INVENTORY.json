@@ -26,7 +26,7 @@
     {"phase":"P1","experience":"Copperline archaeology","authority":"Phase 2 authored","implementation":"legacy website routes and local fixtures exist; recurring lived-in archive expansion begun for P4","gap":"full current-standard content density, responsive review, immutable hosted history, and private deployment receipt"},
     {"phase":"P2","experience":"gated prologue save","authority":"Phase 2 authored","implementation":"playable Hold handoff, local archive manifest, download/hash runtime exist","gap":"current private end-to-end client and package parity receipt"},
     {"phase":"P3","experience":"arrival, settlement, Discord","authority":"Phase 2 authored","implementation":"Paper, identity-link, Discord docket, and local-primary runtime components exist","gap":"private authenticated Discord guild/service target and cold player review"},
-    {"phase":"P4","experience":"Mouth, descent, intake","authority":"vNext case brief frozen for offline build","implementation":"compact authored Paper slice, free-text zero-receipt deductions, Copperline comparison fixture, gate/security/replay runtime in progress","gap":"fresh disposable Paper/restart receipt, deployed cross-surface route, and Brad morning acceptance"},
+    {"phase":"P4","experience":"Mouth, descent, intake","authority":"vNext case brief and disposable Paper proof complete","implementation":"compact authored Paper slice, free-text zero-receipt deductions, Copperline comparison fixture, gate/security/replay/restart proof passed","gap":"authenticated cross-surface private route and Brad morning acceptance"},
     {"phase":"P5","experience":"refuge life and seven Ways","authority":"Phase 2 authored","implementation":"legacy civic/archive nodes, structures, and runtime predicates exist","gap":"current-standard civic ethnography prose, natural evidence placement, novelty audit, and human timing"},
     {"phase":"P6","experience":"six Keeper dossiers","authority":"Phase 2 authored","implementation":"six legacy Keeper lanes, artifacts, dialogue, structures, and affidavit runtime exist","gap":"profession-specific reauthoring, reduction of repetitive cipher/sign mechanics, current voice and visual audit"},
     {"phase":"P7","experience":"Cistern Winter","authority":"Phase 2 authored","implementation":"legacy records, sample/valve mechanics, Nessa and media bindings exist","gap":"forensic chain-of-custody reauthoring and full exoneration experience review"},
@@ -38,11 +38,11 @@
   ],
   "surfaces": {
     "minecraft": {"source":"plugin, datapack, resourcepack, structure manifests","status":"substantial existing runtime plus active P4 vNext; localhost disposable target is authorized","production":"forbidden"},
-    "web": {"source":"dashboard Next.js application","status":"local buildable application and Copperline fixture; no exact Vercel project binding found","deployment":"blocked_without_project_identity_and_authentication"},
-    "discord": {"source":"discord TypeScript services and railway.worker.json/railway.cron.json","status":"local buildable worker/cron and runtime bindings; no token, guild, channel, Railway project identity, or authenticated target present","deployment":"blocked_without_exact_private_targets_and_authentication"},
-    "supabase": {"source":"dashboard/supabase, discord/supabase, design/m2/sql","status":"migration proposals, rollback SQL, explicit grants/RLS work, and disposable validation tooling exist; no authenticated disposable or exact private project target present","deployment":"production unapplied; external validation blocked, local/disposable validation remains permitted"},
+    "web": {"source":"dashboard Next.js application","status":"exact Vercel team/project authenticated; production is old; preview deployment authorized with fail-closed external-write policy","deployment":"preview pending exact candidate commit; production promotion forbidden"},
+    "discord": {"source":"discord TypeScript services and railway.worker.json/railway.cron.json","status":"both exact Railway production families authenticated and secret-name complete; no distinct staging guild/database/environment exists","deployment":"production untouched; staging blocked specifically on safe target isolation and potential paid resource"},
+    "supabase": {"source":"dashboard/supabase, discord/supabase, design/m2/sql","status":"exact healthy production baseline and advisor findings verified; hardening UP/rollback/forward/assertion proposal authored","deployment":"production read-only; development target blocked on connector permission/branch cost confirmation"},
     "media": {"source":"arc/v5/media-manifest.json and custody authorities","status":"five exact source-byte identities are recorded (four clips and one WAV), but none of those media bytes is present in this checkout","deployment":"blocked; never fabricate, redownload, replace, or claim custody"},
-    "director_dashboard": {"source":"dashboard author routes and read-only projections","status":"local implementation exists; required credentials absent; private deployment blocked"}
+    "director_dashboard": {"source":"dashboard author routes and read-only projections","status":"preview-safe implementation exists; preview writes reject production and unverified targets","deployment":"read-only Vercel preview permitted; mutation requires a verified non-production Supabase ref"}
   },
   "supabase_july_2026_boundary": {
     "explicit_grants_separate_from_rls": true,
@@ -52,12 +52,13 @@
     "production_sql_applied": false
   },
   "external_target_discovery": {
-    "vercel_project_binding": "absent",
-    "railway_project_binding": "absent",
-    "supabase_project_binding": "absent",
-    "discord_private_target_identity": "absent",
-    "relevant_environment_variable_names_present": [],
-    "rule": "Do not infer a project, account, guild, channel, database, or public hostname. Continue offline packages and localhost proof."
+    "receipt": "design/handoff/EXTERNAL-TARGET-DISCOVERY-RECEIPT-2026-07-17.json",
+    "vercel_project_binding": "verified_prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "railway_project_binding": "verified_two_production_families_only",
+    "supabase_project_binding": "verified_production_fndmhbpxnodrnbrzrlqq",
+    "discord_private_target_identity": "absent_distinct_staging_identity",
+    "relevant_environment_variable_names_present": ["DISCORD_BOT_TOKEN","DISCORD_APP_ID","DISCORD_GUILD_ID","CHANNEL_THE_RECORD","SUPABASE_URL","SUPABASE_SERVICE_ROLE_KEY"],
+    "rule": "Use Vercel preview read-only. Never mutate the verified production baselines. Railway staging requires a distinct guild/channel and non-production database; Supabase development creation requires cost confirmation."
   },
   "approval": {
     "v5_experiential_proof": "rejected_incomplete",
