@@ -26,6 +26,7 @@ REVIEW_RECEIPT = M3 / "PAPER-V3-REVIEW-SERVER-RECEIPT.json"
 FAILED_ATTEMPTS = M3 / "PAPER-V3-FAILED-ATTEMPTS.json"
 PACKAGE_MANIFEST = M3 / "PACKAGE-MANIFEST-V3.json"
 ACTIVE_REVIEW = M3 / "BRAD-V3-ACTIVE-REVIEW.json"
+V3_DECISION = M3 / "BRAD-V3-REVIEW-DECISION.json"
 EXPECTED_SLICE_SHA256 = "0181b5566ea49a653b9cc95a650246c52ce670735d6ec2d6e4b1f6b9bc2a7ae5"
 PASSING_SOURCE_COMMIT = "ebc731ff3bfc0eb42572246b814ac541811190f2"
 
@@ -315,12 +316,12 @@ def check_package_manifest() -> None:
 def check_active_review() -> None:
     review = load(ACTIVE_REVIEW)
     require(review["schema_version"] == "1.0.0-m3-brad-v3-active-review"
-            and review["review_status"] == "in_progress_binding_finding_recorded_not_approved"
+            and review["review_status"] == "in_progress_decision_not_approved_revision_required"
             and review["brad_visual_approval"] is None and review["m4_authority"] == "closed",
             "active v3 review approval/M4 status drift")
-    require(review["live_server_directive"] == "do_not_stop_or_mutate_while_brad_continues_the_v3_walk"
-            and review["implementation_state"] == "paused_until_full_v3_feedback_pass_complete"
-            and review["revision_authority"] == "blocked_until_brad_declares_the_full_v3_feedback_pass_complete",
+    require(review["live_server_directive"] == "do_not_stop_or_mutate_until_brad_disconnects"
+            and review["implementation_state"] == "paused_until_full_v3_visual_pass_and_disconnect"
+            and review["revision_authority"] == "blocked_until_full_v3_visual_pass_completes_and_brad_disconnects",
             "active v3 server/revision hold weakened")
     require(len(review["binding_finding_verbatim"]) == 4
             and "not acceptable as final legibility" in review["binding_interpretation"],
@@ -332,6 +333,24 @@ def check_active_review() -> None:
         "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION",
     ] and all(row["current_v3_compliance"] is False and row["predicate"] for row in checks),
             "active v3 future acceptance checks weakened")
+    decision = load(V3_DECISION)
+    require(decision["schema_version"] == "1.0.0-m3-brad-v3-decision"
+            and decision["decision"] == "not_approved_revision_required"
+            and decision["brad_visual_approval"] is None and decision["m4_authority"] == "closed",
+            "decisive v3 rejection or M4 gate drift")
+    require(decision["review_status"] == "mechanic_complete_visual_pass_and_disconnect_pending"
+            and decision["live_server_directive"] == "do_not_stop_or_mutate_until_brad_disconnects"
+            and "without reading, comparing, understanding, or deducing" in decision["decisive_binding_finding"],
+            "v3 mechanic-success/checklist-rejection finding drift")
+    next_checks = decision["required_next_revision_checks"]
+    require(len(next_checks) == 9 and all(row["current_v3_compliance"] is False for row in next_checks)
+            and {row["check_id"] for row in next_checks} >= {
+                "M3.VNEXT.FOUR_CONTENT_DEPENDENT_CONCLUSIONS",
+                "M3.VNEXT.CONTENT_DEPENDENT_SYNTHESIS",
+                "M3.VNEXT.NAIVE_CLICK_THROUGH_NEGATIVE",
+                "M3.VNEXT.BLIND_AND_BRUTE_FORCE_RESISTANCE",
+                "M3.VNEXT.COLD_PLAYER_COMPREHENSION",
+            }, "v3 next-revision reasoning/negative-test authority incomplete")
 
 
 def main() -> None:
@@ -347,7 +366,7 @@ def main() -> None:
     check_paper_receipts()
     check_package_manifest()
     check_active_review()
-    print("M3 v3 structural/Paper receipts PASS — active review finds affordance/objective legibility noncompliant; revision paused; M4 closed; Brad approval null")
+    print("M3 v3 structural/Paper receipts PASS — V3 NOT APPROVED: blind checklist completion bypasses reasoning; live server held; revision blocked; M4 closed")
 
 
 if __name__ == "__main__":

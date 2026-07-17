@@ -159,27 +159,41 @@ def main() -> None:
             "v3 pristine review-target receipt drift")
 
     active_v3 = data["active_brad_v3_review"]
-    require(active_v3["status"] == "in_progress_binding_finding_recorded_not_approved"
+    require(active_v3["status"] == "in_progress_decision_not_approved_revision_required"
             and active_v3["brad_visual_approval"] is None and active_v3["m4_authority"] == "closed",
             "active Brad v3 review approval/M4 gate drift")
     require(active_v3["machine_review_overlay"] == "design/m3/BRAD-V3-ACTIVE-REVIEW.json"
             and (ROOT / active_v3["machine_review_overlay"]).is_file()
+            and active_v3["decision_authority"] == "design/m3/BRAD-V3-REVIEW-DECISION.json"
+            and (ROOT / active_v3["decision_authority"]).is_file()
             and len(active_v3["current_noncompliance"]) == 4
             and active_v3["required_future_check_ids"] == [
                 "M3.V3R.DISTINCT_FILING_AFFORDANCE",
                 "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
                 "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION",
             ], "active Brad v3 finding/check overlay drift")
-    require(active_v3["implementation_state"] == "paused_until_full_v3_feedback_pass_complete"
+    require(active_v3["implementation_state"] == "paused_until_full_v3_visual_pass_and_disconnect"
             and active_v3["live_server_directive"]
-                == "do_not_stop_or_mutate_while_brad_continues_the_v3_walk",
+                == "do_not_stop_or_mutate_until_brad_disconnects",
             "active Brad v3 revision/server hold weakened")
+
+    decisive = data["brad_v3_decisive_mechanic_finding"]
+    require(decisive["decision"] == "not_approved_revision_required"
+            and decisive["review_state"] == "mechanic_complete_visual_pass_and_disconnect_pending"
+            and decisive["brad_visual_approval"] is None and decisive["m4_authority"] == "closed",
+            "decisive Brad v3 rejection state drift")
+    require(decisive["decision_authority"] == active_v3["decision_authority"]
+            and decisive["required_next_revision_check_count"] == 9
+            and len(decisive["required_negative_tests"]) == 2
+            and decisive["live_server_directive"] == "do_not_stop_or_mutate_until_brad_disconnects",
+            "v3 reasoning/negative-test/server-hold authority drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "Brad's complete v3 feedback pass while the live target remains unchanged"
+            and "Brad's complete v3 visual pass and confirmed disconnect while the live target remains unchanged"
                 in gate["required_next_evidence"]
-            and "Brad's explicit v3 visual approval" in gate["required_next_evidence"],
+            and "cold-player comprehension plus naive-click-through and brute-force negative receipts"
+                in gate["required_next_evidence"],
             "M3 v3 client/approval gate weakened")
     review = (ROOT / "design" / "m3" / "BRAD-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("FAILED / REVISION REQUIRED" in review and "M4 district implementation authority: **CLOSED" in review,
@@ -187,7 +201,7 @@ def main() -> None:
     v3_review = (ROOT / "design" / "m3" / "BRAD-V3-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("VISUAL APPROVAL PENDING" in v3_review and "M4 is **closed**" in v3_review,
             "v3 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (v1/v2 rejections and v3 receipts preserved; active v3 legibility finding recorded; server/revision hold; M4 closed)")
+    print("CONTINUATION LINEAGE: PASS (V3 NOT APPROVED; functional receipts preserved; checklist bypass rejected; disconnect/server hold; M4 closed)")
 
 
 if __name__ == "__main__":

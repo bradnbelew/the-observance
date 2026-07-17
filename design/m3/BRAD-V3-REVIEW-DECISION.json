@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0-m3-brad-v3-decision",
+  "authority_id": "observance-p4-private-slice-v3-brad-decision",
+  "review_date": "2026-07-16",
+  "review_status": "mechanic_complete_visual_pass_and_disconnect_pending",
+  "decision": "not_approved_revision_required",
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects",
+  "mechanic_completion_result": "Brad completed the v3 mechanic successfully and the functional state, persistence, filing, and gate path worked",
+  "decisive_binding_finding": "A player can right-click every lectern, then crouch-right-click every filing docket, stamp all findings, and open the gate without reading, comparing, understanding, or deducing anything",
+  "binding_interpretation": "V3 is evidence-collection and checklist gating rather than the required layered investigation or puzzle; the room still reads as many lecterns instead of natural civic records embedded in an investigation",
+  "preserve_from_v3": [
+    "native written-book UI",
+    "exact directional block-state and support fixes",
+    "reduced broken-looking placement and visual defects",
+    "clean functional state and local-primary persistence",
+    "restart, replay, protection, and idempotency behavior",
+    "full-height full-width controlled gate path",
+    "v1, v2, and v3 evidence provenance"
+  ],
+  "next_revision_constraints": [
+    "record possession or touching every surface must never satisfy a finding",
+    "each of P4.F1 through P4.F4 requires a specific defensible conclusion derived from its paired records",
+    "the final synthesis requires combining the content of all four findings",
+    "blind clicking and brute force must not advance or reveal the solution",
+    "the investigation remains any-subset, replay, restart, catch-up, accessibility, and idempotency safe",
+    "the interaction uses grounded civic filing rather than escape-room stations",
+    "the objective and interaction are taught diegetically without chat tutorial scaffolding, immersion-breaking signs, or handholding labels",
+    "records read as natural municipal evidence embedded in a clerical investigation rather than a room of lecterns"
+  ],
+  "required_next_revision_checks": [
+    {
+      "check_id": "M3.VNEXT.DISTINCT_CIVIC_FILING_AFFORDANCE",
+      "predicate": "evidence records and conclusion-filing surfaces have distinct, consistent, natural civic affordances without chat or tutorial labels",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.DIEGETIC_OBJECTIVE_AND_INSTRUCTION",
+      "predicate": "a parsimonious in-world clerical instruction establishes the disputed civic objective, the paired-record comparison, and the physical filing action",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.FOUR_CONTENT_DEPENDENT_CONCLUSIONS",
+      "predicate": "each P4.F1-P4.F4 submission requires its exact defensible conclusion derived from both paired records; observation receipts or possession alone are insufficient",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.CONTENT_DEPENDENT_SYNTHESIS",
+      "predicate": "P4.F5 requires a correct synthesis that combines the four committed finding conclusions; touching the final surface or possessing four finding receipts is insufficient",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.NAIVE_CLICK_THROUGH_NEGATIVE",
+      "predicate": "the exact naive sequence of right-clicking every readable surface and using every filing surface commits no unsupported finding and leaves the controlled gate closed",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.BLIND_AND_BRUTE_FORCE_RESISTANCE",
+      "predicate": "wrong, repeated, reordered, default, and bounded exhaustive submissions neither advance state nor disclose solution-bearing feedback; correct reasoning remains order-independent",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.NATURAL_CIVIC_RECORD_COMPOSITION",
+      "predicate": "the physical evidence reads as varied municipal maps, ledgers, minutes, surveys, and working copies embedded in a functioning clerical room, not repeated escape-room lectern stations",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.SUBSET_REPLAY_ACCESSIBILITY_SAFETY",
+      "predicate": "content-dependent conclusions remain any-subset, solo-accessible, catch-up-readable, restart-safe, replay-safe, and idempotent without weakening the reasoning requirement",
+      "current_v3_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.COLD_PLAYER_COMPREHENSION",
+      "predicate": "without external explanation, a cold player can state the civic question, distinguish records from filing, derive and submit one finding, and explain how four findings produce the final synthesis",
+      "current_v3_compliance": false
+    }
+  ],
+  "implementation_authority": "blocked_until_full_visual_pass_completes_brad_disconnects_the_server_is_cleanly_saved_and_stopped_and_this_rejection_is_checkpointed"
+}

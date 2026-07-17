@@ -212,10 +212,11 @@
   },
   "active_brad_v3_review": {
     "date": "2026-07-16",
-    "status": "in_progress_binding_finding_recorded_not_approved",
+    "status": "in_progress_decision_not_approved_revision_required",
     "brad_visual_approval": null,
     "m4_authority": "closed",
     "machine_review_overlay": "design/m3/BRAD-V3-ACTIVE-REVIEW.json",
+    "decision_authority": "design/m3/BRAD-V3-REVIEW-DECISION.json",
     "positive_observation": "v3 is visibly improved and substantially less broken-looking",
     "binding_interpretation": "native book delivery and physical polish improved, but the player-facing affordance model and investigation objective still require external explanation and are not acceptable as final legibility",
     "current_noncompliance": [
@@ -229,8 +230,32 @@
       "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
       "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION"
     ],
-    "implementation_state": "paused_until_full_v3_feedback_pass_complete",
-    "live_server_directive": "do_not_stop_or_mutate_while_brad_continues_the_v3_walk"
+    "implementation_state": "paused_until_full_v3_visual_pass_and_disconnect",
+    "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects"
+  },
+  "brad_v3_decisive_mechanic_finding": {
+    "date": "2026-07-16",
+    "review_state": "mechanic_complete_visual_pass_and_disconnect_pending",
+    "decision": "not_approved_revision_required",
+    "brad_visual_approval": null,
+    "m4_authority": "closed",
+    "decision_authority": "design/m3/BRAD-V3-REVIEW-DECISION.json",
+    "mechanic_result": "functional path completed successfully",
+    "acceptance_result": "failed_layered_investigation_and_content_dependent_reasoning",
+    "binding_finding": "blindly touching every evidence lectern and every filing docket commits all findings and opens the gate without reading, comparison, understanding, or deduction",
+    "preserve": [
+      "native book UI",
+      "directional and support fixes",
+      "reduced brokenness",
+      "functional persistence and gate path"
+    ],
+    "required_next_revision_check_count": 9,
+    "required_negative_tests": [
+      "naive click-through commits no unsupported finding and leaves the gate closed",
+      "wrong, repeated, reordered, default, and bounded exhaustive submissions do not advance or reveal solutions"
+    ],
+    "implementation_authority": "blocked_until_full_visual_pass_completes_brad_disconnects_clean_stop_is_receipted_and_rejection_is_checkpointed",
+    "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects"
   },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
@@ -251,6 +276,7 @@
     "design/m3/PAPER-V3-REVIEW-SERVER-RECEIPT.json",
     "design/m3/BRAD-V3-REVIEW-PACKAGE.md",
     "design/m3/BRAD-V3-ACTIVE-REVIEW.json",
+    "design/m3/BRAD-V3-REVIEW-DECISION.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -277,6 +303,11 @@
       "effect": "v3 becomes current for re-review while v1/v2 rejections, the improved v2 gate baseline, and all failed v3 attempts remain historical evidence; M4 stays closed until Brad explicitly approves v3"
     },
     {
+      "older": "M3 v3 automated structural and functional receipts",
+      "newer": "Brad's M3 v3 NOT APPROVED content-reasoning decision",
+      "effect": "v3 receipts remain valid platform evidence but checklist completion is rejected as an investigation; the next revision must require four content-dependent conclusions, combined synthesis, cold-player comprehension, and naive/brute-force negative tests; M4 remains closed"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -288,12 +319,14 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v3 active review; automated receipts pass but affordance/objective legibility is not approved",
+    "phase": "M3 v3 NOT APPROVED; mechanic works but checklist gating permits completion without reasoning; server held unchanged pending disconnect",
     "m4_open": false,
     "required_next_evidence": [
-      "Brad's complete v3 feedback pass while the live target remains unchanged",
-      "after the pass, distinct filing affordance, diegetic filing instruction, and cold-player objective-comprehension receipts",
-      "Brad's explicit v3 visual approval"
+      "Brad's complete v3 visual pass and confirmed disconnect while the live target remains unchanged",
+      "clean save/flush/stop receipt after disconnect",
+      "only afterward, a grounded civic investigation requiring four content-dependent conclusions and combined synthesis",
+      "cold-player comprehension plus naive-click-through and brute-force negative receipts",
+      "Brad's explicit approval of the next revision"
     ]
   }
 }

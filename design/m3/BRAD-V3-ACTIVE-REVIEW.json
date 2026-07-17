@@ -2,11 +2,12 @@
   "schema_version": "1.0.0-m3-brad-v3-active-review",
   "authority_id": "observance-p4-private-slice-v3-active-review",
   "review_date": "2026-07-16",
-  "review_status": "in_progress_binding_finding_recorded_not_approved",
+  "review_status": "in_progress_decision_not_approved_revision_required",
+  "decision_authority": "design/m3/BRAD-V3-REVIEW-DECISION.json",
   "brad_visual_approval": null,
   "m4_authority": "closed",
-  "live_server_directive": "do_not_stop_or_mutate_while_brad_continues_the_v3_walk",
-  "implementation_state": "paused_until_full_v3_feedback_pass_complete",
+  "live_server_directive": "do_not_stop_or_mutate_until_brad_disconnects",
+  "implementation_state": "paused_until_full_v3_visual_pass_and_disconnect",
   "positive_observation": "V3 is visibly improved and substantially less broken-looking",
   "binding_finding_verbatim": [
     "the difference between ordinary right-click and crouch-right-click is not discoverable",
@@ -15,6 +16,9 @@
     "the overall goal of the room or investigation is not discoverable"
   ],
   "binding_interpretation": "native book delivery and physical polish improved, but the player-facing affordance model and investigation objective still require external explanation; this is not acceptable as final legibility",
+  "mechanic_completion_result": "completed_successfully_but_does_not_prove_investigation_acceptance",
+  "decisive_binding_finding": "touching every readable surface and then every filing docket commits all findings and opens the gate without reading, comparison, understanding, or deduction",
+  "decisive_interpretation": "functional checklist gating is not the required layered investigation; record possession cannot substitute for content-dependent conclusions",
   "preserve_during_active_review": [
     "current live mechanics for the remainder of Brad's verification",
     "passing v3 structural, Paper, restart, security, and package receipts",
@@ -44,5 +48,6 @@
       "current_v3_compliance": false
     }
   ],
-  "revision_authority": "blocked_until_brad_declares_the_full_v3_feedback_pass_complete"
+  "next_revision_acceptance_authority": "design/m3/BRAD-V3-REVIEW-DECISION.json",
+  "revision_authority": "blocked_until_full_v3_visual_pass_completes_and_brad_disconnects"
 }
