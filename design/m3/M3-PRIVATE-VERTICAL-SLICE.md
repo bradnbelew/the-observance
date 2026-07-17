@@ -1,16 +1,16 @@
 # M3 — Authored P4 Private Vertical Slice Revision
 
-Status: **V4 AUTOMATED GATES PASS; BRAD APPROVAL NULL; M4 CLOSED**
+Status: **V5 AUTOMATED/INTERNAL GATES PASS; BRAD APPROVAL NULL; M4 CLOSED**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
 architecture → M2 technical contracts → this file. `vertical-slice-v1.json`,
 `vertical-slice-v2.json`, and `vertical-slice-v3.json` remain the exact rejected candidates with their
-decisions and Paper receipts. `vertical-slice-v4.json` is the current authored review candidate. No
+decisions and Paper receipts. `vertical-slice-v5.json` is the current authored review candidate. No
 revision rewrites a prior decision, no automated receipt implies Brad approval, and M4 remains closed.
 
 ## Scope and containment
 
-V4 changes only the Brad-private P4 slice. It does not build P5 or any later district, touch production,
+V5 changes only the Brad-private P4 slice. It does not build P5 or any later district, touch production,
 connect to Crafty, mutate Supabase, contact Railway/Vercel, load credentials, alter media, or become a
 second campaign runtime. P4 expands inside the unused pre-P5 depth to X `-34..34`, Y `-24..10`, Z
 `-10..92`; P5 still begins at Z `93` and remains reservation-only.
@@ -221,3 +221,15 @@ subtle, dense, technical, partial, contradictory, and demanding; believable neve
 easy. SirNan's disconnect is independently logged at 00:25:52, and `PAPER-V4-REVIEW-STOP-RECEIPT.json`
 proves save-all flush, orderly shutdown, PID end, and port release. Brad approval is null and M4 remains
 closed.
+
+## V5 client-render and physical-affordance revision
+
+Brad's V4 cold read was voluntarily aborted because he was rushing; it is inconclusive and is not a
+difficulty or comprehension failure. V5 therefore preserves the dense content-dependent four-clause
+report, separate synthesis, provenance work, negative flows, and high-difficulty campaign standard.
+It fixes only the measured interface and physical-presentation defects: each of the twenty clauses has
+one complete conservatively measured written-book page and two equivalent click targets; all four
+interactive chiseled shelves contain an exact visible written book; and every one of the twenty-two
+stair seats has an explicit workplace or waiting sightline. `vertical-slice-v5.json`,
+`AFFORDANCE-INVENTORY-V5.json`, and the V5 Paper receipts are the exact machine authority. Automated
+success does not imply Brad approval, and M4 remains closed.

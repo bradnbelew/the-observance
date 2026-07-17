@@ -45,6 +45,12 @@ authorial cold-read preflight, pristine review target, and package hashes. The m
 startup drift, exercises negative and correct flows across three lifecycles, and prepares a separate
 pristine closed review world. Neither tool can manufacture Brad approval or open M4.
 
+`check_m3_v5_revision.py` validates the focused V5 page-render, complete click-target, occupied-shelf,
+seat-use, difficulty, Paper, lineage, and package gates. `run_m3_v5_disposable_paper.py` is the
+create-only V5 runner: it adds exact 1.21.11 UI and guided-path model receipts while preserving the V4
+naive, brute, report, synthesis, replay, security, restart, and packaging chain. It also cannot imply
+Brad approval or open M4.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,

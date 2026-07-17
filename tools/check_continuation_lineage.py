@@ -309,13 +309,48 @@ def main() -> None:
             and v4_stop["m4_authority"] == "closed",
             "V4 clean stop receipt/approval gate drift")
 
+    v5 = data["v5_revision_evidence"]
+    require(v5["v4_corrected_rejection_checkpoint"]
+                == "dbc45921a1b9a1ac207991901597d41021b214b5"
+            and v5["authored_source_commit"]
+                == "51ad3bdeedbe80b698d366e4c8c536c4cd3778ff"
+            and v5["authority_sha256"]
+                == "a0580902b8f8633579820f1a5adf7419d0151b1259026c554b2d6974c1a95e1c",
+            "V5 rejection/source/authority lineage drift")
+    for commit in (v5["v4_corrected_rejection_checkpoint"], v5["authored_source_commit"]):
+        result = subprocess.run(["git", "merge-base", "--is-ancestor", commit, "HEAD"], cwd=ROOT)
+        require(result.returncode == 0, f"M3 V5 checkpoint is not an ancestor: {commit}")
+    for authority in (v5["current_authority"], v5["affordance_inventory"],
+                      v5["validation_receipt"], v5["review_target_receipt"],
+                      v5["block_state_visual_audit"], v5["package_manifest"]):
+        require((ROOT / authority).is_file(), f"missing M3 V5 lineage authority: {authority}")
+    v5_validation = json.loads((ROOT / v5["validation_receipt"]).read_text(encoding="utf-8"))
+    v5_review = json.loads((ROOT / v5["review_target_receipt"]).read_text(encoding="utf-8"))
+    v5_visual = json.loads((ROOT / v5["block_state_visual_audit"]).read_text(encoding="utf-8"))
+    require(v5_validation["source_git_commit"] == v5["authored_source_commit"]
+            and "options=20" in v5_validation["evidence"]["ui_audit"]
+            and "findings=0 gate=closed" in v5_validation["evidence"]["naive_negative"]
+            and "throttled=true" in v5_validation["evidence"]["brute_negative"]
+            and "gate=open" in v5_validation["evidence"]["restart_audit"],
+            "V5 Paper UI/negative/restart lineage drift")
+    require(v5_review["journal_state"] == "absent_pristine_review_target"
+            and "options=20" in v5_review["evidence"]["ui_audit"]
+            and v5_review["brad_visual_approval"] is None
+            and v5_review["m4_authority"] == "closed",
+            "V5 pristine review target/approval drift")
+    require(v5_visual["paper_findings"] == 0 and v5_visual["classified_seats"] == 22
+            and v5_visual["interactive_chiseled_shelves"] == 4
+            and v5_visual["fully_visible_clauses"] == 20
+            and v5_visual["brad_visual_approval"] is None,
+            "V5 internal block-state/render audit drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "a future bounded M3 revision passes exact book-option pagination/render budgets and full guided-client completion"
+            and "Brad completes the V5 supported-client visual and filing-path walk"
                 in gate["required_next_evidence"]
             and "Brad's explicit approval of a later M3 revision"
                 in gate["required_next_evidence"],
-            "M3 v4 human/client/approval gate weakened")
+            "M3 V5 human/client/approval gate weakened")
     review = (ROOT / "design" / "m3" / "BRAD-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("FAILED / REVISION REQUIRED" in review and "M4 district implementation authority: **CLOSED" in review,
             "Brad rejection authority missing")
@@ -326,7 +361,7 @@ def main() -> None:
     require("COLD HUMAN/VISUAL APPROVAL PENDING" in v4_review_package
             and "M4 is **closed**" in v4_review_package,
             "v4 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (V4 Paper/negative-flow evidence current; Brad approval null; M4 closed)")
+    print("CONTINUATION LINEAGE: PASS (V5 Paper/UI/negative/restart evidence current; Brad approval null; M4 closed)")
 
 
 if __name__ == "__main__":

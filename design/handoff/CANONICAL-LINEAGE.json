@@ -378,6 +378,41 @@
     "brad_visual_approval": null,
     "m4_authority": "closed"
   },
+  "v5_revision_evidence": {
+    "status": "automated_and_internal_gates_passed_pristine_review_target_prepared_not_brad_approved",
+    "v4_corrected_rejection_checkpoint": "dbc45921a1b9a1ac207991901597d41021b214b5",
+    "authored_source_commit": "51ad3bdeedbe80b698d366e4c8c536c4cd3778ff",
+    "current_authority": "design/m3/vertical-slice-v5.json",
+    "affordance_inventory": "design/m3/AFFORDANCE-INVENTORY-V5.json",
+    "validation_receipt": "design/m3/PAPER-V5-DISPOSABLE-RECEIPT.json",
+    "review_target_receipt": "design/m3/PAPER-V5-REVIEW-SERVER-RECEIPT.json",
+    "block_state_visual_audit": "design/m3/V5-BLOCK-STATE-VISUAL-AUDIT.json",
+    "package_manifest": "design/m3/PACKAGE-MANIFEST-V5.json",
+    "authority_sha256": "a0580902b8f8633579820f1a5adf7419d0151b1259026c554b2d6974c1a95e1c",
+    "paper_result": {
+      "version": "1.21.11", "build": 132, "cells": 248745,
+      "findings_closed_open_restart": 0, "closed_gate_collision_cells": 88,
+      "open_gate_collision_cells": 0, "evidence_surfaces": 8,
+      "purposeful_lecterns": 2, "classified_seats": 22,
+      "interactive_occupied_shelves": 4, "selectable_clause_pages": 20,
+      "fully_visible_and_clickable_clauses": 20, "water_cells": 62,
+      "validation_status": "passed"
+    },
+    "negative_and_reasoning_result": {
+      "naive_observe_all": "zero findings; gate closed; no lane feedback",
+      "bounded_blind_reports": "zero findings; gate closed; durable throttle survives restart",
+      "correct_four_clause_report": "four findings committed atomically; gate remains closed",
+      "correct_combined_synthesis": "gate opens",
+      "restart_replay": "open final state re-derived with zero audit findings and zero collision cells"
+    },
+    "unresolved": [
+      "Brad has not visually approved V5",
+      "human supported-client player-view polish and actual clause-selection walk remain pending",
+      "independent interface-affordance discovery remains pending without any rapid-deduction requirement",
+      "authenticated non-op protection/accessibility and optional two-client A2 receipts remain pending"
+    ],
+    "supersession": "V5 supersedes V4 only as the current bounded review candidate; every V1-V4 rejection, receipt, and useful mechanical baseline remains immutable history; automated success does not imply Brad approval or open M4"
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -413,6 +448,12 @@
     "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
     "design/m3/BRAD-V4-REVIEW-DECISION.json",
     "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
+    "design/m3/vertical-slice-v5.json",
+    "design/m3/AFFORDANCE-INVENTORY-V5.json",
+    "design/m3/PAPER-V5-DISPOSABLE-RECEIPT.json",
+    "design/m3/PAPER-V5-REVIEW-SERVER-RECEIPT.json",
+    "design/m3/V5-BLOCK-STATE-VISUAL-AUDIT.json",
+    "design/m3/PACKAGE-MANIFEST-V5.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -459,6 +500,11 @@
       "effect": "V4 mechanics remain useful evidence; the cold review was time-pressure-aborted and inconclusive, while native-book pagination, seating orientation, bookshelf occupancy, and physical affordance are real failures. The cross-phase standard preserves high difficulty and requires investigation depth rather than UI friction, exact client render tests, and full guided-client receipts; M4 remains closed"
     },
     {
+      "older": "rejected M3 v4 client presentation",
+      "newer": "authored M3 v5 client-render and physical-affordance candidate with fresh Paper/restart/negative-flow receipts",
+      "effect": "V5 becomes the current bounded candidate for Brad review; every selectable clause owns a complete measured page, interactive shelves visibly contain exact written books, and all stair seats face classified work or waiting targets. Investigation difficulty, V4 mechanics, earlier rejection history, approval null, and M4 closure remain unchanged"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -470,12 +516,12 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v4 NOT APPROVED / REVISION REQUIRED; cold read inconclusive by Brad correction; clean server stop complete; corrected rejection checkpoint precedes revision",
+    "phase": "M3 V5 automated/internal gates pass; pristine localhost review target prepared; Brad approval pending; M4 closed",
     "m4_open": false,
     "required_next_evidence": [
-      "a future bounded M3 revision passes exact book-option pagination/render budgets and full guided-client completion",
-      "a future revision corrects chair facing and provides visible occupied or replacement evidence affordances",
-      "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid puzzle solution as the criterion",
+      "Brad completes the V5 supported-client visual and filing-path walk",
+      "human review confirms player-view polish, complete clickable clauses, occupied-shelf affordance, and seat composition",
+      "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
       "Brad's explicit approval of a later M3 revision"
     ]
