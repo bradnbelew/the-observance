@@ -1,6 +1,6 @@
 # M3 — Coarse Master Adjacency and Private P4 Vertical Slice
 
-Status: **DISPOSABLE PAPER STRUCTURAL GATE COMPLETE; CLIENT AND BRAD VISUAL GATES OPEN**
+Status: **STRUCTURAL MACHINERY PROOF COMPLETE; VISUAL GATE FAILED — REVISION REQUIRED**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
 architecture → M2 technical contracts → this file. The machine authorities are
@@ -122,10 +122,16 @@ Paper then saved and stopped cleanly. A fresh process loaded the same target and
 identical open-state hash, and accepted the same synthesis replay without adding a receipt. The
 receipt records exact Paper/JAR/journal/log/world-tree/world-package hashes.
 
-This is a structural/runtime receipt, not a client play receipt. The Paper projection contains the
+This is a structural/runtime receipt, not a visual-quality receipt. The Paper projection contains the
 authority's exact solid/air envelope and authored blocking composition, while finding commits are an
 operator harness surface. It does not yet prove player-facing books/signs/submission UX, Adventure
 movement, inventory retention, event-level protection, or the visual standard.
+
+Brad completed a first in-game visual pass on 2026-07-16 and explicitly did not approve it. The durable
+decision and exact findings are recorded in `BRAD-REVIEW-PACKAGE.md`. The palette, scale/density,
+arbitrary water, illegible copying room, confusing blocked right entrance, weak entrance/exit
+composition, and unconvincing half-gate all require revision. None of the structural receipts above
+overrides that failed human gate.
 
 ## Honest external gaps
 
@@ -136,7 +142,7 @@ test, two-client asymmetric view, solo accessibility readback, or player-facing 
 Production Crafty, Supabase, Vercel, both Railway families, Discord secrets, and media bytes remain
 untouched.
 
-Brad has not walked the slice. `BRAD-REVIEW-PACKAGE.md` is ready, but the visual approval gate remains
-explicitly open. Under the approved sequencing, M4 district implementation must not start until the
-remaining client receipts exist and Brad approves the in-game read.
+Brad walked the slice and rejected the first visual pass. Under the approved sequencing, M4 district
+implementation must not start until the private slice is revised, rebuilt, re-audited, walked again,
+and explicitly approved.
 

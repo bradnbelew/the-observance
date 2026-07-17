@@ -184,6 +184,7 @@
     "non_op_survival_region_receipt": null,
     "two_client_asymmetry_receipt": null,
     "solo_accessibility_receipt": null,
-    "brad_visual_approval": null
+    "brad_visual_approval": null,
+    "brad_visual_decision": "failed_revision_required_2026-07-16"
   }
 }

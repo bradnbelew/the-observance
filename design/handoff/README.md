@@ -28,15 +28,16 @@
 > is M2 technical contracts and isolated implementation. Current predicates, schema, cases, media bytes,
 > geometry, and live systems remain unchanged until their later gates.
 
-> **M3 PAPER STRUCTURAL GATE COMPLETE / CLIENT AND VISUAL REVIEW OPEN:** After the M2 authorities, read
+> **M3 STRUCTURAL PROOF COMPLETE / VISUAL GATE FAILED — REVISION REQUIRED:** After the M2 authorities, read
 > `../m3/M3-PRIVATE-VERTICAL-SLICE.md`, `../m3/coarse-adjacency-v1.json`,
 > `../m3/vertical-slice-v1.json`, `../m3/package-manifest.json`,
 > `../m3/PAPER-DISPOSABLE-RECEIPT.json`, and
 > `../m3/BRAD-REVIEW-PACKAGE.md`. M3 now has coordinate-native coarse reservations, one exact private
 > P4 slice, faithful closed/open reachability, isolated local-primary/approval evidence, and a fresh
 > local-only Paper 1.21.11 structural build that passed exact closed/open audit and restart/replay.
-> Real-client non-op/protection/asymmetry/solo/UX evidence and Brad's walk remain open, so M4 district
-> implementation remains closed.
+> Brad rejected the first in-game visual pass on 2026-07-16; the exact findings are in the review
+> package. Real-client protection/asymmetry/solo/UX evidence and a revised approved walk remain open,
+> so M4 district implementation remains closed.
 
 > **AUTONOMOUS CONTINUATION:** Brad authorized the rebuild to continue through all remaining phases on
 > 2026-07-15. Read `AUTONOMOUS-CONTINUATION.md` and `PHASE-CHECKPOINTS.md`. Every phase must be audited,

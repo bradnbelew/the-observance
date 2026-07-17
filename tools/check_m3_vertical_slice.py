@@ -194,6 +194,8 @@ def check_exact_slice(authority: dict) -> None:
     for key in ("non_op_survival_region_receipt", "two_client_asymmetry_receipt",
                 "solo_accessibility_receipt", "brad_visual_approval"):
         require(gaps[key] is None, f"client/human receipt fabricated: {key}")
+    require(gaps["brad_visual_decision"] == "failed_revision_required_2026-07-16",
+            "failed Brad visual decision is not durable")
 
 
 def check_package_manifest(manifest: dict) -> None:
@@ -219,6 +221,8 @@ def check_package_manifest(manifest: dict) -> None:
     require(manifest["paper_world_tree_sha256"] == receipt["world_tree_sha256"], "world tree drift")
     require(manifest["paper_world_package_sha256"] == receipt["world_package_sha256"], "world package drift")
     require(manifest["brad_visual_approval_receipt"] is None, "visual approval fabricated")
+    require(manifest["brad_visual_decision"] == "failed_revision_required_2026-07-16",
+            "package omits failed visual decision")
 
 
 def main() -> None:

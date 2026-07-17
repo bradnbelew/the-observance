@@ -1,6 +1,6 @@
 # Brad Review Package — M3 Private P4 Slice
 
-Status: **STRUCTURAL PAPER TARGET PACKAGED; CLIENT WALK AND VISUAL APPROVAL OPEN**
+Status: **VISUAL GATE FAILED — REVISION REQUIRED**
 
 This package is for one private review only. It is not a campaign save and must not be linked or given
 to players.
@@ -61,12 +61,26 @@ local-primary state path, not the unchecked real-client behaviors or the visual 
 
 ## Decision record
 
-Brad visual approval: **OPEN — no in-game walk has occurred**
+Brad visual approval: **NOT APPROVED — FAILED / REVISION REQUIRED**
 
-Approval date: **not recorded**
+Decision date: **2026-07-16**
 
-Requested changes: **none recorded**
+Brad's exact first-pass findings:
 
-M4 district implementation authority: **CLOSED until the receipts above and Brad's visual approval are
-recorded in a committed checkpoint.**
+1. Plain single-note block palette.
+2. Rooms feel empty and somewhat underscaled.
+3. Little water pool reads arbitrary.
+4. Left slit doorway leads to a small room with empty barrels, random smooth-andesite blocks and wooden
+   planks rather than a legible occupied copying workplace.
+5. Apparent right entrance/exit is blocked and confusing.
+6. Entrances/exits need stronger composition.
+7. The forward iron-bar threshold reads as a half gate and appears walkable between bars, not as a
+   convincing controlled gate.
+
+Decision interpretation: the current Paper projection remains valid only as structural machinery
+proof. It does not pass atmosphere, scale, workplace legibility, circulation composition, or gate
+credibility. A revised private slice must address every finding and receive another in-game walk.
+
+M4 district implementation authority: **CLOSED. The failed M3 visual gate must be revised, rebuilt,
+re-audited, and explicitly approved by Brad in a later committed checkpoint.**
 
