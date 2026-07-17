@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0.0-m3-brad-v5-active-review",
+  "authority_id": "observance-p4-private-slice-v5-active-review",
+  "review_date": "2026-07-17",
+  "review_candidate": "observance-p4-private-slice-v5",
+  "review_status": "active_feedback_pass_incomplete",
+  "decision": null,
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "live_target": {
+    "target_id": "m3-v5-brad-review-51ad3bd-20260717-a",
+    "address": "127.0.0.1:25588",
+    "source_git_commit": "51ad3bdeedbe80b698d366e4c8c536c4cd3778ff",
+    "directive": "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation"
+  },
+  "active_finding": {
+    "category": "substantive_experiential_design_concern",
+    "summary": "V5 is content-dependent but still feels primarily like retrieving explicit facts and selecting matching clauses; it does not yet provide enough ARG-like investigation, layered inference, lore significance, or relevance to the larger story.",
+    "brad_question": "Will all campaign puzzles feel this way?",
+    "brad_direction": "The campaign must not reduce its investigations to clause retrieval.",
+    "current_evidentiary_status": "V5 may remain a technical proof but is not sufficient experiential proof without Brad approval."
+  },
+  "phase_2_interpretation": {
+    "p4_authorized_duration": "1-2 active hours",
+    "p4_authorized_investigation": "construction-phase and route archaeology",
+    "p4_is_not_required_to_be": [
+      "the campaign's hardest arc",
+      "an arbitrary cipher exercise"
+    ],
+    "p4_must_require": [
+      "meaningful spatial investigation",
+      "material and construction-phase reading",
+      "logistical investigation",
+      "cross-source inference",
+      "an emotionally and lore-relevant synthesis establishing why the rational refuge matters"
+    ],
+    "current_v5_concern": "Explicit fact recovery plus a matching-clause ledger does not yet demonstrate the authorized experiential depth."
+  },
+  "global_investigation_diversity_to_preserve": [
+    {"arc":"P1","primary_grammar":"web archaeology"},
+    {"arc":"P2","primary_grammar":"provenance"},
+    {"arc":"P3","primary_grammar":"social corroboration"},
+    {"arc":"P4","primary_grammar":"construction-phase and route archaeology"},
+    {"arc":"P5","primary_grammar":"civic ethnography"},
+    {"arc":"P6","primary_grammar":"six professional grammars"},
+    {"arc":"P7","primary_grammar":"forensic chain of custody"},
+    {"arc":"P8","primary_grammar":"incident reconstruction and engineering intervention"},
+    {"arc":"P9","primary_grammar":"camp and media archaeology"},
+    {"arc":"P10","primary_grammar":"leak attribution and adversarial interview"},
+    {"arc":"P11","primary_grammar":"identity restoration"},
+    {"arc":"P12","primary_grammar":"release audit"}
+  ],
+  "campaign_variety_rule": {
+    "modalities": [
+      "ciphers",
+      "codes",
+      "spatial puzzles",
+      "document forensics",
+      "media",
+      "memory",
+      "conversation",
+      "engineering",
+      "moral inference"
+    ],
+    "requirement": "Use and combine modalities according to each arc's authored grammar; do not make every arc a matching-clause retrieval exercise."
+  },
+  "binding_progression_correction": {
+    "status": "binding_cross_phase_supersession_not_yet_implemented",
+    "rule": "A correct answer or conclusion must be accepted even when the submitting player and the shared campaign state have zero observed-source interaction receipts.",
+    "forbidden_answer_prerequisites": [
+      "right-clicking signs",
+      "right-clicking bookshelves",
+      "right-clicking lecterns",
+      "right-clicking environmental evidence",
+      "touching every clue surface",
+      "an observed-source receipt quota"
+    ],
+    "permitted_evidence_interaction_effects": [
+      "discovery provenance",
+      "contribution credit",
+      "replay and catch-up detail",
+      "hint eligibility and director evidence",
+      "changed-place summaries",
+      "accessibility descriptions"
+    ],
+    "acceptance_semantics": [
+      "correct externally known or player-shared answers pass",
+      "wrong answers still fail exact predicates",
+      "wrong-answer throttling may remain",
+      "one player may share a deduction without every participant touching its sources",
+      "observation custody remains durable but cannot veto a correct answer"
+    ],
+    "supersedes": "V4 and V5 P4 source-possession gating, including rejection of a correct conclusion because surviving records remain unentered",
+    "all_substantial_content_reconciliation": "Substantial content is materially necessary for fair deduction, synthesis, callbacks, and later understanding; it is not enforced through click-completion quotas.",
+    "required_future_negative_tests": [
+      "a correct four-finding report succeeds with zero observation receipts",
+      "a correct synthesis succeeds after that zero-observation correct report",
+      "a wrong report with zero or many observation receipts still fails",
+      "wrong-answer throttling remains exact",
+      "observation provenance, contribution custody, replay, and catch-up remain intact and non-gating"
+    ],
+    "implementation_hold": "Do not change the live V5 runtime or implement this supersession until Brad finishes the review and disconnects."
+  },
+  "preserve_pending_final_feedback": [
+    "V5's exact client render and click-path proof",
+    "occupied-shelf and seat-orientation fixes",
+    "content-dependent report and separate synthesis state model",
+    "naive and brute-force resistance",
+    "local-primary persistence, replay, security, waterworks, and controlled gate",
+    "Brad's corrected V4 cold-read status as time-pressure-aborted and inconclusive",
+    "high difficulty, layered investigation, and the 20-30 active-hour campaign target"
+  ],
+  "non_interpretations": [
+    "This finding does not say V5 is too difficult.",
+    "This finding does not authorize simplifying prose, reducing layer count, or adding routine handholding.",
+    "This finding does not require an arbitrary cipher in P4.",
+    "This active finding is not yet the final V5 review decision."
+  ],
+  "implementation_state": "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
+  "production_mutated": false
+}

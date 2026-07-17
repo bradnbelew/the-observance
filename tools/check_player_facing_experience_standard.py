@@ -14,6 +14,7 @@ MACHINE = ROOT / "design" / "handoff" / "PLAYER-FACING-EXPERIENCE-STANDARD.json"
 V3_DECISION = ROOT / "design" / "m3" / "BRAD-V3-REVIEW-DECISION.json"
 V3_STOP = ROOT / "design" / "m3" / "PAPER-V3-REVIEW-STOP-RECEIPT.json"
 V4_DECISION = ROOT / "design" / "m3" / "BRAD-V4-REVIEW-DECISION.json"
+V5_ACTIVE = ROOT / "design" / "m3" / "BRAD-V5-ACTIVE-REVIEW.json"
 
 
 def require(condition: bool, message: str) -> None:
@@ -31,7 +32,7 @@ def present(value: object) -> bool:
 
 def validate_authority() -> dict:
     data = load(MACHINE)
-    require(data["schema_version"] == "1.1.0-cross-phase-player-facing",
+    require(data["schema_version"] == "1.2.0-cross-phase-player-facing",
             "player-facing authority schema drift")
     require(data["authority_id"] == "observance-cross-phase-player-facing-experience"
             and data["status"] == "binding", "player-facing authority identity drift")
@@ -74,6 +75,17 @@ def validate_authority() -> dict:
             and investigation["routine_handholding_forbidden"] is True
             and investigation["cold_review_tests_interface_affordance_not_rapid_solution_or_difficulty"] is True,
             "V4 investigation-depth/difficulty authority weakened")
+    progression = data["progression_and_evidence_interaction_standard"]
+    require(progression["correct_answer_acceptance_independent_of_observation_receipts"] is True
+            and progression["observed_source_receipts_may_not_be_answer_prerequisites"] is True
+            and progression["correct_external_or_shared_answer_must_pass"] is True
+            and progression["participant_touch_quota_forbidden"] is True
+            and progression["any_subset_allows_shared_deduction_without_source_touch_parity"] is True
+            and progression["wrong_answer_exact_predicates_preserved"] is True
+            and progression["custody_replay_and_catch_up_preserved"] is True
+            and progression["superseded_failure_feedback"] == "surviving records remain unentered"
+            and len(progression["required_negative_tests"]) == 4,
+            "correct-answer/non-gating observation authority weakened")
     client_ui = data["minecraft_client_ui_standard"]
     require(all(client_ui.values()), "Minecraft client UI/render standard contains a disabled predicate")
     copy = data["copy_standard"]
@@ -94,16 +106,18 @@ def validate_authority() -> dict:
         "CROSS.PF.INTERACTIVE_PHYSICAL_AFFORDANCE",
         "CROSS.PF.DIFFICULTY_FROM_INVESTIGATION",
         "CROSS.PF.GUIDED_PATH_CLIENT_GATE", "CROSS.PF.NO_MISSABLE_DEEP_INVESTIGATION",
+        "CROSS.PF.CORRECT_ANSWER_ZERO_OBSERVATION",
+        "CROSS.PF.OBSERVATION_CUSTODY_NON_GATING",
     }
     checks = data["static_checks"]
     require({row["check_id"] for row in checks} == expected_checks
             and len(checks) == len(expected_checks), "static check inventory drift")
-    require(len(data["cold_read_criteria"]) == 15
+    require(len(data["cold_read_criteria"]) == 16
             and any("puzzle chamber or room of lecterns" in row
                     for row in data["cold_read_criteria"])
             and any("naive touching" in row for row in data["cold_read_criteria"]),
             "human cold-read criteria incomplete")
-    require(len(data["guided_client_criteria"]) == 5
+    require(len(data["guided_client_criteria"]) == 6
             and any("four-choice" in row for row in data["guided_client_criteria"])
             and any("non-op Adventure" in row for row in data["guided_client_criteria"]),
             "guided client/render criteria incomplete")
@@ -117,9 +131,30 @@ def validate_authority() -> dict:
         "V4 amendment", "fully visible and clickable", "Stair chairs",
         "Investigation and difficulty standard", "no-missable", "20–30 active hours",
         "not routine handholding", "subtle, dense, technical",
+        "V5 progression amendment", "Correct answers and conclusions", "touch quota",
+        "zero observation receipts",
     ):
         require(phrase in human, f"human player-facing authority missing: {phrase}")
     return data
+
+
+def validate_v5_active_review(authority: dict) -> None:
+    active = load(V5_ACTIVE)
+    correction = active["binding_progression_correction"]
+    require(active["review_status"] == "active_feedback_pass_incomplete"
+            and active["decision"] is None and active["brad_visual_approval"] is None
+            and active["m4_authority"] == "closed"
+            and active["implementation_state"]
+                == "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
+            "V5 active-review hold/approval drift")
+    require(correction["status"] == "binding_cross_phase_supersession_not_yet_implemented"
+            and "zero observed-source" in correction["rule"]
+            and len(correction["required_future_negative_tests"]) == 5
+            and "Do not change the live V5 runtime" in correction["implementation_hold"],
+            "V5 correct-answer/non-gating correction drift")
+    require(authority["progression_amendment_authority"]
+                == "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+            "cross-phase authority does not route through V5 progression correction")
 
 
 def validate_v4_decision(authority: dict) -> None:
@@ -237,11 +272,12 @@ def main() -> None:
     authority = validate_authority()
     validate_v3_decision()
     validate_v4_decision(authority)
+    validate_v5_active_review(authority)
     inventories = sorted((ROOT / "design").glob("**/PLAYER-FACING-INVENTORY*.json"))
     for path in inventories:
         validate_inventory(path, authority)
     print("PLAYER-FACING EXPERIENCE: PASS "
-          f"(cross-phase standard + v3/v4 rejections + {len(inventories)} implementation inventories; quality and client UI remain human-gated)")
+          f"(cross-phase standard + v3/v4 rejections + active v5 corrections + {len(inventories)} implementation inventories; quality and client UI remain human-gated)")
 
 
 if __name__ == "__main__":

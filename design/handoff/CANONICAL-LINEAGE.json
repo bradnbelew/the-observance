@@ -413,6 +413,18 @@
     ],
     "supersession": "V5 supersedes V4 only as the current bounded review candidate; every V1-V4 rejection, receipt, and useful mechanical baseline remains immutable history; automated success does not imply Brad approval or open M4"
   },
+  "active_brad_v5_review": {
+    "date": "2026-07-17",
+    "status": "active_feedback_pass_incomplete",
+    "machine_review_overlay": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+    "experiential_concern": "V5 remains too close to explicit fact retrieval and matching-clause selection to prove P4's authored construction-phase and route archaeology experience",
+    "progression_correction": "correct answers, reports, and syntheses must pass with zero observed-source interaction receipts; custody and contribution receipts remain durable but non-gating",
+    "global_diversity": "P1-P12 preserve distinct web, provenance, social, archaeological, ethnographic, professional, forensic, engineering, media, interview, identity, and release-audit grammars rather than converging on clause retrieval",
+    "live_server_directive": "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation",
+    "implementation_state": "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
+    "brad_visual_approval": null,
+    "m4_authority": "closed"
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -454,6 +466,7 @@
     "design/m3/PAPER-V5-REVIEW-SERVER-RECEIPT.json",
     "design/m3/V5-BLOCK-STATE-VISUAL-AUDIT.json",
     "design/m3/PACKAGE-MANIFEST-V5.json",
+    "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -505,6 +518,11 @@
       "effect": "V5 becomes the current bounded candidate for Brad review; every selectable clause owns a complete measured page, interactive shelves visibly contain exact written books, and all stair seats face classified work or waiting targets. Investigation difficulty, V4 mechanics, earlier rejection history, approval null, and M4 closure remain unchanged"
     },
     {
+      "older": "V4/V5 P4 source-possession and observed-source prerequisite gating",
+      "newer": "Brad's active V5 cross-phase progression correction",
+      "effect": "exact correct answers must pass with zero observation receipts, including shared or externally known deductions; source interactions retain provenance, contribution, replay, catch-up, hint, changed-place, accessibility, and director value but cannot gate acceptance. Wrong-answer predicates and throttling may remain; implementation waits for disconnect"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -520,7 +538,9 @@
     "m4_open": false,
     "required_next_evidence": [
       "Brad completes the V5 supported-client visual and filing-path walk",
+      "Brad completes the remaining V5 feedback pass and disconnects before revision",
       "human review confirms player-view polish, complete clickable clauses, occupied-shelf affordance, and seat composition",
+      "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",
       "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
       "Brad's explicit approval of a later M3 revision"

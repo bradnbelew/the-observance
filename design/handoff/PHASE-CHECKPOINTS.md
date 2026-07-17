@@ -26,6 +26,22 @@ by quotas.
 | M4 — Incremental campaign build and parity rehearsal | Closed pending remaining M3 real-client receipts and Brad's in-game approval | All required arcs/districts, services, content, assets, migrations, packages | Full non-live/live clone matrix, catch-up/replay/outage/region tests | Do not start district implementation from the structural-only M3 Paper checkpoint |
 | M5 — Production cutover and final release | Pending | GitHub/Vercel/Railway/Supabase/Crafty/media parity, final JAR/package, hashes, backups, rollback and launch receipts | Aggregate release gate plus real production readback and post-restart/coda evidence | Final checkpoint and handoff |
 
+### Active V5 review hold
+
+Brad's V5 feedback pass is still active. The server remains immutable, approval is null, and M4 is
+closed. V5's client/render/affordance work remains valid technical evidence, but it does not yet prove
+P4's intended 1–2 hour construction-phase and route archaeology experience: spatial, material,
+logistical, cross-source, emotional, and lore-relevant inference must matter more than explicit fact
+retrieval followed by matching-clause selection. Campaign investigation grammars must remain diverse
+across P1–P12 rather than converging on that interaction.
+
+Brad also superseded source-possession gating cross-phase. Correct answers, reports, and syntheses must
+pass with zero observation receipts, including externally known or player-shared deductions. Evidence
+interactions may retain provenance, contribution, replay, catch-up, hints, changed-place, accessibility,
+and director value, but they may not become answer prerequisites or touch quotas. Future negative tests
+must prove the zero-observation correct path, wrong-answer failure/throttling, and intact non-gating
+custody. No implementation begins until Brad finishes and disconnects.
+
 ## Known external gaps carried forward
 
 - `../m3/EXTERNAL-GAP-AUDIT-2026-07-16.md` records the latest read-only discovery receipts. Railway's

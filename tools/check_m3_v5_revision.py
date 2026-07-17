@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 
@@ -19,6 +20,7 @@ STATE = WORLD.with_name("PrivateSliceState.java")
 RUNTIME = WORLD.with_name("PrivateSliceReviewRuntime.java")
 SELF_TEST = ROOT / "plugin/src/test/java/com/observance/watcher/m3runtime/PrivateSliceStateSelfTest.java"
 EXPECTED_AUTHORITY_SHA256 = "a0580902b8f8633579820f1a5adf7419d0151b1259026c554b2d6974c1a95e1c"
+HISTORICAL_PACKAGE_CHECKPOINT = "967979057f192db5c111bfffeac57ede098ab633"
 
 
 def require(condition: bool, message: str) -> None:
@@ -32,6 +34,15 @@ def load(path: Path) -> dict:
 
 def normalized_sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def historical_bytes(path: Path) -> bytes:
+    relative = path.relative_to(ROOT).as_posix()
+    result = subprocess.run(
+        ["git", "show", f"{HISTORICAL_PACKAGE_CHECKPOINT}:{relative}"],
+        cwd=ROOT, check=True, capture_output=True,
+    )
+    return result.stdout
 
 
 def check_authority() -> dict:
@@ -155,7 +166,8 @@ def check_receipts() -> None:
     canonical = bytearray()
     for row in manifest["files"]:
         path = ROOT / row["path"]
-        require(path.is_file() and normalized_sha(path) == row["sha256"],
+        digest = hashlib.sha256(historical_bytes(path).replace(b"\r\n", b"\n")).hexdigest()
+        require(digest == row["sha256"],
                 f"V5 manifest file drift: {row['path']}")
         canonical.extend((row["path"] + "\n" + row["sha256"] + "\n").encode())
     require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],

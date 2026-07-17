@@ -343,10 +343,24 @@ def main() -> None:
             and v5_visual["fully_visible_clauses"] == 20
             and v5_visual["brad_visual_approval"] is None,
             "V5 internal block-state/render audit drift")
+    active_v5 = data["active_brad_v5_review"]
+    require(active_v5["status"] == "active_feedback_pass_incomplete"
+            and active_v5["machine_review_overlay"] == "design/m3/BRAD-V5-ACTIVE-REVIEW.json"
+            and (ROOT / active_v5["machine_review_overlay"]).is_file()
+            and "zero observed-source" in active_v5["progression_correction"]
+            and active_v5["live_server_directive"]
+                == "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation"
+            and active_v5["implementation_state"]
+                == "hold_no_revision_until_remaining_brad_feedback_and_disconnect"
+            and active_v5["brad_visual_approval"] is None
+            and active_v5["m4_authority"] == "closed",
+            "active V5 experiential/progression/hold authority drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
             and "Brad completes the V5 supported-client visual and filing-path walk"
+                in gate["required_next_evidence"]
+            and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"
                 in gate["required_next_evidence"]
             and "Brad's explicit approval of a later M3 revision"
                 in gate["required_next_evidence"],

@@ -155,3 +155,29 @@ rapid deduction or whether the investigation is difficult enough. A separate gui
 prove every choice renders and clicks,
 the correct report and synthesis can be completed through the intended UI, and replay, protection,
 accessibility, and catch-up still work. Brad's V4 approval remains null and M4 remains closed.
+
+## V5 progression amendment — evidence informs answers but does not unlock them
+
+Correct answers and conclusions are accepted by their exact predicates, not by a prerequisite count of
+clue interactions. A player must never be required to right-click a sign, bookshelf, lectern,
+environmental detail, or any other clue surface before submitting an answer. If a player possesses and
+submits the correct conclusion—whether deduced personally, learned through group discussion, carried
+from earlier play, or shared by another participant—the system accepts it. Feedback such as “surviving
+records remain unentered” may not reject an otherwise correct answer.
+
+Evidence interactions remain valuable. They may durably record discovery provenance, contribution
+credit, replay and catch-up detail, director evidence, hint eligibility, changed-place summaries, and
+accessibility descriptions. None of those receipts may become an answer-unlock token or a touch quota.
+Any-subset play explicitly allows one participant to communicate a deduction without every player—or
+the shared state—having interacted with each source.
+
+“All substantial content ultimately required” means that the content is materially necessary for fair
+deduction, synthesis, later callbacks, emotional understanding, and the campaign's complete account. It
+does not authorize click-completion gating. Exact wrong-answer predicates and bounded throttling may
+remain. Every affected progression path requires negative tests proving that the correct report and
+synthesis succeed with zero observation receipts, wrong answers still fail regardless of receipt count,
+and provenance/contribution/replay/catch-up custody remains intact and non-gating.
+
+This rule supersedes V4/V5 P4 source-possession gating and applies cross-phase. It is recorded during the
+active V5 review but must not be implemented against the live review target before Brad finishes and
+disconnects. Brad approval remains null and M4 remains closed.

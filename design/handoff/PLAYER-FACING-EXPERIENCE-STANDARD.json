@@ -1,10 +1,11 @@
 {
-  "schema_version": "1.1.0-cross-phase-player-facing",
+  "schema_version": "1.2.0-cross-phase-player-facing",
   "authority_id": "observance-cross-phase-player-facing-experience",
   "issued_by": "Brad",
   "issued_date": "2026-07-16",
   "amended_date": "2026-07-17",
   "amendment_authority": "design/m3/BRAD-V4-REVIEW-DECISION.json",
+  "progression_amendment_authority": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
   "status": "binding",
   "authority_precedence": "after_spine_lock_and_spine_conformance_before_phase_specific_player_facing_implementation",
   "scope": {
@@ -63,6 +64,32 @@
     "director_approved_hints_and_recovery": true,
     "routine_handholding_forbidden": true,
     "cold_review_tests_interface_affordance_not_rapid_solution_or_difficulty": true
+  },
+  "progression_and_evidence_interaction_standard": {
+    "correct_answer_acceptance_independent_of_observation_receipts": true,
+    "observed_source_receipts_may_not_be_answer_prerequisites": true,
+    "correct_external_or_shared_answer_must_pass": true,
+    "participant_touch_quota_forbidden": true,
+    "any_subset_allows_shared_deduction_without_source_touch_parity": true,
+    "permitted_observation_receipt_uses": [
+      "discovery provenance",
+      "contribution credit",
+      "replay and catch-up detail",
+      "hint and director evidence",
+      "changed-place summaries",
+      "accessibility descriptions"
+    ],
+    "substantial_content_requirement": "Content must be materially necessary for fair deduction, synthesis, callbacks, and later understanding rather than enforced by click-completion quotas.",
+    "wrong_answer_exact_predicates_preserved": true,
+    "wrong_answer_throttling_permitted": true,
+    "custody_replay_and_catch_up_preserved": true,
+    "superseded_failure_feedback": "surviving records remain unentered",
+    "required_negative_tests": [
+      "correct report succeeds with zero observation receipts",
+      "correct synthesis succeeds on the zero-observation correct path",
+      "wrong report fails regardless of observation receipt count",
+      "observation provenance, contribution credit, replay, and catch-up remain durable and non-gating"
+    ]
   },
   "minecraft_client_ui_standard": {
     "exact_book_pagination_tests_required": true,
@@ -191,6 +218,14 @@
     {
       "check_id": "CROSS.PF.NO_MISSABLE_DEEP_INVESTIGATION",
       "predicate": "distributed or multi-layered evidence preserves any-subset, replay, accessibility, catch-up, and no-missable guarantees"
+    },
+    {
+      "check_id": "CROSS.PF.CORRECT_ANSWER_ZERO_OBSERVATION",
+      "predicate": "an exact correct answer, report, and synthesis are accepted with zero observed-source interaction receipts"
+    },
+    {
+      "check_id": "CROSS.PF.OBSERVATION_CUSTODY_NON_GATING",
+      "predicate": "observation receipts retain provenance, contribution, replay, catch-up, hint, changed-place, accessibility, and director value but never gate correct-answer acceptance"
     }
   ],
   "cold_read_criteria": [
@@ -208,14 +243,16 @@
     "observer records every moment that required out-of-world explanation",
     "cold player identifies readable evidence surfaces from visible physical affordance rather than trial-clicking empty-looking blocks",
     "every selectable book option is fully visible and clickable at the supported client UI",
-    "seating and furniture facing communicate believable work, waiting, or conversation use"
+    "seating and furniture facing communicate believable work, waiting, or conversation use",
+    "cold player may submit a correct shared or externally known conclusion without touching its source surfaces"
   ],
   "guided_client_criteria": [
     "every four-choice question displays all choices without overflow or hidden correct answers",
     "every displayed choice can be selected through the intended native client UI",
     "the complete correct report and final synthesis can be submitted without console, operator, or out-of-world workarounds",
     "interactive evidence surfaces have an unmistakable visible physical affordance",
-    "full path replay, protection, accessibility, and catch-up behavior is exercised by a supported non-op Adventure client"
+    "full path replay, protection, accessibility, and catch-up behavior is exercised by a supported non-op Adventure client",
+    "the exact correct report and synthesis complete with zero observation receipts while wrong reports still fail"
   ],
   "v4_demonstration": {
     "preserve": [
