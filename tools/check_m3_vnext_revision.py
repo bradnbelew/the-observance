@@ -19,6 +19,7 @@ VALIDATION = ROOT / "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json"
 REVIEW = ROOT / "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json"
 FAILED = ROOT / "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json"
 VISUAL = ROOT / "design/m3/VNEXT-BLOCK-STATE-VISUAL-AUDIT.json"
+LIVE_REVIEW = ROOT / "design/m3/PAPER-VNEXT-LIVE-REVIEW-RECEIPT.json"
 
 
 def require(condition: bool, message: str) -> None:
@@ -121,6 +122,16 @@ def main() -> None:
                 and visual["physical_affordance"]["unclassified_floating_blocks"] == 0
                 and visual["limits"]["brad_visual_approval"] is None,
                 "failed-attempt or internal visual audit history drift")
+        if LIVE_REVIEW.is_file():
+            live = load(LIVE_REVIEW)
+            require(live["join"] == {"address": "127.0.0.1:25591",
+                        "minecraft_java_version": "1.21.11", "gamemode": "Adventure",
+                        "operator_required": False, "resource_pack_for_this_bounded_review": "not required"}
+                    and live["process"]["pid"] == 20708
+                    and live["process"]["listener_verified"] is True
+                    and live["process"]["journal_exists_at_receipt"] is False
+                    and live["brad_visual_approval"] is None,
+                    "live localhost review handoff drift")
         print("M3 vNext story/zero-receipt/Copperline/Paper checks PASS")
     else:
         print("M3 vNext story/zero-receipt/Copperline source checks PASS; Paper receipt pending")

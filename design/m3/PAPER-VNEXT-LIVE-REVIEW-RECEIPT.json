@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0.0-m3-vnext-live-review-receipt",
+  "authority_id": "observance-p4-private-slice-vnext",
+  "launch_time": "2026-07-17T02:44:33-05:00",
+  "target_id": "m3-vnext-brad-review-8a51f26-20260717-a",
+  "target_path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-vnext-brad-review-8a51f26-20260717-a",
+  "source_git_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+  "review_preparation_receipt": "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json",
+  "review_world_package_sha256": "fcc0d8dd0bf530b628133bf4f670a8a23d7e8e916922c1528004b67c64e6317f",
+  "paper": {
+    "version": "1.21.11",
+    "build": 132,
+    "runtime": "1.21.11-132-c5eb079",
+    "jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
+  },
+  "plugin_jar_sha256": "cd1e92dc94ef6bbb4e6c63049ca2b83ef50821a3c22099ef19ab00d2ce58ef85",
+  "join": {
+    "address": "127.0.0.1:25591",
+    "minecraft_java_version": "1.21.11",
+    "gamemode": "Adventure",
+    "operator_required": false,
+    "resource_pack_for_this_bounded_review": "not required"
+  },
+  "process": {
+    "pid": 20708,
+    "bind": "127.0.0.1",
+    "port": 25591,
+    "listener_verified": true,
+    "authority_confirmation_lines": 1,
+    "completed_startup_lines": 1,
+    "joined_player_lines_at_receipt": 0,
+    "left_player_lines_at_receipt": 0,
+    "journal_exists_at_receipt": false
+  },
+  "immutability_directive": "Do not issue commands, rebuild, restart, or stop while Brad is reviewing. After confirmed disconnect, save-all flush and stop only PID 20708, then hash the closed log and journal.",
+  "brad_visual_approval": null,
+  "broader_campaign_launch_ready": false,
+  "public_or_production": false,
+  "production_mutated": false
+}
