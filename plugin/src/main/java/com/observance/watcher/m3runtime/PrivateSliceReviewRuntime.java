@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/** Review-only Bukkit adapter for the authored M3 v2 authority. */
+/** Review-only Bukkit adapter for the authored M3 v3 authority. */
 public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoCloseable {
     private static final String MARKER = ".observance-disposable-paper-target";
     private final JavaPlugin plugin;
@@ -41,7 +41,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         String worldName = plugin.getConfig().getString("m3-review.world", "m3_private_slice");
         World world = Bukkit.getWorld(worldName);
         if (world == null) throw new IllegalStateException("configured disposable world is not loaded: " + worldName);
-        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice.journal");
+        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-v3.journal");
         Files.createDirectories(journal.getParent());
         state = PrivateSliceState.open(journal);
         slice = new PrivateSliceWorld(world,
@@ -56,7 +56,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         if (plugin.getCommand("observancem3") == null) throw new IllegalStateException("observancem3 command missing");
         plugin.getCommand("observancem3").setExecutor(this);
         plugin.getLogger().info("M3_TARGET_CONFIRMED target=" + targetId + " commit=" + sourceCommit
-                + " authority=observance-p4-private-slice-v2 paper=" + Bukkit.getVersion());
+                + " authority=observance-p4-private-slice-v3 paper=" + Bukkit.getVersion());
     }
 
     @Override
@@ -83,8 +83,8 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
 
     private void status(CommandSender sender) {
         sender.sendMessage("M3_STATUS target=" + targetId + " commit=" + sourceCommit
-                + " authority=v2 gate=" + (state.gateOpen() ? "open" : "closed")
-                + " evidence_surfaces=14 submissions=6 signs=8 paper=" + Bukkit.getVersion());
+                + " authority=v3 gate=" + (state.gateOpen() ? "open" : "closed")
+                + " evidence_surfaces=8 submissions=6 references=1 signs=4 paper=" + Bukkit.getVersion());
     }
 
     private void build(CommandSender sender) throws IOException {

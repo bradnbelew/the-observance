@@ -11,19 +11,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Local-primary observation, finding, gate, catch-up, and A2 approval state for the M3 v2 slice. */
+/** Local-primary observation, finding, gate, catch-up, and A2 approval state for the M3 v3 slice. */
 public final class PrivateSliceState {
     public static final List<String> BASE_FINDINGS = List.of("P4.F1", "P4.F2", "P4.F3", "P4.F4");
     public static final String SYNTHESIS = "P4.F5";
-    public static final String GATE_IDEMPOTENCY = "m3:p4:gate:P4_INTAKE_GATE:open:v2";
+    public static final String GATE_IDEMPOTENCY = "m3:p4:gate:P4_INTAKE_GATE:open:v3";
     public static final String WATCHER_PAYLOAD_SHA256 =
             "3a2187bdc752b583d92ae47cb0a718b15c02ea2684b2b8fd2c2c8ccf88d9c10a";
     public static final Map<String, Set<String>> ALLOWED_SOURCES = Map.of(
-            "P4.F1", Set.of("drainage_map", "cart_wear", "resident_memory_copy"),
-            "P4.F2", Set.of("material_join_shelter", "material_join_civic", "material_join_deep",
-                    "survey_revisions", "room_use_roll"),
-            "P4.F3", Set.of("population_board", "ration_ledger", "heat_water_capacity_diagram"),
-            "P4.F4", Set.of("founding_minutes", "descent_heat_marks", "recessed_water_channel"));
+            "P4.F1", Set.of("drainage_map", "cart_wear"),
+            "P4.F2", Set.of("material_join_civic", "survey_revisions"),
+            "P4.F3", Set.of("population_board", "ration_ledger"),
+            "P4.F4", Set.of("founding_minutes", "descent_heat_marks"));
 
     private final LocalPrimaryJournal journal;
     private final Map<String, Set<String>> observationsByFinding = new LinkedHashMap<>();
@@ -55,9 +54,9 @@ public final class PrivateSliceState {
             throw new IllegalArgumentException("source is not authored for " + findingId + ": " + sourceId);
         }
         LocalPrimaryJournal.Receipt observation = journal.append(
-                "m3:p4:observation:" + sourceId + ":v2", "observation_committed",
+                "m3:p4:observation:" + sourceId + ":v3", "observation_committed",
                 bytes(findingId + "\n" + sourceId));
-        journal.append("m3:p4:observation-contribution:" + sourceId + ":" + contributorId + ":v2",
+        journal.append("m3:p4:observation-contribution:" + sourceId + ":" + contributorId + ":v3",
                 "observation_contribution_recorded", bytes(findingId + "\n" + sourceId + "\n" + contributorId));
         resetDerivedState();
         replay(journal.after(0));
@@ -87,8 +86,8 @@ public final class PrivateSliceState {
 
         byte[] findingPayload = bytes(findingId + "\n" + String.join(",", sources));
         LocalPrimaryJournal.Receipt finding = journal.append(
-                "m3:p4:finding:" + findingId + ":v2", "finding_committed", findingPayload);
-        journal.append("m3:p4:contribution:" + findingId + ":" + contributorId + ":v2",
+                "m3:p4:finding:" + findingId + ":v3", "finding_committed", findingPayload);
+        journal.append("m3:p4:contribution:" + findingId + ":" + contributorId + ":v3",
                 "contribution_recorded", bytes(findingId + "\n" + contributorId));
         if (SYNTHESIS.equals(findingId)) {
             journal.append(GATE_IDEMPOTENCY, "gate_opened", bytes("P4_INTAKE_GATE"));
@@ -110,8 +109,8 @@ public final class PrivateSliceState {
         long duration = expiresAtEpochSecond - nowEpochSecond;
         if (duration < 60 || duration > 1800) throw new IllegalArgumentException("A2 approval must expire in 1-30 minutes");
         WatcherApproval approval = new WatcherApproval(approvalId, WATCHER_PAYLOAD_SHA256,
-                "m3-private-slice-v2/named-test-players", westTarget, eastTarget, expiresAtEpochSecond);
-        journal.append("m3:p4:watcher-approval:" + approvalId + ":v2", "watcher_approval_recorded",
+                "m3-private-slice-v3/named-test-players", westTarget, eastTarget, expiresAtEpochSecond);
+        journal.append("m3:p4:watcher-approval:" + approvalId + ":v3", "watcher_approval_recorded",
                 bytes(approval.serialize()));
         resetDerivedState();
         replay(journal.after(0));
@@ -131,7 +130,7 @@ public final class PrivateSliceState {
         if (!findingCommitted("P4.F3") || findingCommitted(SYNTHESIS)) {
             throw new IllegalStateException("A2 prerequisite no longer holds");
         }
-        journal.append("m3:p4:watcher-approval:" + approvalId + ":consumed:v2",
+        journal.append("m3:p4:watcher-approval:" + approvalId + ":consumed:v3",
                 "watcher_approval_consumed", bytes(approval.serialize()));
         resetDerivedState();
         replay(journal.after(0));

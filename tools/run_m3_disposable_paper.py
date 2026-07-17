@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create-only Paper 1.21.11 validation and localhost review targets for M3 v2."""
+"""Create-only Paper 1.21.11 validation and localhost review targets for M3 v3."""
 from __future__ import annotations
 
 import argparse
@@ -21,8 +21,8 @@ PAPER_BUILD = 132
 PREDICATE_RAW_SHA256 = "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a"
 MANIFEST_VERSION = "2.0.0-m2"
 COARSE_AUTHORITY_SHA256 = "564225c0d9a2d015437f9722e5741e509b46837b6e194e6ca1cda860cea7f962"
-SLICE_AUTHORITY_SHA256 = "3d8734673d309fc77903874605bb769cd76982f113adf9a6df81d93489666ec6"
-AUTHORITY_ID = "observance-p4-private-slice-v2"
+SLICE_AUTHORITY_SHA256 = "3f7c7924b6905f9f58dc43332f9dfb6ae19cfed853759a5e63f278de2438c320"
+AUTHORITY_ID = "observance-p4-private-slice-v3"
 
 
 def sha256(path: Path) -> str:
@@ -95,11 +95,11 @@ class PaperProcess:
 
 def verify_authorities() -> None:
     coarse = canonical_sha256(ROOT / "design" / "m3" / "coarse-adjacency-v1.json")
-    sliced = canonical_sha256(ROOT / "design" / "m3" / "vertical-slice-v2.json")
+    sliced = canonical_sha256(ROOT / "design" / "m3" / "vertical-slice-v3.json")
     if coarse != COARSE_AUTHORITY_SHA256:
         raise ValueError(f"coarse authority hash drift: {coarse}")
     if sliced != SLICE_AUTHORITY_SHA256:
-        raise ValueError(f"v2 slice authority hash drift: {sliced}")
+        raise ValueError(f"v3 slice authority hash drift: {sliced}")
 
 
 def configure(target: Path, paper: Path, plugin: Path, target_id: str, commit: str, port: int) -> None:
@@ -115,7 +115,7 @@ def configure(target: Path, paper: Path, plugin: Path, target_id: str, commit: s
         "enable-command-block=false", "enable-rcon=false", "enable-status=true", "enforce-whitelist=false",
         "force-gamemode=true", "gamemode=adventure", "generate-structures=false", "hardcore=false",
         "level-name=m3_private_slice", "level-seed=9137", "level-type=minecraft:flat", "max-players=4",
-        "motd=PRIVATE M3 V2 DISPOSABLE REVIEW", "online-mode=false", "prevent-proxy-connections=true",
+        "motd=PRIVATE M3 V3 DISPOSABLE REVIEW", "online-mode=false", "prevent-proxy-connections=true",
         "server-ip=127.0.0.1", f"server-port={port}", "spawn-animals=false", "spawn-monsters=false",
         "spawn-npcs=false", "spawn-protection=0", "sync-chunk-writes=true", "view-distance=5",
         "simulation-distance=4", "white-list=false", "",]))
@@ -206,7 +206,7 @@ def package_world(target: Path) -> tuple[str, str, Path]:
         relative = path.relative_to(target).as_posix()
         digest.update((relative + "\n" + sha256(path) + "\n").encode())
     world_tree_hash = digest.hexdigest()
-    package = target / "m3-private-slice-v2-world.zip"
+    package = target / "m3-private-slice-v3-world.zip"
     with zipfile.ZipFile(package, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for path in files:
             info = zipfile.ZipInfo(path.relative_to(target).as_posix(), (1980, 1, 1, 0, 0, 0))
@@ -238,12 +238,12 @@ def main() -> None:
     evidence, first_lines, second_lines = (exercise_validation(target, args.java)
                                            if args.mode == "validate" else prepare_review(target, args.java))
     world_hash, package_hash, package = package_world(target)
-    journal = target / "plugins" / "Observance" / "m3-private-slice.journal"
+    journal = target / "plugins" / "Observance" / "m3-private-slice-v3.journal"
     if args.mode == "validate" and not journal.is_file():
         raise FileNotFoundError("validation completed without the required durable M3 journal")
     receipt = {
-        "schema_version": "2.0.0-m3-paper-receipt" if args.mode == "validate"
-            else "1.0.0-m3-review-server-receipt",
+        "schema_version": "3.0.0-m3-paper-receipt" if args.mode == "validate"
+            else "3.0.0-m3-review-server-receipt",
         "scope": "disposable local private Paper target; never player-facing or production",
         "mode": args.mode,
         "target_id": args.target_id,
@@ -275,7 +275,7 @@ def main() -> None:
             "reason": "Server configuration, pure state tests, and Paper security readback exist; no authenticated Minecraft client was automated.",
         },
         "brad_visual_approval": None,
-        "brad_visual_status": "pending_re_review_after_revision",
+        "brad_visual_status": "pending_v3_re_review_after_revision",
         "m4_authority": "closed",
     }
     write_text(args.receipt.resolve(), json.dumps(receipt, indent=2, sort_keys=True) + "\n")

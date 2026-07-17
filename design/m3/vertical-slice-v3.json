@@ -1,0 +1,83 @@
+{
+  "schema_version": "3.0.0-m3",
+  "authority_id": "observance-p4-private-slice-v3",
+  "base_geometry": "design/m3/vertical-slice-v2.json",
+  "binding_review_decision": "design/m3/BRAD-V2-REVIEW-DECISION.json",
+  "status": "focused-authored-revision-not-player-facing",
+  "m4_authority": "closed",
+  "brad_visual_approval": null,
+  "envelope": {"min_x": -34, "max_x": 34, "min_y": -24, "max_y": 10, "min_z": -10, "max_z": 92, "cells": 248745},
+  "preservation_baseline": {
+    "retain_v2_palette_improvement": true,
+    "retain_gate": {"min_x": -5, "max_x": 5, "min_y": -20, "max_y": -13, "z": 89, "width": 11, "height": 8, "closed_collision_cells": 88, "open_collision_cells": 0},
+    "retain_locked_spine_and_m2_predicates": true,
+    "retain_local_primary_restart_idempotency": true
+  },
+  "investigation": {
+    "briefing": {
+      "surface_id": "INTAKE_EXAMINER_DOCKET",
+      "cell": [0, 0, 5],
+      "block_data": "minecraft:lectern[facing=south,has_book=true,powered=false]",
+      "reader_standing_cell": [0, 0, 7],
+      "purpose": "credible municipal commission establishing the four disputed intake questions and physical filing practice"
+    },
+    "evidence_books": [
+      {"surface_id":"DRAINAGE_MAP","finding_id":"P4.F1","source_id":"drainage_map","cell":[-8,0,7],"facing":"south","reader_standing_cell":[-8,0,9]},
+      {"surface_id":"CART_WEAR_LOG","finding_id":"P4.F1","source_id":"cart_wear","cell":[8,0,7],"facing":"south","reader_standing_cell":[8,0,9]},
+      {"surface_id":"CIVIC_JOIN_SURVEY","finding_id":"P4.F2","source_id":"material_join_civic","cell":[-5,-20,59],"facing":"south","reader_standing_cell":[-5,-20,61]},
+      {"surface_id":"SURVEY_REVISIONS","finding_id":"P4.F2","source_id":"survey_revisions","cell":[29,-19,65],"facing":"south","reader_standing_cell":[29,-20,67]},
+      {"surface_id":"POPULATION_BOARD","finding_id":"P4.F3","source_id":"population_board","cell":[8,-20,59],"facing":"south","reader_standing_cell":[8,-20,61]},
+      {"surface_id":"RATION_LEDGER","finding_id":"P4.F3","source_id":"ration_ledger","cell":[24,-19,66],"facing":"south","reader_standing_cell":[24,-20,68]},
+      {"surface_id":"DESCENT_HEAT_LOG","finding_id":"P4.F4","source_id":"descent_heat_marks","cell":[-6,-19,72],"facing":"east","reader_standing_cell":[-3,-20,72]},
+      {"surface_id":"FOUNDING_MINUTES","finding_id":"P4.F4","source_id":"founding_minutes","cell":[24,-19,74],"facing":"south","reader_standing_cell":[24,-20,77]}
+    ],
+    "physical_rule": "opening an evidence lectern commits provenance and presents the exact written book in the native lectern UI; evidence body or solution prose is never emitted to chat",
+    "finding_rule": "each P4.F1-P4.F4 requires its exact two authored evidence books; crouch-use on its filing docket stamps the finding; P4.F5 requires all four findings",
+    "submissions": [
+      {"surface_id":"FILE_PUBLIC_MOUTH","finding_id":"P4.F1","cell":[-4,-19,76],"facing":"north","reader_standing_cell":[-4,-20,73]},
+      {"surface_id":"FILE_BUILD_PHASES","finding_id":"P4.F2","cell":[-2,-19,76],"facing":"north","reader_standing_cell":[-2,-20,73]},
+      {"surface_id":"FILE_CAPACITY","finding_id":"P4.F3","cell":[2,-19,76],"facing":"north","reader_standing_cell":[2,-20,73]},
+      {"surface_id":"FILE_DESCENT","finding_id":"P4.F4","cell":[4,-19,76],"facing":"north","reader_standing_cell":[4,-20,73]},
+      {"surface_id":"FILE_INTAKE_SYNTHESIS","finding_id":"P4.F5","cell":[0,-19,77],"facing":"north","reader_standing_cell":[0,-20,74]},
+      {"surface_id":"FIELD_ARCHIVE_READBACK","finding_id":null,"cell":[13,-20,74],"facing":"west","reader_standing_cell":[10,-20,74]}
+    ]
+  },
+  "signage": [
+    {"surface_id":"MOUTH_COMMISSION_PLAQUE","cell":[0,2,1],"block_data":"minecraft:oak_wall_sign[facing=south,waterlogged=false]","support_cell":[0,2,0],"reader_standing_cell":[0,0,3],"purpose":"municipal commission identity"},
+    {"surface_id":"RECORD_OFFICE_PLAQUE","cell":[17,-18,66],"block_data":"minecraft:oak_wall_sign[facing=west,waterlogged=false]","support_cell":[18,-18,66],"reader_standing_cell":[15,-20,66],"purpose":"credible office identity"},
+    {"surface_id":"COMMONS_SEAL_PLAQUE","cell":[-6,-18,88],"block_data":"minecraft:oak_wall_sign[facing=north,waterlogged=false]","support_cell":[-6,-18,89],"reader_standing_cell":[-6,-20,85],"purpose":"controlled civic seal identity"},
+    {"surface_id":"RUNOFF_GAUGE_PLAQUE","cell":[-14,-18,61],"block_data":"minecraft:oak_wall_sign[facing=north,waterlogged=false]","support_cell":[-14,-18,62],"reader_standing_cell":[-14,-20,59],"purpose":"works gauge identity and rated capacity"}
+  ],
+  "waterworks": {
+    "ordered_components": [
+      {"component_id":"INLET_TROUGH","bounds":{"min_x":-14,"max_x":-13,"min_y":-21,"max_y":-21,"min_z":59,"max_z":62},"water_cells":8,"purpose":"receive surface and quarry runoff"},
+      {"component_id":"SETTLING_BASIN","bounds":{"min_x":-14,"max_x":-9,"min_y":-21,"max_y":-21,"min_z":63,"max_z":67},"water_cells":30,"purpose":"drop silt before gauging"},
+      {"component_id":"GAUGING_FLUME","bounds":{"min_x":-12,"max_x":-11,"min_y":-21,"max_y":-21,"min_z":68,"max_z":75},"water_cells":16,"purpose":"constrain measurable flow against the 300-berth limit"},
+      {"component_id":"GRATED_SUMP","bounds":{"min_x":-13,"max_x":-10,"min_y":-21,"max_y":-21,"min_z":76,"max_z":77},"water_cells":8,"purpose":"collect and pass measured flow to the lower filter"}
+    ],
+    "total_water_cells": 62,
+    "flow_order": ["INLET_TROUGH","SETTLING_BASIN","GAUGING_FLUME","GRATED_SUMP"],
+    "orphan_components_allowed": false
+  },
+  "circulation": {
+    "public_office_route": {"start":[12,-20,70],"end":[27,-20,70],"clear_width":3,"threshold_material":"POLISHED_ANDESITE"},
+    "staff_record_route": {"start":[12,-20,81],"end":[27,-20,81],"clear_width":3,"threshold_material":"CUT_COPPER"},
+    "diagonal_or_unexplained_jogs_allowed": false,
+    "instructional_navigation_signs_allowed": false
+  },
+  "mandatory_checks": [
+    "M3.V3.DIRECTIONAL_BLOCK_STATES",
+    "M3.V3.SUPPORT_ATTACHMENT",
+    "M3.V3.PLAYER_EYE_SIGNAGE",
+    "M3.V3.LECTERN_BOOK",
+    "M3.V3.NON_OVERLAP",
+    "M3.V3.NO_UNCLASSIFIED_FLOATING_BLOCKS",
+    "M3.V3.IMMERSIVE_TEXT",
+    "M3.V3.EVIDENCE_IN_BOOK",
+    "M3.V3.INVESTIGATION_LEGIBILITY",
+    "M3.V3.WATERWORKS_FUNCTION",
+    "M3.V3.CORRIDOR_THRESHOLD_SIGHTLINES",
+    "M3.V3.GATE_NO_REGRESSION"
+  ],
+  "review_launch_gate": "all mandatory checks, fresh Paper closed/open/restart/replay/security/package receipts, and a separate pristine closed review target must pass before localhost launch"
+}

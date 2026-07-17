@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
-/** Proves v2 physical observation custody, any-subset findings, local gate, replay, and exact A2 approval. */
+/** Proves v3 physical book custody, paired findings, local gate, replay, and exact A2 approval. */
 public final class PrivateSliceStateSelfTest {
     private static final String WATCHER_HASH =
             "3a2187bdc752b583d92ae47cb0a718b15c02ea2684b2b8fd2c2c8ccf88d9c10a";
@@ -46,11 +46,11 @@ public final class PrivateSliceStateSelfTest {
                     "P4.F2", List.of("different_source", "survey_revisions"), "carol"));
 
             long now = 1_789_000_000L;
-            state.approveWatcher("brad-a2-v2", "WestReviewer", "EastReviewer", now + 600, now);
-            expectIllegalState(() -> state.consumeWatcher("brad-a2-v2", "Wrong", "EastReviewer", now + 1));
-            state.consumeWatcher("brad-a2-v2", "WestReviewer", "EastReviewer", now + 1);
+            state.approveWatcher("brad-a2-v3", "WestReviewer", "EastReviewer", now + 600, now);
+            expectIllegalState(() -> state.consumeWatcher("brad-a2-v3", "Wrong", "EastReviewer", now + 1));
+            state.consumeWatcher("brad-a2-v3", "WestReviewer", "EastReviewer", now + 1);
             expectIllegalState(() -> state.consumeWatcher(
-                    "brad-a2-v2", "WestReviewer", "EastReviewer", now + 2));
+                    "brad-a2-v3", "WestReviewer", "EastReviewer", now + 2));
 
             long cursor = state.catchUpAfter(0).size();
             state.commitFinding("P4.F5", PrivateSliceState.BASE_FINDINGS, "brad");
@@ -67,7 +67,7 @@ public final class PrivateSliceStateSelfTest {
                     "restart preserves physical observation custody");
             approvalBoundary();
             protectionSurface();
-            System.out.println("M3 private-slice v2 state self-test passed");
+            System.out.println("M3 private-slice v3 state self-test passed");
         } finally {
             Files.deleteIfExists(path);
             Files.deleteIfExists(dir);
@@ -115,8 +115,17 @@ public final class PrivateSliceStateSelfTest {
         }
         String interaction = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceInteractionListener.java"));
         for (String required : List.of("commitObservation", "commitFinding", "FIELD ARCHIVE",
-                "Accessibility readback", "setGate(true)")) {
+                "Accessibility readback", "setGate(true)", "referenceAt", "sendActionBar",
+                "Paper opens the authored written book")) {
             check(interaction.contains(required), "player-facing interaction missing " + required);
+        }
+        check(!interaction.contains("sendMessage(Component.text(evidence.body()))"),
+                "evidence body must never be emitted into chat");
+        String world = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java"));
+        for (String required : List.of("expectedBlockData", "facing=west", "checkInvestigationTopology",
+                "checkWaterworks", "checkCorridor", "checkImmersiveText", "requiresSupport",
+                "unclassified floating furnishing", "GATE_CLOSED_COLLISION_CELLS = 88")) {
+            check(world.contains(required), "v3 authored world gate missing " + required);
         }
     }
 

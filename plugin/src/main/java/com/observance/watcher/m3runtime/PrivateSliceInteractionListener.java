@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/** Player-facing evidence, filing, catch-up, and accessibility interactions for the authored v2 slice. */
+/** Native-book evidence, crouch-filing, catch-up, and accessibility interactions for authored v3. */
 public final class PrivateSliceInteractionListener implements Listener {
     private final PrivateSliceWorld slice;
     private final PrivateSliceState state;
@@ -28,23 +28,34 @@ public final class PrivateSliceInteractionListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) return;
         PrivateSliceWorld.EvidenceSurface evidence = slice.evidenceAt(event.getClickedBlock().getLocation());
         PrivateSliceWorld.SubmissionSurface submission = slice.submissionAt(event.getClickedBlock().getLocation());
-        if (evidence == null && submission == null) return;
-        event.setCancelled(true);
+        PrivateSliceWorld.ReferenceSurface reference = slice.referenceAt(event.getClickedBlock().getLocation());
+        if (evidence == null && submission == null && reference == null) return;
         Player player = event.getPlayer();
         try {
-            if (evidence != null) inspect(player, evidence);
-            else file(player, submission);
+            if (evidence != null) {
+                inspect(player, evidence);
+                return; // Do not cancel: Paper opens the authored written book in the native lectern UI.
+            }
+            if (reference != null) {
+                player.sendActionBar(Component.text("Intake examiner's docket"));
+                return; // Reference prose also remains in-world, never copied into chat.
+            }
+            if (!player.isSneaking()) {
+                player.sendActionBar(Component.text("Open docket; crouch-use to stamp when ready."));
+                return;
+            }
+            event.setCancelled(true);
+            file(player, submission);
         } catch (IOException | IllegalArgumentException | IllegalStateException failure) {
-            player.sendMessage(Component.text("Intake filing refused: " + safe(failure.getMessage())));
+            event.setCancelled(true);
+            player.sendActionBar(Component.text("Filing refused: " + safe(failure.getMessage())));
         }
     }
 
     private void inspect(Player player, PrivateSliceWorld.EvidenceSurface evidence) throws IOException {
         state.commitObservation(evidence.findingId(), evidence.sourceId(), contributor(player));
-        player.sendMessage(Component.text("[" + evidence.title() + "]"));
-        player.sendMessage(Component.text(evidence.body()));
-        player.sendMessage(Component.text("Observation retained for " + evidence.findingId()
-                + ": " + evidence.sourceId()));
+        player.sendActionBar(Component.text("Record retained: " + evidence.findingId()
+                + " / " + evidence.sourceId()));
     }
 
     private void file(Player player, PrivateSliceWorld.SubmissionSurface submission) throws IOException {
@@ -56,7 +67,7 @@ public final class PrivateSliceInteractionListener implements Listener {
             state.commitFinding(PrivateSliceState.SYNTHESIS, PrivateSliceState.BASE_FINDINGS,
                     contributor(player));
             slice.setGate(true);
-            player.sendMessage(Component.text("INTAKE FINDING FILED. The controlled gate is open."));
+            player.sendActionBar(Component.text("Intake seal released. The controlled gate is open."));
             return;
         }
         Set<String> observed = state.observedSources(submission.findingId());
@@ -67,8 +78,8 @@ public final class PrivateSliceInteractionListener implements Listener {
         List<String> sources = new ArrayList<>(observed);
         sources.sort(String::compareTo);
         state.commitFinding(submission.findingId(), sources, contributor(player));
-        player.sendMessage(Component.text(submission.findingId() + " filed from " + sources.size()
-                + " retained source receipts."));
+        player.sendActionBar(Component.text(submission.findingId() + " stamped from " + sources.size()
+                + " retained records."));
     }
 
     private void replay(Player player) {
