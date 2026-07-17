@@ -213,10 +213,11 @@ def check_receipts() -> None:
         M3 / "V4-BLOCK-STATE-VISUAL-AUDIT.json",
         M3 / "V4-COLD-READ-PREFLIGHT.json",
         M3 / "V4-ROUTED-REGRESSION-RECEIPT.json",
+        M3 / "BRAD-V4-ACTIVE-REVIEW.json",
     ]
     missing = [path.relative_to(ROOT).as_posix() for path in required if not path.is_file()]
     require(not missing, f"v4 live/package/human preflight receipts missing: {missing}")
-    validation, review, manifest, visual, cold, routed = map(load, required)
+    validation, review, manifest, visual, cold, routed, active = map(load, required)
     failed = load(M3 / "PAPER-V4-FAILED-ATTEMPTS.json")
     for receipt in (validation, review):
         require(receipt["authority_id"] == "observance-p4-private-slice-v4"
@@ -288,6 +289,9 @@ def check_receipts() -> None:
             and visual["lectern_count"] == 2,
             "v4 block-state/composition audit incomplete")
     require(cold["result"] == "passed_internal_preflight_not_brad_approval"
+            and cold["independent_cold_human_status"] == "not_passed_external_guidance_required"
+            and cold["independent_cold_human_evidence"]["binding_quote"]
+                == "can you guide me thru it?"
             and cold["brad_visual_approval"] is None and cold["m4_authority"] == "closed",
             "v4 cold-read preflight overclaims or is incomplete")
     require(routed["aggregate_status"]
@@ -298,6 +302,17 @@ def check_receipts() -> None:
             and routed["brad_visual_approval"] is None
             and routed["m4_authority"] == "closed",
             "v4 routed regression boundary or approval gate drift")
+    require(active["schema_version"] == "1.0.0-m3-brad-v4-active-review"
+            and active["review_status"]
+                == "active_guided_functionality_validation_after_cold_failure"
+            and active["cold_review"]["independent_result"]
+                == "not_passed_external_guidance_required"
+            and active["cold_review"]["binding_quote"] == "can you guide me thru it?"
+            and active["cold_review"]["cannot_be_retroactively_satisfied_by_guided_completion"] is True
+            and active["live_server_directive"]
+                == "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete"
+            and active["brad_visual_approval"] is None and active["m4_authority"] == "closed",
+            "v4 active cold-review failure/live hold drift")
 
 
 def main() -> None:

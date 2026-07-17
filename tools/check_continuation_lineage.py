@@ -247,7 +247,7 @@ def main() -> None:
                       v4["failed_attempts_receipt"], v4["validation_receipt"],
                       v4["review_target_receipt"], v4["block_state_visual_audit"],
                       v4["cold_read_preflight"], v4["routed_regression_receipt"],
-                      v4["review_package"]):
+                      v4["active_review_overlay"], v4["review_package"]):
         require((ROOT / authority).is_file(), f"missing M3 v4 lineage authority: {authority}")
     v4_validation = json.loads((ROOT / v4["validation_receipt"]).read_text(encoding="utf-8"))
     v4_review = json.loads((ROOT / v4["review_target_receipt"]).read_text(encoding="utf-8"))
@@ -274,9 +274,28 @@ def main() -> None:
             and v4_routed["m4_authority"] == "closed",
             "v4 routed regression boundary/provenance drift")
 
+    active_v4 = data["active_brad_v4_review"]
+    require(active_v4["status"]
+                == "active_guided_functionality_validation_after_cold_failure"
+            and active_v4["cold_review_result"]
+                == "not_passed_external_guidance_required"
+            and active_v4["binding_quote"] == "can you guide me thru it?"
+            and active_v4["live_server_directive"]
+                == "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete"
+            and active_v4["implementation_state"]
+                == "paused_pending_complete_guided_feedback_and_disconnect"
+            and active_v4["brad_visual_approval"] is None
+            and active_v4["m4_authority"] == "closed",
+            "active V4 cold-review failure/live hold drift")
+    require(active_v4["machine_review_overlay"] == v4["active_review_overlay"]
+            and (ROOT / active_v4["machine_review_overlay"]).is_file(),
+            "active V4 review overlay missing")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "independent cold player states the room job and civic question without external explanation"
+            and "complete Brad's guided functionality pass and collect the full feedback set"
+                in gate["required_next_evidence"]
+            and "confirmed disconnect followed by clean save/flush/stop before any revision"
                 in gate["required_next_evidence"]
             and "Brad's explicit approval of v4" in gate["required_next_evidence"],
             "M3 v4 human/client/approval gate weakened")

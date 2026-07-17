@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0-m3-brad-v4-active-review",
+  "recorded_at": "2026-07-17T00:21:31-05:00",
+  "review_status": "active_guided_functionality_validation_after_cold_failure",
+  "review_candidate": "observance-p4-private-slice-v4",
+  "source_git_commit": "233b16947a513a97c661f12980906c2a99f4301f",
+  "live_target_id": "m3-v4-brad-review-233b169-20260717-a",
+  "live_pid": 22748,
+  "live_address": "127.0.0.1:25586",
+  "paper": "1.21.11 build 132 c5eb079",
+  "cold_review": {
+    "player": "Brad / SirNan",
+    "joined_at_from_paper_log": "2026-07-17T00:18:47-05:00",
+    "initial_direction": "explore naturally without a solution key or guided walkthrough",
+    "binding_quote": "can you guide me thru it?",
+    "independent_result": "not_passed_external_guidance_required",
+    "failed_criteria": [
+      "cold player states the overall room or investigation objective without external explanation",
+      "cold player independently discovers the intended interaction path",
+      "cold player can begin the civic investigation without guided walkthrough"
+    ],
+    "interpretation": "the authored mechanics and records may be functional, but the objective and interaction model were not independently discoverable to the cold reviewer",
+    "cannot_be_retroactively_satisfied_by_guided_completion": true
+  },
+  "guided_pass": {
+    "status": "in_progress",
+    "scope": "functionality validation only; collect the rest of Brad's visual, interaction, writing, deduction, and mechanical findings",
+    "approval_effect": "none",
+    "cold_comprehension_effect": "does not convert the failed independent cold-read criterion into a pass"
+  },
+  "live_server_directive": "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete",
+  "implementation_state": "paused_pending_complete_guided_feedback_and_disconnect",
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "production_mutated": false
+}

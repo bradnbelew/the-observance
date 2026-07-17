@@ -294,6 +294,7 @@
     "block_state_visual_audit": "design/m3/V4-BLOCK-STATE-VISUAL-AUDIT.json",
     "cold_read_preflight": "design/m3/V4-COLD-READ-PREFLIGHT.json",
     "routed_regression_receipt": "design/m3/V4-ROUTED-REGRESSION-RECEIPT.json",
+    "active_review_overlay": "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
     "review_package": "design/m3/BRAD-V4-REVIEW-PACKAGE.md",
     "preserved_prior_authorities": [
       "design/m3/vertical-slice-v1.json",
@@ -331,12 +332,24 @@
       "restart_replay": "closed negative state and open final state both re-derived with zero audit findings"
     },
     "unresolved": [
-      "independent cold-human objective, interaction, and one-finding comprehension remains pending",
+      "independent cold-human objective and interaction comprehension failed because Brad required external guidance",
       "Brad has not visually reviewed or approved v4",
       "authenticated non-op client protection and accessibility attempts remain unreceipted",
       "optional approved two-client A2 presentation remains unreceipted"
     ],
     "supersession": "v4 is the current review candidate; v1/v2/v3 rejection history and useful v3 baseline remain evidence; automated and internal receipts do not imply Brad approval or open M4"
+  },
+  "active_brad_v4_review": {
+    "date": "2026-07-17",
+    "status": "active_guided_functionality_validation_after_cold_failure",
+    "cold_review_result": "not_passed_external_guidance_required",
+    "binding_quote": "can you guide me thru it?",
+    "interpretation": "V4 objective and interaction language were not independently discoverable; guided completion may test functionality but cannot retroactively pass the cold-read gate",
+    "machine_review_overlay": "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
+    "live_server_directive": "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete",
+    "implementation_state": "paused_pending_complete_guided_feedback_and_disconnect",
+    "brad_visual_approval": null,
+    "m4_authority": "closed"
   },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
@@ -370,6 +383,7 @@
     "design/m3/V4-COLD-READ-PREFLIGHT.json",
     "design/m3/V4-ROUTED-REGRESSION-RECEIPT.json",
     "design/m3/BRAD-V4-REVIEW-PACKAGE.md",
+    "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -422,11 +436,12 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v4 automated and internal gates passed; independent cold-human/client review and Brad approval remain pending",
+    "phase": "M3 v4 independent cold review did not pass; guided functionality review is active; Brad approval remains null",
     "m4_open": false,
     "required_next_evidence": [
-      "independent cold player states the room job and civic question without external explanation",
-      "independent cold player distinguishes reading from filing and derives one defensible finding",
+      "complete Brad's guided functionality pass and collect the full feedback set",
+      "confirmed disconnect followed by clean save/flush/stop before any revision",
+      "a future revision enables an independent cold player to discover the room job, civic question, and interaction path without external guidance",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
       "Brad's explicit approval of v4"
     ]

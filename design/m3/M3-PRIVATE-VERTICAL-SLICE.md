@@ -186,3 +186,13 @@ never reused. A separate pristine closed review target passed with no interactio
 `V4-BLOCK-STATE-VISUAL-AUDIT.json` and `V4-COLD-READ-PREFLIGHT.json` are internal gates only. An
 independent cold human, authenticated client checks, and Brad's explicit visual decision remain open.
 `BRAD-V4-REVIEW-PACKAGE.md` carries that boundary. M4 remains closed.
+
+## Active V4 cold-review result
+
+The independent cold-read gate did not pass. After joining and being asked to explore naturally, Brad
+asked, “can you guide me thru it?” The objective and intended interaction path therefore required
+external guidance. This supersedes the pending human status in the internal authorial preflight without
+invalidating the exact automated mechanics receipts. Brad is continuing only as a guided functionality
+reviewer; successful guided completion cannot retroactively satisfy cold discoverability. The exact
+active-review authority is `BRAD-V4-ACTIVE-REVIEW.json`. The live disposable server must remain
+unchanged until Brad completes the guided pass and disconnects. Approval remains null and M4 closed.

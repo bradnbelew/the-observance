@@ -17,7 +17,13 @@
     {"criterion":"believable workplace rather than puzzle chamber","internal_result":"pass","evidence":"two exceptional lecterns serve a work order and findings ledger; all other evidence uses job-specific tables, tags, signs, cabinet volumes, and hydraulic infrastructure"},
     {"criterion":"grounded voices and media","internal_result":"pass","evidence":"the exact inventory binds unique prose to surveyor, inspector, mason, clerk, registrar, quartermaster, engineer, examiner, and office voices with plausible provenance"}
   ],
-  "independent_cold_human_status": "pending_next_localhost_review",
+  "independent_cold_human_status": "not_passed_external_guidance_required",
+  "independent_cold_human_evidence": {
+    "reviewer": "Brad / SirNan",
+    "binding_quote": "can you guide me thru it?",
+    "result_authority": "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
+    "interpretation": "the internal authorial preflight did not predict the cold reviewer's inability to independently discover the objective and interaction path"
+  },
   "authenticated_client_receipts_status": "pending",
   "brad_visual_approval": null,
   "m4_authority": "closed",
