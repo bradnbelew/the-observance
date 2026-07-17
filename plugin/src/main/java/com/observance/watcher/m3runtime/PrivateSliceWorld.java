@@ -376,7 +376,7 @@ public final class PrivateSliceWorld {
                 {22,-20,75},{23,-20,75},{24,-20,75},{25,-20,75},{26,-20,75}});
         for (int x : new int[]{28,30}) for (int z : new int[]{69,71})
             clusterBlock("BINDING_ISLAND", new Cell(x, -20, z), Material.STRIPPED_SPRUCE_LOG,
-                    "four supported legs carry the binding worktop");
+                    "supported binding and collation island");
         for (int x = 28; x <= 30; x++) for (int z = 69; z <= 71; z++) {
             Cell cell = new Cell(x, -19, z);
             directional(cell, Material.DARK_OAK_SLAB,
