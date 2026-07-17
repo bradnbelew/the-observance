@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0-morning-private-candidate-handoff",
+  "recorded_at": "2026-07-17T08:47:35-05:00",
+  "branch": "codex/m3-disposable-paper-gate",
+  "receipt_checkpoint_parent": "ac7513b29ea122588c4d69d79714087b7b7e0ece",
+  "candidate_source": {
+    "p4_authored_source_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+    "integration_and_private_target_hardening_commit": "ac7513b29ea122588c4d69d79714087b7b7e0ece",
+    "plugin_jar_sha256": "cd1e92dc94ef6bbb4e6c63049ca2b83ef50821a3c22099ef19ab00d2ce58ef85",
+    "paper_jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
+  },
+  "paper_preparation": {
+    "target_id": "m3-vnext-morning-review-8a51f26-20260717-d",
+    "target_path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-vnext-morning-review-8a51f26-20260717-d",
+    "preparation_receipt_path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-vnext-morning-review-receipt-d.json",
+    "preparation_receipt_sha256": "1bb2a2a050481b4023452ea87df8b07dde573299ceb04acf8669842a0b339d36",
+    "world_package_sha256": "3785c5c64f07b552e3d02a79c67855847acddbfd05c0d9359e8956aeef6f0aec",
+    "checks": [
+      "M3_BUILD_COMPLETE: 248745 cells, 8 evidence surfaces, 1 submission desk, 2 references, 6 signs, 62 water cells, 58 bookshelves, 103 supports, 30 clusters, 22 seats, 88 gate-collision cells",
+      "M3_AUDIT PASS closed",
+      "M3_SECURITY_PASS localhost/non-op/Adventure/protection",
+      "M3_UI_AUDIT_PASS five free-text prompts within 1.21.11 page budgets",
+      "M3_GUIDED_CLIENT_MODEL_PASS with zero observation receipts required"
+    ],
+    "journal_before_launch": "absent",
+    "brad_visual_approval": null
+  },
+  "live_review": {
+    "address": "127.0.0.1:25593",
+    "minecraft_java_version": "1.21.11",
+    "paper_runtime": "1.21.11-132-c5eb079",
+    "pid": 36280,
+    "process_start": "2026-07-17T08:47:11.7605961-05:00",
+    "authority_confirmation": "M3_TARGET_CONFIRMED",
+    "startup_confirmation": "Done (9.829s)",
+    "gamemode": "Adventure",
+    "operator_required": false,
+    "bind": "127.0.0.1",
+    "listener_verified": true,
+    "joined_players_at_receipt": 0,
+    "journal_exists_at_receipt": false,
+    "immutability": "Do not issue console commands, rebuild, restart, or stop while Brad is reviewing. After confirmed disconnect, stop only PID 36280 with a console interrupt and verify Paper save/disable markers plus port exit."
+  },
+  "external_surfaces": {
+    "supabase": "production baseline verified read-only; exact hardening forward/rollback/assertion package authored; no development branch or cost confirmation exists, so no DDL/data mutation was made",
+    "railway": "both exact production families inspected read-only; neither has a non-production environment, and no distinct staging Discord guild/channel or Supabase ref exists; no environment was created and production was not redeployed",
+    "vercel": "exact project verified; preview remains undeployed because the direct connector cannot read the local file set, local CLI is authenticated to a different team, and publishing the private candidate to the public GitHub remote was prohibited",
+    "discord": "production-bound variable names verified without values; no staging guild/channel identified; no messages or registrations sent",
+    "media": "static custody manifests pass, but five exact source byte sets remain absent; no upload receipt was fabricated"
+  },
+  "candidate_scope": "P4 vNext is a prepared private technical/creative review slice. Repository-wide P1-P12 canonical/runtime breadth and routed gates pass, but P5-P12 current-standard experiential reauthoring, missing media, and isolated hosted service receipts remain incomplete. This is not honestly a complete whole-campaign launch candidate.",
+  "linear_review_plan": [
+    "Launch Minecraft Java 1.21.11 and add 127.0.0.1:25593.",
+    "Join as the default non-op Adventure player; use no operator commands and request no external explanation during the first pass.",
+    "Enter the bounded P4 civic-refuge slice, inspect naturally placed records and environmental context, and form each conclusion from content rather than source-touch completion.",
+    "Submit plausible wrong theories first to verify rejection/throttling, including a true-but-not-the-door reading where the world acknowledges it distinctly.",
+    "Submit the five exact free-text conclusions from shared reasoning without touching every source; verify a correct answer succeeds with zero observation receipts.",
+    "Complete the final synthesis, verify the controlled gate opens, then retrace the public/staff route and check protection, circulation, waterworks legibility, furnishing, signage, and replay/catch-up affordances.",
+    "Stop the review and report the exact player-facing defects; do not treat automated success as Brad approval or as acceptance of the incomplete hosted/P5-P12 campaign."
+  ],
+  "production_mutated": false,
+  "public_launch": false,
+  "brad_acceptance": null
+}

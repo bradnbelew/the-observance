@@ -502,6 +502,8 @@
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
     "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
     "design/handoff/PRIVATE-LAUNCH-ROUTED-REGRESSION-RECEIPT.json",
+    "design/handoff/EXTERNAL-TARGET-DISCOVERY-RECEIPT-2026-07-17.json",
+    "design/handoff/MORNING-PRIVATE-CANDIDATE-HANDOFF-2026-07-17.json",
     "design/m3/P4-VNEXT-CASE-BRIEF.json",
     "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json",
     "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json",
@@ -639,13 +641,18 @@
       "effect": "the exact production Supabase project, Vercel project, and both Railway production families are now verified. Production remains read-only; Vercel preview is authorized with writes fail-closed; Railway/Discord staging still requires a distinct guild and non-production database; Supabase development creation still requires connector permission and cost confirmation. The legacy fdnm... ref spelling is not treated as a second target and both spellings are mutation-blocked until reconciled"
     },
     {
+      "older": "the initial 2026-07-17 readback that PID 20708 was absent",
+      "newer": "design/handoff/MORNING-PRIVATE-CANDIDATE-HANDOFF-2026-07-17.json",
+      "effect": "a later exact process/listener readback proved the old disposable server was still alive with zero player joins. It was stopped through Paper's shutdown hook and fully saved; the fresh morning target is PID 36280 on 127.0.0.1:25593. Hosted preview/staging gaps are narrowed to exact identity, isolation, cost, and source-upload residues rather than generic absence."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
     }
   ],
   "current_gate": {
-    "phase": "V5 remains rejected historical proof; P4 vNext automated source/Paper/restart/negative/pristine-review gates pass; external production baselines are exactly mapped but not mutated; Vercel preview staging is open with writes fail-closed; broader private launch-candidate remains incomplete; final human gate deferred; public/production closed",
+    "phase": "V5 remains rejected historical proof; P4 vNext automated source/Paper/restart/negative/pristine-review gates pass and a fresh immutable localhost target is live at 127.0.0.1:25593; external production baselines are exactly mapped but not mutated; Vercel preview is still blocked by deployment identity/source-upload isolation; broader private launch-candidate remains incomplete; final human gate deferred; public/production closed",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,

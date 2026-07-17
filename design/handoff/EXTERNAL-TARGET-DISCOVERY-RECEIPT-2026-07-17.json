@@ -67,7 +67,11 @@
     "newest_ready_production_is_rebuild_candidate": false,
     "preview_authorized": true,
     "production_promotion_authorized": false,
-    "preview_write_policy": "all external writes fail closed unless a verified non-production Supabase ref is explicitly bound"
+    "preview_write_policy": "all external writes fail closed unless a verified non-production Supabase ref is explicitly bound",
+    "direct_preview_result": "not_deployed",
+    "direct_preview_residue": "the connected deployment API requires a complete uploaded file set and cannot read this local checkout; the locally authenticated Vercel CLI belongs to a different account/team; the exact GitHub remote is public and the safety reviewer prohibited publishing the private candidate branch solely to trigger Git integration",
+    "public_git_push_attempted": false,
+    "production_mutated": false
   },
   "railway": {
     "cli": "5.26.2",
@@ -123,8 +127,12 @@
   "paper_review_target": {
     "expected_pid": 20708,
     "expected_address": "127.0.0.1:25591",
-    "read_only_reaudit": "PID absent and port closed; latest.log ends after successful startup and contains no graceful stop record",
-    "interpretation": "the old review target is no longer live; do not fabricate a clean-stop receipt; prepare a fresh final target after the new candidate passes"
+    "read_only_reaudit_superseded": "an initial process query incorrectly reported PID absent; a later exact Get-Process plus netstat readback proved PID 20708 still listening on 127.0.0.1:25591",
+    "player_log_readback": "zero joined-player, left-player, or lost-connection lines; Brad never entered this process",
+    "graceful_stop": "Windows console interrupt sent to disposable PID 20708 at 2026-07-17T08:44:31-05:00; Paper logged Observance disable, player/world/chunk saves, all RegionFile I/O completion, and worker-pool shutdown",
+    "closed_log_sha256": "c1a16f16592b688dcf04a0fe65b16b6af2c4e53bb236b911bd69cc509518d9f5",
+    "post_stop_readback": "PID 20708 ended and port 25591 absent",
+    "fresh_morning_target": "127.0.0.1:25593 / PID 36280 / Paper 1.21.11 build 132; see design/handoff/MORNING-PRIVATE-CANDIDATE-HANDOFF-2026-07-17.json"
   },
   "remaining_exact_external_residue": [
     "Supabase task-scoped connector permission and development-branch/cost confirmation",
@@ -132,6 +140,7 @@
     "potential paid Railway environment/runtime confirmation",
     "five exact source media byte sets absent from this checkout",
     "Crafty/brother target intentionally unavailable",
+    "Vercel preview deployment identity/file-upload path that can access Braden's team without publishing private source",
     "public production promotion deferred to Brad's acceptance"
   ],
   "production_mutated": false,
