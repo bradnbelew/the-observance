@@ -238,6 +238,9 @@ def main() -> None:
     evidence, first_lines, second_lines = (exercise_validation(target, args.java)
                                            if args.mode == "validate" else prepare_review(target, args.java))
     world_hash, package_hash, package = package_world(target)
+    journal = target / "plugins" / "Observance" / "m3-private-slice.journal"
+    if args.mode == "validate" and not journal.is_file():
+        raise FileNotFoundError("validation completed without the required durable M3 journal")
     receipt = {
         "schema_version": "2.0.0-m3-paper-receipt" if args.mode == "validate"
             else "1.0.0-m3-review-server-receipt",
@@ -256,7 +259,8 @@ def main() -> None:
         "world_tree_sha256": world_hash,
         "world_package_sha256": package_hash,
         "world_package_name": package.name,
-        "journal_sha256": sha256(target / "plugins" / "Observance" / "m3-private-slice.journal"),
+        "journal_sha256": sha256(journal) if journal.is_file() else None,
+        "journal_state": "present" if journal.is_file() else "absent_pristine_review_target",
         "log_sha256": sha256(target / ("m3-first-start.log" if args.mode == "validate" else "m3-review-prepare.log")),
         "restart_log_sha256": sha256(target / "m3-restart.log") if second_lines else None,
         "evidence": evidence,
