@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0.0-overnight-private-launch-authority",
+  "authority_id": "observance-overnight-private-launch-candidate-2026-07-17",
+  "issued_by": "Brad",
+  "source_thread_id": "019f68de-05a0-7673-945b-104b36c2f9ac",
+  "recorded_at": "2026-07-17T02:02:56.8603314-05:00",
+  "base_checkpoint": "518372297979dc5820b4485e556323e698ecdac7",
+  "status": "binding_superseding_private_automated_staging_authority",
+  "supersession": {
+    "interim_m4_closed_pause_for_automated_staging": "waived",
+    "interim_creative_and_phase_approval_pauses": "deferred_to_morning_end_to_end_playthrough",
+    "automated_phase_progression": "authorized when all owning conformance gates pass",
+    "brad_visual_approval_of_v5_or_unseen_build": null,
+    "final_human_gate": "Brad's morning end-to-end private playthrough",
+    "non_superseded": [
+      "locked spine and exactly three ambiguities",
+      "universal Averyn release and fixed revelation ladder",
+      "automated security, predicate, replay, restart, idempotency, rollback, accessibility, package-parity, story, and conformance gates",
+      "all V1-V5 rejection history and receipts",
+      "production and public-launch prohibitions"
+    ]
+  },
+  "authorized_private_scope": [
+    "complete P1-P12 authored campaign content and runtime wiring",
+    "private Minecraft/Paper launch-candidate world and review target",
+    "Copperline/web and director preview",
+    "Discord private staging flow",
+    "persistence and additive Supabase proposal plus disposable validation",
+    "Railway private/staging families where exact Observance-owned authenticated targets exist",
+    "Vercel preview without production-domain promotion",
+    "media packaging, custody, accessibility, and immutable originals",
+    "full offline, disposable, private integration, rollback, restart, and package testing"
+  ],
+  "forbidden_scope": [
+    "public announcement or public invitation",
+    "promotion to a public production domain",
+    "mutation of the brother or Crafty production server",
+    "overwrite, destructive change, or unapproved application to production Supabase data",
+    "destruction, replacement, or fabricated custody of media originals",
+    "ambiguous target inference or account/project boundary crossing",
+    "secret exposure or user_metadata authorization",
+    "reset, clean, discard, history rewrite, or bulk deletion",
+    "weakening or bypass of any automated gate"
+  ],
+  "external_target_rule": {
+    "deployment_authorized_only_when": "the exact target is Observance-owned, private or staging, already configured, authenticated, and unambiguous",
+    "missing_target_or_credential": "record one exact blocker, keep integration fail-closed, build every honest offline fixture and deployable package, and continue independent work",
+    "receipt_rule": "never report specification, local fixture, package, or unauthenticated observation as deployed behavior",
+    "production_mutation": false
+  },
+  "creative_and_system_contract": {
+    "campaign": "complete high-difficulty cross-media ARG rather than repeated clause retrieval",
+    "runtime": "data-driven open-ended evidence, state, exact-answer, content, and event primitives rather than a fixed puzzle enum",
+    "answers": "correct exact answers pass with zero source-touch receipts; observation custody remains non-gating",
+    "minecraft": "large and polished enough to inhabit, visually coherent and navigable, robustly authored, and independent of fragile mandatory block-perfect archaeology",
+    "copperline": "recurring lived-in hosting/community archive with ordinary texture, distinct voices, time layers, provenance, and callbacks",
+    "difficulty": "preserved; requests for review guidance are not evidence that deductions are too hard",
+    "canon": "locked spine, exactly three ambiguities, fixed media meanings, revelation ladder, P1-P12 evidence architecture, H1-H3, any-subset, catch-up, local-primary, and universal Averyn release"
+  },
+  "mandatory_execution_evidence": [
+    "complete inventory and stale-element disposition",
+    "P1-P12 content/runtime/structure/service/media coverage",
+    "naive, brute-force, wrong-theory, and zero-observation-correct-answer tests",
+    "any-subset, replay, catch-up, restart, crash, and idempotency tests",
+    "non-op Adventure, region protection, circulation, gate, accessibility, and player-view tests",
+    "migration, grants, RLS, rollback, forward, advisor, and service-role custody evidence where available",
+    "exact package parity across commit, JAR, datapack, resource pack, world, web, Discord, SQL, media, and deploy manifest",
+    "one clean checkpoint and one linear cold morning playthrough"
+  ],
+  "quality_gate": "amazing cohesive private launch-candidate quality, judged with fresh-player eyes, believable prose, visual/affordance review, content density, campaign repetition/flow audit, and exact canon/revelation checks",
+  "honest_incompletion_rule": "If the full scope cannot be completed, deliver the broadest coherent private candidate, identify exact remaining gaps, and never call incomplete external integration launch-ready."
+}

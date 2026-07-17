@@ -436,6 +436,20 @@
     "brad_visual_approval": null,
     "m4_authority": "closed"
   },
+  "overnight_private_launch_authority": {
+    "date": "2026-07-17",
+    "recorded_at": "2026-07-17T02:02:56.8603314-05:00",
+    "source_thread_id": "019f68de-05a0-7673-945b-104b36c2f9ac",
+    "base_checkpoint": "518372297979dc5820b4485e556323e698ecdac7",
+    "machine_authority": "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
+    "human_authority": "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.md",
+    "private_automated_m3_m4_plus_staging": "authorized_when_owning_automated_gates_pass",
+    "interim_human_phase_pauses": "deferred",
+    "final_human_gate": "Brad's morning end-to-end private playthrough",
+    "brad_visual_approval": null,
+    "public_or_production_launch": false,
+    "production_mutation": false
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -448,6 +462,8 @@
     "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
     "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.md",
     "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+    "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.md",
+    "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
     "approved Phase 1 authorities",
     "approved Phase 2 evidence authorities",
     "design/m2/M2-TECHNICAL-CONTRACTS.md",
@@ -564,6 +580,11 @@
       "effect": "V5 remains immutable evidence for pagination, affordance, persistence, security, negative flow, waterworks, and gate behavior, but is rejected as experiential proof because explicit fact retrieval and matching clauses do not constitute P4's high-difficulty cross-media ARG investigation. Correct answers must become independent of source-touch receipts; vNext offline authoring is open; M4 remains closed"
     },
     {
+      "older": "the interim M4-closed and per-phase Brad-approval pause for automated staging work",
+      "newer": "Brad's overnight private launch-candidate authority recorded from checkpoint 5183722",
+      "effect": "private automated M3, M4, and later staging implementation may advance when all owning automated gates pass; V5 and unseen builds remain unapproved; Brad's morning end-to-end private playthrough is the final human gate. Public launch, production-domain promotion, Crafty/brother mutation, production Supabase application, ambiguous targets, and fabricated external receipts remain forbidden"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -575,8 +596,11 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 V5 technically proven but NOT APPROVED and cleanly stopped; vNext offline redesign authorized; Brad approval null; M4 closed",
+    "phase": "V5 NOT APPROVED and cleanly stopped; full private launch-candidate automated staging authorized across M3/M4+; final human gate deferred; public/production closed",
     "m4_open": false,
+    "m4_private_automated_staging_open": true,
+    "m4_public_or_production_open": false,
+    "final_human_gate": "Brad's morning end-to-end private playthrough",
     "required_next_evidence": [
       "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
       "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",

@@ -378,8 +378,24 @@ def main() -> None:
             and active_v5["m4_authority"] == "closed",
             "final V5 experiential/progression/stop authority drift")
 
+    overnight = data["overnight_private_launch_authority"]
+    require(overnight["source_thread_id"] == "019f68de-05a0-7673-945b-104b36c2f9ac"
+            and overnight["base_checkpoint"] == "518372297979dc5820b4485e556323e698ecdac7"
+            and overnight["machine_authority"]
+                == "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json"
+            and (ROOT / overnight["machine_authority"]).is_file()
+            and overnight["private_automated_m3_m4_plus_staging"]
+                == "authorized_when_owning_automated_gates_pass"
+            and overnight["brad_visual_approval"] is None
+            and overnight["public_or_production_launch"] is False
+            and overnight["production_mutation"] is False,
+            "overnight private automated staging/public-production boundary drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
+            and gate["m4_private_automated_staging_open"] is True
+            and gate["m4_public_or_production_open"] is False
+            and "morning" in gate["final_human_gate"]
             and "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline"
                 in gate["required_next_evidence"]
             and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"

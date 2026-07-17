@@ -65,6 +65,10 @@ It rejects any allowlist/enum/quota/runtime-catalog interpretation of Brad's mec
 architecture, C01 ladder boundary, lived-texture credibility guard, voice/time/provenance model,
 responsive/accessibility and recovery contract, and offline-versus-real-deployment receipt boundary.
 
+`check_overnight_private_launch_authority.py` validates Brad's superseding authority for continuous
+private automated M3/M4+ staging, the deferred morning human gate, and the still-closed public,
+production, Crafty, production-Supabase, ambiguous-target, secret, media-original, and receipt boundaries.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,
