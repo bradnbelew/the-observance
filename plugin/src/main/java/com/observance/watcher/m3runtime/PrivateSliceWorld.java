@@ -920,18 +920,18 @@ public final class PrivateSliceWorld {
                     + " submissions=" + submissions.size());
         }
         long lecterns = expected.values().stream().filter(material -> material == Material.LECTERN).count();
-        if (lecterns != 2) findings.add("v5 preserves exactly two purpose-specific lecterns actual=" + lecterns);
+        if (lecterns != 2) findings.add("vNext preserves exactly two purpose-specific lecterns actual=" + lecterns);
         Set<String> formats = new LinkedHashSet<>();
         evidence.values().forEach(surface -> formats.add(surface.format()));
         Set<String> exactFormats = Set.of(
-                "annotated drainage diagram",
-                "field tag fixed beside the physical ruts",
-                "chalk annotation across the physical construction seam",
-                "personal cover letter with office marginalia",
-                "official refuge register",
-                "posted seven-day supply tally",
-                "maintenance gauge card beside the working hydraulic train",
-                "personal engineering letter retained with works minutes");
+                "child's reused arithmetic copybook",
+                "early smoke notice fixed at child eye level",
+                "ordinary dwelling and common-room repair slip",
+                "folded neighbor note retained in the market copy shelf",
+                "later stamped office copy",
+                "modern cartridge-order card placed with recovered copies",
+                "register leaf beside the working hydraulic train",
+                "modern node-clock and cartridge read extract");
         if (!formats.equals(exactFormats)) {
             findings.add("authored evidence format inventory drift expected=" + exactFormats + " actual=" + formats);
         }
