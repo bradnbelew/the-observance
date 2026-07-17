@@ -214,10 +214,12 @@ def check_receipts() -> None:
         M3 / "V4-COLD-READ-PREFLIGHT.json",
         M3 / "V4-ROUTED-REGRESSION-RECEIPT.json",
         M3 / "BRAD-V4-ACTIVE-REVIEW.json",
+        M3 / "BRAD-V4-REVIEW-DECISION.json",
+        M3 / "PAPER-V4-REVIEW-STOP-RECEIPT.json",
     ]
     missing = [path.relative_to(ROOT).as_posix() for path in required if not path.is_file()]
     require(not missing, f"v4 live/package/human preflight receipts missing: {missing}")
-    validation, review, manifest, visual, cold, routed, active = map(load, required)
+    validation, review, manifest, visual, cold, routed, active, decision, stop = map(load, required)
     failed = load(M3 / "PAPER-V4-FAILED-ATTEMPTS.json")
     for receipt in (validation, review):
         require(receipt["authority_id"] == "observance-p4-private-slice-v4"
@@ -289,8 +291,9 @@ def check_receipts() -> None:
             and visual["lectern_count"] == 2,
             "v4 block-state/composition audit incomplete")
     require(cold["result"] == "passed_internal_preflight_not_brad_approval"
-            and cold["independent_cold_human_status"] == "not_passed_external_guidance_required"
-            and cold["independent_cold_human_evidence"]["binding_quote"]
+            and cold["independent_cold_human_status"]
+                == "voluntarily_aborted_for_time_pressure_inconclusive"
+            and cold["independent_cold_human_evidence"]["observed_quote"]
                 == "can you guide me thru it?"
             and cold["brad_visual_approval"] is None and cold["m4_authority"] == "closed",
             "v4 cold-read preflight overclaims or is incomplete")
@@ -304,15 +307,37 @@ def check_receipts() -> None:
             "v4 routed regression boundary or approval gate drift")
     require(active["schema_version"] == "1.0.0-m3-brad-v4-active-review"
             and active["review_status"]
-                == "active_guided_functionality_validation_after_cold_failure"
+                == "complete_not_approved_disconnect_and_clean_stop_receipted"
             and active["cold_review"]["independent_result"]
-                == "not_passed_external_guidance_required"
+                == "voluntarily_aborted_for_time_pressure_inconclusive"
             and active["cold_review"]["binding_quote"] == "can you guide me thru it?"
-            and active["cold_review"]["cannot_be_retroactively_satisfied_by_guided_completion"] is True
+            and active["cold_review"]["brad_correction_is_binding"] is True
             and active["live_server_directive"]
-                == "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete"
+                == "disconnect_confirmed_clean_save_flush_stop_complete"
             and active["brad_visual_approval"] is None and active["m4_authority"] == "closed",
             "v4 active cold-review failure/live hold drift")
+    require(decision["schema_version"] == "1.0.0-m3-brad-v4-decision"
+            and decision["review_status"]
+                == "complete_not_approved_disconnect_and_clean_stop_receipted"
+            and decision["decision"] == "not_approved_revision_required"
+            and len(decision["blocking_functionality_and_ux_findings"]) == 3
+            and len(decision["visual_and_affordance_findings"]) == 3
+            and len(decision["required_next_revision_checks"]) == 7
+            and decision["disconnect_evidence"]["independently_confirmed"] is True
+            and decision["review_server_state"]
+                == "clean_save_flush_stop_verified_pid_and_port_ended"
+            and decision["review_server_stop_receipt"]
+                == "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json"
+            and decision["brad_visual_approval"] is None
+            and decision["m4_authority"] == "closed",
+            "v4 final rejection/findings/disconnect state drift")
+    require(stop["result"] == "clean_save_flush_stop_verified"
+            and stop["post_stop_readback"] == {
+                "pid_22748_alive": False, "port_25586_listener_count": 0,
+            } and stop["production_mutated"] is False
+            and stop["brad_visual_approval"] is None
+            and stop["m4_authority"] == "closed",
+            "v4 clean review-server stop receipt drift")
 
 
 def main() -> None:

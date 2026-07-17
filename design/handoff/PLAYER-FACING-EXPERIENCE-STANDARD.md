@@ -88,7 +88,7 @@ must be able to:
 - distinguish readable records from the physical act of filing a conclusion;
 - explain why the evidence artifacts plausibly exist where they are placed;
 - recognize materially different people, formats, and points of view rather than repeated docket prose;
-- derive and submit one defensible finding from content rather than from touching every surface;
+- identify how a defensible finding would be filed, without being expected to solve it under review time pressure;
 - explain how the four findings combine into the final synthesis;
 - navigate the public and staff route without chat prompts or tutorial labels; and
 - describe the space as a workplace or civic facility, not as a puzzle room or room of lecterns.
@@ -109,3 +109,49 @@ locked spine, and the approved evidence model remain mandatory.
 
 Brad's v3 decision is **NOT APPROVED / REVISION REQUIRED**. Visual approval is null and M4 remains
 closed until Brad explicitly approves a later M3 revision in game.
+
+## V4 amendment — investigation depth, physical affordance, and client UI
+
+Brad's completed V4 review is also **NOT APPROVED / REVISION REQUIRED**. V4's underlying state and
+content-dependent deduction logic otherwise worked, but the intended client path did not: some
+four-choice native books formatted incorrectly, long options overflowed the Minecraft page, and the
+correct answer was therefore not visible or selectable. A server-side model pass cannot substitute for
+the exact client render and interaction receipt.
+
+Every selectable book or record UI must now have exact pagination and render-budget tests for every
+supported client presentation. Every option, including the longest and the correct option, must be
+fully visible and clickable. A native book is not accepted merely because it opens or its callback
+exists. The complete correct report, synthesis, replay, and accessibility path must be completed by a
+non-op Adventure client through the intended UI without console, operator, or out-of-world workaround.
+
+Physical affordance is equally binding. Stair chairs must face a believable seated use: a desk, work
+surface, waiting direction, conversation partner, or view justified by the composition. Chairs facing
+walls without such a purpose fail. An interactive chiseled bookshelf must visibly contain books in its
+occupied slot state; an empty-looking shelf may not silently open evidence. Any other interactive
+evidence surface must visibly communicate what can be read or handled without trial-clicking arbitrary
+blocks.
+
+## Investigation and difficulty standard
+
+Investigations must not read as a sequence of discrete “puzzle game” stations. Where the fiction and
+phase scope support it, they may be multi-layered, deep, and difficult. Evidence and deductions may be
+distributed across larger believable areas, and M4+ may use the Hold's scale to conceal, separate, or
+recontextualize material naturally. This is not authority to expand the bounded M3 slice.
+
+Difficulty must come from investigation, synthesis, recall, provenance, spatial observation, and
+callbacks. It must not come from clipped text, pagination failure, invisible controls, empty-looking
+click targets, or unexplained input conventions. Deeper distribution never weakens any-subset, replay,
+restart, catch-up, accessibility, or no-missable guarantees.
+
+The established campaign target remains 20–30 active hours. Group discussion, delayed understanding,
+technical recall, and callbacks across time are desired. Hints and recovery are director-approved tools,
+not routine handholding. “Plain” and “realistic” describe believable voices and artifacts; they do not
+mean simplified, obvious, short, or easy. Writing may be subtle, dense, technical, partial,
+contradictory, and demanding when the human source and medium justify it.
+
+Before another review, a cold player must identify Minecraft interaction rules, readable physical
+evidence, and the filing affordance without external guidance. This tests interface legibility, not
+rapid deduction or whether the investigation is difficult enough. A separate guided client pass must
+prove every choice renders and clicks,
+the correct report and synthesis can be completed through the intended UI, and replay, protection,
+accessibility, and catch-up still work. Brad's V4 approval remains null and M4 remains closed.

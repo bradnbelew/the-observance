@@ -187,12 +187,37 @@ never reused. A separate pristine closed review target passed with no interactio
 independent cold human, authenticated client checks, and Brad's explicit visual decision remain open.
 `BRAD-V4-REVIEW-PACKAGE.md` carries that boundary. M4 remains closed.
 
-## Active V4 cold-review result
+## Corrected V4 cold-review result
 
-The independent cold-read gate did not pass. After joining and being asked to explore naturally, Brad
-asked, “can you guide me thru it?” The objective and intended interaction path therefore required
-external guidance. This supersedes the pending human status in the internal authorial preflight without
-invalidating the exact automated mechanics receipts. Brad is continuing only as a guided functionality
-reviewer; successful guided completion cannot retroactively satisfy cold discoverability. The exact
-active-review authority is `BRAD-V4-ACTIVE-REVIEW.json`. The live disposable server must remain
-unchanged until Brad completes the guided pass and disconnects. Approval remains null and M4 closed.
+The independent cold-read was voluntarily aborted for time pressure and is **inconclusive**. Brad was
+rushing when he asked, “can you guide me thru it?” That request is not evidence that the investigation
+was too hard, that its conclusions should be weakened, or that comprehension failed. This correction
+supersedes the failure interpretation committed at `912f857cb309ce6452e415680f6e5bbaa5c217b2` while
+preserving the quote and review chronology. Cold review in this workflow tests Minecraft interface and
+physical affordance; it does not require rapid solution of a deliberately difficult investigation.
+
+## Final V4 decision
+
+Brad completed the guided pass and V4 is **NOT APPROVED / REVISION REQUIRED**. The content-dependent
+state logic otherwise worked, but some four-choice native books overflowed their page layout. The
+correct answer was not visible or selectable, so Brad could not complete the correct report through the
+intended UI. This is a blocking functionality failure, not investigation difficulty.
+
+The physical review also found stair chairs facing walls, interactive chiseled bookshelves that looked
+empty while opening evidence, and generally non-obvious right-click evidence surfaces. The next
+revision must test every option against exact Minecraft book pagination and supported-client render
+budgets; every option must be fully visible and clickable. It must test chair facing against believable
+seat use and require visible occupied bookshelf slots or another unmistakable physical affordance.
+Independent cold interface-affordance and a full guided non-op client path are required.
+
+Brad further bound the M4+ experience direction: investigations should not appear as discrete puzzle
+stations. Where appropriate, difficulty may be deep and multi-layered across believable spaces, using
+investigation, synthesis, recall, provenance, spatial observation, and callbacks—not UI friction or
+opaque controls. The bounded M3 scope does not expand. Any-subset, replay, catch-up, accessibility, and
+no-missable contracts remain exact. `BRAD-V4-REVIEW-DECISION.json` and the amended cross-phase standard
+are the authority. The 20–30 active-hour campaign target, group discussion, delayed understanding, and
+director-approved hints/recovery without routine handholding remain binding. Realistic artifacts may be
+subtle, dense, technical, partial, contradictory, and demanding; believable never means simplified or
+easy. SirNan's disconnect is independently logged at 00:25:52, and `PAPER-V4-REVIEW-STOP-RECEIPT.json`
+proves save-all flush, orderly shutdown, PID end, and port release. Brad approval is null and M4 remains
+closed.

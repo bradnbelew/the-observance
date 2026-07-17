@@ -13,6 +13,7 @@ HUMAN = ROOT / "design" / "handoff" / "PLAYER-FACING-EXPERIENCE-STANDARD.md"
 MACHINE = ROOT / "design" / "handoff" / "PLAYER-FACING-EXPERIENCE-STANDARD.json"
 V3_DECISION = ROOT / "design" / "m3" / "BRAD-V3-REVIEW-DECISION.json"
 V3_STOP = ROOT / "design" / "m3" / "PAPER-V3-REVIEW-STOP-RECEIPT.json"
+V4_DECISION = ROOT / "design" / "m3" / "BRAD-V4-REVIEW-DECISION.json"
 
 
 def require(condition: bool, message: str) -> None:
@@ -30,7 +31,7 @@ def present(value: object) -> bool:
 
 def validate_authority() -> dict:
     data = load(MACHINE)
-    require(data["schema_version"] == "1.0.0-cross-phase-player-facing",
+    require(data["schema_version"] == "1.1.0-cross-phase-player-facing",
             "player-facing authority schema drift")
     require(data["authority_id"] == "observance-cross-phase-player-facing-experience"
             and data["status"] == "binding", "player-facing authority identity drift")
@@ -59,8 +60,29 @@ def validate_authority() -> dict:
     require(all(room.values()), "room-composition standard contains a disabled predicate")
     require(data["v4_demonstration"]["quality_not_quota"] is True,
             "quality-not-quota guard lost")
+    investigation = data["investigation_and_difficulty_standard"]
+    require(investigation["discrete_puzzle_game_stations_forbidden"] is True
+            and investigation["m3_bounded_scope_preserved"] is True
+            and investigation["any_subset_replay_accessibility_catch_up_and_no_missable_preserved"] is True
+            and set(investigation["difficulty_must_come_from"]) == {
+                "investigation", "synthesis", "recall", "provenance",
+                "spatial observation", "callbacks",
+            } and "UI friction" in investigation["difficulty_must_not_come_from"]
+            and investigation["campaign_active_hour_target"] == {"min": 20, "max": 30}
+            and investigation["group_discussion_and_delayed_understanding_are_valid"] is True
+            and investigation["director_approved_hints_and_recovery"] is True
+            and investigation["routine_handholding_forbidden"] is True
+            and investigation["cold_review_tests_interface_affordance_not_rapid_solution_or_difficulty"] is True,
+            "V4 investigation-depth/difficulty authority weakened")
+    client_ui = data["minecraft_client_ui_standard"]
+    require(all(client_ui.values()), "Minecraft client UI/render standard contains a disabled predicate")
+    copy = data["copy_standard"]
+    require(copy["believable_not_simplified"] is True
+            and set(copy["permitted_demanding_qualities"]) == {
+                "subtle", "dense", "technical", "partial", "contradictory", "delayed in meaning",
+            }, "believable-but-demanding copy authority weakened")
     require("cannot convert" in data["human_quality_rule"]
-            and "human cold-read acceptance remains mandatory" in data["human_quality_rule"],
+            and "must never be misread" in data["human_quality_rule"],
             "human quality rule weakened")
 
     expected_checks = {
@@ -68,15 +90,23 @@ def validate_authority() -> dict:
         "CROSS.PF.REPEATED_FURNITURE_RATIONALE", "CROSS.PF.ARTIFACT_FORMAT_PROVENANCE",
         "CROSS.PF.VOICE_DIVERSITY", "CROSS.PF.NO_META_PUZZLE_COPY",
         "CROSS.PF.NO_MONOTONOUS_DOCKET_PROSE", "CROSS.PF.COLD_READ_HUMAN_GATE",
+        "CROSS.PF.BOOK_OPTION_RENDER_BUDGET", "CROSS.PF.SEATING_FACING_AND_USE",
+        "CROSS.PF.INTERACTIVE_PHYSICAL_AFFORDANCE",
+        "CROSS.PF.DIFFICULTY_FROM_INVESTIGATION",
+        "CROSS.PF.GUIDED_PATH_CLIENT_GATE", "CROSS.PF.NO_MISSABLE_DEEP_INVESTIGATION",
     }
     checks = data["static_checks"]
     require({row["check_id"] for row in checks} == expected_checks
             and len(checks) == len(expected_checks), "static check inventory drift")
-    require(len(data["cold_read_criteria"]) == 12
+    require(len(data["cold_read_criteria"]) == 15
             and any("puzzle chamber or room of lecterns" in row
                     for row in data["cold_read_criteria"])
             and any("naive touching" in row for row in data["cold_read_criteria"]),
             "human cold-read criteria incomplete")
+    require(len(data["guided_client_criteria"]) == 5
+            and any("four-choice" in row for row in data["guided_client_criteria"])
+            and any("non-op Adventure" in row for row in data["guided_client_criteria"]),
+            "guided client/render criteria incomplete")
 
     human = HUMAN.read_text(encoding="utf-8")
     for phrase in (
@@ -84,9 +114,48 @@ def validate_authority() -> dict:
         "Write people, not ARG voice", "Use the medium truthfully", "not a quota",
         "writing quality is never", "M3 v4 demonstration obligation",
         "NOT APPROVED / REVISION REQUIRED", "M4 remains",
+        "V4 amendment", "fully visible and clickable", "Stair chairs",
+        "Investigation and difficulty standard", "no-missable", "20–30 active hours",
+        "not routine handholding", "subtle, dense, technical",
     ):
         require(phrase in human, f"human player-facing authority missing: {phrase}")
     return data
+
+
+def validate_v4_decision(authority: dict) -> None:
+    decision = load(V4_DECISION)
+    require(decision["review_status"]
+                == "complete_not_approved_disconnect_and_clean_stop_receipted"
+            and decision["decision"] == "not_approved_revision_required"
+            and decision["brad_visual_approval"] is None
+            and decision["m4_authority"] == "closed",
+            "V4 final rejection/approval gate drift")
+    require(len(decision["blocking_functionality_and_ux_findings"]) == 3
+            and len(decision["visual_and_affordance_findings"]) == 3
+            and len(decision["global_puzzle_and_space_direction"]) == 8
+            and len(decision["required_next_revision_checks"]) == 7,
+            "V4 final findings/check inventory incomplete")
+    require(decision["cold_review_result"]
+                == "voluntarily_aborted_for_time_pressure_inconclusive"
+            and decision["disconnect_evidence"]["independently_confirmed"] is True
+            and decision["review_server_state"]
+                == "clean_save_flush_stop_verified_pid_and_port_ended"
+            and decision["review_server_stop_receipt"]
+                == "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
+            "V4 disconnect/live-server state drift")
+    cross = decision["cross_phase_experience_authority"]
+    require(cross["human"] == HUMAN.relative_to(ROOT).as_posix()
+            and cross["machine"] == MACHINE.relative_to(ROOT).as_posix()
+            and cross["m3_scope_expansion"] is False,
+            "V4 decision does not preserve bounded M3/cross-phase routing")
+    outcome = authority["v4_review_outcome"]
+    require(outcome["decision"] == "not_approved_revision_required"
+            and outcome["decision_authority"] == V4_DECISION.relative_to(ROOT).as_posix()
+            and outcome["cold_discoverability"]
+                == "voluntarily_aborted_for_time_pressure_inconclusive"
+            and outcome["brad_visual_approval"] is None
+            and outcome["m4_authority"] == "closed",
+            "cross-phase V4 outcome drift")
 
 
 def validate_v3_decision() -> None:
@@ -167,11 +236,12 @@ def validate_inventory(path: Path, authority: dict) -> None:
 def main() -> None:
     authority = validate_authority()
     validate_v3_decision()
+    validate_v4_decision(authority)
     inventories = sorted((ROOT / "design").glob("**/PLAYER-FACING-INVENTORY*.json"))
     for path in inventories:
         validate_inventory(path, authority)
     print("PLAYER-FACING EXPERIENCE: PASS "
-          f"(cross-phase standard + v3 rejection/stop + {len(inventories)} implementation inventories; quality remains human-gated)")
+          f"(cross-phase standard + v3/v4 rejections + {len(inventories)} implementation inventories; quality and client UI remain human-gated)")
 
 
 if __name__ == "__main__":

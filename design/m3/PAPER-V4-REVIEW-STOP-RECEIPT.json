@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0-m3-v4-review-stop",
+  "target_id": "m3-v4-brad-review-233b169-20260717-a",
+  "review_process_id": 22748,
+  "port": 25586,
+  "bind": "127.0.0.1",
+  "paper": "1.21.11 build 132 c5eb079",
+  "source_git_commit": "233b16947a513a97c661f12980906c2a99f4301f",
+  "disconnect_confirmation": {
+    "player": "SirNan",
+    "paper_log_time": "2026-07-17T00:25:52-05:00",
+    "lines": ["SirNan lost connection: Disconnected", "SirNan left the game"]
+  },
+  "save_flush": {
+    "paper_log_time": "2026-07-17T00:32:56-05:00",
+    "lines": ["Saving the game (this may take a moment!)", "ThreadedAnvilChunkStorage: All dimensions are saved", "Saved the game"]
+  },
+  "orderly_stop": {
+    "paper_log_time": "2026-07-17T00:32:58-05:00",
+    "lines": ["Stopping server", "[Observance] Disabling Observance v0.5.0", "Saving worlds", "ThreadedAnvilChunkStorage: All dimensions are saved"]
+  },
+  "shutdown_control": "one-shot local Java attach helper scheduled save-all flush and Bukkit shutdown on the Paper main thread because the hidden launch had no surviving stdin handle",
+  "failed_closed_control_attempts": [
+    "first agent could not resolve Paper's plugin classloader and made no server-state call",
+    "second load reused the first agent class and made no server-state call"
+  ],
+  "latest_log_sha256": "d76688a3f533c6bbc7d17ad68161cf893330ef85f3669d88c8f52f07735a5ec5",
+  "post_stop_readback": {"pid_22748_alive": false, "port_25586_listener_count": 0},
+  "result": "clean_save_flush_stop_verified",
+  "production_mutated": false,
+  "brad_visual_approval": null,
+  "m4_authority": "closed"
+}

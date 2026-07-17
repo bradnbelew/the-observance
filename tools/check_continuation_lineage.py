@@ -247,7 +247,9 @@ def main() -> None:
                       v4["failed_attempts_receipt"], v4["validation_receipt"],
                       v4["review_target_receipt"], v4["block_state_visual_audit"],
                       v4["cold_read_preflight"], v4["routed_regression_receipt"],
-                      v4["active_review_overlay"], v4["review_package"]):
+                      v4["active_review_overlay"], v4["final_review_decision"],
+                      v4["review_server_stop_receipt"],
+                      v4["review_package"]):
         require((ROOT / authority).is_file(), f"missing M3 v4 lineage authority: {authority}")
     v4_validation = json.loads((ROOT / v4["validation_receipt"]).read_text(encoding="utf-8"))
     v4_review = json.loads((ROOT / v4["review_target_receipt"]).read_text(encoding="utf-8"))
@@ -276,28 +278,43 @@ def main() -> None:
 
     active_v4 = data["active_brad_v4_review"]
     require(active_v4["status"]
-                == "active_guided_functionality_validation_after_cold_failure"
+                == "complete_not_approved_disconnect_and_clean_stop_receipted"
             and active_v4["cold_review_result"]
-                == "not_passed_external_guidance_required"
+                == "voluntarily_aborted_for_time_pressure_inconclusive"
             and active_v4["binding_quote"] == "can you guide me thru it?"
             and active_v4["live_server_directive"]
-                == "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete"
+                == "disconnect_confirmed_clean_save_flush_stop_complete"
             and active_v4["implementation_state"]
-                == "paused_pending_complete_guided_feedback_and_disconnect"
+                == "next_revision_ready_only_after_complete_corrected_rejection_checkpoint"
             and active_v4["brad_visual_approval"] is None
             and active_v4["m4_authority"] == "closed",
             "active V4 cold-review failure/live hold drift")
     require(active_v4["machine_review_overlay"] == v4["active_review_overlay"]
             and (ROOT / active_v4["machine_review_overlay"]).is_file(),
             "active V4 review overlay missing")
+    final_v4 = data["final_brad_v4_review"]
+    require(final_v4["status"] == "complete_not_approved_revision_required"
+            and final_v4["decision_authority"] == v4["final_review_decision"]
+            and (ROOT / final_v4["decision_authority"]).is_file()
+            and len(final_v4["blocking_findings"]) == 5
+            and final_v4["m3_scope"] == "bounded and unchanged"
+            and final_v4["brad_visual_approval"] is None
+            and final_v4["m4_authority"] == "closed",
+            "final V4 rejection/scope/approval drift")
+    v4_stop = json.loads((ROOT / v4["review_server_stop_receipt"]).read_text(encoding="utf-8"))
+    require(v4_stop["result"] == "clean_save_flush_stop_verified"
+            and v4_stop["post_stop_readback"] == {
+                "pid_22748_alive": False, "port_25586_listener_count": 0,
+            } and v4_stop["brad_visual_approval"] is None
+            and v4_stop["m4_authority"] == "closed",
+            "V4 clean stop receipt/approval gate drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "complete Brad's guided functionality pass and collect the full feedback set"
+            and "a future bounded M3 revision passes exact book-option pagination/render budgets and full guided-client completion"
                 in gate["required_next_evidence"]
-            and "confirmed disconnect followed by clean save/flush/stop before any revision"
-                in gate["required_next_evidence"]
-            and "Brad's explicit approval of v4" in gate["required_next_evidence"],
+            and "Brad's explicit approval of a later M3 revision"
+                in gate["required_next_evidence"],
             "M3 v4 human/client/approval gate weakened")
     review = (ROOT / "design" / "m3" / "BRAD-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("FAILED / REVISION REQUIRED" in review and "M4 district implementation authority: **CLOSED" in review,

@@ -295,6 +295,8 @@
     "cold_read_preflight": "design/m3/V4-COLD-READ-PREFLIGHT.json",
     "routed_regression_receipt": "design/m3/V4-ROUTED-REGRESSION-RECEIPT.json",
     "active_review_overlay": "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
+    "final_review_decision": "design/m3/BRAD-V4-REVIEW-DECISION.json",
+    "review_server_stop_receipt": "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
     "review_package": "design/m3/BRAD-V4-REVIEW-PACKAGE.md",
     "preserved_prior_authorities": [
       "design/m3/vertical-slice-v1.json",
@@ -332,8 +334,8 @@
       "restart_replay": "closed negative state and open final state both re-derived with zero audit findings"
     },
     "unresolved": [
-      "independent cold-human objective and interaction comprehension failed because Brad required external guidance",
-      "Brad has not visually reviewed or approved v4",
+      "independent cold interface-affordance review was voluntarily aborted for time pressure and remains inconclusive",
+      "Brad completed V4 review and did not approve it; native-book pagination and physical affordance defects require revision",
       "authenticated non-op client protection and accessibility attempts remain unreceipted",
       "optional approved two-client A2 presentation remains unreceipted"
     ],
@@ -341,13 +343,38 @@
   },
   "active_brad_v4_review": {
     "date": "2026-07-17",
-    "status": "active_guided_functionality_validation_after_cold_failure",
-    "cold_review_result": "not_passed_external_guidance_required",
+    "status": "complete_not_approved_disconnect_and_clean_stop_receipted",
+    "cold_review_result": "voluntarily_aborted_for_time_pressure_inconclusive",
     "binding_quote": "can you guide me thru it?",
-    "interpretation": "V4 objective and interaction language were not independently discoverable; guided completion may test functionality but cannot retroactively pass the cold-read gate",
+    "interpretation": "Brad voluntarily aborted the cold read because he was rushing; this is inconclusive and not evidence that the investigation was too hard. Guided validation found real native-book pagination and physical-affordance defects",
     "machine_review_overlay": "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
-    "live_server_directive": "do_not_stop_mutate_rebuild_or_revise_until_guided_pass_and_disconnect_are_complete",
-    "implementation_state": "paused_pending_complete_guided_feedback_and_disconnect",
+    "decision_authority": "design/m3/BRAD-V4-REVIEW-DECISION.json",
+    "live_server_directive": "disconnect_confirmed_clean_save_flush_stop_complete",
+    "review_server_stop_receipt": "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
+    "implementation_state": "next_revision_ready_only_after_complete_corrected_rejection_checkpoint",
+    "brad_visual_approval": null,
+    "m4_authority": "closed"
+  },
+  "final_brad_v4_review": {
+    "date": "2026-07-17",
+    "status": "complete_not_approved_revision_required",
+    "decision_authority": "design/m3/BRAD-V4-REVIEW-DECISION.json",
+    "cold_review_result": "voluntarily_aborted_for_time_pressure_inconclusive",
+    "cold_review_correction": "the earlier failure interpretation is superseded; Brad was rushing and the aborted cold read does not measure investigation difficulty or comprehension",
+    "guided_functionality_result": "underlying functionality otherwise worked but the correct report could not be completed through the intended client UI",
+    "blocking_findings": [
+      "four-choice native-book formatting is broken",
+      "long choices overflow, hiding or disabling the correct option",
+      "some stair chairs face walls",
+      "interactive empty-looking chiseled bookshelves open evidence",
+      "right-clickable evidence surfaces lack obvious physical affordance"
+    ],
+    "cross_phase_amendment": "high difficulty and the 20-30 active-hour target remain; difficulty comes from investigation, synthesis, recall, provenance, spatial observation, callbacks, group discussion, and delayed understanding, not UI friction; exact book render budgets, seating use, visible interactive affordances, cold interface-affordance, and full guided client paths are mandatory",
+    "m3_scope": "bounded and unchanged",
+    "m4_plus_scope": "larger believable areas may distribute deep multi-layered investigations while preserving any-subset, replay, accessibility, catch-up, and no-missable guarantees",
+    "disconnect": "independently confirmed in Paper log at 00:25:52",
+    "review_server_state": "clean save-all flush and orderly stop verified; PID 22748 ended and port 25586 released",
+    "review_server_stop_receipt": "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
     "brad_visual_approval": null,
     "m4_authority": "closed"
   },
@@ -384,6 +411,8 @@
     "design/m3/V4-ROUTED-REGRESSION-RECEIPT.json",
     "design/m3/BRAD-V4-REVIEW-PACKAGE.md",
     "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
+    "design/m3/BRAD-V4-REVIEW-DECISION.json",
+    "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -425,6 +454,11 @@
       "effect": "v4 becomes current for cold-human and Brad review while v1/v2/v3 rejections remain binding history; only the exact four-clause report plus combined synthesis can open the gate; automated success does not open M4"
     },
     {
+      "older": "M3 v4 automated, internal, and guided functionality evidence",
+      "newer": "Brad's completed M3 v4 NOT APPROVED / REVISION REQUIRED decision",
+      "effect": "V4 mechanics remain useful evidence; the cold review was time-pressure-aborted and inconclusive, while native-book pagination, seating orientation, bookshelf occupancy, and physical affordance are real failures. The cross-phase standard preserves high difficulty and requires investigation depth rather than UI friction, exact client render tests, and full guided-client receipts; M4 remains closed"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -436,14 +470,14 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v4 independent cold review did not pass; guided functionality review is active; Brad approval remains null",
+    "phase": "M3 v4 NOT APPROVED / REVISION REQUIRED; cold read inconclusive by Brad correction; clean server stop complete; corrected rejection checkpoint precedes revision",
     "m4_open": false,
     "required_next_evidence": [
-      "complete Brad's guided functionality pass and collect the full feedback set",
-      "confirmed disconnect followed by clean save/flush/stop before any revision",
-      "a future revision enables an independent cold player to discover the room job, civic question, and interaction path without external guidance",
+      "a future bounded M3 revision passes exact book-option pagination/render budgets and full guided-client completion",
+      "a future revision corrects chair facing and provides visible occupied or replacement evidence affordances",
+      "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid puzzle solution as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
-      "Brad's explicit approval of v4"
+      "Brad's explicit approval of a later M3 revision"
     ]
   }
 }

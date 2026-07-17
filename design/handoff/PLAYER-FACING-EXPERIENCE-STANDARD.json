@@ -1,8 +1,10 @@
 {
-  "schema_version": "1.0.0-cross-phase-player-facing",
+  "schema_version": "1.1.0-cross-phase-player-facing",
   "authority_id": "observance-cross-phase-player-facing-experience",
   "issued_by": "Brad",
   "issued_date": "2026-07-16",
+  "amended_date": "2026-07-17",
+  "amendment_authority": "design/m3/BRAD-V4-REVIEW-DECISION.json",
   "status": "binding",
   "authority_precedence": "after_spine_lock_and_spine_conformance_before_phase_specific_player_facing_implementation",
   "scope": {
@@ -20,7 +22,7 @@
     "m4_authority": "closed",
     "brad_visual_approval": null
   },
-  "human_quality_rule": "Static inventory and diversity evidence support review but cannot convert writing, room composition, or puzzle legibility into a quota; human cold-read acceptance remains mandatory.",
+  "human_quality_rule": "Static inventory and diversity evidence support review but cannot convert writing, room composition, or puzzle legibility into a quota; human review remains mandatory, and believable language must never be misread as a requirement for simple, obvious, short, or easy investigation.",
   "room_standard": {
     "ordinary_job_first": true,
     "scale_must_be_functionally_justified": true,
@@ -31,6 +33,44 @@
     "decorative_clusters_require_authored_purpose": true,
     "unclassified_floating_or_misplaced_blocks_forbidden": true,
     "expert_minecraft_composition_required": true
+    ,"seating_must_face_believable_work_waiting_or_conversation_use": true
+    ,"interactive_blocks_must_visibly_advertise_their_physical_affordance": true
+    ,"interactive_chiseled_bookshelves_require_visible_occupied_slots_or_replacement": true
+  },
+  "investigation_and_difficulty_standard": {
+    "discrete_puzzle_game_stations_forbidden": true,
+    "multi_layered_deep_difficult_investigations_encouraged_when_fictionally_appropriate": true,
+    "difficulty_must_come_from": [
+      "investigation",
+      "synthesis",
+      "recall",
+      "provenance",
+      "spatial observation",
+      "callbacks"
+    ],
+    "difficulty_must_not_come_from": [
+      "UI friction",
+      "clipped or paginated-away text",
+      "opaque interaction controls",
+      "unadvertised click targets"
+    ],
+    "evidence_may_span_larger_believable_areas_in_m4_and_later": true,
+    "future_hold_scale_may_conceal_or_distribute_evidence_naturally": true,
+    "m3_bounded_scope_preserved": true,
+    "any_subset_replay_accessibility_catch_up_and_no_missable_preserved": true,
+    "campaign_active_hour_target": {"min": 20, "max": 30},
+    "group_discussion_and_delayed_understanding_are_valid": true,
+    "director_approved_hints_and_recovery": true,
+    "routine_handholding_forbidden": true,
+    "cold_review_tests_interface_affordance_not_rapid_solution_or_difficulty": true
+  },
+  "minecraft_client_ui_standard": {
+    "exact_book_pagination_tests_required": true,
+    "supported_client_render_budget_tests_required": true,
+    "every_selectable_option_fully_visible": true,
+    "every_selectable_option_clickable": true,
+    "no_correct_option_may_overflow_or_become_unselectable": true,
+    "native_book_delivery_is_not_a_pass_without_client_render_receipts": true
   },
   "copy_standard": {
     "required_register": ["immersive", "realistic", "grounded", "human", "medium-specific"],
@@ -58,7 +98,10 @@
       "written book"
     ],
     "format_selection_rule": "Each form must be plausible for its author, recipient, workplace, placement, and evidentiary job; different containers may not disguise duplicated prose.",
-    "voice_selection_rule": "Artifacts must differ where the fiction supplies different knowledge, motive, relationship, register, or reliability; diversity is qualitative rather than a minimum count."
+    "voice_selection_rule": "Artifacts must differ where the fiction supplies different knowledge, motive, relationship, register, or reliability; diversity is qualitative rather than a minimum count.",
+    "believable_not_simplified": true,
+    "permitted_demanding_qualities": ["subtle", "dense", "technical", "partial", "contradictory", "delayed in meaning"],
+    "plain_realistic_language_does_not_mean": ["obvious", "short", "easy", "fully explanatory"]
   },
   "required_inventory_fields": {
     "room": [
@@ -124,6 +167,30 @@
     {
       "check_id": "CROSS.PF.COLD_READ_HUMAN_GATE",
       "predicate": "a recorded cold human review proves workplace, objective, artifact, interaction, and deduction comprehension before visual review"
+    },
+    {
+      "check_id": "CROSS.PF.BOOK_OPTION_RENDER_BUDGET",
+      "predicate": "every selectable native-book option passes exact pagination and supported-client render budgets and remains fully visible and clickable"
+    },
+    {
+      "check_id": "CROSS.PF.SEATING_FACING_AND_USE",
+      "predicate": "every stair chair faces a believable seated use within its furniture composition and no chair faces a wall without an authored workstation purpose"
+    },
+    {
+      "check_id": "CROSS.PF.INTERACTIVE_PHYSICAL_AFFORDANCE",
+      "predicate": "every interactive evidence block visibly communicates its affordance; chiseled bookshelves expose occupied slots or are replaced"
+    },
+    {
+      "check_id": "CROSS.PF.DIFFICULTY_FROM_INVESTIGATION",
+      "predicate": "difficulty derives from investigation, synthesis, recall, provenance, spatial observation, or callbacks rather than UI friction or opaque controls"
+    },
+    {
+      "check_id": "CROSS.PF.GUIDED_PATH_CLIENT_GATE",
+      "predicate": "a supported non-op client completes the full intended path and proves every choice, filing, synthesis, replay, and protection interaction renders and operates correctly"
+    },
+    {
+      "check_id": "CROSS.PF.NO_MISSABLE_DEEP_INVESTIGATION",
+      "predicate": "distributed or multi-layered evidence preserves any-subset, replay, accessibility, catch-up, and no-missable guarantees"
     }
   ],
   "cold_read_criteria": [
@@ -132,13 +199,23 @@
     "cold player distinguishes readable evidence from conclusion filing",
     "cold player explains why each sampled artifact plausibly exists in its placement",
     "cold player recognizes materially different human voices and artifact formats",
-    "cold player derives and submits one defensible finding from record content",
+    "cold player identifies how a defensible finding would be filed without being expected to solve it under review time pressure",
     "cold player explains that four findings combine into the final synthesis",
     "naive touching of every surface commits no unsupported finding and leaves the gate closed",
     "cold player navigates public and staff circulation without chat or tutorial labels",
     "cold player describes the space as a believable workplace or civic facility rather than a puzzle chamber or room of lecterns",
     "observer judges prose plausible for its stated human author, relationship, workplace, and medium",
-    "observer records every moment that required out-of-world explanation"
+    "observer records every moment that required out-of-world explanation",
+    "cold player identifies readable evidence surfaces from visible physical affordance rather than trial-clicking empty-looking blocks",
+    "every selectable book option is fully visible and clickable at the supported client UI",
+    "seating and furniture facing communicate believable work, waiting, or conversation use"
+  ],
+  "guided_client_criteria": [
+    "every four-choice question displays all choices without overflow or hidden correct answers",
+    "every displayed choice can be selected through the intended native client UI",
+    "the complete correct report and final synthesis can be submitted without console, operator, or out-of-world workarounds",
+    "interactive evidence surfaces have an unmistakable visible physical affordance",
+    "full path replay, protection, accessibility, and catch-up behavior is exercised by a supported non-op Adventure client"
   ],
   "v4_demonstration": {
     "preserve": [
@@ -161,5 +238,15 @@
       "naive-click-through and bounded brute-force resistance"
     ],
     "quality_not_quota": true
+  },
+  "v4_review_outcome": {
+    "decision": "not_approved_revision_required",
+    "decision_authority": "design/m3/BRAD-V4-REVIEW-DECISION.json",
+    "cold_discoverability": "voluntarily_aborted_for_time_pressure_inconclusive",
+    "cold_discoverability_correction": "asking for guidance during a rushed review is not evidence that the investigation was too hard or incomprehensible",
+    "book_ui_completion": "failed_long_choices_overflowed_and_correct_answer_was_not_visible_or_selectable",
+    "underlying_functionality": "otherwise_worked",
+    "brad_visual_approval": null,
+    "m4_authority": "closed"
   }
 }

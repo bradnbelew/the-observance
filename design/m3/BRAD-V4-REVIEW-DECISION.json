@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0.0-m3-brad-v4-decision",
+  "authority_id": "observance-p4-private-slice-v4-brad-decision",
+  "review_date": "2026-07-17",
+  "review_status": "complete_not_approved_disconnect_and_clean_stop_receipted",
+  "decision": "not_approved_revision_required",
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "cold_review_result": "voluntarily_aborted_for_time_pressure_inconclusive",
+  "cold_review_correction": "Brad was rushing; asking for guidance is not evidence that the investigation was too hard or incomprehensible and supersedes the failure interpretation committed at 912f857cb309ce6452e415680f6e5bbaa5c217b2",
+  "guided_pass_result": "underlying_state_and_deduction_functionality_worked_but_correct_report_could_not_be_completed_through_the_intended_client_ui",
+  "blocking_functionality_and_ux_findings": [
+    "native book formatting is broken for some four-choice questions",
+    "long choices overflow the Minecraft book page, so the correct answer is not visible or selectable",
+    "underlying functionality otherwise worked, but Brad could not complete the correct report through the intended UI because of pagination and layout"
+  ],
+  "visual_and_affordance_findings": [
+    "stair blocks used as chairs face walls in some locations",
+    "interactive chiseled bookshelves appear empty with no visible books but still emit or open evidence on right-click",
+    "right-clickable evidence surfaces are non-obvious and violate physical affordance expectations"
+  ],
+  "global_puzzle_and_space_direction": [
+    "investigations must not feel like discrete puzzle-game stations",
+    "when appropriate investigations should be multi-layered, deep, and difficult",
+    "evidence and deductions may span larger believable areas, and future Hold scale may conceal or distribute material naturally",
+    "difficulty must come from investigation, synthesis, recall, provenance, spatial observation, and callbacks rather than UI friction or opaque interaction controls",
+    "any-subset, replay, accessibility, catch-up, and no-missable requirements remain mandatory",
+    "M3 remains bounded; the permission to use larger believable areas applies to later M4+ work where the phase authority allows it",
+    "the established campaign target remains 20 to 30 active hours with director-approved hints and recovery rather than routine handholding",
+    "plain realistic language means believable rather than simplified: artifacts may be subtle, dense, technical, partial, contradictory, and demanding"
+  ],
+  "preserve_from_v4": [
+    "content-dependent four-clause state model",
+    "separate combined synthesis before gate release",
+    "naive click-through and bounded brute-force resistance",
+    "native book delivery where it renders within exact client budgets",
+    "local-primary persistence, restart, replay, protection, and idempotency",
+    "full-height full-width controlled gate",
+    "grounded artifact voices and reduced lectern density",
+    "any-subset, catch-up, accessibility, and no-missable contracts",
+    "v1 through v4 rejection and receipt provenance"
+  ],
+  "required_next_revision_checks": [
+    {
+      "check_id": "M3.VNEXT.BOOK_OPTION_RENDER_BUDGET",
+      "predicate": "every selectable option is tested against exact Minecraft book pagination and supported-client render budgets; every option is fully visible and clickable without overflow",
+      "current_v4_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.CHAIR_FACING_AND_SEAT_USE",
+      "predicate": "every stair chair faces a believable seated work or waiting direction and belongs to a classified furniture composition rather than facing a wall",
+      "current_v4_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.INTERACTIVE_BOOKSHELF_OCCUPANCY",
+      "predicate": "every interactive chiseled bookshelf has the exact occupied-slot block state with visible books, or is replaced by another unmistakable physically credible evidence affordance",
+      "current_v4_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.COLD_PLAYER_INTERFACE_AFFORDANCE",
+      "predicate": "without guidance, a cold player can identify Minecraft interaction rules and which physical surfaces are readable or file conclusions; this tests interface affordance, not rapid deduction or puzzle ease",
+      "current_v4_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.FULL_GUIDED_PATH_CLIENT",
+      "predicate": "a supported non-op Adventure client completes every option, report, synthesis, replay, and protection path through the intended UI with exact screenshots or equivalent client receipts",
+      "current_v4_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.DIFFICULTY_FROM_INVESTIGATION",
+      "predicate": "difficulty is attributable to evidence comparison, synthesis, recall, provenance, spatial observation, or callbacks and not to clipped text, pagination failure, hidden click targets, or opaque controls",
+      "current_v4_compliance": false
+    },
+    {
+      "check_id": "M3.VNEXT.SUBSET_REPLAY_ACCESSIBILITY_NO_MISSABLE",
+      "predicate": "the deeper investigation remains any-subset, replay-safe, restart-safe, catch-up-readable, accessible, and free of permanently missable evidence",
+      "current_v4_compliance": true
+    }
+  ],
+  "cross_phase_experience_authority": {
+    "human": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
+    "machine": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "checker": "tools/check_player_facing_experience_standard.py",
+    "scope": "M3 bounded revisions and M4/M5 player-facing investigation, space, artifact, affordance, copy, and client UI",
+    "m3_scope_expansion": false
+  },
+  "disconnect_evidence": {
+    "paper_log_time": "2026-07-17T00:25:52-05:00",
+    "lines": [
+      "SirNan lost connection: Disconnected",
+      "SirNan left the game"
+    ],
+    "independently_confirmed": true
+  },
+  "review_server_state": "clean_save_flush_stop_verified_pid_and_port_ended",
+  "review_server_stop_receipt": "design/m3/PAPER-V4-REVIEW-STOP-RECEIPT.json",
+  "implementation_state": "next_revision_ready_only_after_complete_corrected_rejection_checkpoint",
+  "production_mutated": false
+}

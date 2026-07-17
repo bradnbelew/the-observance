@@ -17,12 +17,14 @@
     {"criterion":"believable workplace rather than puzzle chamber","internal_result":"pass","evidence":"two exceptional lecterns serve a work order and findings ledger; all other evidence uses job-specific tables, tags, signs, cabinet volumes, and hydraulic infrastructure"},
     {"criterion":"grounded voices and media","internal_result":"pass","evidence":"the exact inventory binds unique prose to surveyor, inspector, mason, clerk, registrar, quartermaster, engineer, examiner, and office voices with plausible provenance"}
   ],
-  "independent_cold_human_status": "not_passed_external_guidance_required",
+  "independent_cold_human_status": "voluntarily_aborted_for_time_pressure_inconclusive",
   "independent_cold_human_evidence": {
     "reviewer": "Brad / SirNan",
-    "binding_quote": "can you guide me thru it?",
+    "observed_quote": "can you guide me thru it?",
+    "brad_correction": "the request reflected a rushed review and must not be interpreted as excessive investigation difficulty or failed comprehension",
     "result_authority": "design/m3/BRAD-V4-ACTIVE-REVIEW.json",
-    "interpretation": "the internal authorial preflight did not predict the cold reviewer's inability to independently discover the objective and interaction path"
+    "interpretation": "the independent cold-read was voluntarily aborted for time pressure and is inconclusive",
+    "supersedes_interpretation_committed_at": "912f857cb309ce6452e415680f6e5bbaa5c217b2"
   },
   "authenticated_client_receipts_status": "pending",
   "brad_visual_approval": null,
