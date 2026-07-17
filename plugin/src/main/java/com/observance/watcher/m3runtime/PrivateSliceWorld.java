@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.ChiseledBookshelf;
 import org.bukkit.block.Lectern;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
@@ -23,10 +24,11 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/** Exact Paper projection of the authored M3 v4 private slice. */
+/** Exact Paper projection of the authored M3 v5 private slice. */
 public final class PrivateSliceWorld {
     public static final int MIN_X = -34;
     public static final int MAX_X = 34;
@@ -48,6 +50,7 @@ public final class PrivateSliceWorld {
     private final Map<Cell, SignSurface> signs = new LinkedHashMap<>();
     private final Map<Cell, SupportSpec> supports = new LinkedHashMap<>();
     private final Map<String, DecorativeCluster> clusters = new LinkedHashMap<>();
+    private final Map<Cell, SeatSpec> seats = new LinkedHashMap<>();
 
     public PrivateSliceWorld(World world, int originX, int originY, int originZ, boolean gateOpen) {
         if (world == null) throw new IllegalArgumentException("M3 world is required");
@@ -119,6 +122,16 @@ public final class PrivateSliceWorld {
                     && !lecternMatches(row.getKey(), row.getValue().asEvidence())) {
                 findings.add(row.getKey() + " reference book missing/drifted: " + row.getValue().surfaceId());
             }
+            if (row.getValue().physicalMaterial() == Material.CHISELED_BOOKSHELF
+                    && !shelfBookMatches(row.getKey(), row.getValue().asEvidence())) {
+                findings.add(row.getKey() + " reference shelf book missing/drifted: " + row.getValue().surfaceId());
+            }
+        }
+        for (Map.Entry<Cell, EvidenceSurface> row : evidence.entrySet()) {
+            if (row.getValue().physicalMaterial() == Material.CHISELED_BOOKSHELF
+                    && !shelfBookMatches(row.getKey(), row.getValue())) {
+                findings.add(row.getKey() + " evidence shelf book missing/drifted: " + row.getValue().surfaceId());
+            }
         }
         for (Map.Entry<Cell, SignSurface> row : signs.entrySet()) {
             if (!signMatches(row.getKey(), row.getValue())) findings.add(row.getKey() + " authored sign drift");
@@ -155,13 +168,15 @@ public final class PrivateSliceWorld {
             }
         }
         checkInvestigationTopology(findings);
+        checkSeats(findings);
         checkWaterworks(findings, counts.getOrDefault(Material.WATER, 0));
         checkCorridor(findings, 12, 27, 69, 71, "public record-office corridor");
         checkCorridor(findings, 12, 27, 80, 82, "staff record corridor");
         checkImmersiveText(findings);
         int gateCollision = gateCollisionCells();
         return new Audit(expected.size(), List.copyOf(findings), worldHash(), Map.copyOf(counts),
-                evidence.size(), submissions.size(), references.size(), signs.size(), supports.size(), clusters.size(), gateCollision);
+                evidence.size(), submissions.size(), references.size(), signs.size(), supports.size(), clusters.size(),
+                seats.size(), gateCollision);
     }
 
     public void setGate(boolean open) {
@@ -245,7 +260,9 @@ public final class PrivateSliceWorld {
                     .getBytes(StandardCharsets.UTF_8)));
             supports.forEach((cell, support) -> digest.update((cell + "=" + support.canonical() + "\n")
                     .getBytes(StandardCharsets.UTF_8)));
-            clusters.values().forEach(cluster -> digest.update((cluster.canonical() + "\n")
+        clusters.values().forEach(cluster -> digest.update((cluster.canonical() + "\n")
+                    .getBytes(StandardCharsets.UTF_8)));
+            seats.forEach((cell, seat) -> digest.update((cell + "=" + seat.canonical() + "\n")
                     .getBytes(StandardCharsets.UTF_8)));
             return hex(digest.digest());
         } catch (NoSuchAlgorithmException impossible) {
@@ -343,9 +360,8 @@ public final class PrivateSliceWorld {
                     "west empty-cart return rut worn into the same road crown");
         }
         for (int x : new int[]{-10, 10}) for (int z : new int[]{5, 6, 10, 11})
-            directionalCluster("MOUTH_WAITING_BENCHES", new Cell(x, 0, z), Material.DARK_OAK_STAIRS,
-                    "minecraft:dark_oak_stairs[facing=" + (x < 0 ? "east" : "west")
-                            + ",half=bottom,shape=straight,waterlogged=false]",
+            seat("MOUTH_WAITING_BENCHES", new Cell(x, 0, z), Material.DARK_OAK_STAIRS,
+                    x < 0 ? "west" : "east", new Cell(x < 0 ? -7 : 7, 0, z),
                     "wall-backed benches for hauliers waiting on the examiner");
         for (int x = -1; x <= 1; x++) for (int z = 4; z <= 5; z++)
             clusterBlock("MOUTH_EXAMINER_DESK", new Cell(x, 0, z), Material.DARK_OAK_PLANKS,
@@ -428,10 +444,10 @@ public final class PrivateSliceWorld {
             expected.put(new Cell(x, -19, 74), Material.WHITE_CARPET);
         }
         for (int z : new int[]{67, 76}) {
-            directional(new Cell(23, -20, z), Material.SPRUCE_STAIRS,
-                    "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]");
-            directional(new Cell(25, -20, z), Material.SPRUCE_STAIRS,
-                    "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]");
+            seat("COPY_DESK_CHAIRS", new Cell(23, -20, z), Material.SPRUCE_STAIRS,
+                    "south", new Cell(23, -20, z - 2), "copyist chair facing its working papers");
+            seat("COPY_DESK_CHAIRS", new Cell(25, -20, z), Material.SPRUCE_STAIRS,
+                    "south", new Cell(25, -20, z - 2), "copyist chair facing its working papers");
         }
         for (int z : new int[]{64, 75, 79, 82}) {
             Cell lower = new Cell(29, -20, z);
@@ -456,8 +472,8 @@ public final class PrivateSliceWorld {
             clusterBlock("INTAKE_CLERK_DESKS", new Cell(x, -20, z), Material.SPRUCE_PLANKS,
                     "paired clerk desks for berth and supply reconciliation");
         for (int x : new int[]{10, 13}) for (int z : new int[]{63, 74})
-            directional(new Cell(x, -20, z), Material.SPRUCE_STAIRS,
-                    "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]");
+            seat("INTAKE_CLERK_CHAIRS", new Cell(x, -20, z), Material.SPRUCE_STAIRS,
+                    "north", new Cell(x, -20, z + 2), "clerk chair facing berth and supply work");
         for (int z : new int[]{64, 76}) {
             clusterBlock("INTAKE_ACTIVE_FILES", new Cell(15, -20, z), Material.BOOKSHELF,
                     "supported active berth and supply files beside the clerk desks");
@@ -469,9 +485,8 @@ public final class PrivateSliceWorld {
                     "minecraft:chiseled_bookshelf[facing=west]");
         }
         for (int x = 8; x <= 14; x += 3) for (int z : new int[]{57, 77})
-            directionalCluster("INTAKE_WAITING_BENCHES", new Cell(x, -20, z), Material.DARK_OAK_STAIRS,
-                    "minecraft:dark_oak_stairs[facing=" + (z < 70 ? "south" : "north")
-                            + ",half=bottom,shape=straight,waterlogged=false]",
+            seat("INTAKE_WAITING_BENCHES", new Cell(x, -20, z), Material.DARK_OAK_STAIRS,
+                    z < 70 ? "north" : "south", new Cell(x, -20, z < 70 ? 60 : 74),
                     "public waiting benches kept outside the hydraulic maintenance walk");
     }
 
@@ -573,10 +588,29 @@ public final class PrivateSliceWorld {
 
     private void decorateSurfaces() {
         submissions.forEach((cell, surface) -> writeBook(cell, surface.asEvidence()));
+        evidence.forEach((cell, surface) -> {
+            if (surface.physicalMaterial() == Material.CHISELED_BOOKSHELF) writeShelfBook(cell, surface);
+        });
         references.forEach((cell, surface) -> {
             if (surface.physicalMaterial() == Material.LECTERN) writeBook(cell, surface.asEvidence());
+            if (surface.physicalMaterial() == Material.CHISELED_BOOKSHELF) writeShelfBook(cell, surface.asEvidence());
         });
         signs.forEach(this::writeSign);
+    }
+
+    private void writeShelfBook(Cell cell, EvidenceSurface surface) {
+        if (!(block(cell).getState() instanceof ChiseledBookshelf shelf)) return;
+        shelf.getInventory().setItem(0, authoredBook(surface.title(), surface.author(), bookPages(surface.body())));
+    }
+
+    private boolean shelfBookMatches(Cell cell, EvidenceSurface surface) {
+        if (!(block(cell).getState() instanceof ChiseledBookshelf shelf)) return false;
+        ItemStack item = shelf.getInventory().getItem(0);
+        if (item == null || item.getType() != Material.WRITTEN_BOOK || !(item.getItemMeta() instanceof BookMeta meta))
+            return false;
+        return surface.title().equals(meta.getTitle()) && surface.author().equals(meta.getAuthor())
+                && bookPages(surface.body()).equals(meta.pages())
+                && block(cell).getBlockData().getAsString().contains("slot_0_occupied=true");
     }
 
     private void writeBook(Cell cell, EvidenceSurface surface) {
@@ -626,36 +660,16 @@ public final class PrivateSliceWorld {
         Map<String, String> draft = state.draft(contributor);
         List<Component> pages = new ArrayList<>();
         pages.add(Component.text("EXAMINER'S FINDINGS\n\nOne clause must be marked under each heading. The whole report is examined together; returned papers are not marked by section."));
-        pages.add(choicePage("PUBLIC ROAD", "P4.F1", draft, List.of(
-                choice("Two separate public roads served the Mouth.", "two_separate_public_roads"),
-                choice("One road carried loaded descent and empty return.", "one_road_loaded_down_empty_return"),
-                choice("The road served drainage crews only.", "drainage_crews_only"),
-                choice("No cart road crossed the threshold.", "no_cart_road_crossed"))));
-        pages.add(choicePage("WORKS CAMPAIGNS", "P4.F2", draft, List.of(
-                choice("One emergency build produced every room.", "single_emergency_build"),
-                choice("Shelter and office were the only campaigns.", "two_campaigns_shelter_and_office"),
-                choice("Four unrelated repairs made the visible joints.", "four_unrelated_repairs"),
-                choice("Shelter, Intake, and Commons were three campaigns.", "three_campaigns_shelter_intake_commons"))));
-        pages.add(choicePage("SUPPORTED PLACES", "P4.F3", draft, List.of(
-                choice("328 people, including every work berth.", "328_people_including_work_berths"),
-                choice("294 refuge places; work berths are excluded.", "294_refuge_places_work_berths_excluded"),
-                choice("286 people; infirmary cots do not count.", "286_people_no_infirmary"),
-                choice("300 people, equal to the water gauge.", "300_people_equal_to_water_gauge"))));
-        pages.add(choicePage("THE DOWN-CUT", "P4.F4", draft, List.of(
-                choice("It concealed the works from the public road.", "concealment_from_public_road"),
-                choice("It reached a second entrance.", "access_to_a_second_entrance"),
-                choice("Stable cover and shorter winter service required it.", "downcut_for_stable_cover_shorter_winter_service"),
-                choice("It followed an accidental quarry break.", "accidental_quarry_breakthrough"))));
+        addChoicePages(pages, heading("P4.F1"), "P4.F1", draft, choicesFor("P4.F1"));
+        addChoicePages(pages, heading("P4.F2"), "P4.F2", draft, choicesFor("P4.F2"));
+        addChoicePages(pages, heading("P4.F3"), "P4.F3", draft, choicesFor("P4.F3"));
+        addChoicePages(pages, heading("P4.F4"), "P4.F4", draft, choicesFor("P4.F4"));
         Component lodge = Component.text("LODGE FOUR-CLAUSE REPORT")
                 .clickEvent(ClickEvent.runCommand("/obsfile lodge"));
         pages.add(Component.text("REPORT ENDORSEMENT\n\nWhen all four clauses are marked, lodge the report at this counter.\n\n")
                 .append(lodge));
         if (PrivateSliceState.BASE_FINDINGS.stream().allMatch(state::findingCommitted)) {
-            pages.add(choicePage("ACCOUNT SUPPORTED", "P4.F5", draft, List.of(
-                    choice("A temporary quarry shelter abandoned after one winter.", "temporary_quarry_shelter_abandoned_after_one_winter"),
-                    choice("A planned civic intake for 294, not one emergency shelter.", "planned_civic_intake_for_294_not_single_emergency_shelter"),
-                    choice("A private archive with no refuge role.", "private_archive_with_no_public_refuge_role"),
-                    choice("A natural cave mistaken for civic works.", "natural_cave_later_mistaken_for_civic_works"))));
+            addChoicePages(pages, heading("P4.F5"), "P4.F5", draft, choicesFor("P4.F5"));
             pages.add(Component.text("COMMONS SEAL\n\nThe four endorsed findings support one account of the Mouth. Mark it, then lodge the seal endorsement.\n\n")
                     .append(Component.text("LODGE SEAL ENDORSEMENT")
                             .clickEvent(ClickEvent.runCommand("/obsfile seal"))));
@@ -671,17 +685,75 @@ public final class PrivateSliceWorld {
 
     private static Choice choice(String label, String id) { return new Choice(label, id); }
 
-    private static Component choicePage(String heading, String finding, Map<String, String> draft,
-            List<Choice> choices) {
-        Component page = Component.text(heading + "\n\n");
-        String selected = draft.get(finding);
-        for (Choice choice : choices) {
-            String marker = choice.id().equals(selected) ? "[X] " : "[ ] ";
-            page = page.append(Component.text(marker + choice.label())
-                    .clickEvent(ClickEvent.runCommand("/obsfile mark " + finding + " " + choice.id())))
-                    .append(Component.text("\n\n"));
+    private static String heading(String finding) {
+        return switch (finding) {
+            case "P4.F1" -> "PUBLIC ROAD";
+            case "P4.F2" -> "WORKS CAMPAIGNS";
+            case "P4.F3" -> "SUPPORTED PLACES";
+            case "P4.F4" -> "THE DOWN-CUT";
+            case "P4.F5" -> "ACCOUNT SUPPORTED";
+            default -> throw new IllegalArgumentException("unknown filing heading: " + finding);
+        };
+    }
+
+    private static List<Choice> choicesFor(String finding) {
+        return switch (finding) {
+            case "P4.F1" -> List.of(
+                    choice("Two separate public roads served the Mouth.", "two_separate_public_roads"),
+                    choice("One road carried loaded descent and empty return.", "one_road_loaded_down_empty_return"),
+                    choice("The road served drainage crews only.", "drainage_crews_only"),
+                    choice("No cart road crossed the threshold.", "no_cart_road_crossed"));
+            case "P4.F2" -> List.of(
+                    choice("One emergency build produced every room.", "single_emergency_build"),
+                    choice("Shelter and office were the only campaigns.", "two_campaigns_shelter_and_office"),
+                    choice("Four unrelated repairs made the visible joints.", "four_unrelated_repairs"),
+                    choice("Shelter, Intake, and Commons were three campaigns.", "three_campaigns_shelter_intake_commons"));
+            case "P4.F3" -> List.of(
+                    choice("328 people, including every work berth.", "328_people_including_work_berths"),
+                    choice("294 refuge places; work berths are excluded.", "294_refuge_places_work_berths_excluded"),
+                    choice("286 people; infirmary cots do not count.", "286_people_no_infirmary"),
+                    choice("300 people, equal to the water gauge.", "300_people_equal_to_water_gauge"));
+            case "P4.F4" -> List.of(
+                    choice("It concealed the works from the public road.", "concealment_from_public_road"),
+                    choice("It reached a second entrance.", "access_to_a_second_entrance"),
+                    choice("Stable cover and shorter winter service required it.", "downcut_for_stable_cover_shorter_winter_service"),
+                    choice("It followed an accidental quarry break.", "accidental_quarry_breakthrough"));
+            case "P4.F5" -> List.of(
+                    choice("A temporary quarry shelter abandoned after one winter.", "temporary_quarry_shelter_abandoned_after_one_winter"),
+                    choice("A planned civic intake for 294, not one emergency shelter.", "planned_civic_intake_for_294_not_single_emergency_shelter"),
+                    choice("A private archive with no refuge role.", "private_archive_with_no_public_refuge_role"),
+                    choice("A natural cave mistaken for civic works.", "natural_cave_later_mistaken_for_civic_works"));
+            default -> throw new IllegalArgumentException("unknown filing choices: " + finding);
+        };
+    }
+
+    public BookPageLayout.Audit bookUiAudit() {
+        List<BookPageLayout.OptionPage> pages = new ArrayList<>();
+        for (String finding : List.of("P4.F1", "P4.F2", "P4.F3", "P4.F4", "P4.F5")) {
+            List<BookPageLayout.Option> options = choicesFor(finding).stream()
+                    .map(choice -> new BookPageLayout.Option(choice.label(), choice.id())).toList();
+            pages.addAll(BookPageLayout.optionPages(heading(finding), finding, null, options));
         }
-        return page;
+        Set<String> commands = pages.stream().map(BookPageLayout.OptionPage::command)
+                .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
+        return new BookPageLayout.Audit(List.copyOf(pages), pages.size(), commands.size(),
+                pages.stream().allMatch(page -> page.budget().fits()));
+    }
+
+    private static void addChoicePages(List<Component> pages, String heading, String finding,
+            Map<String, String> draft,
+            List<Choice> choices) {
+        List<BookPageLayout.Option> options = choices.stream()
+                .map(choice -> new BookPageLayout.Option(choice.label(), choice.id())).toList();
+        for (BookPageLayout.OptionPage optionPage : BookPageLayout.optionPages(
+                heading, finding, draft.get(finding), options)) {
+            ClickEvent mark = ClickEvent.runCommand(optionPage.command());
+            Component page = Component.text(optionPage.heading() + "\n" + optionPage.folio() + "\n\n")
+                    .append(Component.text(optionPage.marker() + optionPage.choice().label()).clickEvent(mark))
+                    .append(Component.text("\n\n"))
+                    .append(Component.text("MARK THIS CLAUSE").clickEvent(mark));
+            pages.add(page);
+        }
     }
 
     private static ItemStack authoredBook(String title, String author, List<Component> pages) {
@@ -712,7 +784,7 @@ public final class PrivateSliceWorld {
             Material physicalMaterial, Presentation presentation) {
         Cell cell = new Cell(x, y, z);
         if (physicalMaterial == Material.CHISELED_BOOKSHELF) {
-            directional(cell, physicalMaterial, "minecraft:chiseled_bookshelf[facing=" + facing + "]");
+            directional(cell, physicalMaterial, occupiedShelfData(facing));
         } else {
             expected.put(cell, physicalMaterial);
         }
@@ -753,7 +825,7 @@ public final class PrivateSliceWorld {
             String surfaceId, String author, String format, String title, String kind,
             Material physicalMaterial, Presentation presentation) {
         Cell cell = new Cell(x, y, z);
-        directional(cell, physicalMaterial, "minecraft:chiseled_bookshelf[facing=" + facing + "]");
+        directional(cell, physicalMaterial, occupiedShelfData(facing));
         support(cell, new Cell(x, y - 1, z), "supported " + format);
         references.put(cell, new ReferenceSurface(cell, readerCell, surfaceId, author, format, title,
                 "Dynamic local-primary archive readback", physicalMaterial, presentation, kind));
@@ -798,6 +870,15 @@ public final class PrivateSliceWorld {
             String purpose) {
         directional(cell, material, blockData);
         cluster(clusterId, cell, purpose);
+    }
+
+    private void seat(String clusterId, Cell cell, Material material, String stairFacing, Cell workTarget,
+            String purpose) {
+        directionalCluster(clusterId, cell, material,
+                "minecraft:" + material.name().toLowerCase(Locale.ROOT)
+                        + "[facing=" + stairFacing + ",half=bottom,shape=straight,waterlogged=false]",
+                purpose);
+        seats.put(cell, new SeatSpec(stairFacing, workTarget, purpose));
     }
 
     private void waterComponent(String clusterId, int minX, int maxX, int minZ, int maxZ, String purpose) {
@@ -870,7 +951,7 @@ public final class PrivateSliceWorld {
                     + " submissions=" + submissions.size());
         }
         long lecterns = expected.values().stream().filter(material -> material == Material.LECTERN).count();
-        if (lecterns != 2) findings.add("v4 requires exactly two purpose-specific lecterns actual=" + lecterns);
+        if (lecterns != 2) findings.add("v5 preserves exactly two purpose-specific lecterns actual=" + lecterns);
         Set<String> formats = new LinkedHashSet<>();
         evidence.values().forEach(surface -> formats.add(surface.format()));
         Set<String> exactFormats = Set.of(
@@ -890,6 +971,35 @@ public final class PrivateSliceWorld {
         long environmental = evidence.size() - nativeBooks;
         if (nativeBooks != 4 || environmental != 4) {
             findings.add("evidence medium balance drift native_books=" + nativeBooks + " environmental=" + environmental);
+        }
+    }
+
+    private void checkSeats(List<String> findings) {
+        if (seats.size() != 22) findings.add("exact classified seat inventory expected=22 actual=" + seats.size());
+        for (Map.Entry<Cell, SeatSpec> row : seats.entrySet()) {
+            Cell cell = row.getKey();
+            SeatSpec seat = row.getValue();
+            String data = block(cell).getBlockData().getAsString();
+            if (!data.contains("facing=" + seat.stairFacing())) {
+                findings.add(cell + " seat facing drift expected=" + seat.stairFacing() + " actual=" + data);
+                continue;
+            }
+            int dx = seat.workTarget().x - cell.x;
+            int dz = seat.workTarget().z - cell.z;
+            int gazeX = switch (seat.stairFacing()) {
+                case "west" -> 1;
+                case "east" -> -1;
+                default -> 0;
+            };
+            int gazeZ = switch (seat.stairFacing()) {
+                case "north" -> 1;
+                case "south" -> -1;
+                default -> 0;
+            };
+            if (dx * gazeX + dz * gazeZ <= 0) {
+                findings.add(cell + " seat looks away from authored work/waiting target " + seat.workTarget());
+            }
+            if (seat.purpose().isBlank()) findings.add(cell + " seat has no classified workplace purpose");
         }
     }
 
@@ -953,6 +1063,12 @@ public final class PrivateSliceWorld {
 
     private static String lecternData(String facing) {
         return "minecraft:lectern[facing=" + facing + ",has_book=true,powered=false]";
+    }
+
+    private static String occupiedShelfData(String facing) {
+        return "minecraft:chiseled_bookshelf[facing=" + facing
+                + ",slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false"
+                + ",slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]";
     }
 
     private static List<Component> bookPages(String body) {
@@ -1074,6 +1190,10 @@ public final class PrivateSliceWorld {
         String canonical() { return supportCell + "|" + purpose; }
     }
 
+    private record SeatSpec(String stairFacing, Cell workTarget, String purpose) {
+        String canonical() { return stairFacing + "|" + workTarget + "|" + purpose; }
+    }
+
     private record DecorativeCluster(String clusterId, String purpose, Set<Cell> cells) {
         String canonical() { return clusterId + "|" + purpose + "|" + cells.stream()
                 .sorted(Comparator.comparingInt(Cell::x).thenComparingInt(Cell::y).thenComparingInt(Cell::z))
@@ -1085,7 +1205,7 @@ public final class PrivateSliceWorld {
     public record Audit(int cellsChecked, List<String> findings, String worldHash,
             Map<Material, Integer> materialCounts, int evidenceSurfaceCount, int submissionSurfaceCount,
             int referenceSurfaceCount, int thresholdSignCount, int supportCount, int clusterCount,
-            int gateCollisionCells) {
+            int seatCount, int gateCollisionCells) {
         public boolean pass() { return findings.isEmpty(); }
         public String compositionSummary() {
             return "evidence=" + evidenceSurfaceCount + " submissions=" + submissionSurfaceCount
@@ -1093,7 +1213,8 @@ public final class PrivateSliceWorld {
                     + " signs=" + thresholdSignCount + " water=" + materialCounts.getOrDefault(Material.WATER, 0)
                     + " bookshelves=" + (materialCounts.getOrDefault(Material.CHISELED_BOOKSHELF, 0)
                     + materialCounts.getOrDefault(Material.BOOKSHELF, 0)) + " supports=" + supportCount
-                    + " clusters=" + clusterCount + " gate_collision=" + gateCollisionCells;
+                    + " clusters=" + clusterCount + " seats=" + seatCount
+                    + " gate_collision=" + gateCollisionCells;
         }
     }
 

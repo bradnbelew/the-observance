@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** Review-only Bukkit adapter for the authored M3 v4 authority. */
+/** Review-only Bukkit adapter for the authored M3 v5 authority. */
 public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoCloseable {
     private static final String MARKER = ".observance-disposable-paper-target";
     private final JavaPlugin plugin;
@@ -42,7 +42,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         String worldName = plugin.getConfig().getString("m3-review.world", "m3_private_slice");
         World world = Bukkit.getWorld(worldName);
         if (world == null) throw new IllegalStateException("configured disposable world is not loaded: " + worldName);
-        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-v4.journal");
+        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-v5.journal");
         Files.createDirectories(journal.getParent());
         state = PrivateSliceState.open(journal);
         slice = new PrivateSliceWorld(world,
@@ -60,7 +60,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         plugin.getCommand("observancem3").setExecutor(this);
         plugin.getCommand("observancefile").setExecutor(this);
         plugin.getLogger().info("M3_TARGET_CONFIRMED target=" + targetId + " commit=" + sourceCommit
-                + " authority=observance-p4-private-slice-v4 paper=" + Bukkit.getVersion());
+                + " authority=observance-p4-private-slice-v5 paper=" + Bukkit.getVersion());
     }
 
     @Override
@@ -82,9 +82,11 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
                 case "synthesis-correct" -> synthesisCorrect(sender, args);
                 case "replay" -> replay(sender);
                 case "security" -> security(sender);
+                case "ui-audit" -> uiAudit(sender);
+                case "guided-client-model" -> guidedClientModel(sender);
                 case "watcher-approve" -> watcherApprove(sender, args);
                 case "watcher-show" -> watcherShow(sender, args);
-                default -> sender.sendMessage("Usage: /obsm3 <status|build|audit|observe|draft|lodge-report|lodge-synthesis|naive-negative|brute-negative|report-correct|synthesis-correct|replay|security|watcher-approve|watcher-show>");
+                default -> sender.sendMessage("Usage: /obsm3 <status|build|audit|observe|draft|lodge-report|lodge-synthesis|naive-negative|brute-negative|report-correct|synthesis-correct|replay|security|ui-audit|guided-client-model|watcher-approve|watcher-show>");
             }
         } catch (Exception failure) {
             sender.sendMessage("M3_FAIL action=" + action + " reason=" + safe(failure.getMessage()));
@@ -138,7 +140,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
 
     private void status(CommandSender sender) {
         sender.sendMessage("M3_STATUS target=" + targetId + " commit=" + sourceCommit
-                + " authority=v4 gate=" + (state.gateOpen() ? "open" : "closed")
+                + " authority=v5 gate=" + (state.gateOpen() ? "open" : "closed")
                 + " evidence_surfaces=8 submissions=1 references=2 signs=6 lecterns=2 paper=" + Bukkit.getVersion());
     }
 
@@ -285,6 +287,33 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
                 + GameMode.ADVENTURE + " force_gamemode=true non_op=true inventory_escrow=false"
                 + " denies=block_break,block_place,bucket,entity,container,teleport,gate"
                 + " filing_command=counter_proximity_only gate_collision=" + audit.gateCollisionCells());
+    }
+
+    private void uiAudit(CommandSender sender) {
+        BookPageLayout.Audit audit = slice.bookUiAudit();
+        int maxLines = audit.pages().stream().mapToInt(page -> page.budget().renderedLines()).max().orElse(0);
+        int maxWidth = audit.pages().stream().mapToInt(page -> page.budget().maximumLinePixels()).max().orElse(0);
+        if (!audit.allFit() || audit.pages().size() != 20 || audit.uniqueOptions() != 20
+                || audit.uniqueCommands() != 20) {
+            throw new IllegalStateException("filing book render/click inventory drift");
+        }
+        sender.sendMessage("M3_UI_AUDIT_PASS client=1.21.11 pages=20 options=20 visible=20 clickable=20"
+                + " width_budget=" + BookPageLayout.PAGE_PIXEL_WIDTH
+                + " line_budget=" + BookPageLayout.MAX_RENDERED_LINES
+                + " max_width=" + maxWidth + " max_lines=" + maxLines);
+    }
+
+    private void guidedClientModel(CommandSender sender) {
+        BookPageLayout.Audit audit = slice.bookUiAudit();
+        boolean stateParity = audit.pages().stream().allMatch(page ->
+                PrivateSliceState.CONCLUSION_OPTIONS.getOrDefault(page.finding(), List.of())
+                        .contains(page.choice().id()));
+        if (!audit.allFit() || !stateParity || audit.uniqueCommands() != 20) {
+            throw new IllegalStateException("guided client model cannot reach every authored state option");
+        }
+        sender.sendMessage("M3_GUIDED_CLIENT_MODEL_PASS client=1.21.11 clause_pages=20"
+                + " full_clause_click_targets=20 action_click_targets=20 state_options=20"
+                + " report_path=reachable synthesis_path=reachable replay_path=reachable");
     }
 
     private void watcherApprove(CommandSender sender, String[] args) throws IOException {

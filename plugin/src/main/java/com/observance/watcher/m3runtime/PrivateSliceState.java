@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Local-primary evidence, content-dependent report, synthesis, and A2 state for M3 v4. */
+/** Local-primary evidence, content-dependent report, synthesis, and A2 state for M3 v5. */
 public final class PrivateSliceState {
     public static final List<String> BASE_FINDINGS = List.of("P4.F1", "P4.F2", "P4.F3", "P4.F4");
     public static final String SYNTHESIS = "P4.F5";
-    public static final String GATE_IDEMPOTENCY = "m3:p4:gate:P4_INTAKE_GATE:open:v4";
+    public static final String GATE_IDEMPOTENCY = "m3:p4:gate:P4_INTAKE_GATE:open:v5";
     public static final int REFUSAL_WINDOW_SECONDS = 300;
     public static final int MAX_REFUSALS_PER_WINDOW = 3;
     public static final String WATCHER_PAYLOAD_SHA256 =
@@ -94,9 +94,9 @@ public final class PrivateSliceState {
             throw new IllegalArgumentException("source is not authored for " + findingId + ": " + sourceId);
         }
         LocalPrimaryJournal.Receipt observation = journal.append(
-                "m3:p4:observation:" + sourceId + ":v4", "observation_committed",
+                "m3:p4:observation:" + sourceId + ":v5", "observation_committed",
                 bytes(findingId + "\n" + sourceId));
-        journal.append("m3:p4:observation-contribution:" + sourceId + ":" + contributorId + ":v4",
+        journal.append("m3:p4:observation-contribution:" + sourceId + ":" + contributorId + ":v5",
                 "observation_contribution_recorded", bytes(findingId + "\n" + sourceId + "\n" + contributorId));
         resetDerivedState();
         replay(journal.after(0));
@@ -179,8 +179,8 @@ public final class PrivateSliceState {
         sorted.sort(String::compareTo);
         byte[] findingPayload = bytes(findingId + "\n" + String.join(",", sorted) + "\n" + conclusionId);
         LocalPrimaryJournal.Receipt finding = journal.append(
-                "m3:p4:finding:" + findingId + ":v4", "finding_committed", findingPayload);
-        journal.append("m3:p4:contribution:" + findingId + ":" + contributorId + ":v4",
+                "m3:p4:finding:" + findingId + ":v5", "finding_committed", findingPayload);
+        journal.append("m3:p4:contribution:" + findingId + ":" + contributorId + ":v5",
                 "contribution_recorded", bytes(findingId + "\n" + contributorId));
         return finding;
     }
@@ -204,7 +204,7 @@ public final class PrivateSliceState {
 
     private void recordRefusal(String contributorId, long nowEpochSecond, String stage) throws IOException {
         long ordinal = journal.after(0).size() + 1L;
-        journal.append("m3:p4:report-refused:" + contributorId + ":" + ordinal + ":v4",
+        journal.append("m3:p4:report-refused:" + contributorId + ":" + ordinal + ":v5",
                 "report_refused", bytes(contributorId + "\n" + nowEpochSecond + "\n" + stage));
         resetDerivedState();
         replay(journal.after(0));
@@ -222,8 +222,8 @@ public final class PrivateSliceState {
         long duration = expiresAtEpochSecond - nowEpochSecond;
         if (duration < 60 || duration > 1800) throw new IllegalArgumentException("A2 approval must expire in 1-30 minutes");
         WatcherApproval approval = new WatcherApproval(approvalId, WATCHER_PAYLOAD_SHA256,
-                "m3-private-slice-v4/named-test-players", westTarget, eastTarget, expiresAtEpochSecond);
-        journal.append("m3:p4:watcher-approval:" + approvalId + ":v4", "watcher_approval_recorded",
+                "m3-private-slice-v5/named-test-players", westTarget, eastTarget, expiresAtEpochSecond);
+        journal.append("m3:p4:watcher-approval:" + approvalId + ":v5", "watcher_approval_recorded",
                 bytes(approval.serialize()));
         resetDerivedState();
         replay(journal.after(0));
@@ -243,7 +243,7 @@ public final class PrivateSliceState {
         if (!findingCommitted("P4.F3") || findingCommitted(SYNTHESIS)) {
             throw new IllegalStateException("A2 prerequisite no longer holds");
         }
-        journal.append("m3:p4:watcher-approval:" + approvalId + ":consumed:v4",
+        journal.append("m3:p4:watcher-approval:" + approvalId + ":consumed:v5",
                 "watcher_approval_consumed", bytes(approval.serialize()));
         resetDerivedState();
         replay(journal.after(0));
@@ -317,7 +317,7 @@ public final class PrivateSliceState {
 
     private void replayFinding(String payload) throws IOException {
         String[] fields = payload.split("\n", -1);
-        if (fields.length != 3) throw new IOException("invalid M3 v4 finding receipt");
+        if (fields.length != 3) throw new IOException("invalid M3 v5 finding receipt");
         requireFinding(fields[0]);
         Set<String> sources = normalizeSources(List.of(fields[1].split(",", -1)));
         if (!EXACT_CONCLUSIONS.get(fields[0]).equals(fields[2])) {

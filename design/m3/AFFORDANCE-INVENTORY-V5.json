@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0-m3-v5-affordance-inventory",
+  "authority_id": "observance-p4-v5-player-facing-inventory",
+  "slice_authority": "design/m3/vertical-slice-v5.json",
+  "scope": "focused overlay on V4; unchanged surfaces and architecture retain V4 authority",
+  "book_ui": {
+    "selectable_findings": 5,
+    "choices_per_finding": 4,
+    "selectable_option_pages": 20,
+    "click_targets_per_option": 2,
+    "page_width_pixels": 114,
+    "line_budget": 13,
+    "cross_page_options": 0,
+    "required_result": "all 20 complete clauses visible and clickable on Minecraft Java 1.21.11"
+  },
+  "interactive_shelf_inventory": [
+    {"surface_id":"SURVEY_REVISION_LETTER","cell":[31,-19,65],"material":"CHISELED_BOOKSHELF","facing":"west","slot_0":"WRITTEN_BOOK:Eda's Revision Cover"},
+    {"surface_id":"BERTH_REGISTER","cell":[24,-19,66],"material":"CHISELED_BOOKSHELF","facing":"south","slot_0":"WRITTEN_BOOK:Refuge Register - East Leaf"},
+    {"surface_id":"FOUNDING_ENGINEER_LETTER","cell":[29,-19,79],"material":"CHISELED_BOOKSHELF","facing":"west","slot_0":"WRITTEN_BOOK:Quill's Winter Letter"},
+    {"surface_id":"FIELD_ARCHIVE_READBACK","cell":[31,-19,83],"material":"CHISELED_BOOKSHELF","facing":"west","slot_0":"WRITTEN_BOOK:Examiner's Field Archive"}
+  ],
+  "seat_inventory": {
+    "total": 22,
+    "clusters": [
+      {"id":"MOUTH_WAITING_BENCHES","count":8,"relationship":"wall-backed; gaze toward examiner and shared road"},
+      {"id":"COPY_DESK_CHAIRS","count":4,"relationship":"gaze toward copy desks and working papers"},
+      {"id":"INTAKE_CLERK_CHAIRS","count":4,"relationship":"gaze toward berth and supply desks"},
+      {"id":"INTAKE_WAITING_BENCHES","count":6,"relationship":"wall-backed; gaze toward public counter"}
+    ]
+  },
+  "cold_player_interface_affordance": {
+    "status_before_human_review": "internally_authored_and_machine_checked_not_human_approved",
+    "readable_physical_language": [
+      "open book on lectern",
+      "visible book in occupied chiseled shelf",
+      "attached eye-level field record",
+      "plan on cartography table"
+    ],
+    "filing_physical_language": "one open findings ledger centered on the examiner's public counter",
+    "deduction_speed_requirement": null,
+    "difficulty_reduction": false
+  },
+  "approval": {"brad_visual_approval":null,"m4_authority":"closed","production_mutated":false}
+}

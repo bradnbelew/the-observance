@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.IOException;
 
-/** Distinct record-reading and single-ledger filing interactions for authored M3 v4. */
+/** Distinct record-reading and single-ledger filing interactions for authored M3 v5. */
 public final class PrivateSliceInteractionListener implements Listener {
     private final PrivateSliceWorld slice;
     private final PrivateSliceState state;

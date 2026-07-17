@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 from collections import Counter
 from pathlib import Path
 
@@ -21,6 +22,7 @@ RUNTIME = WORLD.with_name("PrivateSliceReviewRuntime.java")
 SELF_TEST = ROOT / "plugin" / "src" / "test" / "java" / "com" / "observance" / "watcher" / "m3runtime" / "PrivateSliceStateSelfTest.java"
 PLUGIN_YML = ROOT / "plugin" / "src" / "main" / "resources" / "plugin.yml"
 EXPECTED_AUTHORITY_SHA256 = "444926db844dfd5e06bd131a3c941a23b85a575c1b56ce09673f690aa5d88b3f"
+HISTORICAL_CHECKPOINT = "dbc45921a1b9a1ac207991901597d41021b214b5"
 
 
 def require(condition: bool, message: str) -> None:
@@ -34,6 +36,17 @@ def load(path: Path) -> dict:
 
 def canonical_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+
+
+def historical_bytes(path: Path) -> bytes:
+    relative = path.relative_to(ROOT).as_posix()
+    result = subprocess.run(["git", "show", f"{HISTORICAL_CHECKPOINT}:{relative}"], cwd=ROOT,
+                            check=True, capture_output=True)
+    return result.stdout
+
+
+def historical_text(path: Path) -> str:
+    return historical_bytes(path).decode("utf-8")
 
 
 def check_authority(authority: dict) -> None:
@@ -159,12 +172,12 @@ def check_inventory(authority: dict) -> None:
 
 
 def check_implementation(authority: dict) -> None:
-    world = WORLD.read_text(encoding="utf-8")
-    state = STATE.read_text(encoding="utf-8")
-    interaction = INTERACTION.read_text(encoding="utf-8")
-    runtime = RUNTIME.read_text(encoding="utf-8")
-    self_test = SELF_TEST.read_text(encoding="utf-8")
-    plugin_yml = PLUGIN_YML.read_text(encoding="utf-8")
+    world = historical_text(WORLD)
+    state = historical_text(STATE)
+    interaction = historical_text(INTERACTION)
+    runtime = historical_text(RUNTIME)
+    self_test = historical_text(SELF_TEST)
+    plugin_yml = historical_text(PLUGIN_YML)
     for token in (
         "authority=observance-p4-private-slice-v4", "m3-private-slice-v4.journal",
         "naiveNegative", "bruteNegative", "reportCorrect", "synthesisCorrect",
@@ -261,8 +274,8 @@ def check_receipts() -> None:
     canonical = bytearray()
     for row in manifest["files"]:
         path = ROOT / row["path"]
-        require(path.is_file(), f"v4 package file missing: {row['path']}")
-        require(canonical_sha256(path) == row["sha256"],
+        digest = hashlib.sha256(historical_bytes(path).replace(b"\r\n", b"\n")).hexdigest()
+        require(digest == row["sha256"],
                 f"v4 package file hash drift: {row['path']}")
         canonical.extend((row["path"] + "\n" + row["sha256"] + "\n").encode("utf-8"))
     require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],

@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
-/** Proves v4 content-dependent reports, negative flows, local gate, replay, and exact A2 approval. */
+/** Proves v5 content-dependent reports, page budgets, negative flows, replay, and exact A2 approval. */
 public final class PrivateSliceStateSelfTest {
     private static final String WATCHER_HASH =
             "3a2187bdc752b583d92ae47cb0a718b15c02ea2684b2b8fd2c2c8ccf88d9c10a";
@@ -19,7 +19,7 @@ public final class PrivateSliceStateSelfTest {
     private PrivateSliceStateSelfTest() { }
 
     public static void main(String[] args) throws Exception {
-        Path dir = Files.createTempDirectory("observance-m3-v4-slice-");
+        Path dir = Files.createTempDirectory("observance-m3-v5-slice-");
         Path path = dir.resolve("slice.journal");
         try {
             PrivateSliceState state = PrivateSliceState.open(path);
@@ -57,12 +57,12 @@ public final class PrivateSliceStateSelfTest {
             check(!afterNaiveRestart.gateOpen(), "four-clause report does not bypass synthesis");
 
             long now = 1_789_001_100L;
-            afterNaiveRestart.approveWatcher("brad-a2-v4", "WestReviewer", "EastReviewer", now + 600, now);
+            afterNaiveRestart.approveWatcher("brad-a2-v5", "WestReviewer", "EastReviewer", now + 600, now);
             expectIllegalState(() -> afterNaiveRestart.consumeWatcher(
-                    "brad-a2-v4", "Wrong", "EastReviewer", now + 1));
-            afterNaiveRestart.consumeWatcher("brad-a2-v4", "WestReviewer", "EastReviewer", now + 1);
+                    "brad-a2-v5", "Wrong", "EastReviewer", now + 1));
+            afterNaiveRestart.consumeWatcher("brad-a2-v5", "WestReviewer", "EastReviewer", now + 1);
             expectIllegalState(() -> afterNaiveRestart.consumeWatcher(
-                    "brad-a2-v4", "WestReviewer", "EastReviewer", now + 2));
+                    "brad-a2-v5", "WestReviewer", "EastReviewer", now + 2));
 
             afterNaiveRestart.selectDraft(PrivateSliceState.SYNTHESIS,
                     PrivateSliceState.CONCLUSION_OPTIONS.get(PrivateSliceState.SYNTHESIS).get(3), "brad");
@@ -87,8 +87,9 @@ public final class PrivateSliceStateSelfTest {
                     "restart preserves any-subset physical observation custody");
 
             approvalBoundary();
+            bookPageBudget();
             protectionSurface();
-            System.out.println("M3 private-slice v4 state self-test passed");
+            System.out.println("M3 private-slice v5 state self-test passed");
         } finally {
             Files.deleteIfExists(path);
             Files.deleteIfExists(dir);
@@ -156,6 +157,21 @@ public final class PrivateSliceStateSelfTest {
         check(!policy.permitsQueued(approved), "changed A2 payload fails exact approval");
     }
 
+    private static void bookPageBudget() {
+        List<BookPageLayout.Option> options = List.of(
+                new BookPageLayout.Option("A temporary quarry shelter abandoned after one winter.", "a"),
+                new BookPageLayout.Option("A planned civic intake for 294, not one emergency shelter.", "b"),
+                new BookPageLayout.Option("A private archive with no public refuge role.", "c"),
+                new BookPageLayout.Option("A natural cave mistaken for civic works.", "d"));
+        List<BookPageLayout.OptionPage> pages = BookPageLayout.optionPages(
+                "ACCOUNT SUPPORTED", "P4.F5", "b", options);
+        check(pages.size() == 4 && pages.stream().allMatch(page -> page.budget().fits()),
+                "every full synthesis clause has its own render-safe page");
+        check(pages.stream().map(BookPageLayout.OptionPage::command).distinct().count() == 4,
+                "every clause has one unique reachable filing command");
+        check(pages.get(1).marker().equals("[X] "), "selected clause remains visibly marked");
+    }
+
     private static void protectionSurface() throws Exception {
         String source = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceProtectionListener.java"));
         for (String required : List.of("BlockBreakEvent", "BlockPlaceEvent", "PlayerBucketEmptyEvent",
@@ -168,17 +184,18 @@ public final class PrivateSliceStateSelfTest {
                 "openFilingLedger", "Presentation.NATIVE_BOOK", "sendActionBar")) {
             check(interaction.contains(required), "player-facing interaction missing " + required);
         }
-        check(!interaction.contains("sendMessage("), "v4 evidence and filing feedback must not use chat");
+        check(!interaction.contains("sendMessage("), "v5 evidence and filing feedback must not use chat");
         String runtime = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceReviewRuntime.java"));
         for (String required : List.of("naiveNegative", "bruteNegative", "counter_proximity_only",
                 "ReportRefusedException", "FilingThrottleException")) {
-            check(runtime.contains(required), "v4 negative/security runtime missing " + required);
+            check(runtime.contains(required), "v5 negative/security runtime missing " + required);
         }
         String world = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java"));
-        for (String required : List.of("exactly two purpose-specific lecterns", "choicePage",
+        for (String required : List.of("exactly two purpose-specific lecterns", "addChoicePages",
                 "VISIBLE_ENVIRONMENTAL_RECORD", "nearFilingLedger", "checkWaterworks",
-                "checkCorridor", "checkImmersiveText", "GATE_CLOSED_COLLISION_CELLS = 88")) {
-            check(world.contains(required), "v4 authored world gate missing " + required);
+                "checkCorridor", "checkImmersiveText", "occupiedShelfData", "checkSeats",
+                "GATE_CLOSED_COLLISION_CELLS = 88")) {
+            check(world.contains(required), "v5 authored world gate missing " + required);
         }
     }
 

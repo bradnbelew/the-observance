@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0-m3-private-slice-v5",
+  "authority_id": "observance-p4-private-slice-v5",
+  "phase": "M3",
+  "status": "authored-v5-revision-not-player-facing",
+  "supersedes_runtime_authority": "design/m3/vertical-slice-v4.json",
+  "preserves_history": ["M3-v1", "M3-v2", "M3-v3", "M3-v4"],
+  "binding_inputs": [
+    "design/m3/BRAD-V4-REVIEW-DECISION.json",
+    "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "design/m3/vertical-slice-v4.json"
+  ],
+  "scope": {
+    "target": "fresh disposable localhost-only Paper 1.21.11",
+    "envelope": {"min": [-34,-24,-10], "max": [34,10,92], "cells": 248745},
+    "m4_authority": "closed",
+    "production_mutation": false,
+    "brad_visual_approval": null
+  },
+  "preserved_exact_contracts": [
+    "eight evidence surfaces in four paired findings",
+    "four-clause content-dependent report and separate synthesis",
+    "naive-click and bounded-brute negative flows",
+    "any-subset observation, replay, catch-up, restart and idempotency",
+    "local-primary journal and region survival policy",
+    "full-height full-width 88-cell closed controlled gate",
+    "working civic waterworks and bounded room/corridor envelope",
+    "exact A2 Watcher approval envelope"
+  ],
+  "difficulty_contract": {
+    "cold_read_status": "voluntarily_aborted_for_time_pressure_inconclusive",
+    "campaign_target_active_hours": [20,30],
+    "interface_rule": "Minecraft interaction targets and filing mechanics must be physically legible",
+    "deduction_rule": "conclusions remain dense, layered, technical, partial, contradictory, provenance-dependent and difficult",
+    "forbidden_simplifications": [
+      "tutorial signage", "chat scaffolding", "routine handholding", "solution-bearing labels",
+      "reduced layer count", "rapid-comprehension acceptance", "obvious answer rewriting"
+    ]
+  },
+  "book_ui": {
+    "supported_client": "Minecraft Java 1.21.11",
+    "font": "minecraft:default ASCII conservative advance model",
+    "page_pixel_width": 114,
+    "line_height_pixels": 9,
+    "maximum_rendered_lines": 13,
+    "option_page_policy": "one complete selectable clause per page",
+    "click_target_policy": "the complete clause and the explicit ledger action on that same page run the same exact command",
+    "no_cross_page_option": true,
+    "findings": [
+      {"finding_id":"P4.F1","heading":"PUBLIC ROAD","choices":[
+        {"id":"two_separate_public_roads","label":"Two separate public roads served the Mouth."},
+        {"id":"one_road_loaded_down_empty_return","label":"One road carried loaded descent and empty return."},
+        {"id":"drainage_crews_only","label":"The road served drainage crews only."},
+        {"id":"no_cart_road_crossed","label":"No cart road crossed the threshold."}]},
+      {"finding_id":"P4.F2","heading":"WORKS CAMPAIGNS","choices":[
+        {"id":"single_emergency_build","label":"One emergency build produced every room."},
+        {"id":"two_campaigns_shelter_and_office","label":"Shelter and office were the only campaigns."},
+        {"id":"four_unrelated_repairs","label":"Four unrelated repairs made the visible joints."},
+        {"id":"three_campaigns_shelter_intake_commons","label":"Shelter, Intake, and Commons were three campaigns."}]},
+      {"finding_id":"P4.F3","heading":"SUPPORTED PLACES","choices":[
+        {"id":"328_people_including_work_berths","label":"328 people, including every work berth."},
+        {"id":"294_refuge_places_work_berths_excluded","label":"294 refuge places; work berths are excluded."},
+        {"id":"286_people_no_infirmary","label":"286 people; infirmary cots do not count."},
+        {"id":"300_people_equal_to_water_gauge","label":"300 people, equal to the water gauge."}]},
+      {"finding_id":"P4.F4","heading":"THE DOWN-CUT","choices":[
+        {"id":"concealment_from_public_road","label":"It concealed the works from the public road."},
+        {"id":"access_to_a_second_entrance","label":"It reached a second entrance."},
+        {"id":"downcut_for_stable_cover_shorter_winter_service","label":"Stable cover and shorter winter service required it."},
+        {"id":"accidental_quarry_breakthrough","label":"It followed an accidental quarry break."}]},
+      {"finding_id":"P4.F5","heading":"ACCOUNT SUPPORTED","choices":[
+        {"id":"temporary_quarry_shelter_abandoned_after_one_winter","label":"A temporary quarry shelter abandoned after one winter."},
+        {"id":"planned_civic_intake_for_294_not_single_emergency_shelter","label":"A planned civic intake for 294, not one emergency shelter."},
+        {"id":"private_archive_with_no_public_refuge_role","label":"A private archive with no refuge role."},
+        {"id":"natural_cave_later_mistaken_for_civic_works","label":"A natural cave mistaken for civic works."}]}
+    ]
+  },
+  "physical_affordances": {
+    "interactive_chiseled_shelves": [
+      {"surface_id":"SURVEY_REVISION_LETTER","cell":[31,-19,65],"facing":"west","occupied_slot":0},
+      {"surface_id":"BERTH_REGISTER","cell":[24,-19,66],"facing":"south","occupied_slot":0},
+      {"surface_id":"FOUNDING_ENGINEER_LETTER","cell":[29,-19,79],"facing":"west","occupied_slot":0},
+      {"surface_id":"FIELD_ARCHIVE_READBACK","cell":[31,-19,83],"facing":"west","occupied_slot":0}
+    ],
+    "natural_readable_surfaces": [
+      "open written book on the Intake examiner lectern",
+      "open findings ledger on the public filing counter",
+      "written books visibly inserted in every interactive chiseled shelf",
+      "attached eye-level field records",
+      "annotated plan on the cartography table"
+    ],
+    "interaction_language": "use the visible record itself; filing occurs only at the open counter ledger",
+    "chat_scaffolding": false
+  },
+  "seat_compositions": [
+    {"cluster":"MOUTH_WAITING_BENCHES","cells":[[-10,0,5],[-10,0,6],[-10,0,10],[-10,0,11]],"stair_facing":"west","seated_gaze":"east","purpose":"wall-backed view toward examiner and road"},
+    {"cluster":"MOUTH_WAITING_BENCHES","cells":[[10,0,5],[10,0,6],[10,0,10],[10,0,11]],"stair_facing":"east","seated_gaze":"west","purpose":"wall-backed view toward examiner and road"},
+    {"cluster":"COPY_DESK_CHAIRS","cells":[[23,-20,67],[25,-20,67],[23,-20,76],[25,-20,76]],"stair_facing":"south","seated_gaze":"north","purpose":"face the copy desks"},
+    {"cluster":"INTAKE_CLERK_CHAIRS","cells":[[10,-20,63],[13,-20,63],[10,-20,74],[13,-20,74]],"stair_facing":"north","seated_gaze":"south","purpose":"face the berth and supply desks"},
+    {"cluster":"INTAKE_WAITING_BENCHES","cells":[[8,-20,57],[11,-20,57],[14,-20,57]],"stair_facing":"north","seated_gaze":"south","purpose":"wall-backed view toward the public counter"},
+    {"cluster":"INTAKE_WAITING_BENCHES","cells":[[8,-20,77],[11,-20,77],[14,-20,77]],"stair_facing":"south","seated_gaze":"north","purpose":"wall-backed view toward the public counter"}
+  ],
+  "required_gates": [
+    "all 20 selectable clauses fit one page each and remain fully visible and clickable",
+    "all click commands map bijectively to exact state options",
+    "all interactive shelves have exact facing and occupied-slot state plus matching written-book inventory",
+    "every stair seat faces its authored work or waiting sightline",
+    "naive touch-all and bounded brute force advance no findings and never open the gate",
+    "guided UI model reaches all choices, report, synthesis, replay and gate paths",
+    "fresh Paper build, save, restart and re-audit preserve the exact state",
+    "human visual approval remains pending and M4 remains closed"
+  ]
+}
