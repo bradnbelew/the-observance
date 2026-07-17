@@ -6,13 +6,13 @@
     {"path": "design/m3/coarse-adjacency-v1.json", "sha256": "564225c0d9a2d015437f9722e5741e509b46837b6e194e6ca1cda860cea7f962"},
     {"path": "design/m3/vertical-slice-v1.json", "sha256": "bec5c50d7ab7b5c77a4db4a168fdd6e9035cd388790ea1a7178b6a9ff1f4491e"},
     {"path": "design/m3/vertical-slice-v2.json", "sha256": "3d8734673d309fc77903874605bb769cd76982f113adf9a6df81d93489666ec6"},
-    {"path": "design/m3/M3-PRIVATE-VERTICAL-SLICE.md", "sha256": "4ad6d37a40f20455a43d762fbba2293e1634a45e373d027c9e6f9a1693f9d179"},
-    {"path": "design/m3/BRAD-REVIEW-PACKAGE.md", "sha256": "30b6d96a7a7c21e671df905985dbc2f9beb3a64f287bb61e76cb3e0b5f90dafe"},
+    {"path": "design/m3/M3-PRIVATE-VERTICAL-SLICE.md", "sha256": "84c5479daed01700aadd5403e4e605a51e0daa4b78886a95692caa041baa1f46"},
+    {"path": "design/m3/BRAD-REVIEW-PACKAGE.md", "sha256": "308686ee6ae9c6ffb39e4f0e8450ee59e0e930f1f6bcd3fe53f5218871c3fd21"},
     {"path": "design/m3/PAPER-DISPOSABLE-RECEIPT.json", "sha256": "e1fb3f3f5e700bcefa3b2adca353aadc9de3e7730430dc3c89c318608def1af3"},
     {"path": "design/m3/PAPER-REVIEW-SERVER-RECEIPT.json", "sha256": "1df92620c03cda28f5fcf9e49a10eb8547681dc4d80fea68a69139f3fddc15ce"},
     {"path": "tools/sim_m3_vertical_slice.py", "sha256": "413f3c1fae1b15dde39ea27fef2098379ff051d3d170067046c46c13b206c5cd"},
     {"path": "tools/run_m3_disposable_paper.py", "sha256": "ee227e12b2f2889154460171751d991bc093cf84bdfb73d7711a6c96e20a4887"},
-    {"path": "tools/check_m3_vertical_slice.py", "sha256": "8b172c7237128a9762c18e8b657b7032065bf769f5f1ca39674a207cf0b58244"},
+    {"path": "tools/check_m3_vertical_slice.py", "sha256": "5416c8b2e7fd915a4c6d9d94f41ab904939eee7ae540ec47e20bc47a7a562ac0"},
     {"path": "plugin/src/main/java/com/observance/watcher/ObservancePlugin.java", "sha256": "06af2a46a5763866e09eb0bdace3b526f07a315317901b93f1f41ab25331782a"},
     {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceState.java", "sha256": "5a35edfd650373c36b968e1b2a3f0f98ee2e7016c97f35461d04237f535be960"},
     {"path": "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java", "sha256": "5e01957d7a8b6861614fc12cc7686a8f0b93cc1566438c1cd29efb3d0bfc1132"},
@@ -23,7 +23,7 @@
     {"path": "plugin/src/main/resources/config.yml", "sha256": "811d52824e2be5c987d471089acc55061f85b12d8095b422e3af96106b201107"},
     {"path": "plugin/src/main/resources/plugin.yml", "sha256": "248ea4ab83f860aabcde2cbfad658a5c0dfec87e1d89c1c8aeacd82382a8e88c"}
   ],
-  "package_set_sha256": "264bc6a4cb3365cf7d68962551f3d16b38fdb36379236dd0a3f92e0a2860c8ad",
+  "package_set_sha256": "6d63b4f74443833e893dd073ac250f9dc90cde2f9e3c1aff1ebece0eeec92f26",
   "canonical_integration_commit": "69d729460382576d07676103b54048b1a648c412",
   "authored_source_commit": "bc71730820937843be65384ba589d3761780f048",
   "validation_source_git_commit": "a8bb86a7b96904710675752181a10ca96ac09ceb",
@@ -36,5 +36,7 @@
   "review_world_package_sha256": "d0597ce6643b5d1afcec05f2594eaa329659079123ebdf99a21bdb1ce29b8082",
   "brad_visual_approval_receipt": null,
   "brad_visual_status": "pending_re_review_after_revision",
+  "brad_review_state": "in_progress_binding_findings_recorded_not_approved",
+  "implementation_state": "paused_until_full_feedback_pass_complete",
   "m4_authority": "closed"
 }

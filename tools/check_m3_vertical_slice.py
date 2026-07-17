@@ -256,6 +256,9 @@ def check_package_manifest(manifest: dict) -> None:
     require(manifest["brad_visual_approval_receipt"] is None
             and manifest["brad_visual_status"] == "pending_re_review_after_revision",
             "package fabricates Brad approval or loses pending re-review")
+    require(manifest["brad_review_state"] == "in_progress_binding_findings_recorded_not_approved"
+            and manifest["implementation_state"] == "paused_until_full_feedback_pass_complete",
+            "active Brad review findings/pause state lost")
     require(manifest["validation_source_git_commit"] == receipt["source_git_commit"],
             "validation source checkpoint drift")
     review = load(M3 / "PAPER-REVIEW-SERVER-RECEIPT.json")

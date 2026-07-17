@@ -1,6 +1,6 @@
 # Brad Review Package — M3 P4 Slice V2
 
-Status: **AUTHORED REVISION CANDIDATE; RE-REVIEW PENDING**
+Status: **V2 REVIEW IN PROGRESS; ADDITIONAL BINDING FINDINGS RECORDED; NOT APPROVED**
 
 This is one private localhost review. It is not a campaign save and must never be linked or distributed
 to players. The rejected v1 decision below remains part of the record; this package asks for a new walk,
@@ -52,6 +52,26 @@ not retroactive approval.
 - [ ] actual non-op Adventure join/protection attempts;
 - [ ] actual solo accessibility and optional approved two-client A2 view.
 
+## V2 walk findings — in progress, 2026-07-16
+
+Brad has **not** completed or approved this review. The following observations are binding inputs to the
+next revision, but implementation must not begin until Brad declares the full feedback pass complete:
+
+- Evidence lecterns emit authored text into chat instead of containing or visibly presenting authored
+  in-world books or records.
+- The block palette and detail improved over v1 but remain below final-quality composition.
+- Some signs are visibly shoved into walls.
+- Some blocks appear out of place rather than belonging to the architectural composition.
+- Evidence text is hard to understand and/or overused.
+- Labels such as “this is the entrance and exit” are immersion-breaking handholding. Circulation must
+  communicate through architecture, thresholds, light, material, and sightline—not explanatory labels.
+- Brad cannot naturally identify the investigation/puzzle or tell whether it has actually been built.
+
+Binding interpretation: the technical observation/filing state machine exists and its automated receipts
+remain valid, but the player-facing investigation is not yet fully authored or legible in-world. This is
+not a final visual decision and does not authorize implementation while the walk is active. Keep the live
+localhost review server unchanged until Brad says the feedback pass is complete.
+
 ## Preserved v1 decision record
 
 Brad's first-pass visual decision on 2026-07-16 was **NOT APPROVED — FAILED / REVISION REQUIRED**.
@@ -60,7 +80,7 @@ made of barrels/andesite/planks; confusing blocked right entrance; weak entrance
 a half iron-bar threshold that did not read or collide as a real gate. `vertical-slice-v1.json` and the
 earlier receipt remain preserved evidence of that pass.
 
-Current Brad visual approval: **NONE — V2 RE-REVIEW PENDING**
+Current Brad visual approval: **NONE — V2 REVIEW IN PROGRESS WITH BINDING FINDINGS**
 
 M4 district implementation authority: **CLOSED.** Only a new explicit Brad approval after this v2 walk
 can open it.

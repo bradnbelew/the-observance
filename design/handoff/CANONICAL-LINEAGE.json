@@ -81,11 +81,29 @@
       "validation_status": "passed"
     },
     "unresolved": [
-      "Brad has not yet walked or approved v2",
+      "Brad's v2 walk is in progress and has not approved v2",
       "actual non-op client protection attempts remain unreceipted",
       "solo accessibility and optional approved two-client A2 presentation remain unreceipted"
     ],
     "supersession": "v2 supersedes v1 only as the current revision candidate; v1's failed decision remains historical evidence and no automated receipt opens M4"
+  },
+  "active_brad_review": {
+    "date": "2026-07-16",
+    "status": "in_progress_binding_findings_recorded_not_approved",
+    "brad_visual_approval": null,
+    "implementation_state": "paused_until_full_feedback_pass_complete",
+    "live_server_directive": "do_not_mutate_or_stop_while_brad_continues_walk",
+    "findings": [
+      "evidence lecterns emit text into chat instead of visibly presenting authored in-world books or records",
+      "block palette and detail improved but remain below final quality",
+      "some signs are visibly shoved into walls",
+      "some blocks appear out of place",
+      "evidence text is hard to understand and/or overused",
+      "explanatory entrance/exit signage is immersion-breaking handholding; circulation must communicate architecturally",
+      "the investigation or puzzle is not naturally identifiable as built"
+    ],
+    "interpretation": "technical observation and filing state exists, but the player-facing investigation is not yet fully authored or legible in-world",
+    "m4_authority": "closed"
   },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",

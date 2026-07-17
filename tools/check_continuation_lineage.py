@@ -83,6 +83,17 @@ def main() -> None:
                       revision["validation_receipt"], revision["review_target_receipt"]):
         require((ROOT / authority).is_file(), f"missing M3 revision lineage authority: {authority}")
 
+    active = data["active_brad_review"]
+    require(active["status"] == "in_progress_binding_findings_recorded_not_approved"
+            and active["brad_visual_approval"] is None and active["m4_authority"] == "closed",
+            "active Brad review approval/M4 gate drift")
+    require(active["implementation_state"] == "paused_until_full_feedback_pass_complete"
+            and active["live_server_directive"] == "do_not_mutate_or_stop_while_brad_continues_walk",
+            "active-review pause or live-server preservation directive lost")
+    require(len(active["findings"]) == 7
+            and "not yet fully authored or legible in-world" in active["interpretation"],
+            "active Brad findings or binding interpretation drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False and "Brad's new in-game visual decision" in gate["required_next_evidence"],
             "M3 rejection gate weakened")

@@ -1,6 +1,6 @@
 # M3 — Authored P4 Private Vertical Slice Revision
 
-Status: **V2 AUTHORED REVISION AND FRESH PAPER RECEIPTS COMPLETE; BRAD RE-REVIEW REQUIRED**
+Status: **V2 PAPER RECEIPTS COMPLETE; BRAD REVIEW IN PROGRESS WITH BINDING PLAYER-FACING FINDINGS**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
 architecture → M2 technical contracts → this file. `vertical-slice-v1.json` remains the exact rejected
@@ -118,3 +118,14 @@ Record, Watcher, or Averyn.
 - [ ] Brad's explicit revised visual decision.
 
 M4 remains closed regardless of automated passes until the final unchecked Brad decision exists.
+
+## Active v2 review overlay
+
+Brad's 2026-07-16 v2 walk is still in progress and has no approval. The automated structural and state
+receipts remain exact, but they do not prove that the experience communicates itself to a player. The
+binding interim findings are recorded verbatim in `BRAD-REVIEW-PACKAGE.md`: lecterns present evidence
+through chat instead of visible in-world records; palette/detail still needs final-quality authorship;
+signs intersect walls; some blocks feel misplaced; evidence prose is difficult and/or overused;
+explanatory circulation labels break immersion; and the investigation is not naturally identifiable as
+a built puzzle. Do not revise from a partial feedback pass, mutate the live review world, infer approval,
+or open M4.
