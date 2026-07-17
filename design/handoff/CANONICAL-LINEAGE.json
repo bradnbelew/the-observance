@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0-continuation-lineage",
+  "checkpoint_identity": {
+    "branch": "codex/m3-disposable-paper-gate",
+    "commit": "the commit containing this lineage file",
+    "purpose": "canonical linear integration checkpoint before the rejected M3 slice is revised",
+    "production_mutated": false,
+    "m4_authority": "closed"
+  },
+  "starting_authority": {
+    "commit": "8f938e0558b545a33039bb112ad091cf511a6ffe",
+    "subject": "docs: record failed M3 visual review",
+    "structural_receipt_commit": "1f3ca9040ff383049d13033dbe42411158c5be70",
+    "visual_decision": "failed_revision_required_2026-07-16",
+    "current_authority": true
+  },
+  "incorporated_evidence": [
+    {
+      "source_branch": "codex/m2-supabase-validation",
+      "source_commit": "84899e0d367c8ad6151ea74b0c338e92ac8a9b7c",
+      "linear_commit": "9298f155f813d39de75e15a0e298cc1c491b3e24",
+      "authority": "design/m2/M2-SUPABASE-VALIDATION.md",
+      "receipt": "local-only validation guard self-test and committed SQL/pgTAP/advisor harness inputs",
+      "unresolved": [
+        "no executable Supabase CLI or Docker target was available",
+        "no disposable branch or local database application receipt exists",
+        "database tests, both advisors, rollback, and forward receipts remain open"
+      ],
+      "supersession": "adds safe validation tooling; does not supersede M2 contracts or claim a database receipt"
+    },
+    {
+      "source_branch": "codex/m3-external-gap-audit",
+      "source_commit": "a6069aabae705f18255428f612476552c8770e33",
+      "linear_commit": "9fd1e65bfb52de751478a8e4075a35c60674f8dc",
+      "authority": "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
+      "receipt": "read-only platform and media-custody observations dated 2026-07-16",
+      "unresolved": [
+        "Railway worker and recovery identities/configuration remain unauthenticated",
+        "no exact-checkpoint Vercel preview receipt exists",
+        "Crafty identity and live Paper runtime evidence remain unavailable",
+        "media best-master, ownership, AV/accessibility review, and Brad decisions remain open"
+      ],
+      "supersession": "latest read-only external-gap evidence at integration time; does not supersede later Paper structural or Brad visual-decision authority"
+    }
+  ],
+  "authority_precedence": [
+    "design/handoff/SPINE-LOCK.md",
+    "design/handoff/SPINE-CONFORMANCE.md",
+    "approved Phase 1 authorities",
+    "approved Phase 2 evidence authorities",
+    "design/m2/M2-TECHNICAL-CONTRACTS.md",
+    "design/m2/M2-SUPABASE-VALIDATION.md",
+    "design/m3/M3-PRIVATE-VERTICAL-SLICE.md",
+    "design/m3/PAPER-DISPOSABLE-RECEIPT.json",
+    "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
+    "design/m3/BRAD-REVIEW-PACKAGE.md",
+    "design/handoff/PHASE-CHECKPOINTS.md"
+  ],
+  "supersession_rules": [
+    {
+      "older": "M3 structural Paper receipt",
+      "newer": "Brad failed visual decision",
+      "effect": "structural evidence remains valid but cannot open M4 or imply visual approval"
+    },
+    {
+      "older": "M2 statement that no disposable Supabase harness existed",
+      "newer": "M2 local-only guard and lifecycle harness",
+      "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
+    },
+    {
+      "older": "Phase 1 media location unknown",
+      "newer": "M3 read-only external-gap audit",
+      "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
+    }
+  ],
+  "current_gate": {
+    "phase": "M3 private vertical slice revision",
+    "m4_open": false,
+    "required_next_evidence": [
+      "authored replacement addressing every Brad visual finding",
+      "fresh disposable Paper 1.21.11 closed/open and restart/replay receipts",
+      "non-op Adventure and protected interaction receipts where locally automatable",
+      "two-client asymmetry and solo/accessibility evidence or an explicit honest external gap",
+      "Brad's new in-game visual decision"
+    ]
+  }
+}

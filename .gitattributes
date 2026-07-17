@@ -6,11 +6,12 @@ design/m2/** text eol=lf
 design/m3/** text eol=lf
 discord/supabase/seeds/v5_investigations.sql text eol=lf
 
-# The M3 package manifest hashes exact source bytes; keep its package inputs stable on Windows.
-design/m3/coarse-adjacency-v1.json text eol=lf
-design/m3/vertical-slice-v1.json text eol=lf
-design/m3/M3-PRIVATE-VERTICAL-SLICE.md text eol=lf
-design/m3/BRAD-REVIEW-PACKAGE.md text eol=lf
+# The M3 package manifest hashes exact source bytes; keep every non-design package input stable.
+tools/check_m3_vertical_slice.py text eol=lf
+tools/run_m3_disposable_paper.py text eol=lf
 tools/sim_m3_vertical_slice.py text eol=lf
-plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceState.java text eol=lf
-plugin/src/test/java/com/observance/watcher/m3runtime/PrivateSliceStateSelfTest.java text eol=lf
+plugin/src/main/java/com/observance/watcher/ObservancePlugin.java text eol=lf
+plugin/src/main/java/com/observance/watcher/m3runtime/*.java text eol=lf
+plugin/src/test/java/com/observance/watcher/m3runtime/*.java text eol=lf
+plugin/src/main/resources/config.yml text eol=lf
+plugin/src/main/resources/plugin.yml text eol=lf

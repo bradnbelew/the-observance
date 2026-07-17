@@ -21,6 +21,10 @@ idempotency, and both security/performance advisors, then writes exact local CLI
 Docker and an installed official Supabase CLI are prerequisites. `-SelfTest` exercises only its guards
 and committed inputs and never starts or contacts a database.
 
+`check_continuation_lineage.py` validates the canonical M3 continuation ledger: both completed sibling
+evidence commits and their linear incorporation commits, preserved unresolved gaps and supersession,
+the failed Brad visual decision as current authority, and the still-closed M4 gate.
+
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,
 the hosted resource-pack bytes and external media are checked, and release-tool self-tests run. A passing tool run is still not a substitute for the real Paper,

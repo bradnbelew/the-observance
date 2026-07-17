@@ -5,6 +5,11 @@ Status: **CURRENT CONTINUATION LEDGER**
 This file is updated and committed at every autonomous phase boundary. A phase is not complete merely
 because it appears here; its linked authorities and checks must independently prove the claim.
 
+The canonical pre-revision integration lineage is `CANONICAL-LINEAGE.json`. It preserves the original
+source commits, their linear incorporation commits, exact receipt scope, unresolved gaps, supersession,
+and the failed Brad decision as current M3 authority. `python tools/check_continuation_lineage.py`
+validates that chain. The integration checkpoint is the commit containing that lineage file.
+
 | Phase | Status | Durable evidence | Verification | Checkpoint |
 | --- | --- | --- | --- | --- |
 | Phase 0 — Spine and authority control | Complete; Brad approved 2026-07-15 | `SPINE-CONFORMANCE.md`, `PHASE-0-AUTHORITY-AUDIT.md` | V5 freshness, repository integrity, current content/predicate checks | Branch `codex/phase-1-architecture`; foundation commit `6cc1361`, approval record commit `e18d502` |
