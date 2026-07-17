@@ -1,6 +1,6 @@
 # M3 — Authored P4 Private Vertical Slice Revision
 
-Status: **V2 PAPER RECEIPTS COMPLETE; BRAD REVIEW IN PROGRESS WITH BINDING PLAYER-FACING FINDINGS**
+Status: **V2 NOT APPROVED / REVISION REQUIRED; M4 CLOSED; V3 BLOCKED UNTIL REVIEW SERVER CLEAN STOP**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
 architecture → M2 technical contracts → this file. `vertical-slice-v1.json` remains the exact rejected
@@ -129,3 +129,18 @@ signs intersect walls; some blocks feel misplaced; evidence prose is difficult a
 explanatory circulation labels break immersion; and the investigation is not naturally identifiable as
 a built puzzle. Do not revise from a partial feedback pass, mutate the live review world, infer approval,
 or open M4.
+
+The next active-review batch adds misoriented chiseled bookshelves, an embedded and misoriented lectern,
+unsupported shelves, an unexplained turquoise floating block, an unexplained stone floor oval, an awkward
+return hallway, and signage above player eye level. `BRAD-V2-ACTIVE-REVIEW.json` is the current
+machine-readable rejection/revision overlay. It blocks acceptance and specifies the directional-state,
+non-overlap, support/attachment, classified-composition, decorative-purpose, eye-height legibility, and
+corridor/threshold sightline checks that the next revision must implement after feedback closes.
+
+Brad completed the v2 review on 2026-07-16 with **NOT APPROVED / REVISION REQUIRED**. The final authority
+is `BRAD-V2-REVIEW-DECISION.json`. V2's palette/detail improvement and controlled gate are preserved
+baselines, not discarded work. Waterworks still require a self-evidently functional composition;
+embedded and reverse-facing signs remain broken; and general polish remains open. Brad approval is null
+and M4 is closed. Brad's disconnect and the review server's clean save/flush/stop are now proven by
+`PAPER-V2-REVIEW-STOP-RECEIPT.json`; the focused v3 revision may begin only after this complete v2
+rejection record is committed as a clean checkpoint.

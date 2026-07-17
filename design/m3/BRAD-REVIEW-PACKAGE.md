@@ -1,6 +1,6 @@
 # Brad Review Package — M3 P4 Slice V2
 
-Status: **V2 REVIEW IN PROGRESS; ADDITIONAL BINDING FINDINGS RECORDED; NOT APPROVED**
+Status: **NOT APPROVED — REVISION REQUIRED; V2 REVIEW COMPLETE**
 
 This is one private localhost review. It is not a campaign save and must never be linked or distributed
 to players. The rejected v1 decision below remains part of the record; this package asks for a new walk,
@@ -72,6 +72,42 @@ remain valid, but the player-facing investigation is not yet fully authored or l
 not a final visual decision and does not authorize implementation while the walk is active. Keep the live
 localhost review server unchanged until Brad says the feedback pass is complete.
 
+### Next active-review findings — verbatim
+
+- chiseled bookshelves face away from the room center, hiding their book-face visual;
+- a lectern in the library/copy-office-like room is embedded/jammed inside another block and faces the wrong direction;
+- some bookshelves float without believable support;
+- an unexplained floating turquoise block is visible;
+- an unexplained stone oval on the floor is visible;
+- the connecting hallway back to the main room feels awkward/weird;
+- a sign is mounted far above player eye level for no clear reason.
+
+`BRAD-V2-ACTIVE-REVIEW.json` makes these mandatory next-revision gates where machine enforcement is
+feasible: exact directional block states; lectern non-overlap, facing, reader cell, and interaction ray;
+furnishing support/attachment; no unclassified floating blocks; a bounded authored purpose for every
+decorative cluster; player-eye-height sign facing/sightline; and composed corridor width, thresholds, and
+reciprocal sightlines. Current v2 is explicitly noncompliant. These specifications do not authorize
+implementation before the control room declares the feedback pass complete.
+
+## Final v2 decision — 2026-07-16
+
+Brad's decision is **NOT APPROVED / REVISION REQUIRED**. Preserve v1 and v2 history; do not discard v2.
+V2 materially improved the palette/detail, and its full-height/full-width controlled gate is much better
+and must remain the no-regression baseline.
+
+Final-pass findings:
+
+- waterworks are much better than v1 but still feel somewhat random rather than self-evidently functional;
+- gate is much better and should be preserved as the baseline;
+- multiple signs are embedded/shoved into walls and look broken;
+- the back wall of the Mouth opening has a reverse-facing sign that cannot be read;
+- no other obvious major defects were found in the final pass, though general polish can improve.
+
+`BRAD-V2-REVIEW-DECISION.json` combines these with every earlier v2 finding and defines the mandatory v3
+machine gates. Brad visual approval remains null. M4 remains closed. Brad's disconnect was confirmed at
+21:46:14; the disposable server completed save/flush and normal Paper shutdown at 21:57:03–05; PID 28448
+and port 25580 ended. `PAPER-V2-REVIEW-STOP-RECEIPT.json` preserves the exact evidence and hashes.
+
 ## Preserved v1 decision record
 
 Brad's first-pass visual decision on 2026-07-16 was **NOT APPROVED — FAILED / REVISION REQUIRED**.
@@ -80,7 +116,7 @@ made of barrels/andesite/planks; confusing blocked right entrance; weak entrance
 a half iron-bar threshold that did not read or collide as a real gate. `vertical-slice-v1.json` and the
 earlier receipt remain preserved evidence of that pass.
 
-Current Brad visual approval: **NONE — V2 REVIEW IN PROGRESS WITH BINDING FINDINGS**
+Current Brad visual approval: **NONE — V2 NOT APPROVED / REVISION REQUIRED**
 
 M4 district implementation authority: **CLOSED.** Only a new explicit Brad approval after this v2 walk
 can open it.

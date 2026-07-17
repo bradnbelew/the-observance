@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 M3 = ROOT / "design" / "m3"
 M2 = ROOT / "design" / "m2"
 AUTHORITY = M3 / "vertical-slice-v2.json"
+ACTIVE_REVIEW = M3 / "BRAD-V2-ACTIVE-REVIEW.json"
+FINAL_V2_DECISION = M3 / "BRAD-V2-REVIEW-DECISION.json"
+V2_STOP_RECEIPT = M3 / "PAPER-V2-REVIEW-STOP-RECEIPT.json"
 
 
 def require(condition: bool, message: str) -> None:
@@ -254,11 +257,14 @@ def check_package_manifest(manifest: dict) -> None:
     require(manifest["paper_world_tree_sha256"] == receipt["world_tree_sha256"], "world tree drift")
     require(manifest["paper_world_package_sha256"] == receipt["world_package_sha256"], "world package drift")
     require(manifest["brad_visual_approval_receipt"] is None
-            and manifest["brad_visual_status"] == "pending_re_review_after_revision",
-            "package fabricates Brad approval or loses pending re-review")
-    require(manifest["brad_review_state"] == "in_progress_binding_findings_recorded_not_approved"
-            and manifest["implementation_state"] == "paused_until_full_feedback_pass_complete",
-            "active Brad review findings/pause state lost")
+            and manifest["brad_visual_status"] == "not_approved_revision_required",
+            "package fabricates Brad approval or loses final v2 rejection")
+    require(manifest["brad_review_state"] == "complete_not_approved_revision_required"
+            and manifest["implementation_state"]
+            == "ready_for_v3_after_clean_v2_rejection_checkpoint"
+            and manifest["brad_review_finding_count"] == 17
+            and manifest["mandatory_next_revision_check_count"] == 12,
+            "final Brad v2 findings, v3 checks, or pause state lost")
     require(manifest["validation_source_git_commit"] == receipt["source_git_commit"],
             "validation source checkpoint drift")
     review = load(M3 / "PAPER-REVIEW-SERVER-RECEIPT.json")
@@ -282,6 +288,91 @@ def check_package_manifest(manifest: dict) -> None:
             "prepared review target did not pass closed structural/security audit")
 
 
+def check_active_review() -> None:
+    review = load(ACTIVE_REVIEW)
+    require(review["schema_version"] == "1.0.0-m3-active-brad-review"
+            and review["review_status"] == "in_progress_not_approved"
+            and review["brad_visual_approval"] is None and review["m4_authority"] == "closed",
+            "active Brad review identity/approval/M4 gate drift")
+    require(review["implementation_state"]
+            == "paused_until_control_room_declares_full_feedback_pass_complete"
+            and review["live_server_directive"] == "do_not_mutate_or_stop",
+            "active-review implementation pause or live-server directive lost")
+    findings = [finding for batch in review["finding_batches"] for finding in batch["findings"]]
+    require(len(review["finding_batches"]) == 2 and len(findings) == 14,
+            "active Brad finding batches incomplete or duplicated")
+    require(review["current_v2_acceptance"] == "failed_pending_complete_feedback_and_revision"
+            and "not yet fully authored or legible in-world" in review["binding_interpretation"],
+            "current v2 acceptance block or binding interpretation drift")
+    expected = {
+        "M3.BRAD.DIRECTIONAL_BLOCK_STATES", "M3.BRAD.LECTERN_FOOTPRINT_FACING",
+        "M3.BRAD.FURNISHING_SUPPORT_ATTACHMENT", "M3.BRAD.NO_UNCLASSIFIED_FLOATING_BLOCKS",
+        "M3.BRAD.DECORATIVE_CLUSTER_PURPOSE", "M3.BRAD.SIGN_EYE_HEIGHT_LEGIBILITY",
+        "M3.BRAD.CORRIDOR_COMPOSITION_SIGHTLINES",
+    }
+    checks = review["mandatory_next_revision_checks"]
+    require({row["check_id"] for row in checks} == expected and len(checks) == len(expected),
+            "mandatory Brad next-revision machine checks incomplete or duplicated")
+    require(all(row["status"] == "specified_not_yet_implemented"
+                and row["current_v2_compliance"] is False and row["predicate"] for row in checks),
+            "current v2 compliance fabricated or a mandatory predicate is empty")
+
+
+def check_final_v2_decision() -> None:
+    decision = load(FINAL_V2_DECISION)
+    require(decision["schema_version"] == "1.0.0-m3-brad-v2-decision"
+            and decision["review_status"] == "complete"
+            and decision["decision"] == "not_approved_revision_required"
+            and decision["brad_visual_approval"] is None and decision["m4_authority"] == "closed",
+            "final Brad v2 rejection identity/approval/M4 gate drift")
+    require(len(decision["final_pass_findings_verbatim"]) == 5
+            and len(decision["combined_binding_findings"]) == 17,
+            "final or combined Brad v2 findings incomplete")
+    require(decision["v3_implementation_authority"]
+            == "blocked_until_review_server_saved_and_stopped_after_disconnect_confirmation",
+            "v3 implementation opened before review-server clean stop")
+    expected = {
+        "M3.V3.DIRECTIONAL_BLOCK_STATES", "M3.V3.SUPPORT_ATTACHMENT",
+        "M3.V3.PLAYER_EYE_SIGNAGE", "M3.V3.LECTERN_BOOK", "M3.V3.NON_OVERLAP",
+        "M3.V3.NO_UNCLASSIFIED_FLOATING_BLOCKS", "M3.V3.IMMERSIVE_TEXT",
+        "M3.V3.EVIDENCE_IN_BOOK", "M3.V3.INVESTIGATION_LEGIBILITY",
+        "M3.V3.WATERWORKS_FUNCTION", "M3.V3.CORRIDOR_THRESHOLD_SIGHTLINES",
+        "M3.V3.GATE_NO_REGRESSION",
+    }
+    checks = decision["v3_required_machine_checks"]
+    require({row["check_id"] for row in checks} == expected and len(checks) == 12
+            and all(row["predicate"] for row in checks),
+            "mandatory v3 machine checks incomplete, duplicated, or empty")
+    gate = next(row for row in checks if row["check_id"] == "M3.V3.GATE_NO_REGRESSION")
+    require("11-wide by 8-high" in gate["predicate"] and "88 closed and 0 open" in gate["predicate"],
+            "v2 controlled-gate baseline weakened")
+
+
+def check_v2_stop_receipt() -> None:
+    receipt = load(V2_STOP_RECEIPT)
+    require(receipt["schema_version"] == "1.0.0-m3-v2-review-stop-receipt"
+            and receipt["scope"] == "disposable localhost Paper review target only"
+            and receipt["target_id"] == "m3-v2-brad-review-2ca4c39-20260717-b",
+            "v2 review-server stop receipt identity drift")
+    require(receipt["disconnect_evidence"] == [
+        "[21:46:14] [Server thread/INFO]: SirNan lost connection: Disconnected",
+        "[21:46:14] [Server thread/INFO]: SirNan left the game",
+    ], "Brad disconnect evidence drift")
+    readback = receipt["post_stop_readback"]
+    require(readback["pid_28448_alive"] is False and readback["port_25580_listener_count"] == 0
+            and receipt["result"] == "clean_save_flush_stop_verified",
+            "v2 review server is not receipted as cleanly stopped")
+    require(receipt["production_mutated"] is False and receipt["brad_visual_approval"] is None
+            and receipt["brad_v2_decision"] == "not_approved_revision_required"
+            and receipt["m4_authority"] == "closed",
+            "stop receipt fabricated production mutation, Brad approval, or M4 authority")
+    require(len(receipt["review_log_sha256"]) == 64
+            and len(receipt["post_review_journal_sha256"]) == 64
+            and receipt["post_review_world_tree_file_count"] == 47
+            and len(receipt["post_review_world_tree_sha256"]) == 64,
+            "post-review hash receipt incomplete")
+
+
 def main(authority_only: bool = False) -> None:
     authority = load(AUTHORITY)
     require(authority["authority_id"] == "observance-p4-private-slice-v2"
@@ -293,10 +384,13 @@ def main(authority_only: bool = False) -> None:
     check_composition(authority)
     receipt = check_geometry_and_gate(authority)
     check_state_security(authority)
+    check_active_review()
+    check_final_v2_decision()
+    check_v2_stop_receipt()
     if not authority_only:
         check_package_manifest(load(M3 / "package-manifest.json"))
     scope = "authority-only / Paper receipt pending" if authority_only else "complete package"
-    print("M3 v2 static/security gate OK (" + scope + ") — palette=5 zones, intake=651 cells, copy=48/273 blocking, "
+    print("M3 v2 structural receipts verified; NOT APPROVED / REVISION REQUIRED (" + scope + ") — palette=5 zones, intake=651 cells, copy=48/273 blocking, "
           f"water=58, evidence=14, submissions=6, gate=88 collision cells, reachability="
           f"{receipt['closed_visited']}/{receipt['open_visited']}, M4 closed")
 

@@ -93,6 +93,7 @@
     "brad_visual_approval": null,
     "implementation_state": "paused_until_full_feedback_pass_complete",
     "live_server_directive": "do_not_mutate_or_stop_while_brad_continues_walk",
+    "machine_review_overlay": "design/m3/BRAD-V2-ACTIVE-REVIEW.json",
     "findings": [
       "evidence lecterns emit text into chat instead of visibly presenting authored in-world books or records",
       "block palette and detail improved but remain below final quality",
@@ -100,9 +101,32 @@
       "some blocks appear out of place",
       "evidence text is hard to understand and/or overused",
       "explanatory entrance/exit signage is immersion-breaking handholding; circulation must communicate architecturally",
-      "the investigation or puzzle is not naturally identifiable as built"
+      "the investigation or puzzle is not naturally identifiable as built",
+      "chiseled bookshelves face away from the room center, hiding their book-face visual",
+      "a lectern in the library/copy-office-like room is embedded/jammed inside another block and faces the wrong direction",
+      "some bookshelves float without believable support",
+      "an unexplained floating turquoise block is visible",
+      "an unexplained stone oval on the floor is visible",
+      "the connecting hallway back to the main room feels awkward/weird",
+      "a sign is mounted far above player eye level for no clear reason"
     ],
     "interpretation": "technical observation and filing state exists, but the player-facing investigation is not yet fully authored or legible in-world",
+    "m4_authority": "closed"
+  },
+  "final_brad_v2_review": {
+    "date": "2026-07-16",
+    "status": "complete_not_approved_revision_required",
+    "brad_visual_approval": null,
+    "decision_authority": "design/m3/BRAD-V2-REVIEW-DECISION.json",
+    "preserve": [
+      "v1 rejection history",
+      "v2 palette and detail improvements",
+      "v2 full-height full-width controlled gate baseline"
+    ],
+    "review_server_state": "clean_save_flush_stop_verified_pid_and_port_ended",
+    "review_server_stop_receipt": "design/m3/PAPER-V2-REVIEW-STOP-RECEIPT.json",
+    "v3_state": "ready_to_begin_after_clean_v2_rejection_checkpoint",
+    "required_v3_machine_check_count": 12,
     "m4_authority": "closed"
   },
   "authority_precedence": [
@@ -113,8 +137,11 @@
     "design/m2/M2-TECHNICAL-CONTRACTS.md",
     "design/m2/M2-SUPABASE-VALIDATION.md",
     "design/m3/M3-PRIVATE-VERTICAL-SLICE.md",
+    "design/m3/BRAD-V2-ACTIVE-REVIEW.json",
+    "design/m3/BRAD-V2-REVIEW-DECISION.json",
     "design/m3/PAPER-DISPOSABLE-RECEIPT.json",
     "design/m3/PAPER-REVIEW-SERVER-RECEIPT.json",
+    "design/m3/PAPER-V2-REVIEW-STOP-RECEIPT.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -131,6 +158,11 @@
       "effect": "v2 becomes current for re-review while the v1 rejection remains binding history; M4 stays closed until Brad explicitly approves v2"
     },
     {
+      "older": "M3 v2 active-review findings",
+      "newer": "Brad's complete M3 v2 NOT APPROVED / REVISION REQUIRED decision",
+      "effect": "v2 Paper receipts remain historical structural evidence; v2 improvements and gate baseline must be preserved; v3 is blocked until disconnect confirmation and clean review-server stop; M4 remains closed"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -142,12 +174,12 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 private vertical slice revision",
+    "phase": "M3 v2 rejected and review server cleanly stopped; v3 next",
     "m4_open": false,
     "required_next_evidence": [
-      "actual non-op Adventure client and protected interaction receipts",
-      "two-client asymmetry and solo/accessibility evidence or an explicit honest external gap",
-      "Brad's new in-game visual decision"
+      "focused v3 revision implementing all mandatory machine checks without regressing the v2 gate",
+      "fresh disposable Paper v3 closed/open/restart/client receipts",
+      "Brad's explicit v3 visual approval"
     ]
   }
 }

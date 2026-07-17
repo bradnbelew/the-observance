@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0.0-m3-brad-v2-decision",
+  "authority_id": "observance-p4-private-slice-v2-brad-decision",
+  "review_date": "2026-07-16",
+  "review_status": "complete",
+  "decision": "not_approved_revision_required",
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "preserved_history": [
+    "design/m3/vertical-slice-v1.json",
+    "design/m3/vertical-slice-v2.json",
+    "design/m3/BRAD-V2-ACTIVE-REVIEW.json"
+  ],
+  "material_improvements_to_preserve": [
+    "v2 materially improved the palette and detail over v1",
+    "the full-height full-width v2 controlled gate is much better and is the no-regression baseline"
+  ],
+  "final_pass_findings_verbatim": [
+    "waterworks are much better than v1 but still feel somewhat random rather than self-evidently functional",
+    "gate is much better and should be preserved as the baseline",
+    "multiple signs are embedded/shoved into walls and look broken",
+    "the back wall of the Mouth opening has a reverse-facing sign that cannot be read",
+    "no other obvious major defects were found in the final pass, though general polish can improve"
+  ],
+  "combined_binding_findings": [
+    "evidence is delivered into chat instead of through credible readable in-world books or records",
+    "the investigation and puzzle are not sufficiently authored or naturally legible in-world",
+    "signage is excessive and sometimes immersion-breaking handholding instead of architectural communication",
+    "evidence text is hard to understand and/or overused",
+    "multiple signs are embedded or shoved into walls",
+    "the Mouth back-wall sign is reverse-facing and unreadable",
+    "some blocks appear misplaced",
+    "chiseled bookshelves face away from the room center and hide their book-face visual",
+    "a copy-office/library lectern is embedded or jammed into another block and faces the wrong direction",
+    "some bookshelves float without believable support",
+    "an unexplained floating turquoise block is visible",
+    "an unexplained stone oval is visible on the floor",
+    "the connecting hallway back to the main room feels awkward",
+    "a sign is mounted far above player eye level without clear purpose",
+    "waterworks improved over v1 but remain somewhat random instead of self-evidently functional",
+    "palette and detail materially improved over v1 but remain below final quality",
+    "general polish may improve even though no other obvious major defect was found in the final pass"
+  ],
+  "v3_implementation_authority": "blocked_until_review_server_saved_and_stopped_after_disconnect_confirmation",
+  "v3_review_launch_gate": "all_required_machine_checks_implemented_and_passing_then_fresh_disposable_paper_receipts",
+  "v3_required_machine_checks": [
+    {
+      "check_id": "M3.V3.DIRECTIONAL_BLOCK_STATES",
+      "predicate": "every sign, wall sign, lectern, chiseled bookshelf, stair, gate component, and other directional block has an exact coordinate-keyed BlockData expectation and Paper readback; room-facing and reader-facing targets are explicit"
+    },
+    {
+      "check_id": "M3.V3.SUPPORT_ATTACHMENT",
+      "predicate": "every furnishing and decorative cell declares a floor, wall, ceiling, or composed freestanding support chain and Paper verifies the supporting or attachment cells; unsupported bookshelves fail"
+    },
+    {
+      "check_id": "M3.V3.PLAYER_EYE_SIGNAGE",
+      "predicate": "every retained sign has a named standing cell, readable front facing, unobstructed ray, and center within 1.25 blocks of the standing player's 1.62-block eye height; reverse-facing, wall-intersecting, and unexplained high signs fail"
+    },
+    {
+      "check_id": "M3.V3.LECTERN_BOOK",
+      "predicate": "every evidence or filing lectern has a visible top and front, exact reader-facing BlockData, a collision-free interaction ray, and the expected authored written book title, author, and page hashes in its live Paper inventory"
+    },
+    {
+      "check_id": "M3.V3.NON_OVERLAP",
+      "predicate": "all furnishing footprints and required clearance volumes are pairwise non-overlapping; every reader standing cell, lectern interaction ray, cabinet access, public route, and staff route remains collision-free"
+    },
+    {
+      "check_id": "M3.V3.NO_UNCLASSIFIED_FLOATING_BLOCKS",
+      "predicate": "every isolated decorative non-air cell belongs to a bounded authored composition with a declared purpose and valid support or attachment; unclassified floating blocks fail"
+    },
+    {
+      "check_id": "M3.V3.IMMERSIVE_TEXT",
+      "predicate": "all player-facing prose is assigned one in-world document or sign purpose, contains no meta navigation or explanatory entrance/exit handholding, fits its physical medium, and passes exact duplication, banned-phrase, page-fit, and named-editor readability receipts"
+    },
+    {
+      "check_id": "M3.V3.EVIDENCE_IN_BOOK",
+      "predicate": "every long-form evidence body is visibly present in an authored in-world book or record and opens through its physical surface; chat may acknowledge a durable observation id but may not emit the evidence body or solution-bearing prose"
+    },
+    {
+      "check_id": "M3.V3.INVESTIGATION_LEGIBILITY",
+      "predicate": "the physical source-to-finding-to-filing graph is complete and discoverable from named standing cells without chat-only edges or instructional navigation labels, and a fresh solo client receipt identifies the investigative question, two-source deduction pattern, submission surface, and catch-up path unaided"
+    },
+    {
+      "check_id": "M3.V3.WATERWORKS_FUNCTION",
+      "predicate": "every visible water, grate, basin, gauge, channel, sump, and outflow cell belongs to one ordered inlet-to-outflow hydraulic path with declared capacity purpose, support, containment, direction cues, and no unexplained pool or orphan component"
+    },
+    {
+      "check_id": "M3.V3.CORRIDOR_THRESHOLD_SIGHTLINES",
+      "predicate": "each corridor has exact clear width, continuous centerline, composed material and light rhythm, aligned thresholds, and reciprocal main-room/destination sightlines that communicate circulation without explanatory labels"
+    },
+    {
+      "check_id": "M3.V3.GATE_NO_REGRESSION",
+      "predicate": "the controlled gate retains the v2 11-wide by 8-high collision plane, convincing permanent frame, 88 closed and 0 open collision cells, closed/open traversal proofs, and non-bypass protection"
+    }
+  ]
+}

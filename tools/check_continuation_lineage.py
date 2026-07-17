@@ -90,17 +90,37 @@ def main() -> None:
     require(active["implementation_state"] == "paused_until_full_feedback_pass_complete"
             and active["live_server_directive"] == "do_not_mutate_or_stop_while_brad_continues_walk",
             "active-review pause or live-server preservation directive lost")
-    require(len(active["findings"]) == 7
+    require(len(active["findings"]) == 14
             and "not yet fully authored or legible in-world" in active["interpretation"],
             "active Brad findings or binding interpretation drift")
+    require(active["machine_review_overlay"] == "design/m3/BRAD-V2-ACTIVE-REVIEW.json"
+            and (ROOT / active["machine_review_overlay"]).is_file(),
+            "active Brad machine-review overlay missing")
+    final = data["final_brad_v2_review"]
+    require(final["status"] == "complete_not_approved_revision_required"
+            and final["brad_visual_approval"] is None and final["m4_authority"] == "closed",
+            "final Brad v2 rejection or M4 gate drift")
+    require(final["decision_authority"] == "design/m3/BRAD-V2-REVIEW-DECISION.json"
+            and (ROOT / final["decision_authority"]).is_file()
+            and final["required_v3_machine_check_count"] == 12,
+            "final Brad decision authority or v3 check count drift")
+    require(final["review_server_state"] == "clean_save_flush_stop_verified_pid_and_port_ended"
+            and final["v3_state"] == "ready_to_begin_after_clean_v2_rejection_checkpoint",
+            "review-server clean stop or v3 checkpoint gate drift")
+    require(final["review_server_stop_receipt"] == "design/m3/PAPER-V2-REVIEW-STOP-RECEIPT.json"
+            and (ROOT / final["review_server_stop_receipt"]).is_file(),
+            "review-server stop receipt missing")
 
     gate = data["current_gate"]
-    require(gate["m4_open"] is False and "Brad's new in-game visual decision" in gate["required_next_evidence"],
-            "M3 rejection gate weakened")
+    require(gate["m4_open"] is False
+            and "focused v3 revision implementing all mandatory machine checks without regressing the v2 gate"
+                in gate["required_next_evidence"]
+            and "Brad's explicit v3 visual approval" in gate["required_next_evidence"],
+            "M3 v2 rejection / v3 checks / approval gate weakened")
     review = (ROOT / "design" / "m3" / "BRAD-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("FAILED / REVISION REQUIRED" in review and "M4 district implementation authority: **CLOSED" in review,
             "Brad rejection authority missing")
-    print("CONTINUATION LINEAGE: PASS (2 sibling receipts, v1 rejection preserved, v2 Paper receipts current, M4 closed)")
+    print("CONTINUATION LINEAGE: PASS (v1/v2 history preserved, v2 NOT APPROVED, clean server stop receipted, v3 next, M4 closed)")
 
 
 if __name__ == "__main__":
