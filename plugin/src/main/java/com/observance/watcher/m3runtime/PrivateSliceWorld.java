@@ -397,8 +397,9 @@ public final class PrivateSliceWorld {
         meta.setAuthor("Intake Clerk's Office");
         meta.pages(List.of(Component.text(surface.body())));
         book.setItemMeta(meta);
+        // LecternInventory is live. Updating the earlier block-state snapshot after this
+        // write replaces the inventory with that snapshot's empty contents on Paper.
         lectern.getInventory().setItem(0, book);
-        lectern.update(true, false);
     }
 
     private boolean lecternMatches(Cell cell, EvidenceSurface surface) {
