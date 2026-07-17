@@ -7,6 +7,7 @@ import json
 from collections import Counter
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 
@@ -24,6 +25,7 @@ VALIDATION_RECEIPT = M3 / "PAPER-V3-DISPOSABLE-RECEIPT.json"
 REVIEW_RECEIPT = M3 / "PAPER-V3-REVIEW-SERVER-RECEIPT.json"
 FAILED_ATTEMPTS = M3 / "PAPER-V3-FAILED-ATTEMPTS.json"
 PACKAGE_MANIFEST = M3 / "PACKAGE-MANIFEST-V3.json"
+ACTIVE_REVIEW = M3 / "BRAD-V3-ACTIVE-REVIEW.json"
 EXPECTED_SLICE_SHA256 = "0181b5566ea49a653b9cc95a650246c52ce670735d6ec2d6e4b1f6b9bc2a7ae5"
 PASSING_SOURCE_COMMIT = "ebc731ff3bfc0eb42572246b814ac541811190f2"
 
@@ -284,12 +286,21 @@ def check_package_manifest() -> None:
             and manifest["package_id"] == "m3-private-slice-authored-revision-v3",
             "v3 package manifest identity drift")
     canonical = bytearray()
+    manifest_history = subprocess.run(
+        ["git", "log", "-1", "--format=%H", "--", "design/m3/PACKAGE-MANIFEST-V3.json"],
+        cwd=ROOT, check=True, text=True, capture_output=True).stdout.strip()
+    require(bool(manifest_history), "v3 package manifest has no Git provenance")
     for row in manifest["files"]:
         path = ROOT / row["path"]
         require(path.is_file(), f"v3 package file missing: {row['path']}")
         actual = hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
-        require(actual == row["sha256"], f"v3 package file hash drift: {row['path']}")
-        canonical.extend((row["path"] + "\n" + actual + "\n").encode("utf-8"))
+        if actual != row["sha256"]:
+            result = subprocess.run(["git", "show", f"{manifest_history}:{row['path']}"],
+                                    cwd=ROOT, capture_output=True)
+            require(result.returncode == 0, f"historical v3 package blob missing: {row['path']}")
+            historical = hashlib.sha256(result.stdout.replace(b"\r\n", b"\n")).hexdigest()
+            require(historical == row["sha256"], f"historical v3 package hash drift: {row['path']}")
+        canonical.extend((row["path"] + "\n" + row["sha256"] + "\n").encode("utf-8"))
     require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],
             "v3 package-set hash drift")
     require(manifest["passing_source_git_commit"] == PASSING_SOURCE_COMMIT
@@ -299,6 +310,28 @@ def check_package_manifest() -> None:
             and manifest["brad_visual_status"] == "pending_v3_re_review"
             and manifest["m4_authority"] == "closed",
             "v3 package provenance/approval gate drift")
+
+
+def check_active_review() -> None:
+    review = load(ACTIVE_REVIEW)
+    require(review["schema_version"] == "1.0.0-m3-brad-v3-active-review"
+            and review["review_status"] == "in_progress_binding_finding_recorded_not_approved"
+            and review["brad_visual_approval"] is None and review["m4_authority"] == "closed",
+            "active v3 review approval/M4 status drift")
+    require(review["live_server_directive"] == "do_not_stop_or_mutate_while_brad_continues_the_v3_walk"
+            and review["implementation_state"] == "paused_until_full_v3_feedback_pass_complete"
+            and review["revision_authority"] == "blocked_until_brad_declares_the_full_v3_feedback_pass_complete",
+            "active v3 server/revision hold weakened")
+    require(len(review["binding_finding_verbatim"]) == 4
+            and "not acceptable as final legibility" in review["binding_interpretation"],
+            "active v3 discoverability finding incomplete")
+    checks = review["required_acceptance_checks"]
+    require([row["check_id"] for row in checks] == [
+        "M3.V3R.DISTINCT_FILING_AFFORDANCE",
+        "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
+        "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION",
+    ] and all(row["current_v3_compliance"] is False and row["predicate"] for row in checks),
+            "active v3 future acceptance checks weakened")
 
 
 def main() -> None:
@@ -313,7 +346,8 @@ def main() -> None:
     check_implementation()
     check_paper_receipts()
     check_package_manifest()
-    print("M3 v3 revision gate PASS — exact books/signs/supports/waterworks/corridors/gate authority verified; M4 closed; Brad approval null")
+    check_active_review()
+    print("M3 v3 structural/Paper receipts PASS — active review finds affordance/objective legibility noncompliant; revision paused; M4 closed; Brad approval null")
 
 
 if __name__ == "__main__":

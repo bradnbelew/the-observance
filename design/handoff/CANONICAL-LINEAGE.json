@@ -210,6 +210,28 @@
     ],
     "supersession": "v3 is the current re-review candidate and preserves v2 gate/palette improvements; v1/v2 rejection history and all failed disposable attempts remain evidence; no automated receipt opens M4"
   },
+  "active_brad_v3_review": {
+    "date": "2026-07-16",
+    "status": "in_progress_binding_finding_recorded_not_approved",
+    "brad_visual_approval": null,
+    "m4_authority": "closed",
+    "machine_review_overlay": "design/m3/BRAD-V3-ACTIVE-REVIEW.json",
+    "positive_observation": "v3 is visibly improved and substantially less broken-looking",
+    "binding_interpretation": "native book delivery and physical polish improved, but the player-facing affordance model and investigation objective still require external explanation and are not acceptable as final legibility",
+    "current_noncompliance": [
+      "ordinary right-click versus crouch-right-click is not discoverable",
+      "evidence lecterns versus filing lecterns are not discoverable",
+      "crouching as stamping or filing has no discoverable diegetic meaning",
+      "the room and investigation objective are not discoverable"
+    ],
+    "required_future_check_ids": [
+      "M3.V3R.DISTINCT_FILING_AFFORDANCE",
+      "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
+      "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION"
+    ],
+    "implementation_state": "paused_until_full_v3_feedback_pass_complete",
+    "live_server_directive": "do_not_stop_or_mutate_while_brad_continues_the_v3_walk"
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -228,6 +250,7 @@
     "design/m3/PAPER-V3-DISPOSABLE-RECEIPT.json",
     "design/m3/PAPER-V3-REVIEW-SERVER-RECEIPT.json",
     "design/m3/BRAD-V3-REVIEW-PACKAGE.md",
+    "design/m3/BRAD-V3-ACTIVE-REVIEW.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -265,10 +288,11 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 v3 automated and disposable Paper/restart gates pass; Brad visual re-review next",
+    "phase": "M3 v3 active review; automated receipts pass but affordance/objective legibility is not approved",
     "m4_open": false,
     "required_next_evidence": [
-      "actual non-op Adventure v3 walk and protection/accessibility receipts",
+      "Brad's complete v3 feedback pass while the live target remains unchanged",
+      "after the pass, distinct filing affordance, diegetic filing instruction, and cold-player objective-comprehension receipts",
       "Brad's explicit v3 visual approval"
     ]
   }

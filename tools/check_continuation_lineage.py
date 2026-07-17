@@ -158,9 +158,26 @@ def main() -> None:
             and review_receipt["evidence"]["closed_audit"].find("findings=0") >= 0,
             "v3 pristine review-target receipt drift")
 
+    active_v3 = data["active_brad_v3_review"]
+    require(active_v3["status"] == "in_progress_binding_finding_recorded_not_approved"
+            and active_v3["brad_visual_approval"] is None and active_v3["m4_authority"] == "closed",
+            "active Brad v3 review approval/M4 gate drift")
+    require(active_v3["machine_review_overlay"] == "design/m3/BRAD-V3-ACTIVE-REVIEW.json"
+            and (ROOT / active_v3["machine_review_overlay"]).is_file()
+            and len(active_v3["current_noncompliance"]) == 4
+            and active_v3["required_future_check_ids"] == [
+                "M3.V3R.DISTINCT_FILING_AFFORDANCE",
+                "M3.V3R.DIEGETIC_FILING_INSTRUCTION",
+                "M3.V3R.COLD_PLAYER_OBJECTIVE_COMPREHENSION",
+            ], "active Brad v3 finding/check overlay drift")
+    require(active_v3["implementation_state"] == "paused_until_full_v3_feedback_pass_complete"
+            and active_v3["live_server_directive"]
+                == "do_not_stop_or_mutate_while_brad_continues_the_v3_walk",
+            "active Brad v3 revision/server hold weakened")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "actual non-op Adventure v3 walk and protection/accessibility receipts"
+            and "Brad's complete v3 feedback pass while the live target remains unchanged"
                 in gate["required_next_evidence"]
             and "Brad's explicit v3 visual approval" in gate["required_next_evidence"],
             "M3 v3 client/approval gate weakened")
@@ -170,7 +187,7 @@ def main() -> None:
     v3_review = (ROOT / "design" / "m3" / "BRAD-V3-REVIEW-PACKAGE.md").read_text(encoding="utf-8")
     require("VISUAL APPROVAL PENDING" in v3_review and "M4 is **closed**" in v3_review,
             "v3 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (v1/v2 rejections preserved, v3 Paper/restart passes, Brad approval null, M4 closed)")
+    print("CONTINUATION LINEAGE: PASS (v1/v2 rejections and v3 receipts preserved; active v3 legibility finding recorded; server/revision hold; M4 closed)")
 
 
 if __name__ == "__main__":
