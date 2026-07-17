@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.0.0-continuation-lineage",
+  "schema_version": "1.1.0-continuation-lineage",
   "checkpoint_identity": {
     "branch": "codex/m3-disposable-paper-gate",
     "commit": "the commit containing this lineage file",
-    "purpose": "canonical linear integration checkpoint before the rejected M3 slice is revised",
+    "purpose": "canonical linear chain through sibling integration, preserved v1 rejection, and authored M3 v2 Paper receipts",
     "production_mutated": false,
     "m4_authority": "closed"
   },
@@ -12,7 +12,8 @@
     "subject": "docs: record failed M3 visual review",
     "structural_receipt_commit": "1f3ca9040ff383049d13033dbe42411158c5be70",
     "visual_decision": "failed_revision_required_2026-07-16",
-    "current_authority": true
+    "current_authority": false,
+    "superseded_for_revision_by": "observance-p4-private-slice-v2"
   },
   "incorporated_evidence": [
     {
@@ -43,6 +44,49 @@
       "supersession": "latest read-only external-gap evidence at integration time; does not supersede later Paper structural or Brad visual-decision authority"
     }
   ],
+  "revision_evidence": {
+    "integration_checkpoint": "69d729460382576d07676103b54048b1a648c412",
+    "authored_source_commit": "bc71730820937843be65384ba589d3761780f048",
+    "paper_persistence_fix_commit": "a8bb86a7b96904710675752181a10ca96ac09ceb",
+    "pristine_receipt_fix_commit": "2ca4c3900f16df46e817616157ce6fa674e70421",
+    "current_authority": "design/m3/vertical-slice-v2.json",
+    "rejected_authority_preserved_at": "design/m3/vertical-slice-v1.json",
+    "validation_receipt": "design/m3/PAPER-DISPOSABLE-RECEIPT.json",
+    "review_target_receipt": "design/m3/PAPER-REVIEW-SERVER-RECEIPT.json",
+    "preserved_failed_attempts": [
+      {
+        "target_id": "m3-v2-validation-bc71730-20260717-a",
+        "result": "failed_closed",
+        "finding": "12 lectern books were absent because a stale Lectern block-state update replaced the live inventory write",
+        "remediation_commit": "a8bb86a7b96904710675752181a10ca96ac09ceb",
+        "reuse_forbidden_and_observed": true
+      },
+      {
+        "target_id": "m3-v2-brad-review-a8bb86a-20260717-a",
+        "result": "world_build_and_audit_passed_receipt_generation_failed_closed",
+        "finding": "a pristine review target correctly had no interaction journal but receipt generation required one",
+        "remediation_commit": "2ca4c3900f16df46e817616157ce6fa674e70421",
+        "reuse_forbidden_and_observed": true
+      }
+    ],
+    "paper_result": {
+      "version": "1.21.11",
+      "build": 132,
+      "cells": 248745,
+      "closed_gate_collision_cells": 88,
+      "open_gate_collision_cells": 0,
+      "evidence_surfaces": 14,
+      "filing_surfaces": 6,
+      "restart_replay_receipts": 28,
+      "validation_status": "passed"
+    },
+    "unresolved": [
+      "Brad has not yet walked or approved v2",
+      "actual non-op client protection attempts remain unreceipted",
+      "solo accessibility and optional approved two-client A2 presentation remain unreceipted"
+    ],
+    "supersession": "v2 supersedes v1 only as the current revision candidate; v1's failed decision remains historical evidence and no automated receipt opens M4"
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -52,6 +96,7 @@
     "design/m2/M2-SUPABASE-VALIDATION.md",
     "design/m3/M3-PRIVATE-VERTICAL-SLICE.md",
     "design/m3/PAPER-DISPOSABLE-RECEIPT.json",
+    "design/m3/PAPER-REVIEW-SERVER-RECEIPT.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
     "design/handoff/PHASE-CHECKPOINTS.md"
@@ -61,6 +106,11 @@
       "older": "M3 structural Paper receipt",
       "newer": "Brad failed visual decision",
       "effect": "structural evidence remains valid but cannot open M4 or imply visual approval"
+    },
+    {
+      "older": "rejected M3 v1 revision candidate",
+      "newer": "authored M3 v2 revision candidate and fresh Paper receipts",
+      "effect": "v2 becomes current for re-review while the v1 rejection remains binding history; M4 stays closed until Brad explicitly approves v2"
     },
     {
       "older": "M2 statement that no disposable Supabase harness existed",
@@ -77,9 +127,7 @@
     "phase": "M3 private vertical slice revision",
     "m4_open": false,
     "required_next_evidence": [
-      "authored replacement addressing every Brad visual finding",
-      "fresh disposable Paper 1.21.11 closed/open and restart/replay receipts",
-      "non-op Adventure and protected interaction receipts where locally automatable",
+      "actual non-op Adventure client and protected interaction receipts",
       "two-client asymmetry and solo/accessibility evidence or an explicit honest external gap",
       "Brad's new in-game visual decision"
     ]

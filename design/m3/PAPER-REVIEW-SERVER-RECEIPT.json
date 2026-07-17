@@ -1,0 +1,54 @@
+{
+  "authority_id": "observance-p4-private-slice-v2",
+  "brad_visual_approval": null,
+  "brad_visual_status": "pending_re_review_after_revision",
+  "client_receipts": {
+    "non_op_adventure_join": null,
+    "protected_region_bypass": null,
+    "reason": "Server configuration, pure state tests, and Paper security readback exist; no authenticated Minecraft client was automated.",
+    "solo_accessibility": null,
+    "two_client_asymmetry": null
+  },
+  "coarse_authority_sha256": "564225c0d9a2d015437f9722e5741e509b46837b6e194e6ca1cda860cea7f962",
+  "evidence": {
+    "build": "[21:27:57 INFO]: M3_BUILD_COMPLETE target=m3-v2-brad-review-2ca4c39-20260717-b writes=234414 cells=248745 gate=closed world_state_sha256=d6a764569a355d6d68d9fbbc6ca0033166ced1a8d6fde45c0eace86e223eff92 findings=0 composition=evidence=14 submissions=6 signs=8 water=58 bookshelves=48 gate_collision=88",
+    "closed_audit": "[21:27:57 INFO]: M3_AUDIT PASS target=m3-v2-brad-review-2ca4c39-20260717-b cells=248745 gate=closed world_state_sha256=d6a764569a355d6d68d9fbbc6ca0033166ced1a8d6fde45c0eace86e223eff92 findings=0 composition=evidence=14 submissions=6 signs=8 water=58 bookshelves=48 gate_collision=88",
+    "platform_confirmation": "[21:27:54 INFO]: [Observance] M3_TARGET_CONFIRMED target=m3-v2-brad-review-2ca4c39-20260717-b commit=2ca4c3900f16df46e817616157ce6fa674e70421 authority=observance-p4-private-slice-v2 paper=1.21.11-132-c5eb079 (MC: 1.21.11)",
+    "security": "[21:27:57 INFO]: M3_SECURITY_PASS target=m3-v2-brad-review-2ca4c39-20260717-b bind=127.0.0.1 gamemode=ADVENTURE force_gamemode=true non_op=true inventory_escrow=false denies=block_break,block_place,bucket,entity,container,teleport,gate gate_collision=88",
+    "status": "[21:27:55 INFO]: M3_STATUS target=m3-v2-brad-review-2ca4c39-20260717-b commit=2ca4c3900f16df46e817616157ce6fa674e70421 authority=v2 gate=closed evidence_surfaces=14 submissions=6 signs=8 paper=1.21.11-132-c5eb079 (MC: 1.21.11)"
+  },
+  "journal_sha256": null,
+  "journal_state": "absent_pristine_review_target",
+  "log_sha256": "648434240fb7fcc2d1f5197b14feaf9f0398c6b247217dcae757f9857cfba4b5",
+  "m4_authority": "closed",
+  "manifest_version": "2.0.0-m2",
+  "mode": "prepare-review",
+  "paper": {
+    "build": 132,
+    "jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "version": "1.21.11"
+  },
+  "plugin_jar_sha256": "6283967e8d195ef51e474073991624a0476c59e78b4704fd79a7393e6c47c69c",
+  "predicate_raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+  "restart_log_sha256": null,
+  "schema_version": "1.0.0-m3-review-server-receipt",
+  "scope": "disposable local private Paper target; never player-facing or production",
+  "server_configuration": {
+    "bind": "127.0.0.1",
+    "default_op": false,
+    "force_gamemode": true,
+    "gamemode": "adventure",
+    "inventory_escrow": false,
+    "online_mode": false,
+    "port": 25580,
+    "production_credentials_loaded": false,
+    "whitelist": false
+  },
+  "slice_authority_sha256": "3d8734673d309fc77903874605bb769cd76982f113adf9a6df81d93489666ec6",
+  "source_git_commit": "2ca4c3900f16df46e817616157ce6fa674e70421",
+  "target_id": "m3-v2-brad-review-2ca4c39-20260717-b",
+  "target_path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-v2-brad-review-2ca4c39-20260717-b",
+  "world_package_name": "m3-private-slice-v2-world.zip",
+  "world_package_sha256": "d0597ce6643b5d1afcec05f2594eaa329659079123ebdf99a21bdb1ce29b8082",
+  "world_tree_sha256": "206249beaebc355804d17f94430dad422bfdc6df213e77851b2756b5b6ede22d"
+}

@@ -1,6 +1,6 @@
 # M3 — Authored P4 Private Vertical Slice Revision
 
-Status: **V2 AUTHORED REVISION IMPLEMENTED; FRESH PAPER RECEIPT AND BRAD RE-REVIEW REQUIRED**
+Status: **V2 AUTHORED REVISION AND FRESH PAPER RECEIPTS COMPLETE; BRAD RE-REVIEW REQUIRED**
 
 Authority order remains `SPINE-LOCK.md` → approved conformance → approved Phase 1 → Phase 2 evidence
 architecture → M2 technical contracts → this file. `vertical-slice-v1.json` remains the exact rejected
@@ -109,11 +109,11 @@ Record, Watcher, or Averyn.
 - [x] exact v2 data authority, composition counts, bounds, routes, sightlines, standing cells, gate
   collision, protection contracts, and offline reachability;
 - [x] Java state/approval/protection/interaction self-test;
-- [ ] fresh disposable Paper 1.21.11 build and exact block/book/sign audit;
-- [ ] local observation → finding → gate-open exercise;
-- [ ] clean stop/restart/re-audit and replay;
-- [ ] exact JAR/journal/log/world-tree/world-package/package-set hashes;
-- [ ] separate fresh closed localhost review target running non-op Adventure configuration;
+- [x] fresh disposable Paper 1.21.11 build and exact block/book/sign audit;
+- [x] local observation → finding → gate-open exercise;
+- [x] clean stop/restart/re-audit and replay;
+- [x] exact JAR/journal/log/world-tree/world-package/package-set hashes;
+- [x] separate fresh closed localhost review target prepared with non-op Adventure configuration;
 - [ ] Brad's actual client walk, protection attempts, solo readback, and (if approved) two-client A2 view;
 - [ ] Brad's explicit revised visual decision.
 

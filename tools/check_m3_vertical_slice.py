@@ -256,6 +256,27 @@ def check_package_manifest(manifest: dict) -> None:
     require(manifest["brad_visual_approval_receipt"] is None
             and manifest["brad_visual_status"] == "pending_re_review_after_revision",
             "package fabricates Brad approval or loses pending re-review")
+    require(manifest["validation_source_git_commit"] == receipt["source_git_commit"],
+            "validation source checkpoint drift")
+    review = load(M3 / "PAPER-REVIEW-SERVER-RECEIPT.json")
+    require(review["schema_version"] == "1.0.0-m3-review-server-receipt"
+            and review["mode"] == "prepare-review" and review["m4_authority"] == "closed"
+            and review["brad_visual_approval"] is None
+            and review["brad_visual_status"] == "pending_re_review_after_revision",
+            "pristine review receipt identity or gate drift")
+    require(review["journal_sha256"] is None
+            and review["journal_state"] == "absent_pristine_review_target",
+            "prepared review target is not pristine")
+    require(review["paper"] == receipt["paper"]
+            and review["plugin_jar_sha256"] == receipt["plugin_jar_sha256"],
+            "validation/review Paper or plugin identity mismatch")
+    require(manifest["review_source_git_commit"] == review["source_git_commit"]
+            and manifest["review_world_tree_sha256"] == review["world_tree_sha256"]
+            and manifest["review_world_package_sha256"] == review["world_package_sha256"],
+            "prepared review target provenance drift")
+    require("findings=0" in review["evidence"]["closed_audit"]
+            and "gate_collision=88" in review["evidence"]["security"],
+            "prepared review target did not pass closed structural/security audit")
 
 
 def main(authority_only: bool = False) -> None:

@@ -39,9 +39,9 @@ Work in the repo at its root. There is a heavily-modified but committed worktree
 --hard`, `checkout` away, `clean`, or bulk-delete. The `design/` archive is a working, self-enforced
 supersession system, not cruft.**
 
-> **CURRENT CONTINUATION OVERRIDE:** M3's offline and disposable Paper structural machinery gates are
-> complete, but Brad rejected the first visual pass on 2026-07-16. Read the exact failed decision in
-> `../m3/BRAD-REVIEW-PACKAGE.md`. Revise M3 only; do not begin M4.
+> **CURRENT CONTINUATION OVERRIDE:** M3 v2's authored revision and offline/disposable Paper gates are
+> complete, while Brad's 2026-07-16 rejection of v1 remains preserved. Read the exact failed decision
+> and current v2 walk in `../m3/BRAD-REVIEW-PACKAGE.md`. Obtain Brad's v2 review only; do not begin M4.
 > Read the spine,
 > conformance, continuation/checkpoint ledger, approved Phase 1/2 authorities, all M2 contracts, and
 > `../m3/M3-PRIVATE-VERTICAL-SLICE.md` plus its routed JSON/package/review authorities. Continue M3 only

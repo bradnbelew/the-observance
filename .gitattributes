@@ -4,10 +4,15 @@ design/ARG-V5-PHYSICAL-PREDICATES.json text eol=lf
 # Generated M2 authorities and SQL are canonical LF text.
 design/m2/** text eol=lf
 design/m3/** text eol=lf
+design/handoff/CANONICAL-LINEAGE.json text eol=lf
+design/handoff/CODEX-MASTER-PROMPT.md text eol=lf
+design/handoff/PHASE-CHECKPOINTS.md text eol=lf
+design/handoff/README.md text eol=lf
 discord/supabase/seeds/v5_investigations.sql text eol=lf
 
 # The M3 package manifest hashes exact source bytes; keep every non-design package input stable.
 tools/check_m3_vertical_slice.py text eol=lf
+tools/check_continuation_lineage.py text eol=lf
 tools/run_m3_disposable_paper.py text eol=lf
 tools/sim_m3_vertical_slice.py text eol=lf
 plugin/src/main/java/com/observance/watcher/ObservancePlugin.java text eol=lf

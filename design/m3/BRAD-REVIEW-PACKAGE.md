@@ -45,10 +45,10 @@ not retroactive approval.
 ## Machine receipts required before this walk counts
 
 - [x] exact v2 authority and offline geometry/security/state checks;
-- [ ] fresh validation target, closed/open exact Paper audit, observation/filing exercise;
-- [ ] stop/restart, identical open-state audit, replay/idempotency;
-- [ ] exact source/Paper/plugin/journal/log/world/package hashes;
-- [ ] separate fresh closed localhost review target and running-server receipt;
+- [x] fresh validation target, closed/open exact Paper audit, observation/filing exercise;
+- [x] stop/restart, identical open-state audit, replay/idempotency;
+- [x] exact source/Paper/plugin/journal/log/world/package hashes;
+- [x] separate fresh closed localhost review target and prepared-server receipt;
 - [ ] actual non-op Adventure join/protection attempts;
 - [ ] actual solo accessibility and optional approved two-client A2 view.
 
