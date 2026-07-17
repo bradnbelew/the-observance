@@ -193,10 +193,18 @@ def check_required_predicates(authority: dict, decision: dict) -> None:
 
 
 def check_implementation() -> None:
-    world = WORLD_SOURCE.read_text(encoding="utf-8")
-    interaction = INTERACTION_SOURCE.read_text(encoding="utf-8")
-    state = STATE_SOURCE.read_text(encoding="utf-8")
-    runtime = RUNTIME_SOURCE.read_text(encoding="utf-8")
+    def historical(path: Path) -> str:
+        relative = path.relative_to(ROOT).as_posix()
+        result = subprocess.run(["git", "show", f"{PASSING_SOURCE_COMMIT}:{relative}"],
+                                cwd=ROOT, check=True, capture_output=True)
+        return result.stdout.decode("utf-8")
+
+    # V4 legitimately supersedes these runtime source files. Verify the exact passing V3 blobs from
+    # their immutable receipt commit rather than forcing current implementation back to rejected V3.
+    world = historical(WORLD_SOURCE)
+    interaction = historical(INTERACTION_SOURCE)
+    state = historical(STATE_SOURCE)
+    runtime = historical(RUNTIME_SOURCE)
     runner = RUNNER.read_text(encoding="utf-8")
     required_world_tokens = (
         "expectedBlockData", "checkReader", "checkInvestigationTopology", "checkWaterworks",

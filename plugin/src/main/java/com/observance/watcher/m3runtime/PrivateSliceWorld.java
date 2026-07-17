@@ -1,6 +1,7 @@
 package com.observance.watcher.m3runtime;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Lectern;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -24,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Exact Paper projection of the authored M3 v3 private slice. */
+/** Exact Paper projection of the authored M3 v4 private slice. */
 public final class PrivateSliceWorld {
     public static final int MIN_X = -34;
     public static final int MAX_X = 34;
@@ -93,10 +95,19 @@ public final class PrivateSliceWorld {
             }
         }
         for (Map.Entry<Cell, EvidenceSurface> row : evidence.entrySet()) {
-            if (!lecternMatches(row.getKey(), row.getValue())) {
-                findings.add(row.getKey() + " authored evidence book missing/drifted: " + row.getValue().surfaceId());
+            EvidenceSurface surface = row.getValue();
+            if (expected.get(row.getKey()) != surface.physicalMaterial()) {
+                findings.add(row.getKey() + " evidence medium/material drift: " + surface.surfaceId());
             }
-            if (wordCount(row.getValue().body()) > 45) findings.add(row.getValue().surfaceId() + " evidence prose too long");
+            if (surface.presentation() == Presentation.NATIVE_BOOK
+                    && (surface.body().isBlank() || bookPages(surface.body()).isEmpty())) {
+                findings.add(surface.surfaceId() + " native-book evidence missing authored pages");
+            }
+            if (surface.presentation() == Presentation.VISIBLE_ENVIRONMENTAL_RECORD
+                    && (surface.physicalMaterial() != Material.OAK_WALL_SIGN || !signs.containsKey(surface.cell()))) {
+                findings.add(surface.surfaceId() + " environmental record is not visibly authored in-world");
+            }
+            if (wordCount(surface.body()) > 115) findings.add(surface.surfaceId() + " evidence prose too long for medium");
         }
         for (Map.Entry<Cell, SubmissionSurface> row : submissions.entrySet()) {
             if (!lecternMatches(row.getKey(), row.getValue().asEvidence())) {
@@ -104,7 +115,8 @@ public final class PrivateSliceWorld {
             }
         }
         for (Map.Entry<Cell, ReferenceSurface> row : references.entrySet()) {
-            if (!lecternMatches(row.getKey(), row.getValue().asEvidence())) {
+            if (row.getValue().physicalMaterial() == Material.LECTERN
+                    && !lecternMatches(row.getKey(), row.getValue().asEvidence())) {
                 findings.add(row.getKey() + " reference book missing/drifted: " + row.getValue().surfaceId());
             }
         }
@@ -157,7 +169,14 @@ public final class PrivateSliceWorld {
             Cell cell = new Cell(x, y, 89);
             Material material = open ? Material.AIR : Material.COPPER_GRATE;
             expected.put(cell, material);
-            block(cell).setType(material, false);
+            if (open) {
+                expectedBlockData.remove(cell);
+                block(cell).setType(Material.AIR, false);
+            } else {
+                String data = Bukkit.createBlockData("minecraft:copper_grate[waterlogged=false]").getAsString();
+                expectedBlockData.put(cell, data);
+                block(cell).setBlockData(Bukkit.createBlockData(data), false);
+            }
         }
     }
 
@@ -253,8 +272,9 @@ public final class PrivateSliceWorld {
         architecturalDetail();
         waterworks();
         copyOffice();
+        intakeClerkWorkplace();
         publicFilingCounter();
-        referenceSurface();
+        referenceSurfaces();
         evidenceSurfaces();
         submissionSurfaces();
         thresholdSigns();
@@ -316,6 +336,20 @@ public final class PrivateSliceWorld {
             hangingLantern(-10, 8, z, "Mouth bay light");
             hangingLantern(10, 8, z, "Mouth bay light");
         }
+        for (int z = 2; z <= 14; z++) {
+            clusterBlock("MOUTH_LOADED_RUT", new Cell(3, -1, z), Material.PACKED_MUD,
+                    "east loaded-cart rut worn into the shared public road");
+            clusterBlock("MOUTH_RETURN_RUT", new Cell(-3, -1, z), Material.COARSE_DIRT,
+                    "west empty-cart return rut worn into the same road crown");
+        }
+        for (int x : new int[]{-10, 10}) for (int z : new int[]{5, 6, 10, 11})
+            directionalCluster("MOUTH_WAITING_BENCHES", new Cell(x, 0, z), Material.DARK_OAK_STAIRS,
+                    "minecraft:dark_oak_stairs[facing=" + (x < 0 ? "east" : "west")
+                            + ",half=bottom,shape=straight,waterlogged=false]",
+                    "wall-backed benches for hauliers waiting on the examiner");
+        for (int x = -1; x <= 1; x++) for (int z = 4; z <= 5; z++)
+            clusterBlock("MOUTH_EXAMINER_DESK", new Cell(x, 0, z), Material.DARK_OAK_PLANKS,
+                    "public examiner desk beside the shared cart crown");
         for (int x : new int[]{-12, -6, 0, 6, 12}) {
             for (int y = -20; y <= -11; y++) {
                 expected.put(new Cell(x, y, 56), Material.DEEPSLATE_TILE_WALL);
@@ -357,10 +391,12 @@ public final class PrivateSliceWorld {
             clusterBlock("INLET_HEADWALL", new Cell(x, -20, 58), Material.WEATHERED_CUT_COPPER,
                     "headwall makes the runoff entry unambiguous");
         for (int x = -13; x <= -10; x++)
-            clusterBlock("SUMP_GRATE", new Cell(x, -20, 78), Material.COPPER_GRATE,
+            directionalCluster("SUMP_GRATE", new Cell(x, -20, 78), Material.COPPER_GRATE,
+                    "minecraft:copper_grate[waterlogged=false]",
                     "full-width grate marks transfer to the lower filter");
         for (int z : new int[]{63, 67, 75}) for (int x = -12; x <= -11; x++)
-            clusterBlock("FLOW_BAFFLES", new Cell(x, -20, z), Material.COPPER_GRATE,
+            directionalCluster("FLOW_BAFFLES", new Cell(x, -20, z), Material.COPPER_GRATE,
+                    "minecraft:copper_grate[waterlogged=false]",
                     "baffles separate settling, gauging, and sump stages");
         clusterBlock("RUNOFF_GAUGE_SUPPORT", new Cell(-14, -18, 62), Material.WEATHERED_CUT_COPPER,
                 "masonry support for the rated-capacity plaque");
@@ -407,67 +443,114 @@ public final class PrivateSliceWorld {
             cluster("REFERENCE_SHELVES", lower, "supported frequently-used reference volumes");
             cluster("REFERENCE_SHELVES", upper, "supported frequently-used reference volumes");
         }
-        expected.put(new Cell(29, -20, 65), Material.DARK_OAK_PLANKS);
-        cluster("SURVEY_READING_STAND", new Cell(29, -20, 65),
-                "support for the survey-revision lectern");
+        for (int z = 62; z <= 84; z += 11) for (int x = 20; x <= 30; x += 5)
+            clusterBlock("OFFICE_FLOOR_INLAYS", new Cell(x, -21, z), Material.WAXED_CUT_COPPER,
+                    "floor studs mark copy bays and cabinet rank intervals");
+    }
+
+    private void intakeClerkWorkplace() {
+        for (int x = 8; x <= 14; x++) for (int z : new int[]{60, 61})
+            clusterBlock("INTAKE_PUBLIC_COUNTER", new Cell(x, -20, z), Material.DARK_OAK_PLANKS,
+                    "public counter for registering arrivals before records move to the copy office");
+        for (int x : new int[]{9, 12}) for (int z : new int[]{64, 65, 75, 76})
+            clusterBlock("INTAKE_CLERK_DESKS", new Cell(x, -20, z), Material.SPRUCE_PLANKS,
+                    "paired clerk desks for berth and supply reconciliation");
+        for (int x : new int[]{10, 13}) for (int z : new int[]{63, 74})
+            directional(new Cell(x, -20, z), Material.SPRUCE_STAIRS,
+                    "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]");
+        for (int z : new int[]{64, 76}) {
+            clusterBlock("INTAKE_ACTIVE_FILES", new Cell(15, -20, z), Material.BOOKSHELF,
+                    "floor-supported active berth and supply files beside the clerk desks");
+            clusterBlock("INTAKE_ACTIVE_FILES", new Cell(15, -19, z), Material.CHISELED_BOOKSHELF,
+                    "frequently consulted active files above the floor-supported shelf");
+            support(new Cell(15, -20, z), new Cell(15, -21, z), "floor-supported intake file shelf");
+            support(new Cell(15, -19, z), new Cell(15, -20, z), "stacked active-file shelf");
+            directional(new Cell(15, -19, z), Material.CHISELED_BOOKSHELF,
+                    "minecraft:chiseled_bookshelf[facing=west]");
+        }
+        for (int x = 8; x <= 14; x += 3) for (int z : new int[]{57, 77})
+            directionalCluster("INTAKE_WAITING_BENCHES", new Cell(x, -20, z), Material.DARK_OAK_STAIRS,
+                    "minecraft:dark_oak_stairs[facing=" + (z < 70 ? "south" : "north")
+                            + ",half=bottom,shape=straight,waterlogged=false]",
+                    "public waiting benches kept outside the hydraulic maintenance walk");
     }
 
     private void publicFilingCounter() {
-        for (int x = -6; x <= -1; x++) expected.put(new Cell(x, -20, 76), Material.POLISHED_ANDESITE);
-        for (int x = 1; x <= 6; x++) expected.put(new Cell(x, -20, 76), Material.POLISHED_ANDESITE);
-        for (int x : new int[]{-6,-5,-4,-3,3,4,5,6}) expected.put(new Cell(x, -19, 76), Material.WHITE_CARPET);
-        for (int x : new int[]{-6,-5,-4,-3,3,4,5,6}) expected.put(new Cell(x, -20, 59), Material.DARK_OAK_PLANKS);
-        expected.put(new Cell(0, -20, 77), Material.DARK_OAK_PLANKS);
-        cluster("SYNTHESIS_PLINTH", new Cell(0, -20, 77), "support for the final intake seal docket");
-        expected.put(new Cell(-6, -20, 72), Material.DARK_OAK_PLANKS);
-        cluster("PUMP_LOG_STAND", new Cell(-6, -20, 72), "support for the heat and pump log");
+        for (int x = -6; x <= 6; x++) {
+            clusterBlock("EXAMINER_FILING_COUNTER", new Cell(x, -20, 76),
+                    x == -6 || x == 6 ? Material.WAXED_WEATHERED_CUT_COPPER : Material.POLISHED_ANDESITE,
+                    "single public counter where one reconciled report is lodged");
+            if (x != 0) clusterBlock("COUNTER_WORKING_PAPERS", new Cell(x, -19, 76),
+                    x % 3 == 0 ? Material.LIGHT_GRAY_CARPET : Material.WHITE_CARPET,
+                    "composed stacks of working copies around the central findings ledger");
+        }
+        clusterBlock("EXAMINER_SIDE_TRAYS", new Cell(5, -20, 75), Material.DARK_OAK_PLANKS,
+                "side table carrying the weighted civic seal press");
+        clusterBlock("EXAMINER_SIDE_TRAYS", new Cell(-5, -20, 75), Material.DARK_OAK_PLANKS,
+                "side table carrying ink and blotting materials");
+        directionalCluster("EXAMINER_SEAL_PRESS", new Cell(5, -19, 75), Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
+                "minecraft:heavy_weighted_pressure_plate[power=0]",
+                "weighted civic seal press beside the findings ledger");
+        clusterBlock("EXAMINER_INK_TRAY", new Cell(-5, -19, 75), Material.BLACK_CARPET,
+                "ink and blotting tray for the examiner's endorsed report");
     }
 
-    private void referenceSurface() {
+    private void referenceSurfaces() {
         addReference(0, 0, 5, "south", new Cell(0, 0, 7), "INTAKE_EXAMINER_DOCKET",
-                "Intake Examiner's Docket",
-                "WORK ORDER 14\nThe refuge register and works plan disagree.\f"
-                + "Reconcile four entries before the Commons seal can be released: public approach; works campaigns; safe berths; reason for descent.\f"
-                + "Read the surviving records. At Intake, open each brass filing docket. Crouch and use it to stamp a finding after two records agree.");
+                "Examiner Mara Venn", "official work order", "Intake Examiner's Docket",
+                "COMMISSION 14 — MARA VENN\nThe refuge register does not agree with the works file. Before I release the Commons seal, establish the public road, the building campaigns, the supported refuge places, and the reason for the down-cut.\f"
+                + "I left one findings ledger on the Intake counter. Enter one clause under each heading, then lodge the whole report. Returned papers are not marked by section. Once endorsed, add the account that all four findings support.",
+                Material.LECTERN, Presentation.NATIVE_BOOK, "briefing");
+        addReferenceArtifact(31, -19, 83, "west", new Cell(28, -20, 83), "FIELD_ARCHIVE_READBACK",
+                "Intake record office", "bound field archive", "Examiner's Field Archive", "archive",
+                Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
     }
 
     private void evidenceSurfaces() {
-        addEvidence(-8,0,7,"south",new Cell(-8,0,9),"DRAINAGE_MAP","P4.F1","drainage_map",
-                "Drainage Survey 14-A", "The quarry and well drains end outside this Mouth. One graded intake road crosses the threshold; its return lane shares the same crown.");
-        addEvidence(8,0,7,"south",new Cell(8,0,9),"CART_WEAR_LOG","P4.F1","cart_wear",
-                "Cart Inspector's Log", "Loaded carts descended on the east rut. Empty carts climbed the west rut. The clerk found no second public approach.");
-        addEvidence(-5,-20,59,"south",new Cell(-5,-20,61),"CIVIC_JOIN_SURVEY","P4.F2","material_join_civic",
-                "Works Joint Survey", "Rough tuff ends first. Dressed civic stone keys into it. Deep tile braces cut around both. The joints record three separate campaigns.");
-        addEvidence(29,-19,65,"south",new Cell(29,-20,67),"SURVEY_REVISIONS","P4.F2","survey_revisions",
-                "Survey Revisions A-C", "A: storm shelter only. B: intake and record office. C: Commons spine below the controlled seal.");
-        addEvidence(8,-20,59,"south",new Cell(8,-20,61),"POPULATION_BOARD","P4.F3","population_board",
-                "Refuge Intake Board", "Sleeping register: 286. Work berths: 42, counted separately. Intake officers must not add the two figures.");
-        addEvidence(24,-19,66,"south",new Cell(24,-20,68),"RATION_LEDGER","P4.F3","ration_ledger",
-                "Seven-Day Ration Abstract", "Grain, lamp oil, and boiler draw support 294 full refuge shares. The water gauge is rated for 300.");
-        addEvidence(-6,-19,72,"east",new Cell(-3,-20,72),"DESCENT_HEAT_LOG","P4.F4","descent_heat_marks",
-                "Heat and Pump Log", "Below the civic landing, wall heat steadies and pump lift shortens. A lateral gallery would remain colder and farther from the sump.");
-        addEvidence(24,-19,74,"south",new Cell(24,-20,77),"FOUNDING_MINUTES","P4.F4","founding_minutes",
-                "Founding Works Minutes", "The committee chose the down-cut: stable cover, shorter winter haul, and direct service beside the water line.");
+        addEvidenceArtifact(-8,0,6,"south",new Cell(-8,0,8),"DRAINAGE_PLAN_TABLE","P4.F1","drainage_plan",
+                "Neri Holt, works surveyor", "annotated drainage diagram", "Drainage Sheet 14-A",
+                "NORTH: quarry drain — stops at headwall\nSOUTH: well drain — stops outside crown\nCENTER: one graded road through the Mouth\f"
+                + "Holt's red pencil: 'Keep both gutters off the cart crown. Loaded side east; empty return west. Do not cut a second approach.'",
+                Material.CARTOGRAPHY_TABLE, Presentation.NATIVE_BOOK);
+        addEvidenceSign(8,2,1,"south",new Cell(8,2,0),new Cell(8,0,3),"CART_RUT_INSPECTION_TAG",
+                "P4.F1","cart_rut_tag","Orris Pell, road inspector","field tag fixed beside the physical ruts",
+                "ROAD CHECK 18","EAST: LOAD","WEST: RETURN","ONE CROWN");
+        addEvidenceSign(-5,-18,56,"south",new Cell(-5,-18,55),new Cell(-5,-20,59),"THREE_CAMPAIGN_MASON_MARK",
+                "P4.F2","mason_mark","Toma Rusk, municipal mason","chalk annotation across the physical construction seam",
+                "RUSK — JOINT","A TUFF SHELL","B CIVIC STONE","C DEEP TILE");
+        addEvidenceArtifact(31,-19,65,"west",new Cell(28,-20,65),"SURVEY_REVISION_LETTER","P4.F2","revision_letter",
+                "Eda Sorn to Mara Venn", "personal cover letter with office marginalia", "Eda's Revision Cover",
+                "Mara—\nI found the three rolls you asked for. A ends at the storm shell. B adds Intake and the copy office. C carries the Commons spine beneath the seal.\f"
+                + "In the margin, in Mara's hand: 'Not repairs. Three appropriations, three crews, one continuing plan.'",
+                Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
+        addEvidenceArtifact(24,-19,66,"south",new Cell(24,-20,68),"BERTH_REGISTER","P4.F3","berth_register",
+                "Lio Marr, refuge registrar", "official refuge register", "Refuge Register — East Leaf",
+                "Assigned sleeping places ........ 286\nInfirmary reserve cots ............. 8\nSupported refuge places .......... 294\f"
+                + "Work berths in pump, copy, and watch rooms: 42. These are shifts, not sleeping places, and are excluded from the refuge total.",
+                Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
+        addEvidenceSign(19,-18,75,"east",new Cell(18,-18,75),new Cell(21,-20,75),"RATION_TALLY_NOTICE",
+                "P4.F3","ration_tally","Sela Orr, quartermaster","posted seven-day supply tally",
+                "7-DAY TALLY","294 FULL SHARES","WATER GAUGE 300","42 SHIFTS OMIT");
+        expected.put(new Cell(-15, -18, 72), Material.WEATHERED_CUT_COPPER);
+        addEvidenceSign(-14,-18,72,"east",new Cell(-15,-18,72),new Cell(-11,-20,72),"PUMP_GAUGE_CARD",
+                "P4.F4","pump_gauge","Iven Quill, pump engineer","maintenance gauge card beside the working hydraulic train",
+                "PUMP CARD 7","LOWER: 11 LIFT","WARM + STEADY","WINTER ROUTE");
+        addEvidenceArtifact(29,-19,79,"west",new Cell(26,-20,79),"FOUNDING_ENGINEER_LETTER","P4.F4","engineer_letter",
+                "Iven Quill to Councillor Meve", "personal engineering letter retained with works minutes", "Quill's Winter Letter",
+                "Councillor—\nA level gallery saves digging but costs us every winter: longer pipe, colder wall, and another exposed haul.\f"
+                + "Drive down beside the sump. The cover is stable, the pump lift shortens, and stores reach the Commons without crossing the runoff walk. —I. Quill",
+                Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
     }
 
     private void submissionSurfaces() {
-        addSubmission(-4,-19,76,"north",new Cell(-4,-20,73),"FILE_PUBLIC_MOUTH","P4.F1","Mouth Finding Docket");
-        addSubmission(-2,-19,76,"north",new Cell(-2,-20,73),"FILE_BUILD_PHASES","P4.F2","Works Finding Docket");
-        addSubmission(2,-19,76,"north",new Cell(2,-20,73),"FILE_CAPACITY","P4.F3","Capacity Finding Docket");
-        addSubmission(4,-19,76,"north",new Cell(4,-20,73),"FILE_DESCENT","P4.F4","Descent Finding Docket");
-        addSubmission(0,-19,77,"north",new Cell(0,-20,74),"FILE_INTAKE_SYNTHESIS","P4.F5","Intake Seal Docket");
-        addSubmission(13,-20,74,"west",new Cell(10,-20,74),"FIELD_ARCHIVE_READBACK",null,"Field Archive Index");
+        addSubmission(0,-19,76,"north",new Cell(0,-20,73),"EXAMINER_FINDINGS_LEDGER","Examiner's Findings Ledger");
     }
 
     private void thresholdSigns() {
         addSign(0,2,1,"south",new Cell(0,2,0),new Cell(0,0,3),"MOUTH_COMMISSION_PLAQUE",
-                "municipal commission identity","INTAKE WORKS","COMMISSION 14","EXAMINER DUE","");
+                "municipal commission identity","INTAKE WORKS","COMMISSION 14","MARA VENN","");
         addSign(19,-18,66,"east",new Cell(18,-18,66),new Cell(21,-20,66),"RECORD_OFFICE_PLAQUE",
-                "credible office identity","RECORD OFFICE","COPIES + SURVEYS","BELL AT DESK","");
-        addSign(-6,-18,88,"north",new Cell(-6,-18,89),new Cell(-5,-20,87),"COMMONS_SEAL_PLAQUE",
-                "controlled civic seal identity","COMMONS SEAL","WICKET No. 3","CLERK RELEASE","");
-        addSign(-14,-18,61,"north",new Cell(-14,-18,62),new Cell(-14,-20,59),"RUNOFF_GAUGE_PLAQUE",
-                "works gauge identity and rated capacity","RUNOFF WORKS","GAUGE No. 7","300 BERTH MAX","");
+                "credible office identity","RECORD OFFICE","SURVEYS + COPIES","BELL AT DESK","");
     }
 
     private void gateFrame(boolean gateOpen) {
@@ -479,28 +562,27 @@ public final class PrivateSliceWorld {
             expected.put(new Cell(-6, y, 89), Material.POLISHED_BLACKSTONE_BRICKS);
             expected.put(new Cell(6, y, 89), Material.POLISHED_BLACKSTONE_BRICKS);
         }
-        for (int x = -5; x <= 5; x++) for (int y = -20; y <= -13; y++)
-            expected.put(new Cell(x, y, 89), gateOpen ? Material.AIR : Material.COPPER_GRATE);
+        for (int x = -5; x <= 5; x++) for (int y = -20; y <= -13; y++) {
+            Cell cell = new Cell(x, y, 89);
+            if (gateOpen) expected.put(cell, Material.AIR);
+            else directional(cell, Material.COPPER_GRATE, "minecraft:copper_grate[waterlogged=false]");
+        }
         expected.put(new Cell(-6, -16, 88), Material.REDSTONE_LAMP);
         expected.put(new Cell(6, -16, 88), Material.REDSTONE_LAMP);
     }
 
     private void decorateSurfaces() {
-        evidence.forEach(this::writeBook);
         submissions.forEach((cell, surface) -> writeBook(cell, surface.asEvidence()));
-        references.forEach((cell, surface) -> writeBook(cell, surface.asEvidence()));
+        references.forEach((cell, surface) -> {
+            if (surface.physicalMaterial() == Material.LECTERN) writeBook(cell, surface.asEvidence());
+        });
         signs.forEach(this::writeSign);
     }
 
     private void writeBook(Cell cell, EvidenceSurface surface) {
         Block block = block(cell);
         if (!(block.getState() instanceof Lectern lectern)) return;
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-        BookMeta meta = (BookMeta) book.getItemMeta();
-        meta.setTitle(surface.title());
-        meta.setAuthor("Intake Clerk's Office");
-        meta.pages(bookPages(surface.body()));
-        book.setItemMeta(meta);
+        ItemStack book = authoredBook(surface.title(), surface.author(), bookPages(surface.body()));
         // LecternInventory is live. Updating the earlier block-state snapshot after this
         // write replaces the inventory with that snapshot's empty contents on Paper.
         lectern.getInventory().setItem(0, book);
@@ -511,7 +593,105 @@ public final class PrivateSliceWorld {
         ItemStack item = lectern.getInventory().getItem(0);
         if (item == null || item.getType() != Material.WRITTEN_BOOK || !(item.getItemMeta() instanceof BookMeta meta))
             return false;
-        return surface.title().equals(meta.getTitle()) && bookPages(surface.body()).equals(meta.pages());
+        return surface.title().equals(meta.getTitle()) && surface.author().equals(meta.getAuthor())
+                && bookPages(surface.body()).equals(meta.pages());
+    }
+
+    public void openEvidenceBook(Player player, EvidenceSurface surface) {
+        if (surface.presentation() != Presentation.NATIVE_BOOK) return;
+        player.openBook(authoredBook(surface.title(), surface.author(), bookPages(surface.body())));
+    }
+
+    public void openReferenceBook(Player player, ReferenceSurface surface, PrivateSliceState state) {
+        if ("archive".equals(surface.kind())) {
+            List<Component> pages = new ArrayList<>();
+            List<String> entered = new ArrayList<>();
+            for (String finding : PrivateSliceState.BASE_FINDINGS) {
+                entered.add(finding + ": " + state.observedSources(finding).size() + "/2 records; finding "
+                        + (state.findingCommitted(finding) ? "endorsed" : "open"));
+            }
+            pages.add(Component.text("FIELD ARCHIVE\n\n" + String.join("\n", entered)));
+            pages.add(Component.text("Changed place\n\nCommons seal: " + (state.gateOpen() ? "released" : "held")
+                    + "\n\nThe filed report is durable. Unentered drafts are working paper and are not retained."));
+            pages.add(Component.text("ACCESS COPY\n\nWest view: one capacity digit appears freshly overwritten.\n\n"
+                    + "East view: the same digit remains worn.\n\nNeither view is evidence for the report."));
+            player.openBook(authoredBook(surface.title(), surface.author(), pages));
+            return;
+        }
+        player.openBook(authoredBook(surface.title(), surface.author(), bookPages(surface.body())));
+    }
+
+    public void openFilingLedger(Player player, PrivateSliceState state) {
+        String contributor = player.getUniqueId().toString();
+        Map<String, String> draft = state.draft(contributor);
+        List<Component> pages = new ArrayList<>();
+        pages.add(Component.text("EXAMINER'S FINDINGS\n\nOne clause must be marked under each heading. The whole report is examined together; returned papers are not marked by section."));
+        pages.add(choicePage("PUBLIC ROAD", "P4.F1", draft, List.of(
+                choice("Two separate public roads served the Mouth.", "two_separate_public_roads"),
+                choice("One road carried loaded descent and empty return.", "one_road_loaded_down_empty_return"),
+                choice("The road served drainage crews only.", "drainage_crews_only"),
+                choice("No cart road crossed the threshold.", "no_cart_road_crossed"))));
+        pages.add(choicePage("WORKS CAMPAIGNS", "P4.F2", draft, List.of(
+                choice("One emergency build produced every room.", "single_emergency_build"),
+                choice("Shelter and office were the only campaigns.", "two_campaigns_shelter_and_office"),
+                choice("Four unrelated repairs made the visible joints.", "four_unrelated_repairs"),
+                choice("Shelter, Intake, and Commons were three campaigns.", "three_campaigns_shelter_intake_commons"))));
+        pages.add(choicePage("SUPPORTED PLACES", "P4.F3", draft, List.of(
+                choice("328 people, including every work berth.", "328_people_including_work_berths"),
+                choice("294 refuge places; work berths are excluded.", "294_refuge_places_work_berths_excluded"),
+                choice("286 people; infirmary cots do not count.", "286_people_no_infirmary"),
+                choice("300 people, equal to the water gauge.", "300_people_equal_to_water_gauge"))));
+        pages.add(choicePage("THE DOWN-CUT", "P4.F4", draft, List.of(
+                choice("It concealed the works from the public road.", "concealment_from_public_road"),
+                choice("It reached a second entrance.", "access_to_a_second_entrance"),
+                choice("Stable cover and shorter winter service required it.", "downcut_for_stable_cover_shorter_winter_service"),
+                choice("It followed an accidental quarry break.", "accidental_quarry_breakthrough"))));
+        Component lodge = Component.text("LODGE FOUR-CLAUSE REPORT")
+                .clickEvent(ClickEvent.runCommand("/obsfile lodge"));
+        pages.add(Component.text("REPORT ENDORSEMENT\n\nWhen all four clauses are marked, lodge the report at this counter.\n\n")
+                .append(lodge));
+        if (PrivateSliceState.BASE_FINDINGS.stream().allMatch(state::findingCommitted)) {
+            pages.add(choicePage("ACCOUNT SUPPORTED", "P4.F5", draft, List.of(
+                    choice("A temporary quarry shelter abandoned after one winter.", "temporary_quarry_shelter_abandoned_after_one_winter"),
+                    choice("A planned civic intake for 294, not one emergency shelter.", "planned_civic_intake_for_294_not_single_emergency_shelter"),
+                    choice("A private archive with no refuge role.", "private_archive_with_no_public_refuge_role"),
+                    choice("A natural cave mistaken for civic works.", "natural_cave_later_mistaken_for_civic_works"))));
+            pages.add(Component.text("COMMONS SEAL\n\nThe four endorsed findings support one account of the Mouth. Mark it, then lodge the seal endorsement.\n\n")
+                    .append(Component.text("LODGE SEAL ENDORSEMENT")
+                            .clickEvent(ClickEvent.runCommand("/obsfile seal"))));
+        }
+        player.openBook(authoredBook("Examiner's Findings", "Mara Venn", pages));
+    }
+
+    public boolean nearFilingLedger(Location location) {
+        if (!inside(location)) return false;
+        Cell c = relative(location);
+        return Math.abs(c.x) <= 4 && c.y >= -20 && c.y <= -18 && c.z >= 72 && c.z <= 77;
+    }
+
+    private static Choice choice(String label, String id) { return new Choice(label, id); }
+
+    private static Component choicePage(String heading, String finding, Map<String, String> draft,
+            List<Choice> choices) {
+        Component page = Component.text(heading + "\n\n");
+        String selected = draft.get(finding);
+        for (Choice choice : choices) {
+            String marker = choice.id().equals(selected) ? "[X] " : "[ ] ";
+            page = page.append(Component.text(marker + choice.label())
+                    .clickEvent(ClickEvent.runCommand("/obsfile mark " + finding + " " + choice.id())))
+                    .append(Component.text("\n\n"));
+        }
+        return page;
+    }
+
+    private static ItemStack authoredBook(String title, String author, List<Component> pages) {
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+        BookMeta meta = (BookMeta) book.getItemMeta();
+        meta.setTitle(title);
+        meta.setAuthor(author);
+        meta.pages(pages);
+        book.setItemMeta(meta);
+        return book;
     }
 
     private void writeSign(Cell cell, SignSurface surface) {
@@ -527,28 +707,56 @@ public final class PrivateSliceWorld {
         return true;
     }
 
-    private void addEvidence(int x, int y, int z, String facing, Cell readerCell, String surfaceId,
-            String findingId, String sourceId, String title, String body) {
+    private void addEvidenceArtifact(int x, int y, int z, String facing, Cell readerCell, String surfaceId,
+            String findingId, String sourceId, String author, String format, String title, String body,
+            Material physicalMaterial, Presentation presentation) {
         Cell cell = new Cell(x, y, z);
-        directional(cell, Material.LECTERN, lecternData(facing));
-        support(cell, new Cell(x, y - 1, z), "evidence lectern support");
-        evidence.put(cell, new EvidenceSurface(cell, readerCell, surfaceId, findingId, sourceId, title, body));
+        if (physicalMaterial == Material.CHISELED_BOOKSHELF) {
+            directional(cell, physicalMaterial, "minecraft:chiseled_bookshelf[facing=" + facing + "]");
+        } else {
+            expected.put(cell, physicalMaterial);
+        }
+        support(cell, new Cell(x, y - 1, z), "supported " + format);
+        evidence.put(cell, new EvidenceSurface(cell, readerCell, surfaceId, findingId, sourceId,
+                author, format, title, body, physicalMaterial, presentation));
+    }
+
+    private void addEvidenceSign(int x, int y, int z, String facing, Cell supportCell, Cell readerCell,
+            String surfaceId, String findingId, String sourceId, String author, String format,
+            String... lines) {
+        addSign(x, y, z, facing, supportCell, readerCell, surfaceId, format, lines);
+        Cell cell = new Cell(x, y, z);
+        evidence.put(cell, new EvidenceSurface(cell, readerCell, surfaceId, findingId, sourceId,
+                author, format, String.join(" ", lines), String.join("\n", lines), Material.OAK_WALL_SIGN,
+                Presentation.VISIBLE_ENVIRONMENTAL_RECORD));
     }
 
     private void addSubmission(int x, int y, int z, String facing, Cell readerCell,
-            String surfaceId, String findingId, String label) {
+            String surfaceId, String label) {
         Cell cell = new Cell(x, y, z);
         directional(cell, Material.LECTERN, lecternData(facing));
-        support(cell, new Cell(x, y - 1, z), "filing lectern support");
-        submissions.put(cell, new SubmissionSurface(cell, readerCell, surfaceId, findingId, label));
+        support(cell, new Cell(x, y - 1, z), "central findings-ledger support in the public filing counter");
+        submissions.put(cell, new SubmissionSurface(cell, readerCell, surfaceId, label));
     }
 
     private void addReference(int x, int y, int z, String facing, Cell readerCell,
-            String surfaceId, String title, String body) {
+            String surfaceId, String author, String format, String title, String body,
+            Material physicalMaterial, Presentation presentation, String kind) {
         Cell cell = new Cell(x, y, z);
-        directional(cell, Material.LECTERN, lecternData(facing));
-        support(cell, new Cell(x, y - 1, z), "examiner docket support");
-        references.put(cell, new ReferenceSurface(cell, readerCell, surfaceId, title, body));
+        directional(cell, physicalMaterial, lecternData(facing));
+        support(cell, new Cell(x, y - 1, z), "supported " + format);
+        references.put(cell, new ReferenceSurface(cell, readerCell, surfaceId, author, format, title,
+                body, physicalMaterial, presentation, kind));
+    }
+
+    private void addReferenceArtifact(int x, int y, int z, String facing, Cell readerCell,
+            String surfaceId, String author, String format, String title, String kind,
+            Material physicalMaterial, Presentation presentation) {
+        Cell cell = new Cell(x, y, z);
+        directional(cell, physicalMaterial, "minecraft:chiseled_bookshelf[facing=" + facing + "]");
+        support(cell, new Cell(x, y - 1, z), "supported " + format);
+        references.put(cell, new ReferenceSurface(cell, readerCell, surfaceId, author, format, title,
+                "Dynamic local-primary archive readback", physicalMaterial, presentation, kind));
     }
 
     private void addSign(int x, int y, int z, String facing, Cell supportCell, Cell readerCell,
@@ -583,6 +791,12 @@ public final class PrivateSliceWorld {
 
     private void clusterBlock(String clusterId, Cell cell, Material material, String purpose) {
         expected.put(cell, material);
+        cluster(clusterId, cell, purpose);
+    }
+
+    private void directionalCluster(String clusterId, Cell cell, Material material, String blockData,
+            String purpose) {
+        directional(cell, material, blockData);
         cluster(clusterId, cell, purpose);
     }
 
@@ -651,12 +865,20 @@ public final class PrivateSliceWorld {
         if (!counts.equals(Map.of("P4.F1", 2, "P4.F2", 2, "P4.F3", 2, "P4.F4", 2))) {
             findings.add("investigation evidence topology must be exact paired records: " + counts);
         }
-        if (references.size() != 1 || submissions.size() != 6) {
+        if (references.size() != 2 || submissions.size() != 1) {
             findings.add("investigation briefing/filing topology drift references=" + references.size()
                     + " submissions=" + submissions.size());
         }
-        if (evidence.values().stream().anyMatch(surface -> expected.get(surface.cell()) != Material.LECTERN)) {
-            findings.add("chat-only or non-book evidence surface present");
+        long lecterns = expected.values().stream().filter(material -> material == Material.LECTERN).count();
+        if (lecterns != 2) findings.add("v4 requires exactly two purpose-specific lecterns actual=" + lecterns);
+        Set<String> formats = new LinkedHashSet<>();
+        evidence.values().forEach(surface -> formats.add(surface.format()));
+        if (formats.size() < 7) findings.add("artifact format diversity is not authored: " + formats);
+        long nativeBooks = evidence.values().stream()
+                .filter(surface -> surface.presentation() == Presentation.NATIVE_BOOK).count();
+        long environmental = evidence.size() - nativeBooks;
+        if (nativeBooks != 4 || environmental != 4) {
+            findings.add("evidence medium balance drift native_books=" + nativeBooks + " environmental=" + environmental);
         }
     }
 
@@ -690,9 +912,11 @@ public final class PrivateSliceWorld {
 
     private void checkImmersiveText(List<String> findings) {
         List<String> banned = List.of("this is the entrance", "this is the exit", "same public route",
-                "no side exit", "keep aisle clear", "file:");
+                "no side exit", "keep aisle clear", "file:", "right-click", "crouch-use",
+                "solve the puzzle", "submit here", "mysterious", "ancient secret");
         List<String> text = new ArrayList<>();
-        evidence.values().forEach(surface -> text.add(surface.title() + "\n" + surface.body()));
+        evidence.values().forEach(surface -> text.add(surface.author() + "\n" + surface.format()
+                + "\n" + surface.title() + "\n" + surface.body()));
         references.values().forEach(surface -> text.add(surface.title() + "\n" + surface.body()));
         signs.values().forEach(surface -> text.add(String.join(" ", surface.lines())));
         for (String value : text) for (String phrase : banned) if (value.toLowerCase().contains(phrase))
@@ -711,7 +935,9 @@ public final class PrivateSliceWorld {
     private static boolean requiresSupport(Material material) {
         return material == Material.LECTERN || material == Material.CHISELED_BOOKSHELF
                 || material == Material.BOOKSHELF || material == Material.LANTERN
-                || material == Material.OAK_WALL_SIGN || material == Material.DARK_OAK_SLAB;
+                || material == Material.OAK_WALL_SIGN || material == Material.DARK_OAK_SLAB
+                || material == Material.CARTOGRAPHY_TABLE || material == Material.HEAVY_WEIGHTED_PRESSURE_PLATE
+                || material.name().endsWith("_STAIRS") || material.name().endsWith("_CARPET");
     }
 
     private static String lecternData(String facing) {
@@ -798,29 +1024,34 @@ public final class PrivateSliceWorld {
     }
 
     public record EvidenceSurface(Cell cell, Cell readerCell, String surfaceId, String findingId,
-            String sourceId, String title, String body) {
+            String sourceId, String author, String format, String title, String body,
+            Material physicalMaterial, Presentation presentation) {
         String canonical() { return String.join("|", cell.toString(), readerCell.toString(), surfaceId,
-                findingId, sourceId, title, body); }
+                findingId, sourceId, author, format, title, body, physicalMaterial.name(), presentation.name()); }
     }
 
-    public record SubmissionSurface(Cell cell, Cell readerCell, String surfaceId, String findingId, String label) {
+    public record SubmissionSurface(Cell cell, Cell readerCell, String surfaceId, String label) {
         EvidenceSurface asEvidence() {
-            String body = findingId == null
-                    ? "ARCHIVE INDEX\nOpen records are retained here. Crouch and use this index for a concise progress readback."
-                    : "FINDING DOCKET\nRead the paired records for this question. Crouch and use this docket to stamp the clerk's finding.";
-            return new EvidenceSurface(cell, readerCell, surfaceId, findingId == null ? "READBACK" : findingId,
-                    "submission", label, body);
+            String body = "EXAMINER'S FINDINGS\nMark one supported clause under each heading. The whole report is examined together; returned papers are not marked by section.";
+            return new EvidenceSurface(cell, readerCell, surfaceId, "REPORT", "submission",
+                    "Mara Venn", "bound findings ledger", label, body, Material.LECTERN,
+                    Presentation.NATIVE_BOOK);
         }
         String canonical() { return String.join("|", cell.toString(), readerCell.toString(), surfaceId,
-                findingId == null ? "READBACK" : findingId, label); }
+                label); }
     }
 
-    public record ReferenceSurface(Cell cell, Cell readerCell, String surfaceId, String title, String body) {
+    public record ReferenceSurface(Cell cell, Cell readerCell, String surfaceId, String author, String format,
+            String title, String body, Material physicalMaterial, Presentation presentation, String kind) {
         EvidenceSurface asEvidence() {
-            return new EvidenceSurface(cell, readerCell, surfaceId, "REFERENCE", "briefing", title, body);
+            return new EvidenceSurface(cell, readerCell, surfaceId, "REFERENCE", kind, author, format,
+                    title, body, physicalMaterial, presentation);
         }
-        String canonical() { return String.join("|", cell.toString(), readerCell.toString(), surfaceId, title, body); }
+        String canonical() { return String.join("|", cell.toString(), readerCell.toString(), surfaceId,
+                author, format, title, body, physicalMaterial.name(), presentation.name(), kind); }
     }
+
+    public enum Presentation { NATIVE_BOOK, VISIBLE_ENVIRONMENTAL_RECORD }
 
     private record SignSurface(Cell cell, Cell supportCell, Cell readerCell, String surfaceId,
             String purpose, List<String> lines) {
@@ -837,6 +1068,8 @@ public final class PrivateSliceWorld {
                 .sorted(Comparator.comparingInt(Cell::x).thenComparingInt(Cell::y).thenComparingInt(Cell::z))
                 .map(Cell::toString).toList(); }
     }
+
+    private record Choice(String label, String id) { }
 
     public record Audit(int cellsChecked, List<String> findings, String worldHash,
             Map<Material, Integer> materialCounts, int evidenceSurfaceCount, int submissionSurfaceCount,

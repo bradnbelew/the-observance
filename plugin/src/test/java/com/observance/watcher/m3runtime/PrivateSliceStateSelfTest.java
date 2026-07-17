@@ -11,7 +11,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
-/** Proves v3 physical book custody, paired findings, local gate, replay, and exact A2 approval. */
+/** Proves v4 content-dependent reports, negative flows, local gate, replay, and exact A2 approval. */
 public final class PrivateSliceStateSelfTest {
     private static final String WATCHER_HASH =
             "3a2187bdc752b583d92ae47cb0a718b15c02ea2684b2b8fd2c2c8ccf88d9c10a";
@@ -19,59 +19,109 @@ public final class PrivateSliceStateSelfTest {
     private PrivateSliceStateSelfTest() { }
 
     public static void main(String[] args) throws Exception {
-        Path dir = Files.createTempDirectory("observance-m3-slice-");
+        Path dir = Files.createTempDirectory("observance-m3-v4-slice-");
         Path path = dir.resolve("slice.journal");
         try {
             PrivateSliceState state = PrivateSliceState.open(path);
             check(!state.gateOpen(), "gate begins closed");
-            state.commitObservation("P4.F3", "population_board", "brad");
-            state.commitObservation("P4.F3", "ration_ledger", "brad");
-            state.commitFinding("P4.F3", List.of("population_board", "ration_ledger"), "brad");
-            state.commitObservation("P4.F1", "cart_wear", "alice");
-            state.commitObservation("P4.F1", "drainage_map", "alice");
-            state.commitFinding("P4.F1", List.of("cart_wear", "drainage_map"), "alice");
-            expectIllegalState(() -> state.commitFinding("P4.F5", PrivateSliceState.BASE_FINDINGS, "alice"));
-            state.commitObservation("P4.F4", "descent_heat_marks", "bob");
-            state.commitObservation("P4.F4", "founding_minutes", "bob");
-            state.commitFinding("P4.F4", List.of("descent_heat_marks", "founding_minutes"), "bob");
-            state.commitObservation("P4.F2", "material_join_civic", "alice");
-            state.commitObservation("P4.F2", "survey_revisions", "alice");
-            state.commitFinding("P4.F2", List.of("material_join_civic", "survey_revisions"), "alice");
-            long beforeReplay = state.catchUpAfter(0).size();
-            state.commitFinding("P4.F2", List.of("survey_revisions", "material_join_civic"), "bob");
-            check(state.contributors("P4.F2").equals(java.util.Set.of("alice", "bob")),
-                    "contributors are provenance, not eligibility");
-            check(state.catchUpAfter(0).size() == beforeReplay + 1, "finding replay adds only new contribution");
-            expectRefusal(() -> state.commitFinding(
-                    "P4.F2", List.of("different_source", "survey_revisions"), "carol"));
+            selectCorrectReport(state, "no-records");
+            expectIllegalState(() -> state.lodgeReport("no-records", 1_789_000_000L));
 
-            long now = 1_789_000_000L;
-            state.approveWatcher("brad-a2-v3", "WestReviewer", "EastReviewer", now + 600, now);
-            expectIllegalState(() -> state.consumeWatcher("brad-a2-v3", "Wrong", "EastReviewer", now + 1));
-            state.consumeWatcher("brad-a2-v3", "WestReviewer", "EastReviewer", now + 1);
-            expectIllegalState(() -> state.consumeWatcher(
-                    "brad-a2-v3", "WestReviewer", "EastReviewer", now + 2));
+            observeAllAnySubset(state);
+            selectEveryPrintedClause(state, "naive");
+            expectReportRefusal(() -> state.lodgeReport("naive", 1_789_000_010L));
+            check(PrivateSliceState.BASE_FINDINGS.stream().noneMatch(state::findingCommitted)
+                    && !state.gateOpen(), "naive click-through advances nothing");
 
-            long cursor = state.catchUpAfter(0).size();
-            state.commitFinding("P4.F5", PrivateSliceState.BASE_FINDINGS, "brad");
-            check(state.gateOpen(), "local synthesis opens the gate");
-            check(state.catchUpAfter(cursor).stream().anyMatch(receipt -> "gate_opened".equals(receipt.eventType())),
-                    "cursor catch-up contains the physical gate receipt");
+            PrivateSliceState afterNaiveRestart = PrivateSliceState.open(path);
+            check(afterNaiveRestart.refusalCount("naive") == 1,
+                    "naive refusal survives restart without solution payload");
+            for (int attempt = 0; attempt < PrivateSliceState.MAX_REFUSALS_PER_WINDOW; attempt++) {
+                selectWrongReport(afterNaiveRestart, "blind");
+                long epoch = 1_789_000_020L + attempt;
+                expectReportRefusal(() -> afterNaiveRestart.lodgeReport("blind", epoch));
+            }
+            selectCorrectReport(afterNaiveRestart, "blind");
+            expectThrottle(() -> afterNaiveRestart.lodgeReport("blind", 1_789_000_024L));
+            check(PrivateSliceState.BASE_FINDINGS.stream().noneMatch(afterNaiveRestart::findingCommitted),
+                    "bounded brute force cannot advance a finding");
+
+            selectCorrectReport(afterNaiveRestart, "brad");
+            afterNaiveRestart.lodgeReport("brad", 1_789_001_000L);
+            for (String finding : PrivateSliceState.BASE_FINDINGS) {
+                check(afterNaiveRestart.findingCommitted(finding), finding + " committed from exact report");
+                check(PrivateSliceState.EXACT_CONCLUSIONS.get(finding)
+                        .equals(afterNaiveRestart.committedConclusion(finding)),
+                        finding + " retains its content-dependent conclusion");
+            }
+            check(!afterNaiveRestart.gateOpen(), "four-clause report does not bypass synthesis");
+
+            long now = 1_789_001_100L;
+            afterNaiveRestart.approveWatcher("brad-a2-v4", "WestReviewer", "EastReviewer", now + 600, now);
+            expectIllegalState(() -> afterNaiveRestart.consumeWatcher(
+                    "brad-a2-v4", "Wrong", "EastReviewer", now + 1));
+            afterNaiveRestart.consumeWatcher("brad-a2-v4", "WestReviewer", "EastReviewer", now + 1);
+            expectIllegalState(() -> afterNaiveRestart.consumeWatcher(
+                    "brad-a2-v4", "WestReviewer", "EastReviewer", now + 2));
+
+            afterNaiveRestart.selectDraft(PrivateSliceState.SYNTHESIS,
+                    PrivateSliceState.CONCLUSION_OPTIONS.get(PrivateSliceState.SYNTHESIS).get(3), "brad");
+            expectReportRefusal(() -> afterNaiveRestart.lodgeSynthesis("brad", now + 10));
+            check(!afterNaiveRestart.gateOpen(), "wrong synthesis leaves gate closed");
+            long cursor = afterNaiveRestart.catchUpAfter(0).size();
+            afterNaiveRestart.selectDraft(PrivateSliceState.SYNTHESIS,
+                    PrivateSliceState.EXACT_CONCLUSIONS.get(PrivateSliceState.SYNTHESIS), "brad");
+            afterNaiveRestart.lodgeSynthesis("brad", now + 11);
+            check(afterNaiveRestart.gateOpen(), "exact synthesis opens local gate");
+            check(afterNaiveRestart.catchUpAfter(cursor).stream()
+                    .anyMatch(receipt -> "gate_opened".equals(receipt.eventType())),
+                    "cursor catch-up contains physical gate receipt");
 
             PrivateSliceState restarted = PrivateSliceState.open(path);
-            check(restarted.gateOpen() && restarted.findingCommitted("P4.F5"),
-                    "restart re-derives the committed gate state");
-            check(restarted.catchUpAfter(0).size() == state.catchUpAfter(0).size(),
-                    "restart does not duplicate receipts");
-            check(restarted.observedSources("P4.F2").containsAll(List.of("material_join_civic", "survey_revisions")),
-                    "restart preserves physical observation custody");
+            check(restarted.gateOpen() && restarted.findingCommitted(PrivateSliceState.SYNTHESIS),
+                    "restart re-derives committed gate and synthesis");
+            check(PrivateSliceState.EXACT_CONCLUSIONS.get(PrivateSliceState.SYNTHESIS)
+                    .equals(restarted.committedConclusion(PrivateSliceState.SYNTHESIS)),
+                    "restart retains exact synthesis conclusion");
+            check(restarted.observedSources("P4.F2").containsAll(List.of("mason_mark", "revision_letter")),
+                    "restart preserves any-subset physical observation custody");
+
             approvalBoundary();
             protectionSurface();
-            System.out.println("M3 private-slice v3 state self-test passed");
+            System.out.println("M3 private-slice v4 state self-test passed");
         } finally {
             Files.deleteIfExists(path);
             Files.deleteIfExists(dir);
         }
+    }
+
+    private static void observeAllAnySubset(PrivateSliceState state) throws Exception {
+        state.commitObservation("P4.F3", "ration_tally", "sela");
+        state.commitObservation("P4.F1", "cart_rut_tag", "orris");
+        state.commitObservation("P4.F4", "engineer_letter", "eda");
+        state.commitObservation("P4.F2", "mason_mark", "toma");
+        state.commitObservation("P4.F1", "drainage_plan", "neri");
+        state.commitObservation("P4.F4", "pump_gauge", "iven");
+        state.commitObservation("P4.F2", "revision_letter", "eda");
+        state.commitObservation("P4.F3", "berth_register", "lio");
+    }
+
+    private static void selectEveryPrintedClause(PrivateSliceState state, String contributor) {
+        for (String finding : PrivateSliceState.BASE_FINDINGS) {
+            for (String option : PrivateSliceState.CONCLUSION_OPTIONS.get(finding)) {
+                state.selectDraft(finding, option, contributor);
+            }
+        }
+    }
+
+    private static void selectWrongReport(PrivateSliceState state, String contributor) {
+        PrivateSliceState.BASE_FINDINGS.forEach(finding -> state.selectDraft(finding,
+                PrivateSliceState.CONCLUSION_OPTIONS.get(finding).get(0), contributor));
+    }
+
+    private static void selectCorrectReport(PrivateSliceState state, String contributor) {
+        PrivateSliceState.BASE_FINDINGS.forEach(finding -> state.selectDraft(finding,
+                PrivateSliceState.EXACT_CONCLUSIONS.get(finding), contributor));
     }
 
     private static void approvalBoundary() {
@@ -114,18 +164,21 @@ public final class PrivateSliceStateSelfTest {
             check(source.contains(required), "protected review runtime missing " + required);
         }
         String interaction = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceInteractionListener.java"));
-        for (String required : List.of("commitObservation", "commitFinding", "FIELD ARCHIVE",
-                "Accessibility readback", "setGate(true)", "referenceAt", "sendActionBar",
-                "Paper opens the authored written book")) {
+        for (String required : List.of("commitObservation", "openEvidenceBook", "openReferenceBook",
+                "openFilingLedger", "Presentation.NATIVE_BOOK", "sendActionBar")) {
             check(interaction.contains(required), "player-facing interaction missing " + required);
         }
-        check(!interaction.contains("sendMessage(Component.text(evidence.body()))"),
-                "evidence body must never be emitted into chat");
+        check(!interaction.contains("sendMessage("), "v4 evidence and filing feedback must not use chat");
+        String runtime = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceReviewRuntime.java"));
+        for (String required : List.of("naiveNegative", "bruteNegative", "counter_proximity_only",
+                "ReportRefusedException", "FilingThrottleException")) {
+            check(runtime.contains(required), "v4 negative/security runtime missing " + required);
+        }
         String world = Files.readString(Path.of("src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java"));
-        for (String required : List.of("expectedBlockData", "facing=west", "checkInvestigationTopology",
-                "checkWaterworks", "checkCorridor", "checkImmersiveText", "requiresSupport",
-                "unclassified floating furnishing", "GATE_CLOSED_COLLISION_CELLS = 88")) {
-            check(world.contains(required), "v3 authored world gate missing " + required);
+        for (String required : List.of("exactly two purpose-specific lecterns", "choicePage",
+                "VISIBLE_ENVIRONMENTAL_RECORD", "nearFilingLedger", "checkWaterworks",
+                "checkCorridor", "checkImmersiveText", "GATE_CLOSED_COLLISION_CELLS = 88")) {
+            check(world.contains(required), "v4 authored world gate missing " + required);
         }
     }
 
@@ -138,9 +191,14 @@ public final class PrivateSliceStateSelfTest {
         catch (IllegalStateException expected) { }
     }
 
-    private static void expectRefusal(Throwing action) throws Exception {
-        try { action.run(); throw new AssertionError("expected refusal"); }
-        catch (IllegalStateException | IllegalArgumentException expected) { }
+    private static void expectReportRefusal(Throwing action) throws Exception {
+        try { action.run(); throw new AssertionError("expected report refusal"); }
+        catch (PrivateSliceState.ReportRefusedException expected) { }
+    }
+
+    private static void expectThrottle(Throwing action) throws Exception {
+        try { action.run(); throw new AssertionError("expected filing throttle"); }
+        catch (PrivateSliceState.FilingThrottleException expected) { }
     }
 
     @FunctionalInterface private interface Throwing { void run() throws Exception; }

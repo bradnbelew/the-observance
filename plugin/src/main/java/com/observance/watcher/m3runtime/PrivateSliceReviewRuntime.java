@@ -1,5 +1,6 @@
 package com.observance.watcher.m3runtime;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,9 +20,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
 
-/** Review-only Bukkit adapter for the authored M3 v3 authority. */
+/** Review-only Bukkit adapter for the authored M3 v4 authority. */
 public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoCloseable {
     private static final String MARKER = ".observance-disposable-paper-target";
     private final JavaPlugin plugin;
@@ -41,7 +42,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         String worldName = plugin.getConfig().getString("m3-review.world", "m3_private_slice");
         World world = Bukkit.getWorld(worldName);
         if (world == null) throw new IllegalStateException("configured disposable world is not loaded: " + worldName);
-        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-v3.journal");
+        Path journal = plugin.getDataFolder().toPath().resolve("m3-private-slice-v4.journal");
         Files.createDirectories(journal.getParent());
         state = PrivateSliceState.open(journal);
         slice = new PrivateSliceWorld(world,
@@ -53,14 +54,18 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         world.setStorm(false);
         plugin.getServer().getPluginManager().registerEvents(new PrivateSliceProtectionListener(slice, state), plugin);
         plugin.getServer().getPluginManager().registerEvents(new PrivateSliceInteractionListener(slice, state), plugin);
-        if (plugin.getCommand("observancem3") == null) throw new IllegalStateException("observancem3 command missing");
+        if (plugin.getCommand("observancem3") == null || plugin.getCommand("observancefile") == null) {
+            throw new IllegalStateException("M3 review commands missing");
+        }
         plugin.getCommand("observancem3").setExecutor(this);
+        plugin.getCommand("observancefile").setExecutor(this);
         plugin.getLogger().info("M3_TARGET_CONFIRMED target=" + targetId + " commit=" + sourceCommit
-                + " authority=observance-p4-private-slice-v3 paper=" + Bukkit.getVersion());
+                + " authority=observance-p4-private-slice-v4 paper=" + Bukkit.getVersion());
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("observancefile")) return filingCommand(sender, args);
         String action = args.length == 0 ? "status" : args[0].toLowerCase(Locale.ROOT);
         try {
             switch (action) {
@@ -68,12 +73,18 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
                 case "build" -> build(sender);
                 case "audit" -> audit(sender);
                 case "observe" -> observe(sender, args);
-                case "finding" -> finding(sender, args);
+                case "draft" -> draft(sender, args);
+                case "lodge-report" -> lodgeReport(sender, args);
+                case "lodge-synthesis" -> lodgeSynthesis(sender, args);
+                case "naive-negative" -> naiveNegative(sender, args);
+                case "brute-negative" -> bruteNegative(sender, args);
+                case "report-correct" -> reportCorrect(sender, args);
+                case "synthesis-correct" -> synthesisCorrect(sender, args);
                 case "replay" -> replay(sender);
                 case "security" -> security(sender);
                 case "watcher-approve" -> watcherApprove(sender, args);
                 case "watcher-show" -> watcherShow(sender, args);
-                default -> sender.sendMessage("Usage: /obsm3 <status|build|audit|observe|finding|replay|security|watcher-approve|watcher-show>");
+                default -> sender.sendMessage("Usage: /obsm3 <status|build|audit|observe|draft|lodge-report|lodge-synthesis|naive-negative|brute-negative|report-correct|synthesis-correct|replay|security|watcher-approve|watcher-show>");
             }
         } catch (Exception failure) {
             sender.sendMessage("M3_FAIL action=" + action + " reason=" + safe(failure.getMessage()));
@@ -81,10 +92,54 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         return true;
     }
 
+    private boolean filingCommand(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player player)) return true;
+        try {
+            if (!slice.nearFilingLedger(player.getLocation())) {
+                throw new IllegalStateException("the findings ledger is only available at the examiner's counter");
+            }
+            String contributor = player.getUniqueId().toString();
+            String action = args.length == 0 ? "open" : args[0].toLowerCase(Locale.ROOT);
+            switch (action) {
+                case "open" -> slice.openFilingLedger(player, state);
+                case "mark" -> {
+                    if (args.length != 3) throw new IllegalArgumentException("invalid ledger clause");
+                    state.selectDraft(args[1], args[2], contributor);
+                    player.sendActionBar(Component.text("Clause marked in the working report."));
+                    reopenLedger(player);
+                }
+                case "lodge" -> {
+                    state.lodgeReport(contributor, Instant.now().getEpochSecond());
+                    player.sendActionBar(Component.text("Four-clause report endorsed. The seal account remains."));
+                    reopenLedger(player);
+                }
+                case "seal" -> {
+                    state.lodgeSynthesis(contributor, Instant.now().getEpochSecond());
+                    slice.setGate(true);
+                    player.sendActionBar(Component.text("Commons seal released."));
+                }
+                default -> throw new IllegalArgumentException("invalid ledger action");
+            }
+        } catch (PrivateSliceState.ReportRefusedException | PrivateSliceState.FilingThrottleException failure) {
+            player.sendActionBar(Component.text(failure.getMessage()));
+        } catch (Exception failure) {
+            player.sendActionBar(Component.text("Record desk unavailable: " + safe(failure.getMessage())));
+        }
+        return true;
+    }
+
+    private void reopenLedger(Player player) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline() && slice.nearFilingLedger(player.getLocation())) {
+                slice.openFilingLedger(player, state);
+            }
+        }, 1L);
+    }
+
     private void status(CommandSender sender) {
         sender.sendMessage("M3_STATUS target=" + targetId + " commit=" + sourceCommit
-                + " authority=v3 gate=" + (state.gateOpen() ? "open" : "closed")
-                + " evidence_surfaces=8 submissions=6 references=1 signs=4 paper=" + Bukkit.getVersion());
+                + " authority=v4 gate=" + (state.gateOpen() ? "open" : "closed")
+                + " evidence_surfaces=8 submissions=1 references=2 signs=6 lecterns=2 paper=" + Bukkit.getVersion());
     }
 
     private void build(CommandSender sender) throws IOException {
@@ -121,21 +176,107 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
                 + " contributor=" + args[3] + " label=" + safe(args[4]));
     }
 
-    private void finding(CommandSender sender, String[] args) throws IOException {
+    private void draft(CommandSender sender, String[] args) {
         requireOperator(sender);
-        if (args.length != 4) throw new IllegalArgumentException("finding requires <id> <contributor> <source1,source2>");
-        List<String> sources = List.of(args[3].split(",", -1));
-        state.commitFinding(args[1], sources, args[2]);
-        slice.setGate(state.gateOpen());
-        sender.sendMessage("M3_FINDING_COMMITTED id=" + args[1] + " contributor=" + args[2]
-                + " gate=" + (state.gateOpen() ? "open" : "closed"));
+        if (args.length != 4) throw new IllegalArgumentException("draft requires <contributor> <finding> <conclusion>");
+        state.selectDraft(args[2], args[3], args[1]);
+        sender.sendMessage("M3_DRAFT_MARKED contributor=" + args[1] + " finding=" + args[2]);
+    }
+
+    private void lodgeReport(CommandSender sender, String[] args) throws IOException {
+        requireOperator(sender);
+        if (args.length != 3) throw new IllegalArgumentException("lodge-report requires <contributor> <epoch>");
+        state.lodgeReport(args[1], Long.parseLong(args[2]));
+        sender.sendMessage("M3_REPORT_ENDORSED contributor=" + args[1] + " findings=4 gate=closed");
+    }
+
+    private void lodgeSynthesis(CommandSender sender, String[] args) throws IOException {
+        requireOperator(sender);
+        if (args.length != 4) throw new IllegalArgumentException("lodge-synthesis requires <contributor> <conclusion> <epoch>");
+        state.selectDraft(PrivateSliceState.SYNTHESIS, args[2], args[1]);
+        state.lodgeSynthesis(args[1], Long.parseLong(args[3]));
+        slice.setGate(true);
+        sender.sendMessage("M3_SYNTHESIS_ENDORSED contributor=" + args[1] + " gate=open");
+    }
+
+    private void naiveNegative(CommandSender sender, String[] args) throws IOException {
+        requireOperator(sender);
+        if (args.length != 3) throw new IllegalArgumentException("naive-negative requires <contributor> <epoch>");
+        String contributor = args[1];
+        for (String finding : PrivateSliceState.BASE_FINDINGS) {
+            for (String option : PrivateSliceState.CONCLUSION_OPTIONS.get(finding)) {
+                state.selectDraft(finding, option, contributor);
+            }
+        }
+        try {
+            state.lodgeReport(contributor, Long.parseLong(args[2]));
+            throw new IllegalStateException("naive click-through unexpectedly endorsed");
+        } catch (PrivateSliceState.ReportRefusedException expected) {
+            if (PrivateSliceState.BASE_FINDINGS.stream().anyMatch(state::findingCommitted) || state.gateOpen()) {
+                throw new IllegalStateException("naive click-through advanced state");
+            }
+            sender.sendMessage("M3_NAIVE_NEGATIVE_PASS contributor=" + contributor
+                    + " findings=0 gate=closed lane_feedback=false");
+        }
+    }
+
+    private void bruteNegative(CommandSender sender, String[] args) throws IOException {
+        requireOperator(sender);
+        if (args.length != 3) throw new IllegalArgumentException("brute-negative requires <contributor> <epoch>");
+        String contributor = args[1];
+        long epoch = Long.parseLong(args[2]);
+        for (int attempt = 0; attempt < PrivateSliceState.MAX_REFUSALS_PER_WINDOW; attempt++) {
+            selectWrongReport(contributor);
+            try { state.lodgeReport(contributor, epoch + attempt); throw new IllegalStateException("blind report endorsed"); }
+            catch (PrivateSliceState.ReportRefusedException expected) { }
+        }
+        selectCorrectReport(contributor);
+        try { state.lodgeReport(contributor, epoch + PrivateSliceState.MAX_REFUSALS_PER_WINDOW); throw new IllegalStateException("throttle missing"); }
+        catch (PrivateSliceState.FilingThrottleException expected) { }
+        if (PrivateSliceState.BASE_FINDINGS.stream().anyMatch(state::findingCommitted) || state.gateOpen()) {
+            throw new IllegalStateException("bounded blind submissions advanced state");
+        }
+        sender.sendMessage("M3_BRUTE_NEGATIVE_PASS contributor=" + contributor
+                + " refusals=3 throttled=true findings=0 gate=closed solution_feedback=false");
+    }
+
+    private void reportCorrect(CommandSender sender, String[] args) throws IOException {
+        requireOperator(sender);
+        if (args.length != 3) throw new IllegalArgumentException("report-correct requires <contributor> <epoch>");
+        selectCorrectReport(args[1]);
+        state.lodgeReport(args[1], Long.parseLong(args[2]));
+        sender.sendMessage("M3_REPORT_CORRECT_PASS contributor=" + args[1] + " findings=4 gate=closed");
+    }
+
+    private void synthesisCorrect(CommandSender sender, String[] args) throws IOException {
+        requireOperator(sender);
+        if (args.length != 3) throw new IllegalArgumentException("synthesis-correct requires <contributor> <epoch>");
+        state.selectDraft(PrivateSliceState.SYNTHESIS,
+                PrivateSliceState.EXACT_CONCLUSIONS.get(PrivateSliceState.SYNTHESIS), args[1]);
+        state.lodgeSynthesis(args[1], Long.parseLong(args[2]));
+        slice.setGate(true);
+        sender.sendMessage("M3_SYNTHESIS_CORRECT_PASS contributor=" + args[1] + " gate=open");
     }
 
     private void replay(CommandSender sender) throws IOException {
         requireOperator(sender);
-        state.commitFinding(PrivateSliceState.SYNTHESIS, PrivateSliceState.BASE_FINDINGS, "replay-audit");
-        slice.setGate(state.gateOpen());
+        selectCorrectReport("replay-audit");
+        state.lodgeReport("replay-audit", Instant.now().getEpochSecond());
+        state.selectDraft(PrivateSliceState.SYNTHESIS,
+                PrivateSliceState.EXACT_CONCLUSIONS.get(PrivateSliceState.SYNTHESIS), "replay-audit");
+        state.lodgeSynthesis("replay-audit", Instant.now().getEpochSecond());
+        slice.setGate(true);
         sender.sendMessage("M3_REPLAY_PASS gate=open receipts=" + state.catchUpAfter(0).size());
+    }
+
+    private void selectCorrectReport(String contributor) {
+        PrivateSliceState.BASE_FINDINGS.forEach(finding -> state.selectDraft(
+                finding, PrivateSliceState.EXACT_CONCLUSIONS.get(finding), contributor));
+    }
+
+    private void selectWrongReport(String contributor) {
+        PrivateSliceState.BASE_FINDINGS.forEach(finding -> state.selectDraft(
+                finding, PrivateSliceState.CONCLUSION_OPTIONS.get(finding).get(0), contributor));
     }
 
     private void security(CommandSender sender) {
@@ -143,7 +284,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         sender.sendMessage("M3_SECURITY_PASS target=" + targetId + " bind=127.0.0.1 gamemode="
                 + GameMode.ADVENTURE + " force_gamemode=true non_op=true inventory_escrow=false"
                 + " denies=block_break,block_place,bucket,entity,container,teleport,gate"
-                + " gate_collision=" + audit.gateCollisionCells());
+                + " filing_command=counter_proximity_only gate_collision=" + audit.gateCollisionCells());
     }
 
     private void watcherApprove(CommandSender sender, String[] args) throws IOException {
@@ -199,7 +340,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
     }
 
     private static String safe(String value) {
-        return value == null ? "unknown" : value.replaceAll("[^A-Za-z0-9_.:/=-]", "_");
+        return value == null ? "unknown" : value.replaceAll("[^A-Za-z0-9_.:/=;,' -]", "_");
     }
 
     @Override public void close() { }

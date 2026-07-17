@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from collections import Counter
 from pathlib import Path
 
@@ -148,6 +149,11 @@ def validate_inventory(path: Path, authority: dict) -> None:
                 f"{path}: human editorial review missing for {artifact['artifact_id']}")
         require(artifact["medium_fit"].get("plausible") is True,
                 f"{path}: medium-fit review failed for {artifact['artifact_id']}")
+        authored_text = artifact.get("authored_text")
+        if authored_text is not None:
+            calculated = hashlib.sha256(authored_text.encode("utf-8")).hexdigest()
+            require(calculated == artifact["text_sha256"],
+                    f"{path}: authored text hash drift for {artifact['artifact_id']}")
         hashes.append(artifact["text_sha256"])
     duplicates = [value for value, count in Counter(hashes).items() if count > 1]
     require(not duplicates, f"{path}: duplicate artifact text hashes masquerade as variety: {duplicates}")

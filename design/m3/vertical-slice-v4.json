@@ -1,0 +1,101 @@
+{
+  "schema_version": "4.0.0-m3",
+  "authority_id": "observance-p4-private-slice-v4",
+  "base_geometry": "design/m3/vertical-slice-v3.json",
+  "binding_review_decision": "design/m3/BRAD-V3-REVIEW-DECISION.json",
+  "cross_phase_player_facing_authority": "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+  "status": "authored-v4-revision-not-player-facing",
+  "m4_authority": "closed",
+  "brad_visual_approval": null,
+  "envelope": {"min_x": -34, "max_x": 34, "min_y": -24, "max_y": 10, "min_z": -10, "max_z": 92, "cells": 248745},
+  "preservation_baseline": {
+    "v3_native_book_ui": true,
+    "v3_directional_and_support_fixes": true,
+    "v3_local_primary_restart_replay_protection_idempotency": true,
+    "v3_gate": {"min_x": -5, "max_x": 5, "min_y": -20, "max_y": -13, "z": 89, "closed_collision_cells": 88, "open_collision_cells": 0},
+    "locked_spine_and_m2_predicates": true,
+    "any_subset_and_solo_accessibility": true
+  },
+  "room_program": [
+    {
+      "room_id": "MOUTH_CARRIAGE_HALL",
+      "institutional_job": "covered intake road, drainage-plan desk, and examiner arrival point",
+      "bounds": {"min_x": -12, "max_x": 12, "floor": 0, "ceiling": 9, "min_z": 0, "max_z": 15},
+      "scale_justification": "nine-block two-way cart crown, two drained shoulders, a public examiner desk, and turning clearance",
+      "purposeful_lecterns": ["INTAKE_EXAMINER_DOCKET"]
+    },
+    {
+      "room_id": "INTAKE_WORKS_HALL",
+      "institutional_job": "receive runoff, verify refuge capacity, and lodge the examiner's reconciled intake report",
+      "bounds": {"min_x": -16, "max_x": 16, "floor": -20, "ceiling": -10, "min_z": 56, "max_z": 78},
+      "scale_justification": "west hydraulic train, central public route and filing counter, east clerk work bay, maintenance clearance, and gate queue",
+      "purposeful_lecterns": ["EXAMINER_FINDINGS_LEDGER"]
+    },
+    {
+      "room_id": "RECORD_COPY_OFFICE",
+      "institutional_job": "copy, collate, revise, bind, and retain civic surveys and registers",
+      "bounds": {"min_x": 18, "max_x": 32, "floor": -20, "ceiling": -12, "min_z": 62, "max_z": 84},
+      "scale_justification": "two copy desks, binding island, active-reference shelves, archive ranks, public counter, and separated staff route",
+      "purposeful_lecterns": []
+    }
+  ],
+  "investigation": {
+    "civic_question": "What was the Mouth actually built to do, at what capacity, and why was its later route driven downward?",
+    "evidence_rule": "eight sources may be observed in any order; observation custody alone never commits a finding",
+    "filing_rule": "one findings ledger holds a four-clause draft; all four exact content-derived conclusions are evaluated together with generic refusal and durable attempt throttling",
+    "synthesis_rule": "after the four-clause report is endorsed, a separate exact synthesis combines all four findings and alone releases the controlled gate",
+    "lectern_count": 2,
+    "evidence": [
+      {"surface_id":"DRAINAGE_PLAN_TABLE","finding_id":"P4.F1","source_id":"drainage_plan","format":"annotated drainage diagram","cell":[-8,0,6],"material":"CARTOGRAPHY_TABLE","presentation":"native_book","reader_standing_cell":[-8,0,8]},
+      {"surface_id":"CART_RUT_INSPECTION_TAG","finding_id":"P4.F1","source_id":"cart_rut_tag","format":"road inspector's field tag plus physical ruts","cell":[8,2,1],"material":"OAK_WALL_SIGN","presentation":"visible_environmental_record","reader_standing_cell":[8,0,3]},
+      {"surface_id":"THREE_CAMPAIGN_MASON_MARK","finding_id":"P4.F2","source_id":"mason_mark","format":"mason's chalk annotation on physical material seam","cell":[-5,-18,56],"material":"OAK_WALL_SIGN","presentation":"visible_environmental_record","reader_standing_cell":[-5,-20,59]},
+      {"surface_id":"SURVEY_REVISION_LETTER","finding_id":"P4.F2","source_id":"revision_letter","format":"personal cover letter with marginalia","cell":[31,-19,65],"material":"CHISELED_BOOKSHELF","presentation":"native_book","reader_standing_cell":[28,-20,65]},
+      {"surface_id":"BERTH_REGISTER","finding_id":"P4.F3","source_id":"berth_register","format":"official refuge register","cell":[24,-19,66],"material":"CHISELED_BOOKSHELF","presentation":"native_book","reader_standing_cell":[24,-20,68]},
+      {"surface_id":"RATION_TALLY_NOTICE","finding_id":"P4.F3","source_id":"ration_tally","format":"posted quartermaster tally","cell":[19,-18,75],"material":"OAK_WALL_SIGN","presentation":"visible_environmental_record","reader_standing_cell":[21,-20,75]},
+      {"surface_id":"PUMP_GAUGE_CARD","finding_id":"P4.F4","source_id":"pump_gauge","format":"maintenance gauge card beside working hydraulic train","cell":[-14,-18,72],"material":"OAK_WALL_SIGN","presentation":"visible_environmental_record","reader_standing_cell":[-11,-20,72]},
+      {"surface_id":"FOUNDING_ENGINEER_LETTER","finding_id":"P4.F4","source_id":"engineer_letter","format":"personal engineering letter retained with the works minutes","cell":[29,-19,79],"material":"CHISELED_BOOKSHELF","presentation":"native_book","reader_standing_cell":[26,-20,79]}
+    ],
+    "exact_conclusions": {
+      "P4.F1": "one_road_loaded_down_empty_return",
+      "P4.F2": "three_campaigns_shelter_intake_commons",
+      "P4.F3": "294_refuge_places_work_berths_excluded",
+      "P4.F4": "downcut_for_stable_cover_shorter_winter_service",
+      "P4.F5": "planned_civic_intake_for_294_not_single_emergency_shelter"
+    },
+    "incorrect_report_policy": {
+      "lane_specific_feedback": false,
+      "draft_cleared_after_refusal": true,
+      "durable_max_refusals": 3,
+      "rolling_window_seconds": 300,
+      "finding_progress_on_refusal": 0,
+      "solution_bearing_journal_payload": false
+    }
+  },
+  "functional_composition": {
+    "public_route_clear_width": 3,
+    "staff_route_clear_width": 3,
+    "waterworks_components": ["HEADWALL_INLET", "SILT_SETTLING_BAYS", "RATED_GAUGING_FLUME", "GRATED_FILTER_SUMP"],
+    "copy_office_clusters": ["PUBLIC_COPY_COUNTER", "TWO_COPY_DESKS", "BINDING_ISLAND", "ACTIVE_REFERENCE_SHELVES", "SURVEY_ARCHIVE_RANK", "ROOM_ROLL_ARCHIVE_RANK"],
+    "unclassified_floating_blocks_allowed": false,
+    "instructional_navigation_signs_allowed": false
+  },
+  "mandatory_checks": [
+    "M3.V4.CONTENT_DEPENDENT_FOUR_CLAUSE_REPORT",
+    "M3.V4.CONTENT_DEPENDENT_SYNTHESIS",
+    "M3.V4.NAIVE_CLICK_THROUGH_NEGATIVE",
+    "M3.V4.DURABLE_BRUTE_FORCE_THROTTLE",
+    "M3.V4.NO_LANE_SPECIFIC_REFUSAL_FEEDBACK",
+    "M3.V4.LECTERN_DENSITY_AND_PURPOSE",
+    "M3.V4.ARTIFACT_FORMAT_AND_VOICE_INVENTORY",
+    "M3.V4.GROUNDED_MEDIUM_SPECIFIC_COPY",
+    "M3.V4.FUNCTIONAL_ROOM_SCALE_AND_DENSITY",
+    "M3.V4.DIRECTIONAL_SUPPORT_ATTACHMENT",
+    "M3.V4.NON_OVERLAP_STANDING_CELL_SIGHTLINE",
+    "M3.V4.WATERWORKS_FUNCTION_AND_FLOW_LEGIBILITY",
+    "M3.V4.PUBLIC_STAFF_CIRCULATION",
+    "M3.V4.LOCAL_PRIMARY_RESTART_REPLAY_IDEMPOTENCY",
+    "M3.V4.PROTECTION_AND_GATE_COLLISION",
+    "M3.V4.COLD_PLAYER_OBJECTIVE_INTERACTION_COMPREHENSION"
+  ],
+  "review_launch_gate": "all static and human cold-read checks, fresh Paper closed/open/restart/replay/security and negative-flow receipts, exact package hashes, and a separate pristine closed review target must pass before localhost launch"
+}

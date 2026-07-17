@@ -34,7 +34,12 @@ commands:
     description: Operate the disposable private M3 Paper review slice.
     aliases: [obsm3]
     permission: observance.admin
-    usage: /obsm3 <status|build|audit|observe|finding|replay|security|watcher-approve|watcher-show>
+    usage: /obsm3 <status|build|audit|observe|draft|lodge-report|lodge-synthesis|naive-negative|brute-negative|report-correct|synthesis-correct|replay|security|watcher-approve|watcher-show>
+  observancefile:
+    description: Use the examiner's findings ledger in an armed disposable M3 review target.
+    aliases: [obsfile]
+    permission: observance.m3.file
+    usage: /obsfile <open|mark|lodge|seal>
 
 permissions:
   observance.admin:
@@ -42,4 +47,7 @@ permissions:
     default: op
   observance.link:
     description: Allows a player to request their own one-time Discord identity proof.
+    default: true
+  observance.m3.file:
+    description: Allows in-world use of the fail-closed disposable M3 findings ledger.
     default: true

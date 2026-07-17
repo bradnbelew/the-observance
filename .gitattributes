@@ -15,10 +15,12 @@ discord/supabase/seeds/v5_investigations.sql text eol=lf
 # The M3 package manifest hashes exact source bytes; keep every non-design package input stable.
 tools/check_m3_vertical_slice.py text eol=lf
 tools/check_m3_v3_revision.py text eol=lf
+tools/check_m3_v4_revision.py text eol=lf
 tools/check_continuation_lineage.py text eol=lf
 tools/check_player_facing_experience_standard.py text eol=lf
 tools/run_m3_disposable_paper.py text eol=lf
 tools/run_m3_v3_disposable_paper.py text eol=lf
+tools/run_m3_v4_disposable_paper.py text eol=lf
 tools/sim_m3_vertical_slice.py text eol=lf
 plugin/src/main/java/com/observance/watcher/ObservancePlugin.java text eol=lf
 plugin/src/main/java/com/observance/watcher/m3runtime/*.java text eol=lf
