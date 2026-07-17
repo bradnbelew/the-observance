@@ -150,12 +150,14 @@ def validate_authority() -> dict:
 def validate_v5_active_review(authority: dict) -> None:
     active = load(V5_ACTIVE)
     correction = active["binding_progression_correction"]
-    require(active["review_status"] == "active_feedback_pass_incomplete"
-            and active["decision"] is None and active["brad_visual_approval"] is None
+    require(active["review_status"]
+                == "complete_not_approved_disconnect_and_clean_stop_receipted"
+            and active["decision"] == "not_approved_revision_required"
+            and active["brad_visual_approval"] is None
             and active["m4_authority"] == "closed"
             and active["implementation_state"]
-                == "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
-            "V5 active-review hold/approval drift")
+                == "vnext_offline_authoring_authorized_after_clean_v5_stop",
+            "V5 final-review/approval/offline-authoring state drift")
     require(correction["status"] == "binding_cross_phase_supersession_not_yet_implemented"
             and "zero observed-source" in correction["rule"]
             and len(correction["required_future_negative_tests"]) == 5

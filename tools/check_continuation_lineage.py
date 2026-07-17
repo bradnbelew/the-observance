@@ -344,7 +344,8 @@ def main() -> None:
             and v5_visual["brad_visual_approval"] is None,
             "V5 internal block-state/render audit drift")
     active_v5 = data["active_brad_v5_review"]
-    require(active_v5["status"] == "active_feedback_pass_incomplete"
+    require(active_v5["status"]
+                == "complete_not_approved_disconnect_and_clean_stop_receipted"
             and active_v5["machine_review_overlay"] == "design/m3/BRAD-V5-ACTIVE-REVIEW.json"
             and (ROOT / active_v5["machine_review_overlay"]).is_file()
             and "zero observed-source" in active_v5["progression_correction"]
@@ -366,16 +367,20 @@ def main() -> None:
             and "non-exhaustive" in active_v5["creative_variation_correction"]
             and "mkept was real" in active_v5["copperline_expansion"]
             and active_v5["live_server_directive"]
-                == "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation"
+                == "stopped_cleanly_after_confirmed_disconnect_preserve_as_immutable_historical_target"
             and active_v5["implementation_state"]
-                == "hold_no_revision_until_remaining_brad_feedback_and_disconnect"
+                == "vnext_offline_authoring_authorized_after_clean_v5_stop"
+            and active_v5["decision_authority"]
+                == "design/m3/BRAD-V5-REVIEW-DECISION.json"
+            and active_v5["stop_receipt"]
+                == "design/m3/PAPER-V5-REVIEW-STOP-RECEIPT.json"
             and active_v5["brad_visual_approval"] is None
             and active_v5["m4_authority"] == "closed",
-            "active V5 experiential/progression/hold authority drift")
+            "final V5 experiential/progression/stop authority drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
-            and "Brad completes the V5 supported-client visual and filing-path walk"
+            and "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline"
                 in gate["required_next_evidence"]
             and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"
                 in gate["required_next_evidence"]

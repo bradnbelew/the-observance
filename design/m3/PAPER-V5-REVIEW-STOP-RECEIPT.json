@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0-m3-v5-review-stop-receipt",
+  "target_id": "m3-v5-brad-review-51ad3bd-20260717-a",
+  "review_process_id": 10860,
+  "port": 25588,
+  "bind": "127.0.0.1",
+  "paper": "1.21.11 build 132 c5eb079",
+  "source_git_commit": "51ad3bdeedbe80b698d366e4c8c536c4cd3778ff",
+  "review_authority_checkpoint_before_stop": "8730c832b9524aa3478873c845ed68a258b58a73",
+  "disconnect_confirmation": {
+    "player": "SirNan",
+    "paper_log_time": "2026-07-17T01:14:45-05:00",
+    "lines": ["SirNan lost connection: Disconnected", "SirNan left the game"],
+    "join_count": 1,
+    "leave_count": 1,
+    "active_by_join_leave_delta": 0,
+    "no_later_join_in_exact_log": true
+  },
+  "pre_stop_identity": {
+    "expected_pid_alive": true,
+    "listener": "TCP 127.0.0.1:25588 LISTENING PID 10860",
+    "disposable_marker": ".observance-disposable-paper-target",
+    "target_path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-v5-brad-review-51ad3bd-20260717-a"
+  },
+  "save_flush": {
+    "paper_log_time": "2026-07-17T01:50:57-05:00",
+    "lines": [
+      "Saving the game (this may take a moment!)",
+      "ThreadedAnvilChunkStorage: All dimensions are saved",
+      "Saved the game"
+    ]
+  },
+  "orderly_stop": {
+    "paper_log_start": "2026-07-17T01:50:59-05:00",
+    "paper_log_complete": "2026-07-17T01:51:00-05:00",
+    "lines": [
+      "Stopping server",
+      "[Observance] Disabling Observance v0.5.0",
+      "[Observance] The Observance sleeps.",
+      "Saving players",
+      "Saving worlds",
+      "ThreadedAnvilChunkStorage: All dimensions are saved",
+      "All RegionFile I/O tasks to complete"
+    ]
+  },
+  "shutdown_control": {
+    "method": "previously receipted one-shot local Java attach helper scheduled save-all flush and Bukkit shutdown on the Paper main thread because the hidden launch had no surviving stdin handle",
+    "agent_jar": "ShutdownAgentV3.jar",
+    "agent_jar_sha256": "abcf2d13b0f89f5cc65b76a7cb0a94e2dc67dfc28c5e0d0b0b67c8e808300196"
+  },
+  "review_state": {
+    "journal_path": "plugins/Observance/m3-private-slice-v5.journal",
+    "journal_sha256": "a9e22d3eed64d9b65ae9bd012d117fb3e00c5c0ef9a4cada19c5157a50c59bc3",
+    "journal_records": 14,
+    "observation_records": 7,
+    "contribution_records": 7,
+    "committed_findings": 0,
+    "technical_interpretation": "observation custody operated; review state is preserved as historical evidence and does not imply experiential approval"
+  },
+  "latest_log_sha256": "dfa8d262b29784c281c8dc265a583432db1fe76ae225ee0b04ec2477cd8ece2c",
+  "latest_log_bytes": 11793,
+  "post_stop_readback": {
+    "pid_10860_alive": false,
+    "port_25588_listener_count": 0
+  },
+  "result": "clean_save_flush_stop_verified",
+  "production_mutated": false,
+  "brad_visual_approval": null,
+  "m4_authority": "closed"
+}

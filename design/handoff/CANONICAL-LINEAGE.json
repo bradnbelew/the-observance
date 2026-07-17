@@ -415,8 +415,10 @@
   },
   "active_brad_v5_review": {
     "date": "2026-07-17",
-    "status": "active_feedback_pass_incomplete",
+    "status": "complete_not_approved_disconnect_and_clean_stop_receipted",
     "machine_review_overlay": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+    "decision_authority": "design/m3/BRAD-V5-REVIEW-DECISION.json",
+    "stop_receipt": "design/m3/PAPER-V5-REVIEW-STOP-RECEIPT.json",
     "experiential_concern": "V5 remains too close to explicit fact retrieval and matching-clause selection to prove P4's authored construction-phase and route archaeology experience",
     "progression_correction": "correct answers, reports, and syntheses must pass with zero observed-source interaction receipts; custody and contribution receipts remain durable but non-gating",
     "cross_media_correction": "Minecraft is one evidence surface; P4 and the full campaign combine consequential lore clues across website/community, NPC memory, callbacks, footage/video, files, images, audio, metadata, documents, and social activity while avoiding fragile mandatory bespoke-block geometry",
@@ -429,8 +431,8 @@
     "copperline_expansion": "Copperline becomes a recurring lived-in hosting/community archive while C01 earns only that mkept was real and deliberately preserved a damaged server; production remains untouched",
     "next_revision_plan": "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json",
     "global_diversity": "P1-P12 preserve distinct web, provenance, social, archaeological, ethnographic, professional, forensic, engineering, media, interview, identity, and release-audit grammars rather than converging on clause retrieval",
-    "live_server_directive": "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation",
-    "implementation_state": "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
+    "live_server_directive": "stopped_cleanly_after_confirmed_disconnect_preserve_as_immutable_historical_target",
+    "implementation_state": "vnext_offline_authoring_authorized_after_clean_v5_stop",
     "brad_visual_approval": null,
     "m4_authority": "closed"
   },
@@ -483,6 +485,8 @@
     "design/m3/V5-BLOCK-STATE-VISUAL-AUDIT.json",
     "design/m3/PACKAGE-MANIFEST-V5.json",
     "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+    "design/m3/BRAD-V5-REVIEW-DECISION.json",
+    "design/m3/PAPER-V5-REVIEW-STOP-RECEIPT.json",
     "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json",
     "design/m3/EXTERNAL-GAP-AUDIT-2026-07-16.md",
     "design/m3/BRAD-REVIEW-PACKAGE.md",
@@ -555,6 +559,11 @@
       "effect": "Copperline gains believable information architecture, majority ordinary texture, distinct modern voices, immutable provenance, callbacks, responsive/accessibility and recovery rules, while C01's exact belief and all later revelation boundaries remain fixed; offline fixtures are not production, URL, cache, browser, or human receipts"
     },
     {
+      "older": "V5 automated and client-format technical proof",
+      "newer": "Brad's completed V5 NOT APPROVED decision and clean-stop receipt",
+      "effect": "V5 remains immutable evidence for pagination, affordance, persistence, security, negative flow, waterworks, and gate behavior, but is rejected as experiential proof because explicit fact retrieval and matching clauses do not constitute P4's high-difficulty cross-media ARG investigation. Correct answers must become independent of source-touch receipts; vNext offline authoring is open; M4 remains closed"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -566,12 +575,10 @@
     }
   ],
   "current_gate": {
-    "phase": "M3 V5 automated/internal gates pass; pristine localhost review target prepared; Brad approval pending; M4 closed",
+    "phase": "M3 V5 technically proven but NOT APPROVED and cleanly stopped; vNext offline redesign authorized; Brad approval null; M4 closed",
     "m4_open": false,
     "required_next_evidence": [
-      "Brad completes the V5 supported-client visual and filing-path walk",
-      "Brad completes the remaining V5 feedback pass and disconnects before revision",
-      "human review confirms player-view polish, complete clickable clauses, occupied-shelf affordance, and seat composition",
+      "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
       "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",
       "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation",
       "the next P4 case passes the revelation-first twelve-field brief and qualitative novelty audit without a closed mechanism taxonomy",

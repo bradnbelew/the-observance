@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0-m3-brad-v5-review-decision",
+  "authority_id": "observance-p4-private-slice-v5-final-review",
+  "review_date": "2026-07-17",
+  "review_candidate": "observance-p4-private-slice-v5",
+  "review_status": "complete_not_approved_disconnect_and_clean_stop_receipted",
+  "decision": "not_approved_revision_required",
+  "brad_visual_approval": null,
+  "m4_authority": "closed",
+  "review_server_stop_receipt": "design/m3/PAPER-V5-REVIEW-STOP-RECEIPT.json",
+  "technical_proof_preserved": [
+    "exact measured native-book pages and click targets",
+    "visibly occupied interactive shelves and corrected seat orientation",
+    "compact bounded Paper build, protection, persistence, replay, restart, waterworks, and controlled gate",
+    "content-dependent four-finding report plus separate synthesis",
+    "naive and bounded brute-force refusal under the V5 model",
+    "observation and contribution custody journal"
+  ],
+  "experiential_decision": "V5 is an immutable technical proof but an incomplete and rejected experiential proof. Explicit fact retrieval and matching-clause selection do not demonstrate the required P4 investigation.",
+  "binding_progression_correction": {
+    "rule": "Correct exact conclusions pass with zero source-touch or observation receipts.",
+    "source_interaction_role": "provenance, contribution, replay, catch-up, hints, changed-place summaries, accessibility, and director evidence only",
+    "wrong_answers": "exact predicates and bounded throttling may remain",
+    "required_negative_proof": "correct report and synthesis pass at zero observations while wrong reports fail regardless of observation count"
+  },
+  "binding_p4_experience": {
+    "target_active_hours": {"min": 1, "max": 2},
+    "difficulty": "high",
+    "identity": "genuine cross-media ARG investigation rather than document-clause quiz",
+    "required_play": ["research", "provenance", "callbacks", "reinterpretation", "cross-source inference", "theory formation", "discussion", "emotionally and lore-relevant synthesis"],
+    "minecraft_boundary": "compact robust consequential evidence surface; no mandatory brittle cart tracing, block-by-block archaeology, or exact decorative geometry",
+    "external_boundary": "unavailable media, hosting, NPC, community, and social assets remain real integration gates and may not be fabricated"
+  },
+  "binding_creative_authority": {
+    "dramaturgy": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+    "novelty_audit": "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
+    "cross_media": "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "copperline": "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+    "rule": "Author from revelation and emotional reversal using generic evidence, state, exact-answer, content, and event primitives; examples are never a fixed taxonomy or runtime catalog."
+  },
+  "p4_c02_reversal": {
+    "initial_read": "apparent occult or cult ruin",
+    "human_read": "ordinary rational refuge life and practical mutual work",
+    "disturbing_read": "the origin of Ways/Record as useful safety procedures become institutional control under early deep-space anomalous pressure",
+    "earned_belief": "C02 only: the Hold was a functioning rational refuge before ritual institution",
+    "insufficient_conclusion": "capacity, route, phase, or copied nearby facts without interpreting why the evidence matters together"
+  },
+  "copperline_direction": "Expand Copperline into a recurring believable hosting/community archive with ordinary life, distinct modern voices, immutable provenance, callbacks, and later recontextualization while preserving C01 and the revelation ladder.",
+  "visual_format_affordance_carry_forward": [
+    "all selectable book options remain fully visible and clickable at supported client UI",
+    "interactive evidence has truthful visible physical affordance",
+    "seats, signs, shelves, lecterns, furnishings, thresholds, corridors, supports, and block states retain exact orientation, attachment, non-overlap, and player-view checks",
+    "architecture communicates circulation without immersion-breaking tutorial labels",
+    "grounded diverse human artifacts replace repeated lectern or docket presentation",
+    "the improved waterworks and full controlled gate remain the structural baseline"
+  ],
+  "campaign_guardrails": [
+    "high difficulty and the 20-30 active-hour campaign target remain binding",
+    "multiple independent in-doors, out-of-order sharing, any-subset, catch-up, accessibility, replay, restart, and no-missable behavior remain binding",
+    "the three locked ambiguities and fixed P1-P12 revelation ladder remain binding",
+    "no click quota, UI friction, purple puzzle prose, forced voice, sound-only gate, F3/log dependency, time wait, or repetitive keeper-stone ladder",
+    "Brad approval remains null and M4 remains closed"
+  ],
+  "production_mutated": false
+}

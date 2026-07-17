@@ -3,16 +3,18 @@
   "authority_id": "observance-p4-private-slice-v5-active-review",
   "review_date": "2026-07-17",
   "review_candidate": "observance-p4-private-slice-v5",
-  "review_status": "active_feedback_pass_incomplete",
-  "decision": null,
+  "review_status": "complete_not_approved_disconnect_and_clean_stop_receipted",
+  "decision": "not_approved_revision_required",
   "brad_visual_approval": null,
   "m4_authority": "closed",
   "live_target": {
     "target_id": "m3-v5-brad-review-51ad3bd-20260717-a",
     "address": "127.0.0.1:25588",
     "source_git_commit": "51ad3bdeedbe80b698d366e4c8c536c4cd3778ff",
-    "directive": "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation"
+    "directive": "stopped_cleanly_after_confirmed_disconnect_preserve_as_immutable_historical_target"
   },
+  "final_decision_authority": "design/m3/BRAD-V5-REVIEW-DECISION.json",
+  "review_server_stop_receipt": "design/m3/PAPER-V5-REVIEW-STOP-RECEIPT.json",
   "active_finding": {
     "category": "substantive_experiential_design_concern",
     "summary": "V5 is content-dependent but still feels primarily like retrieving explicit facts and selecting matching clauses; it does not yet provide enough ARG-like investigation, layered inference, lore significance, or relevance to the larger story.",
@@ -144,6 +146,7 @@
     "This finding does not require an arbitrary cipher in P4.",
     "This active finding is not yet the final V5 review decision."
   ],
-  "implementation_state": "hold_no_revision_until_remaining_brad_feedback_and_disconnect",
+  "hold_resolution": "Brad confirmed already disconnected; exact log showed one join, one leave, and no later join; save-all flush and orderly stop completed; PID 10860 and port 25588 ended.",
+  "implementation_state": "vnext_offline_authoring_authorized_after_clean_v5_stop",
   "production_mutated": false
 }
