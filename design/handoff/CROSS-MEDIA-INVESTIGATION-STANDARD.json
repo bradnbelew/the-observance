@@ -6,6 +6,8 @@
   "status": "binding",
   "authority_precedence": "after_spine_lock_spine_conformance_and_approved_phase_2_before_phase_specific_puzzle_implementation",
   "source_review_authority": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
+  "investigation_dramaturgy_authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+  "copperline_archive_authority": "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
   "scope": ["M3-next-revision", "M4", "M5", "P1-P12 player-facing investigations"],
   "m4_authority": "closed",
   "brad_visual_approval": null,
@@ -57,7 +59,15 @@
     "valid_inferable_grammars": ["shelf-line-word", "page-line-word", "another clearly discoverable indexed-book grammar"],
     "reuse_rule": "This establishes fairness and grounding, not a template to repeat across arcs. Other mechanisms must differ in evidentiary job and player operation."
   },
-  "candidate_mechanism_families": [
+  "mechanism_example_boundary": {
+    "examples_are_non_exhaustive": true,
+    "allowlist": false,
+    "enum": false,
+    "quota": false,
+    "runtime_catalog": false,
+    "rule": "The following examples do not define puzzle types. Author generic evidence, state, exact-answer, content, and event primitives, then invent case-specific operations from revelation and character."
+  },
+  "non_exhaustive_mechanism_examples": [
     "transcript timestamps indexing words spoken at matching found-footage moments",
     "community usernames or post dates aligned with book acrostics or archive order",
     "image crop or contact-sheet coordinates arranged by an in-world sequence",
@@ -69,7 +79,8 @@
     "book cipher variants using page-line-word, shelf-spine-letter, catalog number, marginal marks, or deliberate mis-shelving",
     "video-frame callbacks reinterpreted after an NPC conversation",
     "conflicting witness accounts whose shared omissions or identical phrasing expose coordination",
-    "website or community content changing after an in-world event with catch-up and any-subset recovery"
+    "website or community content changing after an in-world event with catch-up and any-subset recovery",
+    "mechanisms not anticipated by any current list, invented from a case's human and emotional reversal"
   ],
   "guardrails": {
     "discoverable_key_required": true,
@@ -112,6 +123,8 @@
     "no mandatory answer depends on observed-source interaction receipts",
     "no mandatory Minecraft predicate depends on fragile bespoke decorative geometry",
     "each arc preserves its primary grammar and does not reuse a mechanism without a distinct evidentiary job",
-    "unavailable media, hosting, community, and social dependencies remain explicit integration gates"
+    "unavailable media, hosting, community, and social dependencies remain explicit integration gates",
+    "mechanism examples remain non-exhaustive and runtime authoring uses generic composable evidence, state, exact-answer, content, and event primitives",
+    "Copperline preserves C01's exact belief, majority human texture, immutable provenance, accessibility, and offline-versus-hosted receipt honesty"
   ]
 }

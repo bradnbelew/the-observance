@@ -351,10 +351,20 @@ def main() -> None:
             and active_v5["cross_media_authority"]
                 == "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json"
             and (ROOT / active_v5["cross_media_authority"]).is_file()
+            and active_v5["dramaturgy_authority"]
+                == "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json"
+            and active_v5["novelty_audit"]
+                == "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json"
+            and active_v5["copperline_archive_authority"]
+                == "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json"
+            and all((ROOT / active_v5[key]).is_file() for key in (
+                "dramaturgy_authority", "novelty_audit", "copperline_archive_authority"))
             and active_v5["next_revision_plan"]
                 == "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json"
             and (ROOT / active_v5["next_revision_plan"]).is_file()
             and "Minecraft is one evidence surface" in active_v5["cross_media_correction"]
+            and "non-exhaustive" in active_v5["creative_variation_correction"]
+            and "mkept was real" in active_v5["copperline_expansion"]
             and active_v5["live_server_directive"]
                 == "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation"
             and active_v5["implementation_state"]
@@ -370,6 +380,10 @@ def main() -> None:
             and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"
                 in gate["required_next_evidence"]
             and "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation"
+                in gate["required_next_evidence"]
+            and "the next P4 case passes the revelation-first twelve-field brief and qualitative novelty audit without a closed mechanism taxonomy"
+                in gate["required_next_evidence"]
+            and "Copperline offline content/voice/version specifications are separated from real future deployment, URL, cache, responsive, accessibility, outage, history, and human-review receipts"
                 in gate["required_next_evidence"]
             and "Brad's explicit approval of a later M3 revision"
                 in gate["required_next_evidence"],

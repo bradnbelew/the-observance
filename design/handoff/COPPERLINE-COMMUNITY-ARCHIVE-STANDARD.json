@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0-copperline-community-archive",
+  "authority_id": "observance-copperline-hosting-community-archive",
+  "issued_by": "Brad",
+  "issued_date": "2026-07-17",
+  "status": "binding_cross_phase_open_ended_content_authority",
+  "parent_authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+  "m4_authority": "closed",
+  "brad_visual_approval": null,
+  "identity": "Copperline is an old believable fictional hosting provider and community archive with accumulated human history. It is a recurring modern evidence surface, not a thin address-recovery prologue or obvious ARG portal.",
+  "c01_ladder_boundary": {
+    "exact_earned_belief": "mkept was a real person who deliberately preserved a damaged server",
+    "mundane_credibility_required": true,
+    "later_case_truths_may_not_be_revealed_early": true,
+    "locked_ambiguities_preserved": true,
+    "ancient_truth_boundary": "Users discuss servers, files, footage, builds, disappearances, anomalies, and one another. Ancient truth reaches Copperline only through recovered artifacts and modern interpretation."
+  },
+  "information_architecture": [
+    {"area":"hosting directory","content":"mundane server listings, status history, mirrors, categories, dead projects, and ordinary neighboring listings"},
+    {"area":"accounts","content":"profiles, signatures, avatars, joins, last activity, edits, reactions, public history, and privacy-respecting gaps"},
+    {"area":"support desk","content":"tickets, staff replies, escalations, maintenance notices, outage incidents, attachment custody, and bureaucratic closure states"},
+    {"area":"community archive","content":"posts, comment threads, quoted replies, guides, arguments, moderation artifacts, removed posts, cached excerpts, and archival gaps"},
+    {"area":"release archive","content":"changelogs, build notes, filenames, checksums, mirrors, broken embeds, cached or dead attachments, and version relationships"},
+    {"area":"reactive history","content":"later annotations, unlocks, recovered mirrors, and changed availability that preserve immutable prior versions and catch-up readback"}
+  ],
+  "content_density_standard": {
+    "direct_clue_definition": "An entry whose primary authored job is to supply an immediately actionable investigation fact, key, answer component, or provenance link.",
+    "texture_definition": "An entry whose primary job is ordinary hosting/community life, relationship, humor, work, disagreement, frustration, care, or historical context, whether or not it later gains meaning.",
+    "planning_ratio": "Across each substantial cold-readable archive slice, direct clues should ordinarily be no more than one part for at least three parts texture; mixed or later-recontextualized entries require human classification.",
+    "anti_padding_rule": "The ratio is a credibility alarm, not a prose quota. Do not fabricate filler, repeat voices, or lower writing quality to satisfy a count.",
+    "human_gate": "A cold reader should encounter convincing unrelated life before recognizing the archive as evidence, and should not assume every username, error, or broken link is a puzzle."
+  },
+  "user_voice_map": [
+    {"identity":"mkept","role":"server owner and preservation actor","voice_basis":"practical, exact about backups and versions, personally restrained; concern appears through maintenance choices rather than lore speeches","ladder_boundary":"C01 proves real person and deliberate damaged-server preservation only"},
+    {"identity":"Ash","role":"recorder and prior-company member","voice_basis":"frame, timestamp, edit, and staging vocabulary; energetic attention to what footage can prove","availability":"seed lightly before P9 without revealing P9 conclusions"},
+    {"identity":"Rook","role":"builder and prior-company member","voice_basis":"geometry, routes, blocking, materials, feasibility, and blunt disagreement","availability":"seed lightly before P9 without revealing P9 conclusions"},
+    {"identity":"Wren","role":"prior-company member","voice_basis":"socially attentive, helpful, anxious about loss and continuity; early traces must support multiple reads","availability":"preserve P10 betrayal and motive revelation"},
+    {"identity":"server regulars","role":"players, builders, visitors, and friends","voice_basis":"distinct interests, jokes, absences, excitement, complaints, memories, and partial knowledge"},
+    {"identity":"moderators","role":"community custodians","voice_basis":"procedural but human; uneven judgment, edits, warnings, conflict fatigue, and context loss"},
+    {"identity":"support staff","role":"hosting workers","voice_basis":"ticket triage, service constraints, handoffs, stock phrases mixed with individual competence, irritation, or care"},
+    {"identity":"other fictional users","role":"neighbors and unrelated community history","voice_basis":"authored individual relationships and ordinary interests; never disposable clue mouths"}
+  ],
+  "time_layers": [
+    {"layer":"ordinary operation","function":"credible hosting and community life before the central anomaly dominates attention"},
+    {"layer":"damaged-server preservation","function":"C01 support tickets, listings, mirrors, and mkept activity earn the exact onboarding belief"},
+    {"layer":"prior-company activity","function":"build excitement, footage debate, technical anomalies, interpersonal strain, disappearances, and abandoned plans accumulate without early spoilers"},
+    {"layer":"fracture and archival loss","function":"removed material, abandoned accounts, failed embeds, mirrors, moderation actions, and conflicting memories show human and technical breakage"},
+    {"layer":"current investigation","function":"players revisit history, observe newly meaningful chronology and provenance, and trigger honest append-only reactions or availability changes"},
+    {"layer":"later recontextualization","function":"new Minecraft, NPC, footage, or document evidence changes the reading of preserved posts while the old bytes/history remain inspectable"}
+  ],
+  "natural_clue_locations": [
+    "reply chronology and quoted context",
+    "attachment and mirror provenance",
+    "account behavior, edits, last activity, and moderation history",
+    "removed material with honest archival gaps",
+    "duplicated or coordinated language",
+    "usernames and filenames only when fictionally grounded",
+    "questions people avoid, misunderstand, or fail to answer",
+    "historical posts reinterpreted after later evidence"
+  ],
+  "human_texture_examples_non_exhaustive": [
+    "concern for someone who stopped posting",
+    "jokes between friends",
+    "frustration over downtime",
+    "excitement about a build",
+    "arguments about whether a recording was staged",
+    "apologies and repaired or unrepaired relationships",
+    "abandoned plans",
+    "evidence of the prior company fracturing"
+  ],
+  "disagreement_rule": "Posts and tickets may disagree because of memory, embarrassment, bureaucracy, incomplete information, loyalty, conflict, or self-protection. Users are people, not cryptic puzzle dispensers.",
+  "callback_opportunities_non_exhaustive": [
+    "an old support phrase becomes important only after a Minecraft system message repeats it",
+    "a quoted reply preserves text removed from the original post",
+    "a footage filename makes an old changelog edit or mirror sequence newly relevant",
+    "an NPC memory changes which participant a vague pronoun or apology referred to",
+    "a later document version explains why two staff replies used identical language",
+    "an ordinary build screenshot contains a detail that matters only after the Hold is understood",
+    "a user's silence, edit pattern, or abandoned draft becomes emotional evidence rather than an answer token"
+  ],
+  "provenance_rules": {
+    "immutable_versions_and_history": true,
+    "edits_show_author_time_and_prior_version_when_authorized": true,
+    "quoted_replies_preserve_their_own_capture_provenance": true,
+    "attachments_declare_filename_hash_size_time_owner_source_and_availability": true,
+    "dead_cached_mirrored_and_missing_are_distinct_states": true,
+    "moderation_and_deletion_never_fake_content_without_a_source_version": true,
+    "later_unlocks_append_or_reveal_receipted_history_instead_of_silently_rewriting_it": true,
+    "source_touch_receipts_never_gate_correct_answers": true
+  },
+  "response_accessibility_and_recovery": {
+    "responsive_keyboard_and_screen_reader_support_required": true,
+    "semantic_thread_quote_edit_deleted_and_attachment_states_required": true,
+    "timestamps_have_machine_readable_and_human_localized_forms": true,
+    "images_video_audio_and_embeds_require_accessible_equivalents": true,
+    "mobile_narrow_and_reflowed_layouts_preserve_chronology_and_provenance": true,
+    "catch_up_replay_outage_and_any_subset_alternatives_required": true,
+    "reactive_changes_preserve_prior_state_readback": true
+  },
+  "forbidden_presentations": [
+    "wall of ominous or purple prose",
+    "obvious fake ARG portal",
+    "linear numbered clue sequence",
+    "every broken link as a puzzle",
+    "every line clue-bearing",
+    "ancient inhabitants posting directly to a modern hosting forum",
+    "later-case revelation dumped into C01"
+  ],
+  "offline_vs_live_receipts": {
+    "offline_authorable_now": ["information architecture", "content model and fixtures", "voice and relationship bible", "timeline and version graph", "sample threads/tickets/listings", "callback graph", "accessibility specifications", "deterministic local tests"],
+    "not_proven_by_offline_work": ["production deployment", "public URL", "real cache/CDN behavior", "authenticated account flows", "actual responsive/browser/accessibility review", "live reactive unlock", "outage behavior", "player-visible history", "human cold-read or Brad review"],
+    "future_required_receipts": ["exact source and built hashes", "deployment/team/project identity", "canonical and preview URLs", "cache headers and invalidation", "immutable-history and unlock readback", "responsive supported-browser matrix", "keyboard/screen-reader/contrast/media-equivalent audit", "outage/catch-up/replay test", "cold-human credibility and clue-density review", "Brad approval"],
+    "production_mutation_now": false
+  }
+}

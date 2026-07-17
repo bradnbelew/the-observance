@@ -421,6 +421,12 @@
     "progression_correction": "correct answers, reports, and syntheses must pass with zero observed-source interaction receipts; custody and contribution receipts remain durable but non-gating",
     "cross_media_correction": "Minecraft is one evidence surface; P4 and the full campaign combine consequential lore clues across website/community, NPC memory, callbacks, footage/video, files, images, audio, metadata, documents, and social activity while avoiding fragile mandatory bespoke-block geometry",
     "cross_media_authority": "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "dramaturgy_authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+    "novelty_audit": "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
+    "copperline_archive_authority": "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+    "creative_variation_correction": "mechanism examples are non-exhaustive; generic evidence/state/exact-answer/content/event primitives support unique cases authored from revelation and emotional reversal",
+    "p4_c02_reversal": "apparent occult/cult ruin -> ordinary refuge life -> disturbing origin of Ways/Record as practical refuge procedure becomes institutional control; no reduction to capacity/route fact matching and no C03+ spoiler",
+    "copperline_expansion": "Copperline becomes a recurring lived-in hosting/community archive while C01 earns only that mkept was real and deliberately preserved a damaged server; production remains untouched",
     "next_revision_plan": "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json",
     "global_diversity": "P1-P12 preserve distinct web, provenance, social, archaeological, ethnographic, professional, forensic, engineering, media, interview, identity, and release-audit grammars rather than converging on clause retrieval",
     "live_server_directive": "keep_running_and_immutable_until_remaining_feedback_and_disconnect_confirmation",
@@ -435,6 +441,11 @@
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.md",
+    "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+    "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
+    "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.md",
+    "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
     "approved Phase 1 authorities",
     "approved Phase 2 evidence authorities",
     "design/m2/M2-TECHNICAL-CONTRACTS.md",
@@ -534,6 +545,16 @@
       "effect": "the next bounded Minecraft slice uses compact stable geometry while investigation depth comes from consequential cross-surface and cross-time lore evidence, discoverable grounded mechanisms, callbacks, provenance, and synthesis. Unavailable media, hosting, community, and social content remains an explicit future integration gate rather than a fabricated receipt"
     },
     {
+      "older": "mechanism-family lists and superseded type/surface/verb/answer puzzle taxonomies",
+      "newer": "Brad's non-exhaustive Investigation Dramaturgy / Creative Variation authority and novelty audit",
+      "effect": "examples are not an allowlist, enum, quota, fixed catalog, or runtime dispatch model. Cases begin with revelation and emotional reversal, use generic composable evidence/state/answer/content/event primitives, preserve strong earlier narrative structures, and undergo qualitative novelty/repetition review"
+    },
+    {
+      "older": "Copperline as a thin C01 address-recovery interface",
+      "newer": "Brad's recurring lived-in hosting/community archive authority",
+      "effect": "Copperline gains believable information architecture, majority ordinary texture, distinct modern voices, immutable provenance, callbacks, responsive/accessibility and recovery rules, while C01's exact belief and all later revelation boundaries remain fixed; offline fixtures are not production, URL, cache, browser, or human receipts"
+    },
+    {
       "older": "M2 statement that no disposable Supabase harness existed",
       "newer": "M2 local-only guard and lifecycle harness",
       "effect": "tooling gap narrows; real database/advisor/rollback/forward receipts remain open"
@@ -553,6 +574,8 @@
       "human review confirms player-view polish, complete clickable clauses, occupied-shelf affordance, and seat composition",
       "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",
       "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation",
+      "the next P4 case passes the revelation-first twelve-field brief and qualitative novelty audit without a closed mechanism taxonomy",
+      "Copperline offline content/voice/version specifications are separated from real future deployment, URL, cache, responsive, accessibility, outage, history, and human-review receipts",
       "exact unavailable media, hosting, community, NPC, and cross-media player receipts are obtained only at their real future integration gates",
       "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",

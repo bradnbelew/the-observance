@@ -1,5 +1,9 @@
 # Player-facing experience, copy, artifact, and room-composition standard
 
+The open-ended investigation authority is `INVESTIGATION-DRAMATURGY-STANDARD.*`; Copperline's lived-in
+hosting/community content authority is `COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.*`. Their examples are not
+closed puzzle catalogs, and their human-quality gates cannot be satisfied by content quotas alone.
+
 Status: **BINDING CROSS-PHASE AUTHORITY**
 
 The companion `CROSS-MEDIA-INVESTIGATION-STANDARD.*` is co-binding for puzzle mechanics, evidence

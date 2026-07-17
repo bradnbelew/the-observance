@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0-investigation-novelty-audit",
+  "audit_id": "observance-investigation-novelty-repetition-audit",
+  "authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+  "status": "binding_authoring_and_human_review_gate",
+  "closed_taxonomy": false,
+  "mechanism_quota": false,
+  "automatic_novelty_score_forbidden": true,
+  "review_dimensions": [
+    "earned revelation and emotional reversal",
+    "initial misread and plausible wrong theories",
+    "human stake and relationships",
+    "character, profession, place, and culpability specificity",
+    "evidence roles and provenance structure",
+    "player operations and cross-surface flow",
+    "dramaturgical rhythm and quiet space",
+    "callback or recontextualization",
+    "world, NPC, media, and emotional consequence",
+    "alternate, shared, and out-of-order routes",
+    "accessibility, outage, replay, restart, and recovery",
+    "similarity to adjacent and prior cases"
+  ],
+  "required_audit_questions": [
+    "Would this case still matter if its most conspicuous cipher or interface were removed?",
+    "Does its mechanism arise from this person, profession, history, place, or culpability rather than a generic skin?",
+    "What do players confidently believe midway, and what evidence later changes that belief?",
+    "Which true finding is meaningful even if it is not the door?",
+    "What quiet human or lore discovery rewards attention without acting as a lock?",
+    "Which earlier ordinary detail receives a later payoff, or which current detail is deliberately planted for one?",
+    "How does the conclusion alter the world, a relationship, a later interpretation, or the players' moral position?",
+    "What materially distinct in-doors keep the belief fair for out-of-order, shared, outage, and any-subset play?",
+    "Which adjacent or prior case is most similar, and what changes in revelation, operation, rhythm, and consequence prevent repetition?",
+    "What new authored operation or evidence relationship was considered beyond all listed examples?"
+  ],
+  "campaign_baseline_not_a_catalog": [
+    {"phase":"P1","dominant_investigative_context":"web archaeology"},
+    {"phase":"P2","dominant_investigative_context":"provenance"},
+    {"phase":"P3","dominant_investigative_context":"social corroboration"},
+    {"phase":"P4","dominant_investigative_context":"refuge reversal through lived, procedural, provenance, and uncanny evidence"},
+    {"phase":"P5","dominant_investigative_context":"civic ethnography"},
+    {"phase":"P6","dominant_investigative_context":"six situated professional grammars"},
+    {"phase":"P7","dominant_investigative_context":"forensic chain of custody and culpability"},
+    {"phase":"P8","dominant_investigative_context":"incident reconstruction and engineering intervention"},
+    {"phase":"P9","dominant_investigative_context":"camp, memory, and media archaeology"},
+    {"phase":"P10","dominant_investigative_context":"leak attribution, adversarial conversation, and moral judgment"},
+    {"phase":"P11","dominant_investigative_context":"identity restoration and recontextualized testimony"},
+    {"phase":"P12","dominant_investigative_context":"release audit, consequence, and aftermath"}
+  ],
+  "p4_vnext_baseline": {
+    "prior_problem": "V5 retrieves explicit facts and selects matching clauses; earlier C02 authority also overweights capacities, ordered overlays, route facts, and touch receipts.",
+    "required_change": "Build the apparent-cult-to-lived-refuge-to-institutional-control reversal through inference, contradiction, provenance, callback, and consequence.",
+    "must_not_repeat": ["four nearby fact lanes followed by matching clauses", "source-touch completion", "mandatory geometry trace", "another keeper-stone cipher ladder"],
+    "human_review_question": "After one to two active hours, do players argue about what the procedures meant to people and how safety became control, rather than merely recall the correct civic settings?"
+  },
+  "audit_result_policy": "Static validation proves the authority and completed comparison exist. Human creative review decides whether a case is genuinely novel, situated, difficult, and emotionally effective; a count or score cannot pass it."
+}

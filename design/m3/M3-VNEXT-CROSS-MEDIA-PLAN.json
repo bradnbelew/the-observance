@@ -6,6 +6,9 @@
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+    "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
+    "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
     "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
     "approved Phase 2 P4 evidence and ambiguity authority",
@@ -24,7 +27,9 @@
     "from": "explicit civic fact retrieval followed by matching-clause selection",
     "to": "cross-media construction-phase and route archaeology whose clues are remembered, compared, reindexed, reinterpreted, and synthesized across time",
     "emotional_lore_job": "establish why the rational refuge matters to people and the central mystery without resolving locked ambiguities early",
-    "minecraft_role": "a consequential physical evidence surface, atmospheric anchor, optional corroboration site, and final civic threshold; not the complete puzzle container"
+    "minecraft_role": "a consequential physical evidence surface, atmospheric anchor, optional corroboration site, and final civic threshold; not the complete puzzle container",
+    "sustained_reversal": "apparent occult or cult ruin -> ordinary refuge life and practical mutual work -> disturbing origin of the Ways/Record as useful procedures become institutional control under early deep-space anomalous pressure",
+    "not_sufficient": "capacity, route, phase, or nearby clause matching without interpretation of why the evidence matters together"
   },
   "compact_minecraft_plan": {
     "preserve": [
@@ -43,7 +48,15 @@
     "interaction_semantics": "clue interactions may record custody and provide accessible descriptions but never unlock answer acceptance",
     "submission_semantics": "exact correct conclusions pass with zero observation receipts; wrong exact predicates and bounded throttle remain"
   },
-  "candidate_p4_mechanism_mix_not_final_until_full_feedback": [
+  "generic_runtime_and_authoring_primitives": {
+    "evidence": "content/provenance/surface/role/accessibility/custody",
+    "state": "earned belief/player theory/recontextualization/consequence/replay",
+    "answer": "exact conclusion/aliases/meaningful wrong reads/zero-receipt acceptance",
+    "content": "author/relationship/medium/version/voice/lore boundary",
+    "event": "trigger/state transition/cross-surface consequence/idempotent recovery",
+    "forbidden_architecture": "mechanism_type enum, choose-one puzzle catalog, or runtime branch over Brad's example families"
+  },
+  "non_exhaustive_p4_possibilities_not_a_frozen_mix": [
     {
       "mechanism": "one grounded indexed-library clue",
       "reference_pattern": "Mara coordinates such as 3-1-4 / 2-1-5 / 6-3-1 establish a discoverable shelf-line-word or related grammar",
@@ -65,6 +78,9 @@
       "constraint": "remains a named future integration gate until exact bytes, hosting, and player-visible receipts exist"
     }
   ],
+  "creative_invention_rule": "The listed possibilities may all change or be replaced. Freeze only after the P4 case brief begins with its C02 revelation, misread, human stake, inference, recontextualization, and aftermath and passes the qualitative novelty audit.",
+  "p4_case_brief_authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json#p4_c02_vnext_case_frame",
+  "novelty_audit_authority": "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
   "clue_graph_requirements": {
     "mandatory_conclusions": "to be frozen only after Brad's complete V5 feedback, against locked Phase 2 P4 authority",
     "multi_surface_rule": "each substantial deduction uses materially distinct evidence roles or documents an approved exception",
@@ -88,6 +104,7 @@
   ],
   "real_future_integration_gates": [
     "exact hosted website/community content and change/unlock behavior",
+    "Copperline responsive archive deployment, immutable history, URL/cache, accessibility, outage, callback, and human credibility receipts",
     "actual NPC dialogue performance or authoritative player-visible conversation surface",
     "exact found-footage, unlisted-video, image, audio, and recovered-file bytes",
     "metadata/EXIF/checksum provenance from those exact bytes",

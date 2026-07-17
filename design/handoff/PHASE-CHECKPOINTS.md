@@ -16,6 +16,12 @@ every later M4/M5 player-facing room, artifact, interaction, subtitle, label, an
 inventory/diversity checks are required, but human editorial and cold-read quality cannot be replaced
 by quotas.
 
+`INVESTIGATION-DRAMATURGY-STANDARD.*` and `INVESTIGATION-NOVELTY-AUDIT.json` are the binding open-ended
+creative authority. Mechanism examples are not an allowlist, enum, quota, fixed catalog, or runtime
+type system. Cases begin with revelation and emotional reversal and use generic composable primitives.
+`COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.*` expands the old hosting/community site into a recurring lived-in
+modern archive while preserving C01, the ladder, immutable provenance, accessibility, and receipt honesty.
+
 | Phase | Status | Durable evidence | Verification | Checkpoint |
 | --- | --- | --- | --- | --- |
 | Phase 0 — Spine and authority control | Complete; Brad approved 2026-07-15 | `SPINE-CONFORMANCE.md`, `PHASE-0-AUTHORITY-AUDIT.md` | V5 freshness, repository integrity, current content/predicate checks | Branch `codex/phase-1-architecture`; foundation commit `6cc1361`, approval record commit `e18d502` |
@@ -55,6 +61,21 @@ authored and tested offline after disconnect from real future integration gates.
 clue graphs, fair keys, accessibility equivalents, exact predicates, robust room-scale geometry, and
 deterministic test fixtures. It may not claim new footage, video, image, audio, file, NPC performance,
 website/community deployment, social activity, hosted unlock, or human cross-media receipt exists.
+
+Brad's open-ended dramaturgy correction supersedes the old closed puzzle-axis/menu framing without
+restoring its stale mechanics. The durable structures retained are Iss's correct-decode/wrong-read and
+cold reread, delayed callbacks, situated professional grammars, multiple in-doors, contradiction and
+provenance, acknowledged true-but-not-door findings, quiet human discovery, changing meanings,
+asymmetric theory, moral judgment, consequence, and aftermath. P4/C02 now requires the sustained reversal
+from apparent cult ruin, to ordinary rational refuge life, to the disturbing origin of Ways/Record as
+practical procedure becomes control. Capacity and route facts alone cannot earn that belief.
+
+Copperline is approved as a major recurring human ARG surface, not a thin prologue. Its directory,
+accounts, support desk, community archive, releases, and reactive history carry majority ordinary lived
+texture, distinct modern voices, time layers, natural provenance, callbacks, and accessible immutable
+history. C01 still earns only that mkept was real and deliberately preserved a damaged server. Offline
+fixtures/specifications do not prove deployment, URLs, cache behavior, responsive/accessibility review,
+live unlocks, outage recovery, player visibility, or Brad approval. Production remains untouched.
 
 ## Known external gaps carried forward
 

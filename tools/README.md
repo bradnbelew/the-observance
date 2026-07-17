@@ -52,10 +52,18 @@ naive, brute, report, synthesis, replay, security, restart, and packaging chain.
 Brad approval or open M4.
 
 `check_cross_media_investigation_standard.py` validates Brad's binding robust-Minecraft/cross-media
-investigation authority, the approved Mara/library reference pattern, distinct P1â€“P12 grammars, the
+investigation authority, the approved Mara/library reference pattern, distinct P1-P12 grammars, the
 offline-versus-future integration boundary, and the held M3 next-revision plan. It rejects fabricated
 media/hosting receipts and any plan that makes fragile bespoke block geometry or source-touch receipts
 mandatory for a correct answer.
+
+`check_investigation_dramaturgy.py` validates the revelation-first, non-taxonomic creative authority,
+its twelve-field case contract, retired brittle patterns, P4/C02 reversal, and qualitative novelty audit.
+It rejects any allowlist/enum/quota/runtime-catalog interpretation of Brad's mechanism examples.
+
+`check_copperline_archive_standard.py` validates Copperline's recurring hosting/community information
+architecture, C01 ladder boundary, lived-texture credibility guard, voice/time/provenance model,
+responsive/accessibility and recovery contract, and offline-versus-real-deployment receipt boundary.
 
 The production entry point is `tools/audit_all.ps1`. It is fail-closed: source authorities are
 validated before generation, every project is built, release artifacts are rebuilt and read back,

@@ -31,18 +31,24 @@ The Mara/library cipher is an approved reference pattern. Coordinates such as `3
 `6-3-1` may resolve shelf-line-word, page-line-word, or another clearly inferable indexed-book grammar.
 Its lesson is a discoverable, fictionally grounded key—not a template to repeat.
 
-Distinct mechanism families may include timestamp-to-transcript indexing; community names or dates
+Non-exhaustive examples may include timestamp-to-transcript indexing; community names or dates
 aligned with acrostics or archive order; contact-sheet or crop coordinates; fairly corroborated
 spectrogram, Morse, DTMF, or reversed audio with accessibility equivalents; provenance-bearing file
 metadata and revision history; NPC-derived substitution alphabets; layered redactions; supplied-image
 map overlays; page/line/word, shelf/spine/letter, catalog, marginal-mark, or mis-shelving book variants;
 video-frame callbacks; coordinated witness omissions; and catch-up-safe website/community changes.
-These are a palette, not a quota, and should be distributed across arcs rather than crowded into one.
+These are not an allowlist, enum, quota, fixed catalog, or set of runtime puzzle types. Generic evidence,
+state, exact-answer, content, and event primitives must permit unique authored mechanisms. Begin with
+revelation and emotional reversal, then invent operations grounded in character and history.
 
 Every cipher has a discoverable key and fair corroboration. Correct answers pass without source-touch
 receipts and may be remembered, shared, or found out of order. A mandatory path may not collapse to one
 surface when approved any-subset and catch-up rules require alternatives. UI friction is not difficulty;
 purple portent and overt puzzle-instruction signage are not clues.
+
+`INVESTIGATION-DRAMATURGY-STANDARD.*` is the controlling open-ended creative-variation authority.
+`COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.*` makes the old hosting/community site a recurring lived-in
+modern archive while preserving C01's exact belief and honest future deployment receipts.
 
 ## Campaign grammar
 

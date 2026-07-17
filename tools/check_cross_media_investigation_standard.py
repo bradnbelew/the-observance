@@ -47,8 +47,19 @@ def main() -> None:
             and reference["sample_coordinates"] == ["3-1-4", "2-1-5", "6-3-1"]
             and "not a template to repeat" in reference["reuse_rule"],
             "Mara reference pattern/fairness boundary drift")
-    require(len(authority["candidate_mechanism_families"]) == 12,
-            "cross-media mechanism family palette drift")
+    boundary = authority["mechanism_example_boundary"]
+    require(boundary["examples_are_non_exhaustive"] is True
+            and all(boundary[key] is False for key in (
+                "allowlist", "enum", "quota", "runtime_catalog"))
+            and "generic evidence" in boundary["rule"]
+            and any("not anticipated" in example
+                    for example in authority["non_exhaustive_mechanism_examples"]),
+            "mechanism examples became a closed taxonomy or runtime catalog")
+    require(authority["investigation_dramaturgy_authority"]
+                == "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json"
+            and authority["copperline_archive_authority"]
+                == "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+            "cross-media authority lost dramaturgy/Copperline routing")
     guards = authority["guardrails"]
     require(all(value is True for key, value in guards.items()
                 if isinstance(value, bool) and not key.endswith("forbidden"))
@@ -63,7 +74,7 @@ def main() -> None:
             "P1-P12 investigation grammar diversity drift")
     integrity = authority["receipt_integrity"]
     require(all(integrity.values()), "external asset/receipt honesty weakened")
-    require(len(authority["required_static_checks"]) == 7,
+    require(len(authority["required_static_checks"]) >= 7,
             "cross-media static gate inventory drift")
 
     plan = load(PLAN)
@@ -76,13 +87,14 @@ def main() -> None:
     require(len(compact["simplify_for_robustness"]) == 4
             and "zero observation receipts" in compact["submission_semantics"],
             "P4 compact geometry or non-gating submission plan drift")
-    require(len(plan["candidate_p4_mechanism_mix_not_final_until_full_feedback"]) == 4
+    require("mechanism_type enum" in plan["generic_runtime_and_authoring_primitives"]["forbidden_architecture"]
+            and "may all change or be replaced" in plan["creative_invention_rule"]
             and plan["clue_graph_requirements"]["out_of_order_safe"] is True
             and plan["clue_graph_requirements"]["correct_answer_zero_receipt_safe"] is True
             and plan["clue_graph_requirements"]["locked_ambiguities_preserved"] is True,
             "P4 cross-media clue graph plan weakened")
-    require(len(plan["offline_authoring_and_tests_after_disconnect"]) == 9
-            and len(plan["real_future_integration_gates"]) == 9
+    require(len(plan["offline_authoring_and_tests_after_disconnect"]) >= 9
+            and len(plan["real_future_integration_gates"]) >= 9
             and "not currently claimed" not in plan["receipt_honesty"]["currently_available"].lower()
             and "No specification" in plan["receipt_honesty"]["rule"],
             "offline/future integration or receipt-honesty boundary drift")
@@ -97,10 +109,25 @@ def main() -> None:
                 == "design/m3/M3-VNEXT-CROSS-MEDIA-PLAN.json"
             and "do not implement" in correction["implementation_hold"].lower(),
             "active V5 cross-media correction routing/hold drift")
+    dramaturgy = active["binding_dramaturgy_and_creative_variation_correction"]
+    copperline = active["binding_copperline_expansion"]
+    require(dramaturgy["authority"]
+                == "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json"
+            and dramaturgy["novelty_audit"]
+                == "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json"
+            and "never an allowlist" in dramaturgy["rule"]
+            and "No live-world" in dramaturgy["implementation_hold"],
+            "active V5 dramaturgy/non-taxonomy hold drift")
+    require(copperline["authority"]
+                == "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json"
+            and copperline["production_mutation"] is False
+            and "mkept was a real person" in copperline["c01_boundary"]
+            and "Do not mutate or stop" in copperline["implementation_hold"],
+            "active V5 Copperline/C01/production hold drift")
 
     human = HUMAN.read_text(encoding="utf-8")
     for phrase in ("BINDING CROSS-PHASE AUTHORITY", "cross-media ARG",
-                   "Robust Minecraft boundary", "Mara/library cipher",
+                   "Robust Minecraft boundary", "Mara/library cipher", "not an allowlist",
                    "discoverable key", "Campaign grammar", "Receipt honesty",
                    "Brad approval is null", "M4"):
         require(phrase in human, f"human cross-media authority missing: {phrase}")

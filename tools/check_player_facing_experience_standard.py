@@ -40,6 +40,11 @@ def validate_authority() -> dict:
                 == "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json"
             and (ROOT / data["cross_media_investigation_authority"]).is_file(),
             "player-facing authority lost cross-media investigation routing")
+    require(data["investigation_dramaturgy_authority"]
+                == "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json"
+            and data["copperline_archive_authority"]
+                == "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+            "player-facing authority lost dramaturgy/Copperline routing")
     scope = data["scope"]
     require(scope["phases"] == ["M3-v4-and-later", "M4", "M5"],
             "cross-phase scope drift")

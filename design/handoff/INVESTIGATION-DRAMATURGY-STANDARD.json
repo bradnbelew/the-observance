@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0.0-investigation-dramaturgy",
+  "authority_id": "observance-investigation-dramaturgy-creative-variation",
+  "issued_by": "Brad",
+  "issued_date": "2026-07-17",
+  "status": "binding_cross_phase_non_exhaustive_authority",
+  "scope": ["M3-vNext", "M4", "M5", "P1-P12 investigations and connective tissue"],
+  "m4_authority": "closed",
+  "brad_visual_approval": null,
+  "authoring_direction": "Begin with revelation and emotional reversal, then invent evidence and operations that arise from the people, professions, culpability, place, and history. Never begin by choosing a puzzle type.",
+  "recurring_surface_authorities": [
+    "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json"
+  ],
+  "taxonomy_boundary": {
+    "closed_taxonomy": false,
+    "allowlist": false,
+    "enum": false,
+    "quota": false,
+    "runtime_mechanism_dispatch_catalog": false,
+    "examples_are_non_exhaustive": true,
+    "rule": "Named mechanisms and families are precedents and creative prompts only. New authored mechanisms are expected; runtime and content schemas may not require selection from a fixed mechanism catalog."
+  },
+  "generic_primitives": {
+    "evidence": ["stable evidence id", "content reference", "surface and availability", "provenance", "one or more dramatic evidence roles", "accessibility equivalent", "custody observations that never gate answers"],
+    "state": ["earned canon belief", "player-facing belief or theory", "recontextualization state", "world/NPC/media consequence", "replay and catch-up readback"],
+    "answer": ["exact normalized conclusion predicate", "accepted equivalent meanings", "wrong-but-meaningful interpretation response", "throttle where appropriate", "zero-observation acceptance"],
+    "content": ["fictional author and relationship", "medium and version", "voice", "time and provenance", "lore boundary", "human or emotional job"],
+    "event": ["trigger independent of source-touch quota", "state transition", "consequence on one or more surfaces", "idempotent receipt", "outage/restart recovery"],
+    "composition_rule": "Primitives compose into unique authored cases. They describe evidence and consequences, not a mechanism_type field or choose-one puzzle dispatcher."
+  },
+  "mined_narrative_structures": [
+    {"structure":"correct_decode_wrong_interpretation","precedent":"Iss/Liar engine","preserve":"A result may decode correctly while supporting a comforting false read; later contradiction makes the same clue read cold.","sources":["arc/bestiary-sealed.md#3-the-liar-iss","design/BUILD-PLAN.md#c-the-callback-web-spiderweb","design/archive/audit/puzzles-ciphers.md#s2-d"]},
+    {"structure":"delayed_callback","preserve":"An ordinary line, object, omission, filename, gesture, or detail becomes a key or accusation later; the payoff reopens earlier evidence rather than merely repeating it."},
+    {"structure":"situated_professional_grammar","preserve":"Vaun, Mara, Sella, Orin, Brann, Iss, Averyn, Nessa, mkept, Ash, Rook, and Wren generate different investigative operations from their work, habits, loyalties, and culpability."},
+    {"structure":"multiple_independent_in_doors","preserve":"Important beliefs have fair materially distinct approaches and allow out-of-order or shared solutions without source-touch parity."},
+    {"structure":"contradiction_and_provenance","preserve":"Copies, witnesses, edits, absences, and custody disagree in authored ways; provenance changes what a true statement means."},
+    {"structure":"true_but_not_the_door","preserve":"A defensible finding may be true without resolving the active question and receives specific world acknowledgement rather than generic wrong-answer copy."},
+    {"structure":"quiet_reward","preserve":"Human scenes and lore discoveries can matter without opening a lock or becoming immediate puzzle payload."},
+    {"structure":"meaning_changes_later","preserve":"Later revelation, world change, NPC admission, or newly available copy can change the meaning of earlier evidence."},
+    {"structure":"asymmetric_theory_and_aftermath","preserve":"Uneven knowledge, discussion, theory formation, recontextualization, moral judgment, consequence, and aftermath are first-class play, not filler between decode/submit loops."}
+  ],
+  "case_authoring_contract": [
+    "player_facing_mystery_or_question",
+    "plausible_initial_belief_or_misread",
+    "human_stake_and_character_relationship",
+    "exact_canon_belief_earned_at_the_fixed_revelation_ladder",
+    "evidence_roles_seed_key_corroboration_contradiction_provenance_emotional_witness_false_plausible_read_synthesis_distributed_across_surfaces",
+    "what_players_must_infer_rather_than_retrieve",
+    "at_least_one_meaningful_recontextualization_or_callback",
+    "consequence_world_npc_or_media_response_after_conclusion",
+    "fair_alternate_and_catch_up_routes_without_source_touch_gating",
+    "accessibility_outage_replay_restart_and_any_subset_behavior",
+    "novelty_comparison_against_adjacent_and_prior_cases",
+    "cold_human_target_time_likely_theory_paths_and_plausible_wrong_theories"
+  ],
+  "dramaturgical_rhythm": {
+    "possible_beats": ["exploration", "conversation", "unsettling observation", "research", "debate", "false confidence", "contradiction", "synthesis", "consequence", "quiet aftermath"],
+    "fixed_sequence": false,
+    "every_beat_is_a_puzzle": false,
+    "every_clue_is_an_artifact": false,
+    "every_answer_opens_a_door": false,
+    "every_case_uses_the_same_rhythm": false,
+    "rule": "Choose and proportion beats for the case's revelation and human reversal."
+  },
+  "retired_brittle_implementations": [
+    "mandatory exact block geometry or block-by-block simulation",
+    "moon phase, in-game time, or real-time waiting as a mandatory gate",
+    "sound-only mandatory gates without equivalent access",
+    "F3, debug overlay, or server-log dependency",
+    "source-touch or click-completion quotas",
+    "forced voice recognition",
+    "decorative interactions presented as deduction",
+    "repetitive keeper-stone cipher ladders"
+  ],
+  "world_and_ladder_contract": {
+    "sources": ["arc/WORLD-BIBLE.md", "arc/lore/canon-spine.md", "design/handoff/SPINE-LOCK.md", "design/handoff/SPINE-CONFORMANCE.md", "arc/v5/SOLUTION-CASEBOOK.md"],
+    "inhabitation_requirement": "Content must make players inhabit the Hold and care about Vaun, Mara, Sella, Orin, Brann, Iss, Averyn, Nessa, mkept, Ash, Rook, and Wren.",
+    "ordinary_material_job": "Establish lived reality, labor, relationships, compromises, and memory.",
+    "uncanny_material_job": "Show how the Dark or Record preserves, repeats, edits, or weaponizes observation without prematurely resolving the three locked ambiguities.",
+    "payoff_rule": "Lore changes what players believe or feel; it does not merely add names, dates, capacities, or route facts."
+  },
+  "p4_c02_vnext_case_frame": {
+    "player_facing_mystery_or_question": "What was the Hold before it looked like an occult ruin, why did ordinary people trust it, and what began to change their refuge into an instrument of control?",
+    "plausible_initial_belief_or_misread": "The Mouth and its repeated procedures are the remains of an irrational cult or a refuge built for ritual observance.",
+    "human_stake_and_character_relationship": "Families, laborers, teachers, traders, and keepers survived the Long Cold through practical mutual work; the same need for legible safety made later control possible.",
+    "exact_canon_belief_earned": "C02 only: the Deep Hold was a functioning rational refuge before ritual institution. Do not spoil the six-person C03 finding, Nessa, the Break, Wren, Averyn's identity, or the three locked ambiguities.",
+    "sustained_reversal": ["apparent occult or cult ruin", "ordinary refuge life and practical civic procedures", "disturbing seed of the Ways and Record as safety practice becomes institutional control under early deep-space anomalous pressure"],
+    "required_inference": "Players interpret why mundane life evidence, practical procedures, conflicting copies, and one uncanny pressure matter together; copied capacities or nearby route clauses are not a sufficient conclusion.",
+    "minecraft_role": "Compact robust place, physical atmosphere, readable ordinary-life evidence, one or more consequential clues, consequence threshold, and optional spatial corroboration; never mandatory long-form bespoke geometry.",
+    "cross_media_role": "Committed books/files and remembered material may carry indexing, contradiction, provenance, and callback layers. Unavailable hosted/community/NPC/video/image/audio assets remain explicit future integration gates.",
+    "recontextualization": "A repeated mark or procedure first reads as rite, then as practical survival instruction, then as the beginning of a system that records compliance and narrows human choice.",
+    "aftermath": "The opened civic threshold should leave a quieter human readback and an unsettled institutional implication, not merely a gate-open reward.",
+    "target_active_hours": {"min": 1, "max": 2}
+  },
+  "source_mining_boundary": "Earlier puzzle documents are mined for dramatic structure and strong story ideas only. Their superseded taxonomies, stale runtime assumptions, and brittle mechanics do not regain authority."
+}

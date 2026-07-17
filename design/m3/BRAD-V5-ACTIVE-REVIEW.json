@@ -112,6 +112,23 @@
     "receipt_honesty": "Separate offline-authored authorities, clue graphs, test fixtures, and specifications from unavailable external media, hosting, community, social, and player receipts.",
     "implementation_hold": "Record and plan now; do not mutate or stop the live V5 server and do not implement before explicit disconnect."
   },
+  "binding_dramaturgy_and_creative_variation_correction": {
+    "status": "binding_cross_phase_non_exhaustive_authority_recorded_implementation_held",
+    "authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+    "novelty_audit": "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
+    "rule": "Brad's mechanism families are examples only, never an allowlist, enum, quota, fixed catalog, or hardcoded runtime puzzle type. Author from revelation and emotional reversal outward using generic composable primitives.",
+    "mined_precedent": "Preserve Iss/Liar correct-decode/wrong-interpretation and cold reread, delayed callbacks, situated professional grammars, multiple in-doors, contradiction/provenance, acknowledged true-but-not-door findings, quiet lore, changing meanings, asymmetric theory, judgment, and aftermath while rejecting stale implementations.",
+    "p4_reversal": "apparent occult/cult ruin -> ordinary refuge life -> disturbing origin of Ways/Record as practical procedure becomes institutional control under early anomalous pressure; earn only C02 and do not reduce the conclusion to capacity/route matching",
+    "implementation_hold": "No live-world implementation, mutation, or stop before Brad explicitly disconnects."
+  },
+  "binding_copperline_expansion": {
+    "status": "approved_design_direction_recorded_offline_only",
+    "authority": "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+    "rule": "Copperline becomes a recurring believable hosting/community archive with human history, ordinary texture, distinct voices, immutable provenance, callbacks, responsive/accessibility behavior, and honest future deployment receipts.",
+    "c01_boundary": "mkept was a real person who deliberately preserved a damaged server; no later-case truth or locked ambiguity resolves early",
+    "production_mutation": false,
+    "implementation_hold": "Do not mutate or stop live V5 before explicit disconnect."
+  },
   "preserve_pending_final_feedback": [
     "V5's exact client render and click-path proof",
     "occupied-shelf and seat-orientation fixes",

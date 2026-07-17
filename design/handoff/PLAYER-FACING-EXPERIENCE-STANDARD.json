@@ -7,6 +7,8 @@
   "amendment_authority": "design/m3/BRAD-V4-REVIEW-DECISION.json",
   "progression_amendment_authority": "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
   "cross_media_investigation_authority": "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+  "investigation_dramaturgy_authority": "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
+  "copperline_archive_authority": "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
   "status": "binding",
   "authority_precedence": "after_spine_lock_and_spine_conformance_before_phase_specific_player_facing_implementation",
   "scope": {
