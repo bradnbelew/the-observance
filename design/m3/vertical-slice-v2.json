@@ -1,0 +1,251 @@
+{
+  "schema_version": "2.0.0-m3",
+  "authority_id": "observance-p4-private-slice-v2",
+  "supersedes_for_revision": "observance-p4-private-slice-v1",
+  "rejected_authority_preserved_at": "design/m3/vertical-slice-v1.json",
+  "manifest_version": "2.0.0-m2",
+  "predicate_raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+  "predicate_semantic_sha256": "d2eec35f58cf79a30f2255f429cb0d19a5c1e8b5bd7942604b3bef724272cbf6",
+  "historical_rollback_raw_sha256": "37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b",
+  "status": "authored-private-review-revision-not-player-facing",
+  "coordinate_system": {
+    "authority": "coarse-adjacency-v1.json",
+    "origin": [0, 0, 0],
+    "unit": "one Minecraft block",
+    "positive_z": "inward along the public descent",
+    "legacy_transform": null
+  },
+  "envelope": {"min_x": -34, "max_x": 34, "min_y": -24, "max_y": 10, "min_z": -10, "max_z": 92},
+  "scale_receipt": {
+    "envelope_cells": 248745,
+    "surface_mouth_interior_floor_cells": 322,
+    "intake_interior_floor_cells": 651,
+    "copy_office_interior_floor_cells": 273,
+    "public_hall_clear_width": 9,
+    "gate_clear_width": 11,
+    "gate_clear_height": 8
+  },
+  "spaces": [
+    {"space_id": "SURFACE_MOUTH", "kind": "room", "bounds": {"min_x": -12, "max_x": 12, "floor_y": 0, "ceiling_y": 9, "min_z": 0, "max_z": 15}, "ordinary_job": "public works entrance, drainage survey point, cart threshold, and return landing"},
+    {"space_id": "INTAKE", "kind": "civic_hall", "bounds": {"min_x": -16, "max_x": 16, "floor_y": -20, "ceiling_y": -10, "min_z": 56, "max_z": 78}, "ordinary_job": "population intake, refuge-capacity filing, drainage measurement, and public survey work"},
+    {"space_id": "PUBLIC_HALLWAY", "kind": "hallway", "bounds": {"min_x": -6, "max_x": 6, "floor_y": -20, "ceiling_y": -12, "min_z": 79, "max_z": 89}, "ordinary_job": "single controlled public route to the future refuge commons"},
+    {"space_id": "INTAKE_COPY_ROOM", "kind": "ordinary_room", "bounds": {"min_x": 18, "max_x": 32, "floor_y": -20, "ceiling_y": -12, "min_z": 62, "max_z": 84}, "ordinary_job": "clerks copy intake rolls, revise surveys, total capacity, bind duplicate records, and stage public readings"},
+    {"space_id": "STAFF_SERVICE_VESTIBULE", "kind": "service_corridor", "bounds": {"min_x": 12, "max_x": 21, "floor_y": -20, "ceiling_y": -14, "min_z": 79, "max_z": 83}, "ordinary_job": "marked records-cart route between intake and the copy office; ends before the controlled gate"},
+    {"space_id": "FUTURE_STUB", "kind": "protected_unbuilt_threshold", "bounds": {"min_x": -6, "max_x": 6, "floor_y": -20, "ceiling_y": -12, "min_z": 90, "max_z": 92}, "ordinary_job": "visibly sealed future route; no side entrance or hidden bypass"}
+  ],
+  "descent": {
+    "route_id": "PUBLIC_DESCENT",
+    "z_start": 16,
+    "z_end": 55,
+    "half_width": 4,
+    "headroom": 5,
+    "floor_formula": "-floor((z-16)/2)",
+    "max_step_delta": 1,
+    "reversible": true,
+    "phase_bands": [
+      {"phase": "shelter", "z": [16, 28], "wall": "TUFF_BRICKS", "floor": "COBBLED_DEEPSLATE"},
+      {"phase": "civic", "z": [29, 42], "wall": "STONE_BRICKS", "floor": "POLISHED_ANDESITE"},
+      {"phase": "deep", "z": [43, 55], "wall": "DEEPSLATE_BRICKS", "floor": "DEEPSLATE_TILES"}
+    ]
+  },
+  "palette_authority": [
+    {"zone": "surface_mouth", "structural": ["MOSSY_STONE_BRICKS", "TUFF_BRICKS", "POLISHED_ANDESITE"], "decorative": ["OXIDIZED_CUT_COPPER", "DARK_OAK_LOG", "LANTERN"]},
+    {"zone": "descent", "structural": ["TUFF_BRICKS", "STONE_BRICKS", "DEEPSLATE_BRICKS", "DEEPSLATE_TILES"], "decorative": ["POLISHED_BASALT", "DARK_OAK_LOG", "EXPOSED_CUT_COPPER", "LANTERN"]},
+    {"zone": "intake", "structural": ["TUFF_BRICKS", "STONE_BRICKS", "POLISHED_ANDESITE", "DEEPSLATE_TILE_WALL"], "decorative": ["WEATHERED_CUT_COPPER", "COPPER_GRATE", "DARK_OAK_PLANKS", "LANTERN"]},
+    {"zone": "copy_office", "structural": ["STONE_BRICKS", "TUFF_BRICKS", "POLISHED_ANDESITE"], "decorative": ["DARK_OAK_PLANKS", "SPRUCE_SLAB", "CHISELED_BOOKSHELF", "BOOKSHELF", "WHITE_CARPET", "LANTERN"]},
+    {"zone": "controlled_gate", "structural": ["POLISHED_BLACKSTONE_BRICKS", "COPPER_GRATE", "IRON_BLOCK"], "decorative": ["WAXED_WEATHERED_CUT_COPPER", "REDSTONE_LAMP"]}
+  ],
+  "doors": [
+    {"door_id": "COPY_ROOM_PUBLIC_DOOR", "cells": [[17,-20,68],[17,-20,69],[17,-20,70],[17,-20,71],[17,-20,72],[18,-20,68],[18,-20,69],[18,-20,70],[18,-20,71],[18,-20,72]], "height": 4, "threshold_label": "PUBLIC COPY OFFICE", "route": "COPY_ROOM_PUBLIC_AISLE"},
+    {"door_id": "INTAKE_STAFF_DOOR", "cells": [[12,-20,78],[13,-20,78],[14,-20,78],[15,-20,78],[16,-20,78]], "height": 4, "threshold_label": "STAFF RECORD CARTS", "route": "INTAKE_STAFF_SERVICE"},
+    {"door_id": "COPY_ROOM_SERVICE_DOOR", "cells": [[17,-20,80],[17,-20,81],[17,-20,82],[18,-20,80],[18,-20,81],[18,-20,82]], "height": 4, "threshold_label": "STAFF COPYING ROUTE", "route": "INTAKE_STAFF_SERVICE"}
+  ],
+  "route_reservations": [
+    {"route_id": "PUBLIC_CIRCULATION", "kind": "player", "waypoints": [[0,0,2],[0,0,13],[0,-1,18],[0,-10,36],[0,-19,54],[0,-20,60],[0,-20,76],[0,-20,84],[0,-20,88],[0,-20,91]], "minimum_width": 3, "gate_behavior": "waypoint z=91 is unreachable while P4_INTAKE_GATE is closed"},
+    {"route_id": "COPY_ROOM_PUBLIC_AISLE", "kind": "player", "waypoints": [[0,-20,70],[12,-20,70],[18,-20,70],[21,-20,70],[26,-20,70],[27,-20,70]], "minimum_width": 3},
+    {"route_id": "INTAKE_STAFF_SERVICE", "kind": "service", "waypoints": [[12,-20,76],[14,-20,78],[14,-20,81],[18,-20,81],[21,-20,81],[27,-20,81]], "minimum_width": 2, "bypass_forbidden": true},
+    {"route_id": "COPY_OFFICE_CROSS_AISLE", "kind": "player", "waypoints": [[20,-20,65],[20,-20,70],[20,-20,76],[20,-20,82]], "minimum_width": 2}
+  ],
+  "waterworks": {
+    "system_id": "INTAKE_DRAINAGE_AND_CAPACITY_FLUME",
+    "function": "surface runoff enters a settling basin, passes a two-block gauging flume, and drains into a grated sump used to estimate safe refuge intake",
+    "water_volumes": [
+      {"part": "settling_basin", "bounds": {"min_x": -14, "max_x": -9, "min_y": -21, "max_y": -21, "min_z": 63, "max_z": 67}, "material": "WATER", "count": 30},
+      {"part": "gauging_flume", "bounds": {"min_x": -12, "max_x": -11, "min_y": -21, "max_y": -21, "min_z": 68, "max_z": 75}, "material": "WATER", "count": 16},
+      {"part": "drain_sump", "bounds": {"min_x": -14, "max_x": -9, "min_y": -21, "max_y": -21, "min_z": 76, "max_z": 77}, "material": "WATER", "count": 12}
+    ],
+    "total_water_blocks": 58,
+    "curb_material": "WEATHERED_CUT_COPPER",
+    "grate_material": "COPPER_GRATE",
+    "capacity_gauge_cell": [-8,-18,70],
+    "inlet_sign_cell": [-15,-19,63],
+    "outlet_sign_cell": [-15,-19,77],
+    "standing_route_width": 2,
+    "flood_escape": false
+  },
+  "composition": [
+    {"prop_id": "COPY_DESK_NORTH", "space_id": "INTAKE_COPY_ROOM", "kind": "blocking_furniture", "material": "DARK_OAK_PLANKS", "floor_cells": [[22,-20,65],[23,-20,65],[24,-20,65],[25,-20,65],[26,-20,65],[22,-20,66],[23,-20,66],[24,-20,66],[25,-20,66],[26,-20,66]], "count": 10},
+    {"prop_id": "COPY_DESK_SOUTH", "space_id": "INTAKE_COPY_ROOM", "kind": "blocking_furniture", "material": "DARK_OAK_PLANKS", "floor_cells": [[22,-20,74],[23,-20,74],[24,-20,74],[25,-20,74],[26,-20,74],[22,-20,75],[23,-20,75],[24,-20,75],[25,-20,75],[26,-20,75]], "count": 10},
+    {"prop_id": "BINDING_BENCH", "space_id": "INTAKE_COPY_ROOM", "kind": "blocking_furniture", "material": "SPRUCE_PLANKS", "floor_cells": [[22,-20,82],[23,-20,82],[24,-20,82],[25,-20,82],[26,-20,82]], "count": 5},
+    {"prop_id": "CLERK_COUNTER", "space_id": "INTAKE_COPY_ROOM", "kind": "blocking_furniture", "material": "POLISHED_ANDESITE", "floor_cells": [[28,-20,68],[29,-20,68],[30,-20,68],[28,-20,69],[30,-20,69],[28,-20,70],[30,-20,70],[28,-20,71],[30,-20,71],[28,-20,72],[29,-20,72],[30,-20,72]], "count": 12},
+    {"prop_id": "CABINET_RANK_NORTH", "space_id": "INTAKE_COPY_ROOM", "kind": "blocking_furniture", "material": "CHISELED_BOOKSHELF", "floor_cells": [[31,-20,63],[31,-20,64],[31,-20,65],[31,-20,66],[31,-20,67]], "vertical_height": 4, "count": 20},
+    {"prop_id": "CABINET_RANK_SOUTH", "space_id": "INTAKE_COPY_ROOM", "kind": "blocking_furniture", "material": "CHISELED_BOOKSHELF", "floor_cells": [[31,-20,78],[31,-20,79],[31,-20,80],[31,-20,81],[31,-20,82],[31,-20,83]], "vertical_height": 4, "count": 24},
+    {"prop_id": "PUBLIC_FILING_COUNTER", "space_id": "INTAKE", "kind": "blocking_furniture", "material": "POLISHED_ANDESITE", "floor_cells": [[-6,-20,76],[-5,-20,76],[-4,-20,76],[-3,-20,76],[-2,-20,76],[-1,-20,76],[1,-20,76],[2,-20,76],[3,-20,76],[4,-20,76],[5,-20,76],[6,-20,76]], "count": 12},
+    {"prop_id": "INTAKE_WAITING_BENCH_WEST", "space_id": "INTAKE", "kind": "blocking_furniture", "material": "DARK_OAK_PLANKS", "floor_cells": [[-6,-20,59],[-5,-20,59],[-4,-20,59],[-3,-20,59]], "count": 4},
+    {"prop_id": "INTAKE_WAITING_BENCH_EAST", "space_id": "INTAKE", "kind": "blocking_furniture", "material": "DARK_OAK_PLANKS", "floor_cells": [[3,-20,59],[4,-20,59],[5,-20,59],[6,-20,59]], "count": 4}
+  ],
+  "copy_office_density": {
+    "interior_floor_cells": 273,
+    "blocking_floor_cells": 48,
+    "blocking_footprint_ratio": 0.1758,
+    "vertical_cabinet_blocks": 44,
+    "paper_surface_blocks": 22,
+    "book_or_ledger_surfaces": 8,
+    "light_fixtures": 8,
+    "purposeful_open_cells": 226,
+    "minimum_public_aisle_width": 3,
+    "minimum_staff_route_width": 2
+  },
+  "evidence_surfaces": [
+    {"surface_id": "DRAINAGE_MAP", "cell": [-8,0,7], "material": "LECTERN", "finding_id": "P4.F1", "source_id": "drainage_map", "title": "Public Works Drainage Survey", "body": "The runoff arrows terminate at this threshold. The well and quarry drains are separately keyed; neither enters the refuge."},
+    {"surface_id": "CART_WEAR", "cell": [0,0,13], "material": "POLISHED_ANDESITE", "finding_id": "P4.F1", "source_id": "cart_wear", "title": "Threshold Wear", "body": "Paired wheel scars descend and return on the same graded route. No second public haul line branches from the landing."},
+    {"surface_id": "RESIDENT_MEMORY", "cell": [8,0,7], "material": "LECTERN", "finding_id": "P4.F1", "source_id": "resident_memory_copy", "title": "Mira Vale, copied interview", "body": "Families queued under the rain shed. Empty carts came back by the same stair after the intake clerks counted them."},
+    {"surface_id": "SHELTER_JOIN", "cell": [-4,-2,22], "material": "CHISELED_TUFF", "finding_id": "P4.F2", "source_id": "material_join_shelter", "title": "First shelter cut", "body": "Rough tuff courses stop at the original storm shelter width; later ribs are keyed into their faces."},
+    {"surface_id": "CIVIC_JOIN", "cell": [-4,-11,38], "material": "CHISELED_STONE_BRICKS", "finding_id": "P4.F2", "source_id": "material_join_civic", "title": "Civic widening", "body": "Dressed stone widens the route and adds cart recesses after the first shelter was already in use."},
+    {"surface_id": "DEEP_JOIN", "cell": [-4,-18,52], "material": "CHISELED_DEEPSLATE", "finding_id": "P4.F2", "source_id": "material_join_deep", "title": "Deep works tie-in", "body": "Tile and basalt braces continue below the civic stair, cut around both earlier campaigns rather than beneath one plan."},
+    {"surface_id": "POPULATION_BOARD", "cell": [-13,-20,59], "material": "LECTERN", "finding_id": "P4.F3", "source_id": "population_board", "title": "Refuge intake board", "body": "Household marks total 286 residents. Forty-two temporary work berths are recorded separately from sleeping capacity."},
+    {"surface_id": "HEAT_WATER_DIAGRAM", "cell": [-13,-20,72], "material": "LECTERN", "finding_id": "P4.F3", "source_id": "heat_water_capacity_diagram", "title": "Heat and water capacity sheet", "body": "Two boilers cover 320 rationed berths. The flume gauge limits intake to 300 until the lower filter bed is commissioned."},
+    {"surface_id": "WATER_CHANNEL_GAUGE", "cell": [-8,-18,70], "material": "WAXED_WEATHERED_CUT_COPPER", "finding_id": "P4.F4", "source_id": "recessed_water_channel", "title": "Drainage capacity gauge", "body": "Basin depth, flume width, and sump marks let clerks reject arrivals the drains and filters could not safely serve."},
+    {"surface_id": "RATION_LEDGER", "cell": [22,-20,66], "material": "LECTERN", "finding_id": "P4.F3", "source_id": "ration_ledger", "title": "Seven-day ration abstract", "body": "Issued grain and lamp oil support 294 full shares. Work crews draw from the surface store and are not counted as refuge mouths."},
+    {"surface_id": "SURVEY_REVISIONS", "cell": [31,-18,65], "material": "CHISELED_BOOKSHELF", "finding_id": "P4.F2", "source_id": "survey_revisions", "title": "Survey revisions A-C", "body": "Revision A ends at the shelter. B adds intake and copy office. C extends the public spine beyond the controlled gate."},
+    {"surface_id": "ROOM_USE_ROLL", "cell": [31,-18,80], "material": "CHISELED_BOOKSHELF", "finding_id": "P4.F2", "source_id": "room_use_roll", "title": "Room-use roll", "body": "The copy office begins after the intake expansion and before deep works crews receive permanent quarters."},
+    {"surface_id": "FOUNDING_MINUTES", "cell": [22,-20,74], "material": "LECTERN", "finding_id": "P4.F4", "source_id": "founding_minutes", "title": "Founding works minutes", "body": "The committee rejects exposed lateral galleries: down-cut cover shortens winter travel and reaches stable heat beside the water line."},
+    {"surface_id": "DESCENT_HEAT_MARKS", "cell": [4,-18,52], "material": "POLISHED_BASALT", "finding_id": "P4.F4", "source_id": "descent_heat_marks", "title": "Heat survey marks", "body": "Measured wall temperature steadies before intake level. Fuel-haul estimates fall once the protected depth is reached."}
+  ],
+  "submission_surfaces": [
+    {"surface_id": "FILE_PUBLIC_MOUTH", "cell": [-4,-19,76], "material": "LECTERN", "finding_id": "P4.F1", "label": "FILE: PUBLIC MOUTH"},
+    {"surface_id": "FILE_BUILD_PHASES", "cell": [-2,-19,76], "material": "LECTERN", "finding_id": "P4.F2", "label": "FILE: BUILD PHASES"},
+    {"surface_id": "FILE_CAPACITY", "cell": [2,-19,76], "material": "LECTERN", "finding_id": "P4.F3", "label": "FILE: CAPACITY"},
+    {"surface_id": "FILE_DESCENT", "cell": [4,-19,76], "material": "LECTERN", "finding_id": "P4.F4", "label": "FILE: DESCENT MOTIVE"},
+    {"surface_id": "FILE_INTAKE_SYNTHESIS", "cell": [0,-19,77], "material": "LECTERN", "finding_id": "P4.F5", "label": "FILE: INTAKE FINDING"},
+    {"surface_id": "FIELD_ARCHIVE_READBACK", "cell": [13,-20,74], "material": "LECTERN", "finding_id": null, "label": "FIELD ARCHIVE / REPLAY"}
+  ],
+  "threshold_signage": [
+    {"sign_id": "MOUTH_ENTRY", "cell": [0,2,0], "lines": ["PUBLIC WORKS", "REFUGE INTAKE", "DESCENT + RETURN", "KEEP AISLE CLEAR"]},
+    {"sign_id": "MOUTH_EXIT", "cell": [0,2,15], "lines": ["RETURN", "TO SURFACE", "SAME PUBLIC ROUTE", "NO SIDE EXIT"]},
+    {"sign_id": "COPY_PUBLIC", "cell": [18,-15,70], "lines": ["PUBLIC", "COPY OFFICE", "READING AISLE", ""]},
+    {"sign_id": "COPY_STAFF", "cell": [18,-15,81], "lines": ["STAFF RECORDS", "CART ROUTE", "RETURNS TO INTAKE", ""]},
+    {"sign_id": "GATE_CONTROL", "cell": [-6,-17,88], "lines": ["CONTROLLED GATE", "INTAKE FINDING", "REQUIRED", "COMMONS BEYOND"]},
+    {"sign_id": "FUTURE_STUB", "cell": [0,-17,92], "lines": ["REFUGE COMMONS", "FUTURE WORK", "SEALED HERE", "NO SERVICE BYPASS"]},
+    {"sign_id": "WATER_INLET", "cell": [-16,-17,63], "lines": ["RUNOFF INLET", "SETTLING BASIN", "CLEAR SILT", "BEFORE GAUGE"]},
+    {"sign_id": "WATER_OUTLET", "cell": [-16,-17,77], "lines": ["GAUGED OUTFLOW", "LOWER FILTER", "CAPACITY LIMIT", "300 BERTHS"]}
+  ],
+  "standing_cells": [
+    {"cell_id": "MOUTH_MAP_STAND", "cell": [-8,0,8]}, {"cell_id": "MOUTH_WEAR_STAND", "cell": [0,0,12]}, {"cell_id": "MOUTH_MEMORY_STAND", "cell": [8,0,8]},
+    {"cell_id": "PHASE_1_STAND", "cell": [-2,-3,22]}, {"cell_id": "PHASE_2_STAND", "cell": [-2,-11,38]}, {"cell_id": "PHASE_3_STAND", "cell": [-2,-18,52]},
+    {"cell_id": "POPULATION_STAND", "cell": [-13,-20,60]}, {"cell_id": "HEAT_WATER_STAND", "cell": [-13,-20,71]}, {"cell_id": "WATER_GAUGE_STAND", "cell": [-7,-20,70]},
+    {"cell_id": "RATION_STAND", "cell": [21,-20,66]}, {"cell_id": "FOUNDING_STAND", "cell": [21,-20,74]}, {"cell_id": "SURVEY_STAND", "cell": [30,-20,65]}, {"cell_id": "ROOM_USE_STAND", "cell": [30,-20,80]},
+    {"cell_id": "FILING_F1_STAND", "cell": [-4,-20,75]}, {"cell_id": "FILING_F2_STAND", "cell": [-2,-20,75]}, {"cell_id": "FILING_F3_STAND", "cell": [2,-20,75]}, {"cell_id": "FILING_F4_STAND", "cell": [4,-20,75]}, {"cell_id": "FILING_F5_STAND", "cell": [0,-20,76]},
+    {"cell_id": "GATE_READBACK_CLOSED", "cell": [0,-20,87]}, {"cell_id": "GATE_READBACK_OPEN", "cell": [0,-20,91]},
+    {"cell_id": "WATCHER_WEST_STAND", "cell": [24,-20,70]}, {"cell_id": "WATCHER_EAST_STAND", "cell": [29,-20,70]}, {"cell_id": "STAFF_ROUTE_STAND", "cell": [20,-20,81]}, {"cell_id": "PUBLIC_ROUTE_STAND", "cell": [20,-20,70]}
+  ],
+  "sightlines": [
+    {"sightline_id": "MOUTH_MAP", "from": [-8,0,8], "to": [-8,0,7], "required": true},
+    {"sightline_id": "MOUTH_MEMORY", "from": [8,0,8], "to": [8,0,7], "required": true},
+    {"sightline_id": "CAPACITY_BOARD", "from": [-13,-20,60], "to": [-13,-20,59], "required": true},
+    {"sightline_id": "HEAT_WATER_BOARD", "from": [-13,-20,71], "to": [-13,-20,72], "required": true},
+    {"sightline_id": "COPY_PUBLIC_THRESHOLD", "from": [12,-20,70], "to": [20,-18,70], "required": true},
+    {"sightline_id": "GATE_CONTROL", "from": [0,-20,84], "to": [0,-15,88], "required": true},
+    {"sightline_id": "WATCHER_TALLY_WEST", "from": [24,-20,70], "to": [31,-18,70], "required": false},
+    {"sightline_id": "WATCHER_TALLY_EAST", "from": [29,-20,70], "to": [31,-18,70], "required": false}
+  ],
+  "investigation": {
+    "arc_id": "P4",
+    "submission_surface": "PUBLIC_FILING_COUNTER",
+    "physical_interaction_contract": "right-click authored evidence to persist observation provenance; right-click the matching filing lectern to commit a finding; P4.F5 opens the physical gate",
+    "findings": [
+      {"finding_id": "P4.F1", "title": "Public Mouth", "sources": ["drainage_map", "cart_wear", "resident_memory_copy"], "minimum_independent_sources": 2, "prerequisites": []},
+      {"finding_id": "P4.F2", "title": "Three build phases", "sources": ["material_join_shelter", "material_join_civic", "material_join_deep", "survey_revisions", "room_use_roll"], "minimum_independent_sources": 2, "prerequisites": []},
+      {"finding_id": "P4.F3", "title": "Refuge capacity", "sources": ["population_board", "ration_ledger", "heat_water_capacity_diagram"], "minimum_independent_sources": 2, "prerequisites": []},
+      {"finding_id": "P4.F4", "title": "Rational descent", "sources": ["founding_minutes", "descent_heat_marks", "recessed_water_channel"], "minimum_independent_sources": 2, "prerequisites": []},
+      {"finding_id": "P4.F5", "title": "Intake finding", "sources": ["P4.F1", "P4.F2", "P4.F3", "P4.F4"], "minimum_independent_sources": 4, "prerequisites": ["P4.F1","P4.F2","P4.F3","P4.F4"], "effect": "open P4_INTAKE_GATE once"}
+    ],
+    "attendance_is_not_a_predicate": true,
+    "elapsed_time_is_not_a_predicate": true,
+    "any_subset": true,
+    "wrong_theory_changes_state": false,
+    "replay_duplicates_reward": false,
+    "catch_up": {"minecraft_field_archive": "physical replay lectern lists committed observations/findings and directs players to originals", "discord_docket": "receipt mirror only; unavailable in offline slice and represented by deterministic export", "public_record": "not earned during P4; no future reveal", "session_brief_fields": ["what_changed","supporting_evidence","remaining_dispute","changed_places","new_search_space"]}
+  },
+  "gate": {
+    "gate_id": "P4_INTAKE_GATE",
+    "barrier_plane": {"min_x": -5, "max_x": 5, "min_y": -20, "max_y": -13, "z": 89, "material": "COPPER_GRATE", "cell_count": 88},
+    "permanent_frame": {"min_x": -6, "max_x": 6, "min_y": -21, "max_y": -12, "z": 89, "material": "POLISHED_BLACKSTONE_BRICKS"},
+    "closed_traversal": false,
+    "open_traversal": true,
+    "closed_collision_cells": 88,
+    "open_collision_cells": 0,
+    "open_predicate": "P4.F5 committed locally",
+    "close_after_open": false,
+    "remote_may_open": false,
+    "idempotency_key": "m3:p4:gate:P4_INTAKE_GATE:open:v2"
+  },
+  "watcher_asymmetry": {
+    "moment_id": "INTAKE_TALLY_RETENTION",
+    "risk_class": "A2",
+    "required_for_progress": false,
+    "automatic": false,
+    "approval_required": true,
+    "scope": "exact private slice session and two named test players",
+    "prerequisite": "P4.F3 committed and P4.F5 not committed",
+    "target_cell": [31,-18,70],
+    "west_zone": {"min_x": 22, "max_x": 26, "min_z": 68, "max_z": 72},
+    "east_zone": {"min_x": 28, "max_x": 30, "min_z": 68, "max_z": 72},
+    "authored_payload": {"moment_id": "INTAKE_TALLY_RETENTION", "west_view": "one copied capacity digit appears freshly overwritten", "east_view": "the same digit remains worn and unchanged", "meaning_boundary": "observation is selective; no source explains the Dark, Record, Watcher, or Averyn"},
+    "accessibility": "neither view carries a required proposition; the field-archive lectern provides both descriptions to a solo reviewer",
+    "payload_sha256": "3a2187bdc752b583d92ae47cb0a718b15c02ea2684b2b8fd2c2c8ccf88d9c10a",
+    "runtime_contract": "console/op must persist an exact named-target approval with a 1-30 minute expiry; presentation is client-only and consumes the approval once"
+  },
+  "protection": {
+    "region_id": "M3_PRIVATE_SLICE_V2",
+    "survival_inventory_retained": true,
+    "inventory_escrow": false,
+    "review_gamemode": "ADVENTURE",
+    "non_op_enforced": true,
+    "default_denies": ["block_break","block_place","entity_damage","container_mutation","teleport_bypass","gate_bypass"],
+    "allowlisted_interactions": ["read_authored_evidence","file_observed_finding","submit_intake_finding","request_replay","read_accessibility_description"],
+    "operator_bypass_is_not_player_evidence": true,
+    "future_stub_entry_requires_open_gate": true
+  },
+  "persistence": {
+    "authority": "minecraft_local_primary",
+    "journal": "M2 LocalPrimaryJournal hash chain",
+    "events": ["observation_committed","observation_contribution_recorded","finding_committed","contribution_recorded","gate_opened","watcher_approval_recorded","watcher_approval_consumed"],
+    "persist_before_presentation": true,
+    "restart_rederive_from_journal": true,
+    "same_key_same_bytes_idempotent": true,
+    "same_key_different_bytes_rejected": true,
+    "remote_projection_cannot_open_gate": true
+  },
+  "revision_acceptance": {
+    "addresses_rejected_single_note_palette": true,
+    "addresses_rejected_scale_and_hierarchy": true,
+    "addresses_rejected_empty_arbitrary_feeling": true,
+    "addresses_rejected_water_feature": true,
+    "addresses_rejected_copy_office": true,
+    "addresses_rejected_threshold_confusion": true,
+    "addresses_rejected_half_gate": true,
+    "authors_player_facing_evidence_and_submission": true,
+    "brad_visual_re_review_required": true
+  },
+  "external_gaps": {
+    "disposable_paper_clone": null,
+    "fresh_build_receipt": null,
+    "restart_reaudit_receipt": null,
+    "non_op_survival_region_receipt": null,
+    "two_client_asymmetry_receipt": null,
+    "solo_accessibility_receipt": null,
+    "brad_visual_approval": null,
+    "brad_visual_decision": "pending_re_review_after_revision"
+  }
+}

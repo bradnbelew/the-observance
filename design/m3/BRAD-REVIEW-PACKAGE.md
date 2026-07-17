@@ -1,86 +1,66 @@
-# Brad Review Package — M3 Private P4 Slice
+# Brad Review Package — M3 P4 Slice V2
 
-Status: **VISUAL GATE FAILED — REVISION REQUIRED**
+Status: **AUTHORED REVISION CANDIDATE; RE-REVIEW PENDING**
 
-This package is for one private review only. It is not a campaign save and must not be linked or given
-to players.
+This is one private localhost review. It is not a campaign save and must never be linked or distributed
+to players. The rejected v1 decision below remains part of the record; this package asks for a new walk,
+not retroactive approval.
 
-## What Brad should experience
+## Exact v2 walk
 
-The review begins outside one public Mouth. The descent should feel constructed in three campaigns,
-not like a decorative stair. At intake, the scale should become civic and ordinary: a counter, capacity
-work, water handling, and a clerk's copying room. The investigation should arise from those jobs. The
-single gate should read as a real controlled threshold and open only after the complete intake finding.
+1. Join the localhost address recorded in `PAPER-REVIEW-SERVER-RECEIPT.json`. Confirm non-op Adventure
+   mode and retained inventory. You begin at `(0,80,2)`, corresponding to authority `(0,0,2)`.
+2. Read the public-works entry and return signs. Inspect the drainage survey at `(-8,80,7)`, cart wear at
+   `(0,80,13)`, and resident copy at `(8,80,7)`.
+3. Descend the reversible nine-wide stair. Compare the tuff shelter join, dressed civic widening, and
+   deepslate/basalt deep works at relative Z `22`, `38`, and `52`.
+4. Enter the 33×23 intake hall. Follow the west runoff inlet through the settling basin, gauging flume,
+   grated sump, and 300-berth outflow. Confirm it reads as drainage/capacity infrastructure.
+5. Use the five-block **PUBLIC COPY OFFICE** threshold. Read the desks, paper work, clerk counter,
+   cabinet ranks, ledgers, lighting, and occupied professional clutter. Walk both the three-wide public
+   reading aisle and separately marked two-wide staff cart route back to intake.
+6. Inspect at least two sources in each P4.F1–P4.F4 lane, then use the four filing lecterns at the public
+   counter. Use the center synthesis lectern last.
+7. Before synthesis, confirm the forward gate fills the entire 11×8 opening and cannot be crossed. After
+   P4.F5, confirm the full plane clears and only the explicitly sealed future stub becomes reachable.
+8. Use the field-archive lectern at `(13,60,74)` for catch-up and both accessibility descriptions.
+9. Optional, only after Brad explicitly approves the exact A2 payload: place the named west reviewer at
+   `(24,60,70)` and east reviewer at `(29,60,70)`. Console approves and presents the one-use moment.
 
-The emotional target is awe disciplined by labor. Nothing in the slice should explain the later
-cosmology or resemble an escape-room station.
+## Visual decision checklist
 
-## Exact walk order
+- [ ] Mouth reads as one composed civic public-works entrance and return, not a fantasy portal.
+- [ ] Descent has visible authored construction campaigns, hierarchy, lighting, and safe reversal.
+- [ ] Intake scale can credibly process a refuge population without becoming empty.
+- [ ] Water reads immediately as inlet → settling → gauging → sump/outflow capacity infrastructure.
+- [ ] Copy office reads on sight as an occupied clerical workplace.
+- [ ] Desks, counter, cabinet ranks, books/papers, signage, and lighting feel composed rather than random.
+- [ ] Public reading and staff cart routes are distinct, legible, navigable, and cannot bypass the gate.
+- [ ] Entry, return, every threshold, controlled gate, and future stub are visually unambiguous.
+- [ ] Gate is full-height/full-width, convincing, closed before synthesis, and entirely open afterward.
+- [ ] Physical evidence and filing feel like civic investigation rather than command/JSON scaffolding.
+- [ ] Catch-up, protection, accessibility, and restrained A2 behavior are understandable in-world.
+- [ ] Grounded civic horror remains primary and no P5/P8/P11 revelation arrives early.
 
-1. Enter at `(0,0,2)` and inspect the drainage map, cart wear, and resident-memory copy.
-2. Walk the reversible descent and read the three material joins without leaving the public route.
-3. At intake, compare population, ration, heat, and water capacity sources.
-4. Use the public side door into the copying room. Confirm the two desks, clerk counter, cabinet ranks,
-   public aisle, and separate staff route read immediately as clerical work.
-5. Compare survey revisions, the room-use roll, and founding minutes.
-6. File P4.F1–P4.F4 in any order, then file the complete P4.F5 synthesis.
-7. Confirm the only gate is physically closed before P4.F5, opens once after the local receipt, survives
-   restart, and does not close on replay.
-8. With an exact bounded A2 approval, place two named test players at `(7,-16,69)` and `(11,-16,69)`.
-   Confirm each receives only the authored tally view and that neither view is needed to solve P4.
+## Machine receipts required before this walk counts
 
-## Brad's visual decision checklist
+- [x] exact v2 authority and offline geometry/security/state checks;
+- [ ] fresh validation target, closed/open exact Paper audit, observation/filing exercise;
+- [ ] stop/restart, identical open-state audit, replay/idempotency;
+- [ ] exact source/Paper/plugin/journal/log/world/package hashes;
+- [ ] separate fresh closed localhost review target and running-server receipt;
+- [ ] actual non-op Adventure join/protection attempts;
+- [ ] actual solo accessibility and optional approved two-client A2 view.
 
-- [ ] The Mouth reads as the one public works entrance, not a fantasy portal.
-- [ ] The descent is easy to reverse and its phases are visible without labels doing all the work.
-- [ ] Intake looks capable of processing a refuge population.
-- [ ] The copying room reads as an ordinary occupied workplace on sight.
-- [ ] Furniture feels specific and dense while a group can circulate comfortably.
-- [ ] Public and staff routes are legible; the service route cannot bypass the gate.
-- [ ] Every referenced physical fact exists and is visible from its authored standing cell.
-- [ ] The investigation is hard through comparison and provenance, not opaque controls.
-- [ ] The submission desk is obvious in fiction.
-- [ ] The closed/open gate states are visually and physically convincing.
-- [ ] The asymmetric moment feels meaningful and restrained, not like a reusable rune gimmick.
-- [ ] Grounded civic horror remains primary; no P8/P11 revelation arrives early.
+## Preserved v1 decision record
 
-## Required machine receipts before the walk counts
+Brad's first-pass visual decision on 2026-07-16 was **NOT APPROVED — FAILED / REVISION REQUIRED**.
+Binding findings were: plain palette; empty/underscaled rooms; arbitrary pool; illegible copying room
+made of barrels/andesite/planks; confusing blocked right entrance; weak entrance/exit composition; and
+a half iron-bar threshold that did not read or collide as a real gate. `vertical-slice-v1.json` and the
+earlier receipt remain preserved evidence of that pass.
 
-- [x] fresh disposable Paper target identity and Paper version;
-- [x] exact Git commit, manifest `2.0.0-m2`, predicate raw `16de527…`, JAR hash, and slice
-  package hash;
-- [x] exact structural build receipt and zero-finding 99,789-cell audit;
-- [x] stop/restart and identical open-state re-audit;
-- [ ] non-op Adventure walk with ordinary survival inventory retained;
-- [ ] block/entity/container/teleport/gate bypass rejection in the protected region;
-- [ ] two-client asymmetric-view read and solo/accessibility readback;
-- [x] local-only bind, whitelist, and no player-facing route for this disposable target.
+Current Brad visual approval: **NONE — V2 RE-REVIEW PENDING**
 
-The checked receipts are in `PAPER-DISPOSABLE-RECEIPT.json`. They prove the Paper projection and
-local-primary state path, not the unchecked real-client behaviors or the visual checklist above.
-
-## Decision record
-
-Brad visual approval: **NOT APPROVED — FAILED / REVISION REQUIRED**
-
-Decision date: **2026-07-16**
-
-Brad's exact first-pass findings:
-
-1. Plain single-note block palette.
-2. Rooms feel empty and somewhat underscaled.
-3. Little water pool reads arbitrary.
-4. Left slit doorway leads to a small room with empty barrels, random smooth-andesite blocks and wooden
-   planks rather than a legible occupied copying workplace.
-5. Apparent right entrance/exit is blocked and confusing.
-6. Entrances/exits need stronger composition.
-7. The forward iron-bar threshold reads as a half gate and appears walkable between bars, not as a
-   convincing controlled gate.
-
-Decision interpretation: the current Paper projection remains valid only as structural machinery
-proof. It does not pass atmosphere, scale, workplace legibility, circulation composition, or gate
-credibility. A revised private slice must address every finding and receive another in-game walk.
-
-M4 district implementation authority: **CLOSED. The failed M3 visual gate must be revised, rebuilt,
-re-audited, and explicitly approved by Brad in a later committed checkpoint.**
-
+M4 district implementation authority: **CLOSED.** Only a new explicit Brad approval after this v2 walk
+can open it.

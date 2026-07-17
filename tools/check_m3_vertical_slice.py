@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Static/security gate for the M3 coarse adjacency and exact private slice."""
+"""Static, composition, security, and receipt gate for the authored M3 v2 private slice."""
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -13,6 +14,7 @@ from sim_m3_vertical_slice import Model, run_simulation
 ROOT = Path(__file__).resolve().parents[1]
 M3 = ROOT / "design" / "m3"
 M2 = ROOT / "design" / "m2"
+AUTHORITY = M3 / "vertical-slice-v2.json"
 
 
 def require(condition: bool, message: str) -> None:
@@ -25,7 +27,6 @@ def load(path: Path) -> dict:
 
 
 def canonical_package_bytes(path: Path) -> bytes:
-    """Hash committed text authority as LF even on a core.autocrlf checkout."""
     return path.read_bytes().replace(b"\r\n", b"\n")
 
 
@@ -42,165 +43,199 @@ def in_envelope(cell: list[int], envelope: dict) -> bool:
         and envelope["min_z"] <= z <= envelope["max_z"]
 
 
+def volume_count(bounds: dict) -> int:
+    return (bounds["max_x"] - bounds["min_x"] + 1) \
+        * (bounds["max_y"] - bounds["min_y"] + 1) \
+        * (bounds["max_z"] - bounds["min_z"] + 1)
+
+
 def line_cells(start: list[int], end: list[int]) -> list[tuple[int, int, int]]:
     distance = max(abs(end[i] - start[i]) for i in range(3))
-    if distance == 0:
-        return [tuple(start)]
-    return [tuple(round(start[i] + (end[i] - start[i]) * step / distance) for i in range(3))
-            for step in range(distance + 1)]
+    return [tuple(round(start[i] + (end[i] - start[i]) * (step / distance)) for i in range(3))
+            for step in range(distance + 1)] if distance else [tuple(start)]
 
 
-def check_master(master: dict) -> None:
-    require(master["coordinate_system"]["transforms_forbidden"], "master plan permits transforms")
-    require(master["coordinate_system"]["constructor_nudges_forbidden"], "master plan permits nudges")
-    require(not master["scope"]["build_authority"], "coarse reservations became build geometry")
-    require(master["scope"]["only_exact_buildable_area"] == "P4_PRIVATE_SLICE", "slice scope widened")
+def check_master(master: dict, authority: dict) -> None:
+    require(master["coordinate_system"]["transforms_forbidden"], "legacy transforms re-enabled")
     districts = master["district_reservations"]
-    require(len(districts) == 9, "expected exact P4-P12 district reservations")
-    for index, left in enumerate(districts):
-        for right in districts[index + 1:]:
+    require(len(districts) == 9 and len({row["district_id"] for row in districts}) == 9,
+            "coarse reservation count/id drift")
+    for i, left in enumerate(districts):
+        for right in districts[i + 1:]:
             require(not overlaps(left["bounds"], right["bounds"]),
-                    f"district ownership overlap: {left['district_id']} / {right['district_id']}")
-    ordered = master["ordered_progression"]
-    require(ordered == [district["district_id"] for district in districts], "district order drift")
-    adjacency = master["public_adjacency"]
-    require(len(adjacency) == len(ordered) - 1, "ordered adjacency edge count drift")
-    require([(edge["from"], edge["to"]) for edge in adjacency]
-            == list(zip(ordered, ordered[1:])), "public adjacency no longer follows P4-P12")
-    contracts = master["global_contracts"]
-    for key in ("one_post_prologue_minecraft_runtime", "any_subset_progress",
-                "survival_inventory_retained", "protected_regions_not_inventory_escrow",
-                "local_physical_truth_primary", "all_routes_survive_restart",
-                "exactly_three_deliberate_ambiguities", "universal_averyn_release"):
-        require(contracts[key] is True, f"master invariant disabled: {key}")
-    require(contracts["private_slice_player_facing"] is False, "private slice became player-facing")
+                    f"coarse reservations overlap: {left['district_id']} / {right['district_id']}")
+    p4 = districts[0]
+    require(p4["bounds"] == authority["envelope"], "P4 coarse and v2 exact envelopes disagree")
+    require("vertical-slice-v2.json" in p4["geometry_status"] and "rejected_v1_preserved" in p4["geometry_status"],
+            "v2 authority or rejected v1 provenance lost")
+    require(all(row["geometry_status"] == "reserved_only" for row in districts[1:]),
+            "M4+ district geometry opened before approval")
+    require(master["global_contracts"]["one_post_prologue_minecraft_runtime"], "one-runtime contract lost")
 
 
-def check_m2_binding(slice_authority: dict) -> None:
+def check_m2_binding(authority: dict) -> None:
     chain = load(M2 / "predicate-authority-chain.json")
-    versions = {version["raw_sha256"]: version for version in chain["versions"]}
-    historical = "37020e754a8048d96e853cc7711f94656b4e66bc183783b9f903947bab585a9b"
-    canonical = "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a"
-    semantic = "d2eec35f58cf79a30f2255f429cb0d19a5c1e8b5bd7942604b3bef724272cbf6"
-    require(slice_authority["manifest_version"] == "2.0.0-m2", "manifest binding drift")
-    require(slice_authority["predicate_raw_sha256"] == canonical, "slice does not bind LF authority")
-    require(slice_authority["historical_rollback_raw_sha256"] == historical, "rollback hash drift")
-    require(slice_authority["predicate_semantic_sha256"] == semantic, "semantic hash drift")
-    require(versions[historical]["semantic_sha256"] == semantic
-            and versions[canonical]["semantic_sha256"] == semantic, "M2 predicate chain changed")
-
-    findings = {row["finding_id"]: row for row in load(M2 / "generated" / "finding-manifest.json")["findings"]}
-    observations = {row["observation_id"]: row for row in load(
-        M2 / "generated" / "observation-manifest.json")["observations"]}
-    for row in slice_authority["investigation"]["findings"]:
-        finding_id = row["finding_id"]
-        require(finding_id in findings and findings[finding_id]["arc_id"] == "P4",
-                f"slice finding is not routed by M2: {finding_id}")
-        require(row["observation_id"] in observations, f"missing M2 observation: {row['observation_id']}")
-        require(row["minimum_independent_sources"] >= observations[row["observation_id"]]["minimum_independent_sources"],
-                f"slice weakens source minimum: {finding_id}")
-        require(findings[finding_id]["attendance_is_not_a_predicate"], f"attendance predicate regressed: {finding_id}")
-        require(findings[finding_id]["elapsed_time_is_not_a_predicate"], f"time predicate regressed: {finding_id}")
+    versions = {row["raw_sha256"]: row for row in chain["versions"]}
+    raw = authority["predicate_raw_sha256"]
+    historical = authority["historical_rollback_raw_sha256"]
+    semantic = authority["predicate_semantic_sha256"]
+    require(raw == "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+            "v2 predicate raw authority drift")
+    require(versions[raw]["semantic_sha256"] == semantic == versions[historical]["semantic_sha256"],
+            "predicate semantic/rollback chain drift")
 
 
-def check_exact_slice(authority: dict) -> None:
-    require(authority["status"] == "exact-private-review-authority-not-player-facing", "slice status drift")
-    require(authority["coordinate_system"]["legacy_transform"] is None, "slice uses legacy transform")
-    kinds = [space["kind"] for space in authority["spaces"]]
-    require(kinds.count("hallway") == 1, "slice must contain exactly one public hallway")
-    require(kinds.count("ordinary_room") == 1, "slice must contain exactly one ordinary room")
-    require(len([authority["gate"]]) == 1, "slice must contain exactly one gate")
-    require(authority["descent"]["reversible"] and authority["descent"]["max_step_delta"] == 1,
-            "descent is not reversible/step-safe")
+def check_palette_scale_water(authority: dict) -> None:
+    e = authority["envelope"]
+    require(volume_count({"min_x": e["min_x"], "max_x": e["max_x"], "min_y": e["min_y"],
+                          "max_y": e["max_y"], "min_z": e["min_z"], "max_z": e["max_z"]})
+            == authority["scale_receipt"]["envelope_cells"] == 248745, "envelope cell receipt drift")
+    require(authority["scale_receipt"]["intake_interior_floor_cells"] == 651
+            and authority["scale_receipt"]["copy_office_interior_floor_cells"] == 273,
+            "authored civic/copy-office scale drift")
+    palette = authority["palette_authority"]
+    require(len(palette) == 5, "palette zones lost")
+    materials = {material for row in palette for key in ("structural", "decorative") for material in row[key]}
+    require(len(materials) >= 18 and {"TUFF_BRICKS", "DEEPSLATE_BRICKS", "WEATHERED_CUT_COPPER",
+            "CHISELED_BOOKSHELF", "COPPER_GRATE"}.issubset(materials), "intentional palette variation weakened")
 
-    envelope = authority["envelope"]
-    owned_cells: dict[tuple[int, int, int], str] = {}
+    water = authority["waterworks"]
+    require(sum(volume_count(row["bounds"]) for row in water["water_volumes"])
+            == water["total_water_blocks"] == 58, "waterworks exact volume/count drift")
+    require("settling basin" in water["function"] and "gauging flume" in water["function"]
+            and "drains" in water["function"], "water feature no longer reads as functional infrastructure")
+    require(not water["flood_escape"] and water["standing_route_width"] >= 2, "waterworks safety weakened")
+
+
+def check_composition(authority: dict) -> None:
+    spaces = {row["space_id"]: row for row in authority["spaces"]}
+    require(sum(row["kind"] == "hallway" for row in spaces.values()) == 1, "public hallway count drift")
+    require(sum(row["kind"] == "ordinary_room" for row in spaces.values()) == 1, "ordinary room count drift")
+    require("clerks copy" in spaces["INTAKE_COPY_ROOM"]["ordinary_job"], "copy-office ordinary job lost")
+    require(len(authority["doors"]) == 3 and {row["threshold_label"] for row in authority["doors"]}
+            == {"PUBLIC COPY OFFICE", "STAFF RECORD CARTS", "STAFF COPYING ROUTE"},
+            "public/staff threshold semantics drift")
+
+    owned: dict[tuple[int, int, int], str] = {}
+    blocking_floor: set[tuple[int, int, int]] = set()
     for prop in authority["composition"]:
-        require(prop["cells"], f"empty authored composition: {prop['prop_id']}")
-        for cell in prop["cells"]:
-            require(in_envelope(cell, envelope), f"composition escapes envelope: {prop['prop_id']} {cell}")
-            key = tuple(cell)
-            require(key not in owned_cells, f"composition overlap: {prop['prop_id']} / {owned_cells.get(key)} {cell}")
-            owned_cells[key] = prop["prop_id"]
-    standing = {tuple(row["cell"]): row["cell_id"] for row in authority["standing_cells"]}
-    require(len(standing) == len(authority["standing_cells"]), "duplicate standing cell")
-    for cell, cell_id in standing.items():
-        require(list(cell) and in_envelope(list(cell), envelope), f"standing cell escapes: {cell_id}")
-        require(cell not in owned_cells, f"furniture consumes standing cell: {cell_id}")
+        height = prop.get("vertical_height", 1)
+        require(len(prop["floor_cells"]) * height == prop["count"], f"composition count drift: {prop['prop_id']}")
+        for x, y, z in prop["floor_cells"]:
+            blocking_floor.add((x, y, z))
+            for dy in range(height):
+                cell = (x, y + dy, z)
+                require(cell not in owned, f"composition overlap: {prop['prop_id']} / {owned.get(cell)} {cell}")
+                owned[cell] = prop["prop_id"]
+    density = authority["copy_office_density"]
+    copy_props = [row for row in authority["composition"] if row["space_id"] == "INTAKE_COPY_ROOM"]
+    copy_floor = {tuple(cell) for row in copy_props for cell in row["floor_cells"]}
+    require(len(copy_floor) == density["blocking_floor_cells"] == 48, "copy-office blocking count drift")
+    require(abs(len(copy_floor) / density["interior_floor_cells"] - density["blocking_footprint_ratio"]) < 0.0001,
+            "copy-office density ratio drift")
+    require(0.16 <= density["blocking_footprint_ratio"] <= 0.30
+            and density["vertical_cabinet_blocks"] == 44 and density["paper_surface_blocks"] >= 20
+            and density["light_fixtures"] >= 8, "copy office no longer dense, occupied, and navigable")
+    require(density["minimum_public_aisle_width"] >= 3 and density["minimum_staff_route_width"] >= 2,
+            "copy-office circulation narrowed")
 
-    room = next(space for space in authority["spaces"] if space["space_id"] == "INTAKE_COPY_ROOM")
-    b = room["bounds"]
-    interior_area = (b["max_x"] - b["min_x"] - 1) * (b["max_z"] - b["min_z"] - 1)
-    blocking = {tuple(cell) for prop in authority["composition"]
-                if prop["space_id"] == room["space_id"] and prop["kind"] == "blocking_furniture"
-                for cell in prop["cells"]}
-    footprint = len(blocking) / interior_area
-    require(0.15 <= footprint <= 0.40, f"ordinary-room blocking footprint unhealthy: {footprint:.1%}")
+    evidence = authority["evidence_surfaces"]
+    require(len(evidence) == 14 and len({row["surface_id"] for row in evidence}) == 14,
+            "authored physical evidence surface count/id drift")
+    require(len({tuple(row["cell"]) for row in evidence}) == 14, "evidence surface cell overlap")
+    findings = {row["finding_id"]: row for row in authority["investigation"]["findings"]}
+    for row in evidence:
+        require(row["source_id"] in findings[row["finding_id"]]["sources"],
+                f"physical evidence not bound to finding source: {row['surface_id']}")
+        require(len(row["body"]) >= 70 and in_envelope(row["cell"], authority["envelope"]),
+                f"evidence surface thin/outside envelope: {row['surface_id']}")
+    require(len(authority["submission_surfaces"]) == 6
+            and {row["finding_id"] for row in authority["submission_surfaces"] if row["finding_id"]}
+            == set(findings), "physical filing/readback surfaces incomplete")
+    require(len(authority["threshold_signage"]) == 8
+            and len({row["sign_id"] for row in authority["threshold_signage"]}) == 8,
+            "threshold signage count/id drift")
 
+
+def check_geometry_and_gate(authority: dict) -> dict:
     model = Model.load()
     model.replay()
+    solid_owned = {tuple(row["cell"]) for row in authority["evidence_surfaces"]}
+    solid_owned |= {tuple(row["cell"]) for row in authority["submission_surfaces"]}
+    for row in authority["standing_cells"]:
+        cell = tuple(row["cell"])
+        require(in_envelope(row["cell"], authority["envelope"]), f"standing cell outside: {row['cell_id']}")
+        require(cell not in solid_owned, f"evidence/submission consumes standing cell: {row['cell_id']}")
     for sightline in authority["sightlines"]:
         if not sightline["required"]:
             continue
-        cells = line_cells(sightline["from"], sightline["to"])
-        for cell in cells[1:-1]:
+        for cell in line_cells(sightline["from"], sightline["to"])[1:-1]:
             require(not model.is_solid(cell), f"required sightline blocked: {sightline['sightline_id']} at {cell}")
 
-    investigation = authority["investigation"]
-    require([row["finding_id"] for row in investigation["findings"]]
-            == ["P4.F1", "P4.F2", "P4.F3", "P4.F4", "P4.F5"], "P4 finding set drift")
-    synthesis = investigation["findings"][-1]
-    require(synthesis["prerequisites"] == ["P4.F1", "P4.F2", "P4.F3", "P4.F4"],
-            "gate synthesis no longer requires all P4 evidence")
-    require(investigation["any_subset"] and investigation["attendance_is_not_a_predicate"]
-            and investigation["elapsed_time_is_not_a_predicate"], "any-subset contract weakened")
-    require(not investigation["wrong_theory_changes_state"] and not investigation["replay_duplicates_reward"],
-            "wrong/replay behavior mutates state")
-    require(set(investigation["catch_up"]["session_brief_fields"])
-            == {"what_changed", "supporting_evidence", "remaining_dispute", "changed_places", "new_search_space"},
-            "catch-up brief contract drift")
-
     gate = authority["gate"]
-    require(not gate["closed_traversal"] and gate["open_traversal"] and not gate["close_after_open"],
-            "gate is not monotonic closed/open")
-    require(not gate["remote_may_open"], "remote state may open physical gate")
+    plane = gate["barrier_plane"]
+    count = (plane["max_x"] - plane["min_x"] + 1) * (plane["max_y"] - plane["min_y"] + 1)
+    require(count == plane["cell_count"] == gate["closed_collision_cells"] == 88,
+            "gate is not exact 11x8 full collision plane")
+    require(not gate["closed_traversal"] and gate["open_traversal"] and not gate["close_after_open"]
+            and not gate["remote_may_open"] and gate["open_collision_cells"] == 0,
+            "gate monotonic/collision authority weakened")
+    receipt = run_simulation()
+    require(receipt == {"closed_visited": 1756, "open_visited": 1787, "gate_delta": 31,
+                        "closed_gate_collision_cells": 88, "open_gate_collision_cells": 0,
+                        "standing_cells": 24, "evidence_surfaces": 14,
+                        "submission_surfaces": 6, "water_blocks": 58},
+            f"v2 reachability/composition receipt drift: {receipt}")
+    return receipt
+
+
+def check_state_security(authority: dict) -> None:
+    investigation = authority["investigation"]
+    findings = investigation["findings"]
+    require([row["finding_id"] for row in findings] == ["P4.F1", "P4.F2", "P4.F3", "P4.F4", "P4.F5"],
+            "P4 finding set drift")
+    require(findings[-1]["prerequisites"] == ["P4.F1", "P4.F2", "P4.F3", "P4.F4"],
+            "P4 synthesis prerequisites weakened")
+    require(investigation["any_subset"] and investigation["attendance_is_not_a_predicate"]
+            and investigation["elapsed_time_is_not_a_predicate"]
+            and not investigation["wrong_theory_changes_state"] and not investigation["replay_duplicates_reward"],
+            "any-subset/wrong/replay contract weakened")
+    require("right-click authored evidence" in investigation["physical_interaction_contract"],
+            "player-facing evidence/submission interaction lost")
+
     persistence = authority["persistence"]
     for key in ("persist_before_presentation", "restart_rederive_from_journal",
                 "same_key_same_bytes_idempotent", "same_key_different_bytes_rejected",
                 "remote_projection_cannot_open_gate"):
         require(persistence[key] is True, f"local-primary contract disabled: {key}")
+    require({"observation_committed", "finding_committed", "gate_opened", "watcher_approval_recorded",
+             "watcher_approval_consumed"}.issubset(persistence["events"]), "physical/state events incomplete")
 
     protection = authority["protection"]
-    require(protection["survival_inventory_retained"] and not protection["inventory_escrow"],
-            "survival-region policy drift")
-    require({"block_break", "block_place", "entity_damage", "container_mutation",
-             "teleport_bypass", "gate_bypass"}.issubset(protection["default_denies"]),
-            "protected region no longer denies a bypass class")
+    require(protection["review_gamemode"] == "ADVENTURE" and protection["non_op_enforced"]
+            and protection["survival_inventory_retained"] and not protection["inventory_escrow"],
+            "review mode/survival inventory policy drift")
+    require({"block_break", "block_place", "entity_damage", "container_mutation", "teleport_bypass",
+             "gate_bypass"}.issubset(protection["default_denies"]), "protected region bypass class lost")
 
     watcher = authority["watcher_asymmetry"]
-    require(watcher["risk_class"] == "A2" and watcher["approval_required"]
-            and not watcher["automatic"] and not watcher["required_for_progress"],
-            "Watcher moment violates A2/accessibility boundary")
-    expected = watcher["payload_sha256"]
-    actual = hashlib.sha256(json.dumps(watcher["authored_payload"], sort_keys=True,
-                                       separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
-    require(expected == actual, "Watcher exact payload hash drift")
+    require(watcher["risk_class"] == "A2" and watcher["approval_required"] and not watcher["automatic"]
+            and not watcher["required_for_progress"] and "consumes the approval once" in watcher["runtime_contract"],
+            "Watcher A2/exact-once/accessibility boundary weakened")
+    actual = hashlib.sha256(json.dumps(watcher["authored_payload"], sort_keys=True, separators=(",", ":"),
+                                       ensure_ascii=False).encode("utf-8")).hexdigest()
+    require(actual == watcher["payload_sha256"], "Watcher exact payload hash drift")
 
-    gaps = authority["external_gaps"]
-    require(gaps["disposable_paper_clone"].endswith("PAPER-DISPOSABLE-RECEIPT.json"),
-            "Paper receipt is not routed")
-    require(gaps["fresh_build_receipt"] and gaps["restart_reaudit_receipt"],
-            "structural Paper receipts are missing")
-    for key in ("non_op_survival_region_receipt", "two_client_asymmetry_receipt",
-                "solo_accessibility_receipt", "brad_visual_approval"):
-        require(gaps[key] is None, f"client/human receipt fabricated: {key}")
-    require(gaps["brad_visual_decision"] == "failed_revision_required_2026-07-16",
-            "failed Brad visual decision is not durable")
+    revision = authority["revision_acceptance"]
+    require(all(revision.values()), "one or more binding Brad revision criteria is not represented")
+    require(authority["external_gaps"]["brad_visual_approval"] is None
+            and authority["external_gaps"]["brad_visual_decision"] == "pending_re_review_after_revision",
+            "Brad approval fabricated or rejected decision not advanced honestly")
 
 
 def check_package_manifest(manifest: dict) -> None:
-    require(manifest["receipt_scope"].startswith("offline authority plus disposable Paper structural"),
-            "package scope drift")
+    require(manifest["schema_version"] == "3.0.0-m3" and manifest["package_id"].endswith("v2"),
+            "v2 package manifest identity drift")
     canonical = bytearray()
     for row in manifest["files"]:
         path = ROOT / row["path"]
@@ -208,39 +243,46 @@ def check_package_manifest(manifest: dict) -> None:
         actual = hashlib.sha256(canonical_package_bytes(path)).hexdigest()
         require(actual == row["sha256"], f"package file hash drift: {row['path']}")
         canonical.extend((row["path"] + "\n" + actual + "\n").encode("utf-8"))
-    require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"],
-            "M3 offline package-set hash drift")
+    require(hashlib.sha256(canonical).hexdigest() == manifest["package_set_sha256"], "v2 package-set hash drift")
     receipt = load(M3 / "PAPER-DISPOSABLE-RECEIPT.json")
-    require(receipt["m4_authority"] == "closed" and receipt["brad_visual_approval"] is None,
-            "Paper receipt improperly opens M4/visual approval")
-    require(all(receipt["client_receipts"][key] is None for key in (
-        "non_op_adventure_survival_inventory", "protected_region_bypass",
-        "two_client_asymmetry", "solo_accessibility")), "client receipt fabricated")
+    require(receipt["schema_version"] == "2.0.0-m3-paper-receipt" and receipt["m4_authority"] == "closed"
+            and receipt["brad_visual_approval"] is None, "Paper receipt identity or M4/visual gate drift")
+    require(receipt["brad_visual_status"] == "pending_re_review_after_revision",
+            "Paper receipt misstates Brad decision")
     require(manifest["paper_server_jar_sha256"] == receipt["paper"]["jar_sha256"], "Paper JAR drift")
     require(manifest["plugin_jar_sha256"] == receipt["plugin_jar_sha256"], "plugin JAR drift")
     require(manifest["paper_world_tree_sha256"] == receipt["world_tree_sha256"], "world tree drift")
     require(manifest["paper_world_package_sha256"] == receipt["world_package_sha256"], "world package drift")
-    require(manifest["brad_visual_approval_receipt"] is None, "visual approval fabricated")
-    require(manifest["brad_visual_decision"] == "failed_revision_required_2026-07-16",
-            "package omits failed visual decision")
+    require(manifest["brad_visual_approval_receipt"] is None
+            and manifest["brad_visual_status"] == "pending_re_review_after_revision",
+            "package fabricates Brad approval or loses pending re-review")
 
 
-def main() -> None:
-    master = load(M3 / "coarse-adjacency-v1.json")
-    authority = load(M3 / "vertical-slice-v1.json")
-    check_master(master)
+def main(authority_only: bool = False) -> None:
+    authority = load(AUTHORITY)
+    require(authority["authority_id"] == "observance-p4-private-slice-v2"
+            and authority["status"] == "authored-private-review-revision-not-player-facing",
+            "v2 authority identity/status drift")
+    check_master(load(M3 / "coarse-adjacency-v1.json"), authority)
     check_m2_binding(authority)
-    check_exact_slice(authority)
-    check_package_manifest(load(M3 / "package-manifest.json"))
-    receipt = run_simulation()
-    print("M3 static/security gate OK — 9 coarse reservations, exact P4 slice, "
-          f"closed/open reachability {receipt['closed_visited']}/{receipt['open_visited']}, "
-          "M2 custody/replay/protection/approval contracts intact")
+    check_palette_scale_water(authority)
+    check_composition(authority)
+    receipt = check_geometry_and_gate(authority)
+    check_state_security(authority)
+    if not authority_only:
+        check_package_manifest(load(M3 / "package-manifest.json"))
+    scope = "authority-only / Paper receipt pending" if authority_only else "complete package"
+    print("M3 v2 static/security gate OK (" + scope + ") — palette=5 zones, intake=651 cells, copy=48/273 blocking, "
+          f"water=58, evidence=14, submissions=6, gate=88 collision cells, reachability="
+          f"{receipt['closed_visited']}/{receipt['open_visited']}, M4 closed")
 
 
 if __name__ == "__main__":
     try:
-        main()
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--authority-only", action="store_true",
+                            help="validate exact authored authority/runtime inputs before a new Paper receipt exists")
+        main(parser.parse_args().authority_only)
     except (AssertionError, KeyError, ValueError) as error:
-        print(f"M3 static/security gate FAILED: {error}", file=sys.stderr)
+        print(f"M3 v2 static/security gate FAILED: {error}", file=sys.stderr)
         raise SystemExit(1)

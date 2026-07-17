@@ -34,7 +34,7 @@ commands:
     description: Operate the disposable private M3 Paper review slice.
     aliases: [obsm3]
     permission: observance.admin
-    usage: /obsm3 <status|build|audit|finding|replay>
+    usage: /obsm3 <status|build|audit|observe|finding|replay|security|watcher-approve|watcher-show>
 
 permissions:
   observance.admin:

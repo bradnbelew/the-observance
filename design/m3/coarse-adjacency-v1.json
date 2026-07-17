@@ -42,9 +42,9 @@
     {
       "district_id": "P4_PRIVATE_SLICE",
       "arc_span": ["P4"],
-      "bounds": {"min_x": -18, "max_x": 18, "min_y": -20, "max_y": 8, "min_z": -8, "max_z": 84},
+      "bounds": {"min_x": -34, "max_x": 34, "min_y": -24, "max_y": 10, "min_z": -10, "max_z": 92},
       "program": "Surface Mouth, reversible descent, intake, one hallway, one ordinary copying room, one investigation, one gate, one approved asymmetric Watcher moment",
-      "geometry_status": "exact_authority_in_vertical-slice-v1.json"
+      "geometry_status": "rejected_v1_preserved; current_exact_authority_in_vertical-slice-v2.json"
     },
     {
       "district_id": "REFUGE_COMMONS",
