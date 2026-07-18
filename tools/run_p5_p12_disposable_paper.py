@@ -37,12 +37,37 @@ def command_outcome(process: PaperProcess, command: str, outcomes: tuple[str, ..
     raise TimeoutError(f"timed out waiting for Paper output: {outcomes!r}")
 
 
-def configure(target: Path, paper: Path, plugin: Path, port: int) -> None:
+def copy_bootstrap_cache(target: Path, source: Path | None) -> dict[str, str]:
+    if source is None:
+        return {}
+    source = source.resolve()
+    if not source.is_dir():
+        raise FileNotFoundError(f"bootstrap cache is not a directory: {source}")
+    files = sorted(path for path in source.rglob("*") if path.is_file())
+    if not files:
+        raise RuntimeError(f"bootstrap cache is empty: {source}")
+    inventory = {path.relative_to(source).as_posix(): sha256(path) for path in files}
+    destination = target / "cache"
+    if destination.exists():
+        raise RuntimeError(f"fresh target unexpectedly already has a cache: {destination}")
+    shutil.copytree(source, destination, copy_function=shutil.copy2)
+    copied = {
+        path.relative_to(destination).as_posix(): sha256(path)
+        for path in sorted(candidate for candidate in destination.rglob("*") if candidate.is_file())
+    }
+    if copied != inventory:
+        raise RuntimeError("bootstrap cache copy changed bytes")
+    return inventory
+
+
+def configure(target: Path, paper: Path, plugin: Path, port: int,
+              bootstrap_cache: Path | None) -> dict[str, str]:
     if target.exists():
         raise FileExistsError(f"refusing to reuse disposable target: {target}")
     (target / "plugins" / "Observance").mkdir(parents=True)
     shutil.copy2(paper, target / "paper.jar")
     shutil.copy2(plugin, target / "plugins" / plugin.name)
+    cache_inventory = copy_bootstrap_cache(target, bootstrap_cache)
     write_text(target / ".observance-disposable-whole-campaign", "private-local-only\n")
     write_text(target / "eula.txt", "eula=true\n")
     write_text(target / "server.properties", "\n".join([
@@ -69,6 +94,7 @@ def configure(target: Path, paper: Path, plugin: Path, port: int) -> None:
             raise RuntimeError(f"offline config replacement anchor drift: {before!r}")
         config = config.replace(before, after, 1)
     write_text(target / "plugins/Observance/config.yml", config)
+    return cache_inventory
 
 
 def package_world(target: Path) -> tuple[Path, str]:
@@ -97,13 +123,15 @@ def main() -> None:
     parser.add_argument("--commit", required=True)
     parser.add_argument("--port", type=int, required=True)
     parser.add_argument("--java", default="java")
+    parser.add_argument("--bootstrap-cache", type=Path,
+                        help="read-only Paperclip cache copied into the fresh target with exact hashes")
     args = parser.parse_args()
     paper = args.paper_jar.resolve()
     plugin = args.plugin_jar.resolve()
     target = args.target.resolve()
     if sha256(paper) != PAPER_EXPECTED_SHA256:
         raise ValueError("Paper JAR does not match pinned 1.21.11 build 132")
-    configure(target, paper, plugin, args.port)
+    cache_inventory = configure(target, paper, plugin, args.port, args.bootstrap_cache)
     command_tail = f"{WORLD} 0 200 0"
 
     first = PaperProcess(target, args.java)
@@ -148,6 +176,10 @@ def main() -> None:
         "address": f"127.0.0.1:{args.port}",
         "paper_sha256": sha256(paper),
         "plugin_sha256": sha256(plugin),
+        "bootstrap_cache": {
+            "source": str(args.bootstrap_cache.resolve()) if args.bootstrap_cache else None,
+            "files": cache_inventory,
+        },
         "campaign_projection_sha256": "c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
         "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
         "first_start": {"authority": authority, "prepare": prepare, "plan": plan,

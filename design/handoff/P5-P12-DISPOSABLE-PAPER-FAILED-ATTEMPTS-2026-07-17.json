@@ -85,6 +85,20 @@
         "orin_observation": "All tested rear-side candidates for orin_marker_6 were occupied by the retained stone envelope, so the strict pass correctly refused to overwrite them.",
         "required_fix": "Derive fallback positions from positive fixture-front depth while preserving claimed-cell, protected-cell, headroom, and solid-floor checks."
       }
+    },
+    {
+      "attempt": 5,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-150db26-05",
+      "outcome": "paperclip_bootstrap_failed_before_server_start",
+      "exact_failure": "Failed to download mojang_1.21.11.jar: java.net.SocketException: Permission denied: connect",
+      "cause": "The create-only target correctly contained the pinned Paper build but no Paperclip cache. Network-restricted validation could not redownload Mojang's server JAR.",
+      "world_created": false,
+      "paper_server_started": false,
+      "readiness_receipt_published": false,
+      "first_log_sha256": "57487287ff9efb5df4277cf5acb8a060350f350ae94289ac967ccaafd6a9b32e",
+      "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+      "plugin_sha256": "2ee6f5113d9f5287ef1760b98d3c014f6661d48626740cab0c7f6eb93ba79ccc",
+      "required_fix": "Copy an existing exact read-only Paperclip cache into a brand-new target, record every cache hash, and refuse any byte drift."
     }
   ],
   "production_mutated": false,
