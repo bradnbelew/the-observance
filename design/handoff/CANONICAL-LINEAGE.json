@@ -878,13 +878,18 @@
       "effect": "the inventory now records the combined Hold-plus-Unlit/copy/restart/package pass and narrows remaining work to actual-client/human experience plus exact external gates. The current Vercel preview export is 154 files / 5,438,242 bytes with aggregate manifest 52a87fa12453b53943a01277d1153ad6c926ede321f80da4300329094502a1ef; upload still requires Brad's explicit informed approval. Railway still lacks an isolated guild/database/staging environment, Supabase development still requires permission/cost confirmation, and media still requires human master/ownership/derivative decisions. No production or public mutation occurred."
     },
     {
+      "older": "the generic P1-P12 event ledger and authored surface responses without a crash-safe cross-surface delivery owner",
+      "newer": "source dc9447910ad49c07a912a6a09115e8c8d17e83fc plus design/handoff/CROSS-SURFACE-EVENT-OUTBOX-RECEIPT-2026-07-18.json",
+      "effect": "the local file ledger and deployable Supabase proposal now use exclusive expiring leases, stale-token rejection, bounded exponential retry, an eight-attempt ceiling, restart recovery, and exact acknowledgement. The Discord worker covers all 28 projected campaign events with authored consequence readbacks, ignores player payloads, fails closed on unknown events, and uses a stable 25-character nonce with enforce_nonce for retry deduplication. Dashboard production build, Discord audit/typecheck, and the ordered 36-file SQL bundle pass. No Supabase, Railway, Discord, production, or public target was mutated; isolated external staging and human experience remain open."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
     }
   ],
   "current_gate": {
-    "phase": "Source 924a5495a6deee0700ae54f7ef54437030ef5375 passes a single combined Hold-plus-Unlit Paper 1.21.11 fresh build, cross-world copy consequence, stop/restart, independent re-audit, occupied rebuild refusal, and deterministic package proof. The story-first P1-P12 source, cross-surface event web, Copperline/Discord/Paper projections, exact input contracts, packages, live custody-approved media routes, full Hold, bounded player-caused copy proof, and seven-house/base Unlit candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
+    "phase": "Source 924a5495a6deee0700ae54f7ef54437030ef5375 passes a single combined Hold-plus-Unlit Paper 1.21.11 fresh build, cross-world copy consequence, stop/restart, independent re-audit, occupied rebuild refusal, and deterministic package proof. Source dc9447910ad49c07a912a6a09115e8c8d17e83fc adds a tested crash-safe local/deployable cross-surface outbox and exact Discord consequence worker. The story-first P1-P12 source, event web, Copperline/Discord/Paper projections, exact input contracts, packages, custody-approved media routes, full Hold, bounded player-caused copy proof, and seven-house/base Unlit candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, external delivery, or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,

@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0-cross-surface-event-outbox-receipt",
+  "receipt_time": "2026-07-18T04:19:13-05:00",
+  "source_commit": "dc9447910ad49c07a912a6a09115e8c8d17e83fc",
+  "classification": "automated_local_and_deployable_package_evidence_only",
+  "implemented": {
+    "canonical_event_model": "open-ended event key, exact prerequisite, local idempotency key, canonical payload hash, durable per-surface projection",
+    "file_ledger": "atomic lock/write, exclusive processing lease, stale-token rejection, bounded exponential retry, eight-attempt ceiling, restart readback",
+    "supabase_proposal": "service-role-only claim/complete RPCs, FOR UPDATE SKIP LOCKED, expiring leases, bounded retry schedule, forward and rollback bundle",
+    "discord_worker": "10-second overlap-safe poll, 45-second leases, exact authored event readbacks, no payload echo, fail-closed unknown events, stable 25-character message nonce with enforce_nonce, explicit acknowledgement",
+    "event_coverage": 28,
+    "correctness_boundary": "the projector never decides an answer, consumes an observation receipt, or advances a case; it delivers only a consequence of an already committed event"
+  },
+  "tests": [
+    {"command":"dashboard: npm.cmd run -s selftest","result":"pass","coverage":"event prerequisites, idempotency collision, restart, exclusive lease, stale token, retry delay, applied readback, all Copperline projections"},
+    {"command":"dashboard: npm.cmd run -s lint && npm.cmd run -s build","result":"pass","coverage":"Next.js 16.2.10 production compile, TypeScript, 14 static pages and dynamic routes"},
+    {"command":"discord: npm.cmd run -s argprojectioncheck","result":"pass","coverage":"28/28 authored Discord projections, no payload echo, unknown-event refusal, stable nonce"},
+    {"command":"discord: npm.cmd run -s audit","result":"pass","coverage":"canon, 82 runtime nodes, 29 surface contracts, event/input contracts, campaign projections, identity, seed, web, database bundle and resolver"},
+    {"command":"discord: npm.cmd run -s db:seed && npm.cmd run -s db:bundlecheck","result":"pass","coverage":"36 migrations in enforced order including 0018 and rollback/static assertions"},
+    {"command":"discord: npm.cmd run -s typecheck","result":"pass","coverage":"worker, repository adapter, Discord REST seam and types"}
+  ],
+  "artifacts": [
+    {"path":"dashboard/src/lib/arg-event-ledger.ts","sha256":"9a2a5fb1583abf60933b6f8706d565a086bd9ecc3835e3f5d897c8216a236f5d","bytes":10331},
+    {"path":"discord/src/v5/arg-projection-worker.ts","sha256":"1c84eb6465da8d69f710a73e12d7648673ad738a4a69b7933f5bc216f739542c","bytes":2998},
+    {"path":"discord/src/v5/arg-projection-catalog.ts","sha256":"01c713bd8b633df27fdbe8b03f2a6e5fa94f486c62a58783ca5332f77f5b290e","bytes":5806},
+    {"path":"discord/supabase/migrations/0018_arg_projection_leases.sql","sha256":"2c1c8b39c528aba9d671b3da10ccd57125d936ebb51c13afc301ee6639358bc4","bytes":4540},
+    {"path":"discord/supabase/rollbacks/0018_arg_projection_leases.rollback.sql","sha256":"fbca65914b1185ab58dfdd453911efe5e6c4f750fdcd09a10b0b2be98870e550","bytes":978},
+    {"path":"discord/supabase/apply-all.sql","sha256":"911ebb0a163df0f3ebaec218687d7ce7c1be1cfa5a3c4ab683cd8b017e5943c1","bytes":430651}
+  ],
+  "external_state": {
+    "supabase_production_mutated": false,
+    "railway_production_mutated": false,
+    "discord_production_mutated": false,
+    "private_staging_deployed": false,
+    "remaining_gate": "an isolated non-production Supabase database plus private Discord guild/channel and Railway environment are still required for a real external delivery/restart receipt"
+  },
+  "not_proven": [
+    "private external staging",
+    "actual Discord client presentation",
+    "whole-campaign experiential quality",
+    "Brad approval",
+    "production or public launch readiness"
+  ]
+}

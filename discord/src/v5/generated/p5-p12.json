@@ -3,7 +3,7 @@
     "authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
     "failure_and_recovery": {
       "late_or_absent_player": "read-only case-so-far plus accessible source paths and contributed player artifacts; no required named participant",
-      "projection_outage": "canonical local event remains committed; failed surface projection retries by idempotency key and catch-up exposes the same authored payload",
+      "projection_outage": "canonical local event remains committed; failed surface projection waits for its durable bounded backoff, is reclaimed only by an expiring lease, and catch-up exposes the same authored consequence",
       "restart": "reload canonical events before projecting changed state; never infer completion from decoration or observation history",
       "rollback": "surface projections may roll back to the last canonical event; irreversible production/public mutation is outside this offline authority",
       "wrong_action": "preserve theory/attempt and return authored non-spoiler response; do not create progress or consume evidence"
@@ -85,11 +85,12 @@
       },
       {
         "events": [
+          "p10.player_copy_proof",
           "p10.wren_confronted",
           "p10.wren_remembrance_committed"
         ],
         "phase": "P10",
-        "world_answer": "evidence exposure changes live dialogue; judgment changes remembrance only"
+        "world_answer": "a bounded player-authored civic pattern returns from the Unlit as a deterministic altered copy; evidence exposure changes live dialogue; judgment changes remembrance only"
       },
       {
         "events": [
@@ -118,6 +119,22 @@
       "secrets_server_only": true,
       "voice_recognition_required": false
     },
+    "projection_runtime": {
+      "canonical_commit_before_projection": true,
+      "discord_delivery": "28 exact authored readbacks are delivered without player payloads; stable 25-character nonce plus enforce_nonce protects the post-before-ack crash window",
+      "external_staging_receipt": null,
+      "local_file_ledger": "atomic lock/write, exclusive expiring leases, stale-token rejection, five-second-to-five-minute bounded exponential backoff, eight-attempt ceiling, restart readback",
+      "proof": "design/handoff/CROSS-SURFACE-EVENT-OUTBOX-RECEIPT-2026-07-18.json",
+      "supabase_proposal": "service-role-only claim/complete RPCs use FOR UPDATE SKIP LOCKED, exact lease tokens, due-time retry and a reversible 0018 migration; no production SQL was applied",
+      "unknown_event_behavior": "fail closed and retain the projection error; never improvise player-facing canon",
+      "worker_timing": {
+        "lease_seconds": 45,
+        "maximum_attempts": 8,
+        "poll_seconds": 10,
+        "retry_seconds_max": 300,
+        "retry_seconds_min": 5
+      }
+    },
     "schema_version": "1.0.0-arg-state-choreography",
     "state_model": {
       "automation": {
@@ -138,11 +155,11 @@
       ],
       "source_possession_gate_actions_or_answers": false
     },
-    "status": "offline_authored_not_deployed",
+    "status": "local_file_runtime_and_deployable_supabase_discord_adapter_implemented_external_staging_unverified",
     "surface_contracts": {
       "copperline": "immutable lived-in account/community history plus append-only earned replies, restored revisions, and cache-safe readback; never a clue menu",
       "dashboard_web": "director health, exact A1 trigger visibility, approvals, replay, accessibility, and rollback; never player-facing omniscient exposition",
-      "discord": "player investigation, theories, dissent, character contact, and authored reaction; never only an answer bot",
+      "discord": "player investigation, theories, dissent, character contact, and exact authored reaction; the implemented event worker is a consequence projector, never an answer judge or payload echo",
       "media_files": "hash-bound fragments, version/provenance work, and accessible equivalents; missing bytes remain fail-closed",
       "minecraft": "places, systems, physical custody, changed-space consequence, and protected actions; never the sole puzzle app",
       "npc_watcher": "relationship-bound preauthored responses and consequences; no generative canon, forced voice, or hidden receipt quota"
@@ -2473,6 +2490,19 @@
         "authored_reactivity": [
           {
             "automation": "A1",
+            "catch_up": "stable pattern hash and visible deterministic diff",
+            "event": "p10.player_copy_proof",
+            "exact_trigger": "one valid six-cell allowlisted pattern committed at the registered surface; no observation receipt or identity field",
+            "idempotent": true,
+            "response": "the Unlit register returns the horizontal mirror with exactly one record-to-watch institutional edit; the original and changed copy remain visible after restart",
+            "surfaces": [
+              "Minecraft surface register",
+              "Unlit base mirror",
+              "read-only archive receipt"
+            ]
+          },
+          {
+            "automation": "A1",
             "catch_up": "conversation branches and fixed fact matrix",
             "event": "p10.wren_confronted",
             "exact_trigger": "valid evidence relationship, accepted without source receipts",
@@ -2512,6 +2542,11 @@
             "fragment": "moderation chronology, private quotations, and group dissent",
             "role": "opportunity and moral debate",
             "surface": "Copperline/Discord"
+          },
+          {
+            "fragment": "players set six bounded civic marks; the returned copy mirrors them and changes the first copied record mark into watch",
+            "role": "player-caused proof that the Record copies and edits without ingesting private material",
+            "surface": "surface register and Unlit base mirror"
           }
         ],
         "earned_final_belief": "Wren deliberately transmitted names, plans, routes, and fears to preserve himself; constraint and fear explain but do not erase responsibility.",
@@ -2523,6 +2558,12 @@
         "phase": "P10",
         "player_caused_world_response": true,
         "player_initiated_actions": [
+          {
+            "action": "arrange six allowlisted civic marks at the surface register and compare the deterministic altered copy returned in the Unlit",
+            "receipt_gate": false,
+            "response_event": "p10.player_copy_proof",
+            "verb": "test"
+          },
           {
             "action": "choose which proven packet or protected omission to expose to Wren and which theory to withhold",
             "receipt_gate": false,

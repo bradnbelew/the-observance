@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0-arg-state-choreography",
-  "status": "offline_authored_not_deployed",
+  "status": "local_file_runtime_and_deployable_supabase_discord_adapter_implemented_external_staging_unverified",
   "authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
   "state_model": {
     "primitive": "generic authored event with exact predicate, durable local commit, projections, recovery, and replay",
@@ -11,10 +11,20 @@
     "source_possession_gate_actions_or_answers": false,
     "automation": {"A0":"deterministic state/readback", "A1":"exact preauthored reaction", "A2":"director approval required; never inferred or auto-promoted"}
   },
+  "projection_runtime": {
+    "canonical_commit_before_projection": true,
+    "local_file_ledger": "atomic lock/write, exclusive expiring leases, stale-token rejection, five-second-to-five-minute bounded exponential backoff, eight-attempt ceiling, restart readback",
+    "supabase_proposal": "service-role-only claim/complete RPCs use FOR UPDATE SKIP LOCKED, exact lease tokens, due-time retry and a reversible 0018 migration; no production SQL was applied",
+    "discord_delivery": "28 exact authored readbacks are delivered without player payloads; stable 25-character nonce plus enforce_nonce protects the post-before-ack crash window",
+    "worker_timing": {"poll_seconds":10,"lease_seconds":45,"maximum_attempts":8,"retry_seconds_min":5,"retry_seconds_max":300},
+    "unknown_event_behavior": "fail closed and retain the projection error; never improvise player-facing canon",
+    "proof": "design/handoff/CROSS-SURFACE-EVENT-OUTBOX-RECEIPT-2026-07-18.json",
+    "external_staging_receipt": null
+  },
   "surface_contracts": {
     "minecraft": "places, systems, physical custody, changed-space consequence, and protected actions; never the sole puzzle app",
     "copperline": "immutable lived-in account/community history plus append-only earned replies, restored revisions, and cache-safe readback; never a clue menu",
-    "discord": "player investigation, theories, dissent, character contact, and authored reaction; never only an answer bot",
+    "discord": "player investigation, theories, dissent, character contact, and exact authored reaction; the implemented event worker is a consequence projector, never an answer judge or payload echo",
     "dashboard_web": "director health, exact A1 trigger visibility, approvals, replay, accessibility, and rollback; never player-facing omniscient exposition",
     "media_files": "hash-bound fragments, version/provenance work, and accessible equivalents; missing bytes remain fail-closed",
     "npc_watcher": "relationship-bound preauthored responses and consequences; no generative canon, forced voice, or hidden receipt quota"
@@ -43,7 +53,7 @@
     {"phase":"P12","events":["p12.release_configuration_ready","p12.name_treatment_committed","p12.record_closed_averyn_released"],"world_answer":"durable release changes every private surface and produces a quiet coda"}
   ],
   "failure_and_recovery": {
-    "projection_outage": "canonical local event remains committed; failed surface projection retries by idempotency key and catch-up exposes the same authored payload",
+    "projection_outage": "canonical local event remains committed; failed surface projection waits for its durable bounded backoff, is reclaimed only by an expiring lease, and catch-up exposes the same authored consequence",
     "restart": "reload canonical events before projecting changed state; never infer completion from decoration or observation history",
     "wrong_action": "preserve theory/attempt and return authored non-spoiler response; do not create progress or consume evidence",
     "late_or_absent_player": "read-only case-so-far plus accessible source paths and contributed player artifacts; no required named participant",

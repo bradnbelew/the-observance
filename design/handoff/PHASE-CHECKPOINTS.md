@@ -446,3 +446,21 @@ open; M4 is still closed.
 - The current dashboard starts locally on `127.0.0.1:3048`; automated browser reload was blocked by the
   in-app browser's localhost URL policy, so no visual receipt was fabricated. Exact residue is recorded in
   `PRIVATE-STAGING-PREFLIGHT-940F102-2026-07-18.json`.
+
+## 2026-07-18 — crash-safe cross-surface event outbox
+
+- Source `dc9447910ad49c07a912a6a09115e8c8d17e83fc` turns the generic P1–P12 event queue into
+  a real local/deployable delivery runtime. The file ledger and Supabase proposal use exclusive expiring
+  leases, exact lease-token acknowledgement, bounded exponential retry, an eight-attempt ceiling, atomic
+  local commit-before-projection, and restart recovery.
+- The private Discord worker owns 28 exact authored event consequences. It never grades answers, reads
+  observation receipts, or echoes submitted payloads. Unknown events fail closed. A stable 25-character
+  Discord nonce with `enforce_nonce` protects the post-before-ack crash window, while the canonical event
+  remains locally committed during an outage.
+- Dashboard self-tests/lint/production build, Discord typecheck/full audit, the worker's totality and payload
+  isolation proof, and the enforced 36-file SQL bundle pass. Exact file hashes and command receipts are in
+  `CROSS-SURFACE-EVENT-OUTBOX-RECEIPT-2026-07-18.json`.
+- This is local runtime and deployable-package evidence only. No Supabase, Railway, Discord, production, or
+  public target was mutated. An isolated non-production database, guild/channel, and Railway environment
+  are still required for an external delivery/restart receipt; campaign experience and Brad approval remain
+  separate human gates.

@@ -266,11 +266,23 @@ def main() -> None:
         require(case["novelty_against_adjacent"], f"{phase}: no qualitative novelty comparison")
 
     choreography = load(CHOREOGRAPHY)
-    require(choreography["status"] == "offline_authored_not_deployed"
+    allowed_choreography_statuses = {
+        "offline_authored_not_deployed",
+        "local_file_runtime_and_deployable_supabase_discord_adapter_implemented_external_staging_unverified",
+    }
+    require(choreography["status"] in allowed_choreography_statuses
             and choreography["state_model"]["closed_mechanism_enum"] is False
             and choreography["state_model"]["observation_receipts_gate_actions_or_answers"] is False
             and choreography["state_model"]["source_possession_gate_actions_or_answers"] is False,
             "state choreography became a closed or receipt-gated runtime")
+    if choreography["status"] != "offline_authored_not_deployed":
+        runtime = choreography.get("projection_runtime", {})
+        require(runtime.get("canonical_commit_before_projection") is True
+                and runtime.get("external_staging_receipt") is None
+                and runtime.get("unknown_event_behavior", "").startswith("fail closed")
+                and runtime.get("worker_timing", {}).get("maximum_attempts") == 8
+                and runtime.get("proof") == "design/handoff/CROSS-SURFACE-EVENT-OUTBOX-RECEIPT-2026-07-18.json",
+                "implemented projection runtime lacks fail-closed, bounded, or honest staging evidence")
     require(choreography["privacy_and_safety"]["public_real_world_travel_required"] is False
             and choreography["privacy_and_safety"]["real_phone_required"] is False
             and choreography["privacy_and_safety"]["personal_data_required"] is False,
@@ -375,6 +387,13 @@ def main() -> None:
             "Copperline input is a decorative fake form")
     require("never parse free chat" in by_id["DISCORD_INVESTIGATION_MODAL"]["data_shape_normalization"],
             "Discord input requires unrestricted chat parsing")
+    if choreography["status"] != "offline_authored_not_deployed":
+        projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
+        require("enforce_nonce=true" in projection.get("primitive", "")
+                and "never echoed" in projection.get("data_shape_normalization", "")
+                and "external" in projection.get("proof", "").casefold()
+                and "unverified" in projection.get("proof", "").casefold(),
+                "implemented Discord projection lacks idempotency, payload isolation, or honest staging gap")
     require(by_id["MC_SIGN_SHORT_INPUT"]["used_by"] == []
             and by_id["MC_WRITABLE_BOOK_INPUT"]["used_by"] == [],
             "unproven sign/book input is active")
