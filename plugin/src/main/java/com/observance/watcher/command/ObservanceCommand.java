@@ -19,6 +19,7 @@ import com.observance.watcher.structure.DeepHoldV5Manifest;
 import com.observance.watcher.structure.V5AuthorityManifest;
 import com.observance.watcher.structure.V5RuntimePredicateRegistry;
 import com.observance.watcher.structure.StructureTemplates;
+import com.observance.watcher.structure.UnlitVillageCandidateBuilder;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.v5runtime.FixtureTransform;
 import com.observance.watcher.v5runtime.V5BookMountPolicy;
@@ -35,6 +36,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Lectern;
@@ -1113,12 +1116,122 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "border" -> handleUnlitBorder(sender, args);
             case "darken", "scrub" -> handleUnlitDarken(sender, args);
             case "buildmode", "build" -> handleUnlitBuildMode(sender, args);
+            case "candidate" -> handleUnlitCandidate(sender, args);
             case "clue" -> handleUnlitClue(sender, args);
             case "pass" -> sender.sendMessage(
                     "Observance V5: /obs unlit pass is retired and made no changes. Use /obs unlit ready.");
             case "repair" -> handleUnlitRepair(sender);
             case "ready", "playtest" -> handleUnlitReady(sender);
-            default -> sender.sendMessage("Usage: /observance unlit <site|clue|repair|audit|darken|border|buildmode|ready>");
+            default -> sender.sendMessage("Usage: /observance unlit <candidate|site|clue|repair|audit|darken|border|buildmode|ready>");
+        }
+    }
+
+    private void handleUnlitCandidate(CommandSender sender, String[] args) {
+        String operation = args.length > 2 ? args[2].toLowerCase(Locale.ROOT).trim() : "audit";
+        if (operation.equals("audit")) {
+            handleUnlitReady(sender);
+            return;
+        }
+        if (!operation.equals("build")) {
+            sender.sendMessage("Usage: /obs unlit candidate <build|audit> [world] [originX] [baseY] [originZ]");
+            return;
+        }
+        if (!plugin.getConfig().getBoolean("unlit.candidate-build-enabled", false)) {
+            sender.sendMessage("UNLIT_CANDIDATE_BUILD BLOCKED unlit.candidate-build-enabled is false");
+            return;
+        }
+        String worldName = args.length > 3 ? args[3].trim()
+                : plugin.getConfig().getString("unlit.world", "observance_unlit");
+        if (worldName == null || !worldName.matches("[A-Za-z0-9_.-]{1,64}")) {
+            sender.sendMessage("UNLIT_CANDIDATE_BUILD BLOCKED invalid world name");
+            return;
+        }
+        try {
+            int originX = args.length > 4 ? Integer.parseInt(args[4]) : 0;
+            int baseY = args.length > 5 ? Integer.parseInt(args[5]) : 72;
+            int originZ = args.length > 6 ? Integer.parseInt(args[6]) : 0;
+            if (baseY < -40 || baseY > 280 || Math.abs(originX) > 20_000_000
+                    || Math.abs(originZ) > 20_000_000) {
+                throw new IllegalArgumentException("candidate origin is outside safe world bounds");
+            }
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) {
+                world = WorldCreator.name(worldName).type(WorldType.FLAT)
+                        .generateStructures(false).seed(713_071L).createWorld();
+            }
+            if (world == null) throw new IllegalStateException("could not create or load candidate world");
+
+            UnlitVillageCandidateBuilder builder = new UnlitVillageCandidateBuilder();
+            UnlitVillageCandidateBuilder.BuildReport report =
+                    builder.buildFresh(world, originX, baseY, originZ);
+
+            plugin.getConfig().set("unlit.world", world.getName());
+            plugin.getConfig().set("unlit.border-radius", UnlitVillageCandidateBuilder.BORDER_RADIUS);
+            plugin.getConfig().set("unlit.buildmode", false);
+            plugin.saveConfig();
+            world.getWorldBorder().setCenter(originX, originZ);
+            world.getWorldBorder().setSize(UnlitVillageCandidateBuilder.BORDER_RADIUS * 2.0);
+            world.setTime(plugin.getConfig().getLong("unlit.night-time", 18_000L));
+            world.setSpawnLocation(originX, baseY + 1, originZ + 48);
+
+            boolean sitesPersisted = false;
+            plugin.beginRuntimeSiteBatch();
+            try {
+                registerUnlitCandidateSite(new Site("unlit_entry", "unlit_entry", world.getName(),
+                        (double) originX, (double) (baseY + 1), (double) (originZ + 52),
+                        5, 5, true, true));
+                registerUnlitCandidateSite(new Site("unlit_spawn_mirror", "unlit_spawn", world.getName(),
+                        (double) originX, (double) (baseY + 1), (double) (originZ + 48),
+                        5, 5, true, true));
+                registerUnlitCandidateSite(new Site("unlit_exit", "unlit_exit", world.getName(),
+                        (double) (originX + 4), (double) (baseY + 1), (double) (originZ + 52),
+                        5, 5, true, true));
+                for (UnlitVillageCandidateBuilder.House house : report.houses()) {
+                    Location location = UnlitVillageCandidateBuilder.siteLocation(
+                            world, originX, baseY, originZ, house);
+                    registerUnlitCandidateSite(new Site(house.siteId(), "unlit_house", world.getName(),
+                            location.getX(), location.getY(), location.getZ(),
+                            house.siteId().equals("unlit_house_base") ? 9 : 7,
+                            6, true, true));
+                    stampUnlitClue(location, house.siteId());
+                    recordUnlitOrientation(location, house.siteId());
+                }
+                sitesPersisted = plugin.endRuntimeSiteBatch();
+            } catch (RuntimeException failure) {
+                plugin.abortRuntimeSiteBatch();
+                throw failure;
+            }
+            if (!sitesPersisted) throw new IllegalStateException("sites.yml batch persistence failed");
+
+            Report install = new V5PhysicalComponentInstaller(plugin).reconcileUnlit(Mode.FRESH_INSTALL);
+            requireCleanPhysical("Unlit candidate physical install", install);
+            Report audit = new V5PhysicalComponentInstaller(plugin).auditUnlit();
+            requireCleanPhysical("Unlit candidate physical audit", audit);
+            UnlitAuditSnapshot snapshot = collectUnlitAuditSnapshot();
+            if (!snapshot.ready()) {
+                throw new IllegalStateException("candidate audit remained blocked: "
+                        + String.join("; ", snapshot.blockers()));
+            }
+            world.save();
+            sender.sendMessage("UNLIT_CANDIDATE_BUILD PASS world=" + world.getName()
+                    + " houses=" + report.houses().size()
+                    + " blocks=" + report.blocksWritten()
+                    + " path_cells=" + report.pathCells()
+                    + " mechanics=" + audit.addressesConsidered()
+                    + " border=" + (UnlitVillageCandidateBuilder.BORDER_RADIUS * 2));
+            handleUnlitReady(sender);
+        } catch (NumberFormatException failure) {
+            sender.sendMessage("UNLIT_CANDIDATE_BUILD BLOCKED coordinates must be integers");
+        } catch (IllegalArgumentException | IllegalStateException failure) {
+            String detail = failure.getMessage() == null ? failure.getClass().getSimpleName()
+                    : failure.getMessage().replace('\n', ' ').replace('\r', ' ');
+            sender.sendMessage("UNLIT_CANDIDATE_BUILD BLOCKED " + detail);
+        }
+    }
+
+    private void registerUnlitCandidateSite(Site site) {
+        if (!plugin.registerRuntimeSite(site)) {
+            throw new IllegalStateException("could not register " + site.id());
         }
     }
 

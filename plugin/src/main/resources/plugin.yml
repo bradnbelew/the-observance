@@ -19,7 +19,7 @@ commands:
       /obs preflight
       /obs audit | visualaudit | dialogueaudit
       /obs placehold <prepare|plan|build|audit|sync|repair|seal|open>
-      /obs unlit <buildmode|site|clue|repair|border|darken|audit|ready>
+      /obs unlit <candidate|buildmode|site|clue|repair|border|darken|audit|ready>
       /obs townsfolk <spawn|despawn> [id]
       /obs wren <spawn|despawn>
       /obs item recover <artifact> [player]

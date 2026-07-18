@@ -30,6 +30,10 @@ repositories {
 dependencies {
     // Paper API — provided by the server at runtime, so compileOnly.
     compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    // The Unlit candidate plan contract intentionally exercises exact 1.21.11 Material and
+    // BlockFace values outside a running server.
+    testCompileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    testRuntimeOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
 
     // Gson — Paper bundles Gson on its classpath, so compileOnly is enough to compile.
     compileOnly 'com.google.code.gson:gson:2.11.0'
@@ -82,6 +86,7 @@ def pluginSelfTests = [
     , argVerticalSliceState: 'com.observance.watcher.arg.ArgVerticalSliceStateSelfTest'
     , argVerticalSliceEvidence: 'com.observance.watcher.arg.ArgVerticalSliceEvidenceSelfTest'
     , unlitCopyProofState: 'com.observance.watcher.v5runtime.unlit.UnlitCopyProofStateSelfTest'
+    , unlitVillageCandidatePlan: 'com.observance.watcher.structure.UnlitVillageCandidatePlanSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
