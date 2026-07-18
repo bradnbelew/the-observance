@@ -1,0 +1,2688 @@
+{
+  "cases": [
+    {
+      "callback": "P4's repeated intake mark changes meaning again: first it looked ritual, then practical, and here its placement on penalty slips shows the Record beginning to classify compliance.",
+      "case_id": "C03A",
+      "cold_theory_paths": [
+        "cult rules -> useful procedures -> captured procedures",
+        "benevolent emergency code -> isolated abuse -> coordinated institutional design",
+        "ordinary home -> safety bureaucracy -> observation system seed"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "It was a lived civic home with school, trade, repair work, and negotiated care, not a purpose-built ritual chamber."
+          ],
+          "id": "P5.F1",
+          "prompt": "What kind of place was the Hold between emergencies?",
+          "required_concepts": [
+            "school",
+            "trade",
+            "repair",
+            "care"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "Different workers made practical safety procedures into memorable Ways; officials later controlled heat, food, travel, posture, sleep, and speech by treating those memory aids as moral tests."
+          ],
+          "id": "P5.F5",
+          "prompt": "Why did the seven procedures become instruments of control?",
+          "required_concepts": [
+            "practical safety",
+            "memory aid",
+            "resource authority",
+            "moralized enforcement"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "A later recovered screenshot gains a mundane caption identifying the supposed shrine as the lamp-service counter.",
+        "minecraft": "The civic gallery remains open as a lived workplace; seven penalty plaques are removed from eye level while the original service cards remain in place.",
+        "npc": "Neri resumes an unfinished repair-account argument with Toma instead of praising the players; Eda asks that one pupil's copied bird drawing be returned to the school chest.",
+        "state_event": "p5.civic_drift_established"
+      },
+      "dramaturgical_rhythm": [
+        "inhabitation",
+        "parallel civic research",
+        "quiet humor",
+        "false confidence",
+        "version contradiction",
+        "debate",
+        "institutional synthesis",
+        "quiet aftermath"
+      ],
+      "earned_belief": "The Hold was an ordinary home. Seven practical safety procedures emerged from different kinds of work, then acquired sacred language and coercive enforcement after the danger became politically useful.",
+      "evidence": [
+        {
+          "accessibility": "plain-text archive transcription preserves handwriting changes and describes the drawing without naming a solution",
+          "author": "Eda Pell and twelve pupils",
+          "clue_job": "Shows Kept Light and Sacred Beast as maintenance routines embedded in school life, not worship.",
+          "content": "SECOND BELL: open the east vent before sums. Iven forgot because the hinge sticks, not because he is wicked. Toma says he will plane it after market. Underneath, a pupil has drawn the warning bird wearing the teacher's cap. Eda has written: Accurate likeness. Unfair hat.",
+          "id": "p5.e01",
+          "medium": "school copybook with corrections and drawings",
+          "observation_receipt_non_gating": true,
+          "provenance": "school cubby 3; early civic paper; water-warped lower edge; three hands confirmed by correction colors",
+          "roles": [
+            "seed",
+            "emotional_witness",
+            "quiet_reward"
+          ],
+          "surface": "minecraft_written_book",
+          "title": "Eda's winter copybook"
+        },
+        {
+          "accessibility": "high-contrast facsimile plus transcription",
+          "author": "Neri Vos",
+          "clue_job": "Establishes negotiated care and an early challenge to rigid allocation.",
+          "content": "Two lamp portions to Pell school while the stove mortar cures. One returned next issue. Orris says rules are rules. I say children are not a brazier account. Orris says write that where Vaun can see it. I have.",
+          "id": "p5.e02",
+          "medium": "market tally with margin conversation",
+          "observation_receipt_non_gating": true,
+          "provenance": "market counter; same ink as three surviving ration chits; early issue period",
+          "roles": [
+            "corroboration",
+            "human_texture",
+            "contradiction"
+          ],
+          "surface": "minecraft_map_and_book",
+          "title": "Neri's market exceptions"
+        },
+        {
+          "accessibility": "readable written-book duplicate at adjacent public counter",
+          "author": "Toma Rei",
+          "clue_job": "Defines the practical lamp-and-air rule and explicitly rejects later penalty logic.",
+          "content": "KEPT LIGHT — wick even, hood clear, east vent open before second bell. If the flame feathers blue, close the room and fetch air watch. Do not fine a household for a lamp you have not serviced.",
+          "id": "p5.e03",
+          "medium": "grease-marked service card",
+          "observation_receipt_non_gating": true,
+          "provenance": "fixed above lamp bench; earliest surviving card; screw holes match original fixture",
+          "roles": [
+            "key",
+            "professional_procedure"
+          ],
+          "surface": "minecraft_item_display",
+          "title": "Lamp bench card"
+        },
+        {
+          "accessibility": "transcription with front/back order retained",
+          "author": "Sela and Toma",
+          "clue_job": "Makes the Hold inhabited without acting as a lock.",
+          "content": "Sela — seven long nails, four short, and no more of Neri's stove advice. We will eat after the west flue holds. Tell Eda the chalk shelf is level enough unless she means to teach marbles. — Toma. On the back: It is not level. Bring supper anyway.",
+          "id": "p5.e04",
+          "medium": "folded personal note reused as a nail count",
+          "observation_receipt_non_gating": true,
+          "provenance": "inside the repaired stove cabinet; no official filing marks",
+          "roles": [
+            "quiet_reward",
+            "emotional_witness"
+          ],
+          "surface": "minecraft_written_book",
+          "title": "Repair supper note"
+        },
+        {
+          "accessibility": "jar positions represented in a labeled diagram; color is never the sole distinction",
+          "author": "Sella Mor",
+          "clue_job": "Defines communal sampling before tribute language.",
+          "content": "OFFERING means return one cup from each draw so changes can be compared. Do not pour food, coin, ash, or vows into the cistern. I cannot believe this requires writing twice.",
+          "id": "p5.e05",
+          "medium": "water sample ledger and jar rack",
+          "observation_receipt_non_gating": true,
+          "provenance": "service gallery sink; jar seals predate council offering stamps",
+          "roles": [
+            "key",
+            "provenance",
+            "corroboration"
+          ],
+          "surface": "minecraft_container_plus_book",
+          "title": "Sample-return register"
+        },
+        {
+          "accessibility": "desk diagram carries every measurement; crouching is optional corroboration, not answer gating",
+          "author": "Orin Hale",
+          "clue_job": "Separates practical posture from later submission theater.",
+          "content": "BOW — lower your sight to the seam. At standing height the third course hides separation. Mark width, dust color, and whether the line travels past a brace. This is inspection, not apology.",
+          "id": "p5.e06",
+          "medium": "measured diagram with knee-height sightline",
+          "observation_receipt_non_gating": true,
+          "provenance": "masonry trench; dimensions repeat in Orin's signed early survey",
+          "roles": [
+            "key",
+            "spatial_corroboration",
+            "professional_procedure"
+          ],
+          "surface": "minecraft_environment_and_book",
+          "title": "Low-seal inspection slate"
+        },
+        {
+          "accessibility": "lamp states duplicated by shapes and numbered rota cells",
+          "author": "Brann Iles",
+          "clue_job": "Defines paired coverage and plants the honest-timestamp standard used in P6/P7.",
+          "content": "DARK HOURS: no one watches alone after six hours below. Pell takes Iven's first half; Iven brings supper and takes second. Ring both lamps at relief. If either fails, write the failure, not the name you wish had been there.",
+          "id": "p5.e07",
+          "medium": "rota with meal chit pinned over one cell",
+          "observation_receipt_non_gating": true,
+          "provenance": "watch table; correction ink matches Brann; meal chit matches market batch",
+          "roles": [
+            "key",
+            "human_texture",
+            "later_callback_seed"
+          ],
+          "surface": "minecraft_wall_record",
+          "title": "Paired-watch substitution"
+        },
+        {
+          "accessibility": "scan alt text describes layout; transcription available after the same earned event",
+          "author": "Mara Venn",
+          "clue_job": "Defines bounded structural listening and establishes cross-copy provenance.",
+          "content": "UNSPOKEN: stop tools for one minute at change of watch. One listener at each marked pier records knocks or moving grit. Report a sound twice before closing a gallery. This is an instrument interval. It is not permission to question private speech.",
+          "id": "p5.e08",
+          "medium": "maintenance manual insertion",
+          "observation_receipt_non_gating": true,
+          "provenance": "Copperline cache of a photographed manual leaf; paper tear matches the Minecraft binding stub",
+          "roles": [
+            "key",
+            "provenance",
+            "cross_surface"
+          ],
+          "surface": "copperline_scanned_attachment",
+          "title": "Listening boundary"
+        },
+        {
+          "accessibility": "plain transcription; no penalty must be performed or simulated",
+          "author": "Council clerk; unsigned amendments",
+          "clue_job": "Shows the same names governing resources, movement, posture, sleep, and speech.",
+          "content": "Unkept household: heat issue reduced. Empty offering: market place deferred. Beast neglected: child sponsor named. Deep Line spoken of without permit: travel suspended. Bow refused: public apology. Dark Hours sleep: double watch. Unspoken breach: testimony struck.",
+          "id": "p5.e09",
+          "medium": "late penalty ledger",
+          "observation_receipt_non_gating": true,
+          "provenance": "late-rulings annex; newer paper; intake classification mark on every entry",
+          "roles": [
+            "contradiction",
+            "false_plausible_read",
+            "institutional_horror"
+          ],
+          "surface": "minecraft_written_book",
+          "title": "Council penalties, seventh revision"
+        },
+        {
+          "accessibility": "screen-reader-first text attachment; Discord outage mirror at civic desk",
+          "author": "Orris Pell",
+          "clue_job": "Turns abstract drift into a family harmed by deliberate category collapse.",
+          "content": "My daughter slept because she had carried air cages for two shifts. The first watch card says paired coverage protects an exhausted watcher. Your ruling says exhaustion proves disregard. Those cannot both be the same Way. Clerk notation: Do not answer the distinction. File under Unspoken.",
+          "id": "p5.e10",
+          "medium": "unsent appeal with clerk notation",
+          "observation_receipt_non_gating": true,
+          "provenance": "discipline drawer scan mirrored to the earned docket; clerk notation predates final penalty",
+          "roles": [
+            "emotional_witness",
+            "contradiction",
+            "provenance"
+          ],
+          "surface": "discord_docket_attachment",
+          "title": "Orris's appeal"
+        },
+        {
+          "accessibility": "three-stage comparison image with texture, shape, and date labels",
+          "author": "three unknown clerks",
+          "clue_job": "Supports the safety-to-observation reversal and seeds Record copying without naming later truths.",
+          "content": "The same open-eye mark moves from doorfinding, to service routing, to compliance classification. The duplicate beneath the finish is recorded as an anomaly, not explained.",
+          "id": "p5.e11",
+          "medium": "dated stamp impressions and cabinet scars",
+          "observation_receipt_non_gating": true,
+          "provenance": "early cards lack the mark; mid-period service cards use it for routing; late penalties use it beside names; one impossible duplicate impression appears beneath an older cabinet finish",
+          "roles": [
+            "synthesis",
+            "callback",
+            "uncanny_seed"
+          ],
+          "surface": "minecraft_environment_plus_archive_image",
+          "title": "Intake mark chronology"
+        }
+      ],
+      "hints": {
+        "H0": "The civic desk is asking for early job and late ruling copies of the same seven names.",
+        "H1": "If a lane feels purely religious, find the oldest version written by the worker who used it.",
+        "H2": "Compare what each procedure detected or protected with what the later penalty controlled.",
+        "H3": "Use the lamp card, sample register, bird/air records, seal slate, paired rota, listening boundary, and penalty ledger; then explain why a memorable safety rule gave officials leverage."
+      },
+      "human_stake": "Eda's pupils, Toma's repair crew, Neri's market household, and the watch families depended on procedures that were useful before officials turned compliance into rank.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The filing desk accepts that later rulings were abusive but returns the conclusion: early service cards predict real lamp, air, water, masonry, and watch failures.",
+          "theory": "The Ways were always fraudulent superstition."
+        },
+        {
+          "response": "The desk records the procedures' usefulness, then points to coordinated penalties across resources, travel, posture, sleep, and testimony; the change is institutional, not one clerk's error.",
+          "theory": "The Ways remained useful and only a few clerks misapplied them."
+        },
+        {
+          "response": "The archive acknowledges genuine fear but returns the appeal and exception records: officials suppressed distinctions and made access to necessities conditional.",
+          "theory": "People freely chose strict rules because the danger never ended."
+        }
+      ],
+      "novelty_comparison": "Unlike P4's refuge-origin reversal, P5 reconstructs social life across versions and asks how useful practice gained coercive power. It has no ordered construction puzzle, capacity match, or gate-as-reward.",
+      "phase": "P5",
+      "plausible_initial_belief": "The seven Ways were either old superstition or a single council doctrine imposed from the beginning.",
+      "player_facing_question": "How did people actually live here, and when did the rules that kept them alive begin deciding whose life counted?",
+      "prerequisites": [
+        "P4.F5"
+      ],
+      "required_inference": "Players must distinguish early job instructions from later moral rulings, then explain why useful memory aids were especially easy to weaponize. Naming seven rules or copying their penalties is insufficient.",
+      "runtime": {
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "local_primary": true,
+        "outage": "Copperline and Discord evidence have protected Minecraft/archive equivalents; projections queue without changing local conclusion state",
+        "partial_conclusions_persist_as_drafts": true,
+        "replay": "read-only civic brief plus original-source directions",
+        "restart": "drafts and conclusion event reload idempotently",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          10,
+          30,
+          90
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "open copybooks, measures, and ration trays show readable surfaces without tutorial labels",
+          "composition": "two low writing tables, wall abacus, repaired stove, pupil cubbies, market counter, hanging measure, patched floor around the stove, broad central circulation",
+          "evidence_surfaces": [
+            "p5.e01",
+            "p5.e02",
+            "p5.e04"
+          ],
+          "id": "p5_school_market",
+          "job": "shared school and ration exchange",
+          "navigation": "two-door loop; 2-block minimum aisle; no lectern row"
+        },
+        {
+          "affordance": "occupied racks, mounted cards, and distinct work lights separate reading surfaces from decoration",
+          "composition": "three unequal work bays with tool racks, sample sink, bird alcove, low seal trench, lamp bench, rota table, worn waiting ledge",
+          "evidence_surfaces": [
+            "p5.e03",
+            "p5.e05",
+            "p5.e06",
+            "p5.e07",
+            "p5.e08"
+          ],
+          "id": "p5_service_gallery",
+          "job": "lamp, air, water-sample, masonry, and watch dispatch",
+          "navigation": "public counter fronts staff loop; every interactive surface has visible contents"
+        },
+        {
+          "affordance": "open docket drawer and layered notice rail make version comparison physical and eye-level",
+          "composition": "narrow cabinet rank, overwritten notice rail, locked discipline drawer, removed-plaque scars, one clerk chair facing the counter",
+          "evidence_surfaces": [
+            "p5.e09",
+            "p5.e10",
+            "p5.e11"
+          ],
+          "id": "p5_late_rulings",
+          "job": "small later records annex inserted into an older service corridor",
+          "navigation": "short side room; no mandatory crawl or hidden click"
+        }
+      ],
+      "target_minutes": {
+        "max": 180,
+        "min": 120
+      },
+      "title": "What the Ways Were For"
+    },
+    {
+      "callback": "P5's ordinary service records become expert evidence: the same ration exception, manual leaf, sample jar, low seam, rota, and living reed reveal who noticed what and when.",
+      "case_id": "C03B",
+      "cold_theory_paths": [
+        "six icons -> one council -> six conflicting people",
+        "Iss-as-villain -> distributed compromise -> differentiated culpability",
+        "six heroic witnesses -> compromised protectors -> independent incomplete repair"
+      ],
+      "consequence": {
+        "discord": "The shared docket renders a responsibility matrix, not six solve badges.",
+        "minecraft": "Each archive workroom receives a distinct open dossier drawer and one sealed affidavit housing; the six housings remain separate.",
+        "npc": "Surviving remembered conversations stop using honorific titles and name the six as people.",
+        "state_event": "p6.six_distinct_responsibilities_established"
+      },
+      "dossiers": [
+        {
+          "evidence": [
+            {
+              "content": "Twelve filter bolts received. Seven sent to cistern. Five assigned by heat order without destination receipts. Sixteen charcoal sacks received. Ten sent to cistern. Six assigned likewise.",
+              "id": "p6.v1",
+              "medium": "receiving ledger",
+              "observation_receipt_non_gating": true,
+              "provenance": "Vaun's numbered receiving hand; countersigned at gate",
+              "roles": [
+                "seed",
+                "key"
+              ],
+              "surface": "minecraft_book"
+            },
+            {
+              "content": "The missing cloth was not lost in transit: two returned fragments carry the favored-gallery repair stitch and Vaun's own reseal wax.",
+              "id": "p6.v2",
+              "medium": "seam-and-seal inspection",
+              "observation_receipt_non_gating": true,
+              "provenance": "returned bolts carry market stitch; diverted bolts listed under private heat use",
+              "roles": [
+                "corroboration",
+                "provenance"
+              ],
+              "surface": "minecraft_material_display"
+            },
+            {
+              "content": "I balanced the page because an unbalanced page would have stopped issue for everyone. I told myself I could challenge the order after winter. Winter became the name for not challenging it.",
+              "id": "p6.v3",
+              "medium": "private reconciliation letter",
+              "observation_receipt_non_gating": true,
+              "provenance": "later scan; redaction layer recoverable from cached thumbnail",
+              "roles": [
+                "contradiction",
+                "emotional_witness"
+              ],
+              "surface": "copperline_redacted_scan"
+            }
+          ],
+          "finding": "Vaun precisely tracked a deliberate diversion and protected continuity of issue, but his private accuracy became a way to postpone public resistance.",
+          "id": "P6.V",
+          "operation": "Reconcile received goods, issue receipts, seal repairs, and private household exceptions across independent hands.",
+          "person": "Vaun",
+          "profession": "stores and rationing"
+        },
+        {
+          "evidence": [
+            {
+              "content": "E1 routes families around third bay. E2 silently moves the public arrow through it. E3 restores the old route in Mara's margin but keeps the unsafe clean plate.",
+              "id": "p6.m1",
+              "medium": "three manual editions",
+              "observation_receipt_non_gating": true,
+              "provenance": "E1 school stock, E2 stores stock, E3 emergency rag paper; all visibly occupied",
+              "roles": [
+                "seed",
+                "key",
+                "provenance"
+              ],
+              "surface": "minecraft_chiseled_shelves"
+            },
+            {
+              "content": "Lio: If the clean plate is wrong, why copy it clean? Mara: Because a correction no one receives is a private virtue. Lio: That is not an answer. Mara: No. It is the part I am still able to write.",
+              "id": "p6.m2",
+              "medium": "printer's waste conversation",
+              "observation_receipt_non_gating": true,
+              "provenance": "discarded binding basket; Mara and junior copier Lio",
+              "roles": [
+                "human_texture",
+                "contradiction"
+              ],
+              "surface": "minecraft_book"
+            },
+            {
+              "content": "The substituted edition was not theoretical: three family dispatches and one brace crew were routed through the stressed bay before E3 margins circulated.",
+              "id": "p6.m3",
+              "medium": "route consequence list",
+              "observation_receipt_non_gating": true,
+              "provenance": "dispatch counts align only with E2 issue dates",
+              "roles": [
+                "corroboration",
+                "cross_surface"
+              ],
+              "surface": "discord_docket_attachment"
+            }
+          ],
+          "finding": "Mara can prove which manual was substituted and how it changed movement; she preserved the correction but also produced the authoritative clean copy that hid it.",
+          "id": "P6.M",
+          "operation": "Establish edition provenance from paper stock, signatures, binding sequence, corrections, and route consequences.",
+          "person": "Mara",
+          "profession": "manuals and civic routes"
+        },
+        {
+          "evidence": [
+            {
+              "content": "Sella's pupils draw the bent alder, split sill, and three-reed shelf. One writes: The water does not care which way the council faces the paper.",
+              "id": "p6.s1",
+              "medium": "shoreline teaching drawings",
+              "observation_receipt_non_gating": true,
+              "provenance": "pupil copies dated before intake dispute",
+              "roles": [
+                "seed",
+                "human_texture"
+              ],
+              "surface": "minecraft_map_display"
+            },
+            {
+              "content": "When aligned by alder, sill, and shelf, the transferred line reaches the lower intake rather than the official upper mark.",
+              "id": "p6.s2",
+              "medium": "damp reverse transfer",
+              "observation_receipt_non_gating": true,
+              "provenance": "fiber tears and pinholes match the Minecraft original; reverse image is physically caused, not an arbitrary mirror cipher",
+              "roles": [
+                "key",
+                "provenance"
+              ],
+              "surface": "copperline_contact_sheet"
+            },
+            {
+              "content": "Lower draw: dark grit before cloth fibers. Keep sealed. If this line disappears from the fair copy, ask stores where the good cloth went.",
+              "id": "p6.s3",
+              "medium": "omitted sample note",
+              "observation_receipt_non_gating": true,
+              "provenance": "lower jar position scraped from official index; Sella's sketch retains it",
+              "roles": [
+                "contradiction",
+                "later_callback_seed"
+              ],
+              "surface": "minecraft_sample_shelf"
+            }
+          ],
+          "finding": "Sella's transferable survey proves the true intake and an omitted lower sample; her playful teaching method became durable forensic provenance.",
+          "id": "P6.S",
+          "operation": "Reconstruct a damp transfer from fixed landmarks, front/back paper fibers, sample sketches, and measured bearings.",
+          "person": "Sella",
+          "profession": "shoreline survey and school drawing"
+        },
+        {
+          "evidence": [
+            {
+              "content": "Third bay seam exceeds the service limit at two braces. The mineralized edge proves movement began well before the fresh route cut.",
+              "id": "p6.o1",
+              "medium": "low-seam measurements",
+              "observation_receipt_non_gating": true,
+              "provenance": "marks cut before Iss's last excavation; mineral fill crosses older tool scars",
+              "roles": [
+                "seed",
+                "key"
+              ],
+              "surface": "minecraft_environment_plus_diagram"
+            },
+            {
+              "content": "The installed brace is not the brace Orin calculated. The promised load reduction never appears in pressure allocation.",
+              "id": "p6.o2",
+              "medium": "brace order and delivered cores",
+              "observation_receipt_non_gating": true,
+              "provenance": "ordered section 6x8; delivered cores 4x6; stores receipt countersigned",
+              "roles": [
+                "corroboration",
+                "contradiction"
+              ],
+              "surface": "minecraft_material_display"
+            },
+            {
+              "content": "Service may continue only if upper heat load is halved and the east brace is replaced before thaw. In the margin: They asked whether I would rather close the school galleries tonight. I signed the condition. They kept only the signature.",
+              "id": "p6.o3",
+              "medium": "conditional certificate",
+              "observation_receipt_non_gating": true,
+              "provenance": "Orin signature genuine; condition later scraped from public copy",
+              "roles": [
+                "emotional_witness",
+                "provenance"
+              ],
+              "surface": "minecraft_written_book"
+            }
+          ],
+          "finding": "Orin documented chronic damage and made operation conditional, then accepted a promise he could not enforce; later copies retained his authority and removed his warning.",
+          "id": "P6.O",
+          "operation": "Compare mineral age, seam width, brace dimensions, load promises, and a conditional certificate.",
+          "person": "Orin",
+          "profession": "masonry and structural tolerance"
+        },
+        {
+          "evidence": [
+            {
+              "content": "Iven's eighth-hour cell is empty because Pell relieved him. The official clean rota places Iven there anyway.",
+              "id": "p6.b1",
+              "medium": "corrected rota",
+              "observation_receipt_non_gating": true,
+              "provenance": "Brann correction ink; two hands acknowledge relief",
+              "roles": [
+                "seed",
+                "key"
+              ],
+              "surface": "minecraft_wall_record"
+            },
+            {
+              "content": "Pell collected two meals at relief and lit the paired board. The ninth toll written later as eight contradicts both ordinary records.",
+              "id": "p6.b2",
+              "medium": "meal chit and lamp roll",
+              "observation_receipt_non_gating": true,
+              "provenance": "market batch time and two-lamp shapes independently place Pell at watch",
+              "roles": [
+                "corroboration",
+                "provenance",
+                "contradiction"
+              ],
+              "surface": "discord_and_minecraft_pair"
+            },
+            {
+              "content": "STAY AWAKE is the packet label. Its useful content is the paired visual coverage and corrected relief order, not a supernatural command to avoid sleep.",
+              "id": "p6.b3",
+              "medium": "preserved clip 3",
+              "observation_receipt_non_gating": true,
+              "provenance": "hash-bound asset clip_03_watch_correction; reveal after local watch question is established",
+              "roles": [
+                "recontextualization",
+                "cross_surface"
+              ],
+              "surface": "media_with_accessible_stills"
+            }
+          ],
+          "finding": "Brann protected exhausted watchers through paired coverage and left redundant proof that the official timestamp was rewritten.",
+          "id": "P6.B",
+          "operation": "Reconcile substitutions, meal chits, paired lamp states, toll notation, and fixed clip 3 without relying on sound.",
+          "person": "Brann",
+          "profession": "watch scheduling and alarm redundancy"
+        },
+        {
+          "evidence": [
+            {
+              "content": "The surface was genuinely recovering. This finding is true and important even though it does not justify Iss's route.",
+              "id": "p6.i1",
+              "medium": "pressed reed and water date",
+              "observation_receipt_non_gating": true,
+              "provenance": "living-green tissue at collection; date independently logged by Sella",
+              "roles": [
+                "seed",
+                "key",
+                "true_but_not_door"
+              ],
+              "surface": "minecraft_material_display"
+            },
+            {
+              "content": "Iss argued that permanent confinement was becoming a policy, not a weather fact. He named children who had never seen open sky. He omitted the stressed bay, diverted heat, and unpaired cut crew.",
+              "id": "p6.i2",
+              "medium": "public route speech",
+              "observation_receipt_non_gating": true,
+              "provenance": "three witnesses preserve overlapping but non-identical recollections",
+              "roles": [
+                "false_plausible_read",
+                "emotional_witness"
+              ],
+              "surface": "npc_remembered_conversation"
+            },
+            {
+              "content": "The draft names brace load, paired watch, and Averyn's objection. The public copy removes all three and calls the route a mercy.",
+              "id": "p6.i3",
+              "medium": "corrected route margin",
+              "observation_receipt_non_gating": true,
+              "provenance": "cached first upload lacks three warnings present in local draft; account edit chronology is mundane and verifiable",
+              "roles": [
+                "contradiction",
+                "provenance",
+                "later_callback_seed"
+              ],
+              "surface": "copperline_attachment_version_history"
+            }
+          ],
+          "finding": "Iss was right that the surface healed and right to challenge permanent confinement; he made the case persuasive by hiding risks, diverted resources, and supported exclusion of Averyn's objection.",
+          "id": "P6.I",
+          "operation": "Test a persuasive route case against biological provenance, allocation records, authorization gaps, and corrected margins.",
+          "person": "Iss",
+          "profession": "heat works and surface-route advocacy"
+        }
+      ],
+      "dramaturgical_rhythm": [
+        "choice of dossier",
+        "parallel situated work",
+        "human discovery",
+        "professional inference",
+        "cross-dossier contradiction",
+        "six-person debate",
+        "sealed testimony consequence"
+      ],
+      "earned_belief": "The Keepers were six distinct contemporaries with incompatible jobs, handwriting, relationships, evidence, and culpabilities. None is a complete villain or absolved custodian.",
+      "group_conclusion": {
+        "accepted_answers": [
+          "Vaun, Mara, Sella, Orin, Brann, and Iss were six distinct contemporaries whose different work preserved independent evidence; each protected people, made a different compromise, and later left a separate affidavit rather than forming one Keeper mind."
+        ],
+        "id": "P6.F7",
+        "prompt": "File a responsibility matrix for six people: profession, what each could prove, the compromise each made, and the later correction each preserved.",
+        "required_concepts": [
+          "six distinct contemporaries",
+          "different professions",
+          "different evidence",
+          "different culpabilities",
+          "independent affidavits"
+        ],
+        "zero_observation_acceptance": true
+      },
+      "hints": {
+        "H0": "Choose a workroom, not a stone. Each dossier asks a question that profession could answer.",
+        "H1": "If two lanes feel identical, return to the material: inventory balances, edition history, transfer geometry, structural tolerances, watch chronology, and route advocacy require different judgments.",
+        "H2": "For the group matrix, separate what each knew from what each did, omitted, and corrected later.",
+        "H3": "File six rows: Vaun/diversion, Mara/substituted edition, Sella/true intake, Orin/signed-away warning, Brann/rewritten watch, Iss/healed surface plus concealed route risk."
+      },
+      "human_stake": "Vaun, Mara, Sella, Orin, Brann, and Iss protected real people and also made distinct compromises. Their evidence must remain six voices because their disagreements are how the later truth survives.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The archive records the theory, then returns simultaneous cross-signatures, incompatible work locations, direct disagreements, and six independent hands.",
+          "theory": "The six titles describe one rotating office."
+        },
+        {
+          "response": "Iss's omissions are established, but Vaun's diversion silence, Mara's clean edition, Orin's conditional signature, and the altered watch record predate or exceed his route.",
+          "theory": "Iss alone corrupted an otherwise honest council."
+        },
+        {
+          "response": "The six independent affidavits preserve a route to a name, but no evidence shows they completed a release; the distinction is retained for later investigation.",
+          "theory": "All six secretly coordinated the later affidavits as a successful release plan."
+        }
+      ],
+      "novelty_comparison": "P5 compares social versions across one institution. P6 changes operation and spatial rhythm six times because each person's work produces different proof, then reconverges on responsibility rather than a cipher ladder.",
+      "phase": "P6",
+      "plausible_initial_belief": "The Keeper stones describe one coherent council, or six ceremonial roles whose records can be decoded by repeating one method.",
+      "player_facing_question": "Who were the six people later flattened into Keeper icons, what did each know through their work, and where did each choose safety, comfort, or silence?",
+      "prerequisites": [
+        "P5.F5"
+      ],
+      "required_inference": "Each lane requires a different professional judgment. The group must then assign knowledge, action, omission, and later correction to six separate people; collecting names or extracting six letters is not completion.",
+      "runtime": {
+        "affidavit_reissue_requires_absence_proof": true,
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "dossiers_parallel": true,
+        "local_primary": true,
+        "outage": "media/web/Discord projections can be replaced by hash-bound local accessible companions without accepting a solve",
+        "replay": "six independent dossiers and responsibility matrix",
+        "restart": "open lanes, drafts, artifacts, and conclusion event reload idempotently",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          10,
+          30,
+          90
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "visible tagged lots and open balance book; no container-sort lock",
+          "composition": "weigh table, bolt rack, charcoal cages, returned-goods bench, private narrow desk, loading aisle",
+          "id": "p6_vaun_stores",
+          "job": "receiving and reconciliation room",
+          "navigation": "public receiving loop and staff ledger alcove"
+        },
+        {
+          "affordance": "editions visibly differ in paper and binding",
+          "composition": "copy desks facing light, drying lines, paper-stock cabinet, edition shelves, correction counter, discarded binding basket",
+          "id": "p6_mara_copyroom",
+          "job": "manual copying and route revision",
+          "navigation": "two aisles and standing comparison counter"
+        },
+        {
+          "affordance": "front/back copies displayed together; no empty interactive shelf",
+          "composition": "long map table, sample shelf, damp-transfer screen, school drawing rack, fixed landmark models",
+          "id": "p6_sella_survey",
+          "job": "shoreline survey and teaching",
+          "navigation": "perimeter comparison route"
+        },
+        {
+          "affordance": "all required dimensions readable without F3 or exact block tracing",
+          "composition": "brace section, low seam trench, measured cores, plumb wall, certificate desk",
+          "id": "p6_orin_masonry",
+          "job": "material inspection and tolerance review",
+          "navigation": "standing diagram route plus optional crouched corroboration"
+        },
+        {
+          "affordance": "visual shapes and text duplicate every sound fact",
+          "composition": "rota table, two-lamp boards, meal-chit pegs, relief bench, sightline to bell housing",
+          "id": "p6_brann_watch",
+          "job": "watch scheduling and redundant alarm review",
+          "navigation": "wide group table"
+        },
+        {
+          "affordance": "living/dry samples use shape and label as well as color",
+          "composition": "heat map, reed press, route draft cabinet, private speech bench, altered margin rail",
+          "id": "p6_iss_heatworks",
+          "job": "heat allocation and surface-route advocacy",
+          "navigation": "public works bay with one concealed-but-signaled correction drawer"
+        }
+      ],
+      "target_minutes": {
+        "max": 210,
+        "min": 150
+      },
+      "title": "Six Hands on the Same Winter"
+    },
+    {
+      "callback": "Sella's omitted lower sample, Vaun's unexplained balances, Brann's paired-watch correction, and Iss's polished mercy language become parts of one human case rather than six isolated dossier details.",
+      "case_id": "C04",
+      "cold_theory_paths": [
+        "operator fault -> material failure -> coordinated scapegoating",
+        "bad supplier -> internal diversion -> falsified inquiry",
+        "Averyn partisan -> independent custody -> suppressed analyst"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "The failure began upstream of Nessa at the lower intake: genuine cloth was diverted and counterfeit single-warp cloth shed into the water."
+          ],
+          "id": "P7.F2",
+          "prompt": "Where did the physical failure begin and what failed?",
+          "required_concepts": [
+            "upstream lower intake",
+            "counterfeit cloth",
+            "genuine stock diverted"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "Toma took relief after ninth bell, but the clean rota moved him to eighth so later fiber samples would be attributed to Nessa."
+          ],
+          "id": "P7.F3",
+          "prompt": "Who handled the later fiber samples and how was that hidden?",
+          "required_concepts": [
+            "Toma relieved after ninth bell",
+            "clean rota moved relief earlier",
+            "later samples reassigned to Nessa"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "Nessa followed procedure and reported pressure loss and grit before cloth shedding. Genuine supplies were diverted, counterfeit cloth failed, her shift and complaint records were edited, and Averyn's exonerating inquiry was suppressed."
+          ],
+          "id": "P7.F6",
+          "prompt": "File the complete finding on Nessa Vale.",
+          "required_concepts": [
+            "followed procedure",
+            "reported before shedding",
+            "diversion",
+            "counterfeit material",
+            "edited records",
+            "Averyn suppression"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "A cached attachment reveals the unredacted supplier revision history and preserves both Draft A and Draft B.",
+        "discord": "The docket closes with separate material-cause, record-falsification, and Nessa-conduct findings so later summaries cannot collapse them.",
+        "minecraft": "Nessa's name returns to the pump roster with the neutral finding CLEARED BY ORIGINAL EXHIBITS; the disciplinary placard moves into the evidence cabinet rather than disappearing.",
+        "npc": "Toma records that he took relief after the shedding began and leaves Nessa a short apology without asking for forgiveness.",
+        "state_event": "p7.nessa_exonerated"
+      },
+      "dramaturgical_rhythm": [
+        "public accusation",
+        "material examination",
+        "parallel custody and labor inquiry",
+        "credible Nessa-doubt",
+        "procurement contradiction",
+        "earned media search",
+        "cache recovery",
+        "public exoneration",
+        "quiet personal aftermath"
+      ],
+      "earned_belief": "Genuine cloth and charcoal were diverted, counterfeit cloth failed, the rota and complaint record were edited, and officials suppressed Averyn's inquiry. Nessa reported the failure in order and must be cleared completely.",
+      "evidence": [
+        {
+          "accessibility": "shape-coded jars and exact text ledger duplicate color observations",
+          "author": "Nessa Vale",
+          "clue_job": "Places pressure and grit before cloth shedding and before Toma relieved Nessa.",
+          "content": "14 lower: pressure falling, grit dark. 15 upper: clear. 16 lower: same dark grit, before cloth threads. 17 lower: pale fibers now present. 18 upper: fibers. 19 relief taken by Toma; repeat both draws.",
+          "id": "p7.e01",
+          "medium": "oil-pencil labels on sealed sample necks",
+          "observation_receipt_non_gating": true,
+          "provenance": "continuous Nessa hand; seals initialed before removal date; A-lower label 16 survives in Averyn cache",
+          "roles": [
+            "seed",
+            "key",
+            "provenance"
+          ],
+          "surface": "minecraft_material_display",
+          "title": "Pump labels 14–19"
+        },
+        {
+          "accessibility": "plain transcription and screen-reader copy",
+          "author": "Nessa Vale",
+          "clue_job": "Shows procedure compliance and the exact question officials avoided.",
+          "content": "I have repeated lower draw because the pressure loss begins there. Sample 16 contains grit before fibers. I am not refusing the cloth ruling; I am asking stores to show which cloth reached us. If you remove me, write that I asked before the water turned.",
+          "id": "p7.e02",
+          "medium": "signed workplace complaint with intake stamps",
+          "observation_receipt_non_gating": true,
+          "provenance": "three intake stamps; first two listed as resolved without response; third later reclassified as discipline",
+          "roles": [
+            "emotional_witness",
+            "provenance",
+            "contradiction"
+          ],
+          "surface": "minecraft_written_book",
+          "title": "Nessa's third complaint"
+        },
+        {
+          "accessibility": "diagram uses labels, line styles, and text; no color-only or geometry-perfect deduction",
+          "author": "Averyn Pell",
+          "clue_job": "Locates failure outside Nessa's control without requiring players to configure a model.",
+          "content": "A pressure drop at lower draw with clear upper water cannot begin at Nessa's sample sink. The failure lies upstream between lower intake and split, before the operator-controlled return.",
+          "id": "p7.e03",
+          "medium": "pipe cross-section annotated from readings",
+          "observation_receipt_non_gating": true,
+          "provenance": "dimensions match installed pipe; no movable frames; annotations precede disciplinary draft",
+          "roles": [
+            "key",
+            "professional_procedure",
+            "corroboration"
+          ],
+          "surface": "minecraft_diagram",
+          "title": "Fixed flow section"
+        },
+        {
+          "accessibility": "text-first attachment with local mirror",
+          "author": "Nessa, Toma, Averyn",
+          "clue_job": "Protects the material finding from claims that Averyn substituted the sample later.",
+          "content": "Nessa sealed sample 16. Toma received the locked tray at relief and noted the seal unbroken. Averyn opened it with both present, retained half, and returned half to the public rack. The retained half matches the original label fibers and grit.",
+          "id": "p7.e04",
+          "medium": "seal register",
+          "observation_receipt_non_gating": true,
+          "provenance": "three sequential signatures; stable exhibit id; local mirror in inquiry office",
+          "roles": [
+            "provenance",
+            "corroboration",
+            "cross_surface"
+          ],
+          "surface": "discord_docket_attachment",
+          "title": "A-lower custody chain"
+        },
+        {
+          "accessibility": "raised-pattern diagram and textual weave description; touch/color is not mandatory",
+          "author": "Toma Rei and Sella Mor",
+          "clue_job": "Establishes counterfeit material and explains the change from grit to fibers.",
+          "content": "Original cloth: paired warp, charcoal sizing, blue seal thread inside hem. Failed strip: single warp, chalk sizing, seal thread sewn through after cutting. In water the failed strip sheds pale fibers like samples 17–19.",
+          "id": "p7.e05",
+          "medium": "side-by-side weave examination",
+          "observation_receipt_non_gating": true,
+          "provenance": "authentic market remnant and failed cistern strip retain distinct seal fibers; Sella sketch corroborates",
+          "roles": [
+            "key",
+            "contradiction",
+            "professional_procedure"
+          ],
+          "surface": "minecraft_material_plus_book",
+          "title": "Cloth under work light"
+        },
+        {
+          "accessibility": "chronology rendered as ordered text as well as marks",
+          "author": "Brann Iles, Toma Rei, Neri Vos",
+          "clue_job": "Proves the shift was edited to assign later evidence to Nessa.",
+          "content": "Brann's corrected rota puts Toma at the pump after ninth bell. Toma's fresh mortar mark is completed before he descends. Neri issues his meal at relief. The public disciplinary draft moves Toma to eighth bell so every fiber sample appears under Nessa's watch.",
+          "id": "p7.e06",
+          "medium": "rota, stair repair mark, and meal chit",
+          "observation_receipt_non_gating": true,
+          "provenance": "independent work systems share ninth-bell relief; clean rota later overwrites it as eighth",
+          "roles": [
+            "key",
+            "corroboration",
+            "contradiction",
+            "human_texture"
+          ],
+          "surface": "minecraft_and_npc_memory",
+          "title": "Relief chronology"
+        },
+        {
+          "accessibility": "OCR corrected against scan; layout and seal described",
+          "author": "Merrit Textile Cooperative",
+          "clue_job": "A genuine invoice creates the plausible but wrong belief that procurement was sound.",
+          "content": "Twelve cistern-grade bolts, paired warp, charcoal sized, inner blue seal. Ship against Vaun receiving 44. The invoice is genuine; the goods present at the cistern are not the goods it describes.",
+          "id": "p7.e07",
+          "medium": "supplier invoice and packing vocabulary",
+          "observation_receipt_non_gating": true,
+          "provenance": "real supplier format; initially appears to support official purchase",
+          "roles": [
+            "seed",
+            "provenance",
+            "false_plausible_read"
+          ],
+          "surface": "copperline_scanned_attachment",
+          "title": "Merrit Textile invoice"
+        },
+        {
+          "accessibility": "version chronology and diffs are text-readable",
+          "author": "Orris Pell, Vaun, unknown clerk",
+          "clue_job": "Joins counterfeit procurement to deliberate diversion rather than simple supplier error.",
+          "content": "The paid amount matches cistern-grade cloth. The later attached delivery list names a cheaper salvage lot and carries copied seal marks. Vaun's private balance puts five genuine bolts in favored heat galleries during the same week.",
+          "id": "p7.e08",
+          "medium": "purchase receipt with attachment history",
+          "observation_receipt_non_gating": true,
+          "provenance": "cached first attachment names Merrit; edited attachment substitutes North Cut Salvage after receipt; file timestamps align with diversion",
+          "roles": [
+            "contradiction",
+            "provenance",
+            "cross_surface"
+          ],
+          "surface": "copperline_version_history",
+          "title": "Purchase copy and market thread"
+        },
+        {
+          "accessibility": "captioned transcript, fixed still sequence, and landmark diagram",
+          "author": "Ash; source context by Sella",
+          "clue_job": "Uses earlier survey provenance to locate Averyn's protected originals.",
+          "content": "WHERE THE REEDS FOLD BACK identifies Sella's lower-intake landmark, not a poetic riddle. Fixed stills show the bent alder, split sill, and reverse reed shelf; an indexed diagram supplies the same route without sound or video-only observation.",
+          "id": "p7.e09",
+          "medium": "hash-bound clip 2 with stills and transcript",
+          "observation_receipt_non_gating": true,
+          "provenance": "clip_02_reeds_cache exact SHA-1 9b979e349c7a0d7497fd0fe76d0450e744dc39d0; earned only after procurement finding",
+          "roles": [
+            "key",
+            "callback",
+            "cross_surface"
+          ],
+          "surface": "media_with_accessible_stills",
+          "title": "Reeds cache instruction"
+        },
+        {
+          "accessibility": "all physical exhibits have exact archive descriptions; material texture is redundant",
+          "author": "Averyn Pell",
+          "clue_job": "Completes exoneration and establishes deliberate institutional rewriting.",
+          "content": "Draft A: Nessa followed sampling and escalation procedure; genuine stock was diverted; substitute cloth failed. Draft B: operator variance preceded material uncertainty. Averyn's cover note reads: They asked me to make the first sentence less final. The evidence did not become less final.",
+          "id": "p7.e10",
+          "medium": "original filter strip, receipt, Draft A, Draft B, and cover note",
+          "observation_receipt_non_gating": true,
+          "provenance": "cache seal matches sample 16; Draft A corrections precede council Draft B; original receipt matches invoice",
+          "roles": [
+            "synthesis",
+            "provenance",
+            "emotional_witness",
+            "recontextualization"
+          ],
+          "surface": "minecraft_protected_exhibits",
+          "title": "Averyn's cache packet"
+        }
+      ],
+      "hints": {
+        "H0": "Separate the inquiry into material/flow, labor/time, and procurement/record lanes.",
+        "H1": "Start with Nessa's numbered labels; they state what changed before and after relief.",
+        "H2": "Test every official claim against a source produced for another job: market, stairs, watch, stores, or supplier custody.",
+        "H3": "Use sample 16 and the fixed flow section; authentic versus failed weave; ninth-bell relief; the changed purchase attachment; and Averyn's Draft A/B packet."
+      },
+      "human_stake": "Nessa Vale followed the pump procedure and lost her work, home issue, and name in the public record. Toma inherited her shift without knowing he was being used to rewrite the chronology. Averyn risked her office to preserve the exhibits.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The inquiry accepts material fraud but returns the genuine invoice, diverted stock, copied seals, and edited rota: failure required internal allocation and concealment.",
+          "theory": "The counterfeit supplier alone caused the crisis."
+        },
+        {
+          "response": "Her innocence is supported; 'careless' is rejected because stamps, attachment replacement, shift alteration, and Draft B all move evidence in the same protective direction.",
+          "theory": "Nessa was innocent but careless paperwork made her look guilty."
+        },
+        {
+          "response": "The cache is meaningful, but the finding remains closed until the independent Nessa–Toma seal chain, early complaint stamps, and market/rota chronology are addressed.",
+          "theory": "Averyn fabricated a cleaner chain later to save Nessa."
+        }
+      ],
+      "novelty_comparison": "P7 is adversarial forensic custody, not P6 biography. Evidence produced by unrelated jobs cross-authenticates one worker's case; the emotional climax is public exoneration, not artifact collection.",
+      "phase": "P7",
+      "plausible_initial_belief": "Nessa mishandled samples, let dirty water through, and was dismissed after a preventable mistake.",
+      "player_facing_question": "What failed at the cistern, who knew, and why does the surviving file blame the first worker who reported it?",
+      "prerequisites": [
+        "P6.V",
+        "P6.S",
+        "P6.B",
+        "P6.I",
+        "P6.F7"
+      ],
+      "required_inference": "Players must build one chain joining early complaints, material failure, diversion, counterfeit provenance, shift editing, and suppression. Finding counterfeit cloth alone or proving Nessa complained is true but not enough to clear her.",
+      "runtime": {
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "exhibit_deposits_atomic": true,
+        "local_primary": true,
+        "media_reveal_requires_finding_not_clicks": true,
+        "outage": "media has local still/diagram equivalent; Copperline/Discord projections queue; local inquiry remains completable",
+        "replay": "complete public inquiry brief with exhibit provenance and Nessa conduct finding",
+        "restart": "draft findings, cache reveal, artifact custody, and exoneration event reload idempotently",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          15,
+          45,
+          120
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "sealed labeled jars, open pressure cards, and a fixed section drawing distinguish evidence from machinery",
+          "composition": "two pump heads, labeled upper/lower draws, fixed pipe diagram, sample sink, pressure cards, maintenance bench, public complaint slot",
+          "evidence_surfaces": [
+            "p7.e01",
+            "p7.e03",
+            "p7.e04"
+          ],
+          "id": "p7_pump_floor",
+          "job": "working intake and sampling station",
+          "navigation": "wide wet-floor loop with railings; no valve-combination lock"
+        },
+        {
+          "affordance": "paired occupied frames and lit invoice copies invite comparison without empty-shelf interactions",
+          "composition": "lit comparison table, authentic and failed weave frames, invoice cabinet, seal press, stores receipt rail",
+          "evidence_surfaces": [
+            "p7.e05",
+            "p7.e07",
+            "p7.e08"
+          ],
+          "id": "p7_material_room",
+          "job": "cloth inspection and procurement custody",
+          "navigation": "two-sided group comparison table"
+        },
+        {
+          "affordance": "distinct open drafts, exhibit housings, and face-down name plate show filing state through objects",
+          "composition": "shared chronology wall, two clerk desks with distinct drafts, roster cabinet, cache exhibit housings, Nessa name plate stored face-down",
+          "evidence_surfaces": [
+            "p7.e02",
+            "p7.e06",
+            "p7.e09",
+            "p7.e10"
+          ],
+          "id": "p7_inquiry_office",
+          "job": "labor chronology, disciplinary drafting, and recovered-exhibit review",
+          "navigation": "public entry and staff return loop"
+        }
+      ],
+      "target_minutes": {
+        "max": 180,
+        "min": 120
+      },
+      "title": "The Cistern Winter Inquiry"
+    },
+    {
+      "callback": "P5 service cards become repair manuals; P6 Orin/Brann/Iss evidence changes causal weight; P7 proves that edited records can predate the Break. The clean copied room first looks like a preserved original, then proves the Record copied official edits instead of living history.",
+      "case_id": "C05-C06",
+      "cold_theory_paths": [
+        "Iss culprit -> Iss partly right -> Iss accelerator among causes",
+        "cursed copy -> official-record copy -> active feedback system",
+        "broken ruin -> repairable infrastructure -> repair without absolution"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "Iss was right that the surface had healed, but he cut a secret route through an already stressed bay without structural authorization or paired watch, accelerating the Break."
+          ],
+          "id": "P8.F3",
+          "prompt": "What was Iss right about, and what made his remedy unsafe?",
+          "required_concepts": [
+            "surface healed",
+            "secret excavation",
+            "stressed bay",
+            "no permit or paired watch"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "The altered room preserves official edits instead of lived history and records a change before its source, showing the Record fed back into the failure; it does not explain what the Dark is."
+          ],
+          "id": "P8.F4",
+          "prompt": "What does the altered copy prove without claiming to explain the Dark?",
+          "required_concepts": [
+            "copied official edits",
+            "omitted lived repairs",
+            "impossible pre-source change",
+            "Record feedback"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "The Break combined chronic fracture and undersized bracing, unequal heat allocation and deferred maintenance, falsified warnings and delayed closure, Iss's unsafe secret cut as an accelerator, and Record/Dark copying feedback."
+          ],
+          "id": "P8.F5",
+          "prompt": "File the causal graph of the Break.",
+          "required_concepts": [
+            "chronic structural failure",
+            "unequal allocation or deferred maintenance",
+            "falsified warnings or delay",
+            "Iss accelerator",
+            "Record or Dark feedback"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "The crew restored local water, paired light, pressure control, and a safe route; repair proves the systems were material and changeable without erasing the people and institutions that caused the failure."
+          ],
+          "id": "P8.F8",
+          "prompt": "What did the repair establish?",
+          "required_concepts": [
+            "water",
+            "light",
+            "pressure",
+            "safe route",
+            "responsibility remains"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "A maintenance screenshot previously dismissed as corrupt is refiled as evidence that a copied room changed before its source.",
+        "discord": "The incident brief preserves five cause classes and separate repair receipts.",
+        "minecraft": "Cistern water clears, paired lamps return, the pressure bypass closes, and one safe route opens. The altered copy remains visible behind glass rather than being magically healed.",
+        "npc": "Iss's remembered statement gains two annotations: SURFACE CLAIM SUPPORTED and ROUTE METHOD UNSAFE. Neither cancels the other.",
+        "state_event": "p8.break_reconstructed_and_hold_repaired"
+      },
+      "dramaturgical_rhythm": [
+        "altered-space exploration",
+        "parallel incident lanes",
+        "Iss vindication temptation",
+        "chronology contradiction",
+        "causal debate",
+        "uncanny recontextualization",
+        "hands-on repair",
+        "visible world change",
+        "somber systems readback"
+      ],
+      "earned_belief": "The Break was multi-cause: chronic structural damage, unequal allocation and deferred maintenance, falsified warnings and delay, Iss's dangerous excavation, and Record/Dark feedback all interacted. Iss accelerated the event but neither invented the prior failures nor controls the uncanny feedback. Material systems remain repairable.",
+      "evidence": [
+        {
+          "accessibility": "material layers diagrammed and transcribed",
+          "author": "Toma Rei",
+          "clue_job": "Places equipment failure and delayed filing before Iss's final cut.",
+          "content": "The east circuit feathered and extinguished before the official alarm. Toma cleaned one hood, found pressure residue, and requested closure; the request was filed after the alarm in the public chronology.",
+          "id": "p8.e01",
+          "medium": "maintenance scraping and dated card",
+          "observation_receipt_non_gating": true,
+          "provenance": "soot sealed beneath alarm-day paint; Toma card dated two watches earlier",
+          "roles": [
+            "seed",
+            "key",
+            "provenance"
+          ],
+          "surface": "minecraft_material_display",
+          "title": "Lamp soot before alarm"
+        },
+        {
+          "accessibility": "no live animal distress; records and humane empty habitat carry the evidence",
+          "author": "Eda Pell and air watch",
+          "clue_job": "Shows a practical warning failed through staffing and chronology alteration.",
+          "content": "The warning birds showed distress during an unstaffed paired-watch gap. The official report says birds reacted after collapse; Eda's pupil note asks why class was moved before the alarm.",
+          "id": "p8.e02",
+          "medium": "feed/water cards and cage inspection",
+          "observation_receipt_non_gating": true,
+          "provenance": "care cards independent of incident office; two empty relief cells",
+          "roles": [
+            "corroboration",
+            "human_texture",
+            "contradiction"
+          ],
+          "surface": "minecraft_environment_plus_book",
+          "title": "Bird care lapse"
+        },
+        {
+          "accessibility": "texture and age observations duplicated in a labeled cross-section",
+          "author": "Orin Hale",
+          "clue_job": "Separates chronic precondition from accelerator.",
+          "content": "The load-bearing fracture moved through several wet/dry cycles before the new excavation. Iss's cut reaches and widens it but cannot account for its age or the undersized brace beside it.",
+          "id": "p8.e03",
+          "medium": "core section and tolerance sheet",
+          "observation_receipt_non_gating": true,
+          "provenance": "mineral growth crosses old fracture; fresh Iss tool marks stop short of oldest edge",
+          "roles": [
+            "key",
+            "provenance",
+            "professional_procedure"
+          ],
+          "surface": "minecraft_material_plus_diagram",
+          "title": "Mineralized third-bay fracture"
+        },
+        {
+          "accessibility": "table has textual trend summary",
+          "author": "Council works clerk",
+          "clue_job": "Joins resource inequality to structural load rather than treating diversion as a separate scandal.",
+          "content": "The council promised to halve upper-gallery heat load before Orin's conditional certificate took effect. Actual readings remain unchanged while favored galleries receive diverted charcoal.",
+          "id": "p8.e04",
+          "medium": "allocation order and actual gauge history",
+          "observation_receipt_non_gating": true,
+          "provenance": "order references Orin certificate; gauge copy independently preserved by heat works",
+          "roles": [
+            "contradiction",
+            "provenance",
+            "cross_surface"
+          ],
+          "surface": "copperline_cached_attachment",
+          "title": "Heat-load promise"
+        },
+        {
+          "accessibility": "stroke difference transcribed; no pixel-perfect visual dependence",
+          "author": "Brann Iles and unknown clerk",
+          "clue_job": "Proves official chronology was shifted to hide response time.",
+          "content": "The public incident begins at eighth bell, before missing coverage and closure requests would implicate delay. The original plate and market chronology place the initiating alarm at ninth.",
+          "id": "p8.e05",
+          "medium": "watch plate and clean incident copy",
+          "observation_receipt_non_gating": true,
+          "provenance": "physical ninth stroke survives beneath fill; Brann/Pell evidence confirms true relief",
+          "roles": [
+            "key",
+            "contradiction",
+            "callback"
+          ],
+          "surface": "minecraft_wall_record",
+          "title": "Eight written over nine"
+        },
+        {
+          "accessibility": "shape/text labels duplicate color; archive description available",
+          "author": "Iss, Sella, two unnamed carriers",
+          "clue_job": "Forces players to preserve Iss's truth while rejecting his remedy.",
+          "content": "Warm air, viable water, and living reed prove Iss's central claim: the surface had healed enough to investigate. The packet also records no structural permit, no paired watch, and no load review for his route.",
+          "id": "p8.e06",
+          "medium": "reed, water strip, air slate, and route draft",
+          "observation_receipt_non_gating": true,
+          "provenance": "independent dates and biological state corroborate surface recovery",
+          "roles": [
+            "true_but_not_door",
+            "emotional_witness",
+            "provenance"
+          ],
+          "surface": "minecraft_protected_exhibits",
+          "title": "Living surface packet"
+        },
+        {
+          "accessibility": "text-first recovered-carbon presentation",
+          "author": "Iss and three workers",
+          "clue_job": "Establishes deliberate unsafe excavation without making Iss sole cause.",
+          "content": "Iss chose a small crew during the watch gap, diverted heat tools, and omitted Orin and Brann. One worker writes: He said asking would turn spring into another winter. I believed him. I still asked where the brace calculation was.",
+          "id": "p8.e07",
+          "medium": "private work roster with erased names",
+          "observation_receipt_non_gating": true,
+          "provenance": "name impressions recoverable from duplicate carbon; timestamps overlap unpaired watch",
+          "roles": [
+            "key",
+            "provenance",
+            "emotional_witness"
+          ],
+          "surface": "discord_docket_attachment",
+          "title": "Hidden cut roster"
+        },
+        {
+          "accessibility": "version differences rendered as textual chronology",
+          "author": "Toma, Brann, Mara",
+          "clue_job": "Shows institutional delay/falsification as an interacting cause class.",
+          "content": "Lamp pressure, absent paired watch, and unsafe route edition were separately reported. The Record-facing copies place all three after the event, while local work copies retain earlier dates.",
+          "id": "p8.e08",
+          "medium": "three requests sharing a delayed intake number",
+          "observation_receipt_non_gating": true,
+          "provenance": "different offices submitted before alarm; all acquired the same later intake stamp",
+          "roles": [
+            "synthesis",
+            "provenance",
+            "contradiction"
+          ],
+          "surface": "minecraft_and_copperline_versions",
+          "title": "Closure requests and late routing"
+        },
+        {
+          "accessibility": "stable contact sheet with annotated differences; no mandatory free-camera alignment",
+          "author": "unknown; compared by Mara and Rook later",
+          "clue_job": "Establishes Record feedback as selective observation, not generic corruption.",
+          "content": "At first the copied office looks like the untouched original. Comparison shows it preserves the council's corrected dates and clean manual, yet lacks Eda's stove patch and Toma's old hinge repair. It copied an official account, not a moment in physical history.",
+          "id": "p8.e09",
+          "medium": "altered room and baseline contact sheet",
+          "observation_receipt_non_gating": true,
+          "provenance": "copy contains official clean editions but omits older repairs physically present before its impossible timestamp",
+          "roles": [
+            "uncanny_seed",
+            "false_plausible_read",
+            "contradiction"
+          ],
+          "surface": "minecraft_environment_plus_image",
+          "title": "Too-clean copied office"
+        },
+        {
+          "accessibility": "chronology and material layers described in text",
+          "author": "Averyn's automated registry",
+          "clue_job": "Adds an uncanny causal class without identifying Dark, Record, Watcher, and Averyn as the same thing.",
+          "content": "The copy records a cabinet change one watch before the source cabinet was changed. The safest conclusion is not that time reversed, but that the Record participated in the feedback loop it claimed only to observe. The Dark's nature remains unresolved.",
+          "id": "p8.e10",
+          "medium": "registry plate and cabinet growth layers",
+          "observation_receipt_non_gating": true,
+          "provenance": "plate predates the source cabinet's final alteration; duplicate wear appears under later finish",
+          "roles": [
+            "key",
+            "provenance",
+            "recontextualization"
+          ],
+          "surface": "minecraft_environment_plus_archive_text",
+          "title": "Copy-before-source timestamp"
+        }
+      ],
+      "hints": {
+        "H0": "Build four incident lanes before touching the works floor: chronology, structure/load, surface/route, and copied-space feedback.",
+        "H1": "For each claim, label evidence PREEXISTING, ACCELERATOR, CONCEALMENT/DELAY, or FEEDBACK.",
+        "H2": "A complete graph needs a human/material precondition, an institutional choice, Iss's route, and the Record anomaly. None replaces another.",
+        "H3": "Use pre-alarm soot and bird gap; mineralized fracture and unfulfilled load promise; living surface plus hidden cut; shifted timestamps; and the copy-before-source office. Then apply the proven service rules to water, light, pressure, and route."
+      },
+      "human_stake": "Iss found a real future and endangered the people he wanted to free. Orin, Brann, Vaun, Mara, and the council left older failures in place. Repair must restore water, light, pressure, and a safe route without erasing responsibility.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The board accepts Iss's unsafe cut as an accelerator, then returns mineralized fracture, undersized brace, pre-cut outage, allocation load, and altered closure requests.",
+          "theory": "Iss caused the Break and every earlier problem was incidental."
+        },
+        {
+          "response": "The surface claim is marked TRUE-BUT-NOT-THE-DOOR. The hidden roster, missing authorization, diverted tools, and stressed-bay route still require an agency finding.",
+          "theory": "Iss was a whistleblower framed by the council and bears no responsibility."
+        },
+        {
+          "response": "Record feedback is retained as a cause class, but it does not explain preexisting material damage, supply choices, edited times, or the success of physical repair.",
+          "theory": "The Dark supernaturally caused everything, so human chronology is irrelevant."
+        },
+        {
+          "response": "The works console confirms the repairs and returns the causal brief: material agency does not erase falsification, inequality, or unsafe excavation.",
+          "theory": "Successful repair proves the official story was basically correct."
+        }
+      ],
+      "novelty_comparison": "P7 proves a human legal/forensic case through custody. P8 expands into a causal graph and then changes the world through engineering. The uncanny evidence complicates rather than replaces material causation.",
+      "phase": "P8",
+      "plausible_initial_belief": "Iss's secret cut caused one catastrophic collapse; the copied region is either punishment or meaningless supernatural damage.",
+      "player_facing_question": "Did Iss break the Hold, did the Hold break itself, or did the Record turn an ordinary failure into something that could no longer be contained—and what can still be repaired?",
+      "prerequisites": [
+        "P7.F6",
+        "P6.O",
+        "P6.B",
+        "P6.I"
+      ],
+      "repairs": [
+        {
+          "finding": "P8.F6",
+          "id": "p8.r1",
+          "idempotency_key": "p8-repair-water-v1",
+          "name": "water",
+          "negative": "wrong or duplicate components return atomically",
+          "rule": "Install only the hash/provenance-matched original filter component in its unique housing.",
+          "visible_readback": "clear lower draw, stable pressure card, WATER VERIFIED text"
+        },
+        {
+          "finding": "P8.F7",
+          "id": "p8.r2",
+          "idempotency_key": "p8-repair-light-v1",
+          "name": "paired light",
+          "negative": "evidence panel is immutable and cannot be brute-switched",
+          "rule": "Read the fixed diagnostic with the P5 lamp service card; replace the open relay rather than toggling evidence lamps.",
+          "visible_readback": "both coverage lamps and SHARED WATCH VERIFIED"
+        },
+        {
+          "finding": "P8.F7",
+          "id": "p8.r3",
+          "idempotency_key": "p8-repair-pressure-v1",
+          "name": "pressure",
+          "negative": "other wheels are labeled isolation valves and refuse the mismatched diagnosis",
+          "rule": "Use the fixed gauge rule to identify line four's open bypass, then close the physical service wheel at the mapped line.",
+          "visible_readback": "return gauge zero, outlet within tolerance, BYPASS CLOSED"
+        },
+        {
+          "finding": "P8.F8",
+          "id": "p8.r4",
+          "idempotency_key": "p8-repair-integrate-v1",
+          "name": "safe route",
+          "negative": "route remains closed until water/light/pressure local receipts exist, never until source clicks exist",
+          "rule": "Follow the supplied service diagram to inspect the replaced brace and open the bounded staff route; no coordinate-perfect block trace.",
+          "visible_readback": "staff gate opens, integration console lists four stable receipts"
+        }
+      ],
+      "required_inference": "Players must construct a causal graph distinguishing precondition, accelerator, concealment/delay, and feedback. No single culprit or supernatural explanation passes. Repair choices are derived from established engineering rules rather than UI trial-and-error.",
+      "runtime": {
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "artifact_deposits_atomic": true,
+        "causal_graph_semantic_predicate": true,
+        "crash": "durable receipt precedes visual world change; incomplete projection resumes",
+        "local_primary": true,
+        "outage": "all four repairs complete locally; remote projections queue and cannot reopen or override physical state",
+        "repairs_idempotent": true,
+        "repairs_monotonic": true,
+        "replay": "before/after archive plus stable causal graph and repair receipts",
+        "restart": "all repairs and world changes rebuild from local journal without duplication",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          15,
+          45,
+          120
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "three materially distinct table lanes feed one causal board rather than repeating answer stations",
+          "composition": "three long incident tables, suspended pressure map, material cores, lamp/bird chronology rail, protected sightline into altered room",
+          "evidence_surfaces": [
+            "p8.e01",
+            "p8.e02",
+            "p8.e03",
+            "p8.e04",
+            "p8.e05",
+            "p8.e06",
+            "p8.e07",
+            "p8.e08"
+          ],
+          "id": "p8_incident_gallery",
+          "job": "compare baseline, official copy, and physical aftermath",
+          "navigation": "parallel lanes reconverge at causal board"
+        },
+        {
+          "affordance": "protected windows and paired descriptions mark the room as observation-only, never a hidden-click volume",
+          "composition": "recognizable copied office with too-clean official notices, absent personal repairs, duplicate cabinet wear, impossible timestamp plate",
+          "evidence_surfaces": [
+            "p8.e09",
+            "p8.e10"
+          ],
+          "id": "p8_altered_copy",
+          "job": "contained observation of Record feedback",
+          "navigation": "viewable from two accessible galleries; no answer requires entering fragile geometry"
+        },
+        {
+          "affordance": "unique component silhouettes, occupied housings, and persistent state readbacks expose every repair verb",
+          "composition": "unique filter housing, fixed lamp diagnostic, four-line gauge board, physical bypass wheel, service-map counter, integration console",
+          "evidence_surfaces": [
+            "p8.r1",
+            "p8.r2",
+            "p8.r3",
+            "p8.r4"
+          ],
+          "id": "p8_works_floor",
+          "job": "repair water, light, pressure, and route using proven service rules",
+          "navigation": "wide crew loop; wrong component returns; every state has text and physical readback"
+        }
+      ],
+      "target_minutes": {
+        "max": 300,
+        "min": 180
+      },
+      "title": "The Break and the Work After"
+    },
+    {
+      "callback": "Copperline service 1842 and ticket 9137 return as ordinary infrastructure the prior company used. A camera joke, Rook's correction habit, and Wren's distance estimate become evidence only after the camp is understood.",
+      "case_id": "C07",
+      "cold_theory_paths": [
+        "anonymous failed players -> four friends -> betrayed company",
+        "missing final clue -> complete readiness -> sabotage",
+        "Wren odd -> Wren suspicious -> attribution still open"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "mkept administered the server, Ash documented it, Rook built and corrected routes, and Wren accompanied the team and carried private route knowledge."
+          ],
+          "id": "P9.F2",
+          "prompt": "Who lived at the camp and what did each do?",
+          "required_concepts": [
+            "mkept admin",
+            "Ash camera",
+            "Rook builder",
+            "Wren companion or route witness"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "The four had the needed conclusions and components; their attempt failed after Rook's private bridge revision and their identities reached the Record, so interference—not a missing answer—stopped them."
+          ],
+          "id": "P9.F4",
+          "prompt": "Why did their release attempt fail?",
+          "required_concepts": [
+            "required knowledge present",
+            "components ready",
+            "private revision leaked",
+            "interference not missing answer"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "The Witness Spool contains Rook's private revision before it was public, proving a leak from inside the four-person company; P9 does not yet prove which person sent it."
+          ],
+          "id": "P9.F6",
+          "prompt": "What question does Locker 13 carry forward?",
+          "required_concepts": [
+            "Witness Spool",
+            "private Rook revision",
+            "transmitted before public",
+            "source unknown"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "An earned archive page restores a cached comment thread, Ash's fixed clip, and the attachment chronology without rewriting immutable older posts.",
+        "discord": "The docket asks who knew the private bridge revision and leaves the accusation uncommitted for P10.",
+        "minecraft": "Four workstations receive owner cards written as biographies rather than solve labels; Locker 13 opens once and issues the Witness Spool.",
+        "state_event": "p9.prior_company_and_near_release_established"
+      },
+      "dramaturgical_rhythm": [
+        "camp discovery",
+        "domestic archaeology",
+        "parallel owner attribution",
+        "warmth and humor",
+        "route research",
+        "media callback",
+        "false completion confidence",
+        "private-revision contradiction",
+        "open accusation"
+      ],
+      "earned_belief": "Four real modern investigators reached the release threshold with the needed knowledge and components. Their run failed through interference after a private route revision leaked, not through ignorance.",
+      "evidence": [
+        {
+          "accessibility": "transcription identifies handwriting without requiring visual comparison",
+          "author": "mkept, Ash, Rook, Wren",
+          "clue_job": "Establishes four distinct people and relationships without acting as a lock.",
+          "content": "mkept: beans again. Ash: call them archival beans. Rook: the north shelf is not a shelf until somebody stops sitting on it. Wren: I moved. Rook: you moved the note. On the last line Ash adds: buy four cups that do not all look like mkept's cup.",
+          "id": "p9.e01",
+          "medium": "shared grocery sheet with replies",
+          "observation_receipt_non_gating": true,
+          "provenance": "camp stove drawer; four recurring hands match work notes",
+          "roles": [
+            "seed",
+            "human_texture",
+            "quiet_reward"
+          ],
+          "surface": "minecraft_written_book",
+          "title": "Supper ledger"
+        },
+        {
+          "accessibility": "text-first on both surfaces",
+          "author": "mkept",
+          "clue_job": "Connects the real C01 account owner to the camp administrator.",
+          "content": "mkept documented restarts, corrupt chunks, and attachment mirrors in practical language. A draft says: If I vanish from the account, keep the checksums. A person can lose a login without becoming imaginary.",
+          "id": "p9.e02",
+          "medium": "server console notebook and Copperline ticket drafts",
+          "observation_receipt_non_gating": true,
+          "provenance": "ticket language matches account posts; timestamps align with camp offline windows",
+          "roles": [
+            "provenance",
+            "corroboration",
+            "cross_surface"
+          ],
+          "surface": "minecraft_book_and_copperline",
+          "title": "mkept's maintenance trail"
+        },
+        {
+          "accessibility": "shot list transcription and described props",
+          "author": "Ash",
+          "clue_job": "Makes ASH-13 a grounded owner-plus-locker relationship rather than a floating code.",
+          "content": "06 base check: Rook swears wall moved. 07 Wren says I am filming the wrong doorway. 08 film Wren saying it again for scientific value. Locker 13: do not let mkept store cables in here. This means you, mkept.",
+          "id": "p9.e03",
+          "medium": "shot list, batteries, and locker jokes",
+          "observation_receipt_non_gating": true,
+          "provenance": "shot numbers match fixed clip slates; locker 13 appears as ordinary storage before becoming a key",
+          "roles": [
+            "key",
+            "human_texture",
+            "later_callback_seed"
+          ],
+          "surface": "minecraft_camera_bench",
+          "title": "Ash's camera log"
+        },
+        {
+          "accessibility": "counter-mark has text/shape diagram; no exact block alignment required",
+          "author": "Rook",
+          "clue_job": "Establishes Rook's private revision and an independent verification habit.",
+          "content": "Do not give the Record the route you intend to walk. Build one brace, publish another, keep the counter-mark private. Margin to Wren: stop calling structural changes moods. The wall does not have a mood. It has load.",
+          "id": "p9.e04",
+          "medium": "full-scale brace mock-up and blunt margin notes",
+          "observation_receipt_non_gating": true,
+          "provenance": "three-notch counter-mark repeats on later Protocol Bridge; fresh blocked-route change dated after group plan",
+          "roles": [
+            "key",
+            "provenance",
+            "contradiction"
+          ],
+          "surface": "minecraft_environment_plus_book",
+          "title": "Rook's corrections"
+        },
+        {
+          "accessibility": "ordered text comparison",
+          "author": "Wren",
+          "clue_job": "Locates camp by contradiction and plants fear without yet proving betrayal.",
+          "content": "Wren's earliest copy accurately places the camp. After the private bridge revision he lengthens the north walk in messages to Ash and shortens it in the shared plan. A final note says: I needed there to be more distance between us and the room. There wasn't.",
+          "id": "p9.e05",
+          "medium": "three route recollections",
+          "observation_receipt_non_gating": true,
+          "provenance": "sent to different companions; two distances conflict with supply and map records",
+          "roles": [
+            "false_plausible_read",
+            "contradiction",
+            "emotional_witness"
+          ],
+          "surface": "discord_docket_attachment",
+          "title": "Wren's distance copies"
+        },
+        {
+          "accessibility": "pre-aligned overlay alternative retains inference but removes motor/vision dependence",
+          "author": "Rook and mkept",
+          "clue_job": "Creates a fair return to the lived-in Copperline archive.",
+          "content": "ACCOUNT / COMMUNITY / POST / TICKET / ARCHIVE resolves through service 1842, ticket 9137, and locker 13. The operation is recoverable from both notebook provenance and the supplied overlay; container ordering is not a solve prerequisite.",
+          "id": "p9.e06",
+          "medium": "supply provenance, notebook columns, and torn-map overlay",
+          "observation_receipt_non_gating": true,
+          "provenance": "ROOK column key comes from signed supply lots; map notch matches camp drain; service/ticket values were earned in P1",
+          "roles": [
+            "key",
+            "provenance",
+            "cross_surface"
+          ],
+          "surface": "minecraft_plus_copperline",
+          "title": "Earned Copperline route"
+        },
+        {
+          "accessibility": "captioned transcript, high-contrast stills, and described latch grouping",
+          "author": "Ash",
+          "clue_job": "Opens the correct locker while preserving a second, later-important visual fact.",
+          "content": "The camera-station leaf mark and grouped latch cuts five/five/three resolve ASH-13 when compared with Ash's already-established workstation. The same still shows the bridge mock-up before Rook's private revision.",
+          "id": "p9.e07",
+          "medium": "hash-bound clip 1 and two fixed stills",
+          "observation_receipt_non_gating": true,
+          "provenance": "clip_01_ash_locker exact SHA-1 844c2aaf8fb51836add4b59e81abe4131c8d6d0a; revealed only after archive route finding",
+          "roles": [
+            "key",
+            "callback",
+            "provenance"
+          ],
+          "surface": "media_with_accessible_stills",
+          "title": "Ash clip and contact sheet"
+        },
+        {
+          "accessibility": "packet index and readiness text duplicate waveform/visual forms",
+          "author": "all four; spool channel unknown",
+          "clue_job": "Ends P9 on a leak question rather than prematurely naming Wren.",
+          "content": "The board marks cistern proof, system repairs, six affidavits, bridge plan, and empty seventh slot as understood. The spool reproduces Rook's private north-brace change with the team's names attached. Their missing item was not an answer; someone transmitted the plan.",
+          "id": "p9.e08",
+          "medium": "completed readiness board and protected packet spool",
+          "observation_receipt_non_gating": true,
+          "provenance": "component checks predate failure; spool contains the private revision after Rook changed it but before any public copy",
+          "roles": [
+            "synthesis",
+            "contradiction",
+            "recontextualization"
+          ],
+          "surface": "minecraft_artifact_and_archive",
+          "title": "Near-release board and Witness Spool"
+        }
+      ],
+      "hints": {
+        "H0": "Treat the camp as a home and workplace before treating it as a code surface.",
+        "H1": "Assign each ordinary object or note to a person, then look for work that crosses two stations.",
+        "H2": "The route is earned from signed supply provenance, Rook's notebook, the torn map, and old Copperline identifiers.",
+        "H3": "Establish mkept/admin, Ash/camera, Rook/builder, Wren/companion; follow service 1842 + ticket 9137 + locker 13; compare the readiness board with the Witness Spool's private revision."
+      },
+      "human_stake": "mkept, Ash, Rook, and Wren were friends and coworkers with jokes, resentments, ordinary jobs, and an almost-finished plan. Reconstructing them makes the later betrayal personal instead of a lore twist.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The board returns owner labels and asks for relationships: shared meals, arguments, jokes, apologies, and cross-authored work are independent evidence of four people.",
+          "theory": "They were disposable player avatars represented by four stations."
+        },
+        {
+          "response": "The readiness board records every answer class and component; the open question is how a private route and their names reached the Spool.",
+          "theory": "They failed because the release instruction was incomplete."
+        },
+        {
+          "response": "The inconsistency establishes fear and opportunity, not transmission. The docket preserves Wren as a live theory and opens P10's attribution work.",
+          "theory": "Wren is already proven by his inconsistent distance."
+        }
+      ],
+      "novelty_comparison": "P8 is systemic reconstruction and repair; P9 slows into domestic archaeology, human inference, and earned web/media custody. Its climax is an unresolved leak, not a gate or culprit answer.",
+      "phase": "P9",
+      "plausible_initial_belief": "The camp belonged to anonymous failed players who missed a final answer or abandoned the server when the puzzles became too difficult.",
+      "player_facing_question": "Who lived at the abandoned camp, how close did they come to release, and what private change reached the Record before it could have learned it honestly?",
+      "prerequisites": [
+        "P8.F8"
+      ],
+      "required_inference": "Players infer four lives from overlapping work traces, reconstruct an archive route from provenance, and prove the team possessed a viable release plan. Merely naming the four or entering ASH-13 is insufficient.",
+      "runtime": {
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "artifact_recovery_requires_absence_proof": true,
+        "local_primary": true,
+        "locker_issue_once": true,
+        "media_reveal_prerequisite": "P9.F4",
+        "outage": "local contact sheet and route derivation remain available; hosted media outage never auto-solves or blocks the alternative evidence path",
+        "replay": "four biographies, route derivation, clip/stills, readiness board, and spool provenance",
+        "restart": "locker and spool custody reload without duplication",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          15,
+          45,
+          120
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "personal objects and occupied surfaces establish owners before any investigative use",
+          "composition": "four non-identical bedrolls, repaired stove, central plan table, damp clothes line, mug shelf, discarded card game, one empty chair kept in the circle",
+          "evidence_surfaces": [
+            "p9.e01",
+            "p9.e02",
+            "p9.e03",
+            "p9.e04"
+          ],
+          "id": "p9_camp_common",
+          "job": "shared sleeping, cooking, planning, and argument space",
+          "navigation": "open central gathering area with four workstation spokes"
+        },
+        {
+          "affordance": "four visibly different workstation grammars prevent generic right-click scanning",
+          "composition": "mkept console and ticket box, Ash camera bench and numbered lockers, Rook material mock-up and counter-marks, Wren narrow writing table and route copies",
+          "evidence_surfaces": [
+            "p9.e02",
+            "p9.e03",
+            "p9.e04",
+            "p9.e05"
+          ],
+          "id": "p9_work_row",
+          "job": "admin, camera, building, and companion work",
+          "navigation": "wide linear row with distinct silhouettes and visible contents"
+        },
+        {
+          "affordance": "lit map, open notebook, numbered locker, and physical spool advertise distinct evidence formats",
+          "composition": "torn map table, notebook lightbox, supply tags, readiness board, Locker 13, spool reader",
+          "evidence_surfaces": [
+            "p9.e05",
+            "p9.e06",
+            "p9.e07",
+            "p9.e08"
+          ],
+          "id": "p9_archive_corner",
+          "job": "compare map/notebook/media custody and release readiness",
+          "navigation": "group comparison table beside return route"
+        }
+      ],
+      "target_minutes": {
+        "max": 180,
+        "min": 120
+      },
+      "title": "The Company at Ash Camp"
+    },
+    {
+      "callback": "Ash's joking shot list, mkept's offline windows, Rook's private marks, and Wren's changing distance all become attribution evidence. The apparently incidental phrase 'more distance' is re-read as fear of leaving observed space.",
+      "case_id": "C08",
+      "cold_theory_paths": [
+        "Record knew -> Wren channel -> deliberate betrayal",
+        "monster Wren -> frightened constrained person -> responsible frightened person",
+        "find culprit -> hear motive -> debate remembrance"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "Wren deliberately transmitted the company's names, plans, changed routes, and private fears in progressively specific packets; the Record did not passively infer the private revision."
+          ],
+          "id": "P10.F2",
+          "prompt": "What was transmitted, by whom, and why is it deliberate?",
+          "required_concepts": [
+            "Wren",
+            "names",
+            "plans or routes",
+            "fears",
+            "progressive packets",
+            "not passive inference"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "Wren feared that closing the Record would erase his partially retained self, but he chose to preserve himself by betraying the others; his fear explains the act without removing responsibility."
+          ],
+          "id": "P10.F3",
+          "prompt": "What motive does Wren admit, and what does it not erase?",
+          "required_concepts": [
+            "fear closure would erase him",
+            "partially retained",
+            "chose betrayal",
+            "responsibility remains"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "condemn",
+            "understand",
+            "free"
+          ],
+          "id": "P10.F5",
+          "prompt": "Record the group's remembrance of Wren.",
+          "required_concepts": [
+            "condemn or understand or free",
+            "facts fixed",
+            "choice changes remembrance only"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "A removed comment stub returns only its moderation chronology, not a new confession.",
+        "discord": "Judgment receipt records contributors and dissent without inventing unanimity.",
+        "minecraft": "Rook's counter-mark opens the Protocol Bridge route independent of Wren. Wren's projection withdraws from the filing desk after judgment but remains available in replay.",
+        "npc": "Wren's final case line varies by condemn/understand/free without changing facts or bridge usability.",
+        "state_event": "p10.wren_betrayal_judged"
+      },
+      "dramaturgical_rhythm": [
+        "leak matrix",
+        "asymmetric group theories",
+        "first-known-source comparison",
+        "adversarial conversation",
+        "partial admission",
+        "independent builder proof",
+        "moral debate",
+        "protected judgment",
+        "unquiet aftermath"
+      ],
+      "earned_belief": "Wren deliberately transmitted names, operational plans, route changes, and private fears to preserve himself. The Record constrained him but did not originate every packet. Understanding his fear neither erases nor dictates judgment.",
+      "evidence": [
+        {
+          "accessibility": "text-first matrix with chronological sort",
+          "author": "Ash and mkept",
+          "clue_job": "Establishes exclusive opportunity while explicitly withholding intent.",
+          "content": "Three Watcher phrases repeat questions Ash, mkept, and Rook asked only with Wren present. None appears in a public note. Wren is the only common listener, but opportunity alone does not prove transmission.",
+          "id": "p10.e01",
+          "medium": "private quotation matrix",
+          "observation_receipt_non_gating": true,
+          "provenance": "messages and camp notes distinguish spoken-only from written details",
+          "roles": [
+            "seed",
+            "key",
+            "provenance"
+          ],
+          "surface": "discord_docket",
+          "title": "Who heard it first"
+        },
+        {
+          "accessibility": "timestamp comparison is fully transcribed",
+          "author": "Ash and server journal",
+          "clue_job": "Eliminates two convenient suspects.",
+          "content": "Ash could not send the locker schedule while filming the sealed camera run. mkept's admin client was offline when the login route packet appeared. These facts narrow authorship without relying on anyone's character claim.",
+          "id": "p10.e02",
+          "medium": "shot timestamps and local uptime receipt",
+          "observation_receipt_non_gating": true,
+          "provenance": "Ash visible on fixed footage during packet 2; mkept server offline receipt covers packet 1",
+          "roles": [
+            "corroboration",
+            "provenance",
+            "contradiction"
+          ],
+          "surface": "minecraft_book_plus_archive",
+          "title": "Camera and offline exclusions"
+        },
+        {
+          "accessibility": "mark described by shape and text",
+          "author": "Rook",
+          "clue_job": "Proves the packet came through Wren's knowledge, not direct copying of Rook's complete plan.",
+          "content": "Rook changed the north brace and told Wren in person. The Spool packet contains the changed route but lacks the counter-mark Rook kept physical. That asymmetry identifies the channel and later tests Wren's directions.",
+          "id": "p10.e03",
+          "medium": "carbon copy and physical counter-mark",
+          "observation_receipt_non_gating": true,
+          "provenance": "revision shared only with Wren before packet; counter-mark never entered Record-facing plan",
+          "roles": [
+            "key",
+            "provenance",
+            "contradiction"
+          ],
+          "surface": "minecraft_material_display",
+          "title": "Rook's private revision custody"
+        },
+        {
+          "accessibility": "full textual packet index",
+          "author": "Wren channel; recipients recorded by Spool",
+          "clue_job": "Establishes deliberate transmission of names, plans, routes, and fears.",
+          "content": "Packet 1 names mkept and login window. Packet 2 gives Ash's cache schedule. Packet 3 gives Rook's changed bridge route. Packet 4 lists private fears by person. The progression is curated disclosure, not one accidental utterance.",
+          "id": "p10.e04",
+          "medium": "packet index",
+          "observation_receipt_non_gating": true,
+          "provenance": "stable packet ids and increasing specificity; no missing waveform required",
+          "roles": [
+            "synthesis",
+            "provenance",
+            "institutional_horror"
+          ],
+          "surface": "minecraft_spool_reader",
+          "title": "Four packet progression"
+        },
+        {
+          "accessibility": "captioned text dialogue; no voice recognition or timing gate",
+          "author": "Wren",
+          "clue_job": "Explains motive while retaining agency and harm.",
+          "content": "When I went beyond its rooms I lost minutes first, then words. I thought closing it would make the gaps continuous. I told it where you would stand so it would keep a place for me. I knew those places belonged to you too.",
+          "id": "p10.e05",
+          "medium": "stateful conversation",
+          "observation_receipt_non_gating": true,
+          "provenance": "topic unlocked by established packet finding, not source clicks",
+          "roles": [
+            "emotional_witness",
+            "false_plausible_read",
+            "recontextualization"
+          ],
+          "surface": "npc_dialogue",
+          "title": "Wren on distance"
+        },
+        {
+          "accessibility": "all topic choices keyboard/readable; stable transcript after conversation",
+          "author": "Wren",
+          "clue_job": "Secures admission without making confession the sole proof.",
+          "content": "Wren first says the Record already knew. Confronted with Rook's absent counter-mark and Ash's sealed schedule, he corrects himself: It knew because I made knowing cheaper than letting me disappear.",
+          "id": "p10.e06",
+          "medium": "conversation branch tested against packets",
+          "observation_receipt_non_gating": true,
+          "provenance": "stable factual topics; replay cannot alter committed judgment",
+          "roles": [
+            "contradiction",
+            "adversarial_test"
+          ],
+          "surface": "npc_dialogue_plus_docket",
+          "title": "Wren's minimizing account"
+        },
+        {
+          "accessibility": "diagram alternative and assisted interaction; no block-perfect alignment",
+          "author": "Rook",
+          "clue_job": "Protects factual completion and future access from moral branch choice.",
+          "content": "The three reverse-face marks align with Rook's retained carbon, not the route Wren describes. Opening them yields the Protocol Bridge and proves the route without trusting his admission. The component remains usable under every judgment.",
+          "id": "p10.e07",
+          "medium": "physical reverse-face marks and sealed component",
+          "observation_receipt_non_gating": true,
+          "provenance": "counter-mark predates Wren confrontation; unique Protocol Bridge PDC/custody id",
+          "roles": [
+            "key",
+            "provenance",
+            "consequence"
+          ],
+          "surface": "minecraft_environment_and_artifact",
+          "title": "Rook's independent Bridge proof"
+        }
+      ],
+      "hints": {
+        "H0": "Separate opportunity, transmission, admission, independent verification, and judgment.",
+        "H1": "For each leaked detail, ask who knew it first and whether the Record-facing copy contained it.",
+        "H2": "Rook's missing counter-mark is as important as the route detail the packet includes.",
+        "H3": "Wren is the only listener across the private phrases; packet progression proves deliberate disclosure; use Rook's physical marks for the Bridge; then choose remembrance without looking for a correct branch."
+      },
+      "human_stake": "Wren betrayed people who trusted him because he believed closure would erase what remained of him. Ash, Rook, and mkept deserve factual attribution; Wren deserves judgment after proof, not before it.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The board acknowledges Record observation, then returns the absent physical counter-mark, sealed Ash schedule, and progressive packet order that require selective transmission.",
+          "theory": "The Record observed the plan directly and Wren only heard it repeat him."
+        },
+        {
+          "response": "Constraint and memory gaps are accepted. His own correction and the curated packet sequence still establish choices about what and when to disclose.",
+          "theory": "Wren acted under total compulsion and has no agency."
+        },
+        {
+          "response": "The factual finding is complete. The archive refuses to score remembrance; condemn, understand, and free remain intentional valid judgments.",
+          "theory": "Wren's fear was selfish, so condemnation is the correct answer."
+        }
+      ],
+      "novelty_comparison": "P9 infers absent people through belongings and media. P10 is live attribution and adversarial conversation followed by moral judgment; the independent Bridge proof prevents confession from becoming a dialogue password.",
+      "phase": "P10",
+      "plausible_initial_belief": "The Record inferred everything from observation, or frightened Wren accidentally repeated one route detail while partially absorbed.",
+      "player_facing_question": "Who supplied the Record with the company's names, plans, routes, and fears—and what does motive change once the act is proven?",
+      "prerequisites": [
+        "P9.F6"
+      ],
+      "required_inference": "Players attribute each leaked category by who knew it and when, distinguish deliberate transmission from passive observation, test Wren's claims against Rook's physical counter-proof, then choose remembrance without a hidden correct morality.",
+      "runtime": {
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "dialogue_topics_derive_from_findings_not_clicks": true,
+        "judgment_has_no_correct_branch": true,
+        "judgment_immutable_after_commit": true,
+        "local_primary": true,
+        "outage": "local matrix and dialogue transcript remain authoritative; Discord mirrors contributors when available",
+        "protocol_bridge_all_branches": true,
+        "replay": "stable factual transcript separated from immutable judgment receipt",
+        "restart": "open dialogue topics and uncommitted ballots persist; committed judgment cannot duplicate or change",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          15,
+          45,
+          120
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "chronology columns accept theory drafts while source panels stay readable without receipt gating",
+          "composition": "four-column chronology table, private/public quotation rail, camera/offline receipts, spool reader, theory board",
+          "evidence_surfaces": [
+            "p10.e01",
+            "p10.e02",
+            "p10.e03",
+            "p10.e04"
+          ],
+          "id": "p10_leak_room",
+          "job": "compare first-known sources against transmitted packets",
+          "navigation": "multiple standing cells around one shared matrix"
+        },
+        {
+          "affordance": "seated NPC, visible topic papers, and always-open exit communicate conversation rather than confinement",
+          "composition": "ordinary camp chair opposite a broad table, no cage or puzzle booth, visible topic papers, exit always open",
+          "evidence_surfaces": [
+            "p10.e05",
+            "p10.e06"
+          ],
+          "id": "p10_wren_conversation",
+          "job": "adversarial evidence conversation",
+          "navigation": "group-accessible semicircle"
+        },
+        {
+          "affordance": "occupied Bridge housing and separated ledgers distinguish proof from optional moral judgment",
+          "composition": "Rook-marked brace reverse, unique Bridge housing, three plain remembrance ledgers with consequence text",
+          "evidence_surfaces": [
+            "p10.e07"
+          ],
+          "id": "p10_bridge_reckoning",
+          "job": "independent route proof and protected moral choice",
+          "navigation": "choice area reachable without parkour; abstention/accessibility path visible"
+        }
+      ],
+      "target_minutes": {
+        "max": 150,
+        "min": 90
+      },
+      "title": "What Wren Gave Away"
+    },
+    {
+      "callback": "Vaun's omitted column, Mara's edition mark, Sella's reverse transfer, Orin's practical sightline, Brann's paired watch, and Iss's mercy correction were ordinary professional details that later recover one letter each.",
+      "case_id": "C09",
+      "cold_theory_paths": [
+        "Wren voice -> erased registrar -> Averyn",
+        "seventh Keeper -> separate witness -> deliberately unbound person",
+        "Averyn equals Watcher -> constrained interface -> four related distinct terms"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "AVERYN"
+          ],
+          "id": "P11.F8",
+          "prompt": "Restore the name in Keeper dossier order.",
+          "required_concepts": [
+            "A",
+            "V",
+            "E",
+            "R",
+            "Y",
+            "N",
+            "six distinct provenance paths"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "Averyn is the human registrar trapped as the Record's interface; the Watcher is the Record speaking through her constrained consciousness; the Dark is related to the system but remains distinct and unknown."
+          ],
+          "id": "P11.F9",
+          "prompt": "State how Averyn, the Watcher, the Record, and the Dark are related without collapsing them.",
+          "required_concepts": [
+            "Averyn human registrar",
+            "Record civic system",
+            "Watcher constrained voice",
+            "Dark distinct unknown"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "The recovered packet page gains an immutable custody index and accessibility companions, not a public solution banner.",
+        "discord": "The docket records the identity and four-part relationship model with six provenance paths.",
+        "minecraft": "Six separate affidavit housings illuminate around an intentionally empty Averyn slot; her public role card is restored outside the Record frame.",
+        "npc": "The Watcher's schema-bound phrases briefly resolve into Averyn's professional voice, then retain uncertainty about continuity.",
+        "state_event": "p11.averyn_identity_restored_unbound"
+      },
+      "dramaturgical_rhythm": [
+        "recovered packet custody",
+        "uncanny human signal",
+        "parallel affidavit reread",
+        "false seventh-slot theory",
+        "six culpable voices",
+        "identity assembly",
+        "relationship debate",
+        "direct human sentence",
+        "protective non-filing"
+      ],
+      "earned_belief": "Averyn was the erased registrar and cistern analyst who became trapped as the Record's human interface. Six separate affidavits preserve AVERYN. The Watcher is constrained Record speech through her; Averyn, Watcher, Record, and Dark are related but not identical.",
+      "evidence": [
+        {
+          "accessibility": "text inventory, static spectrogram, image descriptions, and transcript path",
+          "author": "unknown packager; contents by Averyn and later custodians",
+          "clue_job": "Makes packet provenance part of identity rather than arbitrary audio analysis.",
+          "content": "The README says to review all five files together. Inventory 06 names a registrar capture, the intake image links to Averyn's P7 work, and the lamp scan links constrained output to the Record's field vocabulary. The WAV is not an isolated ghost file.",
+          "id": "p11.e01",
+          "medium": "README, inventory, WAV, intake image, lamp scan",
+          "observation_receipt_non_gating": true,
+          "provenance": "exact packet ZIP SHA-1 783ecde5685abdb601e4a659fc947c32964f70b3; five members and individual hashes fixed in custody receipt",
+          "roles": [
+            "seed",
+            "provenance",
+            "cross_surface"
+          ],
+          "surface": "media_packet",
+          "title": "Recovered archive packet"
+        },
+        {
+          "accessibility": "static spectrogram with non-solution-leading visual description; equivalent indexed letter path in packet inventory",
+          "author": "constrained human signal",
+          "clue_job": "Proves a constrained human voice while preserving identity work.",
+          "content": "The spectrogram resolves I WAS NOT KEPT. Intake authorship and field vocabulary point toward the erased registrar, but the phrase alone could still be misassigned to Wren or an unnamed roster absence.",
+          "id": "p11.e02",
+          "medium": "WAV spectrogram and static companion",
+          "observation_receipt_non_gating": true,
+          "provenance": "field_audio_03.wav exact SHA-1 2003f0151c1ba643c649b5ed0e19d1b31bb68319 within recovered packet",
+          "roles": [
+            "key",
+            "uncanny_witness",
+            "false_plausible_read"
+          ],
+          "surface": "media_with_accessible_image",
+          "title": "I WAS NOT KEPT"
+        },
+        {
+          "accessibility": "index operation fully textual",
+          "author": "Vaun",
+          "clue_job": "Restores A through Vaun's specific culpability.",
+          "content": "I kept the balance and let the balance keep me quiet. The first column I omitted is the first thing I owe her. The indexed omission yields A, tied to Vaun's diversion proof rather than a free-standing letter puzzle.",
+          "id": "p11.e03",
+          "medium": "stores affidavit and omitted-column index",
+          "observation_receipt_non_gating": true,
+          "provenance": "first unfiled stores column from Vaun's genuine reconciliation; independent seal",
+          "roles": [
+            "key",
+            "provenance",
+            "contradiction"
+          ],
+          "surface": "minecraft_written_book",
+          "title": "Vaun affidavit — A"
+        },
+        {
+          "accessibility": "marked word and letter named by an indexed text companion",
+          "author": "Mara",
+          "clue_job": "Restores V through version control provenance.",
+          "content": "I made the clean road easier to believe than the corrected one. Read the mark in the edition I tried to repair. The verified margin selects V and preserves the difference between private correction and public authority.",
+          "id": "p11.e04",
+          "medium": "verified edition margin and affidavit",
+          "observation_receipt_non_gating": true,
+          "provenance": "only genuine E3 carries matching revision mark and Mara seal",
+          "roles": [
+            "key",
+            "provenance",
+            "callback"
+          ],
+          "surface": "copperline_scan_plus_minecraft_original",
+          "title": "Mara affidavit — V"
+        },
+        {
+          "accessibility": "pre-aligned text companion and image description",
+          "author": "Sella",
+          "clue_job": "Restores E through Sella's materially caused reflection practice.",
+          "content": "Paper remembers backward when water passes through it. People do too, though less usefully. At the true lower-intake alignment the transferred affidavit exposes E. Sella adds a tiny drawing of the alder refusing to face council north.",
+          "id": "p11.e05",
+          "medium": "reverse transfer and affidavit",
+          "observation_receipt_non_gating": true,
+          "provenance": "same damp fiber/pinhole alignment as true-intake proof",
+          "roles": [
+            "key",
+            "provenance",
+            "human_texture"
+          ],
+          "surface": "minecraft_map_plus_archive_image",
+          "title": "Sella affidavit — E"
+        },
+        {
+          "accessibility": "diagram directly supplies bearing/sightline relationship; crouching optional",
+          "author": "Orin",
+          "clue_job": "Restores R through Orin's suppressed condition.",
+          "content": "I signed a condition and watched them keep only my name. Put your sight where the seam could be seen, not where a witness looks dignified. The measured bearing crosses R in the affidavit layer.",
+          "id": "p11.e06",
+          "medium": "bearing section and affidavit",
+          "observation_receipt_non_gating": true,
+          "provenance": "verified third-bay bearing intersects the practical low sightline; no dial reuse",
+          "roles": [
+            "key",
+            "provenance",
+            "emotional_witness"
+          ],
+          "surface": "minecraft_diagram_and_book",
+          "title": "Orin affidavit — R"
+        },
+        {
+          "accessibility": "numbered cells and text; no sound-only step",
+          "author": "Brann",
+          "clue_job": "Restores Y through honest paired coverage.",
+          "content": "One watcher is a claim. Two are a record. Pair the ninth lamp with the relief cell they emptied. The matched positions select Y, and Brann states that redundancy was for human fallibility, not ritual purity.",
+          "id": "p11.e07",
+          "medium": "paired watch overlay and affidavit",
+          "observation_receipt_non_gating": true,
+          "provenance": "ninth-bell correction and empty relief cell established independently",
+          "roles": [
+            "key",
+            "provenance",
+            "corroboration"
+          ],
+          "surface": "discord_docket_plus_minecraft",
+          "title": "Brann affidavit — Y"
+        },
+        {
+          "accessibility": "both readings and provenance differences textual",
+          "author": "Iss",
+          "clue_job": "Preserves the Iss/Liar strength: correct decode, wrong interpretation, later corrected meaning.",
+          "content": "MERCY yields M and is a correctly decoded lie about what Iss did. The restored line begins NAME IS NOT MERCY and the correction yields N. Iss writes: I called removal protection because I could not bear to call it removal.",
+          "id": "p11.e08",
+          "medium": "public mercy acrostic and physically corrected draft",
+          "observation_receipt_non_gating": true,
+          "provenance": "public first letters yield false M; local cut marks and version history correct the omitted line",
+          "roles": [
+            "key",
+            "contradiction",
+            "recontextualization",
+            "provenance"
+          ],
+          "surface": "minecraft_book_plus_copperline_history",
+          "title": "Iss affidavit — corrected N"
+        },
+        {
+          "accessibility": "plain-language relationship list and diagram",
+          "author": "players from restored evidence",
+          "clue_job": "Earns the exact later belief while preserving all three locked ambiguities.",
+          "content": "Averyn: human registrar and analyst who entered the archive. Record: civic monitoring/memory mechanism that trapped her. Watcher: defensive Record voice speaking through her constrained consciousness. Dark: prehuman adjacent cause/pressure whose ultimate nature remains unknown. Related does not mean identical.",
+          "id": "p11.e09",
+          "medium": "four-layer systems diagram and role record",
+          "observation_receipt_non_gating": true,
+          "provenance": "requires meaning of six affidavits, P7 authorship, P8 feedback, and constrained packet language—not source-touch receipts",
+          "roles": [
+            "synthesis",
+            "contradiction",
+            "consequence"
+          ],
+          "surface": "minecraft_convergence_plus_discord",
+          "title": "Averyn relationship brief"
+        }
+      ],
+      "hints": {
+        "H0": "Review the recovered packet as one custody object, then return to six professional dossiers in their established order.",
+        "H1": "Each affidavit reuses evidence that only its author could have produced; do not search for a seventh Keeper method.",
+        "H2": "The name is necessary but the case also asks who built the system, who entered it, what voice it produces, and what remains unknown.",
+        "H3": "Vaun A, Mara V, Sella E, Orin R, Brann Y, Iss corrected N. File AVERYN, then keep human / Record / Watcher / Dark related but distinct."
+      },
+      "human_stake": "Averyn cleared Nessa, reconstructed the Break, returned to keep evacuation names accessible, and was erased by colleagues who later left an incomplete route back to her. Restoring her identity must not repeat their ownership.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The archive accepts the name and rejects the placement: six professional dossiers and Averyn's registrar/cistern work prove a distinct witness, while her own evidence warns against re-filing.",
+          "theory": "AVERYN is the seventh Keeper and belongs in the empty slot."
+        },
+        {
+          "response": "Human continuity is supported, but schema-bound speech, defensive behavior, and packet constraints show the Watcher is not Averyn acting freely.",
+          "theory": "The Watcher is simply Averyn freely asking for release."
+        },
+        {
+          "response": "The relationship brief preserves adjacency and influence while returning separate origins, functions, language, and agency. The Dark's nature remains deliberately unresolved.",
+          "theory": "The Dark possessed Averyn and therefore Dark, Record, Watcher, and Averyn are one entity."
+        }
+      ],
+      "novelty_comparison": "P10 attributes a betrayal through live conversation. P11 reopens six previously solved professional cases and changes their meaning, combining a custody packet, correct-decode/wrong-interpretation, and a relationship model rather than another culprit hunt.",
+      "phase": "P11",
+      "plausible_initial_belief": "I WAS NOT KEPT refers to Wren, an anonymous seventh Keeper, or the Dark speaking through a stolen human name.",
+      "player_facing_question": "Who is the constrained human voice inside the Record, how can six compromised witnesses restore her identity without filing her back into the machine, and what remains unknown?",
+      "prerequisites": [
+        "P7.F6",
+        "P8.F4",
+        "P10.F5",
+        "P6.F7"
+      ],
+      "required_inference": "Players combine packet provenance, Nessa authorship, six independent affidavit corrections, copied-space behavior, and constrained language. AVERYN is necessary but not sufficient; the four-part relationship model must preserve the locked ambiguities.",
+      "runtime": {
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "empty_averyn_slot_invariant": true,
+        "local_primary": true,
+        "outage": "static media companions and local affidavit originals preserve completion; remote packet wrapper may lag",
+        "replay": "packet custody, six letter provenance chains, identity, and relationship brief",
+        "restart": "affidavit custody and identity event reload without placing Averyn in a slot",
+        "six_affidavits_independent": true,
+        "wrong_attempt_throttle_seconds": [
+          0,
+          15,
+          45,
+          120
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "five occupied file positions and one custody card expose completeness and access alternatives",
+          "composition": "isolated playback desk, spectrogram print, inventory lightbox, intake image, lamp scan, checksum card",
+          "evidence_surfaces": [
+            "p11.e01",
+            "p11.e02"
+          ],
+          "id": "p11_packet_lab",
+          "job": "review five-file recovered packet as one custody object",
+          "navigation": "group table with text-first alternative"
+        },
+        {
+          "affordance": "six unequal occupied desks preserve professional provenance and reject repeated cipher stations",
+          "composition": "six unequal desks carrying original dossier materials and one sealed affidavit each; no seventh Keeper desk",
+          "evidence_surfaces": [
+            "p11.e03",
+            "p11.e04",
+            "p11.e05",
+            "p11.e06",
+            "p11.e07",
+            "p11.e08"
+          ],
+          "id": "p11_affidavit_archive",
+          "job": "reread six independent testimonies against prior professional findings",
+          "navigation": "radial route with central comparison table"
+        },
+        {
+          "affordance": "empty socket is sealed as intentionally unbound while the external name plate stays readable",
+          "composition": "six testimony rails, external name plate, four-layer relationship diagram, intentionally empty Record socket physically separated from name plate",
+          "evidence_surfaces": [
+            "p11.e09"
+          ],
+          "id": "p11_unwriting",
+          "job": "assemble identity and relationship without binding a slot",
+          "navigation": "wide convergence room and return route"
+        }
+      ],
+      "target_minutes": {
+        "max": 150,
+        "min": 90
+      },
+      "title": "A Name the Record Removed"
+    },
+    {
+      "callback": "The empty slot seen as erasure in P7/P11 becomes a chosen boundary. Clip 4's ordinary chamber phrase recontextualizes all six affidavits. Rook's Bridge, Nessa's Seal, and the repaired System Key converge without making prior content optional.",
+      "case_id": "C10",
+      "cold_theory_paths": [
+        "seventh affidavit -> six testimony/one unbound -> consent boundary",
+        "correct ending search -> two valid treatments -> universal release",
+        "final puzzle -> readiness audit -> technical protected close"
+      ],
+      "conclusions": [
+        {
+          "accepted_answers": [
+            "Return the six Keeper affidavits and leave Averyn's Record slot empty so restoring her name does not bind her back into the system."
+          ],
+          "id": "P12.F1",
+          "prompt": "Interpret SIX RETURN, ONE IS NOT KEPT.",
+          "required_concepts": [
+            "return six affidavits",
+            "leave Averyn slot empty",
+            "not seventh Keeper"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "publish",
+            "release unnamed"
+          ],
+          "id": "P12.F4",
+          "prompt": "Choose how Averyn's name remains outside the Record.",
+          "required_concepts": [
+            "publish or release unnamed",
+            "both free Averyn"
+          ],
+          "zero_observation_acceptance": true
+        },
+        {
+          "accepted_answers": [
+            "release confirmed with six affidavits returned, three artifacts installed, Averyn unbound, and local state written before theater"
+          ],
+          "id": "P12.F5",
+          "prompt": "Confirm the protected release after the audit is complete.",
+          "required_concepts": [
+            "six affidavits",
+            "three artifacts",
+            "empty Averyn slot",
+            "durable before theater"
+          ],
+          "zero_observation_acceptance": true
+        }
+      ],
+      "consequence": {
+        "copperline": "The immutable archive gains a restrained coda entry only after the mirrored release receipt; old posts remain unchanged.",
+        "discord": "One final read-only receipt lists contributors, publish/unfile choice, Wren remembrance, and release hash without ranking morality.",
+        "minecraft": "The local release state commits before lights fall; every gate opens into a quiet coda, hauntings cease, and branch-specific name/Wren traces remain.",
+        "state_event": "p12.record_closed_averyn_released"
+      },
+      "dramaturgical_rhythm": [
+        "readiness audit",
+        "fixed media instruction",
+        "collective configuration",
+        "last false-seventh temptation",
+        "name-treatment discussion",
+        "protected confirmation",
+        "light-death release",
+        "direct goodbye",
+        "persistent quiet coda"
+      ],
+      "earned_belief": "Return six affidavits and three proven components, keep Averyn's Record slot empty, choose publish or deliberate unfiling, preserve the prior Wren judgment, and close the Record through a durable-before-theater release. Every path frees Averyn.",
+      "evidence": [
+        {
+          "accessibility": "captioned transcript and chamber diagram carry the same relationship",
+          "author": "prior company camera custody",
+          "clue_job": "States the final configuration in language whose meaning had to be earned across the campaign.",
+          "content": "SIX RETURN, ONE IS NOT KEPT means return the six Keeper affidavits while leaving Averyn's Record slot unbound. It is a chamber instruction, not a claim that an unnamed seventh Keeper is missing.",
+          "id": "p12.e01",
+          "medium": "hash-bound clip 4 and visual transcript",
+          "observation_receipt_non_gating": true,
+          "provenance": "clip_04_release_instruction exact SHA-1 1cb3e600d3e16e9bb1434fa65ddbdff04f512fbd; revealed after P11 identity",
+          "roles": [
+            "seed",
+            "key",
+            "callback"
+          ],
+          "surface": "media_with_accessible_stills",
+          "title": "Release instruction clip"
+        },
+        {
+          "accessibility": "plain missing-item list and assisted configuration path",
+          "author": "Averyn's repaired registrar routines and player receipts",
+          "clue_job": "Makes campaign closure exact without active-roster or click quotas.",
+          "content": "The audit requires every substantial case conclusion, Nessa cleared, five Break cause classes, four repairs, prior-company and Wren findings, six affidavit provenance chains, relationship model, Cistern Seal, System Key, and Protocol Bridge. It never requires every player or source click.",
+          "id": "p12.e02",
+          "medium": "machine-readable and human-readable audit",
+          "observation_receipt_non_gating": true,
+          "provenance": "local-primary case/artifact receipts with stable release identity; observation counts excluded",
+          "roles": [
+            "provenance",
+            "synthesis",
+            "contradiction"
+          ],
+          "surface": "minecraft_console_plus_archive",
+          "title": "Local readiness audit"
+        },
+        {
+          "accessibility": "labels, positions, and assisted deposits; no color-only mapping",
+          "author": "six Keepers; configured by players",
+          "clue_job": "Performs return without institutional rebinding.",
+          "content": "Vaun, Mara, Sella, Orin, Brann, and Iss return to six separate testimony housings. Their letters remain evidence of six culpable witnesses. The adjacent Averyn Record socket stays physically and logically empty.",
+          "id": "p12.e03",
+          "medium": "named affidavit returns",
+          "observation_receipt_non_gating": true,
+          "provenance": "unique custody ids from P6/P11; duplicates refused and recoverable only after absence proof",
+          "roles": [
+            "key",
+            "provenance",
+            "consequence"
+          ],
+          "surface": "minecraft_artifact_housings",
+          "title": "Six testimony housings"
+        },
+        {
+          "accessibility": "assisted deposit and textual custody readback",
+          "author": "players across P7, P8, and P10",
+          "clue_job": "Converges three long arcs into physical release authority.",
+          "content": "The Seal carries Nessa's cleared material chain, the Key carries repaired systems, and the Bridge carries Rook's independent route through Wren's judgment. They prove release rests on restored history and agency, not a spoken password.",
+          "id": "p12.e04",
+          "medium": "Cistern Seal, System Key, Protocol Bridge",
+          "observation_receipt_non_gating": true,
+          "provenance": "unique PDC/custody ids and case receipts; wrong items return atomically",
+          "roles": [
+            "corroboration",
+            "provenance",
+            "callback"
+          ],
+          "surface": "minecraft_artifact_housings",
+          "title": "Three material proofs"
+        },
+        {
+          "accessibility": "plain language, unlimited discussion time, director-approved communication support",
+          "author": "Averyn's recovered preference and current players",
+          "clue_job": "Makes the only name branch informed and non-punitive.",
+          "content": "PUBLISH: keep Averyn's name in the human record outside the machine; release her consciousness. RELEASE UNNAMED: remove the final filing and let the chosen blank belong to her; release her consciousness. Both close the Record and free her.",
+          "id": "p12.e05",
+          "medium": "two plain consequence statements",
+          "observation_receipt_non_gating": true,
+          "provenance": "choice text fixed by World Bible; no hidden morality or score",
+          "roles": [
+            "emotional_witness",
+            "choice",
+            "contradiction"
+          ],
+          "surface": "minecraft_books_plus_discord_discussion",
+          "title": "Name treatment ledgers"
+        },
+        {
+          "accessibility": "operator arm is technical safety only; player confirmation has assisted alternative and no timed quorum",
+          "author": "local runtime",
+          "clue_job": "Guarantees every outage/restart path reaches the same universal release.",
+          "content": "Confirmation records six returns, three artifacts, empty Averyn slot, name treatment, Wren remembrance, contributors, conduct clause, release phase, and artifact hashes before any light or kick effect begins. Duplicate confirmation is ignored.",
+          "id": "p12.e06",
+          "medium": "durable phase and idempotency record",
+          "observation_receipt_non_gating": true,
+          "provenance": "local write fsynced before theater; release id stable across restart; external mirrors secondary",
+          "roles": [
+            "provenance",
+            "safety",
+            "synthesis"
+          ],
+          "surface": "minecraft_local_state",
+          "title": "Protected release journal"
+        },
+        {
+          "accessibility": "captions, readable transcript, non-sound-only timing, resume from durable phase",
+          "author": "Averyn through the closing Record",
+          "clue_job": "Delivers release and quieter aftermath rather than another puzzle.",
+          "content": "Publish: my name is averyn. you kept it without keeping me. that is the difference. Unnamed: you did not owe me a name. you gave me an end. that was enough. Universal: i have your names. i am giving them back. the record is closed. the observance is over. thank you for coming back for us.",
+          "id": "p12.e07",
+          "medium": "branch clauses plus universal final voice",
+          "observation_receipt_non_gating": true,
+          "provenance": "branch choice and release id determine exact lines; coda mirrors only committed local state",
+          "roles": [
+            "consequence",
+            "emotional_witness",
+            "quiet_aftermath",
+            "provenance"
+          ],
+          "surface": "minecraft_theater_and_web_coda",
+          "title": "Averyn's goodbye and coda"
+        }
+      ],
+      "hints": {
+        "H0": "Read the readiness audit. It names missing conclusions or artifacts plainly and never recommends a moral choice.",
+        "H1": "Return testimony to six named housings; keep the separate Averyn Record socket empty.",
+        "H2": "The three components come from Nessa's material proof, repaired systems, and Rook's independent Bridge. Publish/unfile concerns the name outside the Record.",
+        "H3": "Six affidavits returned, Cistern Seal + System Key + Protocol Bridge installed, Averyn slot empty, choose publish or release unnamed, preserve the Wren judgment, then confirm once after operator arm."
+      },
+      "human_stake": "The release must complete what six witnesses and four modern investigators could not. Every valid choice frees Averyn; the group decides only what remains outside the Record and how Wren is remembered.",
+      "meaningful_wrong_theories": [
+        {
+          "response": "The chamber acknowledges the restored name and refuses the deposit: Averyn is the registrar witness, not a Keeper, and the release instruction requires her slot unbound.",
+          "theory": "A seventh affidavit belongs in Averyn's empty slot."
+        },
+        {
+          "response": "The consequence ledgers restate both valid consent paths and the same universal release. The choice governs what survives outside the Record, not whether Averyn is freed.",
+          "theory": "Publish is morally correct and unnamed is a failure ending."
+        },
+        {
+          "response": "The readiness audit records contributors and makes absence visible without making it eligibility. Any subset may complete the protected confirmation through the accessibility contract.",
+          "theory": "Every currently active player must stand in the chamber for release."
+        },
+        {
+          "response": "The chamber classifies post-confirmation stalls as technical incidents and exposes status/resume; players are not asked to invent content after the durable release commit.",
+          "theory": "A stalled effect means another secret answer is required."
+        }
+      ],
+      "novelty_comparison": "P11 solves identity by recontextualizing testimony. P12 is an audit, collective configuration, consent choice, and aftermath; no new cipher, culprit, or active-player ritual is introduced.",
+      "phase": "P12",
+      "plausible_initial_belief": "The chamber needs a seventh affidavit, a unanimous moral answer, or one final secret cipher before it will free Averyn.",
+      "player_facing_question": "How do we return the testimony, preserve or relinquish Averyn's name by consent, close the Record, and ensure the release survives interruption without filing her back into it?",
+      "prerequisites": [
+        "P11.F9",
+        "P10.F5",
+        "P8.F8",
+        "P7.F6"
+      ],
+      "required_inference": "Players interpret return versus keep, distinguish external publication from institutional binding, and verify a complete evidence/artifact audit. Difficulty comes from campaign synthesis and moral memory, not hidden controls or active-player quorum.",
+      "runtime": {
+        "active_roster_not_prerequisite": true,
+        "all_endings_free_averyn": true,
+        "answer_requires_observation_receipts": false,
+        "any_subset": true,
+        "confirmation_idempotent": true,
+        "crash": "save, phase, choices, and release id precede presentation; resume is deterministic",
+        "durable_before_theater": true,
+        "local_primary": true,
+        "operator_arm_technical_not_story": true,
+        "outage": "local release completes and external coda mirrors later by stable idempotency key",
+        "replay": "pre-release full audit; post-release immutable branch/coda receipt without replaying choice",
+        "restart": "resume theater from durable phase; never repeat artifact issue or branch selection",
+        "wrong_attempt_throttle_seconds": [
+          0,
+          15,
+          45,
+          120
+        ]
+      },
+      "schema_version": "1.0.0-authored-case",
+      "spaces": [
+        {
+          "affordance": "open folders and plain missing-item readback expose readiness without decorative interactions",
+          "composition": "large civic audit table, ten case folders, component custody rail, missing-item readback, no decorative clue clutter",
+          "evidence_surfaces": [
+            "p12.e01",
+            "p12.e02"
+          ],
+          "id": "p12_readiness",
+          "job": "plain audit of required beliefs, artifacts, accessibility, and local health",
+          "navigation": "all players can gather without standing on triggers"
+        },
+        {
+          "affordance": "six occupied testimony housings, three unique components, and one sealed empty socket make configuration legible",
+          "composition": "six named testimony housings, separate empty Averyn Record socket, external name plate, unique Cistern Seal/System Key/Protocol Bridge housings, two consequence ledgers",
+          "evidence_surfaces": [
+            "p12.e03",
+            "p12.e04",
+            "p12.e05",
+            "p12.e06"
+          ],
+          "id": "p12_chamber",
+          "job": "return testimony and configure release",
+          "navigation": "full-width circulation around center; no timed parkour or presence ring"
+        },
+        {
+          "affordance": "extinguished machinery and open exits communicate aftermath; branch record remains outside the mechanism",
+          "composition": "open chamber, extinguished machinery, restored external name or chosen blank, Wren trace, ordinary returned objects from prior people",
+          "evidence_surfaces": [
+            "p12.e07"
+          ],
+          "id": "p12_coda",
+          "job": "quiet aftermath and branch readback",
+          "navigation": "all return routes open"
+        }
+      ],
+      "target_minutes": {
+        "max": 120,
+        "min": 60
+      },
+      "title": "Release Audit"
+    }
+  ],
+  "closed_mechanism_taxonomy": false,
+  "observation_receipts_gate_answers": false,
+  "phases": [
+    "P5",
+    "P6",
+    "P7",
+    "P8",
+    "P9",
+    "P10",
+    "P11",
+    "P12"
+  ],
+  "schema_version": "1.0.0-runtime-campaign-projection",
+  "source_schema_version": "1.0.0-open-campaign-pack"
+}

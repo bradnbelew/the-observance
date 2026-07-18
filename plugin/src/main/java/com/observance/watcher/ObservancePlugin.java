@@ -4,6 +4,7 @@ import com.observance.watcher.beat.BeatEnactor;
 import com.observance.watcher.beat.BeatQueuePoller;
 import com.observance.watcher.beat.NoopBeatEnactor;
 import com.observance.watcher.command.ObservanceCommand;
+import com.observance.watcher.campaign.AuthoredCampaignAuthority;
 import com.observance.watcher.config.ObservanceConfig;
 import com.observance.watcher.config.Site;
 import com.observance.watcher.config.SitesConfig;
@@ -178,6 +179,16 @@ public final class ObservancePlugin extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        AuthoredCampaignAuthority.Report campaignAuthority = AuthoredCampaignAuthority.inspect();
+        if (!campaignAuthority.valid()) {
+            getLogger().severe("Packaged P5-P12 campaign authority failed closed: "
+                    + campaignAuthority.issues());
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        getLogger().info("P5-P12 campaign authority ready: " + campaignAuthority.caseCount()
+                + " cases, hash=" + campaignAuthority.contentHash());
 
         if (getConfig().getBoolean("m3-review.enabled", false)) {
             try {

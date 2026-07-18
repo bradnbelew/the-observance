@@ -1,0 +1,30 @@
+{
+  "schema_version":"1.0.0-p5-p12-media-custody",
+  "observed_at":"2026-07-17T09:00:00-05:00",
+  "status":"all four fixed videos and the complete five-file recovered packet located with exact recorded SHA-1 plus fresh SHA-256 readback",
+  "custody_boundary":"Located exact bytes are approved for non-destructive offline verification and packaging by reference. They are not claimed as best masters, re-edit approved, ownership-cleared beyond existing attribution, accessibility-reviewed, or deployed.",
+  "video_root":"C:\\Users\\nanob\\Documents\\Codex\\2026-07-07\\hey\\outputs\\manual-media",
+  "packet_root":"C:\\Users\\nanob\\Documents\\Codex\\2026-07-07\\hey\\outputs",
+  "assets":[
+    {"id":"clip_01_ash_locker","relative_path":"base_check_06.mp4","bytes":421443427,"sha1":"844c2aaf8fb51836add4b59e81abe4131c8d6d0a","sha256":"c84886c51dd4e7518df00ae32352eb606fbfd3f2a1fd5fe208e0d93dbed71d43","case":"P9"},
+    {"id":"clip_02_reeds_cache","relative_path":"shore_copy_unlisted.mp4","bytes":132001373,"sha1":"9b979e349c7a0d7497fd0fe76d0450e744dc39d0","sha256":"9d8bcda18dd906f615f75b659dda409a78a9dbd7b462b8effd21ac27b9dff691","case":"P7"},
+    {"id":"clip_03_watch_correction","relative_path":"watch_floor_9_lit.mp4","bytes":108195021,"sha1":"9b6552e21ec01e6f046027247a689c8dd78b8ce1","sha256":"24123175343320fbafae19cd4e1c8f2c85ef319d09c225a3c07754701598f78d","case":"P6"},
+    {"id":"clip_04_release_instruction","relative_path":"room_below_noaudio.mp4","bytes":15065612,"sha1":"1cb3e600d3e16e9bb1434fa65ddbdff04f512fbd","sha256":"44514345932114f55265fe1b5f00e3708b4039b5fc670f1b7de8f606c09c2ed9","case":"P12"},
+    {"id":"recovered_archive_packet","relative_path":"recovered-archive-packet.zip","bytes":62009,"sha1":"783ecde5685abdb601e4a659fc947c32964f70b3","sha256":"62bb4c1b7c66f0d5415301418e45ab49f710801ddcc2c72f4cfe15a73ec2317f","case":"P11"},
+    {"id":"packet_readme","relative_path":"recovered-archive-packet/README.txt","bytes":389,"sha1":"1f27f3a9edc2e348fc12916c5d72509dc6107d50","sha256":"215cd3cf4ca50d0edad4b8a3950f5602a688603641646d7e7b292fd8d4751b51","case":"P11"},
+    {"id":"packet_inventory","relative_path":"recovered-archive-packet/inventory_06.txt","bytes":380,"sha1":"83a5c75fcfd4be2072e6df46449124d9a5ccde7f","sha256":"da1c31f2fb7cd38581175620717f4dee4aed94f8bb0e1bdb06e37acea5319e88","case":"P11"},
+    {"id":"spectrogram_averyn_voice","relative_path":"recovered-archive-packet/field_audio_03.wav","bytes":58256,"sha1":"2003f0151c1ba643c649b5ed0e19d1b31bb68319","sha256":"51144a167e45ea68df0d3b615add465cc03a08703bd280dba062472ca2ed178f","case":"P11"},
+    {"id":"packet_intake_image","relative_path":"recovered-archive-packet/intake_partial.png","bytes":34269,"sha1":"1fc1e369ba5e4314496aa66ba9afc4bfc67ae592","sha256":"de4c7865d4854afba0fd406ecdb05279c9e5c31359f72d9ce8d25d98486b2a28","case":"P11"},
+    {"id":"packet_lamp_scan","relative_path":"recovered-archive-packet/lamp_roll_scan.jpg","bytes":38019,"sha1":"ca9a7a3d4958fc05c9a620e452bcc1ed95ae3287","sha256":"e92a4faccc3a3f74cb074f9c7830bf929b463b54f6dfeef1ef9c81cd0e8022d4","case":"P11"}
+  ],
+  "truly_absent_or_unapproved":[
+    "best-master determination for each video",
+    "human frame/audio contamination and editability review",
+    "approved derivative bytes and accessibility companion bytes",
+    "private hosted mirrors/cache receipts for the exact candidate",
+    "explicit keep-as-is/re-edit/replace decision per asset"
+  ],
+  "originals_mutated":false,
+  "bytes_committed_to_git":false,
+  "deployment_claimed":false
+}

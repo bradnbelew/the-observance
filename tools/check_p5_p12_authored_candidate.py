@@ -111,14 +111,14 @@ def main() -> None:
     require([row["id"] for row in phases] == [f"P{i}" for i in range(5, 13)],
             "campaign pack phase order/breadth drift")
     authored = [row for row in phases if row["status"] == "authored_candidate"]
-    require(authored, "campaign pack has no authored cases")
+    require(len(authored) == 8, "campaign pack is not fully authored across P5-P12")
     for row in authored:
         path = PACK / row["file"]
         require(path.is_file(), f"missing authored case file: {row['file']}")
         case = json.loads(path.read_text(encoding="utf-8"))
         require(case["phase"] == row["id"], f"case/index phase mismatch: {row['id']}")
         validate_case(case)
-    print(f"P5-P12 authored candidate: PASS ({len(authored)} authored, {8-len(authored)} in active build)")
+    print("P5-P12 authored candidate: PASS (8 authored cases; open-ended primitives; zero observation gating)")
 
 
 if __name__ == "__main__":

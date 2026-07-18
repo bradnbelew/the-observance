@@ -30,6 +30,7 @@ $authoritySources = [ordered]@{
   "v5/authority/map-art-manifest.json" = (Join-Path $RepoRoot "arc\v5\map-art-manifest.json")
 }
 $retiredResourceNames = @("deep-hold-d05-shelf.json", "deep-hold-lock-books.json")
+$campaignProjectionPath = Join-Path $RepoRoot "plugin\src\main\resources\campaign\p5-p12.json"
 
 $mapManifestPath = [string]$authoritySources["v5/authority/map-art-manifest.json"]
 if (!(Test-Path -LiteralPath $mapManifestPath -PathType Leaf)) {
@@ -145,6 +146,21 @@ if (!(Test-Path $buildFile)) {
         }
         if ($null -eq ($zip.Entries | Where-Object { $_.FullName -eq "sites.yml" } | Select-Object -First 1)) {
           Add-Failure "Plugin jar does not contain sites.yml"
+        }
+        $campaignEntry = $zip.Entries | Where-Object { $_.FullName -eq "campaign/p5-p12.json" } | Select-Object -First 1
+        if ($null -eq $campaignEntry) {
+          Add-Failure "Plugin jar does not contain campaign/p5-p12.json"
+        } elseif (!(Test-Path -LiteralPath $campaignProjectionPath -PathType Leaf)) {
+          Add-Failure "Plugin campaign projection source is missing: $campaignProjectionPath"
+        } else {
+          $entryStream = $campaignEntry.Open()
+          try {
+            $sha = [System.Security.Cryptography.SHA256]::Create()
+            try { $entryHash = ([BitConverter]::ToString($sha.ComputeHash($entryStream))).Replace("-", "").ToLowerInvariant() }
+            finally { $sha.Dispose() }
+          } finally { $entryStream.Dispose() }
+          $sourceHash = (Get-FileHash -LiteralPath $campaignProjectionPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($entryHash -ne $sourceHash) { Add-Failure "Plugin jar campaign projection differs from source" }
         }
         $entryNames = @($zip.Entries | ForEach-Object { $_.FullName })
         # Gradle/JAR may emit structural directory records. Authority parity is exact over files;

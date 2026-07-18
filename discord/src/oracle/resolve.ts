@@ -33,6 +33,8 @@ import {
 } from '../db/repo.js';
 import { voice } from '../voice.js';
 import type { OracleVoiceKey, DeadEndKind } from '../voice.js';
+import { resolvePrivateMessageKey } from './private-message.js';
+export { resolvePrivateMessageKey } from './private-message.js';
 import { archiveLine } from '../voice.archive.js';
 import type {
   AnswerSurface,
@@ -410,7 +412,8 @@ async function applyOutcome(
  * as-is rather than guessed at — the beat then harmlessly skips ("empty") the same way a future
  * authoring typo would, instead of erroring the player's solve.
  */
-export function resolvePrivateMessageKey(beat: OutcomeBeat): OutcomeBeat {
+/** @deprecated Compatibility-only copy; runtime and offline tests use private-message.ts. */
+export function resolvePrivateMessageKeyLegacy(beat: OutcomeBeat): OutcomeBeat {
   if (beat.type !== 'unlock') return beat;
   const outer = beat.payload ?? {};
   if (outer['step'] !== 'private_message') return beat;

@@ -1,0 +1,23 @@
+{
+  "phase_count": 8,
+  "production_deployed": false,
+  "projection_bytes": 147088,
+  "projection_sha256": "c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
+  "schema_version": "1.0.0-campaign-projection-manifest",
+  "source_files": [
+    "campaign.json",
+    "case-p5.json",
+    "case-p6.json",
+    "case-p7.json",
+    "case-p8.json",
+    "case-p9.json",
+    "case-p10.json",
+    "case-p11.json",
+    "case-p12.json"
+  ],
+  "targets": [
+    "plugin/src/main/resources/campaign/p5-p12.json",
+    "dashboard/content/campaign/p5-p12.json",
+    "discord/src/v5/generated/p5-p12.json"
+  ]
+}

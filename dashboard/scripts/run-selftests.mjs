@@ -18,6 +18,7 @@ if (!existsSync(tsx)) {
 
 const tests = [
   'src/lib/deployment-target.selftest.ts',
+  'src/lib/campaign-projection.selftest.ts',
   'src/lib/copperline-p4-archive.selftest.ts',
   'src/lib/v5-cases.selftest.ts',
   'src/lib/v5-web-node-policy.selftest.ts',

@@ -4,7 +4,7 @@
  * reads title/subtitle/actionbar/text, but authors write a symbolic `key` instead). A regression
  * here would silently reintroduce the "no-wall-catch" cold-flip no-op this fix closes.
  */
-import { resolvePrivateMessageKey } from './resolve.js';
+import { resolvePrivateMessageKey } from './private-message.js';
 import type { OutcomeBeat } from '../db/types.js';
 
 function unlockBeat(stepPayload: Record<string, unknown>): OutcomeBeat {

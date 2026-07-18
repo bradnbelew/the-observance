@@ -4,7 +4,7 @@ import {
   MIN_SHOWRUNNER_TICK_MS,
   normalizeLeaseSeconds,
   normalizeTickMs,
-} from './persistent.js';
+} from './persistent-policy.js';
 
 function assert(ok: boolean, message: string): void {
   if (!ok) throw new Error(`persistent showrunner selftest FAILED: ${message}`);

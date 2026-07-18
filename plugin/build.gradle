@@ -78,6 +78,7 @@ def pluginSelfTests = [
     m2AutomationApprovalPolicy: 'com.observance.watcher.m2runtime.AutomationApprovalPolicySelfTest',
     m2LocalPrimaryJournal: 'com.observance.watcher.m2runtime.LocalPrimaryJournalSelfTest',
     m3PrivateSliceState: 'com.observance.watcher.m3runtime.PrivateSliceStateSelfTest'
+    , authoredCampaignAuthority: 'com.observance.watcher.campaign.AuthoredCampaignAuthoritySelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
