@@ -81,6 +81,7 @@ import org.bukkit.scheduler.BukkitTask;
 public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P2_HANDOFF_EVENT = "p2.live_runtime_handoff";
     private static final String P3_ACCOUNTS_EVENT = "p3.resident_accounts_opened";
+    private static final String P3_DISPATCH_EVENT = "p3.dispatch_authorized";
     private static final String P5_CURATION_EVENT = "p5.civic_gallery_recurated";
     private static final String P6_MODELS_EVENT = "p6.professional_models_recovered";
     private static final String P6_RESPONSIBILITY_EVENT = "p6.six_responsibilities_acknowledged";
@@ -284,6 +285,10 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         return progress.snapshot().isComplete(P8_PLAN_EVENT);
     }
 
+    public boolean p3DispatchAccepted() {
+        return progress.snapshot().isComplete(P3_DISPATCH_EVENT);
+    }
+
     public boolean p6ResponsibilityAccepted() {
         return progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT);
     }
@@ -323,6 +328,26 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             return PlanSubmission.ACCEPTED;
         } catch (IOException | RuntimeException failure) {
             plugin.getLogger().severe("P6 responsibility matrix could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
+    /** Discord-outage equivalent; only the canonical open-disagreement action is retained. */
+    public PlanSubmission submitP3SettlementDispatch(String finding) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P3_DISPATCH_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P3_ACCOUNTS_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P3SettlementDispatchPredicate.valid(finding)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P3_DISPATCH_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP3DispatchAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P3 settlement dispatch could not be committed locally: "
                     + failure.getMessage());
             return PlanSubmission.FAILED;
         }
@@ -638,6 +663,20 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         });
     }
 
+    private void mirrorP3DispatchAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p3.dispatch.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject dispatch = new JsonObject();
+            dispatch.addProperty("action", "preserve-conflicting-resident-accounts");
+            dispatch.addProperty("scope", "changed-mark-and-work-history");
+            dispatch.addProperty("conclusion_status", "open-for-covered-survey");
+            dispatch.addProperty("observation_receipts", 0);
+            dispatch.addProperty("raw_player_prose_stored", false);
+            plugin.supabase().recordArgEvent(P3_DISPATCH_EVENT,
+                    "minecraft:p3:settlement-dispatch", "minecraft", null, dispatch);
+        });
+    }
+
     private void mirrorP6MilestonesAsync() {
         plugin.scheduler().runAsyncSafe("arg.p6.milestones.mirror", () -> {
             if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
@@ -947,6 +986,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             mirrorP6MilestonesAsync();
         }
         if (progress.snapshot().isComplete(P5_CURATION_EVENT)) mirrorP5CurationAsync();
+        if (progress.snapshot().isComplete(P3_DISPATCH_EVENT)) mirrorP3DispatchAsync();
         if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
         if (progress.snapshot().isComplete(P7_NESSA_EVENT)) mirrorP7NessaAsync();
         if (progress.snapshot().isComplete(P8_PLAN_EVENT)) mirrorP8PlanAsync();

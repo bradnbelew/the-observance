@@ -51,6 +51,8 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             case "status" -> {
                 player.sendMessage("P6 responsibility matrix: " + (runtime.p6ResponsibilityAccepted()
                         ? "accepted and retained locally." : "not yet accepted."));
+                player.sendMessage("P3 resident dispatch: " + (runtime.p3DispatchAccepted()
+                        ? "accepted; both accounts remain open." : "not yet accepted."));
                 player.sendMessage("P7 Nessa correction: " + (runtime.p7NessaCleared()
                         ? "accepted and public." : "not yet accepted."));
                 player.sendMessage("P8 intervention plan: " + (runtime.p8InterventionPlanAccepted()
@@ -67,6 +69,9 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                 player.sendMessage(runtime.p6ResponsibilityAccepted()
                         ? "Retained P6 model: six different people, professions, proofs, compromises, and later corrections; no single Keeper mind."
                         : "No accepted P6 responsibility model is available to replay.");
+                player.sendMessage(runtime.p3DispatchAccepted()
+                        ? "Retained P3 action: the changed practical mark has conflicting resident accounts; both remain preserved without an official winner."
+                        : "No P3 open-disagreement dispatch is retained.");
                 player.sendMessage(runtime.p8InterventionPlanAccepted()
                         ? "Retained P8 plan: four interacting causes; Iss's surface evidence remains valid while his route was unsafe; copy behavior is proven while the Dark remains unidentified; works order is filter, paired light, pressure bypass, then staff route."
                         : "No accepted P8 intervention plan is available to replay.");
@@ -83,6 +88,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                         ? "Retained P11 identity: AVERYN, a person and registrar rather than a seventh Keeper."
                         : "No P11 identity artifact is retained.");
             }
+            case "p3-dispatch" -> submitP3Dispatch(player, args, runtime);
             case "p6-recovery" -> submitP6Recovery(player, label, args, runtime);
             case "p7-nessa" -> submitP7Nessa(player, args, runtime);
             case "p8" -> submitP8(player, label, args, runtime);
@@ -93,6 +99,23 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             default -> help(player, label);
         }
         return true;
+    }
+
+    private void submitP3Dispatch(Player player, String[] args, V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusalWindow(player);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String finding = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        if (finding.isBlank()) {
+            player.sendMessage("Incomplete. Name the disagreement and say that both accounts remain open.");
+            return;
+        }
+        respond(player, runtime.submitP3SettlementDispatch(finding), window,
+                "Dispatch accepted. Both resident accounts stay preserved and the covered survey can proceed.",
+                "The resident accounts must be available in the live world first.",
+                "The note must identify a practical disagreement and preserve both accounts without choosing an official version.");
     }
 
     private void submitP7Nessa(Player player, String[] args, V5RuntimeCoordinator runtime) {
@@ -264,6 +287,8 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
     }
 
     private static void help(Player player, String label) {
+        player.sendMessage("P3 accepts one short open finding: /" + label
+                + " p3-dispatch <what the accounts disagree about and why both stay open>.");
         player.sendMessage("P6 keyboard recovery accepts six short rows in this order: Vaun | Mara | Sella | Orin | Brann | Iss.");
         player.sendMessage("Each row states that person's proof, compromise, and later correction. Use /" + label + " p6-recovery <six rows>.");
         player.sendMessage("P7 accepts three short findings: /" + label
@@ -281,7 +306,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length <= 1) return List.of(
-                "help", "status", "replay", "p6-recovery", "p7-nessa", "p8", "p9-people", "p9-window",
+                "help", "status", "replay", "p3-dispatch", "p6-recovery", "p7-nessa", "p8", "p9-people", "p9-window",
                 "p10-wren", "p11-name");
         return List.of();
     }

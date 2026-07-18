@@ -534,6 +534,18 @@ def main() -> None:
     require(all(row["zero_observation_acceptance"] is True for row in early_input_contracts)
             and all(not (row["interpretive"] and row["runtime_exact_phrase"]) for row in early_input_contracts),
             "P1-P4 input contract reintroduced receipt gating or an interpretive magic phrase")
+    early_input_by_id = {row["id"]: row for row in early_input_contracts}
+    p3_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P3SettlementDispatchPredicate.java").read_text(
+        encoding="utf-8")
+    p3_finding_command = (ROOT / "plugin/src/main/java/com/observance/watcher/command/CampaignFindingCommand.java").read_text(
+        encoding="utf-8")
+    require("/obsfinding p3-dispatch" in early_input_by_id["P3.DISPATCH"]["platform"]
+            and "class P3SettlementDispatchPredicate" in p3_predicate
+            and "submitP3SettlementDispatch" in coordinator
+            and 'case "p3-dispatch"' in p3_finding_command
+            and 'dispatch.addProperty("observation_receipts", 0)' in coordinator
+            and 'dispatch.addProperty("raw_player_prose_stored", false)' in coordinator,
+            "P3 Discord field note lacks a shared local zero-observation recovery path")
     input_contracts = load(PACK / "input-contracts.json")["contracts"]
     input_contract_by_id = {row["id"]: row for row in input_contracts}
     require("protected public-curation controls" in input_contract_by_id["P5.F1"]["platform"]
