@@ -421,3 +421,14 @@ open; M4 is still closed.
 - This closes the combined automated physical/restart/package gate only. It does not supersede Brad's
   experiential rejection, prove actual-client affordance or campaign quality, create approval, establish
   private external staging, authorize production, or establish launch readiness.
+
+## 2026-07-18 — routed audit after combined physical proof
+
+- Clean receipt checkpoint `caf2cd47b8dedaa54d30b8a9b2aa64351bf40a68` passed the complete routed
+  audit after the combined Hold-plus-Unlit proof was entered into canonical lineage.
+- The 91,914-byte log proves the ARG authority/negative contracts, 1,588 deterministic scenarios, 2,300
+  chaos scenarios, web and Discord builds, 367-address Paper catalog, security checks, media routes, and
+  deterministic plugin/datapack/resource-pack/deploy-manifest parity. Exact hashes are in
+  `ROUTED-AUDIT-PASS-CAF2CD4-2026-07-18.json`.
+- Automated source, package, and physical gates now agree at this checkpoint. Human experience, actual-client
+  visual/use testing, private external deployment, Brad approval, production, and launch remain separate gates.

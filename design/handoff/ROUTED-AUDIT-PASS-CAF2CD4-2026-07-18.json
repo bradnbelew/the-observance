@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0-routed-audit-receipt",
+  "audited_commit": "caf2cd47b8dedaa54d30b8a9b2aa64351bf40a68",
+  "branch": "codex/m3-disposable-paper-gate",
+  "completed_local": "2026-07-18T03:57:40.0537018-05:00",
+  "command": ".\\tools\\audit_all.ps1",
+  "result": "pass",
+  "stdout_log": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\audit-caf2cd4-20260718\\audit-all-background.stdout.log",
+  "stdout_sha256": "df04b0c5223c8bca15ecff9974ac3d8f8c27db92235fede566e4bc52264b9072",
+  "stdout_bytes": 91914,
+  "exit_code": 0,
+  "aggregate": "V5 audit: PASS (repository, 82-node content, predicates, Hold, simulation, all projects, deploy artifacts, hosted pack, and live media)",
+  "paper_plugin": {
+    "version": "0.5.0",
+    "jar_sha256": "503f5309e37ed145e02bff538ba6770cfd3c5c3378b897bf6c6c306c33f5dbc4",
+    "physical_contracts": 60,
+    "physical_addresses": 367,
+    "mechanics_node_scenarios": 287,
+    "runtime_contracts": 60,
+    "finale_ending_conduct_combinations": 24
+  },
+  "campaign_simulation": {
+    "deterministic_scenarios": 1588,
+    "chaos_scenarios": 2300,
+    "p5_p12_cases": 8,
+    "p5_p12_conclusions": 21,
+    "zero_observation_correct_paths": 21,
+    "naive_negative_paths": 42,
+    "campaign_sha256": "8c7a8b6a09a5edf21022f6b953fbff18a4f926011058ae6f9e07274dc778ec77"
+  },
+  "packages": {
+    "datapack_sha256": "dabbeb89551ad5600253dfd2ff021ddce8d31935f92fd451d4d35993015e5719",
+    "resourcepack_sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb",
+    "deploy_manifest_sha256": "2247ceb3d159335bee437725a849f0aea92bbb12f19adbcad24a36d0dabcb253",
+    "projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
+    "minecraft_bindings_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d"
+  },
+  "combined_physical_evidence": {
+    "receipt": "design/handoff/COMBINED-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    "source_commit": "924a5495a6deee0700ae54f7ef54437030ef5375",
+    "fresh_build_restart_reaudit": "pass",
+    "world_package_sha256": "e0d2742bd3f5b8aba12da1f8f04f46139014e95f0c69ad12e897c5e3f08fbadd",
+    "human_visual_or_experience_approval": null
+  },
+  "scope": "Automated routed conformance and package evidence after the combined Hold-plus-Unlit Paper pass. It does not replace real-client review, human ARG experience review, private external staging, production, or launch approval.",
+  "brad_approval": null,
+  "production_mutated": false
+}
