@@ -120,29 +120,6 @@ export const investigateCommand = new SlashCommandBuilder()
     .addStringOption((option) => option.setName('record').setDescription('what was changed in the chronology').setRequired(true).setMaxLength(120))
     .addStringOption((option) => option.setName('conduct').setDescription('what Nessa did and when').setRequired(true).setMaxLength(120)))
   .addSubcommand((subcommand) => subcommand
-    .setName('file-leak-window')
-    .setDescription('file what the Ash Camp chronology proves and leaves open.')
-    .addStringOption((option) => option.setName('readiness').setDescription('state of the prior company’s release work').setRequired(true).addChoices(
-      { name: 'needed knowledge and components were ready', value: 'release-ready' },
-      { name: 'the company was missing its final answer', value: 'missing-final-answer' },
-      { name: 'the company never reached the Hold systems', value: 'never-reached-systems' },
-    ))
-    .addStringOption((option) => option.setName('private-object').setDescription('what crossed the private boundary').setRequired(true).addChoices(
-      { name: 'Rook’s north-brace revision and the team identities', value: 'rook-revision-and-identities' },
-      { name: 'Ash’s public camera joke and locker number', value: 'ash-public-joke' },
-      { name: 'mkept’s published backup checksum', value: 'published-checksum' },
-    ))
-    .addStringOption((option) => option.setName('window').setDescription('when the crossing occurred').setRequired(true).addChoices(
-      { name: 'after the private counter-mark, before any public upload', value: 'private-before-public' },
-      { name: 'after the public archive post', value: 'after-public' },
-      { name: 'before Rook made the revision', value: 'before-revision' },
-    ))
-    .addStringOption((option) => option.setName('boundary').setDescription('what P9 can honestly claim').setRequired(true).addChoices(
-      { name: 'an insider transmission is proven; the sender is not yet proven', value: 'insider-unknown' },
-      { name: 'Wren is already proven as sender', value: 'wren-proven' },
-      { name: 'the Record invented the revision without human access', value: 'record-invented' },
-    )))
-  .addSubcommand((subcommand) => subcommand
     .setName('confront-wren')
     .setDescription('commit the transmission finding before the remembrance choice.')
     .addStringOption((option) => option.setName('sender').setDescription('who transmitted the private packets').setRequired(true).addChoices(

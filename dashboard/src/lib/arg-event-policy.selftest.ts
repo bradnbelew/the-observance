@@ -38,6 +38,9 @@ check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].sourceSurfaces.incl
 check(ARG_EVENT_DEFINITIONS['p8.hold_systems_repaired'].prerequisites[0]
   === 'p8.intervention_plan_accepted',
   'P8 physical repair must project only after a bounded safe intervention plan');
+check(ARG_EVENT_DEFINITIONS['p9.leak_window_proven'].sourceSurfaces.includes('copperline')
+  && !ARG_EVENT_DEFINITIONS['p9.leak_window_proven'].sourceSurfaces.includes('discord'),
+  'P9 must preserve the private version chain on Copperline or the local Minecraft path, not a Discord answer menu');
 check(ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].sourceSurfaces.length === 1
   && ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].sourceSurfaces[0] === 'minecraft',
   'bounded player copy proof must be owned by its physical Paper predicate');

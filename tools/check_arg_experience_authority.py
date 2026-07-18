@@ -389,6 +389,16 @@ def main() -> None:
             and "canonical component ids" in by_id["WEB_COPPERLINE_FORM"]["data_shape_normalization"]
             and "raw player prose is not stored" in by_id["WEB_COPPERLINE_FORM"]["data_shape_normalization"],
             "P8 Copperline plan lacks real form ownership, canonical idempotency, or text-retention safety")
+    p9_page = (ROOT / "dashboard/src/app/community/archive/ash-camp/page.tsx").read_text(encoding="utf-8")
+    p9_form = (ROOT / "dashboard/src/app/community/archive/ash-camp/LeakWindowForm.tsx").read_text(encoding="utf-8")
+    p9_action = (ROOT / "dashboard/src/app/community/archive/ash-camp/actions.ts").read_text(encoding="utf-8")
+    discord_register = (ROOT / "discord/src/bot/register.ts").read_text(encoding="utf-8")
+    require("Copies from separate clocks" in p9_page
+            and "<form action={action}" in p9_form
+            and "p9.leak_window_proven" in p9_action
+            and "observation_receipts: 0" in p9_action
+            and "file-leak-window" not in discord_register,
+            "P9 private-window finding is not real provenance work or retains a Discord answer menu")
     require("never parse free chat" in by_id["DISCORD_INVESTIGATION_MODAL"]["data_shape_normalization"],
             "Discord input requires unrestricted chat parsing")
     modal = by_id["DISCORD_INVESTIGATION_MODAL"]

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Breadcrumbs, LegacyShell, OldPageTitle } from '@/components/legacy/LegacyShell';
 import { hasCampaignEvent } from '@/lib/arg-event-store';
 import { CampBiographyForm } from './CampBiographyForm';
+import { LeakWindowForm } from './LeakWindowForm';
 
 export const metadata: Metadata = { title: 'Ash Camp owner recovery - Copperline Archive', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -24,6 +25,15 @@ export default async function AshCampArchive() {
         <article className="customer"><header><b>wren-home</b><time>April 19, 2011 11:21 PM</time></header><p>I moved. The note stayed because mkept put his cables on it.</p></article>
         <article className="customer"><header><b>mkept</b><time>April 19, 2011 11:25 PM</time></header><p>I have reviewed the evidence and blame the beans.</p></article>
       </div></section>}
+      {restored === true && <section className="old-copy" aria-labelledby="private-copies"><h2 id="private-copies">Copies from separate clocks</h2>
+        <div className="ticket-thread">
+          <article className="staff"><header><b>release board / local Polaroid</b><time>April 21, 2011 10:14 PM</time></header><p>Water return, paired lamps, pressure bypass, and staff passage are all marked complete. The marker strokes cross the same coffee ring.</p></article>
+          <article className="customer"><header><b>Rook / private build notebook</b><time>April 21, 2011 10:19 PM</time></header><p>North brace NB-17/c. Counter-mark: two short cuts under the lower joint. Shared with the four of us. Do not upload until Ash photographs the repaired face.</p></article>
+          <article className="staff"><header><b>Witness Spool / intake controller</b><time>April 21, 2011 10:23 PM</time></header><p>Object NB-17/c accepted with four account labels. The diagram includes the revised upper angle but not Rook&apos;s two physical cuts.</p></article>
+          <article className="customer"><header><b>Copperline attachment history</b><time>April 21, 2011 11:02 PM</time></header><p><code>north-brace-NB17c.png</code> uploaded by rookline. First public copy. Ash added the repaired-face photograph at 11:06 PM.</p></article>
+        </div>
+      </section>}
+      {restored === true && <LeakWindowForm proven={leakWindow === true} />}
       {leakWindow === true
         ? <section className="old-copy" aria-labelledby="leak-window"><h2 id="leak-window">Private-window finding</h2><p>The release board was complete. Rook&apos;s north-brace revision entered the Witness Spool after his private counter-mark and before any public upload. The source was inside the four-person company. P9 does not name which person sent it.</p><p>The archive now preserves the last private version, the first spool version, and the later public version side by side.</p></section>
         : restored === true ? <div className="old-message">The owner cards are restored. The private revision window is still open for group review.</div> : null}
