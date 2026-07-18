@@ -908,6 +908,11 @@
       "effect": "confession-only reasoning, wrong-sender attribution, single-packet claims, missing private provenance, missing motive, and fear-as-absolution now receive distinct evidence-bounded responses without committing progress, storing raw prose, or revealing the supported finding. A valid finding still requires private NB-17/c provenance, progressive packet knowledge, and responsible choice, and still passes with zero observation receipts. Focused Discord and Paper tests pass; Wren remains a responsive character rather than the source of proof."
     },
     {
+      "older": "P6's six-row responsibility synthesis returning one generic parser refusal for any unsupported or field-swapped row",
+      "newer": "row-specific non-solution feedback in P6ResponsibilityPredicate, the Paper 1.21.11 Dialog, and its command fallback",
+      "effect": "players now learn only which Keeper theory rows need review, not a missing keyword or canonical sentence. Each row still requires that person's proof, compromise, and later correction, accepts ordinary player language, and passes with zero source observations. Focused Paper predicate, Dialog compile, swap, retrieval-only, bounds, and one-row failure tests pass; final real-client layout and human wording review remain open."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"

@@ -143,8 +143,9 @@ public final class P6ResponsibilityDialogRuntime implements Listener, AutoClosea
                     "The P5 public-record correction must be complete before this model can be attached. Nothing changed."));
             case WRONG -> {
                 window.count++;
+                String rows = String.join(", ", P6ResponsibilityPredicate.unsupportedRows(matrix));
                 player.sendMessage(Component.text(
-                        "At least one row lacks a distinct proof, compromise, or later correction, or belongs to another person. Nothing changed."));
+                        "Review these rows: " + rows + ". Each must connect that person's proof, compromise, and later correction. Nothing changed."));
             }
             case FAILED -> player.sendMessage(Component.text(
                     "The docket failed safely. Nothing changed; use /obsfinding p6-recovery after recovery."));

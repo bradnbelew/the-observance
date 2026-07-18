@@ -3,6 +3,7 @@ package com.observance.watcher.v5runtime;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
+import java.util.ArrayList;
 
 /**
  * Six-field recovery predicate for P6's responsibility matrix.
@@ -20,15 +21,20 @@ public final class P6ResponsibilityPredicate {
                          String orin, String brann, String iss) { }
 
     public static boolean valid(Matrix matrix) {
-        if (matrix == null || invalid(matrix.vaun()) || invalid(matrix.mara())
-                || invalid(matrix.sella()) || invalid(matrix.orin())
-                || invalid(matrix.brann()) || invalid(matrix.iss())) return false;
-        return vaun(fold(matrix.vaun()))
-                && mara(fold(matrix.mara()))
-                && sella(fold(matrix.sella()))
-                && orin(fold(matrix.orin()))
-                && brann(fold(matrix.brann()))
-                && iss(fold(matrix.iss()));
+        return unsupportedRows(matrix).isEmpty();
+    }
+
+    /** Names only the rows needing review; it never discloses a missing keyword or finding. */
+    public static List<String> unsupportedRows(Matrix matrix) {
+        if (matrix == null) return List.of("Vaun", "Mara", "Sella", "Orin", "Brann", "Iss");
+        List<String> result = new ArrayList<>();
+        if (invalid(matrix.vaun()) || !vaun(fold(matrix.vaun()))) result.add("Vaun");
+        if (invalid(matrix.mara()) || !mara(fold(matrix.mara()))) result.add("Mara");
+        if (invalid(matrix.sella()) || !sella(fold(matrix.sella()))) result.add("Sella");
+        if (invalid(matrix.orin()) || !orin(fold(matrix.orin()))) result.add("Orin");
+        if (invalid(matrix.brann()) || !brann(fold(matrix.brann()))) result.add("Brann");
+        if (invalid(matrix.iss()) || !iss(fold(matrix.iss()))) result.add("Iss");
+        return List.copyOf(result);
     }
 
     private static boolean vaun(String value) {

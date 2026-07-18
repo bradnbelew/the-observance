@@ -232,7 +232,9 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             case NOT_READY -> player.sendMessage("The P5 public-record correction must be complete before this model can be attached. Nothing changed.");
             case WRONG -> {
                 window.count++;
-                player.sendMessage("At least one row lacks a distinct proof, compromise, or later correction, or is assigned to the wrong person. Nothing changed.");
+                String rows = String.join(", ", P6ResponsibilityPredicate.unsupportedRows(matrix));
+                player.sendMessage("Review these rows: " + rows
+                        + ". Each must connect that person's proof, compromise, and later correction. Nothing changed.");
             }
             case FAILED -> player.sendMessage("The finding desk failed safely. Nothing changed; retry after recovery.");
         }

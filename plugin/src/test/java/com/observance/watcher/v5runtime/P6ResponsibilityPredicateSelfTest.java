@@ -34,11 +34,19 @@ public final class P6ResponsibilityPredicateSelfTest {
         require(!P6ResponsibilityPredicate.valid(new P6ResponsibilityPredicate.Matrix(
                 "Vaun had a ledger", valid.mara(), valid.sella(), valid.orin(), valid.brann(), valid.iss())),
                 "retrieved fact without compromise/correction must fail");
+        require(P6ResponsibilityPredicate.unsupportedRows(new P6ResponsibilityPredicate.Matrix(
+                valid.mara(), valid.vaun(), valid.sella(), valid.orin(), valid.brann(), valid.iss()))
+                .equals(java.util.List.of("Vaun", "Mara")),
+                "field-swapped rows must identify only Vaun and Mara for review");
+        require(P6ResponsibilityPredicate.unsupportedRows(new P6ResponsibilityPredicate.Matrix(
+                valid.vaun(), valid.mara(), valid.sella(), "Orin signed it", valid.brann(), valid.iss()))
+                .equals(java.util.List.of("Orin")),
+                "one incomplete row must not invalidate the other five in feedback");
         require(!P6ResponsibilityPredicate.valid(new P6ResponsibilityPredicate.Matrix(
                 "x".repeat(P6ResponsibilityPredicate.MAX_FIELD_LENGTH + 1),
                 valid.mara(), valid.sella(), valid.orin(), valid.brann(), valid.iss())),
                 "oversized field must fail");
-        System.out.println("P6ResponsibilityPredicateSelfTest OK - paraphrase, short-note, swap, retrieval-only, and bounds paths pass");
+        System.out.println("P6ResponsibilityPredicateSelfTest OK - paraphrase, short-note, row-specific review, retrieval-only, and bounds paths pass");
     }
 
     private static void require(boolean condition, String message) {

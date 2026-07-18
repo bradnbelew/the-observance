@@ -623,3 +623,14 @@ open; M4 is still closed.
   fear-as-absolution. Each path receives a short authored response bounded by already available evidence.
 - Wrong theories commit no progress, store no raw player prose, and disclose no missing answer. Focused
   Discord interaction/type tests and Paper predicate/compile tests pass with the same zero-observation rule.
+
+## 2026-07-18 — P6 responsibility synthesis reports the theory row, not parser trivia
+
+- P6 retains six distinct professional investigations and one six-person synthesis. Each Dialog row remains a
+  short player-authored note joining that person's proof, compromise, and later correction; several ordinary
+  phrasings pass and no room visit, affidavit, or source-click receipt grants eligibility.
+- The real Paper 1.21.11 Dialog and namespaced command fallback now identify only the Keeper rows whose meaning
+  is unsupported. They never disclose a missing keyword or canonical sentence, and valid rows are not blamed
+  when another person's row is incomplete or swapped.
+- Focused predicate, Dialog compile, natural-answer, field-swap, retrieval-only, overlong, and one-row failure
+  tests pass. Final client layout and cold-human wording judgment remain reserved for the end-to-end test.
