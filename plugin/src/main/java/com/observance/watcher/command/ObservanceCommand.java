@@ -1670,12 +1670,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     || !hasMaterialNear(loc, radius, Material.BLUE_ICE)
                     || !hasMaterialNear(loc, radius, Material.LEVER))
                     ? "expected sample tray, unlit hearth, warmth/cold contrast, and handle" : null;
-            case "threshold" -> (!hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)
-                    || !hasMaterialNear(loc, radius, Material.DEEPSLATE_BRICK_SLAB)
-                    || !hasMaterialNear(loc, radius, Material.BLACK_CARPET)
-                    || !hasMaterialNear(loc, radius, Material.TINTED_GLASS)
-                    || !hasMaterialNear(loc, radius, Material.LEVER))
-                    ? "expected safe route, low lintel, black marks, inner lever, and sealed outer decoy" : null;
+            case "threshold" -> {
+                List<String> missing = new ArrayList<>();
+                if (!hasMaterialNear(loc, radius, Material.POLISHED_BLACKSTONE)) missing.add("safe-route");
+                if (!hasMaterialNear(loc, radius, Material.DEEPSLATE_BRICK_SLAB)) missing.add("low-lintel");
+                if (!hasMaterialNear(loc, radius, Material.BLACK_CARPET)) missing.add("black-marks");
+                if (!hasMaterialNear(loc, radius, Material.TINTED_GLASS)) missing.add("sealed-outer-decoy");
+                if (!hasMaterialNear(loc, radius, Material.LEVER)) missing.add("inner-lever");
+                yield missing.isEmpty() ? null : "missing exact threshold elements: " + String.join(",", missing);
+            }
             case "base" -> (!hasMaterialNear(loc, radius, Material.BARREL)
                     || !hasMaterialNear(loc, radius, Material.LECTERN))
                     ? "expected copied-base barrel and docket lectern" : null;
