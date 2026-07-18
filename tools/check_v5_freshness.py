@@ -58,6 +58,7 @@ ACTIVE_TOOLS = {
     "build_hold_prologue.py",
     "check_assets.ps1",
     "check_arg_experience_authority.py",
+    "check_campaign_web.py",
     "check_arg_vertical_slice.py",
     "run_arg_vertical_slice_disposable_paper.py",
     "test_arg_experience_negative_contracts.py",
@@ -203,6 +204,7 @@ def validate_tools(failures: list[str]) -> None:
     required = {
         "check_repository_integrity.py",
         "check_arg_experience_authority.py",
+        "check_campaign_web.py",
         "test_arg_experience_negative_contracts.py",
         "check_v5_freshness.py",
         "check_v5_content.py",

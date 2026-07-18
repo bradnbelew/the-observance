@@ -35,6 +35,13 @@ the exact P1–P12 responsive case briefs and state choreography, rejects direct
 single-surface, interaction-free, no-world-response, and answer-box-dominant structures, preserves
 zero-receipt correctness and A0/A1 automation, and never treats its structural pass as Brad approval.
 
+`check_campaign_web.py` validates the executable connective tissue rather than isolated case packets.
+It resolves event references against the runtime catalog and evidence references against the authored
+P5-P12 cases, rejects isolated nodes and backward revelation edges, and requires every early plant or
+player action to retain a directed route to the cross-surface coda. Its eight required long threads make
+the human lives, waterworks, Keepers, prior company, Copperline, Unlit, Record behavior, and category
+error recur and change meaning instead of ending in self-contained rooms.
+
 `test_arg_experience_negative_contracts.py` mutates every story/input guardrail independently. It proves
 the gate rejects one-source conclusions, single-surface cases, receipt gating, interaction-free stories,
 silent worlds, repeated answer boxes, optional major threads, absent-player locks, unsafe personalized
