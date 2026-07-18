@@ -612,3 +612,14 @@ open; M4 is still closed.
   leaves the sender open for P10; it does not require source-touch receipts.
 - The local Paper recovery path uses the same three-part meaning shape—archive treatment, readiness, claim
   boundary—with ordinary-language aliases. Focused web, Paper predicate, compile, and negative-flow tests pass.
+
+## 2026-07-18 — P10 answers plausible theories instead of returning one generic refusal
+
+- P10 still requires independent private-version provenance, the increasing packet-content pattern, and a
+  motive boundary that explains fear without converting it into absolution. Wren's later admission remains a
+  response to that proof and cannot substitute for it.
+- Discord contact and the local Paper recovery path now distinguish confession-only reasoning, attribution to
+  the wrong company member, a single-packet theory, missing private provenance, missing supported motive, and
+  fear-as-absolution. Each path receives a short authored response bounded by already available evidence.
+- Wrong theories commit no progress, store no raw player prose, and disclose no missing answer. Focused
+  Discord interaction/type tests and Paper predicate/compile tests pass with the same zero-observation rule.

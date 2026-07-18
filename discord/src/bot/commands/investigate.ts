@@ -15,6 +15,8 @@ import {
 } from '../../v5/nessa-correction.js';
 import {
   validWrenTransmission,
+  wrenTransmissionResponse,
+  WREN_TRANSMISSION_RESPONSE_TEXT,
   WREN_TRANSMISSION_CANONICAL_PAYLOAD,
   type WrenTransmissionFinding,
 } from '../../v5/wren-transmission.js';
@@ -94,7 +96,7 @@ async function submitWrenTransmission(interaction: ModalSubmitInteraction, findi
   const player = await getPlayerByDiscordId(interaction.user.id);
   if (!player) { await interaction.editReply('Link your Minecraft name first with /link.'); return; }
   if (!validWrenTransmission(finding)) {
-    await interaction.editReply('That account does not yet connect private provenance, the packet progression, and Wren’s responsible choice. Nothing changed.');
+    await interaction.editReply(`${WREN_TRANSMISSION_RESPONSE_TEXT[wrenTransmissionResponse(finding)]} Nothing changed.`);
     return;
   }
   const result = await recordArgEvent({

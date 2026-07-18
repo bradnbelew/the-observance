@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { validWrenTransmission, WREN_TRANSMISSION_CANONICAL_PAYLOAD } from './wren-transmission.js';
+import { validWrenTransmission, wrenTransmissionResponse, WREN_TRANSMISSION_CANONICAL_PAYLOAD } from './wren-transmission.js';
 
 assert.equal(WREN_TRANSMISSION_CANONICAL_PAYLOAD.observation_receipts, 0);
 for (const finding of [
@@ -14,4 +14,9 @@ for (const finding of [
   { proof: 'Wren private route, missing countermark.', pattern: 'Progressive packets had names and fears.', motive: 'Wren feared erasure and remains responsible.' },
 ]) assert.equal(validWrenTransmission(finding), false);
 
-console.log('wren-transmission.selftest OK: provenance, progression, motive, and wrong-theory refusal');
+assert.equal(wrenTransmissionResponse({ proof: 'Wren confessed', pattern: 'four packets grew', motive: 'fear but still responsible' }), 'confession_only');
+assert.equal(wrenTransmissionResponse({ proof: 'Rook knew the private revision', pattern: 'four packets grew', motive: 'fear but still responsible' }), 'wrong_sender');
+assert.equal(wrenTransmissionResponse({ proof: 'Wren knew the north brace; physical mark was missing', pattern: 'one packet had a route', motive: 'fear but still responsible' }), 'single_packet');
+assert.equal(wrenTransmissionResponse({ proof: 'Wren knew the north brace; physical mark was missing', pattern: 'four packets grew from people to build route to fear', motive: 'fear removes responsibility' }), 'absolution');
+
+console.log('wren-transmission.selftest OK: provenance, progression, motive, and authored wrong-theory responses');

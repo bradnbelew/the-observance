@@ -152,7 +152,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
         respond(player, runtime.submitP10WrenTransmission(finding), window,
                 "The supported attribution is fixed. Wren answers it; remembrance remains a separate choice.",
                 "The private version window must be preserved first.",
-                "The finding does not yet connect private provenance, the packet progression, and responsible choice.");
+                P10WrenTransmissionPredicate.response(finding).message());
     }
 
     private void submitP11Name(Player player, String[] args, V5RuntimeCoordinator runtime) {
