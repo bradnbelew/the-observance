@@ -445,7 +445,7 @@ def main() -> None:
                 "story_interaction_map", "story_dependency_map",
                 "campaign_grammar_audit", "functional_feasibility_matrix",
                 "platform_input_feasibility_matrix", "p4_p5_vertical_slice_authority",
-                "p4_p5_vertical_slice_checker"))
+                "p4_p5_vertical_slice_checker", "p4_p5_disposable_paper_receipt"))
             and arg_redesign["coverage"] == "P1-P12 exact ordered responsive case briefs"
             and "five human layers" in arg_redesign["story_coverage"]
             and "no lectern textbox" in arg_redesign["input_boundary"]
@@ -456,6 +456,22 @@ def main() -> None:
             and arg_redesign["production_mutation"] is False
             and arg_redesign["new_brad_server_authorized"] is False,
             "research-based P1-P12 ARG experience redesign lineage drift")
+
+    arg_paper = json.loads((ROOT / arg_redesign["p4_p5_disposable_paper_receipt"])
+                           .read_text(encoding="utf-8"))
+    require(arg_paper["status"] == "automated_technical_pass_human_experience_open"
+            and arg_paper["brad_approval"] is None
+            and arg_paper["source_commit"] == "e2cd69fa95d5f68d4d549f7aa3945a3bd73c76b9"
+            and arg_paper["physical_audit"]["closed_findings"] == 0
+            and arg_paper["physical_audit"]["open_findings"] == 0
+            and arg_paper["physical_audit"]["restart_findings"] == 0
+            and arg_paper["physical_audit"]["gate_collision_closed"] == 88
+            and arg_paper["physical_audit"]["gate_collision_open"] == 0
+            and arg_paper["state_and_negative_flow"]["correct_theory_with_zero_observation_receipts"] is True
+            and arg_paper["state_and_negative_flow"]["final_receipt_count"] == 4
+            and len(arg_paper["failed_attempts_preserved"]) == 3
+            and arg_paper["production_mutated"] is False,
+            "P4-P5 ARG disposable Paper lineage drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False

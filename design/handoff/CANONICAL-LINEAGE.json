@@ -516,6 +516,7 @@
     "negative_contract_selftest": "tools/test_arg_experience_negative_contracts.py",
     "p4_p5_vertical_slice_authority": "design/m3/P4-P5-ARG-VERTICAL-SLICE.json",
     "p4_p5_vertical_slice_checker": "tools/check_arg_vertical_slice.py",
+    "p4_p5_disposable_paper_receipt": "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
     "story_human_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md",
     "story_machine_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.json",
     "story_interaction_map": "campaign/story-interaction-map.json",
@@ -552,6 +553,7 @@
     "design/m3/P4-P5-ARG-VERTICAL-SLICE.md",
     "design/m3/P4-P5-ARG-VERTICAL-SLICE.json",
     "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json",
+    "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.md",
@@ -730,6 +732,11 @@
       "older": "the rejected P4 vNext server held immutable at 127.0.0.1:25593 / PID 36280",
       "newer": "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json",
       "effect": "Brad explicitly confirmed disconnect; the log independently showed SirNan left at 20:54:24 with no later join. A console interrupt targeted only PID 36280, Paper saved every dimension and completed RegionFile/worker shutdown, and PID/port readback is empty. The server remains rejected technical proof and its stop does not create approval."
+    },
+    {
+      "older": "the story-first P4-P5 vertical slice as static and pure-state implementation only",
+      "newer": "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
+      "effect": "Fresh Paper 1.21.11 build 132 now proves real Dialog class linkage, Brigadier fallback registration, zero-observation correctness, wrong-theory non-progression, 88-to-0 gate collision, two physical P5 curation decisions, exactly four idempotent local receipts, clean stop/restart projection, and zero physical/security findings across 248,745 cells. Three create-only failed targets and their exact causes remain preserved. Real-client and human ARG experience gates stay open."
     },
     {
       "older": "the external-target receipt residue claiming five media byte sets were absent",

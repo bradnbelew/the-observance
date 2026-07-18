@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0-p4-p5-arg-disposable-paper-lineage",
+  "recorded_at": "2026-07-17T22:03:00-05:00",
+  "status": "automated_technical_pass_human_experience_open",
+  "brad_approval": null,
+  "source_commit": "e2cd69fa95d5f68d4d549f7aa3945a3bd73c76b9",
+  "target": {
+    "id": "p4-p5-arg-validation-e2cd69f-04",
+    "path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\p4-p5-arg-validation-e2cd69f-04",
+    "address_during_test": "127.0.0.1:25602",
+    "paper": "1.21.11 build 132",
+    "paper_jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_jar_sha256": "696ed18152d78ee0ed5c276afdf37b03afb0406f82504ff1d725518493d6ed58",
+    "authority_sha256": "170c8be5dec8ef380b7e93fb6335d7dc17692704a5a8404f7e531dc88590ccad",
+    "world_tree_sha256": "e9040d0fa4b5a6c17f6f41f2ab562f0f2c44f94958506ea4fe859bf870c67b93",
+    "world_package_sha256": "8858ed030449660b45ace0f3d691822164b7fbe2c24b10f4d9bde22aa35c9bcd",
+    "journal_sha256": "00aee8c8aa27d4bba7d85edf0cd7b61c86d6693a3fb17746e845355969d3950d"
+  },
+  "physical_audit": {
+    "cells": 248745,
+    "build_writes": 234557,
+    "evidence_surfaces": 8,
+    "submission_desks": 1,
+    "references": 2,
+    "signs": 8,
+    "water_cells": 62,
+    "bookshelves": 61,
+    "supports": 105,
+    "composition_clusters": 30,
+    "seats": 22,
+    "closed_findings": 0,
+    "open_findings": 0,
+    "restart_findings": 0,
+    "gate_collision_closed": 88,
+    "gate_collision_open": 0,
+    "closed_world_state_sha256": "d78f01705757365683e7afc414e48be72d646bb231a3bdbc168e7d109f0de262",
+    "curated_world_state_sha256": "317d37ddc298fa428043a6357abdcb6f4c4d08d321a92fd59bc1df67544950be"
+  },
+  "state_and_negative_flow": {
+    "dialog_runtime_linked": true,
+    "brigadier_fallback_registered": true,
+    "wrong_theory_changes_state": false,
+    "correct_theory_with_zero_observation_receipts": true,
+    "correct_theory_opens_gate": true,
+    "service_public_partial_state_persists": true,
+    "penalty_custody_completes_curation": true,
+    "restart_reprojects_gate_and_curation": true,
+    "duplicate_correct_is_idempotent": true,
+    "final_receipt_count": 4
+  },
+  "security": {
+    "bind": "127.0.0.1",
+    "online_mode": false,
+    "force_gamemode": true,
+    "gamemode": "ADVENTURE",
+    "default_op": false,
+    "inventory_escrow": false,
+    "production_credentials_loaded": false,
+    "closed_and_open_security_audits": "PASS"
+  },
+  "full_external_receipt": {
+    "path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\p4-p5-arg-validation-e2cd69f-04-receipt.json",
+    "bytes": 8289,
+    "sha256": "5644dfe5f06a1c06a3faa075af6cef17e2ddf2c7efc55f920056da76dc1d4fa0",
+    "first_log_sha256": "3ed8822b64357d8a0fb957b749f576e2aab1a5f3bf044770c3f44bc7d4b7896c",
+    "restart_log_sha256": "96f045f9f45e2c5ac9bcd9f2d1233d04e32089bac63ae9c7e2c0bf1e12e08e89"
+  },
+  "failed_attempts_preserved": [
+    {
+      "attempt": 1,
+      "target": "p4-p5-arg-validation-6e5d80d-01",
+      "port": 25599,
+      "failure": "Paper exited 1 before authority confirmation; no readiness receipt or latest.log was produced. The harness had not yet gained failed-stdout preservation, so no cause is invented.",
+      "pid_and_port_after": "absent"
+    },
+    {
+      "attempt": 2,
+      "target": "p4-p5-arg-validation-a8166a0-02",
+      "port": 25600,
+      "failure": "The runtime did announce readiness, but the harness consumed that earlier line while waiting for the later target-confirmation line and timed out. No world build/readiness receipt was published.",
+      "failed_log_sha256": "2aebc40a28bcc3694b7c38c75f1396c583b21260427bdda821ad29c091cab89b",
+      "latest_log_sha256": "f8ef4a684d58ef138685b7e76a741ec1b1b560187e392870a8b14480aa10d175",
+      "clean_shutdown": true
+    },
+    {
+      "attempt": 3,
+      "target": "p4-p5-arg-validation-49ae608-03",
+      "port": 25601,
+      "failure": "Build completed but the exact audit found both P5 signs 2.88 blocks outside the classified player-eye band. Standing frames were corrected; the audit was not weakened.",
+      "failed_log_sha256": "51c2d4c5750cf3806b63aac6cb472cd672cb33d8c76e2b2c5d74c441d58aed9b",
+      "latest_log_sha256": "d3a27148bdb2e1ec4ca9ab6e51dbfaeb6d65bf017292ce1b96080340c62a925e",
+      "clean_shutdown": true
+    }
+  ],
+  "post_run_ports_25599_through_25602": 0,
+  "human_gaps": [
+    "actual 1.21.11 client Dialog visual and keyboard flow",
+    "authenticated non-op Adventure join and physical lever use",
+    "fresh-player discovery, theory formation, composition, and emotional-force review",
+    "Brad experiential approval"
+  ],
+  "production_mutated": false,
+  "public_launch": false
+}

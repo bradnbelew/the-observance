@@ -254,6 +254,19 @@ or postponing safe work in earlier phases.
   source gating, cipher-coordinate drift, or book overflow. Fresh Paper restart/client proof and Brad's
   experiential approval remain open and may not be inferred from these static checks.
 
+### Fresh Paper 1.21.11 automated proof
+
+- Create-only attempt 1 exited before authority confirmation and produced no readiness receipt; attempt 2
+  exposed a harness event-order defect; attempt 3 correctly rejected two P5 signs outside the classified
+  player-eye band. All targets remain preserved, no failed target was reused, and no audit was weakened.
+- Attempt 4 at source `e2cd69fa95d5f68d4d549f7aa3945a3bd73c76b9` passed closed, open, curated,
+  restart, security, wrong-theory, zero-observation-correct, and duplicate-idempotency paths. All three
+  248,745-cell audits report zero findings; gate collision is `88 -> 0`; the journal has exactly four
+  receipts after theory and P5 curation.
+- The exact source, Paper/plugin/authority/world/journal/log hashes and all failed-attempt provenance are in
+  `P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json`. Actual client Dialog, non-op physical use,
+  fresh-player experience, and Brad approval remain explicitly null.
+
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the
 investigation: twenty complete one-clause pages fit the conservative 114-pixel/13-line budget and expose
