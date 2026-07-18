@@ -231,7 +231,7 @@ The six masonry/banner marks establish the exact compass rotations `N / E / S / 
 
 Compare conditions on the signed certificate to the crack projection. Neither condition was met: heat load was not reduced and the brace was cut short.
 
-- Accepted conclusion: `conditional certificate; load not reduced and brace failed`.
+- Primary conclusion is filed through the component-aware campaign surface. The short local recovery token is `CONDITIONAL LOAD BRACE`; no hidden sentence is required.
 - H1: “signed safe” is not the whole sentence.
 - H2: test each condition against physical evidence.
 - H3: both safety conditions failed.
@@ -259,7 +259,7 @@ Decode the three-rail strip `PNWEYRARIEIHMTHUINTPO`.
 
 Bell nine's clean copy uses Nessa despite her removal. Toma Rill's meal chit and Brann's mark place him as relief. The outage/alarm correction points to bell eight.
 
-- Accepted conclusion: `Toma Rill at bell eight; Nessa was inserted later`.
+- Primary conclusion is filed by its time/name components. The short local recovery token is `TOMA EIGHT NESSA LATER`.
 - H1: test names against availability, not only the clean rota.
 - H2: Nessa cannot work after removal; follow the meal chit.
 - H3: Toma Rill / bell eight.
@@ -286,7 +286,7 @@ Inspect PDC/lore on the physical reed knot. Original recovery tag says living gr
 
 Margin acrostic and signature comparison prove Iss signed the unnamed registrar out of the roster and described the omission as mercy. Her identity remains unresolved until C09.
 
-- Accepted conclusion: `ISS SIGNED THE REGISTRAR OUT`, plus harmless phrasing variants.
+- Primary conclusion is preserved by actor/action/subject components. The short local recovery token is `REGISTRAR SIGNED OUT`.
 - H1: follow correction marks, not the warm first letters.
 - H2: read only lines with the same cut as the keepsake tag.
 - H3: the actor is ISS; action SIGNED OUT; subject is the unnamed registrar.
@@ -355,16 +355,16 @@ draft. All three cache exhibits are tagged and recoverable.
 
 ### CW08 — Clear Nessa
 
-The conclusion must contain two propositions: Nessa followed procedure; counterfeit/diverted supplies caused the failure and the hearing hid evidence.
+The primary correction uses three short fields: material cause/place, chronology edits, and Nessa's conduct/timing. It accepts meaning components and stores a canonical finding, not the player's prose.
 
-- Accepted examples: `NESSA FOLLOWED PROCEDURE; COUNTERFEIT FILTERS WERE HIDDEN`.
+- Local compatibility action: `CLEAR NESSA`. It is an explicit correction action, not a substitute for the evidence or a hidden summary sentence.
 - H1: separate worker conduct from material cause.
 - H2: use samples, invoice, and two drafts.
 - H3: clear Nessa and name counterfeit filters / supply diversion.
 
 ## C05 — Break Inquest / the Unlit
 
-BI01–BI07 are seven independent house investigations. Their numbers are filing labels, not an unlock order: all seven are open on arrival and may be completed in any order. BI08 is the base-mirror synthesis and accepts a conclusion only after all seven house receipts exist. The village well is both entrance and exit.
+BI01–BI07 are seven independent house investigations. Their numbers are filing labels, not an unlock order: all seven are open on arrival and may be completed in any order. The primary causal-plan surface accepts a correct model with zero observation receipts; the seven substantial house investigations remain separate required campaign work. The legacy local BI08 recovery route opens after those seven actions. The village well is both entrance and exit.
 
 ### BI01 — Lamp house
 
@@ -435,9 +435,9 @@ Bounded route/sightline proves Orin operated the inner seal after the outer cont
 
 Conclusion must identify multiple interacting causes, not a single villain: neglected fracture/heat load, diverted resources, falsified timing, Iss's secret cut, delayed response, and Record/Dark copying feedback.
 
-- Accepted answers require at least four categories including Iss's cut and preexisting failure.
+- The primary campaign surface checks cause components. The short legacy local recovery token is `FRACTURE DELAY CUT FEEDBACK`.
 - H1: make a cause table: existed before / accelerated / hidden / supernatural feedback.
-- H2: use all seven house receipts and the copied base.
+- H2: compare all seven house findings and the copied base; touching their source props is not an answer prerequisite.
 - H3: preexisting fracture + resource neglect + hidden cut + delayed/edited response + Record feedback.
 
 ## C06 — Restoring the Hold
@@ -509,6 +509,8 @@ Insert System Key, verify water/lamp/pressure/survey flags, then operate the syn
 
 Combine village supply entry, torn map corner, and Wren's contradictory distance. Coordinates are generated from the placed camp site; the route uses relative bearings so no hard-coded world coordinate becomes stale.
 
+- Primary action restores the four biographies by relationships. The short local bearing recovery token is `MAP SUPPLY NOT DISTANCE`.
+
 - H1: three sources describe one journey in different units.
 - H2: convert supply “turns,” map compass, and Wren walking time to the same relative route.
 - H3: the map and supply entry agree; use Wren only to identify which distance is false.
@@ -573,14 +575,14 @@ After Discord accepts the answer, Locker 13 opens at the camp and contains the t
 - H2: Ash's station has numbered lockers.
 - H3: claim Locker 13.
 
-### A10 — Sabotage synthesis
+### A10 — Private revision window
 
-Compare spool, Rook's route change, mkept's offline time, and Ash's footage. Only Wren knew the private bridge revision when the Watcher reproduced it.
+Compare the spool, Rook's counter-mark, independent intake time, and the public upload. They prove that a private revision crossed before publication through someone with inside access. Wren remains a plausible theory, not the P9 conclusion.
 
-- Accepted conclusion: Wren leaked the plan because he feared Record closure would erase him.
-- H1: test who knew each leaked detail and when.
-- H2: eliminate Ash and mkept with camera/offline receipts; Rook authored the private revision.
-- H3: Wren is the only remaining source.
+- Short custody token: `INSIDE ACCESS SENDER UNRESOLVED`.
+- H1: order copies by independent clocks, not the time printed in their body text.
+- H2: private counter-mark 10:19; Witness Spool intake 10:23; public upload 11:02.
+- H3: inside access is proven; sender attribution remains open for C08/P10.
 
 ## C08 — Wren's Betrayal
 
