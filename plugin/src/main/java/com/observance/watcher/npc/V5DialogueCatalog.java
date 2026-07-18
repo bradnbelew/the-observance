@@ -89,8 +89,8 @@ public final class V5DialogueCatalog {
             }
             Npc wren = parseNpc(root.getAsJsonObject("wren"));
             lines += countLines(wren);
-            if (townsfolk.size() != 5 || lines != 69) {
-                throw new IllegalStateException("V5 NPC authority expected 5 townsfolk/69 lines, found "
+            if (townsfolk.size() != 5 || lines != 77) {
+                throw new IllegalStateException("V5 NPC authority expected 5 townsfolk/77 lines, found "
                         + townsfolk.size() + "/" + lines);
             }
             return new Catalog(Map.copyOf(townsfolk), wren, lines);

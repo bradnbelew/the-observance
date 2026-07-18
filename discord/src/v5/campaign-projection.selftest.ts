@@ -8,6 +8,15 @@ const projection = JSON.parse(readFileSync(resolve('src/v5/generated/p5-p12.json
   observation_receipts_gate_answers: boolean;
   cases: DocketProjection[];
 };
+const rawCases = projection.cases as unknown as Array<Record<string, unknown>>;
+const inputRows = rawCases.flatMap((entry) => {
+  const conclusions = Array.isArray(entry.conclusions) ? entry.conclusions : [];
+  return entry.group_conclusion ? [...conclusions, entry.group_conclusion] : conclusions;
+}) as Array<{ id: string; input_contract: { interpretive: boolean; runtime_exact_phrase: boolean; accepted_answers_are_human_examples: boolean } }>;
+assert.equal(inputRows.length, 21);
+assert.deepEqual(inputRows.filter((row) => row.input_contract.runtime_exact_phrase).map((row) => row.id), ['P11.F8']);
+assert.ok(inputRows.filter((row) => row.input_contract.interpretive).every((row) =>
+  !row.input_contract.runtime_exact_phrase && row.input_contract.accepted_answers_are_human_examples));
 assert.equal(projection.observation_receipts_gate_answers, false);
 assert.equal(buildDocket(projection.cases, 'P7', new Set()), null);
 const p7 = buildDocket(projection.cases, 'P7', new Set(['P6.V', 'P6.S', 'P6.B', 'P6.I', 'P6.F7']));

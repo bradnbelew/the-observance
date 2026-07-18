@@ -25,7 +25,7 @@
   ],
   "generic_primitives": {
     "evidence": "Authored content with provenance, dramatic roles, surface projections, and an accessibility equivalent.",
-    "conclusion": "A normalized meaning contract with accepted full answers, required concepts, and specific meaningful-wrong responses.",
+    "conclusion": "A case-specific platform input contract. Long accepted-answer sentences are human meaning examples only; runtime predicates use short components, exact fair artifacts, choices, matrices, or physical state.",
     "event": "An idempotent local-primary state transition with consequence projections and outage recovery.",
     "theory": "A player-held interpretation that may be acknowledged, contradicted, or recontextualized without becoming progress.",
     "projection": "A release-bounded view of canonical content for Minecraft, Copperline, Discord, NPC, media, or catch-up surfaces."

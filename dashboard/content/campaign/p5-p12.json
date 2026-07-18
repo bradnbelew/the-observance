@@ -234,6 +234,19 @@
             "It was a lived civic home with school, trade, repair work, and negotiated care, not a purpose-built ritual chamber."
           ],
           "id": "P5.F1",
+          "input_contract": {
+            "acceptance_owner": "p5 chronology predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p5.service_chronology_shared",
+            "id": "P5.F1",
+            "implementation_status": "private-slice-partial",
+            "input_shape": "four short meaning components: home, work, repair, care",
+            "interpretive": true,
+            "platform": "Discord or Paper recovery command",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "shared service chronology",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What kind of place was the Hold between emergencies?",
           "required_concepts": [
             "school",
@@ -248,6 +261,19 @@
             "Different workers made practical safety procedures into memorable Ways; officials later controlled heat, food, travel, posture, sleep, and speech by treating those memory aids as moral tests."
           ],
           "id": "P5.F5",
+          "input_contract": {
+            "acceptance_owner": "local-primary protected block-state predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p5.civic_gallery_recurated",
+            "id": "P5.F5",
+            "implementation_status": "private-slice-proven",
+            "input_shape": "keep work cards public; move penalty copies into evidence custody",
+            "interpretive": true,
+            "platform": "Minecraft Paper 1.21.11",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "two protected public-curation controls",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Why did the seven procedures become instruments of control?",
           "required_concepts": [
             "practical safety",
@@ -928,6 +954,19 @@
           "Vaun, Mara, Sella, Orin, Brann, and Iss were six distinct contemporaries whose different work preserved independent evidence; each protected people, made a different compromise, and later left a separate affidavit rather than forming one Keeper mind."
         ],
         "id": "P6.F7",
+        "input_contract": {
+          "acceptance_owner": "versioned matrix predicate",
+          "accepted_answers_are_human_examples": true,
+          "event": "p6.six_responsibilities_acknowledged",
+          "id": "P6.F7",
+          "implementation_status": "authored-not-runtime-proven",
+          "input_shape": "six rows with profession, proof, compromise, and correction fields",
+          "interpretive": true,
+          "platform": "Discord modal plus Paper command fallback",
+          "runtime_exact_phrase": false,
+          "visible_trigger": "shared responsibility matrix",
+          "zero_observation_acceptance": true
+        },
         "prompt": "File a responsibility matrix for six people: profession, what each could prove, the compromise each made, and the later correction each preserved.",
         "required_concepts": [
           "six distinct contemporaries",
@@ -1125,6 +1164,19 @@
             "The failure began upstream of Nessa at the lower intake: genuine cloth was diverted and counterfeit single-warp cloth shed into the water."
           ],
           "id": "P7.F2",
+          "input_contract": {
+            "acceptance_owner": "material-state predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p7.counterfeit_material_proven",
+            "id": "P7.F2",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "select failed material and first failure location",
+            "interpretive": true,
+            "platform": "Minecraft Paper 1.21.11",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "protected material comparison bench",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Where did the physical failure begin and what failed?",
           "required_concepts": [
             "upstream lower intake",
@@ -1138,6 +1190,19 @@
             "Toma took relief after ninth bell, but the clean rota moved him to eighth so later fiber samples would be attributed to Nessa."
           ],
           "id": "P7.F3",
+          "input_contract": {
+            "acceptance_owner": "server-side provenance predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p7.supplier_history_restored",
+            "id": "P7.F3",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "identify handler transition and concealed revision relationship",
+            "interpretive": true,
+            "platform": "Copperline semantic form",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "supplier revision comparison",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Who handled the later fiber samples and how was that hidden?",
           "required_concepts": [
             "Toma relieved after ninth bell",
@@ -1151,6 +1216,19 @@
             "Nessa followed procedure and reported pressure loss and grit before cloth shedding. Genuine supplies were diverted, counterfeit cloth failed, her shift and complaint records were edited, and Averyn's exonerating inquiry was suppressed."
           ],
           "id": "P7.F6",
+          "input_contract": {
+            "acceptance_owner": "three-component exoneration predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p7.nessa_publicly_cleared",
+            "id": "P7.F6",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "separate cause, record change, and conduct findings",
+            "interpretive": true,
+            "platform": "Discord modal plus Paper command fallback",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "public correction docket",
+            "zero_observation_acceptance": true
+          },
           "prompt": "File the complete finding on Nessa Vale.",
           "required_concepts": [
             "followed procedure",
@@ -1537,6 +1615,19 @@
             "Iss was right that the surface had healed, but he cut a secret route through an already stressed bay without structural authorization or paired watch, accelerating the Break."
           ],
           "id": "P8.F3",
+          "input_contract": {
+            "acceptance_owner": "two-component causal predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p8.intervention_plan_accepted",
+            "id": "P8.F3",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "short correct-result and unsafe-remedy components",
+            "interpretive": true,
+            "platform": "Paper Dialog plus command fallback",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "Iss intervention review",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What was Iss right about, and what made his remedy unsafe?",
           "required_concepts": [
             "surface healed",
@@ -1551,6 +1642,19 @@
             "The altered room preserves official edits instead of lived history and records a change before its source, showing the Record fed back into the failure; it does not explain what the Dark is."
           ],
           "id": "P8.F4",
+          "input_contract": {
+            "acceptance_owner": "bounded-claim predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p8.intervention_plan_accepted",
+            "id": "P8.F4",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "behavior proven and ontology not claimed fields",
+            "interpretive": true,
+            "platform": "Discord modal",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "altered-copy limits note",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What does the altered copy prove without claiming to explain the Dark?",
           "required_concepts": [
             "copied official edits",
@@ -1565,6 +1669,19 @@
             "The Break combined chronic fracture and undersized bracing, unequal heat allocation and deferred maintenance, falsified warnings and delayed closure, Iss's unsafe secret cut as an accelerator, and Record/Dark copying feedback."
           ],
           "id": "P8.F5",
+          "input_contract": {
+            "acceptance_owner": "graph-edge predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p8.intervention_plan_accepted",
+            "id": "P8.F5",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "ordered cause and interaction edges, not prose",
+            "interpretive": true,
+            "platform": "Copperline semantic causal-map form",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "incident reconstruction board",
+            "zero_observation_acceptance": true
+          },
           "prompt": "File the causal graph of the Break.",
           "required_concepts": [
             "chronic structural failure",
@@ -1580,6 +1697,19 @@
             "The crew restored local water, paired light, pressure control, and a safe route; repair proves the systems were material and changeable without erasing the people and institutions that caused the failure."
           ],
           "id": "P8.F8",
+          "input_contract": {
+            "acceptance_owner": "local-primary physical state predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p8.hold_systems_repaired",
+            "id": "P8.F8",
+            "implementation_status": "legacy-physical-scaffolding-needs-reauthor",
+            "input_shape": "safe compatible repair state",
+            "interpretive": true,
+            "platform": "Minecraft Paper 1.21.11",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "water, lamp, pressure, and route controls",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What did the repair establish?",
           "required_concepts": [
             "water",
@@ -2010,6 +2140,19 @@
             "mkept administered the server, Ash documented it, Rook built and corrected routes, and Wren accompanied the team and carried private route knowledge."
           ],
           "id": "P9.F2",
+          "input_contract": {
+            "acceptance_owner": "biography relationship predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p9.company_biographies_restored",
+            "id": "P9.F2",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "four owner-to-habit/work/relationship mappings",
+            "interpretive": true,
+            "platform": "Copperline semantic form and Discord readback",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "camp biography cards",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Who lived at the camp and what did each do?",
           "required_concepts": [
             "mkept admin",
@@ -2024,6 +2167,19 @@
             "The four had the needed conclusions and components; their attempt failed after Rook's private bridge revision and their identities reached the Record, so interference—not a missing answer—stopped them."
           ],
           "id": "P9.F4",
+          "input_contract": {
+            "acceptance_owner": "timeline predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p9.leak_window_proven",
+            "id": "P9.F4",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "four ordered events and one still-private boundary",
+            "interpretive": true,
+            "platform": "Discord modal",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "private-window chronology",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Why did their release attempt fail?",
           "required_concepts": [
             "required knowledge present",
@@ -2038,6 +2194,19 @@
             "The Witness Spool contains Rook's private revision before it was public, proving a leak from inside the four-person company; P9 does not yet prove which person sent it."
           ],
           "id": "P9.F6",
+          "input_contract": {
+            "acceptance_owner": "open-question custody action",
+            "accepted_answers_are_human_examples": true,
+            "event": "p9.leak_window_proven",
+            "id": "P9.F6",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "choose which unresolved provenance question remains open",
+            "interpretive": true,
+            "platform": "Discord thread action",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "Locker 13 carry-forward note",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What question does Locker 13 carry forward?",
           "required_concepts": [
             "Witness Spool",
@@ -2383,6 +2552,19 @@
             "Wren deliberately transmitted the company's names, plans, changed routes, and private fears in progressively specific packets; the Record did not passively infer the private revision."
           ],
           "id": "P10.F2",
+          "input_contract": {
+            "acceptance_owner": "provenance relationship predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p10.wren_confronted",
+            "id": "P10.F2",
+            "implementation_status": "legacy-physical-scaffolding-needs-reauthor",
+            "input_shape": "sender, transmitted classes, opportunity, and independent proof mappings",
+            "interpretive": true,
+            "platform": "Minecraft evidence bridge plus Discord matrix",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "packet provenance board",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What was transmitted, by whom, and why is it deliberate?",
           "required_concepts": [
             "Wren",
@@ -2399,6 +2581,19 @@
             "Wren feared that closing the Record would erase his partially retained self, but he chose to preserve himself by betraying the others; his fear explains the act without removing responsibility."
           ],
           "id": "P10.F3",
+          "input_contract": {
+            "acceptance_owner": "two-component moral fact predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p10.wren_confronted",
+            "id": "P10.F3",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "motive and responsibility-not-erased components",
+            "interpretive": true,
+            "platform": "Paper Dialog plus command fallback",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "Wren response limits",
+            "zero_observation_acceptance": true
+          },
           "prompt": "What motive does Wren admit, and what does it not erase?",
           "required_concepts": [
             "fear closure would erase him",
@@ -2415,6 +2610,19 @@
             "free"
           ],
           "id": "P10.F5",
+          "input_contract": {
+            "acceptance_owner": "protected branch choice",
+            "accepted_answers_are_human_examples": true,
+            "event": "p10.wren_remembrance_committed",
+            "id": "P10.F5",
+            "implementation_status": "legacy-choice-scaffolding-needs-reauthor",
+            "input_shape": "condemn, understand, or free; dissent preserved",
+            "interpretive": false,
+            "platform": "Minecraft protected choice with Discord readback",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "remembrance control",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Record the group's remembrance of Wren.",
           "required_concepts": [
             "condemn or understand or free",
@@ -2739,6 +2947,19 @@
             "AVERYN"
           ],
           "id": "P11.F8",
+          "input_contract": {
+            "acceptance_owner": "exact artifact predicate",
+            "accepted_answers_are_human_examples": false,
+            "event": "p11.averyn_identified",
+            "id": "P11.F8",
+            "implementation_status": "legacy-physical-scaffolding-needs-reauthor",
+            "input_shape": "fairly yielded six-letter identity artifact",
+            "interpretive": false,
+            "platform": "Minecraft arrangement plus Paper command fallback",
+            "runtime_exact_phrase": true,
+            "visible_trigger": "six affidavit fragments in dossier order",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Restore the name in Keeper dossier order.",
           "required_concepts": [
             "A",
@@ -2756,6 +2977,19 @@
             "Averyn is the human registrar trapped as the Record's interface; the Watcher is the Record speaking through her constrained consciousness; the Dark is related to the system but remains distinct and unknown."
           ],
           "id": "P11.F9",
+          "input_contract": {
+            "acceptance_owner": "four-component relation predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p11.averyn_restored_unbound",
+            "id": "P11.F9",
+            "implementation_status": "authored-not-runtime-proven",
+            "input_shape": "four separate relation and non-identity fields",
+            "interpretive": true,
+            "platform": "Paper Dialog plus command fallback",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "identity relationship review",
+            "zero_observation_acceptance": true
+          },
           "prompt": "State how Averyn, the Watcher, the Record, and the Dark are related without collapsing them.",
           "required_concepts": [
             "Averyn human registrar",
@@ -3125,6 +3359,19 @@
             "Return the six Keeper affidavits and leave Averyn's Record slot empty so restoring her name does not bind her back into the system."
           ],
           "id": "P12.F1",
+          "input_contract": {
+            "acceptance_owner": "protected arrangement predicate",
+            "accepted_answers_are_human_examples": true,
+            "event": "p12.release_configuration_ready",
+            "id": "P12.F1",
+            "implementation_status": "legacy-finale-scaffolding-needs-reauthor",
+            "input_shape": "six returned and Averyn unbound state",
+            "interpretive": true,
+            "platform": "Minecraft release configuration",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "six affidavit returns and one deliberately empty place",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Interpret SIX RETURN, ONE IS NOT KEPT.",
           "required_concepts": [
             "return six affidavits",
@@ -3139,6 +3386,19 @@
             "release unnamed"
           ],
           "id": "P12.F4",
+          "input_contract": {
+            "acceptance_owner": "protected branch choice",
+            "accepted_answers_are_human_examples": true,
+            "event": "p12.name_treatment_committed",
+            "id": "P12.F4",
+            "implementation_status": "legacy-finale-scaffolding-needs-reauthor",
+            "input_shape": "publish or deliberately unfile",
+            "interpretive": false,
+            "platform": "Minecraft protected choice",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "name treatment control",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Choose how Averyn's name remains outside the Record.",
           "required_concepts": [
             "publish or release unnamed",
@@ -3151,6 +3411,19 @@
             "release confirmed with six affidavits returned, three artifacts installed, Averyn unbound, and local state written before theater"
           ],
           "id": "P12.F5",
+          "input_contract": {
+            "acceptance_owner": "local-primary finale state machine",
+            "accepted_answers_are_human_examples": true,
+            "event": "p12.record_closed_averyn_released",
+            "id": "P12.F5",
+            "implementation_status": "legacy-finale-scaffolding-needs-reauthor",
+            "input_shape": "bounded physical confirmation after exact audit",
+            "interpretive": false,
+            "platform": "Minecraft collective release controls",
+            "runtime_exact_phrase": false,
+            "visible_trigger": "armed release readback",
+            "zero_observation_acceptance": true
+          },
           "prompt": "Confirm the protected release after the audit is complete.",
           "required_concepts": [
             "six affidavits",

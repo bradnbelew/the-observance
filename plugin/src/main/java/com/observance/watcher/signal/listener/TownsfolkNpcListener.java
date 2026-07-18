@@ -107,22 +107,26 @@ public final class TownsfolkNpcListener implements Listener {
             case "aro" -> {
                 if (truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
                 if (truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
+                if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
                 yield introState(player, id, "mouth_lead");
             }
             case "wenna" -> {
                 if (truthy(flags.get("v5_case_c05_complete"))) yield "after_c05";
+                if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (keepersComplete(flags)) yield "after_c03";
                 yield introState(player, id, "well_lead");
             }
             case "coll" -> {
                 if (truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
                 if (truthy(flags.get("v5_case_c06_complete"))) yield "camp_lead";
+                if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c01_complete"))) yield "after_c01";
                 yield "arrival";
             }
             case "dob" -> {
                 if (truthy(flags.get("v5_case_c05_complete"))) yield "after_c05";
+                if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
                 yield introState(player, id, "mouth_lead");
             }

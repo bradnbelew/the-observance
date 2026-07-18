@@ -287,6 +287,29 @@ public final class AuthoredCampaignAuthority {
         if (array(row, "required_concepts", phase, issues).isEmpty()) {
             issues.add(phase + " conclusion has no meaning contract");
         }
+        JsonObject input = object(row, "input_contract", phase, issues);
+        for (String key : List.of("id", "platform", "visible_trigger", "input_shape",
+                "acceptance_owner", "event", "implementation_status")) {
+            requireText(input, key, phase, issues);
+        }
+        String conclusionId = row.has("id") ? row.get("id").getAsString() : "";
+        if (input.has("id") && !conclusionId.equals(input.get("id").getAsString())) {
+            issues.add(phase + " input contract ID differs from conclusion " + conclusionId);
+        }
+        requireTrue(input, "zero_observation_acceptance", phase, issues);
+        boolean exact = input.has("runtime_exact_phrase")
+                && input.get("runtime_exact_phrase").isJsonPrimitive()
+                && input.get("runtime_exact_phrase").getAsBoolean();
+        boolean interpretive = input.has("interpretive")
+                && input.get("interpretive").isJsonPrimitive()
+                && input.get("interpretive").getAsBoolean();
+        if (exact && interpretive) {
+            issues.add(phase + " interpretive conclusion cannot require exact prose: " + conclusionId);
+        }
+        if (!exact) {
+            requireFalse(input, "runtime_exact_phrase", issues);
+            requireTrue(input, "accepted_answers_are_human_examples", phase, issues);
+        }
         return 1;
     }
 

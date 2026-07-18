@@ -27,6 +27,10 @@
           "A school and a market below. That sounds more like a refuge than the story I was told.",
           "If you find a market token, show it to Coll. He knows the old issue marks better than I do."
         ],
+        "after_p5": [
+          "Copperline changed the old caption from shrine to lamp-service counter. I have stopped calling every carved room a temple.",
+          "The work cards can stay where people use them. The penalty copies belong where people can see who changed the rules."
+        ],
         "after_c04": [
           "Pell worked the pumps with Nessa's family. Let him finish when he tells you what she filed.",
           "Bad filter cloth and a hearing that hid it. People here blamed Nessa for years."
@@ -60,6 +64,10 @@
           "Sella taught drawing. The old school slates put north at the bottom because damp copies were read from the reverse.",
           "Orin cut inspection marks on the undersides of stones. The upper faces were worn smooth by boots and water."
         ],
+        "after_p5": [
+          "The old sample card said to return one cup so the next draw could be compared. It did not ask anyone to make an offering.",
+          "Pera's school repair and our drain patch use the same reed packing. Dob still buys it from me every spring."
+        ],
         "after_c05": [
           "You found a different record in each of the seven houses. Averyn's list only made sense after you compared them at the base.",
           "The well reflects the sky again. It still tastes of iron, but that part has always been true."
@@ -84,6 +92,10 @@
         "after_c01": [
           "mkept bought paper, lamp oil, and a second map case. Paid in full and kept the receipt.",
           "The receipt carried the old Copperline service number, 1842. I copied it before using the back for stock totals."
+        ],
+        "after_p5": [
+          "A service exception is not a theft. If a school stove is broken, the lamp account can carry it until the mortar cures.",
+          "The later ledger turned those exceptions into offenses. Keep both copies. Do not pretend they are the same book."
         ],
         "camp_lead": [
           "Ash's group took four bundles: light, food, building, then recording. Rook repacked each bundle by receipt number.",
@@ -117,6 +129,10 @@
         "after_c02": [
           "There are three hands in the stone: rough shelter cuts, civic chisel work, then the dark pressure blocks.",
           "The school walls and patched drains matter. People maintained that place for years."
+        ],
+        "after_p5": [
+          "The low bow mark was an inspection position. You kneel because a standing eye cannot see the seam, not because stone wants respect.",
+          "Once the gallery is safe, I want to compare its old drain repair with the patch behind Wenna's wall."
         ],
         "after_c05": [
           "Three mineral seams crossed that crack before the fresh cut. The fracture was already moving.",

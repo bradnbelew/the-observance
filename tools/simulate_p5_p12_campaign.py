@@ -49,9 +49,13 @@ class State:
         return state
 
 
-def accepted(row: dict, answer: str) -> bool:
-    candidate = norm(answer)
-    return any(candidate == norm(value) for value in row["accepted_answers"])
+def accepted(row: dict, answer: str | set[str]) -> bool:
+    contract = row["input_contract"]
+    if contract["runtime_exact_phrase"]:
+        return isinstance(answer, str) and any(norm(answer) == norm(value) for value in row["accepted_answers"])
+    if not isinstance(answer, set):
+        return False
+    return set(row["required_concepts"]).issubset(answer)
 
 
 def main() -> None:
@@ -72,8 +76,17 @@ def main() -> None:
             assert not accepted(row, blind), f"{row['id']} accepted naive click-through text"
             assert not accepted(row, ""), f"{row['id']} accepted blank answer"
             naive_failures += 2
-            answer = row["accepted_answers"][0]
-            assert accepted(row, answer), f"{row['id']} rejected canonical correct answer"
+            contract = row["input_contract"]
+            if contract["runtime_exact_phrase"]:
+                answer: str | set[str] = row["accepted_answers"][0]
+            else:
+                assert not accepted(row, row["accepted_answers"][0]), \
+                    f"{row['id']} still treats the long human example as an exact runtime answer"
+                concepts = set(row["required_concepts"])
+                partial = set(list(row["required_concepts"])[:-1])
+                assert not accepted(row, partial), f"{row['id']} accepted an incomplete meaning/action contract"
+                answer = concepts
+            assert accepted(row, answer), f"{row['id']} rejected its case-specific correct input contract"
             assert state.observations == before_observations, f"{row['id']} mutated/required observations"
             state.completed.add(row["id"])
             correct_without_observation += 1

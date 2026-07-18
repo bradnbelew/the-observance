@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Breadcrumbs, LegacyShell, OldPageTitle } from '@/components/legacy/LegacyShell';
 import { P4_COPPERLINE_ROUTE } from '@/lib/copperline-p4-route';
+import { hasCampaignEvent } from '@/lib/arg-event-store';
 
 export const metadata: Metadata = { title: 'Community Blog - Copperline Hosting' };
 
@@ -16,7 +17,12 @@ const posts = [
 
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ user?: string }> }) {
   const user = (await searchParams).user;
-  const visible = user ? posts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : posts;
+  const recurated = await hasCampaignEvent('p5.civic_gallery_recurated');
+  const currentPosts = recurated === true ? [
+    { date: 'February 16, 2011', user: 'ashfield', title: 'that room was a service counter', body: 'The uncropped frame has wick shears, school chalk, and sample rings. Copperline corrected the archive caption after the service-card review.', href: '/community/2011/02/16/service-counter' },
+    ...posts,
+  ] : posts;
+  const visible = user ? currentPosts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : currentPosts;
   return (
     <LegacyShell active="community">
       <Breadcrumbs>Community Blog</Breadcrumbs>
