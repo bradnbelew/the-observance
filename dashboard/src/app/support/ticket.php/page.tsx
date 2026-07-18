@@ -39,7 +39,7 @@ function Ticket9137() {
         <article className="staff">
           <header><b>Andrew &mdash; Copperline Support</b><time>November 2, 2014 8:46 PM</time></header>
           <p>We located the single-player recovery image on the off-site cartridge. It remains attached to the account owner&apos;s community archive post. The dispatch destination was not copied into this ticket.</p>
-          <p><Link href="/community/2011/02/08/world-backup/">Open the community archive attachment &raquo;</Link></p>
+          <p><Link href="/community/archive.php?service=1842&amp;ticket=9137">Open the retained account history &raquo;</Link></p>
         </article>
         <article className="customer">
           <header><b>mkept</b><time>November 2, 2014 8:59 PM</time></header>

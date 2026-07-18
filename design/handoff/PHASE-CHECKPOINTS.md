@@ -497,3 +497,19 @@ open; M4 is still closed.
 - Focused M2, physical-authority, ARG-authority, Discord SQL/binding, and Paper tests pass, including a
   nearby-player negative test, no-attendance-timer test, restart/idempotence, and all 24 ending/conduct
   combinations. This is automated correctness evidence, not a human experience approval or launch receipt.
+
+## 2026-07-18 — opening/P9 Copperline revelation-order correction
+
+- The active Copperline implementation no longer requires P9's Locker 13 coordinate to complete P1.
+  `/community/archive.php?service=1842&ticket=9137` now owns only the ordinary Service 1842 account,
+  attachment-history, privacy, and damaged-world custody work. It commits the same idempotent
+  `p1.attachment_history_restored` event and leads to the existing package/relay provenance review.
+- `/community/archive.php?service=1842&ticket=9137&locker=13` is a distinct P9 callback. It fails closed
+  until `p9.company_biographies_restored`, then owns A06/A07 and Ash's custody-approved clip/stills. P1 no
+  longer exposes Ash Camp, Locker 13, or later-company meaning early.
+- Ticket 9137 links to the P1 account archive; the restored P9 camp route links back to the earned Locker 13
+  archive. Service 1842 and Ticket 9137 therefore recur as ordinary infrastructure instead of acting as a
+  one-use clue menu.
+- Dashboard self-tests, lint, rendered localhost DOM review, P9 precondition refusal, and browser console
+  review pass. This corrects a player-route and revelation-ladder defect; it does not establish human ARG
+  approval, external staging, production mutation, or launch readiness.

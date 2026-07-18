@@ -23,7 +23,7 @@
     ]
   },
   "p1_p12": [
-    {"phase":"P1","experience":"Copperline archaeology","authority":"Phase 2 authored","implementation":"legacy website routes and local fixtures exist; recurring lived-in archive expansion begun for P4","gap":"full current-standard content density, responsive review, immutable hosted history, and private deployment receipt"},
+    {"phase":"P1","experience":"Copperline archaeology","authority":"Phase 2 authored","implementation":"service 1842, ticket 9137, ordinary account history, semantic privacy/custody treatment, and package handoff are connected locally; P9-only Locker 13/Ash media is separately prerequisite-gated so the later callback cannot leak into the prologue","gap":"full responsive/mobile human review, immutable hosted history, and private deployment receipt"},
     {"phase":"P2","experience":"gated prologue save","authority":"Phase 2 authored","implementation":"playable Hold handoff, local archive manifest, download/hash runtime exist","gap":"current private end-to-end client and package parity receipt"},
     {"phase":"P3","experience":"arrival, settlement, Discord","authority":"Phase 2 authored","implementation":"Paper, identity-link, Discord docket, and local-primary runtime components exist","gap":"private authenticated Discord guild/service target and cold player review"},
     {"phase":"P4","experience":"Mouth, descent, intake","authority":"vNext case brief and disposable Paper proof complete","implementation":"compact authored Paper slice, free-text zero-receipt deductions, Copperline comparison fixture, gate/security/replay/restart proof passed","gap":"authenticated cross-surface private route and Brad morning acceptance"},

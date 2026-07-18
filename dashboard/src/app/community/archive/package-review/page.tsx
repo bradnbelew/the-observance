@@ -26,7 +26,7 @@ export default async function PackageReviewPage() {
   ]);
   return (
     <LegacyShell active="community">
-      <Breadcrumbs><Link href="/community/index.php">Community</Link> &raquo; <Link href="/community/archive.php?service=1842&amp;ticket=9137&amp;locker=13">Locker 13</Link> &raquo; Package review</Breadcrumbs>
+      <Breadcrumbs><Link href="/community/index.php">Community</Link> &raquo; <Link href="/community/archive.php?service=1842&amp;ticket=9137">Service 1842 archive</Link> &raquo; Package review</Breadcrumbs>
       <OldPageTitle sub="Recovery desk copy assembled from retained host records.">World package / relay note comparison</OldPageTitle>
       <section className="old-copy">
         <h2>Retained together by Copperline</h2>

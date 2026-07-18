@@ -25,6 +25,7 @@ const tests = [
   'src/lib/copperline-p4-route.selftest.ts',
   'src/lib/copperline-p4-restore.selftest.ts',
   'src/lib/copperline-p2-package.selftest.ts',
+  'src/lib/copperline-opening-callback.selftest.ts',
   'src/lib/copperline-p5-consequence.selftest.ts',
   'src/lib/copperline-p6-consequence.selftest.ts',
   'src/lib/copperline-p7-inquiry.selftest.ts',
