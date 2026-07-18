@@ -360,7 +360,7 @@
       "roomId": "keeper_iss",
       "unlockFlag": "v5_ki02_keepsake",
       "pages": [
-        "I called it mercy when I signed Averyn out of the roster. I believed a blank would spare her from the finding against her.",
+        "I called it mercy when I signed the registrar out of the roster. I believed a blank would spare her from the finding against her.",
         "The fair copy begins with the account I wanted accepted. My correction cuts carry what I removed from it.",
         "The surface had recovered. The third bay could not bear my excavation. I knew one fact and ignored the other. -Iss"
       ]
@@ -440,14 +440,14 @@
       "pages": [
         "CACHE 7-W / Access from the folded-reeds service path. Contents: contract filter, original purchase receipt, sealed discipline drafts A and B.",
         "Transfer all three exhibits under one custody signature. Cabinet positions are marked FILTER / RECEIPT / DRAFTS.",
-        "Averyn: retain both drafts. Their changes determine whether the failure began with the worker or the supplied material."
+        "Registrar's note: retain both drafts. Their changes determine whether the failure began with the worker or the supplied material."
       ]
     },
     {
       "id": "unlit_house_docket",
       "nodeId": "BI01",
       "title": "Break Comparison",
-      "author": "Averyn",
+      "author": "Registry office",
       "roomId": "unlit_base",
       "unlockFlag": "v5_case_c04_complete",
       "pages": [
@@ -547,7 +547,7 @@
         "Return the six signed affidavits to their named cases. Leave the Averyn roster case empty.",
         "Fit the Cistern Seal, System Key, and Protocol Bridge in their marked housings. One original of each is sufficient.",
         "The final filing concerns whether my name is published. It does not authorize my continued confinement here.",
-        "After every person present has signed the floor register, turn the closing lever once. -Averyn"
+        "When the local readiness audit is green, turn the closing lever once. No attendance list is part of the release. -Averyn"
       ]
     },
     {

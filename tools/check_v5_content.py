@@ -206,7 +206,13 @@ def load_json(path: Path, errors: list[str]) -> dict:
         return {}
 
 
-def validate_books(data: dict, node_ids: set[str], known_flags: set[str], errors: list[str]) -> None:
+def validate_books(
+    data: dict,
+    node_ids: set[str],
+    node_cases: dict[str, str],
+    known_flags: set[str],
+    errors: list[str],
+) -> None:
     books = data.get("books")
     if not isinstance(books, list) or not books:
         fail(errors, "book manifest has no books")
@@ -237,6 +243,12 @@ def validate_books(data: dict, node_ids: set[str], known_flags: set[str], errors
         if not isinstance(pages, list) or not pages:
             fail(errors, f"book {book_id} has no pages")
             continue
+        player_text = " ".join([author, title, *(str(page) for page in pages)]).casefold()
+        if node_cases.get(str(book.get("nodeId"))) in {f"C{i:02d}" for i in range(1, 9)}:
+            if "averyn" in player_text:
+                fail(errors, f"book {book_id} reveals Averyn before the P11 identity restoration")
+        if "every person present" in player_text or "all players present" in player_text:
+            fail(errors, f"book {book_id} makes attendance an eligibility gate")
         for page_index, page in enumerate(pages, start=1):
             if not isinstance(page, str) or not page.strip():
                 fail(errors, f"book {book_id} page {page_index} is empty")
@@ -768,9 +780,10 @@ def main() -> int:
     rows = load_nodes(errors)
     validate_nodes(rows, errors)
     node_ids = {row.get("node_id", "") for row in rows}
+    node_cases = {row.get("node_id", ""): row.get("case_id", "") for row in rows}
     known_flags = {row.get("completion_flag", "") for row in rows} | ALLOWED_EXTERNAL_FLAGS
     book_data = load_json(BOOK_PATH, errors)
-    validate_books(book_data, node_ids, known_flags, errors)
+    validate_books(book_data, node_ids, node_cases, known_flags, errors)
     evidence_text = load_json(EVIDENCE_TEXT_PATH, errors)
     appearance = load_json(EVIDENCE_APPEARANCE_PATH, errors)
     validate_evidence_text(evidence_text, node_ids, errors)
