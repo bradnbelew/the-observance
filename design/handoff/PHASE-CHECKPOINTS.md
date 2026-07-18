@@ -267,6 +267,18 @@ or postponing safe work in earlier phases.
   `P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json`. Actual client Dialog, non-op physical use,
   fresh-player experience, and Brad approval remain explicitly null.
 
+### Pristine story-first human target preparation
+
+- After Brad's explicit execution authorization, create-only target `p4-p5-arg-review-89fafae-01` was
+  prepared from source `89fafae6723ec8d5af078bfceb3f3b07efa05efc` on Paper 1.21.11 build 132.
+- The target started with all four ARG flags false, zero receipts, and no journal file. Its 248,745-cell
+  physical audit and localhost/non-op Adventure security audit both passed with zero findings; the closed
+  gate retained 88 collision cells. Paper then saved every dimension and stopped with port 25604 closed.
+- Exact target, source, Paper, plugin, authority, world, package, preparation-log, and external-receipt hashes
+  are in `P4-P5-ARG-PRISTINE-REVIEW-PREPARATION-2026-07-17.json`. Starting this target is authorized only
+  for the bounded real-client review. It does not claim whole-campaign readiness, launch approval, or Brad
+  approval; every human receipt remains null until the walk occurs.
+
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the
 investigation: twenty complete one-clause pages fit the conservative 114-pixel/13-line budget and expose

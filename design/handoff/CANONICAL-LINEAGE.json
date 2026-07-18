@@ -517,6 +517,7 @@
     "p4_p5_vertical_slice_authority": "design/m3/P4-P5-ARG-VERTICAL-SLICE.json",
     "p4_p5_vertical_slice_checker": "tools/check_arg_vertical_slice.py",
     "p4_p5_disposable_paper_receipt": "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
+    "p4_p5_pristine_review_preparation": "design/handoff/P4-P5-ARG-PRISTINE-REVIEW-PREPARATION-2026-07-17.json",
     "story_human_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md",
     "story_machine_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.json",
     "story_interaction_map": "campaign/story-interaction-map.json",
@@ -532,7 +533,7 @@
     "p5_p12_prior_packet_role": "content and technical scaffolding only",
     "brad_approval": null,
     "production_mutation": false,
-    "new_brad_server_authorized": false
+    "new_brad_server_authorized": true
   },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
@@ -554,6 +555,7 @@
     "design/m3/P4-P5-ARG-VERTICAL-SLICE.json",
     "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json",
     "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
+    "design/handoff/P4-P5-ARG-PRISTINE-REVIEW-PREPARATION-2026-07-17.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.md",
@@ -737,6 +739,11 @@
       "older": "the story-first P4-P5 vertical slice as static and pure-state implementation only",
       "newer": "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
       "effect": "Fresh Paper 1.21.11 build 132 now proves real Dialog class linkage, Brigadier fallback registration, zero-observation correctness, wrong-theory non-progression, 88-to-0 gate collision, two physical P5 curation decisions, exactly four idempotent local receipts, clean stop/restart projection, and zero physical/security findings across 248,745 cells. Three create-only failed targets and their exact causes remain preserved. Real-client and human ARG experience gates stay open."
+    },
+    {
+      "older": "the story-first slice after offline critique and automated Paper proof but before a pristine human target existed",
+      "newer": "design/handoff/P4-P5-ARG-PRISTINE-REVIEW-PREPARATION-2026-07-17.json",
+      "effect": "Brad's execution authorization permits the next bounded private human test after automated gates. A new create-only Paper 1.21.11 build 132 target was prepared at source 89fafae, audited with zero findings, confirmed at zero ARG receipts with no journal, saved, and stopped. Starting it may establish only the still-null real-client, non-op, physical-use, and experiential receipts; it cannot establish whole-campaign or launch approval."
     },
     {
       "older": "the external-target receipt residue claiming five media byte sets were absent",

@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0-p4-p5-arg-pristine-review-preparation",
+  "recorded_at": "2026-07-17T22:12:30-05:00",
+  "status": "prepared_stopped_pristine_human_review_open",
+  "brad_approval": null,
+  "source_commit": "89fafae6723ec8d5af078bfceb3f3b07efa05efc",
+  "target": {
+    "id": "p4-p5-arg-review-89fafae-01",
+    "path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\p4-p5-arg-review-89fafae-01",
+    "review_address_when_started": "127.0.0.1:25604",
+    "paper": "1.21.11 build 132",
+    "paper_jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_jar_sha256": "696ed18152d78ee0ed5c276afdf37b03afb0406f82504ff1d725518493d6ed58",
+    "authority_sha256": "170c8be5dec8ef380b7e93fb6335d7dc17692704a5a8404f7e531dc88590ccad",
+    "world_tree_sha256": "f5f09bce6c76fb90a7ff63098b9ec4aa7a508e754a3ee4f9cd91ef9418bb3286",
+    "world_package_sha256": "b651d2671d46f41ddad350ff0b3c0a5a257516c11d7ff767f6584a6d7d4cf64a"
+  },
+  "preparation": {
+    "runtime_dialog_linked": true,
+    "brigadier_fallback_registered": true,
+    "initial_theory": false,
+    "initial_service_public": false,
+    "initial_penalty_custody": false,
+    "initial_curated": false,
+    "initial_receipt_count": 0,
+    "journal_state": "absent_pristine_review_target",
+    "closed_physical_findings": 0,
+    "closed_security_findings": 0,
+    "gate_collision_closed": 88,
+    "build_writes": 234557,
+    "audited_cells": 248745,
+    "graceful_save_stop": true,
+    "post_stop_pid": null,
+    "post_stop_port_rows": 0
+  },
+  "exact_receipts": {
+    "external_preparation_receipt": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\p4-p5-arg-review-89fafae-01-receipt.json",
+    "external_preparation_receipt_sha256": "97cfe8dd538a3bb814e7092582e21c7b6fcb5ac14472e65f1af09dea9a5de9ea",
+    "preparation_latest_log_sha256": "687fbccfe2aef8b883f90857ded22348b91a0c212bc098251d84da95fa73441d",
+    "first_log_sha256": "e69e5c7bba878bd83fb26cfa979c93bb7c37ff01b78c50a7606867d451bfbcc6"
+  },
+  "human_review_gates": {
+    "actual_dialog_visual": null,
+    "non_op_adventure_join": null,
+    "physical_p5_control_use": null,
+    "fresh_player_arg_experience": null,
+    "brad_approval": null
+  },
+  "scope": "bounded story-first P4-to-P5 vertical slice; technical preparation is not whole-campaign or launch acceptance",
+  "production_mutated": false,
+  "public_launch": false
+}

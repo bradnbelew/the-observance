@@ -445,7 +445,8 @@ def main() -> None:
                 "story_interaction_map", "story_dependency_map",
                 "campaign_grammar_audit", "functional_feasibility_matrix",
                 "platform_input_feasibility_matrix", "p4_p5_vertical_slice_authority",
-                "p4_p5_vertical_slice_checker", "p4_p5_disposable_paper_receipt"))
+                "p4_p5_vertical_slice_checker", "p4_p5_disposable_paper_receipt",
+                "p4_p5_pristine_review_preparation"))
             and arg_redesign["coverage"] == "P1-P12 exact ordered responsive case briefs"
             and "five human layers" in arg_redesign["story_coverage"]
             and "no lectern textbox" in arg_redesign["input_boundary"]
@@ -454,7 +455,7 @@ def main() -> None:
             and arg_redesign["p5_p12_prior_packet_role"] == "content and technical scaffolding only"
             and arg_redesign["brad_approval"] is None
             and arg_redesign["production_mutation"] is False
-            and arg_redesign["new_brad_server_authorized"] is False,
+            and arg_redesign["new_brad_server_authorized"] is True,
             "research-based P1-P12 ARG experience redesign lineage drift")
 
     arg_paper = json.loads((ROOT / arg_redesign["p4_p5_disposable_paper_receipt"])
@@ -472,6 +473,22 @@ def main() -> None:
             and len(arg_paper["failed_attempts_preserved"]) == 3
             and arg_paper["production_mutated"] is False,
             "P4-P5 ARG disposable Paper lineage drift")
+
+    arg_review = json.loads((ROOT / arg_redesign["p4_p5_pristine_review_preparation"])
+                            .read_text(encoding="utf-8"))
+    require(arg_review["status"] == "prepared_stopped_pristine_human_review_open"
+            and arg_review["brad_approval"] is None
+            and arg_review["source_commit"] == "89fafae6723ec8d5af078bfceb3f3b07efa05efc"
+            and arg_review["target"]["paper"] == "1.21.11 build 132"
+            and arg_review["preparation"]["journal_state"] == "absent_pristine_review_target"
+            and arg_review["preparation"]["initial_receipt_count"] == 0
+            and arg_review["preparation"]["closed_physical_findings"] == 0
+            and arg_review["preparation"]["closed_security_findings"] == 0
+            and arg_review["preparation"]["graceful_save_stop"] is True
+            and arg_review["preparation"]["post_stop_port_rows"] == 0
+            and all(value is None for value in arg_review["human_review_gates"].values())
+            and arg_review["production_mutated"] is False,
+            "P4-P5 pristine review preparation lineage drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
