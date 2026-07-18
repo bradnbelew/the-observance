@@ -30,6 +30,7 @@ public final class RitualAuthorityContract {
                                 + node.predicate().kind());
             }
         });
+        P12AnySubsetAuthority.validate(authority);
     }
 
     public PhysicalPredicateAuthority authority() {

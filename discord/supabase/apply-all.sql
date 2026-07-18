@@ -7061,7 +7061,7 @@ values
   ('RP01','C10',1,'Release footage','unwriting','cross-media','media payload answer',array['v5_case_c09_complete'],'v5_rp01_instruction','SIX RETURN ONE IS NOT KEPT receipt','reveal clip 4 again','v5-rp01-release-instruction'),
   ('RP02','C10',2,'Configure release chamber','unwriting','physical Minecraft','tagged deposits and empty slot',array['v5_rp01_instruction'],'v5_rp02_configured','six affidavits plus seals keys bridge installed','reissue all earned artifacts',null),
   ('RP03','C10',3,'Choose name treatment','unwriting','collective choice','protected choice markers',array['v5_rp02_configured'],'v5_rp03_name_choice','publish or release-unnamed branch','operator recovery preserves chosen branch',null),
-  ('RP04','C10',4,'Active roster operation','unwriting','collective rite','group presence and tagged bridge',array['v5_rp03_name_choice'],'v5_rp04_collective','finale-ready receipt','rearm presence without changing choices',null),
+  ('RP04','C10',4,'Any-subset release confirmation','unwriting','physical confirmation','branch step and protected handle',array['v5_rp03_name_choice'],'v5_rp04_collective','finale-ready receipt','rearm confirmation without changing choices',null),
   ('RP05','C10',5,'Sever the Record','release','final choice','armed confirmation',array['v5_rp04_collective'],'v5_rp05_severed','durable ending state plus website and Discord coda','cancel before safe cutoff',null),
   ('RP06','C10',6,'Cinematic close and Coda','release','cinematic state machine','automatic armed finale',array['v5_rp05_severed'],'v5_case_c10_complete','save goodbye kick shutdown and persistent Coda Mode','resume idempotently from durable finale phase',null)
 on conflict (node_key) do update set

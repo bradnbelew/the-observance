@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0-p12-any-subset-overlay",
+  "authority_type": "superseding_behavior_overlay",
+  "base_physical_authority": {
+    "path": "design/ARG-V5-PHYSICAL-PREDICATES.json",
+    "raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+    "bytes_immutable": true
+  },
+  "supersession": {
+    "reason": "Later Brad authority requires zero source-touch gating, any-subset completion, and no active-player or attendance prerequisite for the final release.",
+    "scope": ["RP03", "RP04"],
+    "history_policy": "The M2 predicate receipt remains exact evidence of the earlier contract. This overlay is the current runtime authority for the two named nodes and does not rewrite that receipt.",
+    "m4_or_launch_approval": false
+  },
+  "global_rules": {
+    "source_observation_gates_correctness": false,
+    "nearby_online_or_absent_players_required": false,
+    "one_linked_participant_sufficient": true,
+    "timer_required": false,
+    "discussion_allowed_without_enrollment": true,
+    "branch_set_once": true,
+    "local_primary_restart_idempotent": true,
+    "legacy_telemetry_fields": "RP03 stores its one voluntary actor in the existing ballot telemetry shape for conduct-verdict compatibility. Field names do not create eligibility."
+  },
+  "nodes": [
+    {
+      "node_id": "RP03",
+      "legacy_kind": "visible_two_branch_active_roster_choice",
+      "effective_kind": "protected_any_subset_name_choice",
+      "participant_selection": "the linked non-spectator actor who operates one exact marker; no other player is enrolled",
+      "consequence_book": {
+        "available_before_choice": true,
+        "required_open_before_choice": false,
+        "observation_receipt_non_gating": true
+      },
+      "accepted_action": "one exact PUBLISH or RELEASE_UNNAMED marker operation",
+      "wrong_or_failed_action": "unlinked actor, invalid marker, or persistence failure changes no branch",
+      "commit": "persist name treatment, one-actor RP03 telemetry, and derived conduct exactly once; both branches release Averyn"
+    },
+    {
+      "node_id": "RP04",
+      "legacy_kind": "all_visible_active_players_presence_and_confirmation",
+      "effective_kind": "any_subset_branch_confirmation",
+      "participant_selection": "the linked Protocol Bridge depositor only; nearby, online, disconnected, and absent players are not enrolled",
+      "sector_rule": {
+        "required_reachable_lit_sectors": 1,
+        "time_limit": false,
+        "participant_confirms_own_handle": true
+      },
+      "branch_operation": {
+        "condemn": "leave the branch-marked Bridge in the black housing, then confirm",
+        "understand": "pass to a willing second player or use the five-second solo self-hold, then place in amber and confirm",
+        "free": "carry the Bridge from center to the white release trough, then confirm"
+      },
+      "wrong_or_failed_action": "reset only the uncommitted confirmation attempt; preserve Wren and name choices",
+      "commit": "persist finale-ready receipt, voluntary participant UUID, and same Protocol Bridge identity exactly once"
+    }
+  ]
+}

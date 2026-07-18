@@ -326,22 +326,18 @@ public final class V5RitualWorldController implements Listener, AutoCloseable {
     private void startAndVoteRp03(Player player, String branch) {
         try {
             if (ballots.view(VisibleBallotRite.VoteNode.RP03).isEmpty()) {
-                Set<UUID> roster = visibleRoster("the_unwriting");
-                VisibleBallotRite.StartResult started = ballots.startRp03(roster);
+                Set<UUID> participants = Set.of(player.getUniqueId());
+                VisibleBallotRite.StartResult started = ballots.startRp03(participants);
                 if (started.status() != VisibleBallotRite.StartStatus.STARTED
                         && started.status() != VisibleBallotRite.StartStatus.BUSY) {
-                    if (started.status() == VisibleBallotRite.StartStatus.CONSEQUENCE_BOOK_UNREAD) {
-                        player.sendMessage(Component.text(
-                                "The choice waits until every visible voter opens the consequence book ("
-                                        + started.unreadPlayers().size() + " unread).",
-                                NamedTextColor.YELLOW));
-                    } else {
-                        reportStart(player, "name vote", started.status().name(), roster.size());
-                    }
+                    reportStart(player, "name choice", started.status().name(),
+                            participants.size());
                     return;
                 }
-                broadcast(roster, "NAME TREATMENT — visible roster " + roster.size()
-                        + "; every listed player must choose PUBLISH or RELEASE UNNAMED.");
+                player.sendMessage(Component.text(
+                        "NAME TREATMENT — your protected choice is set once. Nearby and absent "
+                                + "players are not enrolled; discuss before operating a marker.",
+                        NamedTextColor.GOLD));
             }
             vote(player, VisibleBallotRite.VoteNode.RP03, branch);
         } catch (RuntimeException failure) {
@@ -382,7 +378,8 @@ public final class V5RitualWorldController implements Listener, AutoCloseable {
         try {
             ballots.markConsequenceBookRead(player.getUniqueId());
             player.sendActionBar(Component.text(
-                    "Consequence receipt recorded.", NamedTextColor.GRAY));
+                    "Release protocol opened. Reading is not a submission prerequisite.",
+                    NamedTextColor.GRAY));
         } catch (IOException | RuntimeException failure) {
             fail(player, "RP03 consequence read", failure);
         }
@@ -393,16 +390,22 @@ public final class V5RitualWorldController implements Listener, AutoCloseable {
         ItemStack stack = item(housing, 13);
         if (!isProtocolBridge(stack)) return;
         try {
-            ProtocolBridge bridge = bridges.captureSame(stack);
-            Set<UUID> roster = visibleRoster("coop_plate");
-            int sectors = fixtures.bindings("RP04", "sectors").size();
-            if (roster.isEmpty() || sectors < roster.size()) {
+            if (!remote.linked(starter.getUniqueId())) {
                 starter.sendMessage(Component.text(
-                        "The floor has " + sectors + " sectors for a roster of " + roster.size() + '.',
+                        "Link this player before starting the protected release confirmation.",
                         NamedTextColor.RED));
                 return;
             }
-            CollectivePresenceRite.Result result = presence.start(roster, bridge);
+            ProtocolBridge bridge = bridges.captureSame(stack);
+            Set<UUID> participants = Set.of(starter.getUniqueId());
+            int sectors = fixtures.bindings("RP04", "sectors").size();
+            if (sectors < participants.size()) {
+                starter.sendMessage(Component.text(
+                        "The floor has no reachable confirmation sector.",
+                        NamedTextColor.RED));
+                return;
+            }
+            CollectivePresenceRite.Result result = presence.start(participants, bridge);
             if (result.status() == CollectivePresenceRite.Status.STARTED) {
                 rp04Active = true;
                 rp04Starter = starter.getUniqueId();
@@ -410,11 +413,13 @@ public final class V5RitualWorldController implements Listener, AutoCloseable {
                 understandFirstCarrier = null;
                 freeCarrier = null;
                 understandOriginAt.clear();
-                broadcast(roster, "ACTIVE ROSTER — " + roster.size()
-                        + " linked player(s). Take distinct lit sectors, perform the Bridge step,"
-                        + " then confirm your own handle.");
+                starter.sendMessage(Component.text(
+                        "RELEASE CONFIRMATION — perform the Bridge step, stand on any lit sector, "
+                                + "then confirm its handle. No other player is required.",
+                        NamedTextColor.GOLD));
             } else {
-                reportStart(starter, "active-roster floor", result.status().name(), roster.size());
+                reportStart(starter, "release confirmation", result.status().name(),
+                        participants.size());
             }
         } catch (RuntimeException failure) {
             fail(starter, "RP04 start", failure);
@@ -554,7 +559,7 @@ public final class V5RitualWorldController implements Listener, AutoCloseable {
     private void showVisibleStatus() {
         for (VisibleBallotRite.VoteNode node : VisibleBallotRite.VoteNode.values()) {
             ballots.view(node).ifPresent(view -> {
-                String text = node + " — visible " + view.visibleRoster().size()
+                String text = node + " — participants " + view.visibleRoster().size()
                         + ", received " + view.receivedVotes() + ", phase "
                         + view.phase().name().toLowerCase();
                 broadcast(new LinkedHashSet<>(view.visibleRoster()), text);
@@ -673,7 +678,7 @@ public final class V5RitualWorldController implements Listener, AutoCloseable {
 
     private void reportStart(Player player, String name, String status, int roster) {
         player.sendMessage(Component.text(name + ": " + status.toLowerCase()
-                + " (visible roster " + roster + ')',
+                + " (participants " + roster + ')',
                 "STARTED".equals(status) ? NamedTextColor.GOLD : NamedTextColor.RED));
     }
 

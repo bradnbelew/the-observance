@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-/** RP04 distinct-sector collective confirmation with branch-specific Bridge handling. */
+/** RP04 voluntary any-subset confirmation with branch-specific Bridge handling. */
 public final class CollectivePresenceRite {
     public enum Status {
         STARTED,
@@ -62,7 +62,6 @@ public final class CollectivePresenceRite {
     private record Presence(int sector, boolean lit) {
     }
 
-    private static final long WINDOW_TICKS = 45L * 20L;
     private static final long DISCONNECT_GRACE_TICKS = 20L * 20L;
     private static final Duration LEASE_DURATION = Duration.ofMinutes(5);
     private static final Duration MUTEX_TIMEOUT = Duration.ofSeconds(2);
@@ -145,7 +144,7 @@ public final class CollectivePresenceRite {
         if (lease == null) {
             return result(Status.BUSY);
         }
-        window = new Window(visibleRoster, bridge, committed, lease, clock.tick() + WINDOW_TICKS);
+        window = new Window(visibleRoster, bridge, committed, lease, Long.MAX_VALUE);
         return result(Status.STARTED);
     }
 
@@ -273,9 +272,6 @@ public final class CollectivePresenceRite {
                 return abort();
             }
         }
-        if (now >= window.closesAtTick) {
-            return abort();
-        }
         return maybeComplete(Status.UPDATED);
     }
 
@@ -308,11 +304,11 @@ public final class CollectivePresenceRite {
             }
         }
         try (SiteMutexes.Guard ignored = acquireMutex()) {
-            String rosterWire = window.roster.stream().map(UUID::toString)
+            String participantWire = window.roster.stream().map(UUID::toString)
                     .sorted().reduce((left, right) -> left + "," + right).orElseThrow();
             String bridgeId = window.bridge.instanceId().toString();
             progress.transact(editor -> {
-                editor.putBranchOnce("v5_rp04_roster", rosterWire);
+                editor.putBranchOnce("v5_rp04_participants", participantWire);
                 editor.putBranchOnce("v5_rp04_bridge_instance", bridgeId);
                 editor.compareAndSetCompletion(authority.completionFlag("RP04"), false, true);
                 return null;

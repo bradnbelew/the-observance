@@ -7,7 +7,6 @@ import com.observance.watcher.v5runtime.EscrowEntry;
 import com.observance.watcher.v5runtime.EscrowStatus;
 import com.observance.watcher.v5runtime.LeaseBook;
 import com.observance.watcher.v5runtime.PlayerBitDomain;
-import com.observance.watcher.v5runtime.PlayerProgress;
 import com.observance.watcher.v5runtime.SiteMutexes;
 import com.observance.watcher.v5runtime.V5ProgressStore;
 import com.observance.watcher.v5runtime.ritual.RitualChoices.NameTreatment;
@@ -27,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-/** Visible, roster-snapshotted WR05/RP03 ballot controller with immutable first evidence. */
+/** WR05 group ballot and RP03 voluntary-participant choice with immutable first evidence. */
 public final class VisibleBallotRite {
     public enum VoteNode {
         WR05(Set.of("CONDEMN", "UNDERSTAND", "FREE")),
@@ -57,7 +56,6 @@ public final class VisibleBallotRite {
         BUSY,
         EMPTY_ROSTER,
         PREREQUISITE_MISSING,
-        CONSEQUENCE_BOOK_UNREAD,
         INVALID_BRIDGE,
         ALREADY_COMPLETE,
         RECOVERY_REQUIRED
@@ -233,10 +231,6 @@ public final class VisibleBallotRite {
         if (validation.status() != StartStatus.STARTED) {
             return validation;
         }
-        Set<UUID> unread = unreadPlayers(visibleRoster);
-        if (!unread.isEmpty()) {
-            return startResult(StartStatus.CONSEQUENCE_BOOK_UNREAD, null, unread);
-        }
         LeaseBook.Token lease = acquireLease(VoteNode.RP03);
         if (lease == null) {
             return startResult(StartStatus.BUSY, null, Set.of());
@@ -248,6 +242,7 @@ public final class VisibleBallotRite {
         return startResult(StartStatus.STARTED, window, Set.of());
     }
 
+    /** Optional provenance/catch-up observation. It is deliberately never an RP03 prerequisite. */
     public void markConsequenceBookRead(UUID playerId) throws IOException {
         Objects.requireNonNull(playerId, "playerId");
         if (!progress.snapshot().isComplete("v5_rp02_configured")) {
@@ -516,17 +511,6 @@ public final class VisibleBallotRite {
         window.phase = phase;
         windows.remove(window.node);
         window.lease.close();
-    }
-
-    private Set<UUID> unreadPlayers(Set<UUID> roster) {
-        Set<UUID> result = new LinkedHashSet<>();
-        for (UUID playerId : roster) {
-            PlayerProgress player = progress.snapshot().players().get(playerId.toString());
-            if (player == null || !player.topics().contains(CONSEQUENCE_READ_BIT)) {
-                result.add(playerId);
-            }
-        }
-        return Set.copyOf(result);
     }
 
     private LeaseBook.Token acquireLease(VoteNode node) {

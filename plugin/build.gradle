@@ -139,6 +139,7 @@ tasks.named('processResources') {
         include 'ARG-V5-RECORD-OWNERSHIP.csv'
         include 'ARG-V5-RUNTIME-BINDINGS.csv'
         include 'ARG-V5-PHYSICAL-PREDICATES.json'
+        include 'ARG-P12-ANY-SUBSET-OVERLAY.json'
         include 'DEEP-HOLD-GATE-MANIFEST.csv'
         include 'DEEP-HOLD-RECORD-STATION-MANIFEST.csv'
         into 'v5/authority'

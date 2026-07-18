@@ -95,7 +95,7 @@ for (const exact of [
   "('AR01','C09',1,'Recovered archive spectrogram','accepting'",
   "('AR08','C09',8,'Assemble AVERYN','accepting'",
   "('RP01','C10',1,'Release footage','unwriting'",
-  "('RP04','C10',4,'Active roster operation','unwriting'",
+  "('RP04','C10',4,'Any-subset release confirmation','unwriting'",
   "('RP05','C10',5,'Sever the Record','release'",
 ]) if (!seed.includes(exact)) fail(`room topology drift: ${exact}`);
 

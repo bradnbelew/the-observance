@@ -31,7 +31,7 @@ The experience never asks players to repeat a proposition only to make the story
 - Exactly 82 required nodes across ten cases.
 - Intended for a persistent friend group over multiple sessions.
 - Major cases are sequential; work inside Keeper Court, Civic Archive, and evidence comparison steps can be divided among players.
-- The game must remain finishable with one active player for recovery/testing, but signature collective rites require the current active roster or an explicit operator accessibility override.
+- Every required action remains finishable by any subset, including one active player. Nearby, online, disconnected, or absent players never become eligibility; collective meaning comes from discussion and contribution, not attendance gates.
 - Leaving the Hold never loses progress. Open gates remain open. Critical items can be recovered.
 
 For a six-player group, the expected first-playthrough budget is about 15 active play hours:
@@ -178,7 +178,7 @@ The final choice is armed by an operator and fail-safe by default. The local ser
 
 Final sequence:
 
-1. validate all required artifacts and active roster;
+1. validate all required case receipts and artifacts, excluding attendance and source-touch counts;
 2. lock duplicate interaction while leaving the cancel path;
 3. store name treatment Wren outcome and conduct clause;
 4. extinguish the Hold from upper districts toward Release;

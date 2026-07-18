@@ -43,8 +43,9 @@ public final class RitualFinaleSelfTest {
         cancelledArm(authority, contract, text);
         int endings = everyEndingAndRestart(authority, contract, text);
 
-        System.out.println("RitualFinaleSelfTest: PASS (six nodes; 1/2/7 rosters; "
-                + endings + " ending/conduct combinations; restart/idempotence verified)");
+        System.out.println("RitualFinaleSelfTest: PASS (six nodes; WR05 1/2/7 cohorts; "
+                + "RP03 zero-receipt and RP04 any-subset; " + endings
+                + " ending/conduct combinations; restart/idempotence verified)");
     }
 
     private static void wrenRequiresFourCompletedTurns(
@@ -125,11 +126,8 @@ public final class RitualFinaleSelfTest {
                     "visible roster telemetry " + count);
 
             fixture.progress.completeIfAbsent("v5_rp02_configured");
-            for (UUID player : roster) {
-                ballots.markConsequenceBookRead(player);
-            }
             check(ballots.startRp03(roster).status() == VisibleBallotRite.StartStatus.STARTED,
-                    "RP03 starts only after every book receipt");
+                    "RP03 starts with zero consequence-book observation receipts");
             for (UUID player : roster) {
                 result = ballots.cast(VisibleBallotRite.VoteNode.RP03, player, "PUBLISH");
             }
@@ -170,9 +168,6 @@ public final class RitualFinaleSelfTest {
                     "tied first ballot preserved");
 
             fixture.progress.completeIfAbsent("v5_rp02_configured");
-            for (UUID player : roster) {
-                ballots.markConsequenceBookRead(player);
-            }
             ballots.startRp03(roster);
             ballots.cast(VisibleBallotRite.VoteNode.RP03, players.get(0), "PUBLISH");
             VisibleBallotRite.VoteResult nameTie = ballots.cast(
@@ -222,23 +217,28 @@ public final class RitualFinaleSelfTest {
         try (Fixture fixture = Fixture.create(authority)) {
             seedResolvedChoices(fixture.progress, WrenOutcome.FREE, NameTreatment.PUBLISH,
                     ConductVerdict.UNANIMOUS);
-            Set<UUID> roster = roster(2, 500);
+            UUID participant = uuid(500);
+            UUID nearbyBystander = uuid(501);
+            Set<UUID> participants = Set.of(participant);
             CollectivePresenceRite rite = new CollectivePresenceRite(
                     contract, fixture.progress, new LeaseBook(), new SiteMutexes(), fixture.clock,
                     (operator, oldSector, replacement, reason) -> { });
             ProtocolBridge bridge = bridge(502).retag(WrenOutcome.FREE);
-            check(rite.start(roster, bridge).status() == CollectivePresenceRite.Status.STARTED,
-                    "RP04 starts");
-            List<UUID> players = List.copyOf(roster);
-            rite.updatePresence(players.get(0), 0, true);
-            rite.updatePresence(players.get(1), 1, true);
-            rite.confirmOwnSector(players.get(0), 0);
-            check(rite.confirmOwnSector(players.get(1), 1).status()
+            check(rite.start(participants, bridge).status() == CollectivePresenceRite.Status.STARTED,
+                    "RP04 starts for a voluntary any-subset participant");
+            fixture.clock.advanceTicks(45L * 20L + 1L);
+            check(rite.tick().status() != CollectivePresenceRite.Status.ABORTED,
+                    "RP04 has no attendance timer");
+            check(rite.updatePresence(nearbyBystander, 0, true).status()
+                    == CollectivePresenceRite.Status.NOT_ELIGIBLE,
+                    "nearby non-participant is not enrolled and cannot block RP04");
+            rite.updatePresence(participant, 0, true);
+            check(rite.confirmOwnSector(participant, 0).status()
                     != CollectivePresenceRite.Status.COMPLETED,
                     "sector confirmation alone cannot skip Bridge operation");
-            check(rite.confirmFreeCenterToWhiteTrough(players.get(0), true, true).status()
+            check(rite.confirmFreeCenterToWhiteTrough(participant, true, true).status()
                     == CollectivePresenceRite.Status.COMPLETED,
-                    "distinct lit sectors and exact branch operation complete RP04");
+                    "one participant and exact branch operation complete RP04");
             check(fixture.progress.snapshot().isComplete("v5_rp04_collective"),
                     "RP04 durable receipt");
         }

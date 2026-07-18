@@ -97,7 +97,8 @@ public final class RitualBukkitInteractionListener implements Listener {
         try {
             ballots.markConsequenceBookRead(event.getPlayer().getUniqueId());
             event.getPlayer().sendActionBar(Component.text(
-                    "consequence text read receipt recorded", NamedTextColor.GRAY));
+                    "release protocol opened; this observation never gates the choice",
+                    NamedTextColor.GRAY));
         } catch (IOException | RuntimeException failure) {
             failClosed(event.getPlayer(), "RP03 consequence receipt", failure);
         }
