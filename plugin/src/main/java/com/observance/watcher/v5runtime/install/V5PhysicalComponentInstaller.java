@@ -980,22 +980,35 @@ public final class V5PhysicalComponentInstaller {
                                         boolean mutate, Accumulator result) {
         if (!(block.getBlockData() instanceof Switch control)) return;
         Address address = resolved.address();
-        boolean exactCeilingControl = switch (address.nodeId() + '/' + address.componentId()) {
-            case "LC03/evaluation_handle", "CW07/cache_seal", "HS02/housing_latch" -> true;
-            default -> false;
-        };
-        if (exactCeilingControl) {
-            Block support = block.getRelative(BlockFace.UP);
-            ensureSupport(support, address, "exact ceiling control", mode, mutate, result);
+        boolean exactAuthoredControl = "evaluation_handle".equals(address.componentId())
+                || "CW07/cache_seal".equals(address.nodeId() + '/' + address.componentId())
+                || "HS02/housing_latch".equals(address.nodeId() + '/' + address.componentId());
+        if (exactAuthoredControl) {
+            String supportId = address.componentId() + "_support";
+            Address plannedSupport = catalog.addressesForNode(address.nodeId()).stream()
+                    .filter(candidate -> supportId.equals(candidate.componentId()))
+                    .findFirst().orElse(null);
+            if (plannedSupport == null
+                    || plannedSupport.offset().right() != address.offset().right()
+                    || plannedSupport.offset().front() != address.offset().front()
+                    || Math.abs(plannedSupport.offset().up() - address.offset().up()) != 1) {
+                result.block(address, "exact control has no adjacent authored support address");
+                return;
+            }
+            boolean ceiling = plannedSupport.offset().up() > address.offset().up();
+            Block support = block.getRelative(ceiling ? BlockFace.UP : BlockFace.DOWN);
+            ensureSupport(support, address, "exact authored control", mode, mutate, result);
             if (mutate) {
-                control.setAttachedFace(org.bukkit.block.data.FaceAttachable.AttachedFace.CEILING);
+                control.setAttachedFace(ceiling
+                        ? org.bukkit.block.data.FaceAttachable.AttachedFace.CEILING
+                        : org.bukkit.block.data.FaceAttachable.AttachedFace.FLOOR);
                 if (control.getFaces().contains(face(resolved.anchor().front()))) {
                     control.setFacing(face(resolved.anchor().front()));
                 }
                 block.setBlockData(control, false);
             }
             if (!block.getBlockData().isSupported(block)) {
-                result.block(address, "exact ceiling control is not supported at "
+                result.block(address, "exact authored control is not supported at "
                         + blockKey(block));
             }
             return;

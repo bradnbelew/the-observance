@@ -193,6 +193,7 @@ public final class V5PhysicalComponentCatalog {
                     .map(Address::addressKey).forEach(globalOccupied::add);
         }
         all = relocateUnpositionedSyntheticAddresses(all, authority);
+        all = addEvaluationHandleSupports(all, findings);
         Map<String, List<Address>> byNode = new LinkedHashMap<>();
         for (Address address : all) byNode.computeIfAbsent(address.nodeId(), ignored -> new ArrayList<>()).add(address);
         nodePlans = authority.nodes().stream().map(node -> new NodePlan(node,
@@ -247,6 +248,47 @@ public final class V5PhysicalComponentCatalog {
             occupied.add(resolved.addressKey());
         }
         return List.copyOf(result);
+    }
+
+    private static List<Address> addEvaluationHandleSupports(List<Address> source,
+                                                              List<Finding> findings) {
+        List<Address> result = new ArrayList<>(source);
+        Set<String> occupied = source.stream()
+                .filter(address -> address.kind() == AddressKind.BLOCK
+                        || address.kind() == AddressKind.ITEM_FRAME
+                        || address.kind() == AddressKind.ITEM_DISPLAY)
+                .map(Address::addressKey).collect(java.util.stream.Collectors.toCollection(
+                        LinkedHashSet::new));
+        for (Address handle : source) {
+            if (!"evaluation_handle".equals(handle.componentId())) continue;
+            LocalOffset at = handle.offset();
+            LocalOffset ceiling = new LocalOffset(at.right(), at.up() + 1, at.front());
+            LocalOffset floor = new LocalOffset(at.right(), at.up() - 1, at.front());
+            LocalOffset chosen = !occupied.contains(offsetKey(handle.siteId(), ceiling))
+                    ? ceiling : !occupied.contains(offsetKey(handle.siteId(), floor)) ? floor : null;
+            if (chosen == null) {
+                findings.add(new Finding(Severity.BLOCKER, handle.nodeId(),
+                        "evaluation_handle_support",
+                        "no exact floor or ceiling support cell is free for " + handle.addressKey()));
+                continue;
+            }
+            JsonObject raw = new JsonObject();
+            raw.addProperty("id", "evaluation_handle_support");
+            raw.addProperty("block", "POLISHED_DEEPSLATE");
+            raw.addProperty("synthetic_from", handle.nodeId() + " relocated evaluation handle");
+            Address support = new Address(handle.nodeId(), handle.owner(), handle.siteId(),
+                    "evaluation_handle_support", "evaluation_handle_support", AddressKind.BLOCK,
+                    chosen, "POLISHED_DEEPSLATE",
+                    Map.of("v5_supports_control", handle.nodeId() + " evaluation handle"),
+                    null, null, null, "", false, raw.toString());
+            result.add(support);
+            occupied.add(support.addressKey());
+        }
+        return List.copyOf(result);
+    }
+
+    private static String offsetKey(String siteId, LocalOffset offset) {
+        return siteId + ':' + offset.right() + ':' + offset.up() + ':' + offset.front();
     }
 
     private static List<Address> expandNode(PhysicalPredicateAuthority.Node node, JsonObject predicate,
@@ -429,14 +471,6 @@ public final class V5PhysicalComponentCatalog {
                     AddressKind.BLOCK, chosen, "LEVER", Map.of("v5_handle_node", node.nodeId()),
                     null, null, null, "", true, raw);
             out.add(handle);
-            if ("LC03".equals(node.nodeId())) {
-                LocalOffset support = new LocalOffset(chosen.right(), chosen.up() + 1,
-                        chosen.front());
-                out.add(controlSupport(node, "evaluation_handle_support", support,
-                        "orientation-register evaluation handle"));
-                occupied.add(node.siteId() + ':' + support.right() + ':' + support.up() + ':'
-                        + support.front());
-            }
         }
         return List.copyOf(out);
     }
@@ -463,7 +497,7 @@ public final class V5PhysicalComponentCatalog {
         return address(node, componentId, instanceId, node.siteId(), AddressKind.BLOCK, offset,
                 "LEVER", Map.of("v5_control_id", controlId,
                         "v5_handle_node", node.nodeId()),
-                null, null, null, "", true, raw);
+                null, null, null, "", false, raw);
     }
 
     private static Address syntheticBlock(PhysicalPredicateAuthority.Node node, String componentId,

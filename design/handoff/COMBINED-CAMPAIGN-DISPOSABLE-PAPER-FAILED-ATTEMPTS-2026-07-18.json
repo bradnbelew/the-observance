@@ -104,8 +104,33 @@
       "target_reused_or_deleted": false,
       "production_mutated": false,
       "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 5,
+      "source_commit": "b0070c37d4dadc330d5f83ec2c2fc2d68f63f1bf",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-b0070c3-05",
+      "address": "127.0.0.1:25610",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "708be99bc9396dc6f793ad697f74460d2c4e89f97bda5057f0b341f14059a564",
+      "first_log_sha256": "ad01ea4e491fd22265c4b93679c56d425be05593a550052e58eb3419d11856be",
+      "passed_before_failure": [
+        "Deep Hold plan passed on a fresh generated and ticketed 400-chunk footprint",
+        "1,434,765 ordered architecture writes completed",
+        "76/76 canonical fixtures were placed and framed",
+        "the new BlockData.isSupported audit ran before any readiness receipt"
+      ],
+      "failure": "The generalized Paper support audit correctly exposed two additional generic evaluation handles whose legacy floor attachment was not valid after authored fixture placement. The prior patch had made ceiling support explicit only for the three controls observed in attempt 4, leaving other generated evaluation handles subject to the same underlying attachment weakness.",
+      "exact_findings": [
+        "AR02/evaluation_handle: control is not supported at observance_combined_campaign:-8:105:115",
+        "KS02/evaluation_handle: control is not supported at observance_combined_campaign:30:161:161"
+      ],
+      "harness_result": "failed closed during fresh physical installation; no readiness receipt was published",
+      "shutdown": "The harness finally block stopped only this disposable Paper process. Paper recorded Observance disable, all dimensions saved, RegionFile completion, and worker/I/O pool termination. Python controller and Java child ended; port 25610 has zero rows.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
     }
   ],
-  "resolution": "Source retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. After the exact physical pass and sites.yml commit, the Deep Hold builder flushes exact blocks, books, marker entities, and sites before rebind or cross-world play. The Unlit light scan snapshots same-world unlit_safe sites once per scan. The three controls exposed by attempt 4 now have non-relocatable authored ceiling-support cells; the installer places those supports before the controls, pins exact ceiling attachment, and audits Paper BlockData.isSupported rather than inferring support from material solidity. Full plugin build/self-tests and a fresh create-only retry remain required.",
+  "resolution": "Source retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. After the exact physical pass and sites.yml commit, the Deep Hold builder flushes exact blocks, books, marker entities, and sites before rebind or cross-world play. The Unlit light scan snapshots same-world unlit_safe sites once per scan. Every generated evaluation handle, plus the distinct CW07 and HS02 controls, now has a non-relocatable authored ceiling-support cell; the installer places support before control, pins exact ceiling attachment, and audits Paper BlockData.isSupported rather than inferring support from material solidity. Full plugin build/self-tests and a fresh create-only retry remain required.",
   "brad_approval": null
 }
