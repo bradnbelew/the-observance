@@ -525,3 +525,14 @@ open; M4 is still closed.
 - The pinned Paper compile, focused state test, and fail-closed ARG vertical-slice checker pass. Private-client
   command feedback and the complete final campaign rehearsal remain open; no external or production target
   was mutated.
+
+## 2026-07-18 — canonical event action ownership
+
+- `campaign/campaign-action-owners.json` now maps every canonical P1–P12 policy event to its actual player
+  trigger, owning platform, mutation source, recovery behavior, and zero-observation contract. This is an
+  implementation and state audit, not a fixed puzzle-mechanism catalog.
+- `tools/check_campaign_action_owners.py` fails closed when an event exists only in policy, generated content,
+  or projection text; when an owner source or mutation token disappears; when a source platform exceeds its
+  policy authority; or when source-touch correctness returns. Physical events remain local-primary.
+- The routed audit now runs this owner check beside the connected campaign web. External/client experience
+  proof and the final whole-campaign rehearsal remain separate human and deployment gates.

@@ -45,6 +45,7 @@ foreach ($required in @(
   (Join-Path $tools "check_arg_experience_authority.py"),
   (Join-Path $tools "check_active_world_canon.py"),
   (Join-Path $tools "check_campaign_web.py"),
+  (Join-Path $tools "check_campaign_action_owners.py"),
   (Join-Path $tools "test_arg_experience_negative_contracts.py"),
   (Join-Path $tools "check_arg_vertical_slice.py"),
   (Join-Path $tools "check_p5_p12_authored_candidate.py"),
@@ -86,6 +87,7 @@ Invoke-External "Supabase production-baseline hardening proposal" $root "python"
 Invoke-External "research-based P1-P12 ARG experience authority" $root "python" @((Join-Path $tools "check_arg_experience_authority.py"))
 Invoke-External "active Paper world canon/category-error guard" $root "python" @((Join-Path $tools "check_active_world_canon.py"))
 Invoke-External "connected P1-P12 callback and consequence web" $root "python" @((Join-Path $tools "check_campaign_web.py"))
+Invoke-External "canonical campaign event mutation owners" $root "python" @((Join-Path $tools "check_campaign_action_owners.py"))
 Invoke-External "ARG experience/input negative contract mutations" $root "python" @((Join-Path $tools "test_arg_experience_negative_contracts.py"))
 Invoke-External "P4-P5 real-input ARG vertical slice" $root "python" @((Join-Path $tools "check_arg_vertical_slice.py"))
 Invoke-External "P5-P12 authored content scaffolding" $root "python" @((Join-Path $tools "check_p5_p12_authored_candidate.py"))

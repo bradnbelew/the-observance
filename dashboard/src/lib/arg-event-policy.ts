@@ -41,7 +41,7 @@ export const ARG_EVENT_DEFINITIONS = {
   'p7.counterfeit_material_proven': event('P7', ['p6.six_responsibilities_acknowledged'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p7.supplier_history_restored': event('P7', ['p7.counterfeit_material_proven'], ['copperline'], ['copperline', 'minecraft', 'discord']),
   // A correct exoneration is knowledge, not proof that expected exhibits or restore buttons were touched.
-  'p7.nessa_publicly_cleared': event('P7', ['p6.six_responsibilities_acknowledged'], ['discord', 'npc'], ['minecraft', 'copperline', 'discord', 'npc']),
+  'p7.nessa_publicly_cleared': event('P7', ['p6.six_responsibilities_acknowledged'], ['minecraft', 'discord', 'npc'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p8.intervention_plan_accepted': event('P8', ['p7.nessa_publicly_cleared'], ['minecraft', 'copperline'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p8.unlit_house_synthesis_completed': event('P8', ['p7.nessa_publicly_cleared'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p8.hold_systems_repaired': event('P8', ['p8.intervention_plan_accepted', 'p8.unlit_house_synthesis_completed'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
