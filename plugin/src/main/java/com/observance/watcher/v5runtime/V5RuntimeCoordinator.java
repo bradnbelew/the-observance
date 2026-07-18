@@ -79,6 +79,12 @@ import org.bukkit.scheduler.BukkitTask;
 public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P2_HANDOFF_EVENT = "p2.live_runtime_handoff";
     private static final String P3_ACCOUNTS_EVENT = "p3.resident_accounts_opened";
+    private static final String P5_CURATION_EVENT = "p5.civic_gallery_recurated";
+    private static final String P6_MODELS_EVENT = "p6.professional_models_recovered";
+    private static final String P6_RESPONSIBILITY_EVENT = "p6.six_responsibilities_acknowledged";
+    private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
+            "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
+            "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
     private final ObservancePlugin plugin;
     private final PhysicalPredicateAuthority authority;
     private final V5ProgressStore progress;
@@ -272,8 +278,44 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             return;
         }
         if (closed) return;
+        advanceDerivedStoryEvents();
         plugin.projectV5LocalState(progress.snapshot());
         remote.mirrorLocalSnapshotAsync();
+    }
+
+    /** Six profession-specific completions cause one biography consequence; no prose restatement is required. */
+    private void advanceDerivedStoryEvents() {
+        ProgressSnapshot snapshot = progress.snapshot();
+        if (!snapshot.isComplete(P5_CURATION_EVENT)
+                || !P6_PROFESSIONAL_PROOFS.stream().allMatch(snapshot::isComplete)) return;
+        try {
+            boolean created = progress.transact(editor -> {
+                boolean models = editor.setBooleanTrue(P6_MODELS_EVENT);
+                boolean responsibility = editor.setBooleanTrue(P6_RESPONSIBILITY_EVENT);
+                return models || responsibility;
+            });
+            if (created) mirrorP6MilestonesAsync();
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P6 biography milestones could not be committed locally: " + failure.getMessage());
+            return;
+        }
+    }
+
+    /** Exact idempotency keys make startup/restart retries safe after a remote outage. */
+    private void mirrorP6MilestonesAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p6.milestones.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject models = new JsonObject();
+            models.addProperty("people", "Vaun,Mara,Sella,Orin,Brann,Iss");
+            models.addProperty("basis", "six-distinct-professional-proofs");
+            plugin.supabase().recordArgEvent(P6_MODELS_EVENT,
+                    "minecraft:p6:professional-models-recovered", "minecraft", null, models);
+            JsonObject responsibility = new JsonObject();
+            responsibility.addProperty("matrix", "six-distinct-people-and-culpabilities");
+            responsibility.addProperty("runtime_exact_phrase", false);
+            plugin.supabase().recordArgEvent(P6_RESPONSIBILITY_EVENT,
+                    "minecraft:p6:six-responsibilities-acknowledged", "minecraft", null, responsibility);
+        });
     }
 
     public boolean handleFinaleCommand(CommandSender sender, String[] rootArgs) {
@@ -337,6 +379,10 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         commitLiveRuntimeHandoff(event.getPlayer());
+        if (progress.snapshot().isComplete(P6_MODELS_EVENT)
+                && progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT)) {
+            mirrorP6MilestonesAsync();
+        }
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);

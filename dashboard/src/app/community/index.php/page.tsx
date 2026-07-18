@@ -18,10 +18,15 @@ const posts = [
 export default async function CommunityPage({ searchParams }: { searchParams: Promise<{ user?: string }> }) {
   const user = (await searchParams).user;
   const recurated = await hasCampaignEvent('p5.civic_gallery_recurated');
-  const currentPosts = recurated === true ? [
+  const sixPeople = await hasCampaignEvent('p6.six_responsibilities_acknowledged');
+  const p5Posts = recurated === true ? [
     { date: 'February 16, 2011', user: 'ashfield', title: 'that room was a service counter', body: 'The uncropped frame has wick shears, school chalk, and sample rings. Copperline corrected the archive caption after the service-card review.', href: '/community/2011/02/16/service-counter' },
     ...posts,
   ] : posts;
+  const currentPosts = sixPeople === true ? [
+    { date: 'March 3, 2011', user: 'mkept', title: 'six workspace owners, not one admin', body: 'The export uses one permission role, but the work separates six people. Keep their methods and corrections apart.', href: '/community/2011/03/03/six-workspaces' },
+    ...p5Posts,
+  ] : p5Posts;
   const visible = user ? currentPosts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : currentPosts;
   return (
     <LegacyShell active="community">
