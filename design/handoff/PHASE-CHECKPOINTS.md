@@ -559,3 +559,15 @@ open; M4 is still closed.
   three-relationship readback covering ordinary work, later penalties, and copy order.
 - Focused state, negative-flow, compile, ARG authority, and vertical-slice checks pass. Human theory-path and
   emotional-response judgment remains deliberately open for the final whole-campaign test.
+
+## 2026-07-18 — every P5–P12 evidence record joins the campaign web
+
+- `campaign/evidence-relationship-web.json` authors 95 explicit relationships across all 84 P5–P12
+  evidence and repair records. Every record now identifies what it authenticates, contradicts, teaches,
+  humanizes, recontextualizes, enables, or pays off; all have a directed path into the P12 coda.
+- The detailed web preserves long returns such as the P5 lamp card becoming P8 paired-light repair, Sella's
+  school transfer becoming P7 cache recovery and P11 identity evidence, Nessa's struck-name packet returning
+  in P11, the P8 copy anomaly constraining P10 attribution, and repaired works opening the human camp story.
+- `tools/check_evidence_relationship_web.py` rejects isolated records, backward revelation edges, missing
+  cross-phase callbacks, un-authored reasons, source-touch gating, closed mechanism catalogs, and evidence
+  islands. The routed audit now runs it beside the campaign-level thread graph.

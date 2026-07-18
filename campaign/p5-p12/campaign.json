@@ -7,7 +7,8 @@
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "campaign/arg-experience-redesign.json",
-    "campaign/arg-state-choreography.json"
+    "campaign/arg-state-choreography.json",
+    "campaign/evidence-relationship-web.json"
   ],
   "closed_mechanism_taxonomy": false,
   "observation_receipts_gate_answers": false,
