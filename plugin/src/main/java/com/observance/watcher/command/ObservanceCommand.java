@@ -1169,22 +1169,22 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             plugin.getConfig().set("unlit.border-radius", UnlitVillageCandidateBuilder.BORDER_RADIUS);
             plugin.getConfig().set("unlit.buildmode", false);
             plugin.saveConfig();
-            world.getWorldBorder().setCenter(originX, originZ);
+            world.getWorldBorder().setCenter(originX, originZ + 13);
             world.getWorldBorder().setSize(UnlitVillageCandidateBuilder.BORDER_RADIUS * 2.0);
             world.setTime(plugin.getConfig().getLong("unlit.night-time", 18_000L));
-            world.setSpawnLocation(originX, baseY + 1, originZ + 48);
+            world.setSpawnLocation(originX, baseY + 1, originZ + 13);
 
             boolean sitesPersisted = false;
             plugin.beginRuntimeSiteBatch();
             try {
                 registerUnlitCandidateSite(new Site("unlit_entry", "unlit_entry", world.getName(),
-                        (double) originX, (double) (baseY + 1), (double) (originZ + 52),
+                        (double) (originX + 13), (double) (baseY + 1), (double) (originZ + 52),
                         5, 5, true, true));
                 registerUnlitCandidateSite(new Site("unlit_spawn_mirror", "unlit_spawn", world.getName(),
-                        (double) originX, (double) (baseY + 1), (double) (originZ + 48),
+                        (double) originX, (double) (baseY + 1), (double) (originZ + 13),
                         5, 5, true, true));
                 registerUnlitCandidateSite(new Site("unlit_exit", "unlit_exit", world.getName(),
-                        (double) (originX + 4), (double) (baseY + 1), (double) (originZ + 52),
+                        (double) (originX + 17), (double) (baseY + 1), (double) (originZ + 52),
                         5, 5, true, true));
                 for (UnlitVillageCandidateBuilder.House house : report.houses()) {
                     Location location = UnlitVillageCandidateBuilder.siteLocation(
@@ -2010,6 +2010,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "threshold" -> {
                 setBlock(base, Material.POLISHED_BLACKSTONE);
                 setBlock(base.clone().add(0, 1, 0), Material.DEEPSLATE_BRICK_SLAB);
+                // The exact inner lever owns the block directly above the anchor. Keep the low
+                // lintel one step into the crouched route so both authored elements remain present.
+                setBlock(offsetFrom(base, facing, 0, 1, 1), Material.DEEPSLATE_BRICK_SLAB);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);

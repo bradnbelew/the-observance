@@ -199,6 +199,14 @@ public final class UnlitVillageCandidateBuilder {
                 z += z > 0 ? -1 : 1;
             }
         }
+        // The village-well arrival uses a public path between Warm and Watch. It approaches the
+        // base from the east so it never cuts through a workplace shell.
+        for (int z = 0; z <= 54; z++) {
+            pathCell(world, originX, baseY, originZ, 13, z, BlockFace.NORTH, cells, counter);
+        }
+        for (int x = 8; x <= 13; x++) {
+            pathCell(world, originX, baseY, originZ, x, 0, BlockFace.EAST, cells, counter);
+        }
         for (int x = -11; x <= 11; x++) {
             for (int z = -11; z <= 11; z++) {
                 if (x * x + z * z > 121) continue;
@@ -337,17 +345,18 @@ public final class UnlitVillageCandidateBuilder {
     }
 
     private static void buildEntry(World world, int originX, int baseY, int originZ, Counter counter) {
+        int entryX = originX + 13;
         int z = originZ + 52;
         for (int x = -4; x <= 4; x++) {
-            set(world, originX + x, baseY, z, Material.POLISHED_DEEPSLATE, counter);
+            set(world, entryX + x, baseY, z, Material.POLISHED_DEEPSLATE, counter);
             if (Math.abs(x) >= 3) {
                 for (int y = 1; y <= 5; y++) {
-                    set(world, originX + x, baseY + y, z, Material.DEEPSLATE_BRICKS, counter);
+                    set(world, entryX + x, baseY + y, z, Material.DEEPSLATE_BRICKS, counter);
                 }
             }
         }
         for (int x = -4; x <= 4; x++) {
-            set(world, originX + x, baseY + 6, z, Material.DEEPSLATE_TILES, counter);
+            set(world, entryX + x, baseY + 6, z, Material.DEEPSLATE_TILES, counter);
         }
     }
 
