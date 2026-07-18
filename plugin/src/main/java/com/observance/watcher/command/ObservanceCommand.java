@@ -926,14 +926,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     };
 
     private static final HoldGate[] DEEP_HOLD_GATES = {
-            compactHoldGate("g1", "keeper", "G1 rosetta"),
-            compactHoldGate("g2", "archive", "G2 investigation"),
-            compactHoldGate("g3", "undercroft", "G3 undercroft"),
-            compactHoldGate("g4", "deep", "G4 deep"),
-            compactHoldGate("prior", "prior", "prior camp"),
-            compactHoldGate("dread", "dread", "dread procession"),
-            compactHoldGate("g5", "accepting", "G5 accepting"),
-            compactHoldGate("g6", "coda", "G6 coda"),
+            compactHoldGate("g1", "keeper", "Keeper Court"),
+            compactHoldGate("g2", "archive", "Archive Works"),
+            compactHoldGate("g3", "undercroft", "Lower Works"),
+            compactHoldGate("g4", "deep", "Deep Line"),
+            compactHoldGate("prior", "prior", "Old Survey Camp"),
+            compactHoldGate("dread", "dread", "East Service"),
+            compactHoldGate("g5", "accepting", "Accepting Floor"),
+            compactHoldGate("g6", "coda", "Release Chamber"),
     };
 
     private static HoldGate compactHoldGate(String planId, String runtimeId, String label) {
@@ -9620,10 +9620,16 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void placeHoldGateLabel(HoldGate gate, Location loc) {
         if (gate == null || loc == null || loc.getWorld() == null) return;
         HoldGateSpan span = holdGateSpan(gate);
-        Location signLoc = span.acrossX() ? loc.clone().add(-span.doorHalf() - 2, 2, -1)
-                : loc.clone().add(-1, 2, -span.doorHalf() - 2);
+        Location signLoc = holdGateLabelLocation(loc, span);
         placeWallMountedSign(signLoc, span.acrossX() ? BlockFace.NORTH : BlockFace.WEST,
-                new String[]{gate.label(), "held until", "the record", "turns"});
+                new String[]{gate.label(), "registry access", "seal-controlled", ""});
+    }
+
+    private static Location holdGateLabelLocation(Location loc, HoldGateSpan span) {
+        // Use the first solid jamb outside the clear door span. The prior two-block offset put
+        // labels into the corridor buttress on compact gates, leaving their readable face buried.
+        return span.acrossX() ? loc.clone().add(-span.doorHalf() - 1, 2, -1)
+                : loc.clone().add(-1, 2, -span.doorHalf() - 1);
     }
 
     private void syncPlaceHoldGates(CommandSender sender) {
@@ -10352,11 +10358,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private String auditHoldGateLabel(HoldGate gate, Location loc) {
         if (gate == null || loc == null || loc.getWorld() == null) return "Hold gate label cannot be audited.";
         HoldGateSpan span = holdGateSpan(gate);
-        Block label = span.acrossX()
-                ? loc.getWorld().getBlockAt(loc.getBlockX() - span.doorHalf() - 2,
-                loc.getBlockY() + 2, loc.getBlockZ() - 1)
-                : loc.getWorld().getBlockAt(loc.getBlockX() - 1,
-                loc.getBlockY() + 2, loc.getBlockZ() - span.doorHalf() - 2);
+        Block label = holdGateLabelLocation(loc, span).getBlock();
         if (!(label.getState() instanceof Sign sign)) return "gate " + gate.id() + " label is missing.";
         boolean named = false;
         for (Component line : sign.getSide(Side.FRONT).lines()) {
@@ -10370,6 +10372,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (!(label.getBlockData() instanceof Directional directional)
                 || !label.getRelative(directional.getFacing().getOppositeFace()).getType().isSolid()) {
             return "gate " + gate.id() + " label is embedded or has no backing wall.";
+        }
+        if (!label.getRelative(directional.getFacing()).isPassable()) {
+            return "gate " + gate.id() + " label faces into a blocked reading cell.";
         }
         return null;
     }

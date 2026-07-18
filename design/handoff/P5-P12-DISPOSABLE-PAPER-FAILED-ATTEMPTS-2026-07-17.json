@@ -178,6 +178,39 @@
         "rejected_review_pid_32868_alive_after_stop": true
       },
       "required_fix": "Treat every item-frame hanging cell as authored physical envelope and prefer an existing room-floor stance up to three blocks below high controls before considering a synthetic platform."
+    },
+    {
+      "attempt": 10,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-ebbd377-10",
+      "outcome": "strict_final_world_readback_failed_on_gate_label_legibility",
+      "exact_failure": "Five wall signs faced into blocked cells after the complete physical and book passes.",
+      "cause": "Compact gate labels were mounted two blocks outside the clear door span. On five gate compositions that position was inside a corridor buttress, so the sign had backing but its player-facing reading cell was solid.",
+      "blocked_sign_cells": [
+        "-5:134:71",
+        "-53:106:104",
+        "42:106:87",
+        "-6:106:141",
+        "-5:162:131"
+      ],
+      "mapped_gate_labels": ["g3", "prior", "dread", "g5", "g1"],
+      "plan_pass": true,
+      "architecture_writes": 1434765,
+      "architecture_changed_blocks": 1349934,
+      "canonical_fixtures_placed": "76/76",
+      "second_pass_physical_audit_passed": true,
+      "readiness_receipt_published": false,
+      "first_log_sha256": "1c0f6aacd66073280a14713db969e7b1ceaf9fb0362daa1531b1ebf611e3fa53",
+      "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+      "cache_sha256": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726",
+      "plugin_sha256": "433683f454364e772886e6427442beb60b8c446da07abc815ceab5c2660f64c2",
+      "graceful_stop": {
+        "paper_stop_marker": "Stopping the server",
+        "plugin_disable_marker": "The Observance sleeps.",
+        "all_dimensions_saved_marker": "ThreadedAnvilChunkStorage: All dimensions are saved",
+        "port_25611_listener_count": 0,
+        "rejected_review_pid_32868_alive_after_stop": true
+      },
+      "required_fix": "Mount every gate label on the first solid jamb immediately outside the clear door span, audit its front cell during the gate-local pass, and retain the final all-sign world readback."
     }
   ],
   "production_mutated": false,
