@@ -22,6 +22,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const materialProven = await hasCampaignEvent('p7.counterfeit_material_proven');
   const nessaCleared = await hasCampaignEvent('p7.nessa_publicly_cleared');
   const p8Planned = await hasCampaignEvent('p8.intervention_plan_accepted');
+  const p8UnlitCompared = await hasCampaignEvent('p8.unlit_house_synthesis_completed');
   const p8Repaired = await hasCampaignEvent('p8.hold_systems_repaired');
   const p9People = await hasCampaignEvent('p9.company_biographies_restored');
   const p9Leak = await hasCampaignEvent('p9.leak_window_proven');
@@ -48,7 +49,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     ...materialPosts,
   ] : materialPosts;
   const p8Posts = p8Planned === true ? [
-    { date: 'April 2, 2011', user: 'ashfield', title: p8Repaired === true ? 'the Hold works: repair readback attached' : 'the Hold works: accepted plan', body: p8Repaired === true ? 'The current group restored water, paired light, pressure control, and the staff route in the tested order. Before and altered states remain preserved.' : 'The incident board keeps four interacting failures, Iss’s sound surface proof, his unsafe route, and a safe intervention order separate.', href: '/community/2011/04/02/hold-works' },
+    { date: 'April 2, 2011', user: 'ashfield', title: p8Repaired === true ? 'the Hold works: repair readback attached' : p8UnlitCompared === true ? 'the Hold works: base comparison attached' : 'the Hold works: accepted plan', body: p8Repaired === true ? 'The current group restored water, paired light, pressure control, and the staff route in the tested order. Before and altered states remain preserved.' : p8UnlitCompared === true ? 'Seven copied-house findings now sit beside the works before-state. Copperline kept their disagreements instead of merging them into one clean account.' : 'The incident board keeps four interacting failures, Iss’s sound surface proof, his unsafe route, and a safe intervention order separate.', href: '/community/2011/04/02/hold-works' },
     ...finalPosts,
   ] : finalPosts;
   const p9Posts = p8Repaired === true ? [

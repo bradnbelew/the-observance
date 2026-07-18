@@ -8,9 +8,10 @@ export const metadata: Metadata = { title: 'Hold works comparison - Copperline C
 export const dynamic = 'force-dynamic';
 
 export default async function HoldWorksPost() {
-  const [nessaCleared, planned, repaired] = await Promise.all([
+  const [nessaCleared, planned, unlitCompared, repaired] = await Promise.all([
     hasCampaignEvent('p7.nessa_publicly_cleared'),
     hasCampaignEvent('p8.intervention_plan_accepted'),
+    hasCampaignEvent('p8.unlit_house_synthesis_completed'),
     hasCampaignEvent('p8.hold_systems_repaired'),
   ]);
   if (nessaCleared !== true) return <LegacyShell active="community"><Breadcrumbs><Link href="/community/index.php">Community</Link> &raquo; Archive</Breadcrumbs><OldPageTitle>Archived Post Not Available</OldPageTitle><div className="old-message error">This post is not in the current public index.</div></LegacyShell>;
@@ -31,6 +32,11 @@ export default async function HoldWorksPost() {
         <ol><li>Install the authenticated lower filter.</li><li>Restore the paired coverage lamps.</li><li>Close the mapped pressure bypass.</li><li>Open the staff route after the three system readbacks agree.</li></ol>
         <p>Do not erase the altered office. Its clean chronology is evidence of what the copy preferred.</p>
       </article>}
+      {unlitCompared === true && <section className="old-copy" aria-labelledby="base-comparison-heading">
+        <h2 id="base-comparison-heading">Base comparison received</h2>
+        <p>The current group returned from all seven copied houses. Copperline has kept the house findings as seven separate records instead of merging them into one neat account.</p>
+        <p>The official changes, household repairs, present-day shapes, and earlier company marks do not always agree. Their differences now sit beside the works before-state. Nothing in this attachment replaces the group&apos;s causal finding or makes an unsafe repair acceptable.</p>
+      </section>}
       {planned === true && repaired === true ? (
         <section className="old-copy" aria-labelledby="works-readback"><h2 id="works-readback">Works readback added by the current group</h2><ul><li>Lower draw: clear, original dirty sample retained.</li><li>Coverage: both lamps live.</li><li>Pressure: return gauge at zero; bypass shut.</li><li>Route: staff gate opened last.</li></ul><p>Dob&apos;s surface patch settled after the same pressure correction. The old Hold repair, his later patch, and the group&apos;s intervention now form one material history.</p></section>
       ) : planned === true ? <div className="old-message">No repair readback has been attached. The accepted plan is public; the works remain unchanged.</div> : null}

@@ -73,8 +73,12 @@
           "Pera's school repair and our drain patch use the same reed packing. Dob still buys it from me every spring."
         ],
         "after_c05": [
-          "You found a different record in each of the seven houses. The registrar's list only made sense after you compared them at the base.",
-          "The well reflects the sky again. It still tastes of iron, but that part has always been true."
+          "The copied house nearest the well keeps a clean repair entry, but the wall still carries the household patch beneath it.",
+          "One disagreement is not enough to tell us which version the copy follows. Bring back the other house findings before we call it a pattern."
+        ],
+        "after_unlit": [
+          "You brought back seven house accounts, and none of them can stand in for the others. Keep the official changes beside the repairs people actually made.",
+          "The well still reflects the copied roof. Finishing the comparison did not make that behavior ordinary, and it did not make the repair safe by itself."
         ],
         "after_p8": [
           "The lower draw runs clear now. Dob used your pressure reading on the patch behind my wall, and it stopped knocking before dawn.",

@@ -119,6 +119,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("p11.averyn_restored_unbound"))
                         || truthy(flags.get("v5_case_c09_complete"))) yield "after_p11";
                 if (truthy(flags.get("p8.hold_systems_repaired"))) yield "after_p8";
+                if (truthy(flags.get("p8.unlit_house_synthesis_completed"))) yield "after_unlit";
                 if (truthy(flags.get("v5_case_c05_complete"))) yield "after_c05";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (keepersComplete(flags)) yield "after_c03";

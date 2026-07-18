@@ -510,6 +510,13 @@ def validate_npcs(data: dict, errors: list[str]) -> None:
         fail(errors, "all five townsfolk must select P11 responses from the exact unbound event")
     if listener.count('yield "after_p11"') != 5:
         fail(errors, "all five townsfolk must route to their exact after_p11 dialogue")
+    wenna = next((npc for npc in townsfolk if npc.get("id") == "wenna"), {})
+    if len(((wenna.get("lines") or {}).get("after_unlit") or [])) != 2:
+        fail(errors, "Wenna must have two exact seven-house synthesis response lines")
+    if 'truthy(flags.get("p8.unlit_house_synthesis_completed"))' not in listener:
+        fail(errors, "Wenna seven-house response must select from the exact Unlit synthesis event")
+    if 'yield "after_unlit"' not in listener:
+        fail(errors, "Wenna exact Unlit synthesis event must route to after_unlit dialogue")
     wren = data.get("wren") or {}
     if wren.get("id") != "wren":
         fail(errors, "NPC manifest has no Wren entry")
