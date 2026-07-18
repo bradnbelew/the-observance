@@ -32,6 +32,9 @@ check(!migration.includes("('p7.nessa_publicly_cleared','P7','{p7.supplier_histo
 check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].prerequisites[0]
   === 'p7.nessa_publicly_cleared',
   'P8 correct causal model must accept zero observation/source receipts after phase entry');
+check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].sourceSurfaces.includes('copperline')
+  && !ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].sourceSurfaces.includes('discord'),
+  'P8 must use the semantic Copperline plan or local Minecraft path, not a Discord answer menu');
 check(ARG_EVENT_DEFINITIONS['p8.hold_systems_repaired'].prerequisites[0]
   === 'p8.intervention_plan_accepted',
   'P8 physical repair must project only after a bounded safe intervention plan');

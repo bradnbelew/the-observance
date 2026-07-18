@@ -145,41 +145,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     });
     return;
   }
-  if (action === 'plan-repair') {
-    const causeModel = interaction.options.getString('cause-model', true);
-    const issFinding = interaction.options.getString('iss-finding', true);
-    const worksOrder = interaction.options.getString('works-order', true);
-    if (causeModel !== 'fracture-heat-watch-routing'
-        || issFinding !== 'surface-true-route-unsafe'
-        || worksOrder !== 'water-light-pressure-route') {
-      await interaction.editReply('That model either drops a proven cause, turns Iss into the only cause, or starts work before the systems are safe. Nothing changed.');
-      return;
-    }
-    const result = await recordArgEvent({
-      eventKey: 'p8.intervention_plan_accepted',
-      idempotencyKey: 'discord:p8:intervention-plan',
-      source: 'discord',
-      actorId: interaction.user.id,
-      payload: {
-        cause_model: causeModel,
-        iss_finding: issFinding,
-        works_order: worksOrder,
-        observation_receipts: 0,
-      },
-    });
-    if (result.status === 'blocked') {
-      await interaction.editReply('Nessa’s public correction is not on the shared record yet. Nothing changed.');
-      return;
-    }
-    if (result.status === 'collision') {
-      await interaction.editReply('A different intervention plan already owns that receipt. Nothing changed; use /investigate status.');
-      return;
-    }
-    await interaction.editReply(result.created
-      ? 'Plan accepted. Treat the Break as interacting failures. Keep Iss’s sound surface proof and reject his unsafe route. The Hold works can now be repaired in the tested order.'
-      : 'That intervention plan is already accepted. Nothing was duplicated.');
-    return;
-  }
   if (action === 'file-leak-window') {
     const readiness = interaction.options.getString('readiness', true);
     const privateObject = interaction.options.getString('private-object', true);

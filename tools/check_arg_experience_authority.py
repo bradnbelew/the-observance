@@ -385,6 +385,10 @@ def main() -> None:
     require("real HTML form" in by_id["WEB_COPPERLINE_FORM"]["primitive"]
             and "server" in by_id["WEB_COPPERLINE_FORM"]["primitive"].casefold(),
             "Copperline input is a decorative fake form")
+    require("P8 causal intervention plan" in by_id["WEB_COPPERLINE_FORM"]["used_by"]
+            and "canonical component ids" in by_id["WEB_COPPERLINE_FORM"]["data_shape_normalization"]
+            and "raw player prose is not stored" in by_id["WEB_COPPERLINE_FORM"]["data_shape_normalization"],
+            "P8 Copperline plan lacks real form ownership, canonical idempotency, or text-retention safety")
     require("never parse free chat" in by_id["DISCORD_INVESTIGATION_MODAL"]["data_shape_normalization"],
             "Discord input requires unrestricted chat parsing")
     modal = by_id["DISCORD_INVESTIGATION_MODAL"]

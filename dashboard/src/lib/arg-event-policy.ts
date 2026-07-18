@@ -42,7 +42,7 @@ export const ARG_EVENT_DEFINITIONS = {
   'p7.supplier_history_restored': event('P7', ['p7.counterfeit_material_proven'], ['copperline'], ['copperline', 'minecraft', 'discord']),
   // A correct exoneration is knowledge, not proof that expected exhibits or restore buttons were touched.
   'p7.nessa_publicly_cleared': event('P7', ['p6.six_responsibilities_acknowledged'], ['discord', 'npc'], ['minecraft', 'copperline', 'discord', 'npc']),
-  'p8.intervention_plan_accepted': event('P8', ['p7.nessa_publicly_cleared'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
+  'p8.intervention_plan_accepted': event('P8', ['p7.nessa_publicly_cleared'], ['minecraft', 'copperline'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p8.hold_systems_repaired': event('P8', ['p8.intervention_plan_accepted'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p9.company_biographies_restored': event('P9', ['p8.hold_systems_repaired'], ['minecraft', 'copperline', 'discord'], ['minecraft', 'copperline', 'discord', 'media']),
   'p9.leak_window_proven': event('P9', ['p9.company_biographies_restored'], ['minecraft', 'discord', 'media'], ['minecraft', 'copperline', 'discord', 'media', 'npc']),
