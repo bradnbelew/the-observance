@@ -46,9 +46,10 @@
       "platform": "Paper 1.21.11",
       "visible_trigger": "physical examiner desk",
       "primitive": "Dialog + TextDialogInput + PlayerCustomClickEvent + DialogResponseView",
-      "shape": "normalized plain text, maximum 96 characters",
+      "shape": "three separately labeled normalized claims: purpose max 64, change max 96, anomaly max 64",
       "predicate_owner": "local Paper ArgVerticalSliceState",
-      "fallback": "/obscase theory <short account>",
+      "fallback": "/obscase conclude <purpose> | <change> | <anomaly>",
+      "predicate_contract": "deterministic meaning components with natural paraphrases; no hidden canonical prose sentence",
       "wrong_feedback": "wrong, incomplete, throttled, and technical failure are distinct",
       "observation_receipts_required": false
     },

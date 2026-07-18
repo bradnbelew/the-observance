@@ -58,7 +58,20 @@
     "interaction_free_case": true,
     "no_player_caused_world_response": true,
     "answer_input_as_dominant_verb": true,
-    "closed_mechanism_taxonomy": true
+    "closed_mechanism_taxonomy": true,
+    "hidden_long_canonical_phrase_for_interpretive_conclusion": true
+  },
+  "answer_shape_contract": {
+    "exact_match_allowed_only_when_evidence_yields_exact_value": true,
+    "exact_value_examples_non_exhaustive": ["code", "name", "coordinate", "decoded word", "filename", "checksum"],
+    "interpretive_conclusion_hidden_canonical_sentence": false,
+    "interpretive_conclusion_formats": ["bounded physical action", "separate short claims", "deterministic meaning components"],
+    "natural_paraphrase_and_word_order_coverage_required": true,
+    "partial_contradictory_irrelevant_accounts_fail": true,
+    "input_shape_must_be_clear_without_revealing_deduction": true,
+    "llm_judge_required": false,
+    "observation_or_possession_gate": false,
+    "tests": ["multiple paraphrases", "word-order variation", "partial", "plausible wrong theory", "negation and contradiction", "irrelevant keyword stuffing", "zero-observation correct", "throttle", "idempotency", "restart", "primary-fallback parity"]
   },
   "runtime_invariants": {
     "observation_receipts_gate_correctness": false,

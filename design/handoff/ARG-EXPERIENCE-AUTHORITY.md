@@ -76,6 +76,27 @@ privacy, safety, and any-subset play.
 10. A technical pass never implies experiential acceptance. Static checks can reject structural
     anti-patterns; cold humans must judge whether the world feels alive and whether the investigation is
     genuine. Brad approval remains a separate explicit gate.
+11. No interpretive conclusion may depend on guessing a hidden canonical sentence. Long exact prose is
+    forbidden unless the evidence itself fairly and intentionally yields that exact text. Codes, names,
+    coordinates, decoded words, filenames, and other exact artifacts may use exact predicates. A theory,
+    judgment, or synthesis must instead use a physical decision, clearly separated short claims, or
+    deterministic meaning components with authored synonym and word-order coverage. Natural defensible
+    paraphrases pass; partial, contradictory, and irrelevant accounts fail without leaking the solution.
+    The input surface must state the response shape, not the answer. This clarity is interface design, not
+    handholding.
+
+## Answer-shape contract
+
+- **Exact artifact:** use a short exact input only when the player can derive or copy the exact value from
+  a fair transform or authenticated source.
+- **Interpretive conclusion:** split the judgment into the few distinct claims the evidence must support,
+  or embody it as a bounded world action. Never publish an invisible model sentence for players to guess.
+- **Deterministic validation:** normalize each claim independently and match versioned meaning components,
+  relationships, and contradictions. Do not use an LLM, unrestricted chat parser, observation receipt, or
+  source possession as the judge.
+- **Proof:** tests must cover multiple natural paraphrases and word orders, partial accounts, plausible wrong
+  theories, negation/contradiction, irrelevant keyword stuffing, zero-observation correctness, throttle,
+  idempotency, restart, and parity across primary and accessibility input surfaces.
 
 ## Case brief and review contract
 

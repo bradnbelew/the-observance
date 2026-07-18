@@ -76,7 +76,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
 
     /** Console-only disposable harness entry; uses the same predicate as Dialog and command input. */
     public ArgVerticalSliceState.TheoryResult auditTheory(String theory) throws IOException {
-        ArgVerticalSliceState.TheoryResult result = state.submitTheory(theory, "disposable-paper-audit");
+        ArgVerticalSliceState.TheoryResult result = state.submitConclusion(theory, "disposable-paper-audit");
         if (result == ArgVerticalSliceState.TheoryResult.ACCEPTED) projectState();
         return result;
     }
@@ -101,7 +101,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
 
     public void openDesk(Player player) {
         if (!dialogEnabled) {
-            player.sendMessage(Component.text("Use /obscase theory <your short account>. Use /obscase help for the input rules."));
+            player.sendMessage(Component.text("Use /obscase conclude <purpose> | <change> | <anomaly>. Use /obscase help for the input rules."));
             return;
         }
         try {
@@ -109,17 +109,22 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
                     .base(DialogBase.builder(Component.text("Mouth copy review"))
                             .canCloseWithEscape(true)
                             .body(List.of(DialogBody.plainMessage(Component.text(
-                                    "State what the disagreeing copies show. Keep it short. Esc cancels. The desk does not require a source checklist."))))
-                            .inputs(List.of(DialogInput.text("theory", Component.text("Account"))
-                                    .width(320).maxLength(96).labelVisible(true).build()))
+                                    "Answer three separate questions in your own words. There is no hidden sentence. Esc cancels. Source clicks are not required."))))
+                            .inputs(List.of(
+                                    DialogInput.text("purpose", Component.text("What was the Mouth for?"))
+                                            .width(320).maxLength(64).labelVisible(true).build(),
+                                    DialogInput.text("change", Component.text("What changed between the copies?"))
+                                            .width(320).maxLength(96).labelVisible(true).build(),
+                                    DialogInput.text("anomaly", Component.text("What remains unexplained?"))
+                                            .width(320).maxLength(64).labelVisible(true).build()))
                             .build())
-                    .type(DialogType.notice(ActionButton.builder(Component.text("Test this account"))
-                            .tooltip(Component.text("The server checks the meaning and reports accepted, wrong, incomplete, or failed."))
+                    .type(DialogType.notice(ActionButton.builder(Component.text("Test these conclusions"))
+                            .tooltip(Component.text("The server checks three meaning components and reports accepted, wrong, incomplete, or failed."))
                             .width(160).action(DialogAction.customClick(THEORY_CLICK, null)).build())));
             player.showDialog(dialog);
         } catch (LinkageError | RuntimeException unavailable) {
             plugin.getLogger().warning("Paper Dialog unavailable; using stable command fallback: " + safe(unavailable.getMessage()));
-            player.sendMessage(Component.text("The review form could not open. Use /obscase theory <your short account>."));
+            player.sendMessage(Component.text("The review form could not open. Use /obscase conclude <purpose> | <change> | <anomaly>."));
         }
     }
 
@@ -130,11 +135,10 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
         Player player = connection.getPlayer();
         DialogResponseView response = event.getDialogResponseView();
         if (response == null) {
-            player.sendMessage(Component.text("The form returned no account. Nothing changed. Use /obscase theory as recovery."));
+            player.sendMessage(Component.text("The form returned no conclusions. Nothing changed. Use /obscase conclude as recovery."));
             return;
         }
-        String theory = response.getText("theory");
-        handleTheory(player, theory);
+        handleConclusion(player, response.getText("purpose"), response.getText("change"), response.getText("anomaly"));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -166,7 +170,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
         }
     }
 
-    private void handleTheory(Player player, String theory) {
+    private void handleConclusion(Player player, String purpose, String change, String anomaly) {
         RefusalWindow window = refusals.compute(player.getUniqueId(), (ignored, current) ->
                 current == null || current.expiresAt < System.currentTimeMillis()
                         ? new RefusalWindow(System.currentTimeMillis() + REFUSAL_WINDOW_MILLIS, 0) : current);
@@ -175,17 +179,18 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
             return;
         }
         try {
-            ArgVerticalSliceState.TheoryResult result = state.submitTheory(theory, player.getUniqueId().toString());
+            ArgVerticalSliceState.TheoryResult result = state.submitConclusion(
+                    purpose, change, anomaly, player.getUniqueId().toString());
             switch (result) {
                 case ACCEPTED -> {
                     refusals.remove(player.getUniqueId());
                     world.setGate(true);
-                    player.sendMessage(Component.text("Accepted. The Hold was a refuge before safety language became control. The earlier copy remains unexplained. The civic threshold is open."));
+                    player.sendMessage(Component.text("Accepted. Your three claims identify the ordinary refuge, the change from safety to control, and the unresolved copy order. The civic threshold is open."));
                 }
-                case INCOMPLETE -> player.sendMessage(Component.text("Incomplete. State what the place was and what changed. Nothing changed in the world."));
+                case INCOMPLETE -> player.sendMessage(Component.text("Incomplete. Answer all three questions. Nothing changed in the world."));
                 case WRONG -> {
                     window.count++;
-                    player.sendMessage(Component.text("That account does not explain the ordinary refuge, the later rule, and the earlier copy together. Nothing changed."));
+                    player.sendMessage(Component.text("One or more claims do not fit the surviving evidence. Nothing changed."));
                 }
             }
         } catch (IOException | IllegalStateException failure) {
@@ -203,14 +208,19 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
             }
             String action = args.length == 0 ? "help" : args[0].toLowerCase(Locale.ROOT);
             switch (action) {
-                case "help" -> player.sendMessage(Component.text("Use /obscase open, /obscase theory <short account>, /obscase status, or /obscase replay. No source-click receipt is required."));
+                case "help" -> player.sendMessage(Component.text("Use /obscase open, /obscase conclude <purpose> | <change> | <anomaly>, /obscase status, or /obscase replay. No source-click receipt is required."));
                 case "open" -> openDesk(player);
                 case "status" -> player.sendMessage(Component.text("P4 theory: " + (state.theoryEarned() ? "accepted" : "open")
                         + ". P5 curation: " + (state.curated() ? "complete" : state.theoryEarned() ? "available beyond the gate" : "not yet available")
                         + ". Dialog: " + (dialogEnabled ? "enabled" : "command fallback only") + "."));
-                case "theory" -> {
-                    if (args.length < 2) player.sendMessage(Component.text("Incomplete. Usage: /obscase theory <short account>"));
-                    else handleTheory(player, String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+                case "conclude" -> {
+                    if (args.length < 2) {
+                        player.sendMessage(Component.text("Incomplete. Usage: /obscase conclude <purpose> | <change> | <anomaly>"));
+                    } else {
+                        String[] fields = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).split("\\|", -1);
+                        if (fields.length != 3) player.sendMessage(Component.text("Incomplete. Separate the three answers with | characters."));
+                        else handleConclusion(player, fields[0], fields[1], fields[2]);
+                    }
                 }
                 case "replay" -> player.sendMessage(Component.text(state.theoryEarned()
                         ? "Changed place: the civic threshold is open. Work cards and penalty copies can now be separated beyond it."
@@ -220,7 +230,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
         }
 
         @Override public Collection<String> suggest(CommandSourceStack source, String[] args) {
-            if (args.length <= 1) return List.of("help", "open", "status", "theory", "replay");
+            if (args.length <= 1) return List.of("help", "open", "status", "conclude", "replay");
             return List.of();
         }
 

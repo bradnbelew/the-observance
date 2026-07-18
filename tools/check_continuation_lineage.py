@@ -446,7 +446,7 @@ def main() -> None:
                 "campaign_grammar_audit", "functional_feasibility_matrix",
                 "platform_input_feasibility_matrix", "p4_p5_vertical_slice_authority",
                 "p4_p5_vertical_slice_checker", "p4_p5_disposable_paper_receipt",
-                "p4_p5_pristine_review_preparation"))
+                "p4_p5_pristine_review_preparation", "p4_p5_answer_shape_rejection"))
             and arg_redesign["coverage"] == "P1-P12 exact ordered responsive case briefs"
             and "five human layers" in arg_redesign["story_coverage"]
             and "no lectern textbox" in arg_redesign["input_boundary"]
@@ -457,6 +457,8 @@ def main() -> None:
             and arg_redesign["production_mutation"] is False
             and arg_redesign["new_brad_server_authorized"] is True,
             "research-based P1-P12 ARG experience redesign lineage drift")
+    require("hidden canonical prose is forbidden" in arg_redesign["answer_shape_contract"],
+            "campaign answer-shape lineage weakened")
 
     arg_paper = json.loads((ROOT / arg_redesign["p4_p5_disposable_paper_receipt"])
                            .read_text(encoding="utf-8"))
@@ -489,6 +491,18 @@ def main() -> None:
             and all(value is None for value in arg_review["human_review_gates"].values())
             and arg_review["production_mutated"] is False,
             "P4-P5 pristine review preparation lineage drift")
+
+    answer_shape_review = json.loads((ROOT / arg_redesign["p4_p5_answer_shape_rejection"])
+                                     .read_text(encoding="utf-8"))
+    require(answer_shape_review["status"] == "revision_required_hidden_canonical_sentence_rejected"
+            and answer_shape_review["brad_approval"] is None
+            and answer_shape_review["binding_correction"]["hidden_canonical_prose"] == "forbidden"
+            and answer_shape_review["binding_correction"]["llm_judge"] is False
+            and answer_shape_review["binding_correction"]["observation_or_possession_gate"] is False
+            and answer_shape_review["current_offline_revision"]["old_single_magic_sentence_is_accepted"] is False
+            and answer_shape_review["live_review_server"]["mutated_by_revision"] is False
+            and answer_shape_review["production_mutated"] is False,
+            "P4-P5 answer-shape rejection lineage drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False

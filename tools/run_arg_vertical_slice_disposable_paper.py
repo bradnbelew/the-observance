@@ -39,7 +39,7 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         initial = first.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
         closed = first.command("obsm3 audit", "M3_AUDIT PASS")
         security_closed = first.command("obsm3 security", "M3_SECURITY_PASS")
-        wrong = first.command("obsm3 arg-theory the mouth was only a cult ruin", "M3_ARG_THEORY result=wrong")
+        wrong = first.command("obsm3 arg-theory cult chamber | smoke directions became mandatory attendance | copy before source", "M3_ARG_THEORY result=wrong")
         after_wrong = first.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
         wrong_audit = first.command("obsm3 audit", "M3_AUDIT PASS")
         first.command("save-all flush", "Saved the game")
@@ -57,7 +57,7 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         second.wait_for("Done (", 300)
         before_correct = second.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
         correct = second.command(
-            "obsm3 arg-theory the hold sheltered families before safety became control",
+            "obsm3 arg-theory emergency shelter | smoke directions became mandatory attendance | corrected copy predates source",
             "M3_ARG_THEORY result=accepted")
         open_audit = second.command("obsm3 audit", "M3_AUDIT PASS")
         security_open = second.command("obsm3 security", "M3_SECURITY_PASS")
@@ -82,7 +82,7 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         restart_audit = third.command("obsm3 audit", "M3_AUDIT PASS")
         restart_security = third.command("obsm3 security", "M3_SECURITY_PASS")
         duplicate = third.command(
-            "obsm3 arg-theory the hold sheltered families before safety became control",
+            "obsm3 arg-theory ordinary refuge | emergency instructions became required attendance | source came after copy",
             "M3_ARG_THEORY result=accepted")
         idempotent = third.command("obsm3 arg-status", "receipts=4")
         final = third.command("obsm3 audit", "M3_AUDIT PASS")

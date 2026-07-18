@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 /** Local-primary P4/P5 ARG slice state. Observations never participate in its predicates. */
 public final class ArgVerticalSliceState {
@@ -16,13 +15,6 @@ public final class ArgVerticalSliceState {
     public static final String SERVICE_EVENT = "p5.service_cards_public";
     public static final String PENALTY_EVENT = "p5.penalty_copies_in_custody";
     public static final String CURATED_EVENT = "p5.civic_gallery_recurated";
-
-    private static final Set<String> ACCEPTED_THEORIES = Set.of(
-            "REFUGE BEFORE RITE SAFETY BECAME OBEDIENCE",
-            "THE HOLD WAS A RATIONAL REFUGE BEFORE RITUAL INSTITUTION",
-            "THE HOLD WAS A REFUGE BEFORE IT BECAME AN INSTITUTION",
-            "THE HOLD SHELTERED FAMILIES BEFORE SAFETY BECAME CONTROL"
-    );
 
     private final LocalPrimaryJournal journal;
 
@@ -34,13 +26,28 @@ public final class ArgVerticalSliceState {
         return new ArgVerticalSliceState(LocalPrimaryJournal.open(path));
     }
 
-    public synchronized TheoryResult submitTheory(String raw, String contributor) throws IOException {
-        String normalized = normalize(raw);
-        if (normalized.isBlank()) return TheoryResult.INCOMPLETE;
-        if (!ACCEPTED_THEORIES.contains(normalized)) return TheoryResult.WRONG;
-        byte[] payload = ("theory=" + normalized).getBytes(StandardCharsets.UTF_8);
-        journal.append("p4-theory-" + sha256(normalized), THEORY_EVENT, payload);
+    public synchronized TheoryResult submitConclusion(
+            String purposeRaw, String changeRaw, String anomalyRaw, String contributor) throws IOException {
+        String purpose = normalize(purposeRaw);
+        String change = normalize(changeRaw);
+        String anomaly = normalize(anomalyRaw);
+        if (purpose.isBlank() || change.isBlank() || anomaly.isBlank()) return TheoryResult.INCOMPLETE;
+        if (!withinBudget(purpose, 64, 12) || !withinBudget(change, 96, 18)
+                || !withinBudget(anomaly, 64, 12)) return TheoryResult.WRONG;
+        if (!matchesPurpose(purpose) || !matchesChange(change) || !matchesAnomaly(anomaly)) {
+            return TheoryResult.WRONG;
+        }
+        String canonicalMeaning = "purpose=ordinary_refuge;change=safety_to_control;anomaly=copy_before_source";
+        byte[] payload = canonicalMeaning.getBytes(StandardCharsets.UTF_8);
+        journal.append("p4-theory-" + sha256(canonicalMeaning), THEORY_EVENT, payload);
         return TheoryResult.ACCEPTED;
+    }
+
+    /** Console/recovery adapter. The visible contract is three short claims separated by a pipe. */
+    public synchronized TheoryResult submitConclusion(String delimited, String contributor) throws IOException {
+        String[] fields = delimited == null ? new String[0] : delimited.split("\\|", -1);
+        if (fields.length != 3) return TheoryResult.INCOMPLETE;
+        return submitConclusion(fields[0], fields[1], fields[2], contributor);
     }
 
     public synchronized SelectionResult selectServiceCards(String contributor) throws IOException {
@@ -78,6 +85,37 @@ public final class ArgVerticalSliceState {
         String normalized = Normalizer.normalize(value, Normalizer.Form.NFKC)
                 .toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", " ").trim();
         return normalized.replaceAll(" +", " ");
+    }
+
+    private static boolean matchesPurpose(String value) {
+        return containsAny(value, "REFUGE", "SHELTER", "EVACUATION PLACE", "EMERGENCY PLACE");
+    }
+
+    private static boolean matchesChange(String value) {
+        if (containsAny(value, "DID NOT BECOME", "NEVER BECAME", "NOT CONTROL", "NO CONTROL")) return false;
+        boolean practicalCare = containsAny(value, "SAFETY", "EMERGENCY", "EVACUATION", "SMOKE",
+                "CARE", "PROCEDURE", "INSTRUCTION", "GUIDANCE", "DIRECTION");
+        boolean imposedControl = containsAny(value, "CONTROL", "COMPULSORY", "MANDATORY", "REQUIRED",
+                "ATTENDANCE", "PENALTY", "OBEDIENCE", "MONITOR", "RULE");
+        return practicalCare && imposedControl;
+    }
+
+    private static boolean matchesAnomaly(String value) {
+        if (value.contains("COPY BEFORE SOURCE")) return true;
+        boolean copy = value.contains("COPY");
+        boolean source = containsAny(value, "SOURCE", "ORIGINAL");
+        boolean reversedOrder = containsAny(value, "BEFORE", "PREDATE", "PREDATES", "EARLIER", "CAME FIRST")
+                || (value.contains("SOURCE") && containsAny(value, "AFTER", "LATER"));
+        return copy && source && reversedOrder;
+    }
+
+    private static boolean containsAny(String value, String... candidates) {
+        for (String candidate : candidates) if (value.contains(candidate)) return true;
+        return false;
+    }
+
+    private static boolean withinBudget(String value, int maximumCharacters, int maximumWords) {
+        return value.length() <= maximumCharacters && value.split(" ").length <= maximumWords;
     }
 
     private static String sha256(String value) {

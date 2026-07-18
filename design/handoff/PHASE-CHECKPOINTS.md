@@ -279,6 +279,21 @@ or postponing safe work in earlier phases.
   for the bounded real-client review. It does not claim whole-campaign readiness, launch approval, or Brad
   approval; every human receipt remains null until the walk occurs.
 
+### Campaign-wide answer-shape correction
+
+- Active review established that the P4 desk's long exact prose whitelist was not fairly derivable. A player
+  could reach the right interpretation in ordinary language and still fail because no evidence supplied the
+  server's hidden sentence. That input shape is rejected, and the live PID 32868 target remains unchanged
+  as guided technical proof only.
+- Exact matching is now reserved for short values that fair evidence or a transform actually yields. Every
+  interpretive theory, synthesis, or judgment across P1-P12 must instead use a bounded physical action,
+  clearly separated short claims, or deterministic meaning components with natural paraphrase and word-order
+  coverage. The interface states the response shape without supplying the solution; this is not handholding.
+- The offline P4 revision uses separate purpose/change/anomaly fields and a pipe-delimited command fallback.
+  It stores one canonical meaning event rather than a player's wording. Multiple paraphrases, partial/wrong,
+  contradiction, keyword-stuffing, zero-observation, idempotency, and restart tests are mandatory before a
+  replacement disposable build.
+
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the
 investigation: twenty complete one-clause pages fit the conservative 114-pixel/13-line budget and expose

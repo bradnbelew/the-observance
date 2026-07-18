@@ -24,6 +24,7 @@ BASELINE = {
     "client_input_overflow": False,
     "decoded_plaintext_needlessly_opaque": False,
     "source_click_prerequisite": False,
+    "hidden_long_canonical_phrase": False,
 }
 
 
@@ -44,6 +45,7 @@ MUTATIONS = {
     "book_sign_or_dialog_overflow": ("client_input_overflow", True),
     "needlessly_opaque_decoded_plaintext": ("decoded_plaintext_needlessly_opaque", True),
     "source_click_prerequisite": ("source_click_prerequisite", True),
+    "hidden_long_canonical_phrase": ("hidden_long_canonical_phrase", True),
 }
 
 

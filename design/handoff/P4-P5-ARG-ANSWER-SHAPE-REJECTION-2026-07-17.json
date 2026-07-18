@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0.0-p4-p5-arg-answer-shape-rejection",
+  "recorded_at": "2026-07-17T22:45:00-05:00",
+  "status": "revision_required_hidden_canonical_sentence_rejected",
+  "brad_approval": null,
+  "scope": "current P4-P5 slice and binding P1-P12 future answer/input authority",
+  "finding": "Players cannot fairly derive or guess a long hidden canonical sentence from an interpretive conclusion. The live slice claimed to validate meaning but used an exact prose whitelist.",
+  "binding_correction": {
+    "exact_matching": "allowed only when fair evidence or a transform yields the exact short value",
+    "interpretive_conclusions": "use bounded physical actions, separate short claims, or deterministic meaning components",
+    "natural_paraphrases": "must pass across reasonable synonyms and word order",
+    "hidden_canonical_prose": "forbidden",
+    "input_shape": "must be clear without revealing the deduction",
+    "handholding": "not required; interface clarity is distinct from solution guidance",
+    "llm_judge": false,
+    "observation_or_possession_gate": false
+  },
+  "current_offline_revision": {
+    "p4_fields": ["purpose", "historical change", "unresolved anomaly"],
+    "command_fallback": "/obscase conclude <purpose> | <change> | <anomaly>",
+    "canonical_event_payload": "purpose=ordinary_refuge;change=safety_to_control;anomaly=copy_before_source",
+    "raw_player_sentence_is_idempotency_key": false,
+    "old_single_magic_sentence_is_accepted": false,
+    "fresh_disposable_paper_required": true,
+    "human_client_review_required": true
+  },
+  "live_review_server": {
+    "address": "127.0.0.1:25604",
+    "expected_pid": 32868,
+    "runtime_source_commit": "89fafae6723ec8d5af078bfceb3f3b07efa05efc",
+    "mutated_by_revision": false,
+    "classification": "guided technical proof with rejected answer shape"
+  },
+  "production_mutated": false,
+  "public_launch": false
+}

@@ -93,6 +93,7 @@ def guardrail_violations(candidate: dict[str, Any]) -> list[str]:
         "book_sign_or_dialog_overflow": candidate["client_input_overflow"] is False,
         "needlessly_opaque_decoded_plaintext": candidate["decoded_plaintext_needlessly_opaque"] is False,
         "source_click_prerequisite": candidate["source_click_prerequisite"] is False,
+        "hidden_long_canonical_phrase": candidate["hidden_long_canonical_phrase"] is False,
     }
     for name, passed in rules.items():
         if not passed:
@@ -125,6 +126,14 @@ def main() -> None:
             and runtime["local_primary"] is True and runtime["any_subset"] is True
             and runtime["public_real_world_travel_phone_or_personal_data_required"] is False,
             "ARG runtime/safety invariants weakened")
+    answer_shape = authority["answer_shape_contract"]
+    require(answer_shape["exact_match_allowed_only_when_evidence_yields_exact_value"] is True
+            and answer_shape["interpretive_conclusion_hidden_canonical_sentence"] is False
+            and answer_shape["natural_paraphrase_and_word_order_coverage_required"] is True
+            and answer_shape["partial_contradictory_irrelevant_accounts_fail"] is True
+            and answer_shape["llm_judge_required"] is False
+            and answer_shape["observation_or_possession_gate"] is False,
+            "campaign answer-shape contract weakened")
 
     story_authority = load(STORY_AUTHORITY)
     require(story_authority["status"] == "binding_offline_story_authority_not_human_approved"
@@ -352,6 +361,8 @@ def main() -> None:
              "ordinary chat is a required parser", "media submits an answer",
              "client overflow is acceptable", "source interaction receipts gate a correct answer"}.issubset(forbidden_assumptions),
             "platform input fail-closed assumptions are incomplete")
+    require("an interpretive conclusion requires a hidden long canonical sentence" in forbidden_assumptions,
+            "hidden canonical prose assumption is not forbidden")
 
     safe_copy = story_authority["safe_player_copy"]
     baseline_guardrails = {
@@ -375,6 +386,7 @@ def main() -> None:
         "client_input_overflow": False,
         "decoded_plaintext_needlessly_opaque": language["decoded_plaintext_needlessly_opaque"],
         "source_click_prerequisite": functional["correctness_requires_observation_receipts"],
+        "hidden_long_canonical_phrase": answer_shape["interpretive_conclusion_hidden_canonical_sentence"],
     }
     require(not guardrail_violations(baseline_guardrails),
             f"offline ARG negative contract violated: {guardrail_violations(baseline_guardrails)}")

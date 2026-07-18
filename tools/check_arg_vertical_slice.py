@@ -49,8 +49,9 @@ def main() -> int:
     runtime = text("plugin/src/main/java/com/observance/watcher/arg/ArgVerticalSliceRuntime.java", failures)
     for needle in (
         "DialogResponseView", "DialogInput.text", "PlayerCustomClickEvent", "LifecycleEvents.COMMANDS",
-        "new CaseCommand()", "maxLength(96)", "width(320)", "List.of()",
-        "state.submitTheory(theory", "world.setGate(true)", "No source-click receipt is required"
+        "new CaseCommand()", "maxLength(96)", "maxLength(64)", "width(320)", "List.of()",
+        "DialogInput.text(\"purpose\"", "DialogInput.text(\"change\"", "DialogInput.text(\"anomaly\"",
+        "state.submitConclusion(", "world.setGate(true)", "No source-click receipt is required"
     ):
         if needle not in runtime:
             failures.append(f"Paper real-input invariant missing: {needle}")
@@ -62,6 +63,12 @@ def main() -> int:
     if "LocalPrimaryJournal" not in state_source or any(token in state_source for token in (
             "observationReceipt", "hasObserved", "sourcePossession", "requiredObservations")):
         failures.append("vertical-slice predicate must be local-primary and observation-independent")
+    for needle in ("matchesPurpose", "matchesChange", "matchesAnomaly", "canonicalMeaning"):
+        if needle not in state_source:
+            failures.append(f"structured meaning predicate missing: {needle}")
+    for forbidden in ("ACCEPTED_THEORIES", "THE HOLD SHELTERED FAMILIES BEFORE SAFETY BECAME CONTROL"):
+        if forbidden in state_source:
+            failures.append(f"hidden canonical sentence predicate remains: {forbidden}")
 
     evidence = text("plugin/src/main/java/com/observance/watcher/arg/ArgVerticalSliceEvidence.java", failures)
     for needle in ("3, 1, 5", "2, 1, 6", "6, 3, 1", '"COPY BEFORE SOURCE"', "BookPageLayout::measure"):
