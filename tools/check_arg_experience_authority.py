@@ -441,6 +441,24 @@ def main() -> None:
             and "mirrorP11UnboundAsync" in coordinator
             and '"minecraft:p11:averyn-relationship-unbound"' in coordinator,
             "P11 retains a relationship answer menu or lacks the local physical unbound transition")
+    aliases = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/ArgEventPrerequisiteAliases.java").read_text(encoding="utf-8")
+    remote_cache = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/V5RemoteStateCache.java").read_text(encoding="utf-8")
+    for legacy, event in {
+        "v5_case_c02_complete": "p5.civic_gallery_recurated",
+        "v5_case_c03_complete": "p6.six_responsibilities_acknowledged",
+        "v5_case_c04_complete": "p7.nessa_publicly_cleared",
+        "v5_case_c05_complete": "p8.intervention_plan_accepted",
+        "v5_case_c06_complete": "p8.hold_systems_repaired",
+        "v5_case_c07_complete": "p9.leak_window_proven",
+        "v5_case_c08_complete": "p10.wren_remembrance_committed",
+        "v5_case_c09_complete": "p11.averyn_restored_unbound",
+    }.items():
+        require(f'Map.entry("{legacy}", "{event}")' in aliases,
+                f"missing one-way story prerequisite alias {legacy} -> {event}")
+    require("v5_case_c10_complete" not in aliases
+            and "ArgEventPrerequisiteAliases.storyEventFor(flag)" in remote_cache
+            and "ArgEventPrerequisiteAliases.resolvedAliases(flags)" in remote_cache,
+            "cross-surface prerequisite bridge bypasses physical C10 or is not wired into Paper")
     early_input_contracts = load(EARLY_INPUTS)["contracts"]
     require([row["id"] for row in early_input_contracts] == [
         "P1.SERVICE", "P1.CUSTODY", "P2.PACKAGE", "P2.HANDOFF",

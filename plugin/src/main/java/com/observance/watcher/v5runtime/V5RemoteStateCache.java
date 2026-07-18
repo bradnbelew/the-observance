@@ -179,8 +179,11 @@ public final class V5RemoteStateCache implements
 
     @Override
     public boolean isTrue(String flag) {
-        return flag != null && (progress.snapshot().isComplete(flag)
-                || trueRemoteFlags.contains(flag));
+        if (flag == null) return false;
+        if (progress.snapshot().isComplete(flag) || trueRemoteFlags.contains(flag)) return true;
+        String storyEvent = ArgEventPrerequisiteAliases.storyEventFor(flag);
+        return storyEvent != null && (progress.snapshot().isComplete(storyEvent)
+                || trueRemoteFlags.contains(storyEvent));
     }
 
     @Override
@@ -188,6 +191,7 @@ public final class V5RemoteStateCache implements
         if (!metadataValidated) return Optional.empty();
         Map<String, Boolean> flags = new LinkedHashMap<>();
         trueRemoteFlags.forEach(flag -> flags.put(flag, true));
+        flags.putAll(ArgEventPrerequisiteAliases.resolvedAliases(flags));
         return Optional.of(new ContainerRuntimePorts.ValidatedSnapshot(
                 PhysicalPredicateAuthority.CAMPAIGN_VERSION, authority.sha256(), flags));
     }
