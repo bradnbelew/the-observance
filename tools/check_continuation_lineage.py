@@ -24,7 +24,7 @@ def git(*args: str) -> str:
 
 def main() -> None:
     data = json.loads(LINEAGE.read_text(encoding="utf-8"))
-    require(data["schema_version"] == "1.4.0-continuation-lineage", "lineage schema drift")
+    require(data["schema_version"] == "1.5.0-continuation-lineage", "lineage schema drift")
     checkpoint = data["checkpoint_identity"]
     require(checkpoint["branch"] == "codex/m3-disposable-paper-gate", "canonical branch drift")
     require(checkpoint["production_mutated"] is False, "integration cannot claim production mutation")
@@ -435,6 +435,45 @@ def main() -> None:
             and rejected_stop["production_mutated"] is False
             and rejected_stop["other_paper_process_mutated"] is False,
             "rejected P4 vNext stop receipt drift")
+
+    p5_p12_paper = data["p5_p12_disposable_paper_validation"]
+    require(all((ROOT / p5_p12_paper[key]).is_file() for key in (
+                "pass_receipt", "failed_attempts_receipt"))
+            and p5_p12_paper["status"]
+                == "technical_physical_install_restart_audit_and_package_pass_only"
+            and p5_p12_paper["paper_version"] == "1.21.11"
+            and p5_p12_paper["rooms"] == 32
+            and p5_p12_paper["fixtures"] == 76
+            and p5_p12_paper["physical_authority_addresses"] == 305
+            and p5_p12_paper["fresh_build_passed"] is True
+            and p5_p12_paper["restart_independent_audit_passed"] is True
+            and p5_p12_paper["experiential_status"] == "not_evidence"
+            and p5_p12_paper["fresh_client_visual_receipt"] is False
+            and p5_p12_paper["brad_approval"] is None
+            and p5_p12_paper["production_mutation"] is False,
+            "P5-P12 disposable Paper lineage boundary drift")
+    result = subprocess.run(["git", "merge-base", "--is-ancestor",
+                             p5_p12_paper["source_commit"], "HEAD"], cwd=ROOT)
+    require(result.returncode == 0, "P5-P12 Paper source checkpoint is not an ancestor")
+    p5_p12_pass = json.loads((ROOT / p5_p12_paper["pass_receipt"])
+                             .read_text(encoding="utf-8"))
+    p5_p12_failed = json.loads((ROOT / p5_p12_paper["failed_attempts_receipt"])
+                               .read_text(encoding="utf-8"))
+    require(p5_p12_pass["source_commit"] == p5_p12_paper["source_commit"]
+            and p5_p12_pass["physical_result"]["fresh_build_passed"] is True
+            and p5_p12_pass["physical_result"]["restart_independent_audit_passed"] is True
+            and p5_p12_pass["physical_result"]["rooms"] == 32
+            and p5_p12_pass["physical_result"]["fixtures"] == 76
+            and p5_p12_pass["physical_result"]["retired_written_books_surviving"] == 0
+            and p5_p12_pass["world_package_sha256"]
+                == p5_p12_paper["world_package_sha256"]
+            and p5_p12_pass["fresh_client_visual_receipt"] is False
+            and p5_p12_pass["brad_approval"] is None
+            and p5_p12_pass["production_mutated"] is False
+            and len(p5_p12_failed["attempts"]) == 11
+            and p5_p12_failed["attempts"][-1]["attempt"] == 11
+            and p5_p12_failed["production_mutated"] is False,
+            "P5-P12 Paper pass/failure receipts drift")
 
     arg_redesign = data["arg_experience_redesign"]
     require(arg_redesign["status"] == "offline_authored_not_human_approved"

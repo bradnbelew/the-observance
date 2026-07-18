@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0-p5-p12-disposable-paper-receipt",
+  "source_commit": "53dfe9615b10148f0a94690c0123bdbaa9988bee",
+  "runner_sha256": "20ff43a550bb6a00d6dc0812643367933dd25437061727dd2b0b9d0b598eb430",
+  "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-53dfe96-12",
+  "address": "127.0.0.1:25613",
+  "paper_version": "1.21.11",
+  "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_sha256": "1451cdda4469bcdddeb82868158031867d3307cb0b89eae8971bbcc852f746a9",
+  "bootstrap_cache": {
+    "source": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-5d66ad1-08\\cache",
+    "files": {
+      "mojang_1.21.11.jar": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726"
+    }
+  },
+  "campaign_projection_sha256": "c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
+  "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+  "first_start": {
+    "authority": "[23:49:37 INFO]: [Observance] P5-P12 campaign authority ready: 8 cases, hash=2ba7eb4d31eef57d147e263a90d631d21ec37a65cd2b4d9c9971e642ba0705d7",
+    "prepare": "[23:49:41 INFO]: Observance: PREPARE PASS - all 400 chunks are generated, loaded, and ticketed for this exact Mouth.",
+    "plan": "[23:49:41 INFO]:  PLAN PASS: no blocks or registrations changed. Build with the exact same Mouth.",
+    "build": "[23:49:58 INFO]: Observance: Deep Hold build complete - 76/76 canonical ARG sites registered inside the V5 Hold.",
+    "audit": "[23:49:59 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
+  },
+  "physical_result": {
+    "rooms": 32,
+    "fixtures": 76,
+    "physical_authority_addresses": 305,
+    "protected_source_items": 96,
+    "retired_written_books_surviving": 0,
+    "fresh_build_passed": true,
+    "graceful_stop_passed": true,
+    "restart_independent_audit_passed": true,
+    "port_listener_after_stop": 0
+  },
+  "restart": {
+    "authority": "[23:50:13 INFO]: [Observance] P5-P12 campaign authority ready: 8 cases, hash=2ba7eb4d31eef57d147e263a90d631d21ec37a65cd2b4d9c9971e642ba0705d7",
+    "audit": "[23:50:17 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
+  },
+  "first_log_sha256": "f3955fdd0611409cf1e111cb177ab14e97f7283625c283d5fab6fc8cc52d6d62",
+  "restart_log_sha256": "068eafda3d546ec5ced2663e4d30539f7f4ecee8f32c21dbf3e3cad74c143d1c",
+  "world_package": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-53dfe96-12\\whole-campaign-world.zip",
+  "world_package_sha256": "677421c6d5639614a504baea530ffbfab449ca595f21cac01f93c523ced6c316",
+  "scope": "Technical physical install, restart, audit, and deterministic packaging proof only. The current P5-P12 authored packets remain scaffolding under the ARG-experience redesign and this receipt does not establish experiential, client-visual, whole-campaign, Brad, staging, production, or launch acceptance.",
+  "production_mutated": false,
+  "pinned_rejected_process_mutated": false,
+  "fresh_client_visual_receipt": false,
+  "brad_approval": null
+}

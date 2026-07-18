@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.4.0-continuation-lineage",
+  "schema_version": "1.5.0-continuation-lineage",
   "checkpoint_identity": {
     "branch": "codex/m3-disposable-paper-gate",
     "commit": "the commit containing this lineage file",
@@ -506,6 +506,25 @@
     "production_mutation": false,
     "public_launch": false
   },
+  "p5_p12_disposable_paper_validation": {
+    "status": "technical_physical_install_restart_audit_and_package_pass_only",
+    "source_commit": "53dfe9615b10148f0a94690c0123bdbaa9988bee",
+    "pass_receipt": "design/handoff/P5-P12-DISPOSABLE-PAPER-PASS-2026-07-17.json",
+    "failed_attempts_receipt": "design/handoff/P5-P12-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-17.json",
+    "paper_version": "1.21.11",
+    "rooms": 32,
+    "fixtures": 76,
+    "physical_authority_addresses": 305,
+    "protected_source_items": 96,
+    "fresh_build_passed": true,
+    "restart_independent_audit_passed": true,
+    "world_package_sha256": "677421c6d5639614a504baea530ffbfab449ca595f21cac01f93c523ced6c316",
+    "experiential_status": "not_evidence",
+    "p5_p12_content_status": "technical_and_content_scaffolding_pending_story_first_arg_reauthoring",
+    "fresh_client_visual_receipt": false,
+    "brad_approval": null,
+    "production_mutation": false
+  },
   "arg_experience_redesign": {
     "status": "offline_authored_not_human_approved",
     "human_authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.md",
@@ -573,6 +592,8 @@
     "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
     "design/handoff/PRIVATE-LAUNCH-ROUTED-REGRESSION-RECEIPT.json",
     "design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
+    "design/handoff/P5-P12-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-17.json",
+    "design/handoff/P5-P12-DISPOSABLE-PAPER-PASS-2026-07-17.json",
     "design/handoff/PRIVATE-STAGING-DEPLOY-MANIFEST-2026-07-17.json",
     "design/handoff/EXTERNAL-TARGET-DISCOVERY-RECEIPT-2026-07-17.json",
     "campaign/p5-p12/campaign.json",
@@ -771,6 +792,11 @@
       "effect": "Ticket 2184 is now earned through ordinary Copperline history, mkept's connected account behavior, and a linked disagreement post. The ticket authenticates custody and exposes one real read-only restore action; players do not retype facts already on screen. The slice also makes the campaign-wide relationship-web rule explicit: artifacts must plant, develop, contradict, authenticate, recontextualize, or pay off other threads rather than form isolated sections. Automated Next.js, browser, restore, and idempotency checks pass; Brad approval remains null."
     },
     {
+      "older": "P5-P12 physical placement existing only as manifests, projections, simulations, and failed disposable attempts",
+      "newer": "design/handoff/P5-P12-DISPOSABLE-PAPER-PASS-2026-07-17.json",
+      "effect": "fresh Paper 1.21.11 now proves the complete 32-room/76-fixture Hold can install 305 physical authority addresses and 96 protected source items, stop, restart, independently re-audit, and package deterministically. This closes only the physical-install technical gap. The cases remain technical/content scaffolding under Brad's ARG-experience rejection and require story-first cross-surface reauthoring, client visual review, whole-campaign rehearsal, and human acceptance."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
@@ -787,7 +813,7 @@
       "P4 and P5-P12 implementation is audited against the document-read/answer-submit monoculture so the authored offline redesign becomes real player-caused cross-surface consequence before any new Brad server",
       "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval",
       "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
-      "P5-P12 fresh disposable Paper placement and player-view receipts bind the 27 functional compositions and current artifacts to the existing 32-room Hold without regressing navigation or affordance",
+      "P5-P12 player-view and experiential receipts must evaluate the now-proven physical installation after story-first cross-surface reauthoring; automated placement cannot establish ARG quality",
       "a whole-campaign simulation/rehearsal verifies cross-phase event wiring, catch-up, outage, restart, rollback, and package parity on one private target",
       "Copperline offline content/voice/version specifications are separated from real future deployment, URL, cache, responsive, accessibility, outage, history, and human-review receipts",
       "custody-verified media receives human master/AV review, approved accessibility derivatives, ownership decision, and exact private hosted/cache receipts",

@@ -310,6 +310,24 @@ closed/open/restart audits pass across 248,745 cells. Brad visual approval, huma
 independent interface-affordance discovery, authenticated non-op/accessibility, and optional A2 remain
 open; M4 is still closed.
 
+## 2026-07-17 — P5–P12 whole-Hold disposable Paper technical proof
+
+- Eleven failed create-only targets are preserved in
+  `P5-P12-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-17.json`. They document real configuration, terrain,
+  KS01 identity, book-mount, sandbox, stacked-reader stance, and gate-label defects. No failed target was
+  reused and no physical predicate, collision check, or readiness condition was weakened.
+- Source `53dfe9615b10148f0a94690c0123bdbaa9988bee` passed on fresh Paper 1.21.11. The builder installed all
+  32 rooms and 76 fixtures, reconciled 305 physical authority addresses and 96 protected source items,
+  found no retired written book, saved and stopped, restarted, and passed an independent physical audit.
+- The deterministic world package SHA-256 is
+  `677421c6d5639614a504baea530ffbfab449ca595f21cac01f93c523ced6c316`. Exact Paper, plugin, cache,
+  projection, binding, log, and package hashes are recorded in
+  `P5-P12-DISPOSABLE-PAPER-PASS-2026-07-17.json`.
+- This closes only the whole-Hold physical-install/restart/package gap. It does not make the current P5–P12
+  packets experiential proof. Brad's campaign-level ARG rejection remains binding: the cases still require
+  story-first cross-surface reauthoring, responsive player-caused consequences, client/player-view review,
+  whole-campaign rehearsal, and human acceptance before they can support a launch claim.
+
 ## 2026-07-17 — P4 vNext private automated candidate
 
 - Overnight authority supersedes the interim human pause only for private automated staging. V5 remains
