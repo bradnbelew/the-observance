@@ -564,6 +564,7 @@
     "routed_audit_receipt": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json",
     "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
     "private_staging_readiness_receipt": "design/handoff/PRIVATE-STAGING-READINESS-2026-07-18.json",
+    "final_human_test_plan": "design/handoff/FINAL-WHOLE-CAMPAIGN-HUMAN-TEST-PLAN.md",
     "campaign_projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
     "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
     "paper_version": "1.21.11",

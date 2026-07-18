@@ -582,7 +582,7 @@ def main() -> None:
             and current_candidate["public_launch"] is False,
             "current whole-campaign technical/human boundary drift")
     for key in ("routed_audit_receipt", "fresh_paper_receipt",
-                "private_staging_readiness_receipt"):
+                "private_staging_readiness_receipt", "final_human_test_plan"):
         require((ROOT / current_candidate[key]).is_file(),
                 f"missing current campaign receipt: {current_candidate[key]}")
     for key in ("runtime_source_commit", "receipt_harness_commit"):
@@ -629,6 +629,15 @@ def main() -> None:
             and staging["cross_surface"]["brad_approval"] is None
             and staging["cross_surface"]["public_launch"] is False,
             "private staging readiness/export/isolation boundary drift")
+    final_test = (ROOT / current_candidate["final_human_test_plan"]).read_text(encoding="utf-8")
+    require("spoiler-free" in final_test
+            and "Correct knowledge must pass with zero observation receipts" in final_test
+            and "source states conclusion, player restates it, answer box accepts it" in final_test
+            and "long hidden canonical sentence" in final_test
+            and "player action causes no authored world response" in final_test
+            and "P1–P2" in final_test and "P12" in final_test
+            and "Brad records one of" in final_test,
+            "final whole-campaign human test contract drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
