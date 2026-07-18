@@ -481,12 +481,23 @@ def validate_npcs(data: dict, errors: list[str]) -> None:
         if not isinstance(lines, dict) or "arrival" not in lines or "coda" not in lines:
             fail(errors, f"NPC {npc_id} lacks arrival/coda dialogue")
             continue
+        if not isinstance(lines.get("after_p11"), list) or len(lines["after_p11"]) != 2:
+            fail(errors, f"NPC {npc_id} must have two exact P11 identity-restoration responses")
         for state, state_lines in lines.items():
             if not isinstance(state_lines, list) or not state_lines:
                 fail(errors, f"NPC {npc_id} state {state} has no lines")
             for line in state_lines or []:
                 if not isinstance(line, str) or not line.strip():
                     fail(errors, f"NPC {npc_id} state {state} contains an empty line")
+                if state not in {"after_p11", "coda"} and "averyn" in str(line).casefold():
+                    fail(errors, f"NPC {npc_id} state {state} reveals Averyn before P11")
+    listener = (ROOT / "plugin/src/main/java/com/observance/watcher/signal/listener/TownsfolkNpcListener.java").read_text(
+        encoding="utf-8"
+    )
+    if listener.count('truthy(flags.get("p11.averyn_restored_unbound"))') != 5:
+        fail(errors, "all five townsfolk must select P11 responses from the exact unbound event")
+    if listener.count('yield "after_p11"') != 5:
+        fail(errors, "all five townsfolk must route to their exact after_p11 dialogue")
     wren = data.get("wren") or {}
     if wren.get("id") != "wren":
         fail(errors, "NPC manifest has no Wren entry")

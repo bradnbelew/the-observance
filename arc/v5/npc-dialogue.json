@@ -39,6 +39,10 @@
           "There were four campers. Wren barely ate and checked the door whenever the pipes knocked. I thought he was only nervous.",
           "Ash rented the back room and labelled camera batteries across the floor. I remember because I nearly stepped on them."
         ],
+        "after_p11": [
+          "Averyn was the registrar, not another Keeper. My father's story counted seven offices because it mixed the six people with the work they controlled.",
+          "I have corrected the room ledger. It names her work and leaves the old wording beside it, so nobody has to trust my memory alone."
+        ],
         "coda": [
           "The humming stopped last night. The cups stayed still, and I slept until morning.",
           "If anyone asks what happened, I'll give them the names and dates. They can make their own story from that."
@@ -69,12 +73,16 @@
           "Pera's school repair and our drain patch use the same reed packing. Dob still buys it from me every spring."
         ],
         "after_c05": [
-          "You found a different record in each of the seven houses. Averyn's list only made sense after you compared them at the base.",
+          "You found a different record in each of the seven houses. The registrar's list only made sense after you compared them at the base.",
           "The well reflects the sky again. It still tastes of iron, but that part has always been true."
         ],
         "after_p8": [
           "The lower draw runs clear now. Dob used your pressure reading on the patch behind my wall, and it stopped knocking before dawn.",
           "Keep the old dirty sample. Clean water proves the repair worked; it does not erase what was in the pipe."
+        ],
+        "after_p11": [
+          "Averyn's sample notes use the same short marks as the old well cards. She was checking other people's work, not ruling a seventh Way.",
+          "Her name is back on the copy. The empty place below it can stay empty if that is what keeps the copy from owning her again."
         ],
         "coda": [
           "The white thread has gone slack. The reflection and the rope measure the same depth now; I checked twice.",
@@ -108,6 +116,10 @@
         "after_c07": [
           "Ash used locker thirteen for camera stock. The same number appears on the battery crate and film sheet.",
           "Rook returned a coil of rope cut clean through. He said the lower room had copied a bridge change made only at camp."
+        ],
+        "after_p11": [
+          "I found Averyn Pell's hand in three stock margins. The council copy kept the totals and dropped the person who checked them.",
+          "The corrected archive says registrar. It does not call her a Keeper, and it does not make the six less responsible."
         ],
         "coda": [
           "Your tab showed paid at dawn. I checked the total against my paper copy; it was correct.",
@@ -146,6 +158,10 @@
           "Your order held: filter, paired lamps, bypass, then the staff gate. Opening the gate first would have put someone under live pressure.",
           "The old Hold repair and my surface patch use the same reed packing. I left your cut end beside mine so nobody can call that a coincidence later."
         ],
+        "after_p11": [
+          "Averyn's cut mark is on inspection copies, not on the six foundation stones. I should have noticed the difference before you brought the records together.",
+          "Leave the seventh socket empty. A missing stone and an unfilled office are not the same thing, even if they look alike from the door."
+        ],
         "coda": [
           "I walked as far as the first gate this morning. It was open. I may go farther tomorrow.",
           "The fourth landing still catches a loose sole. Mind it on the way out."
@@ -171,7 +187,7 @@
           "If you cleared her, say the complete finding: Nessa followed procedure, the filter cloth failed, and the hearing hid the lower samples.",
           "Write it down where people can return to it. One correct telling will not undo all the old ones."
         ],
-        "after_c09": [
+        "after_p11": [
           "Averyn wrote the original finding. I knew a registrar had objected, but her name was missing from every copy I saw.",
           "If she asks you not to enter her again, listen. A record is meant to serve the person named in it."
         ],
