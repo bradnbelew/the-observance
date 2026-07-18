@@ -390,6 +390,26 @@ def main() -> None:
             and "canonical component ids" in by_id["WEB_COPPERLINE_FORM"]["data_shape_normalization"]
             and "raw player prose is not stored" in by_id["WEB_COPPERLINE_FORM"]["data_shape_normalization"],
             "P8 Copperline plan lacks real form ownership, canonical idempotency, or text-retention safety")
+    p1_page = (ROOT / "dashboard/src/app/community/archive.php/page.tsx").read_text(encoding="utf-8")
+    p1_action = (ROOT / "dashboard/src/app/community/archive.php/actions.ts").read_text(encoding="utf-8")
+    p2_form = (ROOT / "dashboard/src/app/community/archive/package-review/PackageReviewForm.tsx").read_text(
+        encoding="utf-8")
+    p2_action = (ROOT / "dashboard/src/app/community/archive/package-review/actions.ts").read_text(
+        encoding="utf-8")
+    require("custodyAccepted === true" in p1_page
+            and "Current reconstruction" in p1_page
+            and "The history supports a narrow claim" not in p1_page
+            and "replace-with-newest" in p1_action
+            and "destroy the evidence mkept preserved" in p1_action
+            and "restart-clean" in p1_action
+            and "create a new world" in p1_action,
+            "P1 prints its earned conclusion before the custody action or lacks distinct wrong-action consequences")
+    require("readValidatedV5HoldArchive" in p2_action
+            and "sha1: archive.sha1" in p2_action
+            and "verified-package-quarantined-unmatched-relay" in p2_action
+            and 'type="radio"' not in p2_form
+            and "Run retained-receipt verification" in p2_form,
+            "P2 is another classification form or does not verify the actual packaged bytes fail closed")
     p9_page = (ROOT / "dashboard/src/app/community/archive/ash-camp/page.tsx").read_text(encoding="utf-8")
     p9_form = (ROOT / "dashboard/src/app/community/archive/ash-camp/LeakWindowForm.tsx").read_text(encoding="utf-8")
     p9_action = (ROOT / "dashboard/src/app/community/archive/ash-camp/actions.ts").read_text(encoding="utf-8")

@@ -11,6 +11,8 @@ const camp = read('src/app/community/archive/ash-camp/page.tsx');
 assert.ok(archive.includes("params.locker === undefined"), 'P1 archive route must not require the later locker answer');
 assert.ok(archive.includes("eventKey: 'p1.attachment_history_restored'"));
 assert.ok(archive.includes("idempotencyKey: 'copperline:p1:service-1842-ticket-9137-history'"));
+assert.ok(archive.includes('custodyAccepted === true') && archive.includes('Current reconstruction'));
+assert.ok(!archive.includes('The history supports a narrow claim'));
 assert.ok(!archive.includes('copperline:p1:service-1842-ticket-9137-locker-13'));
 assert.ok(archive.includes("hasCampaignEvent('p9.company_biographies_restored')"), 'P9 media route must stay earned');
 assert.ok(archive.includes("['A06']") && archive.includes("['A07']"));

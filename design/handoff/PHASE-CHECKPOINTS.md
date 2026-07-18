@@ -680,3 +680,15 @@ open; M4 is still closed.
   cross-person aliases pass; owner swaps and oversized or missing traces still fail.
 - Focused dashboard selftests, Paper predicate/compile, campaign-web, natural-answer, ARG-authority, and lineage
   checks pass. The final camp composition, emotional read, and whole-campaign experience remain human gates.
+
+## 2026-07-18 — P1 custody and P2 verification use different verbs
+
+- P1 remains a human archive decision: retain the damaged copy while removing private information, destroy its
+  provenance by replacing it, or create an unrelated clean world. The wrong choices now receive different factual
+  consequences, and the reconstruction that mkept deliberately preserved the damaged server appears only after the
+  defensible treatment commits.
+- P2 is no longer another radio-choice classification. Its real Next.js Server Action reads the checked-in Hold
+  package and SHA-1 receipt, hashes the actual bytes, fails closed on any missing or mismatched artifact, records the
+  computed digest, and leaves the unmatched relay note quarantined. It accepts no player-entered answer.
+- Dashboard selftests, ARG/action-owner/campaign-web/lineage checks, and a Next.js 16.2.10 production build pass.
+  Authenticated preview behavior and the final human opening experience remain part of the end test.

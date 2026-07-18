@@ -17,8 +17,8 @@
   },
   "nodes": [
     {"id":"p1.damaged-listing","phase":"P1","kind":"event","ref":"p1.attachment_history_restored","surface":"copperline","meaning":"A damaged service listing has human revision history, not a planted clue sequence."},
-    {"id":"p1.mkept-custody","phase":"P1","kind":"event","ref":"p1.mkept_intent_authenticated","surface":"copperline","meaning":"mkept deliberately retained a damaged server and kept its custody legible."},
-    {"id":"p2.authentic-package","phase":"P2","kind":"event","ref":"p2.artifact_authenticated","surface":"file","meaning":"The package is authentic even though one preserved route is not."},
+    {"id":"p1.mkept-custody","phase":"P1","kind":"event","ref":"p1.mkept_intent_authenticated","surface":"copperline","meaning":"A player-chosen privacy-preserving custody treatment earns the reconstruction that mkept deliberately retained a damaged server."},
+    {"id":"p2.authentic-package","phase":"P2","kind":"event","ref":"p2.artifact_authenticated","surface":"file","meaning":"A server-side SHA-1 of the actual retained bytes authenticates the package while the unmatched relay note stays quarantined."},
     {"id":"p2.live-handoff","phase":"P2","kind":"event","ref":"p2.live_runtime_handoff","surface":"minecraft","meaning":"The group enters one continuing private world without trusting every inherited instruction."},
     {"id":"p3.open-disagreement","phase":"P3","kind":"event","ref":"p3.dispatch_authorized","surface":"discord","meaning":"Aro, Dob, and Pell can disagree honestly; preserving disagreement is useful evidence."},
     {"id":"p3.unlit-depth","phase":"P3","kind":"story_map","ref":"P3:first Unlit well-depth discrepancy","surface":"minecraft","meaning":"The village well has a second measured depth that no current repair explains."},
@@ -81,7 +81,7 @@
   ],
   "edges": [
     {"from":"p1.damaged-listing","to":"p1.mkept-custody","relationship":"authenticates","why":"Revision order turns an abandoned listing into deliberate custody."},
-    {"from":"p1.mkept-custody","to":"p2.authentic-package","relationship":"opens","why":"mkept's practice supplies a fair reason to authenticate bytes rather than trust directions."},
+    {"from":"p1.mkept-custody","to":"p2.authentic-package","relationship":"opens","why":"The custody choice teaches why preserving provenance matters; the next action changes verb and verifies actual bytes rather than asking for another classification."},
     {"from":"p2.authentic-package","to":"p2.live-handoff","relationship":"causes_response","why":"Rejecting the planted endpoint permits the controlled live handoff."},
     {"from":"p2.live-handoff","to":"p3.open-disagreement","relationship":"opens","why":"The continuing world contains living witnesses, not only inherited records."},
     {"from":"p3.open-disagreement","to":"p4.mouth-copy","relationship":"plants","why":"Aro and Dob's incompatible Mouth accounts make the missing notice a live problem."},

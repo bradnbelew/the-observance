@@ -53,9 +53,12 @@ async function Service1842Archive() {
           <tr><th>February 11, 2011</th><td>mkept confirms the copy opens locally and asks that player files and chat remain outside the public archive.</td></tr>
           <tr><th>November 2, 2014</th><td>Ticket 9137 reconnects the expired service, the community post, and the retained cartridge without adding a new route or file.</td></tr>
         </tbody></table>
-        <p>The history supports a narrow claim: somebody using the name mkept deliberately kept a damaged server recoverable and kept its private player records out of the public copy.</p>
       </section>
       <CustodyDecisionForm alreadyAccepted={custodyAccepted === true} />
+      {custodyAccepted === true && <section className="old-copy" aria-labelledby="p1-reconstruction-heading">
+        <h2 id="p1-reconstruction-heading">Current reconstruction</h2>
+        <p>mkept was a real account owner who deliberately kept a damaged server recoverable and kept its private player records out of the public copy. The retained versions and privacy request remain attached to that finding.</p>
+      </section>}
       <div className="ticket-end">Comments, replacement uploads, and account changes are disabled.</div>
     </LegacyShell>
   );

@@ -15,22 +15,16 @@ export function PackageReviewForm({ alreadyAccepted }: { alreadyAccepted: boolea
   const accepted = state.status === 'accepted';
   return (
     <section className="old-copy" aria-labelledby="package-review-heading">
-      <h2 id="package-review-heading">Record the custody decision</h2>
-      <p>Choose what the evidence supports. This is a package decision, not a password or hidden phrase.</p>
+      <h2 id="package-review-heading">Verify the retained package</h2>
+      <p>Run the retained receipt against the actual packaged bytes. This is a real integrity check, not a password, hidden phrase, or trust choice.</p>
       <form action={action} aria-describedby="package-review-result">
-        <fieldset disabled={pending || accepted}>
-          <legend>Package and route treatment</legend>
-          <label><input type="radio" name="decision" value="trust-relay-and-package" /> Trust the package and the relay address because they arrived together.</label>
-          <label><input type="radio" name="decision" value="reject-everything" /> Reject the package because the relay address has no retained checksum.</label>
-          <label><input type="radio" name="decision" value="verify-package-quarantine-relay" /> Verify the retained world with its checksum; quarantine the later relay address as unverified.</label>
-        </fieldset>
-        <button type="submit" disabled={pending || accepted}>{pending ? 'Saving...' : accepted ? 'Review saved' : 'Save package review'}</button>
+        <button type="submit" disabled={pending || accepted}>{pending ? 'Hashing packaged world...' : accepted ? 'Package verified' : 'Run retained-receipt verification'}</button>
       </form>
       <div id="package-review-result" role="status" aria-live="polite" data-status={state.status}>
         <p><b>{state.status}.</b> {state.message}</p>
         {state.receiptId && <p><b>Receipt:</b> <code>{state.receiptId}</code></p>}
       </div>
-      {accepted ? <p><Link href="/community/2011/02/08/world-backup">Open mkept&apos;s retained world post</Link>. Opening the world is the next action; no copied answer is required.</p> : null}
+      {accepted ? <p><Link href="/community/2011/02/08/world-backup">Open mkept&apos;s retained world post</Link>. The package passed the actual byte check; the unmatched relay note remains quarantined. No copied answer is required.</p> : null}
     </section>
   );
 }

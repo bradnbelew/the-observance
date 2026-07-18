@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers';
 import { recordCampaignEvent } from '@/lib/arg-event-store';
+import { readValidatedV5HoldArchive } from '@/lib/v5-hold-archive';
 
 export type PackageReviewState = {
   status: 'idle' | 'accepted' | 'wrong' | 'incomplete' | 'technical_failure';
@@ -16,21 +17,18 @@ function sameOrigin(origin: string | null, host: string | null): boolean {
 
 export async function confirmPackageReview(
   _previous: PackageReviewState,
-  formData: FormData,
+  _formData: FormData,
 ): Promise<PackageReviewState> {
   const requestHeaders = await headers();
   if (!sameOrigin(requestHeaders.get('origin'), requestHeaders.get('host'))) {
     return { status: 'technical_failure', message: 'The request came from another host. Nothing changed.' };
   }
 
-  const decision = String(formData.get('decision') ?? '').normalize('NFKC').trim();
-  if (!decision) return { status: 'incomplete', message: 'Choose how to treat the package and relay note.' };
-  if (decision !== 'verify-package-quarantine-relay') {
-    return {
-      status: 'wrong',
-      message: 'That choice gives an unverified route the same custody as the retained package. Nothing changed.',
-    };
-  }
+  const archive = await readValidatedV5HoldArchive();
+  if (!archive) return {
+    status: 'technical_failure',
+    message: 'The packaged world does not match its checked-in receipt or could not be read. Nothing changed.',
+  };
 
   const event = await recordCampaignEvent({
     eventKey: 'p2.artifact_authenticated',
@@ -38,9 +36,9 @@ export async function confirmPackageReview(
     source: 'copperline',
     payload: {
       artifact: 'the-hold.zip',
-      sha1: '669f3fd00bbb6e647eeb8941e79281cc434f1e8c',
+      sha1: archive.sha1,
       relay_note: 'quarantined-unverified',
-      decision,
+      decision: 'verified-package-quarantined-unmatched-relay',
     },
   });
   if (event.status === 'blocked') {

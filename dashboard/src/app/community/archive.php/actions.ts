@@ -26,9 +26,15 @@ export async function confirmCustodyDecision(
 
   const treatment = String(formData.get('treatment') ?? '').normalize('NFKC').trim();
   if (!treatment) return { status: 'incomplete', message: 'Choose an archive treatment before you confirm.' };
-  if (treatment !== 'retain-damaged-redact-private') {
-    return { status: 'wrong', message: 'That treatment conflicts with the retained ticket and account history. Nothing changed.' };
-  }
+  if (treatment === 'replace-with-newest') return {
+    status: 'wrong', message: 'The newest copy has a different history. Replacing the damaged copy would destroy the evidence mkept preserved. Nothing changed.',
+  };
+  if (treatment === 'restart-clean') return {
+    status: 'wrong', message: 'A clean restart would create a new world, not preserve this account owner\'s damaged copy. Nothing changed.',
+  };
+  if (treatment !== 'retain-damaged-redact-private') return {
+    status: 'wrong', message: 'That treatment is not supported by the retained custody record. Nothing changed.',
+  };
 
   const event = await recordCampaignEvent({
     eventKey: 'p1.mkept_intent_authenticated',
