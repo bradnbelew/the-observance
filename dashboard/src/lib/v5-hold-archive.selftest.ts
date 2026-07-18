@@ -127,13 +127,8 @@ check(!/\b(?:discord|arg|puzzle|placeholder|todo|tbd)\b/i.test(functionText), 'w
 for (const required of [
   "dynamic = 'force-dynamic'",
   'revalidate = 0',
-  "readV5CompletionFlag('v5_ls03_directory_trail')",
+  "hasCampaignEvent('p2.artifact_authenticated')",
   'readValidatedV5HoldArchive',
-  'recordV5WebSequence',
-  "['LS04']",
-  "'copperline_world_backup'",
-  "handler: 'world_download'",
-  'if (!handoff.complete) return genericNotFound()',
   'genericNotFound()',
   'status: 404',
   "'Cache-Control': 'private, no-store, max-age=0, must-revalidate'",
@@ -141,7 +136,7 @@ for (const required of [
 ]) {
   check(route.includes(required), `download route missing contract: ${required}`);
 }
-check(!route.includes("readV5CompletionFlag('v5_ls04"), 'the first download must not require LS04 in advance');
+check(!route.includes('p2.live_runtime_handoff'), 'downloading evidence must not pretend the Paper world was entered');
 check(helper.includes("'content', 'the-hold-v5'"), 'archive helper does not resolve the private content directory');
 check(!helper.includes("'public', 'the-hold'"), 'archive helper still resolves the public directory');
 check(helper.includes("createHash('sha1')"), 'archive helper does not validate the checksum at runtime');
@@ -163,5 +158,5 @@ for (const required of ['outputFileTracingIncludes', './content/the-hold-v5/the-
 }
 
 console.log(
-  `V5 Hold archive self-test: OK - playable 3-room world, format 94, private LS03 gate, checksum ${actualSha1}`,
+  `V5 Hold archive self-test: OK - playable 3-room world, format 94, private P2 custody gate, checksum ${actualSha1}`,
 );

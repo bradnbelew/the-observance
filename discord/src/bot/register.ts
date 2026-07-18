@@ -97,7 +97,19 @@ export const investigateCommand = new SlashCommandBuilder()
       .setDescription('one plain sentence naming the disagreement; no hidden phrase is required.')
       .setRequired(true)
       .setMinLength(12)
-      .setMaxLength(180)));
+      .setMaxLength(180)))
+  .addSubcommand((subcommand) => subcommand
+    .setName('test-copy')
+    .setDescription('run one custody test against the two Mouth copies.')
+    .addStringOption((option) => option
+      .setName('method')
+      .setDescription('choose the record that should order damaged copies.')
+      .setRequired(true)
+      .addChoices(
+        { name: 'cartridge barcode order checked against the recovery-node clock', value: 'barcode-and-node-clock' },
+        { name: 'filenames from the damaged guest', value: 'guest-filenames' },
+        { name: 'modified times from the damaged guest', value: 'guest-modified-times' },
+      )));
 
 /** Every rite, in registration order. */
 export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand, investigateCommand] as const;

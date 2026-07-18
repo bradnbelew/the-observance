@@ -1,5 +1,6 @@
 package com.observance.watcher.v5runtime;
 
+import com.google.gson.JsonObject;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.npc.V5DialogueCatalog;
 import com.observance.watcher.structure.V5RuntimePredicateRegistry;
@@ -76,6 +77,8 @@ import org.bukkit.scheduler.BukkitTask;
  * close a locally opened route.</p>
  */
 public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
+    private static final String P2_HANDOFF_EVENT = "p2.live_runtime_handoff";
+    private static final String P3_ACCOUNTS_EVENT = "p3.resident_accounts_opened";
     private final ObservancePlugin plugin;
     private final PhysicalPredicateAuthority authority;
     private final V5ProgressStore progress;
@@ -333,6 +336,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        commitLiveRuntimeHandoff(event.getPlayer());
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);
@@ -341,6 +345,42 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         finale.codaReceipt().ifPresent(receipt -> event.getPlayer().sendMessage(
                 joined(receipt.exactGoodbye())));
         speakCodaWrenRecord(event.getPlayer());
+    }
+
+    /** Entering the authenticated world is the P2 action; local state never waits for the network. */
+    private void commitLiveRuntimeHandoff(Player player) {
+        boolean created;
+        try {
+            created = progress.transact(editor -> editor.setBooleanTrue(P2_HANDOFF_EVENT));
+            progress.transact(editor -> editor.setBooleanTrue(P3_ACCOUNTS_EVENT));
+            if (created) {
+                projectLocalState();
+                plugin.getServer().getScheduler().runTaskLater(plugin, () -> player.sendMessage(
+                        Component.text("The retained world is live. Its local record will keep working if Copperline or Discord goes offline.")), 40L);
+            }
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P2 live handoff could not be committed locally: " + failure.getMessage());
+            return;
+        }
+        // The web prerequisite can arrive later. Reusing this key on every join is an exact,
+        // idempotent retry, never a click or source-possession gate for the local world.
+        plugin.scheduler().runAsyncSafe("arg.p2.handoff.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject payload = new JsonObject();
+            payload.addProperty("runtime", "paper-1.21.11");
+            payload.addProperty("world_authority", "local-primary");
+            plugin.supabase().recordArgEvent(
+                    P2_HANDOFF_EVENT,
+                    "minecraft:p2:live-runtime-handoff",
+                    "minecraft", null, payload);
+            JsonObject accounts = new JsonObject();
+            accounts.addProperty("incident", "settlement-accounts-disagree");
+            accounts.addProperty("availability", "replayable-local-dialogue");
+            plugin.supabase().recordArgEvent(
+                    P3_ACCOUNTS_EVENT,
+                    "minecraft:p3:resident-accounts-opened",
+                    "minecraft", null, accounts);
+        });
     }
 
     /** Read-only Coda replay; it never re-enters WR03 or writes a choice. */

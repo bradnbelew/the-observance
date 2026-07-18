@@ -14,7 +14,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function IntakeCopiesArchivePage() {
-  const restored = await hasCampaignEvent('p4.mouth_revision_restored');
+  const [restored, tested] = await Promise.all([
+    hasCampaignEvent('p4.mouth_revision_restored'),
+    hasCampaignEvent('p4.copy_hypothesis_tested'),
+  ]);
   const initialState = restored ? {
     status: 'accepted' as const,
     message: 'The five retained rows are restored below as a read-only copy. The older archive remains unchanged.',
@@ -35,6 +38,18 @@ export default async function IntakeCopiesArchivePage() {
         <p>Five retained rows are available. Their original upload records remain closed. Restoring them makes a read-only copy below; it does not alter the account or decide what the records mean.</p>
       </section>
       <RestoreArchiveForm initialState={initialState} />
+      {tested === true ? (
+        <section className="old-copy" aria-labelledby="copy-test-heading">
+          <h2 id="copy-test-heading">Custody test result</h2>
+          <p>The group asked Copperline to order the copies by cartridge barcode and check that order against the independent recovery-node clock. Guest filenames and modified times were excluded.</p>
+          <table className="detail-table"><tbody>
+            <tr><th>Cartridge 03</th><td>imaged first; conditional smoke notice; bell correction already present</td></tr>
+            <tr><th>Cartridge 04</th><td>imaged second; compulsory attendance notice; source bell entry filed later</td></tr>
+            <tr><th>Recovery node</th><td>within two seconds of billing host during both reads</td></tr>
+          </tbody></table>
+          <p>The test settles copy order. It does not explain why cartridge 03 already carries the same correction later entered as a source record on cartridge 04.</p>
+        </section>
+      ) : null}
       <section className="old-copy" aria-labelledby="context-heading">
         <h2 id="context-heading">Nearby public archive context</h2>
         <p>The archive retained {copperlineP4Entries.length - copperlineP4DirectEntries.length} nearby public listings, notices, posts, and replies from the same period.</p>

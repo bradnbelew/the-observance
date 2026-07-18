@@ -24,6 +24,7 @@ const tests = [
   'src/lib/copperline-p4-archive.selftest.ts',
   'src/lib/copperline-p4-route.selftest.ts',
   'src/lib/copperline-p4-restore.selftest.ts',
+  'src/lib/copperline-p2-package.selftest.ts',
   'src/lib/v5-cases.selftest.ts',
   'src/lib/v5-web-node-policy.selftest.ts',
   'src/lib/v5-ls02-docket.selftest.ts',

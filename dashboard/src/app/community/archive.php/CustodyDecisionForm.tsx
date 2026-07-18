@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
+import Link from 'next/link';
 import { confirmCustodyDecision, type CustodyDecisionState } from './actions';
 
 const INITIAL: CustodyDecisionState = { status: 'idle', message: 'No archive treatment has been confirmed.' };
@@ -28,6 +29,7 @@ export function CustodyDecisionForm({ alreadyAccepted }: { alreadyAccepted: bool
         <p><b>{state.status}.</b> {state.message}</p>
         {state.receiptId && <p><b>Receipt:</b> <code>{state.receiptId}</code></p>}
       </div>
+      {state.status === 'accepted' ? <p><Link href="/community/archive/package-review">Compare the retained world package with the later relay note</Link>.</p> : null}
     </section>
   );
 }

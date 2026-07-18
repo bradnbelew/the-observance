@@ -11,6 +11,7 @@ const migration = read('supabase/migrations/0017_arg_events.sql');
 
 assert.ok(register.includes(".setName('investigate')"));
 assert.ok(register.includes(".setName('dispatch')"));
+assert.ok(register.includes(".setName('test-copy')"));
 assert.ok(index.includes("case 'investigate':"));
 assert.ok(index.includes('handleInvestigate(interaction)'));
 
@@ -21,6 +22,8 @@ assert.ok(!index.includes('GatewayIntentBits.MessageContent'));
 // Discord actions use a documented interaction and one server-owned event RPC.
 assert.ok(handler.includes("getSubcommand(true)"));
 assert.ok(handler.includes("eventKey: 'p3.dispatch_authorized'"));
+assert.ok(handler.includes("eventKey: 'p4.copy_hypothesis_tested'"));
+assert.ok(handler.includes("method !== 'barcode-and-node-clock'"));
 assert.ok(handler.includes("idempotencyKey: 'discord:p3:settlement-dispatch'"));
 assert.ok(handler.includes('.normalize(\'NFKC\')'));
 assert.ok(repo.includes("rpc('observance_record_arg_event'"));

@@ -279,6 +279,8 @@ public final class V5RuntimeCoreSelfTest {
             store.transact(editor -> {
                 editor.setBooleanTrue("v5_ls04_map_handoff");
                 editor.setBooleanTrue("p1.attachment_history_restored");
+                editor.setBooleanTrue("p2.live_runtime_handoff");
+                editor.setBooleanTrue("p3.resident_accounts_opened");
                 for (PlayerBitDomain domain : PlayerBitDomain.values()) {
                     editor.addPlayerBit(playerId, domain, "bit_" + domain.name().toLowerCase());
                 }
@@ -302,6 +304,10 @@ public final class V5RuntimeCoreSelfTest {
             check(committed.escrow().containsKey(entry.escrowId()), "durable local escrow");
             check(committed.isComplete("p1.attachment_history_restored"),
                     "cross-surface story event is a durable local-primary fact");
+            check(committed.isComplete("p2.live_runtime_handoff"),
+                    "Paper runtime handoff survives locally without a remote receipt");
+            check(committed.isComplete("p3.resident_accounts_opened"),
+                    "resident-account incident remains replayable after restart");
 
             V5ProgressStore reloaded = V5ProgressStore.open(progressPath, authority);
             check(reloaded.snapshot().equals(committed), "atomic reload equality");

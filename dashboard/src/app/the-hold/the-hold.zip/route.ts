@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
+import { hasCampaignEvent } from '@/lib/arg-event-store';
 import { readValidatedV5HoldArchive } from '@/lib/v5-hold-archive';
-import { readV5CompletionFlag, recordV5WebSequence } from '@/lib/v5-web-progress';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -19,23 +19,11 @@ function genericNotFound(): NextResponse {
 }
 
 export async function GET(): Promise<NextResponse> {
-  const prerequisite = await readV5CompletionFlag('v5_ls03_directory_trail');
-  if (!prerequisite.complete) return genericNotFound();
+  const prerequisite = await hasCampaignEvent('p2.artifact_authenticated');
+  if (prerequisite !== true) return genericNotFound();
 
   const archive = await readValidatedV5HoldArchive();
   if (!archive) return genericNotFound();
-
-  const handoff = await recordV5WebSequence(
-    ['LS04'],
-    'copperline_world_backup',
-    {
-      handler: 'world_download',
-      artifact: 'the-hold.zip',
-      bytes: archive.bytes.byteLength,
-      sha1: archive.sha1,
-    },
-  );
-  if (!handoff.complete) return genericNotFound();
 
   return new NextResponse(new Uint8Array(archive.bytes), {
     status: 200,

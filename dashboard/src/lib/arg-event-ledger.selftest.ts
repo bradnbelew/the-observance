@@ -55,9 +55,18 @@ async function main(): Promise<void> {
   check(second.status === 'committed' && second.created,
     'the next story event must open after its prerequisite');
 
+  const p2 = await ledger.record({
+    eventKey: 'p2.artifact_authenticated',
+    idempotencyKey: 'copperline:p2:package-669f3fd0-relay-quarantine',
+    source: 'copperline',
+    payload: { artifact: 'the-hold.zip', relay_note: 'quarantined-unverified' },
+  });
+  check(p2.status === 'committed' && p2.created,
+    'a provenance decision must continue the P1 to P2 causal chain');
+
   const restarted = new FileArgEventLedger(path, now);
   const state = await restarted.read();
-  check(state.events.length === 2, 'restart must retain exactly two canonical events');
+  check(state.events.length === 3, 'restart must retain exactly three canonical events');
   check(state.projections.some((projection) => projection.surface === 'discord'
     && projection.status === 'queued'), 'cross-surface response must queue durably');
   check(await restarted.has('p1.attachment_history_restored'), 'event readback must survive restart');

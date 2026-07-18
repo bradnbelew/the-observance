@@ -35,6 +35,35 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(`Shared changes so far:\n${lines.join('\n')}`);
     return;
   }
+  if (action === 'test-copy') {
+    const method = interaction.options.getString('method', true);
+    if (method !== 'barcode-and-node-clock') {
+      await interaction.editReply('That test relies on timestamps or filenames written by the damaged guest. It cannot order the retained cartridges. Nothing changed.');
+      return;
+    }
+    const result = await recordArgEvent({
+      eventKey: 'p4.copy_hypothesis_tested',
+      idempotencyKey: 'discord:p4:barcode-node-clock-test',
+      source: 'discord',
+      actorId: interaction.user.id,
+      payload: { method, finding: 'copy-order-independent-of-guest-metadata' },
+    });
+    if (result.status === 'blocked') {
+      await interaction.editReply('The retained Mouth revision is not available yet. Nothing changed.');
+      return;
+    }
+    if (result.status === 'collision') {
+      await interaction.editReply('A different copy test already owns that receipt. Nothing changed; use /investigate status.');
+      return;
+    }
+    await interaction.editReply(result.created
+      ? 'Test complete. Barcode 03 was imaged before 04, and the independent recovery-node clock stayed stable. Guest filenames and modified times cannot reverse that order.'
+      : 'That custody test is already complete. Nothing was duplicated.');
+    if (result.created) {
+      void postToTheRecord('Copy test complete: cartridge 03 precedes 04. The recovery-node clock stayed stable; guest filenames and modified times are excluded from the order.');
+    }
+    return;
+  }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
 
   const summary = interaction.options.getString('summary', true).normalize('NFKC').trim().replace(/\s+/g, ' ');
