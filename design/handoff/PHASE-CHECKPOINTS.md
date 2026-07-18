@@ -464,3 +464,18 @@ open; M4 is still closed.
   public target was mutated. An isolated non-production database, guild/channel, and Railway environment
   are still required for an external delivery/restart receipt; campaign experience and Brad approval remain
   separate human gates.
+
+## 2026-07-18 — routed audit after event-outbox integration
+
+- The first complete audit at source `7c228cd7e04924030beaf2cedcaf434bcc6a2e8c` failed on the exact
+  Paper authority assertion that still allowed only `offline_authored_not_deployed`. The failure log is
+  preserved; the assertion was not skipped or weakened.
+- Source `b9fbd4248c7db20f9ddd0a71ba98b807003e44c4` strengthens that check: an implemented
+  choreography status is accepted only with local commit-before-projection, a bounded eight-attempt runtime,
+  a proof receipt, and `external_staging_receipt=null`. Discord command handlers also no longer post their own
+  consequences, so the durable outbox is the sole delivery owner.
+- The rerun passes the full routed repository, canon/ARG authority, deterministic/chaos simulation,
+  dashboard, Discord, Paper, package, hosted resource-pack, and read-only live-media chain. Exact attempt
+  logs and hashes are in `ROUTED-AUDIT-PASS-B9FBD42-2026-07-18.json`.
+- This is automated source/package evidence. It does not prove the human ARG experience, private external
+  delivery, Brad approval, production, or public launch readiness.

@@ -883,6 +883,11 @@
       "effect": "the local file ledger and deployable Supabase proposal now use exclusive expiring leases, stale-token rejection, bounded exponential retry, an eight-attempt ceiling, restart recovery, and exact acknowledgement. The Discord worker covers all 28 projected campaign events with authored consequence readbacks, ignores player payloads, fails closed on unknown events, and uses a stable 25-character nonce with enforce_nonce for retry deduplication. Dashboard production build, Discord audit/typecheck, and the ordered 36-file SQL bundle pass. No Supabase, Railway, Discord, production, or public target was mutated; isolated external staging and human experience remain open."
     },
     {
+      "older": "the crash-safe projection checkpoint before its complete routed regression",
+      "newer": "source b9fbd4248c7db20f9ddd0a71ba98b807003e44c4 plus design/handoff/ROUTED-AUDIT-PASS-B9FBD42-2026-07-18.json",
+      "effect": "the first audit attempt at 7c228cd is preserved as a genuine Paper authority failure caused by a stale offline-only status assertion. The checker was strengthened to require bounded fail-closed implementation evidence, and direct Discord consequence posts were removed so only the durable outbox owns delivery. The second audit passes the full repository, ARG authority, simulations, dashboard, Discord, Paper, packages, hosted resource pack, and read-only live media chain. This creates no human approval, external staging receipt, production mutation, or launch authority."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"

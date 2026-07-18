@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0-routed-audit-receipt",
+  "receipt_time": "2026-07-18T04:27:45-05:00",
+  "pass_source_commit": "b9fbd4248c7db20f9ddd0a71ba98b807003e44c4",
+  "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/audit_all.ps1 -RepoRoot <exact worktree>",
+  "attempts": [
+    {
+      "source_commit": "7c228cd7e04924030beaf2cedcaf434bcc6a2e8c",
+      "result": "failed",
+      "exact_failure": "Paper authoredCampaignAuthoritySelfTest still required arg_state_choreography.status=offline_authored_not_deployed after the canonical projection had truthfully advanced to a locally implemented/external-staging-unverified status",
+      "stdout_path": "C:/Users/nanob/.codex/visualizations/2026/07/17/019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0/audit-7c228cd-20260718/stdout.log",
+      "stdout_sha256": "1a7a4e6d5cede15f00152ecfe9a77c100b14ef957bc29ca58e9d33970d9c871c",
+      "stdout_bytes": 37053,
+      "disposition": "preserved failed evidence; checker strengthened rather than bypassed"
+    },
+    {
+      "source_commit": "b9fbd4248c7db20f9ddd0a71ba98b807003e44c4",
+      "result": "pass",
+      "stdout_path": "C:/Users/nanob/.codex/visualizations/2026/07/17/019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0/audit-b9fbd42-20260718/stdout.log",
+      "stdout_sha256": "8ed0ea3c1293577002d3d9604efabedbb260a1380375421d0ee500c8404c2980",
+      "stdout_bytes": 45400,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "final_line": "V5 audit: PASS (repository, 82-node content, predicates, Hold, simulation, all projects, deploy artifacts, hosted pack, and live media)"
+    }
+  ],
+  "fix_between_attempts": {
+    "paper_authority": "accepts only offline-authored or local/deployable-external-unverified choreography; implemented status requires canonical commit-before-projection, proof, null external staging receipt, and eight-attempt ceiling",
+    "discord_delivery": "commands no longer post consequences directly; the lease/ack outbox is the only Discord consequence path, preventing duplicates"
+  },
+  "covered": [
+    "repository integrity and supersession",
+    "locked canon and P1-P12 ARG authority",
+    "negative input/receipt/monoculture contracts",
+    "deterministic and chaos simulations",
+    "dashboard selftests, lint, TypeScript and production build",
+    "Discord canon, input, event worker, database bundle and typecheck",
+    "Paper plugin clean compile and full self-test suite",
+    "datapack, resource pack, JAR, SQL and deploy artifact parity",
+    "hosted resource-pack exact bytes and read-only live media readiness"
+  ],
+  "not_proven": [
+    "Brad or other human experiential approval",
+    "actual-client whole-campaign playthrough",
+    "isolated Supabase/Railway/Discord private staging",
+    "Vercel preview upload",
+    "production or public launch readiness"
+  ],
+  "production_mutated": false,
+  "public_launch": false
+}
