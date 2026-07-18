@@ -11,8 +11,8 @@
   "phases": [
     {"id":"P5","file":"case-p5.json","status":"authored_candidate"},
     {"id":"P6","file":"case-p6.json","status":"authored_candidate"},
-    {"id":"P7","file":"case-p7.json","status":"pending_in_this_build"},
-    {"id":"P8","file":"case-p8.json","status":"pending_in_this_build"},
+    {"id":"P7","file":"case-p7.json","status":"authored_candidate"},
+    {"id":"P8","file":"case-p8.json","status":"authored_candidate"},
     {"id":"P9","file":"case-p9.json","status":"pending_in_this_build"},
     {"id":"P10","file":"case-p10.json","status":"pending_in_this_build"},
     {"id":"P11","file":"case-p11.json","status":"pending_in_this_build"},
