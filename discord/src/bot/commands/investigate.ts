@@ -202,6 +202,56 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     }
     return;
   }
+  if (action === 'identify-averyn') {
+    const name = interaction.options.getString('name', true).normalize('NFKC').trim().toUpperCase();
+    const averyn = interaction.options.getString('averyn', true);
+    const record = interaction.options.getString('record', true);
+    const watcher = interaction.options.getString('watcher', true);
+    const dark = interaction.options.getString('dark', true);
+    if (name !== 'AVERYN' || averyn !== 'human-registrar-analyst'
+        || record !== 'civic-system-trapped-her' || watcher !== 'constrained-record-voice'
+        || dark !== 'related-distinct-unknown') {
+      await interaction.editReply('The name or relationship model collapses a distinction the evidence keeps open. Nothing changed.');
+      return;
+    }
+    const identity = await recordArgEvent({
+      eventKey: 'p11.averyn_identified',
+      idempotencyKey: 'discord:p11:averyn-six-affidavit-identity',
+      source: 'discord',
+      actorId: interaction.user.id,
+      payload: { name, provenance: 'six-distinct-affidavit-paths', observation_receipts: 0 },
+    });
+    if (identity.status === 'blocked') {
+      await interaction.editReply('The group’s Wren remembrance has not been committed yet. Nothing changed.');
+      return;
+    }
+    if (identity.status === 'collision') {
+      await interaction.editReply('A different identity filing already owns that receipt. Nothing changed; use /investigate status.');
+      return;
+    }
+    const relationship = await recordArgEvent({
+      eventKey: 'p11.averyn_restored_unbound',
+      idempotencyKey: 'discord:p11:averyn-relationship-unbound',
+      source: 'discord',
+      actorId: interaction.user.id,
+      payload: { averyn, record, watcher, dark, empty_record_slot: true, observation_receipts: 0 },
+    });
+    if (relationship.status === 'blocked') {
+      await interaction.editReply('The name was preserved, but the relationship filing is not ready. Retry is safe; no source clicks are required.');
+      return;
+    }
+    if (relationship.status === 'collision') {
+      await interaction.editReply('The name is preserved, but a different relationship filing owns the second receipt. Nothing was overwritten.');
+      return;
+    }
+    await interaction.editReply(relationship.created
+      ? 'Averyn restored as a person and left unbound. The Record is the civic system; the Watcher is constrained system speech through her; the Dark remains related, distinct, and unknown.'
+      : 'Averyn’s identity and unbound relationship record are already committed. Nothing was duplicated.');
+    if (relationship.created) {
+      void postToTheRecord('Averyn restored as the erased human registrar, outside the Keeper role and outside the Record slot. Record, Watcher, Averyn, and Dark remain related without being collapsed into one thing.');
+    }
+    return;
+  }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
 
   const summary = interaction.options.getString('summary', true).normalize('NFKC').trim().replace(/\s+/g, ' ');

@@ -16,6 +16,7 @@ assert.ok(register.includes(".setName('clear-nessa')"));
 assert.ok(register.includes(".setName('plan-repair')"));
 assert.ok(register.includes(".setName('file-leak-window')"));
 assert.ok(register.includes(".setName('confront-wren')"));
+assert.ok(register.includes(".setName('identify-averyn')"));
 assert.ok(index.includes("case 'investigate':"));
 assert.ok(index.includes('handleInvestigate(interaction)'));
 
@@ -32,6 +33,10 @@ assert.ok(handler.includes("eventKey: 'p7.nessa_publicly_cleared'"));
 assert.ok(handler.includes("eventKey: 'p8.intervention_plan_accepted'"));
 assert.ok(handler.includes("eventKey: 'p9.leak_window_proven'"));
 assert.ok(handler.includes("eventKey: 'p10.wren_confronted'"));
+assert.ok(handler.includes("eventKey: 'p11.averyn_identified'"));
+assert.ok(handler.includes("eventKey: 'p11.averyn_restored_unbound'"));
+assert.ok(handler.includes("name !== 'AVERYN'"));
+assert.ok(handler.includes("dark !== 'related-distinct-unknown'"));
 assert.ok(handler.includes("proof !== 'progressive-private-missing-countermark'"));
 assert.ok(handler.includes("boundary !== 'insider-unknown'"));
 assert.ok(handler.includes("causeModel !== 'fracture-heat-watch-routing'"));

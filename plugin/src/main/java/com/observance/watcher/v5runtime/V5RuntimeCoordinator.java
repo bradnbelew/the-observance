@@ -89,6 +89,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P9_LEAK_EVENT = "p9.leak_window_proven";
     private static final String P10_CONFRONTED_EVENT = "p10.wren_confronted";
     private static final String P10_REMEMBRANCE_EVENT = "p10.wren_remembrance_committed";
+    private static final String P11_IDENTIFIED_EVENT = "p11.averyn_identified";
     private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
             "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
             "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
@@ -368,6 +369,16 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 plugin.getLogger().severe("P10 remembrance could not be committed locally: " + failure.getMessage());
             }
         }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P10_REMEMBRANCE_EVENT)
+                && snapshot.isComplete("v5_case_c09_complete")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P11_IDENTIFIED_EVENT));
+                if (created) mirrorP11IdentityAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P11 Averyn identity could not be committed locally: " + failure.getMessage());
+            }
+        }
     }
 
     /** Exact idempotency keys make startup/restart retries safe after a remote outage. */
@@ -467,6 +478,18 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         });
     }
 
+    private void mirrorP11IdentityAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p11.identity.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject identity = new JsonObject();
+            identity.addProperty("name", "AVERYN");
+            identity.addProperty("provenance", "six-distinct-affidavit-paths");
+            identity.addProperty("exact_artifact", true);
+            plugin.supabase().recordArgEvent(P11_IDENTIFIED_EVENT,
+                    "minecraft:p11:averyn-six-affidavit-identity", "minecraft", null, identity);
+        });
+    }
+
     public boolean handleFinaleCommand(CommandSender sender, String[] rootArgs) {
         return ritualController.handleFinaleCommand(sender, rootArgs);
     }
@@ -538,6 +561,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         if (progress.snapshot().isComplete(P9_LEAK_EVENT)) mirrorP9LeakAsync();
         if (progress.snapshot().isComplete(P10_CONFRONTED_EVENT)) mirrorP10ConfrontedAsync();
         if (progress.snapshot().isComplete(P10_REMEMBRANCE_EVENT)) mirrorP10RemembranceAsync();
+        if (progress.snapshot().isComplete(P11_IDENTIFIED_EVENT)) mirrorP11IdentityAsync();
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);

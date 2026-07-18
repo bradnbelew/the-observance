@@ -2948,16 +2948,16 @@
           ],
           "id": "P11.F8",
           "input_contract": {
-            "acceptance_owner": "exact artifact predicate",
+            "acceptance_owner": "exact AVERYN artifact predicate",
             "accepted_answers_are_human_examples": false,
             "event": "p11.averyn_identified",
             "id": "P11.F8",
-            "implementation_status": "legacy-physical-scaffolding-needs-reauthor",
+            "implementation_status": "runtime-wired-awaiting-private-client-proof",
             "input_shape": "fairly yielded six-letter identity artifact",
             "interpretive": false,
-            "platform": "Minecraft arrangement plus Paper command fallback",
+            "platform": "Minecraft six-affidavit assembly plus Discord exact-artifact field",
             "runtime_exact_phrase": true,
-            "visible_trigger": "six affidavit fragments in dossier order",
+            "visible_trigger": "six provenance-specific affidavit fragments in dossier order",
             "zero_observation_acceptance": true
           },
           "prompt": "Restore the name in Keeper dossier order.",
@@ -2978,14 +2978,14 @@
           ],
           "id": "P11.F9",
           "input_contract": {
-            "acceptance_owner": "four-component relation predicate",
+            "acceptance_owner": "four-component relation/non-identity predicate",
             "accepted_answers_are_human_examples": true,
             "event": "p11.averyn_restored_unbound",
             "id": "P11.F9",
-            "implementation_status": "authored-not-runtime-proven",
-            "input_shape": "four separate relation and non-identity fields",
+            "implementation_status": "runtime-wired-awaiting-private-client-proof",
+            "input_shape": "human role, civic system, constrained voice, and Dark boundary fields",
             "interpretive": true,
-            "platform": "Paper Dialog plus command fallback",
+            "platform": "Discord slash-command select fields with Copperline readback",
             "runtime_exact_phrase": false,
             "visible_trigger": "identity relationship review",
             "zero_observation_acceptance": true
@@ -3001,11 +3001,11 @@
         }
       ],
       "consequence": {
-        "copperline": "The recovered packet page gains an immutable custody index and accessibility companions, not a public solution banner.",
-        "discord": "The docket records the identity and four-part relationship model with six provenance paths.",
-        "minecraft": "Six separate affidavit housings illuminate around an intentionally empty Averyn slot; her public role card is restored outside the Record frame.",
+        "copperline": "The recovered packet keeps its immutable custody index, then attaches the earned identity and unbound relationship record without becoming a public solution banner.",
+        "discord": "One structured action records the fairly yielded name and four-part relationship model while preserving the locked boundaries.",
+        "minecraft": "Six separate affidavit housings illuminate around an intentionally empty Averyn socket; her public role card is restored outside the Record frame.",
         "npc": "The Watcher's schema-bound phrases briefly resolve into Averyn's professional voice, then retain uncertainty about continuity.",
-        "state_event": "p11.averyn_identity_restored_unbound"
+        "state_event": "p11.averyn_restored_unbound"
       },
       "dramaturgical_rhythm": [
         "recovered packet custody",
