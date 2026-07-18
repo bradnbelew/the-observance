@@ -4427,6 +4427,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     throw new IllegalStateException("Deep Hold V5 blocks were placed, but sites.yml did not "
                             + "persist and verify. Do not admit players; fix storage and run placehold repair.");
                 }
+                // The earlier fixtures_ready save protects the legacy shell before exact authority
+                // reconciliation. Flush again after the exact blocks, books, marker entities, and
+                // runtime sites are all verified. Without this second milestone, immediately opening
+                // a distant world can unload/reload a Hold chunk before autosave and expose the older
+                // shell (for example an AIR filing handle with its marker absent).
+                world.save();
+                if (sender != null) sender.sendMessage(
+                        "  exact V5 fixture milestone saved before cross-world play.");
                 var runtime = plugin.v5Runtime();
                 if (runtime != null) runtime.rebindAllLoadedFixtures();
             }

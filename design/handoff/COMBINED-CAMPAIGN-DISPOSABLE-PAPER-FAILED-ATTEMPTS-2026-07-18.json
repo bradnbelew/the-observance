@@ -51,8 +51,34 @@
       "target_reused_or_deleted": false,
       "production_mutated": false,
       "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 3,
+      "source_commit": "93f68e8",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-93f68e8-03",
+      "address": "127.0.0.1:25608",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "54fcfba8aaaf839fd07006795713bcbebcaaac277bbc4eb0e53391447ce4302d",
+      "first_log_sha256": "edba4e094b8e01604fb2cf1e51d48ffb191f6cb8cfb29d1a98fdb79afef27e01",
+      "passed_before_failure": [
+        "Deep Hold and Unlit fresh builds initially passed",
+        "strict runtime binding initially passed with the bounded control chunk tickets",
+        "bounded copy proof committed",
+        "the optimized Unlit scan completed without a watchdog warning"
+      ],
+      "failure": "The first post-copy Hold audit loaded previously evicted Hold chunks and found LC03/evaluation_handle as AIR instead of LEVER; CW07 and HS02 marker bindings were also absent. The builder had saved the legacy fixtures_ready shell before exact authority installation, but it did not flush the later exact blocks, books, marker entities, and registered sites before declaring the build complete. Immediate cross-world play could therefore reload the older saved shell before autosave.",
+      "exact_findings": [
+        "LC03/evaluation_handle: block is AIR, expected LEVER",
+        "CW07 requires exactly one bound cache_seal/evaluation_handle control, found 0",
+        "HS02 requires exactly one bound housing_latch/evaluation_handle control, found 0"
+      ],
+      "harness_result": "failed closed while waiting for the post-copy Hold audit to report physically launch-placeable; no readiness receipt was published",
+      "shutdown": "The harness finally block stopped only this disposable Paper process. Paper recorded every dimension saved and RegionFile/worker completion. PID and port 25608 are absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
     }
   ],
-  "resolution": "Source now retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. Paper removes plugin tickets on disable. The Unlit light scan snapshots same-world unlit_safe sites once per scan. Full plugin build/self-tests pass; a fresh create-only target and unused port remain required.",
+  "resolution": "Source now retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. After the exact physical pass and sites.yml commit, the Deep Hold builder now flushes the exact blocks, books, marker entities, and sites before rebind or cross-world play. The Unlit light scan snapshots same-world unlit_safe sites once per scan. Full plugin build/self-tests and a fresh create-only retry remain required.",
   "brad_approval": null
 }
