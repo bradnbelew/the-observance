@@ -2553,14 +2553,14 @@
           ],
           "id": "P10.F2",
           "input_contract": {
-            "acceptance_owner": "provenance relationship predicate",
+            "acceptance_owner": "four-component provenance predicate",
             "accepted_answers_are_human_examples": true,
             "event": "p10.wren_confronted",
             "id": "P10.F2",
-            "implementation_status": "legacy-physical-scaffolding-needs-reauthor",
-            "input_shape": "sender, transmitted classes, opportunity, and independent proof mappings",
+            "implementation_status": "runtime-wired-awaiting-private-client-proof",
+            "input_shape": "sender, packet classes, deliberate-proof relationship, and motive boundary",
             "interpretive": true,
-            "platform": "Minecraft evidence bridge plus Discord matrix",
+            "platform": "Discord slash-command select fields plus Minecraft evidence bridge",
             "runtime_exact_phrase": false,
             "visible_trigger": "packet provenance board",
             "zero_observation_acceptance": true
@@ -2582,14 +2582,14 @@
           ],
           "id": "P10.F3",
           "input_contract": {
-            "acceptance_owner": "two-component moral fact predicate",
+            "acceptance_owner": "motive-without-absolution predicate",
             "accepted_answers_are_human_examples": true,
             "event": "p10.wren_confronted",
             "id": "P10.F3",
-            "implementation_status": "authored-not-runtime-proven",
-            "input_shape": "motive and responsibility-not-erased components",
+            "implementation_status": "runtime-wired-awaiting-private-client-proof",
+            "input_shape": "fear explains choice and responsibility remains components",
             "interpretive": true,
-            "platform": "Paper Dialog plus command fallback",
+            "platform": "Discord slash-command motive field with Paper dialogue replay",
             "runtime_exact_phrase": false,
             "visible_trigger": "Wren response limits",
             "zero_observation_acceptance": true
@@ -2611,16 +2611,16 @@
           ],
           "id": "P10.F5",
           "input_contract": {
-            "acceptance_owner": "protected branch choice",
+            "acceptance_owner": "local-primary immutable branch choice",
             "accepted_answers_are_human_examples": true,
             "event": "p10.wren_remembrance_committed",
             "id": "P10.F5",
-            "implementation_status": "legacy-choice-scaffolding-needs-reauthor",
-            "input_shape": "condemn, understand, or free; dissent preserved",
+            "implementation_status": "runtime-wired-awaiting-fresh-paper-proof",
+            "input_shape": "condemn, understand, or free; dissent and first ballot preserved",
             "interpretive": false,
-            "platform": "Minecraft protected choice with Discord readback",
+            "platform": "Minecraft Paper 1.21.11 protected visible ballot",
             "runtime_exact_phrase": false,
-            "visible_trigger": "remembrance control",
+            "visible_trigger": "three physically separated remembrance controls",
             "zero_observation_acceptance": true
           },
           "prompt": "Record the group's remembrance of Wren.",
@@ -2633,11 +2633,11 @@
         }
       ],
       "consequence": {
-        "copperline": "A removed comment stub returns only its moderation chronology, not a new confession.",
-        "discord": "Judgment receipt records contributors and dissent without inventing unanimity.",
-        "minecraft": "Rook's counter-mark opens the Protocol Bridge route independent of Wren. Wren's projection withdraws from the filing desk after judgment but remains available in replay.",
-        "npc": "Wren's final case line varies by condemn/understand/free without changing facts or bridge usability.",
-        "state_event": "p10.wren_betrayal_judged"
+        "copperline": "A removed comment returns only its moderation chronology; later findings and remembrance attach without manufacturing a confession.",
+        "discord": "The transmission finding is committed before the separate physical remembrance choice.",
+        "minecraft": "Rook's counter-mark opens the Protocol Bridge route independent of Wren. The protected ballot commits condemn, understand, or free without changing the facts or bridge usability.",
+        "npc": "Wren's final case line varies by remembrance treatment while the stable factual dialogue remains replayable.",
+        "state_event": "p10.wren_remembrance_committed"
       },
       "dramaturgical_rhythm": [
         "leak matrix",

@@ -168,6 +168,29 @@ export const investigateCommand = new SlashCommandBuilder()
       { name: 'an insider transmission is proven; the sender is not yet proven', value: 'insider-unknown' },
       { name: 'Wren is already proven as sender', value: 'wren-proven' },
       { name: 'the Record invented the revision without human access', value: 'record-invented' },
+    )))
+  .addSubcommand((subcommand) => subcommand
+    .setName('confront-wren')
+    .setDescription('commit the transmission finding before the remembrance choice.')
+    .addStringOption((option) => option.setName('sender').setDescription('who transmitted the private packets').setRequired(true).addChoices(
+      { name: 'Wren, through knowledge shared inside the company', value: 'wren' },
+      { name: 'Rook, through the complete physical plan', value: 'rook' },
+      { name: 'the Record, by direct passive observation alone', value: 'record-alone' },
+    ))
+    .addStringOption((option) => option.setName('payload').setDescription('what the packet progression carried').setRequired(true).addChoices(
+      { name: 'names, operating plans, changed routes, and private fears', value: 'names-plans-routes-fears' },
+      { name: 'one route distance repeated by accident', value: 'one-distance' },
+      { name: 'only public Copperline posts and checksums', value: 'public-posts' },
+    ))
+    .addStringOption((option) => option.setName('proof').setDescription('what makes the transmission deliberate').setRequired(true).addChoices(
+      { name: 'progressive packets include the private revision but omit Rook’s physical counter-mark', value: 'progressive-private-missing-countermark' },
+      { name: 'Wren was nervous and sometimes changed distances', value: 'nervous-distance' },
+      { name: 'the camp stopped posting after the incident', value: 'posting-stopped' },
+    ))
+    .addStringOption((option) => option.setName('motive').setDescription('what motive changes and does not change').setRequired(true).addChoices(
+      { name: 'fear of erasure explains his choice; it does not remove responsibility', value: 'fear-explains-choice-responsibility-remains' },
+      { name: 'fear proves total compulsion and removes responsibility', value: 'fear-erases-responsibility' },
+      { name: 'motive is irrelevant and must be deleted from the record', value: 'delete-motive' },
     )));
 
 /** Every rite, in registration order. */

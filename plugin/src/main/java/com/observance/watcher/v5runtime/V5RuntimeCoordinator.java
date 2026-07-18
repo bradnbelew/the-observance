@@ -87,6 +87,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P8_REPAIR_EVENT = "p8.hold_systems_repaired";
     private static final String P9_BIOGRAPHIES_EVENT = "p9.company_biographies_restored";
     private static final String P9_LEAK_EVENT = "p9.leak_window_proven";
+    private static final String P10_CONFRONTED_EVENT = "p10.wren_confronted";
+    private static final String P10_REMEMBRANCE_EVENT = "p10.wren_remembrance_committed";
     private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
             "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
             "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
@@ -345,6 +347,27 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 plugin.getLogger().severe("P9 private leak window could not be committed locally: " + failure.getMessage());
             }
         }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P9_LEAK_EVENT)
+                && snapshot.isComplete("v5_wr03_confession")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P10_CONFRONTED_EVENT));
+                if (created) mirrorP10ConfrontedAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P10 Wren finding could not be committed locally: " + failure.getMessage());
+            }
+        }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P10_CONFRONTED_EVENT)
+                && snapshot.isComplete("v5_case_c08_complete")
+                && snapshot.branches().containsKey("v5_wren_outcome")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P10_REMEMBRANCE_EVENT));
+                if (created) mirrorP10RemembranceAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P10 remembrance could not be committed locally: " + failure.getMessage());
+            }
+        }
     }
 
     /** Exact idempotency keys make startup/restart retries safe after a remote outage. */
@@ -417,6 +440,33 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         });
     }
 
+    private void mirrorP10ConfrontedAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p10.confronted.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject finding = new JsonObject();
+            finding.addProperty("sender", "wren");
+            finding.addProperty("packet_payload", "names-plans-routes-fears");
+            finding.addProperty("proof", "progressive-private-missing-countermark");
+            finding.addProperty("motive", "fear-explains-choice-responsibility-remains");
+            plugin.supabase().recordArgEvent(P10_CONFRONTED_EVENT,
+                    "minecraft:p10:wren-transmission-finding", "minecraft", null, finding);
+        });
+    }
+
+    private void mirrorP10RemembranceAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p10.remembrance.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            String outcome = progress.snapshot().branches().get("v5_wren_outcome");
+            if (outcome == null || outcome.isBlank()) return;
+            JsonObject remembrance = new JsonObject();
+            remembrance.addProperty("treatment", outcome);
+            remembrance.addProperty("facts_fixed", true);
+            remembrance.addProperty("protocol_bridge_branch_independent", true);
+            plugin.supabase().recordArgEvent(P10_REMEMBRANCE_EVENT,
+                    "minecraft:p10:wren-remembrance", "minecraft", null, remembrance);
+        });
+    }
+
     public boolean handleFinaleCommand(CommandSender sender, String[] rootArgs) {
         return ritualController.handleFinaleCommand(sender, rootArgs);
     }
@@ -486,6 +536,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         if (progress.snapshot().isComplete(P8_REPAIR_EVENT)) mirrorP8RepairAsync();
         if (progress.snapshot().isComplete(P9_BIOGRAPHIES_EVENT)) mirrorP9BiographiesAsync();
         if (progress.snapshot().isComplete(P9_LEAK_EVENT)) mirrorP9LeakAsync();
+        if (progress.snapshot().isComplete(P10_CONFRONTED_EVENT)) mirrorP10ConfrontedAsync();
+        if (progress.snapshot().isComplete(P10_REMEMBRANCE_EVENT)) mirrorP10RemembranceAsync();
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);

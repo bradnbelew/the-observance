@@ -168,6 +168,40 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     }
     return;
   }
+  if (action === 'confront-wren') {
+    const sender = interaction.options.getString('sender', true);
+    const payload = interaction.options.getString('payload', true);
+    const proof = interaction.options.getString('proof', true);
+    const motive = interaction.options.getString('motive', true);
+    if (sender !== 'wren' || payload !== 'names-plans-routes-fears'
+        || proof !== 'progressive-private-missing-countermark'
+        || motive !== 'fear-explains-choice-responsibility-remains') {
+      await interaction.editReply('That finding confuses opportunity with proof, reduces four packets to one accident, or lets motive erase the act. Nothing changed.');
+      return;
+    }
+    const result = await recordArgEvent({
+      eventKey: 'p10.wren_confronted',
+      idempotencyKey: 'discord:p10:wren-transmission-finding',
+      source: 'discord',
+      actorId: interaction.user.id,
+      payload: { sender, packet_payload: payload, proof, motive, observation_receipts: 0 },
+    });
+    if (result.status === 'blocked') {
+      await interaction.editReply('The private revision window has not been filed yet. Nothing changed.');
+      return;
+    }
+    if (result.status === 'collision') {
+      await interaction.editReply('A different Wren finding already owns that receipt. Nothing changed; use /investigate status.');
+      return;
+    }
+    await interaction.editReply(result.created
+      ? 'Finding committed. Wren deliberately transmitted the four packet classes. Fear of being erased explains his choice and does not remove responsibility. The group’s remembrance remains unchosen.'
+      : 'That Wren transmission finding is already committed. Nothing was duplicated.');
+    if (result.created) {
+      void postToTheRecord('Wren finding committed: progressive packets carried names, plans, changed routes, and private fears. His fear of erasure explains the betrayal; it does not erase responsibility. Remembrance is still open.');
+    }
+    return;
+  }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
 
   const summary = interaction.options.getString('summary', true).normalize('NFKC').trim().replace(/\s+/g, ' ');

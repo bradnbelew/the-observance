@@ -25,6 +25,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const p8Repaired = await hasCampaignEvent('p8.hold_systems_repaired');
   const p9People = await hasCampaignEvent('p9.company_biographies_restored');
   const p9Leak = await hasCampaignEvent('p9.leak_window_proven');
+  const p10Confronted = await hasCampaignEvent('p10.wren_confronted');
+  const p10Remembered = await hasCampaignEvent('p10.wren_remembrance_committed');
   const p5Posts = recurated === true ? [
     { date: 'February 16, 2011', user: 'ashfield', title: 'that room was a service counter', body: 'The uncropped frame has wick shears, school chalk, and sample rings. Copperline corrected the archive caption after the service-card review.', href: '/community/2011/02/16/service-counter' },
     ...posts,
@@ -49,7 +51,11 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     { date: 'April 19, 2011', user: p9People === true ? 'mkept' : 'copperline-support', title: p9Leak === true ? 'Ash Camp: private revision window preserved' : p9People === true ? 'Ash Camp: four owner cards restored' : 'Ash Camp: owner recovery set', body: p9Leak === true ? 'The release board was complete. A private Rook revision reached the Witness Spool before public upload; the source remains unresolved.' : p9People === true ? 'The camp record now preserves mkept, Ash, Rook, and Wren as people with crossed work and relationships.' : 'Linked maintenance records reopened a camp archive that the old export reduced to four unlabeled stations.', href: '/community/archive/ash-camp' },
     ...p8Posts,
   ] : p8Posts;
-  const visible = user ? p9Posts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : p9Posts;
+  const p10Posts = p9Leak === true ? [
+    { date: 'April 27, 2011', user: 'copperline-moderation', title: p10Remembered === true ? 'comment 4417: finding and remembrance attached' : p10Confronted === true ? 'comment 4417: transmission finding attached' : 'comment 4417: retained moderation chronology', body: p10Remembered === true ? 'The group’s remembrance choice now sits beside fixed attribution facts and an unchanged moderation history.' : p10Confronted === true ? 'The current finding is attached to packet progression and Rook’s counter-mark; Copperline did not restore a missing confession.' : 'A removed Wren comment retains account, edit, report, moderation, and public-upload times—but not the missing words.', href: '/community/archive/wren-moderation' },
+    ...p9Posts,
+  ] : p9Posts;
+  const visible = user ? p10Posts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : p10Posts;
   return (
     <LegacyShell active="community">
       <Breadcrumbs>Community Blog</Breadcrumbs>
