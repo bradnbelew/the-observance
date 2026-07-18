@@ -6337,7 +6337,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 world.getBlockAt(x, by + 1, bz).setType(Material.SOUL_LANTERN, false);
             }
         }
-        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+        // The public approach is north of the seal. Keep the mason's working copy facing that
+        // standing lane so the exact V5 LC01 book can reuse this authored furniture instead of
+        // spawning a second lectern inside the sealed composition.
+        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2),
+                holdFixtureFront("undercroft_seal"),
                 "entry five shelf", List.of(
                         "entry five was set apart with a warm lamp.",
                         "do not price it.",
@@ -6387,7 +6391,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx, by + 2, bz).setType(Material.SOUL_LANTERN, false);
         world.getBlockAt(bx - 3, by, bz - 1).setType(Material.GRAY_CARPET, false);
         world.getBlockAt(bx - 2, by, bz - 1).setType(Material.GRAY_CARPET, false);
-        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.SOUTH,
+        // The public approach is north of the seal; this is the fixture-owned LC01 book mount.
+        placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2),
+                holdFixtureFront("undercroft_seal"),
                 "mason's rest", List.of(
                         "the seal was entered from the wrong side.",
                         "the mason cut the last line low.",
