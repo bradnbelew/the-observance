@@ -1,0 +1,147 @@
+{
+  "schema_version": "1.0.0-authored-case",
+  "phase": "P5",
+  "case_id": "C03A",
+  "title": "What the Ways Were For",
+  "target_minutes": {"min":120,"max":180},
+  "player_facing_question": "How did people actually live here, and when did the rules that kept them alive begin deciding whose life counted?",
+  "plausible_initial_belief": "The seven Ways were either old superstition or a single council doctrine imposed from the beginning.",
+  "human_stake": "Eda's pupils, Toma's repair crew, Neri's market household, and the watch families depended on procedures that were useful before officials turned compliance into rank.",
+  "earned_belief": "The Hold was an ordinary home. Seven practical safety procedures emerged from different kinds of work, then acquired sacred language and coercive enforcement after the danger became politically useful.",
+  "prerequisites": ["P4.F5"],
+  "dramaturgical_rhythm": ["inhabitation","parallel civic research","quiet humor","false confidence","version contradiction","debate","institutional synthesis","quiet aftermath"],
+  "required_inference": "Players must distinguish early job instructions from later moral rulings, then explain why useful memory aids were especially easy to weaponize. Naming seven rules or copying their penalties is insufficient.",
+  "callback": "P4's repeated intake mark changes meaning again: first it looked ritual, then practical, and here its placement on penalty slips shows the Record beginning to classify compliance.",
+  "consequence": {
+    "minecraft": "The civic gallery remains open as a lived workplace; seven penalty plaques are removed from eye level while the original service cards remain in place.",
+    "npc": "Neri resumes an unfinished repair-account argument with Toma instead of praising the players; Eda asks that one pupil's copied bird drawing be returned to the school chest.",
+    "copperline": "A later recovered screenshot gains a mundane caption identifying the supposed shrine as the lamp-service counter.",
+    "state_event": "p5.civic_drift_established"
+  },
+  "spaces": [
+    {"id":"p5_school_market","job":"shared school and ration exchange","composition":"two low writing tables, wall abacus, repaired stove, pupil cubbies, market counter, hanging measure, patched floor around the stove, broad central circulation","evidence_surfaces":["p5.e01","p5.e02","p5.e04"],"navigation":"two-door loop; 2-block minimum aisle; no lectern row"},
+    {"id":"p5_service_gallery","job":"lamp, air, water-sample, masonry, and watch dispatch","composition":"three unequal work bays with tool racks, sample sink, bird alcove, low seal trench, lamp bench, rota table, worn waiting ledge","evidence_surfaces":["p5.e03","p5.e05","p5.e06","p5.e07","p5.e08"],"navigation":"public counter fronts staff loop; every interactive surface has visible contents"},
+    {"id":"p5_late_rulings","job":"small later records annex inserted into an older service corridor","composition":"narrow cabinet rank, overwritten notice rail, locked discipline drawer, removed-plaque scars, one clerk chair facing the counter","evidence_surfaces":["p5.e09","p5.e10","p5.e11"],"navigation":"short side room; no mandatory crawl or hidden click"}
+  ],
+  "evidence": [
+    {
+      "id":"p5.e01","title":"Eda's winter copybook","author":"Eda Pell and twelve pupils","medium":"school copybook with corrections and drawings","surface":"minecraft_written_book","roles":["seed","emotional_witness","quiet_reward"],
+      "provenance":"school cubby 3; early civic paper; water-warped lower edge; three hands confirmed by correction colors",
+      "content":"SECOND BELL: open the east vent before sums. Iven forgot because the hinge sticks, not because he is wicked. Toma says he will plane it after market. Underneath, a pupil has drawn the warning bird wearing the teacher's cap. Eda has written: Accurate likeness. Unfair hat.",
+      "accessibility":"plain-text archive transcription preserves handwriting changes and describes the drawing without naming a solution",
+      "clue_job":"Shows Kept Light and Sacred Beast as maintenance routines embedded in school life, not worship.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e02","title":"Neri's market exceptions","author":"Neri Vos","medium":"market tally with margin conversation","surface":"minecraft_map_and_book","roles":["corroboration","human_texture","contradiction"],
+      "provenance":"market counter; same ink as three surviving ration chits; early issue period",
+      "content":"Two lamp portions to Pell school while the stove mortar cures. One returned next issue. Orris says rules are rules. I say children are not a brazier account. Orris says write that where Vaun can see it. I have.",
+      "accessibility":"high-contrast facsimile plus transcription",
+      "clue_job":"Establishes negotiated care and an early challenge to rigid allocation.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e03","title":"Lamp bench card","author":"Toma Rei","medium":"grease-marked service card","surface":"minecraft_item_display","roles":["key","professional_procedure"],
+      "provenance":"fixed above lamp bench; earliest surviving card; screw holes match original fixture",
+      "content":"KEPT LIGHT — wick even, hood clear, east vent open before second bell. If the flame feathers blue, close the room and fetch air watch. Do not fine a household for a lamp you have not serviced.",
+      "accessibility":"readable written-book duplicate at adjacent public counter",
+      "clue_job":"Defines the practical lamp-and-air rule and explicitly rejects later penalty logic.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e04","title":"Repair supper note","author":"Sela and Toma","medium":"folded personal note reused as a nail count","surface":"minecraft_written_book","roles":["quiet_reward","emotional_witness"],
+      "provenance":"inside the repaired stove cabinet; no official filing marks",
+      "content":"Sela — seven long nails, four short, and no more of Neri's stove advice. We will eat after the west flue holds. Tell Eda the chalk shelf is level enough unless she means to teach marbles. — Toma. On the back: It is not level. Bring supper anyway.",
+      "accessibility":"transcription with front/back order retained",
+      "clue_job":"Makes the Hold inhabited without acting as a lock.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e05","title":"Sample-return register","author":"Sella Mor","medium":"water sample ledger and jar rack","surface":"minecraft_container_plus_book","roles":["key","provenance","corroboration"],
+      "provenance":"service gallery sink; jar seals predate council offering stamps",
+      "content":"OFFERING means return one cup from each draw so changes can be compared. Do not pour food, coin, ash, or vows into the cistern. I cannot believe this requires writing twice.",
+      "accessibility":"jar positions represented in a labeled diagram; color is never the sole distinction",
+      "clue_job":"Defines communal sampling before tribute language.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e06","title":"Low-seal inspection slate","author":"Orin Hale","medium":"measured diagram with knee-height sightline","surface":"minecraft_environment_and_book","roles":["key","spatial_corroboration","professional_procedure"],
+      "provenance":"masonry trench; dimensions repeat in Orin's signed early survey",
+      "content":"BOW — lower your sight to the seam. At standing height the third course hides separation. Mark width, dust color, and whether the line travels past a brace. This is inspection, not apology.",
+      "accessibility":"desk diagram carries every measurement; crouching is optional corroboration, not answer gating",
+      "clue_job":"Separates practical posture from later submission theater.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e07","title":"Paired-watch substitution","author":"Brann Iles","medium":"rota with meal chit pinned over one cell","surface":"minecraft_wall_record","roles":["key","human_texture","later_callback_seed"],
+      "provenance":"watch table; correction ink matches Brann; meal chit matches market batch",
+      "content":"DARK HOURS: no one watches alone after six hours below. Pell takes Iven's first half; Iven brings supper and takes second. Ring both lamps at relief. If either fails, write the failure, not the name you wish had been there.",
+      "accessibility":"lamp states duplicated by shapes and numbered rota cells",
+      "clue_job":"Defines paired coverage and plants the honest-timestamp standard used in P6/P7.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e08","title":"Listening boundary","author":"Mara Venn","medium":"maintenance manual insertion","surface":"copperline_scanned_attachment","roles":["key","provenance","cross_surface"],
+      "provenance":"Copperline cache of a photographed manual leaf; paper tear matches the Minecraft binding stub",
+      "content":"UNSPOKEN: stop tools for one minute at change of watch. One listener at each marked pier records knocks or moving grit. Report a sound twice before closing a gallery. This is an instrument interval. It is not permission to question private speech.",
+      "accessibility":"scan alt text describes layout; transcription available after the same earned event",
+      "clue_job":"Defines bounded structural listening and establishes cross-copy provenance.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e09","title":"Council penalties, seventh revision","author":"Council clerk; unsigned amendments","medium":"late penalty ledger","surface":"minecraft_written_book","roles":["contradiction","false_plausible_read","institutional_horror"],
+      "provenance":"late-rulings annex; newer paper; intake classification mark on every entry",
+      "content":"Unkept household: heat issue reduced. Empty offering: market place deferred. Beast neglected: child sponsor named. Deep Line spoken of without permit: travel suspended. Bow refused: public apology. Dark Hours sleep: double watch. Unspoken breach: testimony struck.",
+      "accessibility":"plain transcription; no penalty must be performed or simulated",
+      "clue_job":"Shows the same names governing resources, movement, posture, sleep, and speech.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e10","title":"Orris's appeal","author":"Orris Pell","medium":"unsent appeal with clerk notation","surface":"discord_docket_attachment","roles":["emotional_witness","contradiction","provenance"],
+      "provenance":"discipline drawer scan mirrored to the earned docket; clerk notation predates final penalty",
+      "content":"My daughter slept because she had carried air cages for two shifts. The first watch card says paired coverage protects an exhausted watcher. Your ruling says exhaustion proves disregard. Those cannot both be the same Way. Clerk notation: Do not answer the distinction. File under Unspoken.",
+      "accessibility":"screen-reader-first text attachment; Discord outage mirror at civic desk",
+      "clue_job":"Turns abstract drift into a family harmed by deliberate category collapse.",
+      "observation_receipt_non_gating":true
+    },
+    {
+      "id":"p5.e11","title":"Intake mark chronology","author":"three unknown clerks","medium":"dated stamp impressions and cabinet scars","surface":"minecraft_environment_plus_archive_image","roles":["synthesis","callback","uncanny_seed"],
+      "provenance":"early cards lack the mark; mid-period service cards use it for routing; late penalties use it beside names; one impossible duplicate impression appears beneath an older cabinet finish",
+      "content":"The same open-eye mark moves from doorfinding, to service routing, to compliance classification. The duplicate beneath the finish is recorded as an anomaly, not explained.",
+      "accessibility":"three-stage comparison image with texture, shape, and date labels",
+      "clue_job":"Supports the safety-to-observation reversal and seeds Record copying without naming later truths.",
+      "observation_receipt_non_gating":true
+    }
+  ],
+  "conclusions": [
+    {
+      "id":"P5.F1","prompt":"What kind of place was the Hold between emergencies?","required_concepts":["school","trade","repair","care"],
+      "accepted_answers":["It was a lived civic home with school, trade, repair work, and negotiated care, not a purpose-built ritual chamber."],
+      "zero_observation_acceptance":true
+    },
+    {
+      "id":"P5.F5","prompt":"Why did the seven procedures become instruments of control?","required_concepts":["practical safety","memory aid","resource authority","moralized enforcement"],
+      "accepted_answers":["Different workers made practical safety procedures into memorable Ways; officials later controlled heat, food, travel, posture, sleep, and speech by treating those memory aids as moral tests."],
+      "zero_observation_acceptance":true
+    }
+  ],
+  "meaningful_wrong_theories": [
+    {"theory":"The Ways were always fraudulent superstition.","response":"The filing desk accepts that later rulings were abusive but returns the conclusion: early service cards predict real lamp, air, water, masonry, and watch failures."},
+    {"theory":"The Ways remained useful and only a few clerks misapplied them.","response":"The desk records the procedures' usefulness, then points to coordinated penalties across resources, travel, posture, sleep, and testimony; the change is institutional, not one clerk's error."},
+    {"theory":"People freely chose strict rules because the danger never ended.","response":"The archive acknowledges genuine fear but returns the appeal and exception records: officials suppressed distinctions and made access to necessities conditional."}
+  ],
+  "hints": {
+    "H0":"The civic desk is asking for early job and late ruling copies of the same seven names.",
+    "H1":"If a lane feels purely religious, find the oldest version written by the worker who used it.",
+    "H2":"Compare what each procedure detected or protected with what the later penalty controlled.",
+    "H3":"Use the lamp card, sample register, bird/air records, seal slate, paired rota, listening boundary, and penalty ledger; then explain why a memorable safety rule gave officials leverage."
+  },
+  "runtime": {
+    "local_primary":true,"any_subset":true,"answer_requires_observation_receipts":false,
+    "partial_conclusions_persist_as_drafts":true,"wrong_attempt_throttle_seconds":[0,10,30,90],
+    "replay":"read-only civic brief plus original-source directions","restart":"drafts and conclusion event reload idempotently",
+    "outage":"Copperline and Discord evidence have protected Minecraft/archive equivalents; projections queue without changing local conclusion state"
+  },
+  "novelty_comparison":"Unlike P4's refuge-origin reversal, P5 reconstructs social life across versions and asks how useful practice gained coercive power. It has no ordered construction puzzle, capacity match, or gate-as-reward.",
+  "cold_theory_paths":["cult rules -> useful procedures -> captured procedures","benevolent emergency code -> isolated abuse -> coordinated institutional design","ordinary home -> safety bureaucracy -> observation system seed"]
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version":"1.0.0-authored-case",
+  "phase":"P6",
+  "case_id":"C03B",
+  "title":"Six Hands on the Same Winter",
+  "target_minutes":{"min":150,"max":210},
+  "player_facing_question":"Who were the six people later flattened into Keeper icons, what did each know through their work, and where did each choose safety, comfort, or silence?",
+  "plausible_initial_belief":"The Keeper stones describe one coherent council, or six ceremonial roles whose records can be decoded by repeating one method.",
+  "human_stake":"Vaun, Mara, Sella, Orin, Brann, and Iss protected real people and also made distinct compromises. Their evidence must remain six voices because their disagreements are how the later truth survives.",
+  "earned_belief":"The Keepers were six distinct contemporaries with incompatible jobs, handwriting, relationships, evidence, and culpabilities. None is a complete villain or absolved custodian.",
+  "prerequisites":["P5.F5"],
+  "dramaturgical_rhythm":["choice of dossier","parallel situated work","human discovery","professional inference","cross-dossier contradiction","six-person debate","sealed testimony consequence"],
+  "required_inference":"Each lane requires a different professional judgment. The group must then assign knowledge, action, omission, and later correction to six separate people; collecting names or extracting six letters is not completion.",
+  "callback":"P5's ordinary service records become expert evidence: the same ration exception, manual leaf, sample jar, low seam, rota, and living reed reveal who noticed what and when.",
+  "consequence":{"minecraft":"Each archive workroom receives a distinct open dossier drawer and one sealed affidavit housing; the six housings remain separate.","npc":"Surviving remembered conversations stop using honorific titles and name the six as people.","discord":"The shared docket renders a responsibility matrix, not six solve badges.","state_event":"p6.six_distinct_responsibilities_established"},
+  "spaces":[
+    {"id":"p6_vaun_stores","job":"receiving and reconciliation room","composition":"weigh table, bolt rack, charcoal cages, returned-goods bench, private narrow desk, loading aisle","navigation":"public receiving loop and staff ledger alcove","affordance":"visible tagged lots and open balance book; no container-sort lock"},
+    {"id":"p6_mara_copyroom","job":"manual copying and route revision","composition":"copy desks facing light, drying lines, paper-stock cabinet, edition shelves, correction counter, discarded binding basket","navigation":"two aisles and standing comparison counter","affordance":"editions visibly differ in paper and binding"},
+    {"id":"p6_sella_survey","job":"shoreline survey and teaching","composition":"long map table, sample shelf, damp-transfer screen, school drawing rack, fixed landmark models","navigation":"perimeter comparison route","affordance":"front/back copies displayed together; no empty interactive shelf"},
+    {"id":"p6_orin_masonry","job":"material inspection and tolerance review","composition":"brace section, low seam trench, measured cores, plumb wall, certificate desk","navigation":"standing diagram route plus optional crouched corroboration","affordance":"all required dimensions readable without F3 or exact block tracing"},
+    {"id":"p6_brann_watch","job":"watch scheduling and redundant alarm review","composition":"rota table, two-lamp boards, meal-chit pegs, relief bench, sightline to bell housing","navigation":"wide group table","affordance":"visual shapes and text duplicate every sound fact"},
+    {"id":"p6_iss_heatworks","job":"heat allocation and surface-route advocacy","composition":"heat map, reed press, route draft cabinet, private speech bench, altered margin rail","navigation":"public works bay with one concealed-but-signaled correction drawer","affordance":"living/dry samples use shape and label as well as color"}
+  ],
+  "dossiers":[
+    {
+      "id":"P6.V","person":"Vaun","profession":"stores and rationing","operation":"Reconcile received goods, issue receipts, seal repairs, and private household exceptions across independent hands.",
+      "evidence":[
+        {"id":"p6.v1","medium":"receiving ledger","surface":"minecraft_book","roles":["seed","key"],"provenance":"Vaun's numbered receiving hand; countersigned at gate","content":"Twelve filter bolts received. Seven sent to cistern. Five assigned by heat order without destination receipts. Sixteen charcoal sacks received. Ten sent to cistern. Six assigned likewise."},
+        {"id":"p6.v2","medium":"seam-and-seal inspection","surface":"minecraft_material_display","roles":["corroboration","provenance"],"provenance":"returned bolts carry market stitch; diverted bolts listed under private heat use","content":"The missing cloth was not lost in transit: two returned fragments carry the favored-gallery repair stitch and Vaun's own reseal wax."},
+        {"id":"p6.v3","medium":"private reconciliation letter","surface":"copperline_redacted_scan","roles":["contradiction","emotional_witness"],"provenance":"later scan; redaction layer recoverable from cached thumbnail","content":"I balanced the page because an unbalanced page would have stopped issue for everyone. I told myself I could challenge the order after winter. Winter became the name for not challenging it."}
+      ],
+      "finding":"Vaun precisely tracked a deliberate diversion and protected continuity of issue, but his private accuracy became a way to postpone public resistance."
+    },
+    {
+      "id":"P6.M","person":"Mara","profession":"manuals and civic routes","operation":"Establish edition provenance from paper stock, signatures, binding sequence, corrections, and route consequences.",
+      "evidence":[
+        {"id":"p6.m1","medium":"three manual editions","surface":"minecraft_chiseled_shelves","roles":["seed","key","provenance"],"provenance":"E1 school stock, E2 stores stock, E3 emergency rag paper; all visibly occupied","content":"E1 routes families around third bay. E2 silently moves the public arrow through it. E3 restores the old route in Mara's margin but keeps the unsafe clean plate."},
+        {"id":"p6.m2","medium":"printer's waste conversation","surface":"minecraft_book","roles":["human_texture","contradiction"],"provenance":"discarded binding basket; Mara and junior copier Lio","content":"Lio: If the clean plate is wrong, why copy it clean? Mara: Because a correction no one receives is a private virtue. Lio: That is not an answer. Mara: No. It is the part I am still able to write."},
+        {"id":"p6.m3","medium":"route consequence list","surface":"discord_docket_attachment","roles":["corroboration","cross_surface"],"provenance":"dispatch counts align only with E2 issue dates","content":"The substituted edition was not theoretical: three family dispatches and one brace crew were routed through the stressed bay before E3 margins circulated."}
+      ],
+      "finding":"Mara can prove which manual was substituted and how it changed movement; she preserved the correction but also produced the authoritative clean copy that hid it."
+    },
+    {
+      "id":"P6.S","person":"Sella","profession":"shoreline survey and school drawing","operation":"Reconstruct a damp transfer from fixed landmarks, front/back paper fibers, sample sketches, and measured bearings.",
+      "evidence":[
+        {"id":"p6.s1","medium":"shoreline teaching drawings","surface":"minecraft_map_display","roles":["seed","human_texture"],"provenance":"pupil copies dated before intake dispute","content":"Sella's pupils draw the bent alder, split sill, and three-reed shelf. One writes: The water does not care which way the council faces the paper."},
+        {"id":"p6.s2","medium":"damp reverse transfer","surface":"copperline_contact_sheet","roles":["key","provenance"],"provenance":"fiber tears and pinholes match the Minecraft original; reverse image is physically caused, not an arbitrary mirror cipher","content":"When aligned by alder, sill, and shelf, the transferred line reaches the lower intake rather than the official upper mark."},
+        {"id":"p6.s3","medium":"omitted sample note","surface":"minecraft_sample_shelf","roles":["contradiction","later_callback_seed"],"provenance":"lower jar position scraped from official index; Sella's sketch retains it","content":"Lower draw: dark grit before cloth fibers. Keep sealed. If this line disappears from the fair copy, ask stores where the good cloth went."}
+      ],
+      "finding":"Sella's transferable survey proves the true intake and an omitted lower sample; her playful teaching method became durable forensic provenance."
+    },
+    {
+      "id":"P6.O","person":"Orin","profession":"masonry and structural tolerance","operation":"Compare mineral age, seam width, brace dimensions, load promises, and a conditional certificate.",
+      "evidence":[
+        {"id":"p6.o1","medium":"low-seam measurements","surface":"minecraft_environment_plus_diagram","roles":["seed","key"],"provenance":"marks cut before Iss's last excavation; mineral fill crosses older tool scars","content":"Third bay seam exceeds the service limit at two braces. The mineralized edge proves movement began well before the fresh route cut."},
+        {"id":"p6.o2","medium":"brace order and delivered cores","surface":"minecraft_material_display","roles":["corroboration","contradiction"],"provenance":"ordered section 6x8; delivered cores 4x6; stores receipt countersigned","content":"The installed brace is not the brace Orin calculated. The promised load reduction never appears in pressure allocation."},
+        {"id":"p6.o3","medium":"conditional certificate","surface":"minecraft_written_book","roles":["emotional_witness","provenance"],"provenance":"Orin signature genuine; condition later scraped from public copy","content":"Service may continue only if upper heat load is halved and the east brace is replaced before thaw. In the margin: They asked whether I would rather close the school galleries tonight. I signed the condition. They kept only the signature."}
+      ],
+      "finding":"Orin documented chronic damage and made operation conditional, then accepted a promise he could not enforce; later copies retained his authority and removed his warning."
+    },
+    {
+      "id":"P6.B","person":"Brann","profession":"watch scheduling and alarm redundancy","operation":"Reconcile substitutions, meal chits, paired lamp states, toll notation, and fixed clip 3 without relying on sound.",
+      "evidence":[
+        {"id":"p6.b1","medium":"corrected rota","surface":"minecraft_wall_record","roles":["seed","key"],"provenance":"Brann correction ink; two hands acknowledge relief","content":"Iven's eighth-hour cell is empty because Pell relieved him. The official clean rota places Iven there anyway."},
+        {"id":"p6.b2","medium":"meal chit and lamp roll","surface":"discord_and_minecraft_pair","roles":["corroboration","provenance","contradiction"],"provenance":"market batch time and two-lamp shapes independently place Pell at watch","content":"Pell collected two meals at relief and lit the paired board. The ninth toll written later as eight contradicts both ordinary records."},
+        {"id":"p6.b3","medium":"preserved clip 3","surface":"media_with_accessible_stills","roles":["recontextualization","cross_surface"],"provenance":"hash-bound asset clip_03_watch_correction; reveal after local watch question is established","content":"STAY AWAKE is the packet label. Its useful content is the paired visual coverage and corrected relief order, not a supernatural command to avoid sleep."}
+      ],
+      "finding":"Brann protected exhausted watchers through paired coverage and left redundant proof that the official timestamp was rewritten."
+    },
+    {
+      "id":"P6.I","person":"Iss","profession":"heat works and surface-route advocacy","operation":"Test a persuasive route case against biological provenance, allocation records, authorization gaps, and corrected margins.",
+      "evidence":[
+        {"id":"p6.i1","medium":"pressed reed and water date","surface":"minecraft_material_display","roles":["seed","key","true_but_not_door"],"provenance":"living-green tissue at collection; date independently logged by Sella","content":"The surface was genuinely recovering. This finding is true and important even though it does not justify Iss's route."},
+        {"id":"p6.i2","medium":"public route speech","surface":"npc_remembered_conversation","roles":["false_plausible_read","emotional_witness"],"provenance":"three witnesses preserve overlapping but non-identical recollections","content":"Iss argued that permanent confinement was becoming a policy, not a weather fact. He named children who had never seen open sky. He omitted the stressed bay, diverted heat, and unpaired cut crew."},
+        {"id":"p6.i3","medium":"corrected route margin","surface":"copperline_attachment_version_history","roles":["contradiction","provenance","later_callback_seed"],"provenance":"cached first upload lacks three warnings present in local draft; account edit chronology is mundane and verifiable","content":"The draft names brace load, paired watch, and Averyn's objection. The public copy removes all three and calls the route a mercy."}
+      ],
+      "finding":"Iss was right that the surface healed and right to challenge permanent confinement; he made the case persuasive by hiding risks, diverted resources, and supported exclusion of Averyn's objection."
+    }
+  ],
+  "group_conclusion":{
+    "id":"P6.F7","prompt":"File a responsibility matrix for six people: profession, what each could prove, the compromise each made, and the later correction each preserved.",
+    "required_concepts":["six distinct contemporaries","different professions","different evidence","different culpabilities","independent affidavits"],
+    "accepted_answers":["Vaun, Mara, Sella, Orin, Brann, and Iss were six distinct contemporaries whose different work preserved independent evidence; each protected people, made a different compromise, and later left a separate affidavit rather than forming one Keeper mind."],
+    "zero_observation_acceptance":true
+  },
+  "meaningful_wrong_theories":[
+    {"theory":"The six titles describe one rotating office.","response":"The archive records the theory, then returns simultaneous cross-signatures, incompatible work locations, direct disagreements, and six independent hands."},
+    {"theory":"Iss alone corrupted an otherwise honest council.","response":"Iss's omissions are established, but Vaun's diversion silence, Mara's clean edition, Orin's conditional signature, and the altered watch record predate or exceed his route."},
+    {"theory":"All six secretly coordinated the later affidavits as a successful release plan.","response":"The six independent affidavits preserve a route to a name, but no evidence shows they completed a release; the distinction is retained for later investigation."}
+  ],
+  "hints":{
+    "H0":"Choose a workroom, not a stone. Each dossier asks a question that profession could answer.",
+    "H1":"If two lanes feel identical, return to the material: inventory balances, edition history, transfer geometry, structural tolerances, watch chronology, and route advocacy require different judgments.",
+    "H2":"For the group matrix, separate what each knew from what each did, omitted, and corrected later.",
+    "H3":"File six rows: Vaun/diversion, Mara/substituted edition, Sella/true intake, Orin/signed-away warning, Brann/rewritten watch, Iss/healed surface plus concealed route risk."
+  },
+  "runtime":{"local_primary":true,"any_subset":true,"answer_requires_observation_receipts":false,"dossiers_parallel":true,"affidavit_reissue_requires_absence_proof":true,"wrong_attempt_throttle_seconds":[0,10,30,90],"replay":"six independent dossiers and responsibility matrix","restart":"open lanes, drafts, artifacts, and conclusion event reload idempotently","outage":"media/web/Discord projections can be replaced by hash-bound local accessible companions without accepting a solve"},
+  "novelty_comparison":"P5 compares social versions across one institution. P6 changes operation and spatial rhythm six times because each person's work produces different proof, then reconverges on responsibility rather than a cipher ladder.",
+  "cold_theory_paths":["six icons -> one council -> six conflicting people","Iss-as-villain -> distributed compromise -> differentiated culpability","six heroic witnesses -> compromised protectors -> independent incomplete repair"]
+}
