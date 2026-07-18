@@ -2013,9 +2013,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             case "threshold" -> {
                 setBlock(base, Material.POLISHED_BLACKSTONE);
                 setBlock(base.clone().add(0, 1, 0), Material.DEEPSLATE_BRICK_SLAB);
-                // The exact inner lever owns the block directly above the anchor. Keep the low
-                // lintel one step into the crouched route so both authored elements remain present.
-                setBlock(offsetFrom(base, facing, 0, 1, 1), Material.DEEPSLATE_BRICK_SLAB);
+                // The inner lever owns the block directly above the anchor, while the route owns
+                // its body and head cells. Keep the low lintel beside that envelope so it remains
+                // visible without colliding with the crouched walk or the outer-control cage.
+                setBlock(offsetFrom(base, facing, -1, 1, 2), Material.DEEPSLATE_BRICK_SLAB);
                 setBlock(offsetFrom(base, facing, 1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, -1, 0, 0), Material.BLACK_CARPET);
                 setBlock(offsetFrom(base, facing, 0, 1, 0), Material.POLISHED_BLACKSTONE_PRESSURE_PLATE);
