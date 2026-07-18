@@ -85,6 +85,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P7_MATERIAL_EVENT = "p7.counterfeit_material_proven";
     private static final String P8_PLAN_EVENT = "p8.intervention_plan_accepted";
     private static final String P8_REPAIR_EVENT = "p8.hold_systems_repaired";
+    private static final String P9_BIOGRAPHIES_EVENT = "p9.company_biographies_restored";
+    private static final String P9_LEAK_EVENT = "p9.leak_window_proven";
     private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
             "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
             "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
@@ -323,6 +325,26 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 plugin.getLogger().severe("P8 integrated repair could not be committed locally: " + failure.getMessage());
             }
         }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P8_REPAIR_EVENT)
+                && snapshot.isComplete("v5_a02_stations")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P9_BIOGRAPHIES_EVENT));
+                if (created) mirrorP9BiographiesAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P9 company biographies could not be committed locally: " + failure.getMessage());
+            }
+        }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P9_BIOGRAPHIES_EVENT)
+                && snapshot.isComplete("v5_case_c07_complete")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P9_LEAK_EVENT));
+                if (created) mirrorP9LeakAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P9 private leak window could not be committed locally: " + failure.getMessage());
+            }
+        }
     }
 
     /** Exact idempotency keys make startup/restart retries safe after a remote outage. */
@@ -365,6 +387,33 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             repair.addProperty("altered_copy", "preserved-not-erased");
             plugin.supabase().recordArgEvent(P8_REPAIR_EVENT,
                     "minecraft:p8:hold-systems-repaired", "minecraft", null, repair);
+        });
+    }
+
+    private void mirrorP9BiographiesAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p9.biographies.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject people = new JsonObject();
+            people.addProperty("mkept", "admin-custody");
+            people.addProperty("ash", "camera-humor");
+            people.addProperty("rook", "builder-countermark");
+            people.addProperty("wren", "route-companion");
+            people.addProperty("restored_as", "people-not-stations");
+            plugin.supabase().recordArgEvent(P9_BIOGRAPHIES_EVENT,
+                    "minecraft:p9:ash-camp-owner-cards", "minecraft", null, people);
+        });
+    }
+
+    private void mirrorP9LeakAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p9.leak.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject leak = new JsonObject();
+            leak.addProperty("readiness", "release-ready");
+            leak.addProperty("private_object", "rook-revision-and-identities");
+            leak.addProperty("window", "private-before-public");
+            leak.addProperty("boundary", "insider-unknown");
+            plugin.supabase().recordArgEvent(P9_LEAK_EVENT,
+                    "minecraft:p9:private-revision-window", "minecraft", null, leak);
         });
     }
 
@@ -435,6 +484,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         }
         if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
         if (progress.snapshot().isComplete(P8_REPAIR_EVENT)) mirrorP8RepairAsync();
+        if (progress.snapshot().isComplete(P9_BIOGRAPHIES_EVENT)) mirrorP9BiographiesAsync();
+        if (progress.snapshot().isComplete(P9_LEAK_EVENT)) mirrorP9LeakAsync();
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);

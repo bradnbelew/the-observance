@@ -105,7 +105,8 @@ public final class TownsfolkNpcListener implements Listener {
         if (truthy(flags.get("v5_case_c10_complete"))) return "coda";
         return switch (id) {
             case "aro" -> {
-                if (truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
+                if (truthy(flags.get("p9.leak_window_proven"))
+                        || truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
                 if (truthy(flags.get("p7.nessa_publicly_cleared"))
                         || truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
@@ -120,7 +121,8 @@ public final class TownsfolkNpcListener implements Listener {
                 yield introState(player, id, "well_lead");
             }
             case "coll" -> {
-                if (truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
+                if (truthy(flags.get("p9.leak_window_proven"))
+                        || truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
                 if (truthy(flags.get("v5_case_c06_complete"))) yield "camp_lead";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c01_complete"))) yield "after_c01";

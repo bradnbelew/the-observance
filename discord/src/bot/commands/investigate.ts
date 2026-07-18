@@ -135,6 +135,39 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     }
     return;
   }
+  if (action === 'file-leak-window') {
+    const readiness = interaction.options.getString('readiness', true);
+    const privateObject = interaction.options.getString('private-object', true);
+    const window = interaction.options.getString('window', true);
+    const boundary = interaction.options.getString('boundary', true);
+    if (readiness !== 'release-ready' || privateObject !== 'rook-revision-and-identities'
+        || window !== 'private-before-public' || boundary !== 'insider-unknown') {
+      await interaction.editReply('That filing either treats the company as unprepared, uses public material, breaks the version order, or names a sender P9 has not proved. Nothing changed.');
+      return;
+    }
+    const result = await recordArgEvent({
+      eventKey: 'p9.leak_window_proven',
+      idempotencyKey: 'discord:p9:private-revision-window',
+      source: 'discord',
+      actorId: interaction.user.id,
+      payload: { readiness, private_object: privateObject, window, boundary, observation_receipts: 0 },
+    });
+    if (result.status === 'blocked') {
+      await interaction.editReply('The four Ash Camp owner cards are not restored yet. Nothing changed.');
+      return;
+    }
+    if (result.status === 'collision') {
+      await interaction.editReply('A different private-window filing already owns that receipt. Nothing changed; use /investigate status.');
+      return;
+    }
+    await interaction.editReply(result.created
+      ? 'Finding filed. The four-person company was ready. Rook’s private revision and their identities crossed into the Witness Spool before public upload. The sender remains an open question.'
+      : 'That private-window finding is already filed. Nothing was duplicated.');
+    if (result.created) {
+      void postToTheRecord('Ash Camp finding: the release work was ready. Rook’s private revision and the team identities crossed before public upload. The transmission came from inside the four-person company; P9 does not name the sender.');
+    }
+    return;
+  }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
 
   const summary = interaction.options.getString('summary', true).normalize('NFKC').trim().replace(/\s+/g, ' ');
