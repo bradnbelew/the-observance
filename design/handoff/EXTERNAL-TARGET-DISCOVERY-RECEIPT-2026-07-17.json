@@ -134,11 +134,20 @@
     "post_stop_readback": "PID 20708 ended and port 25591 absent",
     "fresh_morning_target": "127.0.0.1:25593 / PID 36280 / Paper 1.21.11 build 132; see design/handoff/MORNING-PRIVATE-CANDIDATE-HANDOFF-2026-07-17.json"
   },
+  "media_custody_correction": {
+    "supersedes": "the earlier remaining-residue statement that five source-media byte sets were absent",
+    "receipt": "campaign/p5-p12/media-custody.json",
+    "verification_tool": "tools/verify_p5_p12_media_custody.ps1",
+    "result": "10 exact files passed fresh size and SHA-256 readback: four videos, recovered packet ZIP, README, inventory, WAV, intake PNG, and lamp JPG",
+    "location_boundary": "bytes are in prior read-only external media/output roots, not committed to this checkout",
+    "originals_mutated": false,
+    "remaining": "best-master determination, human AV contamination/editability review, derivative and accessibility companions, ownership decision, hosting/mirror/cache receipts"
+  },
   "remaining_exact_external_residue": [
     "Supabase task-scoped connector permission and development-branch/cost confirmation",
     "distinct private Discord guild/channel and non-production Supabase binding for Railway staging",
     "potential paid Railway environment/runtime confirmation",
-    "five exact source media byte sets absent from this checkout",
+    "media source bytes located and custody-verified outside the checkout; human master/AV, derivative/accessibility, ownership, and hosted cache receipts remain",
     "Crafty/brother target intentionally unavailable",
     "Vercel preview deployment identity/file-upload path that can access Braden's team without publishing private source",
     "public production promotion deferred to Brad's acceptance"

@@ -27,6 +27,8 @@ import java.util.Set;
 public final class AuthoredCampaignAuthority {
 
     public static final String RESOURCE = "campaign/p5-p12.json";
+    public static final String MINECRAFT_BINDING_RESOURCE =
+            "campaign/p5-p12-minecraft-bindings.json";
     private static final List<String> PHASES =
             List.of("P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12");
 
@@ -45,7 +47,7 @@ public final class AuthoredCampaignAuthority {
 
     public static Report inspect() {
         List<String> issues = new ArrayList<>();
-        byte[] bytes = read(issues);
+        byte[] bytes = readResource(RESOURCE, issues);
         if (bytes.length == 0) return new Report(0, 0, 0, 0, "", issues);
 
         JsonObject root;
@@ -61,6 +63,7 @@ public final class AuthoredCampaignAuthority {
         JsonArray cases = array(root, "cases", issues);
         Set<String> phases = new LinkedHashSet<>();
         Set<String> caseIds = new LinkedHashSet<>();
+        Set<String> authoredSpaceIds = new LinkedHashSet<>();
         int conclusions = 0;
         int evidence = 0;
         int spaces = 0;
@@ -126,6 +129,12 @@ public final class AuthoredCampaignAuthority {
                 evidence += validateEvidence(optionalArray(dossier, "evidence"), phase, issues);
             }
             JsonArray authoredSpaces = optionalArray(authored, "spaces");
+            for (JsonElement spaceElement : authoredSpaces) {
+                if (spaceElement.isJsonObject() && spaceElement.getAsJsonObject().has("id")) {
+                    String spaceId = spaceElement.getAsJsonObject().get("id").getAsString();
+                    if (!authoredSpaceIds.add(spaceId)) issues.add("duplicate authored space " + spaceId);
+                }
+            }
             spaces += validateSpaces(authoredSpaces, phase, issues);
             if (authoredSpaces.isEmpty()) issues.add(phase + " has no functional Minecraft spaces");
             if (directConclusions.isEmpty() && !authored.has("group_conclusion")) {
@@ -137,7 +146,45 @@ public final class AuthoredCampaignAuthority {
             issues.add("campaign phases must be exact ordered P5-P12, found " + phases);
         }
         if (cases.size() != PHASES.size()) issues.add("expected 8 cases, found " + cases.size());
+        validateMinecraftBindings(authoredSpaceIds, issues);
         return new Report(cases.size(), conclusions, evidence, spaces, sha256(bytes), issues);
+    }
+
+    private static void validateMinecraftBindings(Set<String> authoredSpaceIds,
+                                                   List<String> issues) {
+        byte[] bytes = readResource(MINECRAFT_BINDING_RESOURCE, issues);
+        if (bytes.length == 0) return;
+        JsonObject root;
+        try {
+            root = JsonParser.parseString(new String(bytes, StandardCharsets.UTF_8)).getAsJsonObject();
+        } catch (RuntimeException failure) {
+            issues.add("Minecraft binding authority is not valid JSON: " + failure.getMessage());
+            return;
+        }
+        JsonElement receipt = root.get("fresh_client_receipt");
+        if (receipt == null || !receipt.isJsonPrimitive() || receipt.getAsBoolean()) {
+            issues.add("offline Minecraft binding must record fresh_client_receipt=false");
+        }
+        Set<String> bound = new LinkedHashSet<>();
+        for (JsonElement element : array(root, "bindings", "Minecraft binding", issues)) {
+            if (!element.isJsonObject()) {
+                issues.add("Minecraft binding entry is not an object");
+                continue;
+            }
+            JsonObject row = element.getAsJsonObject();
+            String spaceId = text(row, "space_id", issues);
+            if (!bound.add(spaceId)) issues.add("duplicate Minecraft binding " + spaceId);
+            if (array(row, "room_ids", spaceId, issues).isEmpty()) {
+                issues.add(spaceId + " has no exact room binding");
+            }
+            if (array(row, "fixture_ids", spaceId, issues).isEmpty()) {
+                issues.add(spaceId + " has no exact fixture binding");
+            }
+            requireText(row, "placement_mode", spaceId, issues);
+        }
+        if (!bound.equals(authoredSpaceIds)) {
+            issues.add("Minecraft binding coverage differs from authored spaces");
+        }
     }
 
     private static int validateEvidence(JsonArray rows, String phase, List<String> issues) {
@@ -258,11 +305,11 @@ public final class AuthoredCampaignAuthority {
         }
     }
 
-    private static byte[] read(List<String> issues) {
+    private static byte[] readResource(String resource, List<String> issues) {
         try (InputStream stream = AuthoredCampaignAuthority.class.getClassLoader()
-                .getResourceAsStream(RESOURCE)) {
+                .getResourceAsStream(resource)) {
             if (stream == null) {
-                issues.add("missing packaged campaign authority " + RESOURCE);
+                issues.add("missing packaged campaign authority " + resource);
                 return new byte[0];
             }
             return stream.readAllBytes();

@@ -480,11 +480,30 @@
       "optional_custody_after_solution": "eight receipts retained without becoming answer prerequisites",
       "replay_second_restart": "open state re-derived with zero audit findings"
     },
-    "external_blockers": "No exact authenticated Vercel, Railway, Discord, or disposable Supabase target is configured; five receipted media source-byte sets are absent from this checkout. Offline packages remain honest and production remains untouched.",
+    "external_blockers": "Exact production Vercel, both Railway families, and Supabase are mapped but remain non-mutating baselines. Vercel lacks a private local-source upload identity; Railway lacks isolated guild/database/environment and cost clearance; Supabase lacks a verified development branch. Media bytes are custody-verified outside the checkout, while master/AV, derivative/accessibility, ownership, and hosted cache receipts remain open.",
     "brad_visual_approval": null,
     "final_human_gate": "Brad's morning end-to-end private playthrough",
     "public_or_production_launch": false,
     "production_mutation": false
+  },
+  "whole_campaign_offline_candidate": {
+    "status": "P5-P12 current-standard authored offline pack, three-surface projection, packaged fail-closed Paper authority, deterministic simulation, routed build/package chain, and media custody readback pass; hosted staging, fresh P5-P12 client placement, whole-campaign rehearsal, and Brad acceptance remain open",
+    "source_commit": "670b7adb1ca2f7d87f7cddfab068510321189862",
+    "campaign_authority": "campaign/p5-p12/campaign.json",
+    "receipt": "design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
+    "deploy_manifest": "design/handoff/PRIVATE-STAGING-DEPLOY-MANIFEST-2026-07-17.json",
+    "projection_sha256": "c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
+    "cases": 8,
+    "conclusions": 21,
+    "evidence_records": 80,
+    "functional_minecraft_compositions": 27,
+    "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+    "minecraft_binding": "27/27 authored spaces bind to the exact existing 32-room/76-fixture Deep Hold authority; fresh client placement remains unclaimed",
+    "media_custody": "10 exact files verified outside checkout; originals untouched; no hosted receipt claimed",
+    "p4_live_review_target": "127.0.0.1:25593 / PID 36280 remains immutable",
+    "brad_visual_approval": null,
+    "production_mutation": false,
+    "public_launch": false
   },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
@@ -502,7 +521,11 @@
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
     "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
     "design/handoff/PRIVATE-LAUNCH-ROUTED-REGRESSION-RECEIPT.json",
+    "design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
+    "design/handoff/PRIVATE-STAGING-DEPLOY-MANIFEST-2026-07-17.json",
     "design/handoff/EXTERNAL-TARGET-DISCOVERY-RECEIPT-2026-07-17.json",
+    "campaign/p5-p12/campaign.json",
+    "campaign/p5-p12/media-custody.json",
     "design/handoff/MORNING-PRIVATE-CANDIDATE-HANDOFF-2026-07-17.json",
     "design/m3/P4-VNEXT-CASE-BRIEF.json",
     "design/m3/PAPER-VNEXT-DISPOSABLE-RECEIPT.json",
@@ -646,13 +669,23 @@
       "effect": "a later exact process/listener readback proved the old disposable server was still alive with zero player joins. It was stopped through Paper's shutdown hook and fully saved; the fresh morning target is PID 36280 on 127.0.0.1:25593. Hosted preview/staging gaps are narrowed to exact identity, isolation, cost, and source-upload residues rather than generic absence."
     },
     {
+      "older": "the post-P4 inventory statement that P5-P12 still lacked current-standard authored campaign content",
+      "newer": "campaign/p5-p12 plus design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
+      "effect": "P5-P12 now have eight current-standard cases, 21 zero-observation conclusion contracts, 80 authored evidence records, 27 functional Minecraft compositions, byte-identical Paper/web/Discord projections, packaged fail-closed Paper authority, and deterministic naive/brute/restart/idempotency simulation. Fresh client placement, hosted staging, whole-campaign rehearsal, and human acceptance remain real gates."
+    },
+    {
+      "older": "the external-target receipt residue claiming five media byte sets were absent",
+      "newer": "campaign/p5-p12/media-custody.json and tools/verify_p5_p12_media_custody.ps1",
+      "effect": "four videos and the recovered packet ZIP plus README, inventory, WAV, PNG, and JPG are freshly size/SHA-256 verified in prior read-only output roots. The bytes remain outside the checkout and untouched. Best-master, human AV, derivative/accessibility, ownership, hosting, mirror, and cache receipts remain open."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
     }
   ],
   "current_gate": {
-    "phase": "V5 remains rejected historical proof; P4 vNext automated source/Paper/restart/negative/pristine-review gates pass and a fresh immutable localhost target is live at 127.0.0.1:25593; external production baselines are exactly mapped but not mutated; Vercel preview is still blocked by deployment identity/source-upload isolation; broader private launch-candidate remains incomplete; final human gate deferred; public/production closed",
+    "phase": "V5 remains rejected historical proof; P4 vNext immutable review target remains live; P5-P12 current-standard offline authorship, three-surface projection, executable Paper authority, deterministic simulation, routed build/package parity, and media custody pass. Fresh P5-P12 Paper/client placement, whole-campaign private rehearsal, exact hosted staging, media delivery, and Brad acceptance remain open; production/public closed.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,
@@ -660,11 +693,10 @@
     "required_next_evidence": [
       "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval",
       "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
-      "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior",
-      "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation",
-      "the next P4 case passes the revelation-first twelve-field brief and qualitative novelty audit without a closed mechanism taxonomy",
+      "P5-P12 fresh disposable Paper placement and player-view receipts bind the 27 functional compositions and current artifacts to the existing 32-room Hold without regressing navigation or affordance",
+      "a whole-campaign simulation/rehearsal verifies cross-phase event wiring, catch-up, outage, restart, rollback, and package parity on one private target",
       "Copperline offline content/voice/version specifications are separated from real future deployment, URL, cache, responsive, accessibility, outage, history, and human-review receipts",
-      "exact unavailable media, hosting, community, NPC, and cross-media player receipts are obtained only at their real future integration gates",
+      "custody-verified media receives human master/AV review, approved accessibility derivatives, ownership decision, and exact private hosted/cache receipts",
       "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
       "Brad's explicit approval of a later M3 revision"

@@ -31,6 +31,7 @@ $authoritySources = [ordered]@{
 }
 $retiredResourceNames = @("deep-hold-d05-shelf.json", "deep-hold-lock-books.json")
 $campaignProjectionPath = Join-Path $RepoRoot "plugin\src\main\resources\campaign\p5-p12.json"
+$campaignBindingPath = Join-Path $RepoRoot "plugin\src\main\resources\campaign\p5-p12-minecraft-bindings.json"
 
 $mapManifestPath = [string]$authoritySources["v5/authority/map-art-manifest.json"]
 if (!(Test-Path -LiteralPath $mapManifestPath -PathType Leaf)) {
@@ -161,6 +162,21 @@ if (!(Test-Path $buildFile)) {
           } finally { $entryStream.Dispose() }
           $sourceHash = (Get-FileHash -LiteralPath $campaignProjectionPath -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($entryHash -ne $sourceHash) { Add-Failure "Plugin jar campaign projection differs from source" }
+        }
+        $bindingEntry = $zip.Entries | Where-Object { $_.FullName -eq "campaign/p5-p12-minecraft-bindings.json" } | Select-Object -First 1
+        if ($null -eq $bindingEntry) {
+          Add-Failure "Plugin jar does not contain campaign/p5-p12-minecraft-bindings.json"
+        } elseif (!(Test-Path -LiteralPath $campaignBindingPath -PathType Leaf)) {
+          Add-Failure "Plugin campaign Minecraft binding source is missing: $campaignBindingPath"
+        } else {
+          $entryStream = $bindingEntry.Open()
+          try {
+            $sha = [System.Security.Cryptography.SHA256]::Create()
+            try { $entryHash = ([BitConverter]::ToString($sha.ComputeHash($entryStream))).Replace("-", "").ToLowerInvariant() }
+            finally { $sha.Dispose() }
+          } finally { $entryStream.Dispose() }
+          $sourceHash = (Get-FileHash -LiteralPath $campaignBindingPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($entryHash -ne $sourceHash) { Add-Failure "Plugin jar campaign Minecraft bindings differ from source" }
         }
         $entryNames = @($zip.Entries | ForEach-Object { $_.FullName })
         # Gradle/JAR may emit structural directory records. Authority parity is exact over files;

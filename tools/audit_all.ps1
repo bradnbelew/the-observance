@@ -44,6 +44,7 @@ foreach ($required in @(
   (Join-Path $tools "check_supabase_security_proposal.py"),
   (Join-Path $tools "check_p5_p12_authored_candidate.py"),
   (Join-Path $tools "check_p5_p12_projection.py"),
+  (Join-Path $tools "check_p5_p12_minecraft_bindings.py"),
   (Join-Path $tools "simulate_p5_p12_campaign.py"),
   (Join-Path $tools "sim_m3_vertical_slice.py"),
   (Join-Path $tools "check_hold_invitation.ps1"),
@@ -77,6 +78,7 @@ Invoke-External "cross-phase player-facing experience authority" $root "python" 
 Invoke-External "Supabase production-baseline hardening proposal" $root "python" @((Join-Path $tools "check_supabase_security_proposal.py"))
 Invoke-External "P5-P12 authored campaign candidate" $root "python" @((Join-Path $tools "check_p5_p12_authored_candidate.py"))
 Invoke-External "P5-P12 Paper/web/Discord projection parity" $root "python" @((Join-Path $tools "check_p5_p12_projection.py"))
+Invoke-External "P5-P12 authored-to-Deep-Hold Minecraft bindings" $root "python" @((Join-Path $tools "check_p5_p12_minecraft_bindings.py"))
 Invoke-External "P5-P12 deterministic campaign simulation" $root "python" @((Join-Path $tools "simulate_p5_p12_campaign.py"))
 Invoke-External "M3 private-slice block reachability" $root "python" @((Join-Path $tools "sim_m3_vertical_slice.py"))
 Invoke-External "playable Hold and private Discord handoff" $root "powershell" @(

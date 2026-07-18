@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0-private-staging-deploy-manifest",
+  "source_commit": "670b7adb1ca2f7d87f7cddfab068510321189862",
+  "production_promotion": false,
+  "secrets_in_manifest": false,
+  "vercel": {
+    "team_id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "root": "dashboard",
+    "mode": "preview only",
+    "required_preflight": ["connector or CLI identity belongs to exact team", "complete private source upload path", "external writes bound to verified non-production Supabase or fail closed"],
+    "blocked_now": "connected deployment API cannot read local checkout; local CLI identity is another team; publishing private source to public Git is forbidden"
+  },
+  "railway": {
+    "projects": [
+      {"project_id":"462b0f7f-a98a-4cd7-9641-01b5704375c9","service_id":"06c1fdec-ab9d-44f7-ad70-96feea84023e","role":"recovery_cron","config":"discord/railway.cron.json"},
+      {"project_id":"e8158c1a-259b-4079-b51d-df7a2bb654e6","service_id":"ea488e14-1c46-4ecf-8448-5c7842247dd1","role":"persistent_worker","config":"discord/railway.worker.json"}
+    ],
+    "required_preflight": ["new or existing non-production environment id", "distinct staging Discord guild/channel", "verified non-production Supabase ref", "platform cost confirmation if resource duplication bills"],
+    "blocked_now": "only production environments exist; no isolated guild/database; possible paid resource",
+    "production_redeploy": false
+  },
+  "supabase": {
+    "production_ref": "fndmhbpxnodrnbrzrlqq",
+    "production_policy": "read-only baseline",
+    "proposal": [
+      "design/m2/sql/production-security-hardening-v2.up.sql",
+      "design/m2/sql/production-security-hardening-v2.rollback.sql",
+      "design/m2/sql/production-security-hardening-v2.forward.sql",
+      "design/m2/sql/tests/production-security-hardening-v2.assert.sql"
+    ],
+    "required_preflight": ["exact development branch ref", "cost confirmation if applicable", "pre-snapshot", "UP assertions", "security/performance advisors", "rollback assertions", "forward assertions"],
+    "production_sql_applied": false
+  },
+  "paper": {
+    "p4_pinned_review": "127.0.0.1:25593 / PID 36280 / immutable",
+    "next_candidate_rule": "use a fresh disposable directory, new port, exact plugin/datapack/resourcepack hashes, non-op Adventure, restart/re-audit; never replace the pinned process"
+  },
+  "media": {
+    "custody_receipt": "campaign/p5-p12/media-custody.json",
+    "upload_allowed_now": false,
+    "required_preflight": ["best-master selection", "human AV review", "approved derivatives/accessibility companions", "ownership decision", "private host target", "post-upload byte/hash/cache readback"]
+  }
+}

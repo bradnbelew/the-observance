@@ -1,4 +1,7 @@
 {
+  "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+  "minecraft_binding_source": "campaign/p5-p12/minecraft-bindings.json",
+  "minecraft_binding_target": "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json",
   "phase_count": 8,
   "production_deployed": false,
   "projection_bytes": 147088,

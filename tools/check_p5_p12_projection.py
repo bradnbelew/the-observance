@@ -35,6 +35,12 @@ def main() -> None:
                 f"projection observation gate drift: {relative}")
         payloads.append(payload)
     require(len(set(payloads)) == 1, "surface projections are not byte-identical")
+    binding_source = ROOT / data["minecraft_binding_source"]
+    binding_target = ROOT / data["minecraft_binding_target"]
+    require(binding_source.read_bytes() == binding_target.read_bytes(),
+            "packaged Minecraft binding differs from canonical source")
+    require(hashlib.sha256(binding_target.read_bytes()).hexdigest() == data["minecraft_binding_sha256"],
+            "packaged Minecraft binding hash drift")
     print(f"P5-P12 projection: PASS (8 phases, 3 byte-identical surfaces, {data['projection_sha256']})")
 
 

@@ -15,6 +15,8 @@ TARGETS = [
     ROOT / "discord/src/v5/generated/p5-p12.json",
 ]
 MANIFEST = SOURCE / "projection-manifest.json"
+BINDING_SOURCE = SOURCE / "minecraft-bindings.json"
+BINDING_TARGET = ROOT / "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json"
 
 
 def canonical_bytes(value: object) -> bytes:
@@ -41,6 +43,9 @@ def main() -> None:
     for target in TARGETS:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(payload)
+    binding_payload = BINDING_SOURCE.read_bytes()
+    BINDING_TARGET.parent.mkdir(parents=True, exist_ok=True)
+    BINDING_TARGET.write_bytes(binding_payload)
     manifest = {
         "schema_version": "1.0.0-campaign-projection-manifest",
         "source_files": ["campaign.json"] + [row["file"] for row in index["phases"]],
@@ -49,6 +54,9 @@ def main() -> None:
         "targets": [str(path.relative_to(ROOT)).replace("\\", "/") for path in TARGETS],
         "phase_count": len(cases),
         "production_deployed": False,
+        "minecraft_binding_source": str(BINDING_SOURCE.relative_to(ROOT)).replace("\\", "/"),
+        "minecraft_binding_target": str(BINDING_TARGET.relative_to(ROOT)).replace("\\", "/"),
+        "minecraft_binding_sha256": hashlib.sha256(binding_payload).hexdigest(),
     }
     MANIFEST.write_bytes(canonical_bytes(manifest))
     print(f"P5-P12 projection written: phases={len(cases)} bytes={len(payload)} sha256={digest}")

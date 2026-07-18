@@ -1,9 +1,9 @@
 {
   "schema_version": "1.0.0-private-launch-routed-regression",
-  "run_time": "2026-07-17T02:42:00-05:00",
-  "source_checkpoint": "9861dad1f866396ed593c6cc05c81e46143c8b68",
+  "run_time": "2026-07-17T19:57:41-05:00",
+  "source_checkpoint": "670b7adb1ca2f7d87f7cddfab068510321189862",
   "branch": "codex/m3-disposable-paper-gate",
-  "result": "offline_and_disposable_private_gates_passed; historical generic external blockers superseded by exact target discovery receipt",
+  "result": "complete routed static/build/package chain passed from a clean commit; live hosted resource-pack and external-media delivery checks explicitly skipped; production untouched",
   "routed_chain": {
     "passed_before_external_boundary": [
       "repository integrity",
@@ -18,32 +18,28 @@
       "32-room/76-fixture/8-gate Deep Hold layout",
       "1,588 deterministic failure scenarios",
       "34-file ordered SQL bundle",
-      "Discord canon, binding, surface, identity, seed, web, and SQL-bundle self-tests"
+      "Discord canon, binding, surface, identity, seed, web, SQL-bundle, resolve, persistent worker, and 2,300-scenario chaos self-tests",
+      "P5-P12 authored-candidate validation: 8 cases, 21 conclusion contracts, 80 evidence records, 27 functional compositions",
+      "27/27 authored functional compositions bound to the exact 32-room/76-fixture Deep Hold authority",
+      "P5-P12 byte-identical Paper/web/Discord projection c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
+      "P5-P12 zero-observation, naive/brute, wrong-answer, any-subset, restart, idempotency, Wren-branch, and release simulation"
     ],
-    "expected_fail_closed_boundary": {
-      "stage": "Discord resolve check and persistent service runtime",
-      "missing_environment_variables": [
-        "DISCORD_BOT_TOKEN",
-        "DISCORD_APP_ID",
-        "DISCORD_GUILD_ID",
-        "CHANNEL_THE_RECORD",
-        "SUPABASE_URL",
-        "SUPABASE_SERVICE_ROLE_KEY"
-      ],
-      "effect": "No Discord registration, message, guild/channel mutation, Railway service start, Supabase query, or hosted receipt was attempted or claimed."
+    "secret_free_runtime_resolution": {
+      "result": "pure resolve and persistent-policy self-tests were separated from secret-bearing runtime configuration and now pass without dummy credentials",
+      "external_effect": "No Discord registration, message, guild/channel mutation, Railway service start, Supabase query, or hosted receipt was attempted or claimed."
     },
     "independent_post_boundary_passes": [
       "Discord TypeScript typecheck",
       "36-glyph/11-sound resource-pack generation and rune proof",
       "dashboard lint, self-tests, TypeScript, static generation, and production build",
-      "full Gradle build with 22 main-driven plugin self-test tasks",
+      "full Gradle build with 28 main-driven plugin self-test tasks including packaged campaign fail-closed authority",
       "plugin JAR content and physical-predicate parity",
       "deterministic datapack/resource-pack packaging and readback",
       "deploy-manifest parity",
       "resource-pack configuration/publisher guards",
       "Supabase backup guard self-test",
       "M2 local-only Supabase target/input self-test",
-      "five-entry external-media manifest/receipt static readiness",
+      "five-entry external-media manifest/receipt static readiness plus separate 10-file exact local custody readback",
       "P4 vNext source, story, Copperline, Paper, negative, restart, replay, and review-target checks",
       "final repository integrity"
     ]
@@ -59,7 +55,7 @@
     "brad_visual_approval": null
   },
   "deployable_artifacts": [
-    {"path":"plugin/build/libs/observance-0.5.0.jar","bytes":1980880,"sha256":"cd1e92dc94ef6bbb4e6c63049ca2b83ef50821a3c22099ef19ab00d2ce58ef85"},
+    {"path":"plugin/build/libs/observance-0.5.0.jar","bytes":2030990,"sha1":"f423a8a0d8eb5117ff0a4ebb43897511ea79da83","sha256":"ff806448771a36a2c26a7a1235f979979a35536e325f495e1a07f4ce45be87ea"},
     {"path":"observance-datapack.zip","bytes":783,"sha256":"dabbeb89551ad5600253dfd2ff021ddce8d31935f92fd451d4d35993015e5719"},
     {"path":"observance-resourcepack.zip","bytes":307663,"sha256":"4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb"},
     {"path":"discord/supabase/apply-all.sql","bytes":415096,"sha256":"da705cab9631a89beb4f56acf65e4ab8d0f7844815e756d055b1b3dde4caab92"},
@@ -70,7 +66,7 @@
     "railway_worker_and_cron": "Both exact production families are verified. Each has only a production environment; no safe isolated staging environment exists and production was not redeployed.",
     "discord": "Required secret variable names exist in both production services, but no distinct staging guild/channel is identified; production Discord remains untouched.",
     "supabase": "Exact production baseline and advisor findings are verified. No development branch is established; production SQL remains unapplied and branch creation requires connector permission plus cost confirmation.",
-    "media": "Five exact asset identities are receipted, but their source bytes are absent from this checkout; no packaging/upload/custody receipt was fabricated.",
+    "media": "Four videos and the recovered packet set are located outside the checkout and pass exact 10-file custody readback. Human master/AV review, derivatives/accessibility companions, ownership decision, and hosted cache receipts remain open; no upload receipt was fabricated.",
     "public_or_production": "Closed by authority; production Supabase, public domain, brother/Crafty, public Discord, and media originals were untouched."
   },
   "supabase_july_2026": {
@@ -80,9 +76,9 @@
     "real_security_and_performance_advisors": "production_baseline_read_only_receipted; post-remediation development-target advisors still required"
   },
   "not_launch_ready": [
-    "P5-P12 still require current-standard experiential reauthoring and human review beyond reusable legacy runtime breadth.",
+    "P5-P12 current-standard offline authored packs, projections, executable authority, and simulations pass; fresh Paper placement/client visual validation and human timing/experience review remain.",
     "Vercel and both Railway production identities are authenticated, but Railway/Discord and Supabase still lack isolated non-production targets.",
-    "Exact source media bytes are unavailable in this checkout.",
+    "Exact source media bytes are custody-verified outside the checkout, but master/AV review, derivative/accessibility packages, ownership approval, and hosted delivery receipts remain.",
     "Brad has not accepted vNext or completed the full morning campaign playthrough."
   ],
   "production_mutated": false,

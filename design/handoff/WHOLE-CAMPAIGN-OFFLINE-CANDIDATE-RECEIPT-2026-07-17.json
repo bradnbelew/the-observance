@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0.0-whole-campaign-offline-candidate-receipt",
+  "recorded_at": "2026-07-17T19:57:41-05:00",
+  "branch": "codex/m3-disposable-paper-gate",
+  "source_commit": "670b7adb1ca2f7d87f7cddfab068510321189862",
+  "scope": "broadest honest offline/private package candidate; not hosted, not production, not Brad-approved",
+  "p4_live_evidence_hold": {
+    "address": "127.0.0.1:25593",
+    "pid": 36280,
+    "paper": "1.21.11 build 132",
+    "immutable": true,
+    "mutated_or_stopped_by_this_work": false
+  },
+  "p5_p12": {
+    "canonical_root": "campaign/p5-p12",
+    "cases": 8,
+    "conclusion_contracts": 21,
+    "evidence_records": 80,
+    "functional_minecraft_compositions": 27,
+    "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+    "minecraft_binding_result": "PASS (27 spaces -> exact 32-room / 76-fixture authority)",
+    "projection_sha256": "c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
+    "projection_bytes": 147088,
+    "byte_identical_targets": [
+      "plugin/src/main/resources/campaign/p5-p12.json",
+      "dashboard/content/campaign/p5-p12.json",
+      "discord/src/v5/generated/p5-p12.json"
+    ],
+    "paper_authority": "com.observance.watcher.campaign.AuthoredCampaignAuthority",
+    "paper_boot_policy": "fail closed on missing/invalid campaign, closed taxonomy, observation-gated answers, missing durability/accessibility/space/wrong-theory contracts, or phase drift",
+    "simulation": {
+      "phases": 8,
+      "zero_observation_correct": 21,
+      "naive_negative": 42,
+      "restarts": 8,
+      "idempotent_operations": 6,
+      "result": "PASS"
+    }
+  },
+  "routed_regression": {
+    "command": "powershell -ExecutionPolicy Bypass -File tools/audit_all.ps1 -SkipLiveExternalMedia -SkipLiveHostedResourcePack",
+    "result": "PASS",
+    "explicit_live_skips": [
+      "hosted resource-pack verification",
+      "hosted external-media delivery verification"
+    ],
+    "deterministic_scenarios": 1588,
+    "discord_chaos_scenarios": 2300,
+    "deep_hold": "32 rooms / 76 fixtures / 8 persistent gates / 7 Record stations",
+    "dashboard": "lint, self-tests, TypeScript, 14-page Next production build PASS",
+    "discord": "typecheck, full audit, resolve, persistent and all showrunner tests PASS",
+    "plugin": "Gradle clean/check/build and 28 main-driven tasks PASS"
+  },
+  "artifacts": {
+    "plugin": {"bytes":2030990,"sha1":"f423a8a0d8eb5117ff0a4ebb43897511ea79da83","sha256":"ff806448771a36a2c26a7a1235f979979a35536e325f495e1a07f4ce45be87ea"},
+    "datapack": {"bytes":783,"sha1":"112b05351ef222ed997b8f1a92d6e358be1c84a2","sha256":"dabbeb89551ad5600253dfd2ff021ddce8d31935f92fd451d4d35993015e5719"},
+    "resourcepack": {"bytes":307663,"sha1":"bae2623687b8d9e68eb4910807ed87d03671ca3c","sha256":"4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb"},
+    "supabase_sql": {"bytes":415096,"sha256":"da705cab9631a89beb4f56acf65e4ab8d0f7844815e756d055b1b3dde4caab92"},
+    "hold_archive": {"bytes":10492,"sha1":"669f3fd00bbb6e647eeb8941e79281cc434f1e8c","sha256":"ddeaa3e88c6030a36150cf2a534ec85914f57b4f09191059e96c04a3bee9a4ed"}
+  },
+  "media_custody": {
+    "receipt": "campaign/p5-p12/media-custody.json",
+    "verification": "PASS (10 exact files)",
+    "bytes_location": "read-only prior output roots outside checkout",
+    "originals_mutated": false,
+    "hosted_or_derivative_receipt_claimed": false
+  },
+  "open_external_and_human_gates": [
+    "Vercel exact-team preview cannot ingest the private local tree through the available connector/identity path",
+    "both Railway projects expose production only; private staging needs isolated guild/database and cost confirmation",
+    "Supabase production remains read-only; no verified development branch and branch creation may cost money",
+    "media master/AV review, derivative/accessibility package, ownership decision, and hosted cache receipts",
+    "fresh P5-P12 Paper placement/client visual and whole-campaign rehearsal",
+    "Brad morning end-to-end acceptance"
+  ],
+  "production_mutated": false,
+  "public_launch": false,
+  "brad_approval": null
+}
