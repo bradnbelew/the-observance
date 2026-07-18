@@ -500,7 +500,8 @@
     "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
     "minecraft_binding": "27/27 authored spaces bind to the exact existing 32-room/76-fixture Deep Hold authority; fresh client placement remains unclaimed",
     "media_custody": "10 exact files verified outside checkout; originals untouched; no hosted receipt claimed",
-    "p4_live_review_target": "127.0.0.1:25593 / PID 36280 remains immutable",
+    "p4_rejected_review_target": "127.0.0.1:25593 / PID 36280 stopped gracefully after explicit disconnect; experiential status remains rejected",
+    "p4_rejected_stop_receipt": "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json",
     "brad_visual_approval": null,
     "production_mutation": false,
     "public_launch": false
@@ -513,6 +514,8 @@
     "state_choreography": "campaign/arg-state-choreography.json",
     "checker": "tools/check_arg_experience_authority.py",
     "negative_contract_selftest": "tools/test_arg_experience_negative_contracts.py",
+    "p4_p5_vertical_slice_authority": "design/m3/P4-P5-ARG-VERTICAL-SLICE.json",
+    "p4_p5_vertical_slice_checker": "tools/check_arg_vertical_slice.py",
     "story_human_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md",
     "story_machine_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.json",
     "story_interaction_map": "campaign/story-interaction-map.json",
@@ -546,6 +549,9 @@
     "campaign/campaign-grammar-audit.json",
     "campaign/functional-feasibility-matrix.json",
     "campaign/platform-input-feasibility-matrix.json",
+    "design/m3/P4-P5-ARG-VERTICAL-SLICE.md",
+    "design/m3/P4-P5-ARG-VERTICAL-SLICE.json",
+    "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.md",
@@ -719,6 +725,11 @@
       "older": "P4 vNext fact-filing experience and P5-P12 authored packet shapes",
       "newer": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json plus campaign/arg-experience-redesign.json and campaign/arg-state-choreography.json",
       "effect": "The campaign-level grammar is now a responsive distributed ARG, not lore scavenging or a bounded puzzle hunt. P1-P12 each begin with a live unknown, support competing theories across native surfaces, require player-initiated consequential actions, and produce exact A0/A1 authored world responses. Answer inputs are minority verbs; correctness remains zero-receipt; prior content remains scaffolding; no new Brad server or experiential claim is authorized until offline implementation/critique and explicit human approval."
+    },
+    {
+      "older": "the rejected P4 vNext server held immutable at 127.0.0.1:25593 / PID 36280",
+      "newer": "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json",
+      "effect": "Brad explicitly confirmed disconnect; the log independently showed SirNan left at 20:54:24 with no later join. A console interrupt targeted only PID 36280, Paper saved every dimension and completed RegionFile/worker shutdown, and PID/port readback is empty. The server remains rejected technical proof and its stop does not create approval."
     },
     {
       "older": "the external-target receipt residue claiming five media byte sets were absent",

@@ -14,10 +14,13 @@ import java.io.IOException;
 public final class PrivateSliceInteractionListener implements Listener {
     private final PrivateSliceWorld slice;
     private final PrivateSliceState state;
+    private final com.observance.watcher.arg.ArgVerticalSliceRuntime argRuntime;
 
-    public PrivateSliceInteractionListener(PrivateSliceWorld slice, PrivateSliceState state) {
+    public PrivateSliceInteractionListener(PrivateSliceWorld slice, PrivateSliceState state,
+            com.observance.watcher.arg.ArgVerticalSliceRuntime argRuntime) {
         this.slice = slice;
         this.state = state;
+        this.argRuntime = argRuntime;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -43,7 +46,8 @@ public final class PrivateSliceInteractionListener implements Listener {
                 slice.openReferenceBook(player, reference, state);
                 return;
             }
-            slice.openFilingLedger(player, state);
+            if (argRuntime != null) argRuntime.openDesk(player);
+            else slice.openFilingLedger(player, state);
         } catch (IOException | IllegalArgumentException | IllegalStateException failure) {
             player.sendActionBar(Component.text("Record desk unavailable: " + safe(failure.getMessage())));
         }

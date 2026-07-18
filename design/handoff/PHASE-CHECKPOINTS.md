@@ -183,7 +183,18 @@ or postponing safe work in earlier phases.
   launch readiness.
 - No superficial "add more cipher types" implementation follows from this finding. The next experiential
   implementation must wait for and incorporate the control room's deep ARG-design research authority and
-  campaign experience redesign.
+  campaign experience redesign. That authority is now story-first and cross-surface.
+
+### Rejected P4 vNext server stop
+
+- Brad later explicitly confirmed he was disconnected. The Paper log independently shows SirNan left at
+  `20:54:24` and no later join occurred.
+- Only disposable PID `36280` / `127.0.0.1:25593` was targeted. Paper logged plugin disable, player/world
+  saves, all-dimension saves, RegionFile completion, and worker/I/O-pool shutdown at `21:41:58`.
+- The post-stop readback at `21:42:13-05:00` found no PID and no port row. The exact target, package,
+  plugin, Paper, final-log hashes, and the failed-before-delivery console-input attempt are preserved in
+  `P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json`. Experiential rejection and Brad approval null
+  are unchanged.
 
 ## 2026-07-17 — Research-based P1–P12 ARG experience redesign authority
 
@@ -226,6 +237,22 @@ or postponing safe work in earlier phases.
   optional major threads, absent-player gates, unsafe copy, fake forms, chat parsing, unavailable APIs,
   overflow, opaque plaintext, and source-click correctness prerequisites. Passing remains offline authority,
   not implementation, experience, or launch evidence.
+
+## 2026-07-17 — P4–P5 real-input ARG vertical slice implementation
+
+- `design/m3/P4-P5-ARG-VERTICAL-SLICE.md/.json` turns the story-first direction into an executable,
+  still-unapproved disposable candidate. A Copperline custody restoration yields a fair page-line-word
+  index; a six-page Minecraft read extract yields `COPY BEFORE SOURCE`, which is a provenance relationship
+  to interpret rather than the final answer.
+- The examiner desk uses the exact Paper 1.21.11 experimental Dialog/TextDialogInput response API with
+  server-side validation and a stable namespaced Brigadier fallback. Copperline uses a semantic HTML form
+  and Server Action. P5 uses two protected physical curation controls. No lectern pretends to be a textbox.
+- Correct theory acceptance is explicitly independent of observations, clicks, possession, NPC contact,
+  or telemetry. An accepted account opens the physical threshold; the subsequent civic curation changes
+  the room and persists through the local hash-chained journal.
+- `check_arg_vertical_slice.py` and the Java evidence self-test fail closed on API drift, fake forms,
+  source gating, cipher-coordinate drift, or book overflow. Fresh Paper restart/client proof and Brad's
+  experiential approval remain open and may not be inferred from these static checks.
 
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the

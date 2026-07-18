@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0-p4-vnext-rejected-server-stop",
+  "recorded_at": "2026-07-17T21:42:13-05:00",
+  "source_thread_id": "019f68de-05a0-7673-945b-104b36c2f9ac",
+  "brad_disconnect_confirmation": "Brad explicitly confirmed he was disconnected on 2026-07-17 before stop authority was exercised.",
+  "candidate_status": "experientially_rejected_technical_proof_only",
+  "brad_approval": null,
+  "target": {
+    "id": "m3-vnext-morning-review-8a51f26-20260717-d",
+    "path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\m3-vnext-morning-review-8a51f26-20260717-d",
+    "address": "127.0.0.1:25593",
+    "pid": 36280,
+    "paper": "1.21.11-132-c5eb079",
+    "authored_source_commit": "8a51f26814914e89fe857a929266e807b2c96586",
+    "marker_sha256": "8b93498640edb68b70d1280f1f332c0c3495fa049fb30a936df76fdf12602cf9",
+    "paper_jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_jar_sha256": "cd1e92dc94ef6bbb4e6c63049ca2b83ef50821a3c22099ef19ab00d2ce58ef85",
+    "world_package_sha256": "3785c5c64f07b552e3d02a79c67855847acddbfd05c0d9359e8956aeef6f0aec"
+  },
+  "player_absence": {
+    "last_join": "2026-07-17T20:37:01-05:00 SirNan joined from 127.0.0.1",
+    "last_disconnect": "2026-07-17T20:54:24-05:00 SirNan disconnected and left",
+    "later_join_before_stop": false,
+    "basis": "complete Paper latest.log readback plus Brad's explicit disconnect confirmation"
+  },
+  "stop": {
+    "initial_console_input_attempt": "The exact list/save-all flush/stop console-input helper failed closed at WriteConsoleInput before command delivery; no other process or target was affected.",
+    "method": "Windows console interrupt sent only to PID 36280 after target marker, Java process, and disconnect log verification; Paper shutdown hook performed the graceful save.",
+    "paper_stop_at": "2026-07-17T21:41:58-05:00",
+    "required_log_markers": [
+      "Stopping server",
+      "Disabling Observance v0.5.0",
+      "Saving players",
+      "Saving worlds",
+      "All dimensions are saved",
+      "All RegionFile I/O tasks to complete",
+      "Awaiting termination of worker pool",
+      "Awaiting termination of I/O pool"
+    ],
+    "post_stop_checked_at": "2026-07-17T21:42:13-05:00",
+    "pid_alive": false,
+    "port_25593_rows": 0,
+    "latest_log_bytes": 9100,
+    "latest_log_sha256": "c1df43be4a6cd94fa01f03d76518fc73f7f04fc9ca096528d30861468617eb45"
+  },
+  "production_mutated": false,
+  "other_paper_process_mutated": false,
+  "public_launch": false
+}

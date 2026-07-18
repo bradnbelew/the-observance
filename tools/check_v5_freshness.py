@@ -58,6 +58,8 @@ ACTIVE_TOOLS = {
     "build_hold_prologue.py",
     "check_assets.ps1",
     "check_arg_experience_authority.py",
+    "check_arg_vertical_slice.py",
+    "run_arg_vertical_slice_disposable_paper.py",
     "test_arg_experience_negative_contracts.py",
     "check_deep_hold_fixture_manifest.py",
     "check_deep_hold_layout.py",

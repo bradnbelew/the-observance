@@ -112,6 +112,23 @@ button, input, select, textarea { font: inherit; }
 
 .live-directory-address { color:#1f556e;font:bold 12px "Courier New",monospace; }
 
+.archive-restore-form { margin:10px 0;padding:10px;border:1px solid #c7c7c7;background:#f3f3f3; }
+.archive-restore-form > p { margin:0 0 8px; }
+.archive-restore-form label { color:#555;font-weight:bold; }
+.archive-restore-form input { width:min(100%,360px);min-height:25px;padding:3px 5px;border:1px solid #999;background:#fff;color:#333;font:11px Arial,sans-serif; }
+.archive-restore-form button { min-height:27px;padding:4px 11px;border:1px solid #777;background:linear-gradient(#eee,#bbb);color:#333;font-weight:bold; }
+.archive-restore-form button:disabled { color:#777; }
+.archive-restore-result { margin:9px 0;padding:7px 9px;border:1px solid #c6d0d4;background:#eef3f5; }
+.archive-restore-result[data-status="accepted"] { border-color:#9cb89a;background:#edf6eb; }
+.archive-restore-result[data-status="wrong"],.archive-restore-result[data-status="incomplete"] { border-color:#d2b2a4;background:#fff3ed; }
+.archive-restore-result p { margin:2px 0; }
+.archive-restore-result code { overflow-wrap:anywhere; }
+.restored-records { margin:14px 0 0;padding:0;list-style:none; }
+.restored-records li { margin:0 0 13px; }
+.restored-records article { padding:10px 12px;border:1px solid #bbb;background:#f7f7f7; }
+.restored-records h3 { margin:0;color:#315b70;font:bold 14px Georgia,serif; }
+.restored-records pre { max-width:100%;margin:7px 0 0;padding:8px;border:1px solid #d0d0d0;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.45 "Courier New",monospace; }
+
 /* --------------------------------------------------------------------------
    Public status — clear operational truth inside the old host fiction
    -------------------------------------------------------------------------- */

@@ -17,14 +17,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.function.BooleanSupplier;
+
 /** Fail-closed private-slice protection with explicit full-gate crossing enforcement. */
 public final class PrivateSliceProtectionListener implements Listener {
     private final PrivateSliceWorld slice;
-    private final PrivateSliceState state;
+    private final BooleanSupplier gateOpen;
 
-    public PrivateSliceProtectionListener(PrivateSliceWorld slice, PrivateSliceState state) {
+    public PrivateSliceProtectionListener(PrivateSliceWorld slice, BooleanSupplier gateOpen) {
         this.slice = slice;
-        this.state = state;
+        this.gateOpen = gateOpen;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -80,7 +82,7 @@ public final class PrivateSliceProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
-        if (state.gateOpen() || bypass(event.getPlayer()) || event.getTo() == null) return;
+        if (gateOpen.getAsBoolean() || bypass(event.getPlayer()) || event.getTo() == null) return;
         if (!slice.beyondClosedGate(event.getFrom()) && slice.beyondClosedGate(event.getTo())) {
             event.setCancelled(true);
         }

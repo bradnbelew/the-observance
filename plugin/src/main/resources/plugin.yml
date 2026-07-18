@@ -51,3 +51,6 @@ permissions:
   observance.m3.file:
     description: Allows in-world use of the fail-closed disposable M3 findings ledger.
     default: true
+  observance.arg.case:
+    description: Allows the disposable P4/P5 ARG investigation and recovery input surface.
+    default: true

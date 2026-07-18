@@ -79,6 +79,8 @@ def pluginSelfTests = [
     m2LocalPrimaryJournal: 'com.observance.watcher.m2runtime.LocalPrimaryJournalSelfTest',
     m3PrivateSliceState: 'com.observance.watcher.m3runtime.PrivateSliceStateSelfTest'
     , authoredCampaignAuthority: 'com.observance.watcher.campaign.AuthoredCampaignAuthoritySelfTest'
+    , argVerticalSliceState: 'com.observance.watcher.arg.ArgVerticalSliceStateSelfTest'
+    , argVerticalSliceEvidence: 'com.observance.watcher.arg.ArgVerticalSliceEvidenceSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

@@ -423,6 +423,19 @@ def main() -> None:
             and active_vnext_review["pinned_review_process_mutated"] is False,
             "Brad P4 vNext active experiential rejection drift")
 
+    rejected_stop = json.loads((ROOT / "design/handoff/P4-VNEXT-REJECTED-SERVER-STOP-RECEIPT-2026-07-17.json")
+                               .read_text(encoding="utf-8"))
+    require(rejected_stop["candidate_status"] == "experientially_rejected_technical_proof_only"
+            and rejected_stop["brad_approval"] is None
+            and rejected_stop["target"]["pid"] == 36280
+            and rejected_stop["target"]["address"] == "127.0.0.1:25593"
+            and rejected_stop["player_absence"]["later_join_before_stop"] is False
+            and rejected_stop["stop"]["pid_alive"] is False
+            and rejected_stop["stop"]["port_25593_rows"] == 0
+            and rejected_stop["production_mutated"] is False
+            and rejected_stop["other_paper_process_mutated"] is False,
+            "rejected P4 vNext stop receipt drift")
+
     arg_redesign = data["arg_experience_redesign"]
     require(arg_redesign["status"] == "offline_authored_not_human_approved"
             and all((ROOT / arg_redesign[key]).is_file() for key in (
@@ -431,7 +444,8 @@ def main() -> None:
                 "story_human_authority", "story_machine_authority",
                 "story_interaction_map", "story_dependency_map",
                 "campaign_grammar_audit", "functional_feasibility_matrix",
-                "platform_input_feasibility_matrix"))
+                "platform_input_feasibility_matrix", "p4_p5_vertical_slice_authority",
+                "p4_p5_vertical_slice_checker"))
             and arg_redesign["coverage"] == "P1-P12 exact ordered responsive case briefs"
             and "five human layers" in arg_redesign["story_coverage"]
             and "no lectern textbox" in arg_redesign["input_boundary"]
@@ -469,7 +483,7 @@ def main() -> None:
     require("COLD HUMAN/VISUAL APPROVAL PENDING" in v4_review_package
             and "M4 is **closed**" in v4_review_package,
             "v4 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (V5 historical human gate closed; private automated M4+ staging open; Brad approval null)")
+    print("CONTINUATION LINEAGE: PASS (rejected P4 server stopped; private automated staging open; Brad approval null)")
 
 
 if __name__ == "__main__":

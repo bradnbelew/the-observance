@@ -30,6 +30,7 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
     private final String sourceCommit;
     private PrivateSliceState state;
     private PrivateSliceWorld slice;
+    private com.observance.watcher.arg.ArgVerticalSliceRuntime argRuntime;
 
     public PrivateSliceReviewRuntime(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -49,16 +50,20 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
                 plugin.getConfig().getInt("m3-review.origin-x", 0),
                 plugin.getConfig().getInt("m3-review.origin-y", 80),
                 plugin.getConfig().getInt("m3-review.origin-z", 0), state.gateOpen());
+        if (plugin.getConfig().getBoolean("m3-review.arg-experience.enabled", false)) {
+            argRuntime = new com.observance.watcher.arg.ArgVerticalSliceRuntime(plugin, slice);
+        }
         world.setSpawnLocation(slice.absolute(0, 0, 2));
         world.setTime(18000L);
         world.setStorm(false);
-        plugin.getServer().getPluginManager().registerEvents(new PrivateSliceProtectionListener(slice, state), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new PrivateSliceInteractionListener(slice, state), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new PrivateSliceProtectionListener(slice, this::effectiveGateOpen), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new PrivateSliceInteractionListener(slice, state, argRuntime), plugin);
         if (plugin.getCommand("observancem3") == null || plugin.getCommand("observancefile") == null) {
             throw new IllegalStateException("M3 review commands missing");
         }
         plugin.getCommand("observancem3").setExecutor(this);
         plugin.getCommand("observancefile").setExecutor(this);
+        if (argRuntime != null) argRuntime.start();
         plugin.getLogger().info("M3_TARGET_CONFIRMED target=" + targetId + " commit=" + sourceCommit
                 + " authority=observance-p4-private-slice-vnext paper=" + Bukkit.getVersion());
     }
@@ -84,6 +89,10 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
                 case "security" -> security(sender);
                 case "ui-audit" -> uiAudit(sender);
                 case "guided-client-model" -> guidedClientModel(sender);
+                case "arg-status" -> argStatus(sender);
+                case "arg-theory" -> argTheory(sender, args);
+                case "arg-select-service" -> argSelect(sender, PrivateSliceWorld.P5Control.SERVICE_PUBLIC);
+                case "arg-select-penalty" -> argSelect(sender, PrivateSliceWorld.P5Control.PENALTY_CUSTODY);
                 case "watcher-approve" -> watcherApprove(sender, args);
                 case "watcher-show" -> watcherShow(sender, args);
                 default -> sender.sendMessage("Usage: /obsm3 <status|build|audit|observe|draft|lodge-report|lodge-synthesis|naive-negative|brute-negative|report-correct|synthesis-correct|replay|security|ui-audit|guided-client-model|watcher-approve|watcher-show>");
@@ -94,8 +103,33 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         return true;
     }
 
+    private void argStatus(CommandSender sender) {
+        if (argRuntime == null) throw new IllegalStateException("ARG experience runtime is disabled");
+        sender.sendMessage("M3_ARG_STATUS " + argRuntime.auditState());
+    }
+
+    private void argTheory(CommandSender sender, String[] args) throws IOException {
+        if (argRuntime == null) throw new IllegalStateException("ARG experience runtime is disabled");
+        if (args.length < 2) throw new IllegalArgumentException("enter a short theory after arg-theory");
+        String theory = String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length));
+        com.observance.watcher.arg.ArgVerticalSliceState.TheoryResult result = argRuntime.auditTheory(theory);
+        sender.sendMessage("M3_ARG_THEORY result=" + result.name().toLowerCase(Locale.ROOT)
+                + " zero_observations=true " + argRuntime.auditState());
+    }
+
+    private void argSelect(CommandSender sender, PrivateSliceWorld.P5Control control) throws IOException {
+        if (argRuntime == null) throw new IllegalStateException("ARG experience runtime is disabled");
+        com.observance.watcher.arg.ArgVerticalSliceState.SelectionResult result = argRuntime.auditSelect(control);
+        sender.sendMessage("M3_ARG_SELECT control=" + control.name().toLowerCase(Locale.ROOT)
+                + " result=" + result.name().toLowerCase(Locale.ROOT) + " " + argRuntime.auditState());
+    }
+
     private boolean filingCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player player)) return true;
+        if (argRuntime != null) {
+            player.sendMessage(Component.text("This review uses /obscase and the physical curation controls. The old findings ledger is closed."));
+            return true;
+        }
         try {
             if (!slice.nearFilingLedger(player.getLocation())) {
                 throw new IllegalStateException("the findings ledger is only available at the examiner's counter");
@@ -140,7 +174,8 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
 
     private void status(CommandSender sender) {
         sender.sendMessage("M3_STATUS target=" + targetId + " commit=" + sourceCommit
-                + " authority=vnext gate=" + (state.gateOpen() ? "open" : "closed")
+                + " authority=" + (argRuntime == null ? "vnext-technical" : "story-first-arg-slice")
+                + " gate=" + (effectiveGateOpen() ? "open" : "closed")
                 + " evidence_surfaces=8 findings=5 submission_desks=1 observation_gating=false paper=" + Bukkit.getVersion());
     }
 
@@ -148,21 +183,22 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         requireOperator(sender);
         verifyDisposableMarker();
         int writes = slice.apply();
-        slice.setGate(state.gateOpen());
+        if (argRuntime != null) argRuntime.projectState();
+        else slice.setGate(state.gateOpen());
         plugin.getServer().getWorlds().forEach(World::save);
         PrivateSliceWorld.Audit audit = slice.audit();
         sender.sendMessage("M3_BUILD_COMPLETE target=" + targetId + " writes=" + writes
-                + " cells=" + audit.cellsChecked() + " gate=" + (state.gateOpen() ? "open" : "closed")
+                + " cells=" + audit.cellsChecked() + " gate=" + (effectiveGateOpen() ? "open" : "closed")
                 + " world_state_sha256=" + audit.worldHash() + " findings=" + audit.findings().size()
                 + " composition=" + audit.compositionSummary());
     }
 
     private void audit(CommandSender sender) {
         PrivateSliceWorld.Audit audit = slice.audit();
-        int expectedCollision = state.gateOpen() ? 0 : PrivateSliceWorld.GATE_CLOSED_COLLISION_CELLS;
+        int expectedCollision = effectiveGateOpen() ? 0 : PrivateSliceWorld.GATE_CLOSED_COLLISION_CELLS;
         boolean pass = audit.pass() && audit.gateCollisionCells() == expectedCollision;
         sender.sendMessage("M3_AUDIT " + (pass ? "PASS" : "FAIL") + " target=" + targetId
-                + " cells=" + audit.cellsChecked() + " gate=" + (state.gateOpen() ? "open" : "closed")
+                + " cells=" + audit.cellsChecked() + " gate=" + (effectiveGateOpen() ? "open" : "closed")
                 + " world_state_sha256=" + audit.worldHash() + " findings=" + audit.findings().size()
                 + " composition=" + audit.compositionSummary());
         for (String finding : audit.findings()) sender.sendMessage("M3_AUDIT_FINDING " + finding);
@@ -371,5 +407,11 @@ public final class PrivateSliceReviewRuntime implements CommandExecutor, AutoClo
         return value == null ? "unknown" : value.replaceAll("[^A-Za-z0-9_.:/=;,' -]", "_");
     }
 
-    @Override public void close() { }
+    private boolean effectiveGateOpen() {
+        return argRuntime == null ? state.gateOpen() : argRuntime.gateOpen();
+    }
+
+    @Override public void close() {
+        if (argRuntime != null) argRuntime.close();
+    }
 }

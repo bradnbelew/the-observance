@@ -11,7 +11,7 @@ assert.equal(ids.size, copperlineP4Entries.length, 'archive ids must be unique')
 assert.ok(copperlineP4TextureEntries.length >= copperlineP4DirectEntries.length * 3,
   'ordinary/mixed texture must outnumber direct clues by at least 3:1 in this review fixture');
 assert.deepEqual(copperlineP4DirectEntries.map((entry) => entry.id),
-  ['p4-ticket', 'p4-ticket-reply', 'p4-diff', 'p4-clock']);
+  ['p4-ticket', 'p4-ticket-reply', 'p4-diff', 'p4-clock', 'p4-index']);
 assert.ok(copperlineP4Entries.some((entry) => entry.author === 'mkept'));
 assert.ok(new Set(copperlineP4Entries.map((entry) => entry.author)).size >= 10,
   'human texture needs distinct voices');

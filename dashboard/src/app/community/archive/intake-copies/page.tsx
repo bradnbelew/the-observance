@@ -6,6 +6,7 @@ import {
   copperlineP4Entries,
   P4_COPPERLINE_OFFLINE_NOTICE,
 } from '@/lib/copperline-p4-archive';
+import { RestoreArchiveForm } from './RestoreArchiveForm';
 
 export const metadata: Metadata = {
   title: 'Ticket 2184 retained copy table - Copperline Community',
@@ -22,21 +23,9 @@ export default function IntakeCopiesArchivePage() {
       <div className="old-alert" role="note"><b>Local review status.</b> {P4_COPPERLINE_OFFLINE_NOTICE}</div>
       <section className="old-copy" aria-labelledby="ticket-thread-heading">
         <h2 id="ticket-thread-heading">Ticket thread and retained attachments</h2>
-        <p>The archive preserves author, time, reply order, and attachment state separately. A quoted or cached copy is not silently substituted for its source.</p>
-        <ol className="community-posts" aria-label="Ticket 2184 chronological record">
-          {copperlineP4DirectEntries.map((entry) => (
-            <li key={entry.id}>
-              <article>
-                <div>
-                  <h3>{entry.title}</h3>
-                  <p className="old-post-meta"><b>{entry.author}</b> &middot; <time dateTime={entry.date}>{new Date(entry.date).toLocaleString('en-US', { timeZone: 'America/Chicago' })}</time> &middot; {entry.kind}</p>
-                  <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{entry.body}</pre>
-                </div>
-              </article>
-            </li>
-          ))}
-        </ol>
+        <p>The archive preserves author, time, reply order, and attachment state separately. A quoted or cached copy is not silently substituted for its source. Ticket 2184 names <b>mouth_notice.compare.txt</b> and says cartridge 03 was imaged before 04.</p>
       </section>
+      <RestoreArchiveForm />
       <section className="old-copy" aria-labelledby="context-heading">
         <h2 id="context-heading">Nearby public archive context</h2>
         <p>Ticket 2184 sits among {copperlineP4Entries.length - copperlineP4DirectEntries.length} ordinary listings, notices, posts, and replies in this authored review slice. They are not numbered clue steps.</p>

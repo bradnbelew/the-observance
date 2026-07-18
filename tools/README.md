@@ -41,6 +41,18 @@ silent worlds, repeated answer boxes, optional major threads, absent-player lock
 copying, lectern text input, fake web forms, required chat parsing, unavailable APIs, client overflow,
 opaque decoded plaintext, and source-click prerequisites.
 
+`check_arg_vertical_slice.py` is the implementation gate for the next disposable P4-P5 proof. It binds
+the audited six-page Minecraft read extract to its restored Copperline page-line-word index, verifies the
+real Paper 1.21.11 Dialog/Brigadier surfaces and semantic Next.js Server Action form, and rejects any
+source-touch predicate. Its pass is automated implementation evidence only; client experience and Brad
+approval remain explicit human gates.
+
+`run_arg_vertical_slice_disposable_paper.py` owns a create-only localhost Paper 1.21.11 lifecycle for
+that slice. It enables the exact Dialog runtime, proves wrong and zero-observation-correct theory paths,
+projects the two physical P5 curation decisions, stops and restarts, verifies four idempotent journal
+receipts, re-audits the world/security state, and packages deterministic hashes. It leaves real-client
+Dialog, non-op, visual, and experiential receipts null rather than manufacturing them.
+
 `check_player_facing_experience_standard.py` validates Brad's binding cross-phase copy, artifact, room
 composition, and cold-read authority; the complete v3 rejection and clean review-server stop; and every
 present `PLAYER-FACING-INVENTORY*.json`. It rejects missing room jobs, scale rationales, artifact

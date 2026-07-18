@@ -1,0 +1,101 @@
+{
+  "schema_version": "1.0.0-p4-p5-arg-vertical-slice",
+  "status": "implementation_candidate_automated_proof_required",
+  "brad_approval": null,
+  "target": "disposable_private_paper_1.21.11_only",
+  "campaign_scope": ["P4", "P5_connection"],
+  "inciting_anomaly": "A restored Copperline custody trail points into a Minecraft host extract whose indexed words say that a copy predates its recorded source.",
+  "live_unknown": "Was the Mouth an occult site, an ordinary refuge later ritualized into control, or a modern reconstruction contaminated by the failed company?",
+  "competing_hypotheses": [
+    "The Mouth was designed as an occult rite and the work records are camouflage.",
+    "The Mouth was an ordinary rational refuge whose practical safety procedures later became institutional control.",
+    "The contradiction is only a modern recovery error introduced by mkept's company."
+  ],
+  "earned_belief": "The Hold was a rational refuge before practical safety language became institutional control; the earlier copy remains a live anomaly rather than a solved ontology claim.",
+  "conclusion_printed_verbatim_by_any_source": false,
+  "distributed_fragments": [
+    {"surface": "copperline", "role": "provenance_key", "artifact": "Ticket 2184 custody thread and restored read-extract index"},
+    {"surface": "minecraft", "role": "ordinary_life", "artifact": "intake, household, bell, and waterworks traces"},
+    {"surface": "minecraft", "role": "contradiction", "artifact": "six-page cartridge read extract"},
+    {"surface": "minecraft", "role": "institutional_edit", "artifact": "later copy wording that changes care into compliance"},
+    {"surface": "paper_runtime", "role": "world_response", "artifact": "civic threshold and P5 public-memory curation"}
+  ],
+  "cipher": {
+    "mechanism": "page-line-word",
+    "coordinates": ["3-1-5", "2-1-6", "6-3-1"],
+    "result": "COPY BEFORE SOURCE",
+    "result_is_final_answer": false,
+    "key_source": "restored Copperline attachment after custody authentication",
+    "payload_consequence": "forces provenance comparison and interpretation of the Mouth copies"
+  },
+  "player_initiated_actions": [
+    "authenticate and restore retained Copperline copies",
+    "apply the restored index to the Minecraft read extract",
+    "submit a short theory through a real Paper Dialog or the equivalent command fallback",
+    "curate service cards and penalty copies using protected physical controls"
+  ],
+  "authored_reactivity": [
+    "Copperline returns restored entries and a deterministic receipt",
+    "an accepted zero-observation theory opens the full physical civic threshold",
+    "the P5 curation action changes the room and persists across restart",
+    "replay reports the earned changed place without requiring source touches"
+  ],
+  "inputs": [
+    {
+      "id": "p4_theory_dialog",
+      "platform": "Paper 1.21.11",
+      "visible_trigger": "physical examiner desk",
+      "primitive": "Dialog + TextDialogInput + PlayerCustomClickEvent + DialogResponseView",
+      "shape": "normalized plain text, maximum 96 characters",
+      "predicate_owner": "local Paper ArgVerticalSliceState",
+      "fallback": "/obscase theory <short account>",
+      "wrong_feedback": "wrong, incomplete, throttled, and technical failure are distinct",
+      "observation_receipts_required": false
+    },
+    {
+      "id": "p5_curation",
+      "platform": "Paper 1.21.11",
+      "visible_trigger": "two supported floor levers beyond the opened gate",
+      "primitive": "PlayerInteractEvent with exact block coordinates and protected block states",
+      "shape": "two bounded boolean selections",
+      "predicate_owner": "local Paper ArgVerticalSliceState",
+      "fallback": "replay/status exposes state; a later accessibility client review remains required",
+      "wrong_feedback": "not-ready and partial-state feedback do not consume evidence",
+      "observation_receipts_required": false
+    },
+    {
+      "id": "copperline_restore",
+      "platform": "Next.js 16.2.10",
+      "visible_trigger": "semantic restore form in the ordinary Ticket 2184 thread",
+      "primitive": "HTML form + Server Action",
+      "shape": "ticket, filename, order, idempotency token",
+      "predicate_owner": "server-side Copperline validator",
+      "fallback": "Minecraft remains locally finishable if Copperline is unavailable",
+      "wrong_feedback": "accepted, wrong, incomplete, throttled, and technical failure states are representable",
+      "observation_receipts_required": false
+    }
+  ],
+  "state_contract": {
+    "local_primary": true,
+    "hash_chained_journal": true,
+    "monotonic": true,
+    "idempotent": true,
+    "restart_safe": true,
+    "any_subset": true,
+    "correct_theory_with_zero_observations": true,
+    "source_click_or_possession_gate": false
+  },
+  "automated_required": [
+    "plain Java state and zero-observation negative flow",
+    "book render and page-line-word index audit",
+    "exact Paper API compile and runtime startup smoke",
+    "Copperline form validation, origin, receipt, accessibility, lint, and production build",
+    "fresh disposable Paper build, non-op Adventure flow, restart, independent audit, and exact hashes"
+  ],
+  "honest_human_gaps": [
+    "actual 1.21.11 client Dialog visual and keyboard review",
+    "fresh-player discovery and theory-path review",
+    "Minecraft composition, sightline, and emotional-force review",
+    "Brad experiential approval"
+  ]
+}

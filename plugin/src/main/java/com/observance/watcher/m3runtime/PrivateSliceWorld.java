@@ -1,5 +1,7 @@
 package com.observance.watcher.m3runtime;
 
+import com.observance.watcher.arg.ArgVerticalSliceEvidence;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
@@ -224,6 +226,10 @@ public final class PrivateSliceWorld {
         return new Location(world, originX + x, originY + y, originZ + z);
     }
 
+    public boolean isInstalled() {
+        return block(new Cell(0, -19, 76)).getType() == Material.LECTERN;
+    }
+
     public boolean inWatcherWestZone(Location location) {
         Cell c = relative(location);
         return c.y == -20 && c.x >= 22 && c.x <= 26 && c.z >= 68 && c.z <= 72;
@@ -232,6 +238,37 @@ public final class PrivateSliceWorld {
     public boolean inWatcherEastZone(Location location) {
         Cell c = relative(location);
         return c.y == -20 && c.x >= 28 && c.x <= 30 && c.z >= 68 && c.z <= 72;
+    }
+
+    public P5Control p5ControlAt(Location location) {
+        if (location == null || location.getWorld() != world) return null;
+        Cell cell = relative(location);
+        if (cell.equals(new Cell(-3, -19, 91))) return P5Control.SERVICE_PUBLIC;
+        if (cell.equals(new Cell(3, -19, 91))) return P5Control.PENALTY_CUSTODY;
+        return null;
+    }
+
+    public void setP5CurationState(boolean servicePublic, boolean penaltyCustody, boolean curated) {
+        setP5Lever(new Cell(-3, -19, 91), servicePublic);
+        setP5Lever(new Cell(3, -19, 91), penaltyCustody);
+        for (int x = -4; x <= -2; x++) setDynamic(new Cell(x, -17, 92),
+                servicePublic ? Material.BOOKSHELF : Material.WAXED_EXPOSED_CUT_COPPER);
+        for (int x = 2; x <= 4; x++) setDynamic(new Cell(x, -17, 92),
+                penaltyCustody ? Material.COPPER_GRATE : Material.BOOKSHELF);
+        setDynamic(new Cell(0, -17, 92), curated ? Material.SEA_LANTERN : Material.POLISHED_BLACKSTONE_BRICKS);
+    }
+
+    private void setP5Lever(Cell cell, boolean powered) {
+        expected.put(cell, Material.LEVER);
+        String data = Bukkit.createBlockData("minecraft:lever[face=floor,facing=north,powered=" + powered + "]").getAsString();
+        expectedBlockData.put(cell, data);
+        block(cell).setBlockData(Bukkit.createBlockData(data), false);
+    }
+
+    private void setDynamic(Cell cell, Material material) {
+        expected.put(cell, material);
+        expectedBlockData.remove(cell);
+        block(cell).setType(material, false);
     }
 
     public int gateCollisionCells() {
@@ -295,6 +332,7 @@ public final class PrivateSliceWorld {
         evidenceSurfaces();
         submissionSurfaces();
         thresholdSigns();
+        p5CurationPreview();
         gateFrame(gateOpen);
     }
 
@@ -553,8 +591,7 @@ public final class PrivateSliceWorld {
                 "2ND BELL: CLEAR","FEN: NEXT DOOR","INK: CORRECTED","COPY: EARLIER");
         addEvidenceArtifact(29,-19,79,"west",new Cell(26,-20,79),"NODE_CLOCK_EXTRACT","P4.F4","node_clock_extract",
                 "Copperline archive", "modern node-clock and cartridge read extract", "chi-ret-2 Read Extract",
-                "00:12:08 — cartridge 03 read complete; node offset +01.4s\n00:19:41 — unrelated service 1174 backup complete; offset +01.6s\f"
-                + "00:27:03 — cartridge 04 read complete; offset +01.5s\n\nThe copy on 03 already carries the correction later entered on 04.",
+                ArgVerticalSliceEvidence.bookBody(),
                 Material.CHISELED_BOOKSHELF, Presentation.NATIVE_BOOK);
     }
 
@@ -567,6 +604,20 @@ public final class PrivateSliceWorld {
                 "municipal commission identity","INTAKE WORKS","COPY INQUIRY","PUBLIC OFFICE","");
         addSign(19,-18,66,"east",new Cell(18,-18,66),new Cell(21,-20,66),"RECORD_OFFICE_PLAQUE",
                 "credible office identity","RECORD OFFICE","SURVEYS + COPIES","BELL AT DESK","");
+    }
+
+    private void p5CurationPreview() {
+        addSign(-3,-16,91,"north",new Cell(-3,-16,92),new Cell(-3,-20,90),"P5_SERVICE_PUBLIC_SIGN",
+                "P5 civic curation action","WORK CARDS","STAY PUBLIC","USE, REPAIR","TEACH");
+        addSign(3,-16,91,"north",new Cell(3,-16,92),new Cell(3,-20,90),"P5_PENALTY_CUSTODY_SIGN",
+                "P5 civic curation action","PENALTY COPIES","KEEP AS EVIDENCE","DO NOT DISPLAY","AS THE RULE");
+        directional(new Cell(-3, -19, 91), Material.LEVER,
+                "minecraft:lever[face=floor,facing=north,powered=false]");
+        directional(new Cell(3, -19, 91), Material.LEVER,
+                "minecraft:lever[face=floor,facing=north,powered=false]");
+        for (int x = -4; x <= -2; x++) expected.put(new Cell(x, -17, 92), Material.WAXED_EXPOSED_CUT_COPPER);
+        for (int x = 2; x <= 4; x++) expected.put(new Cell(x, -17, 92), Material.BOOKSHELF);
+        expected.put(new Cell(0, -17, 92), Material.POLISHED_BLACKSTONE_BRICKS);
     }
 
     private void gateFrame(boolean gateOpen) {
@@ -1148,6 +1199,7 @@ public final class PrivateSliceWorld {
     }
 
     public enum Presentation { NATIVE_BOOK, VISIBLE_ENVIRONMENTAL_RECORD }
+    public enum P5Control { SERVICE_PUBLIC, PENALTY_CUSTODY }
 
     private record SignSurface(Cell cell, Cell supportCell, Cell readerCell, String surfaceId,
             String purpose, List<String> lines) {
