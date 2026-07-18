@@ -474,6 +474,13 @@ def main() -> None:
             and "six profession-specific" in input_contract_by_id["P6.F7"]["platform"]
             and "Discord modal" not in input_contract_by_id["P6.F7"]["platform"],
             "P5/P6 input authority still advertises an unimplemented answer form instead of physical work")
+    v5_seed = (ROOT / "discord/supabase/seeds/v5_investigations.sql").read_text(encoding="utf-8")
+    require("v5-a10-private-window" in v5_seed
+            and "inside access sender unresolved" in v5_seed
+            and "v5-a10-sabotage" not in v5_seed
+            and "wren leaked the plan" not in v5_seed.casefold()
+            and "wren is the only remaining source" not in v5_seed.casefold(),
+            "P9 legacy compatibility path still reveals Wren before P10 proves attribution")
     if choreography["status"] != "offline_authored_not_deployed":
         projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
         require("enforce_nonce=true" in projection.get("primitive", "")

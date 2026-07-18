@@ -130,7 +130,7 @@ const discordOracle: Record<string, string> = {
   LC05: 'v5-lc05-motive', KO03: 'v5-ko03-crack-map', KB01: 'v5-kb01-stay-awake',
   KB03: 'v5-kb03-altered-watch', KI03: 'v5-ki03-iss-correction', CW05: 'v5-cw05-counterfeit',
   CW06: 'v5-cw06-reeds', CW08: 'v5-cw08-clear-nessa', BI08: 'v5-bi08-break-inquest',
-  A01: 'v5-a01-camp-ash', A08: 'v5-a08-ash-13', A10: 'v5-a10-sabotage',
+  A01: 'v5-a01-camp-ash', A08: 'v5-a08-ash-13', A10: 'v5-a10-private-window',
   AR01: 'v5-ar01-not-kept', AR08: 'v5-ar08-averyn', RP01: 'v5-rp01-release-instruction',
 };
 const nodeInsertStart = seed.indexOf('insert into public.investigation_nodes');
