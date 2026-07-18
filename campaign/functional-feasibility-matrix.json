@@ -21,5 +21,5 @@
   "all_entries_have_human_gap": true,
   "external_deployment_receipts_claimed": false,
   "paper_runtime_receipts_claimed": true,
-  "paper_runtime_receipt_scope": "P4 structured slice, full Deep Hold install/restart, bounded Unlit copy install/commit/restart, and the integrated seven-house/base Unlit physical candidate install/restart are receipted; whole-campaign human experience remains open"
+  "paper_runtime_receipt_scope": "P4 structured slice, full Deep Hold, bounded Unlit copy, and one combined Paper 1.21.11 seven-house/base Unlit plus player-copy action, graceful stop, restart, independent re-audit, occupied-rebuild refusal, and deterministic two-world package are receipted at design/handoff/COMBINED-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json; whole-campaign actual-client and human experience remain open"
 }

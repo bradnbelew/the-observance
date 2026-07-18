@@ -432,3 +432,17 @@ open; M4 is still closed.
   `ROUTED-AUDIT-PASS-CAF2CD4-2026-07-18.json`.
 - Automated source, package, and physical gates now agree at this checkpoint. Human experience, actual-client
   visual/use testing, private external deployment, Brad approval, production, and launch remain separate gates.
+
+## 2026-07-18 — current private staging preflight
+
+- The launch inventory is reconciled to the combined Paper and routed-audit receipts. Remaining Minecraft
+  work is actual-client experience, not another unreceipted claim about placement.
+- The exact current Vercel preview export is 154 dashboard files / 5,438,242 bytes with aggregate manifest
+  `52a87fa12453b53943a01277d1153ad6c926ede321f80da4300329094502a1ef`. Export to the verified
+  preview project still requires Brad's explicit informed approval; production promotion remains forbidden.
+- Railway still has only the two known production environments and no distinct test guild/database identity.
+  Supabase production remains read-only and a disposable/development target still requires permission/cost
+  confirmation. Custody-approved media still requires human master, ownership, derivative, and hosting choices.
+- The current dashboard starts locally on `127.0.0.1:3048`; automated browser reload was blocked by the
+  in-app browser's localhost URL policy, so no visual receipt was fabricated. Exact residue is recorded in
+  `PRIVATE-STAGING-PREFLIGHT-940F102-2026-07-18.json`.

@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0-private-staging-preflight",
+  "source_checkpoint": "940f10226a23a4d9846cc3b5641b2bee49038985",
+  "recorded_local": "2026-07-18T04:05:00-05:00",
+  "automated_local_gates": {
+    "combined_paper_receipt": "design/handoff/COMBINED-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    "post_combined_routed_audit": "design/handoff/ROUTED-AUDIT-PASS-CAF2CD4-2026-07-18.json",
+    "result": "pass",
+    "brad_approval": null
+  },
+  "vercel_preview": {
+    "team_id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "project_name": "the-observance-kjxn",
+    "target": "preview_only",
+    "production_promotion": false,
+    "source_export": {
+      "root": "dashboard",
+      "file_count": 154,
+      "bytes": 5438242,
+      "manifest_sha256": "52a87fa12453b53943a01277d1153ad6c926ede321f80da4300329094502a1ef",
+      "excludes": ["node_modules", ".next*", ".vercel", ".observance-local", ".env*", "tsconfig.tsbuildinfo", "*.log"]
+    },
+    "required_confirmation": "Brad must explicitly approve exporting these 154 private source files / 5,438,242 bytes to this exact Vercel preview project; no upload has occurred."
+  },
+  "railway_discord": {
+    "known_projects": [
+      "462b0f7f-a98a-4cd7-9641-01b5704375c9/06c1fdec-ab9d-44f7-ad70-96feea84023e",
+      "e8158c1a-259b-4079-b51d-df7a2bb654e6/ea488e14-1c46-4ecf-8448-5c7842247dd1"
+    ],
+    "production_environments_seen": 2,
+    "production_deploy_authorized": false,
+    "required_confirmation_or_input": "a distinct private Discord guild/channel identity plus a verified non-production Railway environment; creating a possibly paid environment requires explicit cost confirmation"
+  },
+  "supabase": {
+    "production_ref": "fndmhbpxnodrnbrzrlqq",
+    "production_mutation_authorized": false,
+    "proposal_ready": true,
+    "required_confirmation_or_input": "permission/cost confirmation for an exact disposable or development branch before applying and advisor-testing the migration/rollback proposal"
+  },
+  "media": {
+    "custody_verified_bytes": "four videos plus recovered packet set are hash/size verified outside the checkout",
+    "originals_mutated": false,
+    "required_human_gate": "master/AV review, derivative/accessibility choice, ownership approval, and exact private hosting destination"
+  },
+  "local_web": {
+    "address": "http://127.0.0.1:3048/community/index.php",
+    "source_checkpoint": "940f10226a23a4d9846cc3b5641b2bee49038985",
+    "server_log": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\dashboard-caf2cd4-local\\stdout.log",
+    "server_ready_log": true,
+    "automated_browser_result": "blocked_by_in_app_browser_localhost_url_policy_before_reload",
+    "human_visual_result": null
+  },
+  "production_mutated": false,
+  "public_launch_authorized": false
+}

@@ -873,6 +873,11 @@
       "effect": "clean checkpoint caf2cd47b8dedaa54d30b8a9b2aa64351bf40a68 passes the complete routed ARG authority, negative-contract, deterministic/chaos simulation, web, Discord, Paper plugin, security, package, hosted-pack, and live-media chain after the combined physical receipt was routed. The exact 91,914-byte log and final artifact hashes are retained. This aligns automated source/package and combined-world evidence without creating human approval or production authority."
     },
     {
+      "older": "the 2026-07-17 private launch inventory and 5,436,052-byte Vercel export snapshot before combined-world proof and the latest routed audit",
+      "newer": "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json plus design/handoff/PRIVATE-STAGING-PREFLIGHT-940F102-2026-07-18.json",
+      "effect": "the inventory now records the combined Hold-plus-Unlit/copy/restart/package pass and narrows remaining work to actual-client/human experience plus exact external gates. The current Vercel preview export is 154 files / 5,438,242 bytes with aggregate manifest 52a87fa12453b53943a01277d1153ad6c926ede321f80da4300329094502a1ef; upload still requires Brad's explicit informed approval. Railway still lacks an isolated guild/database/staging environment, Supabase development still requires permission/cost confirmation, and media still requires human master/ownership/derivative decisions. No production or public mutation occurred."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
