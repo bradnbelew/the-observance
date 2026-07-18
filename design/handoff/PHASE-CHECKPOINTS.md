@@ -479,3 +479,21 @@ open; M4 is still closed.
   logs and hashes are in `ROUTED-AUDIT-PASS-B9FBD42-2026-07-18.json`.
 - This is automated source/package evidence. It does not prove the human ARG experience, private external
   delivery, Brad approval, production, or public launch readiness.
+
+## 2026-07-18 — physical evidence carriers and any-subset release correction
+
+- Source `6aa363e` binds every Minecraft/NPC-owned P5–P12 evidence record to at least one exact authored
+  book, occupied fixture, NPC, or runtime carrier. Paper startup and the routed static checker both fail
+  closed on JSON-only local evidence. The gate caught and corrected an omitted Sella lectern, omitted bird
+  coops, and P8 repair actions mislabeled as evidence surfaces.
+- Source `ab483c3` corrects the final release without rewriting historical evidence. The M2 physical
+  predicate bytes remain exactly SHA-256
+  `16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a`; the packaged
+  `ARG-P12-ANY-SUBSET-OVERLAY.json` is the current RP03/RP04 behavior authority.
+- RP03 now accepts one linked actor's protected publish/unfile action with zero consequence-book or source
+  receipts. RP04 now accepts one linked participant's untimed, branch-specific Bridge action and sector
+  confirmation. Nearby, online, disconnected, and absent players are not enrolled and cannot block either
+  action. The existing ballot field names remain storage compatibility only.
+- Focused M2, physical-authority, ARG-authority, Discord SQL/binding, and Paper tests pass, including a
+  nearby-player negative test, no-attendance-timer test, restart/idempotence, and all 24 ending/conduct
+  combinations. This is automated correctness evidence, not a human experience approval or launch receipt.
