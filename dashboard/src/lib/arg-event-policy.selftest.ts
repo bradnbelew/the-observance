@@ -46,6 +46,9 @@ check(ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].sourceSurfaces.length === 1
   'bounded player copy proof must be owned by its physical Paper predicate');
 check(ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].projectionSurfaces.includes('copperline'),
   'the bounded player copy must cause an authored Copperline response');
+check(ARG_EVENT_DEFINITIONS['p11.averyn_restored_unbound'].sourceSurfaces.length === 1
+  && ARG_EVENT_DEFINITIONS['p11.averyn_restored_unbound'].sourceSurfaces[0] === 'minecraft',
+  'P11 unbound relationship must come from the protected physical empty-socket arrangement, not an answer menu');
 check(migration.includes("('p10.player_copy_proof','P10','{p9.leak_window_proven}','{minecraft}','{minecraft,copperline,discord,dashboard}')"),
   'database must carry the exact bounded player-copy event and projection surfaces');
 for (const table of ['arg_event_definitions', 'arg_events', 'arg_event_projections']) {

@@ -416,6 +416,16 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             }
         }
         snapshot = progress.snapshot();
+        if (snapshot.isComplete(P11_IDENTIFIED_EVENT)
+                && snapshot.isComplete("v5_rp02_configured")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P11_UNBOUND_EVENT));
+                if (created) mirrorP11UnboundAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P11 unbound relationship could not be committed locally: " + failure.getMessage());
+            }
+        }
+        snapshot = progress.snapshot();
         if (snapshot.isComplete(P11_UNBOUND_EVENT)
                 && snapshot.isComplete("v5_rp02_configured")) {
             try {
@@ -557,6 +567,21 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         });
     }
 
+    private void mirrorP11UnboundAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p11.unbound.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject relationship = new JsonObject();
+            relationship.addProperty("averyn", "human-registrar-analyst");
+            relationship.addProperty("record", "civic-system-trapped-her");
+            relationship.addProperty("watcher", "constrained-record-voice");
+            relationship.addProperty("dark", "related-distinct-unknown");
+            relationship.addProperty("averyn_record_socket", "empty-unbound");
+            relationship.addProperty("observation_receipts", 0);
+            plugin.supabase().recordArgEvent(P11_UNBOUND_EVENT,
+                    "minecraft:p11:averyn-relationship-unbound", "minecraft", null, relationship);
+        });
+    }
+
     private void mirrorP12ConfigurationAsync() {
         plugin.scheduler().runAsyncSafe("arg.p12.configuration.mirror", () -> {
             if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
@@ -694,6 +719,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         if (progress.snapshot().isComplete(P10_CONFRONTED_EVENT)) mirrorP10ConfrontedAsync();
         if (progress.snapshot().isComplete(P10_REMEMBRANCE_EVENT)) mirrorP10RemembranceAsync();
         if (progress.snapshot().isComplete(P11_IDENTIFIED_EVENT)) mirrorP11IdentityAsync();
+        if (progress.snapshot().isComplete(P11_UNBOUND_EVENT)) mirrorP11UnboundAsync();
         if (progress.snapshot().isComplete(P12_CONFIGURATION_EVENT)) mirrorP12ConfigurationAsync();
         if (progress.snapshot().isComplete(P12_NAME_EVENT)) mirrorP12NameAsync();
         if (progress.snapshot().isComplete(P12_RELEASE_EVENT)) mirrorP12ReleaseAsync();

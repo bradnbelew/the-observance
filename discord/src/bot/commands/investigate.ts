@@ -194,16 +194,10 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     });
     return;
   }
-  if (action === 'identify-averyn') {
+  if (action === 'restore-name') {
     const name = interaction.options.getString('name', true).normalize('NFKC').trim().toUpperCase();
-    const averyn = interaction.options.getString('averyn', true);
-    const record = interaction.options.getString('record', true);
-    const watcher = interaction.options.getString('watcher', true);
-    const dark = interaction.options.getString('dark', true);
-    if (name !== 'AVERYN' || averyn !== 'human-registrar-analyst'
-        || record !== 'civic-system-trapped-her' || watcher !== 'constrained-record-voice'
-        || dark !== 'related-distinct-unknown') {
-      await interaction.editReply('The name or relationship model collapses a distinction the evidence keeps open. Nothing changed.');
+    if (name !== 'AVERYN') {
+      await interaction.editReply('That six-letter artifact does not match the independent affidavit results. Nothing changed.');
       return;
     }
     const identity = await recordArgEvent({
@@ -221,24 +215,9 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
       await interaction.editReply('A different identity filing already owns that receipt. Nothing changed; use /investigate status.');
       return;
     }
-    const relationship = await recordArgEvent({
-      eventKey: 'p11.averyn_restored_unbound',
-      idempotencyKey: 'discord:p11:averyn-relationship-unbound',
-      source: 'discord',
-      actorId: interaction.user.id,
-      payload: { averyn, record, watcher, dark, empty_record_slot: true, observation_receipts: 0 },
-    });
-    if (relationship.status === 'blocked') {
-      await interaction.editReply('The name was preserved, but the relationship filing is not ready. Retry is safe; no source clicks are required.');
-      return;
-    }
-    if (relationship.status === 'collision') {
-      await interaction.editReply('The name is preserved, but a different relationship filing owns the second receipt. Nothing was overwritten.');
-      return;
-    }
-    await interaction.editReply(relationship.created
-      ? 'Averyn restored as a person and left unbound. The Record is the civic system; the Watcher is constrained system speech through her; the Dark remains related, distinct, and unknown.'
-      : 'Averyn’s identity and unbound relationship record are already committed. Nothing was duplicated.');
+    await interaction.editReply(identity.created
+      ? 'Averyn’s name is restored as a person. The separate physical arrangement must still keep her outside the Record; this name field cannot decide that relationship.'
+      : 'Averyn’s identity is already restored. Nothing was duplicated.');
     return;
   }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');

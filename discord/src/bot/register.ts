@@ -123,29 +123,9 @@ export const investigateCommand = new SlashCommandBuilder()
     .setName('contact-wren')
     .setDescription('bring the authenticated packet chain to Wren and open the response form.'))
   .addSubcommand((subcommand) => subcommand
-    .setName('identify-averyn')
-    .setDescription('restore the yielded name and keep four related terms distinct.')
-    .addStringOption((option) => option.setName('name').setDescription('the six-letter artifact yielded by the six affidavits').setRequired(true).setMinLength(6).setMaxLength(12))
-    .addStringOption((option) => option.setName('averyn').setDescription('Averyn’s evidenced role').setRequired(true).addChoices(
-      { name: 'human registrar and cistern analyst who entered the archive', value: 'human-registrar-analyst' },
-      { name: 'a themed seventh Keeper', value: 'seventh-keeper' },
-      { name: 'another name for the Dark', value: 'dark-alias' },
-    ))
-    .addStringOption((option) => option.setName('record').setDescription('the Record’s evidenced role').setRequired(true).addChoices(
-      { name: 'a civic monitoring and memory system that trapped her', value: 'civic-system-trapped-her' },
-      { name: 'Averyn’s free and private diary', value: 'averyn-private-diary' },
-      { name: 'the same entity as the Dark', value: 'record-is-dark' },
-    ))
-    .addStringOption((option) => option.setName('watcher').setDescription('the Watcher’s evidenced role').setRequired(true).addChoices(
-      { name: 'defensive Record speech through her constrained consciousness', value: 'constrained-record-voice' },
-      { name: 'Averyn speaking freely without system limits', value: 'averyn-free-voice' },
-      { name: 'one of the six Keepers speaking anonymously', value: 'keeper-anonymous' },
-    ))
-    .addStringOption((option) => option.setName('dark').setDescription('the honest boundary on the Dark').setRequired(true).addChoices(
-      { name: 'related pressure or cause; distinct and still unknown', value: 'related-distinct-unknown' },
-      { name: 'fully identified as Averyn', value: 'dark-is-averyn' },
-      { name: 'fully identified as the civic Record', value: 'dark-is-record' },
-    )));
+    .setName('restore-name')
+    .setDescription('keyboard fallback for the six-letter identity assembled from the affidavits.')
+    .addStringOption((option) => option.setName('name').setDescription('the six-letter artifact').setRequired(true).setMinLength(6).setMaxLength(12)));
 
 /** Every rite, in registration order. */
 export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand, investigateCommand] as const;

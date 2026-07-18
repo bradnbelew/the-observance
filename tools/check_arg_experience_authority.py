@@ -425,6 +425,14 @@ def main() -> None:
             and "private guild" in wren_modal["proof"].casefold()
             and "remain open" in wren_modal["proof"].casefold(),
             "P10 character-response input lacks exact primitive, retention boundary, or honest client gap")
+    coordinator = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/V5RuntimeCoordinator.java").read_text(encoding="utf-8")
+    require("restore-name" in discord_register
+            and "identify-averyn" not in discord_register
+            and "P11_UNBOUND_EVENT" in coordinator
+            and 'snapshot.isComplete("v5_rp02_configured")' in coordinator
+            and "mirrorP11UnboundAsync" in coordinator
+            and '"minecraft:p11:averyn-relationship-unbound"' in coordinator,
+            "P11 retains a relationship answer menu or lacks the local physical unbound transition")
     if choreography["status"] != "offline_authored_not_deployed":
         projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
         require("enforce_nonce=true" in projection.get("primitive", "")
