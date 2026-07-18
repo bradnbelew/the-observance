@@ -15,6 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 AUTHORITY = ROOT / "design/m3/P4-P5-ARG-VERTICAL-SLICE.json"
 
 
+def stop_if_running(process: base.PaperProcess) -> None:
+    if process.process.poll() is None:
+        process.stop()
+
+
 def configure(target: Path, paper: Path, plugin: Path, target_id: str, commit: str, port: int) -> None:
     vnext.configure(target, paper, plugin, target_id, commit, port)
     config = target / "plugins/Observance/config.yml"
@@ -38,8 +43,11 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         after_wrong = first.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
         wrong_audit = first.command("obsm3 audit", "M3_AUDIT PASS")
         first.command("save-all flush", "Saved the game")
+    except BaseException:
+        base.write_text(target / "arg-slice-first-start.failed.log", "\n".join(first.lines) + "\n")
+        raise
     finally:
-        first.stop()
+        stop_if_running(first)
     base.write_text(target / "arg-slice-first-start.log", "\n".join(first.lines) + "\n")
 
     second = base.PaperProcess(target, java)
@@ -59,8 +67,11 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         curated = second.command("obsm3 arg-status", "service_public=true penalty_custody=true curated=true")
         curated_audit = second.command("obsm3 audit", "M3_AUDIT PASS")
         second.command("save-all flush", "Saved the game")
+    except BaseException:
+        base.write_text(target / "arg-slice-second-start.failed.log", "\n".join(second.lines) + "\n")
+        raise
     finally:
-        second.stop()
+        stop_if_running(second)
 
     third = base.PaperProcess(target, java)
     try:
@@ -76,8 +87,11 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         idempotent = third.command("obsm3 arg-status", "receipts=4")
         final = third.command("obsm3 audit", "M3_AUDIT PASS")
         third.command("save-all flush", "Saved the game")
+    except BaseException:
+        base.write_text(target / "arg-slice-third-start.failed.log", "\n".join(third.lines) + "\n")
+        raise
     finally:
-        third.stop()
+        stop_if_running(third)
     restart_lines = second.lines + ["--- THIRD START ---"] + third.lines
     base.write_text(target / "arg-slice-restart.log", "\n".join(restart_lines) + "\n")
     return {
