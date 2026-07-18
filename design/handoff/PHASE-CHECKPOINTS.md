@@ -350,3 +350,24 @@ open; M4 is still closed.
   Client polish, human 1–2 hour solve, authenticated external targets, source media bytes, and Brad's
   morning acceptance remain open. Production, Crafty, public domains, and production Supabase remain
   untouched.
+
+## 2026-07-18 — bounded player-caused Unlit copy proof
+
+- Source `1c84e40a2adf774d381f37b24421fb7972338bf3` implements the required safe
+  surface-to-Unlit copy as a real Paper 1.21.11 physical action, not an answer field. Players set six
+  protected civic-role selectors (`water`, `heat`, `watch`, `record`) and send one pattern. The keyboard
+  fallback `/obscopy` uses the same predicate. The local hash-chain journal stores only the six allowlisted
+  ids and their hash—never free text, identity, inventory, arbitrary blocks, chat, logs, names, or fears.
+- The returned Unlit register mirrors both three-cell rows and changes exactly the first copied `record`
+  mark to `watch`. This is a fixed authored institutional edit: it proves copy-and-alter behavior without
+  resolving what the Dark is and without claiming private surveillance.
+- Create-only attempt 1 is preserved in
+  `UNLIT-COPY-PROOF-DISPOSABLE-PAPER-FAILED-ATTEMPT-2026-07-18.json`. Its restricted Java process could
+  not reopen the copied Mojang cache and exited before Paper/plugin/world readiness; it produced no state.
+- Attempt 2 passed fresh install, blank-register audit, bounded commit, deterministic physical projection,
+  save/stop, restart, independent audit, closed port, and deterministic two-world packaging. Exact source,
+  Paper/plugin/cache/journal/layout/log/package hashes are in
+  `UNLIT-COPY-PROOF-DISPOSABLE-PAPER-PASS-2026-07-18.json`.
+- This closes the automated bounded-copy capability gap only. It does not prove the full seven-house Unlit
+  multi-expedition, actual-client affordance or visual composition, player dread/recognition, Brad approval,
+  external staging, production, or launch readiness.

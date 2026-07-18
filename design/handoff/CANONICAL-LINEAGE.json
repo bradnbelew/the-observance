@@ -561,9 +561,14 @@
     "status": "automated_offline_and_disposable_paper_pass_human_experience_and_external_staging_open",
     "runtime_source_commit": "3d54c238938932cc1ee66b44aafe807310ce0f70",
     "receipt_harness_commit": "5d5b620d1f68614e001a21648df3dabed85a851e",
-    "routed_audit_receipt": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json",
-    "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
-    "private_staging_readiness_receipt": "design/handoff/PRIVATE-STAGING-READINESS-2026-07-18.json",
+      "routed_audit_receipt": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json",
+      "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+      "bounded_unlit_copy_source_commit": "1c84e40a2adf774d381f37b24421fb7972338bf3",
+      "bounded_unlit_copy_receipt": "design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+      "bounded_unlit_copy_failed_attempt": "design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-FAILED-ATTEMPT-2026-07-18.json",
+      "bounded_unlit_copy_pattern_sha256": "852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+      "bounded_unlit_copy_world_package_sha256": "d4120f9ea797a223cd0105695607b09d5c9a1d1f94e6cf52c07a10cf54b62464",
+      "private_staging_readiness_receipt": "design/handoff/PRIVATE-STAGING-READINESS-2026-07-18.json",
     "final_human_test_plan": "design/handoff/FINAL-WHOLE-CAMPAIGN-HUMAN-TEST-PLAN.md",
     "campaign_projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
     "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
@@ -837,13 +842,18 @@
       "effect": "the existing Vercel project is reachable but exporting the exact 154-file private source allowlist is blocked pending Brad's explicit informed approval; both Railway families have only production environments, and no raw variable values were read; Supabase development-branch listing is permission denied. No preview, staging environment, migration, secret read, production mutation, or public launch occurred."
     },
     {
+      "older": "the story-expansion requirement for a safe bounded player-authored surface-to-Unlit copy as an unimplemented feasibility candidate",
+      "newer": "source commit 1c84e40a2adf774d381f37b24421fb7972338bf3 plus design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+      "effect": "a real Paper 1.21.11 six-cell civic pattern register now accepts only water, heat, watch, and record tokens through physical selectors or the /obscopy accessibility command. The local hash-chain journal commits before projection; the Unlit returns a deterministic horizontal mirror with one record-to-watch institutional edit. No free text, identity, inventory, arbitrary build, chat, log, name, or fear is ingested. Fresh install, commit, graceful stop, restart, independent audit, closed port, and exact two-world package hashes pass. The restricted-sandbox attempt that exited before startup is preserved separately. Actual-client affordance, visual composition, uncanny effect, full seven-house Unlit expedition, and Brad experience remain open."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
     }
   ],
   "current_gate": {
-    "phase": "The story-first P1-P12 source, cross-surface event web, Copperline/Discord/Paper projections, exact input contracts, packages, live custody-approved media routes, and fresh whole-Hold Paper 1.21.11 build/restart audit now pass automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
+    "phase": "The story-first P1-P12 source, cross-surface event web, Copperline/Discord/Paper projections, exact input contracts, packages, live custody-approved media routes, fresh whole-Hold Paper 1.21.11 build/restart audit, and bounded player-caused surface-to-Unlit copy proof now pass their stated automated local gates. The full seven-house Unlit act still lacks a current fresh integrated build/client receipt. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,
@@ -859,6 +869,7 @@
       "custody-verified media receives human master/AV review, approved accessibility derivatives, ownership decision, and exact private hosted/cache receipts",
       "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
+      "a real-client walk verifies the bounded copy register's physical selectors, lectern pages, reset/send controls, readable textures, returned diff, and uncanny but non-personalized effect; the full seven-house Unlit multi-expedition still requires fresh integrated Paper and human proof",
       "Brad's explicit approval of a later M3 revision"
     ]
   }

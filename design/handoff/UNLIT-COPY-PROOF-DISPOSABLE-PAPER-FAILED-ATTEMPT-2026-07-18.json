@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0-preserved-disposable-paper-failure",
+  "source_commit": "1c84e40a2adf774d381f37b24421fb7972338bf3",
+  "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-copy-paper-1c84e40-01",
+  "configured_address": "127.0.0.1:25597",
+  "result": "failed_before_paper_startup",
+  "exit_code": 1,
+  "failure": "Paperclip could not reopen the copied cache/mojang_1.21.11.jar under the restricted sandbox execution identity and exited before plugin authority or world startup.",
+  "log_sha256": "e9e7cc7e40e5a47f90ce9b389c91cdc80afd818236ce75f51b7b3d428ee24eb2",
+  "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_sha256": "0b60591c3aaa94a6cf262d7050c3aaf772e4dc123885a31ea44a5e613b677c78",
+  "readiness_published": false,
+  "world_created": false,
+  "journal_created": false,
+  "port_listener_after_exit": 0,
+  "target_reused": false,
+  "remediation": "A new create-only target used the identical pinned inputs under the permitted desktop execution context; no check or predicate changed.",
+  "production_mutated": false
+}

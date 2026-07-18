@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0-unlit-copy-proof-disposable-paper-receipt",
+  "source_commit": "1c84e40a2adf774d381f37b24421fb7972338bf3",
+  "runner_sha256": "7358269396b64844695b05b9199d88ec0e8a834fbf62349b2ed6f081af2838ae",
+  "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-copy-paper-1c84e40-02",
+  "address": "127.0.0.1:25598",
+  "paper_version": "1.21.11 build 132",
+  "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_sha256": "0b60591c3aaa94a6cf262d7050c3aaf772e4dc123885a31ea44a5e613b677c78",
+  "bootstrap_cache": {
+    "source": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-5d66ad1-08\\cache",
+    "files": {
+      "mojang_1.21.11.jar": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726"
+    }
+  },
+  "first_start": {
+    "ready": "[02:02:26 INFO]: [Observance] UNLIT_COPY_PROOF_READY installed=false committed=false input=/obscopy observation_gating=false personalized_input=false",
+    "install": "[02:02:27 INFO]: UNLIT_COPY_PROOF_INSTALL PASS surface=observance_copy_surface_disposable,20,68,20 unlit=observance_copy_unlit_disposable,0,40,0",
+    "initial_audit": "[02:02:27 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=false pattern_sha256=none",
+    "exercise": "[02:02:27 INFO]: UNLIT_COPY_PROOF_EXERCISE PASS status=committed pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "committed_audit": "[02:02:27 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=true pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d"
+  },
+  "restart": {
+    "ready": "[02:02:40 INFO]: [Observance] UNLIT_COPY_PROOF_READY installed=true committed=true input=/obscopy observation_gating=false personalized_input=false",
+    "audit": "[02:02:41 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=true pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d"
+  },
+  "journal_sha256": "fab89e38798729873dfa6dd02ad3aec40e957755b2af0f80c99b8b96603d3eaf",
+  "layout_sha256": "b888e2562e176fc8f64d2fe46683719e21c618a238cbb3e7a082fe56e14a8bd0",
+  "first_log_sha256": "c0e8e4a85ba397fe2dcc03964f1897455050aabc97a07f8b142c12dc7c21984f",
+  "restart_log_sha256": "31d72dcd6d9fdc10abf03552ccedfe3375f36f65f7343e92d35d75795640e525",
+  "world_package": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-copy-paper-1c84e40-02\\unlit-copy-proof-worlds.zip",
+  "world_package_sha256": "d4120f9ea797a223cd0105695607b09d5c9a1d1f94e6cf52c07a10cf54b62464",
+  "world_file_counts": {
+    "observance_copy_surface_disposable": 15,
+    "observance_copy_unlit_disposable": 11
+  },
+  "proof": {
+    "bounded_cells": 6,
+    "allowlisted_tokens": ["water", "heat", "watch", "record"],
+    "free_text_ingested": false,
+    "player_identity_ingested": false,
+    "inventory_or_arbitrary_build_ingested": false,
+    "deterministic_copy_alteration": true,
+    "fresh_install_passed": true,
+    "graceful_stop_passed": true,
+    "restart_independent_audit_passed": true,
+    "port_listener_after_stop": 0
+  },
+  "scope": "Automated physical install/state/restart proof only; actual-client visual and experiential acceptance remain open.",
+  "production_mutated": false,
+  "brad_approval": null
+}

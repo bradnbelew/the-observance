@@ -26,6 +26,7 @@ PACK = ROOT / "campaign/p5-p12"
 PAPER_RECEIPTS = (
     ROOT / "design/handoff/P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json",
     ROOT / "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    ROOT / "design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-PASS-2026-07-18.json",
 )
 
 
@@ -348,7 +349,7 @@ def main() -> None:
         receipt_scope = feasibility.get("paper_runtime_receipt_scope", "").casefold()
         require(all(path.is_file() for path in PAPER_RECEIPTS)
                 and "p4" in receipt_scope and "deep hold" in receipt_scope
-                and "human" in receipt_scope,
+                and "bounded unlit copy" in receipt_scope and "human" in receipt_scope,
                 "Paper runtime claim lacks exact scoped receipts")
     else:
         require(feasibility["paper_runtime_receipts_claimed"] is False,
