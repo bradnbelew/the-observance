@@ -110,14 +110,27 @@ Forbid "support" $support "<Link href=\"/support/index.php\">Connecting"
 
 $post = Read-Source "app\community\2011\02\08\world-backup\page.tsx"
 foreach ($needle in @(
-  "It does not contain a playable world",
-  "Do not install this archive into Minecraft",
-  "byte-for-byte as recovered",
-  "static file mirror"
+  "Java Edition 1.21.11 world",
+  "V5_HOLD_ARCHIVE_DOWNLOAD_PATH",
+  "readValidatedV5HoldArchive",
+  "hasCampaignEvent('p2.artifact_authenticated')",
+  "Download world"
 )) { Require "world backup post" $post $needle }
-foreach ($retired in @("included text file", "walk north", "first stone stair", "plain mirror page")) {
+foreach ($retired in @("included text file", "walk north", "first stone stair", "plain mirror page", "It does not contain a playable world", "Do not install this archive into Minecraft")) {
   Forbid "world backup post" $post $retired
 }
+
+$openingArchive = Read-Source "app\community\archive.php\page.tsx"
+foreach ($needle in @(
+  "params.locker === undefined",
+  "eventKey: 'p1.attachment_history_restored'",
+  "idempotencyKey: 'copperline:p1:service-1842-ticket-9137-history'",
+  "hasCampaignEvent('p9.company_biographies_restored')",
+  "params.locker === '13'",
+  "['A06']",
+  "['A07']"
+)) { Require "opening/P9 archive split" $openingArchive $needle }
+Forbid "opening/P9 archive split" $openingArchive "copperline:p1:service-1842-ticket-9137-locker-13"
 
 $record = Read-Source "app\record\[slug]\page.tsx"
 foreach ($needle in @(

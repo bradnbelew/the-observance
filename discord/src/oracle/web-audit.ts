@@ -80,7 +80,7 @@ for (const required of ['v_required_media_delivery', 'only earned evidence is in
 for (const required of ['82', '10 cases', 'this docket is read-only', 'a typed minecraft name is not an identity credential', 'no closeness response']) {
   if (!terminal.includes(required)) issues.push(`Terminal missing V5 contract: ${required}`);
 }
-for (const required of ['Ticket #9137', '/community/2011/02/08/world-backup/', 'single-player recovery image']) {
+for (const required of ['Ticket #9137', '/community/archive.php?service=1842&amp;ticket=9137', 'single-player recovery image']) {
   if (!support.includes(required)) issues.push(`Copperline ticket trail missing contract: ${required}`);
 }
 for (const required of ['Java Edition 1.21.11 world', 'V5_HOLD_ARCHIVE_DOWNLOAD_PATH', "readV5CompletionFlag('v5_ls03_directory_trail')", 'Download world']) {
@@ -94,9 +94,13 @@ for (const forbidden of ['DISCORD_INVITE_URL', 'safeDiscordInvite', 'discord.gg'
   if (remoteRoom.includes(forbidden)) issues.push(`Copperline remote room can still expose or advance the retired handoff: ${forbidden}`);
 }
 for (const required of [
-  "params.service === '1842'",
-  "params.ticket === '9137'",
+  "params.service !== '1842'",
+  "params.ticket !== '9137'",
+  "params.locker === undefined",
   "params.locker === '13'",
+  "hasCampaignEvent('p9.company_biographies_restored')",
+  "eventKey: 'p1.attachment_history_restored'",
+  "idempotencyKey: 'copperline:p1:service-1842-ticket-9137-history'",
   'https://youtu.be/du-qp_clP7c',
   "['A06']",
   "'copperline_archive_route'",
@@ -107,6 +111,9 @@ for (const required of [
   '/evidence/copperline/locker-detail-13.png',
 ]) {
   if (!priorArchive.includes(required)) issues.push(`A06 exact archive route missing contract: ${required}`);
+}
+if (priorArchive.includes('copperline:p1:service-1842-ticket-9137-locker-13')) {
+  issues.push('P1 restoration still depends on the later Locker 13 route');
 }
 
 const publicCopy = `${record}\n${archive}\n${terminal}\n${support}\n${community}\n${remoteRoom}\n${priorArchive}`.toLowerCase();
@@ -211,8 +218,9 @@ for (const media of REQUIRED_MEDIA) {
 }
 
 // Public source must not carry fixed-media URLs ahead of their database prerequisites. Four assets
-// are delivered only through the gated archive view. Clip 1 is the sole exact-route exception, and
-// that page must receipt A06 before A07 through the prerequisite-enforcing RPC.
+// are delivered only through the gated archive view. Clip 1 is the sole exact-route exception; its
+// route requires P9's restored camp biographies and receipts A06 before A07. The P1 service/ticket
+// route shares ordinary identifiers but cannot expose the locker or media.
 const publicSources = sourceFiles('dashboard/src/app').filter((path) => !path.includes('/author/'));
 for (const media of REQUIRED_MEDIA) {
   const occurrences = publicSources.filter((path) => read(path).includes(media.url));
