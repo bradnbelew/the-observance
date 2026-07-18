@@ -15,6 +15,13 @@ public final class P5CurationStateSelfTest {
             require(P5CurationRuntime.select(progress, P5CurationRuntime.Choice.SERVICE_PUBLIC)
                     == P5CurationRuntime.SelectionResult.NOT_READY, "sealed case must refuse");
             progress.completeIfAbsent("v5_case_c02_complete");
+            require(P5CurationRuntime.select(progress, P5CurationRuntime.Choice.SERVICE_SEALED)
+                    == P5CurationRuntime.SelectionResult.WRONG, "sealed service-card choice must refuse");
+            require(P5CurationRuntime.select(progress, P5CurationRuntime.Choice.PENALTY_PUBLIC)
+                    == P5CurationRuntime.SelectionResult.WRONG, "public-penalty choice must refuse");
+            require(!progress.snapshot().isComplete(P5CurationRuntime.SERVICE_SELECTED)
+                            && !progress.snapshot().isComplete(P5CurationRuntime.PENALTY_SELECTED),
+                    "wrong curatorial choices must commit no partial state");
             require(P5CurationRuntime.select(progress, P5CurationRuntime.Choice.PENALTY_CUSTODY)
                     == P5CurationRuntime.SelectionResult.SELECTED, "either side may be first");
             require(!progress.snapshot().isComplete(P5CurationRuntime.CURATION_EVENT),
@@ -32,7 +39,7 @@ public final class P5CurationStateSelfTest {
             V5ProgressStore finalRestart = V5ProgressStore.open(journal, authority);
             require(finalRestart.snapshot().isComplete(P5CurationRuntime.CURATION_EVENT),
                     "completed curation must survive a second restart");
-            System.out.println("P5CurationStateSelfTest OK - sealed refusal, any-order partial state, idempotency, and restart pass");
+            System.out.println("P5CurationStateSelfTest OK - authored wrong choices, zero mutation, any-order correct action, idempotency, and restart pass");
         } finally {
             try (var paths = Files.walk(directory)) {
                 for (Path path : paths.sorted(java.util.Comparator.reverseOrder()).toList()) {

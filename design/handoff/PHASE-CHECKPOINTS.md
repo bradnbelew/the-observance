@@ -646,3 +646,14 @@ open; M4 is still closed.
 - The campaign-web checker now fails if P7's public correction stops constraining P8 as a genuine callback.
   Focused dashboard, Paper 1.21.11 predicate/compile, natural-answer, ARG-authority, evidence-web, and lineage
   checks pass. The final client and whole-campaign human experience test remains open.
+
+## 2026-07-18 — P5 recuration becomes a public-memory decision
+
+- The civic counter no longer offers two required levers that are both automatically correct. The early
+  service-card bay offers PUBLIC USE or SEALED FILE; the later penalty-copy bay offers PUBLIC FINDING or
+  EVIDENCE ONLY. Both bays remain visibly occupied and keep the old versions in custody.
+- Sealing the rules used on households and republishing accusations as valid findings receive different
+  evidence-bounded refusals. Neither wrong action writes partial progress. The defensible actions may be made
+  in either order, complete atomically, project visibly, and survive restart with zero source-touch gates.
+- Focused Paper 1.21.11 state/compile, campaign-web, action-owner, input-contract, and ARG-authority checks pass.
+  Fresh physical installation, client composition, and final human judgment remain part of the end test.

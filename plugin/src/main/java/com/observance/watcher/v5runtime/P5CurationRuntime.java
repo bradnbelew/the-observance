@@ -70,9 +70,8 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
         Location anchor = anchor();
         if (anchor == null) return;
         Block clicked = event.getClickedBlock();
-        boolean service = same(clicked, at(anchor, -3, 1, 2));
-        boolean penalty = same(clicked, at(anchor, 3, 1, 2));
-        if (!service && !penalty) return;
+        Choice choice = choiceAt(anchor, clicked);
+        if (choice == null) return;
         event.setCancelled(true);
         Player player = event.getPlayer();
         if (!progress.snapshot().isComplete(PREREQUISITE)) {
@@ -80,14 +79,24 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
             return;
         }
         try {
-            SelectionResult result = select(progress, service ? Choice.SERVICE_PUBLIC : Choice.PENALTY_CUSTODY);
+            SelectionResult result = select(progress, choice);
+            if (result == SelectionResult.WRONG) {
+                if (choice == Choice.SERVICE_SEALED) {
+                    player.sendActionBar(Component.text(
+                            "Sealing the work cards repeats the later system: households lose the rules used on them. Nothing changed."));
+                } else {
+                    player.sendActionBar(Component.text(
+                            "Publishing penalty copies as valid findings repeats the accusation. Preserve them as evidence instead. Nothing changed."));
+                }
+                return;
+            }
             project();
             onChanged.run();
             ProgressSnapshot after = progress.snapshot();
             if (after.isComplete(CURATION_EVENT)) {
                 player.sendActionBar(Component.text(
                         "Service cards remain public. Penalty copies are retained in evidence custody."));
-            } else if (service) {
+            } else if (choice == Choice.SERVICE_PUBLIC) {
                 player.sendActionBar(Component.text(
                         "Service cards retained for public use. The penalty copies still need a custody decision."));
             } else {
@@ -110,8 +119,10 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
         boolean service = snapshot.isComplete(SERVICE_SELECTED);
         boolean penalty = snapshot.isComplete(PENALTY_SELECTED);
         boolean events = snapshot.isComplete(CHRONOLOGY_EVENT) && snapshot.isComplete(CURATION_EVENT);
-        boolean levers = powered(at(anchor, -3, 1, 2)) == service
-                && powered(at(anchor, 3, 1, 2)) == penalty;
+        boolean levers = powered(at(anchor, -4, 1, 2)) == service
+                && !powered(at(anchor, -2, 1, 2))
+                && !powered(at(anchor, 2, 1, 2))
+                && powered(at(anchor, 4, 1, 2)) == penalty;
         boolean publicRack = occupiedShelf(at(anchor, -3, 0, 0));
         boolean penaltyState = penalty
                 ? at(anchor, 3, 0, 0).getType() == Material.WAXED_COPPER_GRATE
@@ -167,8 +178,21 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
         placeWallSign(at(anchor, x, 2, 1), publicCards
                 ? List.of("SERVICE CARDS", "PUBLIC RACK", "", "")
                 : List.of("PENALTY COPIES", "EVIDENCE DRAWER", "", ""));
-        at(anchor, x, 0, 2).setType(publicCards ? Material.WAXED_CUT_COPPER : Material.OXIDIZED_CUT_COPPER, false);
-        placeLever(at(anchor, x, 1, 2), selected);
+        for (int optionX : List.of(x - 1, x + 1)) {
+            at(anchor, optionX, 0, 2).setType(publicCards ? Material.WAXED_CUT_COPPER : Material.OXIDIZED_CUT_COPPER, false);
+            at(anchor, optionX, 1, 0).setType(Material.DEEPSLATE_BRICKS, false);
+        }
+        if (publicCards) {
+            placeWallSign(at(anchor, x - 1, 1, 1), List.of("SERVICE CARDS", "PUBLIC USE", "", ""));
+            placeWallSign(at(anchor, x + 1, 1, 1), List.of("SERVICE CARDS", "SEALED FILE", "", ""));
+            placeLever(at(anchor, x - 1, 1, 2), selected);
+            placeLever(at(anchor, x + 1, 1, 2), false);
+        } else {
+            placeWallSign(at(anchor, x - 1, 1, 1), List.of("PENALTY COPIES", "PUBLIC FINDING", "", ""));
+            placeWallSign(at(anchor, x + 1, 1, 1), List.of("PENALTY COPIES", "EVIDENCE ONLY", "", ""));
+            placeLever(at(anchor, x - 1, 1, 2), false);
+            placeLever(at(anchor, x + 1, 1, 2), selected);
+        }
         at(anchor, x, 0, 3).setType(publicCards ? Material.LIGHT_BLUE_CARPET : Material.BROWN_CARPET, false);
     }
 
@@ -223,6 +247,14 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
                 && left.getY() == right.getY() && left.getZ() == right.getZ();
     }
 
+    private static Choice choiceAt(Location anchor, Block clicked) {
+        if (same(clicked, at(anchor, -4, 1, 2))) return Choice.SERVICE_PUBLIC;
+        if (same(clicked, at(anchor, -2, 1, 2))) return Choice.SERVICE_SEALED;
+        if (same(clicked, at(anchor, 2, 1, 2))) return Choice.PENALTY_PUBLIC;
+        if (same(clicked, at(anchor, 4, 1, 2))) return Choice.PENALTY_CUSTODY;
+        return null;
+    }
+
     private static boolean powered(Block block) {
         return block.getBlockData() instanceof Powerable powerable && powerable.isPowered();
     }
@@ -247,6 +279,9 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
         Objects.requireNonNull(choice, "choice");
         ProgressSnapshot before = progress.snapshot();
         if (!before.isComplete(PREREQUISITE)) return SelectionResult.NOT_READY;
+        if (choice == Choice.SERVICE_SEALED || choice == Choice.PENALTY_PUBLIC) {
+            return SelectionResult.WRONG;
+        }
         return progress.transact(editor -> {
             boolean selected = choice == Choice.SERVICE_PUBLIC
                     ? editor.setBooleanTrue(SERVICE_SELECTED)
@@ -262,8 +297,8 @@ public final class P5CurationRuntime implements Listener, AutoCloseable {
         });
     }
 
-    public enum Choice { SERVICE_PUBLIC, PENALTY_CUSTODY }
-    public enum SelectionResult { NOT_READY, SELECTED, COMPLETE, ALREADY }
+    public enum Choice { SERVICE_PUBLIC, SERVICE_SEALED, PENALTY_PUBLIC, PENALTY_CUSTODY }
+    public enum SelectionResult { NOT_READY, WRONG, SELECTED, COMPLETE, ALREADY }
 
     public record Audit(boolean pass, String summary) { }
 }

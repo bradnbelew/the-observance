@@ -564,9 +564,11 @@ def main() -> None:
             and p5_controls["p5_civic_records_counter"]["source_touch_prerequisite"] is False
             and "P5CurationRuntime" in p5_runtime
             and "SERVICE_SELECTED" in p5_runtime and "PENALTY_SELECTED" in p5_runtime
+            and "SERVICE_SEALED" in p5_runtime and "PENALTY_PUBLIC" in p5_runtime
+            and "SelectionResult.WRONG" in p5_runtime
             and "CHRONOLOGY_EVENT" in p5_runtime and "CURATION_EVENT" in p5_runtime
             and "CHISELED_BOOKSHELF" in p5_runtime and "WAXED_COPPER_GRATE" in p5_runtime,
-            "P5 curation is still only disposable-slice scaffolding or lacks a real occupied main-world control")
+            "P5 curation lacks occupied evidence, genuine alternatives, or fail-closed authored refusal")
     p6_contract = input_contract_by_id["P6.F7"]
     p6_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P6ResponsibilityPredicate.java").read_text(
         encoding="utf-8")

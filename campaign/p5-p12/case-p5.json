@@ -13,7 +13,7 @@
   "required_inference": "Players must distinguish early job instructions from later moral rulings, then explain why useful memory aids were especially easy to weaponize. Naming seven rules or copying their penalties is insufficient.",
   "callback": "P4's repeated intake mark changes meaning again: first it looked ritual, then practical, and here its placement on penalty slips shows the Record beginning to classify compliance.",
   "consequence": {
-    "minecraft": "The civic gallery remains open as a lived workplace; seven penalty plaques are removed from eye level while the original service cards remain in place.",
+    "minecraft": "Players decide that early service cards remain available for public use while later penalty copies survive only in evidence custody. The gallery visibly changes without erasing either version.",
     "npc": "Neri resumes an unfinished repair-account argument with Toma instead of praising the players; Eda asks that one pupil's copied bird drawing be returned to the school chest.",
     "copperline": "A later recovered screenshot gains a mundane caption identifying the supposed shrine as the lamp-service counter.",
     "state_event": "p5.civic_drift_established"
