@@ -11,11 +11,11 @@ export function InterventionPlanForm({ planned }: { planned: boolean }) {
   return (
     <section className="old-copy" aria-labelledby="intervention-heading">
       <h2 id="intervention-heading">Attach a testable intervention</h2>
-      <p>Use four short findings. Name interacting causes, separate Iss&apos;s evidence from his route, state what the altered copy does and does not prove, and put the works in a safe order. This form does not require one exact sentence.</p>
+      <p>Use four short findings. Carry the earlier correction into the cause model, separate Iss&apos;s evidence from his route, state what the altered copy does and does not prove, and put the works in a safe order. This form does not require one exact sentence.</p>
       <form action={action} aria-describedby="intervention-result">
         <fieldset disabled={pending || accepted}>
           <legend>Current group plan</legend>
-          <label>Interacting causes<textarea name="causes" required maxLength={180} rows={3} /></label>
+          <label>Interacting causes and the earlier correction<textarea name="causes" required maxLength={180} rows={3} /></label>
           <label>Iss: supported finding and unsafe act<textarea name="iss" required maxLength={140} rows={2} /></label>
           <label>Altered-copy evidence boundary<textarea name="copyBoundary" required maxLength={140} rows={2} /></label>
           <label>Safe works order<textarea name="order" required maxLength={140} rows={2} /></label>

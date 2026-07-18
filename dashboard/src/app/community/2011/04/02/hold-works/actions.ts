@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers';
 import { recordCampaignEvent } from '@/lib/arg-event-store';
-import { P8_INTERVENTION_CANONICAL_PAYLOAD, validInterventionPlan } from '@/lib/p8-intervention-plan';
+import { P8_INTERVENTION_CANONICAL_PAYLOAD, unsupportedInterventionParts } from '@/lib/p8-intervention-plan';
 
 export type InterventionPlanState = {
   status: 'idle' | 'accepted' | 'wrong' | 'incomplete' | 'technical_failure';
@@ -33,8 +33,9 @@ export async function publishInterventionPlan(
   if (Object.values(finding).some((value) => !value.trim())) {
     return { status: 'incomplete', message: 'Enter all four parts of the proposed intervention. Nothing changed.' };
   }
-  if (!validInterventionPlan(finding)) {
-    return { status: 'wrong', message: 'That plan drops a proven cause, overclaims the copy, or starts work in an unsafe order. Nothing changed.' };
+  const unsupported = unsupportedInterventionParts(finding);
+  if (unsupported.length > 0) {
+    return { status: 'wrong', message: `Review: ${unsupported.join(', ')}. Nothing changed.` };
   }
   const event = await recordCampaignEvent({
     eventKey: 'p8.intervention_plan_accepted',

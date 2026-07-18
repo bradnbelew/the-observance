@@ -112,6 +112,13 @@ def main() -> None:
         incident[source] += 1
         incident[target] += 1
 
+    p7_p8 = next((edge for edge in web["edges"]
+                  if edge["from"] == "p7.public-correction"
+                  and edge["to"] == "p8.intervention-plan"), None)
+    require(p7_p8 is not None and "record-edit pattern" in p7_p8["why"]
+            and "cannot become an unrelated closed file" in p7_p8["why"],
+            "P7 correction does not constrain the P8 model as a real callback")
+
     require(all(incident[node_id] > 0 for node_id in node_ids), "one or more authored nodes are isolated")
     connected = reachable(undirected, node_ids[0])
     require(connected == set(node_ids), "campaign graph contains a disconnected case or lore island")

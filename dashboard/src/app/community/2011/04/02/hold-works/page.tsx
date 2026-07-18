@@ -23,6 +23,7 @@ export default async function HoldWorksPost() {
         <h2 id="before-state-heading">Before-state retained by ashfield</h2>
         <p>Rook asked that this thread keep the old gauge sketch, the paired-lamp photograph, and the copied-office diff together. He did not agree that one of them explained the others.</p>
         <p>Rook kept four sets of readings because they refused a one-cause account. One begins before Iss arrived. Another changes after a watch relief. The closure stamps do not match the order in the public incident copy. Iss kept his surface samples beside a route objection, not as an answer to it. The group still has to decide what those relationships predict and what can be tested safely.</p>
+        <p>The Nessa correction matters here because it proved that work copies and clean Record-facing copies were already being made to disagree before the Break. It is evidence about the incident system, not a separate solved file to leave behind.</p>
       </article>
       <section className="old-copy" id="evidence-p8-allocation-gauge" data-evidence-id="p8.e04" aria-labelledby="allocation-gauge-heading">
         <h2 id="allocation-gauge-heading">Cached allocation order and gauge hand</h2>
@@ -37,7 +38,7 @@ export default async function HoldWorksPost() {
       </section>
       <InterventionPlanForm planned={planned === true} />
       {planned === true && <article className="old-copy">
-        <p>We are keeping more than one cause on the board. The old fracture, unchanged heat load, empty paired watch, and late-routed closure requests overlap. Iss&apos;s cut widened the failure. It did not create the old fracture.</p>
+        <p>We are keeping more than one cause on the board. The old fracture, unchanged heat load, empty paired watch, and late-routed closure requests overlap. Nessa&apos;s case proves that the same record-edit pattern was already in use before the Break. Iss&apos;s cut widened the failure. It did not create the old fracture.</p>
         <p>His reed, water, and air samples still support the surface claim. They do not make an unreviewed route safe. That distinction stays in the incident file.</p>
         <h2>Accepted order</h2>
         <ol><li>Install the authenticated lower filter.</li><li>Restore the paired coverage lamps.</li><li>Close the mapped pressure bypass.</li><li>Open the staff route after the three system readbacks agree.</li></ol>

@@ -73,7 +73,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                         ? "Retained P3 action: the changed practical mark has conflicting resident accounts; both remain preserved without an official winner."
                         : "No P3 open-disagreement dispatch is retained.");
                 player.sendMessage(runtime.p8InterventionPlanAccepted()
-                        ? "Retained P8 plan: four interacting causes; Iss's surface evidence remains valid while his route was unsafe; copy behavior is proven while the Dark remains unidentified; works order is filter, paired light, pressure bypass, then staff route."
+                        ? "Retained P8 plan: the pre-Break record-edit pattern remains in the interacting-cause model; Iss's surface evidence remains valid while his route was unsafe; copy behavior is proven while the Dark remains unidentified; works order is filter, paired light, pressure bypass, then staff route."
                         : "No accepted P8 intervention plan is available to replay.");
                 player.sendMessage(runtime.p7NessaCleared()
                         ? "Retained P7 correction: genuine cloth diverted; substitute failed first at the lower intake; relief and complaint chronology edited; Nessa followed procedure and reported before failure."
@@ -262,7 +262,8 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             case NOT_READY -> player.sendMessage("The current Nessa correction must be public before this plan can be attached. Nothing changed.");
             case WRONG -> {
                 window.count++;
-                player.sendMessage("One or more fields do not fit the surviving evidence, or the works order is unsafe. Nothing changed.");
+                player.sendMessage("Review: " + String.join(", ",
+                        P8InterventionPlanPredicate.unsupportedComponents(plan)) + ". Nothing changed.");
             }
             case FAILED -> player.sendMessage("The finding desk failed safely. Nothing changed; retry or use Copperline when it returns.");
         }
@@ -297,7 +298,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
         player.sendMessage("P7 accepts three short findings: /" + label
                 + " p7-nessa <material cause/place> | <record changes> | <Nessa conduct/timing>.");
         player.sendMessage("P8 accepts four short findings, not one exact sentence:");
-        player.sendMessage("/" + label + " p8 <interacting causes> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
+        player.sendMessage("/" + label + " p8 <interacting causes and earlier correction> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
         player.sendMessage("P9 local recovery mirrors Copperline's real forms: /" + label + " p9-people <mkept | Ash | Rook | Wren traces>.");
         player.sendMessage("Then /" + label + " p9-window <archive treatment | readiness | strongest supported claim>.");
         player.sendMessage("P10 accepts three short findings: /" + label

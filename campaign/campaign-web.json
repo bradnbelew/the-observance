@@ -106,7 +106,7 @@
     {"from":"p7.relief-chronology","to":"p8.shifted-alarm","relationship":"recontextualizes","why":"Toma's true relief order turns the overwritten alarm from a clerical discrepancy into concealed response time."},
     {"from":"p7.supplier-history","to":"p7.public-correction","relationship":"corroborates","why":"Restored versions support material diversion without source-touch gating."},
     {"from":"p7.averyn-cache","to":"p7.public-correction","relationship":"causes_response","why":"The memorial can be corrected because distinct evidence roles converge."},
-    {"from":"p7.public-correction","to":"p8.intervention-plan","relationship":"teaches","why":"Players have already learned to separate evidence correction from system repair."},
+    {"from":"p7.public-correction","to":"p8.intervention-plan","relationship":"constrains","why":"The accepted Break model must carry forward the pre-Break record-edit pattern proven by Nessa's correction; P7 cannot become an unrelated closed file."},
     {"from":"p6.orin-certificate","to":"p8.fracture","relationship":"recontextualizes","why":"The conditional certificate becomes one contributor in a multi-cause failure."},
     {"from":"p6.brann-coverage","to":"p8.shifted-alarm","relationship":"recontextualizes","why":"Corrected watch evidence makes the overwritten bell a response-delay concealment."},
     {"from":"p6.iss-margin","to":"p8.clean-copy","relationship":"recontextualizes","why":"Iss's public edit explains why an official copy can be clean and still false."},

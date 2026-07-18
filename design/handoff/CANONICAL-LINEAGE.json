@@ -913,6 +913,11 @@
       "effect": "players now learn only which Keeper theory rows need review, not a missing keyword or canonical sentence. Each row still requires that person's proof, compromise, and later correction, accepts ordinary player language, and passes with zero source observations. Focused Paper predicate, Dialog compile, swap, retrieval-only, bounds, and one-row failure tests pass; final real-client layout and human wording review remain open."
     },
     {
+      "older": "P7 public exoneration acting only as a prerequisite before a P8 causal plan whose meaning predicate could leave the earlier falsification case behind",
+      "newer": "the connected P7-to-P8 causal model in P8InterventionPlanPredicate and Copperline's Hold works form",
+      "effect": "the P8 cause section now must carry forward, in ordinary player language, the fact that the record-edit pattern proven in Nessa's case already existed before the Break. Natural paraphrases still pass with zero observations, raw prose is not stored, and failure names only the unsupported model section rather than solution words. The campaign-web checker now rejects separation of P7 and P8 into unrelated cases; focused Next.js, Paper 1.21.11 predicate/compile, natural-answer, ARG-authority, relationship-web, and lineage checks pass. Final real-client and human experience review remain open."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"

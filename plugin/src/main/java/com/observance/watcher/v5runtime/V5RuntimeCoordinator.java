@@ -739,7 +739,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
             JsonObject plan = new JsonObject();
             plan.addProperty("finding_shape", "causes-iss-copy-boundary-order-v1");
-            plan.addProperty("causes", "old-fracture,unchanged-heat-load,paired-watch-gap,late-routing");
+            plan.addProperty("causes", "old-fracture,unchanged-heat-load,paired-watch-gap,late-routing,pre-break-record-edit-pattern");
             plan.addProperty("iss", "surface-proof-valid-route-unsafe");
             plan.addProperty("copy_boundary", "copy-behavior-proven-ontology-open");
             plan.addProperty("works_order", "water-filter,paired-light,pressure-bypass,staff-route");

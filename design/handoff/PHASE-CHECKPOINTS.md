@@ -634,3 +634,15 @@ open; M4 is still closed.
   when another person's row is incomplete or swapped.
 - Focused predicate, Dialog compile, natural-answer, field-swap, retrieval-only, overlong, and one-row failure
   tests pass. Final client layout and cold-human wording judgment remain reserved for the end-to-end test.
+
+## 2026-07-18 — P7's correction constrains the P8 Break model
+
+- Nessa's exoneration is no longer only an event prerequisite that can be mentally discarded. The P8 cause
+  section must retain the earlier record-edit pattern as part of the Break's concealment/delay lane, in any
+  ordinary defensible wording. It remains one short model section, not a hidden canonical sentence.
+- Copperline and the Paper command fallback now identify only unsupported sections—interacting causes, the
+  earlier record pattern, Iss's evidence/route finding, altered-copy boundary, or works order. They do not
+  return missing keywords, store raw prose, or require any observation/source receipt.
+- The campaign-web checker now fails if P7's public correction stops constraining P8 as a genuine callback.
+  Focused dashboard, Paper 1.21.11 predicate/compile, natural-answer, ARG-authority, evidence-web, and lineage
+  checks pass. The final client and whole-campaign human experience test remains open.
