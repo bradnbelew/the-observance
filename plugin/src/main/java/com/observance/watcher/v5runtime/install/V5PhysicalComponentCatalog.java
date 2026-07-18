@@ -8,6 +8,7 @@ import com.observance.watcher.structure.DeepHoldV4Plan;
 import com.observance.watcher.v5runtime.FixtureTransform.LocalOffset;
 import com.observance.watcher.v5runtime.PhysicalPredicateAuthority;
 import com.observance.watcher.v5runtime.PhysicalPredicateAuthorityLoader;
+import com.observance.watcher.v5runtime.P11IdentityAuthority;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,12 +178,13 @@ public final class V5PhysicalComponentCatalog {
 
     public static Catalog build(PhysicalPredicateAuthority authority) {
         Objects.requireNonNull(authority, "authority");
+        PhysicalPredicateAuthority effectiveAuthority = P11IdentityAuthority.apply(authority);
         List<NodePlan> nodePlans = new ArrayList<>();
         List<Address> all = new ArrayList<>();
         List<Finding> findings = new ArrayList<>();
         Set<String> globalOccupied = new LinkedHashSet<>();
 
-        for (PhysicalPredicateAuthority.Node node : authority.nodes()) {
+        for (PhysicalPredicateAuthority.Node node : effectiveAuthority.nodes()) {
             JsonObject predicate = JsonParser.parseString(node.predicate().canonicalJson()).getAsJsonObject();
             List<Address> addresses = expandNode(node, predicate, findings, globalOccupied);
             nodePlans.add(new NodePlan(node, node.predicate().canonicalJson(), addresses));
@@ -192,16 +194,16 @@ public final class V5PhysicalComponentCatalog {
                             || address.kind() == AddressKind.ITEM_DISPLAY)
                     .map(Address::addressKey).forEach(globalOccupied::add);
         }
-        all = relocateUnpositionedSyntheticAddresses(all, authority);
+        all = relocateUnpositionedSyntheticAddresses(all, effectiveAuthority);
         all = addEvaluationHandleSupports(all, findings);
         Map<String, List<Address>> byNode = new LinkedHashMap<>();
         for (Address address : all) byNode.computeIfAbsent(address.nodeId(), ignored -> new ArrayList<>()).add(address);
-        nodePlans = authority.nodes().stream().map(node -> new NodePlan(node,
+        nodePlans = effectiveAuthority.nodes().stream().map(node -> new NodePlan(node,
                 node.predicate().canonicalJson(), byNode.getOrDefault(node.nodeId(), List.of()))).toList();
         inspectBounds(all, findings);
         inspectRequiredMaterials(all, findings);
         inspectCollisions(all, findings);
-        return new Catalog(authority.sha256(), nodePlans, all, findings);
+        return new Catalog(effectiveAuthority.sha256(), nodePlans, all, findings);
     }
 
     private static List<Address> relocateUnpositionedSyntheticAddresses(

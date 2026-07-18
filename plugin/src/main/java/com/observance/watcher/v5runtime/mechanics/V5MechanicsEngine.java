@@ -8,6 +8,7 @@ import com.observance.watcher.v5runtime.EscrowEntry;
 import com.observance.watcher.v5runtime.EscrowStatus;
 import com.observance.watcher.v5runtime.ImplementationFamily;
 import com.observance.watcher.v5runtime.PhysicalPredicateAuthority;
+import com.observance.watcher.v5runtime.P11IdentityAuthority;
 import com.observance.watcher.v5runtime.PlayerBitDomain;
 import com.observance.watcher.v5runtime.PlayerProgress;
 import com.observance.watcher.v5runtime.PredicateCoverageCatalog;
@@ -57,7 +58,7 @@ public final class V5MechanicsEngine {
             ArtifactDelivery artifacts,
             AsyncMirror mirror,
             PlayerFeedback feedback) {
-        this.authority = Objects.requireNonNull(authority, "authority");
+        this.authority = P11IdentityAuthority.apply(Objects.requireNonNull(authority, "authority"));
         this.progress = Objects.requireNonNull(progress, "progress");
         this.externalFlags = Objects.requireNonNull(externalFlags, "externalFlags");
         this.worldState = Objects.requireNonNull(worldState, "worldState");
@@ -67,8 +68,8 @@ public final class V5MechanicsEngine {
         this.feedback = Objects.requireNonNull(feedback, "feedback");
         this.evaluator = new PhysicalPredicateEvaluator();
         this.mutexes = new SiteMutexes();
-        PhysicalPredicateEvaluator.validateCoverage(authority);
-        if (!progress.manifestSha256().equals(authority.sha256())) {
+        PhysicalPredicateEvaluator.validateCoverage(this.authority);
+        if (!progress.manifestSha256().equals(this.authority.sha256())) {
             throw new IllegalArgumentException("progress store authority hash mismatch");
         }
     }

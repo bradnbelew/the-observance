@@ -586,3 +586,17 @@ open; M4 is still closed.
   observation prerequisite, if active inputs lack actual predicate owners and negative paths, or if the exact
   artifact exception silently expands. Focused Paper, Discord, and Copperline predicate tests pass; the one
   final real-client layout and whole-campaign rehearsal remain intentionally deferred until the build closes.
+
+## 2026-07-18 — P11 identity is recoverable from six independent packaged routes
+
+- `campaign/p11-identity-routes.json` now binds Vaun, Mara, Sella, Orin, Brann, and Iss to six distinct
+  player-visible return operations whose letters synthesize `AVERYN` in already-established dossier order.
+  Each packaged affidavit contains its own fair return mark, but no single affidavit prints the full name.
+- The six physical returns no longer form a hidden A-to-N prerequisite ladder. After the recovered packet
+  exists, each route depends only on that Keeper's own affidavit and may be completed in any order or shared
+  by another player. Correct identity submission remains valid with zero observation receipts.
+- Orin's P11 return now uses one verified east bearing and a practical low sightline. The duplicated six-dial
+  station explicitly retired by Phase 2 is no longer part of the active P11 predicate.
+- `tools/check_p11_identity_routes.py` fails closed on missing book evidence, a full-name spoiler carrier,
+  sequential letter prerequisites, wrong fragment custody, source-touch gating, or restoration of the retired
+  Orin dial reuse. This closes implementation drift; final cold-human fairness remains part of the end test.

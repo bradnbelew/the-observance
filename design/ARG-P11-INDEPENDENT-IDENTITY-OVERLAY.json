@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0-p11-independent-identity-overlay",
+  "authority_type": "superseding_behavior_overlay",
+  "base_physical_authority": {
+    "path": "design/ARG-V5-PHYSICAL-PREDICATES.json",
+    "raw_sha256": "16de527496a6c4e3ae0fc093db07b74754be55193059f1c8d3fe9ab0c29a595a",
+    "bytes_immutable": true
+  },
+  "supersession": {
+    "reason": "Later Brad authority requires independent any-subset evidence routes, no source-touch prerequisite for correct knowledge, and retirement of the duplicated Orin six-dial station.",
+    "scope": ["AR02", "AR03", "AR04", "AR05", "AR06", "AR07"],
+    "history_policy": "The M2 predicate receipt remains exact evidence of the earlier sequential altar. This packaged overlay is current runtime authority for the six named returns.",
+    "human_experiential_approval": false
+  },
+  "global_rules": {
+    "archive_context_flag": "v5_ar01_not_kept",
+    "routes_independent": true,
+    "routes_any_order": true,
+    "source_receipts_gate_identity": false,
+    "correct_shared_identity_passes": true,
+    "fragment_delivery_idempotent": true
+  },
+  "nodes": [
+    {
+      "node_id": "AR02",
+      "legacy_kind": "affidavit_plus_first_unfiled_column_selection",
+      "effective_kind": "affidavit_plus_first_unfiled_column_selection",
+      "effective_prerequisites": ["v5_ar01_not_kept", "v5_kv03_affidavit"]
+    },
+    {
+      "node_id": "AR03",
+      "legacy_kind": "affidavit_plus_verified_revision_selection",
+      "effective_kind": "affidavit_plus_verified_revision_selection",
+      "effective_prerequisites": ["v5_ar01_not_kept", "v5_km03_affidavit"]
+    },
+    {
+      "node_id": "AR04",
+      "legacy_kind": "affidavit_plus_backwater_intake_alignment",
+      "effective_kind": "affidavit_plus_backwater_intake_alignment",
+      "effective_prerequisites": ["v5_ar01_not_kept", "v5_ks03_affidavit"]
+    },
+    {
+      "node_id": "AR05",
+      "legacy_kind": "affidavit_plus_six_bearings_and_crouch",
+      "effective_kind": "affidavit_plus_verified_bearing_and_low_sightline",
+      "effective_prerequisites": ["v5_ar01_not_kept", "v5_ko03_affidavit"],
+      "effective_predicate": {
+        "kind": "affidavit_plus_verified_bearing_and_low_sightline",
+        "evaluation_trigger": "insert Orin affidavit, set the verified third-bay bearing EAST, crouch in the low inspection cut for 10 ticks, and pull the reader",
+        "components": [
+          {"id":"affidavit_slot","block":"BARREL","offset":[1,0,0],"slot":13,"required_item":{"material":"WRITTEN_BOOK","pdc":{"v5_artifact_id":"affidavit_orin"}}},
+          {"id":"bearing","block":"ITEM_FRAME","offset":[2,1,0],"material":"COMPASS","pdc":{"v5_control_id":"ar05_bearing"},"legend":{"0":"NORTH","2":"EAST","4":"SOUTH","6":"WEST"},"required_rotation":2},
+          {"id":"crouch_cell","offset":[2,0,2],"posture":"SNEAKING","hold_ticks":10,"reveals":"R"}
+        ],
+        "all_of": [
+          {"op":"slot_exact_item","component":"affidavit_slot","item_pdc":{"v5_artifact_id":"affidavit_orin"},"amount":1},
+          {"op":"frame_rotation_exact","component":"bearing","value":2},
+          {"op":"player_in_cell_posture_for_ticks","component":"crouch_cell"}
+        ],
+        "commit": "return affidavit and deliver R Fragment"
+      },
+      "effective_wrong_input": {
+        "policy": "return_wrong_item_preserve_bearing_reset_hold",
+        "feedback": "Reader reports AFFIDAVIT, BEARING, or LOW SIGHTLINE mismatch.",
+        "state_effect": "none"
+      },
+      "effective_reset_repair_recovery": {
+        "reset": "return affidavit, bearing to NORTH, clear hold timer",
+        "repair": "restore reader/bearing frame/crouch cell/headroom/handle and affidavit recovery",
+        "recovery": "reissue R Fragment only from v5_ar05_r after duplicate scan"
+      }
+    },
+    {
+      "node_id": "AR06",
+      "legacy_kind": "affidavit_plus_bell_nine_empty_hour_pair",
+      "effective_kind": "affidavit_plus_bell_nine_empty_hour_pair",
+      "effective_prerequisites": ["v5_ar01_not_kept", "v5_kb03_affidavit"]
+    },
+    {
+      "node_id": "AR07",
+      "legacy_kind": "affidavit_plus_explicit_false_initial_rejection",
+      "effective_kind": "affidavit_plus_explicit_false_initial_rejection",
+      "effective_prerequisites": ["v5_ar01_not_kept", "v5_ki03_affidavit"]
+    }
+  ]
+}

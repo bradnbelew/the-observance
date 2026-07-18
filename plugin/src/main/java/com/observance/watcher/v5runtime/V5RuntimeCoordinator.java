@@ -134,7 +134,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
 
     public V5RuntimeCoordinator(ObservancePlugin plugin) throws IOException {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
-        this.authority = PhysicalPredicateAuthorityLoader.loadDefault();
+        this.authority = P11IdentityAuthority.apply(PhysicalPredicateAuthorityLoader.loadDefault());
         PredicateCoverageCatalog.validateAgainst(authority);
 
         Path base = plugin.getDataFolder().toPath().resolve("v5");

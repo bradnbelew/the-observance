@@ -643,7 +643,7 @@ The recovered archive is automatically available after C08. `field_audio_03.wav`
 
 ### AR02 — Vaun / A
 
-The recovered archive index says `first unfiled column`. Apply KV03's decoded instruction and select the first omitted stores column: **A**.
+The recovered archive index says `first unfiled column`. Vaun's return note identifies the first column he admits he withheld as column **A**. The earlier Caesar shift is provenance for the real reconciliation, not a second required decode.
 
 - H1: use Vaun's second column and the archive index.
 - H2: “first” is an index, not a Caesar key this time.
@@ -667,10 +667,10 @@ Read the water transfer from the back at the intake-A alignment. The exposed let
 
 ### AR05 — Orin / R
 
-At crouched inspection height, the verified bearing crosses the affidavit's **R** mark.
+Set the single verified third-bay bearing east. At practical low inspection height, that bearing crosses the affidavit's **R** cut in `FRACTURE`. This reuses Orin's material sightline without reviving the retired six-dial station.
 
 - H1: posture and bearing were both previously taught.
-- H2: set KO02 dials then crouch at the center cut.
+- H2: set the one bearing east, then crouch at the low inspection cut.
 - H3: R.
 
 ### AR06 — Brann / Y
@@ -691,7 +691,7 @@ Iss's warm first-letter route offers false `M` from MERCY. The physically correc
 
 ### AR08 — AVERYN
 
-Assemble `A V E R Y N` and submit `AVERYN`. The Unwriting opens and reveals her roles: registrar, Cistern analyst, returning rescuer, human interface of the Record.
+The six routes may be recovered in any order. Assemble them in the established Keeper dossier order—Vaun, Mara, Sella, Orin, Brann, Iss—and submit `AVERYN`. A correct identity passes even when another player supplied the letters and no source-observation receipts exist. The Unwriting then asks players to establish her roles: registrar, Cistern analyst, returning rescuer, and human interface of the Record.
 
 - H1: keep letter order by Keeper dossier order in the archive.
 - H2: Vaun / Mara / Sella / Orin / Brann / Iss.

@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "authority": "P11 identity is a six-source reconstruction, not a seventh-Keeper count and not a source-touch quota.",
+  "unlock_context": {
+    "event": "p10.wren_remembrance_committed",
+    "archive_entry": "/community/archive/recovered-packet",
+    "inciting_signal": "I WAS NOT KEPT",
+    "live_unknown": "Which erased person produced the constrained signal, and how do the six culpable affidavits route back to that person?"
+  },
+  "rules": {
+    "routes_are_independent": true,
+    "routes_may_be_completed_in_any_order": true,
+    "correct_identity_requires_observation_receipts": false,
+    "single_source_prints_complete_identity": false,
+    "letters_are_culpability_routes_not_roster_slots": true,
+    "legacy_orin_six_dial_reuse": false
+  },
+  "keeper_order": ["Vaun", "Mara", "Sella", "Orin", "Brann", "Iss"],
+  "routes": [
+    {
+      "keeper": "Vaun",
+      "evidence_id": "p11.e03",
+      "book_id": "vaun_sealed_affidavit",
+      "letter": "A",
+      "earlier_method": "reconciliation and omitted stores columns",
+      "return_operation": "Use the first column Vaun admits he left unfiled; do not repeat the Caesar shift.",
+      "required_book_phrases": ["first column I left unfiled", "headed A"],
+      "prerequisite_flag": "v5_kv03_affidavit",
+      "completion_flag": "v5_ar02_a"
+    },
+    {
+      "keeper": "Mara",
+      "evidence_id": "p11.e04",
+      "book_id": "mara_sealed_affidavit",
+      "letter": "V",
+      "earlier_method": "edition provenance and revision marks",
+      "return_operation": "Authenticate E3, then read Mara's short revision cut in its original position.",
+      "required_book_phrases": ["genuine E3", "V in DIVERSION"],
+      "prerequisite_flag": "v5_km03_affidavit",
+      "completion_flag": "v5_ar03_v"
+    },
+    {
+      "keeper": "Sella",
+      "evidence_id": "p11.e05",
+      "book_id": "sella_sealed_affidavit",
+      "letter": "E",
+      "earlier_method": "materially caused reverse transfer and true-intake alignment",
+      "return_operation": "Align the damp reverse at Intake A and read the letter the front hearing copy covered.",
+      "required_book_phrases": ["damp reverse at Intake A", "E in LOWER"],
+      "prerequisite_flag": "v5_ks03_affidavit",
+      "completion_flag": "v5_ar04_e"
+    },
+    {
+      "keeper": "Orin",
+      "evidence_id": "p11.e06",
+      "book_id": "orin_sealed_affidavit",
+      "letter": "R",
+      "earlier_method": "verified third-bay bearing and practical low sightline",
+      "return_operation": "Set the single verified bearing east and inspect from the low cut; the sightline crosses Orin's return mark.",
+      "required_book_phrases": ["bearing EAST", "R I cut into FRACTURE"],
+      "prerequisite_flag": "v5_ko03_affidavit",
+      "completion_flag": "v5_ar05_r"
+    },
+    {
+      "keeper": "Brann",
+      "evidence_id": "p11.e07",
+      "book_id": "brann_sealed_affidavit",
+      "letter": "Y",
+      "earlier_method": "paired watch, corrected bell, and empty relief cell",
+      "return_operation": "Pair bell nine with the empty relief cell and use the surviving visual watch mark.",
+      "required_book_phrases": ["Pair bell nine", "watch mark is Y"],
+      "prerequisite_flag": "v5_kb03_affidavit",
+      "completion_flag": "v5_ar06_y"
+    },
+    {
+      "keeper": "Iss",
+      "evidence_id": "p11.e08",
+      "book_id": "iss_sealed_affidavit",
+      "letter": "N",
+      "earlier_method": "correct decode, false moral reading, and provenance correction",
+      "return_operation": "Keep MERCY as the mechanically correct false M, then use the restored cut NAME IS NOT MERCY for N.",
+      "required_book_phrases": ["NAME IS NOT MERCY", "begins with N"],
+      "prerequisite_flag": "v5_ki03_affidavit",
+      "completion_flag": "v5_ar07_n"
+    }
+  ],
+  "synthesis": {
+    "artifact": "AVERYN",
+    "ordering_key": "the six named Keeper dossiers, whose identities and professions were established in P6",
+    "minecraft_fallback": "/observancefinding p11-name <six-letter artifact>",
+    "discord_input": "/investigate restore-name name:<six-letter artifact>",
+    "predicate_owners": [
+      "plugin/src/main/java/com/observance/watcher/v5runtime/P11AverynIdentityPredicate.java",
+      "discord/src/bot/commands/investigate.ts"
+    ],
+    "zero_observation_acceptance": true,
+    "next_action": "Arrange the four-part Averyn / Record / Watcher / Dark relationship while leaving Averyn's Record socket empty."
+  }
+}

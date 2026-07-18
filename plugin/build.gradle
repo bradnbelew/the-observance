@@ -96,6 +96,7 @@ def pluginSelfTests = [
     , p9CampPredicate: 'com.observance.watcher.v5runtime.P9CampPredicateSelfTest'
     , p10WrenTransmissionPredicate: 'com.observance.watcher.v5runtime.P10WrenTransmissionPredicateSelfTest'
     , p11AverynIdentityPredicate: 'com.observance.watcher.v5runtime.P11AverynIdentityPredicateSelfTest'
+    , p11IdentityAuthority: 'com.observance.watcher.v5runtime.P11IdentityAuthoritySelfTest'
     , p5CurationState: 'com.observance.watcher.v5runtime.P5CurationStateSelfTest'
 ]
 
@@ -140,6 +141,7 @@ tasks.named('processResources') {
         include 'ARG-V5-RUNTIME-BINDINGS.csv'
         include 'ARG-V5-PHYSICAL-PREDICATES.json'
         include 'ARG-P12-ANY-SUBSET-OVERLAY.json'
+        include 'ARG-P11-INDEPENDENT-IDENTITY-OVERLAY.json'
         include 'DEEP-HOLD-GATE-MANIFEST.csv'
         include 'DEEP-HOLD-RECORD-STATION-MANIFEST.csv'
         into 'v5/authority'
