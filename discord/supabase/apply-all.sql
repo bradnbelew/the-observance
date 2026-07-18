@@ -2009,6 +2009,7 @@ values
   ('p8.hold_systems_repaired','P8','{p8.intervention_plan_accepted}','{minecraft}','{minecraft,copperline,discord,npc}'),
   ('p9.company_biographies_restored','P9','{p8.hold_systems_repaired}','{minecraft,copperline,discord}','{minecraft,copperline,discord,media}'),
   ('p9.leak_window_proven','P9','{p9.company_biographies_restored}','{minecraft,discord,media}','{minecraft,copperline,discord,media,npc}'),
+  ('p10.player_copy_proof','P10','{p9.leak_window_proven}','{minecraft}','{minecraft,copperline,discord,dashboard}'),
   ('p10.wren_confronted','P10','{p9.leak_window_proven}','{minecraft,discord,npc}','{minecraft,copperline,discord,npc}'),
   ('p10.wren_remembrance_committed','P10','{p10.wren_confronted}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),
   ('p11.averyn_identified','P11','{p10.wren_remembrance_committed}','{minecraft,discord,media}','{minecraft,copperline,discord,npc}'),

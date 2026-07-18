@@ -159,7 +159,17 @@ Record:
 - non-audio access to every required signal;
 - what changed between expeditions and why players returned;
 - how surface discoveries reinterpreted a house and vice versa;
-- the exact arranged input and deterministic altered copy;
+- at the registered surface, use the physical selectors to arrange six marks drawn only from water,
+  heat, watch, and record; include record and at least three civic roles, then use the physical send
+  control. Use `/obscopy set <1-6> <water|heat|watch|record>` and `/obscopy confirm` only as the
+  tested accessibility/recovery path, not as the expected first interaction;
+- the exact arranged input and deterministic altered copy: each three-cell row returns mirrored and
+  exactly the first copied record mark becomes watch; no other cell changes;
+- after the local return appears, refresh Copperline's retained Wren moderation chronology and run
+  Discord `/investigate status`. Both must acknowledge the same copy event without revealing a new
+  confession, resolving the Dark, or claiming that Copperline received player text or identity;
+- reset/retry, duplicate-confirm, and a different second-pattern attempt. The committed pattern must
+  remain stable, the duplicate must be idempotent, and the different pattern must be refused;
 - restart and absent-player recovery;
 - any ontology claim that improperly resolves what the Dark is.
 

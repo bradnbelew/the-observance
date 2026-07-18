@@ -35,6 +35,13 @@ check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].prerequisites[0]
 check(ARG_EVENT_DEFINITIONS['p8.hold_systems_repaired'].prerequisites[0]
   === 'p8.intervention_plan_accepted',
   'P8 physical repair must project only after a bounded safe intervention plan');
+check(ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].sourceSurfaces.length === 1
+  && ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].sourceSurfaces[0] === 'minecraft',
+  'bounded player copy proof must be owned by its physical Paper predicate');
+check(ARG_EVENT_DEFINITIONS['p10.player_copy_proof'].projectionSurfaces.includes('copperline'),
+  'the bounded player copy must cause an authored Copperline response');
+check(migration.includes("('p10.player_copy_proof','P10','{p9.leak_window_proven}','{minecraft}','{minecraft,copperline,discord,dashboard}')"),
+  'database must carry the exact bounded player-copy event and projection surfaces');
 for (const table of ['arg_event_definitions', 'arg_events', 'arg_event_projections']) {
   check(migration.includes(`alter table public.${table} enable row level security`), `${table} must enable RLS`);
   check(migration.includes(`revoke all on public.${table} from public, anon, authenticated`),

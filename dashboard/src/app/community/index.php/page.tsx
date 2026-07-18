@@ -25,6 +25,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const p8Repaired = await hasCampaignEvent('p8.hold_systems_repaired');
   const p9People = await hasCampaignEvent('p9.company_biographies_restored');
   const p9Leak = await hasCampaignEvent('p9.leak_window_proven');
+  const p10CopyProof = await hasCampaignEvent('p10.player_copy_proof');
   const p10Confronted = await hasCampaignEvent('p10.wren_confronted');
   const p10Remembered = await hasCampaignEvent('p10.wren_remembrance_committed');
   const p11Identified = await hasCampaignEvent('p11.averyn_identified');
@@ -55,7 +56,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     ...p8Posts,
   ] : p8Posts;
   const p10Posts = p9Leak === true ? [
-    { date: 'April 27, 2011', user: 'copperline-moderation', title: p10Remembered === true ? 'comment 4417: finding and remembrance attached' : p10Confronted === true ? 'comment 4417: transmission finding attached' : 'comment 4417: retained moderation chronology', body: p10Remembered === true ? 'The group’s remembrance choice now sits beside fixed attribution facts and an unchanged moderation history.' : p10Confronted === true ? 'The current finding is attached to packet progression and Rook’s counter-mark; Copperline did not restore a missing confession.' : 'A removed Wren comment retains account, edit, report, moderation, and public-upload times—but not the missing words.', href: '/community/archive/wren-moderation' },
+    { date: 'April 27, 2011', user: 'copperline-moderation', title: p10Remembered === true ? 'comment 4417: finding and remembrance attached' : p10Confronted === true ? 'comment 4417: transmission finding attached' : p10CopyProof === true ? 'comment 4417: mirror return attached' : 'comment 4417: retained moderation chronology', body: p10Remembered === true ? 'The group’s remembrance choice now sits beside fixed attribution facts and an unchanged moderation history.' : p10Confronted === true ? 'The current finding is attached to packet progression and Rook’s counter-mark; Copperline did not restore a missing confession.' : p10CopyProof === true ? 'A bounded six-mark return is now preserved beside the old chronology. Copperline stores the pattern receipt and the one-mark difference, not player text or identity.' : 'A removed Wren comment retains account, edit, report, moderation, and public-upload times—but not the missing words.', href: '/community/archive/wren-moderation' },
     ...p9Posts,
   ] : p9Posts;
   const p11Posts = p10Remembered === true ? [
