@@ -1376,6 +1376,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
 
         Set<String> touched = new HashSet<>();
+        List<Site> safeSites = unlitSafeSites(world);
         int changed = 0;
         int anchors = 0;
         if (fullBorder) {
@@ -1386,7 +1387,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                         + " before running /obs unlit darken all.");
                 return;
             }
-            changed = darkenUnlitStrayLightsInBorder(center, radius, touched);
+            changed = darkenUnlitStrayLightsInBorder(center, radius, touched, safeSites);
             sender.sendMessage("Observance: Unlit full darken scrub checked the border area at radius " + radius
                     + " and removed/dimmed " + changed + " unauthorized light source(s).");
         } else {
@@ -1396,7 +1397,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 if (site == null || !site.isPlaced() || loc == null || loc.getWorld() == null) continue;
                 if (!loc.getWorld().getName().equals(world.getName())) continue;
                 anchors++;
-                changed += darkenUnlitStrayLightsNear(loc, radius, touched);
+                changed += darkenUnlitStrayLightsNear(loc, radius, touched, safeSites);
             }
             sender.sendMessage("Observance: Unlit anchor darken scrub checked " + anchors
                     + " anchors at radius " + radius + " and removed/dimmed " + changed
@@ -1716,11 +1717,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private UnlitLightScan scanUnlitStrayLights(World world) {
         UnlitLightScan scan = new UnlitLightScan();
         Set<String> seen = new HashSet<>();
+        List<Site> safeSites = unlitSafeSites(world);
         Site spawn = plugin.sites() == null ? null : plugin.sites().get("unlit_spawn_mirror");
         Location center = spawn == null ? null : spawn.location();
         if (center != null && center.getWorld() != null && center.getWorld().getName().equals(world.getName())) {
             int radius = Math.max(16, Math.min(256, plugin.getConfig().getInt("unlit.border-radius", 96)));
-            scanUnlitStrayLightsInBorder(center, radius, seen, scan);
+            scanUnlitStrayLightsInBorder(center, radius, seen, scan, safeSites);
             return scan;
         }
         for (String id : unlitRequiredSites()) {
@@ -1728,12 +1730,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             Location loc = site == null ? null : site.location();
             if (site == null || !site.isPlaced() || loc == null || loc.getWorld() == null) continue;
             if (!loc.getWorld().getName().equals(world.getName())) continue;
-            scanUnlitStrayLightsNear(loc, 10, seen, scan);
+            scanUnlitStrayLightsNear(loc, 10, seen, scan, safeSites);
         }
         return scan;
     }
 
-    private void scanUnlitStrayLightsInBorder(Location center, int radius, Set<String> seen, UnlitLightScan scan) {
+    private void scanUnlitStrayLightsInBorder(Location center, int radius, Set<String> seen,
+                                               UnlitLightScan scan, List<Site> safeSites) {
         if (center == null || center.getWorld() == null || scan == null) return;
         World world = center.getWorld();
         int r = Math.max(16, Math.min(256, radius));
@@ -1746,7 +1749,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     Block block = world.getBlockAt(cx + dx, y, cz + dz);
                     String key = blockKey(block);
                     if (!seen.add(key)) continue;
-                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (isInsideUnlitSafe(block.getLocation(), safeSites)) continue;
                     if (!isUnauthorizedUnlitLight(block)) continue;
                     scan.count++;
                     if (scan.firstType == null) {
@@ -1760,7 +1763,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void scanUnlitStrayLightsNear(Location loc, int radius, Set<String> seen, UnlitLightScan scan) {
+    private void scanUnlitStrayLightsNear(Location loc, int radius, Set<String> seen,
+                                          UnlitLightScan scan, List<Site> safeSites) {
         if (loc == null || loc.getWorld() == null || scan == null) return;
         World world = loc.getWorld();
         int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
@@ -1771,7 +1775,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     Block block = world.getBlockAt(bx + dx, by + dy, bz + dz);
                     String key = blockKey(block);
                     if (!seen.add(key)) continue;
-                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (isInsideUnlitSafe(block.getLocation(), safeSites)) continue;
                     if (!isUnauthorizedUnlitLight(block)) continue;
                     scan.count++;
                     if (scan.firstType == null) {
@@ -1785,7 +1789,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private int darkenUnlitStrayLightsNear(Location loc, int radius, Set<String> seen) {
+    private int darkenUnlitStrayLightsNear(Location loc, int radius, Set<String> seen,
+                                            List<Site> safeSites) {
         if (loc == null || loc.getWorld() == null) return 0;
         World world = loc.getWorld();
         int changed = 0;
@@ -1797,7 +1802,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     Block block = world.getBlockAt(bx + dx, by + dy, bz + dz);
                     String key = blockKey(block);
                     if (!seen.add(key)) continue;
-                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (isInsideUnlitSafe(block.getLocation(), safeSites)) continue;
                     if (!isUnauthorizedUnlitLight(block)) continue;
                     darkenUnlitLightBlock(block);
                     changed++;
@@ -1807,7 +1812,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return changed;
     }
 
-    private int darkenUnlitStrayLightsInBorder(Location center, int radius, Set<String> seen) {
+    private int darkenUnlitStrayLightsInBorder(Location center, int radius, Set<String> seen,
+                                                List<Site> safeSites) {
         if (center == null || center.getWorld() == null) return 0;
         World world = center.getWorld();
         int changed = 0;
@@ -1821,7 +1827,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     Block block = world.getBlockAt(cx + dx, y, cz + dz);
                     String key = blockKey(block);
                     if (!seen.add(key)) continue;
-                    if (isInsideUnlitSafe(block.getLocation())) continue;
+                    if (isInsideUnlitSafe(block.getLocation(), safeSites)) continue;
                     if (!isUnauthorizedUnlitLight(block)) continue;
                     darkenUnlitLightBlock(block);
                     changed++;
@@ -1831,10 +1837,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         return changed;
     }
 
-    private boolean isInsideUnlitSafe(Location loc) {
-        if (loc == null || loc.getWorld() == null || plugin.sites() == null) return false;
-        for (Site site : plugin.sites().placed()) {
-            if (!"unlit_safe".equals(site.type())) continue;
+    private List<Site> unlitSafeSites(World world) {
+        if (world == null || plugin.sites() == null) return List.of();
+        return plugin.sites().placed().stream()
+                .filter(site -> "unlit_safe".equals(site.type()))
+                .filter(site -> world.getName().equals(site.worldName()))
+                .toList();
+    }
+
+    private boolean isInsideUnlitSafe(Location loc, List<Site> safeSites) {
+        if (loc == null || loc.getWorld() == null || safeSites == null) return false;
+        for (Site site : safeSites) {
             if (site.contains(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ())) return true;
         }
         return false;

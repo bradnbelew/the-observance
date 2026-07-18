@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.npc.V5DialogueCatalog;
 import com.observance.watcher.structure.V5RuntimePredicateRegistry;
+import com.observance.watcher.structure.V5AuthorityManifest;
 import com.observance.watcher.v5runtime.container.BukkitContainerCustody;
 import com.observance.watcher.v5runtime.container.BukkitContainerListener;
 import com.observance.watcher.v5runtime.container.BukkitContainerTriggerAudit;
@@ -627,7 +628,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         addBlockers(findings, lastBindingReport);
         addBlockers(findings, lastMapReport);
         if (plugin.v5HoldMouth() != null) {
-            findings.addAll(BukkitContainerTriggerAudit.findings(fixtures));
+            findings.addAll(BukkitContainerTriggerAudit.findings(
+                    fixtures, this::containerTriggerSiteChunkLoaded));
         }
         if (plugin.supabase() != null && plugin.supabase().isConfigured()
                 && !remote.metadataValidated()) {
@@ -640,6 +642,24 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             findings.add("LS06 Discord handoff URL is missing or invalid");
         }
         return List.copyOf(findings);
+    }
+
+    /**
+     * The exact fixture registry intentionally contains loaded chunks only. Missing bindings are
+     * blockers when their authored chunk is loaded; an unloaded distant Hold chunk is deferred
+     * until ChunkLoadEvent rebinds it and must not make the Unlit world fail readiness.
+     */
+    private boolean containerTriggerSiteChunkLoaded(String nodeId) {
+        V5AuthorityManifest.RuntimeBinding binding = V5AuthorityManifest.runtimeBindings().stream()
+                .filter(candidate -> candidate.nodeId().equals(nodeId))
+                .findFirst().orElse(null);
+        var site = binding == null || plugin.sites() == null
+                ? null : plugin.sites().get(binding.siteId());
+        World world = site == null ? null : Bukkit.getWorld(site.worldName());
+        boolean chunkLoaded = world != null && site != null && site.isPlaced()
+                && world.isChunkLoaded(site.x().intValue() >> 4, site.z().intValue() >> 4);
+        return BukkitContainerTriggerAudit.requireForLoadedChunk(
+                binding != null, site != null && site.isPlaced(), world != null, chunkLoaded);
     }
 
     @EventHandler

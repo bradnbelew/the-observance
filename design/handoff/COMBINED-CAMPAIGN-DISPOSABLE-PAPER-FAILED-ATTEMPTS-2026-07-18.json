@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0-combined-campaign-disposable-paper-failed-attempts",
+  "attempts": [
+    {
+      "attempt": 1,
+      "source_commit": "0a0ec332f577e7fcd3ced66dc98249c5a390becc",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-0a0ec33-01",
+      "address": "127.0.0.1:25606",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "b5b867e4f146e4005f0b74a6e7d6a4f024c9e860c203e52f81982cc37c0736a0",
+      "first_log_sha256": "5c554ba1ee8e7a50ad5172c92997d45db3e0321ba270e285008626e0ac41b49a",
+      "passed_before_failure": [
+        "Deep Hold build completed with 76/76 canonical sites",
+        "Deep Hold physical audit reported launch-placeable",
+        "Unlit candidate built eight houses/base with 34 exact mechanics addresses",
+        "bounded copy proof installed and committed pattern 852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+        "post-copy Deep Hold physical audit remained launch-placeable"
+      ],
+      "failure": "After the distant Unlit scan evicted Hold chunks, runtime readiness reported zero loaded cache_seal and housing_latch controls for CW07 and HS02. The loaded-chunk fixture index was working as designed, but global readiness incorrectly treated deliberately unloaded exact Hold controls as destroyed controls. The border light scan also repeatedly rebuilt the complete placed-site list for roughly 1.5 million checked blocks and triggered a recovered Paper watchdog warning.",
+      "exact_findings": [
+        "CW07 requires exactly one bound cache_seal/evaluation_handle control, found 0",
+        "HS02 requires exactly one bound housing_latch/evaluation_handle control, found 0"
+      ],
+      "harness_result": "failed closed while waiting for post-copy Gate: READY; no readiness receipt was published",
+      "shutdown": "The harness finally block stopped only this disposable Paper process. Paper recorded Observance disable, every dimension saved, RegionFile completion, and worker/I/O pool termination. PID and port 25606 are absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
+    }
+  ],
+  "resolution": "Source now audits exact synthetic controls only while their authored chunks are loaded; ChunkLoadEvent still rebinds them before interaction. Missing controls in loaded chunks remain blockers. The Unlit light scan now snapshots same-world unlit_safe sites once per scan instead of re-enumerating all sites per block. Full plugin build/self-tests pass; a fresh create-only target and unused port remain required.",
+  "brad_approval": null
+}

@@ -87,6 +87,7 @@ def pluginSelfTests = [
     , argVerticalSliceEvidence: 'com.observance.watcher.arg.ArgVerticalSliceEvidenceSelfTest'
     , unlitCopyProofState: 'com.observance.watcher.v5runtime.unlit.UnlitCopyProofStateSelfTest'
     , unlitVillageCandidatePlan: 'com.observance.watcher.structure.UnlitVillageCandidatePlanSelfTest'
+    , containerTriggerReadiness: 'com.observance.watcher.v5runtime.container.BukkitContainerTriggerAuditSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
