@@ -32,9 +32,9 @@ def configure(target: Path, paper: Path, plugin: Path, target_id: str, commit: s
 def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
     first = base.PaperProcess(target, java)
     try:
+        runtime_ready = first.wait_for("ARG_VERTICAL_SLICE_READY", 300)
         confirmation = wait_for_confirmation(first)
         first.wait_for("Done (", 300)
-        runtime_ready = first.wait_for("ARG_VERTICAL_SLICE_READY", 30)
         build = first.command("obsm3 build", "M3_BUILD_COMPLETE", 300)
         initial = first.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
         closed = first.command("obsm3 audit", "M3_AUDIT PASS")
@@ -52,9 +52,9 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
 
     second = base.PaperProcess(target, java)
     try:
+        second_ready = second.wait_for("ARG_VERTICAL_SLICE_READY", 300)
         second_confirmation = wait_for_confirmation(second)
         second.wait_for("Done (", 300)
-        second.wait_for("ARG_VERTICAL_SLICE_READY", 30)
         before_correct = second.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
         correct = second.command(
             "obsm3 arg-theory the hold sheltered families before safety became control",
@@ -75,9 +75,9 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
 
     third = base.PaperProcess(target, java)
     try:
+        restart_ready = third.wait_for("ARG_VERTICAL_SLICE_READY", 300)
         restart_confirmation = wait_for_confirmation(third)
         third.wait_for("Done (", 300)
-        restart_ready = third.wait_for("ARG_VERTICAL_SLICE_READY", 30)
         restarted = third.command("obsm3 arg-status", "theory=true service_public=true penalty_custody=true curated=true")
         restart_audit = third.command("obsm3 audit", "M3_AUDIT PASS")
         restart_security = third.command("obsm3 security", "M3_SECURITY_PASS")
@@ -98,7 +98,8 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
         "platform_confirmation": confirmation, "runtime_ready": runtime_ready, "build": build,
         "initial_state": initial, "closed_audit": closed, "security_closed": security_closed,
         "wrong_theory": wrong, "state_after_wrong": after_wrong, "wrong_audit": wrong_audit,
-        "second_confirmation": second_confirmation, "before_zero_observation_correct": before_correct,
+        "second_runtime_ready": second_ready, "second_confirmation": second_confirmation,
+        "before_zero_observation_correct": before_correct,
         "zero_observation_correct": correct, "open_audit": open_audit, "security_open": security_open,
         "service_selection": service, "partial_curation": partial, "penalty_selection": penalty,
         "curated_state": curated, "curated_audit": curated_audit,
