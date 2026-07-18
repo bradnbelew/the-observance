@@ -2,7 +2,7 @@
   "schema_version": "1.0.0-whole-campaign-offline-candidate-receipt",
   "recorded_at": "2026-07-17T19:57:41-05:00",
   "branch": "codex/m3-disposable-paper-gate",
-  "source_commit": "670b7adb1ca2f7d87f7cddfab068510321189862",
+  "source_commit": "60e0317d6f408df908919c69839ca0be56b16b05",
   "scope": "broadest honest offline/private package candidate; not hosted, not production, not Brad-approved",
   "p4_live_evidence_hold": {
     "address": "127.0.0.1:25593",

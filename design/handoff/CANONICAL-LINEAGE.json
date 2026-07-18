@@ -488,7 +488,7 @@
   },
   "whole_campaign_offline_candidate": {
     "status": "P5-P12 current-standard authored offline pack, three-surface projection, packaged fail-closed Paper authority, deterministic simulation, routed build/package chain, and media custody readback pass; hosted staging, fresh P5-P12 client placement, whole-campaign rehearsal, and Brad acceptance remain open",
-    "source_commit": "670b7adb1ca2f7d87f7cddfab068510321189862",
+    "source_commit": "60e0317d6f408df908919c69839ca0be56b16b05",
     "campaign_authority": "campaign/p5-p12/campaign.json",
     "receipt": "design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
     "deploy_manifest": "design/handoff/PRIVATE-STAGING-DEPLOY-MANIFEST-2026-07-17.json",

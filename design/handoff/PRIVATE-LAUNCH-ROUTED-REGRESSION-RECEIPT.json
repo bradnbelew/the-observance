@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0-private-launch-routed-regression",
   "run_time": "2026-07-17T19:57:41-05:00",
-  "source_checkpoint": "670b7adb1ca2f7d87f7cddfab068510321189862",
+  "source_checkpoint": "60e0317d6f408df908919c69839ca0be56b16b05",
   "branch": "codex/m3-disposable-paper-gate",
   "result": "complete routed static/build/package chain passed from a clean commit; live hosted resource-pack and external-media delivery checks explicitly skipped; production untouched",
   "routed_chain": {

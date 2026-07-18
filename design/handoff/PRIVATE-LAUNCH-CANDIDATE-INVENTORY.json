@@ -2,7 +2,7 @@
   "schema_version": "1.0.0-private-launch-candidate-inventory",
   "authority": "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
   "inventory_time": "2026-07-17T19:57:41-05:00",
-  "source_checkpoint": "670b7adb1ca2f7d87f7cddfab068510321189862",
+  "source_checkpoint": "60e0317d6f408df908919c69839ca0be56b16b05",
   "interpretation": "The 82-node V5 implementation remains reusable technical breadth. P5-P12 now also have a current-standard authored offline campaign pack, executable fail-closed Paper authority, byte-identical web/Discord projections, deterministic state simulation, and exact media custody readback; this is not a claim of client placement review, hosted deployment, or Brad approval.",
   "legacy_runtime_inventory": {
     "node_manifest": "design/ARG-V5-NODE-MANIFEST.csv",
