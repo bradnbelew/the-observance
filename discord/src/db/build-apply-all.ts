@@ -79,6 +79,8 @@ const ORDER: readonly string[] = [
   'discord/supabase/seeds/progression_seed.sql',
   // V5 must be last: it retires every old authored row after legacy seeds finish their audit-preserving upserts.
   'discord/supabase/seeds/v5_investigations.sql',
+  // This supersession must follow every legacy seed or a rebuild could reactivate the stale category runtime.
+  'discord/supabase/migrations/0019_retire_superseded_seventh_runtime.sql',
   // ---- plugin<->DB schema reconciliation (adds columns/indexes the plugin upserts need) ----
   'discord/supabase/schema-repair.sql',
 ];

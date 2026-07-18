@@ -481,6 +481,25 @@ def main() -> None:
             and "wren leaked the plan" not in v5_seed.casefold()
             and "wren is the only remaining source" not in v5_seed.casefold(),
             "P9 legacy compatibility path still reveals Wren before P10 proves attribution")
+    seventh_retirement = (ROOT / "discord/supabase/migrations/0019_retire_superseded_seventh_runtime.sql").read_text(encoding="utf-8")
+    seventh_rollback = (ROOT / "discord/supabase/rollbacks/0019_retire_superseded_seventh_runtime.rollback.sql").read_text(encoding="utf-8")
+    apply_all = (ROOT / "discord/supabase/apply-all.sql").read_text(encoding="utf-8")
+    retired_seventh_keys = {
+        "seventh-shrine", "seventh-unwriting", "seventh-cause", "seventh-choice", "seventh-name",
+    }
+    require("iss signed averyn out" not in v5_seed.casefold()
+            and "subject averyn" not in v5_seed.casefold(),
+            "P6 compatibility path names Averyn before the P11 identity restoration")
+    require(all(f"'{key}'" in seventh_retirement and f"'{key}'" in seventh_rollback
+                for key in retired_seventh_keys)
+            and "set active = false" in seventh_retirement.casefold()
+            and "set active = true" in seventh_rollback.casefold(),
+            "stale literal-Seventh runtime is not retired by an exact reversible migration")
+    require("('v5-ar08-averyn'" in v5_seed and "('RP06'" in v5_seed,
+            "Averyn identity or physical universal release was lost while retiring stale runtime")
+    require(apply_all.index("-- FILE: discord/supabase/migrations/0019_retire_superseded_seventh_runtime.sql")
+            > apply_all.index("-- FILE: discord/supabase/seeds/v5_investigations.sql"),
+            "literal-Seventh retirement must run after all legacy and V5 seeds")
     if choreography["status"] != "offline_authored_not_deployed":
         projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
         require("enforce_nonce=true" in projection.get("primitive", "")

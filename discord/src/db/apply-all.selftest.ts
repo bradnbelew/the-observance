@@ -41,6 +41,7 @@ const expected = [
   'discord/supabase/seeds/metapuzzle_seed.sql',
   'discord/supabase/seeds/progression_seed.sql',
   'discord/supabase/seeds/v5_investigations.sql',
+  'discord/supabase/migrations/0019_retire_superseded_seventh_runtime.sql',
   'discord/supabase/schema-repair.sql',
 ];
 
@@ -76,6 +77,7 @@ for (const key of [
   '0016_security_grants.sql',
   '0017_arg_events.sql',
   '0018_arg_projection_leases.sql',
+  '0019_retire_superseded_seventh_runtime.sql',
   'observance_record_arg_event',
   'observance_claim_arg_projections',
   'observance_complete_arg_projection',
