@@ -152,6 +152,32 @@
         "rejected_review_pid_32868_alive_after_stop": true
       },
       "required_fix": "Face the existing mason lectern from the canonical undercroft fixture front in both builders, reuse it as the exact LC01 mount, and retain all collision, protected-cell, headroom, and standing-lane checks."
+    },
+    {
+      "attempt": 9,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-32ea107-09",
+      "outcome": "strict_second_pass_physical_audit_failed_after_exact_book_binding",
+      "exact_failure": "V5 second-pass physical audit failed: AR05/dials item-frame hanging cell blocked; AR05/dials and AR05/reader_control front interaction cells had no floor",
+      "cause": "The generic reachability pass preferred a same-height stance for AR05's high stacked dials and reader button. Its synthesized floor occupied a lower dial's adjacent hanging cell, so the first pass created a configuration that the independent second pass correctly rejected.",
+      "plan_pass": true,
+      "architecture_writes": 1434765,
+      "architecture_changed_blocks": 1349934,
+      "canonical_fixtures_placed": "76/76",
+      "physical_book_placements_bound": "37/38",
+      "undercroft_lc01_mount_passed": true,
+      "readiness_receipt_published": false,
+      "first_log_sha256": "d4c39b3755072c0e84187d6dc6ecab76f0c0381fd1e555b130932086ca61e471",
+      "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+      "cache_sha256": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726",
+      "plugin_sha256": "41ae5a904c659973f17d727d71085aa7c2a22c89dbb1081b33372e732f2336ff",
+      "graceful_stop": {
+        "paper_stop_marker": "Stopping the server",
+        "plugin_disable_marker": "The Observance sleeps.",
+        "all_dimensions_saved_marker": "ThreadedAnvilChunkStorage: All dimensions are saved",
+        "port_25610_listener_count": 0,
+        "rejected_review_pid_32868_alive_after_stop": true
+      },
+      "required_fix": "Treat every item-frame hanging cell as authored physical envelope and prefer an existing room-floor stance up to three blocks below high controls before considering a synthetic platform."
     }
   ],
   "production_mutated": false,

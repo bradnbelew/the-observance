@@ -1364,6 +1364,14 @@ public final class V5PhysicalComponentInstaller {
             if (kind == AddressKind.BLOCK || kind == AddressKind.ITEM_FRAME
                     || kind == AddressKind.ITEM_DISPLAY) {
                 authoredComponents.add(blockKey(physical.location().getBlock()));
+                if (kind == AddressKind.ITEM_FRAME) {
+                    // The adjacent air block is part of the mounted frame's physical envelope.
+                    // Never turn it into a platform for a higher control in a dense, stacked
+                    // reader: doing so leaves the backing intact while silently breaking the
+                    // lower frame on the next independent audit.
+                    authoredComponents.add(blockKey(physical.location().getBlock().getRelative(
+                            itemFrameFacing(physical.address(), physical.anchor()))));
+                }
             }
         }
         for (Resolved physical : resolved) {
@@ -1374,10 +1382,11 @@ public final class V5PhysicalComponentInstaller {
                     : face(physical.anchor().front());
             Block interact = null;
             Block repairFallback = null;
-            // Dense stations may mount a control above eye level. Prefer an already playable
-            // room-floor stance at the same Y or one block below before synthesizing a platform.
+            // Dense stations may mount controls in two or three vertical rows. Prefer their
+            // existing room-floor stance before a same-height synthetic platform; the latter can
+            // occupy a lower frame's hanging plane and is less believable player-facing geometry.
             search:
-            for (int vertical : List.of(0, -1, 1)) {
+            for (int vertical : List.of(-1, -2, -3, 0, 1)) {
                 for (int distance = 1; distance <= 3; distance++) {
                     Block candidate = physical.location().getBlock().getRelative(front, distance);
                     if (vertical < 0) candidate = candidate.getRelative(BlockFace.DOWN, -vertical);
