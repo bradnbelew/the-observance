@@ -13,7 +13,7 @@ export function RestoreArchiveForm({ initialState }: { initialState: P4RestoreSt
       <form className="archive-restore-form" action={formAction} aria-describedby="restore-help restore-result">
         <input type="hidden" name="operation" value="restore-retained-attachments" />
         <p id="restore-help">Submit restores a read-only copy. Repeating the action returns the same receipt. Leaving this page before submission changes nothing.</p>
-        <button type="submit" disabled={pending || state.status === 'accepted'}>
+        <button type="submit" disabled={pending} aria-disabled={state.status === 'accepted'}>
           {pending ? 'Restoring…' : state.status === 'accepted' ? 'Retained copy restored' : 'Restore retained attachments'}
         </button>
       </form>
