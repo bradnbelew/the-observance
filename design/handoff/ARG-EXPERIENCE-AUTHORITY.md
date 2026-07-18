@@ -84,6 +84,12 @@ privacy, safety, and any-subset play.
     paraphrases pass; partial, contradictory, and irrelevant accounts fail without leaking the solution.
     The input surface must state the response shape, not the answer. This clarity is interface design, not
     handholding.
+12. The campaign is a relationship web, not a row of self-contained sections. Every substantial artifact,
+    clue, scene, character beat, or world change must plant, develop, contradict, authenticate,
+    recontextualize, or pay off another thread. Connections may point backward or forward, cross cases and
+    surfaces, and turn ordinary earlier texture into a later callback. Major beliefs need multiple
+    independent in-doors. Review must reject orphan substantial nodes and disconnected case islands without
+    turning this into a mechanical link quota; ordinary lived-in texture may remain ordinary.
 
 ## Answer-shape contract
 

@@ -11,6 +11,7 @@ __pycache__/
 # Node / dashboard / discord
 node_modules/
 .next/
+.next-*/
 dist/
 .vercel/
 

@@ -73,6 +73,16 @@
     "observation_or_possession_gate": false,
     "tests": ["multiple paraphrases", "word-order variation", "partial", "plausible wrong theory", "negation and contradiction", "irrelevant keyword stuffing", "zero-observation correct", "throttle", "idempotency", "restart", "primary-fallback parity"]
   },
+  "relationship_web_contract": {
+    "isolated_case_sections_or_clue_stations_forbidden": true,
+    "artifact_local_function_is_sufficient": false,
+    "minimum_relationship": "Every substantial artifact, clue, scene, character beat, or world change must plant, develop, contradict, authenticate, recontextualize, or pay off another campaign thread.",
+    "backward_or_forward_connection_required": true,
+    "callbacks_and_references_may_cross_cases_and_surfaces": true,
+    "ordinary_texture_may_gain_later_significance": true,
+    "major_threads_require_multiple_independent_in_doors": true,
+    "machine_review": "Reject orphan substantial nodes and disconnected case islands, while allowing ordinary non-clue texture and avoiding a brittle connection quota."
+  },
   "runtime_invariants": {
     "observation_receipts_gate_correctness": false,
     "source_possession_gates_correctness": false,

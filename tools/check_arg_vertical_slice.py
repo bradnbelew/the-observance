@@ -45,6 +45,11 @@ def main() -> int:
     surfaces = {row.get("platform") for row in authority.get("inputs", [])}
     if surfaces != {"Paper 1.21.11", "Next.js 16.2.10"}:
         failures.append(f"platform input coverage drifted: {sorted(surfaces)}")
+    relationship_web = authority.get("relationship_web", {})
+    if relationship_web.get("isolated_subsections_forbidden") is not True:
+        failures.append("isolated clue subsections are no longer forbidden")
+    if len(relationship_web.get("route", [])) < 7:
+        failures.append("P4 relationship web lost its cross-surface plant-to-payoff chain")
 
     runtime = text("plugin/src/main/java/com/observance/watcher/arg/ArgVerticalSliceRuntime.java", failures)
     for needle in (
@@ -86,16 +91,40 @@ def main() -> int:
     form = text("dashboard/src/app/community/archive/intake-copies/RestoreArchiveForm.tsx", failures)
     action = text("dashboard/src/app/community/archive/intake-copies/actions.ts", failures)
     validator = text("dashboard/src/lib/copperline-p4-restore.ts", failures)
+    archive_page = text("dashboard/src/app/community/archive/intake-copies/page.tsx", failures)
+    route = text("dashboard/src/lib/copperline-p4-route.ts", failures)
+    disagreement_post = text("dashboard/src/app/community/2011/02/11/old-copy/page.tsx", failures)
+    ticket_page = text("dashboard/src/app/support/ticket.php/page.tsx", failures)
     harness = text("tools/run_arg_vertical_slice_disposable_paper.py", failures)
-    for needle in ("action={formAction}", "required", "aria-live=\"polite\"", "disabled={pending}"):
+    for needle in ("action={formAction}", "aria-live=\"polite\"", "disabled={pending}",
+                   "type=\"hidden\"", "restore-retained-attachments"):
         if needle not in form:
             failures.append(f"semantic Copperline form invariant missing: {needle}")
+    for forbidden in ('name="ticket"', 'name="attachment"', 'name="order"', 'name="idempotency"'):
+        if forbidden in form:
+            failures.append(f"Copperline restore asks player to retype archive fact: {forbidden}")
     for needle in ("'use server'", "new URL(origin).host !== host", "validateP4Restore(formData)"):
         if needle not in action:
             failures.append(f"Copperline Server Action invariant missing: {needle}")
-    for needle in ("createHash('sha256')", "P4-RESTORE", "idempotency", "MOUTH_NOTICE.COMPARE.TXT"):
+    for needle in ("createHash('sha256')", "P4-RESTORE", "RESTORE-RETAINED-ATTACHMENTS",
+                   "RETAINED-ATTACHMENTS", "READ-ONLY"):
         if needle not in validator:
             failures.append(f"Copperline predicate/receipt invariant missing: {needle}")
+    for forbidden in ("formData.get('ticket')", "formData.get('attachment')", "formData.get('order')",
+                      "formData.get('idempotency')"):
+        if forbidden in validator:
+            failures.append(f"Copperline server still validates player-retyped archive fact: {forbidden}")
+    for forbidden in ("mouth_notice.compare.txt", "03 was imaged before 04"):
+        if forbidden in archive_page:
+            failures.append(f"retained page prints discovery before restore: {forbidden}")
+    for needle in ("accountFilter", "priorBackupPost", "disagreementPost", "custodyTicket",
+                   "retainedAttachments"):
+        if needle not in route:
+            failures.append(f"Copperline relationship route missing: {needle}")
+    if "P4_COPPERLINE_ROUTE.custodyTicket" not in disagreement_post:
+        failures.append("ordinary mkept post does not lead to Ticket 2184")
+    if "P4_COPPERLINE_ROUTE.retainedAttachments" not in ticket_page:
+        failures.append("Ticket 2184 does not lead to its retained rows")
     for needle in ("arg-experience", "arg-theory", "zero_observation_correct", "receipts=4",
                    "arg-p4-p5-vertical-slice.journal", "actual_dialog_visual", "prepare-review",
                    "absent_pristine_review_target"):

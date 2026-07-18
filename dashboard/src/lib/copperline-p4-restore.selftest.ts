@@ -8,12 +8,14 @@ function form(fields: Record<string, string>) {
 }
 
 assert.equal(validateP4Restore(form({})).status, 'incomplete');
-assert.equal(validateP4Restore(form({ ticket: '2184', attachment: 'wrong.txt', order: '03-04', idempotency: 'review-01' })).status, 'wrong');
-const accepted = validateP4Restore(form({ ticket: '2184', attachment: 'mouth_notice.compare.txt', order: '03 before 04', idempotency: 'review-01' }));
+assert.equal(validateP4Restore(form({ operation: 'delete-originals' })).status, 'wrong');
+const accepted = validateP4Restore(form({ operation: 'restore-retained-attachments' }));
 assert.equal(accepted.status, 'accepted');
 assert.equal(accepted.entries?.length, 5);
 assert.equal(accepted.receiptId?.length, 64);
-assert.equal(validateP4Restore(form({ ticket: '2184', attachment: 'mouth_notice.compare.txt', order: '03-04', idempotency: 'review-01' })).receiptId, accepted.receiptId,
-  'same normalized request must return the same idempotency receipt');
-assert.equal(validateP4Restore(form({ ticket: '2184', attachment: 'mouth_notice.compare.txt', order: '03-04', idempotency: 'x' })).status, 'incomplete');
-console.log('Copperline P4 real restore form self-test passed');
+assert.equal(
+  validateP4Restore(form({ operation: '  restore-retained-attachments  ' })).receiptId,
+  accepted.receiptId,
+  'same fixed restore action must return the same deterministic receipt',
+);
+console.log('Copperline P4 semantic restore action self-test passed');

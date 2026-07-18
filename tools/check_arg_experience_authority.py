@@ -134,6 +134,15 @@ def main() -> None:
             and answer_shape["llm_judge_required"] is False
             and answer_shape["observation_or_possession_gate"] is False,
             "campaign answer-shape contract weakened")
+    relationship_web = authority["relationship_web_contract"]
+    require(relationship_web["isolated_case_sections_or_clue_stations_forbidden"] is True
+            and relationship_web["artifact_local_function_is_sufficient"] is False
+            and relationship_web["backward_or_forward_connection_required"] is True
+            and relationship_web["callbacks_and_references_may_cross_cases_and_surfaces"] is True
+            and relationship_web["ordinary_texture_may_gain_later_significance"] is True
+            and relationship_web["major_threads_require_multiple_independent_in_doors"] is True
+            and "quota" in relationship_web["machine_review"],
+            "campaign relationship web weakened or converted into isolated sections/a brittle quota")
 
     story_authority = load(STORY_AUTHORITY)
     require(story_authority["status"] == "binding_offline_story_authority_not_human_approved"

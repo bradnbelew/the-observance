@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0.0-copperline-p4-connected-route-receipt",
+  "recorded_at": "2026-07-17T23:13:59.0952676-05:00",
+  "source_head_before_change": "a13b3107e53458b6ab7686e7aaf802d9ac376144",
+  "candidate_commit": "the commit containing this receipt",
+  "branch": "codex/m3-disposable-paper-gate",
+  "status": "automated_web_route_pass_human_experience_open",
+  "brad_approval": null,
+  "production_mutated": false,
+  "legacy_review_processes_mutated": false,
+  "purpose": "Replace the unexplained Ticket 2184 prompt and player-retyped archive facts with an earned, connected Copperline history and one real semantic restore action.",
+  "relationship_web": [
+    "ordinary Copperline community history",
+    "mkept account history and prior backup practice",
+    "old-copy disagreement post",
+    "Ticket 2184 barcode custody",
+    "retained attachment restoration",
+    "Minecraft page-line-word extract",
+    "physical civic response",
+    "later failed-company and Averyn reinterpretation"
+  ],
+  "player_input": {
+    "visible_inputs_before_restore": 0,
+    "operation": "restore-retained-attachments",
+    "visible_button_count": 1,
+    "retyped_ticket_required": false,
+    "retyped_filename_required": false,
+    "retyped_order_required": false,
+    "invented_request_id_required": false,
+    "server_origin_validation_preserved": true,
+    "deterministic_receipt": "f8be25c005bb9cca1972d92a081ccf9aff43d9a538405899768b34ecdc58d763"
+  },
+  "automated_results": {
+    "dashboard_selftests": "pass",
+    "dashboard_lint": "pass",
+    "arg_vertical_slice_checker": "pass",
+    "cross_media_investigation_checker": "pass_after_stale_active-review-hold_supersession_was_corrected",
+    "next_build": "pass",
+    "browser_route": "pass",
+    "browser_restore": "pass",
+    "browser_repeat_idempotency": "pass",
+    "pre_restore_filename_leak": false,
+    "pre_restore_order_leak": false,
+    "restored_record_count": 5,
+    "meta_or_tutorial_language_on_retained_page": false
+  },
+  "next_build": {
+    "framework": "Next.js 16.2.10",
+    "isolated_dist_dir": ".next-arg-revision",
+    "build_id": "7vq0O9Vl3Zc_gd9vTQlJk",
+    "build_id_sha256": "f2d9fdd85b9afc56460f2a27ebacedbd3406fa014e713e012d19e866b590b367",
+    "verification_address": "http://127.0.0.1:3048",
+    "public_or_production_deployment": false
+  },
+  "source_sha256": {
+    "dashboard/src/lib/copperline-p4-route.ts": "11bb72e99a505b3b6f5f07ccb45e4e4271bdf65cbf143169984234efbfc86f42",
+    "dashboard/src/app/community/2011/02/11/old-copy/page.tsx": "240c46792ff32c1fdef966399f1993b2409da48f359faf604384e803d36d9551",
+    "dashboard/src/app/support/ticket.php/page.tsx": "0f1358a65a266e2472dbdcdf7ae3f32c98c30d7564cf8d2ced4a427085895fae",
+    "dashboard/src/app/community/archive/intake-copies/page.tsx": "17296ca5e4cbd2a4bbbf7e79d009bb251b13503bae45c43495199f42d179d861",
+    "dashboard/src/app/community/archive/intake-copies/RestoreArchiveForm.tsx": "4f085967776c4700ef47644a00bf225c3a23a2c4560af9e763278a7ceee9fcd4",
+    "dashboard/src/lib/copperline-p4-restore.ts": "67ae3a2f3ba549c1cc9fc33e710265a6eec027b64ed7a3249628a738be306303",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.json": "0bab40ba0578bc1e2bf3dbe764ad614ad7ce5e73152c09f6d5408e77da89cf06",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.md": "fe333a395646309563f0f568e527706862cb15cb52f24cbba63a27d196f5cad1",
+    "design/m3/P4-P5-ARG-VERTICAL-SLICE.json": "a6541347f4ad66689202c6baf589f8a894f0afbf792fe35ec52779b1f3d64edb"
+  },
+  "honest_open_gates": [
+    "This is automated route and interface proof, not Brad experiential approval.",
+    "The full P4 and P1-P12 relationship web still requires human play and campaign-wide repetition review.",
+    "No production Copperline, Vercel, Railway, Supabase, Discord, Paper, Crafty, DNS, or media target changed."
+  ]
+}

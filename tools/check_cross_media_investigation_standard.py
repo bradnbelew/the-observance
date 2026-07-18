@@ -78,11 +78,15 @@ def main() -> None:
             "cross-media static gate inventory drift")
 
     plan = load(PLAN)
-    require(plan["status"] == "authored_plan_only_implementation_held_for_active_review_and_disconnect"
+    require(plan["status"] == "technical_scaffolding_preserved_experiential_shape_superseded"
             and plan["scope"]["target_active_hours"] == {"min": 1, "max": 2}
-            and plan["scope"]["m4_authority"] == "closed"
             and plan["scope"]["brad_visual_approval"] is None,
-            "P4 next-revision plan scope/hold drift")
+            "P4 next-revision supersession or human-approval boundary drift")
+    require(plan["scope"]["production_mutation"] is False
+            and "no new Brad server" in plan["scope"]["phase_progression"]
+            and plan["experiential_rejection_supersession"]["p4_vnext_role"]
+                == "technical proof and reusable content scaffolding only",
+            "P4 private implementation authority leaked into production or experiential proof")
     compact = plan["compact_minecraft_plan"]
     require(len(compact["simplify_for_robustness"]) == 4
             and "zero observation receipts" in compact["submission_semantics"],
@@ -98,8 +102,8 @@ def main() -> None:
             and "not currently claimed" not in plan["receipt_honesty"]["currently_available"].lower()
             and "No specification" in plan["receipt_honesty"]["rule"],
             "offline/future integration or receipt-honesty boundary drift")
-    require("Do not implement" in plan["implementation_hold"],
-            "live-server implementation hold lost")
+    require(plan["implementation_hold"] is None,
+            "superseded active-review implementation hold was revived")
 
     active = load(ACTIVE)
     correction = active["binding_cross_media_and_geometry_correction"]

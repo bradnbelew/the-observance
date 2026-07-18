@@ -18,28 +18,20 @@ export function normalizeArchiveField(value: FormDataEntryValue | null): string 
     ? value.normalize('NFKC').trim().replace(/\s+/g, ' ').toUpperCase()
     : '';
 }
-
 export function validateP4Restore(formData: FormData): P4RestoreState {
-  const ticket = normalizeArchiveField(formData.get('ticket'));
-  const attachment = normalizeArchiveField(formData.get('attachment'));
-  const suppliedOrder = normalizeArchiveField(formData.get('order')).replaceAll(' ', '-');
-  const idempotency = normalizeArchiveField(formData.get('idempotency'));
-  if (!ticket || !attachment || !suppliedOrder || !idempotency) {
-    return { status: 'incomplete', message: 'Enter the ticket, attachment, cartridge order, and request ID. Nothing changed.' };
+  const operation = normalizeArchiveField(formData.get('operation'));
+  if (!operation) {
+    return { status: 'incomplete', message: 'The restore action was missing. Nothing changed.' };
   }
-  if (ticket !== '2184' || attachment !== 'MOUTH_NOTICE.COMPARE.TXT' || !['03-04', '03-BEFORE-04'].includes(suppliedOrder)) {
-    return { status: 'wrong', message: 'That request does not match the retained custody table. Nothing changed.' };
+  if (operation !== 'RESTORE-RETAINED-ATTACHMENTS') {
+    return { status: 'wrong', message: 'That action is not available for this retained table. Nothing changed.' };
   }
-  if (!/^[A-Z0-9][A-Z0-9_-]{5,47}$/.test(idempotency)) {
-    return { status: 'incomplete', message: 'Use a request ID of 6–48 letters, numbers, dashes, or underscores.' };
-  }
-  const order = '03-04';
   const receiptId = createHash('sha256')
-    .update(`P4-RESTORE\n${ticket}\n${attachment}\n${order}\n${idempotency}`)
+    .update('P4-RESTORE\n2184\nRETAINED-ATTACHMENTS\nREAD-ONLY')
     .digest('hex');
   return {
     status: 'accepted',
-    message: 'Accepted. The retained ticket replies and attachments are restored below. The older archive remains unchanged.',
+    message: 'Accepted. The five retained rows are restored below as a read-only copy. The older archive remains unchanged.',
     receiptId,
     entries: [...copperlineP4DirectEntries],
   };

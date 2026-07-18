@@ -29,7 +29,7 @@
     "payload_consequence": "forces provenance comparison and interpretation of the Mouth copies"
   },
   "player_initiated_actions": [
-    "authenticate and restore retained Copperline copies",
+    "navigate mkept's ordinary community history into the linked custody dispute and restore its retained copies",
     "apply the restored index to the Minecraft read extract",
     "submit a short theory through a real Paper Dialog or the equivalent command fallback",
     "curate service cards and penalty copies using protected physical controls"
@@ -67,15 +67,30 @@
     {
       "id": "copperline_restore",
       "platform": "Next.js 16.2.10",
-      "visible_trigger": "semantic restore form in the ordinary Ticket 2184 thread",
+      "visible_trigger": "restore button reached from mkept's community history through the linked Ticket 2184 custody thread",
       "primitive": "HTML form + Server Action",
-      "shape": "ticket, filename, order, idempotency token",
+      "shape": "fixed semantic operation: restore-retained-attachments",
       "predicate_owner": "server-side Copperline validator",
       "fallback": "Minecraft remains locally finishable if Copperline is unavailable",
       "wrong_feedback": "accepted, wrong, incomplete, throttled, and technical failure states are representable",
       "observation_receipts_required": false
     }
   ],
+  "relationship_web": {
+    "isolated_subsections_forbidden": true,
+    "required_roles": ["plant", "development", "contradiction", "provenance", "recontextualization", "payoff"],
+    "route": [
+      "ordinary Copperline community history",
+      "mkept account history and prior backup practice",
+      "old-copy disagreement post",
+      "Ticket 2184 barcode custody",
+      "restored archive index",
+      "Minecraft read extract",
+      "physical civic response",
+      "later failed-company and Averyn reinterpretation"
+    ],
+    "rule": "Every substantial artifact must connect backward, forward, or both; local function alone is insufficient."
+  },
   "state_contract": {
     "local_primary": true,
     "hash_chained_journal": true,

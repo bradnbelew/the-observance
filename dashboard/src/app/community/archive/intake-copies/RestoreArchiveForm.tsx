@@ -13,15 +13,12 @@ export function RestoreArchiveForm() {
   const [state, formAction, pending] = useActionState(restoreP4ArchiveAction, INITIAL_P4_RESTORE_STATE);
   return (
     <section className="old-copy" aria-labelledby="restore-heading">
-      <h2 id="restore-heading">Restore a retained attachment</h2>
-      <p>Use the ticket and custody details already visible in the public thread. This form restores a copy. It does not decide what the copy means.</p>
+      <h2 id="restore-heading">Restore retained attachments</h2>
+      <p>This action rebuilds the five retained rows as a read-only copy. It does not decide what the records mean.</p>
       <form className="archive-restore-form" action={formAction} aria-describedby="restore-help restore-result">
-        <p id="restore-help">All four fields are required. Submit sends the request. Your browser Back button or leaving the page cancels before submission.</p>
-        <p><label htmlFor="ticket">Ticket number</label><br /><input id="ticket" name="ticket" inputMode="numeric" required maxLength={8} /></p>
-        <p><label htmlFor="attachment">Attachment filename</label><br /><input id="attachment" name="attachment" required maxLength={64} /></p>
-        <p><label htmlFor="order">Cartridge order</label><br /><input id="order" name="order" required maxLength={24} placeholder="earlier-later" /></p>
-        <p><label htmlFor="idempotency">Your request ID</label><br /><input id="idempotency" name="idempotency" required minLength={6} maxLength={48} autoComplete="off" /></p>
-        <button type="submit" disabled={pending}>{pending ? 'Restoring…' : 'Restore retained copy'}</button>
+        <input type="hidden" name="operation" value="restore-retained-attachments" />
+        <p id="restore-help">Submit restores a read-only copy. Repeating the action returns the same receipt. Leaving this page before submission changes nothing.</p>
+        <button type="submit" disabled={pending}>{pending ? 'Restoring…' : 'Restore retained attachments'}</button>
       </form>
       <div className="archive-restore-result" id="restore-result" role="status" aria-live="polite" data-status={state.status}>
         <p><b>{state.status.replaceAll('_', ' ')}.</b> {state.message}</p>
@@ -32,7 +29,7 @@ export function RestoreArchiveForm() {
           {state.entries.map((entry) => (
             <li key={entry.id}><article><div>
               <h3>{entry.title}</h3>
-              <p className="old-post-meta"><b>{entry.author}</b> &middot; <time dateTime={entry.date}>{new Date(entry.date).toLocaleString('en-US', { timeZone: 'America/Chicago' })}</time> &middot; {entry.kind}</p>
+              <p className="old-post-meta"><b>{entry.author}</b> · <time dateTime={entry.date}>{new Date(entry.date).toLocaleString('en-US', { timeZone: 'America/Chicago' })}</time> · {entry.kind}</p>
               <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }}>{entry.body}</pre>
             </div></article></li>
           ))}

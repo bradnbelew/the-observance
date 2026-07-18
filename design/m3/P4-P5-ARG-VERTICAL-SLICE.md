@@ -12,7 +12,8 @@ The player must decide which account best explains the ordinary refuge, the late
 
 ## Real surfaces
 
-- Copperline uses a semantic HTML form and a server action. It validates the visible ticket number, attachment name, cartridge order, origin, and idempotency token. Accepted restoration returns a deterministic receipt and the retained before/after archive material.
+- Copperline begins in ordinary community history. The mkept account connects a prior backup post to a later disagreement post; that post links the historical support ticket; the ticket authenticates cartridge order and links its retained attachment table. The player does not guess or type `2184`, filenames, custody order, or a request ID. Those are archive facts, not deductions.
+- The retained table uses a semantic HTML form and a server action for one meaningful operation: restore its five retained rows as a read-only copy. The server validates the fixed operation and request origin. Accepted restoration returns one deterministic receipt and the retained before/after archive material.
 - Minecraft evidence uses a real written book. Every page is inside the conservative 1.21.11 font budget and the page-line-word coordinates are executable test data.
 - The theory desk opens the experimental Paper 1.21.11 `Dialog` with three short fields: purpose,
   historical change, and unresolved anomaly. There is no hidden canonical sentence. Server-side validation
@@ -25,5 +26,7 @@ The player must decide which account best explains the ordinary refuge, the late
 ## Experience boundary
 
 This is a compact cross-surface proof, not the whole 1–2 hour case. It must prove a rabbit-hole change of surface, provenance work, an indexed cipher, interpretation among plausible accounts, a player-caused Minecraft change, a second physical civic action, local-primary persistence, replay, and outage-safe completion. It must not print the conclusion in a source, make the cipher plaintext the answer, or reduce the interaction to a source checklist.
+
+Every substantial artifact in this slice belongs to a relationship web. It must plant, develop, contradict, authenticate, recontextualize, or pay off another artifact or human thread. A locally functional but narratively disconnected clue station fails. The Copperline custody trail grows from mkept's established preservation and privacy behavior, changes how the Minecraft copies are read, and remains available for later failed-company and Averyn reinterpretation.
 
 The automated gate cannot establish visual quality, cold-human theory formation, actual client Dialog readability, or emotional force. Those remain explicit human gaps until a fresh non-op Adventure walk. Brad approval remains null.
