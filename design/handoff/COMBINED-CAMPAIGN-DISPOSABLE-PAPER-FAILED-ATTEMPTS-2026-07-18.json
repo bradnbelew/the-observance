@@ -26,8 +26,33 @@
       "target_reused_or_deleted": false,
       "production_mutated": false,
       "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 2,
+      "source_commit": "32f1c72",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-32f1c72-02",
+      "address": "127.0.0.1:25607",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "2eb86007419efb595991bc428edc2976f03b9f89b83d4d228e6c5acd56b454b5",
+      "first_log_sha256": "e60c609ec37394e56d4d33bc3d8ac8fa33fee7b8788497d58800c904320f300f",
+      "passed_before_failure": [
+        "Deep Hold build and physical audit passed",
+        "Unlit build and exact mechanics audit passed",
+        "bounded copy proof committed and the Hold remained physically launch-placeable",
+        "the safe-site snapshot removed the prior Paper watchdog stall"
+      ],
+      "failure": "Filtering readiness by the authored site's center chunk was insufficient. Both site-center chunks could remain loaded while a non-tile control's persistent marker occupied an adjacent deferred chunk. Rebinding therefore had no trusted control pair and strict readiness still reported CW07 and HS02 as zero.",
+      "exact_findings": [
+        "CW07 requires exactly one bound cache_seal/evaluation_handle control, found 0",
+        "HS02 requires exactly one bound housing_latch/evaluation_handle control, found 0"
+      ],
+      "harness_result": "failed closed while waiting for post-copy Gate: READY; no readiness receipt was published",
+      "shutdown": "The harness finally block stopped only this disposable Paper process. Paper recorded all dimensions saved and RegionFile completion. PID and port 25607 are absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
     }
   ],
-  "resolution": "Source now audits exact synthetic controls only while their authored chunks are loaded; ChunkLoadEvent still rebinds them before interaction. Missing controls in loaded chunks remain blockers. The Unlit light scan now snapshots same-world unlit_safe sites once per scan instead of re-enumerating all sites per block. Full plugin build/self-tests pass; a fresh create-only target and unused port remain required.",
+  "resolution": "Source now retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. Paper removes plugin tickets on disable. The Unlit light scan snapshots same-world unlit_safe sites once per scan. Full plugin build/self-tests pass; a fresh create-only target and unused port remain required.",
   "brad_approval": null
 }

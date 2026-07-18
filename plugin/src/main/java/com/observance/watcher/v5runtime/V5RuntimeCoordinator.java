@@ -4,13 +4,14 @@ import com.google.gson.JsonObject;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.npc.V5DialogueCatalog;
 import com.observance.watcher.structure.V5RuntimePredicateRegistry;
-import com.observance.watcher.structure.V5AuthorityManifest;
 import com.observance.watcher.v5runtime.container.BukkitContainerCustody;
 import com.observance.watcher.v5runtime.container.BukkitContainerListener;
 import com.observance.watcher.v5runtime.container.BukkitContainerTriggerAudit;
 import com.observance.watcher.v5runtime.container.BukkitContainerWorld;
 import com.observance.watcher.v5runtime.container.ContainerAuthorityContract;
 import com.observance.watcher.v5runtime.container.ContainerSolveService;
+import com.observance.watcher.v5runtime.container.ContainerTriggerBindings;
+import com.observance.watcher.v5runtime.container.ContainerTriggerChunkPolicy;
 import com.observance.watcher.v5runtime.install.V5PhysicalComponentCatalog;
 import com.observance.watcher.v5runtime.install.V5PhysicalComponentInstaller;
 import com.observance.watcher.v5runtime.mechanics.BukkitDurableItemEscrow;
@@ -304,6 +305,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             return;
         }
         if (closed) return;
+        retainCriticalContainerControlChunks();
         fixtures.clear();
         Location mouth = plugin.v5HoldMouth();
         lastBindingReport = installer.bindLoadedFixtures(fixtures, mouth);
@@ -628,8 +630,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         addBlockers(findings, lastBindingReport);
         addBlockers(findings, lastMapReport);
         if (plugin.v5HoldMouth() != null) {
-            findings.addAll(BukkitContainerTriggerAudit.findings(
-                    fixtures, this::containerTriggerSiteChunkLoaded));
+            findings.addAll(BukkitContainerTriggerAudit.findings(fixtures));
         }
         if (plugin.supabase() != null && plugin.supabase().isConfigured()
                 && !remote.metadataValidated()) {
@@ -645,21 +646,24 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     }
 
     /**
-     * The exact fixture registry intentionally contains loaded chunks only. Missing bindings are
-     * blockers when their authored chunk is loaded; an unloaded distant Hold chunk is deferred
-     * until ChunkLoadEvent rebinds it and must not make the Unlit world fail readiness.
+     * CW07 and HS02 use non-tile player controls plus persistent marker entities. Keep only their
+     * bounded three-block neighborhoods loaded so a distant Unlit scan cannot split a control
+     * from its marker or erase it from the loaded-fixture index. Paper removes plugin tickets on
+     * disable; every other fixture remains ordinary chunk-load/rebind state.
      */
-    private boolean containerTriggerSiteChunkLoaded(String nodeId) {
-        V5AuthorityManifest.RuntimeBinding binding = V5AuthorityManifest.runtimeBindings().stream()
-                .filter(candidate -> candidate.nodeId().equals(nodeId))
-                .findFirst().orElse(null);
-        var site = binding == null || plugin.sites() == null
-                ? null : plugin.sites().get(binding.siteId());
-        World world = site == null ? null : Bukkit.getWorld(site.worldName());
-        boolean chunkLoaded = world != null && site != null && site.isPlaced()
-                && world.isChunkLoaded(site.x().intValue() >> 4, site.z().intValue() >> 4);
-        return BukkitContainerTriggerAudit.requireForLoadedChunk(
-                binding != null, site != null && site.isPlaced(), world != null, chunkLoaded);
+    private void retainCriticalContainerControlChunks() {
+        if (plugin.sites() == null) return;
+        for (var binding : com.observance.watcher.structure.V5AuthorityManifest.runtimeBindings()) {
+            if (!ContainerTriggerBindings.requiredSyntheticComponents().containsKey(binding.nodeId())) continue;
+            var site = plugin.sites().get(binding.siteId());
+            if (site == null || !site.isPlaced()) continue;
+            World world = Bukkit.getWorld(site.worldName());
+            if (world == null) continue;
+            for (ContainerTriggerChunkPolicy.ChunkCoordinate chunk
+                    : ContainerTriggerChunkPolicy.chunks(site.x(), site.z())) {
+                world.getChunkAt(chunk.x(), chunk.z()).addPluginChunkTicket(plugin);
+            }
+        }
     }
 
     @EventHandler
