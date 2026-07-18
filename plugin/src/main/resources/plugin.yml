@@ -34,7 +34,7 @@ commands:
     description: Submit or replay short structured campaign findings without chat parsing.
     aliases: [obsfinding]
     permission: observance.arg.finding
-    usage: /obsfinding <help|status|replay|p6-recovery|p8>
+    usage: /obsfinding <help|status|replay|p6-recovery|p8|p9-people|p9-window>
   observancem3:
     description: Operate the disposable private M3 Paper review slice.
     aliases: [obsm3]

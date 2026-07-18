@@ -287,6 +287,14 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         return progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT);
     }
 
+    public boolean p9BiographiesAccepted() {
+        return progress.snapshot().isComplete(P9_BIOGRAPHIES_EVENT);
+    }
+
+    public boolean p9LeakWindowAccepted() {
+        return progress.snapshot().isComplete(P9_LEAK_EVENT);
+    }
+
     /** Zero-observation keyboard recovery for a correctly formed six-person responsibility model. */
     public PlanSubmission submitP6ResponsibilityMatrix(P6ResponsibilityPredicate.Matrix matrix) {
         if (!storyInputsEnabled) return PlanSubmission.FAILED;
@@ -302,6 +310,46 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             return PlanSubmission.ACCEPTED;
         } catch (IOException | RuntimeException failure) {
             plugin.getLogger().severe("P6 responsibility matrix could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
+    /** Local outage/recovery equivalent of Copperline's four owner-card form. */
+    public PlanSubmission submitP9CampPeople(P9CampPredicate.People people) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P9_BIOGRAPHIES_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P8_REPAIR_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P9CampPredicate.validPeople(people)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P9_BIOGRAPHIES_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP9BiographiesAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P9 camp biographies could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
+    /** Local outage/recovery equivalent of Copperline's authenticated three-clock chain. */
+    public PlanSubmission submitP9LeakWindow(P9CampPredicate.Window window) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P9_LEAK_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P9_BIOGRAPHIES_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P9CampPredicate.validWindow(window)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P9_LEAK_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP9LeakAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P9 private version window could not be committed locally: "
                     + failure.getMessage());
             return PlanSubmission.FAILED;
         }
@@ -439,26 +487,6 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 if (created) mirrorP8RepairAsync();
             } catch (IOException | RuntimeException failure) {
                 plugin.getLogger().severe("P8 integrated repair could not be committed locally: " + failure.getMessage());
-            }
-        }
-        snapshot = progress.snapshot();
-        if (snapshot.isComplete(P8_REPAIR_EVENT)
-                && snapshot.isComplete("v5_a02_stations")) {
-            try {
-                boolean created = progress.transact(editor -> editor.setBooleanTrue(P9_BIOGRAPHIES_EVENT));
-                if (created) mirrorP9BiographiesAsync();
-            } catch (IOException | RuntimeException failure) {
-                plugin.getLogger().severe("P9 company biographies could not be committed locally: " + failure.getMessage());
-            }
-        }
-        snapshot = progress.snapshot();
-        if (snapshot.isComplete(P9_BIOGRAPHIES_EVENT)
-                && snapshot.isComplete("v5_case_c07_complete")) {
-            try {
-                boolean created = progress.transact(editor -> editor.setBooleanTrue(P9_LEAK_EVENT));
-                if (created) mirrorP9LeakAsync();
-            } catch (IOException | RuntimeException failure) {
-                plugin.getLogger().severe("P9 private leak window could not be committed locally: " + failure.getMessage());
             }
         }
         snapshot = progress.snapshot();
@@ -640,6 +668,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             people.addProperty("rook", "builder-countermark");
             people.addProperty("wren", "route-companion");
             people.addProperty("restored_as", "people-not-stations");
+            people.addProperty("observation_receipts", 0);
             plugin.supabase().recordArgEvent(P9_BIOGRAPHIES_EVENT,
                     "minecraft:p9:ash-camp-owner-cards", "minecraft", null, people);
         });
@@ -653,6 +682,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             leak.addProperty("private_object", "rook-revision-and-identities");
             leak.addProperty("window", "private-before-public");
             leak.addProperty("boundary", "insider-unknown");
+            leak.addProperty("observation_receipts", 0);
             plugin.supabase().recordArgEvent(P9_LEAK_EVENT,
                     "minecraft:p9:private-revision-window", "minecraft", null, leak);
         });

@@ -3,6 +3,7 @@ package com.observance.watcher.command;
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.v5runtime.P6ResponsibilityPredicate;
 import com.observance.watcher.v5runtime.P8InterventionPlanPredicate;
+import com.observance.watcher.v5runtime.P9CampPredicate;
 import com.observance.watcher.v5runtime.V5RuntimeCoordinator;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +51,9 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                         ? "accepted and retained locally." : "not yet accepted."));
                 player.sendMessage("P8 intervention plan: " + (runtime.p8InterventionPlanAccepted()
                         ? "accepted and retained locally." : "not yet accepted."));
+                player.sendMessage("P9 camp owners / private window: "
+                        + (runtime.p9BiographiesAccepted() ? "owners accepted" : "owners open") + " / "
+                        + (runtime.p9LeakWindowAccepted() ? "window accepted." : "window open."));
             }
             case "replay" -> {
                 player.sendMessage(runtime.p6ResponsibilityAccepted()
@@ -58,12 +62,56 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                 player.sendMessage(runtime.p8InterventionPlanAccepted()
                         ? "Retained P8 plan: four interacting causes; Iss's surface evidence remains valid while his route was unsafe; copy behavior is proven while the Dark remains unidentified; works order is filter, paired light, pressure bypass, then staff route."
                         : "No accepted P8 intervention plan is available to replay.");
+                player.sendMessage(runtime.p9LeakWindowAccepted()
+                        ? "Retained P9 finding: four people restored; private counter-mark, Witness Spool intake, then public upload; inside access proven, sender still open."
+                        : "P9 replay remains available on Copperline; no complete local private-window finding is retained.");
             }
             case "p6-recovery" -> submitP6Recovery(player, label, args, runtime);
             case "p8" -> submitP8(player, label, args, runtime);
+            case "p9-people" -> submitP9People(player, label, args, runtime);
+            case "p9-window" -> submitP9Window(player, label, args, runtime);
             default -> help(player, label);
         }
         return true;
+    }
+
+    private void submitP9People(Player player, String label, String[] args,
+                                V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusalWindow(player);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String[] fields = fields(args);
+        if (fields.length != 4) {
+            player.sendMessage("Incomplete. Give four owner traces in mkept, Ash, Rook, Wren order, separated by |.");
+            return;
+        }
+        var people = new P9CampPredicate.People(fields[0], fields[1], fields[2], fields[3]);
+        respond(player, runtime.submitP9CampPeople(people), window,
+                "Four people restored to the camp record. Shared objects remain shared.",
+                "Restore or correctly identify all four people before preserving the private window.",
+                "At least one work/relationship trace belongs to another person.");
+    }
+
+    private void submitP9Window(Player player, String label, String[] args,
+                                V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusalWindow(player);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String[] fields = fields(args);
+        if (fields.length != 5) {
+            player.sendMessage("Incomplete. Give before | crossing | after | readiness | claim boundary.");
+            return;
+        }
+        var finding = new P9CampPredicate.Window(
+                fields[0], fields[1], fields[2], fields[3], fields[4]);
+        respond(player, runtime.submitP9LeakWindow(finding), window,
+                "Private version window preserved. It proves inside access and leaves the sender open.",
+                "The four camp owner cards must be restored first.",
+                "The clock order, release state, or claim boundary conflicts with the preserved copies.");
     }
 
     private void submitP6Recovery(Player player, String label, String[] args,
@@ -125,17 +173,41 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
         }
     }
 
+    private void respond(Player player, V5RuntimeCoordinator.PlanSubmission result,
+                         RefusalWindow window, String accepted, String notReady, String wrong) {
+        switch (result) {
+            case ACCEPTED -> {
+                refusals.remove(player.getUniqueId());
+                player.sendMessage(accepted + " No source-click receipt was required.");
+            }
+            case ALREADY_ACCEPTED -> player.sendMessage("That finding is already accepted and retained locally.");
+            case NOT_READY -> player.sendMessage(notReady + " Nothing changed.");
+            case WRONG -> {
+                window.count++;
+                player.sendMessage(wrong + " Nothing changed.");
+            }
+            case FAILED -> player.sendMessage("The finding desk failed safely. Nothing changed; retry after recovery.");
+        }
+    }
+
+    private static String[] fields(String[] args) {
+        return String.join(" ", Arrays.copyOfRange(args, 1, args.length)).split("\\|", -1);
+    }
+
     private static void help(Player player, String label) {
         player.sendMessage("P6 keyboard recovery accepts six short rows in this order: Vaun | Mara | Sella | Orin | Brann | Iss.");
         player.sendMessage("Each row states that person's proof, compromise, and later correction. Use /" + label + " p6-recovery <six rows>.");
         player.sendMessage("P8 accepts four short findings, not one exact sentence:");
         player.sendMessage("/" + label + " p8 <interacting causes> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
+        player.sendMessage("P9 local recovery mirrors Copperline's real forms: /" + label + " p9-people <mkept | Ash | Rook | Wren traces>.");
+        player.sendMessage("Then /" + label + " p9-window <before | crossing | after | readiness | strongest supported claim>.");
         player.sendMessage("Use /" + label + " status or /" + label + " replay. Source clicks are never required.");
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length <= 1) return List.of("help", "status", "replay", "p6-recovery", "p8");
+        if (args.length <= 1) return List.of(
+                "help", "status", "replay", "p6-recovery", "p8", "p9-people", "p9-window");
         return List.of();
     }
 

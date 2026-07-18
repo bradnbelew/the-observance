@@ -400,6 +400,25 @@ def main() -> None:
             and "observation_receipts: 0" in p9_action
             and "file-leak-window" not in discord_register,
             "P9 private-window finding is not real provenance work or retains a Discord answer menu")
+    p9_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P9CampPredicate.java").read_text(
+        encoding="utf-8")
+    p9_input_by_id = {row["id"]: row for row in load(PACK / "input-contracts.json")["contracts"]}
+    p9_coordinator = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/V5RuntimeCoordinator.java").read_text(
+        encoding="utf-8")
+    p9_finding_command = (ROOT / "plugin/src/main/java/com/observance/watcher/command/CampaignFindingCommand.java").read_text(
+        encoding="utf-8")
+    require(all("/obsfinding" in p9_input_by_id[key]["platform"]
+                and p9_input_by_id[key]["zero_observation_acceptance"] is True
+                for key in ("P9.F2", "P9.F4", "P9.F6"))
+            and "class P9CampPredicate" in p9_predicate
+            and "validPeople" in p9_predicate and "validWindow" in p9_predicate
+            and "submitP9CampPeople" in p9_coordinator and "submitP9LeakWindow" in p9_coordinator
+            and 'case "p9-people"' in p9_finding_command and 'case "p9-window"' in p9_finding_command
+            and 'people.addProperty("observation_receipts", 0)' in p9_coordinator
+            and 'leak.addProperty("observation_receipts", 0)' in p9_coordinator
+            and 'snapshot.isComplete("v5_a02_stations")' not in p9_coordinator
+            and 'snapshot.isComplete("v5_case_c07_complete")' not in p9_coordinator,
+            "P9 local path still auto-certifies biographies/version chronology from station completion or lacks the shared zero-observation predicate")
     require("never parse free chat" in by_id["DISCORD_INVESTIGATION_MODAL"]["data_shape_normalization"],
             "Discord input requires unrestricted chat parsing")
     modal = by_id["DISCORD_INVESTIGATION_MODAL"]
