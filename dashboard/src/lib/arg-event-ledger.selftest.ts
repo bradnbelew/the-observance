@@ -127,11 +127,59 @@ async function main(): Promise<void> {
     wrongSurface = true;
   }
   check(wrongSurface, 'a surface may not claim an event owned by another platform');
+
+  // Exercise the complete P1-P12 graph in an order that proves optional evidence interactions do
+  // not gate correct conclusions. P4 resolves before its restore/test; P7 resolves before its web
+  // restore; P10 attribution resolves before the optional bounded-copy proof.
+  const full = new FileArgEventLedger(join(root, 'full-ledger.json'), now);
+  const completePath = [
+    ['p1.attachment_history_restored', 'copperline'],
+    ['p1.mkept_intent_authenticated', 'copperline'],
+    ['p2.artifact_authenticated', 'copperline'],
+    ['p2.live_runtime_handoff', 'minecraft'],
+    ['p3.resident_accounts_opened', 'minecraft'],
+    ['p3.dispatch_authorized', 'discord'],
+    ['p4.control_reversal_earned', 'minecraft'],
+    ['p4.mouth_revision_restored', 'copperline'],
+    ['p4.copy_hypothesis_tested', 'discord'],
+    ['p5.service_chronology_shared', 'minecraft'],
+    ['p5.civic_gallery_recurated', 'minecraft'],
+    ['p6.professional_models_recovered', 'minecraft'],
+    ['p6.six_responsibilities_acknowledged', 'minecraft'],
+    ['p7.counterfeit_material_proven', 'minecraft'],
+    ['p7.nessa_publicly_cleared', 'discord'],
+    ['p7.supplier_history_restored', 'copperline'],
+    ['p8.intervention_plan_accepted', 'copperline'],
+    ['p8.hold_systems_repaired', 'minecraft'],
+    ['p9.company_biographies_restored', 'copperline'],
+    ['p9.leak_window_proven', 'copperline'],
+    ['p10.wren_confronted', 'discord'],
+    ['p10.player_copy_proof', 'minecraft'],
+    ['p10.wren_remembrance_committed', 'minecraft'],
+    ['p11.averyn_identified', 'discord'],
+    ['p11.averyn_restored_unbound', 'minecraft'],
+    ['p12.release_configuration_ready', 'minecraft'],
+    ['p12.name_treatment_committed', 'minecraft'],
+    ['p12.record_closed_averyn_released', 'minecraft'],
+  ] as const;
+  for (const [index, [eventKey, source]] of completePath.entries()) {
+    const result = await full.record({
+      eventKey,
+      idempotencyKey: `selftest:full:${String(index + 1).padStart(2, '0')}:${eventKey}`,
+      source,
+      payload: { canonical_test_action: eventKey, observation_receipts: 0 },
+    });
+    check(result.status === 'committed' && result.created, `full graph failed at ${eventKey}`);
+  }
+  const fullRestart = await new FileArgEventLedger(join(root, 'full-ledger.json'), now).read();
+  check(fullRestart.events.length === 28, 'full P1-P12 graph must retain all 28 events after restart');
+  check(fullRestart.events.every((event) => event.payload.observation_receipts === 0),
+    'complete graph fixtures must prove zero-observation acceptance');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
 
-  console.log('arg-event-ledger.selftest OK: prerequisites, ownership, idempotency, collision, restart, lease, retry, projection');
+  console.log('arg-event-ledger.selftest OK: prerequisites, ownership, idempotency, collision, restart, lease, retry, projection, full P1-P12 graph');
 }
 
 void main();
