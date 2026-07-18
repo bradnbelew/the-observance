@@ -211,6 +211,38 @@
         "rejected_review_pid_32868_alive_after_stop": true
       },
       "required_fix": "Mount every gate label on the first solid jamb immediately outside the clear door span, audit its front cell during the gate-local pass, and retain the final all-sign world readback."
+    },
+    {
+      "attempt": 11,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-427e286-11",
+      "outcome": "strict_final_world_readback_confirmed_gate_buttress_strip_is_not_a_reading_surface",
+      "exact_failure": "The same five gate labels remained blocked after moving one block toward the door jamb.",
+      "cause": "The full compact corridor buttress strip outside the clear door span is solid on the approach side. It is not a valid wall-sign reading plane at either tested jamb offset.",
+      "blocked_sign_cells": [
+        "-4:134:71",
+        "-52:106:104",
+        "42:106:88",
+        "-5:106:141",
+        "-4:162:131"
+      ],
+      "plan_pass": true,
+      "architecture_writes": 1434765,
+      "architecture_changed_blocks": 1349934,
+      "canonical_fixtures_placed": "76/76",
+      "second_pass_physical_audit_passed": true,
+      "readiness_receipt_published": false,
+      "first_log_sha256": "3803456c76c9643c11f32bae5e76db8464b54017bac3f7735a0f8fce39842507",
+      "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+      "cache_sha256": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726",
+      "plugin_sha256": "e4a7b073d8742e258784b6dd3bacc498042d0b6dbf05c7676de56a3d1d19ab2f",
+      "graceful_stop": {
+        "paper_stop_marker": "Stopping the server",
+        "plugin_disable_marker": "The Observance sleeps.",
+        "all_dimensions_saved_marker": "ThreadedAnvilChunkStorage: All dimensions are saved",
+        "port_25612_listener_count": 0,
+        "rejected_review_pid_32868_alive_after_stop": true
+      },
+      "required_fix": "Use a low freestanding civic marker on the edge of each clear gate approach, face it toward arriving players, require floor support and exact rotation, and run that label audit inside the final gate loop."
     }
   ],
   "production_mutated": false,

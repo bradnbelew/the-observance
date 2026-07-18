@@ -4215,6 +4215,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 }
                 String issue = auditHoldGateIntegrity(gate, gateLoc);
                 if (issue != null) throw new IllegalStateException(issue);
+                String labelIssue = auditHoldGateLabel(gate, gateLoc);
+                if (labelIssue != null) throw new IllegalStateException(labelIssue);
             }
 
             // From this point forward only exact-authority reconciliation and registration remain.
@@ -9621,15 +9623,20 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (gate == null || loc == null || loc.getWorld() == null) return;
         HoldGateSpan span = holdGateSpan(gate);
         Location signLoc = holdGateLabelLocation(loc, span);
-        placeWallMountedSign(signLoc, span.acrossX() ? BlockFace.NORTH : BlockFace.WEST,
+        placeStandingSign(signLoc, holdGateLabelFacing(span),
                 new String[]{gate.label(), "registry access", "seal-controlled", ""});
     }
 
     private static Location holdGateLabelLocation(Location loc, HoldGateSpan span) {
-        // Use the first solid jamb outside the clear door span. The prior two-block offset put
-        // labels into the corridor buttress on compact gates, leaving their readable face buried.
-        return span.acrossX() ? loc.clone().add(-span.doorHalf() - 1, 2, -1)
-                : loc.clone().add(-1, 2, -span.doorHalf() - 1);
+        // Compact corridor buttresses occupy the wall strip outside the door jamb. Put a low,
+        // non-colliding civic marker at the edge of the clear approach instead of embedding a wall
+        // sign in that strip. It leaves the center route open and remains at player eye level.
+        return span.acrossX() ? loc.clone().add(-span.doorHalf(), 0, -3)
+                : loc.clone().add(-3, 0, -span.doorHalf());
+    }
+
+    private static BlockFace holdGateLabelFacing(HoldGateSpan span) {
+        return span.acrossX() ? BlockFace.NORTH : BlockFace.WEST;
     }
 
     private void syncPlaceHoldGates(CommandSender sender) {
@@ -10369,12 +10376,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         if (!named) return "gate " + gate.id() + " label text is wrong.";
-        if (!(label.getBlockData() instanceof Directional directional)
-                || !label.getRelative(directional.getFacing().getOppositeFace()).getType().isSolid()) {
-            return "gate " + gate.id() + " label is embedded or has no backing wall.";
+        if (!(label.getBlockData() instanceof Rotatable rotatable)
+                || rotatable.getRotation() != holdGateLabelFacing(span)) {
+            return "gate " + gate.id() + " label has the wrong player-facing rotation.";
         }
-        if (!label.getRelative(directional.getFacing()).isPassable()) {
-            return "gate " + gate.id() + " label faces into a blocked reading cell.";
+        if (!label.getRelative(BlockFace.DOWN).getType().isSolid()) {
+            return "gate " + gate.id() + " label has no approach floor support.";
         }
         return null;
     }
