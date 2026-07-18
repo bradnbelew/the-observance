@@ -1,0 +1,1042 @@
+{
+  "schema_version": "1.0.0-private-staging-readiness",
+  "source_checkpoint": "dc3d342",
+  "recorded_local": "2026-07-18T01:38:00-05:00",
+  "vercel": {
+    "team": {
+      "id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+      "slug": "bradens-projects-c5e41066"
+    },
+    "project": {
+      "id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+      "name": "the-observance-kjxn"
+    },
+    "requested_target": "preview",
+    "upload_manifest": {
+      "root": "dashboard",
+      "file_count": 154,
+      "bytes": 5436052,
+      "exclusions": [
+        "node_modules",
+        ".next*",
+        ".vercel",
+        ".observance-local",
+        ".env*",
+        "tsconfig.tsbuildinfo",
+        "*.log"
+      ],
+      "files": [
+        {
+          "file": ".gitignore",
+          "size": 304,
+          "sha256": "c2387a692f0f79b3e8b20397bb087591a25952c03e76f3be7bc6bed62d44e0e4",
+          "b64len": 408
+        },
+        {
+          "file": "content/campaign/p5-p12.json",
+          "size": 201292,
+          "sha256": "ea70d2636aef44ddb9ead82f69226918eead93ebd1fb59365869ce6fdfd95067",
+          "b64len": 268392
+        },
+        {
+          "file": "content/the-hold-v5/archive-manifest.tsv",
+          "size": 182,
+          "sha256": "5c6f38f22507f0a9762651c5dbdce661f0bce93cddb1c7787b886d46b4bfe453",
+          "b64len": 244
+        },
+        {
+          "file": "content/the-hold-v5/README-FIRST.txt",
+          "size": 440,
+          "sha256": "6f8109958ede9fbe55eec482d1c2470509838e69913b4505045330ff92ea030e",
+          "b64len": 588
+        },
+        {
+          "file": "content/the-hold-v5/the-hold.sha1",
+          "size": 56,
+          "sha256": "52e8179e20f92cd93748e92474ed35466fe1b08101563b91251fbadba1060159",
+          "b64len": 76
+        },
+        {
+          "file": "content/the-hold-v5/the-hold.zip",
+          "size": 10492,
+          "sha256": "ddeaa3e88c6030a36150cf2a534ec85914f57b4f09191059e96c04a3bee9a4ed",
+          "b64len": 13992
+        },
+        {
+          "file": "eslint.config.mjs",
+          "size": 228,
+          "sha256": "4ec478f51824f3ee7557c44728a1d6005eb86ecfab87dc5188a721983778cd17",
+          "b64len": 304
+        },
+        {
+          "file": "next.config.mjs",
+          "size": 352,
+          "sha256": "bc7e5cdf1b396c2ce54cf516e09fe74c6d30c93d4d673ee55b5d6e1618f39117",
+          "b64len": 472
+        },
+        {
+          "file": "next-env.d.ts",
+          "size": 253,
+          "sha256": "4e4da12aa061aac172fb1bcb48e9b6e4b293080d2f494327925fdba8f39632ac",
+          "b64len": 340
+        },
+        {
+          "file": "package.json",
+          "size": 801,
+          "sha256": "ed1e816b3559687fd4796fa47667fe91ed73b2321602ecf26208d847a12f510b",
+          "b64len": 1068
+        },
+        {
+          "file": "package-lock.json",
+          "size": 250663,
+          "sha256": "6af73bde39637d14e148312b0f2464991f3be11d1e997da5cba28c9cb5791ee9",
+          "b64len": 334220
+        },
+        {
+          "file": "postcss.config.mjs",
+          "size": 166,
+          "sha256": "d54acbe4c9478034b3795eca94de59e1fe0298198e4fdc9d40afffde9c1da3bf",
+          "b64len": 224
+        },
+        {
+          "file": "public/evidence/copperline/camp-frame-06.png",
+          "size": 2137241,
+          "sha256": "e77eb6a0be112b73e2c8b3395f396d47230b12a1f252776778d8ae87f31b4ed0",
+          "b64len": 2849656
+        },
+        {
+          "file": "public/evidence/copperline/locker-detail-13.png",
+          "size": 2369812,
+          "sha256": "1196974a7b1cd639dd8d380da6022a93f649ec034321adad433e76312abb099e",
+          "b64len": 3159752
+        },
+        {
+          "file": "public/keeper-eye.svg",
+          "size": 1684,
+          "sha256": "c817857ea3de7f227c5bb93645509e4d08c895ff47050325d5620e87e36df42a",
+          "b64len": 2248
+        },
+        {
+          "file": "README.md",
+          "size": 4886,
+          "sha256": "613686467e20fe8670c6aa5fd084a4af89f552ef4959b6678ce1fc4402b8b91b",
+          "b64len": 6516
+        },
+        {
+          "file": "scripts/run-selftests.mjs",
+          "size": 2404,
+          "sha256": "19d127bd9d9909b41c244808f356076f64a62c691db7b7780aafcb73dac16ea5",
+          "b64len": 3208
+        },
+        {
+          "file": "src/app/announcements.php/page.tsx",
+          "size": 691,
+          "sha256": "ef6f69c626a178fc3f99c8ae59d36417e0ca25dafffa58acdce6a3834aae9b46",
+          "b64len": 924
+        },
+        {
+          "file": "src/app/auth/callback/route.ts",
+          "size": 690,
+          "sha256": "4bdb1debb071226ee613314ab0cfc534c672c15e6f3b5e0a55745146a4bd7bf8",
+          "b64len": 920
+        },
+        {
+          "file": "src/app/author/actions.ts",
+          "size": 3515,
+          "sha256": "1596475fc1d3ca68545f9c8c912416696dbf5e993ae1cdcaf2411ed6c88f3414",
+          "b64len": 4688
+        },
+        {
+          "file": "src/app/author/login/actions.ts",
+          "size": 1278,
+          "sha256": "8a7eaba7ed27fdf42907b9d8214b601dbfd288de57c8201a8d7cb69246a74d1b",
+          "b64len": 1704
+        },
+        {
+          "file": "src/app/author/login/LoginForm.tsx",
+          "size": 837,
+          "sha256": "6436dd9921346b1e7f9a4046bea68374fc1f6d6753a2d8daedf7e9e5f7bc1a6b",
+          "b64len": 1116
+        },
+        {
+          "file": "src/app/author/login/page.tsx",
+          "size": 1065,
+          "sha256": "861768e689d65ce43568bf3546919ba033a2c2e091ebcccc346ceb30af345b8a",
+          "b64len": 1420
+        },
+        {
+          "file": "src/app/author/page.tsx",
+          "size": 7482,
+          "sha256": "c54eb487433193cbe000a2f1e6371570bda4065cf8fe74efee3088c6dab87ad4",
+          "b64len": 9976
+        },
+        {
+          "file": "src/app/clientarea.php/page.tsx",
+          "size": 1074,
+          "sha256": "4e75a5edcd12d7037f8ff8489a755aa447864ee8a3c043dd7c49b1357bfff94d",
+          "b64len": 1432
+        },
+        {
+          "file": "src/app/community/2011/02/08/world-backup/page.tsx",
+          "size": 3313,
+          "sha256": "0e10817a6bc61f42f0fb0b6bc1b33f3dae2771e9083cf858d5274cc6a2357b42",
+          "b64len": 4420
+        },
+        {
+          "file": "src/app/community/2011/02/11/old-copy/page.tsx",
+          "size": 2615,
+          "sha256": "240c46792ff32c1fdef966399f1993b2409da48f359faf604384e803d36d9551",
+          "b64len": 3488
+        },
+        {
+          "file": "src/app/community/2011/02/16/service-counter/page.tsx",
+          "size": 3077,
+          "sha256": "08e0bc71a0410b21fb11212b3db26338924d1c1231b8331290c9f415d25ca432",
+          "b64len": 4104
+        },
+        {
+          "file": "src/app/community/2011/03/03/six-workspaces/page.tsx",
+          "size": 3463,
+          "sha256": "7a25d66f70567ba8c4603f97a85db97e1937a70e73aac2e55c615260d05db8c0",
+          "b64len": 4620
+        },
+        {
+          "file": "src/app/community/2011/03/14/nessa-correction/page.tsx",
+          "size": 3182,
+          "sha256": "7c334c6eae6a99822569116ff56c8e6a6cec047e64468ec36f0f76b854a6ecc4",
+          "b64len": 4244
+        },
+        {
+          "file": "src/app/community/2011/04/02/hold-works/page.tsx",
+          "size": 3707,
+          "sha256": "e17fe3f12ce96e2e84f9d478953e3d555e070336ff6f08a2cb50dc9e35ff2788",
+          "b64len": 4944
+        },
+        {
+          "file": "src/app/community/2011/05/18/archive-closed/page.tsx",
+          "size": 3431,
+          "sha256": "1c869b344ca2a011777b2b6e28bcb0f298949bb9427a6f3b5cb1a7e836e63a0e",
+          "b64len": 4576
+        },
+        {
+          "file": "src/app/community/archive.php/actions.ts",
+          "size": 2055,
+          "sha256": "7677a3addf122ecb96c24819ab9619ba4140b238f770040870a77e0aafb2a492",
+          "b64len": 2740
+        },
+        {
+          "file": "src/app/community/archive.php/CustodyDecisionForm.tsx",
+          "size": 2264,
+          "sha256": "3f541868b4723b3dfdd705528f3edb4ff7bbe12f11daff7e95e96caf8adbe662",
+          "b64len": 3020
+        },
+        {
+          "file": "src/app/community/archive.php/page.tsx",
+          "size": 4187,
+          "sha256": "c5075d9c914b0ff7f37fe3e8bd4ef418662b872c250e7fc4c66b4f5062fdfb5e",
+          "b64len": 5584
+        },
+        {
+          "file": "src/app/community/archive/ash-camp/actions.ts",
+          "size": 2445,
+          "sha256": "5da2ef8e74493b59b4e2df1440e9450fff9262c8594656270eae82e5a00c86fb",
+          "b64len": 3260
+        },
+        {
+          "file": "src/app/community/archive/ash-camp/CampBiographyForm.tsx",
+          "size": 2114,
+          "sha256": "62e667dba0e204abee37dc6428269449754d6ebd21c7a3bfa124a0201c6dee53",
+          "b64len": 2820
+        },
+        {
+          "file": "src/app/community/archive/ash-camp/page.tsx",
+          "size": 3743,
+          "sha256": "a16ac8ee15c46408750a05a59515087d3904f58c245d7afd584038e8408edf6b",
+          "b64len": 4992
+        },
+        {
+          "file": "src/app/community/archive/intake-copies/actions.ts",
+          "size": 1715,
+          "sha256": "e4cb1e4685426dd578c317498ecd1ed18be59e9a44e2db8f8790549eae934404",
+          "b64len": 2288
+        },
+        {
+          "file": "src/app/community/archive/intake-copies/page.tsx",
+          "size": 3829,
+          "sha256": "ca552663deaecd920389a91d2d05b1c30a05ea4b480d88d59d3ff87e2cd09a1a",
+          "b64len": 5108
+        },
+        {
+          "file": "src/app/community/archive/intake-copies/RestoreArchiveForm.tsx",
+          "size": 2213,
+          "sha256": "6bd36330e225ddf592f697afda2457dfa2a654f9edc3a627144ec1cd83c2df10",
+          "b64len": 2952
+        },
+        {
+          "file": "src/app/community/archive/package-review/actions.ts",
+          "size": 2123,
+          "sha256": "4b6f690d4cd2ed9288001f2f1cfefdd46c94b96d12a802a76e79971462b66d81",
+          "b64len": 2832
+        },
+        {
+          "file": "src/app/community/archive/package-review/PackageReviewForm.tsx",
+          "size": 2301,
+          "sha256": "b183227e7aa54a2138ab355adb49df55a3b0f44adb619acdcb05375cc90ed573",
+          "b64len": 3068
+        },
+        {
+          "file": "src/app/community/archive/package-review/page.tsx",
+          "size": 3248,
+          "sha256": "69f16f62d5c054900468cadfb67c9ec473f0fb34e591984e2c7bebbc9356159b",
+          "b64len": 4332
+        },
+        {
+          "file": "src/app/community/archive/recovered-packet/page.tsx",
+          "size": 4348,
+          "sha256": "dbc01b73026629cae26824e21e5124d7f95de023416860e5da94537be7d5d4d8",
+          "b64len": 5800
+        },
+        {
+          "file": "src/app/community/archive/supplier-revisions/actions.ts",
+          "size": 1930,
+          "sha256": "6557a37439a7d905b408d23c589b01ac89b93ec3993a21ef22b2e257f1df1794",
+          "b64len": 2576
+        },
+        {
+          "file": "src/app/community/archive/supplier-revisions/page.tsx",
+          "size": 2382,
+          "sha256": "c094ca4cb691b3209910d9805e051070c3680829e06dba93e7d4ed294600d1e2",
+          "b64len": 3176
+        },
+        {
+          "file": "src/app/community/archive/supplier-revisions/SupplierRestoreForm.tsx",
+          "size": 1756,
+          "sha256": "69ffba65243df54a11ed9a95800fb29725d3a36c106e7ffe0e2371e9bd99de6b",
+          "b64len": 2344
+        },
+        {
+          "file": "src/app/community/archive/wren-moderation/page.tsx",
+          "size": 3133,
+          "sha256": "d46074ddeecf32879ecce0ca12c33dac333d685a9b6dd3e320cdc3b6464b8ca2",
+          "b64len": 4180
+        },
+        {
+          "file": "src/app/community/index.php/page.tsx",
+          "size": 9027,
+          "sha256": "b8a69461eea628db1c658a680837e1fd590a74cdb1c602933a46d6b99cac231e",
+          "b64len": 12036
+        },
+        {
+          "file": "src/app/community/remote-room.php/page.tsx",
+          "size": 811,
+          "sha256": "0faa87dca734ba3573baf75d9d6bf85c0a01784dae1fe20be0168988539c0f2a",
+          "b64len": 1084
+        },
+        {
+          "file": "src/app/game-servers.php/page.tsx",
+          "size": 1941,
+          "sha256": "c1c7a99cdbae7726ca622c8e2a502574ef130902794844dbd774c9402239df6d",
+          "b64len": 2588
+        },
+        {
+          "file": "src/app/globals.css",
+          "size": 50911,
+          "sha256": "79b6edcdd4e03a120eb91eabae65178b3f997f229d96f983ceca93b301ed9a5d",
+          "b64len": 67884
+        },
+        {
+          "file": "src/app/layout.tsx",
+          "size": 620,
+          "sha256": "4eeb0b08b326600f6a612ddda4539d4007c7e6b829177169a52cdd306167b0bd",
+          "b64len": 828
+        },
+        {
+          "file": "src/app/not-found.tsx",
+          "size": 565,
+          "sha256": "4a73c4f3d6a07478ab7767d8b713aea8832680d0ae87716dcb5b5ca37d6cc560",
+          "b64len": 756
+        },
+        {
+          "file": "src/app/page.tsx",
+          "size": 3464,
+          "sha256": "7ebd6285147ab743fc7d167f13c7e678169ab130997849a6166ef926c761dfc8",
+          "b64len": 4620
+        },
+        {
+          "file": "src/app/record/[slug]/page.tsx",
+          "size": 7512,
+          "sha256": "4a4e8cd39da4bd36b7088f145f2a328c4b450f3debafc2890a5918b3456aa921",
+          "b64len": 10016
+        },
+        {
+          "file": "src/app/record/archive/page.tsx",
+          "size": 5108,
+          "sha256": "10bbdeb0d711d8ab3d751603decfb3919b5771061f4b68de5f85c3d6dc7bb0f8",
+          "b64len": 6812
+        },
+        {
+          "file": "src/app/record/layout.tsx",
+          "size": 1539,
+          "sha256": "50336a4b9e98412d17c761f2d14c87abe7421a99b101127261046ffee78b5e64",
+          "b64len": 2052
+        },
+        {
+          "file": "src/app/record/page.tsx",
+          "size": 495,
+          "sha256": "1ce4811e06343b69597e4112fe58a4c1bc3aa0d4adbf1209d34715d15d3de801",
+          "b64len": 660
+        },
+        {
+          "file": "src/app/record/terminal/inscribe/route.ts",
+          "size": 788,
+          "sha256": "87bf3a64fe2fe5e17c3bbabe4e72a6b833a49d45fd8fb2f87788240281e54daf",
+          "b64len": 1052
+        },
+        {
+          "file": "src/app/record/terminal/page.tsx",
+          "size": 5589,
+          "sha256": "35e1af0aab2347be3a8587b436e2594cdedea53533722fe0ba4e3dfb15d708d9",
+          "b64len": 7452
+        },
+        {
+          "file": "src/app/server.php/actions.ts",
+          "size": 1245,
+          "sha256": "904b1885115f94e867d0cc53baaa051dd36bcc32bfadf2cef85c3698bf1eab7d",
+          "b64len": 1660
+        },
+        {
+          "file": "src/app/server.php/page.tsx",
+          "size": 6532,
+          "sha256": "b80285d4f2a40ac7360150a574587d06abf5e9714400c8d303c436054577880d",
+          "b64len": 8712
+        },
+        {
+          "file": "src/app/server.php/ServiceDocketForm.tsx",
+          "size": 1056,
+          "sha256": "fa0eba8c619ca9062e8df286f552e0cfc47e822957f4e5c68c15720b6e53063b",
+          "b64len": 1408
+        },
+        {
+          "file": "src/app/server-list.php/page.tsx",
+          "size": 1599,
+          "sha256": "4d83b587e127e68351224a6910bb997ac9a00d61133b6f97dd86d85e17f35ebb",
+          "b64len": 2132
+        },
+        {
+          "file": "src/app/site-chrome.tsx",
+          "size": 494,
+          "sha256": "0081d57d811b580dda7e4119a4332b5dc7e664f88f5e3244bae39d58dbdfef67",
+          "b64len": 660
+        },
+        {
+          "file": "src/app/status/page.tsx",
+          "size": 2601,
+          "sha256": "99f33a9b952a062b9dd38f0b6b517d2319dcbb55005e8cfb3556ad1b9768588a",
+          "b64len": 3468
+        },
+        {
+          "file": "src/app/support/index.php/page.tsx",
+          "size": 2271,
+          "sha256": "63eb3732854e300fd4a5409f91db460a2de1faec0e5a96f64bf0635b915a94e4",
+          "b64len": 3028
+        },
+        {
+          "file": "src/app/support/ticket.php/page.tsx",
+          "size": 5133,
+          "sha256": "0f1358a65a266e2472dbdcdf7ae3f32c98c30d7564cf8d2ced4a427085895fae",
+          "b64len": 6844
+        },
+        {
+          "file": "src/app/the-hold/the-hold.zip/route.ts",
+          "size": 1850,
+          "sha256": "fb3e7a631bb1750368430a1e2b9f5fcd583e407aa774d96606757ba70e676ada",
+          "b64len": 2468
+        },
+        {
+          "file": "src/components/author/BeatQueue.tsx",
+          "size": 5437,
+          "sha256": "a7c2bed2cc8f5b59450f93a8da66c3bb601500967fb7ad72f3732e2e9f13ff95",
+          "b64len": 7252
+        },
+        {
+          "file": "src/components/author/BondLedger.tsx",
+          "size": 3036,
+          "sha256": "affb5aed682f455003b4f5c56ed446f26ec0113b6092bd7d9638cec4533ec747",
+          "b64len": 4048
+        },
+        {
+          "file": "src/components/author/Dossiers.tsx",
+          "size": 5636,
+          "sha256": "ceb018f8f68023779f764942d884e98d3c22af505aec11454efeb4822faa30e4",
+          "b64len": 7516
+        },
+        {
+          "file": "src/components/author/proofFlags.ts",
+          "size": 968,
+          "sha256": "6efb8326705769265a90929f0a6510bfbd76682a54dbf405da25e03aee1da31b",
+          "b64len": 1292
+        },
+        {
+          "file": "src/components/author/V5CaseConsole.tsx",
+          "size": 4503,
+          "sha256": "0f372d120b994b71c5a003131c5f57f032dfa90cfe8dfa9d9bbc75e0b135ba6f",
+          "b64len": 6004
+        },
+        {
+          "file": "src/components/author/V5FinalePanel.tsx",
+          "size": 1247,
+          "sha256": "562d5d7b3694e494a735040022abea37d18f151a03320bbe766aff76908a9c8c",
+          "b64len": 1664
+        },
+        {
+          "file": "src/components/author/WatcherSleepToggle.tsx",
+          "size": 2343,
+          "sha256": "80397ae0765c72a30c7b7a255a2dfc5bbca8ccaba7beb2eccc3f1e37fc3ac9ce",
+          "b64len": 3124
+        },
+        {
+          "file": "src/components/author/WhisperBudgets.tsx",
+          "size": 5050,
+          "sha256": "22bb0111c815be7e5378f22e65c291bc6212c41fa0dcdb20064d525d289f2a17",
+          "b64len": 6736
+        },
+        {
+          "file": "src/components/legacy/LegacyShell.tsx",
+          "size": 4357,
+          "sha256": "0cdc7032f752700632929b5b2600dd738de9c7623cc3bc9999b079163a13f4b9",
+          "b64len": 5812
+        },
+        {
+          "file": "src/components/status/ComplianceCounts.tsx",
+          "size": 2412,
+          "sha256": "a96d54cc1140e7d6f7f0eb519f0f1bd9f971af3d2b7f70cc4997ca17c322faca",
+          "b64len": 3216
+        },
+        {
+          "file": "src/components/status/HealthPanel.tsx",
+          "size": 6990,
+          "sha256": "0ea874d74a07c4a1f694ed3d81032b46c20b20c71bbc6eaf835f366c6f13305b",
+          "b64len": 9320
+        },
+        {
+          "file": "src/components/status/Heatmap.tsx",
+          "size": 5695,
+          "sha256": "ddac235517952addc808553a0bc3bf7519ee2055daef9cf09262b5d88d775c87",
+          "b64len": 7596
+        },
+        {
+          "file": "src/lib/archive-projection.selftest.ts",
+          "size": 926,
+          "sha256": "973602616dbb6e68766c835eacd8fea93a1a56046557bbdbfa6fb4ae95985ec4",
+          "b64len": 1236
+        },
+        {
+          "file": "src/lib/archive-projection.ts",
+          "size": 1256,
+          "sha256": "2693d824211cae79ef678d78f7a2fb552b7cd3a5e7b5a6911c9357c3294196da",
+          "b64len": 1676
+        },
+        {
+          "file": "src/lib/arg-event-ledger.selftest.ts",
+          "size": 3915,
+          "sha256": "f2c971086ad3ac22e67672eda325b2560f1f99c3231f250c9658f1c86d07c996",
+          "b64len": 5220
+        },
+        {
+          "file": "src/lib/arg-event-ledger.ts",
+          "size": 6321,
+          "sha256": "d4c547d43dcf9c9a4dded5060c506960342d53b2b10adaba743385e029ce46ee",
+          "b64len": 8428
+        },
+        {
+          "file": "src/lib/arg-event-policy.selftest.ts",
+          "size": 3663,
+          "sha256": "1e9c56462dfda3662fc0de026f2b504e336dd65aacff3f836d94538a3b4a32b6",
+          "b64len": 4884
+        },
+        {
+          "file": "src/lib/arg-event-policy.ts",
+          "size": 5636,
+          "sha256": "f0e9cabd2d70e7a821270dafad9a5b87fa73e4f80b16d960eac7523354832f74",
+          "b64len": 7516
+        },
+        {
+          "file": "src/lib/arg-event-store.ts",
+          "size": 3792,
+          "sha256": "2b821b11830bf85e5325b130a7b6675b8f68986e6b9dc7ffdaa6ce59d46fd11b",
+          "b64len": 5056
+        },
+        {
+          "file": "src/lib/author-auth.ts",
+          "size": 1035,
+          "sha256": "6b97a72997df72e08f7edddcc8e116b75f4bb5a558f1b791083df1810ffd7316",
+          "b64len": 1380
+        },
+        {
+          "file": "src/lib/campaign-projection.selftest.ts",
+          "size": 1866,
+          "sha256": "a2db4d74df6e03aafd0a7a041e3cc157c6395ab63d21a5c5374a70eae22733a4",
+          "b64len": 2488
+        },
+        {
+          "file": "src/lib/campaign-projection.ts",
+          "size": 1237,
+          "sha256": "b669706008f5ffcd7e1431aa0006499e1c3cf6a15f52379292c15a82b4024d5b",
+          "b64len": 1652
+        },
+        {
+          "file": "src/lib/copperline-p10-wren.selftest.ts",
+          "size": 905,
+          "sha256": "1fdd11f01a2c042e9adf3ab4e26bba85dfd48258742eb261b42409c0185bbc23",
+          "b64len": 1208
+        },
+        {
+          "file": "src/lib/copperline-p11-averyn.selftest.ts",
+          "size": 1028,
+          "sha256": "e08adc0b859381de999fd2dbd62994809b7a7993b61ab52406af48b0dd3d6dd9",
+          "b64len": 1372
+        },
+        {
+          "file": "src/lib/copperline-p12-coda.selftest.ts",
+          "size": 1048,
+          "sha256": "9df160c8f414e344274c90fe83efc6359b484f323d523f460e4b4ba8aa781d5b",
+          "b64len": 1400
+        },
+        {
+          "file": "src/lib/copperline-p2-package.selftest.ts",
+          "size": 1287,
+          "sha256": "3e852bb3585b4625f6adbd5510ea3dc136b86886cc415431eb6e00528c221ba8",
+          "b64len": 1716
+        },
+        {
+          "file": "src/lib/copperline-p4-archive.selftest.ts",
+          "size": 1355,
+          "sha256": "7a7c94317247537cee38e97cc780eec112552e30423b704a4d317d5784cf015d",
+          "b64len": 1808
+        },
+        {
+          "file": "src/lib/copperline-p4-archive.ts",
+          "size": 8097,
+          "sha256": "f19a26670d7923f1c4b20cdcd63a8452659af441bb9787e3156eb607bfe1e181",
+          "b64len": 10796
+        },
+        {
+          "file": "src/lib/copperline-p4-restore.selftest.ts",
+          "size": 932,
+          "sha256": "7f9948efc2b69c93d7942d9c948a2d4ee4155d02ea7d92781d34a7104051aedf",
+          "b64len": 1244
+        },
+        {
+          "file": "src/lib/copperline-p4-restore.ts",
+          "size": 1467,
+          "sha256": "67ae3a2f3ba549c1cc9fc33e710265a6eec027b64ed7a3249628a738be306303",
+          "b64len": 1956
+        },
+        {
+          "file": "src/lib/copperline-p4-route.selftest.ts",
+          "size": 680,
+          "sha256": "30583249a88fae02603af856abb2120684acdf350825eee361031464d5dc9355",
+          "b64len": 908
+        },
+        {
+          "file": "src/lib/copperline-p4-route.ts",
+          "size": 1370,
+          "sha256": "11bb72e99a505b3b6f5f07ccb45e4e4271bdf65cbf143169984234efbfc86f42",
+          "b64len": 1828
+        },
+        {
+          "file": "src/lib/copperline-p5-consequence.selftest.ts",
+          "size": 820,
+          "sha256": "6abeef207c3a7708c99b8dbea55a99af055f1e18fbb05468851f3c27447525c1",
+          "b64len": 1096
+        },
+        {
+          "file": "src/lib/copperline-p6-consequence.selftest.ts",
+          "size": 803,
+          "sha256": "b1f8a4857c71f34a3eac953d96174145196e7ac8e94b95c5222a3956e74f3547",
+          "b64len": 1072
+        },
+        {
+          "file": "src/lib/copperline-p7-inquiry.selftest.ts",
+          "size": 1307,
+          "sha256": "da60ddb53df3ad09e9da2232c2182e438102b7aeaab93d319fa0786f83a0a848",
+          "b64len": 1744
+        },
+        {
+          "file": "src/lib/copperline-p8-repair.selftest.ts",
+          "size": 1001,
+          "sha256": "b9a2ce4f34c4cab999f81a7a06f9f4318ea169e71139a161a33dc4e7744b7941",
+          "b64len": 1336
+        },
+        {
+          "file": "src/lib/copperline-p9-company.selftest.ts",
+          "size": 1199,
+          "sha256": "0477cdf041f65d7ab86664370f89c9e4adfae39edcce3aef71d718d67eafde41",
+          "b64len": 1600
+        },
+        {
+          "file": "src/lib/database.types.ts",
+          "size": 26594,
+          "sha256": "11bbb2a1edcf238a8a9b5682ce1be6a4ec950421165c87248aaad84beb1121df",
+          "b64len": 35460
+        },
+        {
+          "file": "src/lib/deployment-target.selftest.ts",
+          "size": 1112,
+          "sha256": "42621c51af380f2e0172f0c458c5abe44d4d8ff33523f768a82bcdd369e51b27",
+          "b64len": 1484
+        },
+        {
+          "file": "src/lib/deployment-target.ts",
+          "size": 1253,
+          "sha256": "7d464c718ccc21522d5419e0da3e66281023f780b7607c27f1bfddc5b65387af",
+          "b64len": 1672
+        },
+        {
+          "file": "src/lib/legacy-content.ts",
+          "size": 2921,
+          "sha256": "392e3b0360e3e16ca6af37d78102e5c7c88d25223f28a540939075765d3667d1",
+          "b64len": 3896
+        },
+        {
+          "file": "src/lib/record/gate.ts",
+          "size": 2345,
+          "sha256": "83035a23b2c7594ee03e354064260760f42c53197a3d65795556164d5cfb7b0f",
+          "b64len": 3128
+        },
+        {
+          "file": "src/lib/record/integrity.ts",
+          "size": 4223,
+          "sha256": "88959a3219eb915faeffa56687c25f50141b479a9573bedf36d4a5bfaa83225b",
+          "b64len": 5632
+        },
+        {
+          "file": "src/lib/record/integrity-policy.ts",
+          "size": 1648,
+          "sha256": "2c0133258e35e7cb5783731ae70b13c012a0931066956104e8e7fe279d1ef349",
+          "b64len": 2200
+        },
+        {
+          "file": "src/lib/record/ledger.ts",
+          "size": 8090,
+          "sha256": "975b118d5771a0993735c303be9cf664804da3733f971c84e92475b920a69133",
+          "b64len": 10788
+        },
+        {
+          "file": "src/lib/record/normalize.ts",
+          "size": 1986,
+          "sha256": "4a38aed7e294d4bc6a2bb0213ef17ca9bb0301f7efb79906e9a58427be6ba9de",
+          "b64len": 2648
+        },
+        {
+          "file": "src/lib/record/oracle-client.ts",
+          "size": 3137,
+          "sha256": "ed8e2957136ca735563134da5aabbcda51895fe56011041054ed6d46d719beb0",
+          "b64len": 4184
+        },
+        {
+          "file": "src/lib/record/record-copy.selftest.ts",
+          "size": 1389,
+          "sha256": "8ddf98e9f1ac6e39a659dd141f88d542119c46c23e2c77d7a41965aa1cbc677d",
+          "b64len": 1852
+        },
+        {
+          "file": "src/lib/record/record-oracle.selftest.ts",
+          "size": 3126,
+          "sha256": "f556cbdb19bab8e6b1257336971a1c2b5d75de23e41a304ea366a921b1446178",
+          "b64len": 4168
+        },
+        {
+          "file": "src/lib/record/record-terminal.selftest.ts",
+          "size": 2108,
+          "sha256": "ec636a1b63363002ea78278c077dc4723eb0abb83dfaab7da012c7292d9ef5c4",
+          "b64len": 2812
+        },
+        {
+          "file": "src/lib/record-projection.selftest.ts",
+          "size": 2820,
+          "sha256": "f4deaae23f8b5d9e991af4d20f4dc61c7ba8a90a44493063790737d5c173bfa5",
+          "b64len": 3760
+        },
+        {
+          "file": "src/lib/record-projection.ts",
+          "size": 3707,
+          "sha256": "4a929c458a1f7db81304ef413f08785f9e636afa9d2aa4785ce69ac5aa7e2ee3",
+          "b64len": 4944
+        },
+        {
+          "file": "src/lib/RuneGlyphs.tsx",
+          "size": 2082,
+          "sha256": "2337b3c1646914a4c421482c2abb20709feafede57b1d5456cf2365a21dbccb1",
+          "b64len": 2776
+        },
+        {
+          "file": "src/lib/runes.selftest.ts",
+          "size": 2300,
+          "sha256": "c0fb7ac21c58e9534b3545fa8244bb082bb79717a97497f5680742cbdc6b3e53",
+          "b64len": 3068
+        },
+        {
+          "file": "src/lib/runes.ts",
+          "size": 5790,
+          "sha256": "4c42b031d102de6ddb747ee0d944dde6a5fc8d80e102cdf7d1870b775e0e7260",
+          "b64len": 7720
+        },
+        {
+          "file": "src/lib/supabase/admin.ts",
+          "size": 1395,
+          "sha256": "b3bf6f3b759c7bb5a56d3aa73a204896f87f6211e50bcb557f0b4bbe6b94ed9c",
+          "b64len": 1860
+        },
+        {
+          "file": "src/lib/supabase/client.ts",
+          "size": 528,
+          "sha256": "96f47cd9b8a17794cf7ffa4c5f6efabecf70e929a870ad332c035932119ad1c9",
+          "b64len": 704
+        },
+        {
+          "file": "src/lib/supabase/public-projection.ts",
+          "size": 747,
+          "sha256": "ee469b173be51ebdae07c11a65b4544c3c72e01cb1b85d341247c43ea5491427",
+          "b64len": 996
+        },
+        {
+          "file": "src/lib/supabase/server.ts",
+          "size": 1381,
+          "sha256": "7044c549d6afeff5565382d0761ea2aeaa04d509427eadd175a2ea53df32f1df",
+          "b64len": 1844
+        },
+        {
+          "file": "src/lib/v5-cases.selftest.ts",
+          "size": 562,
+          "sha256": "3511a8526b9240ce664bd1ead9eb0760597a0ac31b5a889960bd32ae85ff92c3",
+          "b64len": 752
+        },
+        {
+          "file": "src/lib/v5-cases.ts",
+          "size": 917,
+          "sha256": "afa255a66a12fa8f741ee80f71d2ae706e68abe84a19f8757cfbd3ca17b820ae",
+          "b64len": 1224
+        },
+        {
+          "file": "src/lib/v5-hold-archive.selftest.ts",
+          "size": 9945,
+          "sha256": "420c422171c1b75bf1b1aa91aa68dc66f8a5d79f3989083723a540120c236aa3",
+          "b64len": 13260
+        },
+        {
+          "file": "src/lib/v5-hold-archive.ts",
+          "size": 1357,
+          "sha256": "ebfe52b4b8d3665e820bbe5da163c5b3c19a458ebf4321046c753ec19ce35729",
+          "b64len": 1812
+        },
+        {
+          "file": "src/lib/v5-ls02-answer.ts",
+          "size": 1121,
+          "sha256": "18292b3e52aa7c183dc9a7b820b90daf226c7691da910f6f9f8362b1adba41a6",
+          "b64len": 1496
+        },
+        {
+          "file": "src/lib/v5-ls02-docket.selftest.ts",
+          "size": 1717,
+          "sha256": "b96ca252a772f30f7af99c6ee213717397ae7abb699ea12d84162528917e6702",
+          "b64len": 2292
+        },
+        {
+          "file": "src/lib/v5-ls02-docket.ts",
+          "size": 563,
+          "sha256": "deff4f55016988832d1b553f4d1a56fe9e090de125f7e1162109b1f2aa386da2",
+          "b64len": 752
+        },
+        {
+          "file": "src/lib/v5-web-node-policy.selftest.ts",
+          "size": 1579,
+          "sha256": "0931fcf92fb199470db6c7ce5a6f8677a9deb0456604e9eeb258dc9391fad91d",
+          "b64len": 2108
+        },
+        {
+          "file": "src/lib/v5-web-node-policy.ts",
+          "size": 861,
+          "sha256": "f128ac42c939b0d7c340e1abf88b45634b27aeddb46c2ed00ef4f5868fc7742e",
+          "b64len": 1148
+        },
+        {
+          "file": "src/lib/v5-web-progress.ts",
+          "size": 4473,
+          "sha256": "786cb00204cecaf02d2a921cfe8d3852202cf1dd5bc9e5208fc845368e4c4628",
+          "b64len": 5964
+        },
+        {
+          "file": "src/proxy.selftest.ts",
+          "size": 2612,
+          "sha256": "694881f2afe075a886795fb87ed4acfafff83a5c032fd342b6b1604c5388ed0e",
+          "b64len": 3484
+        },
+        {
+          "file": "src/proxy.ts",
+          "size": 2042,
+          "sha256": "4c852a1c5fdf9163017f6c3db32eb18fc2ff3255755f674a8d45fc79e04bc466",
+          "b64len": 2724
+        },
+        {
+          "file": "supabase/migrations/0001_init.sql",
+          "size": 11548,
+          "sha256": "56ae6985eb4b0c44156b11279db4166439774afb8585e04cb348cbcd8555c1be",
+          "b64len": 15400
+        },
+        {
+          "file": "supabase/migrations/0002_seed.sql",
+          "size": 807,
+          "sha256": "9be44a9be20aa69d3eaaba74a7093cac5705486556264c55f629c8f65f856363",
+          "b64len": 1076
+        },
+        {
+          "file": "supabase/migrations/0003_lockdown.sql",
+          "size": 1897,
+          "sha256": "8f3fe4e1acf32537000c25d634f70d4564a24d40a7e868a5ff207defa3627b76",
+          "b64len": 2532
+        },
+        {
+          "file": "supabase/migrations/0004_v_record.sql",
+          "size": 4961,
+          "sha256": "75208ca99cef669632db4b51d6420774a683bbc5e64a986f301e492ed07258ee",
+          "b64len": 6616
+        },
+        {
+          "file": "supabase/migrations/0005_reconcile_tracker_views.sql",
+          "size": 8729,
+          "sha256": "c7514dacc3b5d059f2a09db3cf5ea918d9feab4db16cfd90846ac2eccb108ac6",
+          "b64len": 11640
+        },
+        {
+          "file": "supabase/migrations/0006_v_record_theories.sql",
+          "size": 4017,
+          "sha256": "ef1f603ad4c37365fe035e423e097d92e156ef2dd1bfb24f3bf93bc89df05a7b",
+          "b64len": 5356
+        },
+        {
+          "file": "supabase/migrations/0007_v_archive.sql",
+          "size": 6492,
+          "sha256": "74a9f09e8a5046b4eab5fc643b77f2525b8d910912e2b75defd893feffd2d0f3",
+          "b64len": 8656
+        },
+        {
+          "file": "supabase/migrations/0008_v_archive_flag_gate.sql",
+          "size": 3342,
+          "sha256": "8f32987dc5b2c7d86c1025166df6ecc232360b280ed7cf89f02e62d233a14431",
+          "b64len": 4456
+        },
+        {
+          "file": "supabase/migrations/0009_beat_queue_failed_status.sql",
+          "size": 699,
+          "sha256": "8c56042f861b6e804f79623c0d74d6addd3de45e3a1de3e1218ed6059e32b18d",
+          "b64len": 932
+        },
+        {
+          "file": "supabase/migrations/0010_v5_public_record.sql",
+          "size": 5565,
+          "sha256": "7168c246c9179e367c75d3bceaaff8645a67ee6c3f29020bfdced40a8b5ac4c8",
+          "b64len": 7420
+        },
+        {
+          "file": "tailwind.config.ts",
+          "size": 604,
+          "sha256": "cbe39a8ad9bde351f31232dc8e41d2547e51eaef0c3abc35f6c52940f4fb588f",
+          "b64len": 808
+        },
+        {
+          "file": "tsconfig.json",
+          "size": 727,
+          "sha256": "6fdb7a7812226c90d24633055b2fbf1b2f37a14db77b5d17e1b8c08b8da0bd99",
+          "b64len": 972
+        }
+      ]
+    },
+    "export_attempt": "blocked_before_transfer_by_external_export_safety_gate",
+    "deployment_created": false,
+    "latest_project_deployment_after_block": {
+      "id": "dpl_26tawqUKuod6bVCqakmS2mEw1wdz",
+      "target": "production",
+      "commit": "ca5416e477597b6e38f1dc82c9007c814184c980",
+      "state": "READY"
+    },
+    "local_cli_identity": "ethan-2854",
+    "local_cli_used_for_deploy": false,
+    "exact_remaining_confirmation": "Brad must explicitly approve exporting this exact 154-file, 5,436,052-byte allowlist, including two authored evidence PNGs, to the existing Vercel preview project."
+  },
+  "railway": {
+    "workspace": {
+      "id": "20811515-27dd-4d3d-af8f-57c656a120d1",
+      "name": "bradnbelew's Projects"
+    },
+    "families": [
+      {
+        "project_id": "462b0f7f-a98a-4cd7-9641-01b5704375c9",
+        "project": "distinguished-balance",
+        "service_id": "06c1fdec-ab9d-44f7-ad70-96feea84023e",
+        "service": "the-observance",
+        "environments": [
+          {
+            "id": "769978d7-28c3-4a4b-a586-e8378c80ac71",
+            "name": "production"
+          }
+        ],
+        "latest_deployment": {
+          "id": "80782ef4-9dd5-402f-b736-01dacbe0426c",
+          "status": "SUCCESS",
+          "instance_status": "EXITED",
+          "stopped": true,
+          "commit": "ca5416e477597b6e38f1dc82c9007c814184c980",
+          "root": "/discord",
+          "start_command": "npm run showrunner",
+          "cron": "*/10 * * * *"
+        }
+      },
+      {
+        "project_id": "e8158c1a-259b-4079-b51d-df7a2bb654e6",
+        "project": "aware-playfulness",
+        "service_id": "ea488e14-1c46-4ecf-8448-5c7842247dd1",
+        "service": "the-observance",
+        "environments": [
+          {
+            "id": "b6cbdbfd-e0ae-4977-bdb5-94d1c20f932a",
+            "name": "production"
+          }
+        ],
+        "latest_deployment": {
+          "id": "904bdad1-c107-44c2-9ea3-296ced8f54ba",
+          "status": "SUCCESS",
+          "instance_status": "RUNNING",
+          "stopped": false,
+          "root": "/discord",
+          "start_command": "npm start",
+          "cron": null
+        }
+      }
+    ],
+    "isolated_staging_environment_found": false,
+    "variable_values_or_names_read": false,
+    "variable_query": "blocked because the CLI would fetch raw production values before filtering",
+    "deployed": false,
+    "production_mutated": false,
+    "exact_remaining_confirmation": "A distinct staging environment is absent. Creation/duplication and any paid runtime must receive exact cost and isolation confirmation before deployment."
+  },
+  "supabase": {
+    "production_project_id": "fndmhbpxnodrnbrzrlqq",
+    "production_role": "read_only_baseline",
+    "branch_list_result": "permission_denied_MCP_-32600",
+    "development_branch_verified": false,
+    "migration_applied": false,
+    "production_mutated": false,
+    "exact_remaining_confirmation": "Connector permission and any required branch cost confirmation are needed before creating or validating on a development branch."
+  },
+  "cross_surface": {
+    "local_routed_audit": "pass",
+    "fresh_paper_build_restart_audit": "pass",
+    "external_private_staging": "blocked_at_exact_export_identity_isolation_or_cost_confirmations",
+    "human_end_to_end": "not_started_by_user_direction_until_build_end",
+    "brad_approval": null,
+    "production_mutated": false,
+    "public_launch": false
+  }
+}

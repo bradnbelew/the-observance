@@ -563,6 +563,7 @@
     "receipt_harness_commit": "5d5b620d1f68614e001a21648df3dabed85a851e",
     "routed_audit_receipt": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json",
     "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    "private_staging_readiness_receipt": "design/handoff/PRIVATE-STAGING-READINESS-2026-07-18.json",
     "campaign_projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
     "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
     "paper_version": "1.21.11",
@@ -580,7 +581,7 @@
     "answer_shape": "interpretive findings use short deterministic meaning components or physical actions; fairly yielded exact artifacts may remain exact; source-touch receipts never gate correctness",
     "relationship_web": "artifacts, actions, voices, consequences, and callbacks are routed across cases and surfaces rather than treated as isolated puzzle sections",
     "experiential_status": "human_end_to_end_test_not_run_by_user_direction_until_build_end",
-    "external_staging_status": "exact private preview and isolated service deployment receipts remain open",
+    "external_staging_status": "Vercel preview export requires explicit approval of the exact 154-file allowlist; both Railway families expose production only; Supabase development-branch listing is permission denied and branch creation may require cost confirmation",
     "brad_approval": null,
     "production_mutation": false,
     "public_launch": false
@@ -828,6 +829,11 @@
       "older": "the 2026-07-17 P5-P12 packet and physical-install technical scaffold before the complete story-first cross-surface runtime was wired",
       "newer": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json plus design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
       "effect": "the current P1-P12 source now passes the complete routed repository/content/security/runtime/package/media chain and a new create-only Paper 1.21.11 full Hold build, graceful stop, restart, independent physical re-audit, and deterministic world package. This supersedes stale projection hashes and closes the current automated local physical gate. It does not supersede Brad's experiential rejection, create human approval, prove external staging, or authorize production/public launch."
+    },
+    {
+      "older": "generic claims that connected Vercel, Railway, or Supabase targets were either wholly absent or ready for safe staging",
+      "newer": "design/handoff/PRIVATE-STAGING-READINESS-2026-07-18.json",
+      "effect": "the existing Vercel project is reachable but exporting the exact 154-file private source allowlist is blocked pending Brad's explicit informed approval; both Railway families have only production environments, and no raw variable values were read; Supabase development-branch listing is permission denied. No preview, staging environment, migration, secret read, production mutation, or public launch occurred."
     },
     {
       "older": "Phase 1 media location unknown",

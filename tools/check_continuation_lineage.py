@@ -581,7 +581,8 @@ def main() -> None:
             and current_candidate["production_mutation"] is False
             and current_candidate["public_launch"] is False,
             "current whole-campaign technical/human boundary drift")
-    for key in ("routed_audit_receipt", "fresh_paper_receipt"):
+    for key in ("routed_audit_receipt", "fresh_paper_receipt",
+                "private_staging_readiness_receipt"):
         require((ROOT / current_candidate[key]).is_file(),
                 f"missing current campaign receipt: {current_candidate[key]}")
     for key in ("runtime_source_commit", "receipt_harness_commit"):
@@ -594,6 +595,8 @@ def main() -> None:
                               .read_text(encoding="utf-8"))
     current_paper = json.loads((ROOT / current_candidate["fresh_paper_receipt"])
                                .read_text(encoding="utf-8"))
+    staging = json.loads((ROOT / current_candidate["private_staging_readiness_receipt"])
+                         .read_text(encoding="utf-8"))
     require(routed_audit["result"] == "pass"
             and routed_audit["audited_commit"] == current_candidate["runtime_source_commit"]
             and routed_audit["brad_approval"] is None
@@ -614,6 +617,18 @@ def main() -> None:
             and current_paper["production_mutated"] is False
             and current_paper["unrelated_process_mutated"] is False,
             "current disposable Paper receipt drift")
+    require(staging["source_checkpoint"] == "dc3d342"
+            and staging["vercel"]["upload_manifest"]["file_count"] == 154
+            and staging["vercel"]["upload_manifest"]["bytes"] == 5436052
+            and staging["vercel"]["deployment_created"] is False
+            and staging["railway"]["isolated_staging_environment_found"] is False
+            and staging["railway"]["variable_values_or_names_read"] is False
+            and staging["railway"]["production_mutated"] is False
+            and staging["supabase"]["development_branch_verified"] is False
+            and staging["supabase"]["production_mutated"] is False
+            and staging["cross_surface"]["brad_approval"] is None
+            and staging["cross_surface"]["public_launch"] is False,
+            "private staging readiness/export/isolation boundary drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False
