@@ -6,7 +6,9 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import queue
 import shutil
+import time
 import zipfile
 
 from run_m3_disposable_paper import PAPER_EXPECTED_SHA256, PaperProcess, sha256, write_text
@@ -14,6 +16,25 @@ from run_m3_disposable_paper import PAPER_EXPECTED_SHA256, PaperProcess, sha256,
 
 ROOT = Path(__file__).resolve().parents[1]
 WORLD = "observance_campaign_disposable"
+
+
+def command_outcome(process: PaperProcess, command: str, outcomes: tuple[str, ...],
+                    timeout: float) -> str:
+    """Return the first explicit Paper success/refusal line instead of waiting on one token."""
+    assert process.process.stdin is not None
+    process.process.stdin.write(command + "\n")
+    process.process.stdin.flush()
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if process.process.poll() is not None:
+            raise RuntimeError(f"Paper exited while waiting for {outcomes!r}")
+        try:
+            line = process.events.get(timeout=0.5)
+        except queue.Empty:
+            continue
+        if any(token in line for token in outcomes):
+            return line
+    raise TimeoutError(f"timed out waiting for Paper output: {outcomes!r}")
 
 
 def configure(target: Path, paper: Path, plugin: Path, port: int) -> None:
@@ -90,11 +111,14 @@ def main() -> None:
         authority = first.wait_for("P5-P12 campaign authority ready", 300)
         first.wait_for("Done (", 300)
         prepare = first.command(f"observance placehold prepare {command_tail}", "PREPARE PASS", 600)
-        plan = first.command(f"observance placehold plan {command_tail}", "PLAN ", 300)
+        plan = command_outcome(first, f"observance placehold plan {command_tail}",
+                               ("PLAN PASS", "PLAN REFUSED"), 300)
         if "PLAN PASS" not in plan:
             raise RuntimeError(f"Deep Hold plan did not pass: {plan}")
-        build = first.command(f"observance placehold build {command_tail}",
-                              "Deep Hold build complete", 900)
+        build = command_outcome(first, f"observance placehold build {command_tail}",
+                                ("Deep Hold build complete", "Deep Hold V5 build FAILED"), 900)
+        if "Deep Hold build complete" not in build:
+            raise RuntimeError(f"Deep Hold build did not pass: {build}")
         audit = first.command("observance placehold audit", "physically launch-placeable", 300)
         first.command("save-all flush", "Saved the game", 300)
     finally:
