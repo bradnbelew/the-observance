@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Breadcrumbs, LegacyShell, OldPageTitle } from '@/components/legacy/LegacyShell';
 import { recordV5WebSequence } from '@/lib/v5-web-progress';
+import { hasCampaignEvent, recordCampaignEvent } from '@/lib/arg-event-store';
+import { CustodyDecisionForm } from './CustodyDecisionForm';
 
 export const metadata: Metadata = {
   title: 'Archive Lookup - Copperline Community',
@@ -27,13 +29,12 @@ export default async function PriorCompanyArchivePage({ searchParams }: { search
   const exact = params.service === '1842' && params.ticket === '9137' && params.locker === '13';
   if (!exact) return <MissingArchive />;
 
-  const routeProgress = await recordV5WebSequence(
+  await recordV5WebSequence(
     ['A06'],
     'copperline_archive_route',
     { service: '1842', ticket: '9137', locker: '13', route: '/community/archive.php', handler: 'route_resolver' },
   );
-  if (!routeProgress.complete) return <MissingArchive />;
-  const mediaProgress = await recordV5WebSequence(
+  await recordV5WebSequence(
     ['A07'],
     'clip_01_ash_locker',
     {
@@ -42,7 +43,14 @@ export default async function PriorCompanyArchivePage({ searchParams }: { search
       handler: 'automatic_media_reveal',
     },
   );
-  if (!mediaProgress.complete) return <MissingArchive />;
+  const restored = await recordCampaignEvent({
+    eventKey: 'p1.attachment_history_restored',
+    idempotencyKey: 'copperline:p1:service-1842-ticket-9137-locker-13',
+    source: 'copperline',
+    payload: { service: '1842', ticket: '9137', locker: '13', treatment: 'read-only' },
+  });
+  if (restored.status !== 'committed') return <MissingArchive />;
+  const custodyAccepted = await hasCampaignEvent('p1.mkept_intent_authenticated');
 
   return (
     <LegacyShell active="community">
@@ -74,6 +82,7 @@ export default async function PriorCompanyArchivePage({ searchParams }: { search
           <p>SHA-1: <code>844c2aaf8fb51836add4b59e81abe4131c8d6d0a</code></p>
         </div>
       </section>
+      <CustodyDecisionForm alreadyAccepted={custodyAccepted === true} />
       <div className="ticket-end">Comments and replacement uploads are disabled.</div>
     </LegacyShell>
   );

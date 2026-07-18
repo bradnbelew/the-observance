@@ -304,6 +304,102 @@ export interface Database {
         };
         Relationships: [];
       };
+      arg_event_definitions: {
+        Row: {
+          event_key: string;
+          phase_key: string;
+          prerequisite_events: string[];
+          source_surfaces: string[];
+          projection_surfaces: string[];
+          automation: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          event_key: string;
+          phase_key: string;
+          prerequisite_events?: string[];
+          source_surfaces: string[];
+          projection_surfaces: string[];
+          automation?: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          event_key?: string;
+          phase_key?: string;
+          prerequisite_events?: string[];
+          source_surfaces?: string[];
+          projection_surfaces?: string[];
+          automation?: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      arg_events: {
+        Row: {
+          event_id: string;
+          event_key: string;
+          idempotency_key: string;
+          source: string;
+          actor_id: string | null;
+          payload: Json;
+          payload_sha256: string;
+          occurred_at: string;
+        };
+        Insert: {
+          event_id?: string;
+          event_key: string;
+          idempotency_key: string;
+          source: string;
+          actor_id?: string | null;
+          payload?: Json;
+          payload_sha256: string;
+          occurred_at?: string;
+        };
+        Update: {
+          event_id?: string;
+          event_key?: string;
+          idempotency_key?: string;
+          source?: string;
+          actor_id?: string | null;
+          payload?: Json;
+          payload_sha256?: string;
+          occurred_at?: string;
+        };
+        Relationships: [];
+      };
+      arg_event_projections: {
+        Row: {
+          event_id: string;
+          surface: string;
+          status: string;
+          attempts: number;
+          last_error: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          event_id: string;
+          surface: string;
+          status?: string;
+          attempts?: number;
+          last_error?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          event_id?: string;
+          surface?: string;
+          status?: string;
+          attempts?: number;
+          last_error?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       investigations: {
         Row: { case_key: string; ordinal: number; title: string; summary: string; phase_key: string; unlock_flag: string | null; completion_flag: string; required: boolean; active: boolean; expected_nodes: number; created_at: string; updated_at: string };
         Insert: { case_key: string; ordinal: number; title: string; summary: string; phase_key: string; unlock_flag?: string | null; completion_flag: string; required?: boolean; active?: boolean; expected_nodes: number; created_at?: string; updated_at?: string };
@@ -634,6 +730,21 @@ export interface Database {
           p_payload?: Json;
         };
         Returns: boolean;
+      };
+      observance_record_arg_event: {
+        Args: {
+          p_event_key: string;
+          p_idempotency_key: string;
+          p_source: string;
+          p_actor_id?: string | null;
+          p_payload?: Json;
+        };
+        Returns: {
+          status: string;
+          created: boolean;
+          event_id: string | null;
+          missing_prerequisites: string[];
+        }[];
       };
     };
     Enums: Record<string, never>;

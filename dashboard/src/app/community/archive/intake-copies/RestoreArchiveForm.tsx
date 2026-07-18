@@ -4,13 +4,8 @@ import { useActionState } from 'react';
 import type { P4RestoreState } from '@/lib/copperline-p4-restore';
 import { restoreP4ArchiveAction } from './actions';
 
-const INITIAL_P4_RESTORE_STATE: P4RestoreState = {
-  status: 'idle',
-  message: 'No restore request has been sent.',
-};
-
-export function RestoreArchiveForm() {
-  const [state, formAction, pending] = useActionState(restoreP4ArchiveAction, INITIAL_P4_RESTORE_STATE);
+export function RestoreArchiveForm({ initialState }: { initialState: P4RestoreState }) {
+  const [state, formAction, pending] = useActionState(restoreP4ArchiveAction, initialState);
   return (
     <section className="old-copy" aria-labelledby="restore-heading">
       <h2 id="restore-heading">Restore retained attachments</h2>
@@ -18,7 +13,9 @@ export function RestoreArchiveForm() {
       <form className="archive-restore-form" action={formAction} aria-describedby="restore-help restore-result">
         <input type="hidden" name="operation" value="restore-retained-attachments" />
         <p id="restore-help">Submit restores a read-only copy. Repeating the action returns the same receipt. Leaving this page before submission changes nothing.</p>
-        <button type="submit" disabled={pending}>{pending ? 'Restoring…' : 'Restore retained attachments'}</button>
+        <button type="submit" disabled={pending || state.status === 'accepted'}>
+          {pending ? 'Restoring…' : state.status === 'accepted' ? 'Retained copy restored' : 'Restore retained attachments'}
+        </button>
       </form>
       <div className="archive-restore-result" id="restore-result" role="status" aria-live="polite" data-status={state.status}>
         <p><b>{state.status.replaceAll('_', ' ')}.</b> {state.message}</p>

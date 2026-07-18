@@ -44,3 +44,5 @@ observance-deploy-manifest.json
 rehearsals/
 
 .vercel
+.observance-local/
+dashboard/.observance-local/

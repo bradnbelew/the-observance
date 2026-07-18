@@ -18,6 +18,8 @@ if (!existsSync(tsx)) {
 
 const tests = [
   'src/lib/deployment-target.selftest.ts',
+  'src/lib/arg-event-ledger.selftest.ts',
+  'src/lib/arg-event-policy.selftest.ts',
   'src/lib/campaign-projection.selftest.ts',
   'src/lib/copperline-p4-archive.selftest.ts',
   'src/lib/copperline-p4-route.selftest.ts',
