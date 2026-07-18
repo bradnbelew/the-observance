@@ -393,3 +393,15 @@ open; M4 is still closed.
 - This is physical and restart evidence, not an experiential approval. A real client group must still prove
   multi-expedition motivation, navigation, figure pressure, inventory/death/quit extraction, cross-case
   reinterpretation, visual polish, dread, and the complete story-first ARG rhythm. Brad approval remains null.
+
+## 2026-07-18 — routed source/package audit after Unlit integration
+
+- Clean source `cc6cc9be98e3dc76f6886f3a8fa89f18ab296251` passed the complete routed audit after the
+  seven-house/base Unlit candidate and cross-surface player-copy response were integrated.
+- The audit proves the repository/canon contracts, ARG experience and negative-input contracts, 1,588
+  deterministic campaign scenarios, 2,300 chaos scenarios, web and Discord builds, the exact Paper plugin
+  suite, and deterministic JAR/datapack/resource-pack/SQL/deploy-manifest parity. The exact 90,238-byte log
+  and every current package hash are recorded in `ROUTED-AUDIT-PASS-CC6CC9B-2026-07-18.json`.
+- This is automated source/package evidence. It does not replace the still-required single combined
+  Hold-plus-Unlit Paper target, actual-client and human ARG experience review, private staging, Brad approval,
+  production authorization, or public launch authorization.
