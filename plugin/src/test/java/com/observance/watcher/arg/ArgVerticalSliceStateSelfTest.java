@@ -31,13 +31,15 @@ public final class ArgVerticalSliceStateSelfTest {
             expect(state.selectServiceCards("b") == ArgVerticalSliceState.SelectionResult.ACCEPTED, "service curation accepted");
             expect(!state.commitCuration("b"), "one half cannot commit curation");
             expect(state.selectPenaltyCustody("c") == ArgVerticalSliceState.SelectionResult.ACCEPTED, "penalty custody accepted");
-            expect(state.commitCuration("c") && state.curated(), "two physical choices commit P5 response");
+            expect(state.commitCuration("c") && state.serviceChronologyShared() && state.curated(),
+                    "two physical choices commit chronology and P5 response");
             int receipts = state.receipts().size();
             expect(state.commitCuration("late-player") && state.receipts().size() == receipts, "curation replay idempotent");
 
             ArgVerticalSliceState restarted = ArgVerticalSliceState.open(journal);
             expect(restarted.theoryEarned() && restarted.serviceCardsPublic()
-                    && restarted.penaltyCopiesInCustody() && restarted.curated(), "restart restores exact state");
+                    && restarted.penaltyCopiesInCustody() && restarted.serviceChronologyShared()
+                    && restarted.curated(), "restart restores exact state");
             expect(restarted.submitConclusion("a shelter", "emergency instructions became mandatory rules",
                     "the source came after the copy", "external-shared")
                     == ArgVerticalSliceState.TheoryResult.ACCEPTED, "different wording needs no source receipts after restart");

@@ -17,6 +17,13 @@ check(seeded.size === authored.length, `migration has ${seeded.size} events; pol
 for (const key of authored) check(seeded.has(key), `migration is missing ${key}`);
 check(!/evidence_receipts|observation_receipts|source_receipts/i.test(migration),
   'knowledge/action acceptance must not depend on source-touch receipts');
+check(ARG_EVENT_DEFINITIONS['p4.control_reversal_earned'].prerequisites.length === 1
+  && ARG_EVENT_DEFINITIONS['p4.control_reversal_earned'].prerequisites[0] === 'p3.dispatch_authorized',
+  'a correct P4 conclusion must not require revision/test/source interactions');
+check(migration.includes("('p4.control_reversal_earned','P4','{p3.dispatch_authorized}'"),
+  'database P4 correctness must match zero-source-touch policy');
+check(!migration.includes("('p4.control_reversal_earned','P4','{p4.copy_hypothesis_tested}'"),
+  'database must not reintroduce expected-test gating');
 for (const table of ['arg_event_definitions', 'arg_events', 'arg_event_projections']) {
   check(migration.includes(`alter table public.${table} enable row level security`), `${table} must enable RLS`);
   check(migration.includes(`revoke all on public.${table} from public, anon, authenticated`),

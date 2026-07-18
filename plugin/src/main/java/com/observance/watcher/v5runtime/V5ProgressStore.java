@@ -48,7 +48,8 @@ public final class V5ProgressStore {
             .serializeNulls()
             .setPrettyPrinting()
             .create();
-    private static final Pattern STATE_KEY = Pattern.compile("v5_[a-z0-9_]+");
+    private static final Pattern STATE_KEY = Pattern.compile(
+            "(?:v5_[a-z0-9_]+|p(?:1[0-2]|[1-9])\\.[a-z0-9_]+)");
     private static final Pattern SHA256 = Pattern.compile("[0-9a-f]{64}");
     private static final Set<String> ROOT_KEYS = Set.of(
             "schema_version", "campaign_version", "manifest_sha256", "revision",
@@ -887,7 +888,8 @@ public final class V5ProgressStore {
 
     private static void requireStateKey(String key, String label) {
         if (key == null || !STATE_KEY.matcher(key).matches()) {
-            throw new IllegalArgumentException(label + " must be a v5_ lower-snake key");
+            throw new IllegalArgumentException(
+                    label + " must be a v5_ lower-snake key or a P1-P12 authored event key");
         }
     }
 

@@ -20,7 +20,7 @@ import { config } from '../config.js';
 /** /whisper <puzzle> — no tier option; the tier rises on its own with each ask. */
 export const whisperCommand = new SlashCommandBuilder()
   .setName('whisper')
-  .setDescription('ask the watcher. it will keep something of yours while you think.')
+  .setDescription('request an authored hint for an open investigation.')
   .addStringOption((opt) =>
     opt
       .setName('puzzle')
@@ -62,7 +62,7 @@ export const linkCommand = new SlashCommandBuilder()
  */
 export const answerCommand = new SlashCommandBuilder()
   .setName('answer')
-  .setDescription('give the watcher a name you have reached. it will answer, or it will not.')
+  .setDescription('submit a short exact answer when an investigation calls for one.')
   .addStringOption((opt) =>
     opt
       .setName('text')
@@ -80,10 +80,27 @@ export const answerCommand = new SlashCommandBuilder()
 /** /progress — the standing docket of open findings and where each is taken. No options. */
 export const progressCommand = new SlashCommandBuilder()
   .setName('progress')
-  .setDescription('the standing docket: what stands open, and where it is taken.');
+  .setDescription('show open investigation work and its real submission surface.');
+
+/** Shared investigation state and player-caused settlement dispatch. */
+export const investigateCommand = new SlashCommandBuilder()
+  .setName('investigate')
+  .setDescription('review shared changes or send an authored investigation action.')
+  .addSubcommand((subcommand) => subcommand
+    .setName('status')
+    .setDescription('show the campaign changes already caused by the group.'))
+  .addSubcommand((subcommand) => subcommand
+    .setName('dispatch')
+    .setDescription('ask the settlement to keep two conflicting accounts open.')
+    .addStringOption((option) => option
+      .setName('summary')
+      .setDescription('one plain sentence naming the disagreement; no hidden phrase is required.')
+      .setRequired(true)
+      .setMinLength(12)
+      .setMaxLength(180)));
 
 /** Every rite, in registration order. */
-export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand] as const;
+export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand, investigateCommand] as const;
 
 /** JSON payloads for the REST registration call. */
 export const commandsJSON = commands.map((c) => c.toJSON());

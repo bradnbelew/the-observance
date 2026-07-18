@@ -78,6 +78,22 @@ export interface ArcState {
   updated_at: string; // timestamptz (ISO)
 }
 
+export type ArgSurface = 'minecraft' | 'copperline' | 'discord' | 'dashboard' | 'media' | 'npc';
+
+export interface ArgEventRpcRow {
+  status: 'committed' | 'blocked' | 'collision';
+  created: boolean;
+  event_id: string | null;
+  missing_prerequisites: string[];
+}
+
+export interface ArgEventReadRow {
+  event_key: string;
+  source: ArgSurface;
+  actor_id: string | null;
+  occurred_at: string;
+}
+
 /** public.hints — pre-authored whisper hints, keyed by (puzzle_key, tier). */
 export interface Hint {
   id: number;

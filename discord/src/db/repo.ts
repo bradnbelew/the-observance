@@ -862,6 +862,44 @@ export async function setArcFlags(
   if (error) throw error;
 }
 
+/** Record one exact authored story event. This is a consequence ledger, not a puzzle-type enum. */
+export async function recordArgEvent(input: {
+  eventKey: string;
+  idempotencyKey: string;
+  source: import('./types.js').ArgSurface;
+  actorId?: string | null;
+  payload?: Record<string, unknown>;
+}): Promise<import('./types.js').ArgEventRpcRow> {
+  if (!/^p(?:1[0-2]|[1-9])\.[a-z0-9_]+$/.test(input.eventKey)
+      || !/^[a-z0-9][a-z0-9:._/-]{7,159}$/.test(input.idempotencyKey)) {
+    throw new Error('invalid ARG event key or idempotency key');
+  }
+  const { data, error } = await supabase.rpc('observance_record_arg_event', {
+    p_event_key: input.eventKey,
+    p_idempotency_key: input.idempotencyKey,
+    p_source: input.source,
+    p_actor_id: input.actorId ?? null,
+    p_payload: input.payload ?? {},
+  });
+  if (error) throw error;
+  const rows = data as import('./types.js').ArgEventRpcRow[] | null;
+  if (!rows || rows.length !== 1) throw new Error('invalid ARG event response');
+  const row = rows[0];
+  if (!row) throw new Error('invalid ARG event response');
+  return row;
+}
+
+/** Spoiler-light event history used by the investigation status surface. */
+export async function getArgEventHistory(): Promise<import('./types.js').ArgEventReadRow[]> {
+  const { data, error } = await supabase
+    .from('arg_events')
+    .select('event_key,source,actor_id,occurred_at')
+    .order('occurred_at', { ascending: true })
+    .returns<import('./types.js').ArgEventReadRow[]>();
+  if (error) throw error;
+  return data ?? [];
+}
+
 /**
  * Idempotently fire the cold-start ignition (B4 / OVERHAUL §3): set
  * `prologue_ignited` the first time a keeper is seen acting on a watched surface,

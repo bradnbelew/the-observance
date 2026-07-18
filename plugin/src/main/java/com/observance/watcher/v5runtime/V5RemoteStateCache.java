@@ -110,7 +110,7 @@ public final class V5RemoteStateCache implements
             if (row == null) return;
             Map<String, Object> newlyTrue = new LinkedHashMap<>();
             row.flagsMap().forEach((flag, raw) -> {
-                if (truthy(raw) && flag != null && flag.startsWith("v5_")
+                if (truthy(raw) && flag != null && isAllowedRemoteFact(flag)
                         && !physicalFlags.contains(flag)) {
                     trueRemoteFlags.add(flag);
                     newlyTrue.put(flag, Boolean.TRUE);
@@ -212,6 +212,11 @@ public final class V5RemoteStateCache implements
 
     public boolean metadataValidated() {
         return metadataValidated;
+    }
+
+    private static boolean isAllowedRemoteFact(String flag) {
+        return flag.startsWith("v5_")
+                || flag.matches("p(?:1[0-2]|[1-9])\\.[a-z0-9_]+");
     }
 
     /** Local completion mirror; enqueue-only and idempotent. */

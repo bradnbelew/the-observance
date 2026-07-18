@@ -1,5 +1,7 @@
 package com.observance.watcher.arg;
 
+import com.google.gson.JsonObject;
+import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.m3runtime.PrivateSliceWorld;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -24,6 +26,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -46,6 +49,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
     private final ArgVerticalSliceState state;
     private final boolean dialogEnabled;
     private final Map<UUID, RefusalWindow> refusals = new ConcurrentHashMap<>();
+    private BukkitTask mirrorTask;
 
     public ArgVerticalSliceRuntime(JavaPlugin plugin, PrivateSliceWorld world) throws IOException {
         this.plugin = plugin;
@@ -64,11 +68,54 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
         plugin.getLogger().info("ARG_VERTICAL_SLICE_READY dialog=" + dialogEnabled
                 + " command=/obscase observation_gating=false theory=" + state.theoryEarned()
                 + " curated=" + state.curated());
+        mirrorKnownStateAsync();
+        if (plugin instanceof ObservancePlugin observance) {
+            mirrorTask = observance.scheduler().runAsyncTimerSafe(
+                    "arg.event.mirror", 20L * 10L, 20L * 10L, this::mirrorKnownStateBlocking);
+        }
     }
 
     public void projectState() {
         world.setGate(state.theoryEarned());
         world.setP5CurationState(state.serviceCardsPublic(), state.penaltyCopiesInCustody(), state.curated());
+    }
+
+    private void mirrorKnownStateAsync() {
+        if (!(plugin instanceof ObservancePlugin observance)) return;
+        observance.scheduler().runAsyncSafe("arg.event.mirror.now", this::mirrorKnownStateBlocking);
+    }
+
+    /** Network thread only. Every payload/idempotency pair is canonical and restart-stable. */
+    private void mirrorKnownStateBlocking() {
+        if (!(plugin instanceof ObservancePlugin observance) || observance.supabase() == null
+                || !observance.supabase().isConfigured()) return;
+        if (state.theoryEarned()) {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("purpose", "ordinary_refuge");
+            payload.addProperty("change", "safety_to_control");
+            payload.addProperty("anomaly", "copy_before_source");
+            observance.supabase().recordArgEvent(
+                    ArgVerticalSliceState.THEORY_EVENT,
+                    "minecraft:p4:control-reversal-earned",
+                    "minecraft", null, payload);
+        }
+        if (state.serviceChronologyShared()) {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("service_cards", "public");
+            payload.addProperty("penalty_copies", "evidence_custody");
+            observance.supabase().recordArgEvent(
+                    ArgVerticalSliceState.CHRONOLOGY_EVENT,
+                    "minecraft:p5:service-chronology-shared",
+                    "minecraft", null, payload);
+        }
+        if (state.curated()) {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("gallery", "recurated");
+            observance.supabase().recordArgEvent(
+                    ArgVerticalSliceState.CURATED_EVENT,
+                    "minecraft:p5:civic-gallery-recurated",
+                    "minecraft", null, payload);
+        }
     }
 
     public boolean gateOpen() { return state.theoryEarned(); }
@@ -77,7 +124,10 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
     /** Console-only disposable harness entry; uses the same predicate as Dialog and command input. */
     public ArgVerticalSliceState.TheoryResult auditTheory(String theory) throws IOException {
         ArgVerticalSliceState.TheoryResult result = state.submitConclusion(theory, "disposable-paper-audit");
-        if (result == ArgVerticalSliceState.TheoryResult.ACCEPTED) projectState();
+        if (result == ArgVerticalSliceState.TheoryResult.ACCEPTED) {
+            projectState();
+            mirrorKnownStateAsync();
+        }
         return result;
     }
 
@@ -90,6 +140,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
         boolean committed = state.commitCuration("disposable-paper-audit");
         world.setP5CurationState(state.serviceCardsPublic(), state.penaltyCopiesInCustody(),
                 committed || state.curated());
+        if (committed) mirrorKnownStateAsync();
         return result;
     }
 
@@ -159,6 +210,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
             }
             boolean curated = state.commitCuration(player.getUniqueId().toString());
             world.setP5CurationState(state.serviceCardsPublic(), state.penaltyCopiesInCustody(), curated || state.curated());
+            if (curated) mirrorKnownStateAsync();
             player.sendActionBar(Component.text(curated
                     ? "Work cards stay public. Penalty copies move into evidence custody."
                     : control == PrivateSliceWorld.P5Control.SERVICE_PUBLIC
@@ -185,6 +237,7 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
                 case ACCEPTED -> {
                     refusals.remove(player.getUniqueId());
                     world.setGate(true);
+                    mirrorKnownStateAsync();
                     player.sendMessage(Component.text("Accepted. Your three claims identify the ordinary refuge, the change from safety to control, and the unresolved copy order. The civic threshold is open."));
                 }
                 case INCOMPLETE -> player.sendMessage(Component.text("Incomplete. Answer all three questions. Nothing changed in the world."));
@@ -249,5 +302,8 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
         private RefusalWindow(long expiresAt, int count) { this.expiresAt = expiresAt; this.count = count; }
     }
 
-    @Override public void close() { }
+    @Override public void close() {
+        if (mirrorTask != null) mirrorTask.cancel();
+        mirrorTask = null;
+    }
 }

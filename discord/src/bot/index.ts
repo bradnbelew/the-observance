@@ -18,17 +18,16 @@ import {
   PermissionFlagsBits,
   type Interaction,
   type ChatInputCommandInteraction,
-  type Message,
 } from 'discord.js';
 import { config } from '../config.js';
-import { getPlayerByDiscordId, logEvent } from '../db/repo.js';
+import { logEvent } from '../db/repo.js';
 import { voice, BOT_PRESENCE } from '../voice.js';
 import { registerGuildCommands } from './register.js';
 import { handleWhisper, handleWhisperAutocomplete } from './commands/whisper.js';
 import { handleLink } from './commands/link.js';
 import { handleAnswer, handleAnswerAutocomplete } from './commands/answer.js';
 import { handleProgress } from './commands/progress.js';
-import { resolveAnswer } from '../oracle/resolve.js';
+import { handleInvestigate } from './commands/investigate.js';
 import { startPersistentShowrunner } from '../showrunner/persistent.js';
 
 /** Source tag for every row this process writes to event_log. */
@@ -38,7 +37,6 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
   ],
 });
 
@@ -105,6 +103,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
       case 'progress':
         await handleProgress(interaction);
         break;
+      case 'investigate':
+        await handleInvestigate(interaction);
+        break;
       default:
         // an unknown rite — the watcher simply goes quiet.
         await replyQuiet(interaction);
@@ -133,7 +134,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
  * Fault-isolated: the whole body is in try/catch and logs to the record on a
  * stumble — a scan failure never crashes the process and never speaks an error.
  */
-client.on('messageCreate', async (message: Message) => {
+/* Retired passive channel parser (kept temporarily in history only).
   // ignore self, other bots, webhooks, system messages, and anything outside
   // #the-record. The bot is itself a bot, so author.bot also breaks any reply
   // loop (the watcher's own answer can never re-trigger the scan).
@@ -181,6 +182,7 @@ client.on('messageCreate', async (message: Message) => {
   }
 });
 
+*/
 async function auditDiscordSurface(readyClient: Client<true>): Promise<void> {
   const guild = await readyClient.guilds.fetch(config.discord.guildId);
   const channel = await guild.channels.fetch(config.channels.theRecord);

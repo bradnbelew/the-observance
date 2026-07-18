@@ -74,7 +74,7 @@ values
   ('p3.dispatch_authorized','P3','{p3.resident_accounts_opened}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),
   ('p4.mouth_revision_restored','P4','{p3.dispatch_authorized}','{copperline}','{copperline,minecraft,discord}'),
   ('p4.copy_hypothesis_tested','P4','{p4.mouth_revision_restored}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),
-  ('p4.control_reversal_earned','P4','{p4.copy_hypothesis_tested}','{minecraft}','{minecraft,copperline,discord,npc}'),
+  ('p4.control_reversal_earned','P4','{p3.dispatch_authorized}','{minecraft}','{minecraft,copperline,discord,npc}'),
   ('p5.service_chronology_shared','P5','{p4.control_reversal_earned}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),
   ('p5.civic_gallery_recurated','P5','{p5.service_chronology_shared}','{minecraft}','{minecraft,copperline,discord,npc}'),
   ('p6.professional_models_recovered','P6','{p5.civic_gallery_recurated}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),

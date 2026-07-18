@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.observance.watcher.config.ObservanceConfig;
 import com.observance.watcher.data.rows.ArcStateRow;
+import com.observance.watcher.data.rows.ArgEventRpcRow;
 import com.observance.watcher.data.rows.AnswerAttemptReadRow;
 import com.observance.watcher.data.rows.BaseRow;
 import com.observance.watcher.data.rows.BeatQueueRow;
@@ -95,6 +96,8 @@ public final class SupabaseClient {
             new TypeToken<List<NpcQuestRow>>() {}.getType();
     private static final java.lang.reflect.Type LIST_IDENTITY_LINK_CHALLENGE =
             new TypeToken<List<IdentityLinkChallengeRow>>() {}.getType();
+    private static final java.lang.reflect.Type LIST_ARG_EVENT_RPC =
+            new TypeToken<List<ArgEventRpcRow>>() {}.getType();
 
     private record QueuedWrite(String description, Supplier<SupabaseResult<Void>> attempt) { }
 
@@ -652,6 +655,49 @@ public final class SupabaseClient {
         return r;
     }
 
+    /**
+     * Mirror one already-committed local story event through the append-only campaign RPC.
+     * This method never invents or authorizes an event and never queues an unseen security token.
+     * Callers retain the local event and retry the same idempotency key after outages/restarts.
+     */
+    public SupabaseResult<ArgEventRpcRow> recordArgEvent(
+            String eventKey,
+            String idempotencyKey,
+            String source,
+            String actorId,
+            com.google.gson.JsonElement payload) {
+        if (!config.isConfigured()) return SupabaseResult.fail(0, "not-configured");
+        if (eventKey == null
+                || !eventKey.matches("p(?:1[0-2]|[1-9])\\.[a-z0-9_]+")
+                || idempotencyKey == null
+                || !idempotencyKey.matches("[a-z0-9][a-z0-9:._/-]{7,159}")
+                || source == null
+                || !java.util.Set.of("minecraft", "copperline", "discord", "dashboard", "media", "npc")
+                        .contains(source)
+                || actorId != null && !actorId.matches("[A-Za-z0-9][A-Za-z0-9:._-]{0,127}")) {
+            return SupabaseResult.fail(0, "invalid-arg-event");
+        }
+        com.google.gson.JsonObject args = new com.google.gson.JsonObject();
+        args.addProperty("p_event_key", eventKey);
+        args.addProperty("p_idempotency_key", idempotencyKey);
+        args.addProperty("p_source", source);
+        if (actorId == null) args.add("p_actor_id", com.google.gson.JsonNull.INSTANCE);
+        else args.addProperty("p_actor_id", actorId);
+        args.add("p_payload", payload == null ? new com.google.gson.JsonObject() : payload.deepCopy());
+        SupabaseResult<List<ArgEventRpcRow>> result = doRpcRead(
+                "observance_record_arg_event", gson.toJson(args), LIST_ARG_EVENT_RPC, "recordArgEvent");
+        if (!result.ok()) return SupabaseResult.fail(result.httpStatus(), result.error());
+        List<ArgEventRpcRow> rows = result.value();
+        if (rows == null || rows.size() != 1 || rows.get(0) == null) {
+            return SupabaseResult.fail(result.httpStatus(), "invalid-arg-event-response");
+        }
+        ArgEventRpcRow row = rows.get(0);
+        if (!"committed".equals(row.status)) {
+            return SupabaseResult.fail(result.httpStatus(), "arg-event-" + safeErrorToken(row.status));
+        }
+        return SupabaseResult.ok(result.httpStatus(), row);
+    }
+
     /* ==================================================================== */
     /*  World paste ledger (FAWE single-paste idempotency, backlog D10)      */
     /* ==================================================================== */
@@ -968,6 +1014,11 @@ public final class SupabaseClient {
             }
         }
         return sb.toString();
+    }
+
+    private static String safeErrorToken(String value) {
+        if (value == null || value.isBlank()) return "missing-status";
+        return value.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9_-]", "_");
     }
 
     /** ISO-8601 UTC now, exposed for callers building rows. */

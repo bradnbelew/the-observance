@@ -31,7 +31,9 @@ export const ARG_EVENT_DEFINITIONS = {
   'p3.dispatch_authorized': event('P3', ['p3.resident_accounts_opened'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p4.mouth_revision_restored': event('P4', ['p3.dispatch_authorized'], ['copperline'], ['copperline', 'minecraft', 'discord']),
   'p4.copy_hypothesis_tested': event('P4', ['p4.mouth_revision_restored'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
-  'p4.control_reversal_earned': event('P4', ['p4.copy_hypothesis_tested'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
+  // A correct conclusion is accepted after phase entry even when its expected sources/tests were
+  // never touched. The restored revision and chosen test make the deduction fair; they never gate it.
+  'p4.control_reversal_earned': event('P4', ['p3.dispatch_authorized'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p5.service_chronology_shared': event('P5', ['p4.control_reversal_earned'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p5.civic_gallery_recurated': event('P5', ['p5.service_chronology_shared'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p6.professional_models_recovered': event('P6', ['p5.civic_gallery_recurated'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),

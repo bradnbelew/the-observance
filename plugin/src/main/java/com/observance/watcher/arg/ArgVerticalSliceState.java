@@ -14,6 +14,7 @@ public final class ArgVerticalSliceState {
     public static final String THEORY_EVENT = "p4.control_reversal_earned";
     public static final String SERVICE_EVENT = "p5.service_cards_public";
     public static final String PENALTY_EVENT = "p5.penalty_copies_in_custody";
+    public static final String CHRONOLOGY_EVENT = "p5.service_chronology_shared";
     public static final String CURATED_EVENT = "p5.civic_gallery_recurated";
 
     private final LocalPrimaryJournal journal;
@@ -60,6 +61,8 @@ public final class ArgVerticalSliceState {
 
     public synchronized boolean commitCuration(String contributor) throws IOException {
         if (!theoryEarned() || !serviceCardsPublic() || !penaltyCopiesInCustody()) return false;
+        journal.append("p5-service-chronology", CHRONOLOGY_EVENT,
+                "service_cards=public;penalty_copies=evidence".getBytes(StandardCharsets.UTF_8));
         journal.append("p5-curated", CURATED_EVENT, "curated=true".getBytes(StandardCharsets.UTF_8));
         return true;
     }
@@ -73,6 +76,7 @@ public final class ArgVerticalSliceState {
     public boolean theoryEarned() { return has(THEORY_EVENT); }
     public boolean serviceCardsPublic() { return has(SERVICE_EVENT); }
     public boolean penaltyCopiesInCustody() { return has(PENALTY_EVENT); }
+    public boolean serviceChronologyShared() { return has(CHRONOLOGY_EVENT); }
     public boolean curated() { return has(CURATED_EVENT); }
     public List<LocalPrimaryJournal.Receipt> receipts() { return journal.after(0); }
 

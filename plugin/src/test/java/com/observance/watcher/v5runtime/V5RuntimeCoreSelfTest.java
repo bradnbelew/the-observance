@@ -278,6 +278,7 @@ public final class V5RuntimeCoreSelfTest {
                     Map.of("reason", "disconnect_return"));
             store.transact(editor -> {
                 editor.setBooleanTrue("v5_ls04_map_handoff");
+                editor.setBooleanTrue("p1.attachment_history_restored");
                 for (PlayerBitDomain domain : PlayerBitDomain.values()) {
                     editor.addPlayerBit(playerId, domain, "bit_" + domain.name().toLowerCase());
                 }
@@ -299,6 +300,8 @@ public final class V5RuntimeCoreSelfTest {
             check(committed.conductVerdict().orElseThrow() == ConductVerdict.UNANIMOUS,
                     "durable conduct verdict");
             check(committed.escrow().containsKey(entry.escrowId()), "durable local escrow");
+            check(committed.isComplete("p1.attachment_history_restored"),
+                    "cross-surface story event is a durable local-primary fact");
 
             V5ProgressStore reloaded = V5ProgressStore.open(progressPath, authority);
             check(reloaded.snapshot().equals(committed), "atomic reload equality");
