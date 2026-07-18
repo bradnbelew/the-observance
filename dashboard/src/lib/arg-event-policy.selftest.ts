@@ -24,6 +24,11 @@ check(migration.includes("('p4.control_reversal_earned','P4','{p3.dispatch_autho
   'database P4 correctness must match zero-source-touch policy');
 check(!migration.includes("('p4.control_reversal_earned','P4','{p4.copy_hypothesis_tested}'"),
   'database must not reintroduce expected-test gating');
+check(ARG_EVENT_DEFINITIONS['p5.service_chronology_shared'].sourceSurfaces.join(',') === 'minecraft',
+  'P5 chronology must be caused by the protected local curation, not a phantom Discord form');
+check(ARG_EVENT_DEFINITIONS['p6.professional_models_recovered'].sourceSurfaces.join(',') === 'minecraft'
+  && ARG_EVENT_DEFINITIONS['p6.six_responsibilities_acknowledged'].sourceSurfaces.join(',') === 'minecraft',
+  'P6 shared record must derive from six local professional proofs, not a phantom Discord matrix');
 check(ARG_EVENT_DEFINITIONS['p7.nessa_publicly_cleared'].prerequisites[0]
   === 'p6.six_responsibilities_acknowledged',
   'P7 correct exoneration must not require material/source observation events');

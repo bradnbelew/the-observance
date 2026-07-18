@@ -433,6 +433,13 @@ def main() -> None:
             and "mirrorP11UnboundAsync" in coordinator
             and '"minecraft:p11:averyn-relationship-unbound"' in coordinator,
             "P11 retains a relationship answer menu or lacks the local physical unbound transition")
+    input_contracts = load(PACK / "input-contracts.json")["contracts"]
+    input_contract_by_id = {row["id"]: row for row in input_contracts}
+    require("protected public-curation controls" in input_contract_by_id["P5.F1"]["platform"]
+            and "Discord" not in input_contract_by_id["P5.F1"]["platform"]
+            and "six profession-specific" in input_contract_by_id["P6.F7"]["platform"]
+            and "Discord modal" not in input_contract_by_id["P6.F7"]["platform"],
+            "P5/P6 input authority still advertises an unimplemented answer form instead of physical work")
     if choreography["status"] != "offline_authored_not_deployed":
         projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
         require("enforce_nonce=true" in projection.get("primitive", "")

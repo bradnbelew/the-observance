@@ -34,10 +34,10 @@ export const ARG_EVENT_DEFINITIONS = {
   // A correct conclusion is accepted after phase entry even when its expected sources/tests were
   // never touched. The restored revision and chosen test make the deduction fair; they never gate it.
   'p4.control_reversal_earned': event('P4', ['p3.dispatch_authorized'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
-  'p5.service_chronology_shared': event('P5', ['p4.control_reversal_earned'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
+  'p5.service_chronology_shared': event('P5', ['p4.control_reversal_earned'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p5.civic_gallery_recurated': event('P5', ['p5.service_chronology_shared'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
-  'p6.professional_models_recovered': event('P6', ['p5.civic_gallery_recurated'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
-  'p6.six_responsibilities_acknowledged': event('P6', ['p6.professional_models_recovered'], ['minecraft', 'discord'], ['minecraft', 'copperline', 'discord', 'npc']),
+  'p6.professional_models_recovered': event('P6', ['p5.civic_gallery_recurated'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
+  'p6.six_responsibilities_acknowledged': event('P6', ['p6.professional_models_recovered'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p7.counterfeit_material_proven': event('P7', ['p6.six_responsibilities_acknowledged'], ['minecraft'], ['minecraft', 'copperline', 'discord', 'npc']),
   'p7.supplier_history_restored': event('P7', ['p7.counterfeit_material_proven'], ['copperline'], ['copperline', 'minecraft', 'discord']),
   // A correct exoneration is knowledge, not proof that expected exhibits or restore buttons were touched.
