@@ -106,7 +106,8 @@ public final class TownsfolkNpcListener implements Listener {
         return switch (id) {
             case "aro" -> {
                 if (truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
-                if (truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
+                if (truthy(flags.get("p7.nessa_publicly_cleared"))
+                        || truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
                 yield introState(player, id, "mouth_lead");
@@ -132,7 +133,8 @@ public final class TownsfolkNpcListener implements Listener {
             }
             case "old_pell" -> {
                 if (truthy(flags.get("v5_case_c09_complete"))) yield "after_c09";
-                if (truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
+                if (truthy(flags.get("p7.nessa_publicly_cleared"))
+                        || truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
                 if (keepersComplete(flags)) yield "cistern_lead";
                 yield "arrival";
             }

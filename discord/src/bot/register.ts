@@ -109,7 +109,25 @@ export const investigateCommand = new SlashCommandBuilder()
         { name: 'cartridge barcode order checked against the recovery-node clock', value: 'barcode-and-node-clock' },
         { name: 'filenames from the damaged guest', value: 'guest-filenames' },
         { name: 'modified times from the damaged guest', value: 'guest-modified-times' },
-      )));
+      )))
+  .addSubcommand((subcommand) => subcommand
+    .setName('clear-nessa')
+    .setDescription('file three separate findings in the Nessa Vale correction.')
+    .addStringOption((option) => option.setName('cause').setDescription('what physically failed').setRequired(true).addChoices(
+      { name: 'genuine stock diverted; counterfeit lower-intake cloth failed', value: 'diversion-counterfeit-lower-intake' },
+      { name: 'Nessa contaminated the operator sample sink', value: 'operator-contamination' },
+      { name: 'the genuine supplier cloth failed as delivered', value: 'genuine-cloth-failed' },
+    ))
+    .addStringOption((option) => option.setName('record').setDescription('what happened to the surviving chronology').setRequired(true).addChoices(
+      { name: 'relief and complaint records were edited to move later samples onto Nessa', value: 'edited-relief-and-complaints' },
+      { name: 'the public chronology is complete and unedited', value: 'public-record-complete' },
+      { name: 'Averyn created a later false chronology', value: 'averyn-fabricated' },
+    ))
+    .addStringOption((option) => option.setName('conduct').setDescription('what the evidence establishes about Nessa').setRequired(true).addChoices(
+      { name: 'she followed procedure and reported before the cloth began shedding', value: 'followed-and-reported-before-shedding' },
+      { name: 'she noticed the failure but reported it too late', value: 'reported-late' },
+      { name: 'the evidence cannot reach a conduct finding', value: 'no-conduct-finding' },
+    )));
 
 /** Every rite, in registration order. */
 export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand, investigateCommand] as const;

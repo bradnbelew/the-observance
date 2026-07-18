@@ -64,6 +64,39 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     }
     return;
   }
+  if (action === 'clear-nessa') {
+    const cause = interaction.options.getString('cause', true);
+    const record = interaction.options.getString('record', true);
+    const conduct = interaction.options.getString('conduct', true);
+    if (cause !== 'diversion-counterfeit-lower-intake'
+        || record !== 'edited-relief-and-complaints'
+        || conduct !== 'followed-and-reported-before-shedding') {
+      await interaction.editReply('Those three findings do not support a complete public correction. Nothing changed.');
+      return;
+    }
+    const result = await recordArgEvent({
+      eventKey: 'p7.nessa_publicly_cleared',
+      idempotencyKey: 'discord:p7:nessa-public-correction',
+      source: 'discord',
+      actorId: interaction.user.id,
+      payload: { cause, record, conduct, observation_receipts: 0 },
+    });
+    if (result.status === 'blocked') {
+      await interaction.editReply('The six Keeper responsibility records are not complete yet. Nothing changed.');
+      return;
+    }
+    if (result.status === 'collision') {
+      await interaction.editReply('A different Nessa correction already owns that receipt. Nothing changed; use /investigate status.');
+      return;
+    }
+    await interaction.editReply(result.created
+      ? 'Correction filed. Nessa Vale followed procedure and reported before the shedding. Genuine stock was diverted, counterfeit cloth failed upstream, and relief and complaint records were edited.'
+      : 'That public correction is already filed. Nothing was duplicated.');
+    if (result.created) {
+      void postToTheRecord('Public correction: Nessa Vale followed procedure and reported before the shedding. Genuine stock was diverted, counterfeit cloth failed upstream, and the relief and complaint records were edited.');
+    }
+    return;
+  }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
 
   const summary = interaction.options.getString('summary', true).normalize('NFKC').trim().replace(/\s+/g, ' ');

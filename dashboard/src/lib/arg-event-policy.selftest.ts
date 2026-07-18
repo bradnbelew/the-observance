@@ -24,6 +24,11 @@ check(migration.includes("('p4.control_reversal_earned','P4','{p3.dispatch_autho
   'database P4 correctness must match zero-source-touch policy');
 check(!migration.includes("('p4.control_reversal_earned','P4','{p4.copy_hypothesis_tested}'"),
   'database must not reintroduce expected-test gating');
+check(ARG_EVENT_DEFINITIONS['p7.nessa_publicly_cleared'].prerequisites[0]
+  === 'p6.six_responsibilities_acknowledged',
+  'P7 correct exoneration must not require material/source observation events');
+check(!migration.includes("('p7.nessa_publicly_cleared','P7','{p7.supplier_history_restored}'"),
+  'database must not make the supplier restore a prerequisite for correct exoneration');
 for (const table of ['arg_event_definitions', 'arg_events', 'arg_event_projections']) {
   check(migration.includes(`alter table public.${table} enable row level security`), `${table} must enable RLS`);
   check(migration.includes(`revoke all on public.${table} from public, anon, authenticated`),

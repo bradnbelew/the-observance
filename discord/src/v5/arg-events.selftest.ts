@@ -12,6 +12,7 @@ const migration = read('supabase/migrations/0017_arg_events.sql');
 assert.ok(register.includes(".setName('investigate')"));
 assert.ok(register.includes(".setName('dispatch')"));
 assert.ok(register.includes(".setName('test-copy')"));
+assert.ok(register.includes(".setName('clear-nessa')"));
 assert.ok(index.includes("case 'investigate':"));
 assert.ok(index.includes('handleInvestigate(interaction)'));
 
@@ -24,6 +25,8 @@ assert.ok(handler.includes("getSubcommand(true)"));
 assert.ok(handler.includes("eventKey: 'p3.dispatch_authorized'"));
 assert.ok(handler.includes("eventKey: 'p4.copy_hypothesis_tested'"));
 assert.ok(handler.includes("method !== 'barcode-and-node-clock'"));
+assert.ok(handler.includes("eventKey: 'p7.nessa_publicly_cleared'"));
+assert.ok(handler.includes('observation_receipts: 0'));
 assert.ok(handler.includes("idempotencyKey: 'discord:p3:settlement-dispatch'"));
 assert.ok(handler.includes('.normalize(\'NFKC\')'));
 assert.ok(repo.includes("rpc('observance_record_arg_event'"));

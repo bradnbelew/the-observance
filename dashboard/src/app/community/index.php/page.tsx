@@ -19,6 +19,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const user = (await searchParams).user;
   const recurated = await hasCampaignEvent('p5.civic_gallery_recurated');
   const sixPeople = await hasCampaignEvent('p6.six_responsibilities_acknowledged');
+  const materialProven = await hasCampaignEvent('p7.counterfeit_material_proven');
+  const nessaCleared = await hasCampaignEvent('p7.nessa_publicly_cleared');
   const p5Posts = recurated === true ? [
     { date: 'February 16, 2011', user: 'ashfield', title: 'that room was a service counter', body: 'The uncropped frame has wick shears, school chalk, and sample rings. Copperline corrected the archive caption after the service-card review.', href: '/community/2011/02/16/service-counter' },
     ...posts,
@@ -27,7 +29,15 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     { date: 'March 3, 2011', user: 'mkept', title: 'six workspace owners, not one admin', body: 'The export uses one permission role, but the work separates six people. Keep their methods and corrections apart.', href: '/community/2011/03/03/six-workspaces' },
     ...p5Posts,
   ] : p5Posts;
-  const visible = user ? currentPosts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : currentPosts;
+  const materialPosts = materialProven === true ? [
+    { date: 'March 11, 2011', user: 'copperline-support', title: 'cistern cloth attachment history restored', body: 'A retained material comparison reopened two collapsed supplier attachment versions. Both originals remain read-only.', href: '/community/archive/supplier-revisions' },
+    ...currentPosts,
+  ] : currentPosts;
+  const finalPosts = nessaCleared === true ? [
+    { date: 'March 14, 2011', user: 'mkept', title: 'correction to the cistern file', body: 'The material, labor, and record findings do not support the old accusation against Nessa Vale.', href: '/community/2011/03/14/nessa-correction' },
+    ...materialPosts,
+  ] : materialPosts;
+  const visible = user ? finalPosts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : finalPosts;
   return (
     <LegacyShell active="community">
       <Breadcrumbs>Community Blog</Breadcrumbs>

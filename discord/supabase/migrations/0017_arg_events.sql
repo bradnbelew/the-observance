@@ -81,7 +81,7 @@ values
   ('p6.six_responsibilities_acknowledged','P6','{p6.professional_models_recovered}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),
   ('p7.counterfeit_material_proven','P7','{p6.six_responsibilities_acknowledged}','{minecraft}','{minecraft,copperline,discord,npc}'),
   ('p7.supplier_history_restored','P7','{p7.counterfeit_material_proven}','{copperline}','{copperline,minecraft,discord}'),
-  ('p7.nessa_publicly_cleared','P7','{p7.supplier_history_restored}','{discord,npc}','{minecraft,copperline,discord,npc}'),
+  ('p7.nessa_publicly_cleared','P7','{p6.six_responsibilities_acknowledged}','{discord,npc}','{minecraft,copperline,discord,npc}'),
   ('p8.intervention_plan_accepted','P8','{p7.nessa_publicly_cleared}','{minecraft,discord}','{minecraft,copperline,discord,npc}'),
   ('p8.hold_systems_repaired','P8','{p8.intervention_plan_accepted}','{minecraft}','{minecraft,copperline,discord,npc}'),
   ('p9.company_biographies_restored','P9','{p8.hold_systems_repaired}','{minecraft,copperline,discord}','{minecraft,copperline,discord,media}'),

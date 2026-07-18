@@ -82,6 +82,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P5_CURATION_EVENT = "p5.civic_gallery_recurated";
     private static final String P6_MODELS_EVENT = "p6.professional_models_recovered";
     private static final String P6_RESPONSIBILITY_EVENT = "p6.six_responsibilities_acknowledged";
+    private static final String P7_MATERIAL_EVENT = "p7.counterfeit_material_proven";
     private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
             "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
             "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
@@ -286,18 +287,29 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     /** Six profession-specific completions cause one biography consequence; no prose restatement is required. */
     private void advanceDerivedStoryEvents() {
         ProgressSnapshot snapshot = progress.snapshot();
-        if (!snapshot.isComplete(P5_CURATION_EVENT)
-                || !P6_PROFESSIONAL_PROOFS.stream().allMatch(snapshot::isComplete)) return;
-        try {
-            boolean created = progress.transact(editor -> {
-                boolean models = editor.setBooleanTrue(P6_MODELS_EVENT);
-                boolean responsibility = editor.setBooleanTrue(P6_RESPONSIBILITY_EVENT);
-                return models || responsibility;
-            });
-            if (created) mirrorP6MilestonesAsync();
-        } catch (IOException | RuntimeException failure) {
-            plugin.getLogger().severe("P6 biography milestones could not be committed locally: " + failure.getMessage());
-            return;
+        if (snapshot.isComplete(P5_CURATION_EVENT)
+                && P6_PROFESSIONAL_PROOFS.stream().allMatch(snapshot::isComplete)) {
+            try {
+                boolean created = progress.transact(editor -> {
+                    boolean models = editor.setBooleanTrue(P6_MODELS_EVENT);
+                    boolean responsibility = editor.setBooleanTrue(P6_RESPONSIBILITY_EVENT);
+                    return models || responsibility;
+                });
+                if (created) mirrorP6MilestonesAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P6 biography milestones could not be committed locally: " + failure.getMessage());
+                return;
+            }
+        }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P6_RESPONSIBILITY_EVENT)
+                && snapshot.isComplete("v5_cw05_counterfeit")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P7_MATERIAL_EVENT));
+                if (created) mirrorP7MaterialAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P7 material finding could not be committed locally: " + failure.getMessage());
+            }
         }
     }
 
@@ -315,6 +327,18 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             responsibility.addProperty("runtime_exact_phrase", false);
             plugin.supabase().recordArgEvent(P6_RESPONSIBILITY_EVENT,
                     "minecraft:p6:six-responsibilities-acknowledged", "minecraft", null, responsibility);
+        });
+    }
+
+    private void mirrorP7MaterialAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p7.material.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject material = new JsonObject();
+            material.addProperty("failure", "counterfeit-single-warp-cloth");
+            material.addProperty("location", "upstream-lower-intake");
+            material.addProperty("genuine_stock", "diverted");
+            plugin.supabase().recordArgEvent(P7_MATERIAL_EVENT,
+                    "minecraft:p7:counterfeit-material-proven", "minecraft", null, material);
         });
     }
 
@@ -383,6 +407,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 && progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT)) {
             mirrorP6MilestonesAsync();
         }
+        if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);
