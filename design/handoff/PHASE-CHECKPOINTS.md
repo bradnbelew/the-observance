@@ -405,3 +405,19 @@ open; M4 is still closed.
 - This is automated source/package evidence. It does not replace the still-required single combined
   Hold-plus-Unlit Paper target, actual-client and human ARG experience review, private staging, Brad approval,
   production authorization, or public launch authorization.
+
+## 2026-07-18 — combined Hold + Unlit Paper proof
+
+- Source `924a5495a6deee0700ae54f7ef54437030ef5375` passed one fresh, create-only Paper
+  1.21.11 build 132 target containing the full 32-room/76-fixture Hold, all eight gates, the seven-house/base
+  Unlit candidate, and the bounded player-caused surface-to-Unlit copy consequence.
+- Five predecessor targets remain preserved as failed evidence. They exposed unloaded control bindings,
+  missing exact-world flush, vanilla attachment loss, and two additional unsupported generated handles.
+  Checks were strengthened; no target was reused, deleted, or converted into a pass.
+- Attempt 6 passed 328 exact runtime addresses, 96 protected source items, both post-copy audits, graceful
+  save/stop, restart, independent Hold/Unlit/copy audits, occupied-world rebuild refusal, closed port, and a
+  deterministic two-world package. Exact hashes are in
+  `COMBINED-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json`.
+- This closes the combined automated physical/restart/package gate only. It does not supersede Brad's
+  experiential rejection, prove actual-client affordance or campaign quality, create approval, establish
+  private external staging, authorize production, or establish launch readiness.
