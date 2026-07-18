@@ -9,6 +9,11 @@ public final class P10WrenTransmissionPredicateSelfTest {
                 "four packets grew from names to plans, routes, and fears",
                 "fear of being erased explains the choice but does not excuse it; responsibility remains");
         require(P10WrenTransmissionPredicate.valid(valid), "supported attribution and motive boundary must pass");
+        require(P10WrenTransmissionPredicate.valid(new P10WrenTransmissionPredicate.Finding(
+                "Wren knew the north-brace private route when the physical mark was missing.",
+                "Each packet knew more: people, then the build route, then a private worry.",
+                "Being forgotten explains why he chose this. He is still responsible.")),
+                "ordinary player-language attribution must pass");
         require(!P10WrenTransmissionPredicate.valid(new P10WrenTransmissionPredicate.Finding(
                 "Wren said it", valid.pattern(), valid.motive())), "confession-only proof must fail");
         require(!P10WrenTransmissionPredicate.valid(new P10WrenTransmissionPredicate.Finding(

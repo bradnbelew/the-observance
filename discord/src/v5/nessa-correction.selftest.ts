@@ -30,6 +30,11 @@ for (const [index, finding] of [
     record: 'Complaint entries and relief times changed.',
     conduct: 'Before it broke, she worked to procedure and flagged the fault.',
   },
+  {
+    cause: 'The real stock was sent elsewhere. Wrong cloth gave way at the lower intake.',
+    record: 'Someone changed both the relief shift and complaint record.',
+    conduct: 'Nessa did the required checks and warned them ahead of the break.',
+  },
 ].entries()) assert.equal(validNessaCorrection(finding), true, `natural equivalent finding ${index + 1} must pass`);
 
 for (const [index, finding] of [

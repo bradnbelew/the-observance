@@ -15,6 +15,12 @@ for (const finding of [
     copyBoundary: 'Copying is proven. The Dark remains unknown.',
     order: 'filter water, restore watch lamps, settle pressure, then open the passage',
   },
+  {
+    causes: 'An earlier fracture met heat that stayed high, a coverage gap, and a delayed closure.',
+    iss: 'The reed sample checked out, but the cut was unsafe.',
+    copyBoundary: 'The copy shows behavior. We still do not know what it is.',
+    order: 'Fix the filter, restore the lamps, settle the bypass, then use the passage.',
+  },
 ]) assert.equal(validInterventionPlan(finding), true, 'natural complete plan must pass');
 
 for (const finding of [

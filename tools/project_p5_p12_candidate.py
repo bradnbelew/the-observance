@@ -22,6 +22,7 @@ EXTERNAL_BINDING_TARGET = ROOT / "plugin/src/main/resources/campaign/p5-p12-exte
 EXPERIENCE_SOURCE = ROOT / "campaign/arg-experience-redesign.json"
 CHOREOGRAPHY_SOURCE = ROOT / "campaign/arg-state-choreography.json"
 INPUT_CONTRACT_SOURCE = SOURCE / "input-contracts.json"
+NATURAL_ANSWER_SOURCE = ROOT / "campaign/natural-answer-acceptance.json"
 
 
 def canonical_bytes(value: object) -> bytes:
@@ -35,6 +36,7 @@ def main() -> None:
     choreography = json.loads(CHOREOGRAPHY_SOURCE.read_text(encoding="utf-8"))
     input_contract_root = json.loads(INPUT_CONTRACT_SOURCE.read_text(encoding="utf-8"))
     input_contracts = {contract["id"]: contract for contract in input_contract_root["contracts"]}
+    natural_answer_contract = json.loads(NATURAL_ANSWER_SOURCE.read_text(encoding="utf-8"))
     used_input_contracts = set()
     cases = []
     for row in index["phases"]:
@@ -62,6 +64,7 @@ def main() -> None:
         "source_schema_version": index["schema_version"],
         "closed_mechanism_taxonomy": False,
         "observation_receipts_gate_answers": False,
+        "natural_answer_contract": natural_answer_contract["schema_version"],
         "experiential_status": index["experiential_status"],
         "brad_approval": None,
         "arg_state_choreography": choreography,
@@ -86,6 +89,7 @@ def main() -> None:
             "campaign/arg-experience-redesign.json",
             "campaign/arg-state-choreography.json",
             "campaign/p5-p12/input-contracts.json",
+            "campaign/natural-answer-acceptance.json",
             "campaign/p5-p12/external-bindings.json",
         ] + ["campaign/p5-p12/" + row["file"] for row in index["phases"]],
         "projection_sha256": digest,

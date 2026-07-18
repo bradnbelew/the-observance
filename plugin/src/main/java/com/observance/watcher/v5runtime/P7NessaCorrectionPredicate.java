@@ -17,14 +17,15 @@ public final class P7NessaCorrectionPredicate {
         String cause = fold(finding.cause());
         String record = fold(finding.record());
         String conduct = fold(finding.conduct());
-        return any(cause, "divert", "moved", "rerouted")
-                && any(cause, "counterfeit", "substitute", "single warp")
+        return any(cause, "divert", "moved", "rerouted", "taken away", "sent elsewhere")
+                && any(cause, "counterfeit", "substitute", "single warp", "false cloth", "wrong cloth")
                 && any(cause, "lower intake", "upstream intake")
                 && any(record, "edit", "alter", "change", "rewrit", "rewrote", "revis")
                 && any(record, "relief", "shift") && any(record, "complaint", "report")
-                && any(conduct, "followed procedure", "used procedure", "worked to procedure")
-                && any(conduct, "report", "raised alarm", "raised the alarm", "flagged")
-                && conduct.contains("before") && any(conduct, "shed", "fail", "broke", "break");
+                && any(conduct, "followed procedure", "used procedure", "worked to procedure",
+                        "did the required checks", "followed the checks")
+                && any(conduct, "report", "raised alarm", "raised the alarm", "flagged", "warned")
+                && any(conduct, "before", "ahead of") && any(conduct, "shed", "fail", "broke", "break", "gave way");
     }
 
     private static boolean invalid(String value) {

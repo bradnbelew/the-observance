@@ -571,3 +571,18 @@ open; M4 is still closed.
 - `tools/check_evidence_relationship_web.py` rejects isolated records, backward revelation edges, missing
   cross-phase callbacks, un-authored reasons, source-touch gating, closed mechanism catalogs, and evidence
   islands. The routed audit now runs it beside the campaign-level thread graph.
+
+## 2026-07-18 — natural findings replace hidden answer sentences
+
+- `campaign/natural-answer-acceptance.json` now treats every active interpretive text or classification input
+  as a bounded meaning shape with several independent player voices and explicit wrong-theory tests. It is a
+  runtime acceptance corpus, not a mechanism catalog or a prose quota. The only exact-string exception is the
+  six-source AVERYN identity artifact that players actually reconstruct.
+- P3, P6, P7, P8, and P10 predicates now accept additional ordinary, non-jargon phrasings while continuing to
+  reject missing relationships, person/field swaps, unsafe repair order, premature attribution, and
+  absolution. P6 rows are reduced from 160 to 120 characters so its real Paper dialog asks for short notebook
+  findings instead of six mini-essays.
+- `tools/check_natural_answer_acceptance.py` fails closed if interpretive inputs regain an exact phrase or
+  observation prerequisite, if active inputs lack actual predicate owners and negative paths, or if the exact
+  artifact exception silently expands. Focused Paper, Discord, and Copperline predicate tests pass; the one
+  final real-client layout and whole-campaign rehearsal remain intentionally deferred until the build closes.

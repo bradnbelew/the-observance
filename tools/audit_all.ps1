@@ -89,6 +89,7 @@ Invoke-External "research-based P1-P12 ARG experience authority" $root "python" 
 Invoke-External "active Paper world canon/category-error guard" $root "python" @((Join-Path $tools "check_active_world_canon.py"))
 Invoke-External "connected P1-P12 callback and consequence web" $root "python" @((Join-Path $tools "check_campaign_web.py"))
 Invoke-External "all-record evidence relationship web" $root "python" @((Join-Path $tools "check_evidence_relationship_web.py"))
+Invoke-External "natural answer acceptance" $root "python" @((Join-Path $tools "check_natural_answer_acceptance.py"))
 Invoke-External "canonical campaign event mutation owners" $root "python" @((Join-Path $tools "check_campaign_action_owners.py"))
 Invoke-External "ARG experience/input negative contract mutations" $root "python" @((Join-Path $tools "test_arg_experience_negative_contracts.py"))
 Invoke-External "P4-P5 real-input ARG vertical slice" $root "python" @((Join-Path $tools "check_arg_vertical_slice.py"))

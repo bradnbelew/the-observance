@@ -20,9 +20,10 @@ export function validWrenTransmission(finding: WrenTransmissionFinding): boolean
   return proof.includes('wren')
     && any(proof, ['private revision', 'private route', 'rook revision', 'north brace'])
     && any(proof, ['countermark absent', 'counter mark absent', 'missing countermark', 'missing counter mark', 'countermark was missing', 'counter mark was missing', 'physical mark missing', 'physical mark was missing'])
-    && any(pattern, ['progressive packets', 'packet progression', 'four packets', 'increasing packets'])
-    && pattern.includes('name') && any(pattern, ['plan', 'route']) && pattern.includes('fear')
-    && any(motive, ['erased', 'erasure', 'disappear', 'losing himself'])
+    && any(pattern, ['progressive packets', 'packet progression', 'four packets', 'increasing packets', 'each packet knew more', 'packets grew', 'copies grew'])
+    && any(pattern, ['name', 'people']) && any(pattern, ['plan', 'route', 'build'])
+    && any(pattern, ['fear', 'afraid', 'private worry'])
+    && any(motive, ['erased', 'erasure', 'disappear', 'losing himself', 'being forgotten'])
     && any(motive, ['chose', 'choice', 'deliberate', 'responsible', 'responsibility'])
     && any(motive, ['does not excuse', 'not excuse', 'does not erase responsibility', 'responsibility remains', 'still responsible']);
 }

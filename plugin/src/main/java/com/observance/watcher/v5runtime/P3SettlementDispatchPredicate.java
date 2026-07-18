@@ -19,7 +19,8 @@ public final class P3SettlementDispatchPredicate {
                 && any(value, "mark", "date", "time", "name", "place", "location", "work")
                 && any(value, "keep open", "keep both", "leave open", "preserve both",
                         "record both", "do not choose", "don t choose", "no official version",
-                        "without choosing");
+                        "without choosing", "cannot settle", "can t settle", "not enough to decide",
+                        "not enough to choose", "needs checking", "needs more checking");
     }
 
     private static boolean any(String value, String... terms) {

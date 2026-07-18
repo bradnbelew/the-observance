@@ -18,14 +18,14 @@ export function validNessaCorrection(finding: NessaFinding): boolean {
   const cause = normalizeNessaFindingText(finding.cause);
   const record = normalizeNessaFindingText(finding.record);
   const conduct = normalizeNessaFindingText(finding.conduct);
-  return hasAny(cause, ['divert', 'moved', 'rerouted'])
-    && hasAny(cause, ['counterfeit', 'substitute', 'single warp'])
+  return hasAny(cause, ['divert', 'moved', 'rerouted', 'taken away', 'sent elsewhere'])
+    && hasAny(cause, ['counterfeit', 'substitute', 'single warp', 'false cloth', 'wrong cloth'])
     && hasAny(cause, ['lower intake', 'upstream intake'])
     && hasAny(record, ['edit', 'alter', 'change', 'rewrit', 'rewrote', 'revis'])
     && hasAny(record, ['relief', 'shift'])
     && hasAny(record, ['complaint', 'report'])
-    && hasAny(conduct, ['followed procedure', 'used procedure', 'worked to procedure'])
-    && hasAny(conduct, ['report', 'raised alarm', 'raised the alarm', 'flagged'])
-    && conduct.includes('before')
-    && hasAny(conduct, ['shed', 'fail', 'broke', 'break']);
+    && hasAny(conduct, ['followed procedure', 'used procedure', 'worked to procedure', 'did the required checks', 'followed the checks'])
+    && hasAny(conduct, ['report', 'raised alarm', 'raised the alarm', 'flagged', 'warned'])
+    && hasAny(conduct, ['before', 'ahead of'])
+    && hasAny(conduct, ['shed', 'fail', 'broke', 'break', 'gave way']);
 }

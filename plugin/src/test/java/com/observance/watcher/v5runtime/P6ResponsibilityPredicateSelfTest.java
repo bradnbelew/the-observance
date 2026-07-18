@@ -20,6 +20,14 @@ public final class P6ResponsibilityPredicateSelfTest {
                 "watch rota / bell eight rewritten / paired lamp",
                 "surface reed true / unsafe route omitted / registrar warning")),
                 "short professional notes must pass");
+        require(P6ResponsibilityPredicate.valid(new P6ResponsibilityPredicate.Matrix(
+                "Cloth moved. Vaun waited to object, but kept the figures.",
+                "Mara removed the warning from the directions and left her note in the older route.",
+                "Sella proved the water line, passed it on, and saved the jar.",
+                "Orin approved the damaged brace with conditions and marked the limit.",
+                "Brann changed the watch time; Pell's meal chit and the second light expose it.",
+                "Iss saw the water cleared, used a dangerous cut, and kept the registrar warning.")),
+                "plain player-language model must pass");
         require(!P6ResponsibilityPredicate.valid(new P6ResponsibilityPredicate.Matrix(
                 valid.mara(), valid.vaun(), valid.sella(), valid.orin(), valid.brann(), valid.iss())),
                 "swapped people must fail");

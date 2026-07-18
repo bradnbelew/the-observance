@@ -12,7 +12,7 @@ import java.util.Locale;
  * observation, affidavit possession, or per-room completion is inspected here.</p>
  */
 public final class P6ResponsibilityPredicate {
-    public static final int MAX_FIELD_LENGTH = 160;
+    public static final int MAX_FIELD_LENGTH = 120;
 
     private P6ResponsibilityPredicate() { }
 
@@ -32,39 +32,40 @@ public final class P6ResponsibilityPredicate {
     }
 
     private static boolean vaun(String value) {
-        return any(value, "divert", "missing cloth", "heat order")
-                && any(value, "delay", "silent", "postpone", "kept issue going", "continuity")
-                && any(value, "receipt", "reseal", "ledger", "balance");
+        return any(value, "divert", "missing cloth", "heat order", "cloth moved", "stock moved")
+                && any(value, "delay", "silent", "postpone", "kept issue going", "continuity",
+                        "waited to object", "didn t object", "failed to object")
+                && any(value, "receipt", "reseal", "ledger", "balance", "left the figures", "kept the figures");
     }
 
     private static boolean mara(String value) {
-        return any(value, "edition", "route", "manual", "clean copy")
-                && any(value, "hid", "substitut", "unsafe", "clean plate")
-                && any(value, "margin", "correction", "older route");
+        return any(value, "edition", "route", "manual", "clean copy", "directions")
+                && any(value, "hid", "substitut", "unsafe", "clean plate", "removed the warning")
+                && any(value, "margin", "correction", "older route", "kept her note", "left her note");
     }
 
     private static boolean sella(String value) {
-        return any(value, "intake", "sample", "shore", "survey")
-                && any(value, "teach", "transfer", "drawing", "landmark")
-                && any(value, "sealed", "sketch", "lower jar", "true line");
+        return any(value, "intake", "sample", "shore", "survey", "water line")
+                && any(value, "teach", "transfer", "drawing", "landmark", "passed it on")
+                && any(value, "sealed", "sketch", "lower jar", "true line", "saved the jar", "saved the drawing");
     }
 
     private static boolean orin(String value) {
-        return any(value, "seam", "brace", "load", "damage")
-                && any(value, "condition", "signed", "promise")
-                && any(value, "warning", "scraped", "replacement", "halved");
+        return any(value, "seam", "brace", "load", "damage", "crack")
+                && any(value, "condition", "signed", "promise", "approved")
+                && any(value, "warning", "scraped", "replacement", "halved", "left a limit", "marked the limit");
     }
 
     private static boolean brann(String value) {
-        return any(value, "watch", "rota", "toll", "relief")
-                && any(value, "rewrite", "wrong time", "eight", "timestamp")
-                && any(value, "paired", "meal", "lamp", "pell");
+        return any(value, "watch", "rota", "toll", "relief", "shift")
+                && any(value, "rewrite", "wrong time", "eight", "timestamp", "changed the time", "changed the watch time")
+                && any(value, "paired", "meal", "lamp", "pell", "second light", "meal chit");
     }
 
     private static boolean iss(String value) {
-        return any(value, "surface", "reed", "recover", "open sky")
-                && any(value, "route", "risk", "omitted", "unsafe")
-                && any(value, "objection", "registrar", "warning", "correction");
+        return any(value, "surface", "reed", "recover", "open sky", "water cleared")
+                && any(value, "route", "risk", "omitted", "unsafe", "bad cut", "dangerous cut")
+                && any(value, "objection", "registrar", "warning", "correction", "left the warning", "kept the warning");
     }
 
     private static boolean invalid(String value) {

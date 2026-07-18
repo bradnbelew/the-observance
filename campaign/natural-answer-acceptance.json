@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0-natural-answer-acceptance",
+  "authority": "Interpretive findings accept short, defensible player language rather than a hidden canonical sentence. Exact strings are reserved for artifacts that the investigation actually yields. This is a test corpus, not a puzzle taxonomy or a prose quota.",
+  "rules": {
+    "correct_without_source_receipts": true,
+    "raw_player_prose_stored": false,
+    "one_magic_phrase_for_interpretive_findings": false,
+    "difficulty_owner": "evidence relationships, provenance, inference, and action consequences",
+    "submission_owner": "bounded semantic components or a platform-real physical action",
+    "exact_artifact_exception": "An exact value is fair only when players reconstruct or decode that value itself; P11 AVERYN is the current campaign example."
+  },
+  "interpretive_inputs": [
+    {"id":"P3.DISPATCH","predicate_owners":["P3SettlementDispatchPredicate","validSettlementDispatch"],"fields":["open disagreement"],"accepted_voice_tests":["Aro and Pell disagree about the mark date; keep both accounts open.","The accounts conflict on where the work mark stood. Record both without choosing an official version.","Their dates for the repair mark contradict each other. We cannot settle this yet."],"negative_tests":["premature choice","missing disagreement","empty","overlong"],"zero_observation":true},
+    {"id":"P4.CONCLUSION","predicate_owners":["ArgVerticalSliceState.submitConclusion"],"fields":["ordinary refuge purpose","procedure-to-control change","copy anomaly boundary"],"accepted_voice_tests":["families and workers | safety rules became control | the later copy appears before its source","ordinary shelter | practical records turned into enforcement | independent clocks put the copy first","a refuge for daily life | procedure was used to control people | the retained copy predates the filed source"],"negative_tests":["direct COPY BEFORE SOURCE restatement","cult-only theory","forgery-only theory","clock-fault-only theory"],"zero_observation":true},
+    {"id":"P6.RESPONSIBILITY","predicate_owners":["P6ResponsibilityPredicate"],"fields":["Vaun","Mara","Sella","Orin","Brann","Iss"],"accepted_voice_tests":["complete plain sentences","short professional notebook terms","ordinary player-language notes"],"negative_tests":["person swap","retrieved fact without compromise or correction","empty row","overlong row"],"zero_observation":true},
+    {"id":"P7.NESSA","predicate_owners":["P7NessaCorrectionPredicate","validNessaCorrection"],"fields":["material cause and place","record changes","conduct and timing"],"accepted_voice_tests":["formal material finding","plain chronology summary","ordinary independent wording"],"negative_tests":["field swap","missing complaint edit","accusation without evidence","overlong field"],"zero_observation":true},
+    {"id":"P8.INTERVENTION","predicate_owners":["P8InterventionPlanPredicate","validInterventionPlan"],"fields":["interacting causes","Iss proof and unsafe route","copy behavior and open ontology","safe work order"],"accepted_voice_tests":["complete plain plan","short technical notebook","plain non-jargon plan"],"negative_tests":["reversed repair order","single-cause blame","field swap","overlong field"],"zero_observation":true},
+    {"id":"P9.CAMP_PEOPLE","predicate_owners":["P9CampPredicate.validPeople","restoreCampBiographies"],"fields":["four person-bound crossed work traces"],"accepted_voice_tests":["semantic HTML selects with visible descriptions","local recovery aliases","canonical relationship ids"],"negative_tests":["owner swap","missing owner","duplicate work trace","overlong local value"],"zero_observation":true},
+    {"id":"P9.LEAK_WINDOW","predicate_owners":["P9CampPredicate.validWindow","proveLeakWindow"],"fields":["before","crossing","after","readiness","claim boundary"],"accepted_voice_tests":["semantic HTML custody arrangement","local recovery aliases","canonical version-chain ids"],"negative_tests":["reversed chronology","premature Wren attribution","Record-invented claim","missing copy"],"zero_observation":true},
+    {"id":"P10.WREN","predicate_owners":["P10WrenTransmissionPredicate","validWrenTransmission"],"fields":["private-channel proof","packet progression","motive boundary"],"accepted_voice_tests":["formal provenance finding","natural relationship summary","ordinary player-language attribution"],"negative_tests":["confession-only proof","single packet","absolution","overlong field"],"zero_observation":true}
+  ],
+  "exact_artifacts": [
+    {"id":"P11.AVERYN","value":"AVERYN","yield":"six independently proven affidavit routes each yield one ordered letter","source_receipts_gate":false,"why_exact":"the recovered identity is the artifact being reconstructed, not an interpretation paraphrase"}
+  ]
+}

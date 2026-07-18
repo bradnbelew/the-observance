@@ -10,6 +10,9 @@ public final class P3SettlementDispatchPredicateSelfTest {
         require(P3SettlementDispatchPredicate.valid(
                 "The accounts conflict on where the work mark stood. Record both without choosing an official version"),
                 "natural equivalent must pass");
+        require(P3SettlementDispatchPredicate.valid(
+                "Their dates for the repair mark contradict each other. We cannot settle this yet."),
+                "ordinary uncertainty wording must pass");
         require(!P3SettlementDispatchPredicate.valid("They disagree, and Aro is clearly right"),
                 "premature official choice must fail");
         require(!P3SettlementDispatchPredicate.valid("Keep the mark open"),

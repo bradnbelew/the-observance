@@ -9,6 +9,11 @@ public final class P7NessaCorrectionPredicateSelfTest {
                 "The relief shifts and complaint reports were edited",
                 "Nessa followed procedure and reported it before the cloth started shedding");
         require(P7NessaCorrectionPredicate.valid(valid), "natural complete correction must pass");
+        require(P7NessaCorrectionPredicate.valid(new P7NessaCorrectionPredicate.Finding(
+                "The real stock was sent elsewhere. Wrong cloth gave way at the lower intake.",
+                "Someone changed both the relief shift and complaint record.",
+                "Nessa did the required checks and warned them ahead of the break.")),
+                "independent plain-language correction must pass");
         require(!P7NessaCorrectionPredicate.valid(new P7NessaCorrectionPredicate.Finding(
                 valid.record(), valid.cause(), valid.conduct())), "field-swapped finding must fail");
         require(!P7NessaCorrectionPredicate.valid(new P7NessaCorrectionPredicate.Finding(

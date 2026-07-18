@@ -30,11 +30,12 @@ public final class P8InterventionPlanPredicate {
                 && hasAny(causes, List.of("watch gap", "paired watch", "empty watch", "coverage gap"))
                 && hasAny(causes, List.of("late route", "late routing", "closure delay", "delayed closure"))
                 && hasAny(iss, List.of("surface proof", "surface sample", "reed sample", "water sample"))
-                && hasAny(iss, List.of("valid", "sound", "true", "held"))
+                && hasAny(iss, List.of("valid", "sound", "true", "held", "was right", "checked out"))
                 && hasAny(iss, List.of("route unsafe", "cut unsafe", "cut was unsafe", "unreviewed route", "unsafe cut"))
                 && hasAny(boundary, List.of("copy", "altered office", "record behavior"))
                 && hasAny(boundary, List.of("proves behavior", "shows behavior", "copying is proven", "alteration is proven"))
-                && hasAny(boundary, List.of("dark unknown", "dark remains unknown", "ontology open", "does not identify", "not what the dark is"))
+                && hasAny(boundary, List.of("dark unknown", "dark remains unknown", "ontology open", "does not identify", "not what the dark is",
+                        "still don t know what it is", "still do not know what it is", "doesn t tell us what it is"))
                 && ordered(positions);
     }
 

@@ -14,6 +14,12 @@ public final class P8InterventionPlanPredicateSelfTest {
                 "old fracture / unchanged heat load / empty watch / late routing",
                 "surface proof valid; cut unsafe", "copying is proven; ontology open",
                 "water then watch light then bypass then passage")), "short technical notes must pass");
+        require(P8InterventionPlanPredicate.valid(new P8InterventionPlanPredicate.Plan(
+                "An earlier fracture met heat that stayed high, a coverage gap, and a delayed closure.",
+                "The reed sample checked out, but the cut was unsafe.",
+                "The copy shows behavior. We still do not know what it is.",
+                "Fix the filter, restore the lamps, settle the bypass, then use the passage.")),
+                "plain non-jargon plan must pass");
         require(!P8InterventionPlanPredicate.valid(new P8InterventionPlanPredicate.Plan(
                 valid.causes(), valid.iss(), valid.copyBoundary(),
                 "staff route, pressure bypass, lamps, filter")), "unsafe reversed order must fail");

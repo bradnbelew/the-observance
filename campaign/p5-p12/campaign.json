@@ -8,7 +8,8 @@
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "campaign/arg-experience-redesign.json",
     "campaign/arg-state-choreography.json",
-    "campaign/evidence-relationship-web.json"
+    "campaign/evidence-relationship-web.json",
+    "campaign/natural-answer-acceptance.json"
   ],
   "closed_mechanism_taxonomy": false,
   "observation_receipts_gate_answers": false,

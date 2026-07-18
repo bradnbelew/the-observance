@@ -977,8 +977,8 @@
           "accepted_answers_are_human_examples": true,
           "event": "p6.six_responsibilities_acknowledged",
           "id": "P6.F7",
-          "implementation_status": "Paper-Dialog-primary-and-local-zero-observation-command-recovery-wired; predicate/compile/static-parity-tested; exact-client-layout-and-restart-proof-pending-final-campaign-test",
-          "input_shape": "six bounded 160-character person-bound rows in Vaun, Mara, Sella, Orin, Brann, Iss order; flexible meaning groups, never one hidden sentence",
+          "implementation_status": "Paper-Dialog-primary-and-local-zero-observation-command-recovery-wired; multi-voice paraphrase/predicate/compile/static-parity-tested; exact-client-layout-and-restart-proof-pending-final-campaign-test",
+          "input_shape": "six bounded 120-character person-bound rows in Vaun, Mara, Sella, Orin, Brann, Iss order; flexible meaning groups accept ordinary player wording, never one hidden sentence",
           "interpretive": true,
           "platform": "six profession-specific Minecraft workrooms plus a real Paper 1.21.11 Dialog opened by /obsfinding p6-docket; /obsfinding p6-recovery is the stable local keyboard fallback",
           "runtime_exact_phrase": false,
@@ -3742,6 +3742,7 @@
   ],
   "closed_mechanism_taxonomy": false,
   "experiential_status": "offline_redesigned_not_human_approved",
+  "natural_answer_contract": "1.0.0-natural-answer-acceptance",
   "observation_receipts_gate_answers": false,
   "phases": [
     "P5",
