@@ -29,7 +29,7 @@ export const DISCORD_EVENT_MESSAGES = Object.freeze({
   'p9.company_biographies_restored': 'Copperline memorial updated: mkept, Ash, Rook, and Wren now have separate account histories, work, jokes, and unfinished plans.',
   'p9.leak_window_proven': 'Camp inquiry: the leak window is now fixed by custody and opportunity. A witness spool has been released for review; it is evidence, not a confession.',
   'p10.player_copy_proof': 'Unlit test: the bounded arrangement made by the group returned as an altered copy. The original and returned states are both preserved for comparison.',
-  'p10.wren_confronted': 'Contact record: Wren has received the evidence that fixes the leak window. Her response adds context but does not replace the proof.',
+  'p10.wren_confronted': 'Contact record: Wren has received the evidence that fixes the leak window. His response adds context but does not replace the proof.',
   'p10.wren_remembrance_committed': 'Memorial decision recorded: the group\'s treatment of Wren is now reflected in the private archive. Campaign completion does not depend on one moral judgment.',
   'p11.averyn_identified': 'Identity correction: Averyn is recorded as a registrar and witness, not a seventh Keeper. The six routes back to her remain evidence of responsibility.',
   'p11.averyn_restored_unbound': 'Registry update: Averyn\'s name and work have been restored without filling the binding slot that erased her.',

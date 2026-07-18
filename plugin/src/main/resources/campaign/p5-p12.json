@@ -2080,15 +2080,15 @@
         {
           "affordance": "unique component silhouettes, occupied housings, and persistent state readbacks expose every repair verb",
           "composition": "unique filter housing, fixed lamp diagnostic, four-line gauge board, physical bypass wheel, service-map counter, integration console",
-          "evidence_surfaces": [
+          "id": "p8_works_floor",
+          "job": "repair water, light, pressure, and route using proven service rules",
+          "navigation": "wide crew loop; wrong component returns; every state has text and physical readback",
+          "repair_actions": [
             "p8.r1",
             "p8.r2",
             "p8.r3",
             "p8.r4"
-          ],
-          "id": "p8_works_floor",
-          "job": "repair water, light, pressure, and route using proven service rules",
-          "navigation": "wide crew loop; wrong component returns; every state has text and physical readback"
+          ]
         }
       ],
       "target_minutes": {

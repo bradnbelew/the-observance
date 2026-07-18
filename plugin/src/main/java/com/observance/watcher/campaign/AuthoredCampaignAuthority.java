@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.observance.watcher.structure.V5AuthorityManifest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -98,6 +100,7 @@ public final class AuthoredCampaignAuthority {
         Set<String> phases = new LinkedHashSet<>();
         Set<String> caseIds = new LinkedHashSet<>();
         Set<String> authoredSpaceIds = new LinkedHashSet<>();
+        java.util.Map<String, String> evidenceSurfaces = new LinkedHashMap<>();
         int conclusions = 0;
         int evidence = 0;
         int spaces = 0;
@@ -195,6 +198,7 @@ public final class AuthoredCampaignAuthority {
             }
 
             JsonArray directEvidence = optionalArray(authored, "evidence");
+            collectEvidenceSurfaces(directEvidence, evidenceSurfaces, phase, issues);
             evidence += validateEvidence(directEvidence, phase, issues);
             JsonArray directConclusions = optionalArray(authored, "conclusions");
             conclusions += validateConclusions(directConclusions, phase, issues);
@@ -210,13 +214,22 @@ public final class AuthoredCampaignAuthority {
                 JsonObject dossier = dossierElement.getAsJsonObject();
                 requireText(dossier, "operation", phase, issues);
                 requireText(dossier, "finding", phase, issues);
-                evidence += validateEvidence(optionalArray(dossier, "evidence"), phase, issues);
+                JsonArray dossierEvidence = optionalArray(dossier, "evidence");
+                collectEvidenceSurfaces(dossierEvidence, evidenceSurfaces, phase, issues);
+                evidence += validateEvidence(dossierEvidence, phase, issues);
             }
             JsonArray authoredSpaces = optionalArray(authored, "spaces");
             for (JsonElement spaceElement : authoredSpaces) {
                 if (spaceElement.isJsonObject() && spaceElement.getAsJsonObject().has("id")) {
-                    String spaceId = spaceElement.getAsJsonObject().get("id").getAsString();
+                    JsonObject space = spaceElement.getAsJsonObject();
+                    String spaceId = space.get("id").getAsString();
                     if (!authoredSpaceIds.add(spaceId)) issues.add("duplicate authored space " + spaceId);
+                    for (JsonElement evidenceId : optionalArray(space, "evidence_surfaces")) {
+                        if (!evidenceId.isJsonPrimitive()
+                                || !evidenceSurfaces.containsKey(evidenceId.getAsString())) {
+                            issues.add(spaceId + " references unknown evidence surface " + evidenceId);
+                        }
+                    }
                 }
             }
             spaces += validateSpaces(authoredSpaces, phase, issues);
@@ -230,11 +243,12 @@ public final class AuthoredCampaignAuthority {
             issues.add("campaign phases must be exact ordered P5-P12, found " + phases);
         }
         if (cases.size() != PHASES.size()) issues.add("expected 8 cases, found " + cases.size());
-        validateMinecraftBindings(authoredSpaceIds, issues);
+        validateMinecraftBindings(authoredSpaceIds, evidenceSurfaces, issues);
         return new Report(cases.size(), conclusions, evidence, spaces, sha256(bytes), issues);
     }
 
     private static void validateMinecraftBindings(Set<String> authoredSpaceIds,
+                                                   java.util.Map<String, String> evidenceSurfaces,
                                                    List<String> issues) {
         byte[] bytes = readResource(MINECRAFT_BINDING_RESOURCE, issues);
         if (bytes.length == 0) return;
@@ -250,6 +264,7 @@ public final class AuthoredCampaignAuthority {
             issues.add("offline Minecraft binding must record fresh_client_receipt=false");
         }
         Set<String> bound = new LinkedHashSet<>();
+        Set<String> fixtureIds = new LinkedHashSet<>();
         for (JsonElement element : array(root, "bindings", "Minecraft binding", issues)) {
             if (!element.isJsonObject()) {
                 issues.add("Minecraft binding entry is not an object");
@@ -264,10 +279,85 @@ public final class AuthoredCampaignAuthority {
             if (array(row, "fixture_ids", spaceId, issues).isEmpty()) {
                 issues.add(spaceId + " has no exact fixture binding");
             }
+            for (JsonElement fixture : optionalArray(row, "fixture_ids")) {
+                if (fixture.isJsonPrimitive()) fixtureIds.add(fixture.getAsString());
+            }
             requireText(row, "placement_mode", spaceId, issues);
         }
         if (!bound.equals(authoredSpaceIds)) {
             issues.add("Minecraft binding coverage differs from authored spaces");
+        }
+        validateEvidenceBindings(root, evidenceSurfaces, fixtureIds, issues);
+    }
+
+    private static void validateEvidenceBindings(JsonObject root,
+                                                  java.util.Map<String, String> evidenceSurfaces,
+                                                  Set<String> fixtureIds,
+                                                  List<String> issues) {
+        Set<String> expected = new LinkedHashSet<>();
+        evidenceSurfaces.forEach((id, surface) -> {
+            String value = surface.toLowerCase(java.util.Locale.ROOT);
+            if (value.contains("minecraft") || value.contains("npc_dialogue")
+                    || value.contains("npc_memory")) expected.add(id);
+        });
+        Set<String> bound = new LinkedHashSet<>();
+        for (JsonElement element : array(root, "evidence_bindings", "Minecraft evidence", issues)) {
+            if (!element.isJsonObject()) {
+                issues.add("Minecraft evidence binding is not an object");
+                continue;
+            }
+            JsonObject row = element.getAsJsonObject();
+            String evidenceId = text(row, "evidence_id", issues);
+            if (!bound.add(evidenceId)) issues.add("duplicate Minecraft evidence binding " + evidenceId);
+            if (!expected.contains(evidenceId)) issues.add("non-local or unknown Minecraft evidence binding " + evidenceId);
+            JsonArray carriers = array(row, "carriers", evidenceId, issues);
+            if (carriers.isEmpty()) issues.add(evidenceId + " has no concrete runtime carrier");
+            boolean concrete = false;
+            for (JsonElement carrierElement : carriers) {
+                if (!carrierElement.isJsonPrimitive()) {
+                    issues.add(evidenceId + " carrier is not text");
+                    continue;
+                }
+                String carrier = carrierElement.getAsString();
+                if (carrier.startsWith("book:")) {
+                    concrete = true;
+                    String bookId = carrier.substring("book:".length());
+                    if (V5AuthorityManifest.book(bookId) == null) {
+                        issues.add(evidenceId + " references missing authored book " + bookId);
+                    }
+                } else if (carrier.startsWith("fixture:")) {
+                    concrete = true;
+                    String fixtureId = carrier.substring("fixture:".length());
+                    if (!fixtureIds.contains(fixtureId)) {
+                        issues.add(evidenceId + " references fixture outside campaign bindings " + fixtureId);
+                    }
+                } else if (carrier.equals("npc:wren") || carrier.startsWith("runtime:")) {
+                    concrete = true;
+                } else {
+                    issues.add(evidenceId + " has unsupported carrier " + carrier);
+                }
+            }
+            if (!concrete) issues.add(evidenceId + " exists only as campaign JSON");
+        }
+        if (!bound.equals(expected)) {
+            Set<String> missing = new LinkedHashSet<>(expected);
+            missing.removeAll(bound);
+            Set<String> extra = new LinkedHashSet<>(bound);
+            extra.removeAll(expected);
+            issues.add("Minecraft evidence carrier coverage differs: missing=" + missing + " extra=" + extra);
+        }
+    }
+
+    private static void collectEvidenceSurfaces(JsonArray rows,
+                                                java.util.Map<String, String> surfaces,
+                                                String phase, List<String> issues) {
+        for (JsonElement element : rows) {
+            if (!element.isJsonObject()) continue;
+            JsonObject row = element.getAsJsonObject();
+            if (!row.has("id") || !row.has("surface")) continue;
+            String id = row.get("id").getAsString();
+            String previous = surfaces.putIfAbsent(id, row.get("surface").getAsString());
+            if (previous != null) issues.add(phase + " duplicate evidence id " + id);
         }
     }
 
