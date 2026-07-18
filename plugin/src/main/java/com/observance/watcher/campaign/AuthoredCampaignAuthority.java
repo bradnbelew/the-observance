@@ -68,9 +68,31 @@ public final class AuthoredCampaignAuthority {
             issues.add("campaign must retain brad_approval=null");
         }
         JsonObject choreography = object(root, "arg_state_choreography", "campaign", issues);
-        if (!"offline_authored_not_deployed".equals(choreography.has("status")
-                ? choreography.get("status").getAsString() : "")) {
-            issues.add("ARG state choreography must remain offline/not deployed");
+        String choreographyStatus = choreography.has("status")
+                ? choreography.get("status").getAsString() : "";
+        Set<String> allowedChoreographyStatuses = Set.of(
+                "offline_authored_not_deployed",
+                "local_file_runtime_and_deployable_supabase_discord_adapter_implemented_external_staging_unverified");
+        if (!allowedChoreographyStatuses.contains(choreographyStatus)) {
+            issues.add("ARG state choreography status is unsupported or overclaims deployment");
+        }
+        if (!"offline_authored_not_deployed".equals(choreographyStatus)) {
+            JsonObject projectionRuntime = object(
+                    choreography, "projection_runtime", "campaign choreography", issues);
+            requireTrue(projectionRuntime, "canonical_commit_before_projection",
+                    "campaign choreography", issues);
+            requireText(projectionRuntime, "unknown_event_behavior", "campaign choreography", issues);
+            requireText(projectionRuntime, "proof", "campaign choreography", issues);
+            if (!projectionRuntime.has("external_staging_receipt")
+                    || !projectionRuntime.get("external_staging_receipt").isJsonNull()) {
+                issues.add("implemented projection runtime must retain external_staging_receipt=null");
+            }
+            JsonObject timing = object(
+                    projectionRuntime, "worker_timing", "campaign choreography", issues);
+            if (!timing.has("maximum_attempts")
+                    || timing.get("maximum_attempts").getAsInt() != 8) {
+                issues.add("implemented projection runtime must retain the eight-attempt ceiling");
+            }
         }
         JsonArray cases = array(root, "cases", issues);
         Set<String> phases = new LinkedHashSet<>();

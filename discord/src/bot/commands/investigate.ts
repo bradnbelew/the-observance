@@ -1,6 +1,5 @@
 import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
 import { getArgEventHistory, getPlayerByDiscordId, recordArgEvent } from '../../db/repo.js';
-import { postToTheRecord } from '../../showrunner/discord.js';
 
 const PHASE_LABELS: Record<string, string> = {
   p1: 'Copperline recovery', p2: 'world handoff', p3: 'settlement accounts',
@@ -59,9 +58,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(result.created
       ? 'Test complete. Barcode 03 was imaged before 04, and the independent recovery-node clock stayed stable. Guest filenames and modified times cannot reverse that order.'
       : 'That custody test is already complete. Nothing was duplicated.');
-    if (result.created) {
-      void postToTheRecord('Copy test complete: cartridge 03 precedes 04. The recovery-node clock stayed stable; guest filenames and modified times are excluded from the order.');
-    }
     return;
   }
   if (action === 'clear-nessa') {
@@ -92,9 +88,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(result.created
       ? 'Correction filed. Nessa Vale followed procedure and reported before the shedding. Genuine stock was diverted, counterfeit cloth failed upstream, and relief and complaint records were edited.'
       : 'That public correction is already filed. Nothing was duplicated.');
-    if (result.created) {
-      void postToTheRecord('Public correction: Nessa Vale followed procedure and reported before the shedding. Genuine stock was diverted, counterfeit cloth failed upstream, and the relief and complaint records were edited.');
-    }
     return;
   }
   if (action === 'plan-repair') {
@@ -130,9 +123,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(result.created
       ? 'Plan accepted. Treat the Break as interacting failures. Keep Iss’s sound surface proof and reject his unsafe route. The Hold works can now be repaired in the tested order.'
       : 'That intervention plan is already accepted. Nothing was duplicated.');
-    if (result.created) {
-      void postToTheRecord('Intervention plan accepted: restore water, paired light, and pressure control before opening the staff route. Iss’s surface proof stands; his unreviewed cut does not.');
-    }
     return;
   }
   if (action === 'file-leak-window') {
@@ -163,9 +153,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(result.created
       ? 'Finding filed. The four-person company was ready. Rook’s private revision and their identities crossed into the Witness Spool before public upload. The sender remains an open question.'
       : 'That private-window finding is already filed. Nothing was duplicated.');
-    if (result.created) {
-      void postToTheRecord('Ash Camp finding: the release work was ready. Rook’s private revision and the team identities crossed before public upload. The transmission came from inside the four-person company; P9 does not name the sender.');
-    }
     return;
   }
   if (action === 'confront-wren') {
@@ -197,9 +184,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(result.created
       ? 'Finding committed. Wren deliberately transmitted the four packet classes. Fear of being erased explains his choice and does not remove responsibility. The group’s remembrance remains unchosen.'
       : 'That Wren transmission finding is already committed. Nothing was duplicated.');
-    if (result.created) {
-      void postToTheRecord('Wren finding committed: progressive packets carried names, plans, changed routes, and private fears. His fear of erasure explains the betrayal; it does not erase responsibility. Remembrance is still open.');
-    }
     return;
   }
   if (action === 'identify-averyn') {
@@ -247,9 +231,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     await interaction.editReply(relationship.created
       ? 'Averyn restored as a person and left unbound. The Record is the civic system; the Watcher is constrained system speech through her; the Dark remains related, distinct, and unknown.'
       : 'Averyn’s identity and unbound relationship record are already committed. Nothing was duplicated.');
-    if (relationship.created) {
-      void postToTheRecord('Averyn restored as the erased human registrar, outside the Keeper role and outside the Record slot. Record, Watcher, Averyn, and Dark remain related without being collapsed into one thing.');
-    }
     return;
   }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
@@ -277,7 +258,4 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
   await interaction.editReply(result.created
     ? 'Dispatch accepted. The settlement will keep the conflicting accounts open instead of forcing one version.'
     : 'That dispatch is already on file. Nothing was duplicated.');
-  if (result.created) {
-    void postToTheRecord('Settlement dispatch received. Aro and Dob will keep both accounts in the public record until the Mouth copies can be compared.');
-  }
 }

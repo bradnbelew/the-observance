@@ -37,6 +37,8 @@ assert.ok(handler.includes("eventKey: 'p9.leak_window_proven'"));
 assert.ok(handler.includes("eventKey: 'p10.wren_confronted'"));
 assert.ok(handler.includes("eventKey: 'p11.averyn_identified'"));
 assert.ok(handler.includes("eventKey: 'p11.averyn_restored_unbound'"));
+assert.ok(!handler.includes('postToTheRecord'),
+  'commands must not bypass the durable projection outbox or duplicate its Discord consequence');
 assert.ok(handler.includes("name !== 'AVERYN'"));
 assert.ok(handler.includes("dark !== 'related-distinct-unknown'"));
 assert.ok(handler.includes("proof !== 'progressive-private-missing-countermark'"));
