@@ -38,7 +38,7 @@
     {"id":"copperline_preview_runtime","blocks":["browser-tested restored history", "reactive archive"],"requires":["versioned fixtures", "append-only projections", "accessibility", "preview deployment"]},
     {"id":"discord_staging_runtime","blocks":["live community reaction"],"requires":["exact fictional account", "A0/A1 gate", "privacy", "outage reconciliation"]},
     {"id":"media_custody","blocks":["activation of four videos and recovered packet"],"requires":["exact approved bytes", "human AV review", "derivative hashes", "captions/equivalents"]},
-    {"id":"fresh_paper_1_21_11_unlit_audit","blocks":["Unlit implementation acceptance"],"requires":["figure model", "inventory/death/quit extraction", "border/light/anti-cheese", "restart"]},
+    {"id":"fresh_paper_1_21_11_unlit_audit","blocks":["human Unlit experience acceptance"],"requires":["automated physical receipt complete", "real-client figure model", "inventory/death/quit extraction play", "border/light/anti-cheese play", "human restart/catch-up review"]},
     {"id":"human_experience_review","blocks":["experiential approval", "launch readiness"],"requires":["implemented candidate", "cold investigation", "visual review", "explicit Brad approval"]}
   ],
   "superseded_idea_dispositions": [

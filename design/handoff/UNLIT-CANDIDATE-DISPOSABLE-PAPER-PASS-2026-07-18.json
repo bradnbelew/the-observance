@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0.0-unlit-candidate-disposable-paper-receipt",
+  "source_commit": "ec456d3110e089218c8aeb4ec601ac6bb57a8f8f",
+  "runner_sha256": "231a50bcd8512b51a426cc9478f12dbac09a94488d4f955931386e90c149610d",
+  "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-candidate-paper-ec456d3-05",
+  "address": "127.0.0.1:25605",
+  "paper_version": "1.21.11 build 132",
+  "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_sha256": "b5b867e4f146e4005f0b74a6e7d6a4f024c9e860c203e52f81982cc37c0736a0",
+  "bootstrap_cache": {
+    "source": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-copy-paper-1c84e40-02\\cache",
+    "files": {
+      "mojang_1.21.11.jar": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726"
+    }
+  },
+  "first_start": {
+    "build": "[02:39:50 INFO]: UNLIT_CANDIDATE_BUILD PASS world=observance_unlit_candidate_disposable houses=8 blocks=37991 path_cells=951 mechanics=34 border=128",
+    "ready": "[02:39:51 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass.",
+    "copy_install": "[02:39:53 INFO]: UNLIT_COPY_PROOF_INSTALL PASS surface=observance_unlit_surface_disposable,20,130,20 unlit=observance_unlit_candidate_disposable,10,73,8",
+    "copy_exercise": "[02:39:53 INFO]: UNLIT_COPY_PROOF_EXERCISE PASS status=committed pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "copy_audit": "[02:39:53 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=true pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "post_copy_ready": "[02:39:54 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass."
+  },
+  "restart": {
+    "ready": "[02:40:10 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass.",
+    "copy_audit": "[02:40:10 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=true pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "overwrite_refusal": "[02:40:10 INFO]: UNLIT_CANDIDATE_BUILD BLOCKED Unlit candidate refused occupied build cell BLACKSTONE at -42,77,14",
+    "post_refusal_ready": "[02:40:11 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass."
+  },
+  "sites_sha256": "7cdf1f3a327d4af77f3b6f90ccc661439514781d86082f3c82c22a6935b2fc97",
+  "copy_journal_sha256": "fab89e38798729873dfa6dd02ad3aec40e957755b2af0f80c99b8b96603d3eaf",
+  "copy_layout_sha256": "926f81a8cc435dc8c87b796f8abba831cc3133c6fda3ce81f6409a50348ef535",
+  "first_log_sha256": "23ce5a53585b5d730f2b53e4ca715ceb50a5e5de4149c5c37301b97089f37d6b",
+  "restart_log_sha256": "690f9e5938bd970c1161563177045519788c870e7473b5a8418b0206260f6c49",
+  "world_package": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-candidate-paper-ec456d3-05\\unlit-candidate-worlds.zip",
+  "world_package_sha256": "4ad09f4fa7c4e4e431d75c6ed8982f10d1d467e325f52e35998adec7ec6d086c",
+  "world_file_counts": {
+    "observance_unlit_surface_disposable": 19,
+    "observance_unlit_candidate_disposable": 18
+  },
+  "proof": {
+    "required_sites": 11,
+    "house_workplaces": 7,
+    "base_synthesis": 1,
+    "distinct_structural_palettes": 8,
+    "bounded_build_radius": 58,
+    "border_diameter": 128,
+    "fresh_install_passed": true,
+    "exact_mechanics_audit_passed": true,
+    "bounded_copy_integrated": true,
+    "graceful_stop_passed": true,
+    "restart_independent_audit_passed": true,
+    "occupied_rebuild_refused": true,
+    "port_listener_after_stop": 0
+  },
+  "scope": "Automated physical village/mechanics/copy/restart proof only; player route, dread, investigation depth, and visual experience remain human-gated.",
+  "production_mutated": false,
+  "brad_approval": null
+}

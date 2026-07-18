@@ -568,6 +568,10 @@
       "bounded_unlit_copy_failed_attempt": "design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-FAILED-ATTEMPT-2026-07-18.json",
       "bounded_unlit_copy_pattern_sha256": "852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
       "bounded_unlit_copy_world_package_sha256": "d4120f9ea797a223cd0105695607b09d5c9a1d1f94e6cf52c07a10cf54b62464",
+      "integrated_unlit_candidate_source_commit": "ec456d3110e089218c8aeb4ec601ac6bb57a8f8f",
+      "integrated_unlit_candidate_receipt": "design/handoff/UNLIT-CANDIDATE-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+      "integrated_unlit_candidate_failed_attempts": "design/handoff/UNLIT-CANDIDATE-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-18.json",
+      "integrated_unlit_candidate_world_package_sha256": "4ad09f4fa7c4e4e431d75c6ed8982f10d1d467e325f52e35998adec7ec6d086c",
       "private_staging_readiness_receipt": "design/handoff/PRIVATE-STAGING-READINESS-2026-07-18.json",
     "final_human_test_plan": "design/handoff/FINAL-WHOLE-CAMPAIGN-HUMAN-TEST-PLAN.md",
     "campaign_projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
@@ -625,6 +629,8 @@
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.md",
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
     "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
+    "design/handoff/UNLIT-CANDIDATE-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-18.json",
+    "design/handoff/UNLIT-CANDIDATE-DISPOSABLE-PAPER-PASS-2026-07-18.json",
     "design/handoff/PRIVATE-LAUNCH-ROUTED-REGRESSION-RECEIPT.json",
     "design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
     "design/handoff/P5-P12-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-17.json",
@@ -847,13 +853,18 @@
       "effect": "a real Paper 1.21.11 six-cell civic pattern register now accepts only water, heat, watch, and record tokens through physical selectors or the /obscopy accessibility command. The local hash-chain journal commits before projection; the Unlit returns a deterministic horizontal mirror with one record-to-watch institutional edit. No free text, identity, inventory, arbitrary build, chat, log, name, or fear is ingested. Fresh install, commit, graceful stop, restart, independent audit, closed port, and exact two-world package hashes pass. The restricted-sandbox attempt that exited before startup is preserved separately. Actual-client affordance, visual composition, uncanny effect, full seven-house Unlit expedition, and Brad experience remain open."
     },
     {
+      "older": "the seven-house Unlit act as hand-placed-only geometry without a current integrated Paper build/restart receipt",
+      "newer": "source commit ec456d3110e089218c8aeb4ec601ac6bb57a8f8f plus design/handoff/UNLIT-CANDIDATE-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+      "effect": "a create-only Paper 1.21.11 target now contains a deterministic bounded village-well arrival, seven distinct workplace shells, base mirror, 11 required registered sites, eight structural palettes, 34 exact Unlit mechanics addresses, and the bounded player-copy return. Fresh build, readiness, save/stop, restart, independent audit, occupied-rebuild refusal, closed port, and exact world-package hashes pass. Four failed targets preserve the Threshold route/lintel and unrelated port-collision evidence. This is automated physical infrastructure only: expedition pacing, dread, extraction, interleaving, player understanding, visual polish, and Brad approval remain human gates."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
     }
   ],
   "current_gate": {
-    "phase": "The story-first P1-P12 source, cross-surface event web, Copperline/Discord/Paper projections, exact input contracts, packages, live custody-approved media routes, fresh whole-Hold Paper 1.21.11 build/restart audit, and bounded player-caused surface-to-Unlit copy proof now pass their stated automated local gates. The full seven-house Unlit act still lacks a current fresh integrated build/client receipt. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
+    "phase": "The story-first P1-P12 source, cross-surface event web, Copperline/Discord/Paper projections, exact input contracts, packages, live custody-approved media routes, fresh whole-Hold Paper 1.21.11 build/restart audit, bounded player-caused copy proof, and integrated seven-house/base Unlit physical candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,
@@ -869,7 +880,7 @@
       "custody-verified media receives human master/AV review, approved accessibility derivatives, ownership decision, and exact private hosted/cache receipts",
       "a future review proves independent Minecraft interface and evidence-affordance discovery without treating rapid deduction as the criterion",
       "authenticated non-op Adventure protection, circulation, and accessibility receipts",
-      "a real-client walk verifies the bounded copy register's physical selectors, lectern pages, reset/send controls, readable textures, returned diff, and uncanny but non-personalized effect; the full seven-house Unlit multi-expedition still requires fresh integrated Paper and human proof",
+      "a real-client walk verifies the integrated village-well arrival, seven workplace identities, multi-expedition pacing, figure pressure, extraction/recovery, bounded copy selectors and returned diff, and uncanny but non-personalized effect; automated Paper install/restart proof does not close that human gate",
       "Brad's explicit approval of a later M3 revision"
     ]
   }

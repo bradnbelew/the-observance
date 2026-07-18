@@ -371,3 +371,25 @@ open; M4 is still closed.
 - This closes the automated bounded-copy capability gap only. It does not prove the full seven-house Unlit
   multi-expedition, actual-client affordance or visual composition, player dread/recognition, Brad approval,
   external staging, production, or launch readiness.
+
+## 2026-07-18 — integrated seven-house Unlit physical candidate
+
+- Source `ec456d3110e089218c8aeb4ec601ac6bb57a8f8f` replaces the hand-placement-only gap with a
+  deterministic, create-only candidate builder. It authors a bounded copied-village island, well arrival,
+  seven distinct workplace shells, a base mirror, eight structural palettes, public circulation, 11 exact
+  sites, and the existing seven house mechanics without making block tracing a mandatory deduction.
+- The bounded surface-to-Unlit pattern return is installed in the same Unlit target. Minecraft commits its
+  hash-only `p10.player_copy_proof` event; Copperline's Wren chronology and Discord shared status now project
+  that player-caused response without receiving player text, identity, inventory, or arbitrary builds.
+- Four create-only failures are preserved in
+  `UNLIT-CANDIDATE-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-18.json`: the first found a Threshold and border
+  mismatch; the second confirmed the remaining Threshold problem; the third isolated the low lintel inside
+  required crouched headroom; the fourth was a clean bind refusal on an unrelated occupied port. Every
+  disposable Java process stopped and no target was reused or deleted.
+- Attempt 5 on Paper 1.21.11 build 132 passed 37,991 authored block writes, 951 path cells, all eight
+  houses/base, 34 exact mechanics addresses, border/light readiness, bounded copy commit, save/stop, restart,
+  independent audit, occupied-rebuild refusal, closed port, and deterministic two-world packaging. Exact
+  hashes are in `UNLIT-CANDIDATE-DISPOSABLE-PAPER-PASS-2026-07-18.json`.
+- This is physical and restart evidence, not an experiential approval. A real client group must still prove
+  multi-expedition motivation, navigation, figure pressure, inventory/death/quit extraction, cross-case
+  reinterpretation, visual polish, dread, and the complete story-first ARG rhythm. Brad approval remains null.

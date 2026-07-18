@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0-unlit-candidate-failed-attempts",
+  "attempts": [
+    {
+      "attempt": 1,
+      "source_commit": "f9931711c7c45ac0bd80d182e796308a3de28896",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-candidate-paper-f993171-01",
+      "address": "127.0.0.1:25601",
+      "failure": "The fresh build passed physical reconciliation but readiness found a Threshold composition conflict and a world-border center that did not match the registered spawn mirror.",
+      "log_sha256": "c4e8febb34e57515a7803a9b972fa04e1c95861d272a1fc1112a47508662d798",
+      "harness_log_sha256": "2c1ecab77d084a82fbb425b7d17ec8809b86712ef2aab6b9f98916bc953d0673",
+      "shutdown": "The interrupted harness left only its isolated Java PID 21436. The previously receipted attach helper dispatched save-all flush and Bukkit shutdown to that exact PID; the log contains complete save/disable/dimension-stop markers and port 25601 ended.",
+      "reused": false
+    },
+    {
+      "attempt": 2,
+      "source_commit": "6f9d933b1319a38c542be08edc1c27f2795aaaef",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-candidate-paper-6f9d933-02",
+      "address": "127.0.0.1:25602",
+      "failure": "The border center was corrected; the Threshold readiness contract still failed because its generic message did not identify the one missing element.",
+      "log_sha256": "4a4e3c8bcc4f9dec8e61ceee28517e6cf126fe65f96ff28da0a2f085458e90b0",
+      "harness_log_sha256": "9b8791eb7e43323de0d02a750b1b1ddff74be969b757b6942876e998dfcb4b24",
+      "shutdown": "The interrupted harness left only its isolated Java PID 25380. The receipted attach helper dispatched save-all flush and Bukkit shutdown to that exact PID; complete stop markers were written and port 25602 ended.",
+      "reused": false
+    },
+    {
+      "attempt": 3,
+      "source_commit": "0492d8eeaf6d75176dea117c50126e7685b13a1e",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-candidate-paper-0492d8e-03",
+      "address": "127.0.0.1:25603",
+      "failure": "The strengthened fail-closed diagnostic proved the only missing Threshold element was low-lintel. The first attempted lintel occupied BI07 crouched headroom and was correctly cleared by the physical installer.",
+      "log_sha256": "c1f9be3c916c83e81ea2d3c4e760e4c0afd6a599dabec41837bc72ab65fc2aab",
+      "harness_log_sha256": "d960e23ccc388427222c0e63d3c72e67b3ceeb0d06daed1fdb861a754b9c33fd",
+      "shutdown": "The revised harness recognized BLOCKED immediately and performed a normal Paper stop in finally; complete save/disable/dimension-stop markers were written and port 25603 ended.",
+      "reused": false
+    },
+    {
+      "attempt": 4,
+      "source_commit": "ec456d3110e089218c8aeb4ec601ac6bb57a8f8f",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\unlit-candidate-paper-ec456d3-04",
+      "address": "127.0.0.1:25604",
+      "failure": "Paper refused startup because unrelated pre-existing PID 32868 already owned port 25604. The new target never enabled Observance or built the candidate.",
+      "log_sha256": "d1e483ce7a9f417fcb62c730056d590ed3a7df410117c8e3c7df0fc0c420c3c9",
+      "harness_log_sha256": "e3c0d96e3072f35134f4d7b408a3d6bb5bf9a9ae349a58dac9bd5a9f69c9fc46",
+      "shutdown": "Paper exited itself after the bind refusal. PID 32868 and its listener were not stopped, signaled, or mutated.",
+      "reused": false
+    }
+  ],
+  "checks_weakened": false,
+  "targets_deleted_or_reused": false,
+  "production_mutated": false,
+  "brad_approval": null
+}
