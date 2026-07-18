@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0-routed-audit-receipt",
+  "audited_commit": "3d54c238938932cc1ee66b44aafe807310ce0f70",
+  "branch": "codex/m3-disposable-paper-gate",
+  "completed_local": "2026-07-18T01:20:50-05:00",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File .\\tools\\audit_all.ps1",
+  "result": "pass",
+  "stdout_log": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\audit-20260717\\audit-all.stdout.log",
+  "stdout_sha256": "8cb0521f872f0b897fcaf3debf89878af10b506ff1f439c0239151e6f644774d",
+  "stderr_bytes": 0,
+  "aggregate": "V5 audit: PASS (repository, 82-node content, predicates, Hold, simulation, all projects, deploy artifacts, hosted pack, and live media)",
+  "paper_plugin": {
+    "version": "0.5.0",
+    "jar_sha256": "d921b3b7a39057cecc5a2ff1145aeee3ecf3e073dcbe20d51dfade56a39d6c01",
+    "physical_contracts": 60,
+    "mechanics_node_scenarios": 287,
+    "runtime_contracts": 60,
+    "finale_ending_conduct_combinations": 24
+  },
+  "packages": {
+    "datapack_sha256": "dabbeb89551ad5600253dfd2ff021ddce8d31935f92fd451d4d35993015e5719",
+    "resourcepack_sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb",
+    "deploy_manifest_sha256": "d25f2e061aa4dc6404906c0e6f357d24ca25ac0e32720545309fd6add273e6b0",
+    "projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
+    "minecraft_bindings_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d"
+  },
+  "media": {
+    "required_assets": 5,
+    "manifest_and_dated_receipt": "pass",
+    "public_live_sources": "pass",
+    "source_bytes_mutated": false
+  },
+  "repository_integrity": {
+    "project_owned_files": 1179,
+    "text_files": 1126,
+    "binary_or_archive_files": 53,
+    "bytes": 23436677,
+    "aggregate_prefix": "2220c3b179f677c5"
+  },
+  "post_audit_change": "Commit 5d5b620 changes only the disposable Paper receipt harness; its focused compile/bootstrap/count-parsing tests passed and no campaign/runtime/package byte changed.",
+  "scope": "Automated routed conformance evidence only. It does not replace real-client, human-experience, private-staging, production, or launch approval.",
+  "brad_approval": null,
+  "production_mutated": false
+}

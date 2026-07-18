@@ -557,6 +557,34 @@
     "production_mutation": false,
     "new_brad_server_authorized": true
   },
+  "current_campaign_launch_candidate_evidence": {
+    "status": "automated_offline_and_disposable_paper_pass_human_experience_and_external_staging_open",
+    "runtime_source_commit": "3d54c238938932cc1ee66b44aafe807310ce0f70",
+    "receipt_harness_commit": "5d5b620d1f68614e001a21648df3dabed85a851e",
+    "routed_audit_receipt": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json",
+    "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    "campaign_projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
+    "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+    "paper_version": "1.21.11",
+    "rooms": 32,
+    "fixtures": 76,
+    "gates": 8,
+    "physical_authority_addresses": 305,
+    "protected_source_items": 96,
+    "fresh_build_passed": true,
+    "graceful_stop_passed": true,
+    "restart_independent_audit_passed": true,
+    "world_package_sha256": "54951c78ddc76b8afb81dc9669aec4656bda1a5635191dd13d7714da07316a09",
+    "full_routed_audit_passed": true,
+    "campaign_state": "P1-P12 authored and wired across Paper, Copperline, Discord, event projection, resident response, media custody, replay, catch-up, and finale; automated evidence does not establish that the complete experience feels like an ARG to a human group",
+    "answer_shape": "interpretive findings use short deterministic meaning components or physical actions; fairly yielded exact artifacts may remain exact; source-touch receipts never gate correctness",
+    "relationship_web": "artifacts, actions, voices, consequences, and callbacks are routed across cases and surfaces rather than treated as isolated puzzle sections",
+    "experiential_status": "human_end_to_end_test_not_run_by_user_direction_until_build_end",
+    "external_staging_status": "exact private preview and isolated service deployment receipts remain open",
+    "brad_approval": null,
+    "production_mutation": false,
+    "public_launch": false
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -797,13 +825,18 @@
       "effect": "fresh Paper 1.21.11 now proves the complete 32-room/76-fixture Hold can install 305 physical authority addresses and 96 protected source items, stop, restart, independently re-audit, and package deterministically. This closes only the physical-install technical gap. The cases remain technical/content scaffolding under Brad's ARG-experience rejection and require story-first cross-surface reauthoring, client visual review, whole-campaign rehearsal, and human acceptance."
     },
     {
+      "older": "the 2026-07-17 P5-P12 packet and physical-install technical scaffold before the complete story-first cross-surface runtime was wired",
+      "newer": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json plus design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+      "effect": "the current P1-P12 source now passes the complete routed repository/content/security/runtime/package/media chain and a new create-only Paper 1.21.11 full Hold build, graceful stop, restart, independent physical re-audit, and deterministic world package. This supersedes stale projection hashes and closes the current automated local physical gate. It does not supersede Brad's experiential rejection, create human approval, prove external staging, or authorize production/public launch."
+    },
+    {
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
     }
   ],
   "current_gate": {
-    "phase": "V5 remains rejected historical proof; Brad has now also rejected P4 vNext experientially while its live review process remains immutable. P5-P12 offline authorship, projections, executable Paper authority, deterministic simulation, and media custody are technical/content scaffolding only until audited and redesigned against the same document-read/answer-submit monoculture. Fresh Paper validation may establish technical evidence but cannot prove ARG experience or launch readiness; production/public remain closed.",
+    "phase": "The story-first P1-P12 source, cross-surface event web, Copperline/Discord/Paper projections, exact input contracts, packages, live custody-approved media routes, and fresh whole-Hold Paper 1.21.11 build/restart audit now pass automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,

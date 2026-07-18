@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0-p5-p12-disposable-paper-receipt",
+  "source_commit": "5d5b620d1f68614e001a21648df3dabed85a851e",
+  "runner_sha256": "56914b7ff576eb1919724b51e89e857fb36e0da6458da5b26a46c9775be98a9e",
+  "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-5d5b620-13",
+  "address": "127.0.0.1:25614",
+  "paper_version": "1.21.11",
+  "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_sha256": "d921b3b7a39057cecc5a2ff1145aeee3ecf3e073dcbe20d51dfade56a39d6c01",
+  "bootstrap_cache": {
+    "source": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-5d66ad1-08\\cache",
+    "files": {
+      "mojang_1.21.11.jar": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726"
+    }
+  },
+  "campaign_projection_sha256": "bcff6a96b571ef58a1afe3bd638a50c197583d22df194c4319cbe3d7854fd20c",
+  "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+  "first_start": {
+    "authority": "[01:23:32 INFO]: [Observance] P5-P12 campaign authority ready: 8 cases, hash=ea70d2636aef44ddb9ead82f69226918eead93ebd1fb59365869ce6fdfd95067",
+    "prepare": "[01:23:36 INFO]: Observance: PREPARE PASS - all 400 chunks are generated, loaded, and ticketed for this exact Mouth.",
+    "plan": "[01:23:36 INFO]:  PLAN PASS: no blocks or registrations changed. Build with the exact same Mouth.",
+    "build": "[01:23:52 INFO]: Observance: Deep Hold build complete - 76/76 canonical ARG sites registered inside the V5 Hold.",
+    "audit": "[01:23:52 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
+  },
+  "restart": {
+    "authority": "[01:24:05 INFO]: [Observance] P5-P12 campaign authority ready: 8 cases, hash=ea70d2636aef44ddb9ead82f69226918eead93ebd1fb59365869ce6fdfd95067",
+    "audit": "[01:24:09 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness."
+  },
+  "first_log_sha256": "5e8f098299d81be12204b4e25530591d7198212ed153e472e66885aa576af4f5",
+  "restart_log_sha256": "b2e9626af82e57702444c68431fec85853b628fa36a79f1962bc2f1bc7d4cb5e",
+  "world_package": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-5d5b620-13\\whole-campaign-world.zip",
+  "world_package_sha256": "54951c78ddc76b8afb81dc9669aec4656bda1a5635191dd13d7714da07316a09",
+  "physical_result": {
+    "rooms": 32,
+    "fixtures": 76,
+    "gates": 8,
+    "physical_authority_addresses": 305,
+    "protected_source_items": 96,
+    "retired_written_books_surviving": 0,
+    "fresh_build_passed": true,
+    "graceful_stop_passed": true,
+    "restart_independent_audit_passed": true,
+    "port_listener_after_stop": 0
+  },
+  "scope": "Technical physical install, restart, audit, and deterministic packaging proof only. It does not establish experiential, client-visual, Brad, staging, production, or launch acceptance.",
+  "production_mutated": false,
+  "unrelated_process_mutated": false,
+  "fresh_client_visual_receipt": false,
+  "brad_approval": null
+}
