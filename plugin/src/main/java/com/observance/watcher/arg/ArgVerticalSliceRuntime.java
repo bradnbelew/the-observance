@@ -99,6 +99,15 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
                     "minecraft:p4:control-reversal-earned",
                     "minecraft", null, payload);
         }
+        if (state.copyOrderTested()) {
+            JsonObject payload = new JsonObject();
+            payload.addProperty("method", "barcode-and-node-clock");
+            payload.addProperty("guest_metadata", "excluded");
+            observance.supabase().recordArgEvent(
+                    ArgVerticalSliceState.COPY_TEST_EVENT,
+                    "minecraft:p4:barcode-node-clock-test",
+                    "minecraft", null, payload);
+        }
         if (state.serviceChronologyShared()) {
             JsonObject payload = new JsonObject();
             payload.addProperty("service_cards", "public");
@@ -145,7 +154,8 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
     }
 
     public String auditState() {
-        return "theory=" + state.theoryEarned() + " service_public=" + state.serviceCardsPublic()
+        return "theory=" + state.theoryEarned() + " copy_test=" + state.copyOrderTested()
+                + " service_public=" + state.serviceCardsPublic()
                 + " penalty_custody=" + state.penaltyCopiesInCustody() + " curated=" + state.curated()
                 + " receipts=" + state.receipts().size();
     }
@@ -261,9 +271,20 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
             }
             String action = args.length == 0 ? "help" : args[0].toLowerCase(Locale.ROOT);
             switch (action) {
-                case "help" -> player.sendMessage(Component.text("Use /obscase open, /obscase conclude <purpose> | <change> | <anomaly>, /obscase status, or /obscase replay. No source-click receipt is required."));
+                case "help" -> player.sendMessage(Component.text("Use /obscase test-copy to run the local cartridge-order test; /obscase open or conclude records three short claims; status and replay read back shared state. No source-click receipt is required."));
                 case "open" -> openDesk(player);
-                case "status" -> player.sendMessage(Component.text("P4 theory: " + (state.theoryEarned() ? "accepted" : "open")
+                case "test-copy" -> {
+                    try {
+                        state.testCopyOrder(player.getUniqueId().toString());
+                        mirrorKnownStateAsync();
+                        player.sendMessage(Component.text("Test complete. Cartridge 03 precedes 04 on the barcode record, and the independent node clock stays stable. Guest filenames and modified times were excluded."));
+                    } catch (IOException failure) {
+                        player.sendMessage(Component.text("The custody test failed safely. Nothing changed; retry is safe."));
+                        plugin.getLogger().warning("P4 copy test commit failed: " + safe(failure.getMessage()));
+                    }
+                }
+                case "status" -> player.sendMessage(Component.text("P4 copy test: " + (state.copyOrderTested() ? "complete" : "available")
+                        + ". P4 theory: " + (state.theoryEarned() ? "accepted" : "open")
                         + ". P5 curation: " + (state.curated() ? "complete" : state.theoryEarned() ? "available beyond the gate" : "not yet available")
                         + ". Dialog: " + (dialogEnabled ? "enabled" : "command fallback only") + "."));
                 case "conclude" -> {
@@ -275,15 +296,19 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
                         else handleConclusion(player, fields[0], fields[1], fields[2]);
                     }
                 }
-                case "replay" -> player.sendMessage(Component.text(state.theoryEarned()
-                        ? "Changed place: the civic threshold is open. Work cards and penalty copies can now be separated beyond it."
-                        : "No accepted account has changed the civic threshold yet."));
+                case "replay" -> {
+                    if (state.copyOrderTested()) player.sendMessage(Component.text(
+                            "Retained test: barcode 03 precedes 04; the recovery-node clock is stable; damaged guest metadata cannot reverse that order."));
+                    player.sendMessage(Component.text(state.theoryEarned()
+                            ? "Changed place: the civic threshold is open. Work cards and penalty copies can now be separated beyond it."
+                            : "No accepted account has changed the civic threshold yet."));
+                }
                 default -> player.sendMessage(Component.text("Unknown action. Use /obscase help."));
             }
         }
 
         @Override public Collection<String> suggest(CommandSourceStack source, String[] args) {
-            if (args.length <= 1) return List.of("help", "open", "status", "conclude", "replay");
+            if (args.length <= 1) return List.of("help", "open", "test-copy", "status", "conclude", "replay");
             return List.of();
         }
 

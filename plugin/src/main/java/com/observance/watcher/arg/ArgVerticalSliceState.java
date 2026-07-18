@@ -12,6 +12,7 @@ import java.util.Locale;
 /** Local-primary P4/P5 ARG slice state. Observations never participate in its predicates. */
 public final class ArgVerticalSliceState {
     public static final String THEORY_EVENT = "p4.control_reversal_earned";
+    public static final String COPY_TEST_EVENT = "p4.copy_hypothesis_tested";
     public static final String SERVICE_EVENT = "p5.service_cards_public";
     public static final String PENALTY_EVENT = "p5.penalty_copies_in_custody";
     public static final String CHRONOLOGY_EVENT = "p5.service_chronology_shared";
@@ -55,6 +56,19 @@ public final class ArgVerticalSliceState {
         return appendSelection(SERVICE_EVENT, contributor);
     }
 
+    /**
+     * Local outage-safe ownership of the bounded barcode/node-clock test.
+     *
+     * <p>The command invokes a known physical/custody operation; it does not ask the player to retype
+     * the result or prove that a source was clicked. Discord owns an equivalent select interaction.
+     */
+    public synchronized SelectionResult testCopyOrder(String contributor) throws IOException {
+        journal.append("p4-copy-order-test", COPY_TEST_EVENT,
+                "method=barcode_and_node_clock;guest_metadata=excluded"
+                        .getBytes(StandardCharsets.UTF_8));
+        return SelectionResult.ACCEPTED;
+    }
+
     public synchronized SelectionResult selectPenaltyCustody(String contributor) throws IOException {
         return appendSelection(PENALTY_EVENT, contributor);
     }
@@ -74,6 +88,7 @@ public final class ArgVerticalSliceState {
     }
 
     public boolean theoryEarned() { return has(THEORY_EVENT); }
+    public boolean copyOrderTested() { return has(COPY_TEST_EVENT); }
     public boolean serviceCardsPublic() { return has(SERVICE_EVENT); }
     public boolean penaltyCopiesInCustody() { return has(PENALTY_EVENT); }
     public boolean serviceChronologyShared() { return has(CHRONOLOGY_EVENT); }

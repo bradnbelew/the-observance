@@ -513,3 +513,15 @@ open; M4 is still closed.
 - Dashboard self-tests, lint, rendered localhost DOM review, P9 precondition refusal, and browser console
   review pass. This corrects a player-route and revelation-ladder defect; it does not establish human ARG
   approval, external staging, production mutation, or launch readiness.
+
+## 2026-07-18 — P4 local custody-test ownership
+
+- The P4 input contract previously promised a Minecraft alternative for `p4.copy_hypothesis_tested`, but
+  only the Discord select interaction actually owned that event. The Paper vertical-slice runtime now exposes
+  `/obscase test-copy` as a bounded local custody operation, not a phrase-entry field.
+- The action commits the barcode/node-clock result to the local hash-chain journal before projection, excludes
+  damaged guest metadata, shares the existing event and canonical payload with Discord, is idempotent across
+  players, and replays after restart. It neither requires nor creates observation/source-possession receipts.
+- The pinned Paper compile, focused state test, and fail-closed ARG vertical-slice checker pass. Private-client
+  command feedback and the complete final campaign rehearsal remain open; no external or production target
+  was mutated.

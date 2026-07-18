@@ -56,7 +56,8 @@ def main() -> int:
         "DialogResponseView", "DialogInput.text", "PlayerCustomClickEvent", "LifecycleEvents.COMMANDS",
         "new CaseCommand()", "maxLength(96)", "maxLength(64)", "width(320)", "List.of()",
         "DialogInput.text(\"purpose\"", "DialogInput.text(\"change\"", "DialogInput.text(\"anomaly\"",
-        "state.submitConclusion(", "world.setGate(true)", "No source-click receipt is required"
+        "state.submitConclusion(", "state.testCopyOrder(", 'case "test-copy"',
+        "world.setGate(true)", "No source-click receipt is required"
     ):
         if needle not in runtime:
             failures.append(f"Paper real-input invariant missing: {needle}")
@@ -68,7 +69,8 @@ def main() -> int:
     if "LocalPrimaryJournal" not in state_source or any(token in state_source for token in (
             "observationReceipt", "hasObserved", "sourcePossession", "requiredObservations")):
         failures.append("vertical-slice predicate must be local-primary and observation-independent")
-    for needle in ("matchesPurpose", "matchesChange", "matchesAnomaly", "canonicalMeaning"):
+    for needle in ("matchesPurpose", "matchesChange", "matchesAnomaly", "canonicalMeaning",
+                   "COPY_TEST_EVENT", "testCopyOrder", "copyOrderTested"):
         if needle not in state_source:
             failures.append(f"structured meaning predicate missing: {needle}")
     for forbidden in ("ACCEPTED_THEORIES", "THE HOLD SHELTERED FAMILIES BEFORE SAFETY BECAME CONTROL"):
