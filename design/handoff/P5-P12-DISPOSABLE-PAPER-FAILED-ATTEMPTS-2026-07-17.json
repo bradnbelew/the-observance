@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0.0-p5-p12-disposable-paper-failed-attempts",
+  "source_checkpoint": "a40ad3ece76e9c8da2bd3d2bff544b23f84f7541",
+  "authority": "Failed disposable targets are immutable evidence. They were not deleted, reused, promoted, or represented as readiness receipts.",
+  "attempts": [
+    {
+      "attempt": 1,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-a40ad3e-01",
+      "outcome": "harness_configuration_refused_before_java_start",
+      "exact_failure": "offline config replacement anchor drift: '  enabled: true\\n  force-night:'",
+      "cause": "The harness assumed adjacent unlit.enabled and force-night keys although world and buildmode keys intervene.",
+      "marker_sha256": "968e6b699b0234a962692a2fc25f6b85a5ff2808b36594787231741b4eb6ba57",
+      "server_properties_sha256": "47e2fc731088d45716de5b83837c4fa706267b839e615a235117a50c4b0c89e8",
+      "plugin_sha256": "ff806448771a36a2c26a7a1235f979979a35536e325f495e1a07f4ce45be87ea",
+      "paper_started": false,
+      "readiness_receipt_published": false
+    },
+    {
+      "attempt": 2,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-a40ad3e-02",
+      "outcome": "strict_read_only_plan_refused",
+      "exact_failure": "TERRAIN FAIL: minimum sampled surface Y -61 gives only -247 blocks above the highest non-Mouth roof; requires 12",
+      "cause": "Minecraft 1.21.11's default flat preset placed its surface near the world minimum; the requested Y 200 Mouth could not satisfy buried-roof cover.",
+      "latest_log_sha256": "bc5209929d67f33c506e485feb9bd6e7cf23a59d8c01f6d436a3b7c4b44c757d",
+      "plugin_sha256": "ff806448771a36a2c26a7a1235f979979a35536e325f495e1a07f4ce45be87ea",
+      "prepare_pass": true,
+      "plan_pass": false,
+      "world_mutated_by_hold_builder": false,
+      "graceful_stop_recorded": true,
+      "readiness_receipt_published": false
+    },
+    {
+      "attempt": 3,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-a40ad3e-03",
+      "outcome": "strict_fresh_physical_install_failed_after_full_architecture_and_fixture_placement",
+      "exact_failure": "V5 fresh physical install failed: KS01/strips: movable frame set is incomplete: 5/6 unique pieces present",
+      "plan_pass": true,
+      "architecture_writes": 1434765,
+      "architecture_changed_blocks": 1349934,
+      "canonical_fixtures_placed": "76/76",
+      "readiness_receipt_published": false,
+      "latest_log_sha256": "c9a681e4c54c3d00d329b76a82b2515f9356956c9fd56caf04d7dbb323f620ca",
+      "interrupted_harness_log_sha256": "066c65b00e013d30d3395d446576e176bf00626d115a0bd8bbc42dff0ada26b5",
+      "plugin_sha256": "ff806448771a36a2c26a7a1235f979979a35536e325f495e1a07f4ce45be87ea",
+      "graceful_stop": {
+        "paper_stop_marker": "Stopping the server",
+        "plugin_disable_marker": "The Observance sleeps.",
+        "all_dimensions_saved_marker": "ThreadedAnvilChunkStorage: All dimensions are saved",
+        "pid_39604_alive": false,
+        "port_25595_listener_count": 0,
+        "pinned_pid_36280_alive_after_stop": true
+      },
+      "read_only_nbt_diagnosis": {
+        "surviving_target_x_coordinates": [34, 35, 36, 38, 39],
+        "missing_target_world_cell": [37, 161, 158],
+        "missing_target_identity": "KS01:strips target ks01_yzxp",
+        "expected_shuffled_piece": "ks01_lu",
+        "root_cause": "Displaced-frame recovery used item identity inside a deliberately shuffled movable set. While reconciling the adjacent ks01_lu target it stole the prior target's ks01_lu piece, removed that frame, then replaced the moved item with the next deterministic shuffled item.",
+        "required_fix": "Movable frame sets may never infer target displacement from item identity; a missing movable target remains a blocker rather than consuming a neighboring piece."
+      }
+    }
+  ],
+  "production_mutated": false,
+  "pinned_p4_process_mutated": false
+}

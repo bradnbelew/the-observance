@@ -48,6 +48,11 @@ public final class V5PhysicalComponentCatalogSelfTest {
         require(catalog, "HS02", "housing_latch", AddressKind.BLOCK, "LEVER");
         require(catalog, "CW07", "cache_seal", AddressKind.BLOCK, "LEVER");
 
+        check(!V5MovableFramePolicy.mayInferDisplacementFromItemIdentity(true),
+                "movable shuffled pieces must never be stolen as displaced neighboring targets");
+        check(V5MovableFramePolicy.mayInferDisplacementFromItemIdentity(false),
+                "ordinary fixed frames retain bounded displaced-item recovery");
+
         check(count(catalog, "RP04", "sectors") == 12,
                 "RP04 needs all 12 authored sector plates");
         check(count(catalog, "RP04", "sector_handle") == 12,

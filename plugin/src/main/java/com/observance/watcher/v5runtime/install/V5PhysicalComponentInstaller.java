@@ -1096,6 +1096,7 @@ public final class V5PhysicalComponentInstaller {
         Location frameAt = frameEntityPlane(resolved.location(), facing);
         List<ItemFrame> frames = new ArrayList<>(frameAt.getWorld()
                 .getNearbyEntitiesByType(ItemFrame.class, frameAt, 0.35));
+        boolean reorderable = isReorderableFrame(address);
         ItemFrame frame = selectTagged(frames, address);
         if (frame == null) frame = selectPdcMatching(frames, address);
         if (frame == null && frames.size() == 1) {
@@ -1107,7 +1108,7 @@ public final class V5PhysicalComponentInstaller {
             result.block(address, "multiple item frames occupy the exact component plane");
             return;
         }
-        if (frame == null) {
+        if (frame == null && V5MovableFramePolicy.mayInferDisplacementFromItemIdentity(reorderable)) {
             List<ItemFrame> displaced = matchingFramesNear(resolved, address, 1.35);
             if (displaced.size() > 1) {
                 result.block(address, "duplicate matching frames exist near the authored plane");
@@ -1139,7 +1140,6 @@ public final class V5PhysicalComponentInstaller {
         ItemStack current = frame.getItem();
         boolean empty = current == null || current.getType().isAir();
         boolean materialMatches = !empty && current.getType() == itemMaterial;
-        boolean reorderable = isReorderableFrame(address);
         if (reorderable) {
             if (!empty && !frameItemBelongsToSet(current, address)) {
                 result.block(address, "refused unknown item in reorderable frame: "
