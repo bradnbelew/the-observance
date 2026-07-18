@@ -657,3 +657,15 @@ open; M4 is still closed.
   in either order, complete atomically, project visibly, and survive restart with zero source-touch gates.
 - Focused Paper 1.21.11 state/compile, campaign-web, action-owner, input-contract, and ARG-authority checks pass.
   Fresh physical installation, client composition, and final human judgment remain part of the end test.
+
+## 2026-07-18 — P12 pays off the campaign web instead of showing a generic receipt
+
+- The Copperline coda now reads the committed P4 refuge/control reversal, P5 recuration, P7 Nessa correction,
+  P8 repaired works, P9 restored company, P10 bounded Unlit copy proof, and P11 unbound Averyn state. Each
+  earned event produces its own retained aftermath row; a release event cannot silently stand in for them.
+- Aro, Wenna, Coll, Dob, and Pell receive specific ordinary-life codas. Condemn, understand, and free produce
+  different Wren remembrance language without changing facts, scoring morality, or Averyn's universal release.
+  The Dark remains unresolved, and every earlier Copperline post/version remains immutable.
+- The campaign-web checker now fails if the coda drops a required event-backed thread, a current resident, or
+  the bounded Unlit ambiguity. Dashboard selftests and a Next.js 16.2.10 production build pass, including
+  TypeScript and generation of the dynamic `/community/2011/05/18/archive-closed` route.

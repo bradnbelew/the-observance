@@ -77,7 +77,7 @@
     {"id":"p12.configuration","phase":"P12","kind":"event","ref":"p12.release_configuration_ready","surface":"minecraft","meaning":"The group configures evidence without turning Averyn into a seventh owned category."},
     {"id":"p12.name-treatment","phase":"P12","kind":"event","ref":"p12.name_treatment_committed","surface":"minecraft","meaning":"The chosen name treatment is durable, replayable, and not an eligibility gate."},
     {"id":"p12.release","phase":"P12","kind":"event","ref":"p12.record_closed_averyn_released","surface":"minecraft","meaning":"Durable close precedes theater; every valid branch releases Averyn."},
-    {"id":"p12.coda","phase":"P12","kind":"evidence","ref":"p12.e07","surface":"cross_surface","meaning":"Residents, Copperline, Discord, the world, and company memory answer what the players did."}
+    {"id":"p12.coda","phase":"P12","kind":"evidence","ref":"p12.e07","surface":"cross_surface","meaning":"Event-backed resident, Copperline, Unlit, Hold, and company aftermath answers each long thread without replacing its earlier history."}
   ],
   "edges": [
     {"from":"p1.damaged-listing","to":"p1.mkept-custody","relationship":"authenticates","why":"Revision order turns an abandoned listing into deliberate custody."},

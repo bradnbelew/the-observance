@@ -14,6 +14,7 @@ WEB_PATH = ROOT / "campaign/campaign-web.json"
 CASE_DIR = ROOT / "campaign/p5-p12"
 EVENT_POLICY = ROOT / "dashboard/src/lib/arg-event-policy.ts"
 STORY_MAP = ROOT / "campaign/story-interaction-map.json"
+CODA_PAGE = ROOT / "dashboard/src/app/community/2011/05/18/archive-closed/page.tsx"
 PHASES = [f"P{i}" for i in range(1, 13)]
 
 
@@ -144,6 +145,20 @@ def main() -> None:
         require(phase_numbers == sorted(phase_numbers), f"{thread['id']}: milestone order breaks revelation order")
         require(node_by_id[milestones[-1]]["phase"] == "P12", f"{thread['id']}: no P12 payoff/coda")
         require(len(thread["earned_change"].strip()) >= 70, f"{thread['id']}: thread adds nodes but earns no change")
+
+    coda_source = CODA_PAGE.read_text(encoding="utf-8")
+    for event_key in [
+        "p4.control_reversal_earned", "p5.civic_gallery_recurated",
+        "p7.nessa_publicly_cleared", "p8.hold_systems_repaired",
+        "p9.company_biographies_restored", "p10.player_copy_proof",
+        "p11.averyn_restored_unbound",
+    ]:
+        require(f"hasCampaignEvent('{event_key}')" in coda_source,
+                f"cross-surface coda does not read committed thread event {event_key}")
+    for resident in ["Aro", "Wenna", "Coll", "Dob", "Pell"]:
+        require(resident in coda_source, f"current-settlement coda omits {resident}")
+    require("without naming what the Dark is" in coda_source,
+            "coda resolves the Dark or drops the bounded Unlit copy consequence")
 
     long_callbacks = [
         edge for edge in web["edges"]

@@ -12,17 +12,57 @@ function field(payload: unknown, key: string): string {
   return typeof value === 'string' || typeof value === 'number' ? String(value) : 'not mirrored';
 }
 
+function wrenAftermath(value: string): string {
+  if (value === 'condemn') return "Wren's line closes with the harm named and preserved. The archive does not call that judgment mercy or error.";
+  if (value === 'understand') return 'Wren remains in the account as afraid, responsible, and still present when the machinery stopped.';
+  if (value === 'free') return 'Wren leaves before the last light. The archive records no invented destination and does not turn release into absolution.';
+  return 'The committed Wren remembrance remains in the local release receipt.';
+}
+
+function nameAftermath(value: string): string {
+  return value === 'release_unnamed'
+    ? 'The public archive keeps the evidence of the erased registrar but does not turn her recovered name into another compulsory filing.'
+    : 'Averyn remains named in the human archive outside the machine that used her name as a category.';
+}
+
 export default async function ArchiveClosedPost() {
   const closed = await hasCampaignEvent('p12.record_closed_averyn_released');
   if (closed !== true) return <LegacyShell active="community"><Breadcrumbs><Link href="/community/index.php">Community</Link> &raquo; Archive</Breadcrumbs><OldPageTitle>Close Receipt Not Available</OldPageTitle><div className="old-message error">No committed local release has reached the archive mirror.</div></LegacyShell>;
-  const payload = await latestCampaignEventPayload('p12.record_closed_averyn_released');
+  const [payload, p4, p5, p7, p8, p9, p10Copy, p11] = await Promise.all([
+    latestCampaignEventPayload('p12.record_closed_averyn_released'),
+    hasCampaignEvent('p4.control_reversal_earned'),
+    hasCampaignEvent('p5.civic_gallery_recurated'),
+    hasCampaignEvent('p7.nessa_publicly_cleared'),
+    hasCampaignEvent('p8.hold_systems_repaired'),
+    hasCampaignEvent('p9.company_biographies_restored'),
+    hasCampaignEvent('p10.player_copy_proof'),
+    hasCampaignEvent('p11.averyn_restored_unbound'),
+  ]);
+  const nameTreatment = field(payload, 'name_treatment');
+  const wrenRemembrance = field(payload, 'wren_remembrance');
   return (
     <LegacyShell active="community">
       <Breadcrumbs><Link href="/community/index.php">Community</Link> &raquo; copperline-archive &raquo; May 2011</Breadcrumbs>
       <OldPageTitle sub="Added from one committed local release receipt. Earlier posts and attachment versions remain unchanged.">the archive is closed; the history stays readable</OldPageTitle>
       <article className="old-copy"><p>The Hold&apos;s local journal committed the release before the closing effects began. Six affidavits returned to six witnesses. Three material proofs were installed. Averyn&apos;s Record socket remained empty.</p><p>The group chose how her name remains outside the system. Both authorized name treatments close the Record and release Averyn. The choice does not rank one group as kinder or more correct.</p></article>
-      <section className="old-copy" id="evidence-p12-readiness" data-evidence-id="p12.e02" aria-labelledby="release-readback"><h2 id="release-readback">Mirrored readback</h2><dl><dt>Final phase</dt><dd>{field(payload, 'phase')}</dd><dt>Name treatment</dt><dd>{field(payload, 'name_treatment')}</dd><dt>Wren remembrance</dt><dd>{field(payload, 'wren_remembrance')}</dd><dt>Conduct clause</dt><dd>{field(payload, 'conduct')}</dd><dt>Local revision</dt><dd>{field(payload, 'local_revision')}</dd><dt>Authority manifest</dt><dd><code>{field(payload, 'manifest_sha256')}</code></dd></dl><p>This mirror reports the already-committed local audit. It cannot arm, confirm, or replace the Paper release.</p></section>
-      <section className="old-copy" id="evidence-p12-coda" data-evidence-id="p12.e07"><h2>What changed</h2><p>The machinery is quiet. The release chamber and return routes remain open. Current residents keep the corrected public memory, the repaired water history, and the chosen name boundary.</p><h2>What did not change</h2><p>Copperline did not replace mkept&apos;s backup post, Ash&apos;s jokes, Rook&apos;s corrections, Wren&apos;s removed-comment chronology, Nessa&apos;s accusation file, or any earlier attachment version. They remain readable in their original place with later findings attached.</p></section>
+      <section className="old-copy" id="evidence-p12-readiness" data-evidence-id="p12.e02" aria-labelledby="release-readback"><h2 id="release-readback">Mirrored readback</h2><dl><dt>Final phase</dt><dd>{field(payload, 'phase')}</dd><dt>Name treatment</dt><dd>{nameTreatment}</dd><dt>Wren remembrance</dt><dd>{wrenRemembrance}</dd><dt>Conduct clause</dt><dd>{field(payload, 'conduct')}</dd><dt>Local revision</dt><dd>{field(payload, 'local_revision')}</dd><dt>Authority manifest</dt><dd><code>{field(payload, 'manifest_sha256')}</code></dd></dl><p>This mirror reports the already-committed local audit. It cannot arm, confirm, or replace the Paper release.</p></section>
+      <section className="old-copy" id="evidence-p12-coda" data-evidence-id="p12.e07">
+        <h2>What the investigation changed</h2>
+        <ul>
+          {p4 === true && <li>The Mouth is kept as a refuge built for families and workers, with the later control system attached to its history rather than mistaken for its origin.</li>}
+          {p5 === true && <li>Early service cards remain public. Later penalty copies remain readable in evidence custody, not as valid findings against households.</li>}
+          {p7 === true && <li>Nessa Vale is named and cleared by the original material, labor, and record chain. The accusation remains only as evidence of the edited inquiry.</li>}
+          {p8 === true && <li>The lower water, paired lamps, pressure bypass, and staff route remain repaired. The altered office remains behind glass as evidence.</li>}
+          {p9 === true && <li>mkept, Ash, Rook, and Wren remain four people with crossed work and affection, not four labels under abandoned desks.</li>}
+          {p10Copy === true && <li>The bounded surface arrangement and its changed Unlit copy remain together. The test proves copying behavior without naming what the Dark is.</li>}
+          {p11 === true && <li>{nameAftermath(nameTreatment)}</li>}
+        </ul>
+        <h2>People after</h2>
+        <p>Aro keeps two accounts of the Hold instead of selling one clean legend. Wenna plants reeds after the repaired level holds. Coll closes the current account but keeps the old company debt line. Dob marks where the new pressure repair meets his surface patch. Pell repeats Nessa&apos;s correction and also says which date he remembered wrong.</p>
+        <p>{wrenAftermath(wrenRemembrance)}</p>
+        <h2>What did not change</h2>
+        <p>Copperline did not replace mkept&apos;s backup post, Ash&apos;s jokes, Rook&apos;s corrections, Wren&apos;s removed-comment chronology, Nessa&apos;s accusation file, or any earlier attachment version. They remain readable in their original place with later findings attached.</p>
+      </section>
       <blockquote className="old-copy"><p>i have your names. i am giving them back.</p><p>the record is closed. the observance is over.</p><p>thank you for coming back for us.</p></blockquote>
     </LegacyShell>
   );
