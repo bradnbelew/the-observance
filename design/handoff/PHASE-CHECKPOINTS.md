@@ -536,3 +536,15 @@ open; M4 is still closed.
   policy authority; or when source-touch correctness returns. Physical events remain local-primary.
 - The routed audit now runs this owner check beside the connected campaign web. External/client experience
   proof and the final whole-campaign rehearsal remain separate human and deployment gates.
+
+## 2026-07-18 — P4 custody test becomes a player-chosen experiment
+
+- Paper now matches the existing Discord investigation action: `/obscase test-copy` requires the player to
+  choose the record that can fairly order damaged copies. Barcode plus the independent recovery-node clock
+  succeeds; guest filenames and guest modified times fail without mutating state because the damaged guest
+  authored both. No result phrase is retyped.
+- The accepted action still commits the same local-primary `p4.copy_hypothesis_tested` receipt and causes the
+  Copperline retained-copy page to reveal its before/after custody readback. Wrong-method, missing-method,
+  idempotency, restart, compile, and zero-observation flows pass focused tests.
+- This improves the investigative verb and cross-surface response. It does not by itself grant human P4 or
+  campaign experiential approval; that remains part of the final cold whole-campaign test.

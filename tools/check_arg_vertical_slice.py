@@ -57,6 +57,7 @@ def main() -> int:
         "new CaseCommand()", "maxLength(96)", "maxLength(64)", "width(320)", "List.of()",
         "DialogInput.text(\"purpose\"", "DialogInput.text(\"change\"", "DialogInput.text(\"anomaly\"",
         "state.submitConclusion(", "state.testCopyOrder(", 'case "test-copy"',
+        '"barcode-and-node-clock", "guest-filenames", "guest-modified-times"',
         "world.setGate(true)", "No source-click receipt is required"
     ):
         if needle not in runtime:
@@ -70,7 +71,8 @@ def main() -> int:
             "observationReceipt", "hasObserved", "sourcePossession", "requiredObservations")):
         failures.append("vertical-slice predicate must be local-primary and observation-independent")
     for needle in ("matchesPurpose", "matchesChange", "matchesAnomaly", "canonicalMeaning",
-                   "COPY_TEST_EVENT", "testCopyOrder", "copyOrderTested"):
+                   "COPY_TEST_EVENT", "testCopyOrder", "CopyTestResult", "copyOrderTested",
+                   'method.equals("barcode-and-node-clock")'):
         if needle not in state_source:
             failures.append(f"structured meaning predicate missing: {needle}")
     for forbidden in ("ACCEPTED_THEORIES", "THE HOLD SHELTERED FAMILIES BEFORE SAFETY BECAME CONTROL"):

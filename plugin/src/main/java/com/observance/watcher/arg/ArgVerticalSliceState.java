@@ -62,11 +62,14 @@ public final class ArgVerticalSliceState {
      * <p>The command invokes a known physical/custody operation; it does not ask the player to retype
      * the result or prove that a source was clicked. Discord owns an equivalent select interaction.
      */
-    public synchronized SelectionResult testCopyOrder(String contributor) throws IOException {
+    public synchronized CopyTestResult testCopyOrder(String methodRaw, String contributor) throws IOException {
+        String method = methodRaw == null ? "" : methodRaw.trim().toLowerCase(Locale.ROOT);
+        if (method.isBlank()) return CopyTestResult.INCOMPLETE;
+        if (!method.equals("barcode-and-node-clock")) return CopyTestResult.WRONG;
         journal.append("p4-copy-order-test", COPY_TEST_EVENT,
                 "method=barcode_and_node_clock;guest_metadata=excluded"
                         .getBytes(StandardCharsets.UTF_8));
-        return SelectionResult.ACCEPTED;
+        return CopyTestResult.ACCEPTED;
     }
 
     public synchronized SelectionResult selectPenaltyCustody(String contributor) throws IOException {
@@ -147,5 +150,6 @@ public final class ArgVerticalSliceState {
     }
 
     public enum TheoryResult { ACCEPTED, WRONG, INCOMPLETE }
+    public enum CopyTestResult { ACCEPTED, WRONG, INCOMPLETE }
     public enum SelectionResult { ACCEPTED, NOT_READY }
 }

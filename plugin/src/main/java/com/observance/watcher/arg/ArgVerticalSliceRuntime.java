@@ -271,13 +271,24 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
             }
             String action = args.length == 0 ? "help" : args[0].toLowerCase(Locale.ROOT);
             switch (action) {
-                case "help" -> player.sendMessage(Component.text("Use /obscase test-copy to run the local cartridge-order test; /obscase open or conclude records three short claims; status and replay read back shared state. No source-click receipt is required."));
+                case "help" -> player.sendMessage(Component.text("Use /obscase test-copy <method> to choose how the damaged copies should be ordered. Methods: barcode-and-node-clock, guest-filenames, guest-modified-times. Use /obscase open or conclude for three short findings. No source-click receipt is required."));
                 case "open" -> openDesk(player);
                 case "test-copy" -> {
+                    if (args.length < 2) {
+                        player.sendMessage(Component.text("Incomplete. Choose one method: barcode-and-node-clock, guest-filenames, or guest-modified-times."));
+                        return;
+                    }
                     try {
-                        state.testCopyOrder(player.getUniqueId().toString());
-                        mirrorKnownStateAsync();
-                        player.sendMessage(Component.text("Test complete. Cartridge 03 precedes 04 on the barcode record, and the independent node clock stays stable. Guest filenames and modified times were excluded."));
+                        ArgVerticalSliceState.CopyTestResult result = state.testCopyOrder(
+                                args[1], player.getUniqueId().toString());
+                        if (result == ArgVerticalSliceState.CopyTestResult.ACCEPTED) {
+                            mirrorKnownStateAsync();
+                            player.sendMessage(Component.text("Test complete. Cartridge 03 precedes 04 on the barcode record, and the independent node clock stays stable. Guest filenames and modified times were excluded."));
+                        } else if (result == ArgVerticalSliceState.CopyTestResult.WRONG) {
+                            player.sendMessage(Component.text("That method uses filenames or times written by the damaged guest. It cannot establish cartridge order. Nothing changed."));
+                        } else {
+                            player.sendMessage(Component.text("Incomplete. Choose a custody method. Nothing changed."));
+                        }
                     } catch (IOException failure) {
                         player.sendMessage(Component.text("The custody test failed safely. Nothing changed; retry is safe."));
                         plugin.getLogger().warning("P4 copy test commit failed: " + safe(failure.getMessage()));
@@ -309,6 +320,9 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
 
         @Override public Collection<String> suggest(CommandSourceStack source, String[] args) {
             if (args.length <= 1) return List.of("help", "open", "test-copy", "status", "conclude", "replay");
+            if (args.length == 2 && args[0].equalsIgnoreCase("test-copy")) {
+                return List.of("barcode-and-node-clock", "guest-filenames", "guest-modified-times");
+            }
             return List.of();
         }
 

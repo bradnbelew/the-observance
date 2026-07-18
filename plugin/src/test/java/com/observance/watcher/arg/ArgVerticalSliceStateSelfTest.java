@@ -15,11 +15,18 @@ public final class ArgVerticalSliceStateSelfTest {
             expect(state.submitConclusion("a ritual chamber", "smoke directions became mandatory attendance",
                     "copy before source", "a") == ArgVerticalSliceState.TheoryResult.WRONG, "wrong purpose rejected");
             expect(!state.theoryEarned() && state.receipts().isEmpty(), "wrong answer changes no state");
-            expect(state.testCopyOrder("local-player") == ArgVerticalSliceState.SelectionResult.ACCEPTED,
-                    "local barcode/node-clock action is available without a Discord receipt");
+            expect(state.testCopyOrder("", "local-player") == ArgVerticalSliceState.CopyTestResult.INCOMPLETE,
+                    "missing method is incomplete");
+            expect(state.testCopyOrder("guest-filenames", "local-player") == ArgVerticalSliceState.CopyTestResult.WRONG,
+                    "damaged guest filenames cannot order the cartridges");
+            expect(state.testCopyOrder("guest-modified-times", "local-player") == ArgVerticalSliceState.CopyTestResult.WRONG,
+                    "damaged guest times cannot order the cartridges");
+            expect(!state.copyOrderTested() && state.receipts().isEmpty(), "wrong custody methods change no state");
+            expect(state.testCopyOrder("barcode-and-node-clock", "local-player") == ArgVerticalSliceState.CopyTestResult.ACCEPTED,
+                    "local player can choose the independent custody method without a Discord receipt");
             expect(state.copyOrderTested() && state.receipts().size() == 1,
                     "local custody test commits one canonical event");
-            state.testCopyOrder("shared-player");
+            state.testCopyOrder("barcode-and-node-clock", "shared-player");
             expect(state.receipts().size() == 1, "copy test is idempotent across players");
             expect(state.submitConclusion("a shelter", "safety did not become control", "copy before source", "a")
                     == ArgVerticalSliceState.TheoryResult.WRONG, "contradictory change rejected");
@@ -51,7 +58,7 @@ public final class ArgVerticalSliceStateSelfTest {
                     == ArgVerticalSliceState.TheoryResult.ACCEPTED, "different wording needs no source receipts after restart");
             expect(restarted.submitConclusion("The Hold sheltered families before safety became control", "external-shared")
                     == ArgVerticalSliceState.TheoryResult.INCOMPLETE, "hidden long canonical sentence is not an input contract");
-            System.out.println("ArgVerticalSliceStateSelfTest OK - local copy test, zero-observation theory, P5 physical curation, restart, idempotency");
+            System.out.println("ArgVerticalSliceStateSelfTest OK - player-chosen custody test, wrong-method negative flow, zero-observation theory, P5 physical curation, restart, idempotency");
         } finally {
             Files.deleteIfExists(journal);
             Files.deleteIfExists(dir);
