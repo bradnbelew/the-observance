@@ -122,6 +122,19 @@ public final class V5RuntimeCoreSelfTest {
         spawnAnchors.forEach((facing, anchor) -> check(
                 anchor.equals(FixtureTransform.frameSpawnAnchor(origin, facing)),
                 "Paper hanging spawn anchor " + facing));
+
+        Map<FixtureTransform.Cardinal, FixtureTransform.BlockPos> bookMounts = Map.of(
+                FixtureTransform.Cardinal.NORTH, new FixtureTransform.BlockPos(8, 20, 25),
+                FixtureTransform.Cardinal.EAST, new FixtureTransform.BlockPos(15, 20, 28),
+                FixtureTransform.Cardinal.SOUTH, new FixtureTransform.BlockPos(12, 20, 35),
+                FixtureTransform.Cardinal.WEST, new FixtureTransform.BlockPos(5, 20, 32));
+        bookMounts.forEach((front, expectedMount) -> {
+            FixtureTransform.BlockPos candidate = V5BookMountPolicy.candidate(origin, front, 2, 5);
+            check(expectedMount.equals(candidate),
+                    "book mount must advance into fixture approach space for " + front);
+            check(FixtureTransform.toLocal(origin, front, candidate).front() == 5,
+                    "book mount depth must remain positive fixture-front distance");
+        });
     }
 
     private static void filingGroupSelection() {

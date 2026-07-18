@@ -532,6 +532,7 @@
     "design/m3/PAPER-VNEXT-FAILED-ATTEMPTS.json",
     "design/m3/PAPER-VNEXT-REVIEW-SERVER-RECEIPT.json",
     "design/m3/PAPER-VNEXT-LIVE-REVIEW-RECEIPT.json",
+    "design/m3/BRAD-P4-VNEXT-ACTIVE-REVIEW.json",
     "design/m3/VNEXT-BLOCK-STATE-VISUAL-AUDIT.json",
     "approved Phase 1 authorities",
     "approved Phase 2 evidence authorities",
@@ -674,6 +675,11 @@
       "effect": "P5-P12 now have eight current-standard cases, 21 zero-observation conclusion contracts, 80 authored evidence records, 27 functional Minecraft compositions, byte-identical Paper/web/Discord projections, packaged fail-closed Paper authority, and deterministic naive/brute/restart/idempotency simulation. Fresh client placement, hosted staging, whole-campaign rehearsal, and human acceptance remain real gates."
     },
     {
+      "older": "P4 vNext and P5-P12 authored packets, projections, and deterministic simulations as possible experiential evidence",
+      "newer": "design/m3/BRAD-P4-VNEXT-ACTIVE-REVIEW.json",
+      "effect": "Brad rejects P4 vNext experientially: its dominant loop is still reading authored text and filing an extracted or restated answer, not inhabiting a living ARG investigation. P5-P12 remain useful content and technical scaffolding but require a campaign-wide document-read/answer-submit monoculture audit. Disposable Paper success remains technical evidence only; it cannot prove experiential or launch readiness. Approval is null, the live P4 server is immutable, and no superficial cipher-variety patch is authorized."
+    },
+    {
       "older": "the external-target receipt residue claiming five media byte sets were absent",
       "newer": "campaign/p5-p12/media-custody.json and tools/verify_p5_p12_media_custody.ps1",
       "effect": "four videos and the recovered packet ZIP plus README, inventory, WAV, PNG, and JPG are freshly size/SHA-256 verified in prior read-only output roots. The bytes remain outside the checkout and untouched. Best-master, human AV, derivative/accessibility, ownership, hosting, mirror, and cache receipts remain open."
@@ -685,12 +691,14 @@
     }
   ],
   "current_gate": {
-    "phase": "V5 remains rejected historical proof; P4 vNext immutable review target remains live; P5-P12 current-standard offline authorship, three-surface projection, executable Paper authority, deterministic simulation, routed build/package parity, and media custody pass. Fresh P5-P12 Paper/client placement, whole-campaign private rehearsal, exact hosted staging, media delivery, and Brad acceptance remain open; production/public closed.",
+    "phase": "V5 remains rejected historical proof; Brad has now also rejected P4 vNext experientially while its live review process remains immutable. P5-P12 offline authorship, projections, executable Paper authority, deterministic simulation, and media custody are technical/content scaffolding only until audited and redesigned against the same document-read/answer-submit monoculture. Fresh Paper validation may establish technical evidence but cannot prove ARG experience or launch readiness; production/public remain closed.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,
-    "final_human_gate": "Brad's morning end-to-end private playthrough",
+    "final_human_gate": "Brad approval remains null; a future whole-campaign human playthrough after the deep ARG-experience redesign is required",
     "required_next_evidence": [
+      "the forthcoming control-room deep ARG-design research authority and campaign experience redesign are incorporated before experiential claims or a superficial mechanism-variety patch",
+      "P4 and P5-P12 are audited for document-read/answer-submit monoculture and redesigned so players inhabit a living cross-surface investigation rather than consume lore documents and file summaries",
       "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval",
       "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
       "P5-P12 fresh disposable Paper placement and player-view receipts bind the 27 functional compositions and current artifacts to the existing 32-room Hold without regressing navigation or affordance",

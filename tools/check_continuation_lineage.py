@@ -406,20 +406,33 @@ def main() -> None:
             and vnext["production_mutation"] is False,
             "vNext private candidate lineage drift")
 
+    active_vnext_review = json.loads((
+        ROOT / "design" / "m3" / "BRAD-P4-VNEXT-ACTIVE-REVIEW.json"
+    ).read_text(encoding="utf-8"))
+    require(active_vnext_review["decision"] == "not_approved_experiential_revision_required"
+            and active_vnext_review["brad_approval"] is None
+            and active_vnext_review["live_target"]["pid"] == 36280
+            and active_vnext_review["live_target"]["mutation_authorized"] is False
+            and active_vnext_review["live_target"]["stop_authorized"] is False
+            and active_vnext_review["evidence_effect"]["p4_experiential_proof"] == "rejected"
+            and active_vnext_review["evidence_effect"]["whole_campaign_experiential_readiness"]
+                == "not_proven"
+            and active_vnext_review["evidence_effect"]["launch_readiness"] == "not_proven"
+            and "IN the ARG" in active_vnext_review["exact_distinction"]
+            and active_vnext_review["production_mutated"] is False
+            and active_vnext_review["pinned_review_process_mutated"] is False,
+            "Brad P4 vNext active experiential rejection drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
             and gate["m4_private_automated_staging_open"] is True
             and gate["m4_public_or_production_open"] is False
-            and "morning" in gate["final_human_gate"]
-            and "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval"
+            and "approval remains null" in gate["final_human_gate"]
+            and "the forthcoming control-room deep ARG-design research authority and campaign experience redesign are incorporated before experiential claims or a superficial mechanism-variety patch"
+                in gate["required_next_evidence"]
+            and "P4 and P5-P12 are audited for document-read/answer-submit monoculture and redesigned so players inhabit a living cross-surface investigation rather than consume lore documents and file summaries"
                 in gate["required_next_evidence"]
             and "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline"
-                in gate["required_next_evidence"]
-            and "the next revision proves correct report and synthesis acceptance with zero observation receipts while preserving wrong-answer and custody behavior"
-                in gate["required_next_evidence"]
-            and "the next revision proves a compact robust Minecraft slice and a fair cross-media P4 clue graph without mandatory fragile bespoke-block simulation"
-                in gate["required_next_evidence"]
-            and "the next P4 case passes the revelation-first twelve-field brief and qualitative novelty audit without a closed mechanism taxonomy"
                 in gate["required_next_evidence"]
             and "Copperline offline content/voice/version specifications are separated from real future deployment, URL, cache, responsive, accessibility, outage, history, and human-review receipts"
                 in gate["required_next_evidence"]

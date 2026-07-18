@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0-brad-p4-vnext-active-review",
+  "recorded_at": "2026-07-17T20:52:55.5338152-05:00",
+  "source_checkpoint": "2599fb0293555cb4c0c3e9fbd11cfa77371a251f",
+  "review_candidate": "P4 vNext private review target",
+  "live_target": {
+    "address": "127.0.0.1:25593",
+    "pid": 36280,
+    "status": "live_and_immutable_while_brad_is_connected",
+    "mutation_authorized": false,
+    "stop_authorized": false
+  },
+  "decision": "not_approved_experiential_revision_required",
+  "brad_approval": null,
+  "binding_finding": "The candidate still feels like enter a room, read authored text, then restate or extract what the text says into an answer input. That may be an occasional beat, but it cannot be the core loop and does not make players feel inside a living ARG investigation.",
+  "exact_distinction": "Story, lore, and immersion focus means players feel they are IN the ARG and genuinely investigating, not consuming lore documents and filing their summaries.",
+  "evidence_effect": {
+    "p4_experiential_proof": "rejected",
+    "whole_campaign_experiential_readiness": "not_proven",
+    "launch_readiness": "not_proven",
+    "p5_p12_packets_and_simulations": "useful content and technical scaffolding only; not evidence that the campaign feels like an ARG",
+    "disposable_physical_audit": "may finish as technical evidence only and cannot close the experiential gate"
+  },
+  "required_campaign_audit": "Audit P5-P12 for the same document-read/answer-submit monoculture before any experiential or launch claim.",
+  "redesign_boundary": {
+    "do_not_do": "Do not answer this rejection with a superficial patch that merely adds more cipher types.",
+    "next_authority": "A deep ARG-design research authority and campaign experience redesign will follow from the control room.",
+    "implementation_status": "not_started_from_this_finding"
+  },
+  "production_mutated": false,
+  "pinned_review_process_mutated": false
+}

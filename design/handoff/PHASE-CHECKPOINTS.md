@@ -166,6 +166,25 @@ live unlocks, outage recovery, player visibility, or Brad approval. Production r
 These gaps must be resolved before their owning implementation/release gates; they do not justify losing
 or postponing safe work in earlier phases.
 
+## 2026-07-17 — Brad P4 vNext active-review experiential rejection
+
+- Brad approval remains null. The live P4 review process at `127.0.0.1:25593`, PID `36280`, remains
+  immutable while Brad is connected; no console command, rebuild, restart, or stop is authorized.
+- Brad rejects the candidate's dominant experience: enter a room, read authored text, then restate or
+  extract that text into an answer input. This may be an occasional beat, but it is not a sufficient core
+  loop and does not make players feel inside a living ARG investigation.
+- The exact controlling distinction is: story/lore/immersion focus means players feel they are **IN the
+  ARG and genuinely investigating**, not consuming lore documents and filing their summaries.
+- P4 vNext therefore has no experiential approval. P5-P12 packets, projections, and simulations remain
+  useful content and technical scaffolding, but they do not prove that the campaign feels like an ARG and
+  must be audited for the same document-read/answer-submit monoculture.
+- The fresh disposable physical audit may continue and KS01/book-mount defects may be corrected, but any
+  pass is technical evidence only. It cannot close the experiential gate or establish whole-campaign or
+  launch readiness.
+- No superficial "add more cipher types" implementation follows from this finding. The next experiential
+  implementation must wait for and incorporate the control room's deep ARG-design research authority and
+  campaign experience redesign.
+
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the
 investigation: twenty complete one-clause pages fit the conservative 114-pixel/13-line budget and expose

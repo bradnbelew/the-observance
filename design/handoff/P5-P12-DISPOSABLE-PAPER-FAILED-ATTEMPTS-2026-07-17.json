@@ -58,6 +58,33 @@
         "root_cause": "Displaced-frame recovery used item identity inside a deliberately shuffled movable set. While reconciling the adjacent ks01_lu target it stole the prior target's ks01_lu piece, removed that frame, then replaced the moved item with the next deterministic shuffled item.",
         "required_fix": "Movable frame sets may never infer target displacement from item identity; a missing movable target remains a blocker rather than consuming a neighboring piece."
       }
+    },
+    {
+      "attempt": 4,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-2599fb0-04",
+      "outcome": "strict_exact_book_mount_install_failed_after_full_architecture_and_fixture_placement",
+      "exact_failure": "V5 exact book mount install failed: lc_founding_minutes has no safe lectern cell at kept_light_home_01; orin_certificate has no safe lectern cell at orin_marker_6",
+      "plan_pass": true,
+      "architecture_writes": 1434765,
+      "architecture_changed_blocks": 1349934,
+      "canonical_fixtures_placed": "76/76",
+      "ks01_unique_piece_audit_passed": true,
+      "readiness_receipt_published": false,
+      "latest_log_sha256": "311f76a413519c48512f3bb5911962664daf10ee6511cb53f24b157e4d1d242e",
+      "harness_log_sha256": "18062faf2f680cea25617025fa056a3c88b164635c561e23ca951bfc7f0207ae",
+      "plugin_sha256": "c16403e0d2e3234081c09bb507137fc2d2b616eaedcdc698b8f249cb0cb0e1c4",
+      "graceful_stop": {
+        "paper_stop_marker": "Stopping the server",
+        "plugin_disable_marker": "The Observance sleeps.",
+        "all_dimensions_saved_marker": "ThreadedAnvilChunkStorage: All dimensions are saved",
+        "port_25596_listener_count": 0,
+        "pinned_pid_36280_alive_after_stop": true
+      },
+      "diagnosis": {
+        "root_cause": "Fallback book-mount depth used the opposite of each fixture's authored front, placing candidate lecterns behind the holder rather than in its public approach space.",
+        "orin_observation": "All tested rear-side candidates for orin_marker_6 were occupied by the retained stone envelope, so the strict pass correctly refused to overwrite them.",
+        "required_fix": "Derive fallback positions from positive fixture-front depth while preserving claimed-cell, protected-cell, headroom, and solid-floor checks."
+      }
     }
   ],
   "production_mutated": false,

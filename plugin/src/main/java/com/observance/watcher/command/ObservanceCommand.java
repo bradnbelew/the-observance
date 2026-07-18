@@ -21,6 +21,7 @@ import com.observance.watcher.structure.V5RuntimePredicateRegistry;
 import com.observance.watcher.structure.StructureTemplates;
 import com.observance.watcher.util.Safety;
 import com.observance.watcher.v5runtime.FixtureTransform;
+import com.observance.watcher.v5runtime.V5BookMountPolicy;
 import com.observance.watcher.v5runtime.install.V5PhysicalComponentInstaller;
 import com.observance.watcher.v5runtime.install.V5EvidenceItemTextAuthority;
 import com.observance.watcher.v5runtime.install.V5PhysicalComponentInstaller.Mode;
@@ -15476,18 +15477,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private Block selectV5BookMountCell(Location anchor, BlockFace facing, String mount,
                                         Set<String> claimed, Set<String> protectedCells) {
-        BlockFace side = rightOf(facing.getOppositeFace());
         int lateral = mount.contains("left") || "mkept_station".equals(mount) ? -2
                 : mount.contains("right") || "rook_station".equals(mount) ? 2 : 0;
         int[][] offsets = {{lateral, 5}, {lateral, 6}, {lateral, 4},
                 {lateral - 1, 5}, {lateral + 1, 5}, {lateral - 1, 6}, {lateral + 1, 6},
                 {lateral - 2, 5}, {lateral + 2, 5}, {lateral, 7}};
+        FixtureTransform.BlockPos origin = new FixtureTransform.BlockPos(
+                anchor.getBlockX(), anchor.getBlockY(), anchor.getBlockZ());
+        FixtureTransform.Cardinal front = FixtureTransform.Cardinal.valueOf(facing.name());
         for (int[] offset : offsets) {
-            int x = anchor.getBlockX() + side.getModX() * offset[0]
-                    + facing.getOppositeFace().getModX() * offset[1];
-            int z = anchor.getBlockZ() + side.getModZ() * offset[0]
-                    + facing.getOppositeFace().getModZ() * offset[1];
-            Block block = anchor.getWorld().getBlockAt(x, anchor.getBlockY(), z);
+            FixtureTransform.BlockPos candidate = V5BookMountPolicy.candidate(
+                    origin, front, offset[0], offset[1]);
+            Block block = anchor.getWorld().getBlockAt(candidate.x(), candidate.y(), candidate.z());
             if (claimed.contains(blockKey(block)) || protectedCells.contains(blockKey(block))
                     || protectedCells.contains(blockKey(block.getRelative(BlockFace.UP)))
                     || protectedCells.contains(blockKey(block.getRelative(BlockFace.DOWN)))
