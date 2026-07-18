@@ -111,6 +111,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private final BukkitFixtureIndex fixtures;
     private final BukkitContainerCustody custody;
     private final V5RemoteStateCache remote;
+    private final P5CurationRuntime p5Curation;
 
     private final V5MechanicsEngine mechanics;
     private final V5PhysicalMechanicsListener mechanicsListener;
@@ -143,6 +144,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         this.fixtures = new BukkitFixtureIndex(plugin);
         this.custody = new BukkitContainerCustody(plugin, base.resolve("container-custody"));
         this.remote = new V5RemoteStateCache(plugin, authority, progress);
+        this.p5Curation = new P5CurationRuntime(plugin, progress, this::onP5CurationChanged);
 
         RitualAuthorityContract ritualAuthority = new RitualAuthorityContract(authority);
         CanonicalRitualText ritualText = new CanonicalRitualText(ritualAuthority);
@@ -241,6 +243,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             manager.registerEvents(ritualController, plugin);
             mechanicsListener.start();
             ritualController.start();
+            p5Curation.start();
 
             // This is deliberately last: an active registry certifies that every exact family is live.
             V5RuntimePredicateRegistry.activate(authority);
@@ -340,6 +343,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         Location mouth = plugin.v5HoldMouth();
         lastBindingReport = installer.bindLoadedFixtures(fixtures, mouth);
         lastMapReport = installer.rebindLoadedMapViews(mouth);
+        p5Curation.project();
         if (lastBindingReport.clean() && storyInputsEnabled && started) {
             recoverAndProject();
         }
@@ -355,6 +359,15 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         advanceDerivedStoryEvents();
         plugin.projectV5LocalState(progress.snapshot());
         remote.mirrorLocalSnapshotAsync();
+    }
+
+    private void onP5CurationChanged() {
+        projectLocalState();
+        if (progress.snapshot().isComplete(P5_CURATION_EVENT)) mirrorP5CurationAsync();
+    }
+
+    public P5CurationRuntime.Audit p5CurationAudit() {
+        return p5Curation.audit();
     }
 
     /** Six profession-specific completions cause one biography consequence; no prose restatement is required. */
@@ -500,6 +513,24 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     }
 
     /** Exact idempotency keys make startup/restart retries safe after a remote outage. */
+    private void mirrorP5CurationAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p5.curation.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject chronology = new JsonObject();
+            chronology.addProperty("service_cards", "public");
+            chronology.addProperty("penalty_copies", "evidence-custody");
+            chronology.addProperty("observation_receipts", 0);
+            plugin.supabase().recordArgEvent(P5CurationRuntime.CHRONOLOGY_EVENT,
+                    "minecraft:p5:service-chronology-shared", "minecraft", null, chronology);
+            JsonObject curation = new JsonObject();
+            curation.addProperty("gallery", "recurated");
+            curation.addProperty("old_caption_preserved", true);
+            curation.addProperty("runtime_exact_phrase", false);
+            plugin.supabase().recordArgEvent(P5_CURATION_EVENT,
+                    "minecraft:p5:civic-gallery-recurated", "minecraft", null, curation);
+        });
+    }
+
     private void mirrorP6MilestonesAsync() {
         plugin.scheduler().runAsyncSafe("arg.p6.milestones.mirror", () -> {
             if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
@@ -781,6 +812,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 && progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT)) {
             mirrorP6MilestonesAsync();
         }
+        if (progress.snapshot().isComplete(P5_CURATION_EVENT)) mirrorP5CurationAsync();
         if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
         if (progress.snapshot().isComplete(P8_PLAN_EVENT)) mirrorP8PlanAsync();
         if (progress.snapshot().isComplete(P8_UNLIT_EVENT)) mirrorP8UnlitAsync();
@@ -861,6 +893,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             deferredRebind = null;
         }
         remote.close();
+        p5Curation.close();
         ritualController.close();
         if (mechanicsListener != null) mechanicsListener.close();
         HandlerList.unregisterAll(this);

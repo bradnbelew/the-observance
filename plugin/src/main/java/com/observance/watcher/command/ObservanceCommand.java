@@ -15922,6 +15922,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             return;
         }
         com.observance.watcher.v5runtime.ProgressSnapshot snapshot = runtime.snapshot();
+        var p5Curation = runtime.p5CurationAudit();
+        if (!p5Curation.pass()) {
+            staticIssues.add("P5 civic records counter failed physical/state audit: " + p5Curation.summary());
+        }
         Map<String, Object> facts = new LinkedHashMap<>();
         snapshot.booleans().forEach(facts::put);
         snapshot.branches().forEach(facts::put);

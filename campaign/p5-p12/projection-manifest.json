@@ -1,13 +1,13 @@
 {
   "brad_approval": null,
   "experiential_status": "offline_redesigned_not_human_approved",
-  "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+  "minecraft_binding_sha256": "9379ad144898cbc1fc8ba720f914e2ad4724b36a4a7078157cdf4ca73f340a50",
   "minecraft_binding_source": "campaign/p5-p12/minecraft-bindings.json",
   "minecraft_binding_target": "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json",
   "phase_count": 8,
   "production_deployed": false,
-  "projection_bytes": 207296,
-  "projection_sha256": "a8eca49d68f2b795b27aee7ea4f42a1dcef3b5b9942e0038da96188a784271bf",
+  "projection_bytes": 207646,
+  "projection_sha256": "40c938aca95cca995ed387a0ee8b0d3d22150143ed5a5e09bf1606d9407b2f4d",
   "schema_version": "1.0.0-campaign-projection-manifest",
   "source_files": [
     "campaign/p5-p12/campaign.json",
