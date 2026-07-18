@@ -94,6 +94,9 @@ def validate_case(case: dict[str, Any]) -> None:
                 f"{phase}: correct conclusion cannot pass at zero observations")
 
     text = "\n".join(walk_strings(case)).lower()
+    if phase in {f"P{i}" for i in range(5, 11)}:
+        require("averyn" not in text,
+                f"{phase}: names Averyn before the P11 identity restoration")
     for forbidden in (
         "mechanism_type", "source-touch required", "click every", "six were one",
         "avernyn", "server log puzzle", "f3 required",

@@ -284,12 +284,12 @@ Inspect PDC/lore on the physical reed knot. Original recovery tag says living gr
 
 ### KI03 — Iss corrected account
 
-Margin acrostic and signature comparison prove Iss signed Averyn out of the roster and described the omission as mercy.
+Margin acrostic and signature comparison prove Iss signed the unnamed registrar out of the roster and described the omission as mercy. Her identity remains unresolved until C09.
 
-- Accepted conclusion: `ISS SIGNED AVERYN OUT`, plus harmless phrasing variants.
+- Accepted conclusion: `ISS SIGNED THE REGISTRAR OUT`, plus harmless phrasing variants.
 - H1: follow correction marks, not the warm first letters.
 - H2: read only lines with the same cut as the keepsake tag.
-- H3: the actor is ISS; action SIGNED OUT; subject AVERYN.
+- H3: the actor is ISS; action SIGNED OUT; subject is the unnamed registrar.
 
 ## C04 — Cistern Winter
 
