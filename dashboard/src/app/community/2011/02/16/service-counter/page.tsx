@@ -33,9 +33,15 @@ export default async function ServiceCounterPost() {
           <article className="customer"><header><b>quietorbit</b><time>February 16, 2011 9:12 PM</time></header><p>The penalty plaques cover old screw holes. Whatever they were for, they were added after the counter was already in use.</p></article>
         </div>
       </section>
-      <section className="old-copy">
+      <section className="old-copy" id="evidence-p5-listening-boundary" data-evidence-id="p5.e08" aria-labelledby="listening-boundary-heading">
+        <h2 id="listening-boundary-heading">Cached manual leaf: change-of-watch listening</h2>
+        <p><b>Attachment history:</b> photographed from a torn maintenance manual. The paper tear matches the binding stub left in the Hold copy room. The cached thumbnail predates the later penalty edition.</p>
+        <blockquote>Stop tools for one minute at change of watch. One listener at each marked pier records knocks or moving grit. Report a sound twice before closing a gallery.</blockquote>
+        <p>A handwritten note beneath it says: <i>This is an instrument interval. It is not permission to question private speech.</i> The later rule called <i>Unspoken</i> keeps the silence and drops that limit.</p>
+      </section>
+      <section className="old-copy" id="evidence-p5-intake-mark" data-evidence-id="p5.e11">
         <h2>Archive change</h2>
-        <p>The group kept the early service cards in public view and moved the later penalty copies into evidence custody. Copperline now indexes this image as <b>lamp, school, and sample service counter</b>. The older shrine caption remains in revision history.</p>
+        <p>The group kept the early service cards in public view and moved the later penalty copies into evidence custody. Copperline now indexes this image as <b>lamp, school, and sample service counter</b>. The older shrine caption remains in revision history.</p><p>The contact sheet also preserves the open-eye intake mark in three uses: doorfinding on the oldest wall, service routing on the counter cards, and household classification on the late penalties. One duplicate mark sits beneath an older cabinet finish. The archive records the mismatch without explaining it.</p>
       </section>
     </LegacyShell>
   );

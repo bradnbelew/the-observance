@@ -42,6 +42,23 @@ export default async function SixWorkspacesPost() {
           <article className="customer"><header><b>mkept</b><time>March 4, 2011 12:31 AM</time></header><p>Maybe a seventh person. Not a seventh holder of that role. Those are different claims.</p></article>
         </div>
       </section>
+      <section className="old-copy" aria-labelledby="workspace-attachments">
+        <h2 id="workspace-attachments">Restored attachment set</h2>
+        <article id="evidence-p6-vaun-reconciliation" data-evidence-id="p6.v3">
+          <h3>Vaun / private reconciliation letter</h3>
+          <p><b>Provenance:</b> cached thumbnail retained the text beneath a later redaction layer. The page number and receiving-hand marks match the Hold ledger.</p>
+          <blockquote>I balanced the page because an unbalanced page would have stopped issue for everyone. I told myself I could challenge the order after winter. Winter became the name for not challenging it.</blockquote>
+        </article>
+        <article id="evidence-p6-sella-transfer" data-evidence-id="p6.s2">
+          <h3>Sella / damp transfer contact sheet</h3>
+          <p>The first frame shows a bent alder at upper left, a split sill near center, and three reeds at lower right. The second is the damp reverse. When both copies are aligned by those fixed marks rather than by page edges, the transferred line reaches the lower intake. Fiber tears and pinholes match the sheet displayed in Sella&apos;s workroom.</p>
+        </article>
+        <article id="evidence-p6-iss-revision" data-evidence-id="p6.i3">
+          <h3>Iss / route attachment history</h3>
+          <table><thead><tr><th>Copy</th><th>Retained margin</th></tr></thead><tbody><tr><td>local draft</td><td>brace load; paired watch; registrar objection</td></tr><tr><td>first cached upload</td><td>all three warnings absent; route described only as mercy</td></tr><tr><td>later mirror</td><td>brace and watch restored; objector still unnamed</td></tr></tbody></table>
+          <p>The cache proves an edit sequence. It does not prove whether Iss removed the warnings alone, and it does not make his surface samples false.</p>
+        </article>
+      </section>
       <section className="old-copy"><h2>Archive change</h2><p>The group&apos;s six profession records restored the four replies above. Copperline retains the older collapsed export as a separate revision.</p></section>
     </LegacyShell>
   );

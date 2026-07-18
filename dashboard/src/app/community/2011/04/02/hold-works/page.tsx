@@ -24,6 +24,17 @@ export default async function HoldWorksPost() {
         <p>Rook asked that this thread keep the old gauge sketch, the paired-lamp photograph, and the copied-office diff together. He did not agree that one of them explained the others.</p>
         <p>Rook kept four sets of readings because they refused a one-cause account. One begins before Iss arrived. Another changes after a watch relief. The closure stamps do not match the order in the public incident copy. Iss kept his surface samples beside a route objection, not as an answer to it. The group still has to decide what those relationships predict and what can be tested safely.</p>
       </article>
+      <section className="old-copy" id="evidence-p8-allocation-gauge" data-evidence-id="p8.e04" aria-labelledby="allocation-gauge-heading">
+        <h2 id="allocation-gauge-heading">Cached allocation order and gauge hand</h2>
+        <p>The public order reduces pressure to the school and east dwellings. A photographed gauge card from the same issue leaves the favored upper galleries unchanged. Its return hand rises before Iss&apos;s fresh cut and remains high after the public order says the load was reduced.</p>
+        <p>Rook&apos;s margin reads: <i>Do not use the clean order as the before-state. Use the hand that was physically on the return pin.</i></p>
+      </section>
+      <section className="old-copy" aria-labelledby="works-version-heading">
+        <h2 id="works-version-heading">Local copies against Record-facing copies</h2>
+        <article id="evidence-p8-closure-routing" data-evidence-id="p8.e08"><h3>Closure requests</h3><p>The local lamp, watch, and route copies are dated before the breach. The clean Record-facing copies place all three after it. Their paper, hands, and issue numbers remain independent, so the disagreement is not one bad clock.</p></article>
+        <article id="evidence-p8-clean-office" data-evidence-id="p8.e09"><h3>Too-clean office image</h3><p>The copied office keeps the council&apos;s corrected dates and clean manual. It leaves out Eda&apos;s stove patch, Toma&apos;s oil stain, and the brace note added by hand. The supplied still marks those three absences without asking players to trace custom block geometry.</p></article>
+        <article id="evidence-p8-copy-before-source" data-evidence-id="p8.e10"><h3>Cabinet sequence</h3><p>A retained archive row describes the copied cabinet in its later arrangement one watch before the source cabinet changed. The file does not say time ran backward. It fixes an order that a causal model must account for without naming what the Dark is.</p></article>
+      </section>
       <InterventionPlanForm planned={planned === true} />
       {planned === true && <article className="old-copy">
         <p>We are keeping more than one cause on the board. The old fracture, unchanged heat load, empty paired watch, and late-routed closure requests overlap. Iss&apos;s cut widened the failure. It did not create the old fracture.</p>

@@ -41,6 +41,12 @@ def main() -> None:
             "packaged Minecraft binding differs from canonical source")
     require(hashlib.sha256(binding_target.read_bytes()).hexdigest() == data["minecraft_binding_sha256"],
             "packaged Minecraft binding hash drift")
+    external_source = ROOT / data["external_binding_source"]
+    external_target = ROOT / data["external_binding_target"]
+    require(external_source.read_bytes() == external_target.read_bytes(),
+            "packaged external binding differs from canonical source")
+    require(hashlib.sha256(external_target.read_bytes()).hexdigest() == data["external_binding_sha256"],
+            "packaged external binding hash drift")
     print(f"P5-P12 projection: PASS (8 phases, 3 byte-identical surfaces, {data['projection_sha256']})")
 
 

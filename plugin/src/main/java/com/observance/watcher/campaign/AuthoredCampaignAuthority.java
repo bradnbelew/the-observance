@@ -31,6 +31,8 @@ public final class AuthoredCampaignAuthority {
     public static final String RESOURCE = "campaign/p5-p12.json";
     public static final String MINECRAFT_BINDING_RESOURCE =
             "campaign/p5-p12-minecraft-bindings.json";
+    public static final String EXTERNAL_BINDING_RESOURCE =
+            "campaign/p5-p12-external-bindings.json";
     private static final List<String> PHASES =
             List.of("P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12");
 
@@ -244,7 +246,63 @@ public final class AuthoredCampaignAuthority {
         }
         if (cases.size() != PHASES.size()) issues.add("expected 8 cases, found " + cases.size());
         validateMinecraftBindings(authoredSpaceIds, evidenceSurfaces, issues);
+        validateExternalBindings(evidenceSurfaces, issues);
         return new Report(cases.size(), conclusions, evidence, spaces, sha256(bytes), issues);
+    }
+
+    private static void validateExternalBindings(java.util.Map<String, String> evidenceSurfaces,
+                                                 List<String> issues) {
+        byte[] bytes = readResource(EXTERNAL_BINDING_RESOURCE, issues);
+        if (bytes.length == 0) return;
+        JsonObject root;
+        try {
+            root = JsonParser.parseString(new String(bytes, StandardCharsets.UTF_8)).getAsJsonObject();
+        } catch (RuntimeException failure) {
+            issues.add("external binding authority is not valid JSON: " + failure.getMessage());
+            return;
+        }
+        JsonElement receipt = root.get("fresh_external_client_receipt");
+        if (receipt == null || !receipt.isJsonPrimitive() || receipt.getAsBoolean()) {
+            issues.add("offline external binding must record fresh_external_client_receipt=false");
+        }
+        Set<String> expected = new LinkedHashSet<>();
+        evidenceSurfaces.forEach((id, surface) -> {
+            String value = surface.toLowerCase(java.util.Locale.ROOT);
+            if (List.of("copperline", "discord", "media", "npc", "archive", "web", "image")
+                    .stream().anyMatch(value::contains)) expected.add(id);
+        });
+        Set<String> bound = new LinkedHashSet<>();
+        for (JsonElement element : array(root, "bindings", "external evidence", issues)) {
+            if (!element.isJsonObject()) {
+                issues.add("external evidence binding is not an object");
+                continue;
+            }
+            JsonObject row = element.getAsJsonObject();
+            String evidenceId = text(row, "evidence_id", issues);
+            if (!bound.add(evidenceId)) issues.add("duplicate external evidence binding " + evidenceId);
+            if (!expected.contains(evidenceId)) issues.add("local-only or unknown external binding " + evidenceId);
+            requireText(row, "delivery_status", evidenceId, issues);
+            JsonArray carriers = array(row, "carriers", evidenceId, issues);
+            if (carriers.isEmpty()) issues.add(evidenceId + " has no concrete external carrier");
+            for (JsonElement carrierElement : carriers) {
+                if (!carrierElement.isJsonPrimitive()) {
+                    issues.add(evidenceId + " external carrier is not text");
+                    continue;
+                }
+                String carrier = carrierElement.getAsString();
+                if (!(carrier.startsWith("web:") || carrier.startsWith("discord:")
+                        || carrier.startsWith("media:") || carrier.startsWith("npc:"))) {
+                    issues.add(evidenceId + " has unsupported external carrier " + carrier);
+                }
+            }
+        }
+        if (!bound.equals(expected)) {
+            Set<String> missing = new LinkedHashSet<>(expected);
+            missing.removeAll(bound);
+            Set<String> extra = new LinkedHashSet<>(bound);
+            extra.removeAll(expected);
+            issues.add("external evidence carrier coverage differs: missing=" + missing + " extra=" + extra);
+        }
     }
 
     private static void validateMinecraftBindings(Set<String> authoredSpaceIds,

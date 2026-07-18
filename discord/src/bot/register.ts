@@ -90,6 +90,23 @@ export const investigateCommand = new SlashCommandBuilder()
     .setName('status')
     .setDescription('show the campaign changes already caused by the group.'))
   .addSubcommand((subcommand) => subcommand
+    .setName('docket')
+    .setDescription('review an earned shared evidence record; reading never gates a conclusion.')
+    .addStringOption((option) => option
+      .setName('phase')
+      .setDescription('the open investigation whose shared record you want to review.')
+      .setRequired(true)
+      .addChoices(
+        { name: 'P5 civic services', value: 'p5' },
+        { name: 'P6 six people', value: 'p6' },
+        { name: 'P7 cistern inquiry', value: 'p7' },
+        { name: 'P8 Break and repair', value: 'p8' },
+        { name: 'P9 Ash Camp', value: 'p9' },
+        { name: 'P10 Wren', value: 'p10' },
+        { name: 'P11 Averyn', value: 'p11' },
+        { name: 'P12 release audit', value: 'p12' },
+      )))
+  .addSubcommand((subcommand) => subcommand
     .setName('dispatch')
     .setDescription('ask the settlement to keep two conflicting accounts open.')
     .addStringOption((option) => option

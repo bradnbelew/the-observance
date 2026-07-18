@@ -19,6 +19,7 @@ import {
   type WrenTransmissionFinding,
 } from '../../v5/wren-transmission.js';
 import { SETTLEMENT_DISPATCH_CANONICAL_PAYLOAD, validSettlementDispatch } from '../../v5/settlement-dispatch.js';
+import { evidenceDocketForPhase, formatEvidenceDocket } from '../../v5/evidence-docket.js';
 
 const PHASE_LABELS: Record<string, string> = {
   p1: 'Copperline recovery', p2: 'world handoff', p3: 'settlement accounts',
@@ -159,6 +160,22 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
       return `- ${PHASE_LABELS[phase] ?? phase}: ${detail.replaceAll('_', ' ')}`;
     });
     await interaction.editReply(`Shared changes so far:\n${lines.join('\n')}`);
+    return;
+  }
+  if (action === 'docket') {
+    const phase = interaction.options.getString('phase', true);
+    const records = evidenceDocketForPhase(phase);
+    if (records.length === 0) {
+      await interaction.editReply('No shared docket record exists for that phase. Nothing changed.');
+      return;
+    }
+    const earned = new Set((await getArgEventHistory()).map((event) => event.event_key));
+    const missing = records.find((record) => !earned.has(record.availableAfter));
+    if (missing) {
+      await interaction.editReply('That shared record is not in the current archive yet. Nothing changed.');
+      return;
+    }
+    await interaction.editReply(`${formatEvidenceDocket(records)}\n\nReading this docket is optional. A correct conclusion never requires a source receipt.`);
     return;
   }
   if (action === 'test-copy') {

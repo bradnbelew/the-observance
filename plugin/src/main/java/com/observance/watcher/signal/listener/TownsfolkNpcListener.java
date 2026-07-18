@@ -111,6 +111,7 @@ public final class TownsfolkNpcListener implements Listener {
                         || truthy(flags.get("v5_case_c07_complete"))) yield "after_c07";
                 if (truthy(flags.get("p7.nessa_publicly_cleared"))
                         || truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
+                if (truthy(flags.get("p6.six_responsibilities_acknowledged"))) yield "after_p6";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
                 yield introState(player, id, "mouth_lead");
@@ -121,6 +122,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("p8.hold_systems_repaired"))) yield "after_p8";
                 if (truthy(flags.get("p8.unlit_house_synthesis_completed"))) yield "after_unlit";
                 if (truthy(flags.get("v5_case_c05_complete"))) yield "after_c05";
+                if (truthy(flags.get("p6.six_responsibilities_acknowledged"))) yield "after_p6";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (keepersComplete(flags)) yield "after_c03";
                 yield introState(player, id, "well_lead");
@@ -140,6 +142,7 @@ public final class TownsfolkNpcListener implements Listener {
                         || truthy(flags.get("v5_case_c09_complete"))) yield "after_p11";
                 if (truthy(flags.get("p8.hold_systems_repaired"))) yield "after_p8";
                 if (truthy(flags.get("v5_case_c05_complete"))) yield "after_c05";
+                if (truthy(flags.get("p6.six_responsibilities_acknowledged"))) yield "after_p6";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
                 yield introState(player, id, "mouth_lead");

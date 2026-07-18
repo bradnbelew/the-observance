@@ -1,6 +1,9 @@
 {
   "brad_approval": null,
   "experiential_status": "offline_redesigned_not_human_approved",
+  "external_binding_sha256": "895fae2123ffd561a5512e1cbefed01817edda68f82bf67f4f84b32a2c96cf64",
+  "external_binding_source": "campaign/p5-p12/external-bindings.json",
+  "external_binding_target": "plugin/src/main/resources/campaign/p5-p12-external-bindings.json",
   "minecraft_binding_sha256": "11c0c672e0992018504358869590e6e0c89ff236db9420044d90f1b07475739e",
   "minecraft_binding_source": "campaign/p5-p12/minecraft-bindings.json",
   "minecraft_binding_target": "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json",
@@ -14,6 +17,7 @@
     "campaign/arg-experience-redesign.json",
     "campaign/arg-state-choreography.json",
     "campaign/p5-p12/input-contracts.json",
+    "campaign/p5-p12/external-bindings.json",
     "campaign/p5-p12/case-p5.json",
     "campaign/p5-p12/case-p6.json",
     "campaign/p5-p12/case-p7.json",

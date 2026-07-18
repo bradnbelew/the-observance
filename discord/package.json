@@ -22,7 +22,7 @@
     "v5check": "tsx src/v5/canon.selftest.ts",
     "v5bindingcheck": "tsx src/v5/runtime-bindings.selftest.ts",
     "v5surfacecheck": "tsx src/v5/surface.selftest.ts",
-    "argeventcheck": "tsx src/v5/arg-events.selftest.ts && tsx src/v5/wren-transmission.selftest.ts && tsx src/v5/settlement-dispatch.selftest.ts",
+    "argeventcheck": "tsx src/v5/arg-events.selftest.ts && tsx src/v5/wren-transmission.selftest.ts && tsx src/v5/settlement-dispatch.selftest.ts && tsx src/v5/evidence-docket.selftest.ts",
     "seventhretirementcheck": "tsx src/v5/seventh-retirement.selftest.ts",
     "legacyanswershapecheck": "tsx src/v5/legacy-answer-shape.selftest.ts",
     "argprojectioncheck": "tsx src/v5/arg-projection-worker.selftest.ts",

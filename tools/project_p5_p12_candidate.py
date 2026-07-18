@@ -17,6 +17,8 @@ TARGETS = [
 MANIFEST = SOURCE / "projection-manifest.json"
 BINDING_SOURCE = SOURCE / "minecraft-bindings.json"
 BINDING_TARGET = ROOT / "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json"
+EXTERNAL_BINDING_SOURCE = SOURCE / "external-bindings.json"
+EXTERNAL_BINDING_TARGET = ROOT / "plugin/src/main/resources/campaign/p5-p12-external-bindings.json"
 EXPERIENCE_SOURCE = ROOT / "campaign/arg-experience-redesign.json"
 CHOREOGRAPHY_SOURCE = ROOT / "campaign/arg-state-choreography.json"
 INPUT_CONTRACT_SOURCE = SOURCE / "input-contracts.json"
@@ -74,6 +76,9 @@ def main() -> None:
     binding_payload = BINDING_SOURCE.read_bytes()
     BINDING_TARGET.parent.mkdir(parents=True, exist_ok=True)
     BINDING_TARGET.write_bytes(binding_payload)
+    external_binding_payload = EXTERNAL_BINDING_SOURCE.read_bytes()
+    EXTERNAL_BINDING_TARGET.parent.mkdir(parents=True, exist_ok=True)
+    EXTERNAL_BINDING_TARGET.write_bytes(external_binding_payload)
     manifest = {
         "schema_version": "1.0.0-campaign-projection-manifest",
         "source_files": [
@@ -81,6 +86,7 @@ def main() -> None:
             "campaign/arg-experience-redesign.json",
             "campaign/arg-state-choreography.json",
             "campaign/p5-p12/input-contracts.json",
+            "campaign/p5-p12/external-bindings.json",
         ] + ["campaign/p5-p12/" + row["file"] for row in index["phases"]],
         "projection_sha256": digest,
         "projection_bytes": len(payload),
@@ -92,6 +98,9 @@ def main() -> None:
         "minecraft_binding_source": str(BINDING_SOURCE.relative_to(ROOT)).replace("\\", "/"),
         "minecraft_binding_target": str(BINDING_TARGET.relative_to(ROOT)).replace("\\", "/"),
         "minecraft_binding_sha256": hashlib.sha256(binding_payload).hexdigest(),
+        "external_binding_source": str(EXTERNAL_BINDING_SOURCE.relative_to(ROOT)).replace("\\", "/"),
+        "external_binding_target": str(EXTERNAL_BINDING_TARGET.relative_to(ROOT)).replace("\\", "/"),
+        "external_binding_sha256": hashlib.sha256(external_binding_payload).hexdigest(),
     }
     MANIFEST.write_bytes(canonical_bytes(manifest))
     print(f"P5-P12 projection written: phases={len(cases)} bytes={len(payload)} sha256={digest}")
