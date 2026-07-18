@@ -44,17 +44,14 @@ export async function restoreCampBiographies(_previous: CampBiographyState, form
 export async function proveLeakWindow(_previous: LeakWindowState, formData: FormData): Promise<LeakWindowState> {
   if (!await sameOrigin()) return { status: 'technical_failure', message: 'The request came from another host. Nothing changed.' };
   const finding = {
-    before: String(formData.get('before') ?? ''),
-    crossing: String(formData.get('crossing') ?? ''),
-    after: String(formData.get('after') ?? ''),
+    treatment: String(formData.get('treatment') ?? ''),
     readiness: String(formData.get('readiness') ?? ''),
     boundary: String(formData.get('boundary') ?? ''),
   };
-  if (Object.values(finding).some((value) => !value)) return { status: 'incomplete', message: 'Place all three copies and set both finding limits.' };
-  if (finding.before !== 'rook-private-countermark' || finding.crossing !== 'witness-spool-intake'
-      || finding.after !== 'public-upload' || finding.readiness !== 'release-board-complete'
+  if (Object.values(finding).some((value) => !value)) return { status: 'incomplete', message: 'Choose an archive treatment and set both finding limits.' };
+  if (finding.treatment !== 'preserve-immutable-chain' || finding.readiness !== 'release-board-complete'
       || finding.boundary !== 'inside-access-sender-open') {
-    return { status: 'wrong', message: 'That chain conflicts with the independent clocks, or claims more than the copies prove. Nothing changed.' };
+    return { status: 'wrong', message: 'That treatment would destroy authenticated history, conflicts with the readiness board, or claims more than the copies prove. Nothing changed.' };
   }
   const event = await recordCampaignEvent({
     eventKey: 'p9.leak_window_proven',
@@ -62,6 +59,7 @@ export async function proveLeakWindow(_previous: LeakWindowState, formData: Form
     source: 'copperline',
     payload: {
       chain: ['rook-private-countermark', 'witness-spool-intake', 'public-upload'],
+      treatment: 'preserve-immutable-chain',
       readiness: 'release-board-complete',
       claim_boundary: 'inside-access-sender-open',
       observation_receipts: 0,

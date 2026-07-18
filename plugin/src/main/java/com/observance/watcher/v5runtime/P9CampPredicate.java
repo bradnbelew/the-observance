@@ -10,8 +10,7 @@ public final class P9CampPredicate {
     private P9CampPredicate() { }
 
     public record People(String mkept, String ash, String rook, String wren) { }
-    public record Window(String before, String crossing, String after,
-                         String readiness, String boundary) { }
+    public record Window(String treatment, String readiness, String boundary) { }
 
     public static boolean validPeople(People people) {
         return people != null
@@ -23,10 +22,8 @@ public final class P9CampPredicate {
 
     public static boolean validWindow(Window window) {
         return window != null
-                && is(window.before(), "rook private countermark", "rook private counter-mark",
-                        "private countermark", "private counter-mark", "nb 17 c private")
-                && is(window.crossing(), "witness spool intake", "spool intake", "nb 17 c intake")
-                && is(window.after(), "public upload", "copperline upload", "copperline public upload", "nb 17 c public")
+                && is(window.treatment(), "preserve immutable chain", "preserve private chain",
+                        "keep all three copies", "keep versions separate")
                 && is(window.readiness(), "release board complete", "board complete", "work complete")
                 && is(window.boundary(), "inside access sender open", "inside access sender unknown",
                         "inside source unknown");

@@ -3,12 +3,6 @@
 import { useActionState } from 'react';
 import { proveLeakWindow, type LeakWindowState } from './actions';
 
-const copies = [
-  ['rook-private-countermark', 'Rook private NB-17/c counter-mark'],
-  ['witness-spool-intake', 'Witness Spool NB-17/c intake'],
-  ['public-upload', 'Copperline public NB-17/c upload'],
-] as const;
-
 export function LeakWindowForm({ proven }: { proven: boolean }) {
   const [state, action, pending] = useActionState(proveLeakWindow, proven
     ? { status: 'accepted', message: 'The private version chain is preserved.' } satisfies LeakWindowState
@@ -16,16 +10,16 @@ export function LeakWindowForm({ proven }: { proven: boolean }) {
   const accepted = state.status === 'accepted';
   return <section className="old-copy" aria-labelledby="version-chain-heading">
     <h2 id="version-chain-heading">Preserve the version chain</h2>
-    <p>Use the clocks printed by separate systems. Place the copy that existed first, the copy that proves a crossing, and the later public copy. Then record only what that chain can support.</p>
+    <p>The three copies and their independent clocks are already shown above. Decide what Copperline should do with that custody chain, then record only what the chain can support.</p>
     <form action={action} aria-describedby="version-chain-result">
-      <fieldset disabled={pending || accepted}><legend>Three-copy custody chain</legend>
-        {([['before', 'Copy before the crossing'], ['crossing', 'Copy that proves the crossing'], ['after', 'Later public copy']] as const).map(([name, label]) => <label key={name}>{label}<select name={name} defaultValue="" required><option value="" disabled>Choose a copy</option>{copies.map(([value, text]) => <option value={value} key={value}>{text}</option>)}</select></label>)}
+      <fieldset disabled={pending || accepted}><legend>Archive treatment</legend>
+        <label>How should Copperline retain NB-17/c?<select name="treatment" defaultValue="" required><option value="" disabled>Choose a custody action</option><option value="preserve-immutable-chain">preserve all three copies, their hashes, and their separate clocks</option><option value="collapse-to-public">replace the private and spool copies with the later public upload</option><option value="quarantine-spool">discard the Witness Spool copy as unauthenticated</option></select></label>
       </fieldset>
       <fieldset disabled={pending || accepted}><legend>Finding limits</legend>
         <label>Release board state<select name="readiness" defaultValue="" required><option value="" disabled>Choose the supported state</option><option value="release-board-complete">required work was checked complete before the crossing</option><option value="release-board-incomplete">required work was still missing</option></select></label>
         <label>Strongest supported claim<select name="boundary" defaultValue="" required><option value="" disabled>Choose the supported limit</option><option value="inside-access-sender-open">someone with inside access transmitted it; these copies do not name who</option><option value="wren-proven">these copies alone prove Wren sent it</option><option value="record-invented">the Record created the private revision without access</option></select></label>
       </fieldset>
-      <button type="submit" disabled={pending || accepted}>{pending ? 'Checking clocks...' : accepted ? 'Version chain preserved' : 'Preserve version chain'}</button>
+      <button type="submit" disabled={pending || accepted}>{pending ? 'Writing custody record...' : accepted ? 'Version chain preserved' : 'Commit archive treatment'}</button>
     </form>
     <div id="version-chain-result" role="status" aria-live="polite" data-status={state.status}><p><b>{state.status}.</b> {state.message}</p>{state.receiptId && <p><b>Receipt:</b> <code>{state.receiptId}</code></p>}</div>
   </section>;

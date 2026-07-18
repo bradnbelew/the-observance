@@ -11,19 +11,18 @@ public final class P9CampPredicateSelfTest {
                 people.ash(), people.mkept(), people.rook(), people.wren())), "swapped owners must fail");
 
         var window = new P9CampPredicate.Window(
-                "Rook private counter-mark", "Witness Spool intake", "Copperline public upload",
-                "release board complete", "inside access; sender unknown");
-        require(P9CampPredicate.validWindow(window), "authenticated chain and open boundary must pass");
+                "keep all three copies", "release board complete", "inside access; sender unknown");
+        require(P9CampPredicate.validWindow(window), "preserved chain and open boundary must pass");
         require(!P9CampPredicate.validWindow(new P9CampPredicate.Window(
-                window.after(), window.crossing(), window.before(), window.readiness(), window.boundary())),
-                "reversed chronology must fail");
+                "collapse to public", window.readiness(), window.boundary())),
+                "destructive latest-copy treatment must fail");
         require(!P9CampPredicate.validWindow(new P9CampPredicate.Window(
-                window.before(), window.crossing(), window.after(), window.readiness(), "Wren proven")),
+                window.treatment(), window.readiness(), "Wren proven")),
                 "premature attribution must fail");
         require(!P9CampPredicate.validPeople(new P9CampPredicate.People(
                 "x".repeat(P9CampPredicate.MAX_FIELD_LENGTH + 1),
                 people.ash(), people.rook(), people.wren())), "oversized field must fail");
-        System.out.println("P9CampPredicateSelfTest OK - owners, chronology, claim boundary, and bounds pass");
+        System.out.println("P9CampPredicateSelfTest OK - owners, custody treatment, claim boundary, and bounds pass");
     }
 
     private static void require(boolean condition, String message) {

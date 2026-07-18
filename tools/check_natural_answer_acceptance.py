@@ -52,7 +52,7 @@ def main() -> None:
         "plugin/src/test/java/com/observance/watcher/v5runtime/P9CampPredicateSelfTest.java",
         "plugin/src/test/java/com/observance/watcher/v5runtime/P10WrenTransmissionPredicateSelfTest.java",
     ))
-    for token in ("ordinary player-language", "field-swapped", "oversized", "reversed chronology", "confession-only"):
+    for token in ("ordinary player-language", "field-swapped", "oversized", "destructive latest-copy", "confession-only"):
         require(token in sources, f"runtime negative/paraphrase proof missing token: {token}")
 
     print(f"NATURAL ANSWER ACCEPTANCE: PASS - {len(inputs)} interpretive shapes, {len(exact)} fair exact artifact, zero receipt gates")

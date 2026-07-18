@@ -600,3 +600,15 @@ open; M4 is still closed.
 - `tools/check_p11_identity_routes.py` fails closed on missing book evidence, a full-name spoiler carrier,
   sequential letter prerequisites, wrong fragment custody, source-touch gating, or restoration of the retired
   Orin dial reuse. This closes implementation drift; final cold-human fairness remains part of the end test.
+
+## 2026-07-18 — P9 preserves evidence instead of making players restate its order
+
+- The Ash Camp archive already displays NB-17/c through four independently owned clocks: the completed local
+  board, Rook's private counter-mark, Witness Spool intake, and later Copperline public upload. The old form
+  redundantly asked players to place three plainly labeled copies back into that same printed order.
+- The current action asks players to decide whether Copperline preserves all authenticated versions, destroys
+  history by collapsing to the public copy, or discards the spool, then records the readiness finding and the
+  strongest supported attribution boundary. The accepted action preserves immutable history and explicitly
+  leaves the sender open for P10; it does not require source-touch receipts.
+- The local Paper recovery path uses the same three-part meaning shape—archive treatment, readiness, claim
+  boundary—with ordinary-language aliases. Focused web, Paper predicate, compile, and negative-flow tests pass.

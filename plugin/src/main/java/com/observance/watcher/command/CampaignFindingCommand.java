@@ -195,12 +195,12 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             return;
         }
         String[] fields = fields(args);
-        if (fields.length != 5) {
-            player.sendMessage("Incomplete. Give before | crossing | after | readiness | claim boundary.");
+        if (fields.length != 3) {
+            player.sendMessage("Incomplete. Give archive treatment | readiness | claim boundary.");
             return;
         }
         var finding = new P9CampPredicate.Window(
-                fields[0], fields[1], fields[2], fields[3], fields[4]);
+                fields[0], fields[1], fields[2]);
         respond(player, runtime.submitP9LeakWindow(finding), window,
                 "Private version window preserved. It proves inside access and leaves the sender open.",
                 "The four camp owner cards must be restored first.",
@@ -297,7 +297,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
         player.sendMessage("P8 accepts four short findings, not one exact sentence:");
         player.sendMessage("/" + label + " p8 <interacting causes> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
         player.sendMessage("P9 local recovery mirrors Copperline's real forms: /" + label + " p9-people <mkept | Ash | Rook | Wren traces>.");
-        player.sendMessage("Then /" + label + " p9-window <before | crossing | after | readiness | strongest supported claim>.");
+        player.sendMessage("Then /" + label + " p9-window <archive treatment | readiness | strongest supported claim>.");
         player.sendMessage("P10 accepts three short findings: /" + label
                 + " p10-wren <private-channel proof> | <packet progression> | <motive boundary>.");
         player.sendMessage("P11 accepts the six-letter artifact: /" + label + " p11-name <artifact>.");

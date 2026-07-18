@@ -18,6 +18,8 @@ assert.ok(action.includes("eventKey: 'p9.company_biographies_restored'"));
 assert.ok(action.includes("eventKey: 'p9.leak_window_proven'"));
 assert.ok(action.includes("idempotencyKey: 'copperline:p9:private-version-chain-v1'"));
 assert.ok(action.includes("['rook-private-countermark', 'witness-spool-intake', 'public-upload']"));
+assert.ok(leakForm.includes('name="treatment"') && leakForm.includes('preserve all three copies'));
+assert.ok(!leakForm.includes('name="before"') && !leakForm.includes('name="crossing"') && !leakForm.includes('name="after"'));
 assert.ok(action.includes('observation_receipts: 0'));
 assert.ok(leakForm.includes('<form action={action}') && leakForm.includes('aria-live="polite"'));
 assert.ok(leakForm.includes('someone with inside access transmitted it; these copies do not name who'));
