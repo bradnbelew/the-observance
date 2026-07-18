@@ -387,6 +387,15 @@ def main() -> None:
             "Copperline input is a decorative fake form")
     require("never parse free chat" in by_id["DISCORD_INVESTIGATION_MODAL"]["data_shape_normalization"],
             "Discord input requires unrestricted chat parsing")
+    modal = by_id["DISCORD_INVESTIGATION_MODAL"]
+    require(modal["used_by"] == ["P7.F6 public Nessa correction"]
+            and "showModal" in modal["primitive"]
+            and "MODAL_SUBMIT" in modal["primitive"]
+            and "observance:p7:nessa-correction:v1" in modal["primitive"]
+            and "/investigate file-nessa" in modal["accessibility_fallback"]
+            and "private guild" in modal["proof"].casefold()
+            and "remains open" in modal["proof"].casefold(),
+            "active Discord modal lacks exact primitive, fallback, or honest client gap")
     if choreography["status"] != "offline_authored_not_deployed":
         projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
         require("enforce_nonce=true" in projection.get("primitive", "")

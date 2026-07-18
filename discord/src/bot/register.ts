@@ -111,23 +111,14 @@ export const investigateCommand = new SlashCommandBuilder()
         { name: 'modified times from the damaged guest', value: 'guest-modified-times' },
       )))
   .addSubcommand((subcommand) => subcommand
-    .setName('clear-nessa')
-    .setDescription('file three separate findings in the Nessa Vale correction.')
-    .addStringOption((option) => option.setName('cause').setDescription('what physically failed').setRequired(true).addChoices(
-      { name: 'genuine stock diverted; counterfeit lower-intake cloth failed', value: 'diversion-counterfeit-lower-intake' },
-      { name: 'Nessa contaminated the operator sample sink', value: 'operator-contamination' },
-      { name: 'the genuine supplier cloth failed as delivered', value: 'genuine-cloth-failed' },
-    ))
-    .addStringOption((option) => option.setName('record').setDescription('what happened to the surviving chronology').setRequired(true).addChoices(
-      { name: 'relief and complaint records were edited to move later samples onto Nessa', value: 'edited-relief-and-complaints' },
-      { name: 'the public chronology is complete and unedited', value: 'public-record-complete' },
-      { name: 'Averyn created a later false chronology', value: 'averyn-fabricated' },
-    ))
-    .addStringOption((option) => option.setName('conduct').setDescription('what the evidence establishes about Nessa').setRequired(true).addChoices(
-      { name: 'she followed procedure and reported before the cloth began shedding', value: 'followed-and-reported-before-shedding' },
-      { name: 'she noticed the failure but reported it too late', value: 'reported-late' },
-      { name: 'the evidence cannot reach a conduct finding', value: 'no-conduct-finding' },
-    )))
+    .setName('review-nessa')
+    .setDescription('open the three-part public correction form.'))
+  .addSubcommand((subcommand) => subcommand
+    .setName('file-nessa')
+    .setDescription('keyboard fallback for the same three-part public correction.')
+    .addStringOption((option) => option.setName('cause').setDescription('material cause and first failure place').setRequired(true).setMaxLength(120))
+    .addStringOption((option) => option.setName('record').setDescription('what was changed in the chronology').setRequired(true).setMaxLength(120))
+    .addStringOption((option) => option.setName('conduct').setDescription('what Nessa did and when').setRequired(true).setMaxLength(120)))
   .addSubcommand((subcommand) => subcommand
     .setName('plan-repair')
     .setDescription('publish a bounded Break model and safe works order.')

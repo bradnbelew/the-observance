@@ -14,13 +14,19 @@ const rollback = read('supabase/rollbacks/0018_arg_projection_leases.rollback.sq
 assert.ok(register.includes(".setName('investigate')"));
 assert.ok(register.includes(".setName('dispatch')"));
 assert.ok(register.includes(".setName('test-copy')"));
-assert.ok(register.includes(".setName('clear-nessa')"));
+assert.ok(register.includes(".setName('review-nessa')"));
+assert.ok(register.includes(".setName('file-nessa')"));
+assert.ok(!register.includes('diversion-counterfeit-lower-intake'));
+assert.ok(!register.includes('edited-relief-and-complaints'));
+assert.ok(!register.includes('followed-and-reported-before-shedding'));
 assert.ok(register.includes(".setName('plan-repair')"));
 assert.ok(register.includes(".setName('file-leak-window')"));
 assert.ok(register.includes(".setName('confront-wren')"));
 assert.ok(register.includes(".setName('identify-averyn')"));
 assert.ok(index.includes("case 'investigate':"));
 assert.ok(index.includes('handleInvestigate(interaction)'));
+assert.ok(index.includes('interaction.isModalSubmit()'));
+assert.ok(index.includes('handleInvestigateModal(interaction)'));
 
 // Ordinary community speech is never parsed as a hidden answer surface.
 assert.ok(!index.includes("client.on('messageCreate'"));
@@ -32,6 +38,9 @@ assert.ok(handler.includes("eventKey: 'p3.dispatch_authorized'"));
 assert.ok(handler.includes("eventKey: 'p4.copy_hypothesis_tested'"));
 assert.ok(handler.includes("method !== 'barcode-and-node-clock'"));
 assert.ok(handler.includes("eventKey: 'p7.nessa_publicly_cleared'"));
+assert.ok(handler.includes("'observance:p7:nessa-correction:v1'"));
+assert.ok(handler.includes('interaction.showModal(nessaCorrectionModal())'));
+assert.ok(handler.includes("interaction.fields.getTextInputValue('cause')"));
 assert.ok(handler.includes("eventKey: 'p8.intervention_plan_accepted'"));
 assert.ok(handler.includes("eventKey: 'p9.leak_window_proven'"));
 assert.ok(handler.includes("eventKey: 'p10.wren_confronted'"));

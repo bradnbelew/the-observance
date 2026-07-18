@@ -18,6 +18,7 @@ import {
   PermissionFlagsBits,
   type Interaction,
   type ChatInputCommandInteraction,
+  type ModalSubmitInteraction,
 } from 'discord.js';
 import { config } from '../config.js';
 import { logEvent } from '../db/repo.js';
@@ -27,7 +28,7 @@ import { handleWhisper, handleWhisperAutocomplete } from './commands/whisper.js'
 import { handleLink } from './commands/link.js';
 import { handleAnswer, handleAnswerAutocomplete } from './commands/answer.js';
 import { handleProgress } from './commands/progress.js';
-import { handleInvestigate } from './commands/investigate.js';
+import { handleInvestigate, handleInvestigateModal } from './commands/investigate.js';
 import { startPersistentShowrunner } from '../showrunner/persistent.js';
 import { startArgProjectionWorker } from '../v5/arg-projection-worker.js';
 
@@ -86,6 +87,17 @@ client.once('clientReady', (c) => {
 });
 
 client.on('interactionCreate', async (interaction: Interaction) => {
+  if (interaction.isModalSubmit()) {
+    try {
+      await handleInvestigateModal(interaction);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[the-watcher] investigation modal stumbled:', err);
+      void logEvent('error', SOURCE, `investigation modal failed: ${message}`);
+      await replyQuiet(interaction);
+    }
+    return;
+  }
   if (interaction.isAutocomplete()) {
     try {
       if (interaction.commandName === 'whisper') await handleWhisperAutocomplete(interaction);
@@ -254,7 +266,7 @@ process.on('uncaughtException', (err) => {
  * Answer a stumble in-character. Whether or not the interaction was already
  * deferred or replied to, the player only ever hears voice.quiet().
  */
-async function replyQuiet(interaction: ChatInputCommandInteraction): Promise<void> {
+async function replyQuiet(interaction: ChatInputCommandInteraction | ModalSubmitInteraction): Promise<void> {
   try {
     if (interaction.deferred || interaction.replied) {
       await interaction.editReply(voice.quiet());

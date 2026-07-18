@@ -1,5 +1,18 @@
-import { MessageFlags, type ChatInputCommandInteraction } from 'discord.js';
+import {
+  ActionRowBuilder,
+  MessageFlags,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+  type ChatInputCommandInteraction,
+  type ModalSubmitInteraction,
+} from 'discord.js';
 import { getArgEventHistory, getPlayerByDiscordId, recordArgEvent } from '../../db/repo.js';
+import {
+  NESSA_CORRECTION_CANONICAL_PAYLOAD,
+  validNessaCorrection,
+  type NessaFinding,
+} from '../../v5/nessa-correction.js';
 
 const PHASE_LABELS: Record<string, string> = {
   p1: 'Copperline recovery', p2: 'world handoff', p3: 'settlement accounts',
@@ -8,14 +21,78 @@ const PHASE_LABELS: Record<string, string> = {
   p10: 'Wren', p11: 'Averyn', p12: 'release',
 };
 
+export const NESSA_CORRECTION_MODAL_ID = 'observance:p7:nessa-correction:v1';
+
+function nessaCorrectionModal(): ModalBuilder {
+  const field = (id: string, label: string, placeholder: string) => new ActionRowBuilder<TextInputBuilder>()
+    .addComponents(new TextInputBuilder().setCustomId(id).setLabel(label)
+      .setPlaceholder(placeholder).setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(120));
+  return new ModalBuilder()
+    .setCustomId(NESSA_CORRECTION_MODAL_ID)
+    .setTitle('Public correction review')
+    .addComponents(
+      field('cause', 'Material cause and first failure place', 'Short finding'),
+      field('record', 'What was changed in the chronology', 'Short finding'),
+      field('conduct', 'What Nessa did and when', 'Short finding'),
+    );
+}
+
+async function submitNessaCorrection(
+  interaction: ChatInputCommandInteraction | ModalSubmitInteraction,
+  finding: NessaFinding,
+): Promise<void> {
+  const player = await getPlayerByDiscordId(interaction.user.id);
+  if (!player) {
+    await interaction.editReply('Link your Minecraft name first with /link.');
+    return;
+  }
+  if (!validNessaCorrection(finding)) {
+    await interaction.editReply('Those three findings do not yet support a complete public correction. Nothing changed.');
+    return;
+  }
+  const result = await recordArgEvent({
+    eventKey: 'p7.nessa_publicly_cleared',
+    idempotencyKey: 'discord:p7:nessa-public-correction',
+    source: 'discord',
+    actorId: interaction.user.id,
+    payload: NESSA_CORRECTION_CANONICAL_PAYLOAD,
+  });
+  if (result.status === 'blocked') {
+    await interaction.editReply('The six Keeper responsibility records are not complete yet. Nothing changed.');
+    return;
+  }
+  if (result.status === 'collision') {
+    await interaction.editReply('A different Nessa correction already owns that receipt. Nothing changed; use /investigate status.');
+    return;
+  }
+  await interaction.editReply(result.created
+    ? 'Correction filed. The material failure, changed chronology, and Nessa\'s conduct are now separate public findings.'
+    : 'That public correction is already filed. Nothing was duplicated.');
+}
+
+export async function handleInvestigateModal(interaction: ModalSubmitInteraction): Promise<boolean> {
+  if (interaction.customId !== NESSA_CORRECTION_MODAL_ID) return false;
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+  await submitNessaCorrection(interaction, {
+    cause: interaction.fields.getTextInputValue('cause'),
+    record: interaction.fields.getTextInputValue('record'),
+    conduct: interaction.fields.getTextInputValue('conduct'),
+  });
+  return true;
+}
+
 export async function handleInvestigate(interaction: ChatInputCommandInteraction): Promise<void> {
+  const action = interaction.options.getSubcommand(true);
+  if (action === 'review-nessa') {
+    await interaction.showModal(nessaCorrectionModal());
+    return;
+  }
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   const player = await getPlayerByDiscordId(interaction.user.id);
   if (!player) {
     await interaction.editReply('Link your Minecraft name first with /link.');
     return;
   }
-  const action = interaction.options.getSubcommand(true);
   if (action === 'status') {
     const events = await getArgEventHistory();
     if (events.length === 0) {
@@ -60,34 +137,12 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
       : 'That custody test is already complete. Nothing was duplicated.');
     return;
   }
-  if (action === 'clear-nessa') {
-    const cause = interaction.options.getString('cause', true);
-    const record = interaction.options.getString('record', true);
-    const conduct = interaction.options.getString('conduct', true);
-    if (cause !== 'diversion-counterfeit-lower-intake'
-        || record !== 'edited-relief-and-complaints'
-        || conduct !== 'followed-and-reported-before-shedding') {
-      await interaction.editReply('Those three findings do not support a complete public correction. Nothing changed.');
-      return;
-    }
-    const result = await recordArgEvent({
-      eventKey: 'p7.nessa_publicly_cleared',
-      idempotencyKey: 'discord:p7:nessa-public-correction',
-      source: 'discord',
-      actorId: interaction.user.id,
-      payload: { cause, record, conduct, observation_receipts: 0 },
+  if (action === 'file-nessa') {
+    await submitNessaCorrection(interaction, {
+      cause: interaction.options.getString('cause', true),
+      record: interaction.options.getString('record', true),
+      conduct: interaction.options.getString('conduct', true),
     });
-    if (result.status === 'blocked') {
-      await interaction.editReply('The six Keeper responsibility records are not complete yet. Nothing changed.');
-      return;
-    }
-    if (result.status === 'collision') {
-      await interaction.editReply('A different Nessa correction already owns that receipt. Nothing changed; use /investigate status.');
-      return;
-    }
-    await interaction.editReply(result.created
-      ? 'Correction filed. Nessa Vale followed procedure and reported before the shedding. Genuine stock was diverted, counterfeit cloth failed upstream, and relief and complaint records were edited.'
-      : 'That public correction is already filed. Nothing was duplicated.');
     return;
   }
   if (action === 'plan-repair') {

@@ -6,8 +6,8 @@
   "minecraft_binding_target": "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json",
   "phase_count": 8,
   "production_deployed": false,
-  "projection_bytes": 204057,
-  "projection_sha256": "84a55369c452ba66bb3459b7cf62fa18dedfb63760f594bc157eb696925a81d2",
+  "projection_bytes": 204201,
+  "projection_sha256": "993d2139048a0a933b9c2d4a8011d37d01fc56abb9b3faac2887b206ff3260d9",
   "schema_version": "1.0.0-campaign-projection-manifest",
   "source_files": [
     "campaign/p5-p12/campaign.json",
