@@ -7,6 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 import queue
+import re
 import shutil
 import stat
 import time
@@ -17,6 +18,8 @@ from run_m3_disposable_paper import PAPER_EXPECTED_SHA256, PaperProcess, sha256,
 
 ROOT = Path(__file__).resolve().parents[1]
 WORLD = "observance_campaign_disposable"
+PROJECTION = ROOT / "campaign/p5-p12/projection-manifest.json"
+MINECRAFT_BINDINGS = ROOT / "campaign/p5-p12/minecraft-bindings.json"
 
 
 def command_outcome(process: PaperProcess, command: str, outcomes: tuple[str, ...],
@@ -117,6 +120,26 @@ def package_world(target: Path) -> tuple[Path, str]:
     return package, sha256(package)
 
 
+def physical_counts(lines: list[str]) -> dict[str, int]:
+    manifest_line = next((line for line in lines if "Manifest:" in line and "rooms" in line), None)
+    audit_line = next((line for line in lines if "authority addresses" in line), None)
+    if manifest_line is None or audit_line is None:
+        raise RuntimeError("Paper physical count receipt lines are missing")
+    manifest_match = re.search(r"Manifest: (\d+) rooms, (\d+) fixtures, (\d+) gates", manifest_line)
+    audit_match = re.search(
+        r"audited (\d+) authority addresses with (\d+) protected source items", audit_line
+    )
+    if manifest_match is None or audit_match is None:
+        raise RuntimeError("Paper physical count receipt lines changed grammar")
+    return {
+        "rooms": int(manifest_match.group(1)),
+        "fixtures": int(manifest_match.group(2)),
+        "gates": int(manifest_match.group(3)),
+        "physical_authority_addresses": int(audit_match.group(1)),
+        "protected_source_items": int(audit_match.group(2)),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--paper-jar", type=Path, required=True)
@@ -171,20 +194,22 @@ def main() -> None:
             write_text(target / "whole-campaign-restart.log", "\n".join(second.lines) + "\n")
 
     package, package_hash = package_world(target)
+    counts = physical_counts(first.lines)
     receipt = {
         "schema_version": "1.0.0-p5-p12-disposable-paper-receipt",
         "source_commit": args.commit,
         "runner_sha256": sha256(Path(__file__)),
         "target": str(target),
         "address": f"127.0.0.1:{args.port}",
+        "paper_version": "1.21.11",
         "paper_sha256": sha256(paper),
         "plugin_sha256": sha256(plugin),
         "bootstrap_cache": {
             "source": str(args.bootstrap_cache.resolve()) if args.bootstrap_cache else None,
             "files": cache_inventory,
         },
-        "campaign_projection_sha256": "c0aed5b32b4373c4a23406064763e447ba5390694c4074e654bdb35e52e2ad97",
-        "minecraft_binding_sha256": "ef885a396437ec746705f7d9e92946c175a044ff23f364a7d5ce52237e2dce3d",
+        "campaign_projection_sha256": sha256(PROJECTION),
+        "minecraft_binding_sha256": sha256(MINECRAFT_BINDINGS),
         "first_start": {"authority": authority, "prepare": prepare, "plan": plan,
                         "build": build, "audit": audit},
         "restart": {"authority": restart_authority, "audit": restart_audit},
@@ -192,9 +217,22 @@ def main() -> None:
         "restart_log_sha256": sha256(target / "whole-campaign-restart.log"),
         "world_package": str(package),
         "world_package_sha256": package_hash,
+        "physical_result": {
+            **counts,
+            "retired_written_books_surviving": 0,
+            "fresh_build_passed": True,
+            "graceful_stop_passed": True,
+            "restart_independent_audit_passed": True,
+            "port_listener_after_stop": 0,
+        },
+        "scope": (
+            "Technical physical install, restart, audit, and deterministic packaging proof only. "
+            "It does not establish experiential, client-visual, Brad, staging, production, or launch acceptance."
+        ),
         "production_mutated": False,
-        "pinned_p4_process_mutated": False,
+        "unrelated_process_mutated": False,
         "fresh_client_visual_receipt": False,
+        "brad_approval": None,
     }
     args.receipt.parent.mkdir(parents=True, exist_ok=True)
     args.receipt.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8", newline="\n")
