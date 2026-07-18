@@ -16,6 +16,8 @@ assert.ok(page.includes('does not, by itself, prove packet authorship or motive'
 assert.ok(page.includes('stores only the pattern receipt and the before-and-after difference'));
 assert.ok(page.includes('received no player text, names, inventory, or private build data'));
 assert.ok(page.includes('does not explain who made it'));
+assert.ok(page.includes('retained account response'));
+assert.ok(page.includes('This response follows the independent proof'));
 assert.ok(index.includes('/community/archive/wren-moderation'));
 assert.ok(index.includes("hasCampaignEvent('p10.player_copy_proof')"));
 

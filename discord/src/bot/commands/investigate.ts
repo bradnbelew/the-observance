@@ -13,6 +13,11 @@ import {
   validNessaCorrection,
   type NessaFinding,
 } from '../../v5/nessa-correction.js';
+import {
+  validWrenTransmission,
+  WREN_TRANSMISSION_CANONICAL_PAYLOAD,
+  type WrenTransmissionFinding,
+} from '../../v5/wren-transmission.js';
 
 const PHASE_LABELS: Record<string, string> = {
   p1: 'Copperline recovery', p2: 'world handoff', p3: 'settlement accounts',
@@ -22,6 +27,7 @@ const PHASE_LABELS: Record<string, string> = {
 };
 
 export const NESSA_CORRECTION_MODAL_ID = 'observance:p7:nessa-correction:v1';
+export const WREN_TRANSMISSION_MODAL_ID = 'observance:p10:wren-transmission:v1';
 
 function nessaCorrectionModal(): ModalBuilder {
   const field = (id: string, label: string, placeholder: string) => new ActionRowBuilder<TextInputBuilder>()
@@ -34,6 +40,18 @@ function nessaCorrectionModal(): ModalBuilder {
       field('cause', 'Material cause and first failure place', 'Short finding'),
       field('record', 'What was changed in the chronology', 'Short finding'),
       field('conduct', 'What Nessa did and when', 'Short finding'),
+    );
+}
+
+function wrenTransmissionModal(): ModalBuilder {
+  const field = (id: string, label: string, placeholder: string) => new ActionRowBuilder<TextInputBuilder>()
+    .addComponents(new TextInputBuilder().setCustomId(id).setLabel(label)
+      .setPlaceholder(placeholder).setStyle(TextInputStyle.Short).setRequired(true).setMaxLength(120));
+  return new ModalBuilder().setCustomId(WREN_TRANSMISSION_MODAL_ID).setTitle('Wren: packet chain')
+    .addComponents(
+      field('proof', 'Provenance that identifies the channel', 'Short finding'),
+      field('pattern', 'What the packet progression carried', 'Short finding'),
+      field('motive', 'What fear explains—and does not excuse', 'Short finding'),
     );
 }
 
@@ -70,7 +88,34 @@ async function submitNessaCorrection(
     : 'That public correction is already filed. Nothing was duplicated.');
 }
 
+async function submitWrenTransmission(interaction: ModalSubmitInteraction, finding: WrenTransmissionFinding): Promise<void> {
+  const player = await getPlayerByDiscordId(interaction.user.id);
+  if (!player) { await interaction.editReply('Link your Minecraft name first with /link.'); return; }
+  if (!validWrenTransmission(finding)) {
+    await interaction.editReply('That account does not yet connect private provenance, the packet progression, and Wren’s responsible choice. Nothing changed.');
+    return;
+  }
+  const result = await recordArgEvent({
+    eventKey: 'p10.wren_confronted', idempotencyKey: 'discord:p10:wren-transmission-finding-v1',
+    source: 'discord', actorId: interaction.user.id, payload: WREN_TRANSMISSION_CANONICAL_PAYLOAD,
+  });
+  if (result.status === 'blocked') { await interaction.editReply('The private version chain has not been preserved yet. Nothing changed.'); return; }
+  if (result.status === 'collision') { await interaction.editReply('A different transmission finding already owns that receipt. Nothing changed; use /investigate status.'); return; }
+  await interaction.editReply(result.created
+    ? 'Wren answers the evidence. He admits choosing what to transmit because he feared erasure. The factual finding is fixed; the group’s remembrance remains a separate physical choice.'
+    : 'That transmission finding is already fixed. Nothing was duplicated.');
+}
+
 export async function handleInvestigateModal(interaction: ModalSubmitInteraction): Promise<boolean> {
+  if (interaction.customId === WREN_TRANSMISSION_MODAL_ID) {
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    await submitWrenTransmission(interaction, {
+      proof: interaction.fields.getTextInputValue('proof'),
+      pattern: interaction.fields.getTextInputValue('pattern'),
+      motive: interaction.fields.getTextInputValue('motive'),
+    });
+    return true;
+  }
   if (interaction.customId !== NESSA_CORRECTION_MODAL_ID) return false;
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   await submitNessaCorrection(interaction, {
@@ -85,6 +130,10 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
   const action = interaction.options.getSubcommand(true);
   if (action === 'review-nessa') {
     await interaction.showModal(nessaCorrectionModal());
+    return;
+  }
+  if (action === 'contact-wren') {
+    await interaction.showModal(wrenTransmissionModal());
     return;
   }
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
@@ -143,37 +192,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
       record: interaction.options.getString('record', true),
       conduct: interaction.options.getString('conduct', true),
     });
-    return;
-  }
-  if (action === 'confront-wren') {
-    const sender = interaction.options.getString('sender', true);
-    const payload = interaction.options.getString('payload', true);
-    const proof = interaction.options.getString('proof', true);
-    const motive = interaction.options.getString('motive', true);
-    if (sender !== 'wren' || payload !== 'names-plans-routes-fears'
-        || proof !== 'progressive-private-missing-countermark'
-        || motive !== 'fear-explains-choice-responsibility-remains') {
-      await interaction.editReply('That finding confuses opportunity with proof, reduces four packets to one accident, or lets motive erase the act. Nothing changed.');
-      return;
-    }
-    const result = await recordArgEvent({
-      eventKey: 'p10.wren_confronted',
-      idempotencyKey: 'discord:p10:wren-transmission-finding',
-      source: 'discord',
-      actorId: interaction.user.id,
-      payload: { sender, packet_payload: payload, proof, motive, observation_receipts: 0 },
-    });
-    if (result.status === 'blocked') {
-      await interaction.editReply('The private revision window has not been filed yet. Nothing changed.');
-      return;
-    }
-    if (result.status === 'collision') {
-      await interaction.editReply('A different Wren finding already owns that receipt. Nothing changed; use /investigate status.');
-      return;
-    }
-    await interaction.editReply(result.created
-      ? 'Finding committed. Wren deliberately transmitted the four packet classes. Fear of being erased explains his choice and does not remove responsibility. The group’s remembrance remains unchosen.'
-      : 'That Wren transmission finding is already committed. Nothing was duplicated.');
     return;
   }
   if (action === 'identify-averyn') {

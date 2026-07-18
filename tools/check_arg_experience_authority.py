@@ -410,6 +410,21 @@ def main() -> None:
             and "private guild" in modal["proof"].casefold()
             and "remains open" in modal["proof"].casefold(),
             "active Discord modal lacks exact primitive, fallback, or honest client gap")
+    discord_handler = (ROOT / "discord/src/bot/commands/investigate.ts").read_text(encoding="utf-8")
+    require("contact-wren" in discord_register
+            and "confront-wren" not in discord_register
+            and "observance:p10:wren-transmission:v1" in discord_handler
+            and "validWrenTransmission" in discord_handler
+            and "WREN_TRANSMISSION_CANONICAL_PAYLOAD" in discord_handler,
+            "P10 remains a visible answer-choice menu or lacks a canonical character-response modal")
+    wren_modal = by_id["DISCORD_CHARACTER_RESPONSE_MODAL"]
+    require(wren_modal["used_by"] == ["P10.F2 transmission finding", "P10.F3 motive boundary"]
+            and "showModal" in wren_modal["primitive"]
+            and "observance:p10:wren-transmission:v1" in wren_modal["primitive"]
+            and "raw player prose is not stored" in wren_modal["data_shape_normalization"]
+            and "private guild" in wren_modal["proof"].casefold()
+            and "remain open" in wren_modal["proof"].casefold(),
+            "P10 character-response input lacks exact primitive, retention boundary, or honest client gap")
     if choreography["status"] != "offline_authored_not_deployed":
         projection = by_id.get("DISCORD_EVENT_PROJECTION", {})
         require("enforce_nonce=true" in projection.get("primitive", "")
