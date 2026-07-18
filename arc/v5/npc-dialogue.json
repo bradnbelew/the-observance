@@ -72,6 +72,10 @@
           "You found a different record in each of the seven houses. Averyn's list only made sense after you compared them at the base.",
           "The well reflects the sky again. It still tastes of iron, but that part has always been true."
         ],
+        "after_p8": [
+          "The lower draw runs clear now. Dob used your pressure reading on the patch behind my wall, and it stopped knocking before dawn.",
+          "Keep the old dirty sample. Clean water proves the repair worked; it does not erase what was in the pipe."
+        ],
         "coda": [
           "The white thread has gone slack. The reflection and the rope measure the same depth now; I checked twice.",
           "I've planted reeds along the bank. They should take if the water stays level."
@@ -137,6 +141,10 @@
         "after_c05": [
           "Three mineral seams crossed that crack before the fresh cut. The fracture was already moving.",
           "Iss added load to a failing bay. That made it worse, but it did not create the original break."
+        ],
+        "after_p8": [
+          "Your order held: filter, paired lamps, bypass, then the staff gate. Opening the gate first would have put someone under live pressure.",
+          "The old Hold repair and my surface patch use the same reed packing. I left your cut end beside mine so nobody can call that a coincidence later."
         ],
         "coda": [
           "I walked as far as the first gate this morning. It was open. I may go farther tomorrow.",

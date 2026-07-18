@@ -29,6 +29,12 @@ check(ARG_EVENT_DEFINITIONS['p7.nessa_publicly_cleared'].prerequisites[0]
   'P7 correct exoneration must not require material/source observation events');
 check(!migration.includes("('p7.nessa_publicly_cleared','P7','{p7.supplier_history_restored}'"),
   'database must not make the supplier restore a prerequisite for correct exoneration');
+check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].prerequisites[0]
+  === 'p7.nessa_publicly_cleared',
+  'P8 correct causal model must accept zero observation/source receipts after phase entry');
+check(ARG_EVENT_DEFINITIONS['p8.hold_systems_repaired'].prerequisites[0]
+  === 'p8.intervention_plan_accepted',
+  'P8 physical repair must project only after a bounded safe intervention plan');
 for (const table of ['arg_event_definitions', 'arg_events', 'arg_event_projections']) {
   check(migration.includes(`alter table public.${table} enable row level security`), `${table} must enable RLS`);
   check(migration.includes(`revoke all on public.${table} from public, anon, authenticated`),

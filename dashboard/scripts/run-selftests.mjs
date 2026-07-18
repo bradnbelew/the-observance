@@ -28,6 +28,7 @@ const tests = [
   'src/lib/copperline-p5-consequence.selftest.ts',
   'src/lib/copperline-p6-consequence.selftest.ts',
   'src/lib/copperline-p7-inquiry.selftest.ts',
+  'src/lib/copperline-p8-repair.selftest.ts',
   'src/lib/v5-cases.selftest.ts',
   'src/lib/v5-web-node-policy.selftest.ts',
   'src/lib/v5-ls02-docket.selftest.ts',

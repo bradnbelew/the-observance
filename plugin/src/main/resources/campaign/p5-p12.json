@@ -1616,16 +1616,16 @@
           ],
           "id": "P8.F3",
           "input_contract": {
-            "acceptance_owner": "two-component causal predicate",
+            "acceptance_owner": "three-component causal and intervention predicate",
             "accepted_answers_are_human_examples": true,
             "event": "p8.intervention_plan_accepted",
             "id": "P8.F3",
-            "implementation_status": "authored-not-runtime-proven",
-            "input_shape": "short correct-result and unsafe-remedy components",
+            "implementation_status": "runtime-wired-awaiting-private-client-proof",
+            "input_shape": "cause graph, Iss finding, and safe works-order components",
             "interpretive": true,
-            "platform": "Paper Dialog plus command fallback",
+            "platform": "Discord slash-command select fields",
             "runtime_exact_phrase": false,
-            "visible_trigger": "Iss intervention review",
+            "visible_trigger": "shared Break intervention review",
             "zero_observation_acceptance": true
           },
           "prompt": "What was Iss right about, and what made his remedy unsafe?",
@@ -1702,7 +1702,7 @@
             "accepted_answers_are_human_examples": true,
             "event": "p8.hold_systems_repaired",
             "id": "P8.F8",
-            "implementation_status": "legacy-physical-scaffolding-needs-reauthor",
+            "implementation_status": "runtime-wired-awaiting-fresh-paper-proof",
             "input_shape": "safe compatible repair state",
             "interpretive": true,
             "platform": "Minecraft Paper 1.21.11",
@@ -1722,11 +1722,11 @@
         }
       ],
       "consequence": {
-        "copperline": "A maintenance screenshot previously dismissed as corrupt is refiled as evidence that a copied room changed before its source.",
-        "discord": "The incident brief preserves five cause classes and separate repair receipts.",
+        "copperline": "The accepted plan is preserved, then gains the current group's works readback and Dob's surface-patch comparison without replacing the before state.",
+        "discord": "The incident brief preserves the interacting cause model and the tested works order.",
         "minecraft": "Cistern water clears, paired lamps return, the pressure bypass closes, and one safe route opens. The altered copy remains visible behind glass rather than being magically healed.",
         "npc": "Iss's remembered statement gains two annotations: SURFACE CLAIM SUPPORTED and ROUTE METHOD UNSAFE. Neither cancels the other.",
-        "state_event": "p8.break_reconstructed_and_hold_repaired"
+        "state_event": "p8.hold_systems_repaired"
       },
       "dramaturgical_rhythm": [
         "altered-space exploration",

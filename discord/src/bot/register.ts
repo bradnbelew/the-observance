@@ -127,6 +127,24 @@ export const investigateCommand = new SlashCommandBuilder()
       { name: 'she followed procedure and reported before the cloth began shedding', value: 'followed-and-reported-before-shedding' },
       { name: 'she noticed the failure but reported it too late', value: 'reported-late' },
       { name: 'the evidence cannot reach a conduct finding', value: 'no-conduct-finding' },
+    )))
+  .addSubcommand((subcommand) => subcommand
+    .setName('plan-repair')
+    .setDescription('publish a bounded Break model and safe works order.')
+    .addStringOption((option) => option.setName('cause-model').setDescription('which causes interact').setRequired(true).addChoices(
+      { name: 'old fracture + unchanged heat load + watch gap + late routing', value: 'fracture-heat-watch-routing' },
+      { name: 'Iss alone caused the Break when he cut the route', value: 'iss-alone' },
+      { name: 'the copied office caused every earlier material failure', value: 'copy-caused-all' },
+    ))
+    .addStringOption((option) => option.setName('iss-finding').setDescription('what the evidence supports about Iss').setRequired(true).addChoices(
+      { name: 'the surface proof was sound; his unreviewed route was unsafe', value: 'surface-true-route-unsafe' },
+      { name: 'the surface proof and route were both false', value: 'surface-and-route-false' },
+      { name: 'the surface proof made the unreviewed route safe', value: 'surface-made-route-safe' },
+    ))
+    .addStringOption((option) => option.setName('works-order').setDescription('the safe physical intervention order').setRequired(true).addChoices(
+      { name: 'water filter, paired light, pressure bypass, then staff route', value: 'water-light-pressure-route' },
+      { name: 'open the route first, then diagnose the live systems', value: 'route-first' },
+      { name: 'erase the copied office, then reset every gauge', value: 'erase-copy-reset' },
     )));
 
 /** Every rite, in registration order. */

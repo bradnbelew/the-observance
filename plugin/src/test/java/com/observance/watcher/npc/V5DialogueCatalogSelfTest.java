@@ -10,7 +10,7 @@ public final class V5DialogueCatalogSelfTest {
         require(V5DialogueCatalog.townsfolk().keySet().equals(
                 Set.of("aro", "wenna", "coll", "dob", "old_pell")), "townsfolk IDs drifted");
         require(V5DialogueCatalog.wren().id().equals("wren"), "Wren is missing");
-        require(V5DialogueCatalog.lineCount() == 77, "expected 77 exact dialogue lines");
+        require(V5DialogueCatalog.lineCount() == 81, "expected 81 exact dialogue lines");
         require(V5DialogueCatalog.townsperson("old-pell").anchorSite().equals("npc_old_pell_anchor"),
                 "Old Pell anchor normalization drifted");
         for (String id : Set.of("aro", "wenna", "coll", "dob")) {
@@ -18,7 +18,7 @@ public final class V5DialogueCatalogSelfTest {
                     id + " must have two exact P5 consequence lines");
         }
         require(V5DialogueCatalog.wren().states().size() == 10, "Wren needs ten V5 states");
-        System.out.println("V5DialogueCatalogSelfTest OK - 6 NPCs, 77 exact lines");
+        System.out.println("V5DialogueCatalogSelfTest OK - 6 NPCs, 81 exact lines");
     }
 
     private static void require(boolean condition, String message) {

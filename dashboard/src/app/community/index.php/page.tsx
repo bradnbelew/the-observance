@@ -21,6 +21,8 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const sixPeople = await hasCampaignEvent('p6.six_responsibilities_acknowledged');
   const materialProven = await hasCampaignEvent('p7.counterfeit_material_proven');
   const nessaCleared = await hasCampaignEvent('p7.nessa_publicly_cleared');
+  const p8Planned = await hasCampaignEvent('p8.intervention_plan_accepted');
+  const p8Repaired = await hasCampaignEvent('p8.hold_systems_repaired');
   const p5Posts = recurated === true ? [
     { date: 'February 16, 2011', user: 'ashfield', title: 'that room was a service counter', body: 'The uncropped frame has wick shears, school chalk, and sample rings. Copperline corrected the archive caption after the service-card review.', href: '/community/2011/02/16/service-counter' },
     ...posts,
@@ -37,7 +39,11 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     { date: 'March 14, 2011', user: 'mkept', title: 'correction to the cistern file', body: 'The material, labor, and record findings do not support the old accusation against Nessa Vale.', href: '/community/2011/03/14/nessa-correction' },
     ...materialPosts,
   ] : materialPosts;
-  const visible = user ? finalPosts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : finalPosts;
+  const p8Posts = p8Planned === true ? [
+    { date: 'April 2, 2011', user: 'ashfield', title: p8Repaired === true ? 'the Hold works: repair readback attached' : 'the Hold works: accepted plan', body: p8Repaired === true ? 'The current group restored water, paired light, pressure control, and the staff route in the tested order. Before and altered states remain preserved.' : 'The incident board keeps four interacting failures, Iss’s sound surface proof, his unsafe route, and a safe intervention order separate.', href: '/community/2011/04/02/hold-works' },
+    ...finalPosts,
+  ] : finalPosts;
+  const visible = user ? p8Posts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : p8Posts;
   return (
     <LegacyShell active="community">
       <Breadcrumbs>Community Blog</Breadcrumbs>
