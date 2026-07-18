@@ -35,6 +35,11 @@ the exact P1–P12 responsive case briefs and state choreography, rejects direct
 single-surface, interaction-free, no-world-response, and answer-box-dominant structures, preserves
 zero-receipt correctness and A0/A1 automation, and never treats its structural pass as Brad approval.
 
+`check_active_world_canon.py` rejects the retired literal-Seventh stone/empty-seat implementation in
+the active Paper world generator. It requires the approved relationship instead: six Keeper offices,
+seven practical Ways, a separately evidenced registrar/custody hand, and a four-person prior-company
+camp whose evidence does not print Wren's conclusion.
+
 `check_campaign_web.py` validates the executable connective tissue rather than isolated case packets.
 It resolves event references against the runtime catalog and evidence references against the authored
 P5-P12 cases, rejects isolated nodes and backward revelation edges, and requires every early plant or

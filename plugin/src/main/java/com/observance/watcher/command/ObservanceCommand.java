@@ -2458,17 +2458,17 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     "domestic or civic remnant where a kept lamp feels wrong but plausible",
                     "show warm/cold contrast, lamp focal shot, nearby record surface, and exit darkness");
             case "the_far_water" -> new PlacementBrief(
-                    "Sella mirror/count side proof",
+                    "Sella's survey-copy and custody side proof",
                     "on a real shoreline or pool edge where looking into water is natural",
-                    "mirror water, copybook shelf, six stones plus grey seventh, and return path");
+                    "mirror water, six survey stones, older return cut, copybook shelf, and return path");
             case "school_stand" -> new PlacementBrief(
                     "child-scale rule copying; the human thread gets a physical classroom scar",
                     "small civic remnant, not a full schoolhouse; the slate must face approach",
-                    "slate, copy-line, six stones, grey seventh marker, and exit shot");
+                    "slate, seven work headings, separate custody box, lived desks, and exit shot");
             case "markers_row" -> new PlacementBrief(
-                    "bow-count contradiction; six marks and the missing seventh",
+                    "category contradiction: six office stones and seven worker route marks",
                     "linear path where players can count while walking, with space to crouch",
-                    "full row, worn bow marks, hollow seventh, and view back along the row");
+                    "both complete rows, worn route marks, custody note, and view back along the path");
             case "cistern_7" -> new PlacementBrief(
                     "light fouled by water; Cistern 7 as a false-good utility place",
                     "low wet chamber or reservoir edge; black water must be visible on approach",
@@ -5752,7 +5752,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx, by, bz + 5).setType(Material.LIGHT_GRAY_CARPET, false);
 
         placeStandingSign(new Location(world, bx - 5, by, bz + 4), BlockFace.NORTH,
-                new String[]{"after the six", "do not enter", "with one kind", "of proof"});
+                new String[]{"KEEP BOTH", "VERSIONS", "mark source", "and time"});
         placeEditableStandingSign(new Location(world, bx, by, bz + 4), BlockFace.NORTH,
                 new String[]{"file", "missing", "condition", ""});
         placeStandingSign(new Location(world, bx + 5, by, bz + 4), BlockFace.NORTH,
@@ -5760,18 +5760,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         placeEvidenceLectern(new Location(world, bx - 7, by, bz - 2), BlockFace.EAST,
                 "case board", List.of(
-                        "The six stones are not the case. They are the index.\n\n" +
-                                "Before the lower rite opens, the record wants four kinds of proof: " +
-                                "keeper theory, Unlit recovery, side-site evidence, and human kindness.",
-                        "Keeper theory: say what each keeper broke, and which later place proves or corrects it.\n\n" +
-                                "Do not file a solved cipher as a theory unless the world also supports it.",
-                        "Side-site evidence: school, far water, markers, cistern, watch floor, shelf, seal, " +
-                                "mouth, market, ration table, third bay, warm collapse, and coops.\n\n" +
-                                "A visit is not enough if no one can say what changed.",
-                        "The failed camp beyond this board is not another keeper.\n\n" +
-                                "It is the control group: they had answers, but the record says no witness.",
-                        "The unwaxed sign between the labels is a filing slit, not a notice board.\n\n" +
-                                "Use it when the record asks for a condition rather than another solved cipher."
+                        "This table holds copies from different times. Keep the source, date, and revision with every claim.",
+                        "The six Keepers used different work formats. The seven Ways are procedures. Averyn's custody marks belong to neither count.",
+                        "School, water, road, market, watch, and household records repeat the same people. A changed copy matters only when another source fixes when it changed.",
+                        "The camp beyond this board belonged to mkept, Ash, Rook, and Wren. Their private changes appeared below before publication.",
+                        "Do not treat a decoded line as a conclusion. Test who could know it, which copy came first, and what changed after a player action."
                 ));
         placeEvidenceLectern(new Location(world, bx + 7, by, bz - 2), BlockFace.WEST,
                 "open rows", List.of(
@@ -5804,147 +5797,54 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         world.getBlockAt(bx, by - 1, bz).setType(Material.BLACKSTONE, false);
 
-        for (int x : new int[]{bx - 18, bx + 18}) {
-            for (int z : new int[]{bz - 10, bz, bz + 10}) {
-                buildPriorCampBay(world, x, by, z);
-            }
-        }
-        placePriorBedroll(world, bx - 18, by, bz - 10, Material.GRAY_CARPET, Material.LIGHT_GRAY_CARPET);
-        placePriorBedroll(world, bx - 18, by, bz, Material.BROWN_CARPET, Material.LIGHT_GRAY_CARPET);
-        placePriorBedroll(world, bx - 18, by, bz + 10, Material.BLACK_CARPET, Material.GRAY_CARPET);
-        placePriorBedroll(world, bx + 18, by, bz - 10, Material.GRAY_CARPET, Material.LIGHT_GRAY_CARPET);
-        placePriorBedroll(world, bx + 18, by, bz, Material.BROWN_CARPET, Material.LIGHT_GRAY_CARPET);
-        placePriorBedroll(world, bx + 18, by, bz + 10, Material.BLACK_CARPET, Material.GRAY_CARPET);
+        int[][] beds = {{-18, -9}, {-15, 10}, {18, -8}, {15, 11}};
+        for (int[] bed : beds) buildPriorCampBay(world, bx + bed[0], by, bz + bed[1]);
+        placePriorBedroll(world, bx - 18, by, bz - 9, Material.GRAY_CARPET, Material.LIGHT_GRAY_CARPET);
+        placePriorBedroll(world, bx - 15, by, bz + 10, Material.ORANGE_CARPET, Material.WHITE_CARPET);
+        placePriorBedroll(world, bx + 18, by, bz - 8, Material.BROWN_CARPET, Material.LIGHT_GRAY_CARPET);
+        placePriorBedroll(world, bx + 15, by, bz + 11, Material.GREEN_CARPET, Material.WHITE_CARPET);
 
-        placeEvidenceLectern(new Location(world, bx, by, bz - 3), BlockFace.SOUTH,
-                "failed inventory", List.of(
-                        "Copied after the refusal.\n\nSix stones solved. Six answers carried. Six tokens wrapped.",
-                        "No line names a person who could stand outside the finish and still say what happened.",
-                        "The old group brought a complete packet and no outside truth. That is the difference this camp preserves."
-                ));
+        Block common = world.getBlockAt(bx - 3, by, bz - 4);
+        common.setType(Material.BARREL, false);
+        putWrittenBook(common, 0, "camp return list", "mkept", List.of(
+                "Four bedrolls. Four lamp tins. Ash still owes Rook a dry pair of socks. Wren used the last tea and left the kettle clean.",
+                "Service 1842 holds the untouched world copy. New work stays in the camp copy until two of us compare it.",
+                "If one clock disagrees, keep both times. If one file disagrees, keep both files. -mkept"
+        ));
+        Block ashCase = world.getBlockAt(bx - 20, by, bz + 7);
+        ashCase.setType(Material.BARREL, false);
+        putWrittenBook(ashCase, 0, "frame log", "Ash", List.of(
+                "Locker 13: batteries, two clean cards, one cracked lens cap. Rook says the wall moved. I say his wall has always needed supervision.",
+                "Frame 4417 caught Wren looking toward the lower bridge before the switch moved. It proves where he looked, not what he knew.",
+                "Do not crop the kettle out again. It is the only thing in this camp with a reliable timeline. -Ash"
+        ));
+        world.getBlockAt(bx - 18, by, bz + 5).setType(Material.LOOM, false);
+        world.getBlockAt(bx - 14, by, bz + 6).setType(Material.CARTOGRAPHY_TABLE, false);
 
-        placePriorBedrollPacket(world, bx - 21, by, bz - 10, BlockFace.EAST,
-                "vaun packet", List.of(
-                        "Three tally knots. One ration tag rubbed clean.",
-                        "Their note starts with what Vaun held back. It never asks who the first share belonged to.",
-                        "Compare market debt before inventory."
-                ));
-        placePriorBedrollPacket(world, bx - 21, by, bz, BlockFace.EAST,
-                "mara packet", List.of(
-                        "A copied route, folded flat. No mud. No broken fern stem. No return scratch on the map.",
-                        "Their note proves the sentence travelled. It does not prove anyone did.",
-                        "Compare walked ground before filed ground."
-                ));
-        placePriorBedrollPacket(world, bx - 21, by, bz + 10, BlockFace.EAST,
-                "sella packet", List.of(
-                        "The grey seventh was circled as a copyist's stain.",
-                        "Their note trusts clean ink over a child, a cistern, and the water's copy.",
-                        "Compare later ink before neat count."
-                ));
-        placePriorBedrollPacket(world, bx + 21, by, bz - 10, BlockFace.WEST,
-                "orin packet", List.of(
-                        "The banner is folded above eye height.",
-                        "Their note calls the bow a price paid to the room. The low frames say it was how the room could be read.",
-                        "Compare posture before possession."
-                ));
-        placePriorBedrollPacket(world, bx + 21, by, bz, BlockFace.WEST,
-                "brann packet", List.of(
-                        "The toll is marked heard. The bedroll is still warm.",
-                        "Their note treats warning as completion. The watch floor keeps counting after the bell.",
-                        "Compare duration before alarm."
-                ));
-        placePriorBedrollPacket(world, bx + 21, by, bz + 10, BlockFace.WEST,
-                "iss packet", List.of(
-                        "The warm wall sentence is copied twice. The cold shelf mark is not copied at all.",
-                        "Their note asks whether comfort sounded kind. It never asks whether the land agreed.",
-                        "Compare cold proof before warm speech."
-                ));
+        Block rookCase = world.getBlockAt(bx + 20, by, bz - 5);
+        rookCase.setType(Material.BARREL, false);
+        putWrittenBook(rookCase, 0, "change order", "Rook", List.of(
+                "East throat blocked. Replacement bridge moved two blocks north. I marked the private drawing before anybody carried it below.",
+                "Ash was at the camera shelf. mkept was checking the host copy. Wren watched me redraw the span.",
+                "If the lower room returns this revision, the question is how it received private work. Do not turn that into an answer before we have the chain. -Rook"
+        ));
+        world.getBlockAt(bx + 18, by, bz - 3).setType(Material.STONECUTTER, false);
+        world.getBlockAt(bx + 15, by, bz - 5).setType(Material.SCAFFOLDING, false);
 
-        for (int dx = -1; dx <= 1; dx++) {
-            world.getBlockAt(bx + dx, by, bz + 7).setType(Material.LIGHT_GRAY_CARPET, false);
-        }
-        placeStandingSign(new Location(world, bx, by, bz + 6), BlockFace.NORTH,
-                new String[]{"blank place", "not empty", "unwitnessed", ""});
+        Block wrenCase = world.getBlockAt(bx + 18, by, bz + 8);
+        wrenCase.setType(Material.BARREL, false);
+        putWrittenBook(wrenCase, 0, "supply note", "Wren", List.of(
+                "Coll's route estimate is wrong. The camp is closer than the map says. I told him the longer walk because I did not want visitors following us in.",
+                "Ash: your tea is under the green blanket. Rook: I found the missing chalk. mkept: the host ticket answered, but I have not opened the attachment.",
+                "The lower place repeats details we did not publish. I am trying to learn what counts as giving it something. -Wren"
+        ));
+        world.getBlockAt(bx + 13, by, bz + 7).setType(Material.CAULDRON, false);
+        world.getBlockAt(bx + 12, by, bz + 10).setType(Material.FLOWER_POT, false);
 
-        placeStandingSign(new Location(world, bx - 4, by, bz - 7), BlockFace.NORTH,
-                new String[]{"same answers", "same stones", "no witness", ""});
-        placeEditableStandingSign(new Location(world, bx, by, bz - 7), BlockFace.NORTH,
-                new String[]{"file", "correction", "here", ""});
-        placeStandingSign(new Location(world, bx + 4, by, bz - 7), BlockFace.NORTH,
-                new String[]{"correct", "the file", "before rite", ""});
-        // Central grey correction light keeps the prior-run state legible from the camp entrance;
-        // the six packet candles remain distributed at their individual bedrolls.
-        world.getBlockAt(bx - 2, by, bz - 5).setType(Material.GRAY_CANDLE, false);
-
-        placeEvidenceLectern(new Location(world, bx - 23, by, bz - 10), BlockFace.EAST,
-                "accepting record, failed", List.of(
-                        "Six arrived with six stones and six answers. They called that enough.",
-                        "The floor took their tokens and returned nothing.\n\nThe seventh place was not empty. It was unwitnessed.",
-                        "Correction line: no witness is not a missing person. It is a missing relation.\n\nNo one outside the finish could say what was true."
-                ));
-        placeEvidenceLectern(new Location(world, bx + 23, by, bz - 10), BlockFace.WEST,
-                "witness condition", List.of(
-                        "A witness cannot be another token in the bowl.",
-                        "A witness stands outside the wish to finish and still carries the truth back.",
-                        "If the next rite repeats this camp, the Hold will count it as another kept thing.",
-                        "The unwaxed signs by the repair files are filing slits.\n\n" +
-                                "Do not file a correction until this camp file and a living site both agree."
-                ));
-
-        placePriorCorrectionBarrel(world, bx - 13, by, bz + 2, BlockFace.EAST,
-                "vaun correction", List.of(
-                        "Prior file: Vaun held three back. The old group treated the held count as the lesson and called the hoard holy.",
-                        "Market and ration proof disagree. The first share was already owed before anyone made an inventory.",
-                        "File the repair as order, not math: return first before count."
-                ));
-        placeEditableStandingSign(new Location(world, bx - 12, by, bz + 2), BlockFace.EAST,
-                new String[]{"file", "vaun", "repair", ""});
-        placePriorCorrectionBarrel(world, bx - 10, by, bz + 6, BlockFace.NORTH,
-                "mara correction", List.of(
-                        "Prior file: Mara's sentence was copied cleanly into the packet.",
-                        "The map markers disagree with clean copying. The route becomes proof only when feet take the risk the page describes.",
-                        "File the repair as action before archive: walk it before filing it."
-                ));
-        placeEditableStandingSign(new Location(world, bx - 10, by, bz + 5), BlockFace.NORTH,
-                new String[]{"file", "mara", "repair", ""});
-        placePriorCorrectionBarrel(world, bx - 4, by, bz + 7, BlockFace.NORTH,
-                "sella correction", List.of(
-                        "Prior file: the grey seventh was marked later, therefore false.",
-                        "School, water, and cistern evidence disagree. Later ink is how a living absence finally entered the record.",
-                        "File the repair as count order: count the seventh before the six."
-                ));
-        placeEditableStandingSign(new Location(world, bx - 4, by, bz + 6), BlockFace.NORTH,
-                new String[]{"file", "sella", "repair", ""});
-        placePriorCorrectionBarrel(world, bx + 4, by, bz + 7, BlockFace.NORTH,
-                "orin correction", List.of(
-                        "Prior file: the bow was logged as payment.",
-                        "The low frames disagree. Crouching makes the mark legible without letting the reader stand over it.",
-                        "File the repair as posture, not tribute: bowing is proof, not payment."
-                ));
-        placeEditableStandingSign(new Location(world, bx + 4, by, bz + 6), BlockFace.NORTH,
-                new String[]{"file", "orin", "repair", ""});
-        placePriorCorrectionBarrel(world, bx + 10, by, bz + 6, BlockFace.NORTH,
-                "brann correction", List.of(
-                        "Prior file: the toll was heard, so the watch was complete.",
-                        "The corridor and watch floor disagree. A bell only starts the duty; sleep after the warning is still absence.",
-                        "File the repair as duration: the watch must be kept."
-                ));
-        placeEditableStandingSign(new Location(world, bx + 10, by, bz + 5), BlockFace.NORTH,
-                new String[]{"file", "brann", "repair", ""});
-        placePriorCorrectionBarrel(world, bx + 13, by, bz + 2, BlockFace.WEST,
-                "iss correction", List.of(
-                        "Prior file: the warm wall was mercy.",
-                        "The cold land, shelf, and collapse disagree. Comfort can be cover when it refuses the count outside itself.",
-                        "File the repair as cross-check: test warmth against the land."
-                ));
-        placeEditableStandingSign(new Location(world, bx + 12, by, bz + 2), BlockFace.WEST,
-                new String[]{"file", "iss", "repair", ""});
-
-        for (int dx : new int[]{-24, 24}) {
-            for (int dz : new int[]{-15, 0, 15}) {
-                world.getBlockAt(bx + dx, by, bz + dz).setType(Material.SOUL_LANTERN, false);
-            }
-        }
+        placeStandingSign(new Location(world, bx, by, bz - 7), BlockFace.NORTH,
+                new String[]{"CAMP SUPPLY", "RETURN LIST", "keep both", "copies"});
+        world.getBlockAt(bx - 2, by, bz - 5).setType(Material.LANTERN, false);
+        world.getBlockAt(bx + 2, by, bz - 5).setType(Material.SOUL_LANTERN, false);
         placeDecorativeBookshelf(world.getBlockAt(bx - 23, by, bz + 15), 233, BlockFace.NORTH);
         placeDecorativeBookshelf(world.getBlockAt(bx + 23, by, bz + 15), 241, BlockFace.NORTH);
     }
@@ -6388,13 +6288,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         placeDecorativeBookshelf(world.getBlockAt(bx - 5, by, bz + 4), 11, BlockFace.NORTH);
-        world.getBlockAt(bx + 4, by, bz - 4).setType(Material.GRAY_CONCRETE, false);
+        // Seven work headings were taught here, but the six civic administrators signed the
+        // teaching copy in a different system. The separate copper file box belongs to the
+        // registrar/custody office; it is not a literal seventh Keeper marker.
+        for (int dx = -3; dx <= 3; dx++) {
+            world.getBlockAt(bx + dx, by, bz + 2).setType(Material.POLISHED_TUFF_SLAB, false);
+        }
+        world.getBlockAt(bx + 4, by, bz - 4).setType(Material.CUT_COPPER, false);
         world.getBlockAt(bx + 5, by, bz + 4).setType(Material.BARREL, false);
         placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.EAST,
-                "copy line", List.of(
-                        "keep your light.",
-                        "keep your light.",
-                        "six stones copied the line. the grey one did not."
+                "school copybook", List.of(
+                        "Seven jobs keep a shelter running: count, copy, teach, mend, watch, warm, and return.",
+                        "The lesson copy names six office leads. A different hand checked who carried each copy home.",
+                        "Toma wrote: I can do the pump lesson. I still do not know why Nessa's name was scraped from the return column."
                 ));
     }
 
@@ -6405,14 +6311,19 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(x, by + 1, bz).setType(Material.COBBLED_DEEPSLATE_WALL, false);
             world.getBlockAt(x, by, bz - 1).setType(Material.BROWN_CARPET, false);
         }
-        world.getBlockAt(bx + 7, by - 1, bz).setType(Material.SOUL_SAND, false);
-        world.getBlockAt(bx + 7, by, bz).setType(Material.GRAY_CONCRETE, false);
-        world.getBlockAt(bx + 7, by + 1, bz).setType(Material.GRAY_CANDLE, false);
+        // A second, deliberately different seven-part maintenance rail runs beside the six
+        // administrator stones. This is the fair category mismatch, not an empty seventh seat.
+        for (int i = 0; i < 7; i++) {
+            int x = bx - 6 + (i * 2);
+            world.getBlockAt(x, by, bz + 1).setType(Material.POLISHED_TUFF_SLAB, false);
+        }
+        world.getBlockAt(bx + 7, by, bz).setType(Material.CUT_COPPER, false);
+        world.getBlockAt(bx + 7, by + 1, bz).setType(Material.LANTERN, false);
         placeEvidenceLectern(new Location(world, bx - 8, by, bz + 2), BlockFace.SOUTH,
-                "marker row", List.of(
-                        "six stones were set for bowing.",
-                        "one hollow was left at the end.",
-                        "count again after the winter mark."
+                "road crew tally", List.of(
+                        "Six office stones were reset after the freeze. The crew also renewed seven route marks used by workers.",
+                        "Do not add an office stone to make the counts match. They count different things.",
+                        "Orin signed the stone work. The return rail was checked in a smaller hand and later scraped."
                 ));
     }
 
@@ -6441,10 +6352,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx - 5, by, bz + 3).setType(Material.BARREL, false);
         world.getBlockAt(bx - 4, by, bz + 3).setType(Material.BARREL, false);
         placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.EAST,
-                "cistern seven", List.of(
-                        "good oil: two jars.",
-                        "the water gave light back wrong.",
-                        "the seventh mark is under the dark surface."
+                "cistern return slip", List.of(
+                        "Good oil: two jars. Spoiled oil: one jar. Nessa returned both good jars after the west lamp test.",
+                        "The public copy keeps the jar count but removes her name. A later finish covers the old return line below the water mark.",
+                        "The reflection is useful only for finding the older cut. It does not tell you who changed the copy."
                 ));
     }
 
@@ -6512,6 +6423,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         world.getBlockAt(bx, by, bz - 3).setType(Material.SEA_LANTERN, false);
+        for (int i = 0; i < 6; i++) {
+            int x = bx - 5 + (i * 2);
+            world.getBlockAt(x, by, bz + 3).setType(Material.CHISELED_DEEPSLATE, false);
+        }
+        // One older custody cut lies under the repaired water face. It is evidence on a different
+        // plane, not a seventh member of the survey-stone row.
+        world.getBlockAt(bx, by - 1, bz + 1).setType(Material.CUT_COPPER, false);
         placeDecorativeBookshelf(world.getBlockAt(bx - 7, by, bz - 3), 41, BlockFace.NORTH);
         world.getBlockAt(bx + 7, by, bz + 3).setType(Material.BARREL, false);
         placeEvidenceLectern(new Location(world, bx - 6, by, bz + 4), BlockFace.SOUTH,
@@ -6721,14 +6639,15 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
             world.getBlockAt(x + 1, by, bz).setType(i == 2 ? Material.GRAY_CARPET : Material.WHITE_CARPET, false);
         }
-        // Registered focal: a non-coop witness mark centered between the four visible cage groups.
+        // Registered focal: the shared feed scale centered between the four visible cage groups.
         world.getBlockAt(bx, by, bz).setType(Material.CHISELED_TUFF, false);
         world.getBlockAt(bx, by + 1, bz).setType(Material.GRAY_CANDLE, false);
         world.getBlockAt(bx, by, bz + 3).setType(Material.BARREL, false);
         placeEvidenceLectern(new Location(world, bx - 5, by, bz + 3), BlockFace.SOUTH,
-                "coop count", List.of(
-                        "six coops were paid for.",
-                        "the seventh mark is not a coop. It is a witness space."
+                "coop handoff", List.of(
+                        "Four coops were repaired for the air test. Two watch hands signed the feed and latch check.",
+                        "The clean archive copy keeps both jobs but only one signature. The missing hand also disappears from the cistern return.",
+                        "Third latch opened from outside. That is a fault to test, not proof that the missing worker opened it."
                 ));
     }
 
@@ -6817,20 +6736,27 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
     private void buildHoldRosettaCore(World world, int bx, int by, int bz) {
         buildHoldStoneReadingFloor(world, bx, by, bz, Material.CHISELED_TUFF);
+        Material[] officeFormats = {
+                Material.COPPER_BLOCK, Material.BOOKSHELF, Material.PRISMARINE_BRICKS,
+                Material.CHISELED_DEEPSLATE, Material.GOLD_BLOCK, Material.SMOOTH_RED_SANDSTONE
+        };
+        for (int i = 0; i < officeFormats.length; i++) {
+            int x = bx - 6 + (i * 2);
+            world.getBlockAt(x, by, bz).setType(officeFormats[i], false);
+            world.getBlockAt(x, by + 1, bz).setType(Material.WHITE_CANDLE, false);
+        }
         for (int i = 0; i < 7; i++) {
             int x = bx - 6 + (i * 2);
-            Material mat = i == 6 ? Material.GRAY_CONCRETE : Material.CHISELED_DEEPSLATE;
-            world.getBlockAt(x, by, bz).setType(mat, false);
-            world.getBlockAt(x, by + 1, bz).setType(i == 6 ? Material.BLACK_CANDLE : Material.WHITE_CANDLE, false);
+            world.getBlockAt(x, by, bz - 2).setType(Material.POLISHED_TUFF_SLAB, false);
         }
         placeEvidenceLectern(new Location(world, bx - 4, by, bz + 3), BlockFace.EAST,
                 "rosetta cover", List.of(
-                        "The runes are not a secret alphabet. They are a clerk's shortcut for things the Keepers already knew.",
-                        "Six hands were copied clean. The grey seventh was copied after the room was built.",
-                        "Read the stone, then read the copy. The order is the first lie."
+                        "These marks are office shortcuts, not a secret alphabet. Each of the six leads wrote the same jobs in a different form.",
+                        "The lower rail has seven work headings. The upper row has six office formats. Do not invent a seventh official to make the rows match.",
+                        "The unsigned return marks use a consistent low hand. Later copies preserve the marks while removing the person's name."
                 ));
         placeStandingSign(new Location(world, bx + 6, by, bz + 3), BlockFace.WEST,
-                new String[]{"six copied", "one added", "low hand", "low truth"});
+                new String[]{"six offices", "seven jobs", "return hand", "scraped out"});
         // Keep the registered anchor on the actual Rosetta focal stone so runtime audit and
         // interaction proximity cannot point at an arbitrary floor tile.
         world.getBlockAt(bx, by, bz).setType(Material.CHISELED_TUFF, false);
@@ -8241,9 +8167,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if (world == null) return;
         placeHoldRecordStation(world, bx + 10, by - 24, bz + 76, BlockFace.WEST,
                 "mouth register", List.of(
-                        "Entry-mouth census.\n\nSix signed before the covered descent. A seventh mark was added later in grey ink and never matched a hand.",
-                        "Do not call the grey line a prophecy. It is a correction made after the stair was sealed.",
-                        "Later copies turned the six hand marks into rows for entry. One row stayed blank, but the lock still counted it.",
+                        "Entry-mouth census.\n\nSix office leads signed before the covered descent. A separate clerk checked the household copies returned from below.",
+                        "The later public copy keeps the six signatures but scrapes the return clerk's name from the custody column.",
+                        "Seven procedure headings remain: count, copy, teach, mend, watch, warm, and return. They are jobs, not seven officials.",
                         "The first report stays above because the first count was public. The Hold keeps the copy that proves the public story changed."
                 ), 101);
         placeStandingSign(new Location(world, bx + 6, by - 24, bz + 76), BlockFace.WEST,
@@ -8252,11 +8178,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         placeHoldRecordStation(world, bx - 18, by - 28, bz + 154, BlockFace.EAST,
                 "court census", List.of(
                         "Keeper court seating.\n\nVaun, Mara, Sella, Orin, Brann, Iss. Six chairs were cut into the ring before any lower work began.",
-                        "Margin correction: one place was not cut. It was reserved by leaving the count unfinished.",
-                        "When seven appears where six were built, trust the physical room over the speech."
+                        "The work ledger beside it has seven procedure headings. The mismatch is between people and jobs, not a missing chair.",
+                        "A registrar tied copies to households without holding a Keeper seat. Later clerks kept the custody marks and removed the attribution."
                 ), 117);
         placeStandingSign(new Location(world, bx - 14, by - 28, bz + 154), BlockFace.EAST,
-                new String[]{"six seats", "one margin", "count the", "stone"});
+                new String[]{"six seats", "seven jobs", "different", "counts"});
 
         placeHoldRecordStation(world, bx - 16, by - 24, bz + 282, BlockFace.EAST,
                 "intake rail", List.of(
@@ -8269,13 +8195,13 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         placeHoldRecordStation(world, bx - 98, by - 28, bz + 518, BlockFace.EAST,
                 "prior roster", List.of(
-                        "Prior accepting roster.\n\nSix names copied clean. Six keeper answers filed. Six tokens prepared.",
-                        "Seventh line: no witness.\n\nDo not correct this to no seventh. The failed run had no one outside the finish.",
-                        "The camp beyond this gate is not locked because it is sacred. It is locked because the same mistake should not be rehearsed twice.",
-                        "Open condition to file: no witness."
+                        "Camp return roster.\n\nmkept, Ash, Rook, Wren. Four bedrolls, four lamp tins, two world copies, one host attachment left unopened.",
+                        "mkept kept both versions when their clocks disagreed. Ash kept full frames. Rook marked private changes. Wren controlled more routes than he admitted.",
+                        "The camp beyond this gate is held because its evidence chain is unfinished, not because it is sacred.",
+                        "A copied private change proves the lower place received something. It does not by itself prove who sent it."
                 ), 139);
         placeStandingSign(new Location(world, bx - 94, by - 28, bz + 518), BlockFace.EAST,
-                new String[]{"prior run", "six ready", "no witness", ""});
+                new String[]{"camp return", "keep both", "copies", ""});
 
         placeHoldRecordStation(world, bx + 16, by - 24, bz + 282, BlockFace.WEST,
                 "closure docket", List.of(
@@ -11338,10 +11264,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private String[] fixtureLoreFragments(String id) {
         return switch (id) {
             case "far_water" -> new String[]{
-                    "Shore watch note:\n\nAt dusk the far pool reflects six pale stones and one grey. Count the real bank first; the water is only useful after the land count is honest.",
+                    "Shore watch note:\n\nAt dusk the pool reflects the six survey stones. One return cut is visible only in the water because a later repair covers its face.",
                     "Teacher to Sella:\n\n\"Your letters are correct. Your order is not. Bring the slate back before rain gets into it.\"",
                     "Found under a wet plank:\n\nSmall prints at the reeds, adult boots after. No return marks on the mud side.",
-                    "Archive tag:\n\nFile with Sella, not with weather. This place proves the grey seventh was seen before anyone called it rumor."
+                    "Archive tag:\n\nFile with Sella, not with weather. The older return cut matches the hand removed from the school and cistern copies."
             };
             case "school_stand" -> new String[]{
                     "Copybook exercise:\n\nKeep your light.\nCount your light.\nReturn your light.\n\nThe last line is crossed out by a different hand.",
@@ -11350,14 +11276,14 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     "Conversation copied by Nessa:\n\n\"She only wrote what she saw.\"\n\"Then move what she saw.\""
             };
             case "markers_row" -> new String[]{
-                    "Mason tally:\n\nSix bow stones set level. One grey marker added after payment and not in the first order.",
-                    "Road crew note:\n\nDo not repaint the arrow until Orin confirms whether the low mark is a mistake. His hall repeats the count lower.",
-                    "Complaint:\n\nTravelers bow at the wrong place because the grey marker looks official.",
-                    "Count card:\n\nBegin at the chipped edge. Starting clean changes the answer."
+                    "Mason tally:\n\nSix office stones reset. Seven low route marks renewed for workers carrying goods through the Hold.",
+                    "Road crew note:\n\nDo not turn the route rail into an office count. Orin says the two rows were made for different jobs.",
+                    "Complaint:\n\nTravelers keep stopping at the office stones while loaded crews use the lower rail and pass through.",
+                    "Count card:\n\nThe return checker signed the low rail. The name was scraped, but the hand matches the wet cut at the cistern."
             };
             case "cistern_7" -> new String[]{
-                    "Cistern receipt:\n\nGood oil: two jars.\nSpoiled oil: one jar.\nSeven cups reserved for the lower work.",
-                    "Utility notice:\n\nThe seventh measure is held back until all lamps are named. Vaun objected in writing.",
+                    "Cistern receipt:\n\nGood oil: two jars.\nSpoiled oil: one jar.\nNessa returned the good jars after the west lamp test.",
+                    "Utility notice:\n\nKeep the return copy until every lamp is checked. Vaun objected when the public ledger dropped the worker's name.",
                     "Complaint left in the drain:\n\nSomeone keeps calling it waste. It is not waste if the stair stays lit. The first dark was managed, not weather.",
                     "Inspection line:\n\nCopper bulb replaced. Water line remains below safe mark."
             };
@@ -11416,9 +11342,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                     "Counter scratch:\n\nPaid, absent, counted. The three words were written by different hands."
             };
             case "deep_bird_coops" -> new String[]{
-                    "Coop register:\n\nSix enclosures paid. Six birds entered. The grey mark beside them is not another cage.",
-                    "Feed tally:\n\nThe seventh share was carried past the coops and never entered as feed.",
-                    "Keeper note:\n\nA witness place is not an empty pen. Stop correcting the count to seven cages.",
+                    "Coop register:\n\nFour enclosures repaired for the air test. Two watch hands checked feed and latches.",
+                    "Feed tally:\n\nThe public copy keeps both jobs but drops the same return hand missing from the cistern slip.",
+                    "Keeper note:\n\nA missing signature is not an empty cage. Check which copy was made first.",
                     "Latch report:\n\nThird latch opened from outside. No feather trail returns through the market."
             };
             default -> new String[0];
@@ -11629,11 +11555,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         world.getBlockAt(bx - 3, by + 2, bz + 3).setType(Material.LANTERN, false);
 
-        for (int dx = -3; dx <= 2; dx++) {
-            world.getBlockAt(bx + dx, by, bz + 1).setType(Material.COBBLESTONE, false);
+        for (int dx = -3; dx <= 3; dx++) {
+            world.getBlockAt(bx + dx, by, bz + 1).setType(Material.POLISHED_TUFF_SLAB, false);
         }
-        world.getBlockAt(bx + 3, by, bz + 1).setType(Material.GRAY_CONCRETE, false);
-        world.getBlockAt(bx + 3, by + 1, bz + 1).setType(Material.GRAY_CANDLE, false);
+        world.getBlockAt(bx + 3, by + 1, bz + 1).setType(Material.LANTERN, false);
+        world.getBlockAt(bx + 3, by, bz - 2).setType(Material.CUT_COPPER, false);
 
         for (int dx = -2; dx <= 2; dx++) {
             world.getBlockAt(bx + dx, by, bz - 1).setType(Material.DARK_OAK_SLAB, false);
@@ -11644,10 +11570,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx, by + 1, bz + 3).setType(Material.WHITE_CARPET, false);
 
         placeEvidenceLectern(new Location(world, bx - 4, by, bz), BlockFace.EAST,
-                "copy line", List.of(
-                        "keep your light.",
-                        "keep your light.",
-                        "six stones copied the line. the grey one did not."
+                "school copybook", List.of(
+                        "Seven jobs keep a shelter running: count, copy, teach, mend, watch, warm, and return.",
+                        "The lesson copy names six office leads. A different hand checked who carried each copy home.",
+                        "Toma wrote: I can do the pump lesson. I still do not know why Nessa's name was scraped from the return column."
                 ));
         world.getBlockAt(bx + 4, by, bz).setType(Material.LIGHT_GRAY_CARPET, false);
     }
@@ -11676,15 +11602,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             world.getBlockAt(x, by + 1, bz).setType(Material.COBBLED_DEEPSLATE_WALL, false);
             world.getBlockAt(x, by, bz - 1).setType(Material.BROWN_CARPET, false);
         }
-        world.getBlockAt(bx + 7, by - 1, bz).setType(Material.SOUL_SAND, false);
-        world.getBlockAt(bx + 7, by, bz).setType(Material.GRAY_CONCRETE, false);
+        for (int i = 0; i < 7; i++) {
+            int x = bx - 6 + (i * 2);
+            world.getBlockAt(x, by, bz + 1).setType(Material.POLISHED_TUFF_SLAB, false);
+        }
+        world.getBlockAt(bx + 7, by, bz).setType(Material.CUT_COPPER, false);
         world.getBlockAt(bx + 7, by, bz - 1).setType(Material.AIR, false);
-        world.getBlockAt(bx + 7, by + 1, bz).setType(Material.GRAY_CANDLE, false);
+        world.getBlockAt(bx + 7, by + 1, bz).setType(Material.LANTERN, false);
         placeEvidenceLectern(new Location(world, bx - 7, by, bz + 2), BlockFace.SOUTH,
-                "marker row", List.of(
-                        "six stones were set for bowing.",
-                        "one hollow was left at the end.",
-                        "count again after the winter mark."
+                "road crew tally", List.of(
+                        "Six office stones were reset after the freeze. The crew also renewed seven route marks used by workers.",
+                        "Do not add an office stone to make the counts match. They count different things.",
+                        "Orin signed the stone work. The return rail was checked in a smaller hand and later scraped."
                 ));
         world.getBlockAt(bx + 4, by, bz + 2).setType(Material.POLISHED_BLACKSTONE_PRESSURE_PLATE, false);
     }
@@ -11725,10 +11654,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx + 3, by, bz + 3).setType(Material.LANTERN, false);
         world.getBlockAt(bx + 3, by - 1, bz + 1).setType(materialOr(Material.WEATHERED_CUT_COPPER, "COPPER_BULB", "OXIDIZED_COPPER_BULB"), false);
         placeEvidenceLectern(new Location(world, bx - 5, by, bz - 2), BlockFace.EAST,
-                "cistern seven", List.of(
-                        "good oil: two jars.",
-                        "the water gave light back wrong.",
-                        "the seventh mark is under the dark surface."
+                "cistern return slip", List.of(
+                        "Good oil: two jars. Spoiled oil: one jar. Nessa returned both good jars after the west lamp test.",
+                        "The public copy keeps the jar count but removes her name. A later finish covers the old return line below the water mark.",
+                        "The reflection is useful only for finding the older cut. It does not tell you who changed the copy."
                 ));
         world.getBlockAt(bx + 5, by, bz - 2).setType(Material.DARK_PRISMARINE_SLAB, false);
     }
@@ -13232,8 +13161,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("[side/lore lanes]");
         sender.sendMessage("  Fast pass: /obs sidepass, then right-click aro, wenna, coll, dob, old-pell, Wren, and the Keeper.");
         sender.sendMessage("  Dialogue proof: /obs descentproof, then verify Aro/Coll/Wenna lines point to real places.");
-        sender.sendMessage("  School proof: inspect school_stand; the slate, copy-line, and grey seventh must read without narration.");
-        sender.sendMessage("  Far-water proof: inspect the_far_water; Sella's mirror/count evidence must read from water, stones, and the seventh marker.");
+        sender.sendMessage("  School proof: inspect school_stand; seven work headings, six office leads, and the separate custody hand must read without a seventh-Keeper prop.");
+        sender.sendMessage("  Far-water proof: inspect the_far_water; the reflected older return cut must connect to the school/cistern custody hand without narration.");
         sender.sendMessage("  Count/light/watch proof: inspect markers_row, cistern_7, and watch_floor; each must teach a custom through a place, not a paragraph.");
         sender.sendMessage("  Entry/seal/way-up proof: inspect set_apart_shelf, undercroft_seal, and forgotten_mouth; the line, low read, and return mark must be physically legible.");
         sender.sendMessage("  Bird proof: inspect deep_bird_coops; Aro's old-bird/coops rumor must resolve to visible empty cages.");
@@ -14013,11 +13942,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        for (int dx = -3; dx <= 3; dx++) {
-            Material marker = dx == 3 ? Material.CRACKED_DEEPSLATE_BRICKS : Material.CHISELED_DEEPSLATE;
-            world.getBlockAt(bx + dx, by, bz + 4).setType(marker, false);
-            if (dx == 3) world.getBlockAt(bx + dx, by + 1, bz + 4).setType(Material.GRAY_CANDLE, false);
+        for (int i = 0; i < 6; i++) {
+            int x = bx - 5 + (i * 2);
+            world.getBlockAt(x, by, bz + 4).setType(Material.CHISELED_DEEPSLATE, false);
         }
+        world.getBlockAt(bx, by - 1, bz + 1).setType(Material.CUT_COPPER, false);
 
         for (int dy = 0; dy <= 3; dy++) {
             world.getBlockAt(bx - 5, by + dy, bz - 2).setType(dy == 3 ? Material.SEA_LANTERN : Material.DARK_PRISMARINE, false);
@@ -14028,9 +13957,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         placeDecorativeBookshelf(world.getBlockAt(bx - 2, by, bz - 3), 53);
         placeEvidenceLectern(new Location(world, bx + 2, by, bz - 3), BlockFace.WEST,
                 "far water copy", List.of(
-                        "six stones and one grey.",
-                        "face the water and read what holds still.",
-                        "the line is not straight when the copy gives it back."
+                        "Six survey stones stand on the bank. Face the water to find an older return cut under the repaired face.",
+                        "The same low hand checked the school and cistern copies before its name was removed.",
+                        "The water shows the older cut. It does not decide why the later copy hid it."
                 ));
         world.getBlockAt(bx - 4, by, bz + 4).setType(Material.LIGHT_GRAY_CARPET, false);
         world.getBlockAt(bx + 4, by, bz - 3).setType(Material.DARK_PRISMARINE_SLAB, false);
@@ -16644,9 +16573,10 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         }
         if ("rune_rosetta".equals(site.id())
                 && (block.getType() != Material.CHISELED_TUFF
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CUT_COPPER)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.POLISHED_TUFF_SLAB)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
-            return "FAIL " + site.id() + ": expected Hold-native Rosetta stones, grey seventh mark, and record lectern.";
+            return "FAIL " + site.id() + ": expected six office formats, seven-part work rail, and record lectern.";
         }
         if ("stone_of_reckoning".equals(site.id())
                 && (block.getType() != Material.CHISELED_TUFF
@@ -16686,7 +16616,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CANDLE))) {
-            return "FAIL " + site.id() + ": expected prior-run campfire, blank witness place, bedrolls, exact V5 stations, and record mounts.";
+            return "FAIL " + site.id() + ": expected four-person campfire site, bedrolls, personal work zones, exact runtime stations, and record mounts.";
         }
         if ("failed_accepting".equals(site.id())
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_TUFF)
@@ -16740,16 +16670,18 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         if ("school_stand".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.BLACK_CONCRETE)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CUT_COPPER)
+                || countMaterialNear(loc, Math.max(3, site.radius()), Material.POLISHED_TUFF_SLAB, 7) < 7
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
-            return "FAIL " + site.id() + ": expected school slate, copybook shelf, six stones, grey seventh marker, and copy-line book inside radius.";
+            return "FAIL " + site.id() + ": expected school slate, copybook shelf, seven work headings, custody box, and copybook inside radius.";
         }
         if ("markers_row".equals(type)
-                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_DEEPSLATE)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CONCRETE)
+                && (countMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_DEEPSLATE, 6) < 6
+                || countMaterialNear(loc, Math.max(3, site.radius()), Material.POLISHED_TUFF_SLAB, 7) < 7
+                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CUT_COPPER)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BROWN_CARPET)
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN))) {
-            return "FAIL " + site.id() + ": expected six bow-stones, worn bow marks, grey seventh hollow, and marker-row book inside radius.";
+            return "FAIL " + site.id() + ": expected six office stones, seven worker route marks, custody box, and road-crew book inside radius.";
         }
         if ("cistern_7".equals(type)
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.DARK_PRISMARINE)
