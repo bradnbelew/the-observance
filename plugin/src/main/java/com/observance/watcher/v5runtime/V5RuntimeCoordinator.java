@@ -114,6 +114,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private final BukkitContainerCustody custody;
     private final V5RemoteStateCache remote;
     private final P5CurationRuntime p5Curation;
+    private final P6ResponsibilityDialogRuntime p6ResponsibilityDialog;
 
     private final V5MechanicsEngine mechanics;
     private final V5PhysicalMechanicsListener mechanicsListener;
@@ -147,6 +148,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         this.custody = new BukkitContainerCustody(plugin, base.resolve("container-custody"));
         this.remote = new V5RemoteStateCache(plugin, authority, progress);
         this.p5Curation = new P5CurationRuntime(plugin, progress, this::onP5CurationChanged);
+        this.p6ResponsibilityDialog = new P6ResponsibilityDialogRuntime(plugin, this);
 
         RitualAuthorityContract ritualAuthority = new RitualAuthorityContract(authority);
         CanonicalRitualText ritualText = new CanonicalRitualText(ritualAuthority);
@@ -246,6 +248,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             mechanicsListener.start();
             ritualController.start();
             p5Curation.start();
+            p6ResponsibilityDialog.start();
 
             // This is deliberately last: an active registry certifies that every exact family is live.
             V5RuntimePredicateRegistry.activate(authority);
@@ -291,6 +294,11 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
 
     public boolean p6ResponsibilityAccepted() {
         return progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT);
+    }
+
+    /** Primary structured P6 input; the command fallback uses the same predicate. */
+    public void openP6ResponsibilityDocket(Player player) {
+        p6ResponsibilityDialog.open(player);
     }
 
     public boolean p9BiographiesAccepted() {
@@ -1069,6 +1077,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         }
         remote.close();
         p5Curation.close();
+        p6ResponsibilityDialog.close();
         ritualController.close();
         if (mechanicsListener != null) mechanicsListener.close();
         HandlerList.unregisterAll(this);

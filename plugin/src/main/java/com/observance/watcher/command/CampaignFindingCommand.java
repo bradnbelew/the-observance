@@ -89,6 +89,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                         : "No P11 identity artifact is retained.");
             }
             case "p3-dispatch" -> submitP3Dispatch(player, args, runtime);
+            case "p6-docket" -> runtime.openP6ResponsibilityDocket(player);
             case "p6-recovery" -> submitP6Recovery(player, label, args, runtime);
             case "p7-nessa" -> submitP7Nessa(player, args, runtime);
             case "p8" -> submitP8(player, label, args, runtime);
@@ -289,8 +290,8 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
     private static void help(Player player, String label) {
         player.sendMessage("P3 accepts one short open finding: /" + label
                 + " p3-dispatch <what the accounts disagree about and why both stay open>.");
-        player.sendMessage("P6 keyboard recovery accepts six short rows in this order: Vaun | Mara | Sella | Orin | Brann | Iss.");
-        player.sendMessage("Each row states that person's proof, compromise, and later correction. Use /" + label + " p6-recovery <six rows>.");
+        player.sendMessage("P6 uses a six-row Paper form: /" + label + " p6-docket. Each row states that person's proof, compromise, and later correction.");
+        player.sendMessage("If the form is unavailable, use /" + label + " p6-recovery <Vaun | Mara | Sella | Orin | Brann | Iss>.");
         player.sendMessage("P7 accepts three short findings: /" + label
                 + " p7-nessa <material cause/place> | <record changes> | <Nessa conduct/timing>.");
         player.sendMessage("P8 accepts four short findings, not one exact sentence:");
@@ -306,7 +307,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length <= 1) return List.of(
-                "help", "status", "replay", "p3-dispatch", "p6-recovery", "p7-nessa", "p8", "p9-people", "p9-window",
+                "help", "status", "replay", "p3-dispatch", "p6-docket", "p6-recovery", "p7-nessa", "p8", "p9-people", "p9-window",
                 "p10-wren", "p11-name");
         return List.of();
     }

@@ -570,17 +570,27 @@ def main() -> None:
     p6_contract = input_contract_by_id["P6.F7"]
     p6_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P6ResponsibilityPredicate.java").read_text(
         encoding="utf-8")
+    p6_dialog = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P6ResponsibilityDialogRuntime.java").read_text(
+        encoding="utf-8")
     p6_proof_block = coordinator[coordinator.index("P6_PROFESSIONAL_PROOFS.stream().allMatch"):
                                  coordinator.index("snapshot = progress.snapshot();",
                                                    coordinator.index("P6_PROFESSIONAL_PROOFS.stream().allMatch"))]
-    require("/obsfinding p6-recovery" in p6_contract["platform"]
+    require("/obsfinding p6-docket" in p6_contract["platform"]
+            and "/obsfinding p6-recovery" in p6_contract["platform"]
             and p6_contract["zero_observation_acceptance"] is True
             and "cannot certify the conclusion" in p6_contract["acceptance_owner"]
             and "class P6ResponsibilityPredicate" in p6_predicate
             and "observation, affidavit possession, or per-room completion is inspected" in p6_predicate
+            and "class P6ResponsibilityDialogRuntime" in p6_dialog
+            and 'DialogInput.text("vaun"' not in p6_dialog
+            and 'row("vaun"' in p6_dialog and 'row("iss"' in p6_dialog
+            and "P6ResponsibilityPredicate.MAX_FIELD_LENGTH" in p6_dialog
+            and "Source clicks are not required" in p6_dialog
+            and "submitP6ResponsibilityMatrix(matrix)" in p6_dialog
             and "submitP6ResponsibilityMatrix" in coordinator
             and 'responsibility.addProperty("observation_receipts", 0)' in coordinator
             and 'responsibility.addProperty("affidavit_possession_gate", false)' in coordinator
+            and 'case "p6-docket"' in finding_command
             and 'case "p6-recovery"' in finding_command
             and "P6_RESPONSIBILITY_EVENT" not in p6_proof_block,
             "P6 responsibility still auto-completes from six source interactions or lacks a real zero-observation recovery predicate")
