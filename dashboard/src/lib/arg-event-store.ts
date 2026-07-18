@@ -86,3 +86,25 @@ export async function hasCampaignEvent(eventKey: ArgEventKey): Promise<boolean |
     return null;
   }
 }
+
+/** Read-only consequence projection. Inputs still commit through the owning platform adapter. */
+export async function latestCampaignEventPayload(eventKey: ArgEventKey): Promise<ArgJson | null> {
+  const path = localLedgerPath();
+  if (path) {
+    const events = (await new FileArgEventLedger(path).read()).events;
+    return [...events].reverse().find((event) => event.eventKey === eventKey)?.payload ?? null;
+  }
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  try {
+    const { data, error } = await createAdminClient()
+      .from('arg_events')
+      .select('payload')
+      .eq('event_key', eventKey)
+      .order('occurred_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return error || !data ? null : data.payload as ArgJson;
+  } catch {
+    return null;
+  }
+}

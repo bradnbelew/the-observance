@@ -29,6 +29,7 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
   const p10Remembered = await hasCampaignEvent('p10.wren_remembrance_committed');
   const p11Identified = await hasCampaignEvent('p11.averyn_identified');
   const p11Unbound = await hasCampaignEvent('p11.averyn_restored_unbound');
+  const p12Released = await hasCampaignEvent('p12.record_closed_averyn_released');
   const p5Posts = recurated === true ? [
     { date: 'February 16, 2011', user: 'ashfield', title: 'that room was a service counter', body: 'The uncropped frame has wick shears, school chalk, and sample rings. Copperline corrected the archive caption after the service-card review.', href: '/community/2011/02/16/service-counter' },
     ...posts,
@@ -61,7 +62,11 @@ export default async function CommunityPage({ searchParams }: { searchParams: Pr
     { date: 'May 9, 2011', user: 'copperline-archive', title: p11Unbound === true ? 'recovered packet: identity restored outside the Record' : p11Identified === true ? 'recovered packet: identity receipt attached' : 'recovered packet: five-member custody index', body: p11Unbound === true ? 'Averyn is restored as the human registrar. Record, Watcher, Averyn, and Dark remain related without being collapsed.' : p11Identified === true ? 'Six independent affidavit paths yield a person’s name, not a seventh Keeper role.' : 'A retained ZIP, inventory, field audio, intake image, and lamp scan must be reviewed as one custody object.', href: '/community/archive/recovered-packet' },
     ...p10Posts,
   ] : p10Posts;
-  const visible = user ? p11Posts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : p11Posts;
+  const p12Posts = p12Released === true ? [
+    { date: 'May 18, 2011', user: 'copperline-archive', title: 'the archive is closed; the history stays readable', body: 'A committed local release receipt reached the mirror. The Record is closed, Averyn is released, and earlier posts and versions remain unchanged.', href: '/community/2011/05/18/archive-closed' },
+    ...p11Posts,
+  ] : p11Posts;
+  const visible = user ? p12Posts.filter((post) => post.user.toLowerCase() === user.toLowerCase()) : p12Posts;
   return (
     <LegacyShell active="community">
       <Breadcrumbs>Community Blog</Breadcrumbs>

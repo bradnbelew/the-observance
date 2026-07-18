@@ -90,6 +90,10 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P10_CONFRONTED_EVENT = "p10.wren_confronted";
     private static final String P10_REMEMBRANCE_EVENT = "p10.wren_remembrance_committed";
     private static final String P11_IDENTIFIED_EVENT = "p11.averyn_identified";
+    private static final String P11_UNBOUND_EVENT = "p11.averyn_restored_unbound";
+    private static final String P12_CONFIGURATION_EVENT = "p12.release_configuration_ready";
+    private static final String P12_NAME_EVENT = "p12.name_treatment_committed";
+    private static final String P12_RELEASE_EVENT = "p12.record_closed_averyn_released";
     private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
             "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
             "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
@@ -379,6 +383,37 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 plugin.getLogger().severe("P11 Averyn identity could not be committed locally: " + failure.getMessage());
             }
         }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P11_UNBOUND_EVENT)
+                && snapshot.isComplete("v5_rp02_configured")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P12_CONFIGURATION_EVENT));
+                if (created) mirrorP12ConfigurationAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P12 release configuration could not be committed locally: " + failure.getMessage());
+            }
+        }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P12_CONFIGURATION_EVENT)
+                && snapshot.isComplete("v5_rp03_name_choice")
+                && snapshot.branches().containsKey("v5_name_treatment")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P12_NAME_EVENT));
+                if (created) mirrorP12NameAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P12 name treatment could not be committed locally: " + failure.getMessage());
+            }
+        }
+        snapshot = progress.snapshot();
+        if (snapshot.isComplete(P12_NAME_EVENT)
+                && snapshot.isComplete("v5_case_c10_complete")) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P12_RELEASE_EVENT));
+                if (created) mirrorP12ReleaseAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P12 release event could not be committed locally: " + failure.getMessage());
+            }
+        }
     }
 
     /** Exact idempotency keys make startup/restart retries safe after a remote outage. */
@@ -490,6 +525,50 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         });
     }
 
+    private void mirrorP12ConfigurationAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p12.configuration.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject configuration = new JsonObject();
+            configuration.addProperty("affidavits_returned", 6);
+            configuration.addProperty("material_proofs_installed", 3);
+            configuration.addProperty("averyn_record_socket", "empty-unbound");
+            configuration.addProperty("active_roster_prerequisite", false);
+            plugin.supabase().recordArgEvent(P12_CONFIGURATION_EVENT,
+                    "minecraft:p12:release-configuration", "minecraft", null, configuration);
+        });
+    }
+
+    private void mirrorP12NameAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p12.name.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            String treatment = progress.snapshot().branches().get("v5_name_treatment");
+            if (treatment == null || treatment.isBlank()) return;
+            JsonObject name = new JsonObject();
+            name.addProperty("treatment", treatment);
+            name.addProperty("outside_record", true);
+            name.addProperty("every_treatment_releases_averyn", true);
+            plugin.supabase().recordArgEvent(P12_NAME_EVENT,
+                    "minecraft:p12:name-treatment", "minecraft", null, name);
+        });
+    }
+
+    private void mirrorP12ReleaseAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p12.release.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            FinaleStateStore.Snapshot state = finale.snapshot();
+            JsonObject release = new JsonObject();
+            release.addProperty("phase", state.phase().name().toLowerCase(java.util.Locale.ROOT));
+            release.addProperty("local_revision", state.revision());
+            release.addProperty("manifest_sha256", state.manifestSha256());
+            release.addProperty("name_treatment", state.nameTreatment());
+            release.addProperty("wren_remembrance", state.wrenOutcome());
+            release.addProperty("conduct", state.conductVerdict());
+            release.addProperty("every_ending_releases_averyn", true);
+            plugin.supabase().recordArgEvent(P12_RELEASE_EVENT,
+                    "minecraft:p12:record-closed-averyn-released", "minecraft", null, release);
+        });
+    }
+
     public boolean handleFinaleCommand(CommandSender sender, String[] rootArgs) {
         return ritualController.handleFinaleCommand(sender, rootArgs);
     }
@@ -562,6 +641,9 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         if (progress.snapshot().isComplete(P10_CONFRONTED_EVENT)) mirrorP10ConfrontedAsync();
         if (progress.snapshot().isComplete(P10_REMEMBRANCE_EVENT)) mirrorP10RemembranceAsync();
         if (progress.snapshot().isComplete(P11_IDENTIFIED_EVENT)) mirrorP11IdentityAsync();
+        if (progress.snapshot().isComplete(P12_CONFIGURATION_EVENT)) mirrorP12ConfigurationAsync();
+        if (progress.snapshot().isComplete(P12_NAME_EVENT)) mirrorP12NameAsync();
+        if (progress.snapshot().isComplete(P12_RELEASE_EVENT)) mirrorP12ReleaseAsync();
         if (progress.snapshot().isComplete("v5_ls06_relay")) {
             plugin.getServer().getScheduler().runTaskLater(
                     plugin, () -> plugin.sendV5DiscordHandoff(event.getPlayer()), 40L);
