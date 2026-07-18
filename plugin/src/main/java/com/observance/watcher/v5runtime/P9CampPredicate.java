@@ -1,6 +1,8 @@
 package com.observance.watcher.v5runtime;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /** Shared canonical meaning for Copperline's P9 forms and the local outage/recovery command. */
@@ -13,11 +15,22 @@ public final class P9CampPredicate {
     public record Window(String treatment, String readiness, String boundary) { }
 
     public static boolean validPeople(People people) {
-        return people != null
-                && is(people.mkept(), "admin custody", "server custody", "checksums custody")
-                && is(people.ash(), "camera humor", "camera frames", "visual log")
-                && is(people.rook(), "builder countermark", "builder counter-mark", "builder revision", "structural countermark")
-                && is(people.wren(), "route companion", "route memory", "distance copies");
+        return unsupportedPeople(people).isEmpty();
+    }
+
+    /** Names only the owner cards that need review, never the expected trace. */
+    public static List<String> unsupportedPeople(People people) {
+        if (people == null) return List.of("mkept", "Ash", "Rook", "Wren");
+        List<String> unsupported = new ArrayList<>();
+        if (!is(people.mkept(), "admin custody", "server custody", "checksums custody",
+                "kept camera frames and notebook mirror", "kept the camera frames and build notebook mirror stable")) unsupported.add("mkept");
+        if (!is(people.ash(), "camera humor", "camera frames", "visual log",
+                "photographed repaired brace face", "left shot card under supper")) unsupported.add("Ash");
+        if (!is(people.rook(), "builder countermark", "builder counter-mark", "builder revision", "structural countermark",
+                "marked brace privately", "repaired the seat")) unsupported.add("Rook");
+        if (!is(people.wren(), "route companion", "route memory", "distance copies",
+                "walked changed route", "retained both distance cards")) unsupported.add("Wren");
+        return List.copyOf(unsupported);
     }
 
     public static boolean validWindow(Window window) {

@@ -669,3 +669,14 @@ open; M4 is still closed.
 - The campaign-web checker now fails if the coda drops a required event-backed thread, a current resident, or
   the bounded Unlit ambiguity. Dashboard selftests and a Next.js 16.2.10 production build pass, including
   TypeScript and generation of the dynamic `/community/2011/05/18/archive-closed` route.
+
+## 2026-07-18 — Ash Camp owner recovery uses crossed relationships
+
+- The P9 owner-card form no longer presents four isolated job summaries. Each option is a relationship trace
+  another company member can authenticate: retained frames/notebook mirrors, a photographed repaired brace,
+  a privately marked shared structure, or a route walked together with both versions kept.
+- Copperline and the Paper recovery command identify only the owner cards whose mapping needs review. They do
+  not expose the expected relationship, store raw prose, or require any camp interaction receipt. Natural
+  cross-person aliases pass; owner swaps and oversized or missing traces still fail.
+- Focused dashboard selftests, Paper predicate/compile, campaign-web, natural-answer, ARG-authority, and lineage
+  checks pass. The final camp composition, emotional read, and whole-campaign experience remain human gates.

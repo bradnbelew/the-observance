@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers';
 import { recordCampaignEvent } from '@/lib/arg-event-store';
+import { unsupportedOwnerCards } from '@/lib/p9-camp-people';
 
 export type CampBiographyState = { status: 'idle' | 'accepted' | 'wrong' | 'incomplete' | 'technical_failure'; message: string; receiptId?: string };
 export type LeakWindowState = CampBiographyState;
@@ -24,9 +25,9 @@ export async function restoreCampBiographies(_previous: CampBiographyState, form
     wren: String(formData.get('wren') ?? ''),
   };
   if (Object.values(mapping).some((value) => !value)) return { status: 'incomplete', message: 'Assign all four work traces before restoring the owner cards.' };
-  if (mapping.mkept !== 'admin-custody' || mapping.ash !== 'camera-humor'
-      || mapping.rook !== 'builder-countermark' || mapping.wren !== 'route-companion') {
-    return { status: 'wrong', message: 'That assignment conflicts with the crossed work notes and shared camp objects. Nothing changed.' };
+  const unsupported = unsupportedOwnerCards(mapping);
+  if (unsupported.length > 0) {
+    return { status: 'wrong', message: `Review owner cards: ${unsupported.join(', ')}. Their crossed work is not yet authenticated. Nothing changed.` };
   }
   const event = await recordCampaignEvent({
     eventKey: 'p9.company_biographies_restored',

@@ -181,10 +181,21 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             return;
         }
         var people = new P9CampPredicate.People(fields[0], fields[1], fields[2], fields[3]);
-        respond(player, runtime.submitP9CampPeople(people), window,
-                "Four people restored to the camp record. Shared objects remain shared.",
-                "Restore or correctly identify all four people before preserving the private window.",
-                "At least one work/relationship trace belongs to another person.");
+        V5RuntimeCoordinator.PlanSubmission result = runtime.submitP9CampPeople(people);
+        switch (result) {
+            case ACCEPTED -> {
+                refusals.remove(player.getUniqueId());
+                player.sendMessage("Four people restored to the camp record. Shared objects remain shared. No source-click receipt was required.");
+            }
+            case ALREADY_ACCEPTED -> player.sendMessage("Those four owner cards are already restored and retained locally.");
+            case NOT_READY -> player.sendMessage("The Hold works must be repaired before the camp record can be restored. Nothing changed.");
+            case WRONG -> {
+                window.count++;
+                player.sendMessage("Review owner cards: " + String.join(", ", P9CampPredicate.unsupportedPeople(people))
+                        + ". Their crossed work is not yet authenticated. Nothing changed.");
+            }
+            case FAILED -> player.sendMessage("The camp archive failed safely. Nothing changed; retry after recovery.");
+        }
     }
 
     private void submitP9Window(Player player, String label, String[] args,

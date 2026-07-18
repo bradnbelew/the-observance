@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { unsupportedOwnerCards } from './p9-camp-people';
 
 const read = (path: string) => readFileSync(resolve(path), 'utf8');
 const page = read('src/app/community/archive/ash-camp/page.tsx');
@@ -13,8 +14,18 @@ assert.ok(page.includes("hasCampaignEvent('p8.hold_systems_repaired')"));
 assert.ok(page.includes("hasCampaignEvent('p9.company_biographies_restored')"));
 assert.ok(page.includes("hasCampaignEvent('p9.leak_window_proven')"));
 for (const person of ['mkept', 'Ash', 'Rook', 'Wren']) assert.ok(page.includes(person));
-assert.ok(form.includes('<select name={person}') && form.includes('This records responsibilities'));
+assert.ok(form.includes('<select name={person}') && form.includes('This records relationships'));
+assert.ok(form.includes('work another person can authenticate'));
+assert.ok(!form.includes('server administration, checksums, and custody'));
+assert.ok(!form.includes('camera work, shot logs, and visual jokes'));
 assert.ok(action.includes("eventKey: 'p9.company_biographies_restored'"));
+assert.ok(action.includes('Review owner cards:') && action.includes('unsupportedOwnerCards'));
+assert.deepEqual(unsupportedOwnerCards({
+  mkept: 'camera-humor', ash: 'admin-custody', rook: 'builder-countermark', wren: 'route-companion',
+}), ['mkept', 'ash']);
+assert.deepEqual(unsupportedOwnerCards({
+  mkept: 'admin-custody', ash: 'camera-humor', rook: 'builder-countermark', wren: 'route-companion',
+}), []);
 assert.ok(action.includes("eventKey: 'p9.leak_window_proven'"));
 assert.ok(action.includes("idempotencyKey: 'copperline:p9:private-version-chain-v1'"));
 assert.ok(action.includes("['rook-private-countermark', 'witness-spool-intake', 'public-upload']"));
