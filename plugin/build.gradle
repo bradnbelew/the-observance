@@ -91,6 +91,7 @@ def pluginSelfTests = [
     , argEventPrerequisiteAliases: 'com.observance.watcher.v5runtime.ArgEventPrerequisiteAliasesSelfTest'
     , p8InterventionPlanPredicate: 'com.observance.watcher.v5runtime.P8InterventionPlanPredicateSelfTest'
     , p6ResponsibilityPredicate: 'com.observance.watcher.v5runtime.P6ResponsibilityPredicateSelfTest'
+    , p7NessaCorrectionPredicate: 'com.observance.watcher.v5runtime.P7NessaCorrectionPredicateSelfTest'
     , p9CampPredicate: 'com.observance.watcher.v5runtime.P9CampPredicateSelfTest'
     , p10WrenTransmissionPredicate: 'com.observance.watcher.v5runtime.P10WrenTransmissionPredicateSelfTest'
     , p11AverynIdentityPredicate: 'com.observance.watcher.v5runtime.P11AverynIdentityPredicateSelfTest'

@@ -85,6 +85,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P6_MODELS_EVENT = "p6.professional_models_recovered";
     private static final String P6_RESPONSIBILITY_EVENT = "p6.six_responsibilities_acknowledged";
     private static final String P7_MATERIAL_EVENT = "p7.counterfeit_material_proven";
+    private static final String P7_NESSA_EVENT = "p7.nessa_publicly_cleared";
     private static final String P8_PLAN_EVENT = "p8.intervention_plan_accepted";
     private static final String P8_UNLIT_EVENT = "p8.unlit_house_synthesis_completed";
     private static final String P8_REPAIR_EVENT = "p8.hold_systems_repaired";
@@ -291,6 +292,10 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         return progress.snapshot().isComplete(P9_BIOGRAPHIES_EVENT);
     }
 
+    public boolean p7NessaCleared() {
+        return progress.snapshot().isComplete(P7_NESSA_EVENT);
+    }
+
     public boolean p9LeakWindowAccepted() {
         return progress.snapshot().isComplete(P9_LEAK_EVENT);
     }
@@ -318,6 +323,26 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             return PlanSubmission.ACCEPTED;
         } catch (IOException | RuntimeException failure) {
             plugin.getLogger().severe("P6 responsibility matrix could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
+    /** Discord-outage equivalent of the public correction; source possession is not inspected. */
+    public PlanSubmission submitP7NessaCorrection(P7NessaCorrectionPredicate.Finding finding) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P7_NESSA_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P7_MATERIAL_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P7NessaCorrectionPredicate.valid(finding)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P7_NESSA_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP7NessaAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P7 Nessa correction could not be committed locally: "
                     + failure.getMessage());
             return PlanSubmission.FAILED;
         }
@@ -648,6 +673,20 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         });
     }
 
+    private void mirrorP7NessaAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p7.nessa.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject correction = new JsonObject();
+            correction.addProperty("finding_shape", "cause-record-conduct-v1");
+            correction.addProperty("cause", "genuine-diverted-counterfeit-lower-intake");
+            correction.addProperty("record", "relief-and-complaint-chronology-edited");
+            correction.addProperty("conduct", "procedure-followed-report-before-failure");
+            correction.addProperty("observation_receipts", 0);
+            plugin.supabase().recordArgEvent(P7_NESSA_EVENT,
+                    "minecraft:p7:nessa-public-correction-v1", "minecraft", null, correction);
+        });
+    }
+
     private void mirrorP8PlanAsync() {
         plugin.scheduler().runAsyncSafe("arg.p8.plan.mirror", () -> {
             if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
@@ -909,6 +948,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         }
         if (progress.snapshot().isComplete(P5_CURATION_EVENT)) mirrorP5CurationAsync();
         if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
+        if (progress.snapshot().isComplete(P7_NESSA_EVENT)) mirrorP7NessaAsync();
         if (progress.snapshot().isComplete(P8_PLAN_EVENT)) mirrorP8PlanAsync();
         if (progress.snapshot().isComplete(P8_UNLIT_EVENT)) mirrorP8UnlitAsync();
         if (progress.snapshot().isComplete(P8_REPAIR_EVENT)) mirrorP8RepairAsync();

@@ -1235,14 +1235,14 @@
           ],
           "id": "P7.F6",
           "input_contract": {
-            "acceptance_owner": "versioned three-component exoneration predicate",
+            "acceptance_owner": "shared versioned three-component exoneration predicate; source possession and NPC contact are absent from correctness",
             "accepted_answers_are_human_examples": true,
             "event": "p7.nessa_publicly_cleared",
             "id": "P7.F6",
-            "implementation_status": "implemented-local-awaiting-private-client-proof",
+            "implementation_status": "discord-and-local-zero-observation-paths-wired-and-predicate-tested; private-client-proof-pending",
             "input_shape": "three short fields separating material cause/place, chronology change, and Nessa's conduct/timing; flexible component wording, not one canonical sentence",
             "interpretive": true,
-            "platform": "Discord modal plus slash-command short-field fallback",
+            "platform": "Discord modal/slash command plus Minecraft /obsfinding p7-nessa local recovery",
             "runtime_exact_phrase": false,
             "visible_trigger": "public correction review",
             "zero_observation_acceptance": true

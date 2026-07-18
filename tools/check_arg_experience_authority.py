@@ -453,6 +453,22 @@ def main() -> None:
             and "private guild" in modal["proof"].casefold()
             and "remains open" in modal["proof"].casefold(),
             "active Discord modal lacks exact primitive, fallback, or honest client gap")
+    p7_contract = p9_input_by_id["P7.F6"]
+    p7_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P7NessaCorrectionPredicate.java").read_text(
+        encoding="utf-8")
+    require("/obsfinding p7-nessa" in p7_contract["platform"]
+            and p7_contract["zero_observation_acceptance"] is True
+            and "class P7NessaCorrectionPredicate" in p7_predicate
+            and "source possession" in p7_contract["acceptance_owner"]
+            and "submitP7NessaCorrection" in p9_coordinator
+            and 'case "p7-nessa"' in p9_finding_command
+            and 'correction.addProperty("observation_receipts", 0)' in p9_coordinator,
+            "P7 public correction lacks a real local zero-observation path sharing the three-part predicate")
+    ash_camp_page = (ROOT / "dashboard/src/app/community/archive/ash-camp/page.tsx").read_text(encoding="utf-8")
+    require("Crossed traces" in ash_camp_page
+            and "mkept maintained the server and its checksums" not in ash_camp_page
+            and "Ash filmed and noticed visual changes" not in ash_camp_page,
+            "P9 Copperline page still prints owner-card answers beside its form")
     discord_handler = (ROOT / "discord/src/bot/commands/investigate.ts").read_text(encoding="utf-8")
     require("contact-wren" in discord_register
             and "confront-wren" not in discord_register

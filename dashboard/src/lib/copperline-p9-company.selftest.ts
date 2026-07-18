@@ -22,6 +22,9 @@ assert.ok(action.includes('observation_receipts: 0'));
 assert.ok(leakForm.includes('<form action={action}') && leakForm.includes('aria-live="polite"'));
 assert.ok(leakForm.includes('someone with inside access transmitted it; these copies do not name who'));
 assert.ok(page.includes('Copies from separate clocks') && page.includes('10:19 PM') && page.includes('10:23 PM') && page.includes('11:02 PM'));
+assert.ok(page.includes('Crossed traces') && page.includes('Frame 64') && page.includes('two cuts under the joint') && page.includes('twenty-six steps'));
+assert.ok(!page.includes('mkept maintained the server and its checksums'));
+assert.ok(!page.includes('Ash filmed and noticed visual changes'));
 assert.ok(page.includes('P9 does not name which person sent it'));
 assert.ok(index.includes('/community/archive/ash-camp'));
 

@@ -2,6 +2,7 @@ package com.observance.watcher.command;
 
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.v5runtime.P6ResponsibilityPredicate;
+import com.observance.watcher.v5runtime.P7NessaCorrectionPredicate;
 import com.observance.watcher.v5runtime.P8InterventionPlanPredicate;
 import com.observance.watcher.v5runtime.P9CampPredicate;
 import com.observance.watcher.v5runtime.P10WrenTransmissionPredicate;
@@ -50,6 +51,8 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             case "status" -> {
                 player.sendMessage("P6 responsibility matrix: " + (runtime.p6ResponsibilityAccepted()
                         ? "accepted and retained locally." : "not yet accepted."));
+                player.sendMessage("P7 Nessa correction: " + (runtime.p7NessaCleared()
+                        ? "accepted and public." : "not yet accepted."));
                 player.sendMessage("P8 intervention plan: " + (runtime.p8InterventionPlanAccepted()
                         ? "accepted and retained locally." : "not yet accepted."));
                 player.sendMessage("P9 camp owners / private window: "
@@ -67,6 +70,9 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                 player.sendMessage(runtime.p8InterventionPlanAccepted()
                         ? "Retained P8 plan: four interacting causes; Iss's surface evidence remains valid while his route was unsafe; copy behavior is proven while the Dark remains unidentified; works order is filter, paired light, pressure bypass, then staff route."
                         : "No accepted P8 intervention plan is available to replay.");
+                player.sendMessage(runtime.p7NessaCleared()
+                        ? "Retained P7 correction: genuine cloth diverted; substitute failed first at the lower intake; relief and complaint chronology edited; Nessa followed procedure and reported before failure."
+                        : "No accepted P7 public correction is retained.");
                 player.sendMessage(runtime.p9LeakWindowAccepted()
                         ? "Retained P9 finding: four people restored; private counter-mark, Witness Spool intake, then public upload; inside access proven, sender still open."
                         : "P9 replay remains available on Copperline; no complete local private-window finding is retained.");
@@ -78,6 +84,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                         : "No P11 identity artifact is retained.");
             }
             case "p6-recovery" -> submitP6Recovery(player, label, args, runtime);
+            case "p7-nessa" -> submitP7Nessa(player, args, runtime);
             case "p8" -> submitP8(player, label, args, runtime);
             case "p9-people" -> submitP9People(player, label, args, runtime);
             case "p9-window" -> submitP9Window(player, label, args, runtime);
@@ -86,6 +93,24 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             default -> help(player, label);
         }
         return true;
+    }
+
+    private void submitP7Nessa(Player player, String[] args, V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusalWindow(player);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String[] fields = fields(args);
+        if (fields.length != 3) {
+            player.sendMessage("Incomplete. Give material cause/place | record changes | Nessa's conduct/timing.");
+            return;
+        }
+        var finding = new P7NessaCorrectionPredicate.Finding(fields[0], fields[1], fields[2]);
+        respond(player, runtime.submitP7NessaCorrection(finding), window,
+                "The public correction is fixed. Nessa is cleared by cause, record history, and conduct.",
+                "The material comparison must establish the failed cloth and first failure place.",
+                "The correction does not yet separate material cause, edited chronology, and Nessa's conduct.");
     }
 
     private void submitP10Wren(Player player, String[] args, V5RuntimeCoordinator runtime) {
@@ -241,6 +266,8 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
     private static void help(Player player, String label) {
         player.sendMessage("P6 keyboard recovery accepts six short rows in this order: Vaun | Mara | Sella | Orin | Brann | Iss.");
         player.sendMessage("Each row states that person's proof, compromise, and later correction. Use /" + label + " p6-recovery <six rows>.");
+        player.sendMessage("P7 accepts three short findings: /" + label
+                + " p7-nessa <material cause/place> | <record changes> | <Nessa conduct/timing>.");
         player.sendMessage("P8 accepts four short findings, not one exact sentence:");
         player.sendMessage("/" + label + " p8 <interacting causes> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
         player.sendMessage("P9 local recovery mirrors Copperline's real forms: /" + label + " p9-people <mkept | Ash | Rook | Wren traces>.");
@@ -254,7 +281,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length <= 1) return List.of(
-                "help", "status", "replay", "p6-recovery", "p8", "p9-people", "p9-window",
+                "help", "status", "replay", "p6-recovery", "p7-nessa", "p8", "p9-people", "p9-window",
                 "p10-wren", "p11-name");
         return List.of();
     }
