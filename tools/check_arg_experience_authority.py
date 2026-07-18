@@ -483,6 +483,25 @@ def main() -> None:
             and "six profession-specific" in input_contract_by_id["P6.F7"]["platform"]
             and "Discord modal" not in input_contract_by_id["P6.F7"]["platform"],
             "P5/P6 input authority still advertises an unimplemented answer form instead of physical work")
+    p8_contracts = [input_contract_by_id[key] for key in ("P8.F3", "P8.F4", "P8.F5")]
+    finding_command = (ROOT / "plugin/src/main/java/com/observance/watcher/command/CampaignFindingCommand.java").read_text(
+        encoding="utf-8")
+    p8_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P8InterventionPlanPredicate.java").read_text(
+        encoding="utf-8")
+    coordinator = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/V5RuntimeCoordinator.java").read_text(
+        encoding="utf-8")
+    plugin_yml = (ROOT / "plugin/src/main/resources/plugin.yml").read_text(encoding="utf-8")
+    require(all("/obsfinding" in row["platform"] and row["runtime_exact_phrase"] is False
+                and row["zero_observation_acceptance"] is True for row in p8_contracts)
+            and "observancefinding:" in plugin_yml
+            and 'split("\\\\|", -1)' in finding_command
+            and "return List.of();" in finding_command
+            and "MAX_FIELD_LENGTH = 180" in p8_predicate
+            and "submitP8InterventionPlan" in coordinator
+            and 'plan.addProperty("observation_receipts", 0)' in coordinator,
+            "P8 Minecraft outage path is not a real bounded command sharing the zero-receipt meaning predicate")
+    require("if (P8_UNLIT_HOUSE_PROOFS.stream().allMatch(snapshot::isComplete)) {" in coordinator,
+            "seven-house synthesis still waits on the separate causal-plan input")
     v5_seed = (ROOT / "discord/supabase/seeds/v5_investigations.sql").read_text(encoding="utf-8")
     require("v5-a10-private-window" in v5_seed
             and "inside access sender unresolved" in v5_seed

@@ -893,12 +893,24 @@ public final class ObservancePlugin extends JavaPlugin {
         ObservanceCommand handler = new ObservanceCommand(this, safety);
         this.observanceCommand = handler;
         registerIdentityLinkCommand();
+        registerCampaignFindingCommand();
         var cmd = getCommand("observance");
         if (cmd != null) {
             cmd.setExecutor(handler);
             cmd.setTabCompleter(handler);
         } else {
             getLogger().warning("Command 'observance' missing from plugin.yml — admin command unavailable.");
+        }
+    }
+
+    private void registerCampaignFindingCommand() {
+        var findingCommand = getCommand("observancefinding");
+        if (findingCommand != null) {
+            var handler = new com.observance.watcher.command.CampaignFindingCommand(this);
+            findingCommand.setExecutor(handler);
+            findingCommand.setTabCompleter(handler);
+        } else {
+            getLogger().warning("Command 'observancefinding' missing from plugin.yml; local campaign finding fallback unavailable.");
         }
     }
 

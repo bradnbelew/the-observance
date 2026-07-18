@@ -89,6 +89,7 @@ def pluginSelfTests = [
     , unlitVillageCandidatePlan: 'com.observance.watcher.structure.UnlitVillageCandidatePlanSelfTest'
     , containerTriggerReadiness: 'com.observance.watcher.v5runtime.container.BukkitContainerTriggerAuditSelfTest'
     , argEventPrerequisiteAliases: 'com.observance.watcher.v5runtime.ArgEventPrerequisiteAliasesSelfTest'
+    , p8InterventionPlanPredicate: 'com.observance.watcher.v5runtime.P8InterventionPlanPredicateSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

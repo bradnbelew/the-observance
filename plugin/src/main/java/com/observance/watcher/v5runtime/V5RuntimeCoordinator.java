@@ -274,6 +274,32 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         return progress.snapshot();
     }
 
+    public enum PlanSubmission { ACCEPTED, ALREADY_ACCEPTED, NOT_READY, WRONG, FAILED }
+
+    public boolean p8InterventionPlanAccepted() {
+        return progress.snapshot().isComplete(P8_PLAN_EVENT);
+    }
+
+    /** Stable local fallback for the Copperline P8 form; raw player prose is never stored or mirrored. */
+    public PlanSubmission submitP8InterventionPlan(P8InterventionPlanPredicate.Plan plan) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P8_PLAN_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete("p7.nessa_publicly_cleared")) return PlanSubmission.NOT_READY;
+        if (!P8InterventionPlanPredicate.valid(plan)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P8_PLAN_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP8PlanAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P8 intervention plan could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
     /**
      * Commits the privacy-bounded surface-to-Unlit copy proof. The journal owning the physical
      * pattern contains only six allowlisted token ids; this campaign event projects its hash only.
@@ -359,9 +385,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             }
         }
         snapshot = progress.snapshot();
-        if (P8_UNLIT_HOUSE_PROOFS.stream().allMatch(snapshot::isComplete)
-                && (snapshot.isComplete(P8_PLAN_EVENT)
-                || snapshot.isComplete("v5_case_c05_complete"))) {
+        if (P8_UNLIT_HOUSE_PROOFS.stream().allMatch(snapshot::isComplete)) {
             try {
                 boolean created = progress.transact(editor -> editor.setBooleanTrue(P8_UNLIT_EVENT));
                 if (created) mirrorP8UnlitAsync();
@@ -501,6 +525,21 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             material.addProperty("genuine_stock", "diverted");
             plugin.supabase().recordArgEvent(P7_MATERIAL_EVENT,
                     "minecraft:p7:counterfeit-material-proven", "minecraft", null, material);
+        });
+    }
+
+    private void mirrorP8PlanAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p8.plan.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject plan = new JsonObject();
+            plan.addProperty("finding_shape", "causes-iss-copy-boundary-order-v1");
+            plan.addProperty("causes", "old-fracture,unchanged-heat-load,paired-watch-gap,late-routing");
+            plan.addProperty("iss", "surface-proof-valid-route-unsafe");
+            plan.addProperty("copy_boundary", "copy-behavior-proven-ontology-open");
+            plan.addProperty("works_order", "water-filter,paired-light,pressure-bypass,staff-route");
+            plan.addProperty("observation_receipts", 0);
+            plugin.supabase().recordArgEvent(P8_PLAN_EVENT,
+                    "minecraft:p8:intervention-plan", "minecraft", null, plan);
         });
     }
 
@@ -743,6 +782,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             mirrorP6MilestonesAsync();
         }
         if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
+        if (progress.snapshot().isComplete(P8_PLAN_EVENT)) mirrorP8PlanAsync();
         if (progress.snapshot().isComplete(P8_UNLIT_EVENT)) mirrorP8UnlitAsync();
         if (progress.snapshot().isComplete(P8_REPAIR_EVENT)) mirrorP8RepairAsync();
         if (progress.snapshot().isComplete(P9_BIOGRAPHIES_EVENT)) mirrorP9BiographiesAsync();

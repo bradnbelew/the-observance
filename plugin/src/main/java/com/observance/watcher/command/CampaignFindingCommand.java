@@ -1,0 +1,106 @@
+package com.observance.watcher.command;
+
+import com.observance.watcher.ObservancePlugin;
+import com.observance.watcher.v5runtime.P8InterventionPlanPredicate;
+import com.observance.watcher.v5runtime.V5RuntimeCoordinator;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+
+/** Stable command fallback for short structured campaign findings; ordinary chat is never parsed. */
+public final class CampaignFindingCommand implements CommandExecutor, TabCompleter {
+    private static final long REFUSAL_WINDOW_MILLIS = 60_000L;
+    private static final int REFUSAL_LIMIT = 3;
+    private final ObservancePlugin plugin;
+    private final Map<UUID, RefusalWindow> refusals = new ConcurrentHashMap<>();
+
+    public CampaignFindingCommand(ObservancePlugin plugin) {
+        this.plugin = java.util.Objects.requireNonNull(plugin, "plugin");
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("This is a player finding surface.");
+            return true;
+        }
+        if (!player.hasPermission("observance.arg.finding")) {
+            player.sendMessage("The finding desk is not available from here.");
+            return true;
+        }
+        V5RuntimeCoordinator runtime = plugin.v5Runtime();
+        if (runtime == null || !runtime.storyInputsEnabled()) {
+            player.sendMessage("The finding desk is closed. Nothing changed.");
+            return true;
+        }
+        String action = args.length == 0 ? "help" : args[0].toLowerCase(Locale.ROOT);
+        switch (action) {
+            case "help" -> help(player, label);
+            case "status" -> player.sendMessage(runtime.p8InterventionPlanAccepted()
+                    ? "P8 intervention plan: accepted and retained locally."
+                    : "P8 intervention plan: no accepted plan is retained locally.");
+            case "replay" -> player.sendMessage(runtime.p8InterventionPlanAccepted()
+                    ? "Retained plan: four interacting causes; Iss's surface evidence remains valid while his route was unsafe; copy behavior is proven while the Dark remains unidentified; works order is filter, paired light, pressure bypass, then staff route."
+                    : "No accepted intervention plan is available to replay.");
+            case "p8" -> submitP8(player, label, args, runtime);
+            default -> help(player, label);
+        }
+        return true;
+    }
+
+    private void submitP8(Player player, String label, String[] args, V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusals.compute(player.getUniqueId(), (ignored, current) ->
+                current == null || current.expiresAt < System.currentTimeMillis()
+                        ? new RefusalWindow(System.currentTimeMillis() + REFUSAL_WINDOW_MILLIS, 0) : current);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String[] fields = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).split("\\|", -1);
+        if (fields.length != 4) {
+            player.sendMessage("Incomplete. Give four short fields separated by |. Use /" + label + " help.");
+            return;
+        }
+        var plan = new P8InterventionPlanPredicate.Plan(fields[0], fields[1], fields[2], fields[3]);
+        V5RuntimeCoordinator.PlanSubmission result = runtime.submitP8InterventionPlan(plan);
+        switch (result) {
+            case ACCEPTED -> {
+                refusals.remove(player.getUniqueId());
+                player.sendMessage("Accepted. The bounded causal model is retained locally. No source-click receipt was required.");
+            }
+            case ALREADY_ACCEPTED -> player.sendMessage("That intervention plan is already accepted and retained locally.");
+            case NOT_READY -> player.sendMessage("The current Nessa correction must be public before this plan can be attached. Nothing changed.");
+            case WRONG -> {
+                window.count++;
+                player.sendMessage("One or more fields do not fit the surviving evidence, or the works order is unsafe. Nothing changed.");
+            }
+            case FAILED -> player.sendMessage("The finding desk failed safely. Nothing changed; retry or use Copperline when it returns.");
+        }
+    }
+
+    private static void help(Player player, String label) {
+        player.sendMessage("P8 accepts four short findings, not one exact sentence:");
+        player.sendMessage("/" + label + " p8 <interacting causes> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
+        player.sendMessage("Use /" + label + " status or /" + label + " replay. Source clicks are never required.");
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length <= 1) return List.of("help", "status", "replay", "p8");
+        return List.of();
+    }
+
+    private static final class RefusalWindow {
+        private final long expiresAt;
+        private int count;
+        private RefusalWindow(long expiresAt, int count) { this.expiresAt = expiresAt; this.count = count; }
+    }
+}

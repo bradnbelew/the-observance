@@ -30,6 +30,11 @@ commands:
     aliases: [obslink]
     permission: observance.link
     usage: /obslink
+  observancefinding:
+    description: Submit or replay short structured campaign findings without chat parsing.
+    aliases: [obsfinding]
+    permission: observance.arg.finding
+    usage: /obsfinding <help|status|replay|p8>
   observancem3:
     description: Operate the disposable private M3 Paper review slice.
     aliases: [obsm3]
@@ -53,6 +58,9 @@ permissions:
     default: true
   observance.arg.case:
     description: Allows the disposable P4/P5 ARG investigation and recovery input surface.
+    default: true
+  observance.arg.finding:
+    description: Allows the stable local campaign finding and recovery surface.
     default: true
   observance.unlit.copy:
     description: Allows the bounded Unlit copy register and its keyboard recovery surface.
