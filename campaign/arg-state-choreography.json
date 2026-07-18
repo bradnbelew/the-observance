@@ -38,7 +38,7 @@
     {"phase":"P7","events":["p7.counterfeit_material_proven","p7.supplier_history_restored","p7.nessa_publicly_cleared"],"world_answer":"material test and version restoration change Nessa's public record"},
     {"phase":"P8","events":["p8.intervention_plan_accepted","p8.hold_systems_repaired"],"world_answer":"the causal model is tested by visible system repair and retained anomaly"},
     {"phase":"P9","events":["p9.company_biographies_restored","p9.leak_window_proven"],"world_answer":"camp restoration returns community history and releases the Witness Spool"},
-    {"phase":"P10","events":["p10.wren_confronted","p10.wren_remembrance_committed"],"world_answer":"evidence exposure changes live dialogue; judgment changes remembrance only"},
+    {"phase":"P10","events":["p10.player_copy_proof","p10.wren_confronted","p10.wren_remembrance_committed"],"world_answer":"a bounded player-authored civic pattern returns from the Unlit as a deterministic altered copy; evidence exposure changes live dialogue; judgment changes remembrance only"},
     {"phase":"P11","events":["p11.averyn_identified","p11.averyn_restored_unbound"],"world_answer":"prior testimony and constrained speech change while the binding slot remains empty"},
     {"phase":"P12","events":["p12.release_configuration_ready","p12.name_treatment_committed","p12.record_closed_averyn_released"],"world_answer":"durable release changes every private surface and produces a quiet coda"}
   ],

@@ -81,6 +81,7 @@ def pluginSelfTests = [
     , authoredCampaignAuthority: 'com.observance.watcher.campaign.AuthoredCampaignAuthoritySelfTest'
     , argVerticalSliceState: 'com.observance.watcher.arg.ArgVerticalSliceStateSelfTest'
     , argVerticalSliceEvidence: 'com.observance.watcher.arg.ArgVerticalSliceEvidenceSelfTest'
+    , unlitCopyProofState: 'com.observance.watcher.v5runtime.unlit.UnlitCopyProofStateSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

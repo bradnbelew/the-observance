@@ -54,3 +54,6 @@ permissions:
   observance.arg.case:
     description: Allows the disposable P4/P5 ARG investigation and recovery input surface.
     default: true
+  observance.unlit.copy:
+    description: Allows the bounded Unlit copy register and its keyboard recovery surface.
+    default: true

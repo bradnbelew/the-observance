@@ -34,6 +34,7 @@ import com.observance.watcher.util.Safety;
 import com.observance.watcher.util.Scheduler;
 import com.observance.watcher.v5runtime.ProgressSnapshot;
 import com.observance.watcher.v5runtime.V5RuntimeCoordinator;
+import com.observance.watcher.v5runtime.unlit.UnlitCopyProofRuntime;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -109,6 +110,7 @@ public final class ObservancePlugin extends JavaPlugin {
     //     (it spawns display entities that must be cleaned up). ---
     private com.observance.watcher.signal.listener.ThresholdVaultListener thresholdVault;
     private UnlitVillageListener unlitVillage;
+    private UnlitCopyProofRuntime unlitCopyProof;
     /** BI08's asymmetric base-mirror dressing (per-player observation fragments). Same lifecycle as unlitVillage. */
     private com.observance.watcher.signal.listener.BaseMirrorFragmentListener baseMirrorFragments;
     /** Durable kept/broken detector for the black-moon Unlit Deep trial. Rebuilt on reload. */
@@ -282,8 +284,12 @@ public final class ObservancePlugin extends JavaPlugin {
             V5RuntimeCoordinator runtime = new V5RuntimeCoordinator(this);
             this.v5Runtime = runtime;
             runtime.start();
+            this.unlitCopyProof = new UnlitCopyProofRuntime(this);
+            unlitCopyProof.start();
         } catch (Throwable failure) {
             getLogger().severe("V5 runtime failed closed during startup: " + failure.getMessage());
+            if (unlitCopyProof != null) unlitCopyProof.close();
+            unlitCopyProof = null;
             if (v5Runtime != null) v5Runtime.close();
             v5Runtime = null;
             getServer().getPluginManager().disablePlugin(this);
@@ -328,6 +334,10 @@ public final class ObservancePlugin extends JavaPlugin {
         if (v5Runtime != null) {
             v5Runtime.close();
             v5Runtime = null;
+        }
+        if (unlitCopyProof != null) {
+            unlitCopyProof.close();
+            unlitCopyProof = null;
         }
         // Tear down the haunting engine first (cancels ambient task, clears transient beat state).
         if (beatEngine != null) {

@@ -88,6 +88,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P9_BIOGRAPHIES_EVENT = "p9.company_biographies_restored";
     private static final String P9_LEAK_EVENT = "p9.leak_window_proven";
     private static final String P10_CONFRONTED_EVENT = "p10.wren_confronted";
+    private static final String P10_COPY_PROOF_EVENT = "p10.player_copy_proof";
     private static final String P10_REMEMBRANCE_EVENT = "p10.wren_remembrance_committed";
     private static final String P11_IDENTIFIED_EVENT = "p11.averyn_identified";
     private static final String P11_UNBOUND_EVENT = "p11.averyn_restored_unbound";
@@ -265,6 +266,34 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
 
     public ProgressSnapshot snapshot() {
         return progress.snapshot();
+    }
+
+    /**
+     * Commits the privacy-bounded surface-to-Unlit copy proof. The journal owning the physical
+     * pattern contains only six allowlisted token ids; this campaign event projects its hash only.
+     */
+    public void commitUnlitCopyProof(String patternSha256) {
+        if (!storyInputsEnabled || patternSha256 == null
+                || !patternSha256.matches("[0-9a-f]{64}")) return;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P10_COPY_PROOF_EVENT));
+            if (created) {
+                projectLocalState();
+                plugin.scheduler().runAsyncSafe("arg.p10.copy-proof.mirror", () -> {
+                    if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+                    JsonObject copy = new JsonObject();
+                    copy.addProperty("pattern_sha256", patternSha256);
+                    copy.addProperty("cell_count", 6);
+                    copy.addProperty("allowlisted_tokens_only", true);
+                    copy.addProperty("personalized_input", false);
+                    plugin.supabase().recordArgEvent(P10_COPY_PROOF_EVENT,
+                            "minecraft:p10:bounded-unlit-copy", "minecraft", null, copy);
+                });
+            }
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P10 bounded Unlit copy proof could not be committed locally: "
+                    + failure.getMessage());
+        }
     }
 
     /** Rebuild exact coordinate/PDC bindings after construction, repair, startup, or chunk load. */

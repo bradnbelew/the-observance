@@ -55,6 +55,9 @@ rate-limit:
 
 unlit:
   enabled: true
+  copy-proof:
+    # Console exercise exists only for disposable Paper automation. Player builds leave this false.
+    disposable-audit-enabled: false
   world: "observance_unlit"
   buildmode: false
   force-night: true

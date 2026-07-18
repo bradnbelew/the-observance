@@ -242,14 +242,19 @@
       "distributed_fragments": [
         {"surface":"spool/Minecraft","fragment":"packet progression, channel material, and Rook counter-mark","role":"independent attribution"},
         {"surface":"NPC dialogue","fragment":"stateful Wren conversation and partial admissions","role":"motive and relationship"},
-        {"surface":"Copperline/Discord","fragment":"moderation chronology, private quotations, and group dissent","role":"opportunity and moral debate"}
+        {"surface":"Copperline/Discord","fragment":"moderation chronology, private quotations, and group dissent","role":"opportunity and moral debate"},
+        {"surface":"surface register and Unlit base mirror","fragment":"players set six bounded civic marks; the returned copy mirrors them and changes the first copied record mark into watch","role":"player-caused proof that the Record copies and edits without ingesting private material"}
       ],
       "provenance_authentication": "Packet specificity, first-known-source chronology, channel signature, and Rook's independent Bridge prove deliberate transmission without relying on Wren's confession.",
       "player_initiated_actions": [
+        {"verb":"test","action":"arrange six allowlisted civic marks at the surface register and compare the deterministic altered copy returned in the Unlit","receipt_gate":false,"response_event":"p10.player_copy_proof"},
         {"verb":"confront","action":"choose which proven packet or protected omission to expose to Wren and which theory to withhold","receipt_gate":false,"response_event":"p10.wren_confronted"},
         {"verb":"judge","action":"record condemn, understand, or free after the independent Bridge proof, preserving dissent","receipt_gate":false,"response_event":"p10.wren_remembrance_committed"}
       ],
-      "authored_reactivity": [{"event":"p10.wren_confronted","automation":"A1","exact_trigger":"valid evidence relationship, accepted without source receipts","surfaces":["NPC","Discord","Minecraft"],"response":"Wren's response changes by exposed relationship and admits fear without supplying the attribution proof; Rook's Bridge remains independently operable.","idempotent":true,"catch_up":"conversation branches and fixed fact matrix"}],
+      "authored_reactivity": [
+        {"event":"p10.player_copy_proof","automation":"A1","exact_trigger":"one valid six-cell allowlisted pattern committed at the registered surface; no observation receipt or identity field","surfaces":["Minecraft surface register","Unlit base mirror","read-only archive receipt"],"response":"the Unlit register returns the horizontal mirror with exactly one record-to-watch institutional edit; the original and changed copy remain visible after restart","idempotent":true,"catch_up":"stable pattern hash and visible deterministic diff"},
+        {"event":"p10.wren_confronted","automation":"A1","exact_trigger":"valid evidence relationship, accepted without source receipts","surfaces":["NPC","Discord","Minecraft"],"response":"Wren's response changes by exposed relationship and admits fear without supplying the attribution proof; Rook's Bridge remains independently operable.","idempotent":true,"catch_up":"conversation branches and fixed fact matrix"}
+      ],
       "collaborative_asymmetric_paths": "Interviewers, packet analysts, relationship historians, and skeptical players hold different information; protected judgment records disagreement without requiring unanimity.",
       "cross_surface_consequence": "What players reveal changes the conversation, while their later judgment changes Wren's remembered coda but never the fixed facts or ability to finish.",
       "delayed_callback_reinterpretation": "Wren's earlier helpful account behavior becomes self-preservation; his fear foreshadows Averyn's actual constrained persistence without equating them.",

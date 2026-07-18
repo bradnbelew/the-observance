@@ -23,6 +23,10 @@ GRAMMAR = ROOT / "campaign/campaign-grammar-audit.json"
 FEASIBILITY = ROOT / "campaign/functional-feasibility-matrix.json"
 INPUTS = ROOT / "campaign/platform-input-feasibility-matrix.json"
 PACK = ROOT / "campaign/p5-p12"
+PAPER_RECEIPTS = (
+    ROOT / "design/handoff/P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json",
+    ROOT / "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+)
 
 
 def require(condition: bool, message: str) -> None:
@@ -338,9 +342,17 @@ def main() -> None:
     require(feasibility["entries"] and all(feasibility_fields.issubset(row) and row["automated_tests"]
                                            and row["human_gap"] for row in feasibility["entries"]),
             "functional feasibility row is incomplete")
-    require(feasibility["external_deployment_receipts_claimed"] is False
-            and feasibility["paper_runtime_receipts_claimed"] is False,
-            "offline feasibility fabricates runtime/deployment proof")
+    require(feasibility["external_deployment_receipts_claimed"] is False,
+            "feasibility fabricates external deployment proof")
+    if feasibility["paper_runtime_receipts_claimed"] is True:
+        receipt_scope = feasibility.get("paper_runtime_receipt_scope", "").casefold()
+        require(all(path.is_file() for path in PAPER_RECEIPTS)
+                and "p4" in receipt_scope and "deep hold" in receipt_scope
+                and "human" in receipt_scope,
+                "Paper runtime claim lacks exact scoped receipts")
+    else:
+        require(feasibility["paper_runtime_receipts_claimed"] is False,
+                "paper_runtime_receipts_claimed must be boolean")
 
     inputs = load(INPUTS)
     input_fields = {"id", "used_by", "platform_version", "visible_trigger_affordance", "primitive",
