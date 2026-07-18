@@ -5,6 +5,7 @@
  * this only delivers it, keeping the cross-surface voice identical to the bot's.
  */
 import { config } from '../config.js';
+import { createHash } from 'node:crypto';
 
 const API = 'https://discord.com/api/v10';
 
@@ -18,6 +19,41 @@ export async function postToTheRecord(content: string): Promise<boolean> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ content }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Stable 25-character Discord nonce derived from a canonical event id. */
+export function projectionNonce(eventId: string): string {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(eventId)) {
+    throw new Error('invalid ARG event id');
+  }
+  return createHash('sha256').update(eventId, 'utf8').digest('hex').slice(0, 25);
+}
+
+/**
+ * Deliver one canonical event consequence. Discord's nonce/enforce_nonce pair makes a retry in
+ * the lease window return the earlier message rather than creating a duplicate. Player payloads
+ * are never echoed; the caller supplies exact authored text only.
+ */
+export async function postProjectionToTheRecord(content: string, eventId: string): Promise<boolean> {
+  if (content.length < 1 || content.length > 2_000) return false;
+  try {
+    const res = await fetch(`${API}/channels/${config.channels.theRecord}/messages`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bot ${config.discord.botToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content,
+        nonce: projectionNonce(eventId),
+        enforce_nonce: true,
+        allowed_mentions: { parse: [] },
+      }),
     });
     return res.ok;
   } catch {

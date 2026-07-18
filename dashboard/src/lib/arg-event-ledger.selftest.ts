@@ -10,7 +10,8 @@ function check(condition: boolean, message: string): void {
 async function main(): Promise<void> {
   const root = await mkdtemp(join(tmpdir(), 'observance-arg-events-'));
   const path = join(root, 'ledger.json');
-  const now = () => new Date('2026-07-17T20:00:00.000Z');
+  let currentNow = new Date('2026-07-17T20:00:00.000Z');
+  const now = () => new Date(currentNow);
   try {
   const ledger = new FileArgEventLedger(path, now);
   const blocked = await ledger.record({
@@ -70,6 +71,47 @@ async function main(): Promise<void> {
   check(state.projections.some((projection) => projection.surface === 'discord'
     && projection.status === 'queued'), 'cross-surface response must queue durably');
   check(await restarted.has('p1.attachment_history_restored'), 'event readback must survive restart');
+
+  const claimed = await restarted.claimProjections('discord', 1, 30_000);
+  check(claimed.length === 1 && claimed[0]?.projection.status === 'processing'
+    && claimed[0].projection.attempts === 1 && Boolean(claimed[0].projection.leaseToken),
+    'one worker must acquire one durable projection lease');
+  const concurrent = await restarted.claimProjections('discord', 1, 30_000);
+  check(concurrent.every((item) => item.event.eventId !== claimed[0]!.event.eventId),
+    'an active lease must prevent concurrent duplicate delivery of the same event');
+  check(await restarted.completeProjection({
+    eventId: claimed[0]!.event.eventId,
+    surface: 'discord',
+    leaseToken: '00000000-0000-0000-0000-000000000000',
+    applied: true,
+  }) === false, 'a stale or foreign lease token must not acknowledge work');
+  check(await restarted.completeProjection({
+    eventId: claimed[0]!.event.eventId,
+    surface: 'discord',
+    leaseToken: claimed[0]!.projection.leaseToken!,
+    applied: false,
+    error: 'temporary outage',
+  }), 'the owning worker must be able to record a retryable failure');
+  const immediateRetry = await restarted.claimProjections('discord', 10, 30_000);
+  check(immediateRetry.every((item) => item.event.eventId !== claimed[0]!.event.eventId),
+    'a failed projection must respect its durable retry backoff');
+  currentNow = new Date(currentNow.getTime() + 5_001);
+  const retry = await restarted.claimProjections('discord', 10, 30_000);
+  const retriedClaim = retry.find((item) => item.event.eventId === claimed[0]!.event.eventId);
+  check(retriedClaim?.projection.attempts === 2,
+    'a failed projection must be leased again with an incremented attempt count');
+  check(await restarted.completeProjection({
+    eventId: retriedClaim!.event.eventId,
+    surface: 'discord',
+    leaseToken: retriedClaim!.projection.leaseToken!,
+    applied: true,
+  }), 'successful delivery must acknowledge the owning lease');
+  const afterProjectionRestart = await new FileArgEventLedger(path, now).read();
+  const applied = afterProjectionRestart.projections.find((projection) =>
+    projection.eventId === retriedClaim!.event.eventId && projection.surface === 'discord');
+  check(applied?.status === 'applied' && applied.attempts === 2
+    && applied.leaseToken === null && applied.lastError === null,
+    'applied projection state must survive restart without stale lease/error state');
   check(stableJson({ z: 1, a: ['x', true] }) === '{"a":["x",true],"z":1}',
     'payload canonicalization must be stable');
 
@@ -89,7 +131,7 @@ async function main(): Promise<void> {
     await rm(root, { recursive: true, force: true });
   }
 
-  console.log('arg-event-ledger.selftest OK: prerequisites, ownership, idempotency, collision, restart, projection');
+  console.log('arg-event-ledger.selftest OK: prerequisites, ownership, idempotency, collision, restart, lease, retry, projection');
 }
 
 void main();

@@ -94,6 +94,17 @@ export interface ArgEventReadRow {
   occurred_at: string;
 }
 
+/** One server-only delivery lease from the generic cross-surface event outbox. */
+export interface ArgProjectionClaimRow {
+  event_id: string;
+  event_key: string;
+  source: ArgSurface;
+  payload: Record<string, unknown>;
+  occurred_at: string;
+  lease_token: string;
+  attempts: number;
+}
+
 /** public.hints — pre-authored whisper hints, keyed by (puzzle_key, tier). */
 export interface Hint {
   id: number;

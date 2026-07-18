@@ -13,6 +13,8 @@ import { flagsSatisfied, matchPuzzle, matchPuzzles } from '../oracle/gate.js';
 import { hashIdentityLinkCode, isCopperlineCallback } from '../v5/identity.js';
 import type {
   AnswerSurface,
+  ArgProjectionClaimRow,
+  ArgSurface,
   ArcState,
   BeatQueueRow,
   BeatStatus,
@@ -898,6 +900,56 @@ export async function getArgEventHistory(): Promise<import('./types.js').ArgEven
     .returns<import('./types.js').ArgEventReadRow[]>();
   if (error) throw error;
   return data ?? [];
+}
+
+/** Claim a bounded batch of crash-recoverable cross-surface deliveries. Service role only. */
+export async function claimArgProjections(
+  surface: ArgSurface,
+  limit = 10,
+  leaseSeconds = 45,
+): Promise<ArgProjectionClaimRow[]> {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100
+      || !Number.isInteger(leaseSeconds) || leaseSeconds < 5 || leaseSeconds > 300) {
+    throw new Error('invalid ARG projection lease request');
+  }
+  const { data, error } = await supabase.rpc('observance_claim_arg_projections', {
+    p_surface: surface,
+    p_limit: limit,
+    p_lease_seconds: leaseSeconds,
+  });
+  if (error) throw error;
+  if (!Array.isArray(data)) throw new Error('invalid ARG projection claim response');
+  return data.map((value: unknown) => {
+    if (!value || typeof value !== 'object') throw new Error('invalid ARG projection claim row');
+    const row = value as Record<string, unknown>;
+    if (typeof row.event_id !== 'string' || typeof row.event_key !== 'string'
+        || typeof row.source !== 'string' || typeof row.occurred_at !== 'string'
+        || typeof row.lease_token !== 'string' || !Number.isInteger(row.attempts)
+        || !row.payload || typeof row.payload !== 'object' || Array.isArray(row.payload)) {
+      throw new Error('invalid ARG projection claim row');
+    }
+    return row as unknown as ArgProjectionClaimRow;
+  });
+}
+
+/** Acknowledge only the exact lease holder; stale workers cannot overwrite newer delivery state. */
+export async function completeArgProjection(input: {
+  eventId: string;
+  surface: ArgSurface;
+  leaseToken: string;
+  applied: boolean;
+  error?: string | null;
+}): Promise<boolean> {
+  const { data, error } = await supabase.rpc('observance_complete_arg_projection', {
+    p_event_id: input.eventId,
+    p_surface: input.surface,
+    p_lease_token: input.leaseToken,
+    p_applied: input.applied,
+    p_error: input.error?.normalize('NFKC').trim().slice(0, 500) || null,
+  });
+  if (error) throw error;
+  if (typeof data !== 'boolean') throw new Error('invalid ARG projection completion response');
+  return data;
 }
 
 /**

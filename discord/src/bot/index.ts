@@ -29,6 +29,7 @@ import { handleAnswer, handleAnswerAutocomplete } from './commands/answer.js';
 import { handleProgress } from './commands/progress.js';
 import { handleInvestigate } from './commands/investigate.js';
 import { startPersistentShowrunner } from '../showrunner/persistent.js';
+import { startArgProjectionWorker } from '../v5/arg-projection-worker.js';
 
 /** Source tag for every row this process writes to event_log. */
 const SOURCE = 'the-watcher';
@@ -69,6 +70,17 @@ client.once('clientReady', (c) => {
       const message = err instanceof Error ? err.message : String(err);
       console.error('[the-watcher] persistent showrunner tick failed:', err);
       void logEvent('error', SOURCE, `persistent showrunner tick failed: ${message}`);
+    },
+  });
+
+  // Earned A1 consequences move through a durable lease/ack outbox. This worker never interprets
+  // player prose and never advances a case; it only delivers exact authored responses to committed
+  // events, with retry-safe Discord nonces and restart recovery.
+  startArgProjectionWorker({
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[the-watcher] ARG projection tick failed:', err);
+      void logEvent('error', SOURCE, `ARG projection tick failed: ${message}`);
     },
   });
 });

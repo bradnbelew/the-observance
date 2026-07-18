@@ -8,6 +8,8 @@ const register = read('src/bot/register.ts');
 const handler = read('src/bot/commands/investigate.ts');
 const repo = read('src/db/repo.ts');
 const migration = read('supabase/migrations/0017_arg_events.sql');
+const leases = read('supabase/migrations/0018_arg_projection_leases.sql');
+const rollback = read('supabase/rollbacks/0018_arg_projection_leases.rollback.sql');
 
 assert.ok(register.includes(".setName('investigate')"));
 assert.ok(register.includes(".setName('dispatch')"));
@@ -46,6 +48,18 @@ assert.ok(handler.includes('.normalize(\'NFKC\')'));
 assert.ok(repo.includes("rpc('observance_record_arg_event'"));
 assert.ok(migration.includes('revoke all on function public.observance_record_arg_event'));
 assert.ok(migration.includes('grant execute on function public.observance_record_arg_event'));
+assert.ok(leases.includes('for update of p skip locked'));
+assert.ok(leases.includes("p.attempts < 8"));
+assert.ok(leases.includes("p.status = 'processing' and p.lease_expires_at <= now()"));
+assert.ok(leases.includes("p.status = 'failed' and (p.next_attempt_at is null or p.next_attempt_at <= now())"));
+assert.ok(leases.includes('power(2, greatest(0, p.attempts - 1))'));
+assert.ok(leases.includes('observance_claim_arg_projections'));
+assert.ok(leases.includes('observance_complete_arg_projection'));
+assert.ok(leases.includes('p.lease_token = p_lease_token'));
+assert.ok(leases.includes('from public, anon, authenticated'));
+assert.ok(rollback.includes("where status = 'processing'"));
+assert.ok(rollback.includes("check (status in ('queued', 'applied', 'failed'))"));
+assert.ok(rollback.includes('drop column if exists next_attempt_at'));
 
 // The authored action accepts a bounded natural sentence, not a magic long phrase.
 assert.ok(register.includes('.setMinLength(12)'));

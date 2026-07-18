@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, open, readFile, rename, rm } from 'node:fs/promises';
 import { dirname, isAbsolute } from 'node:path';
 import {
+  ARG_SURFACES,
   ARG_EVENT_DEFINITIONS,
   canRecordArgEvent,
   type ArgEventKey,
@@ -24,8 +25,17 @@ export type ArgEventRecord = {
 export type ArgProjectionRecord = {
   eventId: string;
   surface: ArgSurface;
-  status: 'queued' | 'applied';
+  status: 'queued' | 'processing' | 'applied' | 'failed';
   attempts: number;
+  leaseToken?: string | null;
+  leaseExpiresAt?: string | null;
+  nextAttemptAt?: string | null;
+  lastError?: string | null;
+};
+
+export type ArgProjectionClaim = {
+  projection: ArgProjectionRecord;
+  event: ArgEventRecord;
 };
 
 export type ArgLedgerDocument = {
@@ -74,6 +84,85 @@ export class FileArgEventLedger {
     return (await this.read()).events.some((event) => event.eventKey === eventKey);
   }
 
+  async claimProjections(surface: ArgSurface, limit = 10,
+                         leaseMilliseconds = 30_000): Promise<ArgProjectionClaim[]> {
+    if (!ARG_SURFACES.includes(surface) || !Number.isInteger(limit) || limit < 1 || limit > 100
+        || !Number.isInteger(leaseMilliseconds)
+        || leaseMilliseconds < 1_000 || leaseMilliseconds > 300_000) {
+      throw new Error('ARG projection claim parameters are invalid');
+    }
+    const release = await acquireLock(`${this.path}.lock`);
+    try {
+      const ledger = await this.read();
+      const now = this.now();
+      const eventById = new Map(ledger.events.map((event) => [event.eventId, event]));
+      const candidates = ledger.projections
+        .filter((projection) => projection.surface === surface && projection.attempts < 8)
+        .filter((projection) => projection.status === 'queued'
+          || (projection.status === 'failed'
+            && (!projection.nextAttemptAt
+              || Date.parse(projection.nextAttemptAt) <= now.getTime()))
+          || (projection.status === 'processing'
+            && Boolean(projection.leaseExpiresAt)
+            && Date.parse(projection.leaseExpiresAt!) <= now.getTime()))
+        .sort((left, right) => {
+          const leftEvent = eventById.get(left.eventId);
+          const rightEvent = eventById.get(right.eventId);
+          return (leftEvent?.occurredAt ?? '').localeCompare(rightEvent?.occurredAt ?? '')
+            || left.eventId.localeCompare(right.eventId);
+        })
+        .slice(0, limit);
+      const claims: ArgProjectionClaim[] = [];
+      for (const projection of candidates) {
+        const event = eventById.get(projection.eventId);
+        if (!event) throw new Error('ARG projection references a missing event');
+        projection.status = 'processing';
+        projection.attempts += 1;
+        projection.leaseToken = randomUUID();
+        projection.leaseExpiresAt = new Date(now.getTime() + leaseMilliseconds).toISOString();
+        projection.nextAttemptAt = null;
+        projection.lastError = null;
+        claims.push({ projection: structuredClone(projection), event: structuredClone(event) });
+      }
+      if (claims.length > 0) await writeAtomic(this.path, ledger);
+      return claims;
+    } finally {
+      await release();
+    }
+  }
+
+  async completeProjection(input: {
+    eventId: string;
+    surface: ArgSurface;
+    leaseToken: string;
+    applied: boolean;
+    error?: string | null;
+  }): Promise<boolean> {
+    if (!ARG_SURFACES.includes(input.surface) || !/^[0-9a-f-]{36}$/i.test(input.leaseToken)) {
+      throw new Error('ARG projection completion parameters are invalid');
+    }
+    const release = await acquireLock(`${this.path}.lock`);
+    try {
+      const ledger = await this.read();
+      const projection = ledger.projections.find((candidate) => candidate.eventId === input.eventId
+        && candidate.surface === input.surface);
+      if (!projection || projection.status !== 'processing'
+          || projection.leaseToken !== input.leaseToken) return false;
+      projection.status = input.applied ? 'applied' : 'failed';
+      projection.leaseToken = null;
+      projection.leaseExpiresAt = null;
+      projection.nextAttemptAt = input.applied ? null
+        : new Date(this.now().getTime()
+          + Math.min(300_000, 5_000 * (2 ** Math.max(0, projection.attempts - 1)))).toISOString();
+      projection.lastError = input.applied ? null
+        : (input.error ?? 'projection failed').normalize('NFKC').trim().slice(0, 500);
+      await writeAtomic(this.path, ledger);
+      return true;
+    } finally {
+      await release();
+    }
+  }
+
   async record(input: {
     eventKey: ArgEventKey;
     idempotencyKey: string;
@@ -120,6 +209,10 @@ export class FileArgEventLedger {
           surface,
           status: surface === input.source ? 'applied' : 'queued',
           attempts: surface === input.source ? 1 : 0,
+          leaseToken: null,
+          leaseExpiresAt: null,
+          nextAttemptAt: null,
+          lastError: null,
         });
       }
       await writeAtomic(this.path, ledger);
