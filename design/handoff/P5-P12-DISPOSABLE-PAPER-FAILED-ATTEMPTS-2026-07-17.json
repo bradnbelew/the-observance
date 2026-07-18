@@ -99,6 +99,20 @@
       "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
       "plugin_sha256": "2ee6f5113d9f5287ef1760b98d3c014f6661d48626740cab0c7f6eb93ba79ccc",
       "required_fix": "Copy an existing exact read-only Paperclip cache into a brand-new target, record every cache hash, and refuse any byte drift."
+    },
+    {
+      "attempt": 6,
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\whole-campaign-paper-231a029-06",
+      "outcome": "paperclip_cache_extract_failed_before_server_start",
+      "exact_failure": "Failed to extract jar files: java.nio.file.AccessDeniedException: cache\\mojang_1.21.11.jar",
+      "cause": "The first hash-identical offline cache copy used metadata-preserving copy2. Paperclip could read the JAR but Windows ZipFS failed while closing its extraction filesystem.",
+      "world_created": false,
+      "paper_server_started": false,
+      "readiness_receipt_published": false,
+      "first_log_sha256": "e3c3da6e8cb8e8f8b2344dbe00047414e92a17739706a05b7c0a0174578bb97d",
+      "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+      "cache_sha256": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726",
+      "required_fix": "Copy cache bytes without source metadata, explicitly ensure target files are user-writable, and re-verify every copied hash before launch."
     }
   ],
   "production_mutated": false,

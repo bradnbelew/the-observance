@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import queue
 import shutil
+import stat
 import time
 import zipfile
 
@@ -50,7 +51,9 @@ def copy_bootstrap_cache(target: Path, source: Path | None) -> dict[str, str]:
     destination = target / "cache"
     if destination.exists():
         raise RuntimeError(f"fresh target unexpectedly already has a cache: {destination}")
-    shutil.copytree(source, destination, copy_function=shutil.copy2)
+    shutil.copytree(source, destination, copy_function=shutil.copyfile)
+    for path in sorted(candidate for candidate in destination.rglob("*") if candidate.is_file()):
+        path.chmod(path.stat().st_mode | stat.S_IWUSR)
     copied = {
         path.relative_to(destination).as_posix(): sha256(path)
         for path in sorted(candidate for candidate in destination.rglob("*") if candidate.is_file())

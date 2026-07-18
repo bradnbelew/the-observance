@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import tempfile
+import stat
 from pathlib import Path
 
 from run_p5_p12_disposable_paper import copy_bootstrap_cache, sha256
@@ -22,6 +23,7 @@ def main() -> None:
         assert copy_bootstrap_cache(target, source) == expected
         copied = target / "cache" / payload.name
         assert copied.read_bytes() == payload.read_bytes()
+        assert copied.stat().st_mode & stat.S_IWUSR
         try:
             copy_bootstrap_cache(target, source)
         except RuntimeError as exc:
