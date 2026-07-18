@@ -90,7 +90,8 @@ def main() -> int:
         if needle not in validator:
             failures.append(f"Copperline predicate/receipt invariant missing: {needle}")
     for needle in ("arg-experience", "arg-theory", "zero_observation_correct", "receipts=4",
-                   "arg-p4-p5-vertical-slice.journal", "actual_dialog_visual"):
+                   "arg-p4-p5-vertical-slice.journal", "actual_dialog_visual", "prepare-review",
+                   "absent_pristine_review_target"):
         if needle not in harness:
             failures.append(f"disposable Paper lifecycle invariant missing: {needle}")
 

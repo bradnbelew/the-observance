@@ -109,6 +109,28 @@ def run_lifecycle(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
     }, restart_lines
 
 
+def prepare_review(target: Path, java: str) -> tuple[dict[str, str], list[str]]:
+    process = base.PaperProcess(target, java)
+    try:
+        runtime_ready = process.wait_for("ARG_VERTICAL_SLICE_READY", 300)
+        confirmation = wait_for_confirmation(process)
+        process.wait_for("Done (", 300)
+        build = process.command("obsm3 build", "M3_BUILD_COMPLETE", 300)
+        initial = process.command("obsm3 arg-status", "M3_ARG_STATUS theory=false")
+        audit = process.command("obsm3 audit", "M3_AUDIT PASS")
+        security = process.command("obsm3 security", "M3_SECURITY_PASS")
+        process.command("save-all flush", "Saved the game")
+    except BaseException:
+        base.write_text(target / "arg-slice-review-prepare.failed.log", "\n".join(process.lines) + "\n")
+        raise
+    finally:
+        stop_if_running(process)
+    base.write_text(target / "arg-slice-review-prepare.log", "\n".join(process.lines) + "\n")
+    return {"runtime_ready": runtime_ready, "platform_confirmation": confirmation,
+            "build": build, "initial_state": initial, "closed_audit": audit,
+            "security": security}, process.lines
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--paper-jar", type=Path, required=True)
@@ -118,6 +140,7 @@ def main() -> None:
     parser.add_argument("--commit", required=True)
     parser.add_argument("--receipt", type=Path, required=True)
     parser.add_argument("--port", type=int, required=True)
+    parser.add_argument("--mode", choices=("validate", "prepare-review"), default="validate")
     parser.add_argument("--java", default="java")
     args = parser.parse_args()
     authority = json.loads(AUTHORITY.read_text(encoding="utf-8"))
@@ -129,23 +152,28 @@ def main() -> None:
     if base.sha256(paper) != base.PAPER_EXPECTED_SHA256:
         raise ValueError("Paper JAR does not match platform-confirmed stable build 132")
     configure(target, paper, plugin, args.target_id, args.commit, args.port)
-    evidence, restart_lines = run_lifecycle(target, args.java)
+    evidence, restart_lines = (run_lifecycle(target, args.java) if args.mode == "validate"
+                               else prepare_review(target, args.java))
     world_hash, package_hash, package = vnext.package_world(target)
     journal = target / "plugins/Observance/arg-p4-p5-vertical-slice.journal"
-    if not journal.is_file():
+    if args.mode == "validate" and not journal.is_file():
         raise FileNotFoundError("ARG validation completed without its durable local-primary journal")
+    if args.mode == "prepare-review" and journal.exists():
+        raise RuntimeError("pristine review preparation unexpectedly created an ARG solution journal")
     receipt = {
         "schema_version": "1.0.0-p4-p5-arg-paper-receipt",
-        "scope": "fresh disposable localhost Paper target; never production",
+        "scope": "fresh disposable localhost Paper target; never production", "mode": args.mode,
         "target_id": args.target_id, "target_path": str(target), "source_git_commit": args.commit,
         "authority_sha256": base.sha256(AUTHORITY),
         "paper": {"version": base.PAPER_VERSION, "build": base.PAPER_BUILD,
                   "jar_sha256": base.sha256(paper)},
         "plugin_jar_sha256": base.sha256(plugin), "world_tree_sha256": world_hash,
         "world_package_sha256": package_hash, "world_package_name": package.name,
-        "journal_sha256": base.sha256(journal),
-        "first_log_sha256": base.sha256(target / "arg-slice-first-start.log"),
-        "restart_log_sha256": base.sha256(target / "arg-slice-restart.log"),
+        "journal_sha256": base.sha256(journal) if journal.is_file() else None,
+        "journal_state": "present" if journal.is_file() else "absent_pristine_review_target",
+        "first_log_sha256": base.sha256(target / ("arg-slice-first-start.log" if args.mode == "validate"
+                                                    else "arg-slice-review-prepare.log")),
+        "restart_log_sha256": base.sha256(target / "arg-slice-restart.log") if args.mode == "validate" else None,
         "evidence": evidence,
         "server_configuration": {"bind": "127.0.0.1", "port": args.port, "online_mode": False,
             "force_gamemode": True, "gamemode": "adventure", "default_op": False,
