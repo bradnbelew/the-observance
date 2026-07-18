@@ -150,6 +150,7 @@ async function main(): Promise<void> {
     ['p7.nessa_publicly_cleared', 'discord'],
     ['p7.supplier_history_restored', 'copperline'],
     ['p8.intervention_plan_accepted', 'copperline'],
+    ['p8.unlit_house_synthesis_completed', 'minecraft'],
     ['p8.hold_systems_repaired', 'minecraft'],
     ['p9.company_biographies_restored', 'copperline'],
     ['p9.leak_window_proven', 'copperline'],
@@ -172,7 +173,7 @@ async function main(): Promise<void> {
     check(result.status === 'committed' && result.created, `full graph failed at ${eventKey}`);
   }
   const fullRestart = await new FileArgEventLedger(join(root, 'full-ledger.json'), now).read();
-  check(fullRestart.events.length === 28, 'full P1-P12 graph must retain all 28 events after restart');
+  check(fullRestart.events.length === 29, 'full P1-P12 graph must retain all 29 events after restart');
   check(fullRestart.events.every((event) => event.payload.observation_receipts === 0),
     'complete graph fixtures must prove zero-observation acceptance');
   } finally {

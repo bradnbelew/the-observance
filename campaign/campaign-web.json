@@ -47,6 +47,7 @@
     {"id":"p8.clean-copy","phase":"P8","kind":"evidence","ref":"p8.e09","surface":"minecraft","meaning":"The copied office preserves official edits more cleanly than household truth."},
     {"id":"p8.copy-before-source","phase":"P8","kind":"evidence","ref":"p8.e10","surface":"minecraft","meaning":"A registry copy records a cabinet change before the source cabinet changed."},
     {"id":"p8.intervention-plan","phase":"P8","kind":"event","ref":"p8.intervention_plan_accepted","surface":"copperline","meaning":"Players commit a causal model and an ordered safe test rather than restating a document."},
+    {"id":"p8.unlit-synthesis","phase":"P8","kind":"event","ref":"p8.unlit_house_synthesis_completed","surface":"minecraft","meaning":"All seven copied-house investigations and the base comparison are complete as required story work, separate from source-touch acceptance of the causal report."},
     {"id":"p8.water-repaired","phase":"P8","kind":"event","ref":"p8.hold_systems_repaired","surface":"minecraft","meaning":"The same water family serves Hold households, Dob's patch, and the players' repair."},
     {"id":"p9.supper-ledger","phase":"P9","kind":"evidence","ref":"p9.e01","surface":"minecraft","meaning":"Four friends had ordinary habits, jokes, and friction before they became an attribution problem."},
     {"id":"p9.ash-camera","phase":"P9","kind":"evidence","ref":"p9.e03","surface":"minecraft","meaning":"Ash's camera joke later authenticates a locker and a supposedly incidental bridge frame."},
@@ -114,6 +115,9 @@
     {"from":"p8.shifted-alarm","to":"p8.intervention-plan","relationship":"constrains","why":"The plan must separate initiating failure from concealed delay."},
     {"from":"p8.clean-copy","to":"p8.copy-before-source","relationship":"escalates","why":"Biased copying becomes apparent participation in the feedback loop."},
     {"from":"p8.intervention-plan","to":"p8.water-repaired","relationship":"causes_response","why":"A correct causal action changes the actual system."},
+    {"from":"p3.unlit-depth","to":"p8.unlit-synthesis","relationship":"pays_off","why":"The first impossible well measurement opens seven interleaved house investigations whose base comparison becomes required evidence work."},
+    {"from":"p8.clean-copy","to":"p8.unlit-synthesis","relationship":"recontextualizes","why":"The copied office teaches players to compare official edits with the distinct household records preserved across the Unlit houses."},
+    {"from":"p8.unlit-synthesis","to":"p8.water-repaired","relationship":"constrains","why":"The repair cannot close until the copied households and base have been investigated, even though no source-touch receipt gates a correct causal model."},
     {"from":"p5.repair-supper","to":"p8.water-repaired","relationship":"pays_off","why":"The players finish the same cross-generational practical concern."},
     {"from":"p3.open-disagreement","to":"p8.water-repaired","relationship":"pays_off","why":"Dob and Pell's limited accounts receive a material answer rather than a dialogue correction only."},
     {"from":"p1.mkept-custody","to":"p9.people-restored","relationship":"pays_off","why":"mkept's lonely preservation trace becomes one life inside a four-person relationship."},
@@ -169,7 +173,7 @@
     {"id":"record-copying","path":["p4.provenance-test","p8.clean-copy","p8.copy-before-source","p10.copy-proof","p11.not-kept","p12.coda"],"earned_change":"Copy behavior advances from biased preservation to impossible participation and bounded player causation without resolving ontology."},
     {"id":"keeper-culpability","path":["p5.gallery-response","p6.vaun-letter","p6.sella-omission","p7.averyn-cache","p8.intervention-plan","p11.vaun-a","p11.iss-n","p11.averyn-identified","p12.readiness"],"earned_change":"Six professional methods first explain work, then harm, then become distinct routes back to the person they excluded."},
     {"id":"current-settlement","path":["p3.open-disagreement","p4.refuge-control","p5.gallery-response","p7.public-correction","p8.water-repaired","p12.coda"],"earned_change":"Residents are witnesses and neighbors whose practical lives and public memory change because of player action."},
-    {"id":"unlit","path":["p3.unlit-depth","p8.clean-copy","p9.rook-corrections","p10.copy-proof","p12.coda"],"earned_change":"An impossible mirrored depth grows into interleaved copy research and a safe player-caused test, never a boss dungeon or ontology dump."},
+    {"id":"unlit","path":["p3.unlit-depth","p8.clean-copy","p8.unlit-synthesis","p9.rook-corrections","p10.copy-proof","p12.coda"],"earned_change":"An impossible mirrored depth grows into seven required interleaved house investigations, a base synthesis, and a safe player-caused test, never a boss dungeon or ontology dump."},
     {"id":"copperline","path":["p1.damaged-listing","p1.mkept-custody","p4.mouth-copy","p7.supplier-history","p9.people-restored","p9.leak-window","p10.wren-response","p11.packet","p12.coda"],"earned_change":"A mundane host archive becomes recurring human history that changes safely while retaining every prior version."}
   ]
 }

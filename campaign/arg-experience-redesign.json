@@ -199,9 +199,13 @@
       "provenance_authentication": "Players distinguish measured system behavior from edited warnings and copied-space chronology, then test repairs against predicted consequences.",
       "player_initiated_actions": [
         {"verb":"model","action":"publish a multi-cause theory that predicts a safe intervention order without requiring its sources to be clicked","receipt_gate":false,"response_event":"p8.intervention_plan_accepted"},
+        {"verb":"compare","action":"complete the seven distinct copied-house investigations in any order and compare their household findings at the Unlit base","receipt_gate":false,"response_event":"p8.unlit_house_synthesis_completed"},
         {"verb":"repair","action":"perform the bounded water, lamp, pressure, and route interventions with rollback-safe state","receipt_gate":false,"response_event":"p8.hold_systems_repaired"}
       ],
-      "authored_reactivity": [{"event":"p8.hold_systems_repaired","automation":"A1","exact_trigger":"safe compatible repair state","surfaces":["Minecraft","NPC","Copperline","Discord"],"response":"Water clears, lamps return, bypass closes, a route opens, Iss receives two non-canceling annotations, and the altered copy remains preserved.","idempotent":true,"catch_up":"system readback, repair receipts, and retained anomaly"}],
+      "authored_reactivity": [
+        {"event":"p8.unlit_house_synthesis_completed","automation":"A1","exact_trigger":"all seven local house actions and the base comparison are durable","surfaces":["Minecraft","NPC","Copperline","Discord"],"response":"The base comparison preserves seven household findings as one required act while explicitly keeping source-touch receipts outside the causal-report predicate.","idempotent":true,"catch_up":"seven separate house readbacks plus one base synthesis receipt"},
+        {"event":"p8.hold_systems_repaired","automation":"A1","exact_trigger":"safe compatible repair state","surfaces":["Minecraft","NPC","Copperline","Discord"],"response":"Water clears, lamps return, bypass closes, a route opens, Iss receives two non-canceling annotations, and the altered copy remains preserved.","idempotent":true,"catch_up":"system readback, repair receipts, and retained anomaly"}
+      ],
       "collaborative_asymmetric_paths": "Engineering, chronology, labor policy, Iss interpretation, and anomaly analysis can proceed separately; repair controls support assisted operation.",
       "cross_surface_consequence": "A player-authored causal model is tested against a visible repaired place and changes how Iss's statement and the old screenshot are cataloged.",
       "delayed_callback_reinterpretation": "Iss's decode is correct but its culprit interpretation fails; P11 later reuses this exact correct-result/wrong-door pattern for his affidavit letter.",

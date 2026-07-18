@@ -68,6 +68,8 @@ assert.ok(migration.includes('revoke all on function public.observance_record_ar
 assert.ok(migration.includes('grant execute on function public.observance_record_arg_event'));
 assert.ok(migration.includes("('p8.intervention_plan_accepted','P8','{p7.nessa_publicly_cleared}','{minecraft,copperline}'"));
 assert.ok(!migration.includes("('p8.intervention_plan_accepted','P8','{p7.nessa_publicly_cleared}','{minecraft,discord}'"));
+assert.ok(migration.includes("('p8.unlit_house_synthesis_completed','P8','{p7.nessa_publicly_cleared}','{minecraft}'"));
+assert.ok(migration.includes("('p8.hold_systems_repaired','P8','{p8.intervention_plan_accepted,p8.unlit_house_synthesis_completed}','{minecraft}'"));
 assert.ok(migration.includes("('p9.leak_window_proven','P9','{p9.company_biographies_restored}','{minecraft,copperline,media}'"));
 assert.ok(leases.includes('for update of p skip locked'));
 assert.ok(leases.includes("p.attempts < 8"));

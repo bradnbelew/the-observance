@@ -70,10 +70,11 @@
       {
         "events": [
           "p8.intervention_plan_accepted",
+          "p8.unlit_house_synthesis_completed",
           "p8.hold_systems_repaired"
         ],
         "phase": "P8",
-        "world_answer": "the causal model is tested by visible system repair and retained anomaly"
+        "world_answer": "seven substantial copied-house investigations converge with a separately accepted causal model, then visible system repair tests it while retaining the anomaly"
       },
       {
         "events": [
@@ -121,7 +122,7 @@
     },
     "projection_runtime": {
       "canonical_commit_before_projection": true,
-      "discord_delivery": "28 exact authored readbacks are delivered without player payloads; stable 25-character nonce plus enforce_nonce protects the post-before-ack crash window",
+      "discord_delivery": "29 exact authored readbacks are delivered without player payloads; stable 25-character nonce plus enforce_nonce protects the post-before-ack crash window",
       "external_staging_receipt": null,
       "local_file_ledger": "atomic lock/write, exclusive expiring leases, stale-token rejection, five-second-to-five-minute bounded exponential backoff, eight-attempt ceiling, restart readback",
       "proof": "design/handoff/CROSS-SURFACE-EVENT-OUTBOX-RECEIPT-2026-07-18.json",
@@ -1555,6 +1556,20 @@
         "authored_reactivity": [
           {
             "automation": "A1",
+            "catch_up": "seven separate house readbacks plus one base synthesis receipt",
+            "event": "p8.unlit_house_synthesis_completed",
+            "exact_trigger": "all seven local house actions and the base comparison are durable",
+            "idempotent": true,
+            "response": "The base comparison preserves seven household findings as one required act while explicitly keeping source-touch receipts outside the causal-report predicate.",
+            "surfaces": [
+              "Minecraft",
+              "NPC",
+              "Copperline",
+              "Discord"
+            ]
+          },
+          {
+            "automation": "A1",
             "catch_up": "system readback, repair receipts, and retained anomaly",
             "event": "p8.hold_systems_repaired",
             "exact_trigger": "safe compatible repair state",
@@ -1611,6 +1626,12 @@
             "receipt_gate": false,
             "response_event": "p8.intervention_plan_accepted",
             "verb": "model"
+          },
+          {
+            "action": "complete the seven distinct copied-house investigations in any order and compare their household findings at the Unlit base",
+            "receipt_gate": false,
+            "response_event": "p8.unlit_house_synthesis_completed",
+            "verb": "compare"
           },
           {
             "action": "perform the bounded water, lamp, pressure, and route interventions with rollback-safe state",

@@ -24,6 +24,7 @@ export const DISCORD_EVENT_MESSAGES = Object.freeze({
   'p7.supplier_history_restored': 'Copperline mirror restored: the supplier file now includes the removed revision and its attachment chain. That chain can be compared with the Hold sample.',
   'p7.nessa_publicly_cleared': 'Settlement correction: Nessa did not substitute the cistern material. Her removal and Toma\'s replacement shift remain part of the public record.',
   'p8.intervention_plan_accepted': 'Repair board: the proposed intervention is accepted as a testable model. The Hold will preserve what changes and what refuses to change.',
+  'p8.unlit_house_synthesis_completed': 'Unlit field note: all seven copied houses and the base comparison are complete. Their findings remain separately replayable and are not source-touch prerequisites for the causal report.',
   'p8.hold_systems_repaired': 'Works notice: water and drainage are moving through the repaired route. One measured anomaly remains and has not been explained away.',
   'p9.company_biographies_restored': 'Copperline memorial updated: mkept, Ash, Rook, and Wren now have separate account histories, work, jokes, and unfinished plans.',
   'p9.leak_window_proven': 'Camp inquiry: the leak window is now fixed by custody and opportunity. A witness spool has been released for review; it is evidence, not a confession.',

@@ -86,6 +86,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final String P6_RESPONSIBILITY_EVENT = "p6.six_responsibilities_acknowledged";
     private static final String P7_MATERIAL_EVENT = "p7.counterfeit_material_proven";
     private static final String P8_PLAN_EVENT = "p8.intervention_plan_accepted";
+    private static final String P8_UNLIT_EVENT = "p8.unlit_house_synthesis_completed";
     private static final String P8_REPAIR_EVENT = "p8.hold_systems_repaired";
     private static final String P9_BIOGRAPHIES_EVENT = "p9.company_biographies_restored";
     private static final String P9_LEAK_EVENT = "p9.leak_window_proven";
@@ -100,6 +101,9 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private static final List<String> P6_PROFESSIONAL_PROOFS = List.of(
             "v5_kv03_affidavit", "v5_km03_affidavit", "v5_ks03_affidavit",
             "v5_ko03_affidavit", "v5_kb03_affidavit", "v5_ki03_affidavit");
+    private static final List<String> P8_UNLIT_HOUSE_PROOFS = List.of(
+            "v5_bi01_lamp", "v5_bi02_cairn", "v5_bi03_coop", "v5_bi04_well",
+            "v5_bi05_watch", "v5_bi06_warm", "v5_bi07_threshold");
     private final ObservancePlugin plugin;
     private final PhysicalPredicateAuthority authority;
     private final V5ProgressStore progress;
@@ -355,7 +359,20 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             }
         }
         snapshot = progress.snapshot();
+        if (P8_UNLIT_HOUSE_PROOFS.stream().allMatch(snapshot::isComplete)
+                && (snapshot.isComplete(P8_PLAN_EVENT)
+                || snapshot.isComplete("v5_case_c05_complete"))) {
+            try {
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P8_UNLIT_EVENT));
+                if (created) mirrorP8UnlitAsync();
+            } catch (IOException | RuntimeException failure) {
+                plugin.getLogger().severe("P8 seven-house Unlit synthesis could not be committed locally: "
+                        + failure.getMessage());
+            }
+        }
+        snapshot = progress.snapshot();
         if (snapshot.isComplete(P8_PLAN_EVENT)
+                && snapshot.isComplete(P8_UNLIT_EVENT)
                 && snapshot.isComplete("v5_case_c06_complete")) {
             try {
                 boolean created = progress.transact(editor -> editor.setBooleanTrue(P8_REPAIR_EVENT));
@@ -498,6 +515,19 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             repair.addProperty("altered_copy", "preserved-not-erased");
             plugin.supabase().recordArgEvent(P8_REPAIR_EVENT,
                     "minecraft:p8:hold-systems-repaired", "minecraft", null, repair);
+        });
+    }
+
+    private void mirrorP8UnlitAsync() {
+        plugin.scheduler().runAsyncSafe("arg.p8.unlit-synthesis.mirror", () -> {
+            if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
+            JsonObject synthesis = new JsonObject();
+            synthesis.addProperty("houses", 7);
+            synthesis.addProperty("base_comparison", "complete");
+            synthesis.addProperty("observation_receipts_gate_report", false);
+            synthesis.addProperty("any_subset", true);
+            plugin.supabase().recordArgEvent(P8_UNLIT_EVENT,
+                    "minecraft:p8:seven-unlit-houses-and-base", "minecraft", null, synthesis);
         });
     }
 
@@ -713,6 +743,7 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             mirrorP6MilestonesAsync();
         }
         if (progress.snapshot().isComplete(P7_MATERIAL_EVENT)) mirrorP7MaterialAsync();
+        if (progress.snapshot().isComplete(P8_UNLIT_EVENT)) mirrorP8UnlitAsync();
         if (progress.snapshot().isComplete(P8_REPAIR_EVENT)) mirrorP8RepairAsync();
         if (progress.snapshot().isComplete(P9_BIOGRAPHIES_EVENT)) mirrorP9BiographiesAsync();
         if (progress.snapshot().isComplete(P9_LEAK_EVENT)) mirrorP9LeakAsync();

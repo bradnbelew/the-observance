@@ -459,6 +459,15 @@ def main() -> None:
             and "ArgEventPrerequisiteAliases.storyEventFor(flag)" in remote_cache
             and "ArgEventPrerequisiteAliases.resolvedAliases(flags)" in remote_cache,
             "cross-surface prerequisite bridge bypasses physical C10 or is not wired into Paper")
+    require('P8_UNLIT_EVENT = "p8.unlit_house_synthesis_completed"' in coordinator
+            and all(flag in coordinator for flag in (
+                "v5_bi01_lamp", "v5_bi02_cairn", "v5_bi03_coop", "v5_bi04_well",
+                "v5_bi05_watch", "v5_bi06_warm", "v5_bi07_threshold",
+            ))
+            and "P8_UNLIT_HOUSE_PROOFS.stream().allMatch(snapshot::isComplete)" in coordinator
+            and "snapshot.isComplete(P8_UNLIT_EVENT)" in coordinator
+            and "mirrorP8UnlitAsync" in coordinator,
+            "seven required Unlit houses/base are not independently committed before P8 repair")
     early_input_contracts = load(EARLY_INPUTS)["contracts"]
     require([row["id"] for row in early_input_contracts] == [
         "P1.SERVICE", "P1.CUSTODY", "P2.PACKAGE", "P2.HANDOFF",

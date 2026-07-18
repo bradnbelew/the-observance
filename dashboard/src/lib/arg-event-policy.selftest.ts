@@ -40,9 +40,13 @@ check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].prerequisites[0]
 check(ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].sourceSurfaces.includes('copperline')
   && !ARG_EVENT_DEFINITIONS['p8.intervention_plan_accepted'].sourceSurfaces.includes('discord'),
   'P8 must use the semantic Copperline plan or local Minecraft path, not a Discord answer menu');
-check(ARG_EVENT_DEFINITIONS['p8.hold_systems_repaired'].prerequisites[0]
-  === 'p8.intervention_plan_accepted',
-  'P8 physical repair must project only after a bounded safe intervention plan');
+check(ARG_EVENT_DEFINITIONS['p8.unlit_house_synthesis_completed'].sourceSurfaces.join(',') === 'minecraft',
+  'the required seven-house/base synthesis must be a local Paper event');
+check(ARG_EVENT_DEFINITIONS['p8.hold_systems_repaired'].prerequisites.join(',')
+  === 'p8.intervention_plan_accepted,p8.unlit_house_synthesis_completed',
+  'P8 physical repair must wait for both the bounded plan and required Unlit act');
+check(migration.includes("('p8.hold_systems_repaired','P8','{p8.intervention_plan_accepted,p8.unlit_house_synthesis_completed}'"),
+  'database repair prerequisite must preserve the required Unlit act');
 check(ARG_EVENT_DEFINITIONS['p9.leak_window_proven'].sourceSurfaces.includes('copperline')
   && !ARG_EVENT_DEFINITIONS['p9.leak_window_proven'].sourceSurfaces.includes('discord'),
   'P9 must preserve the private version chain on Copperline or the local Minecraft path, not a Discord answer menu');
