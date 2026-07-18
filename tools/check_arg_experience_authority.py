@@ -419,6 +419,29 @@ def main() -> None:
             and 'snapshot.isComplete("v5_a02_stations")' not in p9_coordinator
             and 'snapshot.isComplete("v5_case_c07_complete")' not in p9_coordinator,
             "P9 local path still auto-certifies biographies/version chronology from station completion or lacks the shared zero-observation predicate")
+    p10_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P10WrenTransmissionPredicate.java").read_text(
+        encoding="utf-8")
+    p11_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P11AverynIdentityPredicate.java").read_text(
+        encoding="utf-8")
+    require(all("/obsfinding p10-wren" in p9_input_by_id[key]["platform"]
+                and p9_input_by_id[key]["zero_observation_acceptance"] is True
+                for key in ("P10.F2", "P10.F3"))
+            and "/obsfinding p11-name" in p9_input_by_id["P11.F8"]["platform"]
+            and p9_input_by_id["P11.F8"]["zero_observation_acceptance"] is True
+            and "class P10WrenTransmissionPredicate" in p10_predicate
+            and "source clicks" in p10_predicate and "NPC contact" in p10_predicate
+            and "class P11AverynIdentityPredicate" in p11_predicate
+            and "submitP10WrenTransmission" in p9_coordinator
+            and "submitP11AverynIdentity" in p9_coordinator
+            and 'case "p10-wren"' in p9_finding_command
+            and 'case "p11-name"' in p9_finding_command
+            and 'finding.addProperty("observation_receipts", 0)' in p9_coordinator
+            and 'finding.addProperty("npc_contact_gate", false)' in p9_coordinator
+            and 'identity.addProperty("observation_receipts", 0)' in p9_coordinator
+            and 'identity.addProperty("affidavit_possession_gate", false)' in p9_coordinator
+            and 'snapshot.isComplete("v5_wr03_confession")' not in p9_coordinator
+            and 'snapshot.isComplete("v5_case_c09_complete")' not in p9_coordinator,
+            "P10/P11 local knowledge paths are source-gated, auto-certified, or lack shared bounded predicates")
     require("never parse free chat" in by_id["DISCORD_INVESTIGATION_MODAL"]["data_shape_normalization"],
             "Discord input requires unrestricted chat parsing")
     modal = by_id["DISCORD_INVESTIGATION_MODAL"]

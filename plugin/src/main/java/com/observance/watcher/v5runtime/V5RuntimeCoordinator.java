@@ -295,6 +295,14 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         return progress.snapshot().isComplete(P9_LEAK_EVENT);
     }
 
+    public boolean p10WrenFindingAccepted() {
+        return progress.snapshot().isComplete(P10_CONFRONTED_EVENT);
+    }
+
+    public boolean p11AverynIdentified() {
+        return progress.snapshot().isComplete(P11_IDENTIFIED_EVENT);
+    }
+
     /** Zero-observation keyboard recovery for a correctly formed six-person responsibility model. */
     public PlanSubmission submitP6ResponsibilityMatrix(P6ResponsibilityPredicate.Matrix matrix) {
         if (!storyInputsEnabled) return PlanSubmission.FAILED;
@@ -350,6 +358,49 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             return PlanSubmission.ACCEPTED;
         } catch (IOException | RuntimeException failure) {
             plugin.getLogger().severe("P9 private version window could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
+    /**
+     * Local outage/recovery equivalent of the Discord Wren-contact modal. Wren dialogue, packet
+     * possession, and observation receipts are deliberately absent from this correctness path.
+     */
+    public PlanSubmission submitP10WrenTransmission(P10WrenTransmissionPredicate.Finding finding) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P10_CONFRONTED_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P9_LEAK_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P10WrenTransmissionPredicate.valid(finding)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P10_CONFRONTED_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP10ConfrontedAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P10 Wren transmission finding could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
+    /** Correct six-letter knowledge passes without affidavit possession or prior source contact. */
+    public PlanSubmission submitP11AverynIdentity(String artifact) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P11_IDENTIFIED_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P10_REMEMBRANCE_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P11AverynIdentityPredicate.valid(artifact)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P11_IDENTIFIED_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP11IdentityAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P11 Averyn identity could not be committed locally: "
                     + failure.getMessage());
             return PlanSubmission.FAILED;
         }
@@ -490,16 +541,6 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             }
         }
         snapshot = progress.snapshot();
-        if (snapshot.isComplete(P9_LEAK_EVENT)
-                && snapshot.isComplete("v5_wr03_confession")) {
-            try {
-                boolean created = progress.transact(editor -> editor.setBooleanTrue(P10_CONFRONTED_EVENT));
-                if (created) mirrorP10ConfrontedAsync();
-            } catch (IOException | RuntimeException failure) {
-                plugin.getLogger().severe("P10 Wren finding could not be committed locally: " + failure.getMessage());
-            }
-        }
-        snapshot = progress.snapshot();
         if (snapshot.isComplete(P10_CONFRONTED_EVENT)
                 && snapshot.isComplete("v5_case_c08_complete")
                 && snapshot.branches().containsKey("v5_wren_outcome")) {
@@ -508,16 +549,6 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
                 if (created) mirrorP10RemembranceAsync();
             } catch (IOException | RuntimeException failure) {
                 plugin.getLogger().severe("P10 remembrance could not be committed locally: " + failure.getMessage());
-            }
-        }
-        snapshot = progress.snapshot();
-        if (snapshot.isComplete(P10_REMEMBRANCE_EVENT)
-                && snapshot.isComplete("v5_case_c09_complete")) {
-            try {
-                boolean created = progress.transact(editor -> editor.setBooleanTrue(P11_IDENTIFIED_EVENT));
-                if (created) mirrorP11IdentityAsync();
-            } catch (IOException | RuntimeException failure) {
-                plugin.getLogger().severe("P11 Averyn identity could not be committed locally: " + failure.getMessage());
             }
         }
         snapshot = progress.snapshot();
@@ -696,6 +727,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             finding.addProperty("packet_payload", "names-plans-routes-fears");
             finding.addProperty("proof", "progressive-private-missing-countermark");
             finding.addProperty("motive", "fear-explains-choice-responsibility-remains");
+            finding.addProperty("observation_receipts", 0);
+            finding.addProperty("npc_contact_gate", false);
             plugin.supabase().recordArgEvent(P10_CONFRONTED_EVENT,
                     "minecraft:p10:wren-transmission-finding", "minecraft", null, finding);
         });
@@ -722,6 +755,8 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
             identity.addProperty("name", "AVERYN");
             identity.addProperty("provenance", "six-distinct-affidavit-paths");
             identity.addProperty("exact_artifact", true);
+            identity.addProperty("observation_receipts", 0);
+            identity.addProperty("affidavit_possession_gate", false);
             plugin.supabase().recordArgEvent(P11_IDENTIFIED_EVENT,
                     "minecraft:p11:averyn-six-affidavit-identity", "minecraft", null, identity);
         });

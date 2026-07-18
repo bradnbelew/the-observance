@@ -4,6 +4,7 @@ import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.v5runtime.P6ResponsibilityPredicate;
 import com.observance.watcher.v5runtime.P8InterventionPlanPredicate;
 import com.observance.watcher.v5runtime.P9CampPredicate;
+import com.observance.watcher.v5runtime.P10WrenTransmissionPredicate;
 import com.observance.watcher.v5runtime.V5RuntimeCoordinator;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +55,10 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                 player.sendMessage("P9 camp owners / private window: "
                         + (runtime.p9BiographiesAccepted() ? "owners accepted" : "owners open") + " / "
                         + (runtime.p9LeakWindowAccepted() ? "window accepted." : "window open."));
+                player.sendMessage("P10 supported attribution: " + (runtime.p10WrenFindingAccepted()
+                        ? "accepted; Wren's response is available." : "not yet accepted."));
+                player.sendMessage("P11 identity artifact: " + (runtime.p11AverynIdentified()
+                        ? "accepted and retained locally." : "not yet accepted."));
             }
             case "replay" -> {
                 player.sendMessage(runtime.p6ResponsibilityAccepted()
@@ -65,14 +70,53 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
                 player.sendMessage(runtime.p9LeakWindowAccepted()
                         ? "Retained P9 finding: four people restored; private counter-mark, Witness Spool intake, then public upload; inside access proven, sender still open."
                         : "P9 replay remains available on Copperline; no complete local private-window finding is retained.");
+                player.sendMessage(runtime.p10WrenFindingAccepted()
+                        ? "Retained P10 finding: progressive private knowledge and a missing physical counter-mark identify Wren; fear explains the choice but does not excuse it."
+                        : "No supported P10 transmission finding is retained.");
+                player.sendMessage(runtime.p11AverynIdentified()
+                        ? "Retained P11 identity: AVERYN, a person and registrar rather than a seventh Keeper."
+                        : "No P11 identity artifact is retained.");
             }
             case "p6-recovery" -> submitP6Recovery(player, label, args, runtime);
             case "p8" -> submitP8(player, label, args, runtime);
             case "p9-people" -> submitP9People(player, label, args, runtime);
             case "p9-window" -> submitP9Window(player, label, args, runtime);
+            case "p10-wren" -> submitP10Wren(player, args, runtime);
+            case "p11-name" -> submitP11Name(player, args, runtime);
             default -> help(player, label);
         }
         return true;
+    }
+
+    private void submitP10Wren(Player player, String[] args, V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusalWindow(player);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String[] fields = fields(args);
+        if (fields.length != 3) {
+            player.sendMessage("Incomplete. Give provenance proof | packet progression | motive boundary.");
+            return;
+        }
+        var finding = new P10WrenTransmissionPredicate.Finding(fields[0], fields[1], fields[2]);
+        respond(player, runtime.submitP10WrenTransmission(finding), window,
+                "The supported attribution is fixed. Wren answers it; remembrance remains a separate choice.",
+                "The private version window must be preserved first.",
+                "The finding does not yet connect private provenance, the packet progression, and responsible choice.");
+    }
+
+    private void submitP11Name(Player player, String[] args, V5RuntimeCoordinator runtime) {
+        RefusalWindow window = refusalWindow(player);
+        if (window.count >= REFUSAL_LIMIT) {
+            player.sendMessage("The finding desk is throttled for a short time. Evidence and world state are unchanged.");
+            return;
+        }
+        String artifact = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+        respond(player, runtime.submitP11AverynIdentity(artifact), window,
+                "Identity restored: Averyn is retained as a person and registrar, not a seventh Keeper.",
+                "The group's Wren remembrance must be committed first.",
+                "That artifact does not match the six independent routes.");
     }
 
     private void submitP9People(Player player, String label, String[] args,
@@ -201,13 +245,17 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
         player.sendMessage("/" + label + " p8 <interacting causes> | <Iss evidence and unsafe act> | <what the copy proves and leaves open> | <safe works order>");
         player.sendMessage("P9 local recovery mirrors Copperline's real forms: /" + label + " p9-people <mkept | Ash | Rook | Wren traces>.");
         player.sendMessage("Then /" + label + " p9-window <before | crossing | after | readiness | strongest supported claim>.");
+        player.sendMessage("P10 accepts three short findings: /" + label
+                + " p10-wren <private-channel proof> | <packet progression> | <motive boundary>.");
+        player.sendMessage("P11 accepts the six-letter artifact: /" + label + " p11-name <artifact>.");
         player.sendMessage("Use /" + label + " status or /" + label + " replay. Source clicks are never required.");
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length <= 1) return List.of(
-                "help", "status", "replay", "p6-recovery", "p8", "p9-people", "p9-window");
+                "help", "status", "replay", "p6-recovery", "p8", "p9-people", "p9-window",
+                "p10-wren", "p11-name");
         return List.of();
     }
 
