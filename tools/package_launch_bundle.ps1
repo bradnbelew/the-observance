@@ -49,6 +49,8 @@ $tools = Join-Path $repoFull "tools"
 $discord = Join-Path $repoFull "discord"
 
 Invoke-NativeStep "verify V5 freshness" "python" @((Join-Path $tools "check_v5_freshness.py"))
+Invoke-NativeStep "verify P1-P12 ARG experience authority" "python" @((Join-Path $tools "check_arg_experience_authority.py"))
+Invoke-NativeStep "verify ARG experience/input negative mutations" "python" @((Join-Path $tools "test_arg_experience_negative_contracts.py"))
 Invoke-NativeStep "verify V5 content/runtime parity" "python" @((Join-Path $tools "check_v5_content.py"), "--runtime")
 Invoke-NativeStep "verify V5 physical predicates" "python" @((Join-Path $tools "check_v5_physical_predicates.py"))
 Invoke-NativeStep "verify V5 exact Minecraft map art" "python" @((Join-Path $tools "render_v5_map_art.py"))

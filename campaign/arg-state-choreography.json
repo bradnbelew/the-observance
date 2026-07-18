@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0-arg-state-choreography",
+  "status": "offline_authored_not_deployed",
+  "authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+  "state_model": {
+    "primitive": "generic authored event with exact predicate, durable local commit, projections, recovery, and replay",
+    "closed_mechanism_enum": false,
+    "local_primary": true,
+    "projection_order": ["validate exact action or meaning", "commit local idempotency key and canonical payload", "project safe surface changes", "queue failed projections", "publish read-only catch-up"],
+    "observation_receipts_gate_actions_or_answers": false,
+    "source_possession_gate_actions_or_answers": false,
+    "automation": {"A0":"deterministic state/readback", "A1":"exact preauthored reaction", "A2":"director approval required; never inferred or auto-promoted"}
+  },
+  "surface_contracts": {
+    "minecraft": "places, systems, physical custody, changed-space consequence, and protected actions; never the sole puzzle app",
+    "copperline": "immutable lived-in account/community history plus append-only earned replies, restored revisions, and cache-safe readback; never a clue menu",
+    "discord": "player investigation, theories, dissent, character contact, and authored reaction; never only an answer bot",
+    "dashboard_web": "director health, exact A1 trigger visibility, approvals, replay, accessibility, and rollback; never player-facing omniscient exposition",
+    "media_files": "hash-bound fragments, version/provenance work, and accessible equivalents; missing bytes remain fail-closed",
+    "npc_watcher": "relationship-bound preauthored responses and consequences; no generative canon, forced voice, or hidden receipt quota"
+  },
+  "privacy_and_safety": {
+    "public_real_world_travel_required": false,
+    "real_phone_required": false,
+    "personal_data_required": false,
+    "voice_recognition_required": false,
+    "controlled_fictional_equivalents": true,
+    "secrets_server_only": true,
+    "production_mutation_without_exact_target": false
+  },
+  "phase_events": [
+    {"phase":"P1","events":["p1.attachment_history_restored","p1.mkept_intent_authenticated"],"world_answer":"Copperline restores history and recognizes a player custody reconstruction"},
+    {"phase":"P2","events":["p2.artifact_authenticated","p2.live_runtime_handoff"],"world_answer":"one authenticated private runtime continues the recovered world"},
+    {"phase":"P3","events":["p3.resident_accounts_opened","p3.dispatch_authorized"],"world_answer":"resident and Discord behavior changes after trustworthy corroboration"},
+    {"phase":"P4","events":["p4.mouth_revision_restored","p4.copy_hypothesis_tested","p4.control_reversal_earned"],"world_answer":"archive, threshold, community, and Watcher respond to a player-selected test and theory"},
+    {"phase":"P5","events":["p5.service_chronology_shared","p5.civic_gallery_recurated"],"world_answer":"public workplace and archive description change through protected curation"},
+    {"phase":"P6","events":["p6.professional_models_recovered","p6.six_responsibilities_acknowledged"],"world_answer":"six people regain distinct names, voices, and testimony housings"},
+    {"phase":"P7","events":["p7.counterfeit_material_proven","p7.supplier_history_restored","p7.nessa_publicly_cleared"],"world_answer":"material test and version restoration change Nessa's public record"},
+    {"phase":"P8","events":["p8.intervention_plan_accepted","p8.hold_systems_repaired"],"world_answer":"the causal model is tested by visible system repair and retained anomaly"},
+    {"phase":"P9","events":["p9.company_biographies_restored","p9.leak_window_proven"],"world_answer":"camp restoration returns community history and releases the Witness Spool"},
+    {"phase":"P10","events":["p10.wren_confronted","p10.wren_remembrance_committed"],"world_answer":"evidence exposure changes live dialogue; judgment changes remembrance only"},
+    {"phase":"P11","events":["p11.averyn_identified","p11.averyn_restored_unbound"],"world_answer":"prior testimony and constrained speech change while the binding slot remains empty"},
+    {"phase":"P12","events":["p12.release_configuration_ready","p12.name_treatment_committed","p12.record_closed_averyn_released"],"world_answer":"durable release changes every private surface and produces a quiet coda"}
+  ],
+  "failure_and_recovery": {
+    "projection_outage": "canonical local event remains committed; failed surface projection retries by idempotency key and catch-up exposes the same authored payload",
+    "restart": "reload canonical events before projecting changed state; never infer completion from decoration or observation history",
+    "wrong_action": "preserve theory/attempt and return authored non-spoiler response; do not create progress or consume evidence",
+    "late_or_absent_player": "read-only case-so-far plus accessible source paths and contributed player artifacts; no required named participant",
+    "rollback": "surface projections may roll back to the last canonical event; irreversible production/public mutation is outside this offline authority"
+  }
+}

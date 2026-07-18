@@ -185,6 +185,48 @@ or postponing safe work in earlier phases.
   implementation must wait for and incorporate the control room's deep ARG-design research authority and
   campaign experience redesign.
 
+## 2026-07-17 — Research-based P1–P12 ARG experience redesign authority
+
+- `ARG-EXPERIENCE-AUTHORITY.md/.json` now distinguishes lore scavenging, bounded puzzle hunts, and a
+  responsive distributed ARG, citing the IGDA ARG SIG whitepaper, McGonigal, The Beast, Why So Serious?,
+  and Perplex City. ARG is the campaign-level grammar; the first two may appear only as subordinate beats.
+- `campaign/arg-experience-redesign.json` rewrites exact ordered P1–P12 briefs around an inciting anomaly,
+  live unknown, competing hypotheses, distributed fragments, provenance, player-initiated consequential
+  actions, A0/A1 authored reactivity, asymmetric collaboration, cross-surface consequence, delayed
+  reinterpretation, earned belief, and qualitative novelty. It does not define a mechanism catalog.
+- `campaign/arg-state-choreography.json` binds generic local-primary events to Minecraft, Copperline,
+  Discord, dashboard, media, and NPC/Watcher projections with idempotent retry, replay, catch-up,
+  accessibility, privacy, and the existing A2 approval boundary. Correct actions and meanings remain valid
+  with zero observation or possession receipts.
+- `check_arg_experience_authority.py` rejects direct source-to-restatement, single-surface, interaction-free,
+  no-world-response, conclusion-printed-verbatim, and answer-box-dominant structures. It is a structural
+  rejection gate, not a creativity score or human acceptance receipt.
+- P4 vNext and the prior P5–P12 packets remain reusable technical/content scaffolding. They do not regain
+  experiential status by passing Paper, projection, or simulation checks. No new Brad server is authorized
+  until the responsive redesign is actually implemented, passes offline critique, and retains approval null.
+
+## 2026-07-17 — Story-first expansion and real input authority
+
+- `STORY-EXPANSION-ARG-INTEGRATION.md/.json` binds five human layers: the current settlement, Hold
+  households/workers, six distinct Keeper people, Averyn/the civic Record, and the four-person last company.
+  It preserves exactly three ambiguities and the fixed revelation ladder while requiring the seventh-category
+  correction, Nessa–Toma–Pell line, cross-generational drainage repair, stateful resident lives, human Keeper
+  relationships, last-company history, multi-expedition Unlit, lived Copperline, and controlled cross-media.
+- `campaign/story-interaction-map.json` maps plants, incidents, player actions, authored responses,
+  intersections, reversals, payoffs, and coda across ordered P1–P12. `story-dependency-map.json` keeps locked
+  truth, approved flesh, provisional names/compositions, and implementation prerequisites distinct.
+- `campaign/campaign-grammar-audit.json` rejects document-read/answer-submit monoculture without defining a
+  mechanic taxonomy. Traditional ciphers and hard puzzles remain substantial and layered; plain English
+  governs player-facing prose and decoded payloads unless language is intentionally the fair puzzle.
+- `campaign/functional-feasibility-matrix.json` and `platform-input-feasibility-matrix.json` name physical,
+  web, Discord, media, and Unlit owners, exact primitives, state, outage, accessibility, recovery, security,
+  tests, and honest gaps. Lecterns are evidence readers only. Experimental Paper 1.21.11 Dialog inputs require
+  exact build/client proof and server validation with the same-predicate Brigadier fallback.
+- `test_arg_experience_negative_contracts.py` mutation-tests sixteen fail-closed anti-patterns, including
+  optional major threads, absent-player gates, unsafe copy, fake forms, chat parsing, unavailable APIs,
+  overflow, opaque plaintext, and source-click correctness prerequisites. Passing remains offline authority,
+  not implementation, experience, or launch evidence.
+
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the
 investigation: twenty complete one-clause pages fit the conservative 114-pixel/13-line budget and expose

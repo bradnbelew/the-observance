@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0-arg-experience-authority",
+  "status": "binding_research_based_experience_authority",
+  "recorded_at": "2026-07-17",
+  "brad_approval": null,
+  "p4_vnext_experiential_proof": "rejected",
+  "whole_campaign_experiential_readiness": "not_proven",
+  "launch_readiness": "not_proven",
+  "classifications": {
+    "lore_scavenger": "collect or read canon",
+    "escape_room_or_puzzle_hunt": "solve designed prompts inside a known bounded game and submit answers",
+    "arg": "responsive distributed fiction and investigation whose native surfaces, characters, community, and consequences behave as a continuing world"
+  },
+  "campaign_level_grammar": "arg",
+  "permitted_subordinate_beats": ["lore_scavenger", "escape_room_or_puzzle_hunt"],
+  "research_sources": [
+    {
+      "id": "igda_arg_sig_2006",
+      "url": "https://www.christydena.com/wp-content/uploads/2007/11/igda-alternaterealitygames-whitepaper-2006.pdf",
+      "authority": "2006 IGDA Alternate Reality Games SIG White Paper",
+      "applied_findings": ["exposition interaction challenge", "ordinary world surfaces", "community analysis and action", "non-exhaustive mechanics", "experience-specific invention"]
+    },
+    {
+      "id": "mcgonigal_this_might_be_a_game",
+      "url": "https://janemcgonigal.com/wp-content/uploads/2010/12/mcgonigal_this_might_be_a_game_sm-1.pdf",
+      "authority": "Jane McGonigal dissertation",
+      "applied_findings": ["affordance hunting", "collective sleuthing", "pervasive ordinary media", "ambiguity as debate platform"]
+    },
+    {
+      "id": "beast_first_monday",
+      "url": "https://firstmonday.org/ojs/index.php/fm/article/download/2484/2199",
+      "authority": "peer-reviewed cross-media case history",
+      "applied_findings": ["distributed rabbit hole", "live character response", "player-created archives", "fragments as investigative glue"]
+    },
+    {
+      "id": "why_so_serious_one_club",
+      "url": "https://www.oneclub.org/awards/theoneshow/-award/11241/why-so-seriousa-the-dark-knight-alternate-reality-game/",
+      "authority": "campaign case record",
+      "applied_findings": ["participants act inside fiction", "cross-surface consequences", "user-created activity", "ongoing responsive public world"]
+    },
+    {
+      "id": "perplex_city_wired",
+      "url": "https://www.wired.com/story/perplex-city-satoshi/",
+      "authority": "retrospective with designers and players",
+      "applied_findings": ["distributed specialisms", "community persistence", "shared search", "participation beyond individual access"]
+    }
+  ],
+  "case_required_fields": [
+    "inciting_anomaly", "live_unknown", "competing_hypotheses", "distributed_fragments",
+    "provenance_authentication", "player_initiated_actions", "authored_reactivity",
+    "collaborative_asymmetric_paths", "cross_surface_consequence",
+    "delayed_callback_reinterpretation", "earned_final_belief", "novelty_against_adjacent"
+  ],
+  "structural_rejections": {
+    "direct_source_restatement_core": true,
+    "single_surface_bounded_case": true,
+    "conclusion_printed_verbatim": true,
+    "interaction_free_case": true,
+    "no_player_caused_world_response": true,
+    "answer_input_as_dominant_verb": true,
+    "closed_mechanism_taxonomy": true
+  },
+  "runtime_invariants": {
+    "observation_receipts_gate_correctness": false,
+    "source_possession_gates_correctness": false,
+    "local_primary": true,
+    "any_subset": true,
+    "catch_up": true,
+    "replay": true,
+    "restart_idempotency": true,
+    "accessibility_equivalents": true,
+    "public_real_world_travel_phone_or_personal_data_required": false,
+    "automation": "A0/A1 exact authored triggers only; A2 remains director approved under existing authority"
+  },
+  "human_gate": "Offline structural and qualitative audits must pass before a new Brad candidate; only explicit Brad approval establishes experiential acceptance."
+}

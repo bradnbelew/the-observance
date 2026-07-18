@@ -1,6 +1,226 @@
 {
+  "arg_state_choreography": {
+    "authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+    "failure_and_recovery": {
+      "late_or_absent_player": "read-only case-so-far plus accessible source paths and contributed player artifacts; no required named participant",
+      "projection_outage": "canonical local event remains committed; failed surface projection retries by idempotency key and catch-up exposes the same authored payload",
+      "restart": "reload canonical events before projecting changed state; never infer completion from decoration or observation history",
+      "rollback": "surface projections may roll back to the last canonical event; irreversible production/public mutation is outside this offline authority",
+      "wrong_action": "preserve theory/attempt and return authored non-spoiler response; do not create progress or consume evidence"
+    },
+    "phase_events": [
+      {
+        "events": [
+          "p1.attachment_history_restored",
+          "p1.mkept_intent_authenticated"
+        ],
+        "phase": "P1",
+        "world_answer": "Copperline restores history and recognizes a player custody reconstruction"
+      },
+      {
+        "events": [
+          "p2.artifact_authenticated",
+          "p2.live_runtime_handoff"
+        ],
+        "phase": "P2",
+        "world_answer": "one authenticated private runtime continues the recovered world"
+      },
+      {
+        "events": [
+          "p3.resident_accounts_opened",
+          "p3.dispatch_authorized"
+        ],
+        "phase": "P3",
+        "world_answer": "resident and Discord behavior changes after trustworthy corroboration"
+      },
+      {
+        "events": [
+          "p4.mouth_revision_restored",
+          "p4.copy_hypothesis_tested",
+          "p4.control_reversal_earned"
+        ],
+        "phase": "P4",
+        "world_answer": "archive, threshold, community, and Watcher respond to a player-selected test and theory"
+      },
+      {
+        "events": [
+          "p5.service_chronology_shared",
+          "p5.civic_gallery_recurated"
+        ],
+        "phase": "P5",
+        "world_answer": "public workplace and archive description change through protected curation"
+      },
+      {
+        "events": [
+          "p6.professional_models_recovered",
+          "p6.six_responsibilities_acknowledged"
+        ],
+        "phase": "P6",
+        "world_answer": "six people regain distinct names, voices, and testimony housings"
+      },
+      {
+        "events": [
+          "p7.counterfeit_material_proven",
+          "p7.supplier_history_restored",
+          "p7.nessa_publicly_cleared"
+        ],
+        "phase": "P7",
+        "world_answer": "material test and version restoration change Nessa's public record"
+      },
+      {
+        "events": [
+          "p8.intervention_plan_accepted",
+          "p8.hold_systems_repaired"
+        ],
+        "phase": "P8",
+        "world_answer": "the causal model is tested by visible system repair and retained anomaly"
+      },
+      {
+        "events": [
+          "p9.company_biographies_restored",
+          "p9.leak_window_proven"
+        ],
+        "phase": "P9",
+        "world_answer": "camp restoration returns community history and releases the Witness Spool"
+      },
+      {
+        "events": [
+          "p10.wren_confronted",
+          "p10.wren_remembrance_committed"
+        ],
+        "phase": "P10",
+        "world_answer": "evidence exposure changes live dialogue; judgment changes remembrance only"
+      },
+      {
+        "events": [
+          "p11.averyn_identified",
+          "p11.averyn_restored_unbound"
+        ],
+        "phase": "P11",
+        "world_answer": "prior testimony and constrained speech change while the binding slot remains empty"
+      },
+      {
+        "events": [
+          "p12.release_configuration_ready",
+          "p12.name_treatment_committed",
+          "p12.record_closed_averyn_released"
+        ],
+        "phase": "P12",
+        "world_answer": "durable release changes every private surface and produces a quiet coda"
+      }
+    ],
+    "privacy_and_safety": {
+      "controlled_fictional_equivalents": true,
+      "personal_data_required": false,
+      "production_mutation_without_exact_target": false,
+      "public_real_world_travel_required": false,
+      "real_phone_required": false,
+      "secrets_server_only": true,
+      "voice_recognition_required": false
+    },
+    "schema_version": "1.0.0-arg-state-choreography",
+    "state_model": {
+      "automation": {
+        "A0": "deterministic state/readback",
+        "A1": "exact preauthored reaction",
+        "A2": "director approval required; never inferred or auto-promoted"
+      },
+      "closed_mechanism_enum": false,
+      "local_primary": true,
+      "observation_receipts_gate_actions_or_answers": false,
+      "primitive": "generic authored event with exact predicate, durable local commit, projections, recovery, and replay",
+      "projection_order": [
+        "validate exact action or meaning",
+        "commit local idempotency key and canonical payload",
+        "project safe surface changes",
+        "queue failed projections",
+        "publish read-only catch-up"
+      ],
+      "source_possession_gate_actions_or_answers": false
+    },
+    "status": "offline_authored_not_deployed",
+    "surface_contracts": {
+      "copperline": "immutable lived-in account/community history plus append-only earned replies, restored revisions, and cache-safe readback; never a clue menu",
+      "dashboard_web": "director health, exact A1 trigger visibility, approvals, replay, accessibility, and rollback; never player-facing omniscient exposition",
+      "discord": "player investigation, theories, dissent, character contact, and authored reaction; never only an answer bot",
+      "media_files": "hash-bound fragments, version/provenance work, and accessible equivalents; missing bytes remain fail-closed",
+      "minecraft": "places, systems, physical custody, changed-space consequence, and protected actions; never the sole puzzle app",
+      "npc_watcher": "relationship-bound preauthored responses and consequences; no generative canon, forced voice, or hidden receipt quota"
+    }
+  },
+  "brad_approval": null,
   "cases": [
     {
+      "arg_experience": {
+        "answer_input_role": "Written synthesis is not dominant and may document the result, but chronology and protected curation cause progress.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "before/after gallery and chronology",
+            "event": "p5.civic_gallery_recurated",
+            "exact_trigger": "valid chronology plus protected curatorial action",
+            "idempotent": true,
+            "response": "Penalty plaques move to evidence custody, work cards remain, Neri and Toma resume their dispute, and the archive corrects the shrine caption.",
+            "surfaces": [
+              "Minecraft",
+              "NPC",
+              "Copperline"
+            ]
+          }
+        ],
+        "case_id": "C03A",
+        "collaborative_asymmetric_paths": "Professional lanes can be worked in any order; players contribute chronology, environment, witness, or curation without all visiting every lane.",
+        "competing_hypotheses": [
+          "the Ways were always superstition",
+          "isolated clerks corrupted sound practice",
+          "distributed work rules were deliberately captured into one coercive system"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "The group's historical judgment changes a public workplace and the modern archive's description of it.",
+        "delayed_callback_reinterpretation": "P4's intake mark moves from route aid to service routing to compliance classification; P6 reveals the people who enabled each transition.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "working school, market, air, water, masonry, lamp, and watch environments",
+            "role": "inhabitation and professional practice",
+            "surface": "Minecraft civic rooms"
+          },
+          {
+            "fragment": "Neri-Toma dispute, Orris appeal, and player responsibility matrix",
+            "role": "human interaction and competing judgment",
+            "surface": "NPC/Discord"
+          },
+          {
+            "fragment": "captioned service-counter screenshot and versioned manual leaf",
+            "role": "modern reclassification and provenance",
+            "surface": "Copperline"
+          }
+        ],
+        "earned_final_belief": "Seven practical procedures emerged from ordinary work and were later captured as coercive Ways.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "After P4, a Copperline user identifies the supposed shrine as a service counter, but seven later penalty plaques still control heat, food, travel, posture, sleep, and speech.",
+        "interaction_free": false,
+        "live_unknown": "Did one council invent the Ways, did workers willingly ritualize them, or were useful procedures captured at different times? What should remain in public view?",
+        "novelty_against_adjacent": "P5 is civic ethnography and public curation; P6 is culpability-specific biography and testimony.",
+        "phase": "P5",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "build a shared worker-to-procedure chronology from independent professions",
+            "receipt_gate": false,
+            "response_event": "p5.service_chronology_shared",
+            "verb": "reconstruct"
+          },
+          {
+            "action": "choose which service cards remain public and move coercive plaques into accountable evidence custody",
+            "receipt_gate": false,
+            "response_event": "p5.civic_gallery_recurated",
+            "verb": "curate"
+          }
+        ],
+        "provenance_authentication": "Players date procedures by job-specific material, handwriting, repair history, and later coordinated penalty revisions rather than by repeated labels.",
+        "single_surface_bounded_case": false
+      },
       "callback": "P4's repeated intake mark changes meaning again: first it looked ritual, then practical, and here its placement on penalty slips shows the Record beginning to classify compliance.",
       "case_id": "C03A",
       "cold_theory_paths": [
@@ -334,6 +554,76 @@
       "title": "What the Ways Were For"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "The matrix is a player-created investigative artifact, not six answer boxes; operations and witness interaction dominate.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "six biographies and dissent-preserving matrix",
+            "event": "p6.six_responsibilities_acknowledged",
+            "exact_trigger": "six distinct identity/profession/choice models, shareable at zero receipts",
+            "idempotent": true,
+            "response": "Honorific labels fall away, separate affidavit housings open, and witnesses respond according to relationship rather than solve order.",
+            "surfaces": [
+              "NPC",
+              "Minecraft",
+              "Discord"
+            ]
+          }
+        ],
+        "case_id": "C03B",
+        "collaborative_asymmetric_paths": "Players specialize by profession or relationship; no dossier order or named participant is mandatory, and matrix conflicts are preserved for discussion.",
+        "competing_hypotheses": [
+          "the Keepers acted as one council",
+          "one forged the others' records",
+          "six distinct people converged under pressure while retaining different culpabilities"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "The archive and NPC language stop flattening six people into icons, while separate testimony remains available for later reinterpretation.",
+        "delayed_callback_reinterpretation": "Each apparently solved professional dossier returns in P11 with a culpability-specific hidden letter whose earlier interpretation was incomplete.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "six profession-specific operations and material traces",
+            "role": "embodied professional inference",
+            "surface": "Minecraft workrooms"
+          },
+          {
+            "fragment": "relationships, jokes, evasions, and contradictions",
+            "role": "human witness",
+            "surface": "NPC remembered conversations"
+          },
+          {
+            "fragment": "version histories, stills, scans, and a player-made responsibility matrix",
+            "role": "cross-dossier authentication",
+            "surface": "Copperline/media/Discord"
+          }
+        ],
+        "earned_final_belief": "The Keepers were six distinct contemporaries with incompatible knowledge and culpability; none is a complete villain or absolved custodian.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "Six Keeper icons use one institutional voice, yet the workrooms contain incompatible handwriting, methods, loyalties, and omissions.",
+        "interaction_free": false,
+        "live_unknown": "Who were Vaun, Mara, Sella, Orin, Brann, and Iss as people, and what did each choose to preserve, enable, challenge, or conceal?",
+        "novelty_against_adjacent": "P6 is parallel professional biography and moral attribution; P7 narrows to forensic custody and exoneration.",
+        "phase": "P6",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "perform or reconstruct each person's actual professional test using accessibility-equivalent paths",
+            "receipt_gate": false,
+            "response_event": "p6.professional_models_recovered",
+            "verb": "operate"
+          },
+          {
+            "action": "present one person's omission to another remembered witness and revise the shared responsibility matrix",
+            "receipt_gate": false,
+            "response_event": "p6.six_responsibilities_acknowledged",
+            "verb": "confront"
+          }
+        ],
+        "provenance_authentication": "Each biography requires an independent professional signature and a cross-person contradiction; shared titles cannot authenticate authorship.",
+        "single_surface_bounded_case": false
+      },
       "callback": "P5's ordinary service records become expert evidence: the same ration exception, manual leaf, sample jar, low seam, rota, and living reed reveal who noticed what and when.",
       "case_id": "C03B",
       "cold_theory_paths": [
@@ -745,6 +1035,83 @@
       "title": "Six Hands on the Same Winter"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "Findings document an already performed forensic and restorative action; they are not the dominant challenge.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "original exhibits and exoneration docket",
+            "event": "p7.nessa_publicly_cleared",
+            "exact_trigger": "valid separated findings independent of source touches",
+            "idempotent": true,
+            "response": "Nessa returns to the neutral roster, the accusation moves into evidence custody, Draft A reappears, and Toma leaves an apology without demanding forgiveness.",
+            "surfaces": [
+              "Minecraft",
+              "NPC",
+              "Copperline",
+              "Discord"
+            ]
+          }
+        ],
+        "case_id": "C04",
+        "collaborative_asymmetric_paths": "Material, procurement, labor, and witness lanes are independent and shareable; the group may disagree about officials while still clearing Nessa.",
+        "competing_hypotheses": [
+          "Nessa installed the wrong filter",
+          "counterfeit material entered after her report",
+          "the complaint file was altered to make the reporter look late"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "Forensic work changes a person's public record and restores the version history that enabled the scapegoat narrative.",
+        "delayed_callback_reinterpretation": "The suppressed analyst attribution becomes Averyn evidence in P11; the cleared material chain becomes the P12 Cistern Seal.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "cloth, charcoal, seals, pump timing, and protected originals",
+            "role": "material cause",
+            "surface": "Minecraft forensic exhibits"
+          },
+          {
+            "fragment": "supplier drafts, cache recovery, and redactions",
+            "role": "record falsification",
+            "surface": "Copperline version history"
+          },
+          {
+            "fragment": "shift memories, stills, and separated findings",
+            "role": "conduct and public accountability",
+            "surface": "NPC/media/Discord"
+          }
+        ],
+        "earned_final_belief": "Counterfeit material and edited records caused the failure narrative; Nessa reported in order and is completely cleared.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "A disciplinary placard blames Nessa for the cistern winter, but the protected cloth exhibit sheds differently from the supplier sample named in the final file.",
+        "interaction_free": false,
+        "live_unknown": "What physically failed, who changed the procurement and rota record, and is Nessa a negligent reporter, scapegoat, or participant?",
+        "novelty_against_adjacent": "P7 is chain-of-custody exoneration; P8 expands into multi-cause incident reconstruction and repair.",
+        "phase": "P7",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "run the safe comparative filter test or accessibility-equivalent material model",
+            "receipt_gate": false,
+            "response_event": "p7.counterfeit_material_proven",
+            "verb": "test"
+          },
+          {
+            "action": "restore Draft A beside Draft B without overwriting either",
+            "receipt_gate": false,
+            "response_event": "p7.supplier_history_restored",
+            "verb": "restore"
+          },
+          {
+            "action": "publish separate cause, falsification, and conduct findings that remove Nessa's accusation",
+            "receipt_gate": false,
+            "response_event": "p7.nessa_publicly_cleared",
+            "verb": "clear"
+          }
+        ],
+        "provenance_authentication": "Material behavior, seal custody, draft lineage, rota timing, and first-report order must independently converge; a confession is unnecessary.",
+        "single_surface_bounded_case": false
+      },
       "callback": "Sella's omitted lower sample, Vaun's unexplained balances, Brann's paired-watch correction, and Iss's polished mercy language become parts of one human case rather than six isolated dossier details.",
       "case_id": "C04",
       "cold_theory_paths": [
@@ -1085,6 +1452,78 @@
       "title": "The Cistern Winter Inquiry"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "Prediction and physical intervention dominate; a causal report preserves rather than causes the repaired state.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "system readback, repair receipts, and retained anomaly",
+            "event": "p8.hold_systems_repaired",
+            "exact_trigger": "safe compatible repair state",
+            "idempotent": true,
+            "response": "Water clears, lamps return, bypass closes, a route opens, Iss receives two non-canceling annotations, and the altered copy remains preserved.",
+            "surfaces": [
+              "Minecraft",
+              "NPC",
+              "Copperline",
+              "Discord"
+            ]
+          }
+        ],
+        "case_id": "C05-C06",
+        "collaborative_asymmetric_paths": "Engineering, chronology, labor policy, Iss interpretation, and anomaly analysis can proceed separately; repair controls support assisted operation.",
+        "competing_hypotheses": [
+          "Iss alone caused the Break",
+          "deferred maintenance alone explains it",
+          "the Record amplified interacting failures",
+          "the copied room proves deliberate sabotage"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "A player-authored causal model is tested against a visible repaired place and changes how Iss's statement and the old screenshot are cataloged.",
+        "delayed_callback_reinterpretation": "Iss's decode is correct but its culprit interpretation fails; P11 later reuses this exact correct-result/wrong-door pattern for his affidavit letter.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "pressure, water, lamp, route, crack, and repair state",
+            "role": "engineering intervention",
+            "surface": "Minecraft systems"
+          },
+          {
+            "fragment": "maintenance screenshot, earlier room version, and incident stills",
+            "role": "chronology contradiction",
+            "surface": "Copperline/media"
+          },
+          {
+            "fragment": "Iss claim, warnings, and player causal model",
+            "role": "adversarial interpretation",
+            "surface": "NPC/Discord"
+          }
+        ],
+        "earned_final_belief": "The Break was multi-cause; Iss accelerated it but did not create the prior failures or control the Record/Dark feedback, and material systems can be repaired.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "The Hold's damaged systems respond differently depending on repair order, while a copied room appears changed before its physical source and Iss's correct decode implies the wrong culprit.",
+        "interaction_free": false,
+        "live_unknown": "Which failures are structural, political, human, or anomalous; what did Iss accelerate; and what remains materially repairable?",
+        "novelty_against_adjacent": "P8 is incident reconstruction plus engineering consequence; P9 becomes domestic/media archaeology of a missing modern company.",
+        "phase": "P8",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "publish a multi-cause theory that predicts a safe intervention order without requiring its sources to be clicked",
+            "receipt_gate": false,
+            "response_event": "p8.intervention_plan_accepted",
+            "verb": "model"
+          },
+          {
+            "action": "perform the bounded water, lamp, pressure, and route interventions with rollback-safe state",
+            "receipt_gate": false,
+            "response_event": "p8.hold_systems_repaired",
+            "verb": "repair"
+          }
+        ],
+        "provenance_authentication": "Players distinguish measured system behavior from edited warnings and copied-space chronology, then test repairs against predicted consequences.",
+        "single_surface_bounded_case": false
+      },
       "callback": "P5 service cards become repair manuals; P6 Orin/Brann/Iss evidence changes causal weight; P7 proves that edited records can predate the Break. The clean copied room first looks like a preserved original, then proves the Record copied official edits instead of living history.",
       "case_id": "C05-C06",
       "cold_theory_paths": [
@@ -1487,6 +1926,77 @@
       "title": "The Break and the Work After"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "Player-created biographies and authenticated chronology dominate; the final docket deliberately remains an open question.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "biographies, chronology, and spool custody",
+            "event": "p9.leak_window_proven",
+            "exact_trigger": "valid private-window chronology",
+            "idempotent": true,
+            "response": "Locker 13 releases the Witness Spool, a cached thread returns, and the docket asks who knew without naming Wren.",
+            "surfaces": [
+              "Minecraft",
+              "Copperline",
+              "Discord"
+            ]
+          }
+        ],
+        "case_id": "C07",
+        "collaborative_asymmetric_paths": "Players follow people, video, route, or hosting chronology; owner cards are collaborative artifacts and no one perspective convicts a suspect.",
+        "competing_hypotheses": [
+          "the group failed from ignorance",
+          "someone accidentally uploaded the route",
+          "one member deliberately transmitted it",
+          "the Record inferred it from observation"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "Restoring the camp changes Copperline's accessible history and creates the evidence object that makes P10 a live attribution case.",
+        "delayed_callback_reinterpretation": "C01 account habits become human biography; an incidental Wren concern later reads as fear and opportunity, not yet guilt.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "four workstations, domestic traces, Locker 13, and route materials",
+            "role": "owner attribution and lived history",
+            "surface": "Minecraft camp"
+          },
+          {
+            "fragment": "fixed clip, camera chronology, and accessible stills",
+            "role": "presence and near-release state",
+            "surface": "found footage/media"
+          },
+          {
+            "fragment": "comment thread, attachment provenance, and player biographies",
+            "role": "modern community and leak boundary",
+            "surface": "Copperline/Discord"
+          }
+        ],
+        "earned_final_belief": "Four real investigators reached the release threshold; interference after a private route revision, not ignorance, ended the run.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "An abandoned modern camp is warm in one workstation, and a private route revision appears in a hostile packet before any public upload could contain it.",
+        "interaction_free": false,
+        "live_unknown": "Who were mkept, Ash, Rook, and Wren to one another, how close were they to release, and how did a private revision escape?",
+        "novelty_against_adjacent": "P9 is camp/media archaeology and open accusation; P10 is live adversarial attribution and moral choice.",
+        "phase": "P9",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "restore each workstation enough to attribute its owner and produce a player-written biography card",
+            "receipt_gate": false,
+            "response_event": "p9.company_biographies_restored",
+            "verb": "restore"
+          },
+          {
+            "action": "align private revision, camera, upload, and packet chronologies while leaving culprit theories open",
+            "receipt_gate": false,
+            "response_event": "p9.leak_window_proven",
+            "verb": "authenticate"
+          }
+        ],
+        "provenance_authentication": "Ownership comes from habits and cross-surface chronology, not name labels; the leak question requires proving what was still private when the packet appeared.",
+        "single_surface_bounded_case": false
+      },
       "callback": "Copperline service 1842 and ticket 9137 return as ordinary infrastructure the prior company used. A camera joke, Rook's correction habit, and Wren's distance estimate become evidence only after the camp is understood.",
       "case_id": "C07",
       "cold_theory_paths": [
@@ -1789,6 +2299,77 @@
       "title": "The Company at Ash Camp"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "Conversation strategy, evidence exposure, withholding, and moral judgment dominate; exact submissions only bind fixed facts safely.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "conversation branches and fixed fact matrix",
+            "event": "p10.wren_confronted",
+            "exact_trigger": "valid evidence relationship, accepted without source receipts",
+            "idempotent": true,
+            "response": "Wren's response changes by exposed relationship and admits fear without supplying the attribution proof; Rook's Bridge remains independently operable.",
+            "surfaces": [
+              "NPC",
+              "Discord",
+              "Minecraft"
+            ]
+          }
+        ],
+        "case_id": "C08",
+        "collaborative_asymmetric_paths": "Interviewers, packet analysts, relationship historians, and skeptical players hold different information; protected judgment records disagreement without requiring unanimity.",
+        "competing_hypotheses": [
+          "the Record inferred private facts",
+          "Wren transmitted them under constraint",
+          "another member used Wren's channel",
+          "Wren's fear explains but does not excuse deliberate betrayal"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "What players reveal changes the conversation, while their later judgment changes Wren's remembered coda but never the fixed facts or ability to finish.",
+        "delayed_callback_reinterpretation": "Wren's earlier helpful account behavior becomes self-preservation; his fear foreshadows Averyn's actual constrained persistence without equating them.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "packet progression, channel material, and Rook counter-mark",
+            "role": "independent attribution",
+            "surface": "spool/Minecraft"
+          },
+          {
+            "fragment": "stateful Wren conversation and partial admissions",
+            "role": "motive and relationship",
+            "surface": "NPC dialogue"
+          },
+          {
+            "fragment": "moderation chronology, private quotations, and group dissent",
+            "role": "opportunity and moral debate",
+            "surface": "Copperline/Discord"
+          }
+        ],
+        "earned_final_belief": "Wren deliberately transmitted names, plans, routes, and fears to preserve himself; constraint and fear explain but do not erase responsibility.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "The Witness Spool contains progressively intimate packets, while Wren answers accurate public facts but evades the private route revision in a way that changes with what players expose.",
+        "interaction_free": false,
+        "live_unknown": "Did Wren deliberately transmit the company, was he coerced or copied, and what moral judgment remains after attribution is independent of confession?",
+        "novelty_against_adjacent": "P10 is adversarial interview plus independent attribution and moral judgment; P11 reopens solved testimony to restore an erased identity.",
+        "phase": "P10",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "choose which proven packet or protected omission to expose to Wren and which theory to withhold",
+            "receipt_gate": false,
+            "response_event": "p10.wren_confronted",
+            "verb": "confront"
+          },
+          {
+            "action": "record condemn, understand, or free after the independent Bridge proof, preserving dissent",
+            "receipt_gate": false,
+            "response_event": "p10.wren_remembrance_committed",
+            "verb": "judge"
+          }
+        ],
+        "provenance_authentication": "Packet specificity, first-known-source chronology, channel signature, and Rook's independent Bridge prove deliberate transmission without relying on Wren's confession.",
+        "single_surface_bounded_case": false
+      },
       "callback": "Ash's joking shot list, mkept's offline windows, Rook's private marks, and Wren's changing distance all become attribution evidence. The apparently incidental phrase 'more distance' is re-read as fear of leaving observed space.",
       "case_id": "C08",
       "cold_theory_paths": [
@@ -2073,6 +2654,78 @@
       "title": "What Wren Gave Away"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "Name assembly is one minority beat, never the dominant input; campaign-scale recontextualization and protective non-filing are decisive.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "custody index, relationship model, and non-filing receipt",
+            "event": "p11.averyn_restored_unbound",
+            "exact_trigger": "valid identity/relationship model plus protected non-filing action",
+            "idempotent": true,
+            "response": "Six housings illuminate, the empty slot stays empty, Averyn's professional card returns outside the frame, and constrained speech briefly becomes a direct human sentence.",
+            "surfaces": [
+              "Minecraft",
+              "NPC/Watcher",
+              "Copperline",
+              "Discord"
+            ]
+          }
+        ],
+        "case_id": "C09",
+        "collaborative_asymmetric_paths": "Media analysts, prior-case specialists, accessibility readers, and relationship theorists contribute independently; shared identity knowledge passes with zero touches.",
+        "competing_hypotheses": [
+          "Wren is the voice",
+          "a seventh Keeper was erased",
+          "Averyn is identical to the Watcher",
+          "Averyn is a human interface constrained by a distinct civic Record and unresolved Dark"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "Reinterpreting six earlier cases changes the Watcher's voice and restores a person to public history without turning her into another collectible.",
+        "delayed_callback_reinterpretation": "Iss's correct decode/wrong interpretation becomes the model for an identity whose letters were always present but whose assumed Keeper framing was wrong.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "WAV, images, inventory, custody, and accessible equivalents",
+            "role": "human signal and provenance",
+            "surface": "recovered media packet"
+          },
+          {
+            "fragment": "culpability-specific affidavit features and corrected Iss result",
+            "role": "delayed recontextualization",
+            "surface": "six prior cases"
+          },
+          {
+            "fragment": "empty slot, relationship debate, and immutable custody index",
+            "role": "identity without rebinding",
+            "surface": "Minecraft/Discord/Copperline"
+          }
+        ],
+        "earned_final_belief": "Averyn was the erased registrar and cistern analyst trapped as the Record's human interface; Watcher, Record, Dark, and Averyn are related but not identical.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "A custody-approved recovered packet carries a human phrase through nonverbal data, while six earlier Keeper affidavits each contain a provenance-specific feature that their original solutions did not need.",
+        "interaction_free": false,
+        "live_unknown": "Who is the constrained voice, why was she removed, how are Averyn, Watcher, Record, and Dark related, and can a name be restored without filing its owner back into the system?",
+        "novelty_against_adjacent": "P11 is identity restoration through delayed reinterpretation and consent boundary; P12 is a durable collective release audit and aftermath.",
+        "phase": "P11",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "reopen earlier affidavits under their changed meaning and assemble the name from six independent provenance paths",
+            "receipt_gate": false,
+            "response_event": "p11.averyn_identified",
+            "verb": "reopen"
+          },
+          {
+            "action": "restore Averyn's public role card outside the Record while deliberately refusing the empty binding slot",
+            "receipt_gate": false,
+            "response_event": "p11.averyn_restored_unbound",
+            "verb": "protect"
+          }
+        ],
+        "provenance_authentication": "Six independent letters must retain their distinct people and custody paths; packet data alone proves neither identity nor the four-part relationship.",
+        "single_surface_bounded_case": false
+      },
       "callback": "Vaun's omitted column, Mara's edition mark, Sella's reverse transfer, Orin's practical sightline, Brann's paired watch, and Iss's mercy correction were ordinary professional details that later recover one letter each.",
       "case_id": "C09",
       "cold_theory_paths": [
@@ -2382,6 +3035,83 @@
       "title": "A Name the Record Removed"
     },
     {
+      "arg_experience": {
+        "answer_input_role": "No final answer box opens the ending; custody configuration, consent, protected confirmation, and durable consequence do.",
+        "authored_reactivity": [
+          {
+            "automation": "A1",
+            "catch_up": "release hash, contributor record, choices, and persistent quiet coda",
+            "event": "p12.record_closed_averyn_released",
+            "exact_trigger": "operator arm plus valid durable configuration; A2 content remains approval-controlled",
+            "idempotent": true,
+            "response": "Local release commits before theater, gates open, hauntings cease, the archive receives a restrained immutable coda, and Averyn says goodbye on every valid path.",
+            "surfaces": [
+              "Minecraft",
+              "Discord",
+              "Copperline",
+              "NPC/Watcher"
+            ]
+          }
+        ],
+        "case_id": "C10",
+        "collaborative_asymmetric_paths": "Prior specialists can return or delegate components; accessibility contribution and catch-up replace active-roster ritual, while protected confirmation preserves group meaning.",
+        "competing_hypotheses": [
+          "a seventh affidavit completes the set",
+          "Averyn must be publicly filed to be freed",
+          "six testimonies and three repaired proofs can close the system while her slot remains empty"
+        ],
+        "conclusion_printed_verbatim": false,
+        "cross_surface_consequence": "The players' configuration and consent choice permanently change the world, community archive, final voice, and coda while preserving branch-specific remembrance.",
+        "delayed_callback_reinterpretation": "The empty slot changes from apparent erasure to chosen boundary; ordinary words in clip 4 acquire their final meaning only after P6–P11.",
+        "direct_source_restatement_core": false,
+        "distributed_fragments": [
+          {
+            "fragment": "six testimony housings, three material proofs, empty slot, and durable controls",
+            "role": "collective configuration",
+            "surface": "Minecraft release chamber"
+          },
+          {
+            "fragment": "fixed release instruction and accessible stills",
+            "role": "earned callback",
+            "surface": "media/custody"
+          },
+          {
+            "fragment": "consent discussion, prior judgments, mirrored receipt, and quiet coda",
+            "role": "choice and aftermath",
+            "surface": "Discord/Copperline/NPC"
+          }
+        ],
+        "earned_final_belief": "Six testimonies and three repaired proofs return, Averyn remains unbound by consent, the Record closes durably, and every valid remembrance path frees her.",
+        "experience_classification": "ARG",
+        "inciting_anomaly": "The final chamber offers an apparently obvious seventh slot even though the recovered instruction, repaired systems, and Averyn's restored identity imply that filling it would repeat the Record's harm.",
+        "interaction_free": false,
+        "live_unknown": "How can testimony be returned, history preserved, consent honored, and the Record closed so release survives interruption without rebinding Averyn?",
+        "novelty_against_adjacent": "P12 is convergence, consent, systems closure, and aftermath rather than another decode, culprit, or report.",
+        "phase": "P12",
+        "player_caused_world_response": true,
+        "player_initiated_actions": [
+          {
+            "action": "return six affidavits and three proven components while keeping Averyn's Record slot empty",
+            "receipt_gate": false,
+            "response_event": "p12.release_configuration_ready",
+            "verb": "configure"
+          },
+          {
+            "action": "choose publish or deliberate unfiling for Averyn's name and preserve the protected Wren judgment",
+            "receipt_gate": false,
+            "response_event": "p12.name_treatment_committed",
+            "verb": "choose"
+          },
+          {
+            "action": "confirm the durable-before-theater closure through the protected exact control",
+            "receipt_gate": false,
+            "response_event": "p12.record_closed_averyn_released",
+            "verb": "release"
+          }
+        ],
+        "provenance_authentication": "Every returned object carries prior case custody; the release verifies state and relationships rather than active-player presence or source-touch completion.",
+        "single_surface_bounded_case": false
+      },
       "callback": "The empty slot seen as erasure in P7/P11 becomes a chosen boundary. Clip 4's ordinary chamber phrase recontextualizes all six affidavits. Rook's Bridge, Nessa's Seal, and the repaired System Key converge without making prior content optional.",
       "case_id": "C10",
       "cold_theory_paths": [
@@ -2672,6 +3402,7 @@
     }
   ],
   "closed_mechanism_taxonomy": false,
+  "experiential_status": "offline_redesigned_not_human_approved",
   "observation_receipts_gate_answers": false,
   "phases": [
     "P5",

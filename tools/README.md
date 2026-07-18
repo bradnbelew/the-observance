@@ -30,6 +30,17 @@ The matching `run_m3_v3_disposable_paper.py` imports the preserved v2 process ha
 authority, journal, package, and receipt identities; `run_m3_disposable_paper.py` remains byte-identical
 to its v2 package provenance.
 
+`check_arg_experience_authority.py` is the research-based campaign experience rejection gate. It checks
+the exact P1–P12 responsive case briefs and state choreography, rejects direct source-to-restatement,
+single-surface, interaction-free, no-world-response, and answer-box-dominant structures, preserves
+zero-receipt correctness and A0/A1 automation, and never treats its structural pass as Brad approval.
+
+`test_arg_experience_negative_contracts.py` mutates every story/input guardrail independently. It proves
+the gate rejects one-source conclusions, single-surface cases, receipt gating, interaction-free stories,
+silent worlds, repeated answer boxes, optional major threads, absent-player locks, unsafe personalized
+copying, lectern text input, fake web forms, required chat parsing, unavailable APIs, client overflow,
+opaque decoded plaintext, and source-click prerequisites.
+
 `check_player_facing_experience_standard.py` validates Brad's binding cross-phase copy, artifact, room
 composition, and cold-read authority; the complete v3 rejection and clean review-server stop; and every
 present `PLAYER-FACING-INVENTORY*.json`. It rejects missing room jobs, scale rationales, artifact

@@ -60,6 +60,18 @@ public final class AuthoredCampaignAuthority {
 
         requireFalse(root, "closed_mechanism_taxonomy", issues);
         requireFalse(root, "observation_receipts_gate_answers", issues);
+        if (!"offline_redesigned_not_human_approved".equals(
+                root.has("experiential_status") ? root.get("experiential_status").getAsString() : "")) {
+            issues.add("campaign experiential status must remain offline/not human-approved");
+        }
+        if (!root.has("brad_approval") || !root.get("brad_approval").isJsonNull()) {
+            issues.add("campaign must retain brad_approval=null");
+        }
+        JsonObject choreography = object(root, "arg_state_choreography", "campaign", issues);
+        if (!"offline_authored_not_deployed".equals(choreography.has("status")
+                ? choreography.get("status").getAsString() : "")) {
+            issues.add("ARG state choreography must remain offline/not deployed");
+        }
         JsonArray cases = array(root, "cases", issues);
         Set<String> phases = new LinkedHashSet<>();
         Set<String> caseIds = new LinkedHashSet<>();
@@ -85,6 +97,56 @@ public final class AuthoredCampaignAuthority {
             requireText(authored, "required_inference", phase, issues);
             requireText(authored, "callback", phase, issues);
             requireText(authored, "novelty_comparison", phase, issues);
+
+            JsonObject experience = object(authored, "arg_experience", phase, issues);
+            if (!"ARG".equals(experience.has("experience_classification")
+                    ? experience.get("experience_classification").getAsString() : "")) {
+                issues.add(phase + " campaign-level experience is not ARG");
+            }
+            for (String key : List.of("inciting_anomaly", "live_unknown",
+                    "provenance_authentication", "collaborative_asymmetric_paths",
+                    "cross_surface_consequence", "delayed_callback_reinterpretation",
+                    "earned_final_belief", "answer_input_role", "novelty_against_adjacent")) {
+                requireText(experience, key, phase, issues);
+            }
+            for (String key : List.of("competing_hypotheses", "distributed_fragments",
+                    "player_initiated_actions", "authored_reactivity")) {
+                if (array(experience, key, phase, issues).isEmpty()) {
+                    issues.add(phase + " ARG experience has no " + key);
+                }
+            }
+            requireFalse(experience, "direct_source_restatement_core", issues);
+            requireFalse(experience, "single_surface_bounded_case", issues);
+            requireFalse(experience, "conclusion_printed_verbatim", issues);
+            requireFalse(experience, "interaction_free", issues);
+            requireTrue(experience, "player_caused_world_response", phase, issues);
+            for (JsonElement actionElement : optionalArray(experience, "player_initiated_actions")) {
+                if (!actionElement.isJsonObject()) {
+                    issues.add(phase + " ARG action is not an object");
+                    continue;
+                }
+                JsonObject action = actionElement.getAsJsonObject();
+                requireText(action, "verb", phase, issues);
+                requireText(action, "action", phase, issues);
+                requireText(action, "response_event", phase, issues);
+                requireFalse(action, "receipt_gate", issues);
+            }
+            for (JsonElement reactionElement : optionalArray(experience, "authored_reactivity")) {
+                if (!reactionElement.isJsonObject()) {
+                    issues.add(phase + " authored reaction is not an object");
+                    continue;
+                }
+                JsonObject reaction = reactionElement.getAsJsonObject();
+                requireText(reaction, "event", phase, issues);
+                requireText(reaction, "exact_trigger", phase, issues);
+                requireText(reaction, "response", phase, issues);
+                requireText(reaction, "catch_up", phase, issues);
+                requireTrue(reaction, "idempotent", phase, issues);
+                String automation = text(reaction, "automation", issues);
+                if (!Set.of("A0", "A1").contains(automation)) {
+                    issues.add(phase + " authored reaction exceeds A0/A1: " + automation);
+                }
+            }
 
             JsonObject runtime = object(authored, "runtime", phase, issues);
             requireFalse(runtime, "answer_requires_observation_receipts", issues);

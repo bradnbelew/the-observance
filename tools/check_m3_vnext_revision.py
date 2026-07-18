@@ -35,15 +35,19 @@ def main() -> None:
     case = load(CASE)
     plan = load(PLAN)
     require(case["schema_version"] == "1.0.0-p4-vnext-case-brief", "case identity drift")
+    require(case["status"] == "technical_content_scaffolding_experiential_shape_superseded_by_arg_redesign"
+            and case["experiential_supersession"]["brad_approval"] is None
+            and "arg-experience-redesign.json#P4" in case["experiential_supersession"]["authority_case"],
+            "P4 experiential rejection/supersession drift")
     require(len(case["case_authoring_contract"]) == 12, "revelation-first twelve-field brief incomplete")
     require(case["scope"]["active_hour_target"] == {"min": 1, "max": 2}
             and case["scope"]["difficulty"] == "high"
             and case["scope"]["brad_visual_approval"] is None
             and case["scope"]["production_mutation"] is False,
             "difficulty, approval, or production boundary drift")
-    require("OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json" in " ".join(case["binding_authorities"])
-            and "automated private staging" in case["scope"]["phase_progression"],
-            "overnight supersession missing from P4 authority")
+    require("ARG-EXPERIENCE-AUTHORITY.json" in " ".join(case["binding_authorities"])
+            and "no new Brad server" in case["scope"]["phase_progression"],
+            "research-based ARG supersession missing from P4 authority")
     require(case["generic_primitives"]["mechanism_type_field"] is False,
             "closed puzzle taxonomy introduced")
     findings = case["findings"]
@@ -51,10 +55,12 @@ def main() -> None:
             "finding ladder drift")
     require(all(row["canonical_answer"] not in row["question"] for row in findings),
             "answer leaked by filing question")
-    require(plan["status"] == "implementation_active_under_overnight_private_staging_authority"
+    require(plan["status"] == "technical_scaffolding_preserved_experiential_shape_superseded"
             and plan["implementation_hold"] is None
+            and plan["experiential_rejection_supersession"]["brad_approval"] is None
+            and "no new Brad server" in plan["scope"]["phase_progression"]
             and plan["generic_runtime_and_authoring_primitives"]["forbidden_architecture"].startswith("mechanism_type"),
-            "vNext plan still held or taxonomy-closed")
+            "vNext technical/experiential boundary or taxonomy drift")
 
     state = STATE.read_text(encoding="utf-8")
     world = WORLD.read_text(encoding="utf-8")

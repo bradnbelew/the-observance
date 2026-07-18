@@ -17,6 +17,8 @@ TARGETS = [
 MANIFEST = SOURCE / "projection-manifest.json"
 BINDING_SOURCE = SOURCE / "minecraft-bindings.json"
 BINDING_TARGET = ROOT / "plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json"
+EXPERIENCE_SOURCE = ROOT / "campaign/arg-experience-redesign.json"
+CHOREOGRAPHY_SOURCE = ROOT / "campaign/arg-state-choreography.json"
 
 
 def canonical_bytes(value: object) -> bytes:
@@ -25,16 +27,27 @@ def canonical_bytes(value: object) -> bytes:
 
 def main() -> None:
     index = json.loads((SOURCE / "campaign.json").read_text(encoding="utf-8"))
+    experience_root = json.loads(EXPERIENCE_SOURCE.read_text(encoding="utf-8"))
+    experience_by_phase = {case["phase"]: case for case in experience_root["cases"]}
+    choreography = json.loads(CHOREOGRAPHY_SOURCE.read_text(encoding="utf-8"))
     cases = []
     for row in index["phases"]:
-        if row["status"] != "authored_candidate":
+        if row["status"] != "authored_content_scaffolding":
             raise RuntimeError(f"refusing incomplete projection: {row['id']}={row['status']}")
-        cases.append(json.loads((SOURCE / row["file"]).read_text(encoding="utf-8")))
+        case = json.loads((SOURCE / row["file"]).read_text(encoding="utf-8"))
+        experience = experience_by_phase.get(row["id"])
+        if experience is None or experience["case_id"] != row["experience_case_id"]:
+            raise RuntimeError(f"missing/mismatched ARG experience redesign: {row['id']}")
+        case["arg_experience"] = experience
+        cases.append(case)
     projection = {
         "schema_version": "1.0.0-runtime-campaign-projection",
         "source_schema_version": index["schema_version"],
         "closed_mechanism_taxonomy": False,
         "observation_receipts_gate_answers": False,
+        "experiential_status": index["experiential_status"],
+        "brad_approval": None,
+        "arg_state_choreography": choreography,
         "phases": [case["phase"] for case in cases],
         "cases": cases,
     }
@@ -48,11 +61,17 @@ def main() -> None:
     BINDING_TARGET.write_bytes(binding_payload)
     manifest = {
         "schema_version": "1.0.0-campaign-projection-manifest",
-        "source_files": ["campaign.json"] + [row["file"] for row in index["phases"]],
+        "source_files": [
+            "campaign/p5-p12/campaign.json",
+            "campaign/arg-experience-redesign.json",
+            "campaign/arg-state-choreography.json",
+        ] + ["campaign/p5-p12/" + row["file"] for row in index["phases"]],
         "projection_sha256": digest,
         "projection_bytes": len(payload),
         "targets": [str(path.relative_to(ROOT)).replace("\\", "/") for path in TARGETS],
         "phase_count": len(cases),
+        "experiential_status": index["experiential_status"],
+        "brad_approval": None,
         "production_deployed": False,
         "minecraft_binding_source": str(BINDING_SOURCE.relative_to(ROOT)).replace("\\", "/"),
         "minecraft_binding_target": str(BINDING_TARGET.relative_to(ROOT)).replace("\\", "/"),

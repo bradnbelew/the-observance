@@ -451,7 +451,7 @@
     "production_mutation": false
   },
   "vnext_private_candidate": {
-    "status": "automated_source_paper_restart_negative_and_pristine_review_preparation_passed_human_acceptance_pending",
+    "status": "technical_source_paper_restart_negative_and_review_preparation_passed_but_brad_experientially_rejected",
     "authored_source_commit": "8a51f26814914e89fe857a929266e807b2c96586",
     "case_authority": "design/m3/P4-VNEXT-CASE-BRIEF.json",
     "inventory": "design/handoff/PRIVATE-LAUNCH-CANDIDATE-INVENTORY.json",
@@ -487,7 +487,7 @@
     "production_mutation": false
   },
   "whole_campaign_offline_candidate": {
-    "status": "P5-P12 current-standard authored offline pack, three-surface projection, packaged fail-closed Paper authority, deterministic simulation, routed build/package chain, and media custody readback pass; hosted staging, fresh P5-P12 client placement, whole-campaign rehearsal, and Brad acceptance remain open",
+    "status": "P5-P12 authored content and technical scaffolding, projection, Paper authority, deterministic simulation, and media custody readback pass; these are not ARG experiential acceptance evidence and now sit under the research-based P1-P12 redesign",
     "source_commit": "60e0317d6f408df908919c69839ca0be56b16b05",
     "campaign_authority": "campaign/p5-p12/campaign.json",
     "receipt": "design/handoff/WHOLE-CAMPAIGN-OFFLINE-CANDIDATE-RECEIPT-2026-07-17.json",
@@ -505,11 +505,47 @@
     "production_mutation": false,
     "public_launch": false
   },
+  "arg_experience_redesign": {
+    "status": "offline_authored_not_human_approved",
+    "human_authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.md",
+    "machine_authority": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+    "case_authority": "campaign/arg-experience-redesign.json",
+    "state_choreography": "campaign/arg-state-choreography.json",
+    "checker": "tools/check_arg_experience_authority.py",
+    "negative_contract_selftest": "tools/test_arg_experience_negative_contracts.py",
+    "story_human_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md",
+    "story_machine_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.json",
+    "story_interaction_map": "campaign/story-interaction-map.json",
+    "story_dependency_map": "campaign/story-dependency-map.json",
+    "campaign_grammar_audit": "campaign/campaign-grammar-audit.json",
+    "functional_feasibility_matrix": "campaign/functional-feasibility-matrix.json",
+    "platform_input_feasibility_matrix": "campaign/platform-input-feasibility-matrix.json",
+    "coverage": "P1-P12 exact ordered responsive case briefs",
+    "story_coverage": "five human layers, seven required parallel spines, P1-P12 plants/reversals/payoffs/coda, exactly three ambiguity boundaries",
+    "input_boundary": "real Paper 1.21.11, semantic HTML, and Discord interaction primitives only; Dialog experimental with Brigadier fallback; no lectern textbox",
+    "cipher_boundary": "substantial layered traditional puzzle work remains required; illustrative families are not a catalog; decoded language is plain unless ambiguity is earned",
+    "p4_vnext_experiential_proof": "rejected",
+    "p5_p12_prior_packet_role": "content and technical scaffolding only",
+    "brad_approval": null,
+    "production_mutation": false,
+    "new_brad_server_authorized": false
+  },
   "authority_precedence": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.md",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.md",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+    "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md",
+    "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.json",
+    "campaign/arg-experience-redesign.json",
+    "campaign/arg-state-choreography.json",
+    "campaign/story-interaction-map.json",
+    "campaign/story-dependency-map.json",
+    "campaign/campaign-grammar-audit.json",
+    "campaign/functional-feasibility-matrix.json",
+    "campaign/platform-input-feasibility-matrix.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.md",
@@ -680,6 +716,11 @@
       "effect": "Brad rejects P4 vNext experientially: its dominant loop is still reading authored text and filing an extracted or restated answer, not inhabiting a living ARG investigation. P5-P12 remain useful content and technical scaffolding but require a campaign-wide document-read/answer-submit monoculture audit. Disposable Paper success remains technical evidence only; it cannot prove experiential or launch readiness. Approval is null, the live P4 server is immutable, and no superficial cipher-variety patch is authorized."
     },
     {
+      "older": "P4 vNext fact-filing experience and P5-P12 authored packet shapes",
+      "newer": "design/handoff/ARG-EXPERIENCE-AUTHORITY.json plus campaign/arg-experience-redesign.json and campaign/arg-state-choreography.json",
+      "effect": "The campaign-level grammar is now a responsive distributed ARG, not lore scavenging or a bounded puzzle hunt. P1-P12 each begin with a live unknown, support competing theories across native surfaces, require player-initiated consequential actions, and produce exact A0/A1 authored world responses. Answer inputs are minority verbs; correctness remains zero-receipt; prior content remains scaffolding; no new Brad server or experiential claim is authorized until offline implementation/critique and explicit human approval."
+    },
+    {
       "older": "the external-target receipt residue claiming five media byte sets were absent",
       "newer": "campaign/p5-p12/media-custody.json and tools/verify_p5_p12_media_custody.ps1",
       "effect": "four videos and the recovered packet ZIP plus README, inventory, WAV, PNG, and JPG are freshly size/SHA-256 verified in prior read-only output roots. The bytes remain outside the checkout and untouched. Best-master, human AV, derivative/accessibility, ownership, hosting, mirror, and cache receipts remain open."
@@ -697,8 +738,8 @@
     "m4_public_or_production_open": false,
     "final_human_gate": "Brad approval remains null; a future whole-campaign human playthrough after the deep ARG-experience redesign is required",
     "required_next_evidence": [
-      "the forthcoming control-room deep ARG-design research authority and campaign experience redesign are incorporated before experiential claims or a superficial mechanism-variety patch",
-      "P4 and P5-P12 are audited for document-read/answer-submit monoculture and redesigned so players inhabit a living cross-surface investigation rather than consume lore documents and file summaries",
+      "the research-cited ARG Experience Authority, exact P1-P12 responsive case briefs, and generic state choreography remain routed and machine-checked without becoming a closed mechanism catalog",
+      "P4 and P5-P12 implementation is audited against the document-read/answer-submit monoculture so the authored offline redesign becomes real player-caused cross-surface consequence before any new Brad server",
       "Brad's morning client walk evaluates vNext's actual player-view polish, difficulty, cross-surface coherence, and emotional reversal without converting automated success into approval",
       "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline",
       "P5-P12 fresh disposable Paper placement and player-view receipts bind the 27 functional compositions and current artifacts to the existing 32-room Hold without regressing navigation or affordance",

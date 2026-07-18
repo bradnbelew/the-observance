@@ -423,14 +423,34 @@ def main() -> None:
             and active_vnext_review["pinned_review_process_mutated"] is False,
             "Brad P4 vNext active experiential rejection drift")
 
+    arg_redesign = data["arg_experience_redesign"]
+    require(arg_redesign["status"] == "offline_authored_not_human_approved"
+            and all((ROOT / arg_redesign[key]).is_file() for key in (
+                "human_authority", "machine_authority", "case_authority",
+                "state_choreography", "checker", "negative_contract_selftest",
+                "story_human_authority", "story_machine_authority",
+                "story_interaction_map", "story_dependency_map",
+                "campaign_grammar_audit", "functional_feasibility_matrix",
+                "platform_input_feasibility_matrix"))
+            and arg_redesign["coverage"] == "P1-P12 exact ordered responsive case briefs"
+            and "five human layers" in arg_redesign["story_coverage"]
+            and "no lectern textbox" in arg_redesign["input_boundary"]
+            and "traditional puzzle work" in arg_redesign["cipher_boundary"]
+            and arg_redesign["p4_vnext_experiential_proof"] == "rejected"
+            and arg_redesign["p5_p12_prior_packet_role"] == "content and technical scaffolding only"
+            and arg_redesign["brad_approval"] is None
+            and arg_redesign["production_mutation"] is False
+            and arg_redesign["new_brad_server_authorized"] is False,
+            "research-based P1-P12 ARG experience redesign lineage drift")
+
     gate = data["current_gate"]
     require(gate["m4_open"] is False
             and gate["m4_private_automated_staging_open"] is True
             and gate["m4_public_or_production_open"] is False
             and "approval remains null" in gate["final_human_gate"]
-            and "the forthcoming control-room deep ARG-design research authority and campaign experience redesign are incorporated before experiential claims or a superficial mechanism-variety patch"
+            and "the research-cited ARG Experience Authority, exact P1-P12 responsive case briefs, and generic state choreography remain routed and machine-checked without becoming a closed mechanism catalog"
                 in gate["required_next_evidence"]
-            and "P4 and P5-P12 are audited for document-read/answer-submit monoculture and redesigned so players inhabit a living cross-surface investigation rather than consume lore documents and file summaries"
+            and "P4 and P5-P12 implementation is audited against the document-read/answer-submit monoculture so the authored offline redesign becomes real player-caused cross-surface consequence before any new Brad server"
                 in gate["required_next_evidence"]
             and "vNext preserves V5's proven player-view pagination, occupied-shelf affordance, seat composition, state, security, waterworks, and controlled gate baseline"
                 in gate["required_next_evidence"]

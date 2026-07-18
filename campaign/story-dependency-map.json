@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0-story-dependency-map",
+  "status": "offline_authority_separating_truth_from_candidates",
+  "locked_truth": [
+    {"id":"six_distinct_keepers","source":"arc/WORLD-BIBLE.md","cannot_change":"Vaun, Mara, Sella, Orin, Brann, and Iss are distinct contemporaries"},
+    {"id":"averyn_category","source":"arc/WORLD-BIBLE.md","cannot_change":"Averyn is registrar/cistern analyst and not a themed seventh Keeper"},
+    {"id":"break_multi_cause","source":"arc/WORLD-BIBLE.md","cannot_change":"material neglect, allocation, falsification, Iss acceleration, delay, and Record/Dark feedback contribute"},
+    {"id":"nessa_innocent","source":"arc/WORLD-BIBLE.md","cannot_change":"Nessa followed procedure and was scapegoated"},
+    {"id":"four_company_members","source":"arc/WORLD-BIBLE.md","cannot_change":"mkept, Ash, Rook, Wren are real and Wren deliberately betrays them"},
+    {"id":"universal_release","source":"arc/WORLD-BIBLE.md","cannot_change":"every ending closes the Record and frees Averyn"},
+    {"id":"three_ambiguities","source":"design/handoff/SPINE-LOCK.md","cannot_change":"only Averyn continuity, Dark ontology, and Wren autonomy remain unresolved"},
+    {"id":"unlit_required","source":"arc/WORLD-BIBLE.md","cannot_change":"well entrance, seven houses, and base synthesis are required"},
+    {"id":"media_meanings","source":"arc/WORLD-BIBLE.md","cannot_change":"four footage meanings and spectrogram meaning remain exact"}
+  ],
+  "newly_approved_flesh": [
+    {"id":"five_human_layers","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["six_distinct_keepers","four_company_members"]},
+    {"id":"seventh_category_error_long_thread","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["averyn_category"]},
+    {"id":"nessa_toma_pell_line","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["nessa_innocent"]},
+    {"id":"cross_generational_drainage","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["break_multi_cause"]},
+    {"id":"current_npc_lives","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["five_human_layers"]},
+    {"id":"keeper_relationships_and_corrections","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["six_distinct_keepers"]},
+    {"id":"last_company_living_history","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["four_company_members"]},
+    {"id":"unlit_multi_expedition_act","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["unlit_required"]},
+    {"id":"bounded_player_copy","source":"design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md","depends_on":["unlit_multi_expedition_act","three_ambiguities"]},
+    {"id":"copperline_lived_archive","source":"design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.md","depends_on":["last_company_living_history"]}
+  ],
+  "provisional_creative_candidates": [
+    {"id":"pera_jori_household","status":"approved_for_offline_authoring_not_locked_proper_nouns","purpose":"school, lamp debt, domestic drain continuity","may_change_without_canon_change":true},
+    {"id":"orris_family","status":"approved_for_offline_authoring_not_locked_proper_nouns","purpose":"market, accessibility, bird care, service-to-penalty drift","may_change_without_canon_change":true},
+    {"id":"p4_precopy_register_anomaly","status":"candidate_vertical_slice_incident","purpose":"live altered-copy problem without geometry-heavy tracing","may_change_without_canon_change":true},
+    {"id":"player_ordering_phrase_distortion","status":"candidate_bounded_watcher_response","purpose":"player causation without unrestricted text ingestion","may_change_without_canon_change":true},
+    {"id":"token_arrangement_copy","status":"required_capability_candidate_composition","purpose":"safe player-authored copy proof","may_change_without_canon_change":true},
+    {"id":"specific_copperline_threads_and_staff_names","status":"offline_fixture_candidates","purpose":"lived texture and provenance","may_change_without_canon_change":true}
+  ],
+  "implementation_prerequisites": [
+    {"id":"paper_arg_event_runtime","blocks":["implemented P4/P5 consequence", "Unlit player copy"],"requires":["exact predicate schema", "local journal", "idempotent projection", "restart tests"]},
+    {"id":"npc_state_dialogue","blocks":["current NPC reactive lives", "Wren confrontation"],"requires":["exact-authored branches", "replay", "zero-click correctness", "Paper facing/path audit"]},
+    {"id":"copperline_preview_runtime","blocks":["browser-tested restored history", "reactive archive"],"requires":["versioned fixtures", "append-only projections", "accessibility", "preview deployment"]},
+    {"id":"discord_staging_runtime","blocks":["live community reaction"],"requires":["exact fictional account", "A0/A1 gate", "privacy", "outage reconciliation"]},
+    {"id":"media_custody","blocks":["activation of four videos and recovered packet"],"requires":["exact approved bytes", "human AV review", "derivative hashes", "captions/equivalents"]},
+    {"id":"fresh_paper_1_21_11_unlit_audit","blocks":["Unlit implementation acceptance"],"requires":["figure model", "inventory/death/quit extraction", "border/light/anti-cheese", "restart"]},
+    {"id":"human_experience_review","blocks":["experiential approval", "launch readiness"],"requires":["implemented candidate", "cold investigation", "visual review", "explicit Brad approval"]}
+  ],
+  "superseded_idea_dispositions": [
+    {"idea":"Iss liar-engine","disposition":"reuse narrative strength only","guard":"correct result may support wrong interpretation; no themed liar station"},
+    {"idea":"Mara shelf-line-word","disposition":"available as one grounded callback, not required taxonomy","guard":"book provenance must matter beyond entering a decoded word"},
+    {"idea":"cast-out seventh Keeper","disposition":"retire canon shell","guard":"only category-error suspicion may survive"},
+    {"idea":"six keeper-stone expeditions","disposition":"retire structure","guard":"Keepers cross people, places, media, and one another"},
+    {"idea":"custom compliance profiles and synchronized group crouch","disposition":"retire","guard":"no behavior profiling, time wait, or active-roster eligibility"},
+    {"idea":"player fears/names copied by system","disposition":"retire unsafe ingestion","guard":"bounded allowlisted tokens only"}
+  ]
+}

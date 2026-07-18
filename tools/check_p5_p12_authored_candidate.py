@@ -110,7 +110,9 @@ def main() -> None:
     phases = index["phases"]
     require([row["id"] for row in phases] == [f"P{i}" for i in range(5, 13)],
             "campaign pack phase order/breadth drift")
-    authored = [row for row in phases if row["status"] == "authored_candidate"]
+    require(index.get("experiential_status") == "offline_redesigned_not_human_approved",
+            "campaign pack incorrectly implies experiential acceptance")
+    authored = [row for row in phases if row["status"] == "authored_content_scaffolding"]
     require(len(authored) == 8, "campaign pack is not fully authored across P5-P12")
     for row in authored:
         path = PACK / row["file"]
@@ -118,7 +120,7 @@ def main() -> None:
         case = json.loads(path.read_text(encoding="utf-8"))
         require(case["phase"] == row["id"], f"case/index phase mismatch: {row['id']}")
         validate_case(case)
-    print("P5-P12 authored candidate: PASS (8 authored cases; open-ended primitives; zero observation gating)")
+    print("P5-P12 authored scaffolding: PASS (8 content cases; ARG redesign offline/not human-approved; zero observation gating)")
 
 
 if __name__ == "__main__":

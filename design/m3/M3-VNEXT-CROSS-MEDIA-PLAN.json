@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0-m3-vnext-cross-media-plan",
   "plan_id": "observance-p4-vnext-cross-media-revision-plan",
-  "status": "implementation_active_under_overnight_private_staging_authority",
+  "status": "technical_scaffolding_preserved_experiential_shape_superseded",
   "binding_authorities": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -10,6 +10,9 @@
     "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
     "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
     "design/handoff/PLAYER-FACING-EXPERIENCE-STANDARD.json",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+    "campaign/arg-experience-redesign.json",
+    "campaign/arg-state-choreography.json",
     "design/m3/BRAD-V5-ACTIVE-REVIEW.json",
     "design/m3/BRAD-V5-REVIEW-DECISION.json",
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
@@ -21,9 +24,17 @@
     "arc": "P4",
     "target_active_hours": {"min":1,"max":2},
     "minecraft_envelope": "compact bounded disposable Paper slice",
-    "phase_progression": "automated private staging progression authorized; interim human approval deferred",
+    "phase_progression": "technical offline validation remains authorized; no new Brad server until the responsive ARG redesign is implemented and passes offline critique",
     "brad_visual_approval": null,
     "production_mutation": false
+  },
+  "experiential_rejection_supersession": {
+    "rejected_loop": "enter a room, read authored text, and restate or extract it into an answer input",
+    "p4_vnext_role": "technical proof and reusable content scaffolding only",
+    "new_authority": "campaign/arg-experience-redesign.json#P4",
+    "required_world_behavior": "players authenticate a live altered-copy problem, choose tests, publish theory, and cause exact authored reactions across Minecraft, Copperline, Discord/NPC, and controlled media",
+    "next_brad_candidate": "forbidden until implemented offline critique passes",
+    "brad_approval": null
   },
   "experience_reframe": {
     "from": "explicit civic fact retrieval followed by matching-clause selection",

@@ -3,20 +3,25 @@
   "authority": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/PHASE-2-EVIDENCE-ARCHITECTURE.md",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.json",
-    "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json"
+    "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
+    "campaign/arg-experience-redesign.json",
+    "campaign/arg-state-choreography.json"
   ],
   "closed_mechanism_taxonomy": false,
   "observation_receipts_gate_answers": false,
+  "experiential_status": "offline_redesigned_not_human_approved",
+  "prior_packet_role": "authored content and technical scaffolding; never experiential acceptance evidence by itself",
   "phases": [
-    {"id":"P5","file":"case-p5.json","status":"authored_candidate"},
-    {"id":"P6","file":"case-p6.json","status":"authored_candidate"},
-    {"id":"P7","file":"case-p7.json","status":"authored_candidate"},
-    {"id":"P8","file":"case-p8.json","status":"authored_candidate"},
-    {"id":"P9","file":"case-p9.json","status":"authored_candidate"},
-    {"id":"P10","file":"case-p10.json","status":"authored_candidate"},
-    {"id":"P11","file":"case-p11.json","status":"authored_candidate"},
-    {"id":"P12","file":"case-p12.json","status":"authored_candidate"}
+    {"id":"P5","file":"case-p5.json","status":"authored_content_scaffolding","experience_case_id":"C03A"},
+    {"id":"P6","file":"case-p6.json","status":"authored_content_scaffolding","experience_case_id":"C03B"},
+    {"id":"P7","file":"case-p7.json","status":"authored_content_scaffolding","experience_case_id":"C04"},
+    {"id":"P8","file":"case-p8.json","status":"authored_content_scaffolding","experience_case_id":"C05-C06"},
+    {"id":"P9","file":"case-p9.json","status":"authored_content_scaffolding","experience_case_id":"C07"},
+    {"id":"P10","file":"case-p10.json","status":"authored_content_scaffolding","experience_case_id":"C08"},
+    {"id":"P11","file":"case-p11.json","status":"authored_content_scaffolding","experience_case_id":"C09"},
+    {"id":"P12","file":"case-p12.json","status":"authored_content_scaffolding","experience_case_id":"C10"}
   ],
   "generic_primitives": {
     "evidence": "Authored content with provenance, dramatic roles, surface projections, and an accessibility equivalent.",

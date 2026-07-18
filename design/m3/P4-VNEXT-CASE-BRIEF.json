@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0-p4-vnext-case-brief",
   "case_id": "P4-C02-MOUTH-COPIES",
-  "status": "authored_offline_case_authority_under_overnight_private_staging_build",
+  "status": "technical_content_scaffolding_experiential_shape_superseded_by_arg_redesign",
   "binding_authorities": [
     "design/handoff/SPINE-LOCK.md",
     "design/handoff/SPINE-CONFORMANCE.md",
@@ -10,6 +10,9 @@
     "design/handoff/INVESTIGATION-NOVELTY-AUDIT.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "design/handoff/COPPERLINE-COMMUNITY-ARCHIVE-STANDARD.json",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+    "campaign/arg-experience-redesign.json",
+    "campaign/arg-state-choreography.json",
     "design/m3/BRAD-V5-REVIEW-DECISION.json",
     "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json"
   ],
@@ -21,8 +24,16 @@
     "minecraft": "compact bounded disposable Paper 1.21.11 evidence surface",
     "copperline": "offline localhost fixture and exact authored source only until real deployment receipts exist",
     "brad_visual_approval": null,
-    "phase_progression": "automated private staging progression authorized; human visual approval deferred to Brad's morning end-to-end playthrough",
+    "phase_progression": "technical offline validation may continue; P4 vNext is experientially rejected and no new Brad server may launch before the ARG redesign is implemented and passes offline critique",
     "production_mutation": false
+  },
+  "experiential_supersession": {
+    "authority_case": "campaign/arg-experience-redesign.json#P4",
+    "brad_approval": null,
+    "prior_candidate_role": "technical proof and reusable content scaffolding only",
+    "rejected_core_loop": "enter room, read authored text, restate or extract text into answer input",
+    "new_core_loop": "authenticate a live altered-copy problem, choose and perform provenance tests, coordinate theories across native surfaces, and cause authored world responses",
+    "conclusions_below": "meaning contracts remain safe exact predicates and optional diegetic filing, but no longer define the dominant experience"
   },
   "case_authoring_contract": {
     "player_facing_mystery_or_question": "What was the Mouth built to do, why do its repeated marks read like ritual commands, and why do the surviving copies disagree?",
@@ -46,8 +57,9 @@
     "corroborate that the later wording records attendance and household penalty",
     "discover a register copy whose preserved sequence predates the bell entry it duplicates",
     "debate clock failure, forgery, copying, or observation pressure",
-    "file four concise defensible findings and one unprinted synthesis",
-    "open the civic threshold and receive quiet human readback plus institutional unease"
+    "choose and perform a provenance test that distinguishes clock fault, later forgery, and pre-copy without requiring source-touch receipts",
+    "publish one defensible group theory only after the world has responded to investigation",
+    "open the civic threshold, change Copperline/community state, and hear the Watcher distort a player-produced phrase rather than authored tutorial prose"
   ],
   "generic_primitives": {
     "mechanism_type_field": false,

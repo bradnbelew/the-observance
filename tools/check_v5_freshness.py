@@ -57,6 +57,8 @@ ACTIVE_TOOLS = {
     "audit_all.ps1",
     "build_hold_prologue.py",
     "check_assets.ps1",
+    "check_arg_experience_authority.py",
+    "test_arg_experience_negative_contracts.py",
     "check_deep_hold_fixture_manifest.py",
     "check_deep_hold_layout.py",
     "check_deploy_manifest.ps1",
@@ -198,6 +200,8 @@ def validate_tools(failures: list[str]) -> None:
     audit = read(tools / "audit_all.ps1", failures)
     required = {
         "check_repository_integrity.py",
+        "check_arg_experience_authority.py",
+        "test_arg_experience_negative_contracts.py",
         "check_v5_freshness.py",
         "check_v5_content.py",
         "check_v5_physical_predicates.py",

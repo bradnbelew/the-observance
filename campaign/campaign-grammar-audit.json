@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0-qualitative-campaign-grammar-audit",
+  "status": "offline_authored_critique_not_human_receipt",
+  "closed_mechanism_catalog": false,
+  "mechanic_quotas": false,
+  "evaluation_question": "Does the player inhabit a responsive distributed investigation, or merely consume lore and file summaries?",
+  "campaign_failure_patterns": [
+    {"id":"direct_restatement","fails_when":"one source states the operative conclusion and the player restates or selects it","current_redesign":"rejected structurally"},
+    {"id":"single_surface_container","fails_when":"a major case begins, resolves, and changes nothing outside one bounded room/page/channel","current_redesign":"rejected structurally"},
+    {"id":"interaction_free","fails_when":"reading/decoding completes a case without testing, contacting, changing, authenticating, repairing, curating, confronting, or choosing","current_redesign":"rejected structurally"},
+    {"id":"answer_box_dominance","fails_when":"repeated filing, multiple-choice, terminal, or bot submissions are the main verbs across adjacent cases","current_redesign":"rejected structurally"},
+    {"id":"world_silence","fails_when":"the fiction does not answer an explicit player action with an authored state change","current_redesign":"rejected structurally"},
+    {"id":"decorative_puzzle_variety","fails_when":"different cipher skins preserve the same retrieve/decode/submit loop","current_redesign":"rejected structurally"},
+    {"id":"optional_major_spine","fails_when":"Unlit, ordinary households, company history, current residents, or category correction can be skipped","current_redesign":"rejected structurally"}
+  ],
+  "case_rhythm": [
+    {"phase":"P1","dominant_experience":"web/community archaeology and custody restoration","player_changes":"Copperline revision history","not":"a numbered clue page"},
+    {"phase":"P2","dominant_experience":"artifact authentication and executable migration","player_changes":"which private runtime continues the world","not":"typing a host copied from a book"},
+    {"phase":"P3","dominant_experience":"social corroboration under asymmetric observation","player_changes":"dispatch and resident account state","not":"NPC quest dialogue"},
+    {"phase":"P4","dominant_experience":"altered-copy provenance and institutional reversal","player_changes":"archive, threshold, and Watcher response","not":"read four facts and file clauses"},
+    {"phase":"P5","dominant_experience":"civic ethnography and accountable public curation","player_changes":"workplace display and modern caption","not":"seven Way stations"},
+    {"phase":"P6","dominant_experience":"professional biography, contradiction, and restored public authorship","player_changes":"six named histories and testimony custody","not":"six reskinned puzzles"},
+    {"phase":"P7","dominant_experience":"material inquiry, supplier restoration, and reputational repair","player_changes":"Nessa's public record","not":"a document quiz"},
+    {"phase":"P8","dominant_experience":"causal intervention and cross-generational infrastructure repair","player_changes":"water, pressure, routes, resident life","not":"a causal answer form"},
+    {"phase":"P9","dominant_experience":"occupied-camp reconstruction and modern relationship archaeology","player_changes":"company history and archive access","not":"four labeled desks"},
+    {"phase":"P10","dominant_experience":"information-flow attribution, adversarial contact, and moral judgment","player_changes":"Wren dialogue and remembrance","not":"confession menu"},
+    {"phase":"P11","dominant_experience":"campaign-scale reread and identity restoration without ownership","player_changes":"Averyn's public role and constrained speech","not":"six-letter collection"},
+    {"phase":"P12","dominant_experience":"custody convergence, consent, durable release, and aftermath","player_changes":"all private surfaces and coda","not":"final answer box"}
+  ],
+  "long_threads": [
+    {"thread":"seventh category error","plant":"P3","reversal":"P11","payoff":"P12 consent boundary","required":true},
+    {"thread":"ordinary Hold lives","plant":"P4","reversal":"P7 institutional harm","payoff":"P8/P12 repair and memory","required":true},
+    {"thread":"current settlement lives","plant":"P3","reversal":"P8 material response","payoff":"P12 changed coda","required":true},
+    {"thread":"six Keeper people","plant":"P5","reversal":"P6 culpability","payoff":"P11 affidavit reread","required":true},
+    {"thread":"last company","plant":"P1","reversal":"P9 near-success","payoff":"P10 betrayal/P12 remembrance","required":true},
+    {"thread":"Unlit","plant":"P3","reversal":"P8 official copy versus household truth","payoff":"P10 player-authored copy/P12 ambiguity","required":true},
+    {"thread":"Copperline lived archive","plant":"P1","reversal":"P4/P9 changed context","payoff":"P12 immutable coda","required":true}
+  ],
+  "qualitative_checks": {
+    "each_case_has_exposition_interaction_challenge": true,
+    "each_case_has_player_initiated_action": true,
+    "each_case_has_authored_world_response": true,
+    "each_case_crosses_surfaces": true,
+    "each_case_contains_plausible_wrong_theory": true,
+    "each_case_earns_human_or_lore_consequence": true,
+    "adjacent_cases_share_no_dominant_verb": true,
+    "conclusions_printed_verbatim": false,
+    "answer_input_dominates_any_adjacent_pair": false,
+    "major_threads_optional": false,
+    "human_review_still_required": true
+  },
+  "human_critique_prompts": [
+    "What did players choose to investigate before the fiction told them where to go?",
+    "Which competing theory felt plausible and what changed it?",
+    "What player action caused a visible or social response?",
+    "Which ordinary person or relationship made the final belief matter?",
+    "Which earlier detail changed meaning later?",
+    "Could a player describe the case without saying read, decode, submit?",
+    "Did any difficulty come from UI friction or an invisible interaction rule?",
+    "Did collaboration create theory and asymmetric expertise without requiring a named participant?"
+  ]
+}

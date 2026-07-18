@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0.0-story-expansion-arg-integration",
+  "status": "binding_offline_story_authority_not_human_approved",
+  "recorded_at": "2026-07-17",
+  "authority_precedence": [
+    "design/handoff/SPINE-LOCK.md",
+    "design/handoff/SPINE-CONFORMANCE.md",
+    "design/handoff/PHASE-1-APPROVAL.md",
+    "design/handoff/PHASE-2-EVIDENCE-ARCHITECTURE.md",
+    "design/m2/M2-TECHNICAL-CONTRACTS.md",
+    "design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
+    "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md"
+  ],
+  "brad_approval": null,
+  "p4_current_candidate": "rejected_technical_proof_only",
+  "whole_campaign_experiential_readiness": "not_proven",
+  "new_brad_server_authorized": false,
+  "campaign_order": ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"],
+  "duration": {"provisional_active_hours_min": 30, "provisional_active_hours_max": 40, "playtest_authoritative": true, "padding_forbidden": true},
+  "human_layers": [
+    {"id": "current_settlement", "people": ["Aro", "Wenna", "Coll", "Dob", "Old Pell"]},
+    {"id": "hold_households_workers", "people": ["Nessa Vale", "Toma Rill", "recurring school/market/watch/heat/masonry households"]},
+    {"id": "six_keepers", "people": ["Vaun", "Mara", "Sella", "Orin", "Brann", "Iss"]},
+    {"id": "averyn_record", "people": ["Averyn"], "systems": ["civic Record", "Watcher constraint"]},
+    {"id": "last_company", "people": ["mkept", "Ash", "Rook", "Wren"]}
+  ],
+  "required_parallel_threads": {
+    "seventh_category_error": {"phase_span": ["P3", "P11"], "major": true, "required": true, "truth": "six Keeper administrators, seven practical Ways, Averyn is registrar/witness and not a Keeper"},
+    "people_hold_was_for": {"phase_span": ["P4", "P8"], "major": true, "required": true, "includes": ["Nessa-Toma-Pell", "recurring households", "cross-generational drainage repair"]},
+    "current_settlement_lives": {"phase_span": ["P3", "P12"], "major": true, "required": true, "stateful_dialogue": true, "npc_receipt_gate": false},
+    "six_keepers_as_people": {"phase_span": ["P5", "P11"], "major": true, "required": true, "repeated_station_model": false},
+    "last_company": {"phase_span": ["P1", "P12"], "major": true, "required": true, "confession_creates_proof": false},
+    "unlit_parallel_act": {"phase_span": ["P5", "P10"], "major": true, "required": true, "seven_houses_required": true, "base_synthesis_required": true, "any_order": true, "one_visit": false},
+    "copperline_lived_archive": {"phase_span": ["P1", "P12"], "major": true, "required": true, "clue_menu": false},
+    "controlled_cross_media": {"phase_span": ["P1", "P12"], "major": true, "required": true, "missing_bytes_may_be_claimed": false}
+  },
+  "keeper_humanization_required_fields": ["profession", "keeper_relationship", "worker_or_household_relationship", "private_contradiction", "helped_act", "failure", "attempted_correction", "later_reread"],
+  "case_required_fields": ["inciting_anomaly", "live_unknown", "competing_hypotheses", "human_stake", "earned_final_belief", "evidence_roles", "player_initiated_actions", "authored_reactivity", "collaborative_asymmetric_paths", "cross_surface_consequence", "delayed_callback_reinterpretation", "alternate_catch_up", "outage_replay_restart", "novelty_against_adjacent", "likely_theory_paths"],
+  "functional_invariants": {
+    "paper_version": "1.21.11",
+    "local_primary_physical_truth": true,
+    "correctness_requires_observation_receipts": false,
+    "correctness_requires_source_possession": false,
+    "correctness_requires_npc_interaction": false,
+    "any_subset": true,
+    "absent_player_gate": false,
+    "replay": true,
+    "catch_up": true,
+    "restart_idempotency": true,
+    "external_outage_finishable": true,
+    "closed_mechanism_taxonomy": false,
+    "optional_major_story": false,
+    "production_mutation": false
+  },
+  "plain_language_standard": {
+    "modern_easy_english": true,
+    "short_concrete_sentences": true,
+    "document_specific_language": true,
+    "difficulty_source": "meaning, provenance, relationships, transformation, synthesis, and consequence",
+    "pseudo_archaic_or_ornate_default": false,
+    "decoded_plaintext_needlessly_opaque": false,
+    "automated_readability_is_quota": false,
+    "human_voice_review_required": true
+  },
+  "cipher_puzzle_standard": {
+    "substantial_across_campaign": true,
+    "illustrative_families_not_catalog": true,
+    "in_world_reason_required": true,
+    "earned_key_or_fair_key_trail_required": true,
+    "clear_payload_required": true,
+    "later_consequence_required": true,
+    "layering": ["recognize transform", "authenticate source/key", "decode", "resolve reference", "test on another surface", "interpret response"],
+    "full_key_beside_ciphertext": false,
+    "naked_decoder_whole_case": false,
+    "traditional_answer_submissions_may_dominate": false
+  },
+  "minecraft_input_hierarchy": [
+    "physical world action when naturally physical",
+    "pinned and tested Paper 1.21.11 Dialog for short structured/text input",
+    "stable namespaced Brigadier command accepting the same predicate as fallback",
+    "real sign or writable-book editing only when fiction requires and exact lifecycle tests pass"
+  ],
+  "platform_input_rules": {
+    "lectern_free_text_input": false,
+    "required_unrestricted_chat_parser": false,
+    "fake_decorative_form": false,
+    "media_submits_answers": false,
+    "dialog_api_experimental": true,
+    "dialog_response_server_validation": true,
+    "stable_command_fallback": true,
+    "cross_surface_commit_once": true,
+    "input_result_states": ["accepted", "wrong", "incomplete", "throttled", "technical_failure"]
+  },
+  "safe_player_copy": {
+    "required": true,
+    "registered_surface_only": true,
+    "allowlisted_tokens_only": true,
+    "bounded_pattern": true,
+    "deterministic_alteration": true,
+    "forbidden_inputs": ["arbitrary builds", "free text", "player names", "private storage", "inventories", "server logs", "fears", "personal data"]
+  },
+  "exact_ambiguities": [
+    "whether the end-voice is metaphysically the original Averyn or a perfect retained continuity",
+    "what the Dark ultimately is",
+    "whether Wren's retained partial self can become autonomous after Record closure"
+  ],
+  "offline_required_files": [
+    "campaign/story-interaction-map.json",
+    "campaign/story-dependency-map.json",
+    "campaign/campaign-grammar-audit.json",
+    "campaign/functional-feasibility-matrix.json",
+    "campaign/platform-input-feasibility-matrix.json",
+    "campaign/arg-experience-redesign.json",
+    "campaign/arg-state-choreography.json"
+  ],
+  "offline_rejections": [
+    "conclusion_printed_by_one_source",
+    "single_surface_bounded_case",
+    "click_or_receipt_gated_correctness",
+    "interaction_free_story",
+    "no_player_caused_response",
+    "repeated_answer_box_grammar",
+    "optional_major_side_story",
+    "absent_named_player_gate",
+    "unsafe_or_unbounded_personalized_copy",
+    "fourth_major_ambiguity",
+    "stale_or_brittle_mechanic",
+    "closed_mechanism_taxonomy",
+    "lectern_text_input",
+    "decorative_fake_form",
+    "required_unrestricted_chat_parser",
+    "input_absent_from_pinned_platform",
+    "book_sign_or_dialog_overflow",
+    "needlessly_opaque_decoded_plaintext"
+  ]
+}

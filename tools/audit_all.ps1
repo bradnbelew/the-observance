@@ -42,6 +42,8 @@ foreach ($required in @(
   (Join-Path $tools "check_m3_v4_revision.py"),
   (Join-Path $tools "check_player_facing_experience_standard.py"),
   (Join-Path $tools "check_supabase_security_proposal.py"),
+  (Join-Path $tools "check_arg_experience_authority.py"),
+  (Join-Path $tools "test_arg_experience_negative_contracts.py"),
   (Join-Path $tools "check_p5_p12_authored_candidate.py"),
   (Join-Path $tools "check_p5_p12_projection.py"),
   (Join-Path $tools "check_p5_p12_minecraft_bindings.py"),
@@ -76,7 +78,9 @@ Invoke-External "M3 v3 authored revision/receipt gate" $root "python" @((Join-Pa
 Invoke-External "M3 v4 content-dependent revision/receipt gate" $root "python" @((Join-Path $tools "check_m3_v4_revision.py"))
 Invoke-External "cross-phase player-facing experience authority" $root "python" @((Join-Path $tools "check_player_facing_experience_standard.py"))
 Invoke-External "Supabase production-baseline hardening proposal" $root "python" @((Join-Path $tools "check_supabase_security_proposal.py"))
-Invoke-External "P5-P12 authored campaign candidate" $root "python" @((Join-Path $tools "check_p5_p12_authored_candidate.py"))
+Invoke-External "research-based P1-P12 ARG experience authority" $root "python" @((Join-Path $tools "check_arg_experience_authority.py"))
+Invoke-External "ARG experience/input negative contract mutations" $root "python" @((Join-Path $tools "test_arg_experience_negative_contracts.py"))
+Invoke-External "P5-P12 authored content scaffolding" $root "python" @((Join-Path $tools "check_p5_p12_authored_candidate.py"))
 Invoke-External "P5-P12 Paper/web/Discord projection parity" $root "python" @((Join-Path $tools "check_p5_p12_projection.py"))
 Invoke-External "P5-P12 authored-to-Deep-Hold Minecraft bindings" $root "python" @((Join-Path $tools "check_p5_p12_minecraft_bindings.py"))
 Invoke-External "P5-P12 deterministic campaign simulation" $root "python" @((Join-Path $tools "simulate_p5_p12_campaign.py"))
