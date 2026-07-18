@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Breadcrumbs, LegacyShell, OldPageTitle } from '@/components/legacy/LegacyShell';
 import { readValidatedV5HoldArchive, V5_HOLD_ARCHIVE_DOWNLOAD_PATH } from '@/lib/v5-hold-archive';
 import { hasCampaignEvent } from '@/lib/arg-event-store';
+import { readV5CompletionFlag } from '@/lib/v5-web-progress';
 
 export const metadata: Metadata = {
   title: 'recovered relay files for the old server - Copperline Community',
@@ -22,7 +23,8 @@ function MissingArchive() {
 
 export default async function WorldBackupPost() {
   const prerequisite = await hasCampaignEvent('p2.artifact_authenticated');
-  if (prerequisite !== true) return <MissingArchive />;
+  const directoryTrail = await readV5CompletionFlag('v5_ls03_directory_trail');
+  if (prerequisite !== true || !directoryTrail.complete) return <MissingArchive />;
 
   const archive = await readValidatedV5HoldArchive();
   const available = archive !== null;

@@ -6,8 +6,6 @@ import { hasCampaignEvent } from '@/lib/arg-event-store';
 export const metadata: Metadata = { title: 'Recovered packet custody - Copperline Archive', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
 
-const packetUrl = 'https://www.dropbox.com/scl/fo/72dz7n8lpa1gtiymtkyjl/AMbzcJsSm0x2_TkUq1Bzkv4?rlkey=tsom0g4z87qqxv7jo6cr989v5&st=014v4y3g&dl=0';
-
 export default async function RecoveredPacketPage() {
   const available = await hasCampaignEvent('p10.wren_remembrance_committed');
   const identified = await hasCampaignEvent('p11.averyn_identified');
@@ -17,7 +15,7 @@ export default async function RecoveredPacketPage() {
     <LegacyShell active="community">
       <Breadcrumbs><Link href="/community/index.php">Community</Link> &raquo; Archive &raquo; Recovered packet</Breadcrumbs>
       <OldPageTitle sub="One ZIP and five extracted members. Review the members together; do not treat the audio as an isolated ghost file.">recovered-archive-packet</OldPageTitle>
-      <article className="old-copy"><p><b>ZIP:</b> 62,009 bytes · SHA-1 <code>783ecde5685abdb601e4a659fc947c32964f70b3</code> · SHA-256 <code>62bb4c1b7c66f0d5415301418e45ab49f710801ddcc2c72f4cfe15a73ec2317f</code></p><p><a href={packetUrl} target="_blank" rel="noreferrer">Open the retained packet folder</a>. Copperline keeps this wrapper separate from its extracted-member index.</p></article>
+      <article className="old-copy"><p><b>ZIP:</b> 62,009 bytes · SHA-1 <code>783ecde5685abdb601e4a659fc947c32964f70b3</code> · SHA-256 <code>62bb4c1b7c66f0d5415301418e45ab49f710801ddcc2c72f4cfe15a73ec2317f</code></p><p><Link href="/record/archive">Open the earned Recovery Archive delivery</Link>. Its server-owned media view applies the packet prerequisite before exposing the retained external location. Copperline keeps this wrapper separate from its extracted-member index.</p></article>
       <section className="old-copy" aria-labelledby="packet-members"><h2 id="packet-members">Extracted members</h2><table><thead><tr><th>Member</th><th>Job in the packet</th><th>SHA-1</th></tr></thead><tbody>
         <tr><td><code>README.txt</code></td><td>says to review all five members as one custody object</td><td><code>1f27f3a9edc2e348fc12916c5d72509dc6107d50</code></td></tr>
         <tr><td><code>inventory_06.txt</code></td><td>orders the intake, lamp, and field capture without naming a solution</td><td><code>83a5c75fcfd4be2072e6df46449124d9a5ccde7f</code></td></tr>
