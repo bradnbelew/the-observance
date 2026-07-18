@@ -293,6 +293,12 @@ or postponing safe work in earlier phases.
   It stores one canonical meaning event rather than a player's wording. Multiple paraphrases, partial/wrong,
   contradiction, keyword-stuffing, zero-observation, idempotency, and restart tests are mandatory before a
   replacement disposable build.
+- Fresh create-only target `p4-p5-arg-structured-a76e18d-01` passed that replacement chain on Paper
+  1.21.11 build 132: wrong purpose left zero state, a natural paraphrase passed with zero observations,
+  an alternate paraphrase remained idempotent after restart, all physical/security audits had zero findings,
+  and gate collision remained `88 -> 0`. Exact hashes are in
+  `P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json`; actual client Dialog layout and human experience
+  remain open, and the old live port 25604 target was not changed.
 
 The bounded V5 revision now has a fresh disposable Paper 1.21.11 validation target and a separately
 prepared pristine review target. It fixes the measured client defects without simplifying the

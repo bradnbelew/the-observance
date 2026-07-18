@@ -519,6 +519,7 @@
     "p4_p5_disposable_paper_receipt": "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
     "p4_p5_pristine_review_preparation": "design/handoff/P4-P5-ARG-PRISTINE-REVIEW-PREPARATION-2026-07-17.json",
     "p4_p5_answer_shape_rejection": "design/handoff/P4-P5-ARG-ANSWER-SHAPE-REJECTION-2026-07-17.json",
+    "p4_p5_structured_answer_paper_receipt": "design/handoff/P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json",
     "answer_shape_contract": "exact values only when fairly yielded; interpretive conclusions use physical actions, separate short claims, or deterministic meaning components; hidden canonical prose is forbidden",
     "story_human_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.md",
     "story_machine_authority": "design/handoff/STORY-EXPANSION-ARG-INTEGRATION.json",
@@ -559,6 +560,7 @@
     "design/handoff/P4-P5-ARG-DISPOSABLE-PAPER-RECEIPT-2026-07-17.json",
     "design/handoff/P4-P5-ARG-PRISTINE-REVIEW-PREPARATION-2026-07-17.json",
     "design/handoff/P4-P5-ARG-ANSWER-SHAPE-REJECTION-2026-07-17.json",
+    "design/handoff/P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.md",
     "design/handoff/CROSS-MEDIA-INVESTIGATION-STANDARD.json",
     "design/handoff/INVESTIGATION-DRAMATURGY-STANDARD.md",
@@ -752,6 +754,11 @@
       "older": "the P4 theory desk's hidden whitelist of long authored conclusion sentences",
       "newer": "design/handoff/P4-P5-ARG-ANSWER-SHAPE-REJECTION-2026-07-17.json plus design/handoff/ARG-EXPERIENCE-AUTHORITY.json",
       "effect": "Hidden canonical prose is rejected for P4 and all future cases. Exact predicates remain appropriate only for fairly yielded exact artifacts. Interpretive conclusions must use bounded physical actions, separate short claims, or deterministic meaning components with natural paraphrase and word-order coverage. Input shape is explicit without revealing the deduction; observation receipts and LLM judgment remain forbidden. The live PID 32868 target remains unmodified rejected technical proof while the structured revision is tested offline."
+    },
+    {
+      "older": "the structured P4 answer shape as offline source and unit tests only",
+      "newer": "design/handoff/P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json",
+      "effect": "Fresh disposable Paper 1.21.11 build 132 proves a wrong-purpose triple leaves zero state, one natural paraphrase triple passes with zero observations, an alternate paraphrase is idempotent after restart, and the physical gate/P5 curation/security/audit chain remains exact. Actual client layout and human experience remain open. The old live 25604 server was not mutated."
     },
     {
       "older": "the external-target receipt residue claiming five media byte sets were absent",

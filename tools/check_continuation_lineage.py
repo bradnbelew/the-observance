@@ -446,7 +446,8 @@ def main() -> None:
                 "campaign_grammar_audit", "functional_feasibility_matrix",
                 "platform_input_feasibility_matrix", "p4_p5_vertical_slice_authority",
                 "p4_p5_vertical_slice_checker", "p4_p5_disposable_paper_receipt",
-                "p4_p5_pristine_review_preparation", "p4_p5_answer_shape_rejection"))
+                "p4_p5_pristine_review_preparation", "p4_p5_answer_shape_rejection",
+                "p4_p5_structured_answer_paper_receipt"))
             and arg_redesign["coverage"] == "P1-P12 exact ordered responsive case briefs"
             and "five human layers" in arg_redesign["story_coverage"]
             and "no lectern textbox" in arg_redesign["input_boundary"]
@@ -503,6 +504,24 @@ def main() -> None:
             and answer_shape_review["live_review_server"]["mutated_by_revision"] is False
             and answer_shape_review["production_mutated"] is False,
             "P4-P5 answer-shape rejection lineage drift")
+
+    structured_answer = json.loads((ROOT / arg_redesign["p4_p5_structured_answer_paper_receipt"])
+                                   .read_text(encoding="utf-8"))
+    require(structured_answer["status"] == "automated_structured_answer_pass_human_client_open"
+            and structured_answer["brad_approval"] is None
+            and structured_answer["source_commit"] == "a76e18d48d2d8c5908f57cf745f4ec28010392fe"
+            and structured_answer["answer_shape_proof"]["wrong_purpose_changes_state"] is False
+            and structured_answer["answer_shape_proof"]["natural_paraphrase_zero_observation_pass"] is True
+            and structured_answer["answer_shape_proof"]["alternate_paraphrase_idempotent"] is True
+            and structured_answer["answer_shape_proof"]["hidden_single_canonical_sentence_contract"] is False
+            and structured_answer["paper_proof"]["closed_findings"] == 0
+            and structured_answer["paper_proof"]["open_findings"] == 0
+            and structured_answer["paper_proof"]["restart_findings"] == 0
+            and structured_answer["paper_proof"]["post_stop_port_rows"] == 0
+            and structured_answer["live_old_review_server_mutated"] is False
+            and structured_answer["actual_dialog_visual"] is None
+            and structured_answer["production_mutated"] is False,
+            "P4-P5 structured-answer Paper receipt drift")
 
     gate = data["current_gate"]
     require(gate["m4_open"] is False

@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0-p4-p5-structured-answer-paper-lineage",
+  "recorded_at": "2026-07-17T22:45:00-05:00",
+  "status": "automated_structured_answer_pass_human_client_open",
+  "brad_approval": null,
+  "source_commit": "a76e18d48d2d8c5908f57cf745f4ec28010392fe",
+  "target": {
+    "id": "p4-p5-arg-structured-a76e18d-01",
+    "path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\p4-p5-arg-structured-a76e18d-01",
+    "test_address": "127.0.0.1:25605",
+    "paper": "1.21.11 build 132",
+    "paper_jar_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_jar_sha256": "2ee6f5113d9f5287ef1760b98d3c014f6661d48626740cab0c7f6eb93ba79ccc",
+    "authority_sha256": "5ca7e3b7bc97780e865bec969575b363dd4c47e98848af099491626401798c4a",
+    "world_tree_sha256": "df002384e6ccaf1bc7fa90e1613510081ba6cb48ebad55d456aca800b58525ba",
+    "world_package_sha256": "8188a64d2a829a8d75c18be11b33bffd2a1e448d3126bf3aee32ae3ae748f612"
+  },
+  "answer_shape_proof": {
+    "fields": ["purpose", "historical change", "unresolved anomaly"],
+    "wrong_purpose_changes_state": false,
+    "natural_paraphrase_zero_observation_pass": true,
+    "alternate_paraphrase_idempotent": true,
+    "hidden_single_canonical_sentence_contract": false,
+    "canonical_meaning_event": "purpose=ordinary_refuge;change=safety_to_control;anomaly=copy_before_source",
+    "final_receipts": 4
+  },
+  "paper_proof": {
+    "closed_findings": 0,
+    "open_findings": 0,
+    "curated_findings": 0,
+    "restart_findings": 0,
+    "closed_gate_collision": 88,
+    "open_gate_collision": 0,
+    "closed_world_sha256": "d78f01705757365683e7afc414e48be72d646bb231a3bdbc168e7d109f0de262",
+    "curated_world_sha256": "317d37ddc298fa428043a6357abdcb6f4c4d08d321a92fd59bc1df67544950be",
+    "journal_sha256": "f987792328c14ded0113c397596a58ecc8fbae9be0b5edfdb57b28dad25db145",
+    "security_closed_open_restart": "PASS",
+    "clean_stop": true,
+    "post_stop_port_rows": 0
+  },
+  "external_receipt": {
+    "path": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\p4-p5-arg-structured-a76e18d-01-receipt.json",
+    "bytes": 8341,
+    "sha256": "70d572fef2420e96e00c28d1e128f41e0ebcc7250738bb80142e1b4443d90ab1",
+    "first_log_sha256": "161d49beff0614826a843c7fe388135a9424d57b52166730f226b05eca856b44",
+    "restart_log_sha256": "6fe7828372f80320dfb2327d06fa1f9d335a279d5fb25524067360f6846f7a8b",
+    "final_latest_log_sha256": "16722ab45bdd0fafc0c2bac1a1e312e488c1dfaf5ce2448c0b0117e3c273544c"
+  },
+  "live_old_review_server_mutated": false,
+  "actual_dialog_visual": null,
+  "human_experience": null,
+  "production_mutated": false,
+  "public_launch": false
+}
