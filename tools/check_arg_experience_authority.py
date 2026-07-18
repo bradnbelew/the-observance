@@ -23,6 +23,7 @@ GRAMMAR = ROOT / "campaign/campaign-grammar-audit.json"
 FEASIBILITY = ROOT / "campaign/functional-feasibility-matrix.json"
 INPUTS = ROOT / "campaign/platform-input-feasibility-matrix.json"
 PACK = ROOT / "campaign/p5-p12"
+EARLY_INPUTS = ROOT / "campaign/p1-p4/input-contracts.json"
 PAPER_RECEIPTS = (
     ROOT / "design/handoff/P4-P5-STRUCTURED-ANSWER-PAPER-RECEIPT-2026-07-17.json",
     ROOT / "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
@@ -425,6 +426,13 @@ def main() -> None:
             and "private guild" in wren_modal["proof"].casefold()
             and "remain open" in wren_modal["proof"].casefold(),
             "P10 character-response input lacks exact primitive, retention boundary, or honest client gap")
+    p3_field = by_id["DISCORD_SEMANTIC_FIELD_ACTION"]
+    require(p3_field["used_by"] == ["P3.DISPATCH open resident disagreement"]
+            and "ChatInputCommandInteraction" in p3_field["primitive"]
+            and "raw player prose is not stored" in p3_field["data_shape_normalization"]
+            and "private guild" in p3_field["proof"].casefold()
+            and "remains open" in p3_field["proof"].casefold(),
+            "P3 field-note input lacks real primitive, retention boundary, or honest client gap")
     coordinator = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/V5RuntimeCoordinator.java").read_text(encoding="utf-8")
     require("restore-name" in discord_register
             and "identify-averyn" not in discord_register
@@ -433,6 +441,14 @@ def main() -> None:
             and "mirrorP11UnboundAsync" in coordinator
             and '"minecraft:p11:averyn-relationship-unbound"' in coordinator,
             "P11 retains a relationship answer menu or lacks the local physical unbound transition")
+    early_input_contracts = load(EARLY_INPUTS)["contracts"]
+    require([row["id"] for row in early_input_contracts] == [
+        "P1.SERVICE", "P1.CUSTODY", "P2.PACKAGE", "P2.HANDOFF",
+        "P3.DISPATCH", "P4.RESTORE", "P4.TEST", "P4.CONCLUSION"],
+        "P1-P4 real input contract is incomplete or reordered")
+    require(all(row["zero_observation_acceptance"] is True for row in early_input_contracts)
+            and all(not (row["interpretive"] and row["runtime_exact_phrase"]) for row in early_input_contracts),
+            "P1-P4 input contract reintroduced receipt gating or an interpretive magic phrase")
     input_contracts = load(PACK / "input-contracts.json")["contracts"]
     input_contract_by_id = {row["id"]: row for row in input_contracts}
     require("protected public-curation controls" in input_contract_by_id["P5.F1"]["platform"]

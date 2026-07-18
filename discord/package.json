@@ -22,7 +22,7 @@
     "v5check": "tsx src/v5/canon.selftest.ts",
     "v5bindingcheck": "tsx src/v5/runtime-bindings.selftest.ts",
     "v5surfacecheck": "tsx src/v5/surface.selftest.ts",
-    "argeventcheck": "tsx src/v5/arg-events.selftest.ts && tsx src/v5/wren-transmission.selftest.ts",
+    "argeventcheck": "tsx src/v5/arg-events.selftest.ts && tsx src/v5/wren-transmission.selftest.ts && tsx src/v5/settlement-dispatch.selftest.ts",
     "argprojectioncheck": "tsx src/v5/arg-projection-worker.selftest.ts",
     "nessacorrectioncheck": "tsx src/v5/nessa-correction.selftest.ts",
     "vnextcampaigncheck": "tsx src/v5/campaign-projection.selftest.ts",

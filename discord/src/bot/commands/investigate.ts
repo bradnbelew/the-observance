@@ -18,6 +18,7 @@ import {
   WREN_TRANSMISSION_CANONICAL_PAYLOAD,
   type WrenTransmissionFinding,
 } from '../../v5/wren-transmission.js';
+import { SETTLEMENT_DISPATCH_CANONICAL_PAYLOAD, validSettlementDispatch } from '../../v5/settlement-dispatch.js';
 
 const PHASE_LABELS: Record<string, string> = {
   p1: 'Copperline recovery', p2: 'world handoff', p3: 'settlement accounts',
@@ -222,9 +223,9 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
   }
   if (action !== 'dispatch') throw new Error('unsupported investigate action');
 
-  const summary = interaction.options.getString('summary', true).normalize('NFKC').trim().replace(/\s+/g, ' ');
-  if (summary.length < 12 || summary.length > 180) {
-    await interaction.editReply('Write one plain 12-180 character summary of the disagreement you want the settlement to keep open.');
+  const summary = interaction.options.getString('summary', true);
+  if (!validSettlementDispatch(summary)) {
+    await interaction.editReply('Name what the resident accounts disagree about and say that both versions should remain open. Nothing changed.');
     return;
   }
   const result = await recordArgEvent({
@@ -232,7 +233,7 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     idempotencyKey: 'discord:p3:settlement-dispatch',
     source: 'discord',
     actorId: interaction.user.id,
-    payload: { summary, minecraft_name: player.name },
+    payload: SETTLEMENT_DISPATCH_CANONICAL_PAYLOAD,
   });
   if (result.status === 'blocked') {
     await interaction.editReply('The settlement interviews are not open yet. Nothing changed.');

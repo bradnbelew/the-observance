@@ -37,6 +37,9 @@ assert.ok(!index.includes('GatewayIntentBits.MessageContent'));
 // Discord actions use a documented interaction and one server-owned event RPC.
 assert.ok(handler.includes("getSubcommand(true)"));
 assert.ok(handler.includes("eventKey: 'p3.dispatch_authorized'"));
+assert.ok(handler.includes('validSettlementDispatch(summary)'));
+assert.ok(handler.includes('payload: SETTLEMENT_DISPATCH_CANONICAL_PAYLOAD'));
+assert.ok(!handler.includes('payload: { summary'));
 assert.ok(handler.includes("eventKey: 'p4.copy_hypothesis_tested'"));
 assert.ok(handler.includes("method !== 'barcode-and-node-clock'"));
 assert.ok(handler.includes("eventKey: 'p7.nessa_publicly_cleared'"));
