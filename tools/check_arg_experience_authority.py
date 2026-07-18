@@ -485,6 +485,8 @@ def main() -> None:
             "P5/P6 input authority still advertises an unimplemented answer form instead of physical work")
     p5_runtime = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P5CurationRuntime.java").read_text(
         encoding="utf-8")
+    finding_command = (ROOT / "plugin/src/main/java/com/observance/watcher/command/CampaignFindingCommand.java").read_text(
+        encoding="utf-8")
     minecraft_bindings = load(PACK / "minecraft-bindings.json")
     p5_controls = {row["id"]: row for row in minecraft_bindings["runtime_owned_controls"]}
     require("p5_civic_records_counter" in p5_controls
@@ -495,9 +497,24 @@ def main() -> None:
             and "CHRONOLOGY_EVENT" in p5_runtime and "CURATION_EVENT" in p5_runtime
             and "CHISELED_BOOKSHELF" in p5_runtime and "WAXED_COPPER_GRATE" in p5_runtime,
             "P5 curation is still only disposable-slice scaffolding or lacks a real occupied main-world control")
-    p8_contracts = [input_contract_by_id[key] for key in ("P8.F3", "P8.F4", "P8.F5")]
-    finding_command = (ROOT / "plugin/src/main/java/com/observance/watcher/command/CampaignFindingCommand.java").read_text(
+    p6_contract = input_contract_by_id["P6.F7"]
+    p6_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P6ResponsibilityPredicate.java").read_text(
         encoding="utf-8")
+    p6_proof_block = coordinator[coordinator.index("P6_PROFESSIONAL_PROOFS.stream().allMatch"):
+                                 coordinator.index("snapshot = progress.snapshot();",
+                                                   coordinator.index("P6_PROFESSIONAL_PROOFS.stream().allMatch"))]
+    require("/obsfinding p6-recovery" in p6_contract["platform"]
+            and p6_contract["zero_observation_acceptance"] is True
+            and "cannot certify the conclusion" in p6_contract["acceptance_owner"]
+            and "class P6ResponsibilityPredicate" in p6_predicate
+            and "observation, affidavit possession, or per-room completion is inspected" in p6_predicate
+            and "submitP6ResponsibilityMatrix" in coordinator
+            and 'responsibility.addProperty("observation_receipts", 0)' in coordinator
+            and 'responsibility.addProperty("affidavit_possession_gate", false)' in coordinator
+            and 'case "p6-recovery"' in finding_command
+            and "P6_RESPONSIBILITY_EVENT" not in p6_proof_block,
+            "P6 responsibility still auto-completes from six source interactions or lacks a real zero-observation recovery predicate")
+    p8_contracts = [input_contract_by_id[key] for key in ("P8.F3", "P8.F4", "P8.F5")]
     p8_predicate = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/P8InterventionPlanPredicate.java").read_text(
         encoding="utf-8")
     coordinator = (ROOT / "plugin/src/main/java/com/observance/watcher/v5runtime/V5RuntimeCoordinator.java").read_text(

@@ -283,6 +283,30 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
         return progress.snapshot().isComplete(P8_PLAN_EVENT);
     }
 
+    public boolean p6ResponsibilityAccepted() {
+        return progress.snapshot().isComplete(P6_RESPONSIBILITY_EVENT);
+    }
+
+    /** Zero-observation keyboard recovery for a correctly formed six-person responsibility model. */
+    public PlanSubmission submitP6ResponsibilityMatrix(P6ResponsibilityPredicate.Matrix matrix) {
+        if (!storyInputsEnabled) return PlanSubmission.FAILED;
+        ProgressSnapshot before = progress.snapshot();
+        if (before.isComplete(P6_RESPONSIBILITY_EVENT)) return PlanSubmission.ALREADY_ACCEPTED;
+        if (!before.isComplete(P5_CURATION_EVENT)) return PlanSubmission.NOT_READY;
+        if (!P6ResponsibilityPredicate.valid(matrix)) return PlanSubmission.WRONG;
+        try {
+            boolean created = progress.transact(editor -> editor.setBooleanTrue(P6_RESPONSIBILITY_EVENT));
+            if (!created) return PlanSubmission.ALREADY_ACCEPTED;
+            projectLocalState();
+            mirrorP6MilestonesAsync();
+            return PlanSubmission.ACCEPTED;
+        } catch (IOException | RuntimeException failure) {
+            plugin.getLogger().severe("P6 responsibility matrix could not be committed locally: "
+                    + failure.getMessage());
+            return PlanSubmission.FAILED;
+        }
+    }
+
     /** Stable local fallback for the Copperline P8 form; raw player prose is never stored or mirrored. */
     public PlanSubmission submitP8InterventionPlan(P8InterventionPlanPredicate.Plan plan) {
         if (!storyInputsEnabled) return PlanSubmission.FAILED;
@@ -374,13 +398,12 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private void advanceDerivedStoryEvents() {
         ProgressSnapshot snapshot = progress.snapshot();
         if (snapshot.isComplete(P5_CURATION_EVENT)
-                && P6_PROFESSIONAL_PROOFS.stream().allMatch(snapshot::isComplete)) {
+                && P6_PROFESSIONAL_PROOFS.stream().allMatch(snapshot::isComplete)
+                && !snapshot.isComplete(P6_MODELS_EVENT)) {
             try {
-                boolean created = progress.transact(editor -> {
-                    boolean models = editor.setBooleanTrue(P6_MODELS_EVENT);
-                    boolean responsibility = editor.setBooleanTrue(P6_RESPONSIBILITY_EVENT);
-                    return models || responsibility;
-                });
+                // Exploring all six professional lanes recovers the models. It does not silently
+                // certify the players' responsibility conclusion; that is a separate semantic act.
+                boolean created = progress.transact(editor -> editor.setBooleanTrue(P6_MODELS_EVENT));
                 if (created) mirrorP6MilestonesAsync();
             } catch (IOException | RuntimeException failure) {
                 plugin.getLogger().severe("P6 biography milestones could not be committed locally: " + failure.getMessage());
@@ -534,16 +557,23 @@ public final class V5RuntimeCoordinator implements Listener, AutoCloseable {
     private void mirrorP6MilestonesAsync() {
         plugin.scheduler().runAsyncSafe("arg.p6.milestones.mirror", () -> {
             if (plugin.supabase() == null || !plugin.supabase().isConfigured()) return;
-            JsonObject models = new JsonObject();
-            models.addProperty("people", "Vaun,Mara,Sella,Orin,Brann,Iss");
-            models.addProperty("basis", "six-distinct-professional-proofs");
-            plugin.supabase().recordArgEvent(P6_MODELS_EVENT,
-                    "minecraft:p6:professional-models-recovered", "minecraft", null, models);
-            JsonObject responsibility = new JsonObject();
-            responsibility.addProperty("matrix", "six-distinct-people-and-culpabilities");
-            responsibility.addProperty("runtime_exact_phrase", false);
-            plugin.supabase().recordArgEvent(P6_RESPONSIBILITY_EVENT,
-                    "minecraft:p6:six-responsibilities-acknowledged", "minecraft", null, responsibility);
+            ProgressSnapshot snapshot = progress.snapshot();
+            if (snapshot.isComplete(P6_MODELS_EVENT)) {
+                JsonObject models = new JsonObject();
+                models.addProperty("people", "Vaun,Mara,Sella,Orin,Brann,Iss");
+                models.addProperty("basis", "six-distinct-professional-proofs");
+                plugin.supabase().recordArgEvent(P6_MODELS_EVENT,
+                        "minecraft:p6:professional-models-recovered", "minecraft", null, models);
+            }
+            if (snapshot.isComplete(P6_RESPONSIBILITY_EVENT)) {
+                JsonObject responsibility = new JsonObject();
+                responsibility.addProperty("matrix", "six-distinct-people-and-culpabilities");
+                responsibility.addProperty("runtime_exact_phrase", false);
+                responsibility.addProperty("observation_receipts", 0);
+                responsibility.addProperty("affidavit_possession_gate", false);
+                plugin.supabase().recordArgEvent(P6_RESPONSIBILITY_EVENT,
+                        "minecraft:p6:six-responsibilities-acknowledged", "minecraft", null, responsibility);
+            }
         });
     }
 

@@ -90,6 +90,7 @@ def pluginSelfTests = [
     , containerTriggerReadiness: 'com.observance.watcher.v5runtime.container.BukkitContainerTriggerAuditSelfTest'
     , argEventPrerequisiteAliases: 'com.observance.watcher.v5runtime.ArgEventPrerequisiteAliasesSelfTest'
     , p8InterventionPlanPredicate: 'com.observance.watcher.v5runtime.P8InterventionPlanPredicateSelfTest'
+    , p6ResponsibilityPredicate: 'com.observance.watcher.v5runtime.P6ResponsibilityPredicateSelfTest'
     , p5CurationState: 'com.observance.watcher.v5runtime.P5CurationStateSelfTest'
 ]
 
