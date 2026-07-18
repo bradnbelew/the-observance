@@ -607,9 +607,9 @@ public final class PrivateSliceWorld {
     }
 
     private void p5CurationPreview() {
-        addSign(-3,-16,91,"north",new Cell(-3,-16,92),new Cell(-3,-20,90),"P5_SERVICE_PUBLIC_SIGN",
+        addSign(-3,-16,91,"north",new Cell(-3,-16,92),new Cell(-3,-18,90),"P5_SERVICE_PUBLIC_SIGN",
                 "P5 civic curation action","WORK CARDS","STAY PUBLIC","USE, REPAIR","TEACH");
-        addSign(3,-16,91,"north",new Cell(3,-16,92),new Cell(3,-20,90),"P5_PENALTY_CUSTODY_SIGN",
+        addSign(3,-16,91,"north",new Cell(3,-16,92),new Cell(3,-18,90),"P5_PENALTY_CUSTODY_SIGN",
                 "P5 civic curation action","PENALTY COPIES","KEEP AS EVIDENCE","DO NOT DISPLAY","AS THE RULE");
         directional(new Cell(-3, -19, 91), Material.LEVER,
                 "minecraft:lever[face=floor,facing=north,powered=false]");

@@ -70,6 +70,11 @@ def main() -> int:
     if "ArgVerticalSliceEvidence.bookBody()" not in text(
             "plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java", failures):
         failures.append("Paper world does not consume the audited evidence pages")
+    world_source = text("plugin/src/main/java/com/observance/watcher/m3runtime/PrivateSliceWorld.java", failures)
+    for needle in ('new Cell(-3,-18,90),"P5_SERVICE_PUBLIC_SIGN"',
+                   'new Cell(3,-18,90),"P5_PENALTY_CUSTODY_SIGN"'):
+        if needle not in world_source:
+            failures.append(f"P5 player-eye standing frame drifted: {needle}")
 
     form = text("dashboard/src/app/community/archive/intake-copies/RestoreArchiveForm.tsx", failures)
     action = text("dashboard/src/app/community/archive/intake-copies/actions.ts", failures)
