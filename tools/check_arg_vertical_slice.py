@@ -72,7 +72,7 @@ def main() -> int:
         failures.append("vertical-slice predicate must be local-primary and observation-independent")
     for needle in ("matchesPurpose", "matchesChange", "matchesAnomaly", "canonicalMeaning",
                    "COPY_TEST_EVENT", "testCopyOrder", "CopyTestResult", "copyOrderTested",
-                   'method.equals("barcode-and-node-clock")'):
+                   'method.equals("barcode-and-node-clock")', "wrongTheoryFeedback"):
         if needle not in state_source:
             failures.append(f"structured meaning predicate missing: {needle}")
     for forbidden in ("ACCEPTED_THEORIES", "THE HOLD SHELTERED FAMILIES BEFORE SAFETY BECAME CONTROL"):

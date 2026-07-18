@@ -109,6 +109,33 @@ public final class ArgVerticalSliceState {
         return normalized.replaceAll(" +", " ");
     }
 
+    /**
+     * Evidence-bounded response to a plausible theory. This never mutates progress and never reveals a
+     * missing answer word; it identifies which surviving relationship the proposed account has not handled.
+     */
+    public String wrongTheoryFeedback(String purposeRaw, String changeRaw, String anomalyRaw) {
+        String purpose = normalize(purposeRaw);
+        String change = normalize(changeRaw);
+        String anomaly = normalize(anomalyRaw);
+        if (containsAny(purpose, "CULT", "RITUAL", "TEMPLE", "OCCULT", "SHRINE")) {
+            return "That account does not explain the school repairs, household water marks, market issue records, and ordinary service counter found in separate parts of the Hold.";
+        }
+        if (containsAny(anomaly, "MODERN", "RECONSTRUCTION", "MKEPT", "FORGERY", "FAKE")) {
+            return copyOrderTested()
+                    ? "The modern-reconstruction theory remains possible for some damage, but it does not explain why the independently ordered earlier cartridge already contains the later correction."
+                    : "A modern recovery error is still a live theory. Choose a custody record that can order the damaged cartridges before treating it as settled.";
+        }
+        if (containsAny(anomaly, "CLOCK", "TIMESTAMP", "TIME STAMP", "DATE ERROR")) {
+            return copyOrderTested()
+                    ? "The recovery-node clock stayed aligned during both reads. A simple clock fault does not account for the cartridge order."
+                    : "A clock fault is testable. The damaged guest's own times cannot settle it; use an independent custody record.";
+        }
+        if (containsAny(change, "DID NOT BECOME", "NEVER BECAME", "NOT CONTROL", "NO CONTROL")) {
+            return "That account preserves the emergency purpose but leaves the coordinated attendance, ration, travel, heat, posture, sleep, and testimony penalties unexplained.";
+        }
+        return "That account does not yet fit the ordinary work, the later penalty system, and the surviving copy order at the same time.";
+    }
+
     private static boolean matchesPurpose(String value) {
         return containsAny(value, "REFUGE", "SHELTER", "EVACUATION PLACE", "EMERGENCY PLACE");
     }

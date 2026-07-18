@@ -548,3 +548,14 @@ open; M4 is still closed.
   idempotency, restart, compile, and zero-observation flows pass focused tests.
 - This improves the investigative verb and cross-surface response. It does not by itself grant human P4 or
   campaign experiential approval; that remains part of the final cold whole-campaign test.
+
+## 2026-07-18 — P4 competing theories receive authored responses
+
+- The active Paper conclusion desk no longer collapses every non-accepted account into a generic wrong-answer
+  message. Cult-site, modern-reconstruction, simple clock-fault, and no-control theories now receive distinct
+  evidence-bounded contradictions without committing progress or revealing a missing answer phrase.
+- The modern-reconstruction and clock-fault responses change after the player-chosen custody test, so the world
+  acknowledges that the investigation changed what can be defended. Unclassified theories still receive a
+  three-relationship readback covering ordinary work, later penalties, and copy order.
+- Focused state, negative-flow, compile, ARG authority, and vertical-slice checks pass. Human theory-path and
+  emotional-response judgment remains deliberately open for the final whole-campaign test.

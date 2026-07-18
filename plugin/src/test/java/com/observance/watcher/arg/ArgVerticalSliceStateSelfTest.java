@@ -15,6 +15,12 @@ public final class ArgVerticalSliceStateSelfTest {
             expect(state.submitConclusion("a ritual chamber", "smoke directions became mandatory attendance",
                     "copy before source", "a") == ArgVerticalSliceState.TheoryResult.WRONG, "wrong purpose rejected");
             expect(!state.theoryEarned() && state.receipts().isEmpty(), "wrong answer changes no state");
+            expect(state.wrongTheoryFeedback("a cult temple", "rules", "unknown").contains("school repairs"),
+                    "cult theory receives authored material contradiction");
+            expect(state.wrongTheoryFeedback("refuge", "rules", "mkept forged it").contains("still a live theory"),
+                    "modern reconstruction stays live before custody test");
+            expect(state.wrongTheoryFeedback("refuge", "rules", "clock fault").contains("is testable"),
+                    "clock theory points to an independent test without revealing a solution");
             expect(state.testCopyOrder("", "local-player") == ArgVerticalSliceState.CopyTestResult.INCOMPLETE,
                     "missing method is incomplete");
             expect(state.testCopyOrder("guest-filenames", "local-player") == ArgVerticalSliceState.CopyTestResult.WRONG,
@@ -26,6 +32,10 @@ public final class ArgVerticalSliceStateSelfTest {
                     "local player can choose the independent custody method without a Discord receipt");
             expect(state.copyOrderTested() && state.receipts().size() == 1,
                     "local custody test commits one canonical event");
+            expect(state.wrongTheoryFeedback("refuge", "rules", "clock fault").contains("stayed aligned"),
+                    "clock theory is recontextualized after the player-caused test");
+            expect(state.wrongTheoryFeedback("refuge", "rules", "modern reconstruction").contains("earlier cartridge"),
+                    "modern reconstruction response changes after authenticated copy order");
             state.testCopyOrder("barcode-and-node-clock", "shared-player");
             expect(state.receipts().size() == 1, "copy test is idempotent across players");
             expect(state.submitConclusion("a shelter", "safety did not become control", "copy before source", "a")
@@ -58,7 +68,7 @@ public final class ArgVerticalSliceStateSelfTest {
                     == ArgVerticalSliceState.TheoryResult.ACCEPTED, "different wording needs no source receipts after restart");
             expect(restarted.submitConclusion("The Hold sheltered families before safety became control", "external-shared")
                     == ArgVerticalSliceState.TheoryResult.INCOMPLETE, "hidden long canonical sentence is not an input contract");
-            System.out.println("ArgVerticalSliceStateSelfTest OK - player-chosen custody test, wrong-method negative flow, zero-observation theory, P5 physical curation, restart, idempotency");
+            System.out.println("ArgVerticalSliceStateSelfTest OK - player-chosen custody test, responsive wrong theories, zero-observation conclusion, P5 physical curation, restart, idempotency");
         } finally {
             Files.deleteIfExists(journal);
             Files.deleteIfExists(dir);

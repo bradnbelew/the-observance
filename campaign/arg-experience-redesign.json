@@ -98,7 +98,7 @@
       "provenance_authentication": "Players authenticate screenshot revision, cartridge sequence, node clock, paper/ink order, and the physical notice scar. No record states refuge-before-rite or safety-became-control.",
       "player_initiated_actions": [
         {"verb":"restore","action":"request the exact missing screenshot revision using its attachment provenance","receipt_gate":false,"response_event":"p4.mouth_revision_restored"},
-        {"verb":"test","action":"choose a clock-fault, later-forgery, or pre-copy test and submit the relevant identifier or artifact rather than a conclusion summary","receipt_gate":false,"response_event":"p4.copy_hypothesis_tested"},
+        {"verb":"test","action":"choose whether barcode plus an independent recovery-node clock, damaged-guest filenames, or damaged-guest modified times can fairly order the cartridges; only the independent custody method changes the archive","receipt_gate":false,"response_event":"p4.copy_hypothesis_tested"},
         {"verb":"publish","action":"publish a defensible group theory that explains the ordinary refuge, institutional rewrite, and unresolved pre-copy anomaly","receipt_gate":false,"response_event":"p4.control_reversal_earned"}
       ],
       "authored_reactivity": [

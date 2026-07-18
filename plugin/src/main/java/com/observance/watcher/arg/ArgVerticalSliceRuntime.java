@@ -253,7 +253,8 @@ public final class ArgVerticalSliceRuntime implements Listener, AutoCloseable {
                 case INCOMPLETE -> player.sendMessage(Component.text("Incomplete. Answer all three questions. Nothing changed in the world."));
                 case WRONG -> {
                     window.count++;
-                    player.sendMessage(Component.text("One or more claims do not fit the surviving evidence. Nothing changed."));
+                    player.sendMessage(Component.text(state.wrongTheoryFeedback(purpose, change, anomaly)
+                            + " Nothing changed."));
                 }
             }
         } catch (IOException | IllegalStateException failure) {
