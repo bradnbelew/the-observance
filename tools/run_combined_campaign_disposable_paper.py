@@ -42,6 +42,15 @@ def command_outcome(process: PaperProcess, command: str, outcomes: tuple[str, ..
     raise TimeoutError(f"timed out waiting for Paper output: {outcomes!r}")
 
 
+def require_command(process: PaperProcess, command: str, success: str,
+                    failures: tuple[str, ...], timeout: float) -> str:
+    """Fail immediately on an explicit strict-audit refusal instead of masking it as a timeout."""
+    line = command_outcome(process, command, (success, *failures), timeout)
+    if success not in line:
+        raise RuntimeError(f"{command} did not pass: {line}")
+    return line
+
+
 def copy_bootstrap_cache(target: Path, source: Path | None) -> dict[str, str]:
     if source is None:
         return {}
@@ -195,21 +204,25 @@ def main() -> None:
                                      ("Deep Hold build complete", "Deep Hold V5 build FAILED"), 900)
         if "Deep Hold build complete" not in hold_build:
             raise RuntimeError(f"Deep Hold build did not pass: {hold_build}")
-        hold_audit = first.command("observance placehold audit", "physically launch-placeable", 300)
+        hold_audit = require_command(first, "observance placehold audit",
+                                     "physically launch-placeable", ("Fix findings",), 300)
 
         unlit_build = command_outcome(first,
             f"observance unlit candidate build {UNLIT_WORLD} 0 72 0",
             ("UNLIT_CANDIDATE_BUILD PASS", "UNLIT_CANDIDATE_BUILD BLOCKED"), 900)
         if "UNLIT_CANDIDATE_BUILD PASS" not in unlit_build:
             raise RuntimeError(unlit_build)
-        unlit_ready = first.command("observance unlit candidate audit", "Gate: READY", 300)
+        unlit_ready = require_command(first, "observance unlit candidate audit", "Gate: READY",
+                                      ("Gate: NOT READY",), 300)
         copy_install = first.command(
             f"obscopyproof install {SURFACE_WORLD} 20 266 20 {UNLIT_WORLD} 10 73 8",
             "UNLIT_COPY_PROOF_INSTALL PASS", 300)
         copy_exercise = first.command("obscopyproof exercise-default", "UNLIT_COPY_PROOF_EXERCISE PASS", 120)
         copy_audit = first.command("obscopyproof audit", "UNLIT_COPY_PROOF_AUDIT PASS", 120)
-        post_copy_hold = first.command("observance placehold audit", "physically launch-placeable", 300)
-        post_copy_unlit = first.command("observance unlit candidate audit", "Gate: READY", 300)
+        post_copy_hold = require_command(first, "observance placehold audit",
+                                         "physically launch-placeable", ("Fix findings",), 300)
+        post_copy_unlit = require_command(first, "observance unlit candidate audit", "Gate: READY",
+                                          ("Gate: NOT READY",), 300)
         first.command("save-all flush", "Saved the game", 300)
     finally:
         try:
@@ -221,14 +234,18 @@ def main() -> None:
     try:
         second.wait_for("Done (", 300)
         restart_startup = require_startup_contract(second.lines)
-        restart_hold = second.command("observance placehold audit", "physically launch-placeable", 300)
-        restart_unlit = second.command("observance unlit candidate audit", "Gate: READY", 300)
+        restart_hold = require_command(second, "observance placehold audit",
+                                       "physically launch-placeable", ("Fix findings",), 300)
+        restart_unlit = require_command(second, "observance unlit candidate audit", "Gate: READY",
+                                        ("Gate: NOT READY",), 300)
         restart_copy = second.command("obscopyproof audit", "UNLIT_COPY_PROOF_AUDIT PASS", 120)
         overwrite_refusal = second.command(
             f"observance unlit candidate build {UNLIT_WORLD} 0 72 0",
             "UNLIT_CANDIDATE_BUILD BLOCKED", 300)
-        post_refusal_hold = second.command("observance placehold audit", "physically launch-placeable", 300)
-        post_refusal_unlit = second.command("observance unlit candidate audit", "Gate: READY", 300)
+        post_refusal_hold = require_command(second, "observance placehold audit",
+                                            "physically launch-placeable", ("Fix findings",), 300)
+        post_refusal_unlit = require_command(second, "observance unlit candidate audit", "Gate: READY",
+                                             ("Gate: NOT READY",), 300)
         second.command("save-all flush", "Saved the game", 300)
     finally:
         try:

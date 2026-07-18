@@ -77,8 +77,35 @@
       "target_reused_or_deleted": false,
       "production_mutated": false,
       "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 4,
+      "source_commit": "69b294f466179849f34c3306ac08d60f9d927f4e",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-69b294f-04",
+      "address": "127.0.0.1:25609",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "dcb95a6ba4e42752bca260d2b75d0a36570ab98459a4cd253f024c1a06ad40f8",
+      "first_log_sha256": "f234544955edc5a1ec3e574aa5663e873e0a67d03007865b5247cfed12070351",
+      "passed_before_failure": [
+        "Deep Hold and Unlit fresh builds initially passed",
+        "the exact V5 fixture milestone was saved before cross-world play",
+        "bounded copy proof installed, committed, and audited",
+        "the optimized Unlit scan completed without a watchdog warning"
+      ],
+      "failure": "A forced exact world save did not preserve three controls through later chunk and neighbor updates. LC03/evaluation_handle became AIR and CW07/cache_seal plus HS02/housing_latch lost their trusted marker bindings. The installer checked only whether an adjacent material was broadly solid; it did not prove that each lever's actual attached face was supported under Paper/vanilla block physics.",
+      "exact_findings": [
+        "LC03/evaluation_handle: block is AIR, expected LEVER",
+        "LC03/evaluation_handle: loaded block is AIR, expected LEVER",
+        "CW07 requires exactly one bound cache_seal/evaluation_handle control, found 0",
+        "HS02 requires exactly one bound housing_latch/evaluation_handle control, found 0"
+      ],
+      "harness_result": "failed closed during the post-copy Hold audit; no readiness receipt was published",
+      "shutdown": "The harness finally block stopped only this disposable Paper process. Paper recorded Observance disable, every dimension saved, RegionFile completion, and worker/I/O pool termination. PID and port 25609 are absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
     }
   ],
-  "resolution": "Source now retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. After the exact physical pass and sites.yml commit, the Deep Hold builder now flushes the exact blocks, books, marker entities, and sites before rebind or cross-world play. The Unlit light scan snapshots same-world unlit_safe sites once per scan. Full plugin build/self-tests and a fresh create-only retry remain required.",
+  "resolution": "Source retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. After the exact physical pass and sites.yml commit, the Deep Hold builder flushes exact blocks, books, marker entities, and sites before rebind or cross-world play. The Unlit light scan snapshots same-world unlit_safe sites once per scan. The three controls exposed by attempt 4 now have non-relocatable authored ceiling-support cells; the installer places those supports before the controls, pins exact ceiling attachment, and audits Paper BlockData.isSupported rather than inferring support from material solidity. Full plugin build/self-tests and a fresh create-only retry remain required.",
   "brad_approval": null
 }

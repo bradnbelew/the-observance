@@ -47,6 +47,15 @@ public final class V5PhysicalComponentCatalogSelfTest {
         require(catalog, "KM01", "e3", AddressKind.BLOCK, "LEVER");
         require(catalog, "HS02", "housing_latch", AddressKind.BLOCK, "LEVER");
         require(catalog, "CW07", "cache_seal", AddressKind.BLOCK, "LEVER");
+        requireAt(catalog, "LC03", "evaluation_handle", -2, 1, 0, "LEVER");
+        requireAt(catalog, "LC03", "evaluation_handle_support", -2, 2, 0,
+                "POLISHED_DEEPSLATE");
+        requireAt(catalog, "CW07", "cache_seal", 2, 1, 0, "LEVER");
+        requireAt(catalog, "CW07", "cache_seal_support", 2, 2, 0,
+                "POLISHED_DEEPSLATE");
+        requireAt(catalog, "HS02", "housing_latch", 1, 1, 0, "LEVER");
+        requireAt(catalog, "HS02", "housing_latch_support", 1, 2, 0,
+                "POLISHED_DEEPSLATE");
 
         check(!V5MovableFramePolicy.mayInferDisplacementFromItemIdentity(true),
                 "movable shuffled pieces must never be stolen as displaced neighboring targets");

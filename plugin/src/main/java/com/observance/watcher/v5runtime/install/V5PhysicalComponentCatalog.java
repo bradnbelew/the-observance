@@ -367,12 +367,18 @@ public final class V5PhysicalComponentCatalog {
         if ("HS02".equals(node.nodeId())) {
             out.add(pullControl(node, "housing_latch", "housing_latch", new LocalOffset(1, 1, 0),
                     "hs02_housing_latch", "cartridge housing latch"));
+            out.add(controlSupport(node, "housing_latch_support", new LocalOffset(1, 2, 0),
+                    "cartridge housing latch"));
             occupied.add(node.siteId() + ":1:1:0");
+            occupied.add(node.siteId() + ":1:2:0");
         }
         if ("CW07".equals(node.nodeId())) {
             out.add(pullControl(node, "cache_seal", "cache_seal", new LocalOffset(2, 1, 0),
                     "cw07_cache_seal", "cache seal"));
+            out.add(controlSupport(node, "cache_seal_support", new LocalOffset(2, 2, 0),
+                    "cache seal"));
             occupied.add(node.siteId() + ":2:1:0");
+            occupied.add(node.siteId() + ":2:2:0");
         }
 
         if ("RP04".equals(node.nodeId())) {
@@ -423,8 +429,28 @@ public final class V5PhysicalComponentCatalog {
                     AddressKind.BLOCK, chosen, "LEVER", Map.of("v5_handle_node", node.nodeId()),
                     null, null, null, "", true, raw);
             out.add(handle);
+            if ("LC03".equals(node.nodeId())) {
+                LocalOffset support = new LocalOffset(chosen.right(), chosen.up() + 1,
+                        chosen.front());
+                out.add(controlSupport(node, "evaluation_handle_support", support,
+                        "orientation-register evaluation handle"));
+                occupied.add(node.siteId() + ':' + support.right() + ':' + support.up() + ':'
+                        + support.front());
+            }
         }
         return List.copyOf(out);
+    }
+
+    private static Address controlSupport(PhysicalPredicateAuthority.Node node,
+                                          String componentId, LocalOffset offset,
+                                          String authoredName) {
+        JsonObject raw = new JsonObject();
+        raw.addProperty("id", componentId);
+        raw.addProperty("block", "POLISHED_DEEPSLATE");
+        raw.addProperty("synthetic_from", authoredName + " exact ceiling support");
+        return address(node, componentId, componentId, node.siteId(), AddressKind.BLOCK, offset,
+                "POLISHED_DEEPSLATE", Map.of("v5_supports_control", authoredName),
+                null, null, null, "", false, raw);
     }
 
     private static Address pullControl(PhysicalPredicateAuthority.Node node, String componentId,

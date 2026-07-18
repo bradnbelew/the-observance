@@ -979,6 +979,27 @@ public final class V5PhysicalComponentInstaller {
     private void reconcileSwitchSupport(Block block, Resolved resolved, Mode mode,
                                         boolean mutate, Accumulator result) {
         if (!(block.getBlockData() instanceof Switch control)) return;
+        Address address = resolved.address();
+        boolean exactCeilingControl = switch (address.nodeId() + '/' + address.componentId()) {
+            case "LC03/evaluation_handle", "CW07/cache_seal", "HS02/housing_latch" -> true;
+            default -> false;
+        };
+        if (exactCeilingControl) {
+            Block support = block.getRelative(BlockFace.UP);
+            ensureSupport(support, address, "exact ceiling control", mode, mutate, result);
+            if (mutate) {
+                control.setAttachedFace(org.bukkit.block.data.FaceAttachable.AttachedFace.CEILING);
+                if (control.getFaces().contains(face(resolved.anchor().front()))) {
+                    control.setFacing(face(resolved.anchor().front()));
+                }
+                block.setBlockData(control, false);
+            }
+            if (!block.getBlockData().isSupported(block)) {
+                result.block(address, "exact ceiling control is not supported at "
+                        + blockKey(block));
+            }
+            return;
+        }
         BlockFace supportDirection = switch (control.getAttachedFace()) {
             case FLOOR -> BlockFace.DOWN;
             case CEILING -> BlockFace.UP;
@@ -1004,6 +1025,9 @@ public final class V5PhysicalComponentInstaller {
                 control.getAttachedFace() == org.bukkit.block.data.FaceAttachable.AttachedFace.WALL
                         ? "wall control" : "control",
                 mode, mutate, result);
+        if (!block.getBlockData().isSupported(block)) {
+            result.block(address, "control is not supported at " + blockKey(block));
+        }
     }
 
     private void auditBlockState(Resolved resolved, Mode mode, boolean mutate, Accumulator result) {
