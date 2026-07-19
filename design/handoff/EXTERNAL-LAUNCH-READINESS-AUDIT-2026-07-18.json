@@ -1,0 +1,169 @@
+{
+  "schema_version": "1.0.0-external-launch-readiness-audit",
+  "audit_time": "2026-07-18T22:32:00-05:00",
+  "source_branch": "codex/m3-disposable-paper-gate",
+  "source_head": "8c80e0d",
+  "deployed_web_commit": "e2eaba59655b85beb276f7a1b2598fc6fb6184a9",
+  "scope": "Read-only external audit plus local verification after Brad asked whether Railway/Supabase/Discord access is available and requested the launch-ready state as far as can be safely determined.",
+  "local_verification": {
+    "discord_typecheck": "passed",
+    "discord_audit": "passed",
+    "dashboard_selftest": "passed",
+    "dashboard_build": "passed",
+    "continuation_lineage": "passed"
+  },
+  "vercel": {
+    "project": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "team": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "production_deployment": "dpl_3HQj5igeRsrdVLpfop536VPnNwkG",
+    "commit": "e2eaba59655b85beb276f7a1b2598fc6fb6184a9",
+    "status": "READY",
+    "primary_url": "https://copperlinehosting.com",
+    "readiness": "web production is live and serving the launch-candidate dashboard/Copperline build",
+    "remaining": [
+      "human playthrough and experience approval remain open",
+      "non-web services and production database are not implied ready by Vercel readiness"
+    ]
+  },
+  "railway": {
+    "cli": {
+      "path": "D:\\Program Files\\npx.cmd --yes @railway/cli",
+      "version": "5.27.0",
+      "account": "bradnbelew@gmail.com"
+    },
+    "families": [
+      {
+        "project": "distinguished-balance",
+        "project_id": "462b0f7f-a98a-4cd7-9641-01b5704375c9",
+        "environment_id": "769978d7-28c3-4a4b-a586-e8378c80ac71",
+        "service_id": "06c1fdec-ab9d-44f7-ad70-96feea84023e",
+        "service_name": "the-observance",
+        "source_repo": "bradnbelew/the-observance",
+        "root_directory": "/discord",
+        "latest_deployment": "e8d56f3a-0749-4205-8c5a-edcf93781d13",
+        "latest_status": "SUCCESS",
+        "latest_commit": "e2eaba59655b85beb276f7a1b2598fc6fb6184a9",
+        "start_command": "npm run showrunner",
+        "cron_schedule": "*/10 * * * *",
+        "restart_policy": "NEVER",
+        "deployment_stopped": true,
+        "replicas_running": 0,
+        "interpretation": "Cron/showrunner family has a successful current-commit deployment record and an exited/stopped process, which is expected for scheduled work but still needs real production event replay/readback before launch approval.",
+        "error_logs_observed": [
+          "npm warn config production Use --omit=dev instead"
+        ]
+      },
+      {
+        "project": "aware-playfulness",
+        "project_id": "e8158c1a-259b-4079-b51d-df7a2bb654e6",
+        "environment_id": "b6cbdbfd-e0ae-4977-bdb5-94d1c20f932a",
+        "service_id": "ea488e14-1c46-4ecf-8448-5c7842247dd1",
+        "service_name": "the-observance",
+        "source_repo": "bradnbelew/the-observance",
+        "root_directory": "/discord",
+        "latest_deployment": "904bdad1-c107-44c2-9ea3-296ced8f54ba",
+        "latest_status": "SUCCESS",
+        "latest_created_at": "2026-07-15T02:34:03.918Z",
+        "latest_commit": "not_git_commit_recorded_cli_deploy",
+        "start_command": "npm start",
+        "restart_policy": "ON_FAILURE",
+        "replicas_running": 1,
+        "interpretation": "Always-on Discord worker is running but stale relative to the current web/main launch candidate.",
+        "error_logs_observed": [
+          "npm warn config production Use --omit=dev instead",
+          "[the-watcher] permission warning: Administrator is unnecessary; scope the bot to its ARG channels"
+        ]
+      }
+    ],
+    "required_variable_presence": {
+      "distinguished-balance": {
+        "DISCORD_BOT_TOKEN": true,
+        "DISCORD_APP_ID": true,
+        "DISCORD_GUILD_ID": true,
+        "CHANNEL_THE_RECORD": true,
+        "SUPABASE_URL": true,
+        "SUPABASE_SERVICE_ROLE_KEY": true
+      },
+      "aware-playfulness": {
+        "DISCORD_BOT_TOKEN": true,
+        "DISCORD_APP_ID": true,
+        "DISCORD_GUILD_ID": true,
+        "CHANNEL_THE_RECORD": true,
+        "SUPABASE_URL": true,
+        "SUPABASE_SERVICE_ROLE_KEY": true
+      },
+      "values_printed": false
+    },
+    "deploy_attempt": {
+      "target": "aware-playfulness production worker",
+      "command_intent": "railway up from discord/ to service ea488e14-1c46-4ecf-8448-5c7842247dd1",
+      "result": "blocked_by_tool_reviewer_before_mutation",
+      "reason": "specific explicit Railway/Discord production mutation confirmation required beyond general launch-readiness approval",
+      "needed_exact_human_approval": "Deploy the verified Discord worker service on Railway production now."
+    }
+  },
+  "supabase": {
+    "project_id": "fdnmhbpxnodrnbrzrlqq",
+    "organization_id": "yaenkbhruvrgkxqvngbk",
+    "name": "bradnbelew@gmail.com's Project",
+    "region": "us-east-2",
+    "status": "ACTIVE_HEALTHY",
+    "postgres": "17 / 17.6.1.127",
+    "migrations": [
+      {
+        "version": "20260715020218",
+        "name": "security_grants"
+      }
+    ],
+    "read_only_findings": {
+      "base_public_tables_rls_enabled": true,
+      "base_public_table_policy_count": "0 policies observed on listed base tables",
+      "arg_event_tables_present": false,
+      "security_invoker_views": {
+        "v_archive": false,
+        "v_case_progress": false,
+        "v_compliance_counts": false,
+        "v_custom_compliance": false,
+        "v_dossiers": false,
+        "v_health": false,
+        "v_heatmap": false,
+        "v_record": false,
+        "v_required_media_delivery": false
+      },
+      "broad_public_view_grants_observed": [
+        "v_archive grants include anon/authenticated non-SELECT privileges",
+        "v_record grants include anon/authenticated non-SELECT privileges",
+        "v_case_progress, v_compliance_counts, v_health, v_heatmap, v_required_media_delivery grants include authenticated non-SELECT privileges",
+        "world_paste_ledger grants include authenticated SELECT/INSERT/UPDATE/DELETE"
+      ]
+    },
+    "repo_packages_available": [
+      "discord/supabase/apply-all.sql",
+      "discord/supabase/migrations/0017_arg_events.sql",
+      "discord/supabase/migrations/0018_arg_projection_leases.sql",
+      "design/m2/sql/production-security-hardening-v2.up.sql",
+      "design/m2/sql/production-security-hardening-v2.rollback.sql",
+      "design/m2/sql/tests/production-security-hardening-v2.assert.sql"
+    ],
+    "readiness": "not_launch_ready_for_new_cross-surface_runtime_until_schema/hardening_is_applied_to_a_safe_target_then_production_with_explicit_confirmation",
+    "production_mutated": false
+  },
+  "discord": {
+    "code_status": "local typecheck and audit passed",
+    "external_status": "Railway worker exists and is running, but current deployment is stale and bot permissions warn that Administrator is unnecessary",
+    "needed_for_launch": [
+      "explicit approval to deploy current audited worker to Railway production",
+      "Discord bot permission scoping to ARG channels instead of Administrator",
+      "post-deploy slash command registration/readback and live interaction smoke test",
+      "Supabase production schema/event projection readiness first, or the worker must fail closed for missing arg_event tables"
+    ]
+  },
+  "overall_readiness": {
+    "web": "live",
+    "minecraft_package": "automated local Paper proof exists, human playthrough approval open",
+    "railway_discord": "reachable but stale and needs explicit production deploy approval",
+    "supabase": "reachable but production schema/security not ready for the new launch-candidate runtime",
+    "media": "custody verified locally in prior receipts; hosted media/accessibility derivatives still need owning review",
+    "launch_ready_claim": false
+  }
+}
