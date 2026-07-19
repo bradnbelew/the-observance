@@ -6737,7 +6737,7 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
     private void buildHoldRosettaCore(World world, int bx, int by, int bz) {
         buildHoldStoneReadingFloor(world, bx, by, bz, Material.CHISELED_TUFF);
         Material[] officeFormats = {
-                Material.COPPER_BLOCK, Material.BOOKSHELF, Material.PRISMARINE_BRICKS,
+                Material.CUT_COPPER, Material.BOOKSHELF, Material.PRISMARINE_BRICKS,
                 Material.CHISELED_DEEPSLATE, Material.GOLD_BLOCK, Material.SMOOTH_RED_SANDSTONE
         };
         for (int i = 0; i < officeFormats.length; i++) {

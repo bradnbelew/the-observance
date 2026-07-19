@@ -50,6 +50,14 @@ def main() -> None:
     for text in required_relationships:
         require(text in source, f"active category/prior-company relationship is missing: {text!r}")
 
+    # The Rosetta physical audit requires the deliberately worked copper office format.
+    # Keep this source guard aligned with the live block audit so a cheaper substitute cannot
+    # survive static checks and fail only after a 1.4-million-write disposable build.
+    require(
+        "Material.CUT_COPPER, Material.BOOKSHELF, Material.PRISMARINE_BRICKS" in source,
+        "rune_rosetta office-format row must begin with authored cut copper",
+    )
+
     for title in ("camp return list", "frame log", "change order", "supply note"):
         require(source.count(f'"{title}"') == 1,
                 f"prior-company camp evidence title is missing or duplicated: {title}")
