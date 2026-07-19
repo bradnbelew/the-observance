@@ -150,7 +150,7 @@ design for Brad's approval — do NOT begin by rewriting all 32 rooms or all 75 
 | 2 | `02-HOLD-CONTENT-REBUILD.md` | Rebuild the 10 cases: investigation woven with story, layered difficulty, kill the four-verb monoculture, no naked ciphers, obvious submission. Worked case example. |
 | 3 | `03-PROSE-VOICE-MEDIA.md` | The two prose laws (no AI slop, no ARG-mystery-voice), the exact meta-language to purge (file:line), NPC voice fix, book/sign Minecraft formatting limits, media de-branding. |
 | 4 | `04-MINECRAFT-SAFETY.md` | What builds safely vs. what breaks; traversability/no-escape rules; the offline reachability sim and build-time assertions that must guard every build. |
-| 5 | `05-KS01-BLOCKER.md` | The one hard launch blocker in the *current* build (Sella KS01 fresh-install). Fix it or let the rebuild replace it — either way it must be resolved. |
+| 5 | `05-KS01-BLOCKER.md` | Historical Sella KS01 fresh-install failure and its strict regression contract. The defect is resolved in the combined Paper receipt; never weaken or remove the six-piece audit. |
 | 6 | `06-MULTIPLAYER-WATCHER.md` | Required group play (asymmetric views, must-contribute, per-player hallucinations) and how the reawakened Watcher integrates with the new Hold. |
 | 7 | `07-SERVICES-DEPLOY.md` | Supabase/Railway/Drive discipline. The predicate-hash sync procedure (the #1 way to desync live). What is yours vs. the plugin operator's. |
 | 8 | `08-SEQUENCING-AND-DONE.md` | The exact order to do this in, the verification loop, and the definition of "done" per piece. |

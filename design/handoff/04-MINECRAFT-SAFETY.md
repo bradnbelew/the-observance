@@ -1,5 +1,9 @@
 # 04 — Minecraft Mechanic Safety & Build Verification
 
+> **CURRENT STATUS NOTE (2026-07-18).** The KS01 5/6 failure cited below is resolved and preserved as
+> regression history in doc 5. Its strict uniqueness/support audit remains mandatory, and the combined
+> fresh Paper/restart receipt passes it. All other safety rules in this document remain binding.
+
 Brad's rule 6: **minimal fragile mechanics; deterministic builds only.** His deeper fear is an
 AI-built structure that *looks* right but traps players, walls off a room, floods a chamber, or fails
 its own install. This session already hit all four of those failure modes. This doc is the guardrail so
@@ -33,12 +37,13 @@ the rebuild doesn't repeat them.
 
 ## 2. The item-frame trap (learn from KS01)
 
-The KS01 six-strip Atbash puzzle is *currently the one hard blocker* (doc 5): a fresh build places
+The KS01 six-strip Atbash puzzle was the historical hard blocker (doc 5): an earlier fresh build placed
 "5/6 unique pieces" and fails its own readiness audit. Item-frame *sets* are the most fragile mechanic
 in the codebase because the installer must spawn N entities, tag each, face each, and prove the set is
 complete and unique — and a single chunk-load race or coordinate mismatch drops one silently. **When
 you rebuild content (doc 2), prefer verbs that need zero spawned entities** (read/count/compare/submit)
-over frame sets. Every frame set you keep is a liability the installer has to get exactly right.
+over frame sets. Every frame set kept remains a liability the installer has to get exactly right; the
+current combined receipt proves this exact set, but future changes must re-run the same strict audit.
 
 ## 3. Traversability & no-escape — mechanical rules
 

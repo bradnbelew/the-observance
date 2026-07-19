@@ -1,5 +1,12 @@
 # 05 — The KS01 Fresh-Install Blocker (must resolve before any launch)
 
+> **RESOLVED / HISTORICAL FAILURE RECORD (2026-07-18).** The installer uniqueness defect was fixed
+> without weakening the six-piece audit. Source `924a5495a6deee0700ae54f7ef54437030ef5375` subsequently
+> passed the fresh combined Hold + Unlit Paper 1.21.11 build, strict physical audit, graceful stop,
+> restart, independent re-audit, occupied-rebuild refusal, and deterministic package proof recorded in
+> `COMBINED-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json`. The failure below remains immutable evidence
+> of why the check exists; it is not a current launch blocker.
+
 **Status:** hard blocker. A full fresh cutover build of the *current* Hold reaches **76/76 fixtures
 placed and full route traversal**, then fails its final readiness audit. Until this passes (or the
 content rebuild replaces the mechanism), the production server stays closed — that was the original
