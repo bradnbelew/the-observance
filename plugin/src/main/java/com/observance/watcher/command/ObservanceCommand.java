@@ -5847,6 +5847,8 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         placeStandingSign(new Location(world, bx, by, bz - 7), BlockFace.NORTH,
                 new String[]{"CAMP SUPPLY", "RETURN LIST", "keep both", "copies"});
+        placeEditableStandingSign(new Location(world, bx, by, bz + 4), BlockFace.SOUTH,
+                new String[]{"field notebook", "", "", ""});
         placeEvidenceLectern(new Location(world, bx - 7, by, bz - 6), BlockFace.EAST,
                 "camp common log", List.of(
                         "Rook moved the east throat after the first survey. Ash kept both frame lists. mkept left the host copy alone.",
