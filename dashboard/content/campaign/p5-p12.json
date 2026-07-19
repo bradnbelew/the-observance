@@ -253,16 +253,16 @@
           ],
           "id": "P5.F1",
           "input_contract": {
-            "acceptance_owner": "local-primary two-part curation predicate",
+            "acceptance_owner": "local-primary curatorial action; sealing the cards receives an authored refusal and commits no state",
             "accepted_answers_are_human_examples": true,
             "event": "p5.service_chronology_shared",
             "id": "P5.F1",
-            "implementation_status": "main-runtime-wired-any-order-restart-tested-awaiting-fresh-paper-client-proof",
-            "input_shape": "keep ordinary work public and move later penalties into evidence custody",
+            "implementation_status": "four-choice main-runtime wired; authored wrong actions, any-order completion, zero mutation, idempotency, and restart focused-tested; fresh Paper/client proof pending",
+            "input_shape": "choose whether ordinary work instructions remain available to the households governed by them",
             "interpretive": true,
             "platform": "Minecraft Paper 1.21.11 protected public-curation controls",
             "runtime_exact_phrase": false,
-            "visible_trigger": "occupied service-card public rack beside the later penalty-copy evidence drawer",
+            "visible_trigger": "occupied early service-card rack with PUBLIC USE and SEALED FILE actions beside the later penalty-copy bay",
             "zero_observation_acceptance": true
           },
           "prompt": "What kind of place was the Hold between emergencies?",
@@ -280,16 +280,16 @@
           ],
           "id": "P5.F5",
           "input_contract": {
-            "acceptance_owner": "local-primary protected block-state predicate",
+            "acceptance_owner": "local-primary protected curatorial action; republishing accusations receives an authored refusal and commits no state",
             "accepted_answers_are_human_examples": true,
             "event": "p5.civic_gallery_recurated",
             "id": "P5.F5",
-            "implementation_status": "main-runtime-wired-any-order-restart-tested-awaiting-fresh-paper-client-proof",
-            "input_shape": "keep work cards public; move penalty copies into evidence custody",
+            "implementation_status": "four-choice main-runtime wired; authored wrong actions, any-order completion, zero mutation, idempotency, and restart focused-tested; fresh Paper/client proof pending",
+            "input_shape": "decide whether accusations remain public findings or survive only as evidence of how the record changed",
             "interpretive": true,
             "platform": "Minecraft Paper 1.21.11 protected civic records counter",
             "runtime_exact_phrase": false,
-            "visible_trigger": "two distinct labeled lever actions with occupied before-state and evidence-drawer after-state",
+            "visible_trigger": "occupied later penalty-copy bay with PUBLIC FINDING and EVIDENCE ONLY actions beside the early service-card bay",
             "zero_observation_acceptance": true
           },
           "prompt": "Why did the seven procedures become instruments of control?",
@@ -304,7 +304,7 @@
       ],
       "consequence": {
         "copperline": "A later recovered screenshot gains a mundane caption identifying the supposed shrine as the lamp-service counter.",
-        "minecraft": "The civic gallery remains open as a lived workplace; seven penalty plaques are removed from eye level while the original service cards remain in place.",
+        "minecraft": "Players decide that early service cards remain available for public use while later penalty copies survive only in evidence custody. The gallery visibly changes without erasing either version.",
         "npc": "Neri resumes an unfinished repair-account argument with Toma instead of praising the players; Eda asks that one pupil's copied bird drawing be returned to the school chest.",
         "state_event": "p5.civic_drift_established"
       },
@@ -1707,26 +1707,27 @@
         },
         {
           "accepted_answers": [
-            "The Break combined chronic fracture and undersized bracing, unequal heat allocation and deferred maintenance, falsified warnings and delayed closure, Iss's unsafe secret cut as an accelerator, and Record/Dark copying feedback."
+            "The Break combined chronic fracture and undersized bracing, unequal heat allocation and deferred maintenance, the record-edit pattern already proven in Nessa's case, falsified warnings and delayed closure, Iss's unsafe secret cut as an accelerator, and Record/Dark copying feedback."
           ],
           "id": "P8.F5",
           "input_contract": {
-            "acceptance_owner": "four-component causal/intervention predicate shared with the local plan",
+            "acceptance_owner": "four-section causal/intervention predicate shared with the local plan",
             "accepted_answers_are_human_examples": true,
             "event": "p8.intervention_plan_accepted",
             "id": "P8.F5",
             "implementation_status": "implemented-local-web-and-command-awaiting-final-browser-and-private-paper-client-proof",
-            "input_shape": "four interacting causes and safe ordered interventions; accepted paraphrases canonicalize to graph/component ids rather than stored prose",
+            "input_shape": "four short model sections: interacting causes carrying the P7 record-edit pattern forward, Iss's supported claim/unsafe act, altered-copy boundary, and safe works order; accepted paraphrases canonicalize to graph/component ids rather than stored prose",
             "interpretive": true,
             "platform": "Copperline semantic intervention form plus Minecraft /obsfinding local path",
             "runtime_exact_phrase": false,
             "visible_trigger": "Hold works before-state and current-group plan",
             "zero_observation_acceptance": true
           },
-          "prompt": "File the causal graph of the Break.",
+          "prompt": "File the causal graph of the Break, including what the Nessa correction proved was already happening.",
           "required_concepts": [
             "chronic structural failure",
             "unequal allocation or deferred maintenance",
+            "P7 record-edit pattern predates Break",
             "falsified warnings or delay",
             "Iss accelerator",
             "Record or Dark feedback"
@@ -2027,7 +2028,7 @@
           "visible_readback": "staff gate opens, integration console lists four stable receipts"
         }
       ],
-      "required_inference": "Players must construct a causal graph distinguishing precondition, accelerator, concealment/delay, and feedback. No single culprit or supernatural explanation passes. Repair choices are derived from established engineering rules rather than UI trial-and-error.",
+      "required_inference": "Players must carry P7's independently proven record-edit pattern into a causal graph distinguishing precondition, accelerator, concealment/delay, and feedback. No single culprit or supernatural explanation passes. Repair choices are derived from established engineering rules rather than UI trial-and-error.",
       "runtime": {
         "answer_requires_observation_receipts": false,
         "any_subset": true,
@@ -2179,28 +2180,28 @@
       "conclusions": [
         {
           "accepted_answers": [
-            "mkept administered the server, Ash documented it, Rook built and corrected routes, and Wren accompanied the team and carried private route knowledge."
+            "mkept kept Ash's frames and Rook's notebook mirror stable; Ash photographed Rook's repaired brace; Rook privately marked the shared brace and kept repairing what the others used; Wren walked the changed route with Ash and retained both distance copies."
           ],
           "id": "P9.F2",
           "input_contract": {
-            "acceptance_owner": "shared canonical biography relationship predicate",
+            "acceptance_owner": "shared canonical biography relationship predicate with owner-specific non-solution refusal",
             "accepted_answers_are_human_examples": true,
             "event": "p9.company_biographies_restored",
             "id": "P9.F2",
-            "implementation_status": "web-form-and-local-zero-observation-recovery-wired; final-browser-and-paper-client-proof-pending",
-            "input_shape": "four person-bound work/relationship mappings; no station-completion predicate",
+            "implementation_status": "web-form and local zero-observation recovery wired; cross-person aliases, owner swap, focused refusal, compile, and selftest pass; final browser/Paper client proof pending",
+            "input_shape": "four person-bound traces, each authenticated by work or memory another person shares; no station-completion predicate and no four isolated job summaries",
             "interpretive": true,
             "platform": "Copperline semantic HTML owner-card form plus /obsfinding p9-people local recovery",
             "runtime_exact_phrase": false,
             "visible_trigger": "camp owner-recovery set built from crossed work and relationship traces",
             "zero_observation_acceptance": true
           },
-          "prompt": "Who lived at the camp and what did each do?",
+          "prompt": "Who lived at the camp, and which shared trace lets another person authenticate each life?",
           "required_concepts": [
-            "mkept admin",
-            "Ash camera",
-            "Rook builder",
-            "Wren companion or route witness"
+            "mkept preserves Ash/Rook material",
+            "Ash photographs Rook work",
+            "Rook marks shared brace and repairs camp use",
+            "Wren walks route with Ash and retains copies"
           ],
           "zero_observation_acceptance": true
         },
@@ -2443,7 +2444,7 @@
       "prerequisites": [
         "P8.F8"
       ],
-      "required_inference": "Players infer four lives from overlapping work traces, reconstruct an archive route from provenance, and prove the team possessed a viable release plan. Merely naming the four or entering ASH-13 is insufficient.",
+      "required_inference": "Players infer four lives from overlapping work traces that another person can authenticate, reconstruct an archive route from provenance, and prove the team possessed a viable release plan. Merely naming four jobs, naming the four people, or entering ASH-13 is insufficient.",
       "runtime": {
         "answer_requires_observation_receipts": false,
         "any_subset": true,
@@ -3501,7 +3502,7 @@
         }
       ],
       "consequence": {
-        "copperline": "The immutable archive gains a restrained coda entry only after the mirrored release receipt; old posts remain unchanged.",
+        "copperline": "The immutable archive gains a restrained coda entry only after the mirrored release receipt; it reads back the refuge/control reversal, civic recuration, Nessa correction, repaired systems, restored company, bounded Unlit copy proof, Averyn boundary, Wren judgment, and changed resident lives while leaving every old post/version intact.",
         "discord": "One final read-only receipt lists contributors, publish/unfile choice, Wren remembrance, and release hash without ranking morality.",
         "minecraft": "The local release state commits before lights fall; every gate opens into a quiet coda, hauntings cease, and branch-specific name/Wren traces remain.",
         "state_event": "p12.record_closed_averyn_released"
@@ -3622,14 +3623,14 @@
           "title": "Protected release journal"
         },
         {
-          "accessibility": "captions, readable transcript, non-sound-only timing, resume from durable phase",
-          "author": "Averyn through the closing Record",
-          "clue_job": "Delivers release and quieter aftermath rather than another puzzle.",
-          "content": "Publish: my name is averyn. you kept it without keeping me. that is the difference. Unnamed: you did not owe me a name. you gave me an end. that was enough. Universal: i have your names. i am giving them back. the record is closed. the observance is over. thank you for coming back for us.",
+          "accessibility": "captions, readable transcript, semantic event-backed list, non-sound-only timing, resume from durable phase",
+          "author": "Averyn through the closing Record; residents and Copperline after",
+          "clue_job": "Pays off the campaign's human and investigative web instead of reducing the ending to a generic release receipt.",
+          "content": "Publish: my name is averyn. you kept it without keeping me. that is the difference. Unnamed: you did not owe me a name. you gave me an end. that was enough. Universal: i have your names. i am giving them back. the record is closed. the observance is over. thank you for coming back for us. The public coda separately retains the refuge/control finding, civic recuration, Nessa correction, repaired works, restored company, bounded Unlit copy proof, name boundary, Wren judgment, and changed lives of Aro, Wenna, Coll, Dob, and Pell.",
           "id": "p12.e07",
-          "medium": "branch clauses plus universal final voice",
+          "medium": "branch clauses, universal final voice, and event-backed public aftermath",
           "observation_receipt_non_gating": true,
-          "provenance": "branch choice and release id determine exact lines; coda mirrors only committed local state",
+          "provenance": "branch choice and release id determine exact lines; each public aftermath row is projected only from its committed campaign event; old posts remain immutable",
           "roles": [
             "consequence",
             "emotional_witness",
