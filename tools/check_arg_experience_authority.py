@@ -566,6 +566,16 @@ def main() -> None:
             and 'dispatch.addProperty("observation_receipts", 0)' in coordinator
             and 'dispatch.addProperty("raw_player_prose_stored", false)' in coordinator,
             "P3 Discord field note lacks a shared local zero-observation recovery path")
+    p3_dialogue = load(ROOT / "arc/v5/npc-dialogue.json")
+    p3_listener = (ROOT / "plugin/src/main/java/com/observance/watcher/signal/listener/TownsfolkNpcListener.java").read_text(
+        encoding="utf-8")
+    p3_community = (ROOT / "dashboard/src/app/community/index.php/page.tsx").read_text(encoding="utf-8")
+    require(all(len(npc["lines"].get("after_dispatch", [])) == 2
+                for npc in p3_dialogue["townsfolk"])
+            and p3_listener.count('truthy(flags.get("p3.dispatch_authorized"))') == 5
+            and "dispatchOpen === true" in p3_community
+            and "the post points to support Ticket 2184" in p3_community,
+            "P3 dispatch does not cause exact five-resident and Copperline rabbit-hole responses")
     input_contracts = load(PACK / "input-contracts.json")["contracts"]
     input_contract_by_id = {row["id"]: row for row in input_contracts}
     require("protected public-curation controls" in input_contract_by_id["P5.F1"]["platform"]

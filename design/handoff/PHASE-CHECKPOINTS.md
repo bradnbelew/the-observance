@@ -692,3 +692,16 @@ open; M4 is still closed.
   computed digest, and leaves the unmatched relay note quarantined. It accepts no player-entered answer.
 - Dashboard selftests, ARG/action-owner/campaign-web/lineage checks, and a Next.js 16.2.10 production build pass.
   Authenticated preview behavior and the final human opening experience remain part of the end test.
+
+## 2026-07-18 — P3 dispatch causes a real three-surface response
+
+- The accepted field note now preserves Aro's road-use memory and Dob's drainage reading without turning either
+  resident into a liar or an answer kiosk. Wenna, Coll, and Pell also receive exact post-dispatch states grounded in
+  water work, account custody, and the limits of remembered pump dates.
+- The same event updates the Discord field copy and restores mkept's February 2011 old-copy post to Copperline's
+  historical index. That post points naturally to support Ticket 2184, so the P4 rabbit hole is caused by the P3
+  action instead of requiring outside guidance. The response no longer claims that an unimplemented physical gate
+  opened.
+- Correct ordinary wording still passes with zero NPC/source observations and stores only a canonical action.
+  Focused Paper predicate/dialogue executables and compile, Discord event tests/typecheck, dashboard selftests and
+  Next.js 16.2.10 build, plus campaign authority/web/lineage checks pass. Human settlement experience remains open.

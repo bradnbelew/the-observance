@@ -23,6 +23,10 @@
           "My father called the broad cut the public road. He said families came through it with carts before the village had a kiln.",
           "Dob calls it a drain because he repaired it as one. Follow it north from the kiln and decide which work came first."
         ],
+        "after_dispatch": [
+          "You kept Dob's account beside mine instead of calling one of us a liar. Fair. My father's margin says road over an older word he scraped away.",
+          "Coll found an old Copperline post about two different wall notices. The archive index has put it back under mkept's name."
+        ],
         "after_c02": [
           "A school and a market below. That sounds more like a refuge than the story I was told.",
           "If you find a market token, show it to Coll. He knows the old issue marks better than I do."
@@ -67,6 +71,10 @@
         "well_lead": [
           "My gran tied white thread beneath the well lip when the reflection looked deeper than the rope. The thread is still there.",
           "The Hold mouth is elsewhere. If this well reflects a roof instead of the sky, use the well then, and take someone with you."
+        ],
+        "after_dispatch": [
+          "Leaving both cut accounts open was sensible. A cart can use a drain without proving why it was first cut.",
+          "I lent Dob white thread for the survey. If the channel falls the way he says, the marks should repeat below the silt shelf."
         ],
         "after_c03": [
           "Sella taught drawing. The old school slates put north at the bottom because damp copies were read from the reverse.",
@@ -117,6 +125,10 @@
           "mkept bought paper, lamp oil, and a second map case. Paid in full and kept the receipt.",
           "The receipt carried the old Copperline service number, 1842. I copied it before using the back for stock totals."
         ],
+        "after_dispatch": [
+          "I copied Aro's road account and Dob's drainage account into the same field book. Neither one cancels the wear marks.",
+          "While checking mkept's old receipts, I found his post about the wall notices. It points to support ticket 2184."
+        ],
         "after_p5": [
           "A service exception is not a theft. If a school stove is broken, the lamp account can carry it until the mortar cures.",
           "The later ledger turned those exceptions into offenses. Keep both copies. Do not pretend they are the same book."
@@ -153,6 +165,10 @@
         "mouth_lead": [
           "Aro calls the cut a public road. The slope, silt shelves, and side gates say drainage. A service cart could still fit through it.",
           "Follow it north from the kiln. At the first flat slab, keep the water on your left. The worked arch faces the channel."
+        ],
+        "after_dispatch": [
+          "Good. The field copy says Aro remembers road use and I read drainage work. It does not pretend those are the same claim.",
+          "I marked a covered survey line from the kiln to the flat slab. Check the slope and wear; do not take my trade word as proof."
         ],
         "after_c02": [
           "There are three hands in the stone: rough shelter cuts, civic chisel work, then the dark pressure blocks.",
@@ -194,6 +210,10 @@
         "arrival": [
           "Sit if you're staying. If you're asking about the pump, the iron taste has been there longer than I have.",
           "Her name was Nessa Vale. The hearing called her only 'the tender,' and people here followed its lead."
+        ],
+        "after_dispatch": [
+          "You wrote down where Aro and Dob differ without forcing a winner. Do the same with me when my dates do not match the paper.",
+          "I remember Toma taking cycle five. His meal chit can prove he ate that day; it cannot prove every hour I remember."
         ],
         "cistern_lead": [
           "Nessa filed upper and lower draws separately every time. I watched her seal them at the pump table.",

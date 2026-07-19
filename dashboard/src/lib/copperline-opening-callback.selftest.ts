@@ -7,6 +7,7 @@ const archive = read('src/app/community/archive.php/page.tsx');
 const ticket = read('src/app/support/ticket.php/page.tsx');
 const packageReview = read('src/app/community/archive/package-review/page.tsx');
 const camp = read('src/app/community/archive/ash-camp/page.tsx');
+const community = read('src/app/community/index.php/page.tsx');
 
 assert.ok(archive.includes("params.locker === undefined"), 'P1 archive route must not require the later locker answer');
 assert.ok(archive.includes("eventKey: 'p1.attachment_history_restored'"));
@@ -21,5 +22,8 @@ assert.ok(!ticket.includes('/community/archive.php?service=1842&amp;ticket=9137&
 assert.ok(packageReview.includes('/community/archive.php?service=1842&amp;ticket=9137'));
 assert.ok(!packageReview.includes('locker=13'));
 assert.ok(camp.includes('/community/archive.php?service=1842&amp;ticket=9137&amp;locker=13'));
+assert.ok(community.includes("hasCampaignEvent('p3.dispatch_authorized')"));
+assert.ok(community.includes("dispatchOpen === true") && community.includes("old copy opens without mods"));
+assert.ok(community.includes('the post points to support Ticket 2184'));
 
 console.log('Copperline opening/P9 callback split: PASS');

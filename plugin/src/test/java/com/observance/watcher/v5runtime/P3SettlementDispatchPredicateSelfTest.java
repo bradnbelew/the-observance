@@ -5,7 +5,7 @@ public final class P3SettlementDispatchPredicateSelfTest {
 
     public static void main(String[] args) {
         require(P3SettlementDispatchPredicate.valid(
-                "Aro and Pell disagree about the mark date; keep both accounts open"),
+                "Aro and Dob disagree about the cut's work and date; keep both accounts open"),
                 "plain open disagreement must pass");
         require(P3SettlementDispatchPredicate.valid(
                 "The accounts conflict on where the work mark stood. Record both without choosing an official version"),

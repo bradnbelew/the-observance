@@ -263,6 +263,6 @@ export async function handleInvestigate(interaction: ChatInputCommandInteraction
     return;
   }
   await interaction.editReply(result.created
-    ? 'Dispatch accepted. The settlement will keep the conflicting accounts open instead of forcing one version.'
+    ? 'Dispatch accepted. The settlement will keep both accounts open. Residents have updated the field copy, and Copperline now indexes mkept\'s old-copy post, which points to Ticket 2184.'
     : 'That dispatch is already on file. Nothing was duplicated.');
 }

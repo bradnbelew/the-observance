@@ -114,6 +114,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("p6.six_responsibilities_acknowledged"))) yield "after_p6";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
+                if (truthy(flags.get("p3.dispatch_authorized"))) yield "after_dispatch";
                 yield introState(player, id, "mouth_lead");
             }
             case "wenna" -> {
@@ -125,6 +126,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("p6.six_responsibilities_acknowledged"))) yield "after_p6";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (keepersComplete(flags)) yield "after_c03";
+                if (truthy(flags.get("p3.dispatch_authorized"))) yield "after_dispatch";
                 yield introState(player, id, "well_lead");
             }
             case "coll" -> {
@@ -135,6 +137,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("v5_case_c06_complete"))) yield "camp_lead";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c01_complete"))) yield "after_c01";
+                if (truthy(flags.get("p3.dispatch_authorized"))) yield "after_dispatch";
                 yield "arrival";
             }
             case "dob" -> {
@@ -145,6 +148,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("p6.six_responsibilities_acknowledged"))) yield "after_p6";
                 if (truthy(flags.get("p5.civic_gallery_recurated"))) yield "after_p5";
                 if (truthy(flags.get("v5_case_c02_complete"))) yield "after_c02";
+                if (truthy(flags.get("p3.dispatch_authorized"))) yield "after_dispatch";
                 yield introState(player, id, "mouth_lead");
             }
             case "old_pell" -> {
@@ -153,6 +157,7 @@ public final class TownsfolkNpcListener implements Listener {
                 if (truthy(flags.get("p7.nessa_publicly_cleared"))
                         || truthy(flags.get("v5_case_c04_complete"))) yield "after_c04";
                 if (keepersComplete(flags)) yield "cistern_lead";
+                if (truthy(flags.get("p3.dispatch_authorized"))) yield "after_dispatch";
                 yield "arrival";
             }
             default -> "arrival";

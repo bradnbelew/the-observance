@@ -3,7 +3,7 @@ import { SETTLEMENT_DISPATCH_CANONICAL_PAYLOAD, validSettlementDispatch } from '
 
 assert.equal(SETTLEMENT_DISPATCH_CANONICAL_PAYLOAD.observation_receipts, 0);
 for (const value of [
-  'Aro and Pell disagree about the mark date; keep both accounts open.',
+  "Aro and Dob disagree about the cut's work and date; keep both accounts open.",
   'The accounts conflict on where the work mark stood. Record both without choosing an official version.',
   'Their dates for the repair mark contradict each other. We cannot settle this yet.',
 ]) assert.equal(validSettlementDispatch(value), true);

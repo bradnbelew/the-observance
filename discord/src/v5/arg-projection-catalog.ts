@@ -12,7 +12,7 @@ export const DISCORD_EVENT_MESSAGES = Object.freeze({
   'p2.artifact_authenticated': 'Archive update: the recovered artifact matches the retained copy. Its original location and later handler are still separate questions.',
   'p2.live_runtime_handoff': 'Private host notice: the authenticated runtime is answering again. Copperline has preserved the earlier outage record beside the new handoff.',
   'p3.resident_accounts_opened': 'Field docket: resident accounts are open for comparison. They disagree on dates and names; none is being treated as the official version.',
-  'p3.dispatch_authorized': 'Dispatch has been accepted. The settlement will now respond to findings that change its practical work, not to source-click totals.',
+  'p3.dispatch_authorized': 'Dispatch accepted. Aro and Dob keep both accounts in the field copy, Pell marks his date as memory rather than proof, and Copperline restores mkept\'s old-copy post to the archive index.',
   'p4.mouth_revision_restored': 'Copperline archive diff: an older Mouth revision has been restored beside the public copy. It changes who issued the procedure and when.',
   'p4.copy_hypothesis_tested': 'Test result filed: the Hold reacted to the selected copy test. The archive and the threshold now preserve different parts of the result.',
   'p4.control_reversal_earned': 'Community note: the Hold was built to shelter people. The same practical routines were later used to control them. The record now keeps both facts together.',

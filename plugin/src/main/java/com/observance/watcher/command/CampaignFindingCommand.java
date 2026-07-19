@@ -114,7 +114,7 @@ public final class CampaignFindingCommand implements CommandExecutor, TabComplet
             return;
         }
         respond(player, runtime.submitP3SettlementDispatch(finding), window,
-                "Dispatch accepted. Both resident accounts stay preserved and the covered survey can proceed.",
+                "Dispatch accepted. Both accounts stay open. The residents have updated their field copy, and Copperline now indexes mkept's old-copy post.",
                 "The resident accounts must be available in the live world first.",
                 "The note must identify a practical disagreement and preserve both accounts without choosing an official version.");
     }
