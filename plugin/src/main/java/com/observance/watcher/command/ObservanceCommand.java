@@ -5798,7 +5798,11 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
         world.getBlockAt(bx, by - 1, bz).setType(Material.BLACKSTONE, false);
 
         int[][] beds = {{-18, -9}, {-15, 10}, {18, -8}, {15, 11}};
-        for (int[] bed : beds) buildPriorCampBay(world, bx + bed[0], by, bz + bed[1]);
+        for (int[] bed : beds) {
+            int cx = bx + bed[0], cz = bz + bed[1];
+            buildPriorCampBay(world, cx, by, cz);
+            world.getBlockAt(cx - 2, by, cz - 2).setType(Material.GRAY_CANDLE, false);
+        }
         placePriorBedroll(world, bx - 18, by, bz - 9, Material.GRAY_CARPET, Material.LIGHT_GRAY_CARPET);
         placePriorBedroll(world, bx - 15, by, bz + 10, Material.ORANGE_CARPET, Material.WHITE_CARPET);
         placePriorBedroll(world, bx + 18, by, bz - 8, Material.BROWN_CARPET, Material.LIGHT_GRAY_CARPET);
@@ -5843,6 +5847,12 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
 
         placeStandingSign(new Location(world, bx, by, bz - 7), BlockFace.NORTH,
                 new String[]{"CAMP SUPPLY", "RETURN LIST", "keep both", "copies"});
+        placeEvidenceLectern(new Location(world, bx - 7, by, bz - 6), BlockFace.EAST,
+                "camp common log", List.of(
+                        "Rook moved the east throat after the first survey. Ash kept both frame lists. mkept left the host copy alone.",
+                        "Wren knew the replacement bridge before the private drawing left camp. That narrows the leak; it does not explain why he did it.",
+                        "The four work areas tell different parts of the same week. Keep the times attached to the people who wrote them."
+                ));
         world.getBlockAt(bx - 2, by, bz - 5).setType(Material.LANTERN, false);
         world.getBlockAt(bx + 2, by, bz - 5).setType(Material.SOUL_LANTERN, false);
         placeDecorativeBookshelf(world.getBlockAt(bx - 23, by, bz + 15), 233, BlockFace.NORTH);
@@ -16610,13 +16620,9 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
                 || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_BOOKSHELF))) {
             return "FAIL " + site.id() + ": expected case-board lecterns, filed storage, and shelves; exact V5 books own the readable surfaces.";
         }
-        if ("prior_camp".equals(site.id())
-                && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CAMPFIRE)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LIGHT_GRAY_CARPET)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.BARREL)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.LECTERN)
-                || !hasMaterialNear(loc, Math.max(3, site.radius()), Material.GRAY_CANDLE))) {
-            return "FAIL " + site.id() + ": expected four-person campfire site, bedrolls, personal work zones, exact runtime stations, and record mounts.";
+        if ("prior_camp".equals(site.id())) {
+            String campIssue = auditPriorCampComposition(loc);
+            if (campIssue != null) return "FAIL " + site.id() + ": " + campIssue;
         }
         if ("failed_accepting".equals(site.id())
                 && (!hasMaterialNear(loc, Math.max(3, site.radius()), Material.CHISELED_TUFF)
@@ -16766,6 +16772,53 @@ public final class ObservanceCommand implements CommandExecutor, TabCompleter {
             }
         }
         return false;
+    }
+
+    private String auditPriorCampComposition(Location loc) {
+        if (loc == null || loc.getWorld() == null) return "camp world is unavailable.";
+        World world = loc.getWorld();
+        int bx = loc.getBlockX(), by = loc.getBlockY(), bz = loc.getBlockZ();
+        if (world.getBlockAt(bx, by, bz).getType() != Material.CAMPFIRE) {
+            return "the common fire is missing.";
+        }
+        int[][] bedrolls = {{-18, -9}, {-15, 10}, {18, -8}, {15, 11}};
+        Material[][] cloth = {
+                {Material.LIGHT_GRAY_CARPET, Material.GRAY_CARPET},
+                {Material.WHITE_CARPET, Material.ORANGE_CARPET},
+                {Material.LIGHT_GRAY_CARPET, Material.BROWN_CARPET},
+                {Material.WHITE_CARPET, Material.GREEN_CARPET}
+        };
+        for (int i = 0; i < bedrolls.length; i++) {
+            int x = bx + bedrolls[i][0], z = bz + bedrolls[i][1];
+            if (world.getBlockAt(x, by, z).getType() != cloth[i][0]
+                    || world.getBlockAt(x, by, z + 1).getType() != cloth[i][1]
+                    || world.getBlockAt(x, by, z + 2).getType() != cloth[i][1]
+                    || world.getBlockAt(x - 2, by, z - 2).getType() != Material.GRAY_CANDLE) {
+                return "bedroll or lamp-tin composition " + (i + 1) + "/4 is incomplete.";
+            }
+        }
+        int[][] barrels = {{-3, -4}, {-20, 7}, {20, -5}, {18, 8}};
+        for (int i = 0; i < barrels.length; i++) {
+            if (world.getBlockAt(bx + barrels[i][0], by, bz + barrels[i][1]).getType() != Material.BARREL) {
+                return "personal/common record case " + (i + 1) + "/4 is missing.";
+            }
+        }
+        Object[][] work = {
+                {-18, 5, Material.LOOM}, {-14, 6, Material.CARTOGRAPHY_TABLE},
+                {18, -3, Material.STONECUTTER}, {15, -5, Material.SCAFFOLDING},
+                {13, 7, Material.CAULDRON}, {12, 10, Material.FLOWER_POT}
+        };
+        for (Object[] expected : work) {
+            int x = (Integer) expected[0], z = (Integer) expected[1];
+            Material material = (Material) expected[2];
+            if (world.getBlockAt(bx + x, by, bz + z).getType() != material) {
+                return "personal work-zone block " + material + " is missing.";
+            }
+        }
+        if (world.getBlockAt(bx - 7, by, bz - 6).getType() != Material.LECTERN) {
+            return "the shared chronology mount is missing.";
+        }
+        return null;
     }
 
     private int countMaterialNear(Location loc, int radius, Material material, int cap) {
