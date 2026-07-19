@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0-private-staging-preflight",
+  "source_checkpoint": "6d9beab3df2c26b4fd4d60b20ed18f1818fb4fb3",
+  "recorded_local": "2026-07-18T21:30:00-05:00",
+  "automated_local_gates": {
+    "current_combined_paper_receipt": "design/handoff/COMBINED-CAMPAIGN-LAUNCH-CANDIDATE-PAPER-PASS-2026-07-18.json",
+    "current_routed_audit": "design/handoff/ROUTED-AUDIT-PASS-354300F-2026-07-18.json",
+    "result": "pass",
+    "brad_approval": null
+  },
+  "vercel_preview": {
+    "team_id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "project_name": "the-observance-kjxn",
+    "connector_identity": "Brad-owned connected Vercel app",
+    "target": "preview_only",
+    "production_promotion": false,
+    "latest_observed_production_commit": "ca5416e477597b6e38f1dc82c9007c814184c980",
+    "source_export": {
+      "root": "dashboard",
+      "tracked_file_count": 160,
+      "bytes": 5503147,
+      "manifest_sha256": "f215b4627247ecb2344b6fd59fc8c4fd8697ae1ab725971258eabee035474e0c",
+      "excludes": ["node_modules", ".next*", ".vercel", ".observance-local", ".env*", "tsconfig.tsbuildinfo", "*.log"]
+    },
+    "deployment_attempt": "The verified connector rejected the upload before mutation because the prior explicit preflight requires Brad's informed approval of this private source export.",
+    "required_confirmation": "Brad must explicitly approve uploading exactly 160 tracked dashboard files / 5,503,147 bytes / aggregate manifest f215b4627247ecb2344b6fd59fc8c4fd8697ae1ab725971258eabee035474e0c to this exact project as a preview only.",
+    "deployment_created": false,
+    "production_mutated": false
+  },
+  "local_vercel_cli_boundary": {
+    "observed_identity": "ethan-2854",
+    "expected_identity": "Brad-owned team/project above",
+    "used_for_deployment": false,
+    "rule": "Do not cross account boundaries or use the mismatched local CLI."
+  },
+  "railway_discord": {
+    "known_production_families": 2,
+    "isolated_staging_environment_found": false,
+    "production_deploy_authorized": false,
+    "remaining_gate": "distinct private Discord guild/channel identity plus a verified non-production Railway environment; possible paid-resource creation requires explicit cost confirmation"
+  },
+  "supabase": {
+    "production_ref": "fndmhbpxnodrnbrzrlqq",
+    "production_mutation_authorized": false,
+    "proposal_ready": true,
+    "remaining_gate": "permission/cost confirmation for an exact disposable or development branch before applying and advisor-testing the migration/rollback proposal"
+  },
+  "media": {
+    "custody_verified_bytes": "four videos plus recovered packet set are hash/size verified outside the checkout",
+    "originals_mutated": false,
+    "remaining_gate": "human master/AV review, derivative/accessibility choice, ownership approval, and exact private hosting destination"
+  },
+  "production_mutated": false,
+  "public_launch_authorized": false
+}
