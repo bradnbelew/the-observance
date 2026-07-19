@@ -129,8 +129,84 @@
       "target_reused_or_deleted": false,
       "production_mutated": false,
       "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 7,
+      "source_commit": "cfaf1a23b98f77448e7b06c9663c222be04b7336",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-cfaf1a2-07",
+      "address": "127.0.0.1:25615",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "d17936049401d7960f344123173f251df4f82bf2413b83eec2a70fc431939d38",
+      "first_log_sha256": "e3eea0864ccf782c28dc9ee5bac60563302726a5d30a1ade44235d83bd9d4513",
+      "passed_before_failure": [],
+      "failure": "The restricted sandbox denied Paperclip access to the copied bootstrap cache at cache/mojang_1.21.11.jar. Paper and the Observance plugin never started, so this is an environment-start failure rather than campaign evidence.",
+      "harness_result": "failed before Paper startup; no readiness receipt was published",
+      "shutdown": "No server listener opened. The launcher and Java child ended; port 25615 is absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 8,
+      "source_commit": "cfaf1a23b98f77448e7b06c9663c222be04b7336",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-cfaf1a2-08",
+      "address": "127.0.0.1:25616",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "d17936049401d7960f344123173f251df4f82bf2413b83eec2a70fc431939d38",
+      "first_log_sha256": "9c024ca64311c4dbe96c79e1c78eee6bc736fc2ac9a39d6b97f6f111c31fe622",
+      "passed_before_failure": [
+        "PLAN PASS on a fresh 400-chunk footprint",
+        "1,434,765/1,434,765 ordered architecture writes completed",
+        "1,349,934 blocks changed before strict fixture audit"
+      ],
+      "failure": "The Rosetta office-format row placed COPPER_BLOCK while the authored physical contract required CUT_COPPER. The strict audit stopped at rune_rosetta before publishing readiness.",
+      "harness_result": "failed closed at rune_rosetta; no readiness receipt was published",
+      "shutdown": "The harness stopped only the disposable Paper process. Paper recorded all-dimension save completion; PID and port 25616 are absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 9,
+      "source_commit": "50196a4973cc7f7bb8af9ac9ba800b1867ba28f3",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-50196a4-09",
+      "address": "127.0.0.1:25617",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "11456da06b14b517093caca78ae8467cbf8aa5ebd2e318b7834452c44fbb9129",
+      "first_log_sha256": "05a040c15f3eb03f96d38f99b14369968b312b1d881d3ad6fd9c6b131744792d",
+      "passed_before_failure": [
+        "PLAN PASS on a fresh 400-chunk footprint",
+        "1,434,765/1,434,765 ordered architecture writes completed",
+        "Rosetta exact material audit passed"
+      ],
+      "failure": "The inherited prior-camp proximity audit looked only eight blocks from the common fire even though all four bedrolls and work zones were deliberately distributed 15-20 blocks away. The camp also lacked the shared chronology mount and four explicit lamp-tin cells promised by the composition contract.",
+      "harness_result": "failed closed at prior_camp; no readiness receipt was published",
+      "shutdown": "The plugin initiated an orderly stop on failure. Paper recorded all-dimension save completion; PID 39204 ended and port 25617 closed.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
+    },
+    {
+      "attempt": 10,
+      "source_commit": "720d9369092d56edb6e7eec4e6d7acdbee0ad5ce",
+      "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-720d936-10",
+      "address": "127.0.0.1:25618",
+      "paper_version": "1.21.11 build 132",
+      "plugin_sha256": "c10b7255bb093f7a62349252f89e07137d12b53ca64f40f5e1e84530598099ac",
+      "first_log_sha256": "47d3b3b1405c9347d45af0d3350e0e9ec41427a0d6520b568c3ae0e65b6a37fc",
+      "passed_before_failure": [
+        "PLAN PASS and complete 1,434,765-write architecture",
+        "Rosetta strict composition audit passed",
+        "four exact bedroll/lamp-tin compositions, four record cases, six work-zone blocks, common fire, and shared chronology mount passed"
+      ],
+      "failure": "The camp shell still lacked a real editable field-notebook sign required by its A04 input contract. The generic platform-input guard correctly refused a decorative or absent answer surface.",
+      "harness_result": "failed closed at prior_camp input-surface audit; no readiness receipt was published",
+      "shutdown": "The harness stopped only the disposable Paper process. Paper recorded all-dimension save completion; PID and port 25618 are absent.",
+      "target_reused_or_deleted": false,
+      "production_mutated": false,
+      "unrelated_process_mutated": false
     }
   ],
-  "resolution": "Source retains only the bounded three-block chunk neighborhoods around CW07 and HS02 with plugin-owned Paper chunk tickets before every fixture rebind, then applies the original strict exactly-one-control audit. The pure policy proves edge/corner/negative coordinates retain no more than four chunks per site. After the exact physical pass and sites.yml commit, the Deep Hold builder flushes exact blocks, books, marker entities, and sites before rebind or cross-world play. The Unlit light scan snapshots same-world unlit_safe sites once per scan. Every generated evaluation handle, plus the distinct CW07 and HS02 controls, now has a non-relocatable authored ceiling-support cell; the installer places support before control, pins exact ceiling attachment, and audits Paper BlockData.isSupported rather than inferring support from material solidity. Full plugin build/self-tests and a fresh create-only retry remain required.",
+  "resolution": "The prior chunk, save, and support fixes remain intact. The active Rosetta now uses authored CUT_COPPER and has a source guard aligned with the live audit. Prior Camp now proves four exact distributed bedroll/lamp-tin compositions, four personal/common record cases, six work-zone blocks, the common fire, shared chronology mount, and a real editable field-notebook sign instead of relying on a capped proximity shortcut. Commit 8a21df52de23bf0673bede7b207a7c4945999759 passed fresh create-only attempt 11, complete Hold/Unlit/copy audits, graceful stop, restart, independent re-audits, occupied rebuild refusal, closed port, and deterministic two-world packaging. The pass is recorded separately and does not create human approval.",
   "brad_approval": null
 }

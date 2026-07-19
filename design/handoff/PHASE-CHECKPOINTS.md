@@ -705,3 +705,20 @@ open; M4 is still closed.
 - Correct ordinary wording still passes with zero NPC/source observations and stores only a canonical action.
   Focused Paper predicate/dialogue executables and compile, Discord event tests/typecheck, dashboard selftests and
   Next.js 16.2.10 build, plus campaign authority/web/lineage checks pass. Human settlement experience remains open.
+
+## 2026-07-18 — current launch-candidate combined Paper proof
+
+- Source `8a21df52de23bf0673bede7b207a7c4945999759` passed fresh create-only Paper 1.21.11
+  build 132 after the current P1-P12 relationship-web rewrites. The target built all 32 rooms and 76
+  fixtures, sealed/audited eight gates, installed 323 exact physical authority addresses and 96 protected
+  source items, built the seven-house/base Unlit, and committed the bounded non-personalized copy consequence.
+- Paper then saved and stopped cleanly, restarted from disk, independently re-audited the Hold, Unlit, and copy
+  journal, refused an occupied Unlit rebuild, stopped with no listener, and produced the deterministic two-world
+  package SHA-256 `151eaf6e14875b9ecf7ad8c974336fc6e99acccf65dd1e072b2c490f3cee80f3`.
+- Attempts 7-10 remain preserved. They failed respectively before startup on restricted cache access, at the
+  Rosetta's plain-copper/cut-copper mismatch, at the camp's inaccurate proximity audit/missing composition, and
+  at the camp's missing real notebook input surface. No failed target was deleted or reused and no readiness
+  receipt was published for any failed attempt.
+- The current proof is technical infrastructure and package evidence. It does not supersede Brad's experiential
+  rejection, constitute an actual-client whole-campaign playthrough, establish private hosted delivery, mutate
+  production, or create launch approval.

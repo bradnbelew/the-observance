@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0.0-combined-campaign-disposable-paper-receipt",
+  "source_commit": "8a21df5",
+  "runner_sha256": "dc297749346f29b2d25207f98b8a9ff1b3482e7c33db4d75c0e3d5a3dc6a6851",
+  "target": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-8a21df5-11",
+  "address": "127.0.0.1:25619",
+  "paper_version": "1.21.11 build 132",
+  "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+  "plugin_sha256": "2d782190833639cab4f2c767dc6c4b97cb82ef12e075389e83c7d055a7d9d480",
+  "bootstrap_cache": {
+    "source": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-924a549-06\\cache",
+    "files": {
+      "mojang_1.21.11.jar": "f83b8e093865806f931c7e34aae41b177d4c076335263dd124c75d6d65dd1726"
+    }
+  },
+  "campaign_projection_sha256": "324f6ecdab5fd795bd358dfdce48e2056dfdc6f602babc4cee2ead0944163a22",
+  "minecraft_binding_sha256": "59ad86d84384b4b276dbe8deb1109938a937b8bf9fb9b43d331da7061e70f2c7",
+  "first_start": {
+    "startup": {
+      "campaign_authority": "[21:19:05 INFO]: [Observance] P5-P12 campaign authority ready: 8 cases, hash=19f9aaf580aff2e8f880d6c1e8b73abf0c047b8ff3066870d0865143978ca3f4",
+      "copy_runtime": "[21:19:06 INFO]: [Observance] UNLIT_COPY_PROOF_READY installed=false committed=false input=/obscopy observation_gating=false personalized_input=false"
+    },
+    "prepare": "[21:19:08 INFO]: Observance: PREPARE PASS - all 400 chunks are generated, loaded, and ticketed for this exact Mouth.",
+    "plan": "[21:19:08 INFO]:  PLAN PASS: no blocks or registrations changed. Build with the exact same Mouth.",
+    "hold_build": "[21:19:23 INFO]: Observance: Deep Hold build complete - 76/76 canonical ARG sites registered inside the V5 Hold.",
+    "hold_audit": "[21:19:24 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness.",
+    "unlit_build": "[21:19:25 INFO]: UNLIT_CANDIDATE_BUILD PASS world=observance_unlit houses=8 blocks=37991 path_cells=951 mechanics=39 border=128",
+    "unlit_ready": "[21:19:26 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass.",
+    "copy_install": "[21:19:26 INFO]: UNLIT_COPY_PROOF_INSTALL PASS surface=observance_combined_campaign,20,266,20 unlit=observance_unlit,10,73,8",
+    "copy_exercise": "[21:19:26 INFO]: UNLIT_COPY_PROOF_EXERCISE PASS status=committed pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "copy_audit": "[21:19:26 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=true pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "post_copy_hold": "[21:19:27 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness.",
+    "post_copy_unlit": "[21:19:28 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass."
+  },
+  "restart": {
+    "startup": {
+      "campaign_authority": "[21:19:38 INFO]: [Observance] P5-P12 campaign authority ready: 8 cases, hash=19f9aaf580aff2e8f880d6c1e8b73abf0c047b8ff3066870d0865143978ca3f4",
+      "copy_runtime": "[21:19:40 INFO]: [Observance] UNLIT_COPY_PROOF_READY installed=true committed=true input=/obscopy observation_gating=false personalized_input=false"
+    },
+    "hold_audit": "[21:19:42 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness.",
+    "unlit_ready": "[21:19:42 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass.",
+    "copy_audit": "[21:19:42 INFO]: UNLIT_COPY_PROOF_AUDIT PASS cells=6 bounded=true personalized=false committed=true pattern_sha256=852fa41018d96a75bd784fe362315e206c4bed0846d05d6eedea2aab4a10e91d",
+    "overwrite_refusal": "[21:19:43 INFO]: UNLIT_CANDIDATE_BUILD BLOCKED Unlit candidate refused occupied build cell BLACKSTONE at -42,77,14",
+    "post_refusal_hold": "[21:19:43 INFO]:  Deep Hold V5 is physically launch-placeable. Run /obs preflight for whole-plugin readiness.",
+    "post_refusal_unlit": "[21:19:44 INFO]:   Gate: READY - Unlit audit is clean enough for a non-op player proof pass."
+  },
+  "sites_sha256": "d088fb93374cffa4041d4b9751716845b327e688b21acaaa2053c9c46c005b9a",
+  "copy_journal_sha256": "fab89e38798729873dfa6dd02ad3aec40e957755b2af0f80c99b8b96603d3eaf",
+  "copy_layout_sha256": "094a6572ad54382bc5811bc438182d6536872ebf99865359c928f275bf4c2f59",
+  "first_log_sha256": "b21173ce133bfa19d864802f7dd49fd13493d11fe59d42301b099428d8416774",
+  "restart_log_sha256": "370e246f9f9fe64ac253ef252d3de17082ac308e336cfd548b1ac950a5f06a0a",
+  "world_package": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\combined-campaign-paper-8a21df5-11\\combined-campaign-worlds.zip",
+  "world_package_sha256": "151eaf6e14875b9ecf7ad8c974336fc6e99acccf65dd1e072b2c490f3cee80f3",
+  "world_file_counts": {
+    "observance_combined_campaign": 30,
+    "observance_unlit": 18
+  },
+  "proof": {
+    "rooms": 32,
+    "fixtures": 76,
+    "gates": 8,
+    "physical_authority_addresses": 323,
+    "protected_source_items": 96,
+    "unlit_required_sites": 11,
+    "unlit_house_workplaces": 7,
+    "unlit_base_synthesis": 1,
+    "unlit_distinct_structural_palettes": 8,
+    "bounded_copy_integrated": true,
+    "fresh_combined_install_passed": true,
+    "graceful_stop_passed": true,
+    "restart_independent_audits_passed": true,
+    "occupied_unlit_rebuild_refused": true,
+    "port_listener_after_stop": 0
+  },
+  "scope": "Single-target automated Hold-plus-Unlit physical/restart/package proof only; actual-client ARG experience and Brad approval remain open.",
+  "production_mutated": false,
+  "unrelated_process_mutated": false,
+  "fresh_client_visual_receipt": false,
+  "brad_approval": null
+}

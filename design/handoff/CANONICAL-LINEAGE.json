@@ -562,7 +562,11 @@
     "runtime_source_commit": "3d54c238938932cc1ee66b44aafe807310ce0f70",
     "receipt_harness_commit": "5d5b620d1f68614e001a21648df3dabed85a851e",
       "routed_audit_receipt": "design/handoff/ROUTED-AUDIT-PASS-2026-07-18.json",
-      "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    "fresh_paper_receipt": "design/handoff/WHOLE-CAMPAIGN-DISPOSABLE-PAPER-PASS-2026-07-18.json",
+    "latest_launch_candidate_paper_source_commit": "8a21df52de23bf0673bede7b207a7c4945999759",
+    "latest_launch_candidate_paper_receipt": "design/handoff/COMBINED-CAMPAIGN-LAUNCH-CANDIDATE-PAPER-PASS-2026-07-18.json",
+    "latest_launch_candidate_paper_failed_attempts": "design/handoff/COMBINED-CAMPAIGN-DISPOSABLE-PAPER-FAILED-ATTEMPTS-2026-07-18.json",
+    "latest_launch_candidate_world_package_sha256": "151eaf6e14875b9ecf7ad8c974336fc6e99acccf65dd1e072b2c490f3cee80f3",
       "bounded_unlit_copy_source_commit": "1c84e40a2adf774d381f37b24421fb7972338bf3",
       "bounded_unlit_copy_receipt": "design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-PASS-2026-07-18.json",
       "bounded_unlit_copy_failed_attempt": "design/handoff/UNLIT-COPY-PROOF-DISPOSABLE-PAPER-FAILED-ATTEMPT-2026-07-18.json",
@@ -946,10 +950,15 @@
       "older": "Phase 1 media location unknown",
       "newer": "M3 read-only external-gap audit",
       "effect": "exact receipted bytes were located locally; source/master review and ownership decisions remain open"
+    },
+    {
+      "older": "the combined Paper proof at source 924a549 before the final P1-P12 relationship-web rewrites and strict Rosetta/camp shell corrections",
+      "newer": "source 8a21df52de23bf0673bede7b207a7c4945999759 plus design/handoff/COMBINED-CAMPAIGN-LAUNCH-CANDIDATE-PAPER-PASS-2026-07-18.json",
+      "effect": "the current launch-candidate source now passes one fresh Paper 1.21.11 build-132 target with 32 rooms, 76 fixtures, eight gates, 323 exact physical addresses, 96 protected items, the seven-house/base Unlit, bounded copy consequence, graceful stop, restart, independent re-audits, occupied rebuild refusal, closed port, and deterministic two-world packaging. Attempts 7-10 remain immutable failed evidence for sandbox startup, Rosetta material, exact camp composition, and real camp input-surface defects. This is technical evidence only; Brad approval, actual-client experience, private external staging, production, and public launch remain open or closed exactly as stated."
     }
   ],
   "current_gate": {
-    "phase": "Source 924a5495a6deee0700ae54f7ef54437030ef5375 passes a single combined Hold-plus-Unlit Paper 1.21.11 fresh build, cross-world copy consequence, stop/restart, independent re-audit, occupied rebuild refusal, and deterministic package proof. Source dc9447910ad49c07a912a6a09115e8c8d17e83fc adds a tested crash-safe local/deployable cross-surface outbox and exact Discord consequence worker. Source 6aa363e binds all 60 Minecraft/NPC-owned P5-P12 evidence records to exact books, fixtures, NPC, or runtime carriers, and source ab483c3 supersedes RP03/RP04 attendance behavior through a packaged any-subset overlay while preserving the exact M2 predicate bytes. The story-first P1-P12 source, event web, Copperline/Discord/Paper projections, exact input contracts, packages, custody-approved media routes, full Hold, bounded player-caused copy proof, and seven-house/base Unlit candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, external delivery, or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
+    "phase": "Source 8a21df52de23bf0673bede7b207a7c4945999759 passes a single current combined Hold-plus-Unlit Paper 1.21.11 build-132 fresh build, cross-world copy consequence, graceful stop/restart, independent re-audits, occupied rebuild refusal, and deterministic two-world package proof after the P1-P12 relationship-web rewrites and exact Rosetta/camp corrections. Source dc9447910ad49c07a912a6a09115e8c8d17e83fc adds a tested crash-safe local/deployable cross-surface outbox and exact Discord consequence worker. Source 6aa363e binds all 60 Minecraft/NPC-owned P5-P12 evidence records to exact books, fixtures, NPC, or runtime carriers, and source ab483c3 supersedes RP03/RP04 attendance behavior through a packaged any-subset overlay while preserving the exact M2 predicate bytes. The story-first P1-P12 source, event web, Copperline/Discord/Paper projections, exact input contracts, packages, custody-approved media routes, full Hold, bounded player-caused copy proof, and seven-house/base Unlit candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, external delivery, or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
     "m4_public_or_production_open": false,
