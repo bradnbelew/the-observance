@@ -722,3 +722,17 @@ open; M4 is still closed.
 - The current proof is technical infrastructure and package evidence. It does not supersede Brad's experiential
   rejection, constitute an actual-client whole-campaign playthrough, establish private hosted delivery, mutate
   production, or create launch approval.
+
+## 2026-07-18 — routed regression after current combined proof
+
+- Clean checkpoint `354300f036695454e27f1e5cf1957df73543885b` passed the complete routed chain:
+  repository/canon/ARG authority, 84-record relationship web, natural inputs, 17 negative mutations, P1-P12
+  projection/binding parity, 1,588 deterministic and 2,300 chaos scenarios, Discord audit/typecheck, Next.js
+  16.2.10 production build, all 43 Paper plugin tasks, exact JAR ownership, deterministic packs, deploy manifest,
+  and static media custody.
+- The exact 97,984-byte stdout log is SHA-256
+  `98e690ead2d4a441a3239696078eef599cd9cfccf5d7d92b80aad6a50cb8c17e`. The plugin JAR is SHA-256
+  `2d782190833639cab4f2c767dc6c4b97cb82ef12e075389e83c7d055a7d9d480` and matches the fresh combined
+  Paper proof.
+- Live hosted-resource-pack and live external-media checks were deliberately skipped. The pass is therefore a
+  current source/package/private-candidate receipt, not a production launch receipt or human approval.

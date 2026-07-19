@@ -2,7 +2,7 @@
   "schema_version": "1.0.0-private-launch-candidate-inventory",
   "authority": "design/handoff/OVERNIGHT-PRIVATE-LAUNCH-AUTHORITY.json",
   "inventory_time": "2026-07-18T21:19:44-05:00",
-  "source_checkpoint": "8a21df52de23bf0673bede7b207a7c4945999759",
+  "source_checkpoint": "354300f036695454e27f1e5cf1957df73543885b",
   "interpretation": "The story-first P1-P12 source, 82-node reusable runtime, open-ended event ledger, crash-safe cross-surface projection worker, Copperline/Discord/Paper projections, full Hold, seven-house/base Unlit act, bounded player-copy consequence, deterministic simulations, packages, and custody readback now pass their stated automated local gates together. One fresh combined Paper target passed build, cross-world action, stop, restart, independent re-audit, refusal, and deterministic packaging. This is not a claim of actual-client experience, hosted staging, Brad approval, production authority, or launch readiness.",
   "legacy_runtime_inventory": {
     "node_manifest": "design/ARG-V5-NODE-MANIFEST.csv",

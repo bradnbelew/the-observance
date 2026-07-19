@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0-routed-audit-receipt",
+  "audited_commit": "354300f036695454e27f1e5cf1957df73543885b",
+  "branch": "codex/m3-disposable-paper-gate",
+  "completed_local": "2026-07-18T21:26:33-05:00",
+  "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/audit_all.ps1 -RepoRoot <workspace> -SkipLiveExternalMedia -SkipLiveHostedResourcePack",
+  "result": "pass",
+  "stdout_log": "C:\\Users\\nanob\\.codex\\visualizations\\2026\\07\\17\\019f6dc0-b17d-7ca3-9f5a-3bfa9b3430e0\\audit-354300f-20260718-02\\audit-all.stdout.log",
+  "stdout_sha256": "98e690ead2d4a441a3239696078eef599cd9cfccf5d7d92b80aad6a50cb8c17e",
+  "stdout_bytes": 97984,
+  "exit_code": 0,
+  "aggregate": "V5 audit: PASS (repository, ARG authority, relationship webs, input contracts, simulations, dashboard, Discord, Paper plugin, deterministic packages, static media receipt; live hosted pack and live external media deliberately skipped)",
+  "paper_plugin": {
+    "version": "0.5.0",
+    "jar_sha1": "05a191d91d037ef663b2ab49c7c7d0794defecf4",
+    "jar_sha256": "2d782190833639cab4f2c767dc6c4b97cb82ef12e075389e83c7d055a7d9d480",
+    "physical_contracts": 60,
+    "expanded_static_addresses": 362,
+    "mechanics_node_scenarios": 287,
+    "runtime_contracts": 60,
+    "finale_ending_conduct_combinations": 24
+  },
+  "campaign_simulation": {
+    "deterministic_scenarios": 1588,
+    "chaos_scenarios": 2300,
+    "p5_p12_cases": 8,
+    "p5_p12_conclusions": 21,
+    "zero_observation_correct_paths": 21,
+    "naive_negative_paths": 42,
+    "campaign_sha256": "19f9aaf580aff2e8f880d6c1e8b73abf0c047b8ff3066870d0865143978ca3f4"
+  },
+  "packages": {
+    "datapack_sha256": "dabbeb89551ad5600253dfd2ff021ddce8d31935f92fd451d4d35993015e5719",
+    "resourcepack_sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb",
+    "deploy_manifest_sha256": "150293972806e9d3a71d136956f0640b059285d8202ad52064a011f92076df4f",
+    "projection_sha256": "324f6ecdab5fd795bd358dfdce48e2056dfdc6f602babc4cee2ead0944163a22",
+    "minecraft_bindings_sha256": "59ad86d84384b4b276dbe8deb1109938a937b8bf9fb9b43d331da7061e70f2c7"
+  },
+  "combined_physical_evidence": {
+    "receipt": "design/handoff/COMBINED-CAMPAIGN-LAUNCH-CANDIDATE-PAPER-PASS-2026-07-18.json",
+    "source_commit": "8a21df52de23bf0673bede7b207a7c4945999759",
+    "fresh_build_restart_reaudit": "pass",
+    "rooms": 32,
+    "fixtures": 76,
+    "gates": 8,
+    "physical_authority_addresses": 323,
+    "protected_source_items": 96,
+    "world_package_sha256": "151eaf6e14875b9ecf7ad8c974336fc6e99acccf65dd1e072b2c490f3cee80f3",
+    "human_visual_or_experience_approval": null
+  },
+  "live_hosted_resource_pack_checked": false,
+  "live_external_media_checked": false,
+  "scope": "Automated routed conformance and deterministic package evidence for the current combined candidate. Live hosted-pack/media checks were explicitly skipped, so this is not a production launch receipt and does not replace actual-client or human ARG review.",
+  "brad_approval": null,
+  "production_mutated": false
+}

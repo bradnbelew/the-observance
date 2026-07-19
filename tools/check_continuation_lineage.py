@@ -565,11 +565,11 @@ def main() -> None:
     current_candidate = data["current_campaign_launch_candidate_evidence"]
     require(current_candidate["status"]
                 == "automated_offline_and_disposable_paper_pass_human_experience_and_external_staging_open"
-            and current_candidate["paper_version"] == "1.21.11"
+            and current_candidate["paper_version"] == "1.21.11 build 132"
             and current_candidate["rooms"] == 32
             and current_candidate["fixtures"] == 76
             and current_candidate["gates"] == 8
-            and current_candidate["physical_authority_addresses"] == 305
+            and current_candidate["physical_authority_addresses"] == 323
             and current_candidate["protected_source_items"] == 96
             and current_candidate["fresh_build_passed"] is True
             and current_candidate["graceful_stop_passed"] is True
@@ -602,6 +602,7 @@ def main() -> None:
             and routed_audit["brad_approval"] is None
             and routed_audit["production_mutated"] is False,
             "current routed-audit receipt drift")
+    paper_proof = current_paper["proof"]
     require(current_paper["source_commit"] == current_candidate["receipt_harness_commit"]
             and current_paper["campaign_projection_sha256"]
                 == current_candidate["campaign_projection_sha256"]
@@ -609,10 +610,18 @@ def main() -> None:
                 == current_candidate["minecraft_binding_sha256"]
             and current_paper["world_package_sha256"]
                 == current_candidate["world_package_sha256"]
-            and current_paper["physical_result"]["rooms"] == current_candidate["rooms"]
-            and current_paper["physical_result"]["fixtures"] == current_candidate["fixtures"]
-            and current_paper["physical_result"]["gates"] == current_candidate["gates"]
-            and current_paper["physical_result"]["port_listener_after_stop"] == 0
+            and paper_proof["rooms"] == current_candidate["rooms"]
+            and paper_proof["fixtures"] == current_candidate["fixtures"]
+            and paper_proof["gates"] == current_candidate["gates"]
+            and paper_proof["physical_authority_addresses"]
+                == current_candidate["physical_authority_addresses"]
+            and paper_proof["protected_source_items"]
+                == current_candidate["protected_source_items"]
+            and paper_proof["fresh_combined_install_passed"] is True
+            and paper_proof["graceful_stop_passed"] is True
+            and paper_proof["restart_independent_audits_passed"] is True
+            and paper_proof["occupied_unlit_rebuild_refused"] is True
+            and paper_proof["port_listener_after_stop"] == 0
             and current_paper["brad_approval"] is None
             and current_paper["production_mutated"] is False
             and current_paper["unrelated_process_mutated"] is False,
