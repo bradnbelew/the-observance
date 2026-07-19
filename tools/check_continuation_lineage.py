@@ -27,7 +27,8 @@ def main() -> None:
     require(data["schema_version"] == "1.5.0-continuation-lineage", "lineage schema drift")
     checkpoint = data["checkpoint_identity"]
     require(checkpoint["branch"] == "codex/m3-disposable-paper-gate", "canonical branch drift")
-    require(checkpoint["production_mutated"] is False, "integration cannot claim production mutation")
+    require(checkpoint["production_mutated"] is True,
+            "current lineage must record Brad-authorized production deployment")
     require(checkpoint["m4_authority"] == "closed", "M4 must remain closed")
 
     starting = data["starting_authority"]
@@ -638,6 +639,27 @@ def main() -> None:
             and staging["cross_surface"]["brad_approval"] is None
             and staging["cross_surface"]["public_launch"] is False,
             "private staging readiness/export/isolation boundary drift")
+
+    production_deploy = json.loads((ROOT / "design" / "handoff"
+        / "PRODUCTION-DEPLOY-E2EABA5-2026-07-18.json").read_text(encoding="utf-8"))
+    deployment = production_deploy["vercel"]["deployment"]
+    github = production_deploy["github"]
+    require(production_deploy["published_commit"]
+            == "e2eaba59655b85beb276f7a1b2598fc6fb6184a9"
+            and github["previous_origin_main"]
+                == "ca5416e477597b6e38f1dc82c9007c814184c980"
+            and github["merge_base_before_push"]
+                == "ca5416e477597b6e38f1dc82c9007c814184c980"
+            and github["history_action"] == "fast_forward_push"
+            and github["force_push"] is False
+            and deployment["id"] == "dpl_3HQj5igeRsrdVLpfop536VPnNwkG"
+            and deployment["target"] == "production"
+            and deployment["state"] == "READY"
+            and deployment["github_commit_sha"]
+                == "e2eaba59655b85beb276f7a1b2598fc6fb6184a9"
+            and production_deploy["limits"]["human_experience_approval"] == "not_claimed"
+            and production_deploy["limits"]["supabase_production"] == "read_only_not_mutated",
+            "Brad-authorized production deploy receipt drift")
     final_test = (ROOT / current_candidate["final_human_test_plan"]).read_text(encoding="utf-8")
     require("spoiler-free" in final_test
             and "Correct knowledge must pass with zero observation receipts" in final_test
@@ -651,8 +673,10 @@ def main() -> None:
     gate = data["current_gate"]
     require(gate["m4_open"] is False
             and gate["m4_private_automated_staging_open"] is True
-            and gate["m4_public_or_production_open"] is False
+            and gate["m4_public_or_production_open"] is True
             and "approval remains null" in gate["final_human_gate"]
+            and "Vercel production deployment dpl_3HQj5igeRsrdVLpfop536VPnNwkG is READY"
+                in gate["phase"]
             and "the research-cited ARG Experience Authority, exact P1-P12 responsive case briefs, and generic state choreography remain routed and machine-checked without becoming a closed mechanism catalog"
                 in gate["required_next_evidence"]
             and "P4 and P5-P12 implementation is audited against the document-read/answer-submit monoculture so the authored offline redesign becomes real player-caused cross-surface consequence before any new Brad server"
@@ -674,7 +698,7 @@ def main() -> None:
     require("COLD HUMAN/VISUAL APPROVAL PENDING" in v4_review_package
             and "M4 is **closed**" in v4_review_package,
             "v4 review package approval/M4 gate drift")
-    print("CONTINUATION LINEAGE: PASS (rejected P4 server stopped; private automated staging open; Brad approval null)")
+    print("CONTINUATION LINEAGE: PASS (Vercel production deployed by explicit Brad approval; Brad approval null)")
 
 
 if __name__ == "__main__":

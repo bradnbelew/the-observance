@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0.0-production-deploy-receipt",
+  "receipt_time": "2026-07-18T21:36:47-05:00",
+  "local_branch": "codex/m3-disposable-paper-gate",
+  "published_commit": "e2eaba59655b85beb276f7a1b2598fc6fb6184a9",
+  "published_short_commit": "e2eaba5",
+  "authorization": {
+    "source": "Brad in current control-room task",
+    "exact_instruction": "absolutely, push to main, deploy, go for it",
+    "interpretation": "Explicit approval to fast-forward origin/main and allow the connected Vercel Git integration to deploy production.",
+    "still_not_granted": [
+      "Crafty or brother production server mutation",
+      "production Supabase DDL or data mutation",
+      "Railway production mutation",
+      "Discord production mutation",
+      "source-media overwrite or unreviewed media upload"
+    ]
+  },
+  "github": {
+    "remote": "https://github.com/bradnbelew/the-observance.git",
+    "target_ref": "refs/heads/main",
+    "previous_origin_main": "ca5416e477597b6e38f1dc82c9007c814184c980",
+    "merge_base_before_push": "ca5416e477597b6e38f1dc82c9007c814184c980",
+    "history_action": "fast_forward_push",
+    "push_result": "ca5416e..e2eaba5 HEAD -> main",
+    "force_push": false
+  },
+  "vercel": {
+    "team": {
+      "id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+      "slug": "bradens-projects-c5e41066"
+    },
+    "project": {
+      "id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+      "name": "the-observance-kjxn",
+      "framework": "nextjs",
+      "node_version": "24.x"
+    },
+    "deployment": {
+      "id": "dpl_3HQj5igeRsrdVLpfop536VPnNwkG",
+      "url": "https://the-observance-kjxn-crkki1o4m-bradens-projects-c5e41066.vercel.app",
+      "target": "production",
+      "source": "git",
+      "state": "READY",
+      "ready_state": "READY",
+      "regions": [
+        "iad1"
+      ],
+      "github_commit_sha": "e2eaba59655b85beb276f7a1b2598fc6fb6184a9",
+      "github_commit_ref": "main",
+      "github_commit_message": "Pin current private staging preflight",
+      "lambda_runtime_stats": "{\"nodejs\":3}"
+    },
+    "aliases": [
+      "https://copperlinehosting.com",
+      "https://the-observance-kjxn.vercel.app",
+      "https://the-observance-kjxn-bradens-projects-c5e41066.vercel.app",
+      "https://the-observance-kjxn-git-main-bradens-projects-c5e41066.vercel.app"
+    ],
+    "build_log_check": {
+      "errors_only": true,
+      "result": "no build errors returned",
+      "observed_tail": "Vercel CLI 56.2.0; Build Completed in /vercel/output [23s]"
+    },
+    "runtime_error_check": {
+      "range": "1h",
+      "result": "No runtime errors found in the selected time range."
+    },
+    "live_fetch_checks": [
+      {
+        "url": "https://copperlinehosting.com/",
+        "status": 200,
+        "matched_path": "/",
+        "title": "Copperline Hosting - Affordable Web and Game Server Hosting"
+      },
+      {
+        "url": "https://copperlinehosting.com/community/index.php",
+        "status": 200,
+        "matched_path": "/community/index.php",
+        "title": "Community Blog - Copperline Hosting"
+      },
+      {
+        "url": "https://copperlinehosting.com/community/archive/intake-copies",
+        "status": 200,
+        "matched_path": "/community/archive/intake-copies",
+        "title": "Ticket 2184 retained copy table - Copperline Community",
+        "form_observed": "Restore retained attachments"
+      }
+    ]
+  },
+  "limits": {
+    "human_experience_approval": "not_claimed",
+    "minecraft_client_playthrough": "not_run_in_this_receipt",
+    "discord_external_delivery": "not_mutated",
+    "railway_external_delivery": "not_mutated",
+    "supabase_production": "read_only_not_mutated",
+    "media_hosting": "not_mutated"
+  }
+}

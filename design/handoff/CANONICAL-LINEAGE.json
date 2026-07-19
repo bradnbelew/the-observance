@@ -4,7 +4,7 @@
     "branch": "codex/m3-disposable-paper-gate",
     "commit": "the commit containing this lineage file",
     "purpose": "canonical linear chain through sibling integration, preserved v1/v2/v3 rejections, clean v3 review stop, binding cross-phase player-facing authority, and authored M3 v4 Paper/restart/negative-flow review evidence",
-    "production_mutated": false,
+    "production_mutated": true,
     "m4_authority": "closed"
   },
   "starting_authority": {
@@ -960,13 +960,18 @@
       "older": "the 154-file Vercel source-export preflight before the final P1-P12 relationship-web changes",
       "newer": "design/handoff/PRIVATE-STAGING-PREFLIGHT-6D9BEAB-2026-07-18.json",
       "effect": "the current exact preview export is 160 tracked dashboard files / 5,503,147 bytes / manifest f215b4627247ecb2344b6fd59fc8c4fd8697ae1ab725971258eabee035474e0c. The verified Brad-owned connector rejected the upload before mutation because informed approval of this private export is still required. The local CLI belongs to ethan-2854 and is explicitly forbidden. No deployment, production mutation, public Git push, or secret exposure occurred."
+    },
+    {
+      "older": "the 160-file Vercel source-export preflight after the connector rejected mutation pending explicit informed approval",
+      "newer": "design/handoff/PRODUCTION-DEPLOY-E2EABA5-2026-07-18.json",
+      "effect": "Brad explicitly approved 'push to main, deploy, go for it' in the current control-room task. origin/main was fast-forwarded from ca5416e477597b6e38f1dc82c9007c814184c980 to e2eaba59655b85beb276f7a1b2598fc6fb6184a9 without force-push. Vercel's Git integration created production deployment dpl_3HQj5igeRsrdVLpfop536VPnNwkG for e2eaba5; it reached READY, aliased copperlinehosting.com and the project domains, returned no build errors in the errors-only log, showed no runtime errors in the selected 1h window, and served 200 responses for /, /community/index.php, and /community/archive/intake-copies. This supersedes only the prior Vercel-public-production hold. It does not claim Brad experiential approval, Minecraft client playthrough, Supabase/Railway/Discord production mutation, Crafty/brother server mutation, or media-hosting readiness."
     }
   ],
   "current_gate": {
-    "phase": "Source 8a21df52de23bf0673bede7b207a7c4945999759 passes a single current combined Hold-plus-Unlit Paper 1.21.11 build-132 fresh build, cross-world copy consequence, graceful stop/restart, independent re-audits, occupied rebuild refusal, and deterministic two-world package proof after the P1-P12 relationship-web rewrites and exact Rosetta/camp corrections. Source dc9447910ad49c07a912a6a09115e8c8d17e83fc adds a tested crash-safe local/deployable cross-surface outbox and exact Discord consequence worker. Source 6aa363e binds all 60 Minecraft/NPC-owned P5-P12 evidence records to exact books, fixtures, NPC, or runtime carriers, and source ab483c3 supersedes RP03/RP04 attendance behavior through a packaged any-subset overlay while preserving the exact M2 predicate bytes. The story-first P1-P12 source, event web, Copperline/Discord/Paper projections, exact input contracts, packages, custody-approved media routes, full Hold, bounded player-caused copy proof, and seven-house/base Unlit candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, external delivery, or launch readiness. External private staging, final human playthrough, approval, production, and public launch remain open or closed as explicitly stated.",
+    "phase": "Source 8a21df52de23bf0673bede7b207a7c4945999759 passes a single current combined Hold-plus-Unlit Paper 1.21.11 build-132 fresh build, cross-world copy consequence, graceful stop/restart, independent re-audits, occupied rebuild refusal, and deterministic two-world package proof after the P1-P12 relationship-web rewrites and exact Rosetta/camp corrections. Source dc9447910ad49c07a912a6a09115e8c8d17e83fc adds a tested crash-safe local/deployable cross-surface outbox and exact Discord consequence worker. Source 6aa363e binds all 60 Minecraft/NPC-owned P5-P12 evidence records to exact books, fixtures, NPC, or runtime carriers, and source ab483c3 supersedes RP03/RP04 attendance behavior through a packaged any-subset overlay while preserving the exact M2 predicate bytes. The story-first P1-P12 source, event web, Copperline/Discord/Paper projections, exact input contracts, packages, custody-approved media routes, full Hold, bounded player-caused copy proof, and seven-house/base Unlit candidate now pass their stated automated local gates. Brad's prior P4 experiential rejection remains binding; no automated pass proves whole-campaign ARG experience, Unlit experience, or launch approval. Brad explicitly approved publishing the current checkpoint to main and Vercel production; e2eaba59655b85beb276f7a1b2598fc6fb6184a9 is now on origin/main and Vercel production deployment dpl_3HQj5igeRsrdVLpfop536VPnNwkG is READY at copperlinehosting.com. Final human playthrough and all non-web production safety gates remain open or closed as explicitly stated.",
     "m4_open": false,
     "m4_private_automated_staging_open": true,
-    "m4_public_or_production_open": false,
+    "m4_public_or_production_open": true,
     "final_human_gate": "Brad approval remains null; a future whole-campaign human playthrough after the deep ARG-experience redesign is required",
     "required_next_evidence": [
       "the research-cited ARG Experience Authority, exact P1-P12 responsive case briefs, and generic state choreography remain routed and machine-checked without becoming a closed mechanism catalog",
