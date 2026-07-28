@@ -1,6 +1,12 @@
 # Final Whole-Campaign Human Test Plan
 
-Status: prepared, not started. This plan does not claim Brad approval or launch readiness.
+> **Scope correction — 2026-07-27:** There is no separate public launch and no disposable friend-group
+> acceptance run. Brad's friends are the intended players, and their first complete playthrough is the
+> real private campaign. Use `../PRIVATE-FRIENDS-LAUNCH-CHECKLIST.md` as the current operational
+> authority. Retain this document as a spoiler-safe observation and incident-recording rubric during
+> that real run; do not consume the campaign by asking the intended players to rehearse it first.
+
+Status: retained observation rubric; not a separate pre-launch playthrough.
 
 This is the one final private acceptance run for the current P1–P12 candidate. It is deliberately
 spoiler-free. It tells the test group where a real surface begins and how to report what happened;
@@ -28,9 +34,10 @@ story explanation.
 ## Test group and duration
 
 Use three to seven players if practical, with at least one player who has not read the design files.
-A solo recovery pass follows the group run. Plan several sessions and allow the authored 30–40
-active-hour target to be tested honestly. A rushed review is not evidence that the investigation is
-too easy or too hard.
+Plan several sessions and allow the locked 20–30 active-hour target (24–28 preferred) to unfold
+honestly. A rushed run is not evidence that the investigation is too easy or too hard. Any solo
+recovery verification happens on a restored technical clone with Brad or a spoiler-aware operator,
+not with an intended player before the real campaign.
 
 The director observes and records. The director does not solve, translate, point at clue surfaces,
 name interaction controls, or explain the story. Hints use only the authored, approval-governed

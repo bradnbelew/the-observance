@@ -51,6 +51,7 @@ To prevent stale-story drift, only the files in the **Current authority** table 
 | Wren | `design/V5-WREN-EVIDENCE.md` |
 | finale | `design/V5-FINALE.md` |
 | book integration | `design/V5-BOOKS.md` |
+| private-friends campaign operator entry point and go/no-go checklist | `design/PRIVATE-FRIENDS-LAUNCH-CHECKLIST.md` |
 | setup and testing | `design/V5-WORLD-SETUP-AND-TESTING.md` |
 | production launch | `design/V5-PRODUCTION-LAUNCH-RUNBOOK.md` |
 | launch-night quick sequence | `design/runbooks/V5-LAUNCH-NIGHT-GUIDE.md` (summary; full setup and launch authorities win on conflict) |

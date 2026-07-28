@@ -11,6 +11,17 @@ design/handoff/CODEX-MASTER-PROMPT.md text eol=lf
 design/handoff/PHASE-CHECKPOINTS.md text eol=lf
 design/handoff/README.md text eol=lf
 discord/supabase/seeds/v5_investigations.sql text eol=lf
+discord/supabase/apply-all.sql text eol=lf
+
+# Campaign projections and binding manifests are compared as exact release bytes.
+campaign/p5-p12/projection-manifest.json text eol=lf
+campaign/p5-p12/minecraft-bindings.json text eol=lf
+campaign/p5-p12/external-bindings.json text eol=lf
+dashboard/content/campaign/p5-p12.json text eol=lf
+discord/src/v5/generated/p5-p12.json text eol=lf
+plugin/src/main/resources/campaign/p5-p12.json text eol=lf
+plugin/src/main/resources/campaign/p5-p12-minecraft-bindings.json text eol=lf
+plugin/src/main/resources/campaign/p5-p12-external-bindings.json text eol=lf
 
 # The M3 package manifest hashes exact source bytes; keep every non-design package input stable.
 tools/check_m3_vertical_slice.py text eol=lf

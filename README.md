@@ -1,5 +1,10 @@
 # The Observance
 
+> **Current operator entry point:** This ARG has one intended audience: Brad's private friend group.
+> Their playthrough is the real campaign, not a rehearsal for a later public release. Start with
+> `design/PRIVATE-FRIENDS-LAUNCH-CHECKLIST.md`; it supersedes older "public launch," separate human-test,
+> and 15-hour launch-night framing while retaining the detailed technical runbooks as references.
+
 > **Ground-up rebuild Phase 0 (2026-07-15):** Start with
 > `design/handoff/SPINE-LOCK.md`, `design/handoff/SPINE-CONFORMANCE.md`, and
 > `design/handoff/PHASE-0-AUTHORITY-AUDIT.md`. The spine is locked and the conformance statement requires
