@@ -12,7 +12,7 @@ begin
   select required.name into missing_view
   from unnest(array[
     'v_archive','v_required_media_delivery','v_case_progress','v_heatmap',
-    'v_compliance_counts','v_health','v_record'
+    'v_compliance_counts','v_custom_compliance','v_dossiers','v_health','v_record'
   ]) required(name)
   where to_regclass('public.' || required.name) is null
   limit 1;
@@ -54,13 +54,9 @@ create table observance_migration.security_hardening_v2_indexes (
 );
 insert into observance_migration.security_hardening_v2_indexes(index_name, existed_before)
 values
-  ('idx_solves_player_fk', to_regclass('public.idx_solves_player_fk') is not null),
-  ('idx_answer_attempts_player_fk', to_regclass('public.idx_answer_attempts_player_fk') is not null),
-  ('idx_thread_cards_thread_fk', to_regclass('public.idx_thread_cards_thread_fk') is not null),
-  ('idx_thread_quests_thread_fk', to_regclass('public.idx_thread_quests_thread_fk') is not null),
-  ('idx_discord_ledger_player_fk', to_regclass('public.idx_discord_ledger_player_fk') is not null),
-  ('idx_oracle_attempts_player_fk', to_regclass('public.idx_oracle_attempts_player_fk') is not null),
-  ('idx_hint_events_player_fk', to_regclass('public.idx_hint_events_player_fk') is not null),
+  ('idx_answer_attempts_puzzle_fk', to_regclass('public.idx_answer_attempts_puzzle_fk') is not null),
+  ('idx_dossiers_player_fk', to_regclass('public.idx_dossiers_player_fk') is not null),
+  ('idx_side_quests_thread_fk', to_regclass('public.idx_side_quests_thread_fk') is not null),
   ('idx_observations_player_fk', to_regclass('public.idx_observations_player_fk') is not null),
   ('idx_evidence_receipts_player_fk', to_regclass('public.idx_evidence_receipts_player_fk') is not null),
   ('idx_required_media_node_fk', to_regclass('public.idx_required_media_node_fk') is not null),
@@ -74,6 +70,8 @@ alter view public.v_required_media_delivery set (security_invoker = true);
 alter view public.v_case_progress set (security_invoker = true);
 alter view public.v_heatmap set (security_invoker = true);
 alter view public.v_compliance_counts set (security_invoker = true);
+alter view public.v_custom_compliance set (security_invoker = true);
+alter view public.v_dossiers set (security_invoker = true);
 alter view public.v_health set (security_invoker = true);
 alter view public.v_record set (security_invoker = true);
 
@@ -84,13 +82,9 @@ revoke usage, select on all sequences in schema public from anon, authenticated;
 grant select, insert, update, delete on all tables in schema public to service_role;
 grant usage, select on all sequences in schema public to service_role;
 
-create index if not exists idx_solves_player_fk on public.solves(player_id);
-create index if not exists idx_answer_attempts_player_fk on public.answer_attempts(player_id);
-create index if not exists idx_thread_cards_thread_fk on public.thread_cards(thread_key);
-create index if not exists idx_thread_quests_thread_fk on public.thread_quests(thread_key);
-create index if not exists idx_discord_ledger_player_fk on public.discord_ledger(player_id);
-create index if not exists idx_oracle_attempts_player_fk on public.oracle_attempts(player_id);
-create index if not exists idx_hint_events_player_fk on public.hint_events(player_id);
+create index if not exists idx_answer_attempts_puzzle_fk on public.answer_attempts(puzzle_key);
+create index if not exists idx_dossiers_player_fk on public.dossiers(player_id);
+create index if not exists idx_side_quests_thread_fk on public.side_quests(thread_key);
 create index if not exists idx_observations_player_fk on public.observations(player_id);
 create index if not exists idx_evidence_receipts_player_fk on public.evidence_receipts(player_id);
 create index if not exists idx_required_media_node_fk on public.required_media(node_key);

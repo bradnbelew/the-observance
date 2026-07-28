@@ -41,6 +41,8 @@ alter view public.v_required_media_delivery set (security_invoker = false);
 alter view public.v_case_progress set (security_invoker = false);
 alter view public.v_heatmap set (security_invoker = false);
 alter view public.v_compliance_counts set (security_invoker = false);
+alter view public.v_custom_compliance set (security_invoker = false);
+alter view public.v_dossiers set (security_invoker = false);
 alter view public.v_health set (security_invoker = false);
 alter view public.v_record set (security_invoker = false);
 

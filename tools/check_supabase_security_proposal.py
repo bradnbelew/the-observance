@@ -9,7 +9,7 @@ ASSERT = (SQL / "tests" / "production-security-hardening-v2.assert.sql").read_te
 
 views = {
     "v_archive", "v_required_media_delivery", "v_case_progress", "v_heatmap",
-    "v_compliance_counts", "v_health", "v_record",
+    "v_compliance_counts", "v_custom_compliance", "v_dossiers", "v_health", "v_record",
 }
 for view in views:
     if f"alter view public.{view} set (security_invoker = true)" not in UP:
