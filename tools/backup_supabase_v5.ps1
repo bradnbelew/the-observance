@@ -39,7 +39,10 @@ $script:FutureV5Tables = @(
   "investigations",
   "investigation_nodes",
   "evidence_receipts",
-  "required_media"
+  "required_media",
+  "arg_event_definitions",
+  "arg_events",
+  "arg_event_projections"
 )
 
 function Assert-True {
