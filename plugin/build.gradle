@@ -100,6 +100,8 @@ def pluginSelfTests = [
     , p5CurationState: 'com.observance.watcher.v5runtime.P5CurationStateSelfTest'
     , morrowTransitionService: 'com.observance.watcher.morrow.MorrowTransitionServiceSelfTest'
     , morrowLocalState: 'com.observance.watcher.morrow.MorrowLocalStateSelfTest'
+    , morrowRuntimeSettings: 'com.observance.watcher.morrow.MorrowRuntimeSettingsSelfTest'
+    , morrowEventProjector: 'com.observance.watcher.morrow.MorrowEventProjectorSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

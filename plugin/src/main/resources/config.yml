@@ -142,4 +142,12 @@ morrow-reboot:
   campaign-id: ""
   world: "morrow_rehearsal"
   ingest-url: ""
+  # Prefer the dedicated environment variable. The direct field exists only for disposable tests;
+  # never commit a real shared secret here.
+  ingest-secret-env: "MORROW_MINECRAFT_INGEST_SECRET"
   ingest-secret: ""
+  projector:
+    connect-timeout-ms: 5000
+    request-timeout-ms: 10000
+    initial-retry-ms: 500
+    maximum-retry-ms: 30000

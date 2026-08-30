@@ -12,6 +12,7 @@ import com.observance.watcher.data.SupabaseClient;
 import com.observance.watcher.data.rows.EventLogRow;
 import com.observance.watcher.finale.FinaleController;
 import com.observance.watcher.listener.PresenceListener;
+import com.observance.watcher.morrow.MorrowRuntime;
 import com.observance.watcher.oracle.OracleResolver;
 import com.observance.watcher.signal.InventoryScanner;
 import com.observance.watcher.signal.LocationSampler;
@@ -164,6 +165,8 @@ public final class ObservancePlugin extends JavaPlugin {
     private FinaleController finaleController;
     /** Disposable M3 review runtime. Non-null only when the fail-closed private target mode is armed. */
     private com.observance.watcher.m3runtime.PrivateSliceReviewRuntime m3ReviewRuntime;
+    /** Clean-room reboot runtime. When present, the older campaign graph is never started. */
+    private MorrowRuntime morrowRuntime;
 
     /* ==================================================================== */
     /*  Lifecycle                                                           */
@@ -179,6 +182,20 @@ public final class ObservancePlugin extends JavaPlugin {
         if (!loadConfigAndSites()) {
             getLogger().severe("Failed to load configuration — disabling Observance to avoid undefined behavior.");
             getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        try {
+            this.morrowRuntime = MorrowRuntime.start(this);
+        } catch (Throwable failure) {
+            getLogger().severe("Morrow reboot failed closed during startup: " + failure.getMessage());
+            this.morrowRuntime = null;
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        if (morrowRuntime != null) {
+            getLogger().info("Morrow reboot runtime enabled for release "
+                    + morrowRuntime.settings().releaseId() + "; unrelated campaign runtimes remain disabled.");
             return;
         }
 
@@ -327,6 +344,10 @@ public final class ObservancePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (morrowRuntime != null) {
+            morrowRuntime.close();
+            morrowRuntime = null;
+        }
         if (m3ReviewRuntime != null) {
             m3ReviewRuntime.close();
             m3ReviewRuntime = null;
@@ -1053,6 +1074,7 @@ public final class ObservancePlugin extends JavaPlugin {
     public Reveal reveal() { return reveal; }
     public FinaleController finaleController() { return finaleController; }
     public V5RuntimeCoordinator v5Runtime() { return v5Runtime; }
+    public MorrowRuntime morrowRuntime() { return morrowRuntime; }
 
     public org.bukkit.Location v5HoldMouth() {
         return observanceCommand == null ? null : observanceCommand.v5HoldMouth();

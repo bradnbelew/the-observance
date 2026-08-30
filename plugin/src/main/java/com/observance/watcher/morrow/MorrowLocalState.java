@@ -18,11 +18,13 @@ public final class MorrowLocalState {
     private static final int MAX_PAYLOAD_BYTES = 16_384;
 
     private final LocalPrimaryJournal journal;
+    private final String releaseId;
     private final MorrowTransitionService transitions = new MorrowTransitionService();
     private MorrowRelationshipSnapshot snapshot;
 
     private MorrowLocalState(LocalPrimaryJournal journal, String releaseId) throws IOException {
         this.journal = journal;
+        this.releaseId = releaseId;
         List<LocalPrimaryJournal.Receipt> receipts = journal.after(0);
         if (receipts.isEmpty()) {
             journal.append(INITIALIZATION_KEY, INITIALIZATION_TYPE, releaseId.getBytes(StandardCharsets.UTF_8));
@@ -80,12 +82,26 @@ public final class MorrowLocalState {
         return snapshot;
     }
 
+    public String releaseId() {
+        return releaseId;
+    }
+
     /** Receipts after the durable remote cursor; callers project these asynchronously and in order. */
     public synchronized List<LocalPrimaryJournal.Receipt> pendingAfter(long projectedSequence) {
         if (projectedSequence < 0) throw new IllegalArgumentException("projected sequence must be non-negative");
         return journal.after(Math.max(1, projectedSequence)).stream()
                 .filter(receipt -> MorrowEventAuthority.minecraftOwns(receipt.eventType()))
                 .toList(); // initialization and received projections are never echoed
+    }
+
+    /** Validate a persisted projector cursor against the exact locally-owned journal receipt. */
+    synchronized LocalPrimaryJournal.Receipt projectedReceipt(long sequence) {
+        if (sequence <= 0) throw new IllegalArgumentException("projected sequence must be positive");
+        return journal.after(sequence - 1).stream()
+                .filter(receipt -> receipt.sequence() == sequence)
+                .filter(receipt -> MorrowEventAuthority.minecraftOwns(receipt.eventType()))
+                .findFirst()
+                .orElse(null);
     }
 
     private void apply(LocalPrimaryJournal.Receipt receipt) throws IOException {

@@ -25,7 +25,10 @@ export async function POST(request: Request): Promise<NextResponse> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) {
-    return NextResponse.json({ status: 'unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+    return NextResponse.json({ status: 'unavailable', releaseId: verified.event.releaseId }, {
+      status: 503,
+      headers: { 'Cache-Control': 'no-store' },
+    });
   }
 
   const event = verified.event;
@@ -49,13 +52,24 @@ export async function POST(request: Request): Promise<NextResponse> {
     cache: 'no-store',
   });
   if (!response.ok) {
-    return NextResponse.json({ status: 'unavailable' }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+    return NextResponse.json({ status: 'unavailable', releaseId: event.releaseId }, {
+      status: 503,
+      headers: { 'Cache-Control': 'no-store' },
+    });
   }
   const rows = await response.json() as RpcRow[];
   const result = rows[0];
-  if (!result) return NextResponse.json({ status: 'unavailable' }, { status: 503 });
+  if (!result) return NextResponse.json({ status: 'unavailable', releaseId: event.releaseId }, {
+    status: 503,
+    headers: { 'Cache-Control': 'no-store' },
+  });
   const statusCode = result.status === 'collision' ? 409 : result.status === 'blocked' ? 422 : 200;
-  return NextResponse.json({ status: result.status, created: result.created, eventId: result.event_id }, {
+  return NextResponse.json({
+    status: result.status,
+    created: result.created,
+    eventId: result.event_id,
+    releaseId: event.releaseId,
+  }, {
     status: statusCode,
     headers: { 'Cache-Control': 'no-store' },
   });
