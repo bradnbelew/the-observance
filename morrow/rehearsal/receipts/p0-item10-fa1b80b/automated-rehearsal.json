@@ -19,22 +19,22 @@
       "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "8f5ceeb957fa7673b0ac71e9147c8444de01529c57bde65809a5ae65930b1130",
       "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "17c17b2d639b985c427f431a4958a9909f6a81b5dfc88883798bfb0c62707ca4",
       "tools/run_morrow_disposable_paper.py": "ae476efab36e94355ee002cb9fe9664c91d571f636f85fa9ddee2a48d90614dc",
-      "tools/run_morrow_p0_rehearsal.py": "b1e0d1c3c3cb505baefa9b6a452b1e96f3bd2529fdadfe81012e0891e1075108"
+      "tools/run_morrow_p0_rehearsal.py": "dca90f9e542ca7cd6e00a5636d5e0ca0afad6f0fd26ff686a1af2cd5ace46778"
     },
-    "set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3"
+    "set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026"
   },
   "automated_gate": "pass",
   "cohorts": {
     "1": {
-      "final_head_sha256": "07601971cc73dde9dacb4219c9859ba7cfd79d8801e2239c3a4691d3ea39281e",
+      "final_head_sha256": "4e7145e57ee9532fcbddaeddca4f6774d0e422aef5a74533c945b8927de5376b",
       "status": "pass"
     },
     "2": {
-      "final_head_sha256": "1aca86ba6a869d294c72b8a75dbdf9b2ecaf706417b4995c67cf14c0125c4e6b",
+      "final_head_sha256": "7b7bee69827923f3c9b0b1840189f0b37fe7c4a046270197d8a54255c7b9f692",
       "status": "pass"
     },
     "6": {
-      "final_head_sha256": "e28ab656dc0dab1566f74d96371e45b7b9f00cedfa5d582240de0717ab559b50",
+      "final_head_sha256": "6f08b0fd66988cfcea63e7cceb8a769dc74defa9a54201422462557d405e3df1",
       "status": "pass"
     }
   },
@@ -178,7 +178,7 @@
     },
     {
       "case": "cursor_loss",
-      "head_receipt_sha256": "e6f99eb6d3e969b92ea0d0d9c881d69100320842e8ee18b45f6719d73fda588f",
+      "head_receipt_sha256": "06c3cea48609248c489d2198f5a31fd0514571b7a246ff971a7725ca74f06c8d",
       "progressed": false,
       "recovered_sequence": 3,
       "status": "recovered_from_hash_chain"

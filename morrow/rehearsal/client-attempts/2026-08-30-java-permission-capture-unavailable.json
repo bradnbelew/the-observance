@@ -1,0 +1,42 @@
+{
+  "attempted_at": "2026-08-30T21:26:00Z",
+  "client_lane_status": "unproven",
+  "computer_use": {
+    "capture_error": "SetIsBorderRequired failed: No such interface supported (0x80004002)",
+    "client_window_exact_match_count": 1,
+    "client_window_id": 38208946,
+    "client_window_opened": true,
+    "client_window_title": "Minecraft 1.21.11",
+    "java_permission_granted_before_retry": true,
+    "launcher_window_excluded": true,
+    "screen_capture_available": false
+  },
+  "evidence": {
+    "client_log_sha256": "404bd04d97b00db1381135a8b3611427c3fd63d4b8ad70dfe509ed2693b37e83",
+    "offline_client_receipt_sha256": "7f3b76b41448ed333e36fe833c73d8052da403fb61f713d9c5da61548b0e3ae8"
+  },
+  "graphical_client": {
+    "account_files_read": false,
+    "bounded_wait_seconds": 120,
+    "client_jar_sha256": "1473c9489ac50fda3c435049a76a70d61a10b8610db27f5ba9d8756b686cd3bd",
+    "harness_status": "harness_stopped_after_wait",
+    "identity_kind": "dummy_offline",
+    "loopback_target": "127.0.0.1:25589",
+    "production_credentials_loaded": false,
+    "run_id": "java-capture-20260830a",
+    "source_commit": "eef04ebb30dae522cd0564ffc39fbd1ae09a965b",
+    "version": "1.21.11"
+  },
+  "no_blind_input": true,
+  "production_contacted": false,
+  "result": "java_permission_did_not_resolve_windows_capture_interface_error",
+  "still_required": [
+    "observable synchronized visual media",
+    "native dialog mouse keyboard and escape interaction",
+    "resource-pack accepted and declined parity",
+    "audio-disabled visual equivalence",
+    "full-inventory exit and respawn",
+    "complete one two and six player cohorts",
+    "sixty to ninety minute pacing"
+  ]
+}

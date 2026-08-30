@@ -534,6 +534,8 @@ def paper_lane(args: argparse.Namespace, binding: dict[str, Any]) -> dict[str, A
 def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     client_attempt = ROOT / "morrow" / "rehearsal" / "client-attempts" / \
         "2026-08-30-offline-client-safe-entry-partial.json"
+    client_capture_retry = ROOT / "morrow" / "rehearsal" / "client-attempts" / \
+        "2026-08-30-java-permission-capture-unavailable.json"
     client_protocol = ROOT / "morrow" / "rehearsal" / "CLIENT-REHEARSAL.md"
     client_generator = ROOT / "tools" / "new_morrow_client_rehearsal.py"
     client_checker = ROOT / "tools" / "check_morrow_client_rehearsal.py"
@@ -579,6 +581,9 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",
+            "latest_capture_retry": str(client_capture_retry.relative_to(ROOT)).replace("\\", "/"),
+            "latest_capture_retry_sha256": sha256_file(client_capture_retry),
+            "capture_retry_result": "java_permission_did_not_resolve_windows_capture_interface_error",
             "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
             "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
         },

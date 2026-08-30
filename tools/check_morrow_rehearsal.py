@@ -207,7 +207,10 @@ def validate() -> None:
     client = matrix["human_client_evidence"]
     require(client["gate"] == "required" and client["latest_attempt_status"] == "unproven",
             "client evidence gate was silently advanced")
-    for key in ("protocol", "generator", "checker", "selftest", "offline_launcher", "latest_attempt"):
+    for key in (
+        "protocol", "generator", "checker", "selftest", "offline_launcher", "latest_attempt",
+        "latest_capture_retry",
+    ):
         path = ROOT / client[key]
         require(path.is_file() and client[f"{key}_sha256"] == sha(path),
                 f"client evidence artifact drifted: {key}")
@@ -223,6 +226,17 @@ def validate() -> None:
             and attempt["server"]["full_main_inventory_items_after_rejoin"] == 2304
             and attempt["server"]["join_to_exact_position"] == [0.5, 80.0, -1.5],
             "failed client attempt was misrepresented")
+    capture_retry = load(ROOT / client["latest_capture_retry"])
+    require(client["capture_retry_result"]
+            == "java_permission_did_not_resolve_windows_capture_interface_error"
+            and capture_retry["result"] == client["capture_retry_result"]
+            and capture_retry["computer_use"]["java_permission_granted_before_retry"] is True
+            and capture_retry["computer_use"]["client_window_exact_match_count"] == 1
+            and capture_retry["computer_use"]["launcher_window_excluded"] is True
+            and capture_retry["computer_use"]["screen_capture_available"] is False
+            and capture_retry["no_blind_input"] is True
+            and capture_retry["production_contacted"] is False,
+            "post-permission Java capture retry was omitted or overclaimed")
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
     database_lane = next(row for row in matrix["live_services_required"]

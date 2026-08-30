@@ -19,9 +19,9 @@
       "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "8f5ceeb957fa7673b0ac71e9147c8444de01529c57bde65809a5ae65930b1130",
       "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "17c17b2d639b985c427f431a4958a9909f6a81b5dfc88883798bfb0c62707ca4",
       "tools/run_morrow_disposable_paper.py": "ae476efab36e94355ee002cb9fe9664c91d571f636f85fa9ddee2a48d90614dc",
-      "tools/run_morrow_p0_rehearsal.py": "b1e0d1c3c3cb505baefa9b6a452b1e96f3bd2529fdadfe81012e0891e1075108"
+      "tools/run_morrow_p0_rehearsal.py": "dca90f9e542ca7cd6e00a5636d5e0ca0afad6f0fd26ff686a1af2cd5ace46778"
     },
-    "set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3"
+    "set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026"
   },
   "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
   "cohort_size": 2,
@@ -29,7 +29,7 @@
   "event_receipts": [
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -53,12 +53,12 @@
         "copperline",
         "discord"
       ],
-      "receipt_sha256": "1f8d6c1af99b171762af24a837cf5836b3db1455f25f90392aad48b359c229b7",
+      "receipt_sha256": "fa17b186e5005747dd5915efa897b4fecf1d324c1487f7cbfd5b7e20a411b9b0",
       "sequence": 1
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -75,18 +75,18 @@
         "token_consumed_once": true
       },
       "payload_sha256": "d01e9ec49ded64de6a9704e41606913f360da8f22df7a00cb597daa109c08e4b",
-      "previous_receipt_sha256": "1f8d6c1af99b171762af24a837cf5836b3db1455f25f90392aad48b359c229b7",
+      "previous_receipt_sha256": "fa17b186e5005747dd5915efa897b4fecf1d324c1487f7cbfd5b7e20a411b9b0",
       "projects_to": [
         "minecraft",
         "copperline",
         "discord"
       ],
-      "receipt_sha256": "1ee2c4abb2cdc905fe3fd7d46148b74caccdc247bd212947aeb77a51de6dab2a",
+      "receipt_sha256": "cfd178b5b6e1df7042219f1752743e7b234839bd63b6807596d3059b91358469",
       "sequence": 2
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -103,17 +103,17 @@
         "scope": "group"
       },
       "payload_sha256": "dedf58ca9176f015d5e9ec5a9e2c30b7ec24925be3e369e4308fa3b03336ccbd",
-      "previous_receipt_sha256": "1ee2c4abb2cdc905fe3fd7d46148b74caccdc247bd212947aeb77a51de6dab2a",
+      "previous_receipt_sha256": "cfd178b5b6e1df7042219f1752743e7b234839bd63b6807596d3059b91358469",
       "projects_to": [
         "minecraft",
         "copperline"
       ],
-      "receipt_sha256": "8d429592d742f840de49dba38b387b38ae0fb2875903bea3a3766f07b2444ef8",
+      "receipt_sha256": "0d900f3d7e8e8107aa280ecd1df7f260b82eaaae936b1b8576cf05376fa1c5c5",
       "sequence": 3
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -130,18 +130,18 @@
         "rollback": "six_cell_baseline"
       },
       "payload_sha256": "ad008cd66f9f4cb5ded8fa0808c219c00771e4961af45c1b16b0b96314fdd3ef",
-      "previous_receipt_sha256": "8d429592d742f840de49dba38b387b38ae0fb2875903bea3a3766f07b2444ef8",
+      "previous_receipt_sha256": "0d900f3d7e8e8107aa280ecd1df7f260b82eaaae936b1b8576cf05376fa1c5c5",
       "projects_to": [
         "minecraft",
         "copperline",
         "discord"
       ],
-      "receipt_sha256": "47db6e9ef8565b13eb841e243df57190fe08872b2b1b7ad1ec20e41dc3b80838",
+      "receipt_sha256": "0d76608d06c9c6870d1944138aba2f182b5109ff45017ecbc702f9876a07adfd",
       "sequence": 4
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -160,18 +160,18 @@
         "world_mutation": false
       },
       "payload_sha256": "3f649ec51b935f9f0b65b6e9daa35efdf9df357083927457b3662f7ca26c7fc9",
-      "previous_receipt_sha256": "47db6e9ef8565b13eb841e243df57190fe08872b2b1b7ad1ec20e41dc3b80838",
+      "previous_receipt_sha256": "0d76608d06c9c6870d1944138aba2f182b5109ff45017ecbc702f9876a07adfd",
       "projects_to": [
         "minecraft",
         "copperline",
         "discord"
       ],
-      "receipt_sha256": "6ebb0171cc57c19c6e9062085400b741b3662f764a5df824fa18b6362b6da36d",
+      "receipt_sha256": "6871e48b5fde27d5d3aa33d5e79d1a51057f63543ea2bb9004e3035e78a1eabd",
       "sequence": 5
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -189,18 +189,18 @@
         "starts_capture": false
       },
       "payload_sha256": "5e9f8e923f8d78b71af209b24c2038b32ade2ca94cc370a22852b145c62da4e6",
-      "previous_receipt_sha256": "6ebb0171cc57c19c6e9062085400b741b3662f764a5df824fa18b6362b6da36d",
+      "previous_receipt_sha256": "6871e48b5fde27d5d3aa33d5e79d1a51057f63543ea2bb9004e3035e78a1eabd",
       "projects_to": [
         "minecraft",
         "copperline",
         "discord"
       ],
-      "receipt_sha256": "f9df1f15534a6eaef874973e181d3cad181aac55b911baa9f17aa3ecc1baaffa",
+      "receipt_sha256": "93f8b9cd876aef9815a639121ec5a39799c1ac005839ae41811b04b1c9d17373",
       "sequence": 6
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -223,17 +223,17 @@
         "sample_interval_ticks": 2
       },
       "payload_sha256": "9dc59dc3f3e7860fea27c9fda7b3f7e4b39a4017a6afda456914f4782b00f1cc",
-      "previous_receipt_sha256": "f9df1f15534a6eaef874973e181d3cad181aac55b911baa9f17aa3ecc1baaffa",
+      "previous_receipt_sha256": "93f8b9cd876aef9815a639121ec5a39799c1ac005839ae41811b04b1c9d17373",
       "projects_to": [
         "minecraft",
         "copperline"
       ],
-      "receipt_sha256": "1294378bc8c94ea66b76476de27da43ba5b6c5c85226cd412c4479821c1a6536",
+      "receipt_sha256": "d31a26370b014e5826b853d43f5a3b60bd1d588c4cfb60436d397871d3a6db03",
       "sequence": 7
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -252,18 +252,18 @@
         "tracked_players": 2
       },
       "payload_sha256": "bfabab0affdba78609cebf22158b828aa487ca71e71676fde9b9b726828cb40d",
-      "previous_receipt_sha256": "1294378bc8c94ea66b76476de27da43ba5b6c5c85226cd412c4479821c1a6536",
+      "previous_receipt_sha256": "d31a26370b014e5826b853d43f5a3b60bd1d588c4cfb60436d397871d3a6db03",
       "projects_to": [
         "minecraft",
         "copperline",
         "media"
       ],
-      "receipt_sha256": "6c657718d9b1e1c4d6c4bd717711395f608cb302ece7efb6d95fe352de5ecb15",
+      "receipt_sha256": "41125a9c19e6fa4772bc25c5ae3a980c64925d27fa1e0ff5b71f6c461dfe3504",
       "sequence": 8
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -280,18 +280,18 @@
         "private_contradiction_offered": true
       },
       "payload_sha256": "17e01a762859fe22078f0aed0d89a75c9bfc42062494ab69210c39f46a02fefe",
-      "previous_receipt_sha256": "6c657718d9b1e1c4d6c4bd717711395f608cb302ece7efb6d95fe352de5ecb15",
+      "previous_receipt_sha256": "41125a9c19e6fa4772bc25c5ae3a980c64925d27fa1e0ff5b71f6c461dfe3504",
       "projects_to": [
         "minecraft",
         "copperline",
         "discord"
       ],
-      "receipt_sha256": "08455fc254d8096c495d9e84b1c0aba4c3fd09542b74893ab099fb8aff5f7cfd",
+      "receipt_sha256": "73825117f6c293b9c464f8b57700399d5d09615d0ea2dad9a06a0af36f073692",
       "sequence": 9
     },
     {
       "binding": {
-        "artifact_set_sha256": "5c247d08a40c765dc24a2997a8822fb25e57786c35aea07fc140a23dbf9a5db3",
+        "artifact_set_sha256": "60e0bd0f3d649195e5d330dac39e3fd81ec6de5fbf8c17fd8f81610509b2a026",
         "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
         "players": [
           "e68ef574-2f21-5972-b17b-aa67ab985c2d",
@@ -309,16 +309,16 @@
         "resolution": "file_live_behavior_as_inferred_source"
       },
       "payload_sha256": "3ea3504366174ad70529da23d256b96a622438ea6a9daf0993dcedd0b12d3494",
-      "previous_receipt_sha256": "08455fc254d8096c495d9e84b1c0aba4c3fd09542b74893ab099fb8aff5f7cfd",
+      "previous_receipt_sha256": "73825117f6c293b9c464f8b57700399d5d09615d0ea2dad9a06a0af36f073692",
       "projects_to": [
         "minecraft",
         "discord"
       ],
-      "receipt_sha256": "1aca86ba6a869d294c72b8a75dbdf9b2ecaf706417b4995c67cf14c0125c4e6b",
+      "receipt_sha256": "7b7bee69827923f3c9b0b1840189f0b37fe7c4a046270197d8a54255c7b9f692",
       "sequence": 10
     }
   ],
-  "final_head_sha256": "1aca86ba6a869d294c72b8a75dbdf9b2ecaf706417b4995c67cf14c0125c4e6b",
+  "final_head_sha256": "7b7bee69827923f3c9b0b1840189f0b37fe7c4a046270197d8a54255c7b9f692",
   "live_capture_authorization": "offered_not_accepted",
   "live_capture_event_present": false,
   "players": [
@@ -349,61 +349,61 @@
     {
       "after_event": "morrow.act0.case_chain_authenticated",
       "durable_sequence": 1,
-      "head_receipt_sha256": "1f8d6c1af99b171762af24a837cf5836b3db1455f25f90392aad48b359c229b7",
+      "head_receipt_sha256": "fa17b186e5005747dd5915efa897b4fecf1d324c1487f7cbfd5b7e20a411b9b0",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act0.server_handoff_recovered",
       "durable_sequence": 2,
-      "head_receipt_sha256": "1ee2c4abb2cdc905fe3fd7d46148b74caccdc247bd212947aeb77a51de6dab2a",
+      "head_receipt_sha256": "cfd178b5b6e1df7042219f1752743e7b234839bd63b6807596d3059b91358469",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act1.room04_witnessed",
       "durable_sequence": 3,
-      "head_receipt_sha256": "8d429592d742f840de49dba38b387b38ae0fb2875903bea3a3766f07b2444ef8",
+      "head_receipt_sha256": "0d900f3d7e8e8107aa280ecd1df7f260b82eaaae936b1b8576cf05376fa1c5c5",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act1.static_proposal_authenticated",
       "durable_sequence": 4,
-      "head_receipt_sha256": "47db6e9ef8565b13eb841e243df57190fe08872b2b1b7ad1ec20e41dc3b80838",
+      "head_receipt_sha256": "0d76608d06c9c6870d1944138aba2f182b5109ff45017ecbc702f9876a07adfd",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act1.intention_error_proven",
       "durable_sequence": 5,
-      "head_receipt_sha256": "6ebb0171cc57c19c6e9062085400b741b3662f764a5df824fa18b6362b6da36d",
+      "head_receipt_sha256": "6871e48b5fde27d5d3aa33d5e79d1a51057f63543ea2bb9004e3035e78a1eabd",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act1.entity_replay_authorized",
       "durable_sequence": 6,
-      "head_receipt_sha256": "f9df1f15534a6eaef874973e181d3cad181aac55b911baa9f17aa3ecc1baaffa",
+      "head_receipt_sha256": "93f8b9cd876aef9815a639121ec5a39799c1ac005839ae41811b04b1c9d17373",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act2.missing_role_completed",
       "durable_sequence": 7,
-      "head_receipt_sha256": "1294378bc8c94ea66b76476de27da43ba5b6c5c85226cd412c4479821c1a6536",
+      "head_receipt_sha256": "d31a26370b014e5826b853d43f5a3b60bd1d588c4cfb60436d397871d3a6db03",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act2.live_test_recorded",
       "durable_sequence": 8,
-      "head_receipt_sha256": "6c657718d9b1e1c4d6c4bd717711395f608cb302ece7efb6d95fe352de5ecb15",
+      "head_receipt_sha256": "41125a9c19e6fa4772bc25c5ae3a980c64925d27fa1e0ff5b71f6c461dfe3504",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act2.behavior_reuse_proven",
       "durable_sequence": 9,
-      "head_receipt_sha256": "08455fc254d8096c495d9e84b1c0aba4c3fd09542b74893ab099fb8aff5f7cfd",
+      "head_receipt_sha256": "73825117f6c293b9c464f8b57700399d5d09615d0ea2dad9a06a0af36f073692",
       "status": "recovered"
     },
     {
       "after_event": "morrow.act2.private_contradiction_resolved",
       "durable_sequence": 10,
-      "head_receipt_sha256": "1aca86ba6a869d294c72b8a75dbdf9b2ecaf706417b4995c67cf14c0125c4e6b",
+      "head_receipt_sha256": "7b7bee69827923f3c9b0b1840189f0b37fe7c4a046270197d8a54255c7b9f692",
       "status": "recovered"
     }
   ],

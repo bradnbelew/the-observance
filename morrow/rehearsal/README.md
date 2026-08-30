@@ -23,6 +23,12 @@ remain required and use the create-only protocol
 in `CLIENT-REHEARSAL.md`; its validator refuses screenshots or prose without matching journal, world,
 inventory, cleanup, and complete server-lifecycle evidence.
 
+After Java access was explicitly allowed, a second bounded dummy-identity client was launched and the
+exact `Minecraft 1.21.11` Java window was selected separately from the launcher. Windows still returned
+`SetIsBorderRequired ... 0x80004002`; no blind input was sent. The retained retry receipt is
+`client-attempts/2026-08-30-java-permission-capture-unavailable.json`, so the visual gate remains
+honestly blocked by capture availability rather than Java launch permission.
+
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed
 proposal and records live RLS/role, ownership, RPC, concurrency, idempotency, collision, payload-bound,

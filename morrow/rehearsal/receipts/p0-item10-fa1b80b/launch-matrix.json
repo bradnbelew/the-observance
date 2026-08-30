@@ -22,6 +22,7 @@
     }
   ],
   "human_client_evidence": {
+    "capture_retry_result": "java_permission_did_not_resolve_windows_capture_interface_error",
     "checker": "tools/check_morrow_client_rehearsal.py",
     "checker_sha256": "b0461b0878d2c186cbf321b7e8481c71fd0202980ee9a2184eb4eb78e125024d",
     "gate": "required",
@@ -30,6 +31,8 @@
     "latest_attempt": "morrow/rehearsal/client-attempts/2026-08-30-offline-client-safe-entry-partial.json",
     "latest_attempt_sha256": "10df71f35e59cc4f398f65b4ec78aa897c332d50eccdcae4acfe2bd09c092d42",
     "latest_attempt_status": "unproven",
+    "latest_capture_retry": "morrow/rehearsal/client-attempts/2026-08-30-java-permission-capture-unavailable.json",
+    "latest_capture_retry_sha256": "55180f2f8f4597cd324173a4fa4aa9e676c8eed043b466fd2b01253865f9834a",
     "offline_launcher": "tools/run_morrow_offline_client.py",
     "offline_launcher_sha256": "6a168fff2950e9b61c1e8ed0c8483b58213e65bcb3facfbddc510ece31f252f8",
     "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
