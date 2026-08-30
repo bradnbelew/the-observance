@@ -35,6 +35,23 @@ The `--audio-disabled` profile writes every vanilla sound category to zero befor
 exact options hash into the receipt; it supports the audio-accessibility lane but does not replace the
 human visual-equivalence review.
 
+For the optional resource-pack lane, run the create-only loopback harness once per decision. It serves
+the exact ZIP from loopback, writes a fresh saved-server preference into an isolated game directory,
+waits for Paper's real `LOADED` or `DECLINED` event, stops its owned client, and retains request/log
+hashes. The visible-parity and independent-observer requirements remain open until matching media is
+reviewed:
+
+```text
+python tools/run_morrow_resource_pack_rehearsal.py <pinned inputs> --expected-status loaded --launch-client --launch-acknowledgement launch-visible-minecraft-resource-pack:loaded
+python tools/run_morrow_resource_pack_rehearsal.py <pinned inputs> --expected-status declined --launch-client --launch-acknowledgement launch-visible-minecraft-resource-pack:declined
+python tools/test_morrow_resource_pack_rehearsal.py
+```
+
+The client fixture uses the exact uncompressed NBT format that Minecraft 1.21.11 reads from
+`servers.dat`: omitted `acceptTextures` means prompt, byte `1` means enabled, and byte `0` means
+disabled. This controls only the fresh disposable server entry; it never reads or edits the player's
+normal server list.
+
 Prepare distinct vanilla identities and isolated game directories for a complete cohort before the
 server starts:
 

@@ -10,8 +10,10 @@ import json
 import os
 import platform
 import re
+import struct
 import subprocess
 import sys
+import time
 import uuid
 import zipfile
 from datetime import datetime, timezone
@@ -26,6 +28,37 @@ SOUND_CATEGORIES = (
     "master", "music", "record", "weather", "block", "hostile",
     "neutral", "player", "ambient", "voice", "ui",
 )
+
+
+def nbt_name(value: str) -> bytes:
+    encoded = value.encode("utf-8")
+    return struct.pack(">H", len(encoded)) + encoded
+
+
+def nbt_string(name: str, value: str) -> bytes:
+    encoded = value.encode("utf-8")
+    return b"\x08" + nbt_name(name) + struct.pack(">H", len(encoded)) + encoded
+
+
+def nbt_byte(name: str, value: int) -> bytes:
+    return b"\x01" + nbt_name(name) + struct.pack(">b", value)
+
+
+def write_server_list(path: Path, server: str, policy: str) -> None:
+    compound = b"".join([
+        nbt_string("name", "Morrow loopback rehearsal"),
+        nbt_string("ip", server),
+        nbt_byte("hidden", 0),
+        b"" if policy == "prompt" else nbt_byte("acceptTextures", 1 if policy == "enabled" else 0),
+        b"\x00",
+    ])
+    root = b"".join([
+        b"\x0a\x00\x00",
+        b"\x09" + nbt_name("servers") + b"\x0a" + struct.pack(">i", 1),
+        compound,
+        b"\x00",
+    ])
+    path.write_bytes(root)
 
 
 def sha(path: Path) -> str:
@@ -90,6 +123,12 @@ def main() -> int:
                         default=ROOT / "build" / "morrow-offline-client")
     parser.add_argument("--server", default="127.0.0.1:25589")
     parser.add_argument("--username", default="MorrowWitness")
+    parser.add_argument(
+        "--server-resource-pack-policy",
+        choices=("prompt", "enabled", "disabled"),
+        default="prompt",
+        help="fresh servers.dat preference for this exact loopback server",
+    )
     parser.add_argument("--javaw", type=Path,
                         default=Path(r"C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\javaw.exe"))
     parser.add_argument("--prepare-only", action="store_true")
@@ -100,6 +139,11 @@ def main() -> int:
     )
     parser.add_argument("--wait-seconds", type=int, default=20)
     parser.add_argument("--terminate-after-wait", action="store_true")
+    parser.add_argument(
+        "--stop-when-requested",
+        action="store_true",
+        help="also stop when this run's create-only game directory receives stop.request",
+    )
     parser.add_argument("--max-memory-mib", type=int, default=2048)
     args = parser.parse_args()
 
@@ -114,6 +158,8 @@ def main() -> int:
             "max-memory-mib must be between 768 and 2048")
     require(not (args.prepare_only and args.terminate_after_wait),
             "prepare-only cannot terminate a process")
+    require(not args.stop_when_requested or args.terminate_after_wait,
+            "stop-when-requested requires terminate-after-wait")
 
     minecraft = args.minecraft_root.resolve()
     target = (args.target_root / args.run_id).resolve()
@@ -142,6 +188,8 @@ def main() -> int:
         option_lines.extend(f"soundCategory_{category}:0.0" for category in SOUND_CATEGORIES)
     options_path = game / "options.txt"
     options_path.write_text("\n".join(option_lines) + "\n", encoding="utf-8")
+    servers_path = game / "servers.dat"
+    write_server_list(servers_path, args.server, args.server_resource_pack_policy)
 
     features = {
         "has_custom_resolution": True,
@@ -212,6 +260,8 @@ def main() -> int:
             ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True, capture_output=True, text=True,
         ).stdout.strip(),
         "server": args.server,
+        "server_resource_pack_policy": args.server_resource_pack_policy,
+        "servers_dat_sha256": sha(servers_path),
         "loopback_only": True,
         "identity": {"kind": "dummy_offline", "username": args.username, "uuid": dummy_uuid},
         "account_files_read": False,
@@ -230,6 +280,7 @@ def main() -> int:
                       "aggregate_sha256": hashlib.sha256("\n".join(sha(path) for path in classpath[:-1]).encode()).hexdigest()},
         "natives": {"count": len(native_inventory), "files": native_inventory},
         "game_directory": str(game),
+        "control_stop_file": str(target / "stop.request") if args.stop_when_requested else None,
         "process_id": None,
     }
     receipt_path = target / "offline-client-receipt.json"
@@ -245,8 +296,23 @@ def main() -> int:
     receipt["status"] = "running"
     receipt["log"] = str(log_path)
     receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    stopped_reason = None
     try:
-        return_code = process.wait(timeout=args.wait_seconds)
+        if args.stop_when_requested:
+            deadline = time.monotonic() + args.wait_seconds
+            stop_file = target / "stop.request"
+            while process.poll() is None and time.monotonic() < deadline:
+                if stop_file.is_file():
+                    stopped_reason = "request"
+                    break
+                time.sleep(.25)
+            if process.poll() is None and stopped_reason is None:
+                stopped_reason = "wait"
+            if process.poll() is None and stopped_reason is not None:
+                raise subprocess.TimeoutExpired(command, args.wait_seconds)
+            return_code = process.returncode
+        else:
+            return_code = process.wait(timeout=args.wait_seconds)
     except subprocess.TimeoutExpired:
         if args.terminate_after_wait:
             process.terminate()
@@ -256,9 +322,12 @@ def main() -> int:
                 process.kill()
                 return_code = process.wait(timeout=15)
             log.close()
-            receipt["status"] = "harness_stopped_after_wait"
+            receipt["status"] = ("harness_stopped_after_request"
+                                 if stopped_reason == "request"
+                                 else "harness_stopped_after_wait")
             receipt["exit_code"] = return_code
             receipt["wait_seconds"] = args.wait_seconds
+            receipt["stop_reason"] = stopped_reason or "wait"
             receipt["log_sha256"] = sha(log_path)
             receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             print(json.dumps({"exit_code": return_code, "receipt": str(receipt_path),

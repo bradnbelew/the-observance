@@ -123,6 +123,7 @@ client, world, credential, and service receipts in `design/V5-LIVE-TEST-MATRIX.c
 | `simulate_v5_scenarios.py` | deterministic model-level failure/replay/recovery/finale scenarios |
 | `package_plugin.ps1` / `check_plugin_jar.ps1` | Gradle-only reproducible V5 JAR build and exact authority readback |
 | `package_assets.ps1` / `check_assets.ps1` | deterministic 1.21.11 datapack/resource-pack packaging and readback |
+| `run_morrow_resource_pack_rehearsal.py` / `test_morrow_resource_pack_rehearsal.py` | bounded loopback real-client `LOADED`/`DECLINED` pack handshake with exact byte and cleanup receipts; human visual parity remains separate |
 | `check_external_media_readiness.ps1 -Live` | verify all five immutable public media sources |
 | `set_resource_pack_config.ps1` | atomically set the hosted pack URL and matching SHA-1 |
 | `package_launch_bundle.ps1` | regenerate SQL, then package and verify the V5 deploy artifacts |
