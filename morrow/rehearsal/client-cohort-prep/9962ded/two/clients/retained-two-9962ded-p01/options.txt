@@ -1,0 +1,15 @@
+autoJump:false
+fullscreen:false
+narrator:0
+onboardAccessibility:false
+soundCategory_master:0.0
+soundCategory_music:0.0
+soundCategory_record:0.0
+soundCategory_weather:0.0
+soundCategory_block:0.0
+soundCategory_hostile:0.0
+soundCategory_neutral:0.0
+soundCategory_player:0.0
+soundCategory_ambient:0.0
+soundCategory_voice:0.0
+soundCategory_ui:0.0

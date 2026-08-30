@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `321665b9e0eef00e1f9ac5b93193065068280e6be8e37d66d7be0e3f3ab9fa3e`
+Bundle SHA-256: `4a7a0ae0931799f493ac9f6c8266822850293c55a32dabc022ea924631223d39`
 
 ## Proven automatically
 
@@ -70,6 +70,12 @@ matrix, resource-pack-decline parity, audio-disabled parity, full-inventory rout
 two-/six-player physical cleanup, continuous synchronized media, and 60–90 minute pacing without
 operator narration remain required. `CLIENT-REHEARSAL.md` and the bound generator/checker define the
 evidence needed to finish those six lanes without overclaiming this checkpoint.
+
+The create-only launcher has also prepared and retained hash-bound vanilla client directories for the
+required one-, two-, and six-player cohort sizes: nine distinct offline UUIDs, loopback-only targets,
+bounded per-client heaps, null process IDs, no server contact, and no retained client binaries. The
+two-player preparation additionally proves all eleven vanilla sound categories were zeroed and bound
+to each options hash. This removes cohort setup ambiguity; it does not replace the human runs above.
 
 The database proposal now also exists as a CLI-generated numbered migration and passed an isolated
 Supabase rehearsal: live role/RLS denial, owner projection, service ingest, exact payload and token

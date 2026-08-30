@@ -1,0 +1,50 @@
+{
+  "status": "bounded_prepare_only_pass",
+  "completed_at": "2026-08-30T23:18:30Z",
+  "source_commit": "9962dedd7d18c72e6c3b781f0c60c75c1258a803",
+  "scope": "create-only vanilla 1.21.11 game directories and dummy offline identities for the required one-, two-, and six-player cohort sizes",
+  "artifacts": {
+    "launcher": {
+      "path": "tools/run_morrow_offline_client.py",
+      "sha256": "89259eb2f870bba593eec950ee4206174b1814b2dbaecbb3ef0f172b830336b8"
+    },
+    "cohort_preparer": {
+      "path": "tools/prepare_morrow_offline_cohort.py",
+      "sha256": "685fa9ee2d990f234385248652dc2c403c622a3d23957ce774066949eb0f53d7"
+    }
+  },
+  "cohorts": {
+    "one": {
+      "size": 1,
+      "audio_disabled": false,
+      "max_memory_mib_per_client": 768,
+      "receipt": "morrow/rehearsal/client-cohort-prep/9962ded/one/cohort-receipt.json",
+      "receipt_sha256": "16f5cbf6875ed321b318079ec215a682b29c4add0f53e9f01eb54851354d7b0c"
+    },
+    "two": {
+      "size": 2,
+      "audio_disabled": true,
+      "max_memory_mib_per_client": 1024,
+      "receipt": "morrow/rehearsal/client-cohort-prep/9962ded/two/cohort-receipt.json",
+      "receipt_sha256": "b125812a9ef96fb103ad1f0eab633546cf1a39022b07228c13ef916bc37f53ec"
+    },
+    "six": {
+      "size": 6,
+      "audio_disabled": false,
+      "max_memory_mib_per_client": 768,
+      "receipt": "morrow/rehearsal/client-cohort-prep/9962ded/six/cohort-receipt.json",
+      "receipt_sha256": "43eb4e74c11fa17357f059b301723095d5c44ddfda2683638cd94cd8a9d671a5"
+    }
+  },
+  "boundaries": {
+    "graphical_clients_launched": false,
+    "server_contacted": false,
+    "production_contacted": false,
+    "account_files_read": false,
+    "production_credentials_loaded": false,
+    "retained_client_binaries": false
+  },
+  "proven": "the exact installed vanilla manifest, client, 75 libraries, asset index, and nine native files can prepare distinct create-only 1/2/6 cohort clients with unique UUIDs, bounded heaps, loopback-only targets, and hash-bound options/receipts",
+  "remaining_gate": "launch the clients for complete operator-free 60-90 minute one-, two-, and six-player runs with independent observer media, interaction, restart, inventory, cleanup, resource-pack, and pacing evidence",
+  "production_enablement": "blocked"
+}

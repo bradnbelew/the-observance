@@ -302,12 +302,19 @@ def validate() -> None:
             "client evidence gate was silently advanced")
     for key in (
         "protocol", "generator", "checker", "selftest", "offline_launcher",
-        "offline_cohort_preparer", "latest_attempt",
+        "offline_cohort_preparer", "offline_cohort_checker", "offline_cohort_receipt",
+        "latest_attempt",
         "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
         path = ROOT / client[key]
         require(path.is_file() and client[f"{key}_sha256"] == sha(path),
                 f"client evidence artifact drifted: {key}")
+    cohort_result = subprocess.run(
+        [sys.executable, str(ROOT / client["offline_cohort_checker"])],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(cohort_result.returncode == 0,
+            f"offline cohort preparation receipt failed: {cohort_result.stderr.strip()}")
     attempt = load(ROOT / client["latest_attempt"])
     require(attempt["client_lane_status"] == "unproven"
             and attempt["no_blind_input"] is True

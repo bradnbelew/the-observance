@@ -30,6 +30,12 @@ media, all poses/dialog paths, parity modes, complete cohorts, or pacing. All si
 lanes therefore remain required under `CLIENT-REHEARSAL.md`, whose validator also requires matching
 journal, world, inventory, cleanup, and complete server-lifecycle evidence.
 
+The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
+installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without
+launching a GUI or contacting the server. It retains only JSON/options evidence—not client binaries—
+and is verified by `python tools/check_morrow_offline_cohort_receipts.py`. This is setup evidence,
+not a substitute for the complete human-client runs.
+
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed
 proposal and records live RLS/role, ownership, RPC, concurrency, idempotency, collision, payload-bound,
