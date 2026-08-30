@@ -36,6 +36,11 @@ launching a GUI or contacting the server. It retains only JSON/options evidenceâ
 and is verified by `python tools/check_morrow_offline_cohort_receipts.py`. This is setup evidence,
 not a substitute for the complete human-client runs.
 
+The retained `resource-pack/latest.json` checkpoint binds a matched real-client `LOADED`/`DECLINED`
+pair against the same exact optional loopback ZIP. It proves handshake, byte-fetch, policy, and cleanup
+behavior only; the accepted/declined visual and interaction equivalence lane remains open until matched
+media receives independent review.
+
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed
 proposal and records live RLS/role, ownership, RPC, concurrency, idempotency, collision, payload-bound,
