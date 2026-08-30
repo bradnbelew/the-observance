@@ -151,3 +151,9 @@ morrow-reboot:
     request-timeout-ms: 10000
     initial-retry-ms: 500
     maximum-retry-ms: 30000
+  room04:
+    # Separate rehearsal gate: enabling the reboot alone never authorizes a world build.
+    build-enabled: false
+    origin-x: 0
+    origin-y: 80
+    origin-z: 0

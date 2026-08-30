@@ -102,6 +102,7 @@ def pluginSelfTests = [
     , morrowLocalState: 'com.observance.watcher.morrow.MorrowLocalStateSelfTest'
     , morrowRuntimeSettings: 'com.observance.watcher.morrow.MorrowRuntimeSettingsSelfTest'
     , morrowEventProjector: 'com.observance.watcher.morrow.MorrowEventProjectorSelfTest'
+    , recoveryRoom04Installer: 'com.observance.watcher.morrow.room04.RecoveryRoom04InstallerSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

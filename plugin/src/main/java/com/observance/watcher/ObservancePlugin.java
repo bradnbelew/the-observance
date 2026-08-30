@@ -446,6 +446,16 @@ public final class ObservancePlugin extends JavaPlugin {
     /** Reload config + sites at runtime. Rebuilds dependent singletons that hold config values. */
     public boolean reloadAll() {
         return safety.call("plugin.reload", () -> {
+            if (morrowRuntime != null) {
+                getLogger().warning("Morrow reboot configuration changes require a full Paper restart.");
+                return false;
+            }
+            File candidateFile = new File(getDataFolder(), "config.yml");
+            if (YamlConfiguration.loadConfiguration(candidateFile)
+                    .getBoolean("morrow-reboot.enabled", false)) {
+                getLogger().warning("Enabling the Morrow reboot requires a full Paper restart; reload refused.");
+                return false;
+            }
             if (v5Runtime != null) {
                 v5Runtime.close();
                 v5Runtime = null;

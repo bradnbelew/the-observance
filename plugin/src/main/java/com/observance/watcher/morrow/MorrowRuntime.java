@@ -1,29 +1,38 @@
 package com.observance.watcher.morrow;
 
 import com.observance.watcher.ObservancePlugin;
+import com.observance.watcher.morrow.room04.BukkitRecoveryRoom04World;
+import com.observance.watcher.morrow.room04.RecoveryRoom04Installer;
+import com.observance.watcher.morrow.room04.RecoveryRoom04Manifest;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 
 /** Fail-closed Paper lifecycle for the disabled-by-default Morrow reboot runtime. */
 public final class MorrowRuntime implements AutoCloseable {
     private static final String JOURNAL_NAME = "morrow-reboot.journal";
     private static final String CURSOR_NAME = "morrow-reboot.projector.cursor";
+    private static final String ROOM04_SNAPSHOT_NAME = "morrow-room04.rollback.snapshot";
+    private static final String ROOM04_RECEIPT_NAME = "morrow-room04.install.receipt";
 
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
     private final MorrowEventProjector projector;
+    private final RecoveryRoom04Installer.Result room04Result;
 
     private MorrowRuntime(
             MorrowRuntimeSettings settings,
             MorrowLocalState localState,
-            MorrowEventProjector projector) {
+            MorrowEventProjector projector,
+            RecoveryRoom04Installer.Result room04Result) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
+        this.room04Result = room04Result;
     }
 
     /** Returns {@code null} while the shipped disabled gate is closed. */
@@ -53,6 +62,24 @@ public final class MorrowRuntime implements AutoCloseable {
 
         Path data = plugin.getDataFolder().toPath();
         MorrowLocalState state = MorrowLocalState.open(data.resolve(JOURNAL_NAME), settings.releaseId());
+        RecoveryRoom04Installer.Result room04Result = null;
+        if (section.getBoolean("room04.build-enabled", false)) {
+            RecoveryRoom04Installer.Origin origin = new RecoveryRoom04Installer.Origin(
+                    section.getInt("room04.origin-x"),
+                    section.getInt("room04.origin-y", 80),
+                    section.getInt("room04.origin-z"));
+            RecoveryRoom04Manifest.Bounds bounds = RecoveryRoom04Manifest.BOUNDS;
+            if (origin.y() + bounds.minimumY() < world.getMinHeight()
+                    || origin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+                throw new IllegalArgumentException("Recovery Room 04 origin exceeds the configured world height");
+            }
+            RecoveryRoom04Installer installer = new RecoveryRoom04Installer(
+                    new RecoveryRoom04Manifest(),
+                    data.resolve(ROOM04_SNAPSHOT_NAME),
+                    data.resolve(ROOM04_RECEIPT_NAME));
+            room04Result = installer.install(
+                    settings.releaseId(), origin, new BukkitRecoveryRoom04World(world, origin));
+        }
         MorrowEventProjector projector = null;
         try {
             projector = MorrowEventProjector.open(
@@ -61,7 +88,7 @@ public final class MorrowRuntime implements AutoCloseable {
                     data.resolve(CURSOR_NAME),
                     plugin.getLogger());
             projector.start();
-            return new MorrowRuntime(settings, state, projector);
+            return new MorrowRuntime(settings, state, projector, room04Result);
         } catch (IOException | RuntimeException failure) {
             if (projector != null) projector.close();
             throw failure;
@@ -78,6 +105,10 @@ public final class MorrowRuntime implements AutoCloseable {
 
     public MorrowEventProjector.Snapshot projectorSnapshot() {
         return projector.snapshot();
+    }
+
+    public Optional<RecoveryRoom04Installer.Result> room04Result() {
+        return Optional.ofNullable(room04Result);
     }
 
     @Override

@@ -16,6 +16,13 @@ Implemented and verified:
 - signed Next.js Minecraft event endpoint with replay, size, owner, and schema validation
 - private Supabase schema proposal, service-only SECURITY INVOKER RPC, idempotent event/projection write
 - cross-language audit parity for JSON, Java, TypeScript, SQL, and fail-closed plugin config
+- disabled-by-default Paper `MorrowRuntime` that validates release, campaign, loaded world, HTTPS
+  ingest, and secret bindings before opening `morrow-reboot.journal`
+- async HMAC-SHA256 local event projector with release-bound responses, atomic hash-bound cursor,
+  ordered exponential retry, duplicate recovery, collision halt, and bounded shutdown
+- full-volume Recovery Room 04 manifest with an explicit safe spawn/exit route, occupied-cell refusal,
+  durable pre-mutation rollback snapshot, atomic install receipt, crash recovery, and exact read-back
+  audit (`9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a`)
 
 Verified commands:
 
@@ -30,6 +37,10 @@ cd dashboard && npm.cmd run build
 ## Production order
 
 ### P0 — Make the 60–90 minute slice playable
+
+Items 1–3 are implemented in code and dependency-free self-tests. Room 04 remains behind both the
+global reboot gate and its separate `room04.build-enabled: false` rehearsal gate until a disposable
+Paper/live-client receipt exists.
 
 1. Add a `MorrowRuntime` lifecycle that opens `morrow-reboot.journal` only when the disabled-by-default
    config has valid release/campaign/world/HTTPS ingest values.
@@ -72,8 +83,9 @@ and factual truth. No three consecutive investigations may lead with the same me
 
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
-- Recovery Room 04, the Morrow display body, Paper dialogs, replays, Copperline reboot pages, and
-  Discord reboot interactions still require implementation and live-client rehearsal.
+- Recovery Room 04 still requires disposable Paper/live-client rehearsal; the Morrow display body,
+  Paper dialogs, replays, Copperline reboot pages, and Discord reboot interactions still require
+  implementation and live-client rehearsal.
 - `morrow-reboot.enabled` stays false until the end-to-end disposable Paper receipt passes.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 
