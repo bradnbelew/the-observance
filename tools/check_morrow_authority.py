@@ -19,6 +19,7 @@ PLUGIN_BODY_RUNTIME = PLUGIN_MORROW / "presentation" / "BukkitMorrowBody.java"
 PLUGIN_DIALOG_AUTHORITY = PLUGIN_MORROW / "dialog" / "MorrowDialogAuthority.java"
 PLUGIN_DIALOG_RUNTIME = PLUGIN_MORROW / "dialog" / "BukkitMorrowDialogs.java"
 PLUGIN_STATIC_RESTORE = PLUGIN_MORROW / "room04" / "staticrestore"
+PLUGIN_ENTITY_REPLAY = PLUGIN_MORROW / "room04" / "replay"
 
 
 def load_json(relative: str):
@@ -49,6 +50,52 @@ def main() -> int:
         require(state_rows[-1]["next"] is None, "negotiated state must be terminal")
         for index, row in enumerate(state_rows[:-1]):
             require(row["next"] == state_rows[index + 1]["key"], f"broken state transition at {row['key']}")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        replay_authority = (PLUGIN_ENTITY_REPLAY / "EntityReplayAuthority.java").read_text(encoding="utf-8")
+        replay_consent = (PLUGIN_ENTITY_REPLAY / "EntityReplayConsentStore.java").read_text(encoding="utf-8")
+        replay_clips = (PLUGIN_ENTITY_REPLAY / "EntityReplayClipStore.java").read_text(encoding="utf-8")
+        replay_recorder = (PLUGIN_ENTITY_REPLAY / "EntityReplayRecorder.java").read_text(encoding="utf-8")
+        replay_bukkit = (PLUGIN_ENTITY_REPLAY / "BukkitEntityReplay.java").read_text(encoding="utf-8")
+        ledger = load_json("authority/PUZZLE-LEDGER.json")
+        m03 = next(row for row in ledger["investigations"] if row["id"] == "M03")
+        m04 = next(row for row in ledger["investigations"] if row["id"] == "M04")
+        require(m03["input"] == "A player stands in the missing position and performs the evidenced inventory action during the loop.",
+                "canonical M03 concrete input drifted")
+        require(m03["required_evidence"] == ["partial avatar loop", "redstone pulse log", "inventory transfer", "captioned voice fragment"],
+                "canonical M03 evidence order drifted")
+        require(m04["input"] == "Perform any distinctive movement/action sequence inside the marked test area and seal the clip.",
+                "canonical M04 concrete input drifted")
+        require(m04["failure_behavior"] == "Leaving the boundary cancels and deletes the unsealed clip.",
+                "canonical M04 boundary failure drifted")
+        for required in (
+            "SAMPLE_INTERVAL_TICKS = 2", "MAXIMUM_DURATION_TICKS = 900",
+            "MAXIMUM_SAMPLES_PER_PLAYER = 450", "MAXIMUM_TRACKED_PLAYERS = 6",
+            "MISSING_ROLE_DURATION_TICKS = 740", "MISSING_ROLE_SAMPLE_COUNT = 370",
+            "raw_samples_remote\\\":false", "MISSING_ROLE_COMPLETED", "LIVE_TEST_RECORDED",
+            "BEHAVIOR_REUSE_PROVEN",
+        ):
+            require(required in replay_authority, f"M03/M04 replay authority lacks {required}")
+        for source, required in (
+            (replay_consent, "consentHash"), (replay_consent, "ATOMIC_MOVE"),
+            (replay_clips, "clipHash"), (replay_recorder, "sameConsent"),
+            (replay_recorder, "MAXIMUM_TRACKED_PLAYERS"),
+        ):
+            require(required in source, f"M03/M04 durable local pipeline lacks {required}")
+        for required in (
+            "BlockDisplay", "TextDisplay", "Interaction", "setTeleportDuration(2)",
+            "Provenance.RECORDED", "Provenance.RECONSTRUCTED", "Provenance.LIVE",
+            "PlayerQuitEvent", "catchUpFor", "requirePrimaryThread", "morrow_replay_expires",
+        ):
+            require(required in replay_bukkit, f"M03/M04 Paper loop lacks {required}")
+        for forbidden in (
+            "setBlockData(", "setType(", "runTaskAsynchronously", "net.minecraft",
+            "craftbukkit", "GameProfile", "PlayerInfo",
+        ):
+            require(forbidden not in replay_bukkit,
+                    f"M03/M04 replay crossed its display-only/main-thread boundary via {forbidden}")
     except Exception as exc:  # noqa: BLE001
         errors.append(str(exc))
 

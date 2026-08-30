@@ -33,6 +33,14 @@ Implemented and verified:
   six exact physical diff cells, three visible two-cell passes, four independently openable evidence
   stations, physical-cell plus provenance predicate, authored wrong-action feedback, transactional
   reset/rollback, restart and reconnect catch-up, and group-idempotent `intention_error_proven`
+- canonical M03/M04 Entity Replay loop: purpose-bound per-player consent revisions, exact 37-second
+  missing-role timing, two-tick sampling, 45-second/450-sample/six-player hard caps, redundant-sample
+  compression, atomic content-addressed local clips, release/consent/player/purpose/hash binding,
+  hash-and-summary-only event projection, display-entity interpolation with recorded/reconstructed/live
+  provenance, disconnect/rejoin/restart catch-up, and exact predicates for `missing_role_completed`,
+  `live_test_recorded`, and `behavior_reuse_proven`
+- separate native later-capture authorization after behavior proof; it commits only
+  `live_capture_authorized` with `starts_capture: false` and never starts recording automatically
 
 Verified commands:
 
@@ -48,7 +56,7 @@ cd dashboard && npm.cmd run build
 
 ### P0 — Make the 60–90 minute slice playable
 
-Items 1–6 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
+Items 1–7 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
 global reboot gate and its separate `room04.build-enabled: false` rehearsal gate until a disposable
 Paper/live-client receipt exists. Items 4–6 begin only when those gates have installed Room 04.
 
@@ -66,7 +74,9 @@ Paper/live-client receipt exists. Items 4–6 begin only when those gates have i
 6. Implement the sixth-block static restoration investigation, including authenticated/inferred block
    materials, physical diff, three-source evidence, wrong-action feedback, reset, and catch-up.
 7. Implement the 37-second entity replay and deliberate movement test with explicit opt-in, two-tick
-   sampling, 45-second/450-sample cap, local storage, interpolation, and visual provenance.
+   sampling, 45-second/450-sample cap, local storage, interpolation, and visual provenance. Implemented:
+   unsealed clips delete on cancel, boundary exit, consent revision/revocation, disconnect, or timeline
+   fault; sealed clips persist and verify locally before any receipt or echo.
 8. Add the Copperline Act 0 case chain and Act 1/2 ticket projections as new Morrow routes; do not
    reuse legacy Hold pages or names.
 9. Add the Discord private contradiction/group receipt for the slice using native interactions and
@@ -74,15 +84,15 @@ Paper/live-client receipt exists. Items 4–6 begin only when those gates have i
 10. Exercise one-, two-, and six-player paths through restart and remote outage before enabling the
     rehearsal config.
 
-### Precise next boundary — P0 item 7 only
+### Precise next boundary — P0 item 8 only
 
-M02 now ends at the durable `morrow.act1.intention_error_proven` receipt. The factual proof is fixed to
-physical cell B06 plus the `inferred` class: authenticated screenshot and manifest omit B06, while the
-Finch post explicitly discusses but never places it. Dialogue, freeform text, wrong markers, review,
-reset, and disconnect cannot create that receipt. The existing Entity Replay confirmation may create
-its separate authorization receipt after M02, but no movement recording, sampling, clip storage,
-playback, echo entity, or behavioral comparison exists yet. P0 item 7 must start from that authorization
-and remain within its 45-second/450-sample/six-player authority; none of it is implemented here.
+M04 now ends at the durable `morrow.act2.behavior_reuse_proven` receipt after the exact locally sealed
+route hash and replay duration are physically authenticated. The next native dialog may separately
+commit `morrow.act2.live_capture_authorized`, but its payload explicitly records that it starts no
+capture. P0 item 8 may add only the new Copperline Act 0 case chain and Act 1/2 ticket projections. It
+must consume the existing event catalog and release bindings, must not receive raw replay samples, and
+must not reuse or revive superseded pages, names, routes, or story concepts. No website work has been
+started in this checkpoint.
 
 ### P1 — Safe database rehearsal
 
@@ -104,9 +114,9 @@ and factual truth. No three consecutive investigations may lead with the same me
 
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
-- Recovery Room 04, the Morrow display body, Paper dialogs, and M02 Static Restore still require
-  disposable Paper/live-client rehearsal. Replays, Copperline reboot pages, and Discord reboot
-  interactions still require implementation and live-client rehearsal.
+- Recovery Room 04, the Morrow display body, Paper dialogs, M02 Static Restore, and M03/M04 Entity
+  Replay still require disposable Paper/live-client rehearsal. Copperline reboot pages and Discord
+  reboot interactions still require implementation and live-client rehearsal.
 - `morrow-reboot.enabled` stays false until the end-to-end disposable Paper receipt passes.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 

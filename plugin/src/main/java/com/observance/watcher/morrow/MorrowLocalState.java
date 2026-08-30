@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Restart-safe local authority for Morrow progression. World mechanics commit here before any
@@ -92,6 +93,19 @@ public final class MorrowLocalState {
         return journal.after(Math.max(1, projectedSequence)).stream()
                 .filter(receipt -> MorrowEventAuthority.minecraftOwns(receipt.eventType()))
                 .toList(); // initialization and received projections are never echoed
+    }
+
+    /** Returns a defensive copy of the newest durable payload for restart/catch-up reconstruction. */
+    public synchronized Optional<byte[]> latestPayload(String eventKey) {
+        if (!MorrowEventAuthority.canonical(eventKey)) {
+            throw new IllegalArgumentException("unknown Morrow event: " + eventKey);
+        }
+        List<LocalPrimaryJournal.Receipt> receipts = journal.after(0);
+        for (int index = receipts.size() - 1; index >= 0; index--) {
+            LocalPrimaryJournal.Receipt receipt = receipts.get(index);
+            if (eventKey.equals(receipt.eventType())) return Optional.of(receipt.payload().clone());
+        }
+        return Optional.empty();
     }
 
     /** Validate a persisted projector cursor against the exact locally-owned journal receipt. */

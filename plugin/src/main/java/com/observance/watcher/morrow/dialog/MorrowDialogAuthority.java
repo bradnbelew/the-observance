@@ -2,6 +2,7 @@ package com.observance.watcher.morrow.dialog;
 
 import com.observance.watcher.morrow.MorrowRelationshipSnapshot;
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
+import com.observance.watcher.morrow.room04.replay.EntityReplayAuthority;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -18,7 +19,9 @@ public final class MorrowDialogAuthority {
         TERMINAL_GREETING,
         RESTORATION_PROPOSAL,
         EVIDENCE_REVIEW,
-        ENTITY_REPLAY_AUTHORIZATION
+        ENTITY_REPLAY_AUTHORIZATION,
+        ENTITY_REPLAY_CONSOLE,
+        LIVE_CAPTURE_AUTHORIZATION
     }
 
     public enum Action {
@@ -27,7 +30,9 @@ public final class MorrowDialogAuthority {
         REVIEW_EVIDENCE,
         RESET_STATIC_RESTORE,
         AUTHORIZE_ENTITY_REPLAY,
-        DECLINE_ENTITY_REPLAY
+        DECLINE_ENTITY_REPLAY,
+        AUTHORIZE_LIVE_CAPTURE,
+        DECLINE_LIVE_CAPTURE
     }
 
     public enum Status { READY, NOT_READY }
@@ -65,6 +70,8 @@ public final class MorrowDialogAuthority {
         if (!has(snapshot, PROPOSAL_AUTHENTICATED)) return View.RESTORATION_PROPOSAL;
         if (!has(snapshot, INTENTION_ERROR_PROVEN)) return View.EVIDENCE_REVIEW;
         if (!has(snapshot, ENTITY_REPLAY_AUTHORIZED)) return View.ENTITY_REPLAY_AUTHORIZATION;
+        if (!has(snapshot, EntityReplayAuthority.BEHAVIOR_REUSE_PROVEN)) return View.ENTITY_REPLAY_CONSOLE;
+        if (!has(snapshot, EntityReplayAuthority.LIVE_CAPTURE_AUTHORIZED)) return View.LIVE_CAPTURE_AUTHORIZATION;
         return View.EVIDENCE_REVIEW;
     }
 
@@ -103,6 +110,15 @@ public final class MorrowDialogAuthority {
                     : notReady("The unsupported restoration block must be proven before Entity Replay can be authorized.");
             case DECLINE_ENTITY_REPLAY -> noReceipt(
                     "Entity Replay remains unauthorized. Evidence and relationship state are unchanged.");
+            case AUTHORIZE_LIVE_CAPTURE -> has(snapshot, EntityReplayAuthority.BEHAVIOR_REUSE_PROVEN)
+                    ? receipt(
+                            EntityReplayAuthority.LIVE_CAPTURE_AUTHORIZED,
+                            "paper:room04:live-capture:v1",
+                            "{\"capability\":\"live_capture\",\"dialog\":\"live_capture_authorization_v1\",\"scope\":\"later_authored_scene_only\",\"starts_capture\":false}",
+                            "Later live capture is authorized. This receipt does not start a recording.")
+                    : notReady("Behavior reuse must be proven before later live capture can be authorized.");
+            case DECLINE_LIVE_CAPTURE -> noReceipt(
+                    "Later live capture remains unauthorized. No recording started and no receipt was created.");
         };
     }
 

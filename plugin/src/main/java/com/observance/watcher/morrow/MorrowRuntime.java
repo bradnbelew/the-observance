@@ -8,6 +8,7 @@ import com.observance.watcher.morrow.dialog.BukkitMorrowDialogs;
 import com.observance.watcher.morrow.presentation.BukkitMorrowBody;
 import com.observance.watcher.morrow.room04.staticrestore.BukkitStaticRestore;
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
+import com.observance.watcher.morrow.room04.replay.BukkitEntityReplay;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -30,6 +31,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final RecoveryRoom04Installer.Result room04Result;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
+    private final BukkitEntityReplay entityReplay;
     private final BukkitMorrowDialogs dialogs;
 
     private MorrowRuntime(
@@ -39,6 +41,7 @@ public final class MorrowRuntime implements AutoCloseable {
             RecoveryRoom04Installer.Result room04Result,
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
+            BukkitEntityReplay entityReplay,
             BukkitMorrowDialogs dialogs) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
@@ -46,6 +49,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.room04Result = room04Result;
         this.body = body;
         this.staticRestore = staticRestore;
+        this.entityReplay = entityReplay;
         this.dialogs = dialogs;
     }
 
@@ -104,6 +108,7 @@ public final class MorrowRuntime implements AutoCloseable {
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
         BukkitStaticRestore staticRestore = null;
+        BukkitEntityReplay entityReplay = null;
         BukkitMorrowDialogs dialogs = null;
         try {
             projector = MorrowEventProjector.open(
@@ -117,12 +122,15 @@ public final class MorrowRuntime implements AutoCloseable {
                 staticRestore.start(state.snapshot());
                 body = new BukkitMorrowBody(plugin, world, room04Origin, settings.releaseId());
                 body.start(state.snapshot());
-                dialogs = new BukkitMorrowDialogs(plugin, world, room04Origin, state, body, staticRestore);
+                entityReplay = new BukkitEntityReplay(plugin, world, room04Origin, state, data);
+                entityReplay.start();
+                dialogs = new BukkitMorrowDialogs(plugin, world, room04Origin, state, body, staticRestore, entityReplay);
                 dialogs.start();
             }
-            return new MorrowRuntime(settings, state, projector, room04Result, body, staticRestore, dialogs);
+            return new MorrowRuntime(settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs);
         } catch (IOException | RuntimeException | LinkageError failure) {
             if (dialogs != null) dialogs.close();
+            if (entityReplay != null) entityReplay.close();
             if (staticRestore != null) staticRestore.close();
             if (body != null) body.close();
             if (projector != null) projector.close();
@@ -149,6 +157,7 @@ public final class MorrowRuntime implements AutoCloseable {
     @Override
     public void close() {
         if (dialogs != null) dialogs.close();
+        if (entityReplay != null) entityReplay.close();
         if (staticRestore != null) staticRestore.close();
         if (body != null) body.close();
         projector.close();

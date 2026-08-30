@@ -13,6 +13,7 @@ import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest.
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest.Evidence;
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest.Provenance;
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestorePredicate;
+import com.observance.watcher.morrow.room04.replay.BukkitEntityReplay;
 import io.papermc.paper.connection.PlayerGameConnection;
 import io.papermc.paper.dialog.Dialog;
 import io.papermc.paper.event.player.PlayerCustomClickEvent;
@@ -55,6 +56,13 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
     private static final Key RESET_STATIC_RESTORE = Key.key("observance:morrow/reset-static-restore");
     private static final Key AUTHORIZE_REPLAY = Key.key("observance:morrow/authorize-entity-replay");
     private static final Key DECLINE_REPLAY = Key.key("observance:morrow/decline-entity-replay");
+    private static final Key OPT_IN_REPLAY = Key.key("observance:morrow/opt-in-replay-recording");
+    private static final Key REVOKE_REPLAY = Key.key("observance:morrow/revoke-replay-consent");
+    private static final Key CANCEL_REPLAY = Key.key("observance:morrow/cancel-replay-recording");
+    private static final Key SEAL_REPLAY = Key.key("observance:morrow/seal-replay-recording");
+    private static final Key RESTART_REPLAY = Key.key("observance:morrow/restart-reconstructed-replay");
+    private static final Key AUTHORIZE_LIVE_CAPTURE = Key.key("observance:morrow/authorize-live-capture");
+    private static final Key DECLINE_LIVE_CAPTURE = Key.key("observance:morrow/decline-live-capture");
 
     private final JavaPlugin plugin;
     private final World world;
@@ -62,6 +70,7 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
     private final MorrowLocalState state;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
+    private final BukkitEntityReplay entityReplay;
     private final StaticRestorePredicate staticRestorePredicate;
     private final Map<Key, ClassificationInput> classificationInputs;
     private final Map<UUID, PendingClassification> pendingClassifications = new HashMap<>();
@@ -73,13 +82,15 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
             Origin origin,
             MorrowLocalState state,
             BukkitMorrowBody body,
-            BukkitStaticRestore staticRestore) {
+            BukkitStaticRestore staticRestore,
+            BukkitEntityReplay entityReplay) {
         this.plugin = Objects.requireNonNull(plugin, "plugin");
         this.world = Objects.requireNonNull(world, "world");
         this.origin = Objects.requireNonNull(origin, "origin");
         this.state = Objects.requireNonNull(state, "state");
         this.body = Objects.requireNonNull(body, "body");
         this.staticRestore = Objects.requireNonNull(staticRestore, "staticRestore");
+        this.entityReplay = Objects.requireNonNull(entityReplay, "entityReplay");
         this.staticRestorePredicate = new StaticRestorePredicate(staticRestore.manifest());
         this.classificationInputs = classificationInputs();
     }
@@ -101,6 +112,8 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
                 case RESTORATION_PROPOSAL -> restorationProposal();
                 case EVIDENCE_REVIEW -> evidenceReview();
                 case ENTITY_REPLAY_AUTHORIZATION -> entityReplayAuthorization();
+                case ENTITY_REPLAY_CONSOLE -> entityReplayConsole();
+                case LIVE_CAPTURE_AUTHORIZATION -> liveCaptureAuthorization();
             });
         } catch (LinkageError | RuntimeException unavailable) {
             player.sendMessage(Component.text(
@@ -131,7 +144,10 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
         if (!started || event.getHand() != EquipmentSlot.HAND) return;
         Evidence evidence = staticRestore.evidence(event.getRightClicked());
         Candidate candidate = staticRestore.candidate(event.getRightClicked());
-        if (evidence == null && candidate == null && !body.isOwnedInteraction(event.getRightClicked())) return;
+        boolean replayInteraction = entityReplay.isOwnedInteraction(event.getRightClicked());
+        if (evidence == null && candidate == null && !body.isOwnedInteraction(event.getRightClicked())
+                && !replayInteraction) return;
+        if (replayInteraction) return; // replay listener owns its concrete physical input
         event.setCancelled(true);
         if (evidence != null) {
             openEvidence(event.getPlayer(), evidence);
@@ -162,6 +178,7 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
             return;
         }
         Action action = action(event.getIdentifier());
+        if (action == null && applyReplayAction(connection.getPlayer(), event.getIdentifier())) return;
         if (action == null) return;
         Player player = connection.getPlayer();
         body.focus(player);
@@ -173,6 +190,24 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
         pendingClassifications.remove(event.getPlayer().getUniqueId());
     }
 
+    private boolean applyReplayAction(Player player, Key key) {
+        try {
+            String feedback;
+            if (OPT_IN_REPLAY.equals(key)) feedback = entityReplay.optIn(player);
+            else if (REVOKE_REPLAY.equals(key)) feedback = entityReplay.revoke(player);
+            else if (CANCEL_REPLAY.equals(key)) feedback = entityReplay.cancel(player);
+            else if (SEAL_REPLAY.equals(key)) feedback = entityReplay.seal(player);
+            else if (RESTART_REPLAY.equals(key)) feedback = entityReplay.restartReplay(player);
+            else return false;
+            player.sendMessage(Component.text(feedback, NamedTextColor.AQUA));
+        } catch (IOException | RuntimeException failure) {
+            player.sendMessage(Component.text(
+                    "Entity Replay halted safely. No unverified clip or receipt was retained.", NamedTextColor.RED));
+            plugin.getLogger().warning("Morrow Entity Replay dialog failed safely: " + safe(failure.getMessage()));
+        }
+        return true;
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -181,6 +216,7 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
             if (!started || !isInsideRoom(player)) return;
             try {
                 staticRestore.reconcile(state.snapshot());
+                entityReplay.catchUpFor(player);
                 if (state.snapshot().committedEvents().contains(MorrowDialogAuthority.PROPOSAL_AUTHENTICATED)) {
                     player.sendMessage(Component.text(
                             state.snapshot().committedEvents().contains(MorrowDialogAuthority.INTENTION_ERROR_PROVEN)
@@ -395,6 +431,30 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
                 .type(DialogType.confirmation(authorize, decline)));
     }
 
+    private Dialog entityReplayConsole() {
+        return Dialog.create(builder -> builder.empty()
+                .base(base(
+                        "Entity Replay — M03/M04",
+                        "Every participant opts in separately. Samples remain local, stop at 45 seconds, and include only movement, look, pose, selected slot, and designated actions. Leaving the marked boundary deletes an unsealed clip."))
+                .type(DialogType.multiAction(List.of(
+                        button("Opt in and start", "Creates or renews your local purpose-bound consent, then starts the current bounded scene.", OPT_IN_REPLAY),
+                        button("Seal deliberate test", "M04 only: persists and verifies the clip before its receipt or echo can occur.", SEAL_REPLAY),
+                        button("Replay sealed test", "Reconstructs the exact local hash with a display echo; creates no receipt by itself.", RESTART_REPLAY),
+                        button("Cancel unsealed clip", "Deletes only your active unsealed samples; consent remains.", CANCEL_REPLAY),
+                        button("Revoke consent", "Revisions your consent to denied and immediately removes your unsealed capture or echo.", REVOKE_REPLAY)))
+                        .columns(1).build()));
+    }
+
+    private Dialog liveCaptureAuthorization() {
+        return Dialog.create(builder -> builder.empty()
+                .base(base(
+                        "Later live capture authorization",
+                        "Behavior reuse is proven. This separate decision authorizes a later authored scene only. Authorizing does not start recording now."))
+                .type(DialogType.confirmation(
+                        button("Authorize later capture", "Commits only live_capture_authorized; starts_capture is false.", AUTHORIZE_LIVE_CAPTURE),
+                        button("Not now", "Creates no receipt and starts no recording.", DECLINE_LIVE_CAPTURE))));
+    }
+
     private static DialogBase base(String title, String message) {
         return DialogBase.builder(Component.text(title))
                 .canCloseWithEscape(true)
@@ -439,6 +499,8 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
         if (RESET_STATIC_RESTORE.equals(key)) return Action.RESET_STATIC_RESTORE;
         if (AUTHORIZE_REPLAY.equals(key)) return Action.AUTHORIZE_ENTITY_REPLAY;
         if (DECLINE_REPLAY.equals(key)) return Action.DECLINE_ENTITY_REPLAY;
+        if (AUTHORIZE_LIVE_CAPTURE.equals(key)) return Action.AUTHORIZE_LIVE_CAPTURE;
+        if (DECLINE_LIVE_CAPTURE.equals(key)) return Action.DECLINE_LIVE_CAPTURE;
         return null;
     }
 

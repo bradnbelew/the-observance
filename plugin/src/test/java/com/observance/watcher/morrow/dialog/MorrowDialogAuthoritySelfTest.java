@@ -84,11 +84,26 @@ public final class MorrowDialogAuthoritySelfTest {
             check(state.pendingAfter(0).size() == 4, "six authorizations create one authorization receipt");
             check(state.snapshot().stage() == MorrowStage.CURIOUS,
                     "only complete proof plus explicit authorization advances to curious");
+            check(MorrowDialogAuthority.currentView(state.snapshot()) == View.ENTITY_REPLAY_CONSOLE,
+                    "authorization opens the bounded M03/M04 console");
+
+            state.commit("morrow.act2.missing_role_completed", "paper:test:m03", bytes("{}"));
+            state.commit("morrow.act2.live_test_recorded", "paper:test:m04-live", bytes("{}"));
+            state.commit("morrow.act2.behavior_reuse_proven", "paper:test:m04-reuse", bytes("{}"));
+            check(MorrowDialogAuthority.currentView(state.snapshot()) == View.LIVE_CAPTURE_AUTHORIZATION,
+                    "behavior proof opens a separate later-capture authorization dialog");
+            Decision declineLive = MorrowDialogAuthority.decide(Action.DECLINE_LIVE_CAPTURE, state.snapshot());
+            check(!declineLive.commitsReceipt(), "declining later capture starts nothing and commits nothing");
+            Decision authorizeLive = MorrowDialogAuthority.decide(Action.AUTHORIZE_LIVE_CAPTURE, state.snapshot());
+            check(authorizeLive.commitsReceipt()
+                            && new String(authorizeLive.payload(), StandardCharsets.UTF_8)
+                            .contains("\"starts_capture\":false"),
+                    "explicit later-capture decision commits only a non-starting authorization receipt");
 
             MorrowLocalState restarted = MorrowLocalState.open(journal, RELEASE);
             check(restarted.snapshot().stage() == MorrowStage.CURIOUS,
                     "dialog receipts reconstruct exactly after restart");
-            check(restarted.pendingAfter(0).size() == 4, "restart retains exact local receipt count");
+            check(restarted.pendingAfter(0).size() == 7, "restart retains exact local receipt count");
 
             String bukkit = Files.readString(Path.of(
                     "src/main/java/com/observance/watcher/morrow/dialog/BukkitMorrowDialogs.java"),
@@ -101,7 +116,7 @@ public final class MorrowDialogAuthoritySelfTest {
             for (String forbidden : new String[]{"setBlockData(", "setType(", "breakNaturally(", "Async"}) {
                 check(!bukkit.contains(forbidden), "item 5 must stop before world mutation: " + forbidden);
             }
-            System.out.println("MORROW DIALOG AUTHORITY: PASS players=1/2/6 receipts=4 escape_safe=true");
+            System.out.println("MORROW DIALOG AUTHORITY: PASS players=1/2/6 receipts=7 escape_safe=true");
         } finally {
             Files.deleteIfExists(journal);
             Files.deleteIfExists(directory);

@@ -106,6 +106,7 @@ def pluginSelfTests = [
     , morrowBodyAuthority: 'com.observance.watcher.morrow.presentation.MorrowBodyAuthoritySelfTest'
     , morrowDialogAuthority: 'com.observance.watcher.morrow.dialog.MorrowDialogAuthoritySelfTest'
     , staticRestoreInvestigation: 'com.observance.watcher.morrow.room04.staticrestore.StaticRestoreInvestigationSelfTest'
+    , entityReplayLoop: 'com.observance.watcher.morrow.room04.replay.EntityReplayLoopSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
