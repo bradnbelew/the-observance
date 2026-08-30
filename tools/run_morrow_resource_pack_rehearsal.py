@@ -255,6 +255,18 @@ def main() -> None:
         receipt_dir.mkdir(parents=True)
         paper_log = receipt_dir / "morrow-pack-paper.log"
         shutil.copy2(target / "morrow-pack-paper.log", paper_log)
+        retained_client = None
+        retained_options = None
+        retained_servers = None
+        client_data: dict[str, Any] = {}
+        if client_receipt.is_file():
+            client_data = json.loads(client_receipt.read_text(encoding="utf-8"))
+            retained_client = receipt_dir / "client-receipt.json"
+            retained_options = receipt_dir / "options.txt"
+            retained_servers = receipt_dir / "servers.dat"
+            shutil.copy2(client_receipt, retained_client)
+            shutil.copy2(client_receipt.parent / "game" / "options.txt", retained_options)
+            shutil.copy2(client_receipt.parent / "game" / "servers.dat", retained_servers)
         receipt = {
             "schema_version": "1.0.0-morrow-resource-pack-rehearsal",
             "status": "bounded_handshake_pass_human_visual_parity_open",
@@ -284,9 +296,15 @@ def main() -> None:
             "client": {
                 "launched": args.launch_client,
                 "username": args.username,
-                "receipt": str(client_receipt) if client_receipt.is_file() else None,
-                "receipt_sha256": paper_harness.sha256(client_receipt) if client_receipt.is_file() else None,
+                "receipt": retained_client.name if retained_client is not None else None,
+                "receipt_sha256": paper_harness.sha256(retained_client) if retained_client is not None else None,
+                "options": retained_options.name if retained_options is not None else None,
+                "options_sha256": paper_harness.sha256(retained_options) if retained_options is not None else None,
+                "servers": retained_servers.name if retained_servers is not None else None,
+                "servers_sha256": paper_harness.sha256(retained_servers) if retained_servers is not None else None,
+                "server_resource_pack_policy": client_data.get("server_resource_pack_policy"),
                 "launcher_output_sha256": hashlib.sha256(client_stdout.encode()).hexdigest(),
+                "client_log_retained": False,
             },
             "paper_log": {"file": paper_log.name, "sha256": paper_harness.sha256(paper_log)},
             "proof": {
