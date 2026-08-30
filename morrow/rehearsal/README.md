@@ -17,19 +17,18 @@ byte-for-byte deterministic at the retained timestamp.
 
 The `launch-matrix.json` receipt is authoritative about proof limits. A headless contract result is
 not a substitute for an actual Paper boot or a graphical client observation. The Paper lane now has
-an actual runtime receipt. A bounded graphical 1.21.11 client has now proven Room 04 safe-entry recovery
-without suffocation, but Windows visual capture remains unavailable. The six complete graphical lanes
-remain required and use the create-only protocol
-in `CLIENT-REHEARSAL.md`; its validator refuses screenshots or prose without matching journal, world,
-inventory, cleanup, and complete server-lifecycle evidence.
+an actual runtime receipt. A bounded graphical 1.21.11 client has proven Room 04 safe-entry recovery
+without suffocation. A Windows 10 exact-title/PID fallback now also retains the joined Room 04 frame,
+the presentation defect it exposed, the corrected frame, and one successful native terminal-dialog
+activation under `client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
 
-After Java access was explicitly allowed, a second bounded dummy-identity client was launched and the
-exact `Minecraft 1.21.11` Java window was selected separately from the launcher. Windows still returned
-`SetIsBorderRequired ... 0x80004002`; no blind input was sent. The retained retry receipt is
-`client-attempts/2026-08-30-java-permission-capture-unavailable.json`, so the visual gate remains
-honestly blocked by capture availability rather than Java launch permission. The host is Windows 10
-build 19045; Microsoft documents `GraphicsCaptureSession.IsBorderRequired` from build 20348, so the
-failure is a feature-availability mismatch in the capture helper.
+The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
+historical evidence about the primary capture API. The fallback captures only one unobscured visible
+window and injects no input; exact-window input was separately limited to two reversible F1 toggles and
+one observed terminal right-click. This bounded checkpoint does not satisfy continuous synchronized
+media, all poses/dialog paths, parity modes, complete cohorts, or pacing. All six complete graphical
+lanes therefore remain required under `CLIENT-REHEARSAL.md`, whose validator also requires matching
+journal, world, inventory, cleanup, and complete server-lifecycle evidence.
 
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed

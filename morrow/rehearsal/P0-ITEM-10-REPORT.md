@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `bf86d50c0d31084dc485bb434602658a41bff30c6e43bbcb68ddbcbc3b531783`
+Bundle SHA-256: `c5930bf57c9a94b58f22dd215ccbe432ef6d660e546c0990eedec7eb11ba4909`
 
 ## Proven automatically
 
@@ -53,16 +53,23 @@ all 36 main-inventory slots with 2,304 items, disconnected, rejoined the same pl
 and found the same 2,304 items. Both bounded clients avoided suffocation and emitted finalized hashed
 logs plus clean disconnect/runtime-close receipts.
 
-This is a safe-entry runtime subproof, not a complete graphical lane. Entity interpolation,
-native-dialog interaction, resource-pack-decline parity, audio-disabled parity, full-inventory route,
-exit/respawn, two-/six-player physical cleanup, and 60–90 minute pacing without
-operator narration still require synchronized visual and machine receipts. The installed Microsoft
-launcher did open during the first loopback-only attempt on 2026-08-30, but Windows
-returned `SetIsBorderRequired failed: No such interface supported (0x80004002)` for both capture
-attempts and exposed no accessibility tree or focused element. No blind input was sent. Paper then
-stopped cleanly with `MORROW_RUNTIME_CLOSED`. Both attempts are retained under `client-attempts`;
-`CLIENT-REHEARSAL.md` and the bound generator/checker define the exact evidence required to finish the
-six lanes without overclaiming the working safe-entry subproof.
+Windows' primary capture API still returned
+`SetIsBorderRequired failed: No such interface supported (0x80004002)` on build 19045. A bounded
+exact-title/PID fallback then captured the unobscured visible Java window without injecting input. The
+first joined frame exposed default-scale TextDisplay labels covering the focal build. The implementation
+now applies bounded scales, places `MORROW // TERMINAL` above the copper terminal, and moves its
+interaction surface to the spawn-facing front. A rebuilt plugin passed all self-tests; a fresh joined
+client visibly showed the corrected layout, and one observed right-click opened the native
+`Static restoration proposal` dialogue. The before/corrected/dialog images, capture receipts, launcher
+receipt, and clean server lifecycle are hash-bound in
+`client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
+
+This extends the safe-entry result with a real visual/readability and one-dialog-activation subproof,
+not a complete graphical lane. All poses and interpolation, the full mouse/keyboard/Escape dialogue
+matrix, resource-pack-decline parity, audio-disabled parity, full-inventory route and exit/respawn,
+two-/six-player physical cleanup, continuous synchronized media, and 60–90 minute pacing without
+operator narration remain required. `CLIENT-REHEARSAL.md` and the bound generator/checker define the
+evidence needed to finish those six lanes without overclaiming this checkpoint.
 
 The database proposal now also exists as a CLI-generated numbered migration and passed an isolated
 Supabase rehearsal: live role/RLS denial, owner projection, service ingest, exact payload and token

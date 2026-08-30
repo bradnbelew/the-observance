@@ -64,13 +64,24 @@ public final class MorrowBodyAuthoritySelfTest {
                         && MorrowBodyAuthority.MAXIMUM_HEAD_YAW <= 35.0F
                         && MorrowBodyAuthority.MAXIMUM_HEAD_PITCH <= 15.0F,
                 "head tracking distance and angles are bounded");
+        check(MorrowBodyAuthority.LABEL_SCALE >= 0.15F && MorrowBodyAuthority.LABEL_SCALE <= 0.40F,
+                "Morrow label remains readable without filling the first-person view");
+        check(MorrowBodyAuthority.TERMINAL_LABEL_Y > 2.0D
+                        && Math.abs(MorrowBodyAuthority.TERMINAL_LABEL_Z) <= 0.25D,
+                "idle label sits above rather than inside the two-block terminal");
+        check(MorrowBodyAuthority.TERMINAL_INTERACTION_Y >= 0.0D
+                        && MorrowBodyAuthority.TERMINAL_INTERACTION_Y <= 0.25D
+                        && MorrowBodyAuthority.TERMINAL_INTERACTION_Z <= -0.50D,
+                "idle interaction volume sits on the spawn-facing terminal surface");
 
         String bukkit = Files.readString(Path.of(
                 "src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java"),
                 StandardCharsets.UTF_8);
         for (String required : new String[]{
                 "BlockDisplay", "TextDisplay", "Interaction", "PersistentDataType",
-                "cleanupOwned()", "setPersistent(true)", "expiresAtMillis", "trackingTick()"}) {
+                "cleanupOwned()", "setPersistent(true)", "expiresAtMillis", "trackingTick()",
+                "MorrowBodyAuthority.LABEL_SCALE", "MorrowBodyAuthority.TERMINAL_LABEL_Y",
+                "MorrowBodyAuthority.TERMINAL_INTERACTION_Z", "setTransformation"}) {
             check(bukkit.contains(required), "Bukkit fallback body missing " + required);
         }
         for (String forbidden : new String[]{"net.minecraft", "craftbukkit", "FakePlayer", "ServerPlayer"}) {

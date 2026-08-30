@@ -22,6 +22,8 @@
     }
   ],
   "human_client_evidence": {
+    "capture_fallback": "tools/capture_windows_window.py",
+    "capture_fallback_sha256": "56999a4bf2a9034cecc4d28499399cae42f5fffcf9f984e63ef62f5b8980dbf2",
     "capture_retry_result": "java_permission_did_not_resolve_windows_capture_interface_error",
     "checker": "tools/check_morrow_client_rehearsal.py",
     "checker_sha256": "b0461b0878d2c186cbf321b7e8481c71fd0202980ee9a2184eb4eb78e125024d",
@@ -33,14 +35,18 @@
     "latest_attempt_status": "unproven",
     "latest_capture_retry": "morrow/rehearsal/client-attempts/2026-08-30-java-permission-capture-unavailable.json",
     "latest_capture_retry_sha256": "56d19765c9ebf1740df5aa046432e96aef0b8d4b29256aec89cb63296ddf8a4e",
+    "latest_visual_checkpoint": "morrow/rehearsal/client-visual/2026-08-30-exact-window-visual-checkpoint.json",
+    "latest_visual_checkpoint_sha256": "914e51dfe1e469fb7b325a6fb8b33b90f6b0c00b748e2d5b912fd2b56bf64893",
     "offline_launcher": "tools/run_morrow_offline_client.py",
     "offline_launcher_sha256": "6a168fff2950e9b61c1e8ed0c8483b58213e65bcb3facfbddc510ece31f252f8",
     "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
     "protocol": "morrow/rehearsal/CLIENT-REHEARSAL.md",
-    "protocol_sha256": "539e8bb714d58d7d9a1e36c0b6166fc4f3e7b4bbdfb0d456e574368af2dac3a2",
+    "protocol_sha256": "0451cc23ba4827e65064aa0ff3620a7856b27b19545a8112f19dee3745d7a4d7",
     "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
     "selftest": "tools/test_morrow_client_rehearsal.py",
-    "selftest_sha256": "2bc22838cb832948ec4205868bd1a61ca74b1db1e3635e60cf0416095932a53a"
+    "selftest_sha256": "2bc22838cb832948ec4205868bd1a61ca74b1db1e3635e60cf0416095932a53a",
+    "visual_checkpoint_scope": "joined Room 04 readability plus one native terminal-dialog activation",
+    "visual_checkpoint_status": "bounded_visual_checkpoint_pass"
   },
   "human_client_required": [
     {

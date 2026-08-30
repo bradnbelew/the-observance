@@ -536,11 +536,14 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
         "2026-08-30-offline-client-safe-entry-partial.json"
     client_capture_retry = ROOT / "morrow" / "rehearsal" / "client-attempts" / \
         "2026-08-30-java-permission-capture-unavailable.json"
+    client_visual_checkpoint = ROOT / "morrow" / "rehearsal" / "client-visual" / \
+        "2026-08-30-exact-window-visual-checkpoint.json"
     client_protocol = ROOT / "morrow" / "rehearsal" / "CLIENT-REHEARSAL.md"
     client_generator = ROOT / "tools" / "new_morrow_client_rehearsal.py"
     client_checker = ROOT / "tools" / "check_morrow_client_rehearsal.py"
     client_selftest = ROOT / "tools" / "test_morrow_client_rehearsal.py"
     offline_launcher = ROOT / "tools" / "run_morrow_offline_client.py"
+    capture_fallback = ROOT / "tools" / "capture_windows_window.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
     cron_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
@@ -584,6 +587,12 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "latest_capture_retry": str(client_capture_retry.relative_to(ROOT)).replace("\\", "/"),
             "latest_capture_retry_sha256": sha256_file(client_capture_retry),
             "capture_retry_result": "java_permission_did_not_resolve_windows_capture_interface_error",
+            "capture_fallback": str(capture_fallback.relative_to(ROOT)).replace("\\", "/"),
+            "capture_fallback_sha256": sha256_file(capture_fallback),
+            "latest_visual_checkpoint": str(client_visual_checkpoint.relative_to(ROOT)).replace("\\", "/"),
+            "latest_visual_checkpoint_sha256": sha256_file(client_visual_checkpoint),
+            "visual_checkpoint_status": "bounded_visual_checkpoint_pass",
+            "visual_checkpoint_scope": "joined Room 04 readability plus one native terminal-dialog activation",
             "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
             "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
         },

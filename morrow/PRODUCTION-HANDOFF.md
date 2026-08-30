@@ -83,8 +83,10 @@ Implemented and verified:
   now proves bounded safe entry without suffocation, and the isolated Supabase RLS/concurrency/rollback
   lane is proven. The authenticated browser now proves owner-only reads, Act 0 writes, wrong-token
   refusal, and six ticket cards. A private Supabase Cron schedule now proves automatic ten-second
-  Copperline projection, health/run receipts, failure recovery, and clean disable. Visual capture,
-  a browser-requested PKCE magic-link exchange, the database-bound Discord worker, and every complete
+  Copperline projection, health/run receipts, failure recovery, and clean disable. An exact-window
+  Windows 10 fallback now proves one joined Room 04 readability checkpoint and one native terminal
+  dialogue activation, including the before/after correction of giant TextDisplay overlays. A complete
+  browser-requested PKCE magic-link exchange, the database-bound Discord worker, and every complete
   graphical lane remain unproven. Real Supabase email delivery and bot-only Discord Gateway transport
   are retained partial subproofs; every production gate remains disabled
 
@@ -163,10 +165,9 @@ channel, including `MESSAGE_CREATE`, REST readback, stable nonce, mention suppre
 ephemeral interaction remain; the JavaScript Copperline worker is only an operator fallback.
 Do not expand Acts 3–7, enable production, or mutate production services, data, or worlds at this boundary.
 
-The first 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
-with `SetIsBorderRequired failed: No such interface supported (0x80004002)` and exposed no accessibility
-tree or focused element. No blind click was made; the disposable Paper server then closed cleanly. The
-machine receipt is retained under `morrow/rehearsal/client-attempts` and is explicitly `unproven`.
+The first 2026-08-30 loopback attempts still document Windows app capture failing with
+`SetIsBorderRequired failed: No such interface supported (0x80004002)` and are retained under
+`morrow/rehearsal/client-attempts` as explicitly unproven historical attempts.
 
 A later create-only attempt launched the locally installed vanilla 1.21.11 client directly with a
 dummy offline identity, 75 manifest-verified libraries, nine extracted Windows natives, closed
@@ -174,17 +175,15 @@ loopback HTTP(S) proxying, and no account-file reads. It joined pinned Paper bui
 stale coordinate; the new entry controller recovered it to `(0.5, 80.0, -1.5)` before damage. A fresh
 hardened target then retained all 2,304 items across a same-player disconnect/rejoin at that safe cell,
 with no entry-controller inventory mutations, no suffocation, and clean bounded client/server shutdown.
-Windows capture still failed with the same OS interface error, so the retained attempt is honestly
-`unproven` for the six human-client lanes while recording the safe-entry runtime subproof.
-
-After Java access was explicitly approved, a fresh bounded direct-client retry selected exactly one
-`Minecraft 1.21.11` Java window while excluding the launcher. Capture still failed with the identical
-`0x80004002` interface error. No blind keyboard or mouse input was sent, and the client harness stopped
-after 120 seconds. The retry is retained as
-`morrow/rehearsal/client-attempts/2026-08-30-java-permission-capture-unavailable.json`. The host is
-Windows 10 build 19045, while Microsoft documents the helper's failing
-`GraphicsCaptureSession.IsBorderRequired` interface from build 20348; use a compatible capture host or
-a helper that feature-detects and retains the normal capture border.
+The host-compatible fallback subsequently selected exactly one Java multiplayer window by exact title
+and PID while excluding the launcher. Its first Room 04 frame exposed giant default-scale TextDisplay
+overlays. Bounded label scales removed those overlays, and relocating the idle label plus interaction
+surface made `MORROW // TERMINAL` visible above the copper terminal and reachable from spawn. A fresh
+client visibly showed the corrected room, and one observed terminal right-click opened the native
+`Static restoration proposal` dialogue. The before/corrected/dialog frames and lifecycle receipts are
+retained at `morrow/rehearsal/client-visual/2026-08-30-exact-window-visual-checkpoint.json`. This is only
+a bounded visual/interaction checkpoint: continuous media, all six poses, the full dialogue input
+matrix, parity modes, complete cohorts, cleanup, and pacing remain required.
 
 ### P1 — Safe database rehearsal
 

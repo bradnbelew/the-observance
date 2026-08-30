@@ -190,7 +190,8 @@ public final class StaticRestoreInvestigationSelfTest {
                 "src/main/java/com/observance/watcher/morrow/room04/staticrestore/BukkitStaticRestore.java"));
         for (String required : new String[]{
                 "PASS_INTERVAL_TICKS", "spawnParticle", "playSound", "PersistentDataType",
-                "resetAndReplay", "StaticRestoreEngine", "requirePrimaryThread"}) {
+                "resetAndReplay", "StaticRestoreEngine", "requirePrimaryThread",
+                "CANDIDATE_LABEL_SCALE", "EVIDENCE_LABEL_SCALE", "setTransformation"}) {
             check(source.contains(required), "Paper M02 adapter missing " + required);
         }
         for (String forbidden : new String[]{

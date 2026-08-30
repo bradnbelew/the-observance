@@ -47,6 +47,99 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def validate_client_visual_checkpoint(client: dict[str, Any]) -> dict[str, Any]:
+    checkpoint = load(ROOT / client["latest_visual_checkpoint"])
+    require(client["visual_checkpoint_status"] == "bounded_visual_checkpoint_pass"
+            and checkpoint["status"] == client["visual_checkpoint_status"],
+            "exact-window visual checkpoint status drifted")
+    require(client["visual_checkpoint_scope"]
+            == "joined Room 04 readability plus one native terminal-dialog activation",
+            "exact-window visual checkpoint scope drifted")
+    require(checkpoint["schema_version"] == "1.0.0-morrow-exact-window-visual-checkpoint",
+            "exact-window visual checkpoint schema drifted")
+    require(checkpoint["boundary"]["loopback_only"] is True
+            and checkpoint["boundary"]["server"] == "127.0.0.1:25592"
+            and checkpoint["boundary"]["identity_kind"] == "dummy_offline"
+            and checkpoint["boundary"]["account_files_read"] is False
+            and checkpoint["boundary"]["production_credentials_loaded"] is False
+            and checkpoint["boundary"]["production_contacted"] is False,
+            "exact-window visual checkpoint crossed its disposable boundary")
+    require(checkpoint["selection"]["exact_match_count"] == 1
+            and checkpoint["selection"]["launcher_window_excluded"] is True
+            and checkpoint["selection"]["exact_title"]
+            == "Minecraft 1.21.11 - Multiplayer (3rd-party Server)"
+            and checkpoint["no_blind_input"] is True,
+            "exact-window selection or input provenance drifted")
+    require(checkpoint["source"]["capture_helper"] == client["capture_fallback"]
+            and checkpoint["source"]["capture_helper_sha256"]
+            == client["capture_fallback_sha256"],
+            "visual checkpoint is not bound to the retained capture fallback")
+
+    artifacts = checkpoint["artifacts"]
+    for name in ("launcher_receipt", "server_log"):
+        row = artifacts[name]
+        require(sha(ROOT / row["path"]) == row["sha256"],
+                f"visual checkpoint artifact drifted: {name}")
+    captures: dict[str, tuple[dict[str, Any], dict[str, Any]]] = {}
+    for name in ("before", "corrected_room", "native_dialog"):
+        row = artifacts[name]
+        image_path = ROOT / row["image"]
+        capture_path = ROOT / row["capture_receipt"]
+        require(sha(image_path) == row["image_sha256"],
+                f"visual checkpoint image drifted: {name}")
+        require(sha(capture_path) == row["capture_receipt_sha256"],
+                f"visual checkpoint capture receipt drifted: {name}")
+        capture = load(capture_path)
+        require(capture["status"] == "captured"
+                and capture["input_injected"] is False
+                and capture["window"]["title"] == checkpoint["selection"]["exact_title"]
+                and capture["window"]["process_image"] == checkpoint["selection"]["process_image"]
+                and capture["image"]["sha256"] == row["image_sha256"]
+                and capture["image"]["width"] == 1282
+                and capture["image"]["height"] == 752
+                and capture["image"]["grayscale_entropy"] >= 1.0,
+                f"visual checkpoint capture metadata failed: {name}")
+        captures[name] = (row, capture)
+    require(captures["corrected_room"][1]["window"]["pid"]
+            == checkpoint["selection"]["final_process_id"]
+            == captures["native_dialog"][1]["window"]["pid"]
+            and captures["corrected_room"][1]["window"]["hwnd"]
+            == checkpoint["selection"]["final_window_id"]
+            == captures["native_dialog"][1]["window"]["hwnd"],
+            "corrected room and native dialog were not captured from one exact client window")
+    require(captures["before"][0]["image_sha256"]
+            != captures["corrected_room"][0]["image_sha256"],
+            "before/after visual evidence was reused")
+
+    launcher = load(ROOT / artifacts["launcher_receipt"]["path"])
+    require(launcher["schema_version"] == "1.0.0-morrow-offline-client-launch"
+            and launcher["server"] == checkpoint["boundary"]["server"]
+            and launcher["loopback_only"] is True
+            and launcher["identity"]["kind"] == "dummy_offline"
+            and launcher["process_id"] == checkpoint["selection"]["final_process_id"]
+            and launcher["account_files_read"] is False
+            and launcher["production_credentials_loaded"] is False,
+            "visual checkpoint launcher provenance drifted")
+    server_log = (ROOT / artifacts["server_log"]["path"]).read_text(encoding="utf-8")
+    for marker in (
+        "Starting Minecraft server on 127.0.0.1:25592",
+        "MORROW_RUNTIME_READY",
+        "MORROW_PLAYER_SAFE_ENTRY player=MorrowWitness",
+        "MORROW_RUNTIME_CLOSED entities_and_tasks=cleaned",
+    ):
+        require(marker in server_log, f"visual checkpoint server log omitted: {marker}")
+    proof = checkpoint["proof_scope"]
+    require(proof["overall_human_client_gate"] == "required"
+            and proof["production_enablement"] == "blocked"
+            and len(proof["not_proven"]) == 6,
+            "bounded visual checkpoint overclaimed the overall human-client gate")
+    require(checkpoint["findings"]["server_join_observed"] is True
+            and checkpoint["findings"]["server_clean_shutdown_observed"] is True
+            and checkpoint["findings"]["runtime_closed_without_owned_entity_or_task_leak"] is True,
+            "bounded visual checkpoint findings drifted")
+    return checkpoint
+
+
 def validate_paper_runtime() -> dict[str, Any]:
     receipt_path = PAPER_RUNTIME / "paper-runtime-receipt.json"
     receipt = load(receipt_path)
@@ -209,7 +302,7 @@ def validate() -> None:
             "client evidence gate was silently advanced")
     for key in (
         "protocol", "generator", "checker", "selftest", "offline_launcher", "latest_attempt",
-        "latest_capture_retry",
+        "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
         path = ROOT / client[key]
         require(path.is_file() and client[f"{key}_sha256"] == sha(path),
@@ -239,6 +332,7 @@ def validate() -> None:
             and capture_retry["no_blind_input"] is True
             and capture_retry["production_contacted"] is False,
             "post-permission Java capture retry was omitted or overclaimed")
+    validate_client_visual_checkpoint(client)
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
     database_lane = next(row for row in matrix["live_services_required"]
@@ -344,8 +438,11 @@ def validate() -> None:
     # Test the exact checked-in bundle for accidental carryover without writing the retired names here.
     retired = ["hold", "keep" + "er", "aver" + "yn", "wr" + "en", "nol" + "and",
                "deep " + "hold", "un" + "lit"]
-    authored = "\n".join(path.read_text(encoding="utf-8").lower()
-                           for path in sorted((ROOT / "morrow" / "rehearsal").rglob("*")) if path.is_file())
+    authored = "\n".join(
+        path.read_text(encoding="utf-8").lower()
+        for path in sorted((ROOT / "morrow" / "rehearsal").rglob("*"))
+        if path.is_file() and path.suffix.lower() in {".json", ".log", ".md", ".tsv", ".txt"}
+    )
     require(not any(re.search(rf"(?<![a-z]){re.escape(term)}(?![a-z])", authored) for term in retired),
             "retired-canon text leaked into rehearsal artifacts")
 

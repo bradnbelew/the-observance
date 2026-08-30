@@ -41,6 +41,8 @@ plugin/src/main/resources/plugin.yml text eol=lf
 
 # Morrow runtime receipts are byte-hashed and regenerated exactly; keep their evidence stable.
 morrow/rehearsal/** text eol=lf
+# Retained client visual evidence includes binary media and source receipts; preserve exact captured bytes.
+morrow/rehearsal/client-visual/** -text whitespace=cr-at-eol
 morrow/rehearsal/runtime/**/*.log text eol=lf whitespace=-blank-at-eol,-blank-at-eof
 tools/check_morrow_rehearsal.py text eol=lf
 tools/run_morrow_p0_rehearsal.py text eol=lf

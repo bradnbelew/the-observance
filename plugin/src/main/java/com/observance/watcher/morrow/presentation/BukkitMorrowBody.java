@@ -194,7 +194,8 @@ public final class BukkitMorrowBody implements AutoCloseable {
 
         Location labelLocation = currentPose.embodied()
                 ? anchor.clone().add(0.0, 2.35, 0.0)
-                : anchor.clone().add(0.0, 0.55, 0.0);
+                : anchor.clone().add(0.0, MorrowBodyAuthority.TERMINAL_LABEL_Y,
+                        MorrowBodyAuthority.TERMINAL_LABEL_Z);
         TextDisplay label = world.spawn(labelLocation, TextDisplay.class, entity -> {
             configure(entity, "label");
             entity.text(Component.text(currentPose.accessibleLabel(), NamedTextColor.AQUA));
@@ -203,16 +204,20 @@ public final class BukkitMorrowBody implements AutoCloseable {
             entity.setShadowed(true);
             entity.setSeeThrough(false);
             entity.setViewRange(24.0F);
+            entity.setTransformation(new Transformation(
+                    new Vector3f(), new AxisAngle4f(),
+                    new Vector3f(MorrowBodyAuthority.LABEL_SCALE), new AxisAngle4f()));
         });
         entities.add(label);
 
         Location interactionLocation = currentPose.embodied()
                 ? anchor.clone().add(0.0, 1.15, 0.0)
-                : anchor.clone().add(0.0, 0.95, 0.0);
+                : anchor.clone().add(0.0, MorrowBodyAuthority.TERMINAL_INTERACTION_Y,
+                        MorrowBodyAuthority.TERMINAL_INTERACTION_Z);
         interaction = world.spawn(interactionLocation, Interaction.class, entity -> {
             configure(entity, "interaction");
-            entity.setInteractionWidth(currentPose.embodied() ? 1.65F : 1.25F);
-            entity.setInteractionHeight(currentPose.embodied() ? 2.45F : 1.90F);
+            entity.setInteractionWidth(currentPose.embodied() ? 1.65F : 1.35F);
+            entity.setInteractionHeight(currentPose.embodied() ? 2.45F : 2.15F);
             entity.setResponsive(true);
         });
         entities.add(interaction);

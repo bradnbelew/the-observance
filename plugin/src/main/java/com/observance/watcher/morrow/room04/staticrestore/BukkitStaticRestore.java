@@ -44,6 +44,8 @@ import java.util.Objects;
 public final class BukkitStaticRestore implements AutoCloseable {
     public static final long PASS_INTERVAL_TICKS = 20L;
     public static final long MAXIMUM_ENTITY_LIFETIME_SECONDS = 21_600L;
+    public static final float CANDIDATE_LABEL_SCALE = 0.20F;
+    public static final float EVIDENCE_LABEL_SCALE = 0.22F;
     private static final long MAINTENANCE_INTERVAL_TICKS = 200L;
     private static final String OWNER_VALUE = "morrow:recovery_room_04:static_restore:m02:v1";
 
@@ -274,6 +276,9 @@ public final class BukkitStaticRestore implements AutoCloseable {
                 entity.setLineWidth(240);
                 entity.setShadowed(true);
                 entity.setViewRange(20.0F);
+                entity.setTransformation(new Transformation(
+                        new Vector3f(), new AxisAngle4f(),
+                        new Vector3f(CANDIDATE_LABEL_SCALE), new AxisAngle4f()));
             });
             entities.add(label);
 
@@ -298,6 +303,9 @@ public final class BukkitStaticRestore implements AutoCloseable {
                 entity.setLineWidth(260);
                 entity.setShadowed(true);
                 entity.setViewRange(20.0F);
+                entity.setTransformation(new Transformation(
+                        new Vector3f(), new AxisAngle4f(),
+                        new Vector3f(EVIDENCE_LABEL_SCALE), new AxisAngle4f()));
             });
             entities.add(label);
             Interaction interaction = world.spawn(base, Interaction.class, entity -> {

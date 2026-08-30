@@ -31,6 +31,18 @@ routes HTTP(S) through a closed loopback proxy, and quick-connects only to `127.
 The bounded form retains a finalized receipt and client-log hash after stopping its own disposable
 client process; it does not shut down Paper.
 
+On a Windows 10 host where the normal window-capture API fails before returning a frame, take a bounded
+still only after selecting exactly one visible Java window and recording its exact title and process ID:
+
+```text
+python tools/capture_windows_window.py --title "Minecraft 1.21.11 - Multiplayer (3rd-party Server)" --process-id <pid> --output <frame.png> --receipt <frame.json>
+```
+
+The fallback refuses missing, ambiguous, minimized, invalid, or partially off-screen targets and never
+injects input. Because it captures visible desktop pixels inside the exact window bounds, keep the target
+unobscured and inspect every frame. A fallback still may support a bounded finding, but it never replaces
+the continuous synchronized media and independent-observer evidence required for a complete lane.
+
 ## Run order
 
 Repeat the complete 60–90 minute slice for fresh one-, two-, and six-player cohorts:

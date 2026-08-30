@@ -40,6 +40,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -59,6 +62,7 @@ import java.util.regex.Pattern;
 public final class BukkitEntityReplay implements Listener, AutoCloseable {
     private static final String OWNER = "morrow:recovery_room_04:entity_replay:v1";
     private static final Pattern CLIP_HASH = Pattern.compile("\\\"clip_hash\\\":\\\"([0-9a-f]{64})\\\"");
+    private static final float LABEL_SCALE = 0.24F;
 
     private final JavaPlugin plugin;
     private final World world;
@@ -498,6 +502,8 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
             entity.setBillboard(Display.Billboard.CENTER);
             entity.setLineWidth(240);
             entity.setViewRange(20.0F);
+            entity.setTransformation(new Transformation(
+                    new Vector3f(), new AxisAngle4f(), new Vector3f(LABEL_SCALE), new AxisAngle4f()));
         });
     }
 

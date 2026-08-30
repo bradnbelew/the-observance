@@ -15,6 +15,11 @@ public final class MorrowBodyAuthority {
     public static final double MAXIMUM_FOCUS_DISTANCE = 8.0D;
     public static final float MAXIMUM_HEAD_YAW = 35.0F;
     public static final float MAXIMUM_HEAD_PITCH = 15.0F;
+    public static final float LABEL_SCALE = 0.30F;
+    public static final double TERMINAL_LABEL_Y = 2.20D;
+    public static final double TERMINAL_LABEL_Z = -0.10D;
+    public static final double TERMINAL_INTERACTION_Y = 0.10D;
+    public static final double TERMINAL_INTERACTION_Z = -0.56D;
 
     public enum Pose {
         IDLE("idle", false, "MORROW // TERMINAL"),

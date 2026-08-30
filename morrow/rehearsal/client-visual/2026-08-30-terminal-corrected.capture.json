@@ -1,0 +1,53 @@
+{
+  "status": "captured",
+  "captured_at": "2026-08-30T22:41:07.589003Z",
+  "capture_backend": "Pillow.ImageGrab visible-desktop exact-window bounds",
+  "input_injected": false,
+  "window": {
+    "hwnd": 8786028,
+    "pid": 18036,
+    "title": "Minecraft 1.21.11 - Multiplayer (3rd-party Server)",
+    "minimized": false,
+    "process_image": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\javaw.exe",
+    "bounds": [
+      639,
+      329,
+      1921,
+      1081
+    ]
+  },
+  "virtual_screen_bounds": [
+    -1080,
+    -349,
+    2560,
+    1571
+  ],
+  "image": {
+    "path": "build/window-capture/java-gdi-terminal-clean-20260830a.png",
+    "sha256": "d119401ec8b62da702f206c41aea332d9078e3cb8feabb398ad52e440c345cf4",
+    "width": 1282,
+    "height": 752,
+    "grayscale_entropy": 6.470699,
+    "black_pixel_ratio": 0.000176,
+    "white_pixel_ratio": 0.038231,
+    "channel_extrema": [
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ],
+      [
+        0,
+        255
+      ]
+    ]
+  },
+  "host": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "windows_release": "10",
+    "windows_version": "10.0.19045"
+  }
+}

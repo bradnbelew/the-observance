@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0.0-morrow-exact-window-visual-checkpoint",
+  "status": "bounded_visual_checkpoint_pass",
+  "captured_at": "2026-08-30T22:41:35Z",
+  "source": {
+    "base_commit": "bdabf88ee8febe3d7a30a9ce54377c39e2603fb7",
+    "workspace_state": "uncommitted presentation correction captured before its evidence commit",
+    "plugin_jar_sha256": "9a40c18604f2fa2201c14c86f3147c2d08f986ca9122e536e8502866a53d7c14",
+    "capture_helper": "tools/capture_windows_window.py",
+    "capture_helper_sha256": "56999a4bf2a9034cecc4d28499399cae42f5fffcf9f984e63ef62f5b8980dbf2"
+  },
+  "boundary": {
+    "minecraft_version": "1.21.11",
+    "paper_build": 132,
+    "server": "127.0.0.1:25592",
+    "loopback_only": true,
+    "identity_kind": "dummy_offline",
+    "account_files_read": false,
+    "production_credentials_loaded": false,
+    "production_contacted": false
+  },
+  "host": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "computer_use_capture_result": "SetIsBorderRequired failed: No such interface supported (0x80004002)",
+    "fallback_backend": "Pillow.ImageGrab visible-desktop exact-window bounds"
+  },
+  "selection": {
+    "exact_title": "Minecraft 1.21.11 - Multiplayer (3rd-party Server)",
+    "process_image": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.10.7-hotspot\\bin\\javaw.exe",
+    "exact_match_count": 1,
+    "launcher_window_excluded": true,
+    "final_process_id": 18036,
+    "final_window_id": 8786028,
+    "window_bounds": [639, 329, 1921, 1081]
+  },
+  "observed_inputs": [
+    {
+      "action": "F1",
+      "purpose": "hide the HUD for an unobstructed Room 04 frame",
+      "reversible": true
+    },
+    {
+      "action": "F1",
+      "purpose": "restore the HUD before interaction",
+      "reversible": true
+    },
+    {
+      "action": "right_click",
+      "window_relative_coordinates": [641, 389],
+      "purpose": "activate the visibly centered terminal interaction surface",
+      "result": "native Static restoration proposal dialogue opened"
+    }
+  ],
+  "no_blind_input": true,
+  "artifacts": {
+    "launcher_receipt": {
+      "path": "morrow/rehearsal/client-visual/2026-08-30-terminal-offline-client-receipt.json",
+      "sha256": "59e38e22373db103ad89350a9aed0bb8707f027cbc87f0784b9cc974359333c1"
+    },
+    "server_log": {
+      "path": "morrow/rehearsal/client-visual/2026-08-30-terminal-server.log",
+      "sha256": "39fccf5a1e0b79de420a5fb5a2e707137f9f209fc071fc5f5a6d658d1db16796"
+    },
+    "before": {
+      "image": "morrow/rehearsal/client-visual/2026-08-30-label-defect.png",
+      "image_sha256": "36ee6563f27929340c75fa1bc77bf13ddefae84011acaff35bbda7cdd2b45ca5",
+      "capture_receipt": "morrow/rehearsal/client-visual/2026-08-30-label-defect.capture.json",
+      "capture_receipt_sha256": "bf238c721ab8b8f06ffcd9c6e9e6b44dba8b7c40a76bdfd220872d6365efb8dc"
+    },
+    "corrected_room": {
+      "image": "morrow/rehearsal/client-visual/2026-08-30-terminal-corrected.png",
+      "image_sha256": "d119401ec8b62da702f206c41aea332d9078e3cb8feabb398ad52e440c345cf4",
+      "capture_receipt": "morrow/rehearsal/client-visual/2026-08-30-terminal-corrected.capture.json",
+      "capture_receipt_sha256": "3320d71b08948e3d07ee019a34d80814cb7ae2fb4f61caf81fd54e9220a8258d"
+    },
+    "native_dialog": {
+      "image": "morrow/rehearsal/client-visual/2026-08-30-terminal-dialog.png",
+      "image_sha256": "28a7a2728eb26383f855541651914848235d33512de8d6f8525fa8dcc3c60f86",
+      "capture_receipt": "morrow/rehearsal/client-visual/2026-08-30-terminal-dialog.capture.json",
+      "capture_receipt_sha256": "ccac169ae1660e84f28e54b3baca72d14b487e819789f6524ff7ccaa1312a1cb"
+    }
+  },
+  "findings": {
+    "defect_observed": "default-scale TextDisplay labels overlapped the Room 04 focal build and made the joined view unreadable",
+    "correction_observed": "bounded TextDisplay scales removed the giant overlays; MORROW // TERMINAL was relocated above the copper terminal",
+    "interaction_observed": "the front-surface interaction hitbox accepted a centered right-click and opened the native two-action proposal dialogue",
+    "server_join_observed": true,
+    "server_clean_shutdown_observed": true,
+    "runtime_closed_without_owned_entity_or_task_leak": true
+  },
+  "proof_scope": {
+    "proven": [
+      "Windows 10 exact-title and exact-process graphical capture fallback",
+      "real Java 1.21.11 client joined the loopback Room 04 rehearsal",
+      "corrected terminal label placement and bounded environmental label scale",
+      "visible terminal interaction surface opened one native dialogue"
+    ],
+    "not_proven": [
+      "complete native-dialog mouse keyboard and Escape matrix",
+      "all six authored Morrow poses and interpolation",
+      "resource-pack accepted and declined parity",
+      "audio-disabled visual equivalence",
+      "complete one two and six player full-inventory cohorts",
+      "sixty to ninety minute pacing without operator narration"
+    ],
+    "overall_human_client_gate": "required",
+    "production_enablement": "blocked"
+  }
+}
