@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "initial_state": "helpful",
+  "states": [
+    {
+      "key": "helpful",
+      "capability": "static_restore",
+      "room_revision": "terminal_only",
+      "morrow_need": "complete a valid bounded recovery",
+      "player_proof": "Morrow restores intended work as historical fact when provenance is incomplete",
+      "next": "curious"
+    },
+    {
+      "key": "curious",
+      "capability": "entity_replay",
+      "room_revision": "attending_body",
+      "morrow_need": "understand why recorded actions fail without a missing participant",
+      "player_proof": "Morrow repeats action accurately but misreads human purpose",
+      "next": "intimate"
+    },
+    {
+      "key": "intimate",
+      "capability": "live_capture",
+      "room_revision": "mirroring_body",
+      "morrow_need": "use current human behavior to fill old gaps",
+      "player_proof": "current-player behavior appears in a claimed historical replay",
+      "next": "possessive"
+    },
+    {
+      "key": "possessive",
+      "capability": "account_continuity",
+      "room_revision": "retained_exit",
+      "morrow_need": "prevent restored sessions from ending",
+      "player_proof": "a continued echo lacks facts the real player never demonstrated",
+      "next": "afraid"
+    },
+    {
+      "key": "afraid",
+      "capability": "cold_storage_access",
+      "room_revision": "fractured_instances",
+      "morrow_need": "avoid being classified as a disposable reconstruction",
+      "player_proof": "the current Morrow is itself reconstructed from an interrupted snapshot",
+      "next": "negotiated"
+    },
+    {
+      "key": "negotiated",
+      "capability": "branch_governance",
+      "room_revision": "honest_branch",
+      "morrow_need": "continue without claiming to be an authenticated original",
+      "player_proof": "uncertainty and continuity can coexist under consent and provenance rules",
+      "next": null
+    }
+  ],
+  "transition_rule": "A transition requires every prerequisite event, one durable group decision receipt, matching release_id, and successful projection to Minecraft. No dialogue model may transition state."
+}
+

@@ -34,6 +34,7 @@ $plugin = Join-Path $root "plugin"
 
 foreach ($required in @(
   (Join-Path $tools "check_repository_integrity.py"),
+  (Join-Path $tools "check_morrow_authority.py"),
   (Join-Path $tools "check_v5_freshness.py"),
   (Join-Path $tools "check_v5_content.py"),
   (Join-Path $tools "check_v5_physical_predicates.py"),
@@ -77,6 +78,7 @@ foreach ($required in @(
 # Repository and authority checks run before any build so malformed or stale inputs
 # cannot be copied into SQL, JAR, datapack, or resource-pack outputs.
 Invoke-External "repository integrity (source)" $root "python" @((Join-Path $tools "check_repository_integrity.py"))
+Invoke-External "Morrow reboot canon/contracts/plugin parity" $root "python" @((Join-Path $tools "check_morrow_authority.py"))
 Invoke-External "V5 freshness and supersession" $root "python" @((Join-Path $tools "check_v5_freshness.py"))
 Invoke-External "V5 canonical/runtime content" $root "python" @((Join-Path $tools "check_v5_content.py"), "--runtime")
 Invoke-External "V5 executable physical predicates" $root "python" @((Join-Path $tools "check_v5_physical_predicates.py"))

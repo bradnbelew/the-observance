@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "namespace": "morrow",
+  "surfaces": ["minecraft", "copperline", "discord", "media", "director"],
+  "events": [
+    {"key":"morrow.act0.case_chain_authenticated","act":0,"owner":"copperline","projects_to":["copperline","discord"]},
+    {"key":"morrow.act0.server_handoff_recovered","act":0,"owner":"copperline","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act1.room04_witnessed","act":1,"owner":"minecraft","projects_to":["minecraft","copperline"]},
+    {"key":"morrow.act1.static_proposal_authenticated","act":1,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act1.intention_error_proven","act":1,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act1.entity_replay_authorized","act":1,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act2.missing_role_completed","act":2,"owner":"minecraft","projects_to":["minecraft","copperline"]},
+    {"key":"morrow.act2.live_test_recorded","act":2,"owner":"minecraft","projects_to":["minecraft","copperline","media"]},
+    {"key":"morrow.act2.behavior_reuse_proven","act":2,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act2.live_capture_authorized","act":2,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act3.version_fragments_authenticated","act":3,"owner":"minecraft","projects_to":["minecraft","copperline"]},
+    {"key":"morrow.act3.contradiction_preserved","act":3,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act4.witness_anchor_registered","act":4,"owner":"minecraft","projects_to":["minecraft","copperline"]},
+    {"key":"morrow.act4.almost_home_proven","act":4,"owner":"minecraft","projects_to":["minecraft","copperline","media"]},
+    {"key":"morrow.act4.account_continuity_authorized","act":4,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act5.continued_session_observed","act":5,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act5.returning_identity_authenticated","act":5,"owner":"minecraft","projects_to":["minecraft","copperline"]},
+    {"key":"morrow.act5.dual_session_consciousness_proven","act":5,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act6.audit_chronology_proven","act":6,"owner":"copperline","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act6.current_morrow_reconstruction_proven","act":6,"owner":"minecraft","projects_to":["minecraft","copperline","discord","media"]},
+    {"key":"morrow.act6.cold_storage_access_authorized","act":6,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act7.rollback_anchors_committed","act":7,"owner":"minecraft","projects_to":["minecraft","copperline"]},
+    {"key":"morrow.act7.branch_policy_committed","act":7,"owner":"minecraft","projects_to":["minecraft","copperline","discord","media"]},
+    {"key":"morrow.act7.branch_governance_authorized","act":7,"owner":"minecraft","projects_to":["minecraft","copperline","discord","media"]},
+    {"key":"morrow.act7.coda_started","act":7,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]}
+  ]
+}

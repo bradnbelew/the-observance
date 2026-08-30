@@ -133,3 +133,13 @@ m3-review:
   arg-experience:
     enabled: false
     dialog-enabled: true
+
+# Clean-room Morrow reboot. It remains inert until a rehearsal release has a validated world,
+# database migration, signed ingest secret, and operator receipt. Never point it at a V5 world.
+morrow-reboot:
+  enabled: false
+  release-id: ""
+  campaign-id: ""
+  world: "morrow_rehearsal"
+  ingest-url: ""
+  ingest-secret: ""

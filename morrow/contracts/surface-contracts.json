@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "surfaces": {
+    "minecraft": {
+      "owns": ["physical world state", "bounded scene state", "movement replay source", "witness-anchor source", "world interactions"],
+      "inputs": ["interact", "place", "arrange", "route", "walk", "select dialog option", "short text token"],
+      "must_not": ["grade long freeform theories", "perform remote I/O on the main thread", "use client-only blocks as critical authority"]
+    },
+    "copperline": {
+      "owns": ["custody history", "version diffs", "support tickets", "spoiler-filtered archive", "player receipts"],
+      "inputs": ["server action form", "short token", "version selection", "receipt comparison", "authenticated note"],
+      "must_not": ["be a linear lore reader", "expose service secrets", "show locked spoilers in client payloads"]
+    },
+    "discord": {
+      "owns": ["private contradiction", "person-to-person contact", "group delivery receipt", "optional hints"],
+      "inputs": ["slash command", "button", "select menu", "modal"],
+      "must_not": ["be the universal quest log", "require Administrator permission", "create proof through character testimony alone"]
+    },
+    "media": {
+      "owns": ["screen recordings", "voice fragments", "route diagrams", "training footage", "accessibility derivatives"],
+      "inputs": ["observe", "compare", "extract", "authenticate"],
+      "must_not": ["exist without an in-world cause", "be required without transcript or equivalent", "depend on third-party custody only"]
+    },
+    "director": {
+      "owns": ["health", "replay", "recovery", "hint approval", "release parity"],
+      "inputs": ["explicit operator command", "audited recovery action"],
+      "must_not": ["silently solve player deductions", "rewrite choices", "open gates because players are slow"]
+    }
+  }
+}
+

@@ -98,6 +98,8 @@ def pluginSelfTests = [
     , p11AverynIdentityPredicate: 'com.observance.watcher.v5runtime.P11AverynIdentityPredicateSelfTest'
     , p11IdentityAuthority: 'com.observance.watcher.v5runtime.P11IdentityAuthoritySelfTest'
     , p5CurationState: 'com.observance.watcher.v5runtime.P5CurationStateSelfTest'
+    , morrowTransitionService: 'com.observance.watcher.morrow.MorrowTransitionServiceSelfTest'
+    , morrowLocalState: 'com.observance.watcher.morrow.MorrowLocalStateSelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->
