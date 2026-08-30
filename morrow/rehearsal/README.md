@@ -44,7 +44,8 @@ updates, and synthetic-auth cleanup. The automatic database projector now has se
 proofs covering ordered leases, two-player projection, retry/reclaim, worker ownership, payload
 privacy, and an actual ten-second Supabase Cron schedule. The schedule ran, recorded health/run
 receipts, disabled transactionally, and produced no later invocation. The Node worker is now only a
-fallback; the browser lane remains required solely for production-shaped magic-link delivery.
+fallback. The browser lane has real delivery, disposable-inbox receipt, and provider verification;
+its remaining gate is the fresh post-fix PKCE callback through the owner-only case read.
 
 The Discord transport now has a retained partial receipt at
 `discord/2026-08-30-gateway-private-channel.json`. A real bot connected to Discord Gateway, created a

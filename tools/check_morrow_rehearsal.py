@@ -286,7 +286,7 @@ def validate() -> None:
             and browser_lane["partial_receipt_sha256"] == sha(browser_receipt_path),
             "launch matrix omitted or overclaimed partial authenticated-browser evidence")
     browser_receipt = load(browser_receipt_path)
-    require(browser_receipt["status"] == "partial_magic_link_delivery"
+    require(browser_receipt["status"] == "partial_pkce_callback_fix_unverified"
             and browser_receipt["account_enumeration"]["browser_form_exercised"] is True
             and browser_receipt["account_enumeration"]["direct_case_after_unknown_request"] == "withheld"
             and browser_receipt["account_enumeration"]["should_create_user"] is False
@@ -294,6 +294,14 @@ def validate() -> None:
             and browser_receipt["account_enumeration"]["synthetic_unknown_auth_identities_after_request"] == 0
             and browser_receipt["account_enumeration"]["synthetic_unknown_auth_sessions_after_request"] == 0
             and browser_receipt["account_enumeration"]["synthetic_unknown_refresh_tokens_after_request"] == 0
+            and browser_receipt["pkce_callback_rehearsal"]["otp_request_status"] == 200
+            and browser_receipt["pkce_callback_rehearsal"]["provider_mail_send_logged"] is True
+            and browser_receipt["pkce_callback_rehearsal"]["actual_disposable_inbox_link_received"] is True
+            and browser_receipt["pkce_callback_rehearsal"]["provider_verify_status"] == 303
+            and browser_receipt["pkce_callback_rehearsal"]["callback_exchange_error_code"]
+                == "pkce_code_verifier_not_found"
+            and browser_receipt["pkce_callback_rehearsal"]["fixed_request_route_live_callback_retest"] is False
+            and browser_receipt["pkce_callback_rehearsal"]["final_owner_only_case_read_from_magic_link"] is False
             and browser_receipt["privacy"]["anonymous_case_material_withheld"] is True
             and browser_receipt["privacy"]["other_player_projection_leaked"] is False
             and browser_receipt["act0_browser_flow"]["wrong_handoff_token_event_rows"] == 0

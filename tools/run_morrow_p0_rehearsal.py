@@ -601,7 +601,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
                 "status": "required",
                 "partial_receipt": str(browser_receipt.relative_to(ROOT)).replace("\\", "/"),
                 "partial_receipt_sha256": sha256_file(browser_receipt),
-                "remaining": "production-shaped magic-link delivery",
+                "proven": "real email delivery, inbox receipt, provider verification, and exact PKCE callback defect diagnosis",
+                "remaining": "fresh-inbox retest of the explicit verifier-cookie route through the final owner-only case read",
             },
             {
                 "lane": "disposable_discord_gateway_private_delivery",

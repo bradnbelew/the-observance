@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function PlayerAccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; sent?: string }>;
 }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -32,7 +32,13 @@ export default async function PlayerAccountPage({
       {params.error === 'link'
         ? <p className="player-login-alert" role="alert">That link was invalid or expired. Request a fresh one below.</p>
         : null}
-      <PlayerLoginForm />
+      {params.error === 'input'
+        ? <p className="player-login-alert" role="alert">Enter the email address linked to this recovery assignment.</p>
+        : null}
+      {params.error === 'desk'
+        ? <p className="player-login-alert" role="alert">The account desk is temporarily unavailable. Nothing changed.</p>
+        : null}
+      <PlayerLoginForm sent={params.sent === '1'} />
       <aside><b>Privacy boundary</b><p>Unknown addresses receive the same response. A valid session can
         read only its own release-bound projection; direct links reveal no assignment.</p></aside>
       <Link href={MORROW_CASE_ROUTE}>Return to the recovery case &raquo;</Link>

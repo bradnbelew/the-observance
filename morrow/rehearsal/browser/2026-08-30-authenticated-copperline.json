@@ -1,7 +1,7 @@
 {
-  "status": "partial_magic_link_delivery",
+  "status": "partial_pkce_callback_fix_unverified",
   "lane": "authenticated_browser_case_and_ticket_projection",
-  "completed_at": "2026-08-30T20:41:00Z",
+  "completed_at": "2026-08-30T22:18:10Z",
   "scope": "local Next.js server plus isolated Supabase validation project; never production",
   "project": {
     "ref": "snmqaqlagwzptzqbaiws",
@@ -13,7 +13,7 @@
   },
   "browser": {
     "surface": "Codex in-app browser",
-    "origin": "http://localhost:3104",
+    "origin": "http://localhost:3000",
     "route": "/support/cases/mossfield-recovery",
     "real_dom_and_form_interactions": true,
     "synthetic_session_bootstrap": "isolated-only server route using public Supabase client",
@@ -25,7 +25,7 @@
   },
   "product_fix": {
     "finding": "the case instructed players to sign in but exposed no player sign-in surface",
-    "resolution": "passwordless existing-account-only support login with a case-safe callback and enumeration-resistant response",
+    "resolution": "passwordless existing-account-only support login with a case-safe callback, enumeration-resistant response, and explicit PKCE cookie forwarding on the same-origin POST redirect",
     "unknown_user_creation_disabled": true,
     "operator_login_separated": true
   },
@@ -39,6 +39,24 @@
     "synthetic_unknown_auth_users_after_request": 0,
     "synthetic_unknown_refresh_tokens_after_request": 0,
     "unknown_address_retained": false
+  },
+  "pkce_callback_rehearsal": {
+    "browser_request_at": "2026-08-30T22:15:12Z",
+    "otp_request_status": 200,
+    "provider_mail_send_logged": true,
+    "actual_disposable_inbox_link_received": true,
+    "provider_verify_status": 303,
+    "auth_code_returned_to_local_callback": true,
+    "callback_exchange_status": 400,
+    "callback_exchange_error_code": "pkce_code_verifier_not_found",
+    "root_cause": "the Server Action generated a PKCE challenge but did not retain the verifier cookie in the browser response",
+    "implemented_fix": "a same-origin POST route buffers the Supabase SSR cookie mutations and explicitly attaches them to its 303 response",
+    "fixed_request_route_browser_status": 303,
+    "fixed_request_route_browser_destination": "/support/account?sent=1",
+    "fixed_request_route_live_callback_retest": false,
+    "fixed_request_route_retest_blocker": "the built-in email provider returned 429 after the single successful delivery",
+    "administrative_auth_token_recovery_rejected_and_not_retried": true,
+    "final_owner_only_case_read_from_magic_link": false
   },
   "privacy": {
     "anonymous_case_material_withheld": true,
@@ -107,17 +125,21 @@
     "raw_payload_leaks": 0
   },
   "artifacts": {
-    "player_login_action": {
-      "path": "dashboard/src/app/support/account/actions.ts",
-      "sha256": "b6e4182a1c2eb0cf04b6850413ff064345ae66f1d148d76937b7d21058a8c411"
+    "player_login_request_route": {
+      "path": "dashboard/src/app/auth/player-link/route.ts",
+      "sha256": "16a0995875330877d807df6848cae23d0f8a6ad6370e4fa714f02d7a40186e36"
+    },
+    "auth_callback_route": {
+      "path": "dashboard/src/app/auth/callback/route.ts",
+      "sha256": "4f531f6574aa6e78492a84eb46c165e0360eb1af30670628c6e1607fd9c15356"
     },
     "player_login_form": {
       "path": "dashboard/src/app/support/account/PlayerLoginForm.tsx",
-      "sha256": "fb9d399b998fd51510139ec14d2229efbfa76fcc37689d1b65e08aa2f7104120"
+      "sha256": "9d7ae4d3eb69811a63c42cb7151b34f114312d6e8fa7110711fc066930f3b325"
     },
     "player_login_page": {
       "path": "dashboard/src/app/support/account/page.tsx",
-      "sha256": "c8dda4705b72ace8ce9f46376b343d42613e2e16f4179a13eb253205667ee3fc"
+      "sha256": "c4ab5c4452ee2f158adefc71a1964b28269fd345a0fda5e077f1f2992bc996fd"
     },
     "isolated_session_bootstrap": {
       "path": "dashboard/src/app/api/rehearsal/morrow-session/route.ts",
@@ -136,6 +158,6 @@
       "sha256": "db1a73c598a33df7f58b391b69659921cb67a85abae639e6063e454e9d983f8e"
     }
   },
-  "remaining_gate": "exercise production-shaped magic-link delivery",
+  "remaining_gate": "retest the explicit verifier-cookie route with a fresh disposable inbox through the final owner-only case read",
   "production_enablement": "blocked"
 }

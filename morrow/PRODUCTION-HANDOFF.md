@@ -151,8 +151,12 @@ native-dialog input, resource-pack decline, audio-disabled cues, full-inventory 
 one-/two-/six-player cleanup, and pacing without operator narration. The database lane is now proven on
 a paused validation project. The automatic Copperline database worker and real Supabase Cron schedule
 are live-proven for ordered two-player delivery, private actor receipts, retry/reclaim, payload
-isolation, payload-free health, and clean disable. Real Supabase magic-link email delivery has
-succeeded, but the browser-requested PKCE callback and authenticated RLS read remain. The exact
+isolation, payload-free health, and clean disable. A browser-requested Supabase magic link reached a
+real disposable inbox and `/verify` returned an auth code. The callback then exposed
+`pkce_code_verifier_not_found`: the Server Action had not preserved its verifier cookie. The login
+request now uses an explicit same-origin 303 response that forwards the Supabase cookie mutations, but
+the provider rate-limited the immediate retest. A fresh inbox-to-owner-case callback and authenticated
+RLS read therefore remain. The exact
 authored Discord receipt has crossed a real Gateway in a temporary everyone-denied/bot-allowed
 channel, including `MESSAGE_CREATE`, REST readback, stable nonce, mention suppression, deletion, and
 `Unknown Channel` verification. The database-claimed worker and a disposable-guild linked-player
@@ -214,8 +218,9 @@ and factual truth. No three consecutive investigations may lead with the same me
   connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
   helper. The Morrow display body, Paper
   dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
-  rehearsal. The Copperline reboot route has real email-delivery evidence but still requires the
-  browser-requested PKCE callback and authenticated RLS read. Discord has real bot-only Gateway
+  rehearsal. The Copperline reboot route has real email delivery, inbox receipt, provider verification,
+  and an exact verifier-cookie defect fix, but still requires a fresh final PKCE callback and
+  authenticated RLS read. Discord has real bot-only Gateway
   transport evidence but still requires a database-claimed worker and disposable-guild linked-player
   interaction; its shipped feature gate remains false.
 - `morrow-reboot.enabled` stays false until all remaining human-client and isolated-service receipts pass.

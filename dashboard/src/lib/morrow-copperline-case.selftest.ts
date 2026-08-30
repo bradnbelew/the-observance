@@ -139,7 +139,7 @@ assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, existing: { ...existing
 const routeSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/page.tsx'), 'utf8');
 const actionSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/actions.ts'), 'utf8');
 const serverSource = readFileSync(resolve('src/lib/morrow-copperline-server.ts'), 'utf8');
-const loginActionSource = readFileSync(resolve('src/app/support/account/actions.ts'), 'utf8');
+const loginActionSource = readFileSync(resolve('src/app/auth/player-link/route.ts'), 'utf8');
 const loginPageSource = readFileSync(resolve('src/app/support/account/page.tsx'), 'utf8');
 const loginFormSource = readFileSync(resolve('src/app/support/account/PlayerLoginForm.tsx'), 'utf8');
 const authCallbackSource = readFileSync(resolve('src/app/auth/callback/route.ts'), 'utf8');
@@ -179,8 +179,8 @@ for (const required of ['Accessible attachment metadata', 'Temporary maintenance
   'Case audit halted', 'Synchronized field updates', 'player-specific', 'Sign in to this recovery case']) {
   assert.ok(routeSource.includes(required), `route lacks concrete state/copy: ${required}`);
 }
-for (const required of ['signInWithOtp', 'shouldCreateUser: false', 'MORROW_CASE_ROUTE', 'originUrl.host !== host',
-  'If that address owns a current assignment']) {
+for (const required of ['signInWithOtp', 'shouldCreateUser: false', 'MORROW_CASE_ROUTE',
+  "requestOrigin !== requestUrl.origin", 'pendingCookies', 'response.cookies.set']) {
   assert.ok(loginActionSource.includes(required), `player login action lacks ${required}`);
 }
 assert.equal(loginActionSource.includes('SUPABASE_SERVICE_ROLE_KEY'), false,

@@ -72,8 +72,12 @@ receipt is under `database/2026-08-30-isolated-supabase.json`. A real authentica
 proves anonymous withholding, owner-only RLS, checksum and handoff receipts, wrong-token refusal, and
 all six Act 1–2 ticket cards. The automatic database projector subsequently applied nine ordered events
 to both linked players, kept actor receipts private, leaked no raw payload, rejected wrong/stale workers,
-reclaimed an expired lease, and scheduled bounded retry. The browser lane remains partial only because
-production-shaped magic-link delivery has not run. The primary delivery transport is no longer the
+reclaimed an expired lease, and scheduled bounded retry. The browser lane now has real provider email,
+disposable-inbox receipt, and `/verify` evidence. That run exposed a real callback defect: the Server
+Action did not preserve its PKCE verifier cookie, so the returned auth code was correctly refused.
+The request path now uses a same-origin POST route that explicitly forwards Supabase's cookie mutations;
+its final inbox-to-owner-case retest remains open after the built-in provider rate-limited the immediate
+second request. The primary delivery transport is no longer the
 Node fallback: a private Supabase Cron job automatically applied all nine events in its ten-second
 window, wrote a payload-free run receipt, reported healthy, disabled cleanly, and did not run again.
 A real Discord bot now also proved the raw Gateway transport in a create-once bot-only channel: READY,
