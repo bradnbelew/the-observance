@@ -35,6 +35,21 @@ The `--audio-disabled` profile writes every vanilla sound category to zero befor
 exact options hash into the receipt; it supports the audio-accessibility lane but does not replace the
 human visual-equivalence review.
 
+Prepare distinct vanilla identities and isolated game directories for a complete cohort before the
+server starts:
+
+```text
+python tools/prepare_morrow_offline_cohort.py --run-id <cohort-id> --cohort-size 1
+python tools/prepare_morrow_offline_cohort.py --run-id <cohort-id> --cohort-size 2 --audio-disabled
+python tools/prepare_morrow_offline_cohort.py --run-id <cohort-id> --cohort-size 6 --max-memory-mib 1024
+```
+
+Preparation starts no GUI. An actual local launch additionally requires `--launch` and the exact
+`--launch-acknowledgement` value printed by the helper. Each client gets a unique offline UUID,
+pseudonym, create-only game directory, bounded heap, loopback target, and hash-bound child receipt.
+This removes cohort setup ambiguity but does not turn six synthetic clients into six human players;
+the complete operator-free media and independent-observer gate remains mandatory.
+
 On a Windows 10 host where the normal window-capture API fails before returning a frame, take a bounded
 still only after selecting exactly one visible Java window and recording its exact title and process ID:
 

@@ -301,7 +301,8 @@ def validate() -> None:
     require(client["gate"] == "required" and client["latest_attempt_status"] == "unproven",
             "client evidence gate was silently advanced")
     for key in (
-        "protocol", "generator", "checker", "selftest", "offline_launcher", "latest_attempt",
+        "protocol", "generator", "checker", "selftest", "offline_launcher",
+        "offline_cohort_preparer", "latest_attempt",
         "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
         path = ROOT / client[key]

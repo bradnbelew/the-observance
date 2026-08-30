@@ -543,6 +543,7 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     client_checker = ROOT / "tools" / "check_morrow_client_rehearsal.py"
     client_selftest = ROOT / "tools" / "test_morrow_client_rehearsal.py"
     offline_launcher = ROOT / "tools" / "run_morrow_offline_client.py"
+    offline_cohort_preparer = ROOT / "tools" / "prepare_morrow_offline_cohort.py"
     capture_fallback = ROOT / "tools" / "capture_windows_window.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
@@ -581,6 +582,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "selftest_sha256": sha256_file(client_selftest),
             "offline_launcher": str(offline_launcher.relative_to(ROOT)).replace("\\", "/"),
             "offline_launcher_sha256": sha256_file(offline_launcher),
+            "offline_cohort_preparer": str(offline_cohort_preparer.relative_to(ROOT)).replace("\\", "/"),
+            "offline_cohort_preparer_sha256": sha256_file(offline_cohort_preparer),
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",

@@ -100,6 +100,7 @@ def main() -> int:
     )
     parser.add_argument("--wait-seconds", type=int, default=20)
     parser.add_argument("--terminate-after-wait", action="store_true")
+    parser.add_argument("--max-memory-mib", type=int, default=2048)
     args = parser.parse_args()
 
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]{2,63}", args.run_id):
@@ -109,6 +110,8 @@ def main() -> int:
     host = args.server.rsplit(":", 1)[0].strip("[]")
     require(ipaddress.ip_address(host).is_loopback, "offline client target must be loopback")
     require(0 <= args.wait_seconds <= 120, "wait-seconds must be between 0 and 120")
+    require(768 <= args.max_memory_mib <= 2048,
+            "max-memory-mib must be between 768 and 2048")
     require(not (args.prepare_only and args.terminate_after_wait),
             "prepare-only cannot terminate a process")
 
@@ -172,7 +175,7 @@ def main() -> int:
     require(asset_index.is_file(), "asset index 29 is missing")
     dummy_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, f"morrow-rehearsal:{args.run_id}:{args.username}").hex
     jvm = [
-        "-Xms512M", "-Xmx2G",
+        "-Xms512M", f"-Xmx{args.max_memory_mib}M",
         f"-Djava.library.path={natives}",
         f"-Djna.tmpdir={natives}",
         f"-Dorg.lwjgl.system.SharedLibraryExtractPath={natives}",
@@ -214,6 +217,7 @@ def main() -> int:
         "account_files_read": False,
         "production_credentials_loaded": False,
         "outbound_proxy": "127.0.0.1:1",
+        "max_memory_mib": args.max_memory_mib,
         "accessibility_profile": {
             "audio_disabled": args.audio_disabled,
             "sound_categories_zeroed": list(SOUND_CATEGORIES) if args.audio_disabled else [],
