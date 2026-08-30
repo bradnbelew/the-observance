@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 import run_morrow_disposable_paper as paper_harness
+import run_morrow_offline_client as client_fixture
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -256,17 +257,35 @@ def main() -> None:
         paper_log = receipt_dir / "morrow-pack-paper.log"
         shutil.copy2(target / "morrow-pack-paper.log", paper_log)
         retained_client = None
-        retained_options = None
-        retained_servers = None
+        launch_options = None
+        launch_servers = None
+        final_options = None
+        final_servers = None
         client_data: dict[str, Any] = {}
         if client_receipt.is_file():
             client_data = json.loads(client_receipt.read_text(encoding="utf-8"))
             retained_client = receipt_dir / "client-receipt.json"
-            retained_options = receipt_dir / "options.txt"
-            retained_servers = receipt_dir / "servers.dat"
+            launch_options = receipt_dir / "launch-options.txt"
+            launch_servers = receipt_dir / "launch-servers.dat"
+            final_options = receipt_dir / "final-options.txt"
+            final_servers = receipt_dir / "final-servers.dat"
             shutil.copy2(client_receipt, retained_client)
-            shutil.copy2(client_receipt.parent / "game" / "options.txt", retained_options)
-            shutil.copy2(client_receipt.parent / "game" / "servers.dat", retained_servers)
+            option_lines = [
+                "autoJump:false", "fullscreen:false", "narrator:0", "onboardAccessibility:false",
+            ]
+            if client_data["accessibility_profile"]["audio_disabled"]:
+                option_lines.extend(
+                    f"soundCategory_{category}:0.0" for category in client_fixture.SOUND_CATEGORIES)
+            paper_harness.write_text(launch_options, "\n".join(option_lines) + "\n")
+            client_fixture.write_server_list(
+                launch_servers, client_data["server"], client_data["server_resource_pack_policy"])
+            require(paper_harness.sha256(launch_options)
+                    == client_data["accessibility_profile"]["options_sha256"],
+                    "reconstructed launch options do not match the client receipt")
+            require(paper_harness.sha256(launch_servers) == client_data["servers_dat_sha256"],
+                    "reconstructed launch server policy does not match the client receipt")
+            shutil.copy2(client_receipt.parent / "game" / "options.txt", final_options)
+            shutil.copy2(client_receipt.parent / "game" / "servers.dat", final_servers)
         receipt = {
             "schema_version": "1.0.0-morrow-resource-pack-rehearsal",
             "status": "bounded_handshake_pass_human_visual_parity_open",
@@ -298,10 +317,14 @@ def main() -> None:
                 "username": args.username,
                 "receipt": retained_client.name if retained_client is not None else None,
                 "receipt_sha256": paper_harness.sha256(retained_client) if retained_client is not None else None,
-                "options": retained_options.name if retained_options is not None else None,
-                "options_sha256": paper_harness.sha256(retained_options) if retained_options is not None else None,
-                "servers": retained_servers.name if retained_servers is not None else None,
-                "servers_sha256": paper_harness.sha256(retained_servers) if retained_servers is not None else None,
+                "launch_options": launch_options.name if launch_options is not None else None,
+                "launch_options_sha256": paper_harness.sha256(launch_options) if launch_options is not None else None,
+                "launch_servers": launch_servers.name if launch_servers is not None else None,
+                "launch_servers_sha256": paper_harness.sha256(launch_servers) if launch_servers is not None else None,
+                "final_options": final_options.name if final_options is not None else None,
+                "final_options_sha256": paper_harness.sha256(final_options) if final_options is not None else None,
+                "final_servers": final_servers.name if final_servers is not None else None,
+                "final_servers_sha256": paper_harness.sha256(final_servers) if final_servers is not None else None,
                 "server_resource_pack_policy": client_data.get("server_resource_pack_policy"),
                 "launcher_output_sha256": hashlib.sha256(client_stdout.encode()).hexdigest(),
                 "client_log_retained": False,

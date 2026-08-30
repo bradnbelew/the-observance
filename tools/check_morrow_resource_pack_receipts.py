@@ -74,18 +74,21 @@ def validate_lane(root: Path, binding: dict[str, Any], expected: str) -> dict[st
             and client["client_log_retained"] is False,
             f"{expected} client decision binding drifted")
     for field, hash_field in (("receipt", "receipt_sha256"),
-                              ("options", "options_sha256"),
-                              ("servers", "servers_sha256")):
+                              ("launch_options", "launch_options_sha256"),
+                              ("launch_servers", "launch_servers_sha256"),
+                              ("final_options", "final_options_sha256"),
+                              ("final_servers", "final_servers_sha256")):
         path = (receipt_path.parent / client[field]).resolve()
         require(within(receipt_path.parent, path) and path.is_file()
                 and sha(path) == client[hash_field],
                 f"{expected} retained client {field} drifted")
     client_receipt = load(receipt_path.parent / client["receipt"])
     require(client_receipt["server_resource_pack_policy"] == policy
-            and client_receipt["servers_dat_sha256"] == client["servers_sha256"]
-            and client_receipt["accessibility_profile"]["options_sha256"] == client["options_sha256"],
+            and client_receipt["servers_dat_sha256"] == client["launch_servers_sha256"]
+            and client_receipt["accessibility_profile"]["options_sha256"]
+                == client["launch_options_sha256"],
             f"{expected} client fixture hashes drifted")
-    servers = (receipt_path.parent / client["servers"]).read_bytes()
+    servers = (receipt_path.parent / client["launch_servers"]).read_bytes()
     require(servers[:1] == b"\x0a" and b"acceptTextures" in servers
             and servers.endswith(bytes((1 if expected == "LOADED" else 0, 0, 0))),
             f"{expected} uncompressed server policy fixture drifted")
