@@ -93,14 +93,21 @@ def validate() -> None:
                     f"{name} client {position} receipt hash drifted")
             child = load(child_path)
             options = child_path.with_name("options.txt")
+            servers = child_path.with_name("servers.dat")
             require(options.is_file()
                     and sha(options) == child["accessibility_profile"]["options_sha256"],
                     f"{name} client {position} options hash drifted")
+            require(servers.is_file()
+                    and sha(servers) == child["servers_dat_sha256"]
+                    and servers.read_bytes()[:1] == b"\x0a"
+                    and b"acceptTextures" not in servers.read_bytes(),
+                    f"{name} client {position} prompt-policy server fixture drifted")
             require(child["status"] == "prepared"
                     and child["source_commit"] == source_commit
                     and child["process_id"] is None
                     and child["loopback_only"] is True
                     and child["server"] == cohort["server"]
+                    and child["server_resource_pack_policy"] == "prompt"
                     and child["account_files_read"] is False
                     and child["production_credentials_loaded"] is False
                     and child["outbound_proxy"] == "127.0.0.1:1"
@@ -127,7 +134,7 @@ def validate() -> None:
             cohort_uuids.add(row["uuid"])
             all_uuids.add(row["uuid"])
 
-    retained = INDEX.parent / "9962ded"
+    retained = INDEX.parent / source_commit[:7]
     forbidden = {".jar", ".dll", ".exe", ".zip"}
     require(not any(path.suffix.lower() in forbidden for path in retained.rglob("*")),
             "retained cohort evidence contains client binaries")
