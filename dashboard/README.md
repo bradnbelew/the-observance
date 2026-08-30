@@ -4,6 +4,11 @@ Next.js 16 public ARG surface plus authenticated V5 director console.
 
 ## Public routes
 
+- `/support/cases/mossfield-recovery` is the release-bound Morrow reboot support case. It reads only
+  authenticated, player-owned RLS projections, verifies the accessible attachment custody checksum,
+  recovers the short-token handoff through a Server Action, and renders only already-earned Act 1/2
+  field updates. Missing identity, stale releases, outages, and malformed projections fail closed.
+
 - Copperline pages are an ordinary legacy-hosting trail for C01.
 - `/server-list.php` exposes an opaque damaged row, not the service number. Opening that row receipts
   LS01 and presents an A1Z26 account docket. A dedicated server-side form accepts only the normalized
@@ -52,6 +57,7 @@ Release Protocol owns branch selection, save, goodbye, kick, shutdown, and idemp
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+MORROW_RELEASE_ID=<current-rehearsal-release-id>
 SUPABASE_SERVICE_ROLE_KEY=<service-role secret>
 ADMIN_EMAILS=<comma-separated operator addresses>
 AUTHOR_USERNAME=<private Basic-auth username>

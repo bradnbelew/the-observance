@@ -25,6 +25,33 @@ export type EventLevel = "info" | "warn" | "error";
 export interface Database {
   public: {
     Tables: {
+      morrow_player_projection: {
+        Row: {
+          campaign_id: string;
+          player_id: string;
+          projection_key: string;
+          projection: Json;
+          revision: number;
+          updated_at: string;
+        };
+        Insert: {
+          campaign_id: string;
+          player_id: string;
+          projection_key: string;
+          projection: Json;
+          revision: number;
+          updated_at?: string;
+        };
+        Update: {
+          campaign_id?: string;
+          player_id?: string;
+          projection_key?: string;
+          projection?: Json;
+          revision?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       players: {
         Row: {
           id: string;
@@ -716,6 +743,23 @@ export interface Database {
       };
     };
     Functions: {
+      morrow_record_copperline_event: {
+        Args: {
+          p_campaign_id: string;
+          p_player_id: string;
+          p_release_id: string;
+          p_event_key: string;
+          p_idempotency_key: string;
+          p_payload: Json;
+          p_payload_sha256: string;
+          p_short_token: string | null;
+        };
+        Returns: {
+          status: string;
+          created: boolean;
+          event_id: string | null;
+        }[];
+      };
       observance_merge_arc_flags: {
         Args: { p_flags: Json };
         Returns: undefined;

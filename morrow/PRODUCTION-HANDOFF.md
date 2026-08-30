@@ -41,6 +41,16 @@ Implemented and verified:
   `live_test_recorded`, and `behavior_reuse_proven`
 - separate native later-capture authorization after behavior proof; it commits only
   `live_capture_authorized` with `starts_capture: false` and never starts recording automatically
+- Copperline Act 0 support case at `/support/cases/mossfield-recovery`: an unresolved hosting-recovery
+  workbench with an exact accessible text attachment and SHA-256 custody check, authenticated short-token
+  handoff recovery, release/player/campaign-bound RLS reads, player-owned Server Actions, and explicit
+  empty/loading/error/success states
+- synchronized Copperline Act 1/2 ticket projections for the six earned Room 04 and Entity Replay
+  receipts, with group/player scope labels, prerequisite ordering, future-spoiler omission, local-only raw
+  replay samples, duplicate recovery, and collision halt
+- authenticated Copperline receipt RPC proposal with exact authored payload hashes, private token hash,
+  linked-user ownership, release/prerequisite enforcement, and idempotent event/outbox creation; it remains
+  unapplied pending the isolated database rehearsal in P1
 
 Verified commands:
 
@@ -56,7 +66,7 @@ cd dashboard && npm.cmd run build
 
 ### P0 — Make the 60–90 minute slice playable
 
-Items 1–7 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
+Items 1–8 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
 global reboot gate and its separate `room04.build-enabled: false` rehearsal gate until a disposable
 Paper/live-client receipt exists. Items 4–6 begin only when those gates have installed Room 04.
 
@@ -84,15 +94,15 @@ Paper/live-client receipt exists. Items 4–6 begin only when those gates have i
 10. Exercise one-, two-, and six-player paths through restart and remote outage before enabling the
     rehearsal config.
 
-### Precise next boundary — P0 item 8 only
+### Precise next boundary — P0 item 9 only
 
-M04 now ends at the durable `morrow.act2.behavior_reuse_proven` receipt after the exact locally sealed
-route hash and replay duration are physically authenticated. The next native dialog may separately
-commit `morrow.act2.live_capture_authorized`, but its payload explicitly records that it starts no
-capture. P0 item 8 may add only the new Copperline Act 0 case chain and Act 1/2 ticket projections. It
-must consume the existing event catalog and release bindings, must not receive raw replay samples, and
-must not reuse or revive superseded pages, names, routes, or story concepts. No website work has been
-started in this checkpoint.
+Copperline now ends at the synchronized `morrow.act2.behavior_reuse_proven` ticket update. The route
+accepts only authenticated, RLS-owned projection rows for the current `MORROW_RELEASE_ID`; its two Act 0
+mutations commit only `case_chain_authenticated` and `server_handoff_recovered`. Raw Entity Replay
+samples never enter the web projection. P0 item 9 may add only the private Discord contradiction and
+group receipt for this slice, using native interactions and Ed25519 validation where HTTP interactions
+are used. It must consume the existing event catalog and release bindings, remain idempotent for one to
+six players, and must not implement P0 item 10 rehearsal or mutate a live Discord server.
 
 ### P1 — Safe database rehearsal
 
@@ -115,8 +125,9 @@ and factual truth. No three consecutive investigations may lead with the same me
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
 - Recovery Room 04, the Morrow display body, Paper dialogs, M02 Static Restore, and M03/M04 Entity
-  Replay still require disposable Paper/live-client rehearsal. Copperline reboot pages and Discord
-  reboot interactions still require implementation and live-client rehearsal.
+  Replay still require disposable Paper/live-client rehearsal. The Copperline reboot route requires an
+  isolated database migration/projector rehearsal and authenticated browser rehearsal. Discord reboot
+  interactions are not implemented.
 - `morrow-reboot.enabled` stays false until the end-to-end disposable Paper receipt passes.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 

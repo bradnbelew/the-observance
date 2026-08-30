@@ -289,3 +289,54 @@ button, input, select, textarea { font: inherit; }
   .docket-resolver-form { grid-template-columns:1fr; }
   .record-system-header > div { display:grid;gap:2px; }
 }
+
+/* Morrow reboot: an assigned Copperline recovery desk, not a campaign landing page. */
+.morrow-case-workbench { display:grid;gap:12px;color:#404548; }
+.morrow-case-head { display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;padding:14px 16px;background:linear-gradient(#f7f7f4,#e7e8e7);border:1px solid #aeb3b5;border-top:3px solid #55788a;box-shadow:0 1px 3px #0002; }
+.morrow-case-kicker { margin:0 0 4px;color:#718087;font:bold 11px/1.4 Arial,sans-serif;letter-spacing:.09em;text-transform:uppercase; }
+.morrow-case-head h1 { margin:0;color:#2d3f48;font:bold 24px/1.2 Georgia,serif; }
+.morrow-case-head p:not(.morrow-case-kicker) { margin:5px 0 0;color:#6a7073;font-size:13px;line-height:1.45; }
+.morrow-case-head dl,.morrow-case-facts { margin:0;background:#f8f8f6;border:1px solid #c6c9c9; }
+.morrow-case-head dl div,.morrow-case-facts div { display:grid;grid-template-columns:88px 1fr;gap:8px;padding:5px 7px;border-top:1px dotted #c2c5c5; }
+.morrow-case-head dl div:first-child,.morrow-case-facts div:first-child { border-top:0; }
+.morrow-case-head dt,.morrow-case-facts dt { color:#858b8d;font-size:11px;text-transform:uppercase; }
+.morrow-case-head dd,.morrow-case-facts dd { margin:0;color:#3f4c52;font-size:12px;overflow-wrap:anywhere; }
+.morrow-case-head dd[data-state="open"] { color:#8a5530;font-weight:bold; }.morrow-case-head dd[data-state="issued"] { color:#3e7452;font-weight:bold; }
+.morrow-case-columns { display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:12px;align-items:start; }
+.morrow-case-columns > main,.morrow-case-columns > aside { display:grid;gap:12px; }
+.morrow-case-panel { background:#f8f8f6;border:1px solid #b7bbbc;box-shadow:0 1px 2px #0001; }
+.morrow-case-panel > header { min-height:31px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 9px;background:linear-gradient(#f9f9f9,#e7e8e8);border-bottom:1px solid #c4c7c8; }
+.morrow-case-panel > header h2 { margin:0;color:#405b68;font:bold 12px Arial,sans-serif;text-transform:uppercase;letter-spacing:.03em; }
+.morrow-case-panel > header span { color:#777e80;font-size:11px;text-align:right;text-transform:uppercase; }
+.morrow-custody-list { list-style:none;margin:0;padding:0;counter-reset:custody; }
+.morrow-custody-list li { position:relative;min-height:62px;padding:10px 10px 9px 48px;border-top:1px dotted #c2c5c6; }
+.morrow-custody-list li:first-child { border-top:0; }
+.morrow-custody-list li::before { content:"";position:absolute;left:19px;top:0;bottom:0;width:1px;background:#aeb8bc; }
+.morrow-custody-list li::after { content:"✓";position:absolute;left:10px;top:11px;width:18px;height:18px;display:grid;place-items:center;border:1px solid #728c97;border-radius:50%;background:#edf3f4;color:#406575;font:bold 10px Arial; }
+.morrow-custody-list b { color:#45555d;font-size:12px;text-transform:uppercase; }.morrow-custody-list p { margin:3px 0;color:#696e70;font-size:13px;line-height:1.45; }.morrow-custody-list code { color:#73797b;font-size:11px; }
+.morrow-attachment { display:grid;grid-template-columns:43px minmax(0,1fr);gap:10px;padding:11px; }
+.morrow-file-badge { width:38px;height:45px;display:grid;place-items:center;background:#627984;color:#fff;font:bold 9px Arial;clip-path:polygon(0 0,72% 0,100% 24%,100% 100%,0 100%); }
+.morrow-attachment b { color:#394b53;font-size:13px; }.morrow-attachment p { margin:3px 0 7px;color:#73787a;font-size:12px; }
+.morrow-attachment dl { margin:0; }.morrow-attachment dl div { display:grid;grid-template-columns:64px 1fr;gap:8px;padding:2px 0; }.morrow-attachment dt { color:#7d8385;font-size:11px;text-transform:uppercase; }.morrow-attachment dd { margin:0;color:#5c6366;font-size:11px;overflow-wrap:anywhere; }
+.morrow-attachment-text { margin:0 11px 10px;border:1px solid #c3c6c6;background:#f2f2ee; }.morrow-attachment-text summary { padding:6px 8px;color:#496572;font:bold 12px Arial;cursor:pointer; }.morrow-attachment-text pre { margin:0;padding:9px;border-top:1px solid #d0d2d1;color:#545b5d;font:12px/1.6 "Courier New",monospace;white-space:pre-wrap;overflow-wrap:anywhere; }
+.morrow-case-form { padding:10px 11px;border-top:1px solid #c9cccd;background:#eef1f1; }
+.morrow-case-form > label { display:block;color:#425d68;font:bold 11px Arial;text-transform:uppercase; }.morrow-case-form > p { margin:3px 0 7px;color:#737a7d;font-size:12px; }
+.morrow-case-form > div:not(.morrow-case-action-result) { display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px; }
+.morrow-case-form input { min-width:0;height:32px;padding:4px 6px;border:1px solid #9ca7ab;background:#fff;color:#283b43;font:13px "Courier New",monospace;text-transform:uppercase; }
+.morrow-case-form button,.morrow-route-error button { min-height:32px;padding:0 10px;border:1px solid #557483;background:linear-gradient(#e5eef1,#c9dce2);color:#284f5e;font:bold 12px Arial;cursor:pointer; }
+.morrow-case-form button:disabled { cursor:not-allowed;opacity:.55; }
+.morrow-case-action-result { min-height:24px;display:grid;grid-template-columns:70px 1fr;gap:5px;margin-top:6px;color:#6e7678;font-size:12px; }
+.morrow-case-action-result > span { font-weight:bold;text-transform:uppercase; }.morrow-case-action-result p { margin:0; }.morrow-case-action-result code { grid-column:2;overflow-wrap:anywhere;color:#53656c; }
+.morrow-case-action-result[data-status="success"] { color:#3f704f; }.morrow-case-action-result[data-status="rejected"],.morrow-case-action-result[data-status="locked"] { color:#8b5148; }
+.morrow-case-note { margin:0;padding:10px 11px;color:#686f72;font-size:13px;line-height:1.55; }
+.morrow-case-waiting,.morrow-handoff-success { margin:0 11px 11px;padding:9px;border:1px solid #9baeb5;background:#edf5f6;color:#49636d;font-size:12px; }
+.morrow-token-release { display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 11px 10px;padding:7px 9px;border:1px solid #9baeb5;background:#eef5f6;color:#597078;font-size:11px;text-transform:uppercase; }.morrow-token-release code { color:#294e5c;font:bold 14px "Courier New",monospace;letter-spacing:.08em; }
+.morrow-handoff-success { display:grid;gap:4px;border-color:#7f9b87;background:#eef5ef; }.morrow-handoff-success > span { color:#718477;text-transform:uppercase; }.morrow-handoff-success > b { color:#36513e;font-size:13px; }.morrow-handoff-success > code { padding:7px;background:#29352d;color:#e7eee8;font-size:13px; }.morrow-handoff-success > small { color:#758079; }
+.morrow-case-empty,.morrow-case-state { padding:15px;color:#707779; }.morrow-case-empty b,.morrow-case-state h2 { margin:0;color:#4c5d63;font-size:13px; }.morrow-case-empty p,.morrow-case-state p { margin:4px 0 0;font-size:13px;line-height:1.55; }
+.morrow-update-list { list-style:none;margin:0;padding:0; }.morrow-update-list li { padding:10px 11px;border-top:1px dotted #bdc1c2;border-left:3px solid #82949b; }.morrow-update-list li:first-child { border-top:0; }.morrow-update-list li[data-state="exception"] { border-left-color:#9b684b;background:#f6f0e9; }.morrow-update-list li[data-state="verified"] { border-left-color:#63836c; }
+.morrow-update-list li > div { display:flex;justify-content:space-between;color:#777e80;font-size:11px;text-transform:uppercase; }.morrow-update-list em { font-style:normal;font-weight:bold; }.morrow-update-list b { display:block;margin-top:3px;color:#3f5158;font-size:13px; }.morrow-update-list p { margin:3px 0;color:#666e70;font-size:13px;line-height:1.45; }.morrow-update-list code { color:#737a7c;font-size:11px; }
+.morrow-receipts { list-style:none;margin:0;padding:7px 9px; }.morrow-receipts li { padding:5px 0;border-top:1px dotted #c4c7c7;overflow-wrap:anywhere;font-size:11px; }.morrow-receipts li:first-child { border:0; }.morrow-sidebar-empty { margin:0;padding:10px;color:#787e80;font-size:12px;line-height:1.5; }
+.morrow-case-help { padding:10px;border:1px solid #b9ae8c;background:#f2eedf;color:#726a55; }.morrow-case-help b { font-size:11px;text-transform:uppercase; }.morrow-case-help p { margin:4px 0 0;font-size:12px;line-height:1.5; }
+.morrow-route-error { width:min(100% - 24px,620px);margin:40px auto;padding:18px;border:1px solid #aaa;background:#f7f7f5;color:#555;box-shadow:0 2px 8px #0003; }.morrow-route-error > p:first-child { color:#8a8f90;font-size:9px;text-transform:uppercase; }.morrow-route-error h1 { color:#394c54;font:18px Georgia,serif; }.morrow-route-error a { margin-left:12px;font-size:10px; }
+@media (max-width:760px) { .morrow-case-head,.morrow-case-columns { grid-template-columns:1fr; }.morrow-case-columns > aside { grid-template-columns:1fr 1fr; }.morrow-case-help { grid-column:1/-1; } }
+@media (max-width:560px) { .morrow-case-head { padding:11px; }.morrow-case-columns > aside { grid-template-columns:1fr; }.morrow-case-help { grid-column:auto; }.morrow-case-form > div:not(.morrow-case-action-result) { grid-template-columns:1fr; }.morrow-case-form button { min-height:34px; }.morrow-case-action-result { grid-template-columns:1fr; }.morrow-case-action-result code { grid-column:1; } }

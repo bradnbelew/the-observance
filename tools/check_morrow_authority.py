@@ -14,6 +14,10 @@ MORROW = ROOT / "morrow"
 PLUGIN_MORROW = ROOT / "plugin" / "src" / "main" / "java" / "com" / "observance" / "watcher" / "morrow"
 DASHBOARD_MORROW_ENVELOPE = ROOT / "dashboard" / "src" / "lib" / "morrow-runtime-envelope.ts"
 DASHBOARD_MORROW_ROUTE = ROOT / "dashboard" / "src" / "app" / "api" / "runtime" / "minecraft" / "events" / "route.ts"
+DASHBOARD_COPPERLINE_CASE = ROOT / "dashboard" / "src" / "lib" / "morrow-copperline-case.ts"
+DASHBOARD_COPPERLINE_SERVER = ROOT / "dashboard" / "src" / "lib" / "morrow-copperline-server.ts"
+DASHBOARD_COPPERLINE_ROUTE = ROOT / "dashboard" / "src" / "app" / "support" / "cases" / "mossfield-recovery" / "page.tsx"
+DASHBOARD_COPPERLINE_ACTION = ROOT / "dashboard" / "src" / "app" / "support" / "cases" / "mossfield-recovery" / "actions.ts"
 PLUGIN_BODY_AUTHORITY = PLUGIN_MORROW / "presentation" / "MorrowBodyAuthority.java"
 PLUGIN_BODY_RUNTIME = PLUGIN_MORROW / "presentation" / "BukkitMorrowBody.java"
 PLUGIN_DIALOG_AUTHORITY = PLUGIN_MORROW / "dialog" / "MorrowDialogAuthority.java"
@@ -284,6 +288,48 @@ def main() -> int:
                 "surface contract set drifted")
         require("physical world state" in surfaces["minecraft"]["owns"], "Minecraft lost physical authority")
         require("custody history" in surfaces["copperline"]["owns"], "Copperline lost custody authority")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        case_model = DASHBOARD_COPPERLINE_CASE.read_text(encoding="utf-8")
+        case_server = DASHBOARD_COPPERLINE_SERVER.read_text(encoding="utf-8")
+        case_route = DASHBOARD_COPPERLINE_ROUTE.read_text(encoding="utf-8")
+        case_action = DASHBOARD_COPPERLINE_ACTION.read_text(encoding="utf-8")
+        schema = (MORROW / "db/schema-proposal.sql").read_text(encoding="utf-8")
+        require("/support/cases/mossfield-recovery" in case_model,
+                "Copperline case lost its exact non-legacy route")
+        require("MORROW_CASE_ATTACHMENT_TEXT" in case_model
+                and "d7e1aa41f9d4a03ea20bdf079fa71ce7613ad66a8f347ba7f926016109817ffa" in schema,
+                "Copperline accessible attachment/checksum authority drifted")
+        for event_key in (
+            "morrow.act1.room04_witnessed",
+            "morrow.act1.static_proposal_authenticated",
+            "morrow.act1.intention_error_proven",
+            "morrow.act2.missing_role_completed",
+            "morrow.act2.live_test_recorded",
+            "morrow.act2.behavior_reuse_proven",
+        ):
+            require(event_key in case_model, f"Copperline projection lacks {event_key}")
+        for required in ("import 'server-only'", "auth.getUser()", "morrow_player_projection"):
+            require(required in case_server, f"Copperline RLS reader lacks {required}")
+        for forbidden in ("SUPABASE_SERVICE_ROLE_KEY", "searchParams", "createAdminClient"):
+            require(forbidden not in case_server, f"Copperline browser read boundary leaked {forbidden}")
+        for required in ("Accessible attachment metadata", "Synchronized field updates",
+                         "Temporary maintenance state", "No linked case found", "Case audit halted"):
+            require(required in case_route, f"Copperline working surface lacks {required}")
+        for required in ("'use server'", "sameOrigin()", "readMorrowCase()",
+                         "morrow_record_copperline_event", "externalMutationsAllowed()"):
+            require(required in case_action, f"Copperline mutation boundary lacks {required}")
+        for required in ("security definer", "is_linked_player", "owner_surface = 'copperline'",
+                         "handoff_token_sha256", "from public, anon, authenticated",
+                         "831b4026a5e98b263699ba337d246ad5c2c1f26b3f1d00bdef42775586707096",
+                         "69ef307074c7aaf7cc4fff12c5e8b7b2423c51a05dfc7f8bb11d53b059420a6e"):
+            require(required in schema, f"Copperline receipt SQL lacks {required}")
+        reboot_surface = "\n".join((case_model, case_server, case_route, case_action))
+        require(re.search(r"\b(?:Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
+                          re.IGNORECASE) is None,
+                "legacy lore leaked into the Copperline reboot surface")
     except Exception as exc:  # noqa: BLE001
         errors.append(str(exc))
 
