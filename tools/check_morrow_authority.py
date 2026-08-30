@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -29,6 +30,8 @@ PLUGIN_DIALOG_AUTHORITY = PLUGIN_MORROW / "dialog" / "MorrowDialogAuthority.java
 PLUGIN_DIALOG_RUNTIME = PLUGIN_MORROW / "dialog" / "BukkitMorrowDialogs.java"
 PLUGIN_STATIC_RESTORE = PLUGIN_MORROW / "room04" / "staticrestore"
 PLUGIN_ENTITY_REPLAY = PLUGIN_MORROW / "room04" / "replay"
+MORROW_MIGRATION = ROOT / "supabase" / "migrations" / "20260830200157_morrow_reboot_foundation.sql"
+MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
 
 
 def load_json(relative: str):
@@ -426,12 +429,46 @@ def main() -> int:
             errors.append(f"legacy lore token {match.group(0)!r} leaked into {path.relative_to(MORROW)}")
 
     try:
-        schema = (MORROW / "db/schema-proposal.sql").read_text(encoding="utf-8").lower()
+        schema_path = MORROW / "db/schema-proposal.sql"
+        schema_text = schema_path.read_text(encoding="utf-8")
+        schema = schema_text.lower()
+        migration_text = MORROW_MIGRATION.read_text(encoding="utf-8")
+        database_receipt = json.loads(MORROW_DATABASE_RECEIPT.read_text(encoding="utf-8"))
+        require(schema_text.splitlines()[3:] == migration_text.splitlines()[3:],
+                "generated migration body differs from rehearsed schema proposal")
+        require(database_receipt["artifacts"]["proposal_sha256"]
+                == hashlib.sha256(schema_path.read_bytes()).hexdigest(),
+                "isolated database receipt proposal hash drifted")
+        require(database_receipt["artifacts"]["migration_sha256"]
+                == hashlib.sha256(MORROW_MIGRATION.read_bytes()).hexdigest(),
+                "isolated database receipt migration hash drifted")
+        require(database_receipt["status"] == "pass"
+                and database_receipt["project"]["production_contacted"] is False
+                and database_receipt["production_enablement"] == "blocked",
+                "isolated database receipt overclaims its scope")
         route = DASHBOARD_MORROW_ROUTE.read_text(encoding="utf-8")
         plugin_config = (ROOT / "plugin" / "src" / "main" / "resources" / "config.yml").read_text(encoding="utf-8")
         require("security invoker" in schema, "Minecraft ingest RPC must remain SECURITY INVOKER")
         require("to service_role" in schema, "Minecraft ingest RPC lacks service_role-only grant")
         require("from public, anon, authenticated" in schema, "Minecraft ingest RPC lacks public revocation")
+        for index_name in (
+            "morrow_capability_decision_event_fk", "morrow_dialogue_response_player_fk",
+            "morrow_dialogue_response_prompt_fk", "morrow_dialogue_response_source_event_fk",
+            "morrow_director_action_campaign_fk", "morrow_discord_flow_resolved_event_fk",
+            "morrow_discord_session_player_fk", "morrow_discord_session_source_event_fk",
+            "morrow_discord_vote_player_fk", "morrow_discord_vote_session_fk",
+            "morrow_discord_vote_source_event_fk", "morrow_event_actor_player_fk",
+            "morrow_event_definition_fk", "morrow_evidence_receipt_definition_fk",
+            "morrow_evidence_receipt_player_fk", "morrow_evidence_receipt_source_event_fk",
+            "morrow_media_delivery_event_fk", "morrow_media_delivery_asset_fk",
+            "morrow_player_supabase_user_fk", "morrow_relationship_transition_event_fk",
+            "morrow_replay_campaign_fk", "morrow_replay_owner_player_fk",
+            "morrow_replay_sealed_event_fk", "morrow_restoration_decision_event_fk",
+            "morrow_anchor_committed_event_fk", "morrow_anchor_creator_player_fk",
+            "morrow_anchor_supersedes_fk",
+        ):
+            require(f"create index if not exists {index_name}" in schema,
+                    f"Morrow advisor covering index missing: {index_name}")
         require("MORROW_MINECRAFT_INGEST_SECRET" in route, "runtime route lacks dedicated ingest secret")
         require("SUPABASE_SERVICE_ROLE_KEY" in route, "runtime route lacks server-only database credential")
         require("NEXT_PUBLIC_SUPABASE_SERVICE" not in route, "service role credential became public")

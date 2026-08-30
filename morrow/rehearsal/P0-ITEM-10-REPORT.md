@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `b3e5faf300ad1a17be6557f9c68379d07540b69a5b61b51398193a74b1968b4e`
+Bundle SHA-256: `5e5b9d08437dd979bf17ff0906e0ee267a7f9f1228028eada8a433e7ae34c7c9`
 
 ## Proven automatically
 
@@ -64,9 +64,12 @@ stopped cleanly with `MORROW_RUNTIME_CLOSED`. Both attempts are retained under `
 `CLIENT-REHEARSAL.md` and the bound generator/checker define the exact evidence required to finish the
 six lanes without overclaiming the working safe-entry subproof.
 
-The database schema remains a proposal. An isolated database target, authenticated browser session,
-and disposable Discord guild/worker were not available, so live RLS/concurrency, browser projection,
-and Gateway delivery are not claimed. No production system was contacted or enabled.
+The database proposal now also exists as a CLI-generated numbered migration and passed an isolated
+Supabase rehearsal: live role/RLS denial, owner projection, service ingest, exact payload and token
+checks, concurrent idempotency, altered collision, payload limits, outbox projection, transactional
+rollback, and security/performance advisors. The validation project was paused afterward. The durable
+receipt is under `database/2026-08-30-isolated-supabase.json`. Authenticated browser projection and a
+disposable Discord guild/worker are still unproven. No production system was contacted or enabled.
 
 The actual runtime receipt and logs are retained under `runtime/p0-paper-c40f916`; the
 machine-authoritative split remains in `receipts/p0-item10-fa1b80b/launch-matrix.json`.

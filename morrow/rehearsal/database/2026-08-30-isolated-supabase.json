@@ -1,0 +1,105 @@
+{
+  "status": "pass",
+  "lane": "disposable_supabase_rls_concurrency_and_recovery",
+  "completed_at": "2026-08-30T20:04:41Z",
+  "scope": "isolated restored validation project; never production",
+  "project": {
+    "ref": "snmqaqlagwzptzqbaiws",
+    "name": "observance-validation-20260727",
+    "organization": "the-observance",
+    "production_contacted": false,
+    "unrelated_active_project_untouched": true,
+    "final_state": "paused"
+  },
+  "tooling": {
+    "supabase_cli": "2.116.0",
+    "cli_help_inspected": true,
+    "migration_history_entries": 0,
+    "migration_history_reason": "schema was iterated with direct SQL on the isolated target; the generated migration remains local pending a fresh production backup"
+  },
+  "artifacts": {
+    "proposal": "morrow/db/schema-proposal.sql",
+    "proposal_sha256": "16f358894744d3d387216b1f7f040a8166998bae9a213b81799b002ae5dff567",
+    "migration": "supabase/migrations/20260830200157_morrow_reboot_foundation.sql",
+    "migration_sha256": "225bec024682504b6f92a289bb7893e93a785ce9e537063f9974bdab75a8c0fe",
+    "migration_generated_by_cli": true,
+    "migration_body_matches_rehearsed_proposal": true,
+    "line_count": 1110
+  },
+  "schema_iteration": {
+    "first_attempt": "rolled_back_on_sql_error",
+    "first_error": "42601: record variable cannot be part of multiple-item INTO list",
+    "fix": "split the flow and player row reads into independently typed SELECT INTO statements",
+    "reapply": "pass"
+  },
+  "fixture": {
+    "campaign_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    "release_id": "morrow.rehearsal.supabase.v1",
+    "players": 2,
+    "events": 3,
+    "queued_projections": 7,
+    "raw_replay_samples_persisted": false
+  },
+  "authorization": {
+    "anon_private_schema_denied": true,
+    "authenticated_private_schema_denied": true,
+    "anon_public_projection_denied": true,
+    "authenticated_owner_projection_allowed": true,
+    "authenticated_other_player_projection_denied": true,
+    "anon_copperline_rpc_denied": true,
+    "authenticated_copperline_rpc_allowed": true,
+    "authenticated_minecraft_rpc_denied": true,
+    "service_role_minecraft_rpc_allowed": true,
+    "wrong_owner_blocked": true,
+    "wrong_payload_blocked": true,
+    "wrong_handoff_token_blocked": true,
+    "correct_handoff_token_committed": true
+  },
+  "integrity": {
+    "concurrent_identical_results": [
+      "committed",
+      "duplicate"
+    ],
+    "concurrent_event_id": "863d6e6e-09d7-4a85-afe0-4f3d8c25469c",
+    "concurrent_single_event_row": true,
+    "minecraft_duplicate_recovered": true,
+    "altered_same_idempotency_key_halted_as_collision": true,
+    "oversized_payload_rejected_by_constraint": true,
+    "oversized_payload_rows_persisted": 0,
+    "room_event_projection_surfaces": [
+      "copperline",
+      "minecraft"
+    ]
+  },
+  "rollback": {
+    "mode": "transactional destructive-shape rehearsal followed by rollback",
+    "private_schema_absent_before_rollback": true,
+    "public_projection_absent_before_rollback": true,
+    "private_schema_restored": true,
+    "public_projection_restored": true,
+    "minecraft_rpc_restored": true,
+    "copperline_rpc_restored": true,
+    "fixture_event_count_after_rollback": 3,
+    "fixture_projection_count_after_rollback": 7
+  },
+  "advisors": {
+    "morrow_security_error_count": 0,
+    "morrow_security_warning_count": 1,
+    "accepted_warning": {
+      "name": "authenticated_security_definer_function_executable",
+      "function": "public.morrow_record_copperline_event",
+      "reason": "intentional authenticated RLS bridge with auth.uid ownership, campaign, release, prerequisite, exact-payload, idempotency, and private-token checks",
+      "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable"
+    },
+    "private_rls_without_policy_info_count": 20,
+    "private_rls_without_policy_reason": "canonical tables are deliberately revoked from client roles and have no permissive policies",
+    "morrow_unindexed_foreign_key_count": 0,
+    "fresh_fixture_unused_index_info_count": 29
+  },
+  "remaining_gates": [
+    "authenticated browser case and ticket projection rehearsal",
+    "disposable Discord Gateway private-delivery rehearsal",
+    "fresh production backup and explicit migration authorization"
+  ],
+  "production_enablement": "blocked"
+}

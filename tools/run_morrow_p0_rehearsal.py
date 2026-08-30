@@ -539,6 +539,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     client_checker = ROOT / "tools" / "check_morrow_client_rehearsal.py"
     client_selftest = ROOT / "tools" / "test_morrow_client_rehearsal.py"
     offline_launcher = ROOT / "tools" / "run_morrow_offline_client.py"
+    database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
+        "2026-08-30-isolated-supabase.json"
     return {
         "automated": [
             {"lane": "contract_and_authority", "status": "proven_headless"},
@@ -575,7 +577,12 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
         },
         "live_services_required": [
-            {"lane": "disposable_supabase_rls_concurrency_and_recovery", "status": "required"},
+            {
+                "lane": "disposable_supabase_rls_concurrency_and_recovery",
+                "status": "proven_isolated",
+                "receipt": str(database_receipt.relative_to(ROOT)).replace("\\", "/"),
+                "receipt_sha256": sha256_file(database_receipt),
+            },
             {"lane": "authenticated_browser_case_and_ticket_projection", "status": "required"},
             {"lane": "disposable_discord_gateway_private_delivery", "status": "required"},
         ],

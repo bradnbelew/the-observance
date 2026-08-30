@@ -14,7 +14,8 @@ Implemented and verified:
 - Paper event ownership/prerequisite authority and six-stage transition service
 - restart-safe, hash-chained, local-first Paper journal with collision/release checks
 - signed Next.js Minecraft event endpoint with replay, size, owner, and schema validation
-- private Supabase schema proposal, service-only SECURITY INVOKER RPC, idempotent event/projection write
+- private Supabase schema plus CLI-generated numbered migration, service-only SECURITY INVOKER RPC,
+  authenticated owner-checked Copperline RPC, and idempotent event/projection writes
 - cross-language audit parity for JSON, Java, TypeScript, SQL, and fail-closed plugin config
 - disabled-by-default Paper `MorrowRuntime` that validates release, campaign, loaded world, HTTPS
   ingest, and secret bindings before opening `morrow-reboot.journal`
@@ -53,7 +54,7 @@ Implemented and verified:
   replay samples, duplicate recovery, and collision halt
 - authenticated Copperline receipt RPC proposal with exact authored payload hashes, private token hash,
   linked-user ownership, release/prerequisite enforcement, and idempotent event/outbox creation; it remains
-  unapplied pending the isolated database rehearsal in P1
+  unapplied to production but passed its isolated Supabase rehearsal in P1
 - disabled-by-default native discord.js Gateway contradiction flow: exact linked Discord/Minecraft,
   campaign, release, prerequisite, guild/channel/thread, purpose, and expiring nonce bindings; ephemeral
   intended-recipient evidence; authored acknowledge/decline/cancel/timeout/recovery states; concrete
@@ -75,8 +76,9 @@ Implemented and verified:
   already-present after restart, PDC entity counts stable, clean shutdown observed, and the signed
   projector recovered in order from two loopback 503 responses without restart redelivery
 - fail-closed launch matrix separating proven headless and actual Paper/runtime subproofs from the still
-  required complete graphical-client and isolated service receipts. A real dummy offline 1.21.11 client
-  now proves bounded safe entry without suffocation; visual capture and the complete slice remain
+  required complete graphical-client and remaining service receipts. A real dummy offline 1.21.11 client
+  now proves bounded safe entry without suffocation, and the isolated Supabase RLS/concurrency/rollback
+  lane is proven. Visual capture, authenticated browser delivery, and Discord Gateway delivery remain
   unproven, and every production gate remains disabled
 
 Verified commands:
@@ -133,15 +135,15 @@ rehearsals are complete. Items 4–6 begin only when those gates have installed 
     and media-plus-runtime validator now live in `morrow/rehearsal/CLIENT-REHEARSAL.md` and
     `tools/check_morrow_client_rehearsal.py`.
 
-### Precise next boundary — human-client and isolated-service rehearsal only
+### Precise next boundary — human-client and remaining isolated-service rehearsal only
 
 The automated P0 authority gate and actual disposable Paper lifecycle are green, but this does not make
 the slice playable. A human client must complete every `required` lane in
 `morrow/rehearsal/receipts/p0-item10-fa1b80b/launch-matrix.json`, including visual interpolation,
 native-dialog input, resource-pack decline, audio-disabled cues, full-inventory safe spawn/exit,
-one-/two-/six-player cleanup, and pacing without operator narration. After that, P1 may create an
-isolated database target plus authenticated browser and disposable Discord worker/guild receipts. Do not
-expand Acts 3–7, enable production, or mutate live services, data, or worlds at this boundary.
+one-/two-/six-player cleanup, and pacing without operator narration. The database lane is now proven on
+a paused validation project; authenticated browser and disposable Discord worker/guild receipts remain.
+Do not expand Acts 3–7, enable production, or mutate production services, data, or worlds at this boundary.
 
 The first 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
 with `SetIsBorderRequired failed: No such interface supported (0x80004002)` and exposed no accessibility
@@ -159,13 +161,20 @@ Windows capture still failed with the same OS interface error, so the retained a
 
 ### P1 — Safe database rehearsal
 
-1. Install the current Supabase CLI and inspect its help; do not invent a migration filename.
-2. Create an isolated local/branch target and convert `db/schema-proposal.sql` into a real migration.
-3. Add database tests for anon/authenticated denial, linked-player projection reads, service ingest,
+Completed on 2026-08-30 against the isolated `observance-validation-20260727` project, then paused:
+
+1. Supabase CLI 2.116.0 was invoked and its help inspected; it generated
+   `supabase/migrations/20260830200157_morrow_reboot_foundation.sql`.
+2. Direct SQL iteration caught and rolled back one typed `SELECT INTO` defect before the fixed schema
+   was reapplied idempotently.
+3. Live tests covered anon/authenticated denial, linked-player projection reads, service ingest,
    wrong owner/release/prerequisite, duplicate, collision, concurrent duplicate, payload bounds,
    projection creation, and rollback.
-4. Run Supabase security/performance advisors. Keep raw replay samples out of Postgres.
-5. Only after a production backup and rehearsal receipt may the migration target production.
+4. Security/performance advisors found zero Morrow errors and zero unindexed foreign keys. One intentional
+   authenticated SECURITY DEFINER warning is accepted in the durable receipt; raw replay samples remain
+   out of Postgres.
+5. Production application remains blocked until a fresh backup and explicit authorization. Receipt:
+   `morrow/rehearsal/database/2026-08-30-isolated-supabase.json`.
 
 ### P2 — Expand acts without breaking the grammar
 
@@ -176,15 +185,14 @@ and factual truth. No three consecutive investigations may lead with the same me
 ## Hard launch blockers
 
 - No production service, world, Discord server, or database is mutated from this checkpoint.
-- The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
+- The numbered migration is generated and isolated-rehearsed, but has not been applied to production;
+  a fresh verified backup and explicit production authorization are still required.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
   connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
   helper. The Morrow display body, Paper
   dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
-  rehearsal. The Copperline reboot route requires an
-  isolated database migration/projector rehearsal and authenticated browser rehearsal. The Discord
-  reboot flow likewise requires the proposal to become an isolated migration plus a disposable guild/
-  worker rehearsal; its shipped feature gate remains false.
+  rehearsal. The Copperline reboot route still requires an authenticated browser rehearsal. The Discord
+  reboot flow requires a disposable guild/worker rehearsal; its shipped feature gate remains false.
 - `morrow-reboot.enabled` stays false until all remaining human-client and isolated-service receipts pass.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 

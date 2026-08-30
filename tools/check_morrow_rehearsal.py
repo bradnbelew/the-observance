@@ -225,6 +225,22 @@ def validate() -> None:
             "failed client attempt was misrepresented")
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
+    database_lane = next(row for row in matrix["live_services_required"]
+                         if row["lane"] == "disposable_supabase_rls_concurrency_and_recovery")
+    database_receipt_path = ROOT / database_lane["receipt"]
+    require(database_lane["status"] == "proven_isolated"
+            and database_receipt_path.is_file()
+            and database_lane["receipt_sha256"] == sha(database_receipt_path),
+            "launch matrix omits or drifts isolated Supabase proof")
+    database_receipt = load(database_receipt_path)
+    require(database_receipt["status"] == "pass"
+            and database_receipt["project"]["production_contacted"] is False
+            and database_receipt["project"]["final_state"] == "paused"
+            and database_receipt["rollback"]["private_schema_restored"] is True
+            and database_receipt["rollback"]["public_projection_restored"] is True
+            and database_receipt["advisors"]["morrow_unindexed_foreign_key_count"] == 0
+            and database_receipt["production_enablement"] == "blocked",
+            "isolated Supabase receipt overclaims or is incomplete")
 
     # Test the exact checked-in bundle for accidental carryover without writing the retired names here.
     retired = ["hold", "keep" + "er", "aver" + "yn", "wr" + "en", "nol" + "and",

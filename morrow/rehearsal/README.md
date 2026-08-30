@@ -22,3 +22,9 @@ without suffocation, but Windows visual capture remains unavailable. The six com
 remain required and use the create-only protocol
 in `CLIENT-REHEARSAL.md`; its validator refuses screenshots or prose without matching journal, world,
 inventory, cleanup, and complete server-lifecycle evidence.
+
+The isolated database lane is proven separately by
+`database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed
+proposal and records live RLS/role, ownership, RPC, concurrency, idempotency, collision, payload-bound,
+projection, rollback, and advisor results. The validation project was paused after evidence capture;
+production application remains blocked.

@@ -1,6 +1,6 @@
--- Morrow reboot schema proposal.
--- NOT A PRODUCTION MIGRATION. Generate a numbered migration with the installed Supabase CLI only
--- after this passes on an isolated target, advisors, rollback, RLS, and concurrency tests.
+-- Morrow reboot foundation migration.
+-- Generated with Supabase CLI 2.116.0 after isolated target, RLS, concurrency, payload-bound,
+-- rollback-shape, and advisor rehearsal. Production application still requires a fresh backup.
 
 begin;
 

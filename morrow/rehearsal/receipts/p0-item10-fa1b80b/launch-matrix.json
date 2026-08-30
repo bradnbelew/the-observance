@@ -68,7 +68,9 @@
   "live_services_required": [
     {
       "lane": "disposable_supabase_rls_concurrency_and_recovery",
-      "status": "required"
+      "receipt": "morrow/rehearsal/database/2026-08-30-isolated-supabase.json",
+      "receipt_sha256": "7f21dad30b6604f3d605bae79dc52f38f74c430a2c5fe122b9eaa43949748408",
+      "status": "proven_isolated"
     },
     {
       "lane": "authenticated_browser_case_and_ticket_projection",

@@ -115,13 +115,19 @@ for scalable/security-sensitive subscriptions.
 
 ## Migration workflow
 
-The Supabase CLI is not currently installed on this host, so `db/schema-proposal.sql` is a reviewed
-proposal rather than a numbered migration. Before production:
+Supabase CLI 2.116.0 generated
+`supabase/migrations/20260830200157_morrow_reboot_foundation.sql` after the proposal passed on the
+isolated `observance-validation-20260727` project. The retained receipt is
+`morrow/rehearsal/database/2026-08-30-isolated-supabase.json`; the project was paused afterward.
+The isolated run covered RLS, role grants, ownership, exact payloads, tokens, duplicate/collision,
+concurrent duplicate, payload limits, projection creation, rollback, and both advisor classes. The
+advisor's one Morrow warning is accepted and documented: the authenticated Copperline mutation is an
+intentional SECURITY DEFINER RLS bridge with independent `auth.uid()` and authored-input checks.
 
-1. Install/check the current CLI and inspect `supabase --help`.
-2. Create an isolated local or branch target.
-3. Iterate with direct SQL on that safe target.
-4. Run database and security advisors.
-5. Generate the migration using `supabase migration new`/`db pull` according to the installed CLI.
-6. Run positive, negative, rollback, RLS, idempotency, and concurrency tests.
-7. Back up production, apply once, read back, and retain the rollback receipt.
+Before production:
+
+1. Recheck the installed CLI and the retained migration/proposal body binding.
+2. Take and verify a fresh production backup.
+3. Apply the numbered migration once through the approved production workflow.
+4. Rerun positive, negative, rollback, RLS, idempotency, concurrency, and advisor checks.
+5. Read back the deployed objects and retain migration, backup, and rollback receipts.
