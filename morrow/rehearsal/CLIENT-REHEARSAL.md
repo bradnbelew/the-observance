@@ -23,6 +23,7 @@ already-installed vanilla 1.21.11 client without reading account files:
 python tools/run_morrow_offline_client.py --run-id <lowercase-id> --prepare-only
 python tools/run_morrow_offline_client.py --run-id <different-lowercase-id>
 python tools/run_morrow_offline_client.py --run-id <bounded-id> --wait-seconds 120 --terminate-after-wait
+python tools/run_morrow_offline_client.py --run-id <silent-id> --audio-disabled
 ```
 
 This helper requires every local library and asset index to match the vanilla manifest, extracts only
@@ -30,6 +31,9 @@ the matching Windows natives into a fresh directory, uses a deterministic dummy 
 routes HTTP(S) through a closed loopback proxy, and quick-connects only to `127.0.0.1:25589`.
 The bounded form retains a finalized receipt and client-log hash after stopping its own disposable
 client process; it does not shut down Paper.
+The `--audio-disabled` profile writes every vanilla sound category to zero before launch and binds the
+exact options hash into the receipt; it supports the audio-accessibility lane but does not replace the
+human visual-equivalence review.
 
 On a Windows 10 host where the normal window-capture API fails before returning a frame, take a bounded
 still only after selecting exactly one visible Java window and recording its exact title and process ID:

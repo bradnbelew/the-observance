@@ -22,6 +22,10 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MINECRAFT = Path.home() / "AppData" / "Roaming" / ".minecraft"
 VERSION = "1.21.11"
+SOUND_CATEGORIES = (
+    "master", "music", "record", "weather", "block", "hostile",
+    "neutral", "player", "ambient", "voice", "ui",
+)
 
 
 def sha(path: Path) -> str:
@@ -89,6 +93,11 @@ def main() -> int:
     parser.add_argument("--javaw", type=Path,
                         default=Path(r"C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin\javaw.exe"))
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument(
+        "--audio-disabled",
+        action="store_true",
+        help="start with every vanilla sound category at zero for accessibility parity rehearsal",
+    )
     parser.add_argument("--wait-seconds", type=int, default=20)
     parser.add_argument("--terminate-after-wait", action="store_true")
     args = parser.parse_args()
@@ -120,10 +129,16 @@ def main() -> int:
     natives = target / "natives"
     game.mkdir()
     natives.mkdir()
-    (game / "options.txt").write_text(
-        "autoJump:false\nfullscreen:false\nnarrator:0\nonboardAccessibility:false\n",
-        encoding="utf-8",
-    )
+    option_lines = [
+        "autoJump:false",
+        "fullscreen:false",
+        "narrator:0",
+        "onboardAccessibility:false",
+    ]
+    if args.audio_disabled:
+        option_lines.extend(f"soundCategory_{category}:0.0" for category in SOUND_CATEGORIES)
+    options_path = game / "options.txt"
+    options_path.write_text("\n".join(option_lines) + "\n", encoding="utf-8")
 
     features = {
         "has_custom_resolution": True,
@@ -199,6 +214,11 @@ def main() -> int:
         "account_files_read": False,
         "production_credentials_loaded": False,
         "outbound_proxy": "127.0.0.1:1",
+        "accessibility_profile": {
+            "audio_disabled": args.audio_disabled,
+            "sound_categories_zeroed": list(SOUND_CATEGORIES) if args.audio_disabled else [],
+            "options_sha256": sha(options_path),
+        },
         "manifest": {"path": str(manifest_path), "sha256": sha(manifest_path)},
         "client": {"path": str(client_jar), "sha256": sha(client_jar)},
         "asset_index": {"path": str(asset_index), "sha256": sha(asset_index)},

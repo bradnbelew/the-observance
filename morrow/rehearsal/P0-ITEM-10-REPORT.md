@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `c5930bf57c9a94b58f22dd215ccbe432ef6d660e546c0990eedec7eb11ba4909`
+Bundle SHA-256: `83b3a539c862300aba53492d7d7763aca6cb02f197d162f2ca2f0c85cd07e429`
 
 ## Proven automatically
 

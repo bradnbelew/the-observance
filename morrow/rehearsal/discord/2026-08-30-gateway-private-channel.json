@@ -50,7 +50,12 @@
     },
     "production_worker": {
       "path": "discord/src/morrow/projection-worker.ts",
-      "sha256": "e483a9eff74e7b95cecdd05a55ae4606a6ca14f9783d8f704916e0e4f1257f1a"
+      "sha256": "eceeaa8b90cfeb96a6601d6d9794dbc91be1dc39a09bd8f35e03bf40135f2c5d"
+    },
+    "database_gateway_rehearsal": {
+      "path": "discord/src/morrow/database-gateway-rehearsal.ts",
+      "sha256": "362c3a50b375c52b4cccf3fbd076928dafd5c8f40444abe7bec230baf53e37be",
+      "status": "fail_closed_harness_ready_live_run_pending"
     },
     "authored_domain": {
       "path": "discord/src/morrow/contradiction.ts",
@@ -58,6 +63,6 @@
     }
   },
   "proven": "Discord login, Gateway READY, temporary-channel creation, exact authored receipt post, MESSAGE_CREATE dispatch, REST readback, nonce/mention safety, and verified cleanup",
-  "remaining_gate": "run the database-claimed production worker against an isolated service-role project and a disposable guild with an actual linked-player ephemeral interaction",
+  "remaining_gate": "run the prepared one-shot production worker binding against the isolated service-role project and complete its actual linked-player ephemeral interaction; retain database, Gateway, command, channel, and cleanup evidence",
   "production_enablement": "blocked"
 }

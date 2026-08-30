@@ -55,6 +55,27 @@ function productionDependencies(client: Client<true>): MorrowProjectionDependenc
   };
 }
 
+/**
+ * Run one bounded batch through the same service-role RPC and Discord delivery
+ * dependencies used by the persistent worker. Rehearsal tooling uses this
+ * entrypoint so it can prove a complete lease/activate/post/ack cycle without
+ * starting an interval or any unrelated bot worker.
+ */
+export async function runMorrowDiscordProjectionBatchOnce(
+  client: Client<true>,
+  options: { workerId?: string; limit?: number; leaseSeconds?: number } = {},
+): Promise<{ claimed: number; applied: number; failed: number }> {
+  if (!config.morrow.enabled || !config.morrow.releaseId || !config.morrow.channelId) {
+    throw new Error('Morrow projection batch refused: runtime binding is disabled or incomplete');
+  }
+  return runMorrowDiscordProjectionBatch(
+    options.workerId ?? randomUUID(),
+    productionDependencies(client),
+    options.limit ?? 10,
+    options.leaseSeconds ?? 45,
+  );
+}
+
 export function startMorrowDiscordProjectionWorker(client: Client<true>, options: {
   intervalMilliseconds?: number;
   onError?(error: unknown): void;
@@ -65,14 +86,13 @@ export function startMorrowDiscordProjectionWorker(client: Client<true>, options
     throw new Error('invalid Morrow projection interval');
   }
   const workerId = randomUUID();
-  const dependencies = productionDependencies(client);
   let running = false;
   let stopped = false;
   const tick = async () => {
     if (running || stopped) return;
     running = true;
     try {
-      await runMorrowDiscordProjectionBatch(workerId, dependencies);
+      await runMorrowDiscordProjectionBatchOnce(client, { workerId });
     } catch (error) {
       options.onError?.(error);
     } finally {

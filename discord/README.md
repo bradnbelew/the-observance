@@ -89,6 +89,14 @@ set, interactions and projections must use that exact thread. Do not enable this
 until the schema proposal has become a rehearsed migration and P0 item 10 has produced restart/outage
 receipts.
 
+The isolated database/Gateway proof uses `npm.cmd run morrow:database-gateway-rehearsal`. It refuses
+unless `SUPABASE_URL` names the fixed validation project, the matching service-role key is supplied
+only to the process, the release starts with `morrow.rehearsal.discord.`, and the exact acknowledgement
+printed by the runbook is present. It preflights the service role before touching Discord, creates one
+owner-and-bot-only channel plus one unique guild command, runs the normal claim/activate/post/complete
+dependencies, logs no private evidence, and deletes both Discord objects on success, timeout, error,
+Ctrl+C, or termination. Production `.env` values alone always fail closed.
+
 The cadence is clamped to 10,000–15,000 ms. The lease is clamped to 60–900 seconds. V5 uses no AI,
 speech-to-text, or Discord voice credentials; those retired lanes are absent from production configuration.
 

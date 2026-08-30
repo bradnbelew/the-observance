@@ -38,10 +38,10 @@
     "latest_visual_checkpoint": "morrow/rehearsal/client-visual/2026-08-30-exact-window-visual-checkpoint.json",
     "latest_visual_checkpoint_sha256": "914e51dfe1e469fb7b325a6fb8b33b90f6b0c00b748e2d5b912fd2b56bf64893",
     "offline_launcher": "tools/run_morrow_offline_client.py",
-    "offline_launcher_sha256": "6a168fff2950e9b61c1e8ed0c8483b58213e65bcb3facfbddc510ece31f252f8",
+    "offline_launcher_sha256": "e5719db22876bf9fa7aeb8fa839f352e07432db748c57bcd2b7ccc84b2ae222f",
     "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
     "protocol": "morrow/rehearsal/CLIENT-REHEARSAL.md",
-    "protocol_sha256": "0451cc23ba4827e65064aa0ff3620a7856b27b19545a8112f19dee3745d7a4d7",
+    "protocol_sha256": "7f71a646a2865af91123e5d99a972e4f0df0e6e019ea21c08b7acda0d05b74e3",
     "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
     "selftest": "tools/test_morrow_client_rehearsal.py",
     "selftest_sha256": "2bc22838cb832948ec4205868bd1a61ca74b1db1e3635e60cf0416095932a53a",
@@ -94,7 +94,7 @@
     {
       "lane": "disposable_discord_gateway_private_delivery",
       "partial_receipt": "morrow/rehearsal/discord/2026-08-30-gateway-private-channel.json",
-      "partial_receipt_sha256": "20c52517d9eae51c80d9bfd5f433ed58c4364ac5895af0cb55ecd7b16f0b2556",
+      "partial_receipt_sha256": "4d5c1368f143c16a5f7de5aa9a0ec769b63c4e3e9ed0b5658de9d0a075d7dff4",
       "proven": "real Gateway temporary-private-channel message and cleanup transport",
       "remaining": "isolated database-claimed worker plus disposable-guild linked-player ephemeral interaction",
       "status": "required"
