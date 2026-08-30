@@ -199,6 +199,11 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         return entity instanceof Interaction && owned(entity);
     }
 
+    public int ownedEntityCount() {
+        requirePrimaryThread();
+        return (int) world.getEntities().stream().filter(this::owned).count();
+    }
+
     private void samplingTick() {
         requirePrimaryThread();
         for (UUID playerId : new ArrayList<>(pendingPlayerIds())) {

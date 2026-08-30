@@ -38,3 +38,11 @@ plugin/src/main/java/com/observance/watcher/m3runtime/*.java text eol=lf
 plugin/src/test/java/com/observance/watcher/m3runtime/*.java text eol=lf
 plugin/src/main/resources/config.yml text eol=lf
 plugin/src/main/resources/plugin.yml text eol=lf
+
+# Morrow runtime receipts are byte-hashed and regenerated exactly; keep their evidence stable.
+morrow/rehearsal/** text eol=lf
+morrow/rehearsal/runtime/**/*.log text eol=lf whitespace=-blank-at-eol,-blank-at-eof
+tools/check_morrow_rehearsal.py text eol=lf
+tools/run_morrow_p0_rehearsal.py text eol=lf
+tools/run_morrow_disposable_paper.py text eol=lf
+plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java text eol=lf

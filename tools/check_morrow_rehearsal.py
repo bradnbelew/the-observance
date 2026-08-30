@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -16,6 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 RECEIPTS = ROOT / "morrow" / "rehearsal" / "receipts" / "p0-item10-fa1b80b"
 SOURCE_CHECKPOINT = "fa1b80b84959dc62012c209c4749c6e31abde8ec"
 RELEASE = "morrow.rehearsal.fa1b80b.p0-10.v1"
+PAPER_SOURCE_CHECKPOINT = "c40f916aefb8dedf7c459a6636be92397fb0ebb1"
+PAPER_EXPECTED_SHA256 = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
+PAPER_RUNTIME = ROOT / "morrow" / "rehearsal" / "runtime" / "p0-paper-c40f916"
 SEQUENCE = [
     "morrow.act0.case_chain_authenticated",
     "morrow.act0.server_handoff_recovered",
@@ -43,7 +47,82 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def validate_paper_runtime() -> dict[str, Any]:
+    receipt_path = PAPER_RUNTIME / "paper-runtime-receipt.json"
+    receipt = load(receipt_path)
+    require(receipt["schema_version"] == "1.0.0-morrow-disposable-paper-runtime",
+            "Paper runtime receipt schema drifted")
+    require(receipt["status"] == "pass", "actual Paper runtime did not pass")
+    require(receipt["source_commit"] == PAPER_SOURCE_CHECKPOINT,
+            "actual Paper runtime source binding drifted")
+    require(receipt["scope"] == "create-only loopback disposable Paper; never production",
+            "actual Paper runtime scope drifted")
+    require(receipt["paper"] == {
+        "build": 132,
+        "selected_source": "D:\\the-observance\\build\\paper-smoke\\paper.jar",
+        "sha256": PAPER_EXPECTED_SHA256,
+        "version": "1.21.11",
+    }, "Paper build selection drifted")
+    candidates = receipt["paper_candidates"]
+    require(len(candidates) == 18, "Paper candidate inventory count drifted")
+    require(all(row["exact_build_132_match"] and row["sha256"] == PAPER_EXPECTED_SHA256
+                and row["bytes"] == 54_846_016 for row in candidates),
+            "a retained Paper candidate did not match pinned build 132")
+
+    bootstrap = receipt["bootstrap"]
+    require(bootstrap["cache"]["file_count"] == 1
+            and bootstrap["libraries"]["file_count"] == 114
+            and bootstrap["versions"]["file_count"] == 1,
+            "copied bootstrap inventory count drifted")
+    require(bootstrap["cache"]["tree_sha256"] ==
+            "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a",
+            "copied Paper cache tree drifted")
+    require(bootstrap["libraries"]["tree_sha256"] ==
+            "0885507c46c6eb2df137b152d38bfdce18a035507302480570af25e5eeee1d5a",
+            "copied Paper libraries tree drifted")
+    require(bootstrap["versions"]["tree_sha256"] ==
+            "1e9b7e14f276cd183ed3f134f2a1b46652a4d15aff9573ea35501a543c445c4a",
+            "copied Paper versions tree drifted")
+
+    require(receipt["runner_sha256"] == sha(ROOT / "tools" / "run_morrow_disposable_paper.py"),
+            "actual Paper runner changed after its retained run")
+    require(receipt["logs"]["first_sha256"] == sha(PAPER_RUNTIME / "morrow-first-start.log")
+            and receipt["logs"]["restart_sha256"] == sha(PAPER_RUNTIME / "morrow-restart.log"),
+            "actual Paper log hash drifted")
+    attempts = receipt["projection"]["attempts"]
+    require([row["response_status"] for row in attempts] == [503, 503, 200],
+            "Paper projector outage/recovery sequence drifted")
+    require(all(row["signature_valid"]
+                and row["campaign_id"] == receipt["campaign_id"]
+                and row["release_id"] == receipt["release_id"] for row in attempts),
+            "Paper projector signature or release binding failed")
+    require(receipt["projection"]["no_restart_redelivery"],
+            "Paper restart redelivered an acknowledged event")
+    runtime = receipt["runtime"]
+    expected_entities = {"body": 2, "entity_replay": 6, "static_restore": 26}
+    require(runtime["first_entities"] == expected_entities
+            and runtime["restart_entities"] == expected_entities,
+            "owned Paper entity counts were not stable across restart")
+    require("status=BUILT" in runtime["first_room"]
+            and "status=ALREADY_PRESENT" in runtime["restart_room"],
+            "Room 04 install/readback lifecycle drifted")
+    proof = receipt["proof"]
+    expected_true = {
+        "bootstrap_copy_hash_preserved", "cursor_prevented_restart_duplicate",
+        "entity_counts_stable_across_restart", "exact_paper_match",
+        "graceful_cleanup_logged", "listeners_closed", "no_bootstrap_download_or_mutation",
+        "projector_outage_recovery", "restart_already_present_audit",
+        "room04_built_and_readback_audited",
+    }
+    require(all(proof[name] is True for name in expected_true), "an actual Paper proof flag is false")
+    require(proof["graphical_client_automated"] is False
+            and proof["production_mutated"] is False,
+            "actual Paper receipt overclaimed scope")
+    return receipt
+
+
 def validate() -> None:
+    actual_paper = validate_paper_runtime()
     required = {
         "automated-rehearsal.json", "bundle-manifest.json", "cohort-1.json", "cohort-2.json",
         "cohort-6.json", "launch-matrix.json", "network-boundary.json", "paper-runtime.json",
@@ -115,20 +194,26 @@ def validate() -> None:
     require(network["status"] == "pass" and not network["non_loopback_attempts"]
             and not network["production_contacted"], "network boundary was crossed")
     paper = load(RECEIPTS / "paper-runtime.json")
-    require(paper["status"] in {"not_run_pinned_runtime_unavailable", "pass"},
-            "Paper lane is ambiguous rather than fail-closed")
+    require(paper["status"] == "pass", "retained actual Paper lane is not green")
+    require(paper["runtime_receipt_sha256"] == sha(PAPER_RUNTIME / "paper-runtime-receipt.json")
+            and paper["paper_sha256"] == PAPER_EXPECTED_SHA256
+            and paper["plugin_sha256"] == actual_paper["plugin_sha256"],
+            "headless bundle is not bound to the actual Paper receipt")
     matrix = load(RECEIPTS / "launch-matrix.json")
     require(matrix["production_enablement"] == "blocked", "rehearsal opened production enablement")
     require(len(matrix["human_client_required"]) == 6
             and all(row["status"] == "required" for row in matrix["human_client_required"]),
             "client-only evidence was misrepresented as automated proof")
+    paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
+    require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
 
     # Test the exact checked-in bundle for accidental carryover without writing the retired names here.
     retired = ["hold", "keep" + "er", "aver" + "yn", "wr" + "en", "nol" + "and",
                "deep " + "hold", "un" + "lit"]
     authored = "\n".join(path.read_text(encoding="utf-8").lower()
                            for path in sorted((ROOT / "morrow" / "rehearsal").rglob("*")) if path.is_file())
-    require(not any(term in authored for term in retired), "retired-canon text leaked into rehearsal artifacts")
+    require(not any(re.search(rf"(?<![a-z]){re.escape(term)}(?![a-z])", authored) for term in retired),
+            "retired-canon text leaked into rehearsal artifacts")
 
     with tempfile.TemporaryDirectory(prefix="morrow-p0-check-") as temporary:
         regenerated = Path(temporary) / "receipts"

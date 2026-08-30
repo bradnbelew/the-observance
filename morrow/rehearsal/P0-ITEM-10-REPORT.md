@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `b44d27a6d57080314fdac7f5870ec8985f4116a436975da973b404c30ba62ce3`
+Bundle SHA-256: `19ad0b8333e7609eb9016b5106099c5042dcb12491a64f387e496757a40460e5`
 
 ## Proven automatically
 
@@ -25,17 +25,31 @@ Bundle SHA-256: `b44d27a6d57080314fdac7f5870ec8985f4116a436975da973b404c30ba62ce
 - Static runtime probes retain display-entity fallback, captioned/pulsed audio equivalence, safe
   spawn/exit cells, no Room 04 inventory grant/removal, and entity/task cleanup markers.
 - The rehearsal network guard observed no connection attempt and denies any non-loopback target.
+- An actual Paper 1.21.11 build 132 server boot is retained from source checkpoint
+  `c40f916aefb8dedf7c459a6636be92397fb0ebb1`. All 18 local `paper.jar` candidates were hashed; every
+  candidate was the exact pinned SHA-256
+  `5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba`. The selected source and its
+  `cache`, `libraries`, and `versions` trees were copied into a new create-only target, verified before
+  boot, and byte-identical after both server lifecycles.
+- The plugin JAR SHA-256 was
+  `38fac760c9ba3fc4ca652c5f1a59ec62cbf510157165e19c35942ba9f223977f`. First boot installed and
+  audited Room 04; restart read the same manifest/snapshot as already present. PDC-owned entity counts
+  remained body 2, Static Restore 26, and Entity Replay 6 across restart, with clean runtime shutdown
+  logged after each lifecycle.
+- The real async projector reached only the loopback HTTPS ingest fixture, received two retryable 503
+  responses, then one authenticated 200 response. Its durable cursor remained at sequence 4 across
+  restart with no redelivery. Routine Paper public-key/version lookups were forced through a closed
+  loopback proxy and failed; no bootstrap file was downloaded or changed.
 
 ## Not proven here
 
-The pinned Paper server JAR and copied bootstrap cache are not present in this workspace, so no actual
-disposable server boot is claimed. No graphical Minecraft client is available, so entity interpolation,
-native-dialog interaction, resource-pack-decline parity, audio-disabled parity, full-inventory route
-experience, 1/2/6-player physical cleanup, and 60–90 minute pacing without operator narration still
-require human-client receipts.
+No graphical Minecraft client was automated. Entity interpolation, native-dialog interaction,
+resource-pack-decline parity, audio-disabled parity, full-inventory route experience, one-/two-/six-player
+physical cleanup, and 60–90 minute pacing without operator narration still require human-client receipts.
 
 The database schema remains a proposal. An isolated database target, authenticated browser session,
 and disposable Discord guild/worker were not available, so live RLS/concurrency, browser projection,
 and Gateway delivery are not claimed. No production system was contacted or enabled.
 
-The machine-authoritative split is retained in `receipts/p0-item10-fa1b80b/launch-matrix.json`.
+The actual runtime receipt and logs are retained under `runtime/p0-paper-c40f916`; the
+machine-authoritative split remains in `receipts/p0-item10-fa1b80b/launch-matrix.json`.

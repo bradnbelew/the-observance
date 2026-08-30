@@ -148,6 +148,11 @@ public final class BukkitStaticRestore implements AutoCloseable {
 
     public StaticRestoreManifest manifest() { return manifest; }
 
+    public int ownedEntityCount() {
+        requirePrimaryThread();
+        return (int) world.getEntities().stream().filter(this::owned).count();
+    }
+
     public Candidate candidate(Block block) {
         requirePrimaryThread();
         if (block == null || block.getWorld() != world) return null;

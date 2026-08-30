@@ -3,8 +3,8 @@
 
 This runner never connects to a production service.  Its default lane uses the real repository
 contracts and pure runtime authorities, exercises the cross-surface event protocol in memory, and
-retains signed/hash-chained receipts.  An actual Paper boot is deliberately a separate launch-matrix
-lane: it may be marked proven only when explicitly supplied pinned local artifacts are available.
+retains signed/hash-chained receipts.  The actual Paper lane is imported only from the retained,
+hash-bound receipt produced by the create-only disposable Paper runner.
 """
 
 from __future__ import annotations
@@ -28,6 +28,9 @@ RELEASE = "morrow.rehearsal.fa1b80b.p0-10.v1"
 CAMPAIGN = str(uuid.uuid5(uuid.NAMESPACE_URL, "morrow:p0-rehearsal:campaign"))
 DEFAULT_TIMESTAMP = "2026-08-30T00:00:00Z"
 DEFAULT_OUTPUT = ROOT / "morrow" / "rehearsal" / "receipts" / "p0-item10-fa1b80b"
+PAPER_SOURCE_CHECKPOINT = "c40f916aefb8dedf7c459a6636be92397fb0ebb1"
+PAPER_EXPECTED_SHA256 = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
+PAPER_RUNTIME_RECEIPT = ROOT / "morrow" / "rehearsal" / "runtime" / "p0-paper-c40f916" / "paper-runtime-receipt.json"
 
 EVENT_SEQUENCE = (
     "morrow.act0.case_chain_authenticated",
@@ -73,6 +76,10 @@ ARTIFACTS = (
     "discord/src/morrow/contradiction.ts",
     "discord/src/morrow/projection-policy.ts",
     "tools/run_morrow_p0_rehearsal.py",
+    "tools/run_morrow_disposable_paper.py",
+    "morrow/rehearsal/runtime/p0-paper-c40f916/paper-runtime-receipt.json",
+    "morrow/rehearsal/runtime/p0-paper-c40f916/morrow-first-start.log",
+    "morrow/rehearsal/runtime/p0-paper-c40f916/morrow-restart.log",
     "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java",
 )
 
@@ -467,26 +474,60 @@ class NetworkGuard:
 
 def paper_lane(args: argparse.Namespace, binding: dict[str, Any]) -> dict[str, Any]:
     supplied = [args.paper_jar, args.plugin_jar, args.bootstrap_cache]
+    if not any(supplied):
+        if not PAPER_RUNTIME_RECEIPT.is_file():
+            return {
+                "artifact_binding": binding,
+                "reason": "retained create-only Paper runtime receipt is absent",
+                "status": "not_run_pinned_runtime_unavailable",
+                "production_contacted": False,
+            }
+        retained = json.loads(PAPER_RUNTIME_RECEIPT.read_text(encoding="utf-8"))
+        if (retained.get("status") != "pass"
+                or retained.get("source_commit") != PAPER_SOURCE_CHECKPOINT
+                or retained.get("paper", {}).get("sha256") != PAPER_EXPECTED_SHA256
+                or retained.get("proof", {}).get("production_mutated") is not False
+                or retained.get("proof", {}).get("graphical_client_automated") is not False):
+            return {
+                "artifact_binding": binding,
+                "reason": "retained Paper runtime receipt failed its release/hash/scope binding",
+                "status": "fail_closed",
+                "production_contacted": False,
+            }
+        return {
+            "artifact_binding": binding,
+            "bootstrap_tree_sha256": {
+                name: retained["bootstrap"][name]["tree_sha256"]
+                for name in ("cache", "libraries", "versions")
+            },
+            "paper_sha256": retained["paper"]["sha256"],
+            "plugin_sha256": retained["plugin_sha256"],
+            "production_contacted": False,
+            "release_id": retained["release_id"],
+            "runtime_receipt": str(PAPER_RUNTIME_RECEIPT.relative_to(ROOT)).replace("\\", "/"),
+            "runtime_receipt_sha256": sha256_file(PAPER_RUNTIME_RECEIPT),
+            "source_checkpoint": retained["source_commit"],
+            "status": "pass",
+        }
     if not all(supplied):
         return {
             "artifact_binding": binding,
-            "reason": "pinned Paper server, deployable plugin, and copied bootstrap cache were not all supplied",
-            "status": "not_run_pinned_runtime_unavailable",
+            "reason": "Paper server, deployable plugin, and bootstrap cache must be supplied together",
+            "status": "fail_closed",
             "production_contacted": False,
         }
     paths = [Path(value).resolve() for value in supplied]
     if any(not path.is_file() for path in paths):
         return {"artifact_binding": binding, "reason": "one or more supplied local artifacts do not exist",
                 "status": "fail_closed", "production_contacted": False}
-    expected_paper = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
-    if sha256_file(paths[0]) != expected_paper:
+    if sha256_file(paths[0]) != PAPER_EXPECTED_SHA256:
         return {"artifact_binding": binding, "reason": "Paper hash differs from pinned 1.21.11 build 132",
-                "status": "fail_closed", "production_contacted": False}
+            "status": "fail_closed", "production_contacted": False}
     # The repository's proven disposable runner owns actual create-only boot orchestration.  This
     # lane refuses to improvise if the full local artifact set was not explicitly supplied.
     return {"artifact_binding": binding, "reason": "artifacts verified; execute repository disposable Paper runner manually",
             "status": "ready_not_executed", "production_contacted": False,
-            "paper_sha256": expected_paper, "plugin_sha256": sha256_file(paths[1]),
+            "paper_sha256": PAPER_EXPECTED_SHA256, "plugin_sha256": sha256_file(paths[1]),
             "bootstrap_cache_sha256": sha256_file(paths[2])}
 
 
@@ -497,7 +538,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             {"lane": "ordered_durable_cross_surface_protocol", "status": "proven_headless"},
             {"lane": "cohort_1_2_6_and_negative_paths", "status": "proven_headless"},
             {"lane": "outage_restart_cursor_and_collision", "status": "proven_headless"},
-            {"lane": "disposable_paper_boot", "status": paper["status"]},
+            {"lane": "disposable_paper_boot",
+             "status": "proven_runtime" if paper["status"] == "pass" else paper["status"]},
         ],
         "human_client_required": [
             {"lane": "minecraft_visual_entity_interpolation_and_authored_pose", "status": "required"},
@@ -558,6 +600,11 @@ def bundle(args: argparse.Namespace) -> dict[str, Any]:
         "negative_paths": negatives,
         "outage_recovery": outages,
         "release_id": RELEASE,
+        "paper_runtime": {
+            "receipt_sha256": paper.get("runtime_receipt_sha256"),
+            "source_checkpoint": paper.get("source_checkpoint"),
+            "status": paper["status"],
+        },
         "source_checkpoint": SOURCE_CHECKPOINT,
         "static_runtime_contracts": static,
     }

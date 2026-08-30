@@ -18,7 +18,7 @@
     },
     {
       "lane": "disposable_paper_boot",
-      "status": "not_run_pinned_runtime_unavailable"
+      "status": "proven_runtime"
     }
   ],
   "human_client_required": [

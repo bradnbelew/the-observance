@@ -126,7 +126,17 @@ public final class MorrowRuntime implements AutoCloseable {
                 entityReplay.start();
                 dialogs = new BukkitMorrowDialogs(plugin, world, room04Origin, state, body, staticRestore, entityReplay);
                 dialogs.start();
+                plugin.getLogger().info("MORROW_ROOM04_READY status=" + room04Result.status()
+                        + " manifest=" + room04Result.manifestSha256()
+                        + " snapshot=" + room04Result.snapshotSha256()
+                        + " blocks=" + room04Result.blockCount());
             }
+            plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
+                    + " journal_events=" + state.snapshot().committedEvents().size()
+                    + " projector_state=" + projector.snapshot().state()
+                    + " body_entities=" + (body == null ? 0 : body.ownedEntityCount())
+                    + " static_entities=" + (staticRestore == null ? 0 : staticRestore.ownedEntityCount())
+                    + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount()));
             return new MorrowRuntime(settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs);
         } catch (IOException | RuntimeException | LinkageError failure) {
             if (dialogs != null) dialogs.close();

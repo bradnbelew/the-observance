@@ -64,9 +64,16 @@ Implemented and verified:
   cancel/decline paths, disconnect/rejoin, ordered outage recovery, duplicate/collision, cursor loss,
   release/player/campaign refusal, private-recipient isolation, earned ticket projections, fallback/
   accessibility/inventory/cleanup contracts, and an explicit `offered_not_accepted` later-capture state
-- fail-closed launch matrix separating headless/runtime proof from actual Paper and graphical-client
-  evidence. The pinned Paper server/bootstrap artifacts are absent here, so no server boot or live-client
-  proof is claimed and every production gate remains disabled
+- create-only loopback Paper 1.21.11 build 132 lifecycle rehearsal bound to source checkpoint
+  `c40f916aefb8dedf7c459a6636be92397fb0ebb1`, plugin SHA-256
+  `38fac760c9ba3fc4ca652c5f1a59ec62cbf510157165e19c35942ba9f223977f`, and exact Paper SHA-256
+  `5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba`: 18 local candidates
+  inventoried, bootstrap cache/libraries/versions copied and hash-preserved, Room 04 built then audited
+  already-present after restart, PDC entity counts stable, clean shutdown observed, and the signed
+  projector recovered in order from two loopback 503 responses without restart redelivery
+- fail-closed launch matrix separating proven headless and actual Paper runtime evidence from the still
+  required graphical-client and isolated service receipts. No live-client proof is claimed and every
+  production gate remains disabled
 
 Verified commands:
 
@@ -88,9 +95,10 @@ cd discord && npm.cmd run runtimecheck
 
 ### P0 — Make the 60–90 minute slice playable
 
-Items 1–10 are implemented in code and focused main-driven/headless rehearsal tests. Room 04 remains behind both the
-global reboot gate and its separate `room04.build-enabled: false` rehearsal gate until a disposable
-Paper/live-client receipt exists. Items 4–6 begin only when those gates have installed Room 04.
+Items 1–10 are implemented in code and focused main-driven/headless rehearsal tests. The disposable
+Paper lifecycle receipt exists, but Room 04 remains behind both the global reboot gate and its separate
+`room04.build-enabled: false` shipped default until the required human-client and isolated-service
+rehearsals are complete. Items 4–6 begin only when those gates have installed Room 04.
 
 1. Add a `MorrowRuntime` lifecycle that opens `morrow-reboot.journal` only when the disabled-by-default
    config has valid release/campaign/world/HTTPS ingest values.
@@ -115,15 +123,14 @@ Paper/live-client receipt exists. Items 4–6 begin only when those gates have i
    Ed25519 validation where HTTP interactions are used.
 10. Exercise one-, two-, and six-player paths through restart and remote outage before enabling the
     rehearsal config. Automated authority lane complete; retained bundle:
-    `morrow/rehearsal/receipts/p0-item10-fa1b80b`. Actual disposable Paper and graphical-client lanes
-    remain explicitly required in its launch matrix.
+    `morrow/rehearsal/receipts/p0-item10-fa1b80b`. The actual disposable Paper lifecycle is proven by
+    `morrow/rehearsal/runtime/p0-paper-c40f916/paper-runtime-receipt.json`; graphical-client lanes remain
+    explicitly required in the launch matrix.
 
-### Precise next boundary — isolated runtime rehearsal only
+### Precise next boundary — human-client and isolated-service rehearsal only
 
-The automated P0 authority gate is green, but this does not make the slice playable. The next permitted
-work is to supply the exact pinned Paper 1.21.11 build 132 server JAR, copied local bootstrap cache, and
-the built plugin to the existing create-only disposable runner, then retain an actual server lifecycle
-receipt. A human client must separately complete every `required` lane in
+The automated P0 authority gate and actual disposable Paper lifecycle are green, but this does not make
+the slice playable. A human client must complete every `required` lane in
 `morrow/rehearsal/receipts/p0-item10-fa1b80b/launch-matrix.json`, including visual interpolation,
 native-dialog input, resource-pack decline, audio-disabled cues, full-inventory safe spawn/exit,
 one-/two-/six-player cleanup, and pacing without operator narration. After that, P1 may create an
@@ -150,14 +157,13 @@ and factual truth. No three consecutive investigations may lead with the same me
 
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
-- The automated P0 receipt bundle is green, but the pinned Paper server/bootstrap artifacts were not
-  present and no graphical client was available. Recovery Room 04, the Morrow display body, Paper
-  dialogs, M02 Static Restore, and M03/M04 Entity Replay still require disposable Paper/live-client
-  rehearsal. The Copperline reboot route requires an
+- The automated P0 receipt bundle and disposable Paper lifecycle are green, but no graphical client was
+  available. Recovery Room 04, the Morrow display body, Paper dialogs, M02 Static Restore, and M03/M04
+  Entity Replay still require live-client visual and interaction rehearsal. The Copperline reboot route requires an
   isolated database migration/projector rehearsal and authenticated browser rehearsal. The Discord
   reboot flow likewise requires the proposal to become an isolated migration plus a disposable guild/
   worker rehearsal; its shipped feature gate remains false.
-- `morrow-reboot.enabled` stays false until the end-to-end disposable Paper receipt passes.
+- `morrow-reboot.enabled` stays false until all remaining human-client and isolated-service receipts pass.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 
 ## Definition of playable

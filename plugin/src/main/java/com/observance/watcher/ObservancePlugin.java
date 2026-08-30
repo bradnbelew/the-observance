@@ -347,6 +347,7 @@ public final class ObservancePlugin extends JavaPlugin {
         if (morrowRuntime != null) {
             morrowRuntime.close();
             morrowRuntime = null;
+            getLogger().info("MORROW_RUNTIME_CLOSED entities_and_tasks=cleaned");
         }
         if (m3ReviewRuntime != null) {
             m3ReviewRuntime.close();
