@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0-morrow-resource-pack-evidence-index",
+  "status": "bounded_handshake_pair_pass_human_visual_parity_open",
+  "completed_at": "2026-08-30T23:51:57Z",
+  "source_commit": "8da06ead51ed7cab526e036a7b8b88abfc831373",
+  "artifacts": {
+    "rehearsal_runner": {
+      "path": "tools/run_morrow_resource_pack_rehearsal.py",
+      "sha256": "690abd11399480accc4f4bca12a84c92b2b3628d61d40c5522582863578c51b3"
+    },
+    "client_launcher": {
+      "path": "tools/run_morrow_offline_client.py",
+      "sha256": "484c9c514049c88470699d3306ca8e9c4c2ef32f6dc6ea13c66bc754b09afa46"
+    },
+    "receipt_checker": {
+      "path": "tools/check_morrow_resource_pack_receipts.py",
+      "sha256": "30e00b00e910414f1b36ee2798ee4d6cae203216857ceb028cfbb95532a5a3b3"
+    },
+    "runtime_policy": {
+      "path": "plugin/src/main/java/com/observance/watcher/morrow/MorrowResourcePackPolicy.java",
+      "sha256": "66f3b140adcad07b86175c91f98385cd429a22a7733a6a8e9fa919804fcb9093"
+    }
+  },
+  "lanes": {
+    "loaded": {
+      "receipt": "morrow/rehearsal/resource-pack/8da06ea/loaded/resource-pack-rehearsal.json",
+      "sha256": "592d884ce6d833c3f69e1dbabca9c7dcbe316d97329e3d31d4a85d84988ac9d3"
+    },
+    "declined": {
+      "receipt": "morrow/rehearsal/resource-pack/8da06ea/declined/resource-pack-rehearsal.json",
+      "sha256": "0a59a3ee255f817f379ee30bc086c24fed38c167181b9b2637b3b71f479b5e9e"
+    }
+  },
+  "proven": "real vanilla 1.21.11 clients reached Paper LOADED and DECLINED states against the same exact optional loopback resource-pack bytes; the declined client performed no pack GET; both runtimes cleaned up",
+  "remaining_gate": "capture and independently review matched client media proving every required body, text, dialog, and puzzle interaction remains readable and usable in both states",
+  "production_enablement": "blocked"
+}

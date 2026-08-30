@@ -1,0 +1,86 @@
+{
+  "client": {
+    "client_log_retained": false,
+    "final_options": "final-options.txt",
+    "final_options_sha256": "0649662130e0b7f5d092129d499e65836387afd45c5ba58cd50f999660fe7833",
+    "final_servers": "final-servers.dat",
+    "final_servers_sha256": "23b23a66a89c30f3667f98964e2592e01f15357a96837b3b167a97f0c32e1c40",
+    "launch_options": "launch-options.txt",
+    "launch_options_sha256": "2c0ac1089e3faea54179243291bc99970a6ab7a819cc8d4464efa03eadb116a7",
+    "launch_servers": "launch-servers.dat",
+    "launch_servers_sha256": "4c2aedd6fa61dc7b43fefa905c58467db08894c9524f1b05bab2466ebece4ebe",
+    "launched": true,
+    "launcher_output_sha256": "cd88a7261bb122ec60da207ce73e73053b849e2e3c0fb4f37e4079e32b219a09",
+    "receipt": "client-receipt.json",
+    "receipt_sha256": "72419606bb82b36a12a058a1f9cfe4ca70ba89a4b07b0906897024c3d83779f3",
+    "server_resource_pack_policy": "disabled",
+    "username": "MorrowNoV3"
+  },
+  "expected_status": "DECLINED",
+  "observed_status_line": "[18:51:48 INFO]: [Observance] MORROW_RESOURCE_PACK player=MorrowNoV3 status=DECLINED",
+  "paper_log": {
+    "file": "morrow-pack-paper.log",
+    "sha256": "fced8ff0320ed931cb5151bf5203d0e33ea1633985d5f656b8afbee265613f2f"
+  },
+  "proof": {
+    "exact_pack_hash_bound": true,
+    "human_media_reviewed": false,
+    "listeners_closed": true,
+    "optional_policy_reported": true,
+    "pack_bytes_fetched": false,
+    "production_mutated": false,
+    "status_observed_from_real_client": true,
+    "vanilla_fallback_visual_equivalence": false
+  },
+  "resource_pack": {
+    "bytes": 307663,
+    "requests": [],
+    "required": false,
+    "sha1": "bae2623687b8d9e68eb4910807ed87d03671ca3c",
+    "sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb",
+    "url": "http://127.0.0.1:29459/morrow-resourcepack.zip"
+  },
+  "runner_sha256": "690abd11399480accc4f4bca12a84c92b2b3628d61d40c5522582863578c51b3",
+  "schema_version": "1.0.0-morrow-resource-pack-rehearsal",
+  "scope": "create-only loopback Paper, loopback pack bytes, one owned vanilla client decision",
+  "server": {
+    "bind": "127.0.0.1",
+    "bootstrap_sections": {
+      "cache": {
+        "bytes": 56327581,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\cache",
+        "tree_sha256": "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a"
+      },
+      "libraries": {
+        "bytes": 76378978,
+        "file_count": 114,
+        "source": "D:\\the-observance\\build\\paper-smoke\\libraries",
+        "tree_sha256": "0885507c46c6eb2df137b152d38bfdce18a035507302480570af25e5eeee1d5a"
+      },
+      "versions": {
+        "bytes": 29560892,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\versions",
+        "tree_sha256": "1e9b7e14f276cd183ed3f134f2a1b46652a4d15aff9573ea35501a543c445c4a"
+      }
+    },
+    "ingest_port": 29458,
+    "online_mode": false,
+    "pack_port": 29459,
+    "paper_port": 25598,
+    "production_credentials_loaded": false,
+    "room_ready_line": "[18:51:38 INFO]: [Observance] MORROW_ROOM04_READY status=BUILT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=1ff954da1ac86646269f92cd55295787b4d3a3ee4089c9d1db716417173e85a2 blocks=1144",
+    "runtime_ready_line": "[18:51:38 INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=optional body_entities=2 static_entities=26 replay_entities=6",
+    "seeded_journal": {
+      "head_sha256": "97fc2c773b651f0c1918bd5ce84980ef3fcfdc98316e97fc4e55160069d5170a",
+      "journal_sha256": "4106ff137f622070cec70eba42ee825a4a2220716b83d5fdbd1e198d8585ac54",
+      "projected_sequence": 4,
+      "sequence": 4
+    },
+    "tls_certificate_sha256": "9d1db415566d90a1997a7ae53ffd464f155c4a8d6318d82e3f7c68d1fe9572e2"
+  },
+  "source_commit": "8da06ead51ed7cab526e036a7b8b88abfc831373",
+  "started_at": "2026-08-30T23:51:23Z",
+  "status": "bounded_handshake_pass_human_visual_parity_open"
+}
