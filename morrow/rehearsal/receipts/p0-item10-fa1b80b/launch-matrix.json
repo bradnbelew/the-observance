@@ -83,6 +83,10 @@
     },
     {
       "lane": "disposable_discord_gateway_private_delivery",
+      "partial_receipt": "morrow/rehearsal/discord/2026-08-30-gateway-private-channel.json",
+      "partial_receipt_sha256": "20c52517d9eae51c80d9bfd5f433ed58c4364ac5895af0cb55ecd7b16f0b2556",
+      "proven": "real Gateway temporary-private-channel message and cleanup transport",
+      "remaining": "isolated database-claimed worker plus disposable-guild linked-player ephemeral interaction",
       "status": "required"
     }
   ],

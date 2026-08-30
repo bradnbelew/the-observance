@@ -37,3 +37,13 @@ proofs covering ordered leases, two-player projection, retry/reclaim, worker own
 privacy, and an actual ten-second Supabase Cron schedule. The schedule ran, recorded health/run
 receipts, disabled transactionally, and produced no later invocation. The Node worker is now only a
 fallback; the browser lane remains required solely for production-shaped magic-link delivery.
+
+The Discord transport now has a retained partial receipt at
+`discord/2026-08-30-gateway-private-channel.json`. A real bot connected to Discord Gateway, created a
+temporary everyone-denied/bot-allowed channel, posted the exact authored group receipt with a stable
+nonce and no allowed mentions, observed the matching `MESSAGE_CREATE`, fetched the same message, and
+deleted the channel; a follow-up read returned Discord `10003 Unknown Channel`. Morrow stayed disabled,
+the normal worker and production database were never started, and no player channel or interaction was
+contacted. This closes the raw Gateway/message/cleanup transport subproof, but not the launch lane: an
+isolated service-role database worker and a disposable guild with a linked-player ephemeral interaction
+remain required.

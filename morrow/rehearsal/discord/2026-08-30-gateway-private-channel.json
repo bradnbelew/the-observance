@@ -1,0 +1,63 @@
+{
+  "status": "partial_database_worker_binding",
+  "lane": "discord_gateway_private_delivery",
+  "completed_at": "2026-08-30T21:20:00Z",
+  "scope": "real Discord Gateway plus a create-once temporary bot-only channel; Morrow stayed disabled and no player channel was contacted",
+  "guild": {
+    "id": "1518875082905092097",
+    "name": "The Observance",
+    "member_count": 2,
+    "disposable_guild": false,
+    "production_player_channel_contacted": false
+  },
+  "runtime": {
+    "run_id": "cca196d8-dc17-4aff-91f9-9b0802f2fe3c",
+    "release_id": "morrow.rehearsal.discord.cca196d8dc17",
+    "temporary_channel_id": "1543732187629617192",
+    "message_id": "1543732188410023946",
+    "temporary_channel_everyone_denied": true,
+    "temporary_channel_bot_allowed": true,
+    "gateway_ready_observed": true,
+    "gateway_message_create_observed": true,
+    "rest_message_fetch_verified": true,
+    "authored_receipt_sha256": "dcdaaab35da9ddd1877dd5769a421f26be58b1837997f27ddde3ebc2f4d04905",
+    "nonce_length": 25,
+    "enforce_nonce": true,
+    "allowed_mentions_parse": [],
+    "mentioned_users": 0,
+    "mentioned_roles": 0,
+    "mentioned_everyone": false
+  },
+  "cleanup": {
+    "temporary_channel_delete_reported": true,
+    "post_delete_get_status": 404,
+    "post_delete_discord_code": 10003,
+    "temporary_channel_absent": true
+  },
+  "boundaries": {
+    "production_morrow_enabled": false,
+    "production_database_contacted": false,
+    "normal_bot_worker_started": false,
+    "slash_commands_registered": false,
+    "player_interaction_created": false,
+    "private_player_evidence_sent": false,
+    "group_receipt_contains_private_payload": false
+  },
+  "artifacts": {
+    "gateway_rehearsal": {
+      "path": "discord/src/morrow/gateway-rehearsal.ts",
+      "sha256": "8de8c7143cd55b1fe18b868d20bd623f90ec1850ab1dbb4ddd5283cfd46709fb"
+    },
+    "production_worker": {
+      "path": "discord/src/morrow/projection-worker.ts",
+      "sha256": "e483a9eff74e7b95cecdd05a55ae4606a6ca14f9783d8f704916e0e4f1257f1a"
+    },
+    "authored_domain": {
+      "path": "discord/src/morrow/contradiction.ts",
+      "sha256": "1bc3952d782e9071efe38f885f610944188fbd8fb070b113163a5fc32d962c51"
+    }
+  },
+  "proven": "Discord login, Gateway READY, temporary-channel creation, exact authored receipt post, MESSAGE_CREATE dispatch, REST readback, nonce/mention safety, and verified cleanup",
+  "remaining_gate": "run the database-claimed production worker against an isolated service-role project and a disposable guild with an actual linked-player ephemeral interaction",
+  "production_enablement": "blocked"
+}

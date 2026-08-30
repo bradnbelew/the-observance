@@ -281,6 +281,34 @@ def validate() -> None:
             and browser_receipt["ticket_projection"]["javascript_service_role_transport_live_run"] is False
             and browser_receipt["production_enablement"] == "blocked",
             "partial authenticated-browser receipt overclaims or is incomplete")
+    discord_lane = next(row for row in matrix["live_services_required"]
+                        if row["lane"] == "disposable_discord_gateway_private_delivery")
+    discord_receipt_path = ROOT / discord_lane["partial_receipt"]
+    require(discord_lane["status"] == "required"
+            and discord_receipt_path.is_file()
+            and discord_lane["partial_receipt_sha256"] == sha(discord_receipt_path),
+            "launch matrix omitted or overclaimed partial Discord Gateway evidence")
+    discord_receipt = load(discord_receipt_path)
+    require(discord_receipt["status"] == "partial_database_worker_binding"
+            and discord_receipt["guild"]["disposable_guild"] is False
+            and discord_receipt["guild"]["production_player_channel_contacted"] is False
+            and discord_receipt["runtime"]["gateway_message_create_observed"] is True
+            and discord_receipt["runtime"]["rest_message_fetch_verified"] is True
+            and discord_receipt["runtime"]["enforce_nonce"] is True
+            and discord_receipt["runtime"]["allowed_mentions_parse"] == []
+            and discord_receipt["runtime"]["mentioned_users"] == 0
+            and discord_receipt["runtime"]["mentioned_roles"] == 0
+            and discord_receipt["runtime"]["mentioned_everyone"] is False
+            and discord_receipt["cleanup"]["temporary_channel_absent"] is True
+            and discord_receipt["boundaries"]["production_morrow_enabled"] is False
+            and discord_receipt["boundaries"]["production_database_contacted"] is False
+            and discord_receipt["boundaries"]["private_player_evidence_sent"] is False
+            and discord_receipt["production_enablement"] == "blocked",
+            "partial Discord Gateway receipt overclaims or is incomplete")
+    for artifact in discord_receipt["artifacts"].values():
+        artifact_path = ROOT / artifact["path"]
+        require(artifact_path.is_file() and artifact["sha256"] == sha(artifact_path),
+                f"Discord Gateway rehearsal artifact drifted: {artifact['path']}")
 
     # Test the exact checked-in bundle for accidental carryover without writing the retired names here.
     retired = ["hold", "keep" + "er", "aver" + "yn", "wr" + "en", "nol" + "and",

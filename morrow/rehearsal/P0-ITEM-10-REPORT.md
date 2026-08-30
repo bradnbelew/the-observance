@@ -76,7 +76,12 @@ reclaimed an expired lease, and scheduled bounded retry. The browser lane remain
 production-shaped magic-link delivery has not run. The primary delivery transport is no longer the
 Node fallback: a private Supabase Cron job automatically applied all nine events in its ten-second
 window, wrote a payload-free run receipt, reported healthy, disabled cleanly, and did not run again.
-A disposable Discord guild/worker remains unproven. No production system was contacted or enabled.
+A real Discord bot now also proved the raw Gateway transport in a create-once bot-only channel: READY,
+exact authored post, matching `MESSAGE_CREATE`, REST readback, stable nonce, zero mentions, and verified
+channel deletion. The normal worker remained off, no production database or player channel was touched,
+and the existing two-member guild itself was not disposable. The remaining Discord gate is therefore
+narrower but still open: exercise the database-claimed worker in a disposable guild and complete an
+actual linked-player ephemeral interaction. No production Morrow system was enabled.
 
 The actual runtime receipt and logs are retained under `runtime/p0-paper-c40f916`; the
 machine-authoritative split remains in `receipts/p0-item10-fa1b80b/launch-matrix.json`.

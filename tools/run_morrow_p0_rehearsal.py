@@ -545,6 +545,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
         "2026-08-30-supabase-cron-projector.json"
     browser_receipt = ROOT / "morrow" / "rehearsal" / "browser" / \
         "2026-08-30-authenticated-copperline.json"
+    discord_receipt = ROOT / "morrow" / "rehearsal" / "discord" / \
+        "2026-08-30-gateway-private-channel.json"
     return {
         "automated": [
             {"lane": "contract_and_authority", "status": "proven_headless"},
@@ -596,7 +598,14 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
                 "partial_receipt_sha256": sha256_file(browser_receipt),
                 "remaining": "production-shaped magic-link delivery",
             },
-            {"lane": "disposable_discord_gateway_private_delivery", "status": "required"},
+            {
+                "lane": "disposable_discord_gateway_private_delivery",
+                "status": "required",
+                "partial_receipt": str(discord_receipt.relative_to(ROOT)).replace("\\", "/"),
+                "partial_receipt_sha256": sha256_file(discord_receipt),
+                "proven": "real Gateway temporary-private-channel message and cleanup transport",
+                "remaining": "isolated database-claimed worker plus disposable-guild linked-player ephemeral interaction",
+            },
         ],
         "production_enablement": "blocked",
     }

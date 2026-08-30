@@ -20,6 +20,7 @@
     "typecheck": "tsc --noEmit --pretty false",
     "audit": "npm run -s morrowcheck && npm run -s v5check && npm run -s v5bindingcheck && npm run -s v5surfacecheck && npm run -s argeventcheck && npm run -s argprojectioncheck && npm run -s nessacorrectioncheck && npm run -s seventhretirementcheck && npm run -s legacyanswershapecheck && npm run -s vnextcampaigncheck && npm run -s identitycheck && npm run -s seedcheck && npm run -s webaudit && npm run -s db:bundlecheck && npm run -s resolvecheck",
     "morrowcheck": "tsx src/morrow/contradiction.selftest.ts",
+    "morrow:gateway-rehearsal": "tsx src/morrow/gateway-rehearsal.ts",
     "v5check": "tsx src/v5/canon.selftest.ts",
     "v5bindingcheck": "tsx src/v5/runtime-bindings.selftest.ts",
     "v5surfacecheck": "tsx src/v5/surface.selftest.ts",

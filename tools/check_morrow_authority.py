@@ -348,6 +348,8 @@ def main() -> int:
         discord_repo = DISCORD_MORROW_REPO.read_text(encoding="utf-8")
         discord_policy = DISCORD_MORROW_POLICY.read_text(encoding="utf-8")
         discord_worker = DISCORD_MORROW_WORKER.read_text(encoding="utf-8")
+        discord_gateway_rehearsal = (ROOT / "discord" / "src" / "morrow" /
+                                     "gateway-rehearsal.ts").read_text(encoding="utf-8")
         discord_handler = DISCORD_MORROW_HANDLER.read_text(encoding="utf-8")
         discord_index = (ROOT / "discord" / "src" / "bot" / "index.ts").read_text(encoding="utf-8")
         discord_register = (ROOT / "discord" / "src" / "bot" / "register.ts").read_text(encoding="utf-8")
@@ -398,6 +400,15 @@ def main() -> int:
                 "Morrow Discord projection policy lost activation/callback ordering")
         require("enforceNonce: true" in discord_worker and "allowedMentions: { parse: [] }" in discord_worker,
                 "group receipt delivery lost replay or mention safety")
+        for required in ("MORROW_GATEWAY_REHEARSAL_ACK", "temporary-channel:",
+                         "PermissionFlagsBits.ViewChannel", "waitForMessage",
+                         "enforceNonce: true", "allowedMentions: { parse: [] }",
+                         "channel.delete", "production_database_contacted: false"):
+            require(required in discord_gateway_rehearsal,
+                    f"Discord Gateway rehearsal lost boundary {required}")
+        require(discord_package.get("scripts", {}).get("morrow:gateway-rehearsal")
+                == "tsx src/morrow/gateway-rehearsal.ts",
+                "Discord Gateway rehearsal command drifted")
         reboot_surface = "\n".join((discord_domain, discord_repo, discord_policy,
                                       discord_worker, discord_handler))
         require(re.search(r"\b(?:Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
