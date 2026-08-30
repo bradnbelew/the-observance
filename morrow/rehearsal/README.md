@@ -28,3 +28,11 @@ The isolated database lane is proven separately by
 proposal and records live RLS/role, ownership, RPC, concurrency, idempotency, collision, payload-bound,
 projection, rollback, and advisor results. The validation project was paused after evidence capture;
 production application remains blocked.
+
+The authenticated Copperline browser now has a retained partial receipt at
+`browser/2026-08-30-authenticated-copperline.json`. It proves anonymous withholding, owner-only RLS,
+real checksum and handoff mutations, wrong-token refusal, outbox creation, six rendered Act 1–2
+updates, and synthetic-auth cleanup. The automatic database projector now has a separate live isolated
+proof covering ordered leases, two-player projection, retry/reclaim, worker ownership, and payload
+privacy. The lane remains required until the checked-in JavaScript transport runs with an isolated
+service-role secret and production-shaped magic-link delivery is rehearsed.

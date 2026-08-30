@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `5e5b9d08437dd979bf17ff0906e0ee267a7f9f1228028eada8a433e7ae34c7c9`
+Bundle SHA-256: `6db22ce17359ad254012b3459b49d220a0c21f5a62c5bac37caf933aaf8adb12`
 
 ## Proven automatically
 
@@ -68,8 +68,13 @@ The database proposal now also exists as a CLI-generated numbered migration and 
 Supabase rehearsal: live role/RLS denial, owner projection, service ingest, exact payload and token
 checks, concurrent idempotency, altered collision, payload limits, outbox projection, transactional
 rollback, and security/performance advisors. The validation project was paused afterward. The durable
-receipt is under `database/2026-08-30-isolated-supabase.json`. Authenticated browser projection and a
-disposable Discord guild/worker are still unproven. No production system was contacted or enabled.
+receipt is under `database/2026-08-30-isolated-supabase.json`. A real authenticated browser now also
+proves anonymous withholding, owner-only RLS, checksum and handoff receipts, wrong-token refusal, and
+all six Act 1–2 ticket cards. The automatic database projector subsequently applied nine ordered events
+to both linked players, kept actor receipts private, leaked no raw payload, rejected wrong/stale workers,
+reclaimed an expired lease, and scheduled bounded retry. The browser lane remains partial only because
+the checked-in JavaScript service-role transport and production-shaped magic-link delivery have not run.
+A disposable Discord guild/worker remains unproven. No production system was contacted or enabled.
 
 The actual runtime receipt and logs are retained under `runtime/p0-paper-c40f916`; the
 machine-authoritative split remains in `receipts/p0-item10-fa1b80b/launch-matrix.json`.

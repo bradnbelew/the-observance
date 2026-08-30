@@ -340,3 +340,17 @@ button, input, select, textarea { font: inherit; }
 .morrow-route-error { width:min(100% - 24px,620px);margin:40px auto;padding:18px;border:1px solid #aaa;background:#f7f7f5;color:#555;box-shadow:0 2px 8px #0003; }.morrow-route-error > p:first-child { color:#8a8f90;font-size:9px;text-transform:uppercase; }.morrow-route-error h1 { color:#394c54;font:18px Georgia,serif; }.morrow-route-error a { margin-left:12px;font-size:10px; }
 @media (max-width:760px) { .morrow-case-head,.morrow-case-columns { grid-template-columns:1fr; }.morrow-case-columns > aside { grid-template-columns:1fr 1fr; }.morrow-case-help { grid-column:1/-1; } }
 @media (max-width:560px) { .morrow-case-head { padding:11px; }.morrow-case-columns > aside { grid-template-columns:1fr; }.morrow-case-help { grid-column:auto; }.morrow-case-form > div:not(.morrow-case-action-result) { grid-template-columns:1fr; }.morrow-case-form button { min-height:34px; }.morrow-case-action-result { grid-template-columns:1fr; }.morrow-case-action-result code { grid-column:1; } }
+.player-login-card { max-width:650px;padding:18px;border:1px solid #9fb2bd;background:#f7f7f7;box-shadow:0 2px 8px #24485a18; }
+.player-login-card h1 { margin:3px 0 8px;color:#24485a;font:normal 25px Georgia,serif; }
+.player-login-card > p { max-width:570px;line-height:1.55; }
+.player-login-card aside { margin:16px 0;padding:10px 12px;border-left:3px solid #708b98;background:#e9eff2;color:#40515a; }
+.player-login-card aside p { margin:3px 0 0; }
+.player-login-form { margin:18px 0;padding:13px;border:1px solid #bdc9ce;background:#edf2f4; }
+.player-login-form label { display:block;margin-bottom:6px;color:#435b67;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em; }
+.player-login-row { display:flex;gap:7px; }
+.player-login-row input { min-width:0;flex:1;padding:7px;border:1px solid #91a4ad;background:white; }
+.player-login-row button { padding:7px 12px;border:1px solid #315e72;background:#3c7189;color:white;font-size:10px;font-weight:bold;cursor:pointer; }
+.player-login-row button:disabled { cursor:wait;opacity:.65; }
+.player-login-message,.player-login-alert { margin:9px 0 0;padding:7px 9px;border:1px solid #a7b8bf;background:white;font-size:10px; }
+.player-login-message.error,.player-login-alert { border-color:#ba8e89;background:#f6e9e7;color:#773e38; }
+@media (max-width:560px) { .player-login-row { flex-direction:column; }.player-login-row button { min-height:34px; } }

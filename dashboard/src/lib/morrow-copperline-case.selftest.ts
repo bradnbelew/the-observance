@@ -139,6 +139,12 @@ assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, existing: { ...existing
 const routeSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/page.tsx'), 'utf8');
 const actionSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/actions.ts'), 'utf8');
 const serverSource = readFileSync(resolve('src/lib/morrow-copperline-server.ts'), 'utf8');
+const loginActionSource = readFileSync(resolve('src/app/support/account/actions.ts'), 'utf8');
+const loginPageSource = readFileSync(resolve('src/app/support/account/page.tsx'), 'utf8');
+const loginFormSource = readFileSync(resolve('src/app/support/account/PlayerLoginForm.tsx'), 'utf8');
+const authCallbackSource = readFileSync(resolve('src/app/auth/callback/route.ts'), 'utf8');
+const rehearsalSessionSource = readFileSync(resolve('src/app/api/rehearsal/morrow-session/route.ts'), 'utf8');
+const projectorSource = readFileSync(resolve('scripts/morrow-copperline-projector.mjs'), 'utf8');
 const sql = readFileSync(resolve('../morrow/db/schema-proposal.sql'), 'utf8');
 for (const required of ["'use server'", 'sameOrigin()', 'readMorrowCase()', 'externalMutationsAllowed()',
   '!context.handoffToken', 'morrow_record_copperline_event']) assert.ok(actionSource.includes(required), `action lacks ${required}`);
@@ -152,6 +158,11 @@ for (const required of ['morrow_record_copperline_event', "owner_surface = 'copp
   'handoff_token_sha256', MORROW_CASE_ATTACHMENT_SHA256, '831b4026a5e98b263699ba337d246ad5c2c1f26b3f1d00bdef42775586707096',
   '69ef307074c7aaf7cc4fff12c5e8b7b2423c51a05dfc7f8bb11d53b059420a6e',
   'duplicate', 'collision']) assert.ok(sql.includes(required), `SQL authority lacks ${required}`);
+for (const required of ['morrow_claim_copperline_projections', 'morrow_apply_copperline_projection',
+  'morrow_fail_copperline_projection', "projection.surface = 'copperline'", 'skip locked',
+  "grant select, insert, update, delete on public.morrow_player_projection to service_role"]) {
+  assert.ok(sql.includes(required), `Copperline projector SQL lacks ${required}`);
+}
 const copperlineRpc = sql.split('create or replace function public.morrow_record_copperline_event', 2)[1]
   .split('create table if not exists morrow_private.capability_grants', 2)[0];
 const duplicateBranch = copperlineRpc.split('if v_existing.event_key', 2)[1]
@@ -159,12 +170,43 @@ const duplicateBranch = copperlineRpc.split('if v_existing.event_key', 2)[1]
 assert.equal(duplicateBranch.includes('actor_player_id'), false,
   'group idempotency must not collide when a second linked player submits the exact earned action');
 for (const required of ['Accessible attachment metadata', 'Temporary maintenance state', 'No linked case found',
-  'Case audit halted', 'Synchronized field updates', 'player-specific']) {
+  'Case audit halted', 'Synchronized field updates', 'player-specific', 'Sign in to this recovery case']) {
   assert.ok(routeSource.includes(required), `route lacks concrete state/copy: ${required}`);
 }
+for (const required of ['signInWithOtp', 'shouldCreateUser: false', 'MORROW_CASE_ROUTE', 'originUrl.host !== host',
+  'If that address owns a current assignment']) {
+  assert.ok(loginActionSource.includes(required), `player login action lacks ${required}`);
+}
+assert.equal(loginActionSource.includes('SUPABASE_SERVICE_ROLE_KEY'), false,
+  'player login must use only the public auth client');
+assert.ok(loginPageSource.includes('auth.getUser()') && loginPageSource.includes('redirect(MORROW_CASE_ROUTE)'),
+  'signed-in player login page must return directly to the assigned case');
+assert.ok(loginFormSource.includes('type="email"') && loginFormSource.includes('autoComplete="email"'),
+  'player login form must expose an accessible email field');
+assert.ok(authCallbackSource.includes("next.startsWith('/support/')")
+  && authCallbackSource.includes('/support/account?error=link'),
+  'failed player callbacks must return to the support login instead of the operator console');
+for (const required of ["const VALIDATION_PROJECT = 'snmqaqlagwzptzqbaiws'",
+  "MORROW_BROWSER_REHEARSAL_AUTH === 'enabled'", 'targetRef !== VALIDATION_PROJECT',
+  'signInWithPassword', 'new NextResponse(\'Not found\', { status: 404 })']) {
+  assert.ok(rehearsalSessionSource.includes(required), `browser rehearsal bootstrap lacks ${required}`);
+}
+assert.equal(rehearsalSessionSource.includes('SUPABASE_SERVICE_ROLE_KEY'), false,
+  'browser rehearsal bootstrap must authenticate through the public client');
+for (const required of ['MORROW_COPPERLINE_PROJECTOR', 'OBSERVANCE_MUTATION_PROJECT_REF',
+  'MORROW_PROJECTOR_PRODUCTION_ACK',
+  'morrow_claim_copperline_projections', 'morrow_apply_copperline_projection',
+  'morrow_fail_copperline_projection', 'persistSession: false', "targetUrl?.protocol !== 'https:'",
+  'targetUrl.hostname !== `${targetRef}.supabase.co`', '!Number.isInteger(maxBatches)']) {
+  assert.ok(projectorSource.includes(required), `Copperline worker lacks ${required}`);
+}
+assert.ok(projectorSource.includes('fndmhbpxnodrnbrzrlqq')
+  && projectorSource.includes('fdnmhbpxnodrnbrzrlqq'),
+  'Copperline worker must reject both known production project refs during rehearsal');
 
 const newSurface = [routeSource, actionSource, serverSource,
-  readFileSync(resolve('src/app/support/cases/mossfield-recovery/CaseActions.tsx'), 'utf8')].join('\n');
+  readFileSync(resolve('src/app/support/cases/mossfield-recovery/CaseActions.tsx'), 'utf8'),
+  loginActionSource, loginPageSource, loginFormSource].join('\n');
 const staleLore = new RegExp('\\b(?:Hold|Keeper|Averyn|Wren|Noland|Deep Hold|Unlit)\\b', 'i');
 assert.equal(staleLore.test(newSurface), false, 'new Copperline reboot surface leaked superseded lore');
 assert.equal(newSurface.includes('SUPABASE_SERVICE_ROLE_KEY'), false, 'service role leaked into reboot route');

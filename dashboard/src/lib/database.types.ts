@@ -743,6 +743,39 @@ export interface Database {
       };
     };
     Functions: {
+      morrow_apply_copperline_projection: {
+        Args: {
+          p_event_id: string;
+          p_worker_id: string;
+          p_release_id: string;
+        };
+        Returns: boolean;
+      };
+      morrow_claim_copperline_projections: {
+        Args: {
+          p_worker_id: string;
+          p_release_id: string;
+          p_limit: number;
+          p_lease_seconds: number;
+        };
+        Returns: {
+          event_id: string;
+          event_key: string;
+          campaign_id: string;
+          release_id: string;
+          payload_sha256: string;
+          attempts: number;
+        }[];
+      };
+      morrow_fail_copperline_projection: {
+        Args: {
+          p_event_id: string;
+          p_worker_id: string;
+          p_release_id: string;
+          p_error: string;
+        };
+        Returns: boolean;
+      };
       morrow_record_copperline_event: {
         Args: {
           p_campaign_id: string;

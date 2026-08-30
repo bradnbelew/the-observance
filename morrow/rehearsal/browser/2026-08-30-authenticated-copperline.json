@@ -1,0 +1,128 @@
+{
+  "status": "partial_service_transport_and_magic_link_delivery",
+  "lane": "authenticated_browser_case_and_ticket_projection",
+  "completed_at": "2026-08-30T20:41:00Z",
+  "scope": "local Next.js server plus isolated Supabase validation project; never production",
+  "project": {
+    "ref": "snmqaqlagwzptzqbaiws",
+    "name": "observance-validation-20260727",
+    "production_contacted": false,
+    "unrelated_active_project_untouched": true,
+    "pause_requested_after_rehearsal": true,
+    "final_state": "inactive"
+  },
+  "browser": {
+    "surface": "Codex in-app browser",
+    "origin": "http://localhost:3104",
+    "route": "/support/cases/mossfield-recovery",
+    "real_dom_and_form_interactions": true,
+    "synthetic_session_bootstrap": "isolated-only server route using public Supabase client",
+    "production_password_auth_added": false,
+    "ephemeral_auth_sessions_after_cleanup": 0,
+    "ephemeral_auth_identities_after_cleanup": 0,
+    "ephemeral_refresh_tokens_after_cleanup": 0,
+    "ephemeral_password_length_after_cleanup": 0
+  },
+  "product_fix": {
+    "finding": "the case instructed players to sign in but exposed no player sign-in surface",
+    "resolution": "passwordless existing-account-only support login with a case-safe callback and enumeration-resistant response",
+    "unknown_user_creation_disabled": true,
+    "operator_login_separated": true
+  },
+  "privacy": {
+    "anonymous_case_material_withheld": true,
+    "anonymous_sign_in_affordance_present": true,
+    "authenticated_owner_assignment_visible": true,
+    "other_player_projection_leaked": false,
+    "service_role_key_in_browser_or_reboot_route": false,
+    "raw_replay_samples_rendered": false
+  },
+  "act0_browser_flow": {
+    "case_id": "CL-RCV-04",
+    "release_id": "morrow.rehearsal.supabase.v1",
+    "display_alias": "morrow-owner",
+    "checksum_receipt": "790f1e73-39e3-42fa-a573-ee799b912843",
+    "checksum_outbox_surfaces": [
+      "copperline",
+      "discord"
+    ],
+    "wrong_handoff_token_status": "locked",
+    "wrong_handoff_token_event_rows": 0,
+    "valid_handoff_receipt": "5a231300-46a0-4d96-8702-5fbe8242cff1",
+    "valid_handoff_outbox_surfaces": [
+      "copperline",
+      "discord",
+      "minecraft"
+    ],
+    "recovered_destination_rendered": true,
+    "idempotent_completed_controls_disabled": true
+  },
+  "ticket_projection": {
+    "canonical_minecraft_events_committed": 7,
+    "canonical_minecraft_events_status": "committed",
+    "copperline_projection_rows_applied": 7,
+    "rendered_update_count": 6,
+    "rendered_event_keys": [
+      "morrow.act1.room04_witnessed",
+      "morrow.act1.static_proposal_authenticated",
+      "morrow.act1.intention_error_proven",
+      "morrow.act2.missing_role_completed",
+      "morrow.act2.live_test_recorded",
+      "morrow.act2.behavior_reuse_proven"
+    ],
+    "scope_labels": [
+      "group",
+      "group",
+      "group",
+      "group",
+      "player",
+      "group"
+    ],
+    "future_spoilers_rendered": false,
+    "projection_driver": "browser observation used direct isolated SQL; the automatic database projector was then live-rehearsed against a fresh ordered fixture",
+    "automatic_database_projector_proven": true,
+    "javascript_service_role_transport_live_run": false
+  },
+  "database_projector_rehearsal": {
+    "receipt": "morrow/rehearsal/database/2026-08-30-isolated-supabase.json",
+    "ordered_events_applied": 9,
+    "linked_players_projected": 2,
+    "wrong_and_stale_workers_refused": true,
+    "expired_lease_reclaimed": true,
+    "retry_backoff_proven": true,
+    "cross_player_receipt_leaks": 0,
+    "raw_payload_leaks": 0
+  },
+  "artifacts": {
+    "player_login_action": {
+      "path": "dashboard/src/app/support/account/actions.ts",
+      "sha256": "b6e4182a1c2eb0cf04b6850413ff064345ae66f1d148d76937b7d21058a8c411"
+    },
+    "player_login_form": {
+      "path": "dashboard/src/app/support/account/PlayerLoginForm.tsx",
+      "sha256": "fb9d399b998fd51510139ec14d2229efbfa76fcc37689d1b65e08aa2f7104120"
+    },
+    "player_login_page": {
+      "path": "dashboard/src/app/support/account/page.tsx",
+      "sha256": "c8dda4705b72ace8ce9f46376b343d42613e2e16f4179a13eb253205667ee3fc"
+    },
+    "isolated_session_bootstrap": {
+      "path": "dashboard/src/app/api/rehearsal/morrow-session/route.ts",
+      "sha256": "3a54c934269f2d5a5f9f0f8755bd1f45c3a6390442c551fe26a9066325ae0f1a"
+    },
+    "case_action": {
+      "path": "dashboard/src/app/support/cases/mossfield-recovery/actions.ts",
+      "sha256": "8b14d95b1dd2e8e718935d4361a74108d9ca0e5bff8715b022c6fd5fdb2ffa10"
+    },
+    "case_page": {
+      "path": "dashboard/src/app/support/cases/mossfield-recovery/page.tsx",
+      "sha256": "7cde1b0ef282dc701038348a717838b8ca56f6da4450e67cd7bedb0b46b95285"
+    },
+    "copperline_projector": {
+      "path": "dashboard/scripts/morrow-copperline-projector.mjs",
+      "sha256": "db1a73c598a33df7f58b391b69659921cb67a85abae639e6063e454e9d983f8e"
+    }
+  },
+  "remaining_gate": "run the checked-in JavaScript projector with an isolated service-role secret and exercise production-shaped magic-link delivery",
+  "production_enablement": "blocked"
+}

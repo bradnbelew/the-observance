@@ -112,7 +112,9 @@ function UnavailableCase({ state }: { state: Exclude<MorrowServerRead, MorrowCas
         ? 'The projection service did not answer. Minecraft progress remains local and this page will catch up without duplicate actions.'
         : error ? 'Campaign, player, release, or event ordering did not match this deployment. No attachment, token, spoiler, or destination was rendered.'
           : 'Sign in with the account linked to the current campaign. Direct links and retired assignments reveal no case content.'}</p>
-      <Link href="/support/index.php">Return to Support Center &raquo;</Link>
+      {state.kind === 'empty'
+        ? <Link href="/support/account?next=/support/cases/mossfield-recovery">Sign in to this recovery case &raquo;</Link>
+        : <Link href="/support/index.php">Return to Support Center &raquo;</Link>}
     </section>
   </article>;
 }

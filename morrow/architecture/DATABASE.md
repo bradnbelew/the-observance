@@ -123,6 +123,12 @@ The isolated run covered RLS, role grants, ownership, exact payloads, tokens, du
 concurrent duplicate, payload limits, projection creation, rollback, and both advisor classes. The
 advisor's one Morrow warning is accepted and documented: the authenticated Copperline mutation is an
 intentional SECURITY DEFINER RLS bridge with independent `auth.uid()` and authored-input checks.
+The service-only Copperline projector was also live-rehearsed with nine ordered events and two linked
+players. It rejects wrong/stale workers and incomplete case envelopes, reclaims expired leases,
+schedules bounded retries, derives spoiler-filtered progress only from applied-or-current events, and
+never copies raw event payloads into the public projection. The checked-in JavaScript transport remains
+disabled without exact target/release authorization; production additionally requires the explicit
+`MORROW_PROJECTOR_PRODUCTION_ACK=apply:<release>:<project-ref>` acknowledgement.
 
 Before production:
 

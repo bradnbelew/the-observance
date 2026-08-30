@@ -69,11 +69,14 @@
     {
       "lane": "disposable_supabase_rls_concurrency_and_recovery",
       "receipt": "morrow/rehearsal/database/2026-08-30-isolated-supabase.json",
-      "receipt_sha256": "7f21dad30b6604f3d605bae79dc52f38f74c430a2c5fe122b9eaa43949748408",
+      "receipt_sha256": "997d3f3f96c56e813b65e1d995d01873405ec663434818ebe2daf291fc32a0c7",
       "status": "proven_isolated"
     },
     {
       "lane": "authenticated_browser_case_and_ticket_projection",
+      "partial_receipt": "morrow/rehearsal/browser/2026-08-30-authenticated-copperline.json",
+      "partial_receipt_sha256": "4afc2f8a4cc73277f7f7e43c01ebeb925e71b2733cd59a2d3e05b4124649471c",
+      "remaining": "service-role JavaScript projector transport and production-shaped magic-link delivery",
       "status": "required"
     },
     {

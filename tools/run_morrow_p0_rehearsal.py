@@ -541,6 +541,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     offline_launcher = ROOT / "tools" / "run_morrow_offline_client.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
+    browser_receipt = ROOT / "morrow" / "rehearsal" / "browser" / \
+        "2026-08-30-authenticated-copperline.json"
     return {
         "automated": [
             {"lane": "contract_and_authority", "status": "proven_headless"},
@@ -583,7 +585,13 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
                 "receipt": str(database_receipt.relative_to(ROOT)).replace("\\", "/"),
                 "receipt_sha256": sha256_file(database_receipt),
             },
-            {"lane": "authenticated_browser_case_and_ticket_projection", "status": "required"},
+            {
+                "lane": "authenticated_browser_case_and_ticket_projection",
+                "status": "required",
+                "partial_receipt": str(browser_receipt.relative_to(ROOT)).replace("\\", "/"),
+                "partial_receipt_sha256": sha256_file(browser_receipt),
+                "remaining": "service-role JavaScript projector transport and production-shaped magic-link delivery",
+            },
             {"lane": "disposable_discord_gateway_private_delivery", "status": "required"},
         ],
         "production_enablement": "blocked",

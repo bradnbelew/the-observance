@@ -238,9 +238,31 @@ def validate() -> None:
             and database_receipt["project"]["final_state"] == "paused"
             and database_receipt["rollback"]["private_schema_restored"] is True
             and database_receipt["rollback"]["public_projection_restored"] is True
+            and database_receipt["copperline_projection_worker"]["database_rpc_live_rehearsed"] is True
+            and database_receipt["copperline_projection_worker"]["ordered_events_applied"] == 9
+            and database_receipt["copperline_projection_worker"]["linked_players_projected"] == 2
+            and database_receipt["copperline_projection_worker"]["other_player_receipt_rows"] == 0
+            and database_receipt["copperline_projection_worker"]["raw_payload_leaks"] == 0
             and database_receipt["advisors"]["morrow_unindexed_foreign_key_count"] == 0
             and database_receipt["production_enablement"] == "blocked",
             "isolated Supabase receipt overclaims or is incomplete")
+    browser_lane = next(row for row in matrix["live_services_required"]
+                        if row["lane"] == "authenticated_browser_case_and_ticket_projection")
+    browser_receipt_path = ROOT / browser_lane["partial_receipt"]
+    require(browser_lane["status"] == "required"
+            and browser_receipt_path.is_file()
+            and browser_lane["partial_receipt_sha256"] == sha(browser_receipt_path),
+            "launch matrix omitted or overclaimed partial authenticated-browser evidence")
+    browser_receipt = load(browser_receipt_path)
+    require(browser_receipt["status"] == "partial_service_transport_and_magic_link_delivery"
+            and browser_receipt["privacy"]["anonymous_case_material_withheld"] is True
+            and browser_receipt["privacy"]["other_player_projection_leaked"] is False
+            and browser_receipt["act0_browser_flow"]["wrong_handoff_token_event_rows"] == 0
+            and browser_receipt["ticket_projection"]["rendered_update_count"] == 6
+            and browser_receipt["ticket_projection"]["automatic_database_projector_proven"] is True
+            and browser_receipt["ticket_projection"]["javascript_service_role_transport_live_run"] is False
+            and browser_receipt["production_enablement"] == "blocked",
+            "partial authenticated-browser receipt overclaims or is incomplete")
 
     # Test the exact checked-in bundle for accidental carryover without writing the retired names here.
     retired = ["hold", "keep" + "er", "aver" + "yn", "wr" + "en", "nol" + "and",

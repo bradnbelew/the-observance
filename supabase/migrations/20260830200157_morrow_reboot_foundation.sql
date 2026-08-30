@@ -1,6 +1,6 @@
 -- Morrow reboot foundation migration.
 -- Generated with Supabase CLI 2.116.0 after isolated target, RLS, concurrency, payload-bound,
--- rollback-shape, and advisor rehearsal. Production application still requires a fresh backup.
+-- rollback-shape, advisor, and Copperline projector rehearsal. Production still requires a fresh backup.
 
 begin;
 
@@ -1032,6 +1032,236 @@ on public.morrow_player_projection
 for select
 to authenticated
 using (morrow_private.is_linked_player(campaign_id, player_id));
+
+grant select, insert, update, delete on public.morrow_player_projection to service_role;
+
+-- Service-only Copperline projector. The worker leases ordered outbox rows, and this database
+-- function derives spoiler-filtered progress from applied-or-current receipts. It never copies raw
+-- event payloads into the browser projection and refuses to run unless every linked account has an
+-- operator-seeded case-access row (and, for handoff completion, a server-handoff envelope).
+create or replace function public.morrow_claim_copperline_projections(
+  p_worker_id text,
+  p_release_id text,
+  p_limit integer,
+  p_lease_seconds integer
+)
+returns table(
+  event_id uuid, event_key text, campaign_id uuid, release_id text,
+  payload_sha256 text, attempts integer
+)
+language plpgsql
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+begin
+  if p_worker_id !~ '^[0-9a-f-]{36}$' or p_limit not between 1 and 50
+     or p_lease_seconds not between 5 and 300 then return; end if;
+  return query
+  with claimable as (
+    select projection.event_id
+    from morrow_private.event_projections projection
+    join morrow_private.events event on event.event_id = projection.event_id
+    where projection.surface = 'copperline' and event.release_id = p_release_id
+      and (
+        (projection.status in ('queued','failed') and projection.next_attempt_at <= now())
+        or (projection.status = 'leased' and projection.lease_expires_at <= now())
+      )
+    order by event.received_at, event.event_id
+    for update of projection skip locked
+    limit p_limit
+  ), leased as (
+    update morrow_private.event_projections projection set
+      status = 'leased', lease_owner = p_worker_id,
+      lease_expires_at = now() + make_interval(secs => p_lease_seconds),
+      attempts = projection.attempts + 1, updated_at = now()
+    from claimable where projection.event_id = claimable.event_id
+      and projection.surface = 'copperline'
+    returning projection.event_id, projection.attempts
+  )
+  select event.event_id, event.event_key, event.campaign_id, event.release_id,
+    event.payload_sha256, leased.attempts
+  from leased
+  join morrow_private.events event on event.event_id = leased.event_id
+  order by event.received_at, event.event_id;
+end;
+$$;
+
+revoke all on function public.morrow_claim_copperline_projections(text,text,integer,integer)
+  from public, anon, authenticated;
+grant execute on function public.morrow_claim_copperline_projections(text,text,integer,integer)
+  to service_role;
+
+create or replace function public.morrow_apply_copperline_projection(
+  p_event_id uuid,
+  p_worker_id text,
+  p_release_id text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+declare
+  v_event morrow_private.events%rowtype;
+  v_player_count integer;
+  v_access_count integer;
+  v_handoff_count integer;
+  v_progress jsonb;
+  v_updated integer;
+  v_event_order constant text[] := array[
+    'morrow.act0.case_chain_authenticated',
+    'morrow.act0.server_handoff_recovered',
+    'morrow.act1.room04_witnessed',
+    'morrow.act1.static_proposal_authenticated',
+    'morrow.act1.intention_error_proven',
+    'morrow.act1.entity_replay_authorized',
+    'morrow.act2.missing_role_completed',
+    'morrow.act2.live_test_recorded',
+    'morrow.act2.behavior_reuse_proven',
+    'morrow.act2.private_contradiction_resolved'
+  ];
+begin
+  select event.* into v_event
+  from morrow_private.events event
+  join morrow_private.event_projections projection on projection.event_id = event.event_id
+  where event.event_id = p_event_id and event.release_id = p_release_id
+    and projection.surface = 'copperline' and projection.status = 'leased'
+    and projection.lease_owner = p_worker_id and projection.lease_expires_at > now()
+  for update of projection;
+  if not found then return false; end if;
+
+  select count(*) into v_player_count
+  from morrow_private.player_identities identity
+  where identity.campaign_id = v_event.campaign_id and identity.supabase_user_id is not null;
+  if v_player_count < 1 or v_player_count > 6 then return false; end if;
+
+  select count(*) into v_access_count
+  from public.morrow_player_projection projection
+  join morrow_private.player_identities identity
+    on identity.campaign_id = projection.campaign_id and identity.player_id = projection.player_id
+  where projection.campaign_id = v_event.campaign_id and projection.projection_key = 'case_access'
+    and identity.supabase_user_id is not null;
+  if v_access_count <> v_player_count then return false; end if;
+
+  if v_event.event_key = 'morrow.act0.server_handoff_recovered' then
+    select count(*) into v_handoff_count
+    from public.morrow_player_projection projection
+    join morrow_private.player_identities identity
+      on identity.campaign_id = projection.campaign_id and identity.player_id = projection.player_id
+    where projection.campaign_id = v_event.campaign_id
+      and projection.projection_key = 'server_handoff'
+      and identity.supabase_user_id is not null;
+    if v_handoff_count <> v_player_count then return false; end if;
+  end if;
+
+  select coalesce(jsonb_agg(ordered.event_key order by ordered.ordinal), '[]'::jsonb)
+    into v_progress
+  from (
+    select event.event_key, array_position(v_event_order, event.event_key) as ordinal
+    from morrow_private.events event
+    join morrow_private.event_projections projection on projection.event_id = event.event_id
+    where event.campaign_id = v_event.campaign_id
+      and event.event_key = any(v_event_order)
+      and projection.surface = 'copperline'
+      and (projection.status = 'applied' or event.event_id = v_event.event_id)
+    group by event.event_key
+  ) ordered;
+
+  insert into public.morrow_player_projection(
+    campaign_id, player_id, projection_key, projection, revision, updated_at
+  )
+  select identity.campaign_id, identity.player_id, 'case_progress',
+    jsonb_build_object('events', v_progress), 1, now()
+  from morrow_private.player_identities identity
+  where identity.campaign_id = v_event.campaign_id and identity.supabase_user_id is not null
+  on conflict (campaign_id, player_id, projection_key) do update
+  set projection = excluded.projection,
+      revision = public.morrow_player_projection.revision + 1,
+      updated_at = now();
+
+  if v_event.source_surface = 'copperline' and v_event.actor_player_id is not null then
+    insert into public.morrow_player_projection(
+      campaign_id, player_id, projection_key, projection, revision, updated_at
+    )
+    select v_event.campaign_id, v_event.actor_player_id, 'player_receipts',
+      jsonb_build_object('receipts', coalesce(jsonb_agg(event.event_id::text order by event.received_at), '[]'::jsonb)),
+      1, now()
+    from morrow_private.events event
+    join morrow_private.event_projections projection on projection.event_id = event.event_id
+    where event.campaign_id = v_event.campaign_id
+      and event.actor_player_id = v_event.actor_player_id
+      and event.source_surface = 'copperline' and projection.surface = 'copperline'
+      and (projection.status = 'applied' or event.event_id = v_event.event_id)
+    on conflict (campaign_id, player_id, projection_key) do update
+    set projection = excluded.projection,
+        revision = public.morrow_player_projection.revision + 1,
+        updated_at = now();
+  end if;
+
+  if v_event.event_key = 'morrow.act0.server_handoff_recovered' then
+    update public.morrow_player_projection projection
+    set projection = jsonb_set(projection.projection, '{recoveryReceipt}', to_jsonb(v_event.event_id::text)),
+        revision = projection.revision + 1, updated_at = now()
+    from morrow_private.player_identities identity
+    where projection.campaign_id = v_event.campaign_id
+      and projection.projection_key = 'server_handoff'
+      and identity.campaign_id = projection.campaign_id
+      and identity.player_id = projection.player_id
+      and identity.supabase_user_id is not null;
+  end if;
+
+  update morrow_private.event_projections projection set
+    status = 'applied', applied_release_id = p_release_id, applied_at = now(),
+    last_error = null, lease_owner = null, lease_expires_at = null, updated_at = now()
+  where projection.event_id = v_event.event_id and projection.surface = 'copperline'
+    and projection.status = 'leased' and projection.lease_owner = p_worker_id;
+  get diagnostics v_updated = row_count;
+  if v_updated <> 1 then
+    raise exception 'Copperline projection lease changed during apply' using errcode = '40001';
+  end if;
+  return true;
+end;
+$$;
+
+revoke all on function public.morrow_apply_copperline_projection(uuid,text,text)
+  from public, anon, authenticated;
+grant execute on function public.morrow_apply_copperline_projection(uuid,text,text)
+  to service_role;
+
+create or replace function public.morrow_fail_copperline_projection(
+  p_event_id uuid,
+  p_worker_id text,
+  p_release_id text,
+  p_error text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+declare v_updated integer;
+begin
+  update morrow_private.event_projections projection set
+    status = case when projection.attempts >= 8 then 'dead_letter' else 'failed' end,
+    applied_release_id = null, applied_at = null,
+    last_error = left(coalesce(p_error, 'projection failed'), 500),
+    next_attempt_at = now() + make_interval(
+      secs => least(300, (power(2, least(projection.attempts, 8)))::integer)
+    ),
+    lease_owner = null, lease_expires_at = null, updated_at = now()
+  from morrow_private.events event
+  where projection.event_id = p_event_id and projection.surface = 'copperline'
+    and projection.status = 'leased' and projection.lease_owner = p_worker_id
+    and event.event_id = projection.event_id and event.release_id = p_release_id;
+  get diagnostics v_updated = row_count;
+  return v_updated = 1;
+end;
+$$;
+
+revoke all on function public.morrow_fail_copperline_projection(uuid,text,text,text)
+  from public, anon, authenticated;
+grant execute on function public.morrow_fail_copperline_projection(uuid,text,text,text)
+  to service_role;
 
 -- Cover every non-primary-key foreign-key path reported by the Supabase performance advisor.
 -- These indexes protect cascade/restrict checks and the event/identity joins used by the runtime.

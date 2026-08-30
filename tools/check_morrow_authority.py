@@ -32,6 +32,7 @@ PLUGIN_STATIC_RESTORE = PLUGIN_MORROW / "room04" / "staticrestore"
 PLUGIN_ENTITY_REPLAY = PLUGIN_MORROW / "room04" / "replay"
 MORROW_MIGRATION = ROOT / "supabase" / "migrations" / "20260830200157_morrow_reboot_foundation.sql"
 MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
+MORROW_BROWSER_RECEIPT = MORROW / "rehearsal" / "browser" / "2026-08-30-authenticated-copperline.json"
 
 
 def load_json(relative: str):
@@ -446,6 +447,20 @@ def main() -> int:
                 and database_receipt["project"]["production_contacted"] is False
                 and database_receipt["production_enablement"] == "blocked",
                 "isolated database receipt overclaims its scope")
+        browser_receipt = json.loads(MORROW_BROWSER_RECEIPT.read_text(encoding="utf-8"))
+        for artifact in browser_receipt["artifacts"].values():
+            artifact_path = ROOT / artifact["path"]
+            require(artifact_path.is_file()
+                    and artifact["sha256"] == hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+                    f"authenticated browser receipt artifact drifted: {artifact['path']}")
+        require(browser_receipt["status"] == "partial_service_transport_and_magic_link_delivery"
+                and browser_receipt["ticket_projection"]["automatic_database_projector_proven"] is True
+                and browser_receipt["ticket_projection"]["javascript_service_role_transport_live_run"] is False
+                and database_receipt["copperline_projection_worker"]["database_rpc_live_rehearsed"] is True
+                and database_receipt["copperline_projection_worker"]["raw_payload_leaks"] == 0
+                and database_receipt["copperline_projection_worker"]["other_player_receipt_rows"] == 0
+                and browser_receipt["production_enablement"] == "blocked",
+                "authenticated browser receipt overclaims its scope")
         route = DASHBOARD_MORROW_ROUTE.read_text(encoding="utf-8")
         plugin_config = (ROOT / "plugin" / "src" / "main" / "resources" / "config.yml").read_text(encoding="utf-8")
         require("security invoker" in schema, "Minecraft ingest RPC must remain SECURITY INVOKER")
