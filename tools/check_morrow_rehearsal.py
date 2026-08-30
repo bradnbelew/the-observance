@@ -287,6 +287,13 @@ def validate() -> None:
             "launch matrix omitted or overclaimed partial authenticated-browser evidence")
     browser_receipt = load(browser_receipt_path)
     require(browser_receipt["status"] == "partial_magic_link_delivery"
+            and browser_receipt["account_enumeration"]["browser_form_exercised"] is True
+            and browser_receipt["account_enumeration"]["direct_case_after_unknown_request"] == "withheld"
+            and browser_receipt["account_enumeration"]["should_create_user"] is False
+            and browser_receipt["account_enumeration"]["synthetic_unknown_auth_users_after_request"] == 0
+            and browser_receipt["account_enumeration"]["synthetic_unknown_auth_identities_after_request"] == 0
+            and browser_receipt["account_enumeration"]["synthetic_unknown_auth_sessions_after_request"] == 0
+            and browser_receipt["account_enumeration"]["synthetic_unknown_refresh_tokens_after_request"] == 0
             and browser_receipt["privacy"]["anonymous_case_material_withheld"] is True
             and browser_receipt["privacy"]["other_player_projection_leaked"] is False
             and browser_receipt["act0_browser_flow"]["wrong_handoff_token_event_rows"] == 0

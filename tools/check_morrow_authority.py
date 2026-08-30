@@ -486,6 +486,12 @@ def main() -> int:
                     and artifact["sha256"] == hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
                     f"authenticated browser receipt artifact drifted: {artifact['path']}")
         require(browser_receipt["status"] == "partial_magic_link_delivery"
+                and browser_receipt["account_enumeration"]["browser_form_exercised"] is True
+                and browser_receipt["account_enumeration"]["should_create_user"] is False
+                and browser_receipt["account_enumeration"]["synthetic_unknown_auth_users_after_request"] == 0
+                and browser_receipt["account_enumeration"]["synthetic_unknown_auth_identities_after_request"] == 0
+                and browser_receipt["account_enumeration"]["synthetic_unknown_auth_sessions_after_request"] == 0
+                and browser_receipt["account_enumeration"]["synthetic_unknown_refresh_tokens_after_request"] == 0
                 and browser_receipt["ticket_projection"]["automatic_database_projector_proven"] is True
                 and browser_receipt["ticket_projection"]["primary_projection_transport"]
                     == "database_native_supabase_cron"

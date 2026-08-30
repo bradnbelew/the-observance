@@ -29,6 +29,17 @@
     "unknown_user_creation_disabled": true,
     "operator_login_separated": true
   },
+  "account_enumeration": {
+    "browser_form_exercised": true,
+    "direct_case_after_unknown_request": "withheld",
+    "identical_player_message": "If that address owns a current assignment, a one-time case link has been sent.",
+    "should_create_user": false,
+    "synthetic_unknown_auth_identities_after_request": 0,
+    "synthetic_unknown_auth_sessions_after_request": 0,
+    "synthetic_unknown_auth_users_after_request": 0,
+    "synthetic_unknown_refresh_tokens_after_request": 0,
+    "unknown_address_retained": false
+  },
   "privacy": {
     "anonymous_case_material_withheld": true,
     "anonymous_sign_in_affordance_present": true,

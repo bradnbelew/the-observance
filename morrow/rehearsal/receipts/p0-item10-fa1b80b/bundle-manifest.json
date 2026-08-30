@@ -28,11 +28,11 @@
     "cohort-1.json": "2f13aedc0ec4c85c6f1ab4428f97dce4201fba81aeeb303b8d2993cb76d5de4e",
     "cohort-2.json": "7391d46ebc312cca9b2f859c826f962bd3c2bf8e3f8aeb412dfa67ee4e702ab1",
     "cohort-6.json": "07aa6f607eea89dfb9db1cf4bd050610b866fb3360c11510a29812654c2ef293",
-    "launch-matrix.json": "e7e9beb52f082452674f03ac75e59d6c9c6c76af21668d79163e4844a45128ce",
+    "launch-matrix.json": "fa22ef510651e213a2e8ce1e8e872b961e6ea07662179f31b9b3be5b9ff6a4b9",
     "network-boundary.json": "f36171f575b0598cd5c368e636619cfcfe600f8b18ff9322d6fb2b61ede96531",
     "paper-runtime.json": "efd32ab521d73f1c83a56d2f62f07d3d451fa6adb9d73c91af497a1aac50fb20"
   },
-  "bundle_sha256": "fa32cd9e2b35fccbb35e067ae12ae03c0196c21080155e3f63812687bfbe5924",
+  "bundle_sha256": "58eb9a4471dda8997965b80a04b5c1dd3c691003e4817a4e1c0d6b433b480a75",
   "generated_at": "2026-08-30T00:00:00Z",
   "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
   "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec",

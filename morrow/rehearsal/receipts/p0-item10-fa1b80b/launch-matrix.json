@@ -80,7 +80,7 @@
     {
       "lane": "authenticated_browser_case_and_ticket_projection",
       "partial_receipt": "morrow/rehearsal/browser/2026-08-30-authenticated-copperline.json",
-      "partial_receipt_sha256": "89c1c218e07e1e123a0ce8e3ac790b55782297e5c7b136397cb28466706d041b",
+      "partial_receipt_sha256": "7d2ae8f12a2c3cd8aa562b58f7757b571fcb618fe695e34df209cc348471da4c",
       "remaining": "production-shaped magic-link delivery",
       "status": "required"
     },
