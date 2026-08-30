@@ -151,6 +151,11 @@ morrow-reboot:
     request-timeout-ms: 10000
     initial-retry-ms: 500
     maximum-retry-ms: 30000
+  resource-pack:
+    # Morrow must remain fully playable when this optional enhancement is declined. Setting
+    # required=true fails startup; enable only after the accepted/declined parity rehearsal.
+    enabled: false
+    required: false
   room04:
     # Separate rehearsal gate: enabling the reboot alone never authorizes a world build.
     build-enabled: false

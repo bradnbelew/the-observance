@@ -10,8 +10,11 @@ import com.observance.watcher.morrow.presentation.BukkitMorrowBody;
 import com.observance.watcher.morrow.room04.staticrestore.BukkitStaticRestore;
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
 import com.observance.watcher.morrow.room04.replay.BukkitEntityReplay;
+import com.observance.watcher.listener.ResourcePackPusher;
+import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.HandlerList;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,6 +38,8 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitEntityReplay entityReplay;
     private final BukkitMorrowDialogs dialogs;
     private final BukkitRecoveryRoom04Entry playerEntry;
+    private final ResourcePackTracker resourcePackTracker;
+    private final ResourcePackPusher resourcePackPusher;
 
     private MorrowRuntime(
             MorrowRuntimeSettings settings,
@@ -45,7 +50,9 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
             BukkitMorrowDialogs dialogs,
-            BukkitRecoveryRoom04Entry playerEntry) {
+            BukkitRecoveryRoom04Entry playerEntry,
+            ResourcePackTracker resourcePackTracker,
+            ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
@@ -55,6 +62,8 @@ public final class MorrowRuntime implements AutoCloseable {
         this.entityReplay = entityReplay;
         this.dialogs = dialogs;
         this.playerEntry = playerEntry;
+        this.resourcePackTracker = resourcePackTracker;
+        this.resourcePackPusher = resourcePackPusher;
     }
 
     /** Returns {@code null} while the shipped disabled gate is closed. */
@@ -74,6 +83,16 @@ public final class MorrowRuntime implements AutoCloseable {
                 section.getLong("projector.request-timeout-ms", 10_000L),
                 section.getLong("projector.initial-retry-ms", 500L),
                 section.getLong("projector.maximum-retry-ms", 30_000L));
+        ConfigurationSection packSection = section.getConfigurationSection("resource-pack");
+        boolean packEnabled = packSection != null && packSection.getBoolean("enabled", false);
+        boolean packRequired = packSection != null && packSection.getBoolean("required", false);
+        MorrowResourcePackPolicy.Plan packPlan = MorrowResourcePackPolicy.create(
+                packEnabled,
+                packRequired,
+                plugin.config().resourcePackUrl(),
+                plugin.config().resourcePackSha1(),
+                plugin.config().resourcePackPrompt(),
+                plugin.config().resourcePackDelayTicks());
 
         // This is the only world lookup in the lifecycle. It happens on Paper's enable thread before
         // the projector exists; no Bukkit object is retained by the worker.
@@ -115,6 +134,8 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitEntityReplay entityReplay = null;
         BukkitMorrowDialogs dialogs = null;
         BukkitRecoveryRoom04Entry playerEntry = null;
+        ResourcePackTracker resourcePackTracker = null;
+        ResourcePackPusher resourcePackPusher = null;
         try {
             projector = MorrowEventProjector.open(
                     state,
@@ -122,6 +143,17 @@ public final class MorrowRuntime implements AutoCloseable {
                     data.resolve(CURSOR_NAME),
                     plugin.getLogger());
             projector.start();
+            if (packPlan.enabled()) {
+                resourcePackTracker = new ResourcePackTracker(
+                        plugin.safety(),
+                        (uuid, name, status) -> plugin.getLogger().info(
+                                "MORROW_RESOURCE_PACK player=" + name + " status=" + status));
+                resourcePackPusher = new ResourcePackPusher(
+                        plugin.scheduler(), plugin.safety(), packPlan.url(), packPlan.sha1(),
+                        packPlan.required(), packPlan.prompt(), packPlan.delayTicks());
+                plugin.getServer().getPluginManager().registerEvents(resourcePackTracker, plugin);
+                plugin.getServer().getPluginManager().registerEvents(resourcePackPusher, plugin);
+            }
             if (room04Result != null && room04Origin != null) {
                 playerEntry = new BukkitRecoveryRoom04Entry(plugin, world, room04Origin);
                 playerEntry.start();
@@ -141,17 +173,21 @@ public final class MorrowRuntime implements AutoCloseable {
             plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
+                    + " resource_pack=" + (packPlan.enabled() ? "optional" : "disabled")
                     + " body_entities=" + (body == null ? 0 : body.ownedEntityCount())
                     + " static_entities=" + (staticRestore == null ? 0 : staticRestore.ownedEntityCount())
                     + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount()));
             return new MorrowRuntime(
-                    settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs, playerEntry);
+                    settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs,
+                    playerEntry, resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
             if (dialogs != null) dialogs.close();
             if (entityReplay != null) entityReplay.close();
             if (staticRestore != null) staticRestore.close();
             if (body != null) body.close();
             if (playerEntry != null) playerEntry.close();
+            if (resourcePackPusher != null) HandlerList.unregisterAll(resourcePackPusher);
+            if (resourcePackTracker != null) HandlerList.unregisterAll(resourcePackTracker);
             if (projector != null) projector.close();
             throw failure;
         }
@@ -180,6 +216,8 @@ public final class MorrowRuntime implements AutoCloseable {
         if (staticRestore != null) staticRestore.close();
         if (body != null) body.close();
         if (playerEntry != null) playerEntry.close();
+        if (resourcePackPusher != null) HandlerList.unregisterAll(resourcePackPusher);
+        if (resourcePackTracker != null) HandlerList.unregisterAll(resourcePackTracker);
         projector.close();
     }
 

@@ -55,6 +55,10 @@ not a dialogue lobby or puzzle chamber.
 - Personal visual elements are shown only to the relevant player unless the reveal is group evidence.
 - If the resource pack is unavailable, the body degrades to a clearly labeled vanilla copper/display
   form; required interaction remains functional.
+- Morrow's pack handshake is optional by contract even if an older campaign config marks its pack
+  required. `morrow-reboot.resource-pack.required: true` fails startup, because kicking a player who
+  declines would make the promised vanilla fallback unreachable. The shipped Morrow pack gate stays
+  disabled until accepted/declined parity is proven.
 
 ## Movement replay
 

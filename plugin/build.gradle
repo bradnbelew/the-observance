@@ -101,6 +101,7 @@ def pluginSelfTests = [
     , morrowTransitionService: 'com.observance.watcher.morrow.MorrowTransitionServiceSelfTest'
     , morrowLocalState: 'com.observance.watcher.morrow.MorrowLocalStateSelfTest'
     , morrowRuntimeSettings: 'com.observance.watcher.morrow.MorrowRuntimeSettingsSelfTest'
+    , morrowResourcePackPolicy: 'com.observance.watcher.morrow.MorrowResourcePackPolicySelfTest'
     , morrowEventProjector: 'com.observance.watcher.morrow.MorrowEventProjectorSelfTest'
     , recoveryRoom04Installer: 'com.observance.watcher.morrow.room04.RecoveryRoom04InstallerSelfTest'
     , recoveryRoom04Entry: 'com.observance.watcher.morrow.room04.RecoveryRoom04EntrySelfTest'

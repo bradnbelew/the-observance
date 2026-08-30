@@ -30,6 +30,10 @@ Implemented and verified:
 - vanilla-safe Morrow presentation built from Paper block/text displays plus one interaction entity,
   release-bound PDC ownership, startup cleanup, six-hour expiry, restrained active-speaker tracking,
   and the six authored relationship poses without fake-player, NMS, or resource-pack dependency
+- Morrow-owned optional resource-pack handshake that reuses the exact hosted URL/SHA-1 while forcing
+  `required=false`, rejects credentialed/non-HTTPS URLs outside loopback, unregisters its listeners on
+  shutdown, and fails startup if an operator makes the pack mandatory; the shipped Morrow pack gate
+  stays disabled until accepted/declined parity is observed in a real client
 - native Paper dialogs for the terminal greeting, bounded proposal, read-only evidence review, and
   explicit Entity Replay authorization, with Escape-safe close, group-stable idempotency, exact local
   receipt routing, and one-, two-, and six-player self-test coverage
