@@ -1,0 +1,65 @@
+{
+  "automated": [
+    {
+      "lane": "contract_and_authority",
+      "status": "proven_headless"
+    },
+    {
+      "lane": "ordered_durable_cross_surface_protocol",
+      "status": "proven_headless"
+    },
+    {
+      "lane": "cohort_1_2_6_and_negative_paths",
+      "status": "proven_headless"
+    },
+    {
+      "lane": "outage_restart_cursor_and_collision",
+      "status": "proven_headless"
+    },
+    {
+      "lane": "disposable_paper_boot",
+      "status": "not_run_pinned_runtime_unavailable"
+    }
+  ],
+  "human_client_required": [
+    {
+      "lane": "minecraft_visual_entity_interpolation_and_authored_pose",
+      "status": "required"
+    },
+    {
+      "lane": "native_dialog_mouse_keyboard_escape_and_readability",
+      "status": "required"
+    },
+    {
+      "lane": "resource_pack_decline_fallback_visual_parity",
+      "status": "required"
+    },
+    {
+      "lane": "audio_disabled_visual_equivalence",
+      "status": "required"
+    },
+    {
+      "lane": "full_inventory_safe_spawn_exit_for_1_2_6",
+      "status": "required"
+    },
+    {
+      "lane": "sixty_to_ninety_minute_pacing_without_operator_narration",
+      "status": "required"
+    }
+  ],
+  "live_services_required": [
+    {
+      "lane": "disposable_supabase_rls_concurrency_and_recovery",
+      "status": "required"
+    },
+    {
+      "lane": "authenticated_browser_case_and_ticket_projection",
+      "status": "required"
+    },
+    {
+      "lane": "disposable_discord_gateway_private_delivery",
+      "status": "required"
+    }
+  ],
+  "production_enablement": "blocked"
+}

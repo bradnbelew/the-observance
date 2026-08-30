@@ -1,0 +1,320 @@
+{
+  "artifact_binding": {
+    "files": {
+      "dashboard/src/lib/morrow-copperline-case.ts": "eff82cbc529e7c3b3f669285e87d6151c56b1c071a7d06a9e414de881fdf9060",
+      "dashboard/src/lib/morrow-copperline-server.ts": "ad7c1268b53a95e77bee9c90a5db8022d8b5659896991c09cbd69b99dae43433",
+      "discord/src/morrow/contradiction.ts": "efaead81621217d604b46def4dbcb31a418f3aa3a71263d45745796db3346b0f",
+      "discord/src/morrow/projection-policy.ts": "8105bd2d9c34575d3ab8a7cdf632abf2fe91c456f71ebb3a6b1c9f5df79495b4",
+      "morrow/authority/PUZZLE-LEDGER.json": "4a1b5fcabf96b938e72554bfeb6e17c9c641e89d725fae1e65e20e6fcb3d0bdc",
+      "morrow/contracts/event-catalog.json": "b7753ff35f1eca52522fa5cd1d414d96bf0ca0f105cde26602c2c3b5dc361e94",
+      "morrow/contracts/surface-contracts.json": "09c7fad447017b6dab215c78ff4f86433b964ac826bf4d93ac474ac5c4ced27a",
+      "plugin/src/main/java/com/observance/watcher/morrow/MorrowLocalState.java": "293c243c4eb78aaa4dc92740a151900475f95f85bd7455dfc9d2070713284112",
+      "plugin/src/main/java/com/observance/watcher/morrow/dialog/MorrowDialogAuthority.java": "e42b210b65bd75be9908fed60950ee21779c5678c1ea6e44abeaaab09b05fe8e",
+      "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java": "106f7208e0c7c3a97bb24623be8a63be8dae349ee44ce97970ee87c8449279f6",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java": "6d589464be1335a7e780aebe62f48facd130d61fb1d289c73b3a73cde599cdd3",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/EntityReplayAuthority.java": "396943b1101c42106c02d557d89b8fc554dc8629a52016e05a57ac0656f13035",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "d6ec102610a9b7e26dfde1348c72035d69563714c4c771935733175c8f7b4de8",
+      "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "8856bd0b7b92aac6f9c2c989500d9f40c79a0a596a2dd9d7590c54b0651ddeaa",
+      "tools/run_morrow_p0_rehearsal.py": "e20f07cc5c29cb49f0035aebfd747e2fc0d855bb4c399e80f3109423a8855eee"
+    },
+    "set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3"
+  },
+  "automated_gate": "pass",
+  "cohorts": {
+    "1": {
+      "final_head_sha256": "e32f1098f31638322231154d9b26e1551153f56dac69e054e0408445cf4b4a75",
+      "status": "pass"
+    },
+    "2": {
+      "final_head_sha256": "e6b6017b6898e7446901a7993df3635c5066727fdf90e96fb0616cfbf77c1d84",
+      "status": "pass"
+    },
+    "6": {
+      "final_head_sha256": "4c5b65e6060fb1bac12f7015b79c3e142e5c9c02503ab254d606520c57ab0b5d",
+      "status": "pass"
+    }
+  },
+  "experience_sequence": [
+    {
+      "proof": "cohort event 1 payload",
+      "stage": "copperline_case_discovery",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 1 payload",
+      "stage": "custody_checksum_short_token",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 2 payload",
+      "stage": "paper_handoff",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "RecoveryRoom04 manifest/installer self-tests",
+      "stage": "recovery_room_04_install",
+      "status": "proven_contract"
+    },
+    {
+      "proof": "body/dialog authority self-tests",
+      "stage": "morrow_body_and_native_dialog",
+      "status": "proven_contract"
+    },
+    {
+      "proof": "cohort event 3",
+      "stage": "room04_witnessed",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 4",
+      "stage": "static_restore_proposal",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 5",
+      "stage": "m02_intention_error",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 6",
+      "stage": "explicit_entity_replay_authorization",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 7: 740 ticks/37 seconds",
+      "stage": "m03_exact_missing_role_replay",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 8",
+      "stage": "m04_deliberate_movement_test",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort event 9",
+      "stage": "behavior_reuse",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "projects_to on events 3-9",
+      "stage": "copperline_earned_ticket_updates",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "cohort private_delivery and event 10",
+      "stage": "private_discord_contradiction_and_group_receipt",
+      "status": "proven_headless"
+    },
+    {
+      "proof": "no event 11 present",
+      "stage": "live_capture_authorization_offered",
+      "status": "offered_not_accepted"
+    }
+  ],
+  "generated_at": "2026-08-30T00:00:00Z",
+  "live_capture_authorization": "offered_not_accepted",
+  "negative_paths": [
+    {
+      "case": "reordered",
+      "progressed": false,
+      "status": "missing_prerequisite"
+    },
+    {
+      "case": "partial",
+      "progressed": false,
+      "status": "missing_prerequisite"
+    },
+    {
+      "case": "wrong_action",
+      "progressed": false,
+      "status": "missing_prerequisite"
+    },
+    {
+      "case": "cancel",
+      "progressed": false,
+      "status": "no_receipt"
+    },
+    {
+      "case": "decline",
+      "progressed": false,
+      "status": "no_receipt"
+    },
+    {
+      "case": "duplicate",
+      "progressed": false,
+      "sequence_unchanged": true,
+      "status": "duplicate"
+    },
+    {
+      "case": "altered_collision",
+      "progressed": false,
+      "status": "halted",
+      "worker_halted": true
+    },
+    {
+      "case": "wrong_release",
+      "progressed": false,
+      "status": "wrong_release"
+    },
+    {
+      "case": "wrong_campaign",
+      "progressed": false,
+      "status": "wrong_campaign"
+    },
+    {
+      "case": "wrong_player",
+      "progressed": false,
+      "status": "wrong_player"
+    },
+    {
+      "case": "disconnect_rejoin",
+      "durable_sequence": 1,
+      "progressed": false,
+      "status": "caught_up"
+    },
+    {
+      "case": "cursor_loss",
+      "head_receipt_sha256": "df4a58012da2df44e17533490fb68be07fde9136afc87e7d5a12ad6b23e068cb",
+      "progressed": false,
+      "recovered_sequence": 3,
+      "status": "recovered_from_hash_chain"
+    }
+  ],
+  "outage_recovery": [
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "backoff_seconds": 1,
+          "result": "retryable_outage"
+        },
+        {
+          "attempt": 2,
+          "backoff_seconds": 2,
+          "result": "retryable_outage"
+        },
+        {
+          "attempt": 3,
+          "backoff_seconds": 0,
+          "result": "delivered_once"
+        }
+      ],
+      "durable_local_state_retained": true,
+      "ordered_delivery": true,
+      "status": "recovered",
+      "surface": "copperline"
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "backoff_seconds": 1,
+          "result": "retryable_outage"
+        },
+        {
+          "attempt": 2,
+          "backoff_seconds": 2,
+          "result": "retryable_outage"
+        },
+        {
+          "attempt": 3,
+          "backoff_seconds": 0,
+          "result": "delivered_once"
+        }
+      ],
+      "durable_local_state_retained": true,
+      "ordered_delivery": true,
+      "status": "recovered",
+      "surface": "discord"
+    },
+    {
+      "attempts": [
+        {
+          "attempt": 1,
+          "backoff_seconds": 1,
+          "result": "retryable_outage"
+        },
+        {
+          "attempt": 2,
+          "backoff_seconds": 2,
+          "result": "retryable_outage"
+        },
+        {
+          "attempt": 3,
+          "backoff_seconds": 0,
+          "result": "delivered_once"
+        }
+      ],
+      "durable_local_state_retained": true,
+      "ordered_delivery": true,
+      "status": "recovered",
+      "surface": "supabase"
+    }
+  ],
+  "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+  "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec",
+  "static_runtime_contracts": [
+    {
+      "missing": [],
+      "proof": "resource_pack_fallback",
+      "required_markers": [
+        "BlockDisplay",
+        "TextDisplay",
+        "Interaction"
+      ],
+      "source": "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "proof": "inaccessible_audio_visual_equivalent",
+      "required_markers": [
+        "TextDisplay",
+        "CAPTIONED VOICE FRAGMENT",
+        "pulse 21\u201322"
+      ],
+      "source": "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "proof": "full_inventory_safe_spawn_exit",
+      "required_markers": [
+        "SPAWN_CELL",
+        "EXIT_CELL"
+      ],
+      "source": "plugin/src/main/java/com/observance/watcher/morrow/room04/RecoveryRoom04Manifest.java",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "proof": "bounded_cleanup",
+      "required_markers": [
+        "cleanup",
+        "cancel"
+      ],
+      "source": "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java",
+      "status": "pass"
+    },
+    {
+      "missing": [],
+      "proof": "body_cleanup",
+      "required_markers": [
+        "cleanupOwned",
+        "cancel"
+      ],
+      "source": "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java",
+      "status": "pass"
+    },
+    {
+      "forbidden_markers_found": [],
+      "proof": "full_inventory_remains_untouched",
+      "sources": [
+        "plugin/src/main/java/com/observance/watcher/morrow/dialog/BukkitMorrowDialogs.java",
+        "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/BukkitStaticRestore.java",
+        "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java"
+      ],
+      "status": "pass"
+    }
+  ]
+}

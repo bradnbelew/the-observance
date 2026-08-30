@@ -1,0 +1,25 @@
+{
+  "artifact_binding": {
+    "files": {
+      "dashboard/src/lib/morrow-copperline-case.ts": "eff82cbc529e7c3b3f669285e87d6151c56b1c071a7d06a9e414de881fdf9060",
+      "dashboard/src/lib/morrow-copperline-server.ts": "ad7c1268b53a95e77bee9c90a5db8022d8b5659896991c09cbd69b99dae43433",
+      "discord/src/morrow/contradiction.ts": "efaead81621217d604b46def4dbcb31a418f3aa3a71263d45745796db3346b0f",
+      "discord/src/morrow/projection-policy.ts": "8105bd2d9c34575d3ab8a7cdf632abf2fe91c456f71ebb3a6b1c9f5df79495b4",
+      "morrow/authority/PUZZLE-LEDGER.json": "4a1b5fcabf96b938e72554bfeb6e17c9c641e89d725fae1e65e20e6fcb3d0bdc",
+      "morrow/contracts/event-catalog.json": "b7753ff35f1eca52522fa5cd1d414d96bf0ca0f105cde26602c2c3b5dc361e94",
+      "morrow/contracts/surface-contracts.json": "09c7fad447017b6dab215c78ff4f86433b964ac826bf4d93ac474ac5c4ced27a",
+      "plugin/src/main/java/com/observance/watcher/morrow/MorrowLocalState.java": "293c243c4eb78aaa4dc92740a151900475f95f85bd7455dfc9d2070713284112",
+      "plugin/src/main/java/com/observance/watcher/morrow/dialog/MorrowDialogAuthority.java": "e42b210b65bd75be9908fed60950ee21779c5678c1ea6e44abeaaab09b05fe8e",
+      "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java": "106f7208e0c7c3a97bb24623be8a63be8dae349ee44ce97970ee87c8449279f6",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java": "6d589464be1335a7e780aebe62f48facd130d61fb1d289c73b3a73cde599cdd3",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/EntityReplayAuthority.java": "396943b1101c42106c02d557d89b8fc554dc8629a52016e05a57ac0656f13035",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "d6ec102610a9b7e26dfde1348c72035d69563714c4c771935733175c8f7b4de8",
+      "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "8856bd0b7b92aac6f9c2c989500d9f40c79a0a596a2dd9d7590c54b0651ddeaa",
+      "tools/run_morrow_p0_rehearsal.py": "e20f07cc5c29cb49f0035aebfd747e2fc0d855bb4c399e80f3109423a8855eee"
+    },
+    "set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3"
+  },
+  "production_contacted": false,
+  "reason": "pinned Paper server, deployable plugin, and copied bootstrap cache were not all supplied",
+  "status": "not_run_pinned_runtime_unavailable"
+}

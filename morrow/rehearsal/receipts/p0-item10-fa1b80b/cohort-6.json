@@ -1,0 +1,480 @@
+{
+  "artifact_binding": {
+    "files": {
+      "dashboard/src/lib/morrow-copperline-case.ts": "eff82cbc529e7c3b3f669285e87d6151c56b1c071a7d06a9e414de881fdf9060",
+      "dashboard/src/lib/morrow-copperline-server.ts": "ad7c1268b53a95e77bee9c90a5db8022d8b5659896991c09cbd69b99dae43433",
+      "discord/src/morrow/contradiction.ts": "efaead81621217d604b46def4dbcb31a418f3aa3a71263d45745796db3346b0f",
+      "discord/src/morrow/projection-policy.ts": "8105bd2d9c34575d3ab8a7cdf632abf2fe91c456f71ebb3a6b1c9f5df79495b4",
+      "morrow/authority/PUZZLE-LEDGER.json": "4a1b5fcabf96b938e72554bfeb6e17c9c641e89d725fae1e65e20e6fcb3d0bdc",
+      "morrow/contracts/event-catalog.json": "b7753ff35f1eca52522fa5cd1d414d96bf0ca0f105cde26602c2c3b5dc361e94",
+      "morrow/contracts/surface-contracts.json": "09c7fad447017b6dab215c78ff4f86433b964ac826bf4d93ac474ac5c4ced27a",
+      "plugin/src/main/java/com/observance/watcher/morrow/MorrowLocalState.java": "293c243c4eb78aaa4dc92740a151900475f95f85bd7455dfc9d2070713284112",
+      "plugin/src/main/java/com/observance/watcher/morrow/dialog/MorrowDialogAuthority.java": "e42b210b65bd75be9908fed60950ee21779c5678c1ea6e44abeaaab09b05fe8e",
+      "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java": "106f7208e0c7c3a97bb24623be8a63be8dae349ee44ce97970ee87c8449279f6",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java": "6d589464be1335a7e780aebe62f48facd130d61fb1d289c73b3a73cde599cdd3",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/EntityReplayAuthority.java": "396943b1101c42106c02d557d89b8fc554dc8629a52016e05a57ac0656f13035",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "d6ec102610a9b7e26dfde1348c72035d69563714c4c771935733175c8f7b4de8",
+      "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "8856bd0b7b92aac6f9c2c989500d9f40c79a0a596a2dd9d7590c54b0651ddeaa",
+      "tools/run_morrow_p0_rehearsal.py": "e20f07cc5c29cb49f0035aebfd747e2fc0d855bb4c399e80f3109423a8855eee"
+    },
+    "set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3"
+  },
+  "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+  "cohort_size": 6,
+  "completed_at": "2026-08-30T00:00:00Z",
+  "event_receipts": [
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act0.case_chain_authenticated",
+      "idempotency_key": "p0-rehearsal:6:case_chain_authenticated:v1",
+      "owner": "copperline",
+      "payload": {
+        "attachment": "retained-damaged-package",
+        "checksum_verified": true,
+        "custody_chain": "authenticated",
+        "short_token": "recovered"
+      },
+      "payload_sha256": "f65b26768246ba30152b09e0ff090755a483f1c060194e88ead7d3721d7bf311",
+      "previous_receipt_sha256": null,
+      "projects_to": [
+        "copperline",
+        "discord"
+      ],
+      "receipt_sha256": "ff8a63ac7516798de6a8f1763d94479603111a118efe5f5a6f95732c4a6ab514",
+      "sequence": 1
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act0.server_handoff_recovered",
+      "idempotency_key": "p0-rehearsal:6:server_handoff_recovered:v1",
+      "owner": "copperline",
+      "payload": {
+        "handoff": "paper",
+        "token_consumed_once": true
+      },
+      "payload_sha256": "d01e9ec49ded64de6a9704e41606913f360da8f22df7a00cb597daa109c08e4b",
+      "previous_receipt_sha256": "ff8a63ac7516798de6a8f1763d94479603111a118efe5f5a6f95732c4a6ab514",
+      "projects_to": [
+        "minecraft",
+        "copperline",
+        "discord"
+      ],
+      "receipt_sha256": "3b39649231488a094111c9ec7e8fea05f796b6032edae8c7e5d511707e98f47a",
+      "sequence": 2
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act1.room04_witnessed",
+      "idempotency_key": "p0-rehearsal:6:room04_witnessed:v1",
+      "owner": "minecraft",
+      "payload": {
+        "room": "recovery_room_04",
+        "scope": "group"
+      },
+      "payload_sha256": "dedf58ca9176f015d5e9ec5a9e2c30b7ec24925be3e369e4308fa3b03336ccbd",
+      "previous_receipt_sha256": "3b39649231488a094111c9ec7e8fea05f796b6032edae8c7e5d511707e98f47a",
+      "projects_to": [
+        "minecraft",
+        "copperline"
+      ],
+      "receipt_sha256": "c4d6e50c03ecfe147a97a56b655f8aa1f6773d8de46d381ed4b3cfba641eaed8",
+      "sequence": 3
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act1.static_proposal_authenticated",
+      "idempotency_key": "p0-rehearsal:6:static_proposal_authenticated:v1",
+      "owner": "minecraft",
+      "payload": {
+        "bounded_cells": 6,
+        "rollback": "six_cell_baseline"
+      },
+      "payload_sha256": "ad008cd66f9f4cb5ded8fa0808c219c00771e4961af45c1b16b0b96314fdd3ef",
+      "previous_receipt_sha256": "c4d6e50c03ecfe147a97a56b655f8aa1f6773d8de46d381ed4b3cfba641eaed8",
+      "projects_to": [
+        "minecraft",
+        "copperline",
+        "discord"
+      ],
+      "receipt_sha256": "44470f3d9b9118191978302d87c085bc697a0ee86c2126aee3e47c5fb053a9bc",
+      "sequence": 4
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act1.intention_error_proven",
+      "idempotency_key": "p0-rehearsal:6:intention_error_proven:v1",
+      "owner": "minecraft",
+      "payload": {
+        "classification": "inferred",
+        "factual_source": "discussed_not_placed",
+        "selected_cell": "B06",
+        "world_mutation": false
+      },
+      "payload_sha256": "3f649ec51b935f9f0b65b6e9daa35efdf9df357083927457b3662f7ca26c7fc9",
+      "previous_receipt_sha256": "44470f3d9b9118191978302d87c085bc697a0ee86c2126aee3e47c5fb053a9bc",
+      "projects_to": [
+        "minecraft",
+        "copperline",
+        "discord"
+      ],
+      "receipt_sha256": "0e50026b346b412bf9a2402ce2d3595719dd2d194eb04056b615830640b9c241",
+      "sequence": 5
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act1.entity_replay_authorized",
+      "idempotency_key": "p0-rehearsal:6:entity_replay_authorized:v1",
+      "owner": "minecraft",
+      "payload": {
+        "capability": "entity_replay",
+        "explicit_opt_in": true,
+        "starts_capture": false
+      },
+      "payload_sha256": "5e9f8e923f8d78b71af209b24c2038b32ade2ca94cc370a22852b145c62da4e6",
+      "previous_receipt_sha256": "0e50026b346b412bf9a2402ce2d3595719dd2d194eb04056b615830640b9c241",
+      "projects_to": [
+        "minecraft",
+        "copperline",
+        "discord"
+      ],
+      "receipt_sha256": "2d4a7560fd4656d63aa72b5e279129fd5825a0316bc0d721e3bae220d90ab50c",
+      "sequence": 6
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act2.missing_role_completed",
+      "idempotency_key": "p0-rehearsal:6:missing_role_completed:v1",
+      "owner": "minecraft",
+      "payload": {
+        "clip_duration_ticks": 740,
+        "missing_role_seconds": 37,
+        "provenance": [
+          "recorded",
+          "reconstructed",
+          "live"
+        ],
+        "sample_interval_ticks": 2
+      },
+      "payload_sha256": "9dc59dc3f3e7860fea27c9fda7b3f7e4b39a4017a6afda456914f4782b00f1cc",
+      "previous_receipt_sha256": "2d4a7560fd4656d63aa72b5e279129fd5825a0316bc0d721e3bae220d90ab50c",
+      "projects_to": [
+        "minecraft",
+        "copperline"
+      ],
+      "receipt_sha256": "6ab32271987fe14c9ece0bb04330d527ad7e10a58c1d56dedaccf792e62628cb",
+      "sequence": 7
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act2.live_test_recorded",
+      "idempotency_key": "p0-rehearsal:6:live_test_recorded:v1",
+      "owner": "minecraft",
+      "payload": {
+        "bounded": true,
+        "maximum_duration_seconds": 45,
+        "raw_samples_remote": false,
+        "tracked_players": 6
+      },
+      "payload_sha256": "ffa3451c3958504f60855aa16f10333845fee9479b58b6728f7a6b4337448351",
+      "previous_receipt_sha256": "6ab32271987fe14c9ece0bb04330d527ad7e10a58c1d56dedaccf792e62628cb",
+      "projects_to": [
+        "minecraft",
+        "copperline",
+        "media"
+      ],
+      "receipt_sha256": "2b5646235e9362c0ac260ef64b0e25bbab71bf258834180162574809a2a1caf5",
+      "sequence": 8
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act2.behavior_reuse_proven",
+      "idempotency_key": "p0-rehearsal:6:behavior_reuse_proven:v1",
+      "owner": "minecraft",
+      "payload": {
+        "comparison": "sealed_clip_reused",
+        "private_contradiction_offered": true
+      },
+      "payload_sha256": "17e01a762859fe22078f0aed0d89a75c9bfc42062494ab69210c39f46a02fefe",
+      "previous_receipt_sha256": "2b5646235e9362c0ac260ef64b0e25bbab71bf258834180162574809a2a1caf5",
+      "projects_to": [
+        "minecraft",
+        "copperline",
+        "discord"
+      ],
+      "receipt_sha256": "a0dcbd000806fa305125e5d854dd1f86ed0f658ceb065325b781356923b050a3",
+      "sequence": 9
+    },
+    {
+      "binding": {
+        "artifact_set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3",
+        "campaign_id": "fc12ca95-4f95-5bac-b895-4b74df75f400",
+        "players": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+          "981269e9-cc13-5597-aa21-7a514cea81ba",
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+          "2059678f-dd0d-5639-a755-aff8c4d47abe",
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ],
+        "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+        "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec"
+      },
+      "event": "morrow.act2.private_contradiction_resolved",
+      "idempotency_key": "p0-rehearsal:6:private_contradiction_resolved:v1",
+      "owner": "discord",
+      "payload": {
+        "linked_player_count": 6,
+        "private_payload": false,
+        "resolution": "file_live_behavior_as_inferred_source"
+      },
+      "payload_sha256": "9d81688e8f94f01c1f48916e308e92047a59c29e39b3f79327000895f64d2809",
+      "previous_receipt_sha256": "a0dcbd000806fa305125e5d854dd1f86ed0f658ceb065325b781356923b050a3",
+      "projects_to": [
+        "minecraft",
+        "discord"
+      ],
+      "receipt_sha256": "4c5b65e6060fb1bac12f7015b79c3e142e5c9c02503ab254d606520c57ab0b5d",
+      "sequence": 10
+    }
+  ],
+  "final_head_sha256": "4c5b65e6060fb1bac12f7015b79c3e142e5c9c02503ab254d606520c57ab0b5d",
+  "live_capture_authorization": "offered_not_accepted",
+  "live_capture_event_present": false,
+  "players": [
+    "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+    "981269e9-cc13-5597-aa21-7a514cea81ba",
+    "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+    "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+    "2059678f-dd0d-5639-a755-aff8c4d47abe",
+    "14274bbb-e785-5722-a9b9-af7db2b81642"
+  ],
+  "private_delivery": {
+    "group_receipt_contains_private_payload": false,
+    "intended_recipients": [
+      {
+        "player_id": "e68ef574-2f21-5972-b17b-aa67ab985c2d",
+        "private_payload_sha256": "3f2cff143828bd1668b4b5684bd432b9f7a91cd0caa5ca2195181d1e7d3b170e",
+        "visible_to": [
+          "e68ef574-2f21-5972-b17b-aa67ab985c2d"
+        ]
+      },
+      {
+        "player_id": "981269e9-cc13-5597-aa21-7a514cea81ba",
+        "private_payload_sha256": "899e0f2e23b522fd90b4b998144957a8d19d8799e984ad53ff3c339d2efba05e",
+        "visible_to": [
+          "981269e9-cc13-5597-aa21-7a514cea81ba"
+        ]
+      },
+      {
+        "player_id": "7b5b8725-ac1c-56d0-aee7-80fe241332e7",
+        "private_payload_sha256": "9ab51ce47fb6f056e494c1e6bdfaaaffdfb5600992f56c22aaf941cc42a23324",
+        "visible_to": [
+          "7b5b8725-ac1c-56d0-aee7-80fe241332e7"
+        ]
+      },
+      {
+        "player_id": "6f391ee5-0daf-553d-b58f-1468c5e8cfe6",
+        "private_payload_sha256": "9f7f8e2e00598de2d6c2e7c7dbc640b2ea27e41f8e839aa5a17d0aa7598c6e04",
+        "visible_to": [
+          "6f391ee5-0daf-553d-b58f-1468c5e8cfe6"
+        ]
+      },
+      {
+        "player_id": "2059678f-dd0d-5639-a755-aff8c4d47abe",
+        "private_payload_sha256": "4d8edddc55d20d517f0fa758f6c4dbf829054d217f483b0c5e453a2935f50078",
+        "visible_to": [
+          "2059678f-dd0d-5639-a755-aff8c4d47abe"
+        ]
+      },
+      {
+        "player_id": "14274bbb-e785-5722-a9b9-af7db2b81642",
+        "private_payload_sha256": "d6f0e37cb817d31bbaef904857e5351daece4b0f88d95dfeb257349d4d18c907",
+        "visible_to": [
+          "14274bbb-e785-5722-a9b9-af7db2b81642"
+        ]
+      }
+    ]
+  },
+  "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+  "restart_after_every_durable_boundary": [
+    {
+      "after_event": "morrow.act0.case_chain_authenticated",
+      "durable_sequence": 1,
+      "head_receipt_sha256": "ff8a63ac7516798de6a8f1763d94479603111a118efe5f5a6f95732c4a6ab514",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act0.server_handoff_recovered",
+      "durable_sequence": 2,
+      "head_receipt_sha256": "3b39649231488a094111c9ec7e8fea05f796b6032edae8c7e5d511707e98f47a",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act1.room04_witnessed",
+      "durable_sequence": 3,
+      "head_receipt_sha256": "c4d6e50c03ecfe147a97a56b655f8aa1f6773d8de46d381ed4b3cfba641eaed8",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act1.static_proposal_authenticated",
+      "durable_sequence": 4,
+      "head_receipt_sha256": "44470f3d9b9118191978302d87c085bc697a0ee86c2126aee3e47c5fb053a9bc",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act1.intention_error_proven",
+      "durable_sequence": 5,
+      "head_receipt_sha256": "0e50026b346b412bf9a2402ce2d3595719dd2d194eb04056b615830640b9c241",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act1.entity_replay_authorized",
+      "durable_sequence": 6,
+      "head_receipt_sha256": "2d4a7560fd4656d63aa72b5e279129fd5825a0316bc0d721e3bae220d90ab50c",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act2.missing_role_completed",
+      "durable_sequence": 7,
+      "head_receipt_sha256": "6ab32271987fe14c9ece0bb04330d527ad7e10a58c1d56dedaccf792e62628cb",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act2.live_test_recorded",
+      "durable_sequence": 8,
+      "head_receipt_sha256": "2b5646235e9362c0ac260ef64b0e25bbab71bf258834180162574809a2a1caf5",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act2.behavior_reuse_proven",
+      "durable_sequence": 9,
+      "head_receipt_sha256": "a0dcbd000806fa305125e5d854dd1f86ed0f658ceb065325b781356923b050a3",
+      "status": "recovered"
+    },
+    {
+      "after_event": "morrow.act2.private_contradiction_resolved",
+      "durable_sequence": 10,
+      "head_receipt_sha256": "4c5b65e6060fb1bac12f7015b79c3e142e5c9c02503ab254d606520c57ab0b5d",
+      "status": "recovered"
+    }
+  ],
+  "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec",
+  "status": "pass"
+}

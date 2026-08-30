@@ -1,0 +1,36 @@
+{
+  "artifact_binding": {
+    "files": {
+      "dashboard/src/lib/morrow-copperline-case.ts": "eff82cbc529e7c3b3f669285e87d6151c56b1c071a7d06a9e414de881fdf9060",
+      "dashboard/src/lib/morrow-copperline-server.ts": "ad7c1268b53a95e77bee9c90a5db8022d8b5659896991c09cbd69b99dae43433",
+      "discord/src/morrow/contradiction.ts": "efaead81621217d604b46def4dbcb31a418f3aa3a71263d45745796db3346b0f",
+      "discord/src/morrow/projection-policy.ts": "8105bd2d9c34575d3ab8a7cdf632abf2fe91c456f71ebb3a6b1c9f5df79495b4",
+      "morrow/authority/PUZZLE-LEDGER.json": "4a1b5fcabf96b938e72554bfeb6e17c9c641e89d725fae1e65e20e6fcb3d0bdc",
+      "morrow/contracts/event-catalog.json": "b7753ff35f1eca52522fa5cd1d414d96bf0ca0f105cde26602c2c3b5dc361e94",
+      "morrow/contracts/surface-contracts.json": "09c7fad447017b6dab215c78ff4f86433b964ac826bf4d93ac474ac5c4ced27a",
+      "plugin/src/main/java/com/observance/watcher/morrow/MorrowLocalState.java": "293c243c4eb78aaa4dc92740a151900475f95f85bd7455dfc9d2070713284112",
+      "plugin/src/main/java/com/observance/watcher/morrow/dialog/MorrowDialogAuthority.java": "e42b210b65bd75be9908fed60950ee21779c5678c1ea6e44abeaaab09b05fe8e",
+      "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java": "106f7208e0c7c3a97bb24623be8a63be8dae349ee44ce97970ee87c8449279f6",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java": "6d589464be1335a7e780aebe62f48facd130d61fb1d289c73b3a73cde599cdd3",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/EntityReplayAuthority.java": "396943b1101c42106c02d557d89b8fc554dc8629a52016e05a57ac0656f13035",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "d6ec102610a9b7e26dfde1348c72035d69563714c4c771935733175c8f7b4de8",
+      "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "8856bd0b7b92aac6f9c2c989500d9f40c79a0a596a2dd9d7590c54b0651ddeaa",
+      "tools/run_morrow_p0_rehearsal.py": "e20f07cc5c29cb49f0035aebfd747e2fc0d855bb4c399e80f3109423a8855eee"
+    },
+    "set_sha256": "c4b2310ade75edcf48f8e848aceed5c55f201c0c91ae7fbfb2fe3e4c8a79fbf3"
+  },
+  "bundle_files": {
+    "automated-rehearsal.json": "7433d72da6b5d860476ef528f6fce4e47ceecaa26a74cc924959a50b939640aa",
+    "cohort-1.json": "c583a81fd2cecdba711f25d9905d7fe71f5d8e7c03b128ed1603789fc7a00746",
+    "cohort-2.json": "822458bb7483307d5e5b0ee933b50b94739f7d07c1a6ede7b56fbfcaefb36837",
+    "cohort-6.json": "73747ec5cc47b54f480d892568decf3ec9c0882549852ac97b590334e2a9470c",
+    "launch-matrix.json": "fd8327a743d500d733e1eb15b45d994aa44e3231d384e5a1edd550e050cb0b4c",
+    "network-boundary.json": "f36171f575b0598cd5c368e636619cfcfe600f8b18ff9322d6fb2b61ede96531",
+    "paper-runtime.json": "536c3cc1b1745c074b1dbc5048c85b1396bf4cc464144032f7b99e8f8bbe0851"
+  },
+  "bundle_sha256": "b44d27a6d57080314fdac7f5870ec8985f4116a436975da973b404c30ba62ce3",
+  "generated_at": "2026-08-30T00:00:00Z",
+  "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
+  "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec",
+  "status": "pass"
+}

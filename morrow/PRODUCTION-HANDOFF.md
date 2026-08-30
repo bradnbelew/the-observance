@@ -59,12 +59,22 @@ Implemented and verified:
   altered-payload collision halt, leased outbox retry/restart recovery, spoiler-safe Discord projection,
   and Minecraft callback. No HTTP interaction endpoint, Chat SDK adapter, live server connection, or
   production migration was added
+- deterministic P0 item 10 rehearsal harness and retained SHA-256 receipt bundle for one-, two-, and
+  six-player cohorts: the full Act 0–2 slice order, restart after every durable boundary, wrong/partial/
+  cancel/decline paths, disconnect/rejoin, ordered outage recovery, duplicate/collision, cursor loss,
+  release/player/campaign refusal, private-recipient isolation, earned ticket projections, fallback/
+  accessibility/inventory/cleanup contracts, and an explicit `offered_not_accepted` later-capture state
+- fail-closed launch matrix separating headless/runtime proof from actual Paper and graphical-client
+  evidence. The pinned Paper server/bootstrap artifacts are absent here, so no server boot or live-client
+  proof is claimed and every production gate remains disabled
 
 Verified commands:
 
 ```text
 python tools/check_morrow_authority.py
+python tools/check_morrow_rehearsal.py
 plugin/gradlew.bat check --no-daemon
+plugin/gradlew.bat build --no-daemon
 cd dashboard && npm.cmd run selftest
 cd dashboard && npm.cmd run lint
 cd dashboard && npm.cmd run build
@@ -78,7 +88,7 @@ cd discord && npm.cmd run runtimecheck
 
 ### P0 — Make the 60–90 minute slice playable
 
-Items 1–9 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
+Items 1–10 are implemented in code and focused main-driven/headless rehearsal tests. Room 04 remains behind both the
 global reboot gate and its separate `room04.build-enabled: false` rehearsal gate until a disposable
 Paper/live-client receipt exists. Items 4–6 begin only when those gates have installed Room 04.
 
@@ -104,20 +114,21 @@ Paper/live-client receipt exists. Items 4–6 begin only when those gates have i
 9. Add the Discord private contradiction/group receipt for the slice using native interactions and
    Ed25519 validation where HTTP interactions are used.
 10. Exercise one-, two-, and six-player paths through restart and remote outage before enabling the
-    rehearsal config.
+    rehearsal config. Automated authority lane complete; retained bundle:
+    `morrow/rehearsal/receipts/p0-item10-fa1b80b`. Actual disposable Paper and graphical-client lanes
+    remain explicitly required in its launch matrix.
 
-### Precise next boundary — P0 item 10 only
+### Precise next boundary — isolated runtime rehearsal only
 
-Discord now consumes the earned `morrow.act2.behavior_reuse_proven` projection, presents each linked
-participant an intended-recipient ephemeral contradiction, and commits only the payload-free group
-`morrow.act2.private_contradiction_resolved` receipt once every expected participant chooses the exact
-authored inferred-source classification. Paper requires that group receipt before it can offer the
-separate explicit `live_capture_authorized` dialog. P0 item 10 may only rehearse the already-authored
-slice on disposable infrastructure for one, two, and six players through Paper restart, Discord worker
-restart, remote outage/recovery, disconnect/rejoin, duplicate delivery, and clean reset. It must retain
-release-bound journal, projection, physical read-back, and interaction receipts; it must not expand Acts
-3–7, enable the reboot in production, migrate the live database, or mutate live Discord/Crafty/Vercel/
-Supabase services or worlds.
+The automated P0 authority gate is green, but this does not make the slice playable. The next permitted
+work is to supply the exact pinned Paper 1.21.11 build 132 server JAR, copied local bootstrap cache, and
+the built plugin to the existing create-only disposable runner, then retain an actual server lifecycle
+receipt. A human client must separately complete every `required` lane in
+`morrow/rehearsal/receipts/p0-item10-fa1b80b/launch-matrix.json`, including visual interpolation,
+native-dialog input, resource-pack decline, audio-disabled cues, full-inventory safe spawn/exit,
+one-/two-/six-player cleanup, and pacing without operator narration. After that, P1 may create an
+isolated database target plus authenticated browser and disposable Discord worker/guild receipts. Do not
+expand Acts 3–7, enable production, or mutate live services, data, or worlds at this boundary.
 
 ### P1 — Safe database rehearsal
 
@@ -139,8 +150,10 @@ and factual truth. No three consecutive investigations may lead with the same me
 
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
-- Recovery Room 04, the Morrow display body, Paper dialogs, M02 Static Restore, and M03/M04 Entity
-  Replay still require disposable Paper/live-client rehearsal. The Copperline reboot route requires an
+- The automated P0 receipt bundle is green, but the pinned Paper server/bootstrap artifacts were not
+  present and no graphical client was available. Recovery Room 04, the Morrow display body, Paper
+  dialogs, M02 Static Restore, and M03/M04 Entity Replay still require disposable Paper/live-client
+  rehearsal. The Copperline reboot route requires an
   isolated database migration/projector rehearsal and authenticated browser rehearsal. The Discord
   reboot flow likewise requires the proposal to become an isolated migration plus a disposable guild/
   worker rehearsal; its shipped feature gate remains false.

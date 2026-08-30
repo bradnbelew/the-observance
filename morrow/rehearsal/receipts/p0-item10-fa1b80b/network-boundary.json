@@ -1,0 +1,7 @@
+{
+  "attempts": [],
+  "non_loopback_attempts": [],
+  "policy": "deny_non_loopback",
+  "production_contacted": false,
+  "status": "pass"
+}
