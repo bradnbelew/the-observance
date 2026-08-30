@@ -37,8 +37,11 @@ public final class MorrowDialogAuthoritySelfTest {
                     "room receipt opens restoration proposal");
 
             Decision proposal = MorrowDialogAuthority.decide(Action.AUTHENTICATE_PROPOSAL, state.snapshot());
-            check(new String(proposal.payload(), StandardCharsets.UTF_8).contains("\"world_mutation\":false"),
-                    "proposal authentication explicitly stops before restoration mutation");
+            String proposalPayload = new String(proposal.payload(), StandardCharsets.UTF_8);
+            check(proposalPayload.contains("\"world_mutation\":\"bounded_static_restore\"")
+                            && proposalPayload.contains("\"bounded_cells\":6")
+                            && proposalPayload.contains("\"rollback\":\"six_cell_baseline\""),
+                    "proposal receipt binds the exact bounded restoration and rollback");
             commitAsGroup(state, Action.AUTHENTICATE_PROPOSAL, 2);
             check(state.pendingAfter(0).size() == 2, "two proposal callbacks create one proposal receipt");
             check(MorrowDialogAuthority.currentView(state.snapshot()) == View.EVIDENCE_REVIEW,

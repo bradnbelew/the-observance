@@ -6,6 +6,8 @@ import com.observance.watcher.morrow.room04.RecoveryRoom04Installer;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Manifest;
 import com.observance.watcher.morrow.dialog.BukkitMorrowDialogs;
 import com.observance.watcher.morrow.presentation.BukkitMorrowBody;
+import com.observance.watcher.morrow.room04.staticrestore.BukkitStaticRestore;
+import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -13,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /** Fail-closed Paper lifecycle for the disabled-by-default Morrow reboot runtime. */
 public final class MorrowRuntime implements AutoCloseable {
@@ -26,6 +29,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final MorrowEventProjector projector;
     private final RecoveryRoom04Installer.Result room04Result;
     private final BukkitMorrowBody body;
+    private final BukkitStaticRestore staticRestore;
     private final BukkitMorrowDialogs dialogs;
 
     private MorrowRuntime(
@@ -34,12 +38,14 @@ public final class MorrowRuntime implements AutoCloseable {
             MorrowEventProjector projector,
             RecoveryRoom04Installer.Result room04Result,
             BukkitMorrowBody body,
+            BukkitStaticRestore staticRestore,
             BukkitMorrowDialogs dialogs) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
         this.room04Result = room04Result;
         this.body = body;
+        this.staticRestore = staticRestore;
         this.dialogs = dialogs;
     }
 
@@ -86,11 +92,18 @@ public final class MorrowRuntime implements AutoCloseable {
                     new RecoveryRoom04Manifest(),
                     data.resolve(ROOM04_SNAPSHOT_NAME),
                     data.resolve(ROOM04_RECEIPT_NAME));
+            Set<RecoveryRoom04Manifest.Cell> mutableCells = state.snapshot().committedEvents().contains(
+                    "morrow.act1.static_proposal_authenticated")
+                    ? new StaticRestoreManifest().mutableCells()
+                    : Set.of();
             room04Result = installer.install(
-                    settings.releaseId(), room04Origin, new BukkitRecoveryRoom04World(world, room04Origin));
+                    settings.releaseId(), room04Origin,
+                    new BukkitRecoveryRoom04World(world, room04Origin),
+                    mutableCells);
         }
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
+        BukkitStaticRestore staticRestore = null;
         BukkitMorrowDialogs dialogs = null;
         try {
             projector = MorrowEventProjector.open(
@@ -100,14 +113,17 @@ public final class MorrowRuntime implements AutoCloseable {
                     plugin.getLogger());
             projector.start();
             if (room04Result != null && room04Origin != null) {
+                staticRestore = new BukkitStaticRestore(plugin, world, room04Origin, settings.releaseId());
+                staticRestore.start(state.snapshot());
                 body = new BukkitMorrowBody(plugin, world, room04Origin, settings.releaseId());
                 body.start(state.snapshot());
-                dialogs = new BukkitMorrowDialogs(plugin, world, room04Origin, state, body);
+                dialogs = new BukkitMorrowDialogs(plugin, world, room04Origin, state, body, staticRestore);
                 dialogs.start();
             }
-            return new MorrowRuntime(settings, state, projector, room04Result, body, dialogs);
+            return new MorrowRuntime(settings, state, projector, room04Result, body, staticRestore, dialogs);
         } catch (IOException | RuntimeException | LinkageError failure) {
             if (dialogs != null) dialogs.close();
+            if (staticRestore != null) staticRestore.close();
             if (body != null) body.close();
             if (projector != null) projector.close();
             throw failure;
@@ -133,6 +149,7 @@ public final class MorrowRuntime implements AutoCloseable {
     @Override
     public void close() {
         if (dialogs != null) dialogs.close();
+        if (staticRestore != null) staticRestore.close();
         if (body != null) body.close();
         projector.close();
     }

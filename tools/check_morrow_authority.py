@@ -18,6 +18,7 @@ PLUGIN_BODY_AUTHORITY = PLUGIN_MORROW / "presentation" / "MorrowBodyAuthority.ja
 PLUGIN_BODY_RUNTIME = PLUGIN_MORROW / "presentation" / "BukkitMorrowBody.java"
 PLUGIN_DIALOG_AUTHORITY = PLUGIN_MORROW / "dialog" / "MorrowDialogAuthority.java"
 PLUGIN_DIALOG_RUNTIME = PLUGIN_MORROW / "dialog" / "BukkitMorrowDialogs.java"
+PLUGIN_STATIC_RESTORE = PLUGIN_MORROW / "room04" / "staticrestore"
 
 
 def load_json(relative: str):
@@ -89,16 +90,61 @@ def main() -> int:
                 "Room 04 dialog receipt authority drifted")
         require('case AUTHORIZE_ENTITY_REPLAY -> has(snapshot, INTENTION_ERROR_PROVEN)' in dialog_authority,
                 "Entity Replay dialog lost its proof prerequisite")
-        require(dialog_authority.count('\\"world_mutation\\":false') >= 2,
-                "proposal and Entity Replay payloads must forbid world mutation")
+        require('\\"world_mutation\\":\\"bounded_static_restore\\"' in dialog_authority
+                and '\\"bounded_cells\\":6' in dialog_authority
+                and '\\"rollback\\":\\"six_cell_baseline\\"' in dialog_authority,
+                "M02 proposal lost its exact bounded mutation/rollback authority")
+        require('\\"world_mutation\\":false' in dialog_authority,
+                "Entity Replay authorization must still forbid world mutation")
         for required in (
             "Dialog.create", "canCloseWithEscape(true)", "PlayerCustomClickEvent",
             "DialogType.confirmation", "DialogType.multiAction", "MorrowLocalState.CommitResult",
+            "PendingClassification", "PlayerJoinEvent", "PlayerQuitEvent",
         ):
             require(required in dialog_runtime, f"Morrow native dialog adapter lacks {required}")
         for forbidden in ("setBlockData(", "setType(", "breakNaturally(", "runTaskAsynchronously"):
             require(forbidden not in dialog_runtime,
-                    f"P0 item 5 crossed the sixth-block mutation boundary via {forbidden}")
+                    f"dialog adapter directly owns a forbidden world mutation via {forbidden}")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        static_manifest = (PLUGIN_STATIC_RESTORE / "StaticRestoreManifest.java").read_text(encoding="utf-8")
+        static_predicate = (PLUGIN_STATIC_RESTORE / "StaticRestorePredicate.java").read_text(encoding="utf-8")
+        static_engine = (PLUGIN_STATIC_RESTORE / "StaticRestoreEngine.java").read_text(encoding="utf-8")
+        static_bukkit = (PLUGIN_STATIC_RESTORE / "BukkitStaticRestore.java").read_text(encoding="utf-8")
+        ledger = load_json("authority/PUZZLE-LEDGER.json")
+        m02 = next(row for row in ledger["investigations"] if row["id"] == "M02")
+        require(m02["input"] ==
+                "Mark the one unsupported restored block in Minecraft and classify it as authenticated, inferred, conflicting, or unknown.",
+                "canonical M02 concrete input drifted")
+        require(m02["required_evidence"] ==
+                ["current starter room", "archived screenshot", "block manifest", "Finch planning post"],
+                "canonical M02 evidence order drifted")
+        require('MANIFEST_SHA256 = "870d27b4b21539e496577eff68dc5f26ada71ec321fef9629088e9a8274b28ff"'
+                in static_manifest, "M02 exact manifest/content hash drifted")
+        candidate_rows = re.findall(r'add\(authored, CandidateId[.](B0[1-6]), .*?Provenance[.]([A-Z]+),',
+                                    static_manifest, re.DOTALL)
+        require(candidate_rows == [
+            ("B01", "AUTHENTICATED"), ("B02", "AUTHENTICATED"),
+            ("B03", "AUTHENTICATED"), ("B04", "AUTHENTICATED"),
+            ("B05", "AUTHENTICATED"), ("B06", "INFERRED"),
+        ], "B06 must remain the sole factual inference error")
+        require("CURRENT_ROOM, ARCHIVED_SCREENSHOT, BLOCK_MANIFEST, FINCH_PLANNING_POST" in static_manifest
+                and "not placed" in static_manifest,
+                "M02 four-source evidence/content authority drifted")
+        require("selected == CandidateId.B06 && classification == Provenance.INFERRED" in static_predicate
+                and "MorrowDialogAuthority.INTENTION_ERROR_PROVEN" in static_predicate
+                and '\\"world_mutation\\":false' in static_predicate,
+                "M02 physical predicate no longer exclusively proves B06 as inferred")
+        for required in ("applyTransaction", "auditBaseline", "auditComplete", "reset(", "restore("):
+            require(required in static_engine, f"M02 transactional engine lacks {required}")
+        for required in ("PASS_INTERVAL_TICKS", "spawnParticle", "playSound", "PersistentDataType",
+                         "resetAndReplay", "requirePrimaryThread"):
+            require(required in static_bukkit, f"M02 Paper theater lacks {required}")
+        for forbidden in ("PlayerMoveEvent", "runTaskAsynchronously", "net.minecraft", "craftbukkit",
+                          "sendBlockChange"):
+            require(forbidden not in static_bukkit, f"P0 item 6 crossed the replay/client boundary via {forbidden}")
     except Exception as exc:  # noqa: BLE001
         errors.append(str(exc))
 

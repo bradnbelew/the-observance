@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /** Transactional occupied-cell-refusing installer and read-back auditor for Recovery Room 04. */
 public final class RecoveryRoom04Installer {
@@ -92,7 +93,24 @@ public final class RecoveryRoom04Installer {
             String releaseId,
             Origin origin,
             WorldPort world) throws IOException {
+        return install(releaseId, origin, world, Set.of());
+    }
+
+    /**
+     * Restart path for journal-authorized mutable sub-scenes. Exemptions are accepted only when the
+     * durable room receipt already exists; the owning scene must immediately perform its stricter audit.
+     */
+    public synchronized Result install(
+            String releaseId,
+            Origin origin,
+            WorldPort world,
+            Set<Cell> journalAuthorizedMutableCells) throws IOException {
         requireBinding(releaseId, origin, world);
+        Set<Cell> mutableCells = Set.copyOf(Objects.requireNonNull(
+                journalAuthorizedMutableCells, "journalAuthorizedMutableCells"));
+        if (!manifest.cells().keySet().containsAll(mutableCells)) {
+            throw new IllegalArgumentException("mutable Room 04 scene cell is outside the manifest");
+        }
         if (Files.exists(receiptPath)) {
             Receipt receipt = readReceipt();
             verifyReceiptBinding(receipt, releaseId, origin, world.binding());
@@ -101,7 +119,7 @@ public final class RecoveryRoom04Installer {
             if (!receipt.snapshotSha256().equals(snapshot.snapshotSha256())) {
                 throw new IOException("Recovery Room 04 receipt/snapshot hash mismatch");
             }
-            audit(world);
+            audit(world, mutableCells);
             return new Result(Status.ALREADY_PRESENT, manifest.manifestSha256(),
                     snapshot.snapshotSha256(), manifest.cells().size());
         }
@@ -146,8 +164,13 @@ public final class RecoveryRoom04Installer {
     }
 
     public synchronized void audit(WorldPort world) throws IOException {
+        audit(world, Set.of());
+    }
+
+    private void audit(WorldPort world, Set<Cell> ignoredCells) throws IOException {
         List<String> mismatches = new ArrayList<>();
         for (Map.Entry<Cell, String> entry : manifest.cells().entrySet()) {
+            if (ignoredCells.contains(entry.getKey())) continue;
             String actual = world.blockData(entry.getKey());
             if (!entry.getValue().equals(actual) && mismatches.size() < 8) {
                 mismatches.add(entry.getKey() + " expected=" + entry.getValue() + " actual=" + actual);

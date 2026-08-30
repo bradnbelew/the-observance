@@ -2,6 +2,7 @@ package com.observance.watcher.morrow.room04;
 
 import com.observance.watcher.morrow.room04.RecoveryRoom04Installer.Origin;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Manifest.Cell;
+import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +30,7 @@ public final class RecoveryRoom04InstallerSelfTest {
         occupiedCellRefusesWithoutWrites(manifest);
         failedReadBackRollsBackAndRestartRecovers(manifest);
         receiptAndSnapshotAreReleaseBound(manifest);
+        journalAuthorizedMutableCellsAreNarrow(manifest);
         System.out.println("RECOVERY ROOM 04 INSTALLER: PASS hash=" + manifest.manifestSha256());
     }
 
@@ -127,6 +129,30 @@ public final class RecoveryRoom04InstallerSelfTest {
                     .replace("manifest-sha256=" + manifest.manifestSha256(), "manifest-sha256=" + "0".repeat(64));
             Files.writeString(files.snapshot, changed);
             expectIo(() -> installer.install(RELEASE, ORIGIN, world));
+        } finally {
+            files.close();
+        }
+    }
+
+    private static void journalAuthorizedMutableCellsAreNarrow(RecoveryRoom04Manifest manifest) throws Exception {
+        TestFiles files = TestFiles.create("room04-mutable-scene-");
+        try {
+            FakeWorld world = new FakeWorld("room04-mutable:00000000-0000-4000-8000-000000000008");
+            RecoveryRoom04Installer installer = files.installer(manifest);
+            installer.install(RELEASE, ORIGIN, world);
+            StaticRestoreManifest staticRestore = new StaticRestoreManifest();
+            Cell sceneCell = staticRestore.factualInferenceError().cell();
+            world.blocks.put(sceneCell, staticRestore.factualInferenceError().restoredBlock());
+            expectIo(() -> installer.install(RELEASE, ORIGIN, world));
+            RecoveryRoom04Installer.Result restart = installer.install(
+                    RELEASE, ORIGIN, world, staticRestore.mutableCells());
+            check(restart.status() == RecoveryRoom04Installer.Status.ALREADY_PRESENT,
+                    "journal-authorized M02 cells defer to the stricter scene restart audit");
+
+            world.blocks.put(RecoveryRoom04Manifest.TERMINAL_CELL, "minecraft:dirt");
+            expectIo(() -> installer.install(RELEASE, ORIGIN, world, staticRestore.mutableCells()));
+            check("minecraft:dirt".equals(world.blocks.get(RecoveryRoom04Manifest.TERMINAL_CELL)),
+                    "mutable scene exemption never hides unrelated Room 04 drift");
         } finally {
             files.close();
         }

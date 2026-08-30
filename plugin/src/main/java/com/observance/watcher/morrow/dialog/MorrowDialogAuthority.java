@@ -1,6 +1,7 @@
 package com.observance.watcher.morrow.dialog;
 
 import com.observance.watcher.morrow.MorrowRelationshipSnapshot;
+import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -24,6 +25,7 @@ public final class MorrowDialogAuthority {
         ACKNOWLEDGE_ROOM,
         AUTHENTICATE_PROPOSAL,
         REVIEW_EVIDENCE,
+        RESET_STATIC_RESTORE,
         AUTHORIZE_ENTITY_REPLAY,
         DECLINE_ENTITY_REPLAY
     }
@@ -81,12 +83,17 @@ public final class MorrowDialogAuthority {
                     ? receipt(
                             PROPOSAL_AUTHENTICATED,
                             "paper:room04:proposal:v1",
-                            "{\"action\":\"authenticate_manifest_only\",\"dialog\":\"restoration_proposal_v1\",\"proposal\":\"static_restore_room04_v1\",\"region\":\"recovery_room_04\",\"scope\":\"group\",\"world_mutation\":false}",
-                            "The bounded proposal is authenticated. No blocks were changed.")
+                            "{\"action\":\"apply_bounded_static_restore\",\"bounded_cells\":6,\"dialog\":\"restoration_proposal_v1\",\"manifest_sha256\":\""
+                                    + StaticRestoreManifest.MANIFEST_SHA256
+                                    + "\",\"proposal\":\"static_restore_room04_m02_v1\",\"region\":\"recovery_room_04\",\"rollback\":\"six_cell_baseline\",\"scope\":\"group\",\"world_mutation\":\"bounded_static_restore\"}",
+                            "The bounded proposal is authenticated. Three visible two-cell passes are now applying.")
                     : notReady("A room witness receipt is required before the proposal can be authenticated.");
             case REVIEW_EVIDENCE -> has(snapshot, ROOM_WITNESSED)
                     ? noReceipt("Evidence review is read-only. No receipt or world change was created.")
                     : notReady("Enter and acknowledge Recovery Room 04 before reviewing its evidence.");
+            case RESET_STATIC_RESTORE -> has(snapshot, PROPOSAL_AUTHENTICATED)
+                    ? noReceipt("The six-cell scene is reset to baseline and its authenticated proposal will replay.")
+                    : notReady("Authenticate the bounded proposal before using its Reset control.");
             case AUTHORIZE_ENTITY_REPLAY -> has(snapshot, INTENTION_ERROR_PROVEN)
                     ? receipt(
                             ENTITY_REPLAY_AUTHORIZED,
