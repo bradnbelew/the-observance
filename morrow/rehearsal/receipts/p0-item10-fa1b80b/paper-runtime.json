@@ -1,27 +1,27 @@
 {
   "artifact_binding": {
     "files": {
-      "dashboard/src/lib/morrow-copperline-case.ts": "eff82cbc529e7c3b3f669285e87d6151c56b1c071a7d06a9e414de881fdf9060",
-      "dashboard/src/lib/morrow-copperline-server.ts": "ad7c1268b53a95e77bee9c90a5db8022d8b5659896991c09cbd69b99dae43433",
-      "discord/src/morrow/contradiction.ts": "efaead81621217d604b46def4dbcb31a418f3aa3a71263d45745796db3346b0f",
-      "discord/src/morrow/projection-policy.ts": "8105bd2d9c34575d3ab8a7cdf632abf2fe91c456f71ebb3a6b1c9f5df79495b4",
-      "morrow/authority/PUZZLE-LEDGER.json": "4a1b5fcabf96b938e72554bfeb6e17c9c641e89d725fae1e65e20e6fcb3d0bdc",
-      "morrow/contracts/event-catalog.json": "b7753ff35f1eca52522fa5cd1d414d96bf0ca0f105cde26602c2c3b5dc361e94",
-      "morrow/contracts/surface-contracts.json": "09c7fad447017b6dab215c78ff4f86433b964ac826bf4d93ac474ac5c4ced27a",
+      "dashboard/src/lib/morrow-copperline-case.ts": "aca8123c8c4d5fe5551fa3305ec6ac9d584faf7adc48ddcfa889891fb9ef7f3f",
+      "dashboard/src/lib/morrow-copperline-server.ts": "03070370350dadb135d3b0e5ec092508c38bb50aecb1fba8f6e7a414d7228f03",
+      "discord/src/morrow/contradiction.ts": "1bc3952d782e9071efe38f885f610944188fbd8fb070b113163a5fc32d962c51",
+      "discord/src/morrow/projection-policy.ts": "6414def0b3b9789fd766ac607a6b1609695cbb0f2219ce7b2ec96ddda0f0c08a",
+      "morrow/authority/PUZZLE-LEDGER.json": "63384b2f499ba2da1357d24d3a03199c91f2a637be39f2c4d5c9d1b4b46168eb",
+      "morrow/contracts/event-catalog.json": "9a6299beb4f95e7992381b5e686153f254e70e8fb12426bcce6c0f7a500a1992",
+      "morrow/contracts/surface-contracts.json": "f5dec9910453a8cc14a299dbd7e2b142354064dac1e03b1ddf1ac1d38719210d",
       "morrow/rehearsal/runtime/p0-paper-c40f916/morrow-first-start.log": "bb1fd31c72e2c12ccd63cff2717feeeeccc58bb485545a9063ba3804bfe9adfb",
       "morrow/rehearsal/runtime/p0-paper-c40f916/morrow-restart.log": "3292beb5765c4c977463621cac73f8a6fee393bcd7d6e9a765c7bca8af37aef6",
       "morrow/rehearsal/runtime/p0-paper-c40f916/paper-runtime-receipt.json": "c5aa6b66a539962a4613c5e8750e50d41bd8563ff95f5fe4aee1c971571057cd",
-      "plugin/src/main/java/com/observance/watcher/morrow/MorrowLocalState.java": "293c243c4eb78aaa4dc92740a151900475f95f85bd7455dfc9d2070713284112",
-      "plugin/src/main/java/com/observance/watcher/morrow/dialog/MorrowDialogAuthority.java": "e42b210b65bd75be9908fed60950ee21779c5678c1ea6e44abeaaab09b05fe8e",
-      "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java": "106f7208e0c7c3a97bb24623be8a63be8dae349ee44ce97970ee87c8449279f6",
+      "plugin/src/main/java/com/observance/watcher/morrow/MorrowLocalState.java": "123223adc9359b05992af2c843935f1adb4ffa2e9b8f0760edf313ba60acc2ef",
+      "plugin/src/main/java/com/observance/watcher/morrow/dialog/MorrowDialogAuthority.java": "b049aef9a0ba6f2c79006a273f1a68bc14682edf181821074cc4b8e1382ea04a",
+      "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java": "145e97da8009c3bc04b29fab83d3673238df9617d53c22a7859c6858a6079f9f",
       "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java": "85c40d8a12145f961463bd412c9c622e7337c5f7d8189453e2c71d9c80148333",
-      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/EntityReplayAuthority.java": "396943b1101c42106c02d557d89b8fc554dc8629a52016e05a57ac0656f13035",
-      "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "d6ec102610a9b7e26dfde1348c72035d69563714c4c771935733175c8f7b4de8",
-      "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "8856bd0b7b92aac6f9c2c989500d9f40c79a0a596a2dd9d7590c54b0651ddeaa",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/replay/EntityReplayAuthority.java": "1c8ff37b6fb2257deeb0009b1c6984ff6d418825ddad38ee20dc27fa87164f4b",
+      "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "8f5ceeb957fa7673b0ac71e9147c8444de01529c57bde65809a5ae65930b1130",
+      "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "17c17b2d639b985c427f431a4958a9909f6a81b5dfc88883798bfb0c62707ca4",
       "tools/run_morrow_disposable_paper.py": "ae476efab36e94355ee002cb9fe9664c91d571f636f85fa9ddee2a48d90614dc",
-      "tools/run_morrow_p0_rehearsal.py": "aa86c771115b5d54ad43e92fd9ee46c1a5002bddf45f23406a7993fdd722073d"
+      "tools/run_morrow_p0_rehearsal.py": "b4ea82063431edb52712456d55debb08efe8ca721efda06120c59b609c1fc2ef"
     },
-    "set_sha256": "96951279c59c8001314993cf5b85762999b68ba4367ceb5539db4a985c21cf56"
+    "set_sha256": "0a6fbd2f3e58ea333d06902de7f83525e3145985d4c8115f59d576ee85fa5d7a"
   },
   "bootstrap_tree_sha256": {
     "cache": "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a",

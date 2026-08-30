@@ -125,7 +125,9 @@ rehearsals are complete. Items 4–6 begin only when those gates have installed 
     rehearsal config. Automated authority lane complete; retained bundle:
     `morrow/rehearsal/receipts/p0-item10-fa1b80b`. The actual disposable Paper lifecycle is proven by
     `morrow/rehearsal/runtime/p0-paper-c40f916/paper-runtime-receipt.json`; graphical-client lanes remain
-    explicitly required in the launch matrix.
+    explicitly required in the launch matrix. A create-only run packet, independent-observer protocol,
+    and media-plus-runtime validator now live in `morrow/rehearsal/CLIENT-REHEARSAL.md` and
+    `tools/check_morrow_client_rehearsal.py`.
 
 ### Precise next boundary — human-client and isolated-service rehearsal only
 
@@ -136,6 +138,11 @@ native-dialog input, resource-pack decline, audio-disabled cues, full-inventory 
 one-/two-/six-player cleanup, and pacing without operator narration. After that, P1 may create an
 isolated database target plus authenticated browser and disposable Discord worker/guild receipts. Do not
 expand Acts 3–7, enable production, or mutate live services, data, or worlds at this boundary.
+
+The 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
+with `SetIsBorderRequired failed: No such interface supported (0x80004002)` and exposed no accessibility
+tree or focused element. No blind click was made; the disposable Paper server then closed cleanly. The
+machine receipt is retained under `morrow/rehearsal/client-attempts` and is explicitly `unproven`.
 
 ### P1 — Safe database rehearsal
 
@@ -158,8 +165,9 @@ and factual truth. No three consecutive investigations may lead with the same me
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green, but no graphical client was
-  available. Recovery Room 04, the Morrow display body, Paper dialogs, M02 Static Restore, and M03/M04
-  Entity Replay still require live-client visual and interaction rehearsal. The Copperline reboot route requires an
+  observable through the Windows capture helper. Recovery Room 04, the Morrow display body, Paper
+  dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
+  rehearsal. The Copperline reboot route requires an
   isolated database migration/projector rehearsal and authenticated browser rehearsal. The Discord
   reboot flow likewise requires the proposal to become an isolated migration plus a disposable guild/
   worker rehearsal; its shipped feature gate remains false.

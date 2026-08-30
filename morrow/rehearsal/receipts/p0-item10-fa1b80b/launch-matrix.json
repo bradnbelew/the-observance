@@ -21,6 +21,21 @@
       "status": "proven_runtime"
     }
   ],
+  "human_client_evidence": {
+    "checker": "tools/check_morrow_client_rehearsal.py",
+    "checker_sha256": "b0461b0878d2c186cbf321b7e8481c71fd0202980ee9a2184eb4eb78e125024d",
+    "gate": "required",
+    "generator": "tools/new_morrow_client_rehearsal.py",
+    "generator_sha256": "4ddd78b435f124e79a3fa275c8b8fb1762d2fc2b14f0c782fb7ccbe4bde8064c",
+    "latest_attempt": "morrow/rehearsal/client-attempts/2026-08-30-launcher-capture-unavailable.json",
+    "latest_attempt_sha256": "35337916c8cb93bf17bc46c31af15c05b5240e12d6cd45226f0f3f41ff153732",
+    "latest_attempt_status": "unproven",
+    "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
+    "protocol": "morrow/rehearsal/CLIENT-REHEARSAL.md",
+    "protocol_sha256": "fe7f36aec1adfa00545203ba1c6ae9d159be658bbe05b9494abad6933c8d76fe",
+    "selftest": "tools/test_morrow_client_rehearsal.py",
+    "selftest_sha256": "2bc22838cb832948ec4205868bd1a61ca74b1db1e3635e60cf0416095932a53a"
+  },
   "human_client_required": [
     {
       "lane": "minecraft_visual_entity_interpolation_and_authored_pose",

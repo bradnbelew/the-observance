@@ -204,6 +204,19 @@ def validate() -> None:
     require(len(matrix["human_client_required"]) == 6
             and all(row["status"] == "required" for row in matrix["human_client_required"]),
             "client-only evidence was misrepresented as automated proof")
+    client = matrix["human_client_evidence"]
+    require(client["gate"] == "required" and client["latest_attempt_status"] == "unproven",
+            "client evidence gate was silently advanced")
+    for key in ("protocol", "generator", "checker", "selftest", "latest_attempt"):
+        path = ROOT / client[key]
+        require(path.is_file() and client[f"{key}_sha256"] == sha(path),
+                f"client evidence artifact drifted: {key}")
+    attempt = load(ROOT / client["latest_attempt"])
+    require(attempt["client_lane_status"] == "unproven"
+            and attempt["no_blind_input"] is True
+            and attempt["production_contacted"] is False
+            and attempt["server"]["clean_shutdown"] is True,
+            "failed client attempt was misrepresented")
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
 

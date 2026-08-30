@@ -16,5 +16,7 @@ SHA-256 set of all exercised authorities. It refuses non-loopback network access
 byte-for-byte deterministic at the retained timestamp.
 
 The `launch-matrix.json` receipt is authoritative about proof limits. A headless contract result is
-not a substitute for an actual Paper boot or a graphical client observation. Those lanes remain
-required until pinned local artifacts and human-client receipts exist.
+not a substitute for an actual Paper boot or a graphical client observation. The Paper lane now has
+an actual runtime receipt. The six graphical lanes remain required and use the create-only protocol
+in `CLIENT-REHEARSAL.md`; its validator refuses screenshots or prose without matching journal, world,
+inventory, cleanup, and complete server-lifecycle evidence.

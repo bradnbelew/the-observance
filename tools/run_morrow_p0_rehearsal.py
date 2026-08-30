@@ -532,6 +532,12 @@ def paper_lane(args: argparse.Namespace, binding: dict[str, Any]) -> dict[str, A
 
 
 def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
+    client_attempt = ROOT / "morrow" / "rehearsal" / "client-attempts" / \
+        "2026-08-30-launcher-capture-unavailable.json"
+    client_protocol = ROOT / "morrow" / "rehearsal" / "CLIENT-REHEARSAL.md"
+    client_generator = ROOT / "tools" / "new_morrow_client_rehearsal.py"
+    client_checker = ROOT / "tools" / "check_morrow_client_rehearsal.py"
+    client_selftest = ROOT / "tools" / "test_morrow_client_rehearsal.py"
     return {
         "automated": [
             {"lane": "contract_and_authority", "status": "proven_headless"},
@@ -549,6 +555,21 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             {"lane": "full_inventory_safe_spawn_exit_for_1_2_6", "status": "required"},
             {"lane": "sixty_to_ninety_minute_pacing_without_operator_narration", "status": "required"},
         ],
+        "human_client_evidence": {
+            "gate": "required",
+            "protocol": str(client_protocol.relative_to(ROOT)).replace("\\", "/"),
+            "protocol_sha256": sha256_file(client_protocol),
+            "generator": str(client_generator.relative_to(ROOT)).replace("\\", "/"),
+            "generator_sha256": sha256_file(client_generator),
+            "checker": str(client_checker.relative_to(ROOT)).replace("\\", "/"),
+            "checker_sha256": sha256_file(client_checker),
+            "selftest": str(client_selftest.relative_to(ROOT)).replace("\\", "/"),
+            "selftest_sha256": sha256_file(client_selftest),
+            "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
+            "latest_attempt_sha256": sha256_file(client_attempt),
+            "latest_attempt_status": "unproven",
+            "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
+        },
         "live_services_required": [
             {"lane": "disposable_supabase_rls_concurrency_and_recovery", "status": "required"},
             {"lane": "authenticated_browser_case_and_ticket_projection", "status": "required"},

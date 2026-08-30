@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `19ad0b8333e7609eb9016b5106099c5042dcb12491a64f387e496757a40460e5`
+Bundle SHA-256: `b6f5b87fefbeb3659f0151ec647d458ec48526f1805e6e71f958391d42dd7477`
 
 ## Proven automatically
 
@@ -46,6 +46,12 @@ Bundle SHA-256: `19ad0b8333e7609eb9016b5106099c5042dcb12491a64f387e496757a40460e
 No graphical Minecraft client was automated. Entity interpolation, native-dialog interaction,
 resource-pack-decline parity, audio-disabled parity, full-inventory route experience, one-/two-/six-player
 physical cleanup, and 60–90 minute pacing without operator narration still require human-client receipts.
+The installed Microsoft launcher did open during a loopback-only attempt on 2026-08-30, but Windows
+returned `SetIsBorderRequired failed: No such interface supported (0x80004002)` for both capture
+attempts and exposed no accessibility tree or focused element. No blind input was sent. Paper then
+stopped cleanly with `MORROW_RUNTIME_CLOSED`. That unavailable result is retained under
+`client-attempts`; `CLIENT-REHEARSAL.md` and the bound generator/checker now define the exact evidence
+required for a later real client pass.
 
 The database schema remains a proposal. An isolated database target, authenticated browser session,
 and disposable Discord guild/worker were not available, so live RLS/concurrency, browser projection,

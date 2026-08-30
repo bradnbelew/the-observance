@@ -1,0 +1,26 @@
+{
+  "attempted_at": "2026-08-30T13:14:07-05:00",
+  "client_lane_status": "unproven",
+  "computer_use": {
+    "accessibility_document": null,
+    "accessibility_focused_element": null,
+    "accessibility_tree": null,
+    "capture_error": "SetIsBorderRequired failed: No such interface supported (0x80004002)",
+    "launcher_opened": true,
+    "launcher_window_title": "Minecraft Launcher",
+    "recovery_attempted": true,
+    "screen_capture_available": false
+  },
+  "no_blind_input": true,
+  "production_contacted": false,
+  "result": "blocked_by_unobservable_launcher_ui",
+  "server": {
+    "address": "127.0.0.1:25589",
+    "clean_shutdown": true,
+    "morrow_runtime_closed": true,
+    "morrow_runtime_ready": true,
+    "paper_build": 132,
+    "version": "1.21.11"
+  },
+  "source_commit": "89b9108fd5d66ee58c9770d7ba6a6f97a4c13991"
+}
