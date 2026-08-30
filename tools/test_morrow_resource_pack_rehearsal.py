@@ -68,6 +68,14 @@ def test_server_policies(root: Path) -> None:
         assert values.get("acceptTextures") == expected
 
 
+def test_windows_option_bytes(root: Path) -> None:
+    path = root / "options.txt"
+    lines = ["autoJump:false", "fullscreen:false", "narrator:0", "onboardAccessibility:false"]
+    path.write_bytes(("\r\n".join(lines) + "\r\n").encode("utf-8"))
+    assert rehearsal.paper_harness.sha256(path) == \
+        "2c0ac1089e3faea54179243291bc99970a6ab7a819cc8d4464efa03eadb116a7"
+
+
 def test_config_binding(root: Path) -> None:
     target = root / "target"
     config = target / "plugins" / "Observance" / "config.yml"
@@ -120,6 +128,7 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="morrow-pack-selftest-") as temporary:
         root = Path(temporary)
         test_server_policies(root)
+        test_windows_option_bytes(root)
         test_config_binding(root)
         test_pack_server(root)
     print("MORROW RESOURCE PACK REHEARSAL SELFTEST: PASS policies=3 nbt=uncompressed loopback_get=1")

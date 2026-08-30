@@ -276,7 +276,7 @@ def main() -> None:
             if client_data["accessibility_profile"]["audio_disabled"]:
                 option_lines.extend(
                     f"soundCategory_{category}:0.0" for category in client_fixture.SOUND_CATEGORIES)
-            paper_harness.write_text(launch_options, "\n".join(option_lines) + "\n")
+            launch_options.write_bytes(("\r\n".join(option_lines) + "\r\n").encode("utf-8"))
             client_fixture.write_server_list(
                 launch_servers, client_data["server"], client_data["server_resource_pack_policy"])
             require(paper_harness.sha256(launch_options)
