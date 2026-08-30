@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `6db22ce17359ad254012b3459b49d220a0c21f5a62c5bac37caf933aaf8adb12`
+Bundle SHA-256: `bf86d50c0d31084dc485bb434602658a41bff30c6e43bbcb68ddbcbc3b531783`
 
 ## Proven automatically
 
@@ -73,7 +73,9 @@ proves anonymous withholding, owner-only RLS, checksum and handoff receipts, wro
 all six Act 1–2 ticket cards. The automatic database projector subsequently applied nine ordered events
 to both linked players, kept actor receipts private, leaked no raw payload, rejected wrong/stale workers,
 reclaimed an expired lease, and scheduled bounded retry. The browser lane remains partial only because
-the checked-in JavaScript service-role transport and production-shaped magic-link delivery have not run.
+production-shaped magic-link delivery has not run. The primary delivery transport is no longer the
+Node fallback: a private Supabase Cron job automatically applied all nine events in its ten-second
+window, wrote a payload-free run receipt, reported healthy, disabled cleanly, and did not run again.
 A disposable Discord guild/worker remains unproven. No production system was contacted or enabled.
 
 The actual runtime receipt and logs are retained under `runtime/p0-paper-c40f916`; the

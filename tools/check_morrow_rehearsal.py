@@ -232,6 +232,10 @@ def validate() -> None:
             and database_receipt_path.is_file()
             and database_lane["receipt_sha256"] == sha(database_receipt_path),
             "launch matrix omits or drifts isolated Supabase proof")
+    cron_receipt_path = ROOT / database_lane["scheduler_receipt"]
+    require(cron_receipt_path.is_file()
+            and database_lane["scheduler_receipt_sha256"] == sha(cron_receipt_path),
+            "launch matrix omits or drifts database-native scheduler proof")
     database_receipt = load(database_receipt_path)
     require(database_receipt["status"] == "pass"
             and database_receipt["project"]["production_contacted"] is False
@@ -246,6 +250,18 @@ def validate() -> None:
             and database_receipt["advisors"]["morrow_unindexed_foreign_key_count"] == 0
             and database_receipt["production_enablement"] == "blocked",
             "isolated Supabase receipt overclaims or is incomplete")
+    cron_receipt = load(cron_receipt_path)
+    require(cron_receipt["status"] == "pass"
+            and cron_receipt["project"]["production_contacted"] is False
+            and cron_receipt["project"]["final_state"] == "paused"
+            and cron_receipt["scheduler"]["schedule_created"] is True
+            and cron_receipt["scheduler"]["schedule_removed"] is True
+            and cron_receipt["scheduler"]["active_jobs_after_disable"] == 0
+            and cron_receipt["automatic_success"]["applied_events"] == 9
+            and cron_receipt["automatic_success"]["raw_payload_leaks"] == 0
+            and cron_receipt["automatic_failure_and_recovery"]["retry_applied"] is True
+            and cron_receipt["production_enablement"] == "blocked",
+            "database-native scheduler receipt overclaims or is incomplete")
     browser_lane = next(row for row in matrix["live_services_required"]
                         if row["lane"] == "authenticated_browser_case_and_ticket_projection")
     browser_receipt_path = ROOT / browser_lane["partial_receipt"]
@@ -254,12 +270,14 @@ def validate() -> None:
             and browser_lane["partial_receipt_sha256"] == sha(browser_receipt_path),
             "launch matrix omitted or overclaimed partial authenticated-browser evidence")
     browser_receipt = load(browser_receipt_path)
-    require(browser_receipt["status"] == "partial_service_transport_and_magic_link_delivery"
+    require(browser_receipt["status"] == "partial_magic_link_delivery"
             and browser_receipt["privacy"]["anonymous_case_material_withheld"] is True
             and browser_receipt["privacy"]["other_player_projection_leaked"] is False
             and browser_receipt["act0_browser_flow"]["wrong_handoff_token_event_rows"] == 0
             and browser_receipt["ticket_projection"]["rendered_update_count"] == 6
             and browser_receipt["ticket_projection"]["automatic_database_projector_proven"] is True
+            and browser_receipt["ticket_projection"]["primary_projection_transport"]
+                == "database_native_supabase_cron"
             and browser_receipt["ticket_projection"]["javascript_service_role_transport_live_run"] is False
             and browser_receipt["production_enablement"] == "blocked",
             "partial authenticated-browser receipt overclaims or is incomplete")

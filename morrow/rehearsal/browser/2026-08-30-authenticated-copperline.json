@@ -1,5 +1,5 @@
 {
-  "status": "partial_service_transport_and_magic_link_delivery",
+  "status": "partial_magic_link_delivery",
   "lane": "authenticated_browser_case_and_ticket_projection",
   "completed_at": "2026-08-30T20:41:00Z",
   "scope": "local Next.js server plus isolated Supabase validation project; never production",
@@ -79,12 +79,14 @@
       "group"
     ],
     "future_spoilers_rendered": false,
-    "projection_driver": "browser observation used direct isolated SQL; the automatic database projector was then live-rehearsed against a fresh ordered fixture",
+    "projection_driver": "browser observation used direct isolated SQL; the primary database-native Supabase Cron projector was then live-rehearsed against a fresh ordered fixture",
+    "primary_projection_transport": "database_native_supabase_cron",
     "automatic_database_projector_proven": true,
     "javascript_service_role_transport_live_run": false
   },
   "database_projector_rehearsal": {
-    "receipt": "morrow/rehearsal/database/2026-08-30-isolated-supabase.json",
+    "foundation_receipt": "morrow/rehearsal/database/2026-08-30-isolated-supabase.json",
+    "scheduler_receipt": "morrow/rehearsal/database/2026-08-30-supabase-cron-projector.json",
     "ordered_events_applied": 9,
     "linked_players_projected": 2,
     "wrong_and_stale_workers_refused": true,
@@ -123,6 +125,6 @@
       "sha256": "db1a73c598a33df7f58b391b69659921cb67a85abae639e6063e454e9d983f8e"
     }
   },
-  "remaining_gate": "run the checked-in JavaScript projector with an isolated service-role secret and exercise production-shaped magic-link delivery",
+  "remaining_gate": "exercise production-shaped magic-link delivery",
   "production_enablement": "blocked"
 }

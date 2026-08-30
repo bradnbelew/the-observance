@@ -1263,6 +1263,228 @@ revoke all on function public.morrow_fail_copperline_projection(uuid,text,text,t
 grant execute on function public.morrow_fail_copperline_projection(uuid,text,text,text)
   to service_role;
 
+create table if not exists morrow_private.projector_run_receipts (
+  run_id uuid primary key default gen_random_uuid(),
+  release_id text not null check (release_id ~ '^[a-z0-9][a-z0-9._-]{6,79}$'),
+  worker_id uuid not null,
+  claimed_count integer not null check (claimed_count > 0),
+  applied_count integer not null check (applied_count >= 0),
+  failed_count integer not null check (failed_count >= 0),
+  status text not null check (status in ('applied','partial_failure','failed')),
+  last_error_code text,
+  started_at timestamptz not null,
+  finished_at timestamptz not null default now(),
+  check (claimed_count = applied_count + failed_count),
+  check (finished_at >= started_at)
+);
+
+create index if not exists morrow_projector_run_release_time
+  on morrow_private.projector_run_receipts(release_id, finished_at desc);
+
+-- Primary production transport for Copperline projection. Supabase Cron invokes this private
+-- database function directly, so no service-role secret crosses an HTTP boundary. Each invocation
+-- owns a fresh lease identity, processes claims in canonical order, records only operational counts,
+-- and converts an isolated apply error into the existing bounded retry/dead-letter path.
+create or replace function morrow_private.run_copperline_projector(
+  p_release_id text,
+  p_limit integer default 25
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = morrow_private, public, extensions, pg_temp
+as $$
+declare
+  v_worker_id uuid := gen_random_uuid();
+  v_started_at timestamptz := clock_timestamp();
+  v_claim record;
+  v_claimed integer := 0;
+  v_applied integer := 0;
+  v_failed integer := 0;
+  v_applied_ok boolean;
+  v_failure_recorded boolean;
+  v_error_code text;
+  v_run_id uuid;
+  v_status text;
+begin
+  if p_release_id !~ '^[a-z0-9][a-z0-9._-]{6,79}$' or p_limit not between 1 and 50 then
+    raise exception 'Invalid Copperline projector binding' using errcode = '22023';
+  end if;
+  if not exists (
+    select 1 from morrow_private.campaigns campaign
+    where campaign.release_id = p_release_id and campaign.status in ('ready','running')
+  ) then
+    return jsonb_build_object(
+      'status','inactive_release','releaseId',p_release_id,'claimed',0,'applied',0,'failed',0
+    );
+  end if;
+
+  for v_claim in
+    select claim.event_id
+    from public.morrow_claim_copperline_projections(
+      v_worker_id::text, p_release_id, p_limit, 60
+    ) claim
+  loop
+    v_claimed := v_claimed + 1;
+    v_applied_ok := false;
+    v_error_code := null;
+    begin
+      v_applied_ok := public.morrow_apply_copperline_projection(
+        v_claim.event_id, v_worker_id::text, p_release_id
+      );
+    exception when others then
+      get stacked diagnostics v_error_code = returned_sqlstate;
+      v_applied_ok := false;
+    end;
+
+    if v_applied_ok then
+      v_applied := v_applied + 1;
+    else
+      v_error_code := coalesce(v_error_code, 'projection_refused');
+      v_failure_recorded := public.morrow_fail_copperline_projection(
+        v_claim.event_id, v_worker_id::text, p_release_id,
+        v_error_code
+      );
+      if not v_failure_recorded then
+        v_error_code := 'failure_receipt_refused';
+      end if;
+      v_failed := v_failed + 1;
+    end if;
+  end loop;
+
+  if v_claimed = 0 then
+    return jsonb_build_object(
+      'status','idle','releaseId',p_release_id,'claimed',0,'applied',0,'failed',0
+    );
+  end if;
+
+  v_status := case
+    when v_failed = 0 then 'applied'
+    when v_applied = 0 then 'failed'
+    else 'partial_failure'
+  end;
+  insert into morrow_private.projector_run_receipts(
+    release_id, worker_id, claimed_count, applied_count, failed_count,
+    status, last_error_code, started_at, finished_at
+  ) values (
+    p_release_id, v_worker_id, v_claimed, v_applied, v_failed,
+    v_status, v_error_code, v_started_at, clock_timestamp()
+  ) returning run_id into v_run_id;
+
+  return jsonb_build_object(
+    'status',v_status,'releaseId',p_release_id,'runId',v_run_id,
+    'claimed',v_claimed,'applied',v_applied,'failed',v_failed
+  );
+end;
+$$;
+
+revoke all on function morrow_private.run_copperline_projector(text,integer)
+  from public, anon, authenticated, service_role;
+
+create or replace function morrow_private.copperline_projector_health(p_release_id text)
+returns jsonb
+language sql
+stable
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+  with health as (
+    select
+      count(*) filter (where projection.status = 'queued') as queued_count,
+      count(*) filter (where projection.status = 'leased') as leased_count,
+      count(*) filter (where projection.status = 'failed') as failed_count,
+      count(*) filter (where projection.status = 'dead_letter') as dead_letter_count,
+      min(event.received_at) filter (
+        where projection.status in ('queued','leased','failed')
+      ) as oldest_pending_at
+    from morrow_private.event_projections projection
+    join morrow_private.events event on event.event_id = projection.event_id
+    where projection.surface = 'copperline' and event.release_id = p_release_id
+  )
+  select jsonb_build_object(
+    'status', case
+      when health.dead_letter_count > 0 then 'halt'
+      when health.failed_count > 0
+        or health.oldest_pending_at < now() - interval '2 minutes' then 'degraded'
+      else 'healthy'
+    end,
+    'releaseId', p_release_id,
+    'queued', health.queued_count,
+    'leased', health.leased_count,
+    'failed', health.failed_count,
+    'deadLetter', health.dead_letter_count,
+    'oldestPendingAt', health.oldest_pending_at,
+    'lastRun', (
+      select to_jsonb(receipt) - 'worker_id'
+      from morrow_private.projector_run_receipts receipt
+      where receipt.release_id = p_release_id
+      order by receipt.finished_at desc limit 1
+    )
+  ) from health;
+$$;
+
+revoke all on function morrow_private.copperline_projector_health(text)
+  from public, anon, authenticated, service_role;
+
+-- Schedule installation is deliberately separate from schema application. Only the database owner
+-- can call this private function, the pg_cron extension must already be enabled, and the exact release
+-- acknowledgement prevents a migration or preview deploy from turning the worker on implicitly.
+create or replace function morrow_private.configure_copperline_projector_schedule(
+  p_release_id text,
+  p_enabled boolean,
+  p_ack text
+)
+returns jsonb
+language plpgsql
+security invoker
+set search_path = morrow_private, public, extensions, pg_temp
+as $$
+declare
+  v_job_name text := 'morrow-copperline-' || substr(encode(digest(p_release_id, 'sha256'), 'hex'), 1, 16);
+  v_expected_ack text := case when p_enabled then 'enable:' else 'disable:' end
+    || 'copperline:' || p_release_id;
+  v_exists boolean := false;
+  v_job_id bigint;
+  v_command text;
+begin
+  if p_release_id !~ '^[a-z0-9][a-z0-9._-]{6,79}$' or p_ack is distinct from v_expected_ack then
+    raise exception 'Invalid Copperline schedule authorization' using errcode = '42501';
+  end if;
+  if to_regprocedure('cron.schedule(text,text,text)') is null then
+    if p_enabled then
+      raise exception 'Supabase Cron is not installed' using errcode = '55000';
+    end if;
+    return jsonb_build_object('status','disabled','jobName',v_job_name,'scheduler','absent');
+  end if;
+
+  execute 'select exists(select 1 from cron.job where jobname = $1)'
+    into v_exists using v_job_name;
+  if v_exists then
+    execute 'select cron.unschedule($1)' using v_job_name;
+  end if;
+  if not p_enabled then
+    return jsonb_build_object('status','disabled','jobName',v_job_name);
+  end if;
+  if (select count(*) from morrow_private.campaigns campaign
+      where campaign.release_id = p_release_id and campaign.status in ('ready','running')) <> 1 then
+    raise exception 'Schedule requires exactly one active release campaign' using errcode = '55000';
+  end if;
+
+  v_command := format(
+    'select morrow_private.run_copperline_projector(%L, 25);', p_release_id
+  );
+  execute 'select cron.schedule($1, $2, $3)'
+    into v_job_id using v_job_name, '10 seconds', v_command;
+  return jsonb_build_object(
+    'status','enabled','releaseId',p_release_id,'jobName',v_job_name,
+    'jobId',v_job_id,'interval','10 seconds'
+  );
+end;
+$$;
+
+revoke all on function morrow_private.configure_copperline_projector_schedule(text,boolean,text)
+  from public, anon, authenticated, service_role;
+
 -- Cover every non-primary-key foreign-key path reported by the Supabase performance advisor.
 -- These indexes protect cascade/restrict checks and the event/identity joins used by the runtime.
 create index if not exists morrow_capability_decision_event_fk
@@ -1329,7 +1551,7 @@ begin
     'event_projections','discord_contradiction_flows','discord_contradiction_sessions',
     'discord_contradiction_votes','capability_grants','evidence_definitions','evidence_receipts',
     'dialogue_prompts','dialogue_responses','restoration_proposals','witness_anchors',
-    'replay_clips','media_assets','media_deliveries','director_actions'
+    'replay_clips','media_assets','media_deliveries','director_actions','projector_run_receipts'
   ] loop
     execute format('alter table morrow_private.%I enable row level security', table_name);
     execute format('revoke all on morrow_private.%I from public, anon, authenticated', table_name);

@@ -541,6 +541,8 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     offline_launcher = ROOT / "tools" / "run_morrow_offline_client.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
+    cron_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
+        "2026-08-30-supabase-cron-projector.json"
     browser_receipt = ROOT / "morrow" / "rehearsal" / "browser" / \
         "2026-08-30-authenticated-copperline.json"
     return {
@@ -584,13 +586,15 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
                 "status": "proven_isolated",
                 "receipt": str(database_receipt.relative_to(ROOT)).replace("\\", "/"),
                 "receipt_sha256": sha256_file(database_receipt),
+                "scheduler_receipt": str(cron_receipt.relative_to(ROOT)).replace("\\", "/"),
+                "scheduler_receipt_sha256": sha256_file(cron_receipt),
             },
             {
                 "lane": "authenticated_browser_case_and_ticket_projection",
                 "status": "required",
                 "partial_receipt": str(browser_receipt.relative_to(ROOT)).replace("\\", "/"),
                 "partial_receipt_sha256": sha256_file(browser_receipt),
-                "remaining": "service-role JavaScript projector transport and production-shaped magic-link delivery",
+                "remaining": "production-shaped magic-link delivery",
             },
             {"lane": "disposable_discord_gateway_private_delivery", "status": "required"},
         ],

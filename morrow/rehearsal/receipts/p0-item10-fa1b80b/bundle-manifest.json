@@ -19,20 +19,20 @@
       "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "8f5ceeb957fa7673b0ac71e9147c8444de01529c57bde65809a5ae65930b1130",
       "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "17c17b2d639b985c427f431a4958a9909f6a81b5dfc88883798bfb0c62707ca4",
       "tools/run_morrow_disposable_paper.py": "ae476efab36e94355ee002cb9fe9664c91d571f636f85fa9ddee2a48d90614dc",
-      "tools/run_morrow_p0_rehearsal.py": "dc9eec8e158d8ed51e15ffaeb2baf115a5c1184ced8622ccb129ccf615b33429"
+      "tools/run_morrow_p0_rehearsal.py": "2fb292fc88f3f3fb78860cdc047f03c9baf9b47002619472ebff74b645d5e24a"
     },
-    "set_sha256": "62f47acc2a43c71144b7ff8da1e6be5bf59993767e057605c5827b81c88e5a4b"
+    "set_sha256": "d848893690d98c02fd390e359cdb8739b48da65e770dc8bddfe7a2557dde2079"
   },
   "bundle_files": {
-    "automated-rehearsal.json": "e70ef5409c7d3111c856394b7c09a78f1cc36efb73e066d9205d1ec38f4791b2",
-    "cohort-1.json": "b7586be284f3faf3d575eb9bd3b0744c3017da40f838e8904e87522427d777c4",
-    "cohort-2.json": "c543ef98f650d31dc7cd767c02c29818aed31e789622f1279c07bb2568882885",
-    "cohort-6.json": "5220dcf97e37b90d1677fd1a283ddcdc6db7772019b4f6865e0e8f5614c2556e",
-    "launch-matrix.json": "41fa0794fb4226c5ce15e86d9246c0dceb274d8ac09e8e603691a711cae06f33",
+    "automated-rehearsal.json": "c03ce43a9463a0da660250e6b7c67e53b5fccc76c007f5fc9915810ad06839ae",
+    "cohort-1.json": "a19230d34d8ef46d4af5bae0ae9a7cba6210b2fa66732ad76cb34db2bf12be0d",
+    "cohort-2.json": "d8ccae61a7382592a01167cf905900fafdd60510e567ec9c517850c5c9933683",
+    "cohort-6.json": "a015c64c7ffad47fde0f90e1515387c2193a949d864b9234a8245b978628a9cf",
+    "launch-matrix.json": "62e95eca58e4497cbfff3911877c9199a5b3e1b69d31cf22cdf42c8eb6f1782d",
     "network-boundary.json": "f36171f575b0598cd5c368e636619cfcfe600f8b18ff9322d6fb2b61ede96531",
-    "paper-runtime.json": "3ac8bf2115e2467815a943f33b86ba705c68846925ca02f46996ce403e6d0e78"
+    "paper-runtime.json": "7cc57b2a601557a34947b76f502822bbf1017c6189e83c1ad2983ef29aabbed2"
   },
-  "bundle_sha256": "6db22ce17359ad254012b3459b49d220a0c21f5a62c5bac37caf933aaf8adb12",
+  "bundle_sha256": "bf86d50c0d31084dc485bb434602658a41bff30c6e43bbcb68ddbcbc3b531783",
   "generated_at": "2026-08-30T00:00:00Z",
   "release_id": "morrow.rehearsal.fa1b80b.p0-10.v1",
   "source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec",

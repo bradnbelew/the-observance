@@ -69,14 +69,16 @@
     {
       "lane": "disposable_supabase_rls_concurrency_and_recovery",
       "receipt": "morrow/rehearsal/database/2026-08-30-isolated-supabase.json",
-      "receipt_sha256": "997d3f3f96c56e813b65e1d995d01873405ec663434818ebe2daf291fc32a0c7",
+      "receipt_sha256": "983463eb3abdff498558207e22d01b86f07fbf3fb8dc93f4cabbc659498794ad",
+      "scheduler_receipt": "morrow/rehearsal/database/2026-08-30-supabase-cron-projector.json",
+      "scheduler_receipt_sha256": "5f86d668deed44efd6bf566be6ac0aee3ba265301c781c678f139741d5d8dfec",
       "status": "proven_isolated"
     },
     {
       "lane": "authenticated_browser_case_and_ticket_projection",
       "partial_receipt": "morrow/rehearsal/browser/2026-08-30-authenticated-copperline.json",
-      "partial_receipt_sha256": "4afc2f8a4cc73277f7f7e43c01ebeb925e71b2733cd59a2d3e05b4124649471c",
-      "remaining": "service-role JavaScript projector transport and production-shaped magic-link delivery",
+      "partial_receipt_sha256": "89c1c218e07e1e123a0ce8e3ac790b55782297e5c7b136397cb28466706d041b",
+      "remaining": "production-shaped magic-link delivery",
       "status": "required"
     },
     {

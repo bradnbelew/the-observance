@@ -1,0 +1,107 @@
+{
+  "status": "pass",
+  "lane": "database_native_copperline_scheduler",
+  "completed_at": "2026-08-30T21:00:00Z",
+  "scope": "isolated Supabase validation project; never production",
+  "project": {
+    "ref": "snmqaqlagwzptzqbaiws",
+    "name": "observance-validation-20260727",
+    "production_contacted": false,
+    "unrelated_active_project_untouched": true,
+    "final_state": "paused"
+  },
+  "architecture": {
+    "primary_transport": "Supabase Cron invokes a private Postgres function directly",
+    "http_service_role_secret_required": false,
+    "node_worker_role": "bounded operator fallback",
+    "official_references": [
+      "https://supabase.com/docs/guides/cron",
+      "https://supabase.com/docs/guides/functions/schedule-functions"
+    ]
+  },
+  "artifacts": {
+    "proposal": "morrow/db/schema-proposal.sql",
+    "proposal_sha256": "41013ae8e0a4905fd9fe16a45d1183eb0177951c20ef1204152cb84e490b6f66",
+    "migration": "supabase/migrations/20260830200157_morrow_reboot_foundation.sql",
+    "migration_sha256": "2e12e32c8b26c156e6f9d8bd55885b34484dc5ae2c1800b48ad607a56e15b374",
+    "migration_body_matches_proposal": true,
+    "migration_line_count": 1562,
+    "operations_runbook": "morrow/architecture/OPERATIONS.md",
+    "operations_runbook_sha256": "5b3aa08638dff2d1d1f42e5a39940d2d1bff85e6113aed776f892f1ae3d89c10",
+    "fallback_worker": "dashboard/scripts/morrow-copperline-projector.mjs",
+    "fallback_worker_sha256": "db1a73c598a33df7f58b391b69659921cb67a85abae639e6063e454e9d983f8e"
+  },
+  "restore_readiness": {
+    "finding": "database SQL accepted connections while project status was COMING_UP, then final restore replaced interim rehearsal objects",
+    "rule_added": "wait for authoritative ACTIVE_HEALTHY before migration, fixture, or schedule creation",
+    "rebuild_from_numbered_migration_after_active_healthy": "pass",
+    "schema_objects_read_back": true
+  },
+  "scheduler": {
+    "extension": "pg_cron",
+    "extension_version": "1.6.4",
+    "job_id": 1,
+    "job_name": "morrow-copperline-7ecbd44edf2040e1",
+    "interval": "10 seconds",
+    "release_id": "morrow.rehearsal.cron.v1",
+    "wrong_acknowledgement_left_no_job": true,
+    "exact_enable_acknowledgement_required": true,
+    "schedule_created": true,
+    "cron_success_rows_observed": 3,
+    "exact_disable_acknowledgement_required": true,
+    "schedule_removed": true,
+    "run_count_at_disable": 3,
+    "run_count_after_next_window": 3,
+    "active_jobs_after_disable": 0
+  },
+  "automatic_success": {
+    "queued_events": 9,
+    "applied_events": 9,
+    "linked_players": 2,
+    "exact_progress_rows": 2,
+    "successful_run_receipts": 1,
+    "other_player_receipt_rows": 0,
+    "raw_payload_leaks": 0,
+    "health_after_run": "healthy",
+    "dead_letter_rows": 0,
+    "oldest_pending_at": null
+  },
+  "automatic_failure_and_recovery": {
+    "missing_case_access_failed_closed": true,
+    "failed_outbox_status": "failed",
+    "bounded_backoff_scheduled": true,
+    "health_during_failure": "degraded",
+    "payload_free_error_code": "projection_refused",
+    "case_access_repaired": true,
+    "retry_applied": true,
+    "attempts_after_recovery": 2,
+    "final_health": "healthy"
+  },
+  "authorization": {
+    "anon_runner_execute": false,
+    "authenticated_runner_execute": false,
+    "service_role_runner_execute": false,
+    "anon_schedule_execute": false,
+    "authenticated_schedule_execute": false,
+    "service_role_schedule_execute": false,
+    "database_owner_only": true
+  },
+  "rollback": {
+    "transactional_destructive_shape": "pass",
+    "run_receipts_restored": true,
+    "runner_restored": true,
+    "health_function_restored": true,
+    "scheduler_configuration_function_restored": true,
+    "active_jobs_after_rollback_test": 0
+  },
+  "advisors": {
+    "morrow_security_error_count": 0,
+    "morrow_security_warning_count": 1,
+    "accepted_warning": "the existing authenticated Copperline SECURITY DEFINER mutation is intentional and independently ownership/payload/token checked",
+    "projector_warning_count": 0,
+    "morrow_unindexed_foreign_key_count": 0,
+    "private_rls_without_policy_info_count": 21
+  },
+  "remaining_gate": "production-shaped passwordless email delivery",
+  "production_enablement": "blocked"
+}

@@ -163,6 +163,12 @@ for (const required of ['morrow_claim_copperline_projections', 'morrow_apply_cop
   "grant select, insert, update, delete on public.morrow_player_projection to service_role"]) {
   assert.ok(sql.includes(required), `Copperline projector SQL lacks ${required}`);
 }
+for (const required of ['projector_run_receipts', 'run_copperline_projector',
+  'copperline_projector_health', 'configure_copperline_projector_schedule',
+  "'10 seconds'", "'enable:'", "'disable:'", "to_regprocedure('cron.schedule(text,text,text)')",
+  'from public, anon, authenticated, service_role']) {
+  assert.ok(sql.includes(required), `database-native Copperline scheduler lacks ${required}`);
+}
 const copperlineRpc = sql.split('create or replace function public.morrow_record_copperline_event', 2)[1]
   .split('create table if not exists morrow_private.capability_grants', 2)[0];
 const duplicateBranch = copperlineRpc.split('if v_existing.event_key', 2)[1]

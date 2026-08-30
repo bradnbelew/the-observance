@@ -19,9 +19,9 @@
       "plugin/src/main/java/com/observance/watcher/morrow/room04/staticrestore/StaticRestorePredicate.java": "8f5ceeb957fa7673b0ac71e9147c8444de01529c57bde65809a5ae65930b1130",
       "plugin/src/test/java/com/observance/watcher/morrow/rehearsal/MorrowVerticalSliceRehearsalSelfTest.java": "17c17b2d639b985c427f431a4958a9909f6a81b5dfc88883798bfb0c62707ca4",
       "tools/run_morrow_disposable_paper.py": "ae476efab36e94355ee002cb9fe9664c91d571f636f85fa9ddee2a48d90614dc",
-      "tools/run_morrow_p0_rehearsal.py": "dc9eec8e158d8ed51e15ffaeb2baf115a5c1184ced8622ccb129ccf615b33429"
+      "tools/run_morrow_p0_rehearsal.py": "2fb292fc88f3f3fb78860cdc047f03c9baf9b47002619472ebff74b645d5e24a"
     },
-    "set_sha256": "62f47acc2a43c71144b7ff8da1e6be5bf59993767e057605c5827b81c88e5a4b"
+    "set_sha256": "d848893690d98c02fd390e359cdb8739b48da65e770dc8bddfe7a2557dde2079"
   },
   "bootstrap_tree_sha256": {
     "cache": "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a",

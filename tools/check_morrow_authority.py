@@ -32,6 +32,7 @@ PLUGIN_STATIC_RESTORE = PLUGIN_MORROW / "room04" / "staticrestore"
 PLUGIN_ENTITY_REPLAY = PLUGIN_MORROW / "room04" / "replay"
 MORROW_MIGRATION = ROOT / "supabase" / "migrations" / "20260830200157_morrow_reboot_foundation.sql"
 MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
+MORROW_CRON_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-supabase-cron-projector.json"
 MORROW_BROWSER_RECEIPT = MORROW / "rehearsal" / "browser" / "2026-08-30-authenticated-copperline.json"
 
 
@@ -447,16 +448,39 @@ def main() -> int:
                 and database_receipt["project"]["production_contacted"] is False
                 and database_receipt["production_enablement"] == "blocked",
                 "isolated database receipt overclaims its scope")
+        cron_receipt = json.loads(MORROW_CRON_RECEIPT.read_text(encoding="utf-8"))
+        for artifact_key in ("proposal", "migration", "operations_runbook", "fallback_worker"):
+            artifact = cron_receipt["artifacts"]
+            path_key = artifact_key
+            hash_key = f"{artifact_key}_sha256"
+            artifact_path = ROOT / artifact[path_key]
+            require(artifact_path.is_file()
+                    and artifact[hash_key] == hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+                    f"Supabase Cron receipt artifact drifted: {artifact[path_key]}")
+        require(cron_receipt["status"] == "pass"
+                and cron_receipt["architecture"]["primary_transport"].startswith("Supabase Cron")
+                and cron_receipt["architecture"]["http_service_role_secret_required"] is False
+                and cron_receipt["scheduler"]["schedule_created"] is True
+                and cron_receipt["scheduler"]["schedule_removed"] is True
+                and cron_receipt["scheduler"]["active_jobs_after_disable"] == 0
+                and cron_receipt["automatic_success"]["applied_events"] == 9
+                and cron_receipt["automatic_success"]["raw_payload_leaks"] == 0
+                and cron_receipt["automatic_failure_and_recovery"]["retry_applied"] is True
+                and cron_receipt["production_enablement"] == "blocked",
+                "database-native Copperline scheduler receipt overclaims or is incomplete")
         browser_receipt = json.loads(MORROW_BROWSER_RECEIPT.read_text(encoding="utf-8"))
         for artifact in browser_receipt["artifacts"].values():
             artifact_path = ROOT / artifact["path"]
             require(artifact_path.is_file()
                     and artifact["sha256"] == hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
                     f"authenticated browser receipt artifact drifted: {artifact['path']}")
-        require(browser_receipt["status"] == "partial_service_transport_and_magic_link_delivery"
+        require(browser_receipt["status"] == "partial_magic_link_delivery"
                 and browser_receipt["ticket_projection"]["automatic_database_projector_proven"] is True
+                and browser_receipt["ticket_projection"]["primary_projection_transport"]
+                    == "database_native_supabase_cron"
                 and browser_receipt["ticket_projection"]["javascript_service_role_transport_live_run"] is False
                 and database_receipt["copperline_projection_worker"]["database_rpc_live_rehearsed"] is True
+                and database_receipt["copperline_projection_worker"]["database_native_schedule_live_run"] is True
                 and database_receipt["copperline_projection_worker"]["raw_payload_leaks"] == 0
                 and database_receipt["copperline_projection_worker"]["other_player_receipt_rows"] == 0
                 and browser_receipt["production_enablement"] == "blocked",

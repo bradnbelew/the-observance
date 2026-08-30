@@ -126,9 +126,11 @@ intentional SECURITY DEFINER RLS bridge with independent `auth.uid()` and author
 The service-only Copperline projector was also live-rehearsed with nine ordered events and two linked
 players. It rejects wrong/stale workers and incomplete case envelopes, reclaims expired leases,
 schedules bounded retries, derives spoiler-filtered progress only from applied-or-current events, and
-never copies raw event payloads into the public projection. The checked-in JavaScript transport remains
-disabled without exact target/release authorization; production additionally requires the explicit
-`MORROW_PROJECTOR_PRODUCTION_ACK=apply:<release>:<project-ref>` acknowledgement.
+never copies raw event payloads into the public projection. The primary transport is now a private
+database runner invoked every ten seconds by Supabase Cron; it needs no HTTP service-role secret and
+records payload-free run receipts plus health. Schema application does not enable the job. Activation
+requires an exact release acknowledgement through the database-owner-only configuration function.
+The checked-in JavaScript worker remains a fail-closed operator fallback.
 
 Before production:
 

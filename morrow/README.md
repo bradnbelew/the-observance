@@ -29,6 +29,9 @@ bindings.
 9. `architecture/MINECRAFT-UX.md` — exact in-game presentation and interaction rules
 10. `architecture/CAPABILITY-MATRIX.md` — researched feasibility decisions and rejected approaches
 
+Deployment and incident procedure lives in `architecture/OPERATIONS.md`. It implements the authority
+above but does not override canon, progression, or surface contracts.
+
 If two files disagree, the earlier item wins. A change to an earlier authority must update every
 dependent contract in the same commit.
 
@@ -56,4 +59,3 @@ Supabase/website/Discord outage, and never require an operator to explain around
   actions through an LLM.
 - Only behavior knowingly performed inside the ARG may be reflected back to players.
 - Critical progress is local-first, append-only, idempotent, restart-safe, and auditable.
-

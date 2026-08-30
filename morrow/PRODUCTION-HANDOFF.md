@@ -82,8 +82,9 @@ Implemented and verified:
   required complete graphical-client and remaining service receipts. A real dummy offline 1.21.11 client
   now proves bounded safe entry without suffocation, and the isolated Supabase RLS/concurrency/rollback
   lane is proven. The authenticated browser now proves owner-only reads, Act 0 writes, wrong-token
-  refusal, and six ticket cards with a manual isolated projection driver. Visual capture, automatic
-  Copperline projection/magic-link delivery, and Discord Gateway delivery remain unproven, and every
+  refusal, and six ticket cards. A private Supabase Cron schedule now proves automatic ten-second
+  Copperline projection, health/run receipts, failure recovery, and clean disable. Visual capture,
+  production-shaped magic-link delivery, and Discord Gateway delivery remain unproven, and every
   production gate remains disabled
 
 Verified commands:
@@ -147,10 +148,10 @@ the slice playable. A human client must complete every `required` lane in
 `morrow/rehearsal/receipts/p0-item10-fa1b80b/launch-matrix.json`, including visual interpolation,
 native-dialog input, resource-pack decline, audio-disabled cues, full-inventory safe spawn/exit,
 one-/two-/six-player cleanup, and pacing without operator narration. The database lane is now proven on
-a paused validation project. The automatic Copperline database worker is live-proven for ordered
-two-player delivery, private actor receipts, retry/reclaim, and payload isolation. Its checked-in
-JavaScript service-role transport, production-shaped magic-link delivery, and a disposable Discord
-worker/guild receipt remain.
+a paused validation project. The automatic Copperline database worker and real Supabase Cron schedule
+are live-proven for ordered two-player delivery, private actor receipts, retry/reclaim, payload
+isolation, payload-free health, and clean disable. Production-shaped magic-link delivery and a
+disposable Discord worker/guild receipt remain; the JavaScript worker is only an operator fallback.
 Do not expand Acts 3–7, enable production, or mutate production services, data, or worlds at this boundary.
 
 The first 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
@@ -199,8 +200,7 @@ and factual truth. No three consecutive investigations may lead with the same me
   connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
   helper. The Morrow display body, Paper
   dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
-  rehearsal. The Copperline reboot route still requires a live run of the checked-in service-role
-  projector transport and a production-shaped magic-link rehearsal. The Discord
+  rehearsal. The Copperline reboot route still requires a production-shaped magic-link rehearsal. The Discord
   reboot flow requires a disposable guild/worker rehearsal; its shipped feature gate remains false.
 - `morrow-reboot.enabled` stays false until all remaining human-client and isolated-service receipts pass.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.

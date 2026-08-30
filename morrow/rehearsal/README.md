@@ -32,7 +32,8 @@ production application remains blocked.
 The authenticated Copperline browser now has a retained partial receipt at
 `browser/2026-08-30-authenticated-copperline.json`. It proves anonymous withholding, owner-only RLS,
 real checksum and handoff mutations, wrong-token refusal, outbox creation, six rendered Act 1–2
-updates, and synthetic-auth cleanup. The automatic database projector now has a separate live isolated
-proof covering ordered leases, two-player projection, retry/reclaim, worker ownership, and payload
-privacy. The lane remains required until the checked-in JavaScript transport runs with an isolated
-service-role secret and production-shaped magic-link delivery is rehearsed.
+updates, and synthetic-auth cleanup. The automatic database projector now has separate live isolated
+proofs covering ordered leases, two-player projection, retry/reclaim, worker ownership, payload
+privacy, and an actual ten-second Supabase Cron schedule. The schedule ran, recorded health/run
+receipts, disabled transactionally, and produced no later invocation. The Node worker is now only a
+fallback; the browser lane remains required solely for production-shaped magic-link delivery.

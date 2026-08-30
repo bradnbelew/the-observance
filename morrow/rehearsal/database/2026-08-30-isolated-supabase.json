@@ -1,7 +1,7 @@
 {
   "status": "pass",
   "lane": "disposable_supabase_rls_concurrency_and_recovery",
-  "completed_at": "2026-08-30T20:41:00Z",
+  "completed_at": "2026-08-30T21:00:00Z",
   "scope": "isolated restored validation project; never production",
   "project": {
     "ref": "snmqaqlagwzptzqbaiws",
@@ -19,12 +19,13 @@
   },
   "artifacts": {
     "proposal": "morrow/db/schema-proposal.sql",
-    "proposal_sha256": "0289f5e70e1bb22e57572252c8a3795e72071a33406265d6355cc2e2d05cdbac",
+    "proposal_sha256": "41013ae8e0a4905fd9fe16a45d1183eb0177951c20ef1204152cb84e490b6f66",
     "migration": "supabase/migrations/20260830200157_morrow_reboot_foundation.sql",
-    "migration_sha256": "83d662bd8d6c146649899fb193d87905e606fcd2f653ae101f0d4ebd75d76749",
+    "migration_sha256": "2e12e32c8b26c156e6f9d8bd55885b34484dc5ae2c1800b48ad607a56e15b374",
     "migration_generated_by_cli": true,
     "migration_body_matches_rehearsed_proposal": true,
-    "line_count": 1340
+    "line_count": 1562,
+    "database_native_scheduler_receipt": "morrow/rehearsal/database/2026-08-30-supabase-cron-projector.json"
   },
   "schema_iteration": {
     "first_attempt": "rolled_back_on_sql_error",
@@ -73,8 +74,10 @@
   },
   "copperline_projection_worker": {
     "database_rpc_live_rehearsed": true,
+    "primary_transport": "database_native_supabase_cron",
+    "database_native_schedule_live_run": true,
     "javascript_service_role_transport_live_run": false,
-    "javascript_transport_reason": "the connector does not expose a service-role secret; the checked-in worker was instead verified by static tests and a fail-closed no-authorization run",
+    "javascript_transport_reason": "the checked-in Node worker is a fallback; routine delivery uses the private database runner and requires no HTTP service-role secret",
     "ordered_events_claimed": 9,
     "ordered_events_applied": 9,
     "linked_players_projected": 2,
@@ -124,7 +127,7 @@
     "fresh_fixture_unused_index_info_count": 29
   },
   "remaining_gates": [
-    "service-role JavaScript projector transport and production-shaped magic-link delivery rehearsal",
+    "production-shaped magic-link delivery rehearsal",
     "disposable Discord Gateway private-delivery rehearsal",
     "fresh production backup and explicit migration authorization"
   ],
