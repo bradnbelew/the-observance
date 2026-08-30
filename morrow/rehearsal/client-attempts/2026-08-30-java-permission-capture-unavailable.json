@@ -27,6 +27,14 @@
     "source_commit": "eef04ebb30dae522cd0564ffc39fbd1ae09a965b",
     "version": "1.21.11"
   },
+  "host_capture_compatibility": {
+    "documented_api_minimum_build": 20348,
+    "host_current_build": 19045,
+    "host_display_version": "22H2",
+    "host_product": "Windows 10 Home",
+    "microsoft_reference": "https://learn.microsoft.com/en-us/uwp/api/windows.graphics.capture.graphicscapturesession.isborderrequired",
+    "root_cause": "the capture helper calls GraphicsCaptureSession.IsBorderRequired on an OS build that predates that interface"
+  },
   "no_blind_input": true,
   "production_contacted": false,
   "result": "java_permission_did_not_resolve_windows_capture_interface_error",

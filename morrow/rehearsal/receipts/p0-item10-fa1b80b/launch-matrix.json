@@ -32,7 +32,7 @@
     "latest_attempt_sha256": "10df71f35e59cc4f398f65b4ec78aa897c332d50eccdcae4acfe2bd09c092d42",
     "latest_attempt_status": "unproven",
     "latest_capture_retry": "morrow/rehearsal/client-attempts/2026-08-30-java-permission-capture-unavailable.json",
-    "latest_capture_retry_sha256": "55180f2f8f4597cd324173a4fa4aa9e676c8eed043b466fd2b01253865f9834a",
+    "latest_capture_retry_sha256": "56d19765c9ebf1740df5aa046432e96aef0b8d4b29256aec89cb63296ddf8a4e",
     "offline_launcher": "tools/run_morrow_offline_client.py",
     "offline_launcher_sha256": "6a168fff2950e9b61c1e8ed0c8483b58213e65bcb3facfbddc510ece31f252f8",
     "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",

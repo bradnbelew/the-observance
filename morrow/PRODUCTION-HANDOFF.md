@@ -84,8 +84,9 @@ Implemented and verified:
   lane is proven. The authenticated browser now proves owner-only reads, Act 0 writes, wrong-token
   refusal, and six ticket cards. A private Supabase Cron schedule now proves automatic ten-second
   Copperline projection, health/run receipts, failure recovery, and clean disable. Visual capture,
-  production-shaped magic-link delivery, and Discord Gateway delivery remain unproven, and every
-  production gate remains disabled
+  a browser-requested PKCE magic-link exchange, the database-bound Discord worker, and every complete
+  graphical lane remain unproven. Real Supabase email delivery and bot-only Discord Gateway transport
+  are retained partial subproofs; every production gate remains disabled
 
 Verified commands:
 
@@ -150,8 +151,12 @@ native-dialog input, resource-pack decline, audio-disabled cues, full-inventory 
 one-/two-/six-player cleanup, and pacing without operator narration. The database lane is now proven on
 a paused validation project. The automatic Copperline database worker and real Supabase Cron schedule
 are live-proven for ordered two-player delivery, private actor receipts, retry/reclaim, payload
-isolation, payload-free health, and clean disable. Production-shaped magic-link delivery and a
-disposable Discord worker/guild receipt remain; the JavaScript worker is only an operator fallback.
+isolation, payload-free health, and clean disable. Real Supabase magic-link email delivery has
+succeeded, but the browser-requested PKCE callback and authenticated RLS read remain. The exact
+authored Discord receipt has crossed a real Gateway in a temporary everyone-denied/bot-allowed
+channel, including `MESSAGE_CREATE`, REST readback, stable nonce, mention suppression, deletion, and
+`Unknown Channel` verification. The database-claimed worker and a disposable-guild linked-player
+ephemeral interaction remain; the JavaScript Copperline worker is only an operator fallback.
 Do not expand Acts 3–7, enable production, or mutate production services, data, or worlds at this boundary.
 
 The first 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
@@ -167,6 +172,15 @@ hardened target then retained all 2,304 items across a same-player disconnect/re
 with no entry-controller inventory mutations, no suffocation, and clean bounded client/server shutdown.
 Windows capture still failed with the same OS interface error, so the retained attempt is honestly
 `unproven` for the six human-client lanes while recording the safe-entry runtime subproof.
+
+After Java access was explicitly approved, a fresh bounded direct-client retry selected exactly one
+`Minecraft 1.21.11` Java window while excluding the launcher. Capture still failed with the identical
+`0x80004002` interface error. No blind keyboard or mouse input was sent, and the client harness stopped
+after 120 seconds. The retry is retained as
+`morrow/rehearsal/client-attempts/2026-08-30-java-permission-capture-unavailable.json`. The host is
+Windows 10 build 19045, while Microsoft documents the helper's failing
+`GraphicsCaptureSession.IsBorderRequired` interface from build 20348; use a compatible capture host or
+a helper that feature-detects and retains the normal capture border.
 
 ### P1 — Safe database rehearsal
 
@@ -200,8 +214,10 @@ and factual truth. No three consecutive investigations may lead with the same me
   connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
   helper. The Morrow display body, Paper
   dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
-  rehearsal. The Copperline reboot route still requires a production-shaped magic-link rehearsal. The Discord
-  reboot flow requires a disposable guild/worker rehearsal; its shipped feature gate remains false.
+  rehearsal. The Copperline reboot route has real email-delivery evidence but still requires the
+  browser-requested PKCE callback and authenticated RLS read. Discord has real bot-only Gateway
+  transport evidence but still requires a database-claimed worker and disposable-guild linked-player
+  interaction; its shipped feature gate remains false.
 - `morrow-reboot.enabled` stays false until all remaining human-client and isolated-service receipts pass.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 

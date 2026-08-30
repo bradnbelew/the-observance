@@ -27,7 +27,9 @@ After Java access was explicitly allowed, a second bounded dummy-identity client
 exact `Minecraft 1.21.11` Java window was selected separately from the launcher. Windows still returned
 `SetIsBorderRequired ... 0x80004002`; no blind input was sent. The retained retry receipt is
 `client-attempts/2026-08-30-java-permission-capture-unavailable.json`, so the visual gate remains
-honestly blocked by capture availability rather than Java launch permission.
+honestly blocked by capture availability rather than Java launch permission. The host is Windows 10
+build 19045; Microsoft documents `GraphicsCaptureSession.IsBorderRequired` from build 20348, so the
+failure is a feature-availability mismatch in the capture helper.
 
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed

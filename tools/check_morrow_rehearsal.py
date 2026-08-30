@@ -234,6 +234,8 @@ def validate() -> None:
             and capture_retry["computer_use"]["client_window_exact_match_count"] == 1
             and capture_retry["computer_use"]["launcher_window_excluded"] is True
             and capture_retry["computer_use"]["screen_capture_available"] is False
+            and capture_retry["host_capture_compatibility"]["host_current_build"] == 19045
+            and capture_retry["host_capture_compatibility"]["documented_api_minimum_build"] == 20348
             and capture_retry["no_blind_input"] is True
             and capture_retry["production_contacted"] is False,
             "post-permission Java capture retry was omitted or overclaimed")
