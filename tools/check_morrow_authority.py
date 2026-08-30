@@ -14,6 +14,10 @@ MORROW = ROOT / "morrow"
 PLUGIN_MORROW = ROOT / "plugin" / "src" / "main" / "java" / "com" / "observance" / "watcher" / "morrow"
 DASHBOARD_MORROW_ENVELOPE = ROOT / "dashboard" / "src" / "lib" / "morrow-runtime-envelope.ts"
 DASHBOARD_MORROW_ROUTE = ROOT / "dashboard" / "src" / "app" / "api" / "runtime" / "minecraft" / "events" / "route.ts"
+PLUGIN_BODY_AUTHORITY = PLUGIN_MORROW / "presentation" / "MorrowBodyAuthority.java"
+PLUGIN_BODY_RUNTIME = PLUGIN_MORROW / "presentation" / "BukkitMorrowBody.java"
+PLUGIN_DIALOG_AUTHORITY = PLUGIN_MORROW / "dialog" / "MorrowDialogAuthority.java"
+PLUGIN_DIALOG_RUNTIME = PLUGIN_MORROW / "dialog" / "BukkitMorrowDialogs.java"
 
 
 def load_json(relative: str):
@@ -44,6 +48,57 @@ def main() -> int:
         require(state_rows[-1]["next"] is None, "negotiated state must be terminal")
         for index, row in enumerate(state_rows[:-1]):
             require(row["next"] == state_rows[index + 1]["key"], f"broken state transition at {row['key']}")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        body_authority = PLUGIN_BODY_AUTHORITY.read_text(encoding="utf-8")
+        body_runtime = PLUGIN_BODY_RUNTIME.read_text(encoding="utf-8")
+        expected_pose_order = ["IDLE", "ATTENDING", "MIRRORING", "RETAINING", "FRACTURED", "NEGOTIATED"]
+        declared_poses = re.findall(r'^\s+([A-Z]+)\("[a-z]+",\s*(?:true|false),', body_authority, re.MULTILINE)
+        require(declared_poses == expected_pose_order, "Morrow fallback body pose order drifted")
+        expected_stage_poses = {
+            "HELPFUL": "IDLE",
+            "CURIOUS": "ATTENDING",
+            "INTIMATE": "MIRRORING",
+            "POSSESSIVE": "RETAINING",
+            "AFRAID": "FRACTURED",
+            "NEGOTIATED": "NEGOTIATED",
+        }
+        mapped_stage_poses = dict(re.findall(r'MorrowStage[.]([A-Z]+), Pose[.]([A-Z]+)', body_authority))
+        require(mapped_stage_poses == expected_stage_poses, "relationship stage/body pose mapping drifted")
+        for required in (
+            "BlockDisplay", "TextDisplay", "Interaction", "PersistentDataType",
+            "cleanupOwned()", "MAXIMUM_LIFETIME_SECONDS", "trackingTick()",
+        ):
+            require(required in body_runtime or required in body_authority,
+                    f"Morrow fallback body lacks {required}")
+        for forbidden in ("net.minecraft", "craftbukkit", "FakePlayer", "ServerPlayer"):
+            require(forbidden not in body_runtime, f"Morrow fallback body depends on forbidden {forbidden}")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        dialog_authority = PLUGIN_DIALOG_AUTHORITY.read_text(encoding="utf-8")
+        dialog_runtime = PLUGIN_DIALOG_RUNTIME.read_text(encoding="utf-8")
+        receipt_calls = set(re.findall(
+            r'receipt\(\s*(ROOM_WITNESSED|PROPOSAL_AUTHENTICATED|ENTITY_REPLAY_AUTHORIZED),',
+            dialog_authority,
+        ))
+        require(receipt_calls == {"ROOM_WITNESSED", "PROPOSAL_AUTHENTICATED", "ENTITY_REPLAY_AUTHORIZED"},
+                "Room 04 dialog receipt authority drifted")
+        require('case AUTHORIZE_ENTITY_REPLAY -> has(snapshot, INTENTION_ERROR_PROVEN)' in dialog_authority,
+                "Entity Replay dialog lost its proof prerequisite")
+        require(dialog_authority.count('\\"world_mutation\\":false') >= 2,
+                "proposal and Entity Replay payloads must forbid world mutation")
+        for required in (
+            "Dialog.create", "canCloseWithEscape(true)", "PlayerCustomClickEvent",
+            "DialogType.confirmation", "DialogType.multiAction", "MorrowLocalState.CommitResult",
+        ):
+            require(required in dialog_runtime, f"Morrow native dialog adapter lacks {required}")
+        for forbidden in ("setBlockData(", "setType(", "breakNaturally(", "runTaskAsynchronously"):
+            require(forbidden not in dialog_runtime,
+                    f"P0 item 5 crossed the sixth-block mutation boundary via {forbidden}")
     except Exception as exc:  # noqa: BLE001
         errors.append(str(exc))
 

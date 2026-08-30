@@ -4,6 +4,8 @@ import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.morrow.room04.BukkitRecoveryRoom04World;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Installer;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Manifest;
+import com.observance.watcher.morrow.dialog.BukkitMorrowDialogs;
+import com.observance.watcher.morrow.presentation.BukkitMorrowBody;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -23,16 +25,22 @@ public final class MorrowRuntime implements AutoCloseable {
     private final MorrowLocalState localState;
     private final MorrowEventProjector projector;
     private final RecoveryRoom04Installer.Result room04Result;
+    private final BukkitMorrowBody body;
+    private final BukkitMorrowDialogs dialogs;
 
     private MorrowRuntime(
             MorrowRuntimeSettings settings,
             MorrowLocalState localState,
             MorrowEventProjector projector,
-            RecoveryRoom04Installer.Result room04Result) {
+            RecoveryRoom04Installer.Result room04Result,
+            BukkitMorrowBody body,
+            BukkitMorrowDialogs dialogs) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
         this.room04Result = room04Result;
+        this.body = body;
+        this.dialogs = dialogs;
     }
 
     /** Returns {@code null} while the shipped disabled gate is closed. */
@@ -63,14 +71,15 @@ public final class MorrowRuntime implements AutoCloseable {
         Path data = plugin.getDataFolder().toPath();
         MorrowLocalState state = MorrowLocalState.open(data.resolve(JOURNAL_NAME), settings.releaseId());
         RecoveryRoom04Installer.Result room04Result = null;
+        RecoveryRoom04Installer.Origin room04Origin = null;
         if (section.getBoolean("room04.build-enabled", false)) {
-            RecoveryRoom04Installer.Origin origin = new RecoveryRoom04Installer.Origin(
+            room04Origin = new RecoveryRoom04Installer.Origin(
                     section.getInt("room04.origin-x"),
                     section.getInt("room04.origin-y", 80),
                     section.getInt("room04.origin-z"));
             RecoveryRoom04Manifest.Bounds bounds = RecoveryRoom04Manifest.BOUNDS;
-            if (origin.y() + bounds.minimumY() < world.getMinHeight()
-                    || origin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+            if (room04Origin.y() + bounds.minimumY() < world.getMinHeight()
+                    || room04Origin.y() + bounds.maximumY() >= world.getMaxHeight()) {
                 throw new IllegalArgumentException("Recovery Room 04 origin exceeds the configured world height");
             }
             RecoveryRoom04Installer installer = new RecoveryRoom04Installer(
@@ -78,9 +87,11 @@ public final class MorrowRuntime implements AutoCloseable {
                     data.resolve(ROOM04_SNAPSHOT_NAME),
                     data.resolve(ROOM04_RECEIPT_NAME));
             room04Result = installer.install(
-                    settings.releaseId(), origin, new BukkitRecoveryRoom04World(world, origin));
+                    settings.releaseId(), room04Origin, new BukkitRecoveryRoom04World(world, room04Origin));
         }
         MorrowEventProjector projector = null;
+        BukkitMorrowBody body = null;
+        BukkitMorrowDialogs dialogs = null;
         try {
             projector = MorrowEventProjector.open(
                     state,
@@ -88,8 +99,16 @@ public final class MorrowRuntime implements AutoCloseable {
                     data.resolve(CURSOR_NAME),
                     plugin.getLogger());
             projector.start();
-            return new MorrowRuntime(settings, state, projector, room04Result);
-        } catch (IOException | RuntimeException failure) {
+            if (room04Result != null && room04Origin != null) {
+                body = new BukkitMorrowBody(plugin, world, room04Origin, settings.releaseId());
+                body.start(state.snapshot());
+                dialogs = new BukkitMorrowDialogs(plugin, world, room04Origin, state, body);
+                dialogs.start();
+            }
+            return new MorrowRuntime(settings, state, projector, room04Result, body, dialogs);
+        } catch (IOException | RuntimeException | LinkageError failure) {
+            if (dialogs != null) dialogs.close();
+            if (body != null) body.close();
             if (projector != null) projector.close();
             throw failure;
         }
@@ -113,6 +132,8 @@ public final class MorrowRuntime implements AutoCloseable {
 
     @Override
     public void close() {
+        if (dialogs != null) dialogs.close();
+        if (body != null) body.close();
         projector.close();
     }
 
