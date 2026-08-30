@@ -2,6 +2,7 @@ package com.observance.watcher.morrow;
 
 import com.observance.watcher.ObservancePlugin;
 import com.observance.watcher.morrow.room04.BukkitRecoveryRoom04World;
+import com.observance.watcher.morrow.room04.BukkitRecoveryRoom04Entry;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Installer;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Manifest;
 import com.observance.watcher.morrow.dialog.BukkitMorrowDialogs;
@@ -33,6 +34,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitStaticRestore staticRestore;
     private final BukkitEntityReplay entityReplay;
     private final BukkitMorrowDialogs dialogs;
+    private final BukkitRecoveryRoom04Entry playerEntry;
 
     private MorrowRuntime(
             MorrowRuntimeSettings settings,
@@ -42,7 +44,8 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
-            BukkitMorrowDialogs dialogs) {
+            BukkitMorrowDialogs dialogs,
+            BukkitRecoveryRoom04Entry playerEntry) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
@@ -51,6 +54,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.staticRestore = staticRestore;
         this.entityReplay = entityReplay;
         this.dialogs = dialogs;
+        this.playerEntry = playerEntry;
     }
 
     /** Returns {@code null} while the shipped disabled gate is closed. */
@@ -110,6 +114,7 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitStaticRestore staticRestore = null;
         BukkitEntityReplay entityReplay = null;
         BukkitMorrowDialogs dialogs = null;
+        BukkitRecoveryRoom04Entry playerEntry = null;
         try {
             projector = MorrowEventProjector.open(
                     state,
@@ -118,6 +123,8 @@ public final class MorrowRuntime implements AutoCloseable {
                     plugin.getLogger());
             projector.start();
             if (room04Result != null && room04Origin != null) {
+                playerEntry = new BukkitRecoveryRoom04Entry(plugin, world, room04Origin);
+                playerEntry.start();
                 staticRestore = new BukkitStaticRestore(plugin, world, room04Origin, settings.releaseId());
                 staticRestore.start(state.snapshot());
                 body = new BukkitMorrowBody(plugin, world, room04Origin, settings.releaseId());
@@ -137,12 +144,14 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " body_entities=" + (body == null ? 0 : body.ownedEntityCount())
                     + " static_entities=" + (staticRestore == null ? 0 : staticRestore.ownedEntityCount())
                     + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount()));
-            return new MorrowRuntime(settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs);
+            return new MorrowRuntime(
+                    settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs, playerEntry);
         } catch (IOException | RuntimeException | LinkageError failure) {
             if (dialogs != null) dialogs.close();
             if (entityReplay != null) entityReplay.close();
             if (staticRestore != null) staticRestore.close();
             if (body != null) body.close();
+            if (playerEntry != null) playerEntry.close();
             if (projector != null) projector.close();
             throw failure;
         }
@@ -170,6 +179,7 @@ public final class MorrowRuntime implements AutoCloseable {
         if (entityReplay != null) entityReplay.close();
         if (staticRestore != null) staticRestore.close();
         if (body != null) body.close();
+        if (playerEntry != null) playerEntry.close();
         projector.close();
     }
 

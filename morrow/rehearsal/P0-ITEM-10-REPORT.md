@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `b6f5b87fefbeb3659f0151ec647d458ec48526f1805e6e71f958391d42dd7477`
+Bundle SHA-256: `b3e5faf300ad1a17be6557f9c68379d07540b69a5b61b51398193a74b1968b4e`
 
 ## Proven automatically
 
@@ -41,17 +41,28 @@ Bundle SHA-256: `b6f5b87fefbeb3659f0151ec647d458ec48526f1805e6e71f958391d42dd747
   restart with no redelivery. Routine Paper public-key/version lookups were forced through a closed
   loopback proxy and failed; no bootstrap file was downloaded or changed.
 
-## Not proven here
+## Graphical-client subproof and remaining lanes
 
-No graphical Minecraft client was automated. Entity interpolation, native-dialog interaction,
-resource-pack-decline parity, audio-disabled parity, full-inventory route experience, one-/two-/six-player
-physical cleanup, and 60–90 minute pacing without operator narration still require human-client receipts.
-The installed Microsoft launcher did open during a loopback-only attempt on 2026-08-30, but Windows
+A real graphical Minecraft 1.21.11 client now connects to pinned Paper build 132 through loopback.
+Its create-only launcher verified the vanilla manifest, client JAR, 75 libraries, asset index, and nine
+Windows natives; it used a dummy offline identity, read no account files, loaded no production
+credentials, and forced HTTP(S) through a closed loopback proxy. The first live join exposed an unsafe
+spawn defect. The patched entry controller then recovered a fresh bounded client from `(0, -63, -2)`
+to the authored safe position `(0.5, 80.0, -1.5)` before damage. A hardened fresh target then filled
+all 36 main-inventory slots with 2,304 items, disconnected, rejoined the same player at the safe cell,
+and found the same 2,304 items. Both bounded clients avoided suffocation and emitted finalized hashed
+logs plus clean disconnect/runtime-close receipts.
+
+This is a safe-entry runtime subproof, not a complete graphical lane. Entity interpolation,
+native-dialog interaction, resource-pack-decline parity, audio-disabled parity, full-inventory route,
+exit/respawn, two-/six-player physical cleanup, and 60–90 minute pacing without
+operator narration still require synchronized visual and machine receipts. The installed Microsoft
+launcher did open during the first loopback-only attempt on 2026-08-30, but Windows
 returned `SetIsBorderRequired failed: No such interface supported (0x80004002)` for both capture
 attempts and exposed no accessibility tree or focused element. No blind input was sent. Paper then
-stopped cleanly with `MORROW_RUNTIME_CLOSED`. That unavailable result is retained under
-`client-attempts`; `CLIENT-REHEARSAL.md` and the bound generator/checker now define the exact evidence
-required for a later real client pass.
+stopped cleanly with `MORROW_RUNTIME_CLOSED`. Both attempts are retained under `client-attempts`;
+`CLIENT-REHEARSAL.md` and the bound generator/checker define the exact evidence required to finish the
+six lanes without overclaiming the working safe-entry subproof.
 
 The database schema remains a proposal. An isolated database target, authenticated browser session,
 and disposable Discord guild/worker were not available, so live RLS/concurrency, browser projection,

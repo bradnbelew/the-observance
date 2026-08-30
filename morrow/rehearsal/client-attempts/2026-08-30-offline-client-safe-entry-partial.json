@@ -1,0 +1,69 @@
+{
+  "attempted_at": "2026-08-30T14:45:58-05:00",
+  "client_lane_status": "unproven",
+  "computer_use": {
+    "capture_error": "SetIsBorderRequired failed: No such interface supported (0x80004002)",
+    "client_window_opened": true,
+    "client_window_title": "Minecraft 1.21.11 - Multiplayer (3rd-party Server)",
+    "screen_capture_available": false,
+    "window_id": 3081868
+  },
+  "evidence": {
+    "first_client_log_sha256": "b3ca322d43e71bcbb1c42cbeaa6c4e9a73649ad7fb078c247fd25d7b15d0c08e",
+    "first_client_receipt_sha256": "11e6a7d58795a64dedbdb929b3b175967ed6bcf3da1d9e5931af92ec522e4a97",
+    "rejoin_client_log_sha256": "7a6c007ce6a9cdcf55021fe3232d755bf7bec53620ebe9e82b32616ff60e0235",
+    "rejoin_client_receipt_sha256": "855ae685ad47a3185e6249881fa8b090686a354ded06a47f980ae5b982c20a0f",
+    "disposable_paper_lifecycle_receipt_sha256": "7ffa8b7b3424415a1e4be7f5e8ca35fda73fe08c2afe09ccebb94a70740fe292",
+    "offline_launcher_sha256": "6a168fff2950e9b61c1e8ed0c8483b58213e65bcb3facfbddc510ece31f252f8",
+    "plugin_sha256": "ef53a8f04113cc6d7b0d5515fd6df0d8c1cdc28be30c5ed16f91dd6a2fde5622",
+    "server_log_sha256": "0a9f21c7e664493c29b4541ef9f973d652781720b9ff66ba5a56b8f6e6bbe3bf"
+  },
+  "graphical_client": {
+    "account_files_read": false,
+    "client_jar_sha256": "1473c9489ac50fda3c435049a76a70d61a10b8610db27f5ba9d8756b686cd3bd",
+    "connected": true,
+    "harness_status": "harness_stopped_after_wait",
+    "identity_kind": "dummy_offline",
+    "library_count": 75,
+    "manifest_sha256": "9471dcb0b88c812d5af64259b4f62afc84c3c3ec2f3af64e972f48f7d45e9493",
+    "native_library_count": 9,
+    "production_credentials_loaded": false,
+    "bounded_client_runs": 2,
+    "username": "MorrowCargo",
+    "version": "1.21.11",
+    "wait_seconds_per_run": 70
+  },
+  "no_blind_input": true,
+  "production_contacted": false,
+  "result": "real_client_safe_entry_and_full_inventory_rejoin_proven_visual_and_full_slice_lanes_remain_unproven",
+  "server": {
+    "address": "127.0.0.1:25592",
+    "clean_shutdown": true,
+    "disconnect_rejoin_proven": true,
+    "full_main_inventory_items_before_disconnect": 2304,
+    "full_main_inventory_items_after_rejoin": 2304,
+    "inventory_mutations_by_entry_controller": 0,
+    "join_actions": ["recovered", "accepted"],
+    "join_from_block": [0, -63, -2],
+    "join_to_exact_position": [0.5, 80.0, -1.5],
+    "morrow_runtime_closed": true,
+    "morrow_runtime_ready": true,
+    "no_suffocation_during_bounded_runs": true,
+    "paper_build": 132,
+    "safe_entry_ready_block": [0, 80, -2],
+    "version": "1.21.11"
+  },
+  "source_binding": {
+    "commit_before_working_tree_fix": "7f4d12740b87361fcf025fd2656368d979fc0059",
+    "room04_manifest_sha256": "9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a"
+  },
+  "still_required": [
+    "observable synchronized visual media",
+    "native dialog mouse keyboard and escape interaction",
+    "resource-pack accepted and declined parity",
+    "audio-disabled visual equivalence",
+    "full-inventory exit and respawn",
+    "complete one two and six player cohorts",
+    "sixty to ninety minute pacing"
+  ]
+}

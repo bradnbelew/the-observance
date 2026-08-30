@@ -17,6 +17,8 @@ byte-for-byte deterministic at the retained timestamp.
 
 The `launch-matrix.json` receipt is authoritative about proof limits. A headless contract result is
 not a substitute for an actual Paper boot or a graphical client observation. The Paper lane now has
-an actual runtime receipt. The six graphical lanes remain required and use the create-only protocol
+an actual runtime receipt. A bounded graphical 1.21.11 client has now proven Room 04 safe-entry recovery
+without suffocation, but Windows visual capture remains unavailable. The six complete graphical lanes
+remain required and use the create-only protocol
 in `CLIENT-REHEARSAL.md`; its validator refuses screenshots or prose without matching journal, world,
 inventory, cleanup, and complete server-lifecycle evidence.

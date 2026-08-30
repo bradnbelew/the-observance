@@ -48,4 +48,5 @@ tools/run_morrow_disposable_paper.py text eol=lf
 tools/new_morrow_client_rehearsal.py text eol=lf
 tools/check_morrow_client_rehearsal.py text eol=lf
 tools/test_morrow_client_rehearsal.py text eol=lf
+tools/run_morrow_offline_client.py text eol=lf
 plugin/src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java text eol=lf

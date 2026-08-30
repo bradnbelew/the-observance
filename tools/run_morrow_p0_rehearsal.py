@@ -533,11 +533,12 @@ def paper_lane(args: argparse.Namespace, binding: dict[str, Any]) -> dict[str, A
 
 def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     client_attempt = ROOT / "morrow" / "rehearsal" / "client-attempts" / \
-        "2026-08-30-launcher-capture-unavailable.json"
+        "2026-08-30-offline-client-safe-entry-partial.json"
     client_protocol = ROOT / "morrow" / "rehearsal" / "CLIENT-REHEARSAL.md"
     client_generator = ROOT / "tools" / "new_morrow_client_rehearsal.py"
     client_checker = ROOT / "tools" / "check_morrow_client_rehearsal.py"
     client_selftest = ROOT / "tools" / "test_morrow_client_rehearsal.py"
+    offline_launcher = ROOT / "tools" / "run_morrow_offline_client.py"
     return {
         "automated": [
             {"lane": "contract_and_authority", "status": "proven_headless"},
@@ -565,9 +566,12 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "checker_sha256": sha256_file(client_checker),
             "selftest": str(client_selftest.relative_to(ROOT)).replace("\\", "/"),
             "selftest_sha256": sha256_file(client_selftest),
+            "offline_launcher": str(offline_launcher.relative_to(ROOT)).replace("\\", "/"),
+            "offline_launcher_sha256": sha256_file(offline_launcher),
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",
+            "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
             "proof_rule": "synchronized client media plus server journal world inventory cleanup receipts",
         },
         "live_services_required": [

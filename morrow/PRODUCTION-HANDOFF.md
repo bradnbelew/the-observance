@@ -23,6 +23,9 @@ Implemented and verified:
 - full-volume Recovery Room 04 manifest with an explicit safe spawn/exit route, occupied-cell refusal,
   durable pre-mutation rollback snapshot, atomic install receipt, crash recovery, and exact read-back
   audit (`9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a`)
+- config-scoped Room 04 player entry ownership: Paper world-spawn binding, exact-world unsafe-join
+  recovery, respawn binding, zero inventory mutation, main-thread enforcement, and clean listener
+  shutdown; the 1/2/6-player pure contract is backed by an actual graphical 1.21.11 client join
 - vanilla-safe Morrow presentation built from Paper block/text displays plus one interaction entity,
   release-bound PDC ownership, startup cleanup, six-hour expiry, restrained active-speaker tracking,
   and the six authored relationship poses without fake-player, NMS, or resource-pack dependency
@@ -71,9 +74,10 @@ Implemented and verified:
   inventoried, bootstrap cache/libraries/versions copied and hash-preserved, Room 04 built then audited
   already-present after restart, PDC entity counts stable, clean shutdown observed, and the signed
   projector recovered in order from two loopback 503 responses without restart redelivery
-- fail-closed launch matrix separating proven headless and actual Paper runtime evidence from the still
-  required graphical-client and isolated service receipts. No live-client proof is claimed and every
-  production gate remains disabled
+- fail-closed launch matrix separating proven headless and actual Paper/runtime subproofs from the still
+  required complete graphical-client and isolated service receipts. A real dummy offline 1.21.11 client
+  now proves bounded safe entry without suffocation; visual capture and the complete slice remain
+  unproven, and every production gate remains disabled
 
 Verified commands:
 
@@ -139,10 +143,19 @@ one-/two-/six-player cleanup, and pacing without operator narration. After that,
 isolated database target plus authenticated browser and disposable Discord worker/guild receipts. Do not
 expand Acts 3–7, enable production, or mutate live services, data, or worlds at this boundary.
 
-The 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
+The first 2026-08-30 loopback attempt opened the installed Microsoft launcher but Windows app capture failed
 with `SetIsBorderRequired failed: No such interface supported (0x80004002)` and exposed no accessibility
 tree or focused element. No blind click was made; the disposable Paper server then closed cleanly. The
 machine receipt is retained under `morrow/rehearsal/client-attempts` and is explicitly `unproven`.
+
+A later create-only attempt launched the locally installed vanilla 1.21.11 client directly with a
+dummy offline identity, 75 manifest-verified libraries, nine extracted Windows natives, closed
+loopback HTTP(S) proxying, and no account-file reads. It joined pinned Paper build 132 at an unsafe
+stale coordinate; the new entry controller recovered it to `(0.5, 80.0, -1.5)` before damage. A fresh
+hardened target then retained all 2,304 items across a same-player disconnect/rejoin at that safe cell,
+with no entry-controller inventory mutations, no suffocation, and clean bounded client/server shutdown.
+Windows capture still failed with the same OS interface error, so the retained attempt is honestly
+`unproven` for the six human-client lanes while recording the safe-entry runtime subproof.
 
 ### P1 — Safe database rehearsal
 
@@ -164,8 +177,9 @@ and factual truth. No three consecutive investigations may lead with the same me
 
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
-- The automated P0 receipt bundle and disposable Paper lifecycle are green, but no graphical client was
-  observable through the Windows capture helper. Recovery Room 04, the Morrow display body, Paper
+- The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
+  connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
+  helper. The Morrow display body, Paper
   dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
   rehearsal. The Copperline reboot route requires an
   isolated database migration/projector rehearsal and authenticated browser rehearsal. The Discord

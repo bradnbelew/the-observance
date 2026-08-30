@@ -207,7 +207,7 @@ def validate() -> None:
     client = matrix["human_client_evidence"]
     require(client["gate"] == "required" and client["latest_attempt_status"] == "unproven",
             "client evidence gate was silently advanced")
-    for key in ("protocol", "generator", "checker", "selftest", "latest_attempt"):
+    for key in ("protocol", "generator", "checker", "selftest", "offline_launcher", "latest_attempt"):
         path = ROOT / client[key]
         require(path.is_file() and client[f"{key}_sha256"] == sha(path),
                 f"client evidence artifact drifted: {key}")
@@ -215,7 +215,13 @@ def validate() -> None:
     require(attempt["client_lane_status"] == "unproven"
             and attempt["no_blind_input"] is True
             and attempt["production_contacted"] is False
-            and attempt["server"]["clean_shutdown"] is True,
+            and attempt["server"]["clean_shutdown"] is True
+            and attempt["graphical_client"]["connected"] is True
+            and attempt["server"]["no_suffocation_during_bounded_runs"] is True
+            and attempt["server"]["disconnect_rejoin_proven"] is True
+            and attempt["server"]["full_main_inventory_items_before_disconnect"] == 2304
+            and attempt["server"]["full_main_inventory_items_after_rejoin"] == 2304
+            and attempt["server"]["join_to_exact_position"] == [0.5, 80.0, -1.5],
             "failed client attempt was misrepresented")
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")

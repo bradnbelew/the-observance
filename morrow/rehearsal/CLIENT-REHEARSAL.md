@@ -16,6 +16,21 @@ The command creates `build/morrow-client-rehearsal/<run-id>` once and refuses re
 packet to the current Git commit, retained Paper/runtime receipt, Paper JAR, plugin JAR, release,
 campaign, Room 04 manifest, and `127.0.0.1:25589`. Do not edit those bindings.
 
+If the Microsoft launcher UI is unavailable to automation, the repository can prepare or start the
+already-installed vanilla 1.21.11 client without reading account files:
+
+```text
+python tools/run_morrow_offline_client.py --run-id <lowercase-id> --prepare-only
+python tools/run_morrow_offline_client.py --run-id <different-lowercase-id>
+python tools/run_morrow_offline_client.py --run-id <bounded-id> --wait-seconds 120 --terminate-after-wait
+```
+
+This helper requires every local library and asset index to match the vanilla manifest, extracts only
+the matching Windows natives into a fresh directory, uses a deterministic dummy offline identity,
+routes HTTP(S) through a closed loopback proxy, and quick-connects only to `127.0.0.1:25589`.
+The bounded form retains a finalized receipt and client-log hash after stopping its own disposable
+client process; it does not shut down Paper.
+
 ## Run order
 
 Repeat the complete 60–90 minute slice for fresh one-, two-, and six-player cohorts:
