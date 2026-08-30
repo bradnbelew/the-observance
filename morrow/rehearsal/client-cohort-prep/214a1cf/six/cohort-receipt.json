@@ -1,0 +1,74 @@
+{
+  "audio_disabled": false,
+  "clients": [
+    {
+      "index": 1,
+      "process_id": null,
+      "receipt": "clients/retained-six-214a1cf-p01/offline-client-receipt.json",
+      "receipt_sha256": "8ab27dac36bb5160fc39721fdc498a1efd983349746ea2b6523fbdfc4462d855",
+      "status": "prepared",
+      "username": "MorrowW01",
+      "uuid": "d655d2c2470150e984203649cf202cc4"
+    },
+    {
+      "index": 2,
+      "process_id": null,
+      "receipt": "clients/retained-six-214a1cf-p02/offline-client-receipt.json",
+      "receipt_sha256": "63bfff023fb818121bdd7ab137eb3ad2f568f3e484d2a94b16524e3463ed6a8e",
+      "status": "prepared",
+      "username": "MorrowW02",
+      "uuid": "5434ed6a243b55c991e2ee597d12634d"
+    },
+    {
+      "index": 3,
+      "process_id": null,
+      "receipt": "clients/retained-six-214a1cf-p03/offline-client-receipt.json",
+      "receipt_sha256": "adda6874004ada248872073db8ea3c8e2820c1facdc9d2855de129e19db2b54d",
+      "status": "prepared",
+      "username": "MorrowW03",
+      "uuid": "d903ec4216ce55ce9c75a02c514d787d"
+    },
+    {
+      "index": 4,
+      "process_id": null,
+      "receipt": "clients/retained-six-214a1cf-p04/offline-client-receipt.json",
+      "receipt_sha256": "d4c6368642d4777fe88dd6c7ee78cba957a45ae666792a98488dc0d2afc2763d",
+      "status": "prepared",
+      "username": "MorrowW04",
+      "uuid": "f7f26894f34a53cc9c4219253c0bc384"
+    },
+    {
+      "index": 5,
+      "process_id": null,
+      "receipt": "clients/retained-six-214a1cf-p05/offline-client-receipt.json",
+      "receipt_sha256": "d2a1ac851c4d1e8d60d73a0c3c4372b1cd9661dcf5494e2f8a6e6b2cebba1bbc",
+      "status": "prepared",
+      "username": "MorrowW05",
+      "uuid": "61f65e19ad075c4799814d83bc7ab5ce"
+    },
+    {
+      "index": 6,
+      "process_id": null,
+      "receipt": "clients/retained-six-214a1cf-p06/offline-client-receipt.json",
+      "receipt_sha256": "2c9ca5d92904cd3b406c85df8d75fa8375106722649e06aa0af398f2c4c9df27",
+      "status": "prepared",
+      "username": "MorrowW06",
+      "uuid": "eef4942d06e25f5781468e90a6a8affd"
+    }
+  ],
+  "cohort_size": 6,
+  "created_at": "2026-08-30T23:43:45Z",
+  "distinct_identity_count": 6,
+  "launcher": {
+    "path": "tools/run_morrow_offline_client.py",
+    "sha256": "484c9c514049c88470699d3306ca8e9c4c2ef32f6dc6ea13c66bc754b09afa46"
+  },
+  "loopback_only": true,
+  "max_memory_mib_per_client": 768,
+  "run_id": "retained-six-214a1cf",
+  "schema_version": "1.0.0-morrow-offline-cohort",
+  "server": "127.0.0.1:25589",
+  "source_commit": "214a1cf9ba6e82fbb1bdd4f3cfcc4f2f07e9f177",
+  "status": "prepared",
+  "visible_clients_launched": false
+}

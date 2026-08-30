@@ -1,0 +1,4 @@
+autoJump:false
+fullscreen:false
+narrator:0
+onboardAccessibility:false

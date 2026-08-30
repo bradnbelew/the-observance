@@ -1,0 +1,29 @@
+{
+  "audio_disabled": false,
+  "clients": [
+    {
+      "index": 1,
+      "process_id": null,
+      "receipt": "clients/retained-one-214a1cf-p01/offline-client-receipt.json",
+      "receipt_sha256": "1781dc50e50d868417576f7f38c1c6080d44e71d1009352b679c8e9b771a2ab5",
+      "status": "prepared",
+      "username": "MorrowW01",
+      "uuid": "2e68137ecc4a5a2f97fbf0afd3a32b1d"
+    }
+  ],
+  "cohort_size": 1,
+  "created_at": "2026-08-30T23:43:44Z",
+  "distinct_identity_count": 1,
+  "launcher": {
+    "path": "tools/run_morrow_offline_client.py",
+    "sha256": "484c9c514049c88470699d3306ca8e9c4c2ef32f6dc6ea13c66bc754b09afa46"
+  },
+  "loopback_only": true,
+  "max_memory_mib_per_client": 768,
+  "run_id": "retained-one-214a1cf",
+  "schema_version": "1.0.0-morrow-offline-cohort",
+  "server": "127.0.0.1:25589",
+  "source_commit": "214a1cf9ba6e82fbb1bdd4f3cfcc4f2f07e9f177",
+  "status": "prepared",
+  "visible_clients_launched": false
+}

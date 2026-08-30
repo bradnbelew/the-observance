@@ -1,12 +1,12 @@
 {
   "status": "bounded_prepare_only_pass",
-  "completed_at": "2026-08-30T23:18:30Z",
-  "source_commit": "9962dedd7d18c72e6c3b781f0c60c75c1258a803",
+  "completed_at": "2026-08-30T23:44:12Z",
+  "source_commit": "214a1cf9ba6e82fbb1bdd4f3cfcc4f2f07e9f177",
   "scope": "create-only vanilla 1.21.11 game directories and dummy offline identities for the required one-, two-, and six-player cohort sizes",
   "artifacts": {
     "launcher": {
       "path": "tools/run_morrow_offline_client.py",
-      "sha256": "89259eb2f870bba593eec950ee4206174b1814b2dbaecbb3ef0f172b830336b8"
+      "sha256": "484c9c514049c88470699d3306ca8e9c4c2ef32f6dc6ea13c66bc754b09afa46"
     },
     "cohort_preparer": {
       "path": "tools/prepare_morrow_offline_cohort.py",
@@ -18,22 +18,22 @@
       "size": 1,
       "audio_disabled": false,
       "max_memory_mib_per_client": 768,
-      "receipt": "morrow/rehearsal/client-cohort-prep/9962ded/one/cohort-receipt.json",
-      "receipt_sha256": "16f5cbf6875ed321b318079ec215a682b29c4add0f53e9f01eb54851354d7b0c"
+      "receipt": "morrow/rehearsal/client-cohort-prep/214a1cf/one/cohort-receipt.json",
+      "receipt_sha256": "fbcadf91c58b8a51773796884b1f76e32cec4b0b271c43d1e477abc9c548dba7"
     },
     "two": {
       "size": 2,
       "audio_disabled": true,
       "max_memory_mib_per_client": 1024,
-      "receipt": "morrow/rehearsal/client-cohort-prep/9962ded/two/cohort-receipt.json",
-      "receipt_sha256": "b125812a9ef96fb103ad1f0eab633546cf1a39022b07228c13ef916bc37f53ec"
+      "receipt": "morrow/rehearsal/client-cohort-prep/214a1cf/two/cohort-receipt.json",
+      "receipt_sha256": "09d9cca84f5472848b8276b517031930041589dd1f4aab286d0be3d61cd13ce8"
     },
     "six": {
       "size": 6,
       "audio_disabled": false,
       "max_memory_mib_per_client": 768,
-      "receipt": "morrow/rehearsal/client-cohort-prep/9962ded/six/cohort-receipt.json",
-      "receipt_sha256": "43eb4e74c11fa17357f059b301723095d5c44ddfda2683638cd94cd8a9d671a5"
+      "receipt": "morrow/rehearsal/client-cohort-prep/214a1cf/six/cohort-receipt.json",
+      "receipt_sha256": "16cdc8ed46e98fe04b219db85c29e3c3cd5af1360038cf2a53c87a293ea9f9e6"
     }
   },
   "boundaries": {
