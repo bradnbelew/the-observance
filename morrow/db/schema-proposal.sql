@@ -73,7 +73,8 @@ values
   ('morrow.act2.missing_role_completed', 2, 'minecraft', '{morrow.act1.entity_replay_authorized}', '{minecraft,copperline}'),
   ('morrow.act2.live_test_recorded', 2, 'minecraft', '{morrow.act2.missing_role_completed}', '{minecraft,copperline,media}'),
   ('morrow.act2.behavior_reuse_proven', 2, 'minecraft', '{morrow.act2.live_test_recorded}', '{minecraft,copperline,discord}'),
-  ('morrow.act2.live_capture_authorized', 2, 'minecraft', '{morrow.act2.behavior_reuse_proven}', '{minecraft,copperline,discord}'),
+  ('morrow.act2.private_contradiction_resolved', 2, 'discord', '{morrow.act2.behavior_reuse_proven}', '{minecraft,discord}'),
+  ('morrow.act2.live_capture_authorized', 2, 'minecraft', '{morrow.act2.private_contradiction_resolved}', '{minecraft,copperline,discord}'),
   ('morrow.act3.version_fragments_authenticated', 3, 'minecraft', '{morrow.act2.live_capture_authorized}', '{minecraft,copperline}'),
   ('morrow.act3.contradiction_preserved', 3, 'minecraft', '{morrow.act3.version_fragments_authenticated}', '{minecraft,copperline,discord}'),
   ('morrow.act4.witness_anchor_registered', 4, 'minecraft', '{morrow.act3.contradiction_preserved}', '{minecraft,copperline}'),
@@ -239,6 +240,489 @@ create table if not exists morrow_private.event_projections (
 create index if not exists morrow_projection_work
   on morrow_private.event_projections(surface, status, next_attempt_at)
   where status in ('queued','failed');
+
+-- P0 item 9: asynchronous Discord contradiction state. Private evidence text never enters these
+-- tables or an event payload; only the recipient-bound evidence variant and final group classification
+-- are durable. One flow is activated from the earned behavior-reuse Discord projection.
+create table if not exists morrow_private.discord_contradiction_flows (
+  campaign_id uuid not null references morrow_private.campaigns(campaign_id) on delete cascade,
+  release_id text not null,
+  source_event_id uuid not null unique references morrow_private.events(event_id) on delete restrict,
+  guild_id text not null check (guild_id ~ '^[0-9]{15,22}$'),
+  channel_id text not null check (channel_id ~ '^[0-9]{15,22}$'),
+  thread_id text check (thread_id is null or thread_id ~ '^[0-9]{15,22}$'),
+  linked_player_count smallint not null check (linked_player_count between 1 and 6),
+  status text not null default 'open' check (status in ('open','resolved','halted')),
+  resolved_event_id uuid references morrow_private.events(event_id) on delete restrict,
+  last_error text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (campaign_id, release_id),
+  check ((status = 'resolved') = (resolved_event_id is not null))
+);
+
+create table if not exists morrow_private.discord_contradiction_sessions (
+  session_id uuid primary key default gen_random_uuid(),
+  campaign_id uuid not null,
+  release_id text not null,
+  source_event_id uuid not null references morrow_private.events(event_id) on delete restrict,
+  player_id uuid not null references morrow_private.player_identities(player_id) on delete cascade,
+  nonce_sha256 text not null unique check (nonce_sha256 ~ '^[0-9a-f]{64}$'),
+  purpose text not null check (purpose = 'classify_behavior_reuse_provenance_v1'),
+  evidence_variant text not null check (evidence_variant in ('route_digest','source_gap')),
+  state text not null default 'offered'
+    check (state in ('offered','acknowledged','decided','declined','cancelled','expired')),
+  expires_at timestamptz not null,
+  revision bigint not null default 0 check (revision >= 0),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  foreign key (campaign_id, release_id)
+    references morrow_private.discord_contradiction_flows(campaign_id, release_id) on delete cascade
+);
+
+create index if not exists morrow_discord_session_player
+  on morrow_private.discord_contradiction_sessions(campaign_id, release_id, player_id, created_at desc);
+
+create table if not exists morrow_private.discord_contradiction_votes (
+  campaign_id uuid not null,
+  release_id text not null,
+  source_event_id uuid not null references morrow_private.events(event_id) on delete restrict,
+  player_id uuid not null references morrow_private.player_identities(player_id) on delete cascade,
+  session_id uuid not null references morrow_private.discord_contradiction_sessions(session_id) on delete restrict,
+  decision text not null check (decision = 'file_live_behavior_as_inferred_source'),
+  decided_at timestamptz not null default now(),
+  primary key (campaign_id, release_id, player_id),
+  foreign key (campaign_id, release_id)
+    references morrow_private.discord_contradiction_flows(campaign_id, release_id) on delete cascade
+);
+
+create or replace function public.morrow_activate_discord_contradiction(
+  p_event_id uuid,
+  p_release_id text,
+  p_guild_id text,
+  p_channel_id text,
+  p_thread_id text
+)
+returns text
+language plpgsql
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+declare
+  v_event morrow_private.events%rowtype;
+  v_existing morrow_private.discord_contradiction_flows%rowtype;
+  v_group_size integer;
+  v_linked_size integer;
+begin
+  if p_guild_id !~ '^[0-9]{15,22}$' or p_channel_id !~ '^[0-9]{15,22}$'
+     or (p_thread_id is not null and p_thread_id !~ '^[0-9]{15,22}$') then
+    return 'blocked';
+  end if;
+  select * into v_event from morrow_private.events event
+    where event.event_id = p_event_id
+      and event.release_id = p_release_id
+      and event.event_key = 'morrow.act2.behavior_reuse_proven';
+  if not found then return 'blocked'; end if;
+
+  select count(*), count(identity.discord_user_id)
+    into v_group_size, v_linked_size
+    from morrow_private.player_identities identity
+    where identity.campaign_id = v_event.campaign_id;
+  if v_group_size < 1 or v_group_size > 6 or v_linked_size <> v_group_size then
+    return 'blocked';
+  end if;
+
+  insert into morrow_private.discord_contradiction_flows(
+    campaign_id, release_id, source_event_id, guild_id, channel_id, thread_id, linked_player_count
+  ) values (
+    v_event.campaign_id, p_release_id, p_event_id, p_guild_id, p_channel_id, p_thread_id, v_group_size
+  ) on conflict (campaign_id, release_id) do nothing;
+  if found then return 'activated'; end if;
+
+  select * into v_existing from morrow_private.discord_contradiction_flows flow
+    where flow.campaign_id = v_event.campaign_id and flow.release_id = p_release_id;
+  if v_existing.source_event_id = p_event_id
+     and v_existing.guild_id = p_guild_id
+     and v_existing.channel_id = p_channel_id
+     and v_existing.thread_id is not distinct from p_thread_id
+     and v_existing.linked_player_count = v_group_size then
+    return 'duplicate';
+  end if;
+  return 'collision';
+end;
+$$;
+
+revoke all on function public.morrow_activate_discord_contradiction(uuid,text,text,text,text)
+  from public, anon, authenticated;
+grant execute on function public.morrow_activate_discord_contradiction(uuid,text,text,text,text)
+  to service_role;
+
+create or replace function public.morrow_open_discord_contradiction(
+  p_discord_user_id text,
+  p_release_id text,
+  p_guild_id text,
+  p_channel_id text,
+  p_thread_id text,
+  p_nonce_sha256 text,
+  p_expires_at timestamptz,
+  p_purpose text
+)
+returns table(status text, display_alias text, group_size integer, evidence_variant text, expires_at timestamptz)
+language plpgsql
+security invoker
+set search_path = morrow_private, extensions, public, pg_temp
+as $$
+declare
+  v_matches integer;
+  v_flow morrow_private.discord_contradiction_flows%rowtype;
+  v_player morrow_private.player_identities%rowtype;
+  v_prior boolean;
+  v_variant text;
+begin
+  if p_discord_user_id !~ '^[0-9]{15,22}$' or p_guild_id !~ '^[0-9]{15,22}$'
+     or p_channel_id !~ '^[0-9]{15,22}$'
+     or (p_thread_id is not null and p_thread_id !~ '^[0-9]{15,22}$')
+     or p_nonce_sha256 !~ '^[0-9a-f]{64}$'
+     or p_purpose <> 'classify_behavior_reuse_provenance_v1'
+     or p_expires_at <= now() or p_expires_at > now() + interval '15 minutes' then
+    return query select 'blocked'::text, null::text, 0, null::text, null::timestamptz;
+    return;
+  end if;
+
+  select count(*) into v_matches
+    from morrow_private.discord_contradiction_flows flow
+    join morrow_private.campaigns campaign on campaign.campaign_id = flow.campaign_id
+    join morrow_private.player_identities identity on identity.campaign_id = flow.campaign_id
+    where flow.release_id = p_release_id and flow.status = 'open'
+      and campaign.release_id = p_release_id and campaign.status in ('ready','running','paused')
+      and flow.guild_id = p_guild_id and flow.channel_id = p_channel_id
+      and flow.thread_id is not distinct from p_thread_id
+      and identity.discord_user_id = p_discord_user_id;
+  if v_matches <> 1 then
+    return query select 'blocked'::text, null::text, 0, null::text, null::timestamptz;
+    return;
+  end if;
+
+  select flow, identity into v_flow, v_player
+    from morrow_private.discord_contradiction_flows flow
+    join morrow_private.player_identities identity on identity.campaign_id = flow.campaign_id
+    where flow.release_id = p_release_id and flow.status = 'open'
+      and flow.guild_id = p_guild_id and flow.channel_id = p_channel_id
+      and flow.thread_id is not distinct from p_thread_id
+      and identity.discord_user_id = p_discord_user_id;
+
+  perform pg_advisory_xact_lock(hashtextextended(
+    v_flow.campaign_id::text || ':' || v_player.player_id::text, 1));
+
+  if exists (
+    select 1 from morrow_private.discord_contradiction_votes vote
+    where vote.campaign_id = v_flow.campaign_id and vote.release_id = v_flow.release_id
+      and vote.player_id = v_player.player_id
+  ) then
+    return query select 'complete'::text, null::text, v_flow.linked_player_count::integer,
+      null::text, null::timestamptz;
+    return;
+  end if;
+
+  select exists (
+    select 1 from morrow_private.discord_contradiction_sessions session
+    where session.campaign_id = v_flow.campaign_id and session.release_id = v_flow.release_id
+      and session.player_id = v_player.player_id
+  ) into v_prior;
+  update morrow_private.discord_contradiction_sessions session
+    set state = case when session.expires_at <= now() then 'expired' else 'cancelled' end,
+        revision = session.revision + 1, updated_at = now()
+    where session.campaign_id = v_flow.campaign_id and session.release_id = v_flow.release_id
+      and session.player_id = v_player.player_id and session.state in ('offered','acknowledged');
+
+  v_variant := case when get_byte(digest(v_player.player_id::text, 'sha256'), 0) % 2 = 0
+    then 'route_digest' else 'source_gap' end;
+  insert into morrow_private.discord_contradiction_sessions(
+    campaign_id, release_id, source_event_id, player_id, nonce_sha256, purpose,
+    evidence_variant, expires_at
+  ) values (
+    v_flow.campaign_id, v_flow.release_id, v_flow.source_event_id, v_player.player_id,
+    p_nonce_sha256, p_purpose, v_variant, p_expires_at
+  );
+  return query select case when v_prior then 'recovered' else 'opened' end,
+    v_player.display_alias, v_flow.linked_player_count::integer, v_variant, p_expires_at;
+end;
+$$;
+
+revoke all on function public.morrow_open_discord_contradiction(text,text,text,text,text,text,timestamptz,text)
+  from public, anon, authenticated;
+grant execute on function public.morrow_open_discord_contradiction(text,text,text,text,text,text,timestamptz,text)
+  to service_role;
+
+create or replace function public.morrow_apply_discord_contradiction(
+  p_discord_user_id text,
+  p_release_id text,
+  p_guild_id text,
+  p_channel_id text,
+  p_thread_id text,
+  p_nonce_sha256 text,
+  p_action text,
+  p_decision text,
+  p_purpose text
+)
+returns table(status text, accepted integer, required integer, event_id uuid)
+language plpgsql
+security invoker
+set search_path = morrow_private, extensions, public, pg_temp
+as $$
+declare
+  v_session morrow_private.discord_contradiction_sessions%rowtype;
+  v_flow morrow_private.discord_contradiction_flows%rowtype;
+  v_player morrow_private.player_identities%rowtype;
+  v_accepted integer;
+  v_event_id uuid;
+  v_existing morrow_private.events%rowtype;
+  v_payload jsonb;
+  v_payload_sha256 text;
+begin
+  if p_discord_user_id !~ '^[0-9]{15,22}$' or p_guild_id !~ '^[0-9]{15,22}$'
+     or p_channel_id !~ '^[0-9]{15,22}$'
+     or (p_thread_id is not null and p_thread_id !~ '^[0-9]{15,22}$')
+     or p_nonce_sha256 !~ '^[0-9a-f]{64}$'
+     or p_purpose <> 'classify_behavior_reuse_provenance_v1' then
+    return query select 'blocked'::text, 0, 0, null::uuid;
+    return;
+  end if;
+  select session.* into v_session
+    from morrow_private.discord_contradiction_sessions session
+    join morrow_private.player_identities identity on identity.player_id = session.player_id
+    join morrow_private.discord_contradiction_flows flow
+      on flow.campaign_id = session.campaign_id and flow.release_id = session.release_id
+    where session.nonce_sha256 = p_nonce_sha256 and session.release_id = p_release_id
+      and session.purpose = p_purpose and identity.discord_user_id = p_discord_user_id
+      and flow.guild_id = p_guild_id and flow.channel_id = p_channel_id
+      and flow.thread_id is not distinct from p_thread_id
+    for update of session;
+  if not found then
+    return query select 'blocked'::text, 0, 0, null::uuid;
+    return;
+  end if;
+  select * into v_flow from morrow_private.discord_contradiction_flows flow
+    where flow.campaign_id = v_session.campaign_id and flow.release_id = v_session.release_id;
+  select * into v_player from morrow_private.player_identities identity
+    where identity.player_id = v_session.player_id;
+
+  if v_session.expires_at <= now() then
+    update morrow_private.discord_contradiction_sessions set state = 'expired',
+      revision = revision + 1, updated_at = now() where session_id = v_session.session_id;
+    return query select 'expired'::text, 0, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+  if v_flow.status = 'resolved' then
+    return query select 'duplicate'::text, v_flow.linked_player_count::integer,
+      v_flow.linked_player_count::integer, v_flow.resolved_event_id;
+    return;
+  end if;
+  if v_flow.status = 'halted' then
+    return query select 'collision'::text, 0, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+  if v_session.state = 'decided' and exists (
+    select 1 from morrow_private.discord_contradiction_votes vote
+    where vote.campaign_id = v_flow.campaign_id and vote.release_id = v_flow.release_id
+      and vote.player_id = v_session.player_id
+  ) then
+    select count(*) into v_accepted from morrow_private.discord_contradiction_votes vote
+      where vote.campaign_id = v_flow.campaign_id and vote.release_id = v_flow.release_id;
+    return query select 'pending'::text, v_accepted, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+  if p_action = 'ack' and v_session.state in ('offered','acknowledged') then
+    update morrow_private.discord_contradiction_sessions set state = 'acknowledged',
+      revision = revision + 1, updated_at = now() where session_id = v_session.session_id;
+    return query select 'acknowledged'::text, 0, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+  if p_action in ('decline','cancel') and v_session.state in ('offered','acknowledged') then
+    update morrow_private.discord_contradiction_sessions set state = case when p_action = 'decline'
+      then 'declined' else 'cancelled' end,
+      revision = revision + 1, updated_at = now() where session_id = v_session.session_id;
+    return query select case when p_action = 'decline' then 'declined' else 'cancelled' end,
+      0, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+  if (p_action = 'decline' and v_session.state = 'declined')
+     or (p_action = 'cancel' and v_session.state = 'cancelled') then
+    return query select case when p_action = 'decline' then 'declined' else 'cancelled' end,
+      0, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+  if p_action <> 'decision' or v_session.state <> 'acknowledged'
+     or p_decision is distinct from 'file_live_behavior_as_inferred_source' then
+    return query select 'incorrect'::text, 0, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+
+  perform pg_advisory_xact_lock(hashtextextended(v_flow.campaign_id::text || ':' || v_flow.release_id, 0));
+  insert into morrow_private.discord_contradiction_votes(
+    campaign_id, release_id, source_event_id, player_id, session_id, decision
+  ) values (
+    v_flow.campaign_id, v_flow.release_id, v_flow.source_event_id, v_player.player_id,
+    v_session.session_id, p_decision
+  ) on conflict (campaign_id, release_id, player_id) do nothing;
+  update morrow_private.discord_contradiction_sessions set state = 'decided',
+    revision = revision + 1, updated_at = now() where session_id = v_session.session_id;
+
+  select count(*) into v_accepted from morrow_private.discord_contradiction_votes vote
+    where vote.campaign_id = v_flow.campaign_id and vote.release_id = v_flow.release_id;
+  if v_accepted < v_flow.linked_player_count then
+    return query select 'pending'::text, v_accepted, v_flow.linked_player_count::integer, null::uuid;
+    return;
+  end if;
+
+  v_payload := jsonb_build_object(
+    'linked_player_count', v_flow.linked_player_count,
+    'private_payload', false,
+    'resolution', 'file_live_behavior_as_inferred_source',
+    'scope', 'group',
+    'source_event_id', v_flow.source_event_id
+  );
+  v_payload_sha256 := encode(digest(v_payload::text, 'sha256'), 'hex');
+  insert into morrow_private.events(
+    campaign_id, release_id, event_key, source_surface, actor_player_id,
+    idempotency_key, payload, payload_sha256, occurred_at
+  ) values (
+    v_flow.campaign_id, v_flow.release_id, 'morrow.act2.private_contradiction_resolved',
+    'discord', v_player.player_id, 'discord:morrow:act2:private-contradiction:v1',
+    v_payload, v_payload_sha256, now()
+  ) on conflict (campaign_id, idempotency_key) do nothing
+  returning morrow_private.events.event_id into v_event_id;
+
+  if v_event_id is null then
+    select * into v_existing from morrow_private.events existing
+      where existing.campaign_id = v_flow.campaign_id
+        and existing.idempotency_key = 'discord:morrow:act2:private-contradiction:v1';
+    if v_existing.release_id = v_flow.release_id
+       and v_existing.event_key = 'morrow.act2.private_contradiction_resolved'
+       and v_existing.source_surface = 'discord'
+       and v_existing.payload = v_payload and v_existing.payload_sha256 = v_payload_sha256 then
+      update morrow_private.discord_contradiction_flows set status = 'resolved',
+        resolved_event_id = v_existing.event_id, updated_at = now()
+        where campaign_id = v_flow.campaign_id and release_id = v_flow.release_id;
+      return query select 'duplicate'::text, v_accepted, v_flow.linked_player_count::integer,
+        v_existing.event_id;
+    end if;
+    update morrow_private.discord_contradiction_flows set status = 'halted',
+      last_error = 'group receipt idempotency collision', updated_at = now()
+      where campaign_id = v_flow.campaign_id and release_id = v_flow.release_id;
+    return query select 'collision'::text, v_accepted, v_flow.linked_player_count::integer,
+      v_existing.event_id;
+    return;
+  end if;
+
+  insert into morrow_private.event_projections(event_id, surface)
+    select v_event_id, unnest(definition.projection_surfaces)
+    from morrow_private.event_definitions definition
+    where definition.event_key = 'morrow.act2.private_contradiction_resolved';
+  update morrow_private.discord_contradiction_flows set status = 'resolved',
+    resolved_event_id = v_event_id, updated_at = now()
+    where campaign_id = v_flow.campaign_id and release_id = v_flow.release_id;
+  return query select 'committed'::text, v_accepted, v_flow.linked_player_count::integer, v_event_id;
+end;
+$$;
+
+revoke all on function public.morrow_apply_discord_contradiction(text,text,text,text,text,text,text,text,text)
+  from public, anon, authenticated;
+grant execute on function public.morrow_apply_discord_contradiction(text,text,text,text,text,text,text,text,text)
+  to service_role;
+
+create or replace function public.morrow_claim_discord_projections(
+  p_worker_id text,
+  p_release_id text,
+  p_limit integer,
+  p_lease_seconds integer
+)
+returns table(
+  event_id uuid, event_key text, campaign_id uuid, release_id text, payload_sha256 text,
+  channel_id text, thread_id text, attempts integer
+)
+language plpgsql
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+begin
+  if p_worker_id !~ '^[0-9a-f-]{36}$' or p_limit not between 1 and 50
+     or p_lease_seconds not between 5 and 300 then return; end if;
+  return query
+  with claimable as (
+    select projection.event_id
+    from morrow_private.event_projections projection
+    join morrow_private.events event on event.event_id = projection.event_id
+    where projection.surface = 'discord' and event.release_id = p_release_id
+      and event.event_key in (
+        'morrow.act2.behavior_reuse_proven',
+        'morrow.act2.private_contradiction_resolved'
+      )
+      and (
+        (projection.status in ('queued','failed') and projection.next_attempt_at <= now())
+        or (projection.status = 'leased' and projection.lease_expires_at <= now())
+      )
+    order by event.received_at, event.event_id
+    for update of projection skip locked
+    limit p_limit
+  ), leased as (
+    update morrow_private.event_projections projection set
+      status = 'leased', lease_owner = p_worker_id,
+      lease_expires_at = now() + make_interval(secs => p_lease_seconds),
+      attempts = projection.attempts + 1, updated_at = now()
+    from claimable where projection.event_id = claimable.event_id and projection.surface = 'discord'
+    returning projection.event_id, projection.attempts
+  )
+  select event.event_id, event.event_key, event.campaign_id, event.release_id, event.payload_sha256,
+    flow.channel_id, flow.thread_id, leased.attempts
+  from leased
+  join morrow_private.events event on event.event_id = leased.event_id
+  left join morrow_private.discord_contradiction_flows flow
+    on flow.campaign_id = event.campaign_id and flow.release_id = event.release_id;
+end;
+$$;
+
+revoke all on function public.morrow_claim_discord_projections(text,text,integer,integer)
+  from public, anon, authenticated;
+grant execute on function public.morrow_claim_discord_projections(text,text,integer,integer)
+  to service_role;
+
+create or replace function public.morrow_complete_discord_projection(
+  p_event_id uuid,
+  p_worker_id text,
+  p_release_id text,
+  p_applied boolean,
+  p_error text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = morrow_private, public, pg_temp
+as $$
+declare v_updated integer;
+begin
+  update morrow_private.event_projections projection set
+    status = case when p_applied then 'applied'
+      when projection.attempts >= 8 then 'dead_letter' else 'failed' end,
+    applied_release_id = case when p_applied then p_release_id else null end,
+    applied_at = case when p_applied then now() else null end,
+    last_error = case when p_applied then null else left(coalesce(p_error, 'delivery failed'), 500) end,
+    next_attempt_at = case when p_applied then projection.next_attempt_at
+      else now() + make_interval(secs => least(300, (power(2, least(projection.attempts, 8)))::integer)) end,
+    lease_owner = null, lease_expires_at = null, updated_at = now()
+  from morrow_private.events event
+  where projection.event_id = p_event_id and projection.surface = 'discord'
+    and projection.status = 'leased' and projection.lease_owner = p_worker_id
+    and event.event_id = projection.event_id and event.release_id = p_release_id;
+  get diagnostics v_updated = row_count;
+  return v_updated = 1;
+end;
+$$;
+
+revoke all on function public.morrow_complete_discord_projection(uuid,text,text,boolean,text)
+  from public, anon, authenticated;
+grant execute on function public.morrow_complete_discord_projection(uuid,text,text,boolean,text)
+  to service_role;
 
 -- Authenticated Copperline mutation boundary. The browser chooses neither identity nor campaign:
 -- the Server Action reads its RLS projection, and this function independently rechecks auth.uid(),
@@ -547,7 +1031,8 @@ declare table_name text;
 begin
   foreach table_name in array array[
     'campaigns','player_identities','relationship_state','event_definitions','events',
-    'event_projections','capability_grants','evidence_definitions','evidence_receipts',
+    'event_projections','discord_contradiction_flows','discord_contradiction_sessions',
+    'discord_contradiction_votes','capability_grants','evidence_definitions','evidence_receipts',
     'dialogue_prompts','dialogue_responses','restoration_proposals','witness_anchors',
     'replay_clips','media_assets','media_deliveries','director_actions'
   ] loop

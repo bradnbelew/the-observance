@@ -6,6 +6,18 @@ import-safe tick every ten minutes as crash recovery; the Supabase lease prevent
 
 ## Player commands
 
+The reboot adds one disabled-by-default native Gateway command without changing the V5 command set:
+
+- `/morrow` opens the linked player's private contradiction only after the exact campaign, release,
+  prerequisite projection, and configured channel/thread scope match. Evidence and recovery controls
+  remain ephemeral; the player acknowledges or declines, then selects one authored provenance class.
+  No prose is graded and no modal, HTTP-interaction endpoint, AI, or live-chat dependency is used.
+- Every component carries a short expiring nonce. The server stores only its SHA-256 digest and applies
+  actions through database locks, so double-clicks, reconnects, restarts, and multiple Railway workers
+  converge on one result. Once all one-to-six linked participants file the exact inferred-source choice,
+  a payload-free group receipt is written to the existing event/outbox model. Private evidence text is
+  never copied into that event or its public Discord projection.
+
 - In Minecraft, `/obslink` issues that exact online player a 60-bit, single-use proof code. Only its
   SHA-256 digest is stored; issuance is rate-limited, and the code expires after five minutes.
 - `/link <minecraft name> <callback> <code>` binds one Discord account to an existing Minecraft
@@ -63,6 +75,20 @@ SHOWRUNNER_LEASE_SECONDS=300
 OBSERVANCE_CAMPAIGN_VERSION=v5
 ```
 
+Morrow remains fail-closed unless explicitly enabled for a disposable rehearsal:
+
+```dotenv
+MORROW_DISCORD_ENABLED=false
+MORROW_RELEASE_ID=
+MORROW_DISCORD_CHANNEL_ID=
+MORROW_DISCORD_THREAD_ID=
+```
+
+When enabled, release and channel are mandatory snowflake-bound values; thread is optional but, when
+set, interactions and projections must use that exact thread. Do not enable this against the live guild
+until the schema proposal has become a rehearsed migration and P0 item 10 has produced restart/outage
+receipts.
+
 The cadence is clamped to 10,000–15,000 ms. The lease is clamped to 60–900 seconds. V5 uses no AI,
 speech-to-text, or Discord voice credentials; those retired lanes are absent from production configuration.
 
@@ -96,6 +122,7 @@ receipt.
 ## Verification
 
 ```powershell
+npm.cmd run morrowcheck
 npm.cmd run typecheck
 npm.cmd run audit
 npm.cmd run runtimecheck

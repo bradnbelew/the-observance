@@ -46,6 +46,16 @@ payload hash, and occurrence time.
 Outbox rows keyed by event and surface. Contains status, attempts, lease owner/expiry, next retry,
 applied release, and last error.
 
+### `discord_contradiction_flows` / `discord_contradiction_sessions` / `discord_contradiction_votes`
+
+Private, service-role-only state for the Act 2 contradiction. The flow binds campaign, release,
+Gateway guild/channel/thread scope, prerequisite event, and one-to-six expected linked participants.
+Per-player sessions store an evidence-variant identifier and only a SHA-256 nonce digest; private
+evidence copy never enters the event ledger. Votes are unique per linked player. Advisory and row locks
+make duplicate interaction delivery and concurrent workers converge on one payload-free group receipt.
+Expired leases and sessions have authored recovery paths; an altered idempotency collision halts the
+flow for operator inspection.
+
 ### `evidence_definitions` / `evidence_receipts`
 
 Definitions describe custody, modality, prerequisites, accessibility alternative, and narrative claim.
@@ -91,6 +101,9 @@ Append-only operator actions with reason, before/after revision, and recovery re
   service role; canonical tables remain in `morrow_private`.
 - UPDATE policies include both `USING` and `WITH CHECK`; identity ownership is always explicit.
 - Public Copperline projections are spoiler-filtered and reveal only unlocked material.
+- Discord contradiction RPCs are service-role-only, validate linked Discord/Minecraft ownership plus
+  exact campaign/release/scope/purpose/nonce/prerequisite bindings, and reveal private evidence only in
+  the Gateway interaction response addressed to that player.
 - Every mutation is rate-limited and produces an immutable receipt.
 
 ## Realtime choice

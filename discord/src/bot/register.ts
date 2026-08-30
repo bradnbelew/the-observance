@@ -144,8 +144,13 @@ export const investigateCommand = new SlashCommandBuilder()
     .setDescription('keyboard fallback for the six-letter identity assembled from the affidavits.')
     .addStringOption((option) => option.setName('name').setDescription('the six-letter artifact').setRequired(true).setMinLength(6).setMaxLength(12)));
 
+/** Morrow reboot: one asynchronous private contradiction surface, never a quest log. */
+export const morrowCommand = new SlashCommandBuilder()
+  .setName('morrow')
+  .setDescription('open or recover your linked private recovery exception.');
+
 /** Every rite, in registration order. */
-export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand, investigateCommand] as const;
+export const commands = [whisperCommand, linkCommand, answerCommand, progressCommand, investigateCommand, morrowCommand] as const;
 
 /** JSON payloads for the REST registration call. */
 export const commandsJSON = commands.map((c) => c.toJSON());

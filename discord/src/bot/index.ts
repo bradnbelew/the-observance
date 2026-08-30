@@ -31,6 +31,8 @@ import { handleProgress } from './commands/progress.js';
 import { handleInvestigate, handleInvestigateModal } from './commands/investigate.js';
 import { startPersistentShowrunner } from '../showrunner/persistent.js';
 import { startArgProjectionWorker } from '../v5/arg-projection-worker.js';
+import { handleMorrow, handleMorrowComponent } from './commands/morrow.js';
+import { startMorrowDiscordProjectionWorker } from '../morrow/projection-worker.js';
 
 /** Source tag for every row this process writes to event_log. */
 const SOURCE = 'the-watcher';
@@ -84,9 +86,36 @@ client.once('clientReady', (c) => {
       void logEvent('error', SOURCE, `ARG projection tick failed: ${message}`);
     },
   });
+
+  // The reboot projector is disabled unless every release/channel binding is explicitly configured.
+  // It consumes only the two authored Act 2 Discord callbacks and uses database leases across workers.
+  if (config.morrow.enabled) {
+    startMorrowDiscordProjectionWorker(c, {
+      onError: (err) => {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error('[the-watcher] Morrow projection tick failed:', err);
+        void logEvent('error', SOURCE, `Morrow projection tick failed: ${message}`);
+      },
+    });
+  }
 });
 
 client.on('interactionCreate', async (interaction: Interaction) => {
+  if (interaction.isButton() || interaction.isStringSelectMenu()) {
+    try {
+      if (await handleMorrowComponent(interaction)) return;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[the-watcher] Morrow component stumbled:', err);
+      void logEvent('error', SOURCE, `Morrow component failed: ${message}`);
+      try {
+        if (!interaction.replied && !interaction.deferred) {
+          await interaction.reply({ content: 'The private recovery desk failed safely. Nothing changed.', flags: MessageFlags.Ephemeral });
+        }
+      } catch { /* token may have lapsed */ }
+      return;
+    }
+  }
   if (interaction.isModalSubmit()) {
     try {
       await handleInvestigateModal(interaction);
@@ -129,6 +158,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
         break;
       case 'investigate':
         await handleInvestigate(interaction);
+        break;
+      case 'morrow':
+        await handleMorrow(interaction);
         break;
       default:
         // an unknown rite — the watcher simply goes quiet.
@@ -228,6 +260,14 @@ async function auditDiscordSurface(readyClient: Client<true>): Promise<void> {
     void logEvent('warn', SOURCE, 'bot has unnecessary Administrator permission');
   }
   console.log(`[the-watcher] discord surface ready: ${guild.name} / #${'name' in channel ? channel.name : config.channels.theRecord}`);
+  if (config.morrow.enabled && config.morrow.channelId) {
+    const destinationId = config.morrow.threadId ?? config.morrow.channelId;
+    const morrowChannel = await guild.channels.fetch(destinationId);
+    if (!morrowChannel?.isTextBased()) throw new Error('configured Morrow Discord scope is unavailable');
+    const morrowPermissions = morrowChannel.permissionsFor(me);
+    const morrowMissing = required.filter(([permission]) => !morrowPermissions?.has(permission)).map(([, name]) => name);
+    if (morrowMissing.length > 0) throw new Error(`Morrow Discord scope is missing bot permissions: ${morrowMissing.join(', ')}`);
+  }
 }
 
 client.on('error', (err) => {

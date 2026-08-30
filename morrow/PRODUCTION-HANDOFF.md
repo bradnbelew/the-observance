@@ -10,7 +10,7 @@ and it is not ready for a player server. The shipped config keeps `morrow-reboot
 Implemented and verified:
 
 - clean-room canon, eight-act journey, twelve-investigation ledger, six relationship states
-- twenty-five-event cross-surface vocabulary with explicit capability authorization receipts
+- twenty-six-event cross-surface vocabulary with explicit capability authorization receipts
 - Paper event ownership/prerequisite authority and six-stage transition service
 - restart-safe, hash-chained, local-first Paper journal with collision/release checks
 - signed Next.js Minecraft event endpoint with replay, size, owner, and schema validation
@@ -51,6 +51,14 @@ Implemented and verified:
 - authenticated Copperline receipt RPC proposal with exact authored payload hashes, private token hash,
   linked-user ownership, release/prerequisite enforcement, and idempotent event/outbox creation; it remains
   unapplied pending the isolated database rehearsal in P1
+- disabled-by-default native discord.js Gateway contradiction flow: exact linked Discord/Minecraft,
+  campaign, release, prerequisite, guild/channel/thread, purpose, and expiring nonce bindings; ephemeral
+  intended-recipient evidence; authored acknowledge/decline/cancel/timeout/recovery states; concrete
+  provenance selection with no prose grading; and durable per-player/group locking for one-to-six players
+- payload-free `morrow.act2.private_contradiction_resolved` group receipt with deterministic dedupe,
+  altered-payload collision halt, leased outbox retry/restart recovery, spoiler-safe Discord projection,
+  and Minecraft callback. No HTTP interaction endpoint, Chat SDK adapter, live server connection, or
+  production migration was added
 
 Verified commands:
 
@@ -60,13 +68,17 @@ plugin/gradlew.bat check --no-daemon
 cd dashboard && npm.cmd run selftest
 cd dashboard && npm.cmd run lint
 cd dashboard && npm.cmd run build
+cd discord && npm.cmd run morrowcheck
+cd discord && npm.cmd run typecheck
+cd discord && npm.cmd run audit
+cd discord && npm.cmd run runtimecheck
 ```
 
 ## Production order
 
 ### P0 — Make the 60–90 minute slice playable
 
-Items 1–8 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
+Items 1–9 are implemented in code and focused main-driven self-tests. Room 04 remains behind both the
 global reboot gate and its separate `room04.build-enabled: false` rehearsal gate until a disposable
 Paper/live-client receipt exists. Items 4–6 begin only when those gates have installed Room 04.
 
@@ -94,15 +106,18 @@ Paper/live-client receipt exists. Items 4–6 begin only when those gates have i
 10. Exercise one-, two-, and six-player paths through restart and remote outage before enabling the
     rehearsal config.
 
-### Precise next boundary — P0 item 9 only
+### Precise next boundary — P0 item 10 only
 
-Copperline now ends at the synchronized `morrow.act2.behavior_reuse_proven` ticket update. The route
-accepts only authenticated, RLS-owned projection rows for the current `MORROW_RELEASE_ID`; its two Act 0
-mutations commit only `case_chain_authenticated` and `server_handoff_recovered`. Raw Entity Replay
-samples never enter the web projection. P0 item 9 may add only the private Discord contradiction and
-group receipt for this slice, using native interactions and Ed25519 validation where HTTP interactions
-are used. It must consume the existing event catalog and release bindings, remain idempotent for one to
-six players, and must not implement P0 item 10 rehearsal or mutate a live Discord server.
+Discord now consumes the earned `morrow.act2.behavior_reuse_proven` projection, presents each linked
+participant an intended-recipient ephemeral contradiction, and commits only the payload-free group
+`morrow.act2.private_contradiction_resolved` receipt once every expected participant chooses the exact
+authored inferred-source classification. Paper requires that group receipt before it can offer the
+separate explicit `live_capture_authorized` dialog. P0 item 10 may only rehearse the already-authored
+slice on disposable infrastructure for one, two, and six players through Paper restart, Discord worker
+restart, remote outage/recovery, disconnect/rejoin, duplicate delivery, and clean reset. It must retain
+release-bound journal, projection, physical read-back, and interaction receipts; it must not expand Acts
+3–7, enable the reboot in production, migrate the live database, or mutate live Discord/Crafty/Vercel/
+Supabase services or worlds.
 
 ### P1 — Safe database rehearsal
 
@@ -126,8 +141,9 @@ and factual truth. No three consecutive investigations may lead with the same me
 - The SQL file is a proposal, not a migration, because the Supabase CLI is absent here.
 - Recovery Room 04, the Morrow display body, Paper dialogs, M02 Static Restore, and M03/M04 Entity
   Replay still require disposable Paper/live-client rehearsal. The Copperline reboot route requires an
-  isolated database migration/projector rehearsal and authenticated browser rehearsal. Discord reboot
-  interactions are not implemented.
+  isolated database migration/projector rehearsal and authenticated browser rehearsal. The Discord
+  reboot flow likewise requires the proposal to become an isolated migration plus a disposable guild/
+  worker rehearsal; its shipped feature gate remains false.
 - `morrow-reboot.enabled` stays false until the end-to-end disposable Paper receipt passes.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 

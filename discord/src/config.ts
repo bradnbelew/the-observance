@@ -24,6 +24,12 @@ export interface Config {
     readonly url: string;
     readonly serviceRoleKey: string;
   };
+  readonly morrow: {
+    readonly enabled: boolean;
+    readonly releaseId: string | null;
+    readonly channelId: string | null;
+    readonly threadId: string | null;
+  };
 }
 
 /** Every required env var, mapped to where it lands in `Config`. */
@@ -59,6 +65,20 @@ function loadConfig(): Config {
     );
   }
 
+  const morrowEnabled = process.env.MORROW_DISCORD_ENABLED?.trim().toLowerCase() === 'true';
+  const morrowReleaseId = process.env.MORROW_RELEASE_ID?.trim() || null;
+  const morrowChannelId = process.env.MORROW_DISCORD_CHANNEL_ID?.trim() || null;
+  const morrowThreadId = process.env.MORROW_DISCORD_THREAD_ID?.trim() || null;
+  if (morrowEnabled) {
+    const invalid: string[] = [];
+    if (!morrowReleaseId || !/^[a-z0-9][a-z0-9._-]{6,79}$/.test(morrowReleaseId)) invalid.push('MORROW_RELEASE_ID');
+    if (!morrowChannelId || !/^[0-9]{15,22}$/.test(morrowChannelId)) invalid.push('MORROW_DISCORD_CHANNEL_ID');
+    if (morrowThreadId !== null && !/^[0-9]{15,22}$/.test(morrowThreadId)) invalid.push('MORROW_DISCORD_THREAD_ID');
+    if (invalid.length > 0) {
+      throw new Error(`[config] Morrow Discord is enabled but invalid: ${invalid.join(', ')}.`);
+    }
+  }
+
   return Object.freeze({
     discord: Object.freeze({
       botToken: env.DISCORD_BOT_TOKEN,
@@ -71,6 +91,12 @@ function loadConfig(): Config {
     supabase: Object.freeze({
       url: env.SUPABASE_URL,
       serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY,
+    }),
+    morrow: Object.freeze({
+      enabled: morrowEnabled,
+      releaseId: morrowReleaseId,
+      channelId: morrowChannelId,
+      threadId: morrowThreadId,
     }),
   });
 }

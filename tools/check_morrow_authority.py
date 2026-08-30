@@ -18,6 +18,11 @@ DASHBOARD_COPPERLINE_CASE = ROOT / "dashboard" / "src" / "lib" / "morrow-copperl
 DASHBOARD_COPPERLINE_SERVER = ROOT / "dashboard" / "src" / "lib" / "morrow-copperline-server.ts"
 DASHBOARD_COPPERLINE_ROUTE = ROOT / "dashboard" / "src" / "app" / "support" / "cases" / "mossfield-recovery" / "page.tsx"
 DASHBOARD_COPPERLINE_ACTION = ROOT / "dashboard" / "src" / "app" / "support" / "cases" / "mossfield-recovery" / "actions.ts"
+DISCORD_MORROW_DOMAIN = ROOT / "discord" / "src" / "morrow" / "contradiction.ts"
+DISCORD_MORROW_REPO = ROOT / "discord" / "src" / "morrow" / "repo.ts"
+DISCORD_MORROW_POLICY = ROOT / "discord" / "src" / "morrow" / "projection-policy.ts"
+DISCORD_MORROW_WORKER = ROOT / "discord" / "src" / "morrow" / "projection-worker.ts"
+DISCORD_MORROW_HANDLER = ROOT / "discord" / "src" / "bot" / "commands" / "morrow.ts"
 PLUGIN_BODY_AUTHORITY = PLUGIN_MORROW / "presentation" / "MorrowBodyAuthority.java"
 PLUGIN_BODY_RUNTIME = PLUGIN_MORROW / "presentation" / "BukkitMorrowBody.java"
 PLUGIN_DIALOG_AUTHORITY = PLUGIN_MORROW / "dialog" / "MorrowDialogAuthority.java"
@@ -327,9 +332,72 @@ def main() -> int:
                          "69ef307074c7aaf7cc4fff12c5e8b7b2423c51a05dfc7f8bb11d53b059420a6e"):
             require(required in schema, f"Copperline receipt SQL lacks {required}")
         reboot_surface = "\n".join((case_model, case_server, case_route, case_action))
-        require(re.search(r"\b(?:Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
+        require(re.search(r"\b(?:Hold|Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
                           re.IGNORECASE) is None,
                 "legacy lore leaked into the Copperline reboot surface")
+    except Exception as exc:  # noqa: BLE001
+        errors.append(str(exc))
+
+    try:
+        discord_domain = DISCORD_MORROW_DOMAIN.read_text(encoding="utf-8")
+        discord_repo = DISCORD_MORROW_REPO.read_text(encoding="utf-8")
+        discord_policy = DISCORD_MORROW_POLICY.read_text(encoding="utf-8")
+        discord_worker = DISCORD_MORROW_WORKER.read_text(encoding="utf-8")
+        discord_handler = DISCORD_MORROW_HANDLER.read_text(encoding="utf-8")
+        discord_index = (ROOT / "discord" / "src" / "bot" / "index.ts").read_text(encoding="utf-8")
+        discord_register = (ROOT / "discord" / "src" / "bot" / "register.ts").read_text(encoding="utf-8")
+        discord_config = (ROOT / "discord" / "src" / "config.ts").read_text(encoding="utf-8")
+        discord_package = json.loads((ROOT / "discord" / "package.json").read_text(encoding="utf-8"))
+        schema = (MORROW / "db/schema-proposal.sql").read_text(encoding="utf-8")
+        event = next(row for row in events
+                     if row["key"] == "morrow.act2.private_contradiction_resolved")
+        require(event["owner"] == "discord" and event["projects_to"] == ["minecraft", "discord"],
+                "Act 2 private contradiction event ownership/projection drifted")
+        for required in (
+            "MORROW_CONTRADICTION_TTL_MS", "nonceSha256", "resolveInteractionScope",
+            "authoredPrivateEvidence", "aggregateLinkedDecisions", "private evidence remains private",
+        ):
+            require(required.lower() in discord_domain.lower(),
+                    f"Morrow Discord domain lacks {required}")
+        for required in (
+            "morrow_open_discord_contradiction", "morrow_apply_discord_contradiction",
+            "morrow_claim_discord_projections", "morrow_complete_discord_projection",
+        ):
+            require(required in discord_repo, f"Morrow Discord repository lacks {required}")
+        for required in ("MessageFlags.Ephemeral", "ButtonBuilder", "StringSelectMenuBuilder",
+                         "newContradictionNonce", "resolveInteractionScope", "No prose is graded"):
+            require(required.lower() in discord_handler.lower(),
+                    f"native Morrow Gateway handler lacks {required}")
+        for forbidden in ("ModalBuilder", "fetch(", "SUPABASE_SERVICE_ROLE_KEY", "LLM"):
+            require(forbidden.lower() not in discord_handler.lower(),
+                    f"Morrow Gateway handler crossed its boundary via {forbidden}")
+        require("interaction.isButton()" in discord_index
+                and "interaction.isStringSelectMenu()" in discord_index,
+                "Discord Gateway does not route Morrow native components")
+        require(".setName('morrow')" in discord_register, "native /morrow command is not registered")
+        require("MORROW_DISCORD_ENABLED" in discord_config and "morrowEnabled" in discord_config,
+                "Morrow Discord runtime lacks a fail-closed feature gate")
+        require("chat" not in discord_package.get("dependencies", {})
+                and not any(name.startswith("@chat-adapter/")
+                            for name in discord_package.get("dependencies", {})),
+                "Chat SDK/adapter was added despite the native discord.js architecture")
+        for required in (
+            "discord_contradiction_flows", "discord_contradiction_sessions",
+            "discord_contradiction_votes", "pg_advisory_xact_lock", "skip locked",
+            "lease_expires_at", "p_nonce_sha256", "p_purpose",
+            "'private_payload', false", "from public, anon, authenticated", "to service_role",
+        ):
+            require(required.lower() in schema.lower(), f"Morrow Discord SQL lacks {required}")
+        require("MORROW_BEHAVIOR_REUSE_EVENT" in discord_policy
+                and "MORROW_PRIVATE_CONTRADICTION_EVENT" in discord_policy,
+                "Morrow Discord projection policy lost activation/callback ordering")
+        require("enforceNonce: true" in discord_worker and "allowedMentions: { parse: [] }" in discord_worker,
+                "group receipt delivery lost replay or mention safety")
+        reboot_surface = "\n".join((discord_domain, discord_repo, discord_policy,
+                                      discord_worker, discord_handler))
+        require(re.search(r"\b(?:Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
+                          re.IGNORECASE) is None,
+                "legacy lore leaked into the Morrow Discord surface")
     except Exception as exc:  # noqa: BLE001
         errors.append(str(exc))
 

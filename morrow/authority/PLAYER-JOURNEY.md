@@ -47,12 +47,15 @@ diff, restoration audit.
 **Players believe:** An old resident recording is damaged because one participant is missing.
 
 **They do:** Reconstruct the missing role in a 37-second scene using audio, redstone, inventory, and
-movement evidence. They later perform an intentionally absurd movement test.
+movement evidence. They later perform an intentionally absurd movement test, receive individually
+addressed provenance exceptions through linked Discord identities, and asynchronously file one
+payload-free group classification without requiring live chat.
 
 **They discover:** Completing the replay increased behavioral coverage, and a historical avatar later
 repeats their test.
 
-**Mechanics introduced:** display-model echo, bounded recording/replay, cross-surface ticket response.
+**Mechanics introduced:** display-model echo, bounded recording/replay, cross-surface ticket response,
+private contradiction, and asynchronous group receipt.
 
 **Morrow state:** curious -> intimate.
 

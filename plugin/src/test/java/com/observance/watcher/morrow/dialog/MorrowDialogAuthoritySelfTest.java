@@ -90,8 +90,15 @@ public final class MorrowDialogAuthoritySelfTest {
             state.commit("morrow.act2.missing_role_completed", "paper:test:m03", bytes("{}"));
             state.commit("morrow.act2.live_test_recorded", "paper:test:m04-live", bytes("{}"));
             state.commit("morrow.act2.behavior_reuse_proven", "paper:test:m04-reuse", bytes("{}"));
+            check(MorrowDialogAuthority.currentView(state.snapshot()) == View.ENTITY_REPLAY_CONSOLE,
+                    "behavior proof waits for the private Discord group receipt");
+            check(MorrowDialogAuthority.decide(Action.AUTHORIZE_LIVE_CAPTURE, state.snapshot()).status()
+                            == MorrowDialogAuthority.Status.NOT_READY,
+                    "later capture cannot bypass the private contradiction receipt");
+            state.acceptProjection(MorrowDialogAuthority.PRIVATE_CONTRADICTION_RESOLVED,
+                    "discord:morrow:act2:private-contradiction:v1", bytes("{}"));
             check(MorrowDialogAuthority.currentView(state.snapshot()) == View.LIVE_CAPTURE_AUTHORIZATION,
-                    "behavior proof opens a separate later-capture authorization dialog");
+                    "Discord group receipt opens a separate later-capture authorization dialog");
             Decision declineLive = MorrowDialogAuthority.decide(Action.DECLINE_LIVE_CAPTURE, state.snapshot());
             check(!declineLive.commitsReceipt(), "declining later capture starts nothing and commits nothing");
             Decision authorizeLive = MorrowDialogAuthority.decide(Action.AUTHORIZE_LIVE_CAPTURE, state.snapshot());

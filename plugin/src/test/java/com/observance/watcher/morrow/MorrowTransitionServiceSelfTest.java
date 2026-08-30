@@ -17,7 +17,7 @@ public final class MorrowTransitionServiceSelfTest {
 
         List<List<String>> stages = List.of(
                 List.of("morrow.act1.static_proposal_authenticated", "morrow.act1.intention_error_proven", "morrow.act1.entity_replay_authorized"),
-                List.of("morrow.act2.missing_role_completed", "morrow.act2.behavior_reuse_proven", "morrow.act2.live_capture_authorized"),
+                List.of("morrow.act2.missing_role_completed", "morrow.act2.behavior_reuse_proven", "morrow.act2.private_contradiction_resolved", "morrow.act2.live_capture_authorized"),
                 List.of("morrow.act3.contradiction_preserved", "morrow.act4.witness_anchor_registered", "morrow.act4.almost_home_proven", "morrow.act4.account_continuity_authorized"),
                 List.of("morrow.act5.returning_identity_authenticated", "morrow.act6.current_morrow_reconstruction_proven", "morrow.act6.cold_storage_access_authorized"),
                 List.of("morrow.act7.rollback_anchors_committed", "morrow.act7.branch_policy_committed", "morrow.act7.branch_governance_authorized")

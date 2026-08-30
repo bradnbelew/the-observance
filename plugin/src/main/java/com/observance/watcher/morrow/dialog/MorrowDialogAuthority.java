@@ -14,6 +14,7 @@ public final class MorrowDialogAuthority {
     public static final String PROPOSAL_AUTHENTICATED = "morrow.act1.static_proposal_authenticated";
     public static final String INTENTION_ERROR_PROVEN = "morrow.act1.intention_error_proven";
     public static final String ENTITY_REPLAY_AUTHORIZED = "morrow.act1.entity_replay_authorized";
+    public static final String PRIVATE_CONTRADICTION_RESOLVED = "morrow.act2.private_contradiction_resolved";
 
     public enum View {
         TERMINAL_GREETING,
@@ -71,6 +72,7 @@ public final class MorrowDialogAuthority {
         if (!has(snapshot, INTENTION_ERROR_PROVEN)) return View.EVIDENCE_REVIEW;
         if (!has(snapshot, ENTITY_REPLAY_AUTHORIZED)) return View.ENTITY_REPLAY_AUTHORIZATION;
         if (!has(snapshot, EntityReplayAuthority.BEHAVIOR_REUSE_PROVEN)) return View.ENTITY_REPLAY_CONSOLE;
+        if (!has(snapshot, PRIVATE_CONTRADICTION_RESOLVED)) return View.ENTITY_REPLAY_CONSOLE;
         if (!has(snapshot, EntityReplayAuthority.LIVE_CAPTURE_AUTHORIZED)) return View.LIVE_CAPTURE_AUTHORIZATION;
         return View.EVIDENCE_REVIEW;
     }
@@ -110,13 +112,13 @@ public final class MorrowDialogAuthority {
                     : notReady("The unsupported restoration block must be proven before Entity Replay can be authorized.");
             case DECLINE_ENTITY_REPLAY -> noReceipt(
                     "Entity Replay remains unauthorized. Evidence and relationship state are unchanged.");
-            case AUTHORIZE_LIVE_CAPTURE -> has(snapshot, EntityReplayAuthority.BEHAVIOR_REUSE_PROVEN)
+            case AUTHORIZE_LIVE_CAPTURE -> has(snapshot, PRIVATE_CONTRADICTION_RESOLVED)
                     ? receipt(
                             EntityReplayAuthority.LIVE_CAPTURE_AUTHORIZED,
                             "paper:room04:live-capture:v1",
                             "{\"capability\":\"live_capture\",\"dialog\":\"live_capture_authorization_v1\",\"scope\":\"later_authored_scene_only\",\"starts_capture\":false}",
                             "Later live capture is authorized. This receipt does not start a recording.")
-                    : notReady("Behavior reuse must be proven before later live capture can be authorized.");
+                    : notReady("The private behavior-reuse contradiction must have a group receipt before later live capture can be authorized.");
             case DECLINE_LIVE_CAPTURE -> noReceipt(
                     "Later live capture remains unauthorized. No recording started and no receipt was created.");
         };

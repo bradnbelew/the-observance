@@ -258,6 +258,7 @@ for (const stale of ['relayCallbackMatches', 'relay-form', '/support/ticket.php?
 
 const expectedVercelEnv = [
   'ADMIN_EMAILS', 'AUTHOR_PASSWORD', 'AUTHOR_USERNAME',
+  'MORROW_RELEASE_ID',
   'NEXT_PUBLIC_SUPABASE_ANON_KEY', 'NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY',
 ].sort();
 const vercelEnvKeys = [...dashboardEnv.matchAll(/^([A-Z][A-Z0-9_]+)=/gm)].map((match) => match[1]!).sort();

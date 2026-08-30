@@ -12,6 +12,7 @@
     {"key":"morrow.act2.missing_role_completed","act":2,"owner":"minecraft","projects_to":["minecraft","copperline"]},
     {"key":"morrow.act2.live_test_recorded","act":2,"owner":"minecraft","projects_to":["minecraft","copperline","media"]},
     {"key":"morrow.act2.behavior_reuse_proven","act":2,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
+    {"key":"morrow.act2.private_contradiction_resolved","act":2,"owner":"discord","projects_to":["minecraft","discord"]},
     {"key":"morrow.act2.live_capture_authorized","act":2,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},
     {"key":"morrow.act3.version_fragments_authenticated","act":3,"owner":"minecraft","projects_to":["minecraft","copperline"]},
     {"key":"morrow.act3.contradiction_preserved","act":3,"owner":"minecraft","projects_to":["minecraft","copperline","discord"]},

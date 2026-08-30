@@ -51,6 +51,20 @@ Supabase Postgres
 7. Replays are harmless: an identical idempotency key returns the prior receipt; a mismatched payload
    is a collision and fails closed.
 
+## Discord contradiction boundary
+
+- The existing discord.js Gateway worker owns `/morrow`, buttons, and select menus. No second adapter,
+  HTTP interaction endpoint, or mandatory live-chat loop is introduced.
+- The earned `morrow.act2.behavior_reuse_proven` projection activates a release- and scope-bound group
+  flow. Each linked player receives only their own ephemeral authored evidence and an expiring nonce.
+- A service-role RPC validates identity, prerequisite, scope, purpose, nonce, expiry, and exact authored
+  selection under durable locks. Freeform language cannot decide progress.
+- After every one-to-six expected participant has independently filed the inferred-source choice, the
+  database commits one `morrow.act2.private_contradiction_resolved` event with no private payload. The
+  outbox posts a spoiler-safe group receipt and projects the callback to Minecraft.
+- Decline, cancel, timeout, reconnect, outage, and worker restart preserve recovery without fabricating
+  progress. The later Paper `live_capture_authorized` dialog remains a separate explicit decision.
+
 ## Minecraft thread model
 
 - Bukkit/Paper world and entity access occurs only on the owning server thread/scheduler.

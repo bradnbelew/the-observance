@@ -17,6 +17,7 @@ public final class MorrowTransitionService {
             MorrowStage.CURIOUS, List.of(
                     "morrow.act2.missing_role_completed",
                     "morrow.act2.behavior_reuse_proven",
+                    "morrow.act2.private_contradiction_resolved",
                     "morrow.act2.live_capture_authorized"
             ),
             MorrowStage.INTIMATE, List.of(
