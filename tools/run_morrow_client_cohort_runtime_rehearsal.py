@@ -231,7 +231,7 @@ def main() -> int:
             args.minecraft_root.resolve(), args.javaw.resolve(), args.max_memory_mib)
         first_safe = wait_for_cohort(first_process, usernames)
         fill_lines = first_process.batch("COHORT_FILL", inventory_commands(usernames))
-        require(sum("Replaced slot" in line for line in fill_lines) == 36 * len(usernames),
+        require(sum("Replaced a slot" in line for line in fill_lines) == 36 * len(usernames),
                 "Paper did not fill every main-inventory slot")
         first_counts = verify_inventory(first_process, usernames, "FIRST")
         first_rows = stop_clients(first_root, first_owned)
