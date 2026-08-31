@@ -58,6 +58,7 @@ public final class BukkitMorrowBody implements AutoCloseable {
     private UUID activeSpeaker;
     private long focusUntilMillis;
     private BukkitTask trackingTask;
+    private BukkitTask deferredAuditTask;
 
     public BukkitMorrowBody(
             JavaPlugin plugin,
@@ -90,6 +91,7 @@ public final class BukkitMorrowBody implements AutoCloseable {
     public void start(MorrowRelationshipSnapshot snapshot) {
         requirePrimaryThread();
         Objects.requireNonNull(snapshot, "snapshot");
+        cancelDeferredAudit();
         cleanupOwned();
         spawn(snapshot.stage(), snapshot.revision());
         trackingTask = plugin.getServer().getScheduler().runTaskTimer(
@@ -107,8 +109,20 @@ public final class BukkitMorrowBody implements AutoCloseable {
             audit();
             return;
         }
+        cancelDeferredAudit();
         cleanupOwned();
         spawn(snapshot.stage(), snapshot.revision());
+        long expectedRevision = snapshot.revision();
+        deferredAuditTask = plugin.getServer().getScheduler().runTask(plugin, () -> {
+            deferredAuditTask = null;
+            if (currentRevision != expectedRevision) return;
+            try {
+                audit();
+            } catch (RuntimeException failure) {
+                plugin.getLogger().severe(
+                        "Morrow fallback body deferred audit failed: " + safe(failure.getMessage()));
+            }
+        });
     }
 
     public void focus(Player player) {
@@ -141,6 +155,10 @@ public final class BukkitMorrowBody implements AutoCloseable {
     }
 
     public void audit() {
+        audit(true);
+    }
+
+    private void audit(boolean requireValidInteraction) {
         requirePrimaryThread();
         if (currentPose == null) throw new IllegalStateException("Morrow fallback body is not started");
         int expected = currentPose.embodied() ? Part.values().length + 2 : 2;
@@ -159,7 +177,9 @@ public final class BukkitMorrowBody implements AutoCloseable {
                 throw new IllegalStateException("Morrow fallback body PDC audit failed");
             }
         }
-        if (interaction == null || !interaction.isValid() || !isOwnedInteraction(interaction)) {
+        if (interaction == null
+                || (requireValidInteraction && !interaction.isValid())
+                || !isOwnedInteraction(interaction)) {
             throw new IllegalStateException("Morrow fallback interaction is missing");
         }
     }
@@ -221,7 +241,10 @@ public final class BukkitMorrowBody implements AutoCloseable {
             entity.setResponsive(true);
         });
         entities.add(interaction);
-        audit();
+        // Paper can report a newly spawned Interaction as temporarily invalid
+        // during a native dialog callback. PDC/count ownership is synchronous;
+        // strict validity is audited on the following server tick.
+        audit(false);
     }
 
     private void configure(Entity entity, String part) {
@@ -304,11 +327,21 @@ public final class BukkitMorrowBody implements AutoCloseable {
     @Override
     public void close() {
         requirePrimaryThread();
+        cancelDeferredAudit();
         if (trackingTask != null) trackingTask.cancel();
         trackingTask = null;
         cleanupOwned();
         currentPose = null;
         currentRevision = -1L;
+    }
+
+    private void cancelDeferredAudit() {
+        if (deferredAuditTask != null) deferredAuditTask.cancel();
+        deferredAuditTask = null;
+    }
+
+    private static String safe(String message) {
+        return message == null ? "unknown" : message.replaceAll("[\\r\\n]+", " ");
     }
 
     private static float normalizeYaw(float yaw) {
