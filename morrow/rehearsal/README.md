@@ -49,6 +49,26 @@ manifest, and closes cleanly. Verify it with
 dissent marks, native classification dialogue, wrong answers, Escape path, and public correction still
 require real-client media; the server receipt does not claim those interactions.
 
+The retained `witness-anchor-runtime/latest.json` checkpoint proves the M07 paired-original chamber
+builds as 1,547 real Paper cells, preserves six arbitrary editable reconstruction cells and nine owned
+displays across restart, and refuses foreign targets. The retained
+`almost-home-runtime/latest.json` checkpoint proves the M08 5,225-cell source gallery and completed
+house, eight displays, dynamic chronology lamps, and restart readback. Their private/public reads,
+editing, cipher, provenance, authorization, wrong-answer, and Escape paths remain real-client gates.
+
+The retained `account-continuity-runtime/latest.json` checkpoint proves the M09 2,520-cell safe lobby,
+four dynamic state lamps, bounded echo scene, ten owned entities, semantic readback, restart, and clean
+shutdown on Paper 1.21.11. Its authority tests cover salted private anchors, bounded action receipts,
+wrong identity claims, crash recovery, and one-/two-/six-player paths. A real player's private dialog,
+quit/rejoin, echo observation, and identity clicks remain explicitly unproven.
+
+The retained `maintenance-window-runtime/latest.json` checkpoint proves the M10 5,301-cell split
+chamber, two physical hopper endpoints, six state lamps, two contradictory Morrow display bodies,
+eighteen owned entities, restart readback, and cleanup. Its authority tests cover fresh nonce transfer,
+unsafe deletion refusal, non-consuming wrong/timeout paths, safe disconnect return, restart recovery,
+and one-/two-/six-player cohorts. Tagged-item transfer and asymmetric co-op still require real-client
+media; the server receipt does not claim those inputs.
+
 The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
 installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without
 launching a GUI or contacting the server. It retains only JSON/options evidence—not client binaries—

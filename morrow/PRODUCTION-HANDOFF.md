@@ -49,6 +49,19 @@ Implemented and verified:
   `live_test_recorded`, and `behavior_reuse_proven`
 - separate native later-capture authorization after behavior proof; it commits only
   `live_capture_authorized` with `starts_capture: false` and never starts recording automatically
+- M05–M08 are implemented as isolated, receipt-bound Paper investigations: the three-version room
+  route, consensus audit, paired witness-anchor reconstruction, and source-chronology/Vigenere house
+  gallery. Their retained Paper checkpoints prove 1,617 / 1,309 / 1,547 / 5,225 cells and stable
+  3 / 8 / 9 / 8 owned display counts across restart without claiming human interaction
+- M09 Account Continuity is implemented as a 2,520-cell safe chamber with a hashed private anchor,
+  real quit/join receipts, a four-action bounded echo, excluded-knowledge identity challenge, four
+  state lamps, ten owned entities, reset/immutability rules, crash recovery, and 1/2/6-player authority
+  coverage; retained Paper proof is under `morrow/rehearsal/account-continuity-runtime`
+- M10 Maintenance Window is implemented as a 5,301-cell split-reality chamber with contradictory
+  Morrow bodies, witnessed pulses, tagged paper nonces, two physical hopper endpoints, non-consuming
+  failure paths, safe disconnect return, retain-both authority, six state lamps, eighteen owned
+  entities, restart recovery, and 1/2/6-player authority coverage; retained Paper proof is under
+  `morrow/rehearsal/maintenance-window-runtime`
 - Copperline Act 0 support case at `/support/cases/mossfield-recovery`: an unresolved hosting-recovery
   workbench with an exact accessible text attachment and SHA-256 custody check, authenticated short-token
   handoff recovery, release/player/campaign-bound RLS reads, player-owned Server Actions, and explicit
@@ -99,6 +112,8 @@ Verified commands:
 ```text
 python tools/check_morrow_authority.py
 python tools/check_morrow_rehearsal.py
+python tools/check_morrow_account_continuity_runtime_checkpoint.py
+python tools/check_morrow_maintenance_window_runtime_checkpoint.py
 plugin/gradlew.bat check --no-daemon
 plugin/gradlew.bat build --no-daemon
 cd dashboard && npm.cmd run selftest
@@ -170,7 +185,9 @@ authored Discord receipt has crossed a real Gateway in a temporary everyone-deni
 channel, including `MESSAGE_CREATE`, REST readback, stable nonce, mention suppression, deletion, and
 `Unknown Channel` verification. The database-claimed worker and a disposable-guild linked-player
 ephemeral interaction remain; the JavaScript Copperline worker is only an operator fallback.
-Do not expand Acts 3–7, enable production, or mutate production services, data, or worlds at this boundary.
+Do not enable production or mutate production services, data, or worlds at this boundary. M05–M10 now
+have bounded authority and Paper construction/restart evidence; their complete human interaction lanes
+remain open, and M11–M14 must preserve the same proof discipline.
 
 The first 2026-08-30 loopback attempts still document Windows app capture failing with
 `SetIsBorderRequired failed: No such interface supported (0x80004002)` and are retained under
@@ -212,11 +229,13 @@ Completed on 2026-08-30 against the isolated `observance-validation-20260727` pr
 5. Production application remains blocked until a fresh backup and explicit authorization. Receipt:
    `morrow/rehearsal/database/2026-08-30-isolated-supabase.json`.
 
-### P2 — Expand acts without breaking the grammar
+### P2 — Continue M11–M14 without breaking the grammar
 
-Implement Acts 3–7 in ledger order. Each investigation must retain at least three evidence sources,
-two surfaces, a native input verb, recoverable failure, accessibility equivalent, callback, payoff,
-and factual truth. No three consecutive investigations may lead with the same mechanic.
+M05–M10 now have pure authority, bounded Paper structures, native adapters, 1/2/6-player tests, and
+retained two-boot server evidence. Continue with M11–M14 in ledger order. Each investigation must retain
+at least three evidence sources, two surfaces, a native input verb, recoverable failure, accessibility
+equivalent, callback, payoff, and factual truth. No three consecutive investigations may lead with the
+same mechanic.
 
 ## Hard launch blockers
 
@@ -232,6 +251,10 @@ and factual truth. No three consecutive investigations may lead with the same me
   authenticated RLS read. Discord has real bot-only Gateway
   transport evidence but still requires a database-claimed worker and disposable-guild linked-player
   interaction; its shipped feature gate remains false.
+- M05–M10 construction and restart checkpoints are green, but their complete native-dialog, private
+  display, wrong-answer, Escape, item-transfer, disconnect/rejoin, asymmetric-coop, readability, and
+  pacing lanes are not. The current Computer Use capture path still fails on this host with
+  `SetIsBorderRequired ... 0x80004002`; no blind client input was sent.
 - `morrow-reboot.enabled` stays false until all remaining human-client and isolated-service receipts pass.
 - Legacy names are audit-forbidden inside the reboot authority except the README's explicit boundary.
 

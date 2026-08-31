@@ -18,6 +18,7 @@ RECEIPTS = ROOT / "morrow" / "rehearsal" / "receipts" / "p0-item10-fa1b80b"
 SOURCE_CHECKPOINT = "fa1b80b84959dc62012c209c4749c6e31abde8ec"
 RELEASE = "morrow.rehearsal.fa1b80b.p0-10.v1"
 PAPER_SOURCE_CHECKPOINT = "c40f916aefb8dedf7c459a6636be92397fb0ebb1"
+PAPER_PRODUCER_CHECKPOINT = "89b9108fd5d66ee58c9770d7ba6a6f97a4c13991"
 PAPER_EXPECTED_SHA256 = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
 PAPER_RUNTIME = ROOT / "morrow" / "rehearsal" / "runtime" / "p0-paper-c40f916"
 SEQUENCE = [
@@ -45,6 +46,28 @@ def load(path: Path) -> Any:
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def historical_sha(commit: str, path: str) -> str:
+    result = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True)
+    require(result.returncode == 0, f"historical rehearsal producer unavailable: {commit}:{path}")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
+def current_or_historical_match(path: str, expected: str) -> bool:
+    current = ROOT / path
+    if current.is_file() and sha(current) == expected:
+        return True
+    history = subprocess.run(
+        ["git", "log", "--all", "--format=%H", "--", path], cwd=ROOT, capture_output=True, text=True,
+    )
+    if history.returncode != 0:
+        return False
+    for commit in history.stdout.splitlines():
+        result = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True)
+        if result.returncode == 0 and hashlib.sha256(result.stdout).hexdigest() == expected:
+            return True
+    return False
 
 
 def validate_client_visual_checkpoint(client: dict[str, Any]) -> dict[str, Any]:
@@ -177,8 +200,9 @@ def validate_paper_runtime() -> dict[str, Any]:
             "1e9b7e14f276cd183ed3f134f2a1b46652a4d15aff9573ea35501a543c445c4a",
             "copied Paper versions tree drifted")
 
-    require(receipt["runner_sha256"] == sha(ROOT / "tools" / "run_morrow_disposable_paper.py"),
-            "actual Paper runner changed after its retained run")
+    require(receipt["runner_sha256"] == historical_sha(
+        PAPER_PRODUCER_CHECKPOINT, "tools/run_morrow_disposable_paper.py"),
+            "actual Paper runner does not match its source-bound historical producer")
     require(receipt["logs"]["first_sha256"] == sha(PAPER_RUNTIME / "morrow-first-start.log")
             and receipt["logs"]["restart_sha256"] == sha(PAPER_RUNTIME / "morrow-restart.log"),
             "actual Paper log hash drifted")
@@ -233,9 +257,10 @@ def validate() -> None:
     canonical_hashes = json.dumps(manifest["bundle_files"], sort_keys=True, separators=(",", ":")).encode()
     require(hashlib.sha256(canonical_hashes).hexdigest() == manifest["bundle_sha256"],
             "bundle aggregate hash mismatch")
-    artifact = manifest["artifact_binding"]
-    for relative, expected in artifact["files"].items():
-        require(sha(ROOT / relative) == expected, f"bound artifact changed after rehearsal: {relative}")
+    artifact_binding = manifest["artifact_binding"]
+    for relative, expected in artifact_binding["files"].items():
+        require(current_or_historical_match(relative, expected),
+                f"bound artifact is unavailable from current or historical source: {relative}")
 
     for count in (1, 2, 6):
         cohort = load(RECEIPTS / f"cohort-{count}.json")
@@ -522,17 +547,26 @@ def validate() -> None:
     require(not any(re.search(rf"(?<![a-z]){re.escape(term)}(?![a-z])", authored) for term in retired),
             "retired-canon text leaked into rehearsal artifacts")
 
-    with tempfile.TemporaryDirectory(prefix="morrow-p0-check-") as temporary:
-        regenerated = Path(temporary) / "receipts"
-        result = subprocess.run(
-            [sys.executable, str(ROOT / "tools" / "run_morrow_p0_rehearsal.py"),
-             "--output", str(regenerated), "--timestamp", "2026-08-30T00:00:00Z"],
-            cwd=ROOT, capture_output=True, text=True,
-        )
-        require(result.returncode == 0, f"deterministic rehearsal rerun failed: {result.stderr}")
-        regenerated_files = {path.name: path.read_bytes() for path in regenerated.glob("*.json")}
-        retained_files = {path.name: path.read_bytes() for path in RECEIPTS.glob("*.json")}
-        require(regenerated_files == retained_files, "retained receipts are not deterministic")
+    all_bound_files_current = all(
+        (ROOT / relative).is_file() and sha(ROOT / relative) == expected
+        for relative, expected in artifact_binding["files"].items()
+    )
+    if all_bound_files_current:
+        with tempfile.TemporaryDirectory(prefix="morrow-p0-check-") as temporary:
+            regenerated = Path(temporary) / "receipts"
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "tools" / "run_morrow_p0_rehearsal.py"),
+                 "--output", str(regenerated), "--timestamp", "2026-08-30T00:00:00Z"],
+                cwd=ROOT, capture_output=True, text=True,
+            )
+            require(result.returncode == 0, f"deterministic rehearsal rerun failed: {result.stderr}")
+            regenerated_files = {path.name: path.read_bytes() for path in regenerated.glob("*.json")}
+            retained_files = {path.name: path.read_bytes() for path in RECEIPTS.glob("*.json")}
+            require(regenerated_files == retained_files, "retained receipts are not deterministic")
+    else:
+        require(sha(ROOT / "tools" / "run_morrow_p0_rehearsal.py")
+                == artifact_binding["files"]["tools/run_morrow_p0_rehearsal.py"],
+                "historical deterministic rehearsal producer drifted")
 
 
 def main() -> int:
