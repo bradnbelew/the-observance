@@ -108,6 +108,7 @@ def pluginSelfTests = [
     , morrowBodyAuthority: 'com.observance.watcher.morrow.presentation.MorrowBodyAuthoritySelfTest'
     , morrowDialogAuthority: 'com.observance.watcher.morrow.dialog.MorrowDialogAuthoritySelfTest'
     , staticRestoreInvestigation: 'com.observance.watcher.morrow.room04.staticrestore.StaticRestoreInvestigationSelfTest'
+    , versionRoomsAuthority: 'com.observance.watcher.morrow.versionrooms.VersionRoomsAuthoritySelfTest'
     , entityReplayLoop: 'com.observance.watcher.morrow.room04.replay.EntityReplayLoopSelfTest'
     , morrowVerticalSliceRehearsal: 'com.observance.watcher.morrow.rehearsal.MorrowVerticalSliceRehearsalSelfTest'
 ]

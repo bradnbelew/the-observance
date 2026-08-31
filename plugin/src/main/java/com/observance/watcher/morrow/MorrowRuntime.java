@@ -10,6 +10,10 @@ import com.observance.watcher.morrow.presentation.BukkitMorrowBody;
 import com.observance.watcher.morrow.room04.staticrestore.BukkitStaticRestore;
 import com.observance.watcher.morrow.room04.staticrestore.StaticRestoreManifest;
 import com.observance.watcher.morrow.room04.replay.BukkitEntityReplay;
+import com.observance.watcher.morrow.versionrooms.BukkitVersionRooms;
+import com.observance.watcher.morrow.versionrooms.BukkitVersionRoomsWorld;
+import com.observance.watcher.morrow.versionrooms.VersionRoomsInstaller;
+import com.observance.watcher.morrow.versionrooms.VersionRoomsManifest;
 import com.observance.watcher.listener.ResourcePackPusher;
 import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
@@ -28,16 +32,19 @@ public final class MorrowRuntime implements AutoCloseable {
     private static final String CURSOR_NAME = "morrow-reboot.projector.cursor";
     private static final String ROOM04_SNAPSHOT_NAME = "morrow-room04.rollback.snapshot";
     private static final String ROOM04_RECEIPT_NAME = "morrow-room04.install.receipt";
+    private static final String VERSION_ROOMS_RECEIPT_NAME = "morrow-version-rooms.install.receipt";
 
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
     private final MorrowEventProjector projector;
     private final RecoveryRoom04Installer.Result room04Result;
+    private final VersionRoomsInstaller.Result versionRoomsResult;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
     private final BukkitEntityReplay entityReplay;
     private final BukkitMorrowDialogs dialogs;
     private final BukkitRecoveryRoom04Entry playerEntry;
+    private final BukkitVersionRooms versionRooms;
     private final ResourcePackTracker resourcePackTracker;
     private final ResourcePackPusher resourcePackPusher;
 
@@ -46,22 +53,26 @@ public final class MorrowRuntime implements AutoCloseable {
             MorrowLocalState localState,
             MorrowEventProjector projector,
             RecoveryRoom04Installer.Result room04Result,
+            VersionRoomsInstaller.Result versionRoomsResult,
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
             BukkitMorrowDialogs dialogs,
             BukkitRecoveryRoom04Entry playerEntry,
+            BukkitVersionRooms versionRooms,
             ResourcePackTracker resourcePackTracker,
             ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
         this.room04Result = room04Result;
+        this.versionRoomsResult = versionRoomsResult;
         this.body = body;
         this.staticRestore = staticRestore;
         this.entityReplay = entityReplay;
         this.dialogs = dialogs;
         this.playerEntry = playerEntry;
+        this.versionRooms = versionRooms;
         this.resourcePackTracker = resourcePackTracker;
         this.resourcePackPusher = resourcePackPusher;
     }
@@ -128,12 +139,31 @@ public final class MorrowRuntime implements AutoCloseable {
                     new BukkitRecoveryRoom04World(world, room04Origin),
                     mutableCells);
         }
+        VersionRoomsInstaller.Result versionRoomsResult = null;
+        VersionRoomsInstaller.Origin versionRoomsOrigin = null;
+        if (section.getBoolean("version-rooms.build-enabled", false)) {
+            versionRoomsOrigin = new VersionRoomsInstaller.Origin(
+                    section.getInt("version-rooms.origin-x", 32),
+                    section.getInt("version-rooms.origin-y", 80),
+                    section.getInt("version-rooms.origin-z"));
+            VersionRoomsManifest.Bounds bounds = VersionRoomsManifest.BOUNDS;
+            if (versionRoomsOrigin.y() + bounds.minimumY() < world.getMinHeight()
+                    || versionRoomsOrigin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+                throw new IllegalArgumentException("M05 version-room origin exceeds the configured world height");
+            }
+            VersionRoomsManifest manifest = new VersionRoomsManifest();
+            versionRoomsResult = new VersionRoomsInstaller(
+                    manifest, data.resolve(VERSION_ROOMS_RECEIPT_NAME)).install(
+                    settings.releaseId(), versionRoomsOrigin,
+                    new BukkitVersionRoomsWorld(world, versionRoomsOrigin));
+        }
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
         BukkitStaticRestore staticRestore = null;
         BukkitEntityReplay entityReplay = null;
         BukkitMorrowDialogs dialogs = null;
         BukkitRecoveryRoom04Entry playerEntry = null;
+        BukkitVersionRooms versionRooms = null;
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
@@ -170,17 +200,28 @@ public final class MorrowRuntime implements AutoCloseable {
                         + " snapshot=" + room04Result.snapshotSha256()
                         + " blocks=" + room04Result.blockCount());
             }
+            if (versionRoomsResult != null && versionRoomsOrigin != null) {
+                versionRooms = new BukkitVersionRooms(
+                        plugin, world, versionRoomsOrigin, settings.releaseId(), state, data);
+                versionRooms.start();
+                plugin.getLogger().info("MORROW_VERSION_ROOMS_READY status=" + versionRoomsResult.status()
+                        + " manifest=" + versionRoomsResult.manifestSha256()
+                        + " blocks=" + versionRoomsResult.blockCount());
+            }
             plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
                     + " resource_pack=" + (packPlan.enabled() ? "optional" : "disabled")
                     + " body_entities=" + (body == null ? 0 : body.ownedEntityCount())
                     + " static_entities=" + (staticRestore == null ? 0 : staticRestore.ownedEntityCount())
-                    + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount()));
+                    + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount())
+                    + " version_entities=" + (versionRooms == null ? 0 : versionRooms.ownedEntityCount()));
             return new MorrowRuntime(
-                    settings, state, projector, room04Result, body, staticRestore, entityReplay, dialogs,
-                    playerEntry, resourcePackTracker, resourcePackPusher);
+                    settings, state, projector, room04Result, versionRoomsResult,
+                    body, staticRestore, entityReplay, dialogs,
+                    playerEntry, versionRooms, resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
+            if (versionRooms != null) versionRooms.close();
             if (dialogs != null) dialogs.close();
             if (entityReplay != null) entityReplay.close();
             if (staticRestore != null) staticRestore.close();
@@ -209,8 +250,13 @@ public final class MorrowRuntime implements AutoCloseable {
         return Optional.ofNullable(room04Result);
     }
 
+    public Optional<VersionRoomsInstaller.Result> versionRoomsResult() {
+        return Optional.ofNullable(versionRoomsResult);
+    }
+
     @Override
     public void close() {
+        if (versionRooms != null) versionRooms.close();
         if (dialogs != null) dialogs.close();
         if (entityReplay != null) entityReplay.close();
         if (staticRestore != null) staticRestore.close();

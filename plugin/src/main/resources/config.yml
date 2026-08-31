@@ -162,3 +162,9 @@ morrow-reboot:
     origin-x: 0
     origin-y: 80
     origin-z: 0
+  version-rooms:
+    # Separate M05 world-build gate. The default origin is deliberately outside Room 04.
+    build-enabled: false
+    origin-x: 32
+    origin-y: 80
+    origin-z: 0

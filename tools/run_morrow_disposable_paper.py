@@ -176,7 +176,9 @@ def configure(target: Path, paper: Path, plugin: Path, cache_root: Path,
         '  ingest-secret-env: "MORROW_MINECRAFT_INGEST_SECRET"', f'  ingest-secret: "{SECRET}"',
         "  projector:", "    connect-timeout-ms: 500", "    request-timeout-ms: 1000",
         "    initial-retry-ms: 100", "    maximum-retry-ms: 500", "  room04:",
-        "    build-enabled: true", "    origin-x: 0", "    origin-y: 80", "    origin-z: 0", "",
+        "    build-enabled: true", "    origin-x: 0", "    origin-y: 80", "    origin-z: 0",
+        "  version-rooms:", "    build-enabled: true", "    origin-x: 32",
+        "    origin-y: 80", "    origin-z: 0", "",
     ])
     write_text(target / "plugins" / "Observance" / "config.yml", config)
     journal = seed_journal(target / "plugins" / "Observance" / "morrow-reboot.journal")
@@ -318,12 +320,14 @@ class PaperProcess:
 
 
 def entity_audit(runtime_ready: str, label: str) -> dict[str, int]:
-    match = re.search(r"body_entities=(\d+) static_entities=(\d+) replay_entities=(\d+)", runtime_ready)
+    match = re.search(
+        r"body_entities=(\d+) static_entities=(\d+) replay_entities=(\d+) version_entities=(\d+)",
+        runtime_ready)
     if match is None:
         raise RuntimeError(f"{label} runtime receipt omitted PDC-owned entity counts")
     result = {"body": int(match.group(1)), "static_restore": int(match.group(2)),
-              "entity_replay": int(match.group(3))}
-    expected = {"body": 2, "static_restore": 26, "entity_replay": 6}
+              "entity_replay": int(match.group(3)), "version_rooms": int(match.group(4))}
+    expected = {"body": 2, "static_restore": 26, "entity_replay": 6, "version_rooms": 3}
     if result != expected:
         raise RuntimeError(f"{label} PDC-owned entity counts {result}, expected {expected}")
     return result
@@ -340,6 +344,7 @@ def lifecycle(target: Path, java: str, truststore: Path, ingest: MockState) -> d
     first = PaperProcess(target, java, truststore)
     try:
         first_room = first.wait_for("MORROW_ROOM04_READY status=BUILT", 300)
+        first_versions = first.wait_for("MORROW_VERSION_ROOMS_READY status=BUILT", 300)
         first_ready = first.wait_for("MORROW_RUNTIME_READY", 300)
         first.wait_for("Done (", 300)
         if not ingest.committed.wait(30):
@@ -358,6 +363,7 @@ def lifecycle(target: Path, java: str, truststore: Path, ingest: MockState) -> d
     second = PaperProcess(target, java, truststore)
     try:
         restart_room = second.wait_for("MORROW_ROOM04_READY status=ALREADY_PRESENT", 300)
+        restart_versions = second.wait_for("MORROW_VERSION_ROOMS_READY status=ALREADY_PRESENT", 300)
         restart_ready = second.wait_for("MORROW_RUNTIME_READY", 300)
         second.wait_for("Done (", 300)
         time.sleep(1.5)
@@ -372,8 +378,10 @@ def lifecycle(target: Path, java: str, truststore: Path, ingest: MockState) -> d
         raise RuntimeError("restart Paper stop omitted Morrow cleanup receipt")
     if len(ingest.attempts) != attempts_before_restart:
         raise RuntimeError("durable cursor allowed a duplicate projection after restart")
-    logs.update({"first_room": first_room, "first_ready": first_ready, "first_entities": first_entities,
-                 "restart_room": restart_room, "restart_ready": restart_ready,
+    logs.update({"first_room": first_room, "first_version_rooms": first_versions,
+                 "first_ready": first_ready, "first_entities": first_entities,
+                 "restart_room": restart_room, "restart_version_rooms": restart_versions,
+                 "restart_ready": restart_ready,
                  "restart_entities": restart_entities, "projection_attempts_before_restart": attempts_before_restart,
                  "projection_attempts_after_restart": len(ingest.attempts)})
     return logs
@@ -418,7 +426,8 @@ def main() -> None:
 
     data = target / "plugins" / "Observance"
     required = [data / "morrow-reboot.journal", data / "morrow-reboot.projector.cursor",
-                data / "morrow-room04.rollback.snapshot", data / "morrow-room04.install.receipt"]
+                data / "morrow-room04.rollback.snapshot", data / "morrow-room04.install.receipt",
+                data / "morrow-version-rooms.install.receipt"]
     if any(not path.is_file() for path in required):
         raise RuntimeError("one or more durable Morrow runtime artifacts are missing")
     cursor = (data / "morrow-reboot.projector.cursor").read_text(encoding="utf-8")
@@ -456,7 +465,8 @@ def main() -> None:
         "logs": {"first_sha256": sha256(receipt_dir / "morrow-first-start.log"),
                  "restart_sha256": sha256(receipt_dir / "morrow-restart.log")},
         "proof": {"exact_paper_match": True, "bootstrap_copy_hash_preserved": True,
-                  "no_bootstrap_download_or_mutation": True, "room04_built_and_readback_audited": True,
+                   "no_bootstrap_download_or_mutation": True, "room04_built_and_readback_audited": True,
+                   "version_rooms_built_and_readback_audited": True,
                   "restart_already_present_audit": True, "projector_outage_recovery": True,
                   "cursor_prevented_restart_duplicate": True, "entity_counts_stable_across_restart": True,
                   "graceful_cleanup_logged": True, "listeners_closed": True,
