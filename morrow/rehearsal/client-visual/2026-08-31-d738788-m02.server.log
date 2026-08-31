@@ -1,0 +1,185 @@
+[01:05:55] [ServerMain/INFO]: [bootstrap] Running Java 21 (OpenJDK 64-Bit Server VM 21.0.10+7-LTS; Eclipse Adoptium Temurin-21.0.10+7) on Windows 10 10.0 (amd64)
+[01:05:55] [ServerMain/INFO]: [bootstrap] Loading Paper 1.21.11-132-ver/1.21.11@c5eb079 (2026-05-11T11:43:09Z) for Minecraft 1.21.11
+[01:05:56] [ServerMain/INFO]: [PluginInitializerManager] Initializing plugins...
+[01:05:56] [ServerMain/INFO]: [PluginInitializerManager] Initialized 1 plugin
+[01:05:56] [ServerMain/INFO]: [PluginInitializerManager] Bukkit plugins (1):
+ - Observance (0.5.0)
+[01:06:00] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[01:06:01] [ServerMain/INFO]: Loaded 1470 recipes
+[01:06:01] [ServerMain/INFO]: Loaded 1584 advancements
+[01:06:01] [ServerMain/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Initialising converters for DataConverter...
+[01:06:01] [ServerMain/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Finished initialising converters for DataConverter in 270.5ms
+[01:06:01] [Server thread/INFO]: Starting minecraft server version 1.21.11
+[01:06:01] [Server thread/INFO]: Loading properties
+[01:06:02] [Server thread/INFO]: This server is running Paper version 1.21.11-132-ver/1.21.11@c5eb079 (2026-05-11T11:43:09Z) (Implementing API version 1.21.11-R0.1-SNAPSHOT)
+[01:06:02] [Server thread/INFO]: [spark] This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling
+[01:06:02] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[01:06:02] [Server thread/INFO]: Using 4 threads for Netty based IO
+[01:06:02] [Server thread/INFO]: [MoonriseCommon] Paper is using 4 worker threads, 1 I/O threads
+[01:06:02] [Server thread/INFO]: Default game type: ADVENTURE
+[01:06:02] [Server thread/INFO]: Generating keypair
+[01:06:02] [Server thread/INFO]: Starting Minecraft server on 127.0.0.1:25597
+[01:06:02] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[01:06:02] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[01:06:03] [Server thread/INFO]: [Observance] Loading server plugin Observance v0.5.0
+[01:06:03] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[01:06:03] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[01:06:03] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[01:06:03] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[01:06:03] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[01:06:03] [Server thread/INFO]: Preparing level "morrow_rehearsal"
+[01:06:03] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:overworld'...
+[01:06:03] [Server thread/INFO]: Preparing spawn area: 100%
+[01:06:03] [Server thread/INFO]: Prepared spawn area in 2 ms
+[01:06:03] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:the_nether'...
+[01:06:03] [Server thread/INFO]: Prepared spawn area in 1 ms
+[01:06:03] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:the_end'...
+[01:06:03] [Server thread/INFO]: Prepared spawn area in 0 ms
+[01:06:03] [Server thread/INFO]: Done preparing level "morrow_rehearsal" (0.292s)
+[01:06:03] [Server thread/INFO]: [Observance] Enabling Observance v0.5.0
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY_READY world=morrow_rehearsal spawn=0,80,-2
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_ROOM04_READY status=ALREADY_PRESENT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=e6deba05779b03c26dbb134a50dc62f65748988b621becc9307a6ce1504d6efd blocks=1144 copper_aging_repairs=0
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M05_READY manifest=9489b8b719a93c5b00647d7559ce7a65025239dc613c10c175cee313340a91e4 route=empty labels=3
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_VERSION_ROOMS_READY status=ALREADY_PRESENT manifest=9489b8b719a93c5b00647d7559ce7a65025239dc613c10c175cee313340a91e4 blocks=1617
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M06_READY manifest=62b4d51cf61067a3b8b7ce946d4bccaecb8967e5fb3643114f2f7f6c60ba81cd receipts=0 marked=0 displays=8
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_CONSENSUS_AUDIT_READY status=ALREADY_PRESENT manifest=62b4d51cf61067a3b8b7ce946d4bccaecb8967e5fb3643114f2f7f6c60ba81cd blocks=1309
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M07_READY manifest=c306c4387a165630109207799e007d8efd7450f51a88689239f48ada9cbd71d8 anchor=draft identified=false displays=9
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_WITNESS_ANCHOR_READY status=ALREADY_PRESENT manifest=c306c4387a165630109207799e007d8efd7450f51a88689239f48ada9cbd71d8 blocks=1547
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M08_READY manifest=e32d2cecc25ca8bb4f41edf2a9a48aa99ec0f3a4b7c5cf25d87dbf5ed89e7365 observed=0 chronology=0 proven=false displays=8
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_ALMOST_HOME_READY status=ALREADY_PRESENT manifest=e32d2cecc25ca8bb4f41edf2a9a48aa99ec0f3a4b7c5cf25d87dbf5ed89e7365 blocks=5225
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M09_READY manifest=b79a1e2566a7d6744713b08592719290619d31e85ad87a75b65e7244f6e50ce7 revision=0 state=SAFE LOBBY // INACTIVE entities=10
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_ACCOUNT_CONTINUITY_READY status=ALREADY_PRESENT manifest=b79a1e2566a7d6744713b08592719290619d31e85ad87a75b65e7244f6e50ce7 blocks=2520
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M10_READY manifest=fe54d288044a7f329553228b96cd067ebbfc8c8ab4b87594fffe4acdb0500261 revision=0 phase=INERT SHARED LOBBY entities=18
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_MAINTENANCE_WINDOW_READY status=ALREADY_PRESENT manifest=fe54d288044a7f329553228b96cd067ebbfc8c8ab4b87594fffe4acdb0500261 blocks=5301
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M11_READY manifest=88433e644ebafc5785c53c44764e177cef75e86c30e6c61f7e43ca2272bae5a4 revision=0 phase=CHAIN_0_OF_5 entities=11
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_COLD_STORAGE_READY status=ALREADY_PRESENT manifest=88433e644ebafc5785c53c44764e177cef75e86c30e6c61f7e43ca2272bae5a4 blocks=6417
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_M12_READY manifest=3e69673804f6f7604c2d88c8eb54bf7f941c0f3082971db2203d08933d307310 revision=0 phase=INERT entities=18
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_BRANCH_GOVERNANCE_READY status=ALREADY_PRESENT manifest=3e69673804f6f7604c2d88c8eb54bf7f941c0f3082971db2203d08933d307310 blocks=8325
+[01:06:04] [Server thread/INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=disabled body_entities=2 static_entities=26 replay_entities=6 version_entities=3 consensus_entities=8 witness_entities=9 almost_entities=8 continuity_entities=10 maintenance_entities=18 cold_storage_entities=11 branch_governance_entities=18
+[01:06:04] [Server thread/INFO]: [Observance] Morrow reboot runtime enabled for release morrow.rehearsal.c40f916.paper.v1; unrelated campaign runtimes remain disabled.
+[01:06:04] [Server thread/INFO]: [spark] Starting background profiler...
+[01:06:04] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows10/amd64), so the built-in Java engine will be used instead.
+[01:06:04] [Server thread/INFO]: Running delayed init tasks
+[01:06:04] [Server thread/INFO]: Done (9.854s)! For help, type "help"
+[01:06:04] [Paper Async Task Handler Thread - 1/ERROR]: [PaperVersionFetcher] Error while parsing version list
+java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[?:?]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694) ~[?:?]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[?:?]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[?:?]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[?:?]
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient$1.run(HttpClient.java:590) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient$1.run(HttpClient.java:588) ~[?:?]
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient.privilegedOpenServer(HttpClient.java:587) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:631) ~[?:?]
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264) ~[?:?]
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377) ~[?:?]
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:202) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1278) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143) ~[?:?]
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629) ~[?:?]
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223) ~[?:?]
+	at com.destroystokyo.paper.PaperVersionFetcher.fetchMinecraftVersionList(PaperVersionFetcher.java:149) ~[paper-1.21.11.jar:?]
+	at com.destroystokyo.paper.PaperVersionFetcher.getUpdateStatusStartupMessage(PaperVersionFetcher.java:74) ~[paper-1.21.11.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[?:?]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[?:?]
+[01:06:04] [Paper Async Task Handler Thread - 1/ERROR]: [PaperVersionFetcher] Error while parsing version
+java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method) ~[?:?]
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:694) ~[?:?]
+	at java.base/sun.nio.ch.NioSocketImpl.timedFinishConnect(NioSocketImpl.java:542) ~[?:?]
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:592) ~[?:?]
+	at java.base/java.net.Socket.connect(Socket.java:751) ~[?:?]
+	at java.base/sun.net.NetworkClient.doConnect(NetworkClient.java:178) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:531) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient$1.run(HttpClient.java:590) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient$1.run(HttpClient.java:588) ~[?:?]
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:571) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient.privilegedOpenServer(HttpClient.java:587) ~[?:?]
+	at java.base/sun.net.www.http.HttpClient.openServer(HttpClient.java:631) ~[?:?]
+	at java.base/sun.net.www.protocol.https.HttpsClient.<init>(HttpsClient.java:264) ~[?:?]
+	at java.base/sun.net.www.protocol.https.HttpsClient.New(HttpsClient.java:377) ~[?:?]
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.getNewHttpClient(AbstractDelegateHttpsURLConnection.java:202) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1278) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1143) ~[?:?]
+	at java.base/sun.net.www.protocol.https.AbstractDelegateHttpsURLConnection.connect(AbstractDelegateHttpsURLConnection.java:179) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1705) ~[?:?]
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1629) ~[?:?]
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:223) ~[?:?]
+	at com.destroystokyo.paper.PaperVersionFetcher.fetchDistanceFromSiteApi(PaperVersionFetcher.java:203) ~[paper-1.21.11.jar:?]
+	at com.destroystokyo.paper.PaperVersionFetcher.getUpdateStatusStartupMessage(PaperVersionFetcher.java:76) ~[paper-1.21.11.jar:?]
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1804) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[?:?]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[?:?]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[?:?]
+[01:06:04] [Paper Async Task Handler Thread - 1/ERROR]: *** Error obtaining version information! Cannot fetch version info ***
+[01:06:27] [User Authenticator #0/INFO]: UUID of player MorrowWitness is f3cdae45-d1e4-3681-ae9c-ff2704713ec4
+[01:06:28] [Server thread/INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowWitness reason=join action=recovered from=0,-63,-2 to=0,80,-2 inventory_mutations=0
+[01:06:28] [Server thread/INFO]: MorrowWitness joined the game
+[01:06:28] [Server thread/INFO]: MorrowWitness[/127.0.0.1:59519] logged in with entity id 267 at ([morrow_rehearsal]0.5, 80.0, -1.5)
+[01:06:58] [Server thread/WARN]: [Observance] Morrow fallback body drift detected; rebuilding: Morrow fallback interaction is missing
+[01:06:58] [Server thread/INFO]: [Observance] MORROW_ACCESSIBLE_CUE id=static_restore_pass_1 sound=minecraft:block.copper.place caption=actionbar visual=minecraft:wax_on required=true
+[01:06:59] [Server thread/INFO]: [Observance] MORROW_ACCESSIBLE_CUE id=static_restore_pass_2 sound=minecraft:block.copper.place caption=actionbar visual=minecraft:wax_on required=true
+[01:07:00] [Server thread/INFO]: [Observance] MORROW_ACCESSIBLE_CUE id=static_restore_pass_3 sound=minecraft:block.copper.place caption=actionbar visual=minecraft:wax_on required=true
+[01:08:20] [Server thread/INFO]: MorrowWitness lost connection: Disconnected
+[01:08:20] [Server thread/INFO]: MorrowWitness left the game
+[01:09:24] [User Authenticator #1/INFO]: UUID of player MorrowWitness is f3cdae45-d1e4-3681-ae9c-ff2704713ec4
+[01:09:24] [Server thread/INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowWitness reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0
+[01:09:24] [Server thread/INFO]: MorrowWitness joined the game
+[01:09:24] [Server thread/INFO]: MorrowWitness[/127.0.0.1:60178] logged in with entity id 341 at ([morrow_rehearsal]0.5, 80.0, -1.5)
+[01:11:08] [Server thread/INFO]: Unknown dimension 'minecraft:morrow_rehearsal'
+[01:11:14] [Server thread/INFO]: Teleported MorrowWitness to 0.500000, 80.000000, -1.500000
+[01:11:16] [Server thread/INFO]: MorrowWitness lost connection: Disconnected
+[01:11:16] [Server thread/INFO]: MorrowWitness left the game
+[01:11:39] [User Authenticator #2/INFO]: UUID of player MorrowWitness is f3cdae45-d1e4-3681-ae9c-ff2704713ec4
+[01:11:39] [Server thread/INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowWitness reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0
+[01:11:39] [Server thread/INFO]: MorrowWitness joined the game
+[01:11:39] [Server thread/INFO]: MorrowWitness[/127.0.0.1:60797] logged in with entity id 403 at ([morrow_rehearsal]0.5, 80.0, -1.5)
+[01:11:49] [Server thread/INFO]: Teleported MorrowWitness to 0.500000, 80.000000, -1.500000
+[01:12:08] [Server thread/INFO]: Teleported MorrowWitness to 0.500000, 80.000000, -1.500000
+[01:13:14] [Server thread/WARN]: [Observance] Morrow fallback body drift detected; rebuilding: Morrow fallback interaction is missing
+[01:13:31] [Server thread/INFO]: MorrowWitness lost connection: Disconnected
+[01:13:31] [Server thread/INFO]: MorrowWitness left the game
+[01:13:59] [Server thread/INFO]: Stopping the server
+[01:13:59] [Server thread/INFO]: Stopping server
+[01:13:59] [Server thread/INFO]: [Observance] Disabling Observance v0.5.0
+[01:13:59] [Server thread/INFO]: [Observance] MORROW_RUNTIME_CLOSED entities_and_tasks=cleaned
+[01:13:59] [Server thread/INFO]: [Observance] The Observance sleeps.
+[01:13:59] [Server thread/INFO]: Saving players
+[01:13:59] [Server thread/INFO]: Saving worlds
+[01:13:59] [Server thread/INFO]: Saving chunks for level 'ServerLevel[morrow_rehearsal]'/minecraft:overworld
+[01:13:59] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'morrow_rehearsal'
+[01:13:59] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'morrow_rehearsal'
+[01:13:59] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'morrow_rehearsal'
+[01:13:59] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'morrow_rehearsal' in 0.10s
+[01:13:59] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'morrow_rehearsal'
+[01:13:59] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'morrow_rehearsal'
+[01:13:59] [Server thread/INFO]: Saving chunks for level 'ServerLevel[morrow_rehearsal_nether]'/minecraft:the_nether
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'morrow_rehearsal_nether'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'morrow_rehearsal_nether'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'morrow_rehearsal_nether'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'morrow_rehearsal_nether' in 0.00s
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'morrow_rehearsal_nether'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'morrow_rehearsal_nether'
+[01:14:00] [Server thread/INFO]: Saving chunks for level 'ServerLevel[morrow_rehearsal_the_end]'/minecraft:the_end
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'morrow_rehearsal_the_end'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'morrow_rehearsal_the_end'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'morrow_rehearsal_the_end'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'morrow_rehearsal_the_end' in 0.00s
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'morrow_rehearsal_the_end'
+[01:14:00] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'morrow_rehearsal_the_end'
+[01:14:00] [Server thread/INFO]: ThreadedAnvilChunkStorage (morrow_rehearsal): All chunks are saved
+[01:14:00] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[01:14:00] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[01:14:00] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[01:14:00] [Server thread/INFO]: Waiting for all RegionFile I/O tasks to complete...
+[01:14:00] [Server thread/INFO]: All RegionFile I/O tasks to complete
+[01:14:00] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of worker pool for up to 60s...
+[01:14:00] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of I/O pool for up to 60s...

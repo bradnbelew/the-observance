@@ -32,24 +32,33 @@ was injected, so latest-source dialog choices, pose transitions, continuous medi
 and the full playthrough remain open. Verify it with
 `python tools/check_morrow_source_bound_visual_checkpoint.py`.
 
-The current plugin commit `28c6810d8b770a939cd86fc8eb8be7a49aa39023` has a fresh exact Paper
-1.21.11 build 132 lifecycle under `runtime/28c6810-current`. It proves all M05–M12 structures load,
+The current plugin commit `d7387880d8fe2e2d74235160fab2acd109bccca9` has a fresh exact Paper
+1.21.11 build 132 lifecycle under `runtime/d738788-current`. It proves all M05–M12 structures load,
 restart as already present with stable ownership, close cleanly, and preserve ordered projector
 recovery across 503/503/200. That work also reproduced ambient oxidation failures in Room 04 and M05,
 then retained an accelerated random-tick interval and post-stress restart under `copper-stability/latest.json`.
-The same exact target was restarted for two dummy-client passes: one opens the native Static Restore
-proposal with readable buttons and receipt tooltip; the second opens it and returns to Room 04 through
-Escape without applying it. Images, captures, clients, server log, and Paper receipt are bound at
-`client-visual/2026-08-31-latest-plugin-28c6810-room04-dialog-checkpoint.json`. Apply/review,
-correct/wrong, media, pose, parity, and full-playthrough interaction remain open. Verify these with
+The interaction target then ran two dummy-client passes. One applied the native six-cell Static Restore
+proposal and completed all three accessible passes without the former client-body safe halt. The second
+opened B06 from its physical marker, showed harmless feedback for a wrong `authenticated` choice, then
+filed `inferred` and created exactly one canonical receipt with `world_mutation=false`. Images, captures,
+clients, server log, hash-chain journal, and Paper receipt are bound at
+`client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`. Review on this exact
+build, media, pose, parity, and the operator-free full playthrough remain open. Verify these with
 `python tools/check_morrow_latest_plugin_paper.py` and
 `python tools/check_morrow_latest_plugin_visual_checkpoint.py`; verify the oxidation guard with
 `python tools/check_morrow_copper_stability.py`.
 
+The broad P0 checker also records one legacy retention defect at
+`legacy-artifact-supersession.json`: the original P0 bundle hashed a working-tree
+`BukkitMorrowBody.java` state that was never retained in Git. Only that unavailable hash is narrowly
+superseded by the exact d738 source, plugin, and full Paper receipt; every other legacy artifact remains
+byte-for-byte required.
+
 The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
 window and injects no input; Computer Use handled the bounded observed gameplay actions. The current
-retained checkpoint records one terminal right-click and one Escape. It does not satisfy continuous synchronized
+retained checkpoint records proposal apply plus physical B06 wrong/correct choices and discloses the
+disposable server-console view-positioning assist. It does not satisfy continuous synchronized
 media, all poses/dialog paths, parity modes, or pacing. The separate retained
 `client-cohort-runtime/latest.json` checkpoint now proves real vanilla 1.21.11 one-, two-, and
 six-client concurrent joins, mutation-free safe entry, all 2,304 main-inventory items per player

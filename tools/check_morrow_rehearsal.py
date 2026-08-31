@@ -21,6 +21,7 @@ PAPER_SOURCE_CHECKPOINT = "c40f916aefb8dedf7c459a6636be92397fb0ebb1"
 PAPER_PRODUCER_CHECKPOINT = "89b9108fd5d66ee58c9770d7ba6a6f97a4c13991"
 PAPER_EXPECTED_SHA256 = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
 PAPER_RUNTIME = ROOT / "morrow" / "rehearsal" / "runtime" / "p0-paper-c40f916"
+LEGACY_ARTIFACT_SUPERSESSION = ROOT / "morrow" / "rehearsal" / "legacy-artifact-supersession.json"
 SEQUENCE = [
     "morrow.act0.case_chain_authenticated",
     "morrow.act0.server_handoff_recovered",
@@ -69,7 +70,41 @@ def current_or_historical_match(path: str, expected: str) -> bool:
             candidates = (result.stdout, result.stdout.replace(b"\n", b"\r\n"))
             if any(hashlib.sha256(candidate).hexdigest() == expected for candidate in candidates):
                 return True
-    return False
+    if not LEGACY_ARTIFACT_SUPERSESSION.is_file():
+        return False
+    supersession = load(LEGACY_ARTIFACT_SUPERSESSION)
+    unavailable = supersession.get("unavailable_artifact", {})
+    replacement = supersession.get("replacement", {})
+    if not (
+        supersession.get("status") == "superseded_by_exact_current_source"
+        and supersession.get("legacy_source_checkpoint") == SOURCE_CHECKPOINT
+        and unavailable.get("path") == path
+        and unavailable.get("sha256") == expected
+        and supersession.get("production_mutated") is False
+    ):
+        return False
+    source_commit = replacement.get("source_commit", "")
+    if subprocess.run(
+        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"], cwd=ROOT,
+        capture_output=True,
+    ).returncode != 0:
+        return False
+    source = subprocess.run(
+        ["git", "show", f"{source_commit}:{path}"], cwd=ROOT, capture_output=True,
+    )
+    if source.returncode != 0 or hashlib.sha256(source.stdout).hexdigest() != replacement.get("source_sha256"):
+        return False
+    receipt_path = ROOT / replacement.get("paper_runtime_receipt", "")
+    visual_path = ROOT / replacement.get("visual_checkpoint", "")
+    if not receipt_path.is_file() or not visual_path.is_file():
+        return False
+    receipt = load(receipt_path)
+    return (
+        sha(receipt_path) == replacement.get("paper_runtime_receipt_sha256")
+        and receipt.get("source_commit") == source_commit
+        and receipt.get("plugin_sha256") == replacement.get("plugin_sha256")
+        and receipt.get("status") == "pass"
+    )
 
 
 def validate_client_visual_checkpoint(client: dict[str, Any]) -> dict[str, Any]:

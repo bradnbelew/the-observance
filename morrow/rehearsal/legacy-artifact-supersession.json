@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0.0-morrow-legacy-artifact-supersession",
+  "status": "superseded_by_exact_current_source",
+  "legacy_source_checkpoint": "fa1b80b84959dc62012c209c4749c6e31abde8ec",
+  "unavailable_artifact": {
+    "path": "plugin/src/main/java/com/observance/watcher/morrow/presentation/BukkitMorrowBody.java",
+    "sha256": "5cbcb11fe409a6ffe0ecd638fc1543de4cdd662ba5b96a2c175493594f43c2a2",
+    "retention_defect": "The P0 bundle hashed a working-tree source state that was not retained in Git; the original bytes cannot be reconstructed after later body fixes."
+  },
+  "replacement": {
+    "source_commit": "d7387880d8fe2e2d74235160fab2acd109bccca9",
+    "source_sha256": "199ab0538271128f95caf403c3b1ff533e0ff78cc5fe17b0cf8726774a6ba15c",
+    "plugin_sha256": "ea2cbdfd56eca83580c1dcf71722c3391f85e556c3ea4c25f4cc69561e0bf342",
+    "paper_runtime_receipt": "morrow/rehearsal/runtime/d738788-current/paper-runtime-receipt.json",
+    "paper_runtime_receipt_sha256": "21222c581df47c3f09312915c614589cea84890064bcddc40815089886c0bf72",
+    "visual_checkpoint": "morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json"
+  },
+  "scope": "This supersedes only the unavailable legacy BukkitMorrowBody source hash. Every other P0 artifact remains byte-for-byte required.",
+  "production_mutated": false
+}

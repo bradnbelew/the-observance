@@ -59,13 +59,13 @@ Implemented and verified:
   full client contract now agree. A forward-only migration preserves event UUIDs, payloads,
   idempotency keys, and stored projections; local proof is retained at
   `morrow/rehearsal/database/latest-m06-event-correction-local.json`, while live validation remains open
-- the current plugin at commit `28c6810d8b770a939cd86fc8eb8be7a49aa39023` passed a fresh
+- the current plugin at commit `d7387880d8fe2e2d74235160fab2acd109bccca9` passed a fresh
   two-boot exact Paper 1.21.11 build 132 lifecycle with stable M05–M12 readback, clean ownership
   shutdown, and 503/503/200 projector recovery. The retained proof lives under
-  `morrow/rehearsal/runtime/28c6810-current`; the same exact target also has real-client proof of the
-  Room 04 proposal dialog, readable receipt tooltip, zero-mutation safe entry, reversible Escape, and
-  clean shutdown at
-  `morrow/rehearsal/client-visual/2026-08-31-latest-plugin-28c6810-room04-dialog-checkpoint.json`
+  `morrow/rehearsal/runtime/d738788-current`; real-client interaction proof covers Room 04 proposal
+  apply, all three restore cues, physical B06 dialog, harmless wrong feedback, correct inferred filing,
+  one canonical receipt, client-only body self-heal, zero-inventory-mutation safe entry, and clean shutdown at
+  `morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`
 - that lifecycle exposed a real restart defect: unwaxed authored copper naturally advanced from
   `cut_copper` to `exposed_cut_copper` in Room 04 and from `copper_grate` to
   `exposed_copper_grate` in M05. The fix recognizes five vanilla weathering families, repairs only
@@ -286,16 +286,17 @@ The fail-closed receipt is
 `morrow/rehearsal/client-visual/2026-08-30-source-d2580fd-room04-checkpoint.json`. No client input was
 sent in this run, so it does not advance any interaction or full-playthrough gate.
 
-After the copper-stability correction, current-source client passes bind plugin commit
-`28c6810d8b770a939cd86fc8eb8be7a49aa39023` and plugin SHA-256
-`1b5ba21b09ac2ece5763a58ae756b385073947cc42fd5113e70e5f89ec723f57` to the same exact Paper build.
-The tutorial-disabled vanilla client opened the native `Static restoration proposal`; its bounded
-six-cell copy, apply/review buttons, and receipt tooltip are readable in the retained frame. A second
-observed pass opened the dialog and Escape returned to Room 04 without applying the proposal. Exact
-client/server logs prove loopback-only joins, zero-inventory-mutation safe entry, and clean runtime
-shutdown. The fail-closed receipt is
-`morrow/rehearsal/client-visual/2026-08-31-latest-plugin-28c6810-room04-dialog-checkpoint.json`.
-Apply/review, correct/wrong, receipt creation, and the full playthrough remain open.
+After the client-body correction, current-source client passes bind plugin commit
+`d7387880d8fe2e2d74235160fab2acd109bccca9` and plugin SHA-256
+`ea2cbdfd56eca83580c1dcf71722c3391f85e556c3ea4c25f4cc69561e0bf342` to the same exact Paper build.
+The tutorial-disabled vanilla client applied the native `Static restoration proposal` and completed all
+three restore passes without the former red safe halt. A second client opened `Mark restored cell B06`
+from the physical marker, rendered harmless feedback for a wrong authenticated choice, then filed
+inferred. The journal contains exactly one proposal receipt and one canonical B06 receipt with
+`world_mutation=false`. The fallback-body audit rebuilt client-only interaction drift twice and logged
+neither deferred-audit failure nor consequence safe halt. The fail-closed receipt is
+`morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`.
+Exact-build review and the operator-free full playthrough remain open.
 
 ### P1 — Safe database rehearsal
 
@@ -331,11 +332,10 @@ same mechanic.
   audited and build-clean but have not been executed on the isolated validation project or proven through
   an authenticated browser session.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
-  connects, safe entry is runtime-proven, and the latest-plugin 28c6810 Room 04 terminal has retained
-  native-dialog and reversible-Escape evidence through the exact-window fallback. The primary
-  Computer Use capture API remains unavailable on this host. The full Morrow display-body pose set,
-  remaining Paper dialog choices, M02 apply/review and correct/wrong paths, and M03/M04 Entity Replay
-  still require live-client visual and interaction
+  connects, safe entry is runtime-proven, and the latest-plugin d738788 Room 04 flow has retained
+  proposal-apply plus physical B06 wrong/correct evidence through the exact-window fallback. The primary
+  Computer Use capture API remains unavailable on this host. Exact-build proposal review, the full
+  Morrow display-body pose set, and M03/M04 Entity Replay still require live-client visual and interaction
   rehearsal. The Copperline reboot route has real email delivery, inbox receipt, provider verification,
   and an exact verifier-cookie defect fix, but still requires a fresh final PKCE callback and
   authenticated RLS read. Discord has real bot-only Gateway

@@ -64,14 +64,16 @@ client visibly showed the corrected layout, and one observed right-click opened 
 receipt, and clean server lifecycle are hash-bound in
 `client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
 
-A current-source checkpoint runs the corrected 28c6810 plugin and exact Paper build 132. One observed
-pass opens the native Static Restore proposal and retains its bounded copy, two choices, and receipt
-tooltip; a second opens it and Escape returns to Room 04 without applying the proposal. Its source,
-launcher, client/server logs, zero-mutation safe entry, clean shutdown, and two frames are hash-bound at
-`client-visual/2026-08-31-latest-plugin-28c6810-room04-dialog-checkpoint.json`.
+A current-source checkpoint runs the corrected d738788 plugin and exact Paper build 132. One observed
+pass applies the native Static Restore proposal and completes its three accessible passes without the
+former client-body safe halt. A second opens B06 from the physical marker, renders corrective feedback
+for a wrong authenticated choice, then files inferred with exactly one hash-chain receipt. Its source,
+launcher, client/server logs, zero-inventory-mutation safe entry, clean shutdown, journal, and five
+frames are hash-bound at
+`client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`.
 
-This extends the safe-entry result with real visual/readability plus dialog-open and Escape-close
-subproofs, not a complete graphical lane. All poses and interpolation, the remaining mouse/keyboard dialogue
+This extends the safe-entry result with real apply and physical wrong/correct classification subproofs,
+not a complete graphical lane. Exact-build review, all poses and interpolation, the remaining mouse/keyboard dialogue
 matrix, resource-pack-decline parity, audio-disabled parity, full-inventory route and exit/respawn,
 two-/six-player physical cleanup, continuous synchronized media, and 60–90 minute pacing without
 operator narration remain required. `CLIENT-REHEARSAL.md` and the bound generator/checker define the

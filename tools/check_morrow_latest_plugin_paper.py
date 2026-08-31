@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed over the latest-plugin 28c6810 disposable Paper lifecycle."""
+"""Fail closed over the latest-plugin d738788 disposable Paper lifecycle."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EVIDENCE = ROOT / "morrow/rehearsal/runtime/28c6810-current"
+EVIDENCE = ROOT / "morrow/rehearsal/runtime/d738788-current"
 RECEIPT = EVIDENCE / "paper-runtime-receipt.json"
-SOURCE = "28c6810d8b770a939cd86fc8eb8be7a49aa39023"
-PLUGIN_SHA256 = "1b5ba21b09ac2ece5763a58ae756b385073947cc42fd5113e70e5f89ec723f57"
+SOURCE = "d7387880d8fe2e2d74235160fab2acd109bccca9"
+PLUGIN_SHA256 = "ea2cbdfd56eca83580c1dcf71722c3391f85e556c3ea4c25f4cc69561e0bf342"
 PAPER_SHA256 = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
 
 
@@ -44,7 +44,7 @@ require(
 server = receipt.get("server", {})
 require(
     server.get("bind") == "127.0.0.1"
-    and server.get("port") == 25595
+    and server.get("port") == 25598
     and server.get("online_mode") is False
     and server.get("production_credentials_loaded") is False
     and server.get("jvm_non_loopback_proxy") == "127.0.0.1:1",
@@ -102,5 +102,5 @@ require(
 
 print(
     "MORROW LATEST-PLUGIN PAPER: PASS "
-    "source=28c6810 paper=1.21.11-132 restart=stable projection=503/503/200"
+    "source=d738788 paper=1.21.11-132 restart=stable projection=503/503/200"
 )

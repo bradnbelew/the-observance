@@ -41,7 +41,7 @@
     "generator": "tools/new_morrow_client_rehearsal.py",
     "contract": "morrow/rehearsal/client-rehearsal-contract.json",
     "contract_sha256": "32c516a68ea15ff96f11b646765df1969c9a305f46c87288b4156f1663036334",
-  "generator_sha256": "e4cd8e1dd9b243bcbf7ee25914cdbf9f81337f53a486f8f2ac7a1e2027c0e20f",
+    "generator_sha256": "853f58dc0e0e9f238b9f455b54961f9c5a9efc03e2b1a7ecd88615eed3142ec4",
     "latest_attempt": "morrow/rehearsal/client-attempts/2026-08-30-offline-client-safe-entry-partial.json",
     "latest_attempt_sha256": "10df71f35e59cc4f398f65b4ec78aa897c332d50eccdcae4acfe2bd09c092d42",
     "latest_attempt_status": "unproven",
@@ -72,7 +72,7 @@
     "resource_pack_visual_receipt_sha256": "3520fe2ebc923613214aaeed344779a7d6911e78e8f896fb28e153b6eec617aa",
     "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
     "selftest": "tools/test_morrow_client_rehearsal.py",
-  "selftest_sha256": "cd7404457c1325a47bf0bf1a1f1ef56b03d457308bb6f24e55bddc3a0636e560",
+    "selftest_sha256": "33809f5cf09881b0d7fecaa1c1bb588b917ec27792e06fbb2b9446cd6ad39d9f",
     "visual_checkpoint_scope": "joined Room 04 readability plus one native terminal-dialog activation",
     "visual_checkpoint_status": "bounded_visual_checkpoint_pass"
   },
