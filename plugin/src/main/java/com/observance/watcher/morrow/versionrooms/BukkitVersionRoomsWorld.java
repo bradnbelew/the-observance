@@ -5,6 +5,7 @@ import com.observance.watcher.morrow.versionrooms.VersionRoomsManifest.Cell;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 
 import java.util.Objects;
 
@@ -25,6 +26,11 @@ public final class BukkitVersionRoomsWorld implements VersionRoomsInstaller.Worl
     @Override public String blockData(Cell relative) {
         requirePrimaryThread();
         return block(relative).getBlockData().getAsString(true);
+    }
+    @Override public boolean matches(Cell relative, String expectedBlockData) {
+        requirePrimaryThread();
+        BlockData expected = Bukkit.createBlockData(expectedBlockData);
+        return block(relative).getBlockData().matches(expected);
     }
     @Override public boolean isAir(Cell relative) {
         requirePrimaryThread();

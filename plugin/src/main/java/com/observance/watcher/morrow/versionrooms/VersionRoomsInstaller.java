@@ -37,7 +37,7 @@ public final class VersionRoomsInstaller {
         for (Map.Entry<Cell, String> entry : manifest.cells().entrySet()) {
             String actual = world.blockData(entry.getKey());
             if (world.isAir(entry.getKey())) continue;
-            if (entry.getValue().equals(actual)) recovered = true;
+            if (world.matches(entry.getKey(), entry.getValue())) recovered = true;
             else {
                 foreign++;
                 if (firstForeign == null) firstForeign = entry.getKey();
@@ -77,7 +77,7 @@ public final class VersionRoomsInstaller {
                     && actual.startsWith("minecraft:copper_bulb[") && actual.contains("lit=true")) {
                 continue;
             }
-            if (!entry.getValue().equals(actual)) {
+            if (!world.matches(entry.getKey(), entry.getValue())) {
                 throw new IOException("M05 read-back mismatch at " + entry.getKey()
                         + " expected=" + entry.getValue() + " actual=" + actual);
             }
@@ -152,6 +152,9 @@ public final class VersionRoomsInstaller {
     public interface WorldPort {
         String binding();
         String blockData(Cell relative);
+        default boolean matches(Cell relative, String expectedBlockData) {
+            return expectedBlockData.equals(blockData(relative));
+        }
         boolean isAir(Cell relative);
         void setBlockData(Cell relative, String blockData);
     }

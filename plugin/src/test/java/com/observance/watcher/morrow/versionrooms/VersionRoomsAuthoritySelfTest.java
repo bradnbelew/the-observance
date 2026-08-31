@@ -230,12 +230,15 @@ public final class VersionRoomsAuthoritySelfTest {
 
     private static void paperAdapterUsesNativeBoundedInputs() throws IOException {
         String source = Files.readString(Path.of(
-                "src/main/java/com/observance/watcher/morrow/versionrooms/BukkitVersionRooms.java"));
+                "src/main/java/com/observance/watcher/morrow/versionrooms/BukkitVersionRooms.java"))
+                + Files.readString(Path.of(
+                "src/main/java/com/observance/watcher/morrow/versionrooms/BukkitVersionRoomsWorld.java"));
         String manifestSource = Files.readString(Path.of(
                 "src/main/java/com/observance/watcher/morrow/versionrooms/VersionRoomsManifest.java"));
         for (String required : new String[]{
                 "PlayerInteractEvent", "RIGHT_CLICK_BLOCK", "PlayerCustomClickEvent", "DialogType.multiAction",
-                "canCloseWithEscape(true)", "PRIVATE CUSTODY", "syncLamps", "PersistentDataType"}) {
+                "canCloseWithEscape(true)", "PRIVATE CUSTODY", "syncLamps", "PersistentDataType",
+                "getBlockData().matches(expected)"}) {
             check(source.contains(required), "M05 Paper adapter missing " + required);
         }
         for (String forbidden : new String[]{
