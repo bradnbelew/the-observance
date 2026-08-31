@@ -137,6 +137,11 @@ def main() -> int:
         action="store_true",
         help="start with every vanilla sound category at zero for accessibility parity rehearsal",
     )
+    parser.add_argument(
+        "--disable-tutorial-toast",
+        action="store_true",
+        help="set tutorialStep:none in this disposable profile for deterministic visual capture",
+    )
     parser.add_argument("--wait-seconds", type=int, default=20)
     parser.add_argument("--terminate-after-wait", action="store_true")
     parser.add_argument(
@@ -186,6 +191,8 @@ def main() -> int:
     ]
     if args.audio_disabled:
         option_lines.extend(f"soundCategory_{category}:0.0" for category in SOUND_CATEGORIES)
+    if args.disable_tutorial_toast:
+        option_lines.append("tutorialStep:none")
     options_path = game / "options.txt"
     options_path.write_text("\n".join(option_lines) + "\n", encoding="utf-8")
     servers_path = game / "servers.dat"
@@ -271,6 +278,7 @@ def main() -> int:
         "accessibility_profile": {
             "audio_disabled": args.audio_disabled,
             "sound_categories_zeroed": list(SOUND_CATEGORIES) if args.audio_disabled else [],
+            "tutorial_toast_disabled": args.disable_tutorial_toast,
             "options_sha256": sha(options_path),
         },
         "manifest": {"path": str(manifest_path), "sha256": sha(manifest_path)},

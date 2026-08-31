@@ -74,6 +74,9 @@ def test_windows_option_bytes(root: Path) -> None:
     path.write_bytes(("\r\n".join(lines) + "\r\n").encode("utf-8"))
     assert rehearsal.paper_harness.sha256(path) == \
         "2c0ac1089e3faea54179243291bc99970a6ab7a819cc8d4464efa03eadb116a7"
+    path.write_bytes(("\r\n".join([*lines, "tutorialStep:none"]) + "\r\n").encode("utf-8"))
+    assert rehearsal.paper_harness.sha256(path) == \
+        "f9de4076c0f4dc8af767e43d924f7909ad0bc886de5ed9412ebe6b265ade45c1"
 
 
 def test_config_binding(root: Path) -> None:
