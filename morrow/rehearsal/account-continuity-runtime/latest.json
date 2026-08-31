@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0-morrow-account-continuity-runtime-checkpoint",
+  "status": "paper_install_restart_pass_player_disconnect_open",
+  "source_commit": "5a1f2ae4c6adb027c05d4f11b1c93572384c2fd4",
+  "receipt": "morrow/rehearsal/account-continuity-runtime/5a1f2ae/paper-runtime-receipt.json",
+  "receipt_sha256": "292506bf1969dcda54d18d7b23e09714e070275a6fe560d83a38adc986099941",
+  "producer": {
+    "path": "tools/run_morrow_disposable_paper.py",
+    "sha256": "699ce036d8572bbb1ee672b5f9b6ce3a6fe8604d0921334e345f81f9056f7c40"
+  },
+  "scope": "owned loopback Paper 1.21.11 M09 construction, semantic readback, restart, entity ownership, and cleanup",
+  "boundaries": {
+    "graphical_client_used": false,
+    "player_disconnect_reconnect_proven": false,
+    "native_dialog_interaction_proven": false,
+    "full_human_playthrough_proven": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false
+  },
+  "remaining_gate": "exercise private-anchor selection, arm, real quit/rejoin, bounded echo observation, wrong/correct identity marks, reset and Escape paths with real clients and retained media",
+  "production_enablement": "blocked"
+}
