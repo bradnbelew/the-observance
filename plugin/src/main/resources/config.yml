@@ -204,3 +204,9 @@ morrow-reboot:
     origin-x: 224
     origin-y: 80
     origin-z: 0
+  branch-governance:
+    # Separate M12 build gate. Requires M11; ending predicates and governance consent remain durable.
+    build-enabled: false
+    origin-x: 264
+    origin-y: 80
+    origin-z: 0

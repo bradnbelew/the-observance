@@ -38,6 +38,10 @@ import com.observance.watcher.morrow.coldstorage.BukkitColdStorage;
 import com.observance.watcher.morrow.coldstorage.BukkitColdStorageWorld;
 import com.observance.watcher.morrow.coldstorage.ColdStorageInstaller;
 import com.observance.watcher.morrow.coldstorage.ColdStorageManifest;
+import com.observance.watcher.morrow.branch.BranchGovernanceInstaller;
+import com.observance.watcher.morrow.branch.BranchGovernanceManifest;
+import com.observance.watcher.morrow.branch.BukkitBranchGovernance;
+import com.observance.watcher.morrow.branch.BukkitBranchGovernanceWorld;
 import com.observance.watcher.listener.ResourcePackPusher;
 import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
@@ -63,6 +67,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private static final String ACCOUNT_CONTINUITY_RECEIPT_NAME = "morrow-account-continuity.install.receipt";
     private static final String MAINTENANCE_WINDOW_RECEIPT_NAME = "morrow-maintenance-window.install.receipt";
     private static final String COLD_STORAGE_RECEIPT_NAME = "morrow-cold-storage.install.receipt";
+    private static final String BRANCH_GOVERNANCE_RECEIPT_NAME = "morrow-branch-governance.install.receipt";
 
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
@@ -75,6 +80,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final AccountContinuityInstaller.Result accountContinuityResult;
     private final MaintenanceWindowInstaller.Result maintenanceWindowResult;
     private final ColdStorageInstaller.Result coldStorageResult;
+    private final BranchGovernanceInstaller.Result branchGovernanceResult;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
     private final BukkitEntityReplay entityReplay;
@@ -87,6 +93,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitAccountContinuity accountContinuity;
     private final BukkitMaintenanceWindow maintenanceWindow;
     private final BukkitColdStorage coldStorage;
+    private final BukkitBranchGovernance branchGovernance;
     private final ResourcePackTracker resourcePackTracker;
     private final ResourcePackPusher resourcePackPusher;
 
@@ -102,6 +109,7 @@ public final class MorrowRuntime implements AutoCloseable {
             AccountContinuityInstaller.Result accountContinuityResult,
             MaintenanceWindowInstaller.Result maintenanceWindowResult,
             ColdStorageInstaller.Result coldStorageResult,
+            BranchGovernanceInstaller.Result branchGovernanceResult,
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
@@ -114,6 +122,7 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitAccountContinuity accountContinuity,
             BukkitMaintenanceWindow maintenanceWindow,
             BukkitColdStorage coldStorage,
+            BukkitBranchGovernance branchGovernance,
             ResourcePackTracker resourcePackTracker,
             ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
@@ -127,6 +136,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.accountContinuityResult = accountContinuityResult;
         this.maintenanceWindowResult = maintenanceWindowResult;
         this.coldStorageResult = coldStorageResult;
+        this.branchGovernanceResult = branchGovernanceResult;
         this.body = body;
         this.staticRestore = staticRestore;
         this.entityReplay = entityReplay;
@@ -139,6 +149,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.accountContinuity = accountContinuity;
         this.maintenanceWindow = maintenanceWindow;
         this.coldStorage = coldStorage;
+        this.branchGovernance = branchGovernance;
         this.resourcePackTracker = resourcePackTracker;
         this.resourcePackPusher = resourcePackPusher;
     }
@@ -349,6 +360,27 @@ public final class MorrowRuntime implements AutoCloseable {
                     settings.releaseId(), coldStorageOrigin,
                     new BukkitColdStorageWorld(world, coldStorageOrigin));
         }
+        BranchGovernanceInstaller.Result branchGovernanceResult = null;
+        BranchGovernanceInstaller.Origin branchGovernanceOrigin = null;
+        if (section.getBoolean("branch-governance.build-enabled", false)) {
+            if (coldStorageResult == null) {
+                throw new IllegalArgumentException("M12 Branch Governance requires M11 Cold Storage");
+            }
+            branchGovernanceOrigin = new BranchGovernanceInstaller.Origin(
+                    section.getInt("branch-governance.origin-x", 264),
+                    section.getInt("branch-governance.origin-y", 80),
+                    section.getInt("branch-governance.origin-z"));
+            BranchGovernanceManifest.Bounds bounds = BranchGovernanceManifest.BOUNDS;
+            if (branchGovernanceOrigin.y() + bounds.minimumY() < world.getMinHeight()
+                    || branchGovernanceOrigin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+                throw new IllegalArgumentException("M12 Branch Governance origin exceeds the configured world height");
+            }
+            BranchGovernanceManifest manifest = new BranchGovernanceManifest();
+            branchGovernanceResult = new BranchGovernanceInstaller(
+                    manifest, data.resolve(BRANCH_GOVERNANCE_RECEIPT_NAME)).install(
+                    settings.releaseId(), branchGovernanceOrigin,
+                    new BukkitBranchGovernanceWorld(world, branchGovernanceOrigin));
+        }
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
         BukkitStaticRestore staticRestore = null;
@@ -362,6 +394,7 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitAccountContinuity accountContinuity = null;
         BukkitMaintenanceWindow maintenanceWindow = null;
         BukkitColdStorage coldStorage = null;
+        BukkitBranchGovernance branchGovernance = null;
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
@@ -456,6 +489,14 @@ public final class MorrowRuntime implements AutoCloseable {
                         + " manifest=" + coldStorageResult.manifestSha256()
                         + " blocks=" + coldStorageResult.blockCount());
             }
+            if (branchGovernanceResult != null && branchGovernanceOrigin != null && coldStorage != null) {
+                branchGovernance = new BukkitBranchGovernance(
+                        plugin, world, branchGovernanceOrigin, settings.releaseId(), state, data);
+                branchGovernance.start();
+                plugin.getLogger().info("MORROW_BRANCH_GOVERNANCE_READY status=" + branchGovernanceResult.status()
+                        + " manifest=" + branchGovernanceResult.manifestSha256()
+                        + " blocks=" + branchGovernanceResult.blockCount());
+            }
             plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
@@ -469,14 +510,16 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " almost_entities=" + (almostHome == null ? 0 : almostHome.ownedEntityCount())
                     + " continuity_entities=" + (accountContinuity == null ? 0 : accountContinuity.ownedEntityCount())
                     + " maintenance_entities=" + (maintenanceWindow == null ? 0 : maintenanceWindow.ownedEntityCount())
-                    + " cold_storage_entities=" + (coldStorage == null ? 0 : coldStorage.ownedEntityCount()));
+                    + " cold_storage_entities=" + (coldStorage == null ? 0 : coldStorage.ownedEntityCount())
+                    + " branch_governance_entities=" + (branchGovernance == null ? 0 : branchGovernance.ownedEntityCount()));
             return new MorrowRuntime(
                     settings, state, projector, room04Result, versionRoomsResult, consensusAuditResult,
-                    witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult, coldStorageResult,
+                    witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult, coldStorageResult, branchGovernanceResult,
                     body, staticRestore, entityReplay, dialogs,
-                    playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow, coldStorage,
+                    playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow, coldStorage, branchGovernance,
                     resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
+            if (branchGovernance != null) branchGovernance.close();
             if (coldStorage != null) coldStorage.close();
             if (maintenanceWindow != null) maintenanceWindow.close();
             if (accountContinuity != null) accountContinuity.close();
@@ -540,8 +583,13 @@ public final class MorrowRuntime implements AutoCloseable {
         return Optional.ofNullable(coldStorageResult);
     }
 
+    public Optional<BranchGovernanceInstaller.Result> branchGovernanceResult() {
+        return Optional.ofNullable(branchGovernanceResult);
+    }
+
     @Override
     public void close() {
+        if (branchGovernance != null) branchGovernance.close();
         if (coldStorage != null) coldStorage.close();
         if (maintenanceWindow != null) maintenanceWindow.close();
         if (accountContinuity != null) accountContinuity.close();
