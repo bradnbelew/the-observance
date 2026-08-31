@@ -1,5 +1,6 @@
 package com.observance.watcher.morrow.room04;
 
+import com.observance.watcher.morrow.CopperAgingPolicy;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Manifest.Cell;
 
 import java.io.IOException;
@@ -31,11 +32,19 @@ public final class RecoveryRoom04Installer {
 
     public record Origin(int x, int y, int z) { }
 
-    public record Result(Status status, String manifestSha256, String snapshotSha256, int blockCount) {
+    public record Result(
+            Status status,
+            String manifestSha256,
+            String snapshotSha256,
+            int blockCount,
+            int naturalAgingRepairs) {
         public Result {
             Objects.requireNonNull(status, "status");
             Objects.requireNonNull(manifestSha256, "manifestSha256");
             Objects.requireNonNull(snapshotSha256, "snapshotSha256");
+            if (blockCount < 0 || naturalAgingRepairs < 0) {
+                throw new IllegalArgumentException("Recovery Room 04 counts cannot be negative");
+            }
         }
     }
 
@@ -119,9 +128,10 @@ public final class RecoveryRoom04Installer {
             if (!receipt.snapshotSha256().equals(snapshot.snapshotSha256())) {
                 throw new IOException("Recovery Room 04 receipt/snapshot hash mismatch");
             }
+            int repairs = restoreNaturalCopperAging(world, mutableCells);
             audit(world, mutableCells);
             return new Result(Status.ALREADY_PRESENT, manifest.manifestSha256(),
-                    snapshot.snapshotSha256(), manifest.cells().size());
+                    snapshot.snapshotSha256(), manifest.cells().size(), repairs);
         }
 
         boolean recovered = false;
@@ -160,7 +170,8 @@ public final class RecoveryRoom04Installer {
                 recovered ? Status.RECOVERED_AND_BUILT : Status.BUILT,
                 manifest.manifestSha256(),
                 snapshot.snapshotSha256(),
-                manifest.cells().size());
+                manifest.cells().size(),
+                0);
     }
 
     public synchronized void audit(WorldPort world) throws IOException {
@@ -184,6 +195,19 @@ public final class RecoveryRoom04Installer {
         if (!mismatches.isEmpty()) {
             throw new IOException("Recovery Room 04 read-back audit failed: " + mismatches);
         }
+    }
+
+    private int restoreNaturalCopperAging(WorldPort world, Set<Cell> ignoredCells) {
+        int repairs = 0;
+        for (Map.Entry<Cell, String> entry : manifest.cells().entrySet()) {
+            if (ignoredCells.contains(entry.getKey())) continue;
+            String actual = world.blockData(entry.getKey());
+            if (CopperAgingPolicy.isNaturalAging(entry.getValue(), actual)) {
+                world.setBlockData(entry.getKey(), entry.getValue());
+                repairs++;
+            }
+        }
+        return repairs;
     }
 
     private void refuseOccupied(WorldPort world) throws OccupiedCellsException {

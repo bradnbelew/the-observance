@@ -31,6 +31,7 @@ public final class RecoveryRoom04InstallerSelfTest {
         failedReadBackRollsBackAndRestartRecovers(manifest);
         receiptAndSnapshotAreReleaseBound(manifest);
         journalAuthorizedMutableCellsAreNarrow(manifest);
+        naturalCopperAgingRepairsButForeignDriftRefuses(manifest);
         System.out.println("RECOVERY ROOM 04 INSTALLER: PASS hash=" + manifest.manifestSha256());
     }
 
@@ -153,6 +154,36 @@ public final class RecoveryRoom04InstallerSelfTest {
             expectIo(() -> installer.install(RELEASE, ORIGIN, world, staticRestore.mutableCells()));
             check("minecraft:dirt".equals(world.blocks.get(RecoveryRoom04Manifest.TERMINAL_CELL)),
                     "mutable scene exemption never hides unrelated Room 04 drift");
+        } finally {
+            files.close();
+        }
+    }
+
+    private static void naturalCopperAgingRepairsButForeignDriftRefuses(
+            RecoveryRoom04Manifest manifest) throws Exception {
+        TestFiles files = TestFiles.create("room04-copper-aging-");
+        try {
+            FakeWorld world = new FakeWorld("room04-aging:00000000-0000-4000-8000-000000000009");
+            RecoveryRoom04Installer installer = files.installer(manifest);
+            installer.install(RELEASE, ORIGIN, world);
+            Cell west = new Cell(-1, 0, 2);
+            Cell east = new Cell(1, 0, 2);
+            world.blocks.put(west, "minecraft:exposed_cut_copper");
+            world.blocks.put(east, "minecraft:weathered_cut_copper");
+
+            RecoveryRoom04Installer.Result restart = installer.install(RELEASE, ORIGIN, world);
+            check(restart.status() == RecoveryRoom04Installer.Status.ALREADY_PRESENT,
+                    "ambient copper repair retains the installed status");
+            check(restart.naturalAgingRepairs() == 2,
+                    "restart reports both naturally aged authored cells");
+            check("minecraft:cut_copper".equals(world.blockData(west))
+                            && "minecraft:cut_copper".equals(world.blockData(east)),
+                    "ambient copper aging is restored to authored provenance");
+
+            world.blocks.put(west, "minecraft:waxed_cut_copper");
+            expectIo(() -> installer.install(RELEASE, ORIGIN, world));
+            check("minecraft:waxed_cut_copper".equals(world.blockData(west)),
+                    "non-natural copper drift refuses without overwrite");
         } finally {
             files.close();
         }

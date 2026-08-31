@@ -1,5 +1,6 @@
 package com.observance.watcher.morrow.witnessanchor;
 
+import com.observance.watcher.morrow.CopperAgingPolicy;
 import com.observance.watcher.morrow.witnessanchor.WitnessAnchorAuthority.MaterialChoice;
 import com.observance.watcher.morrow.witnessanchor.WitnessAnchorManifest.Cell;
 
@@ -31,6 +32,8 @@ public final class WitnessAnchorInstaller {
         requireBinding(release, origin, world);
         if (Files.exists(receiptPath)) {
             verify(readReceipt(), release, origin, world.binding());
+            CopperAgingPolicy.restoreNaturalAging(
+                    manifest.cells(), world::blockData, world::setBlockData);
             audit(world, true);
             return new Result(Status.ALREADY_PRESENT, manifest.manifestSha256(), manifest.cells().size());
         }

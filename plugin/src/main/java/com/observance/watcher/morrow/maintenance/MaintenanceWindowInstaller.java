@@ -1,5 +1,6 @@
 package com.observance.watcher.morrow.maintenance;
 
+import com.observance.watcher.morrow.CopperAgingPolicy;
 import com.observance.watcher.morrow.maintenance.MaintenanceWindowManifest.Cell;
 
 import java.io.IOException;
@@ -22,7 +23,10 @@ public final class MaintenanceWindowInstaller {
     public synchronized Result install(String release, Origin origin, WorldPort world) throws IOException {
         requireBinding(release, origin, world);
         if (Files.exists(receiptPath)) {
-            verify(readReceipt(), release, origin, world.binding()); audit(world, true);
+            verify(readReceipt(), release, origin, world.binding());
+            CopperAgingPolicy.restoreNaturalAging(
+                    manifest.cells(), world::blockData, world::setBlockData);
+            audit(world, true);
             return new Result(Status.ALREADY_PRESENT, manifest.manifestSha256(), manifest.cells().size());
         }
         boolean recovered = false; Cell firstForeign = null; int foreign = 0;

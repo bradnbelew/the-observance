@@ -94,6 +94,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitMaintenanceWindow maintenanceWindow;
     private final BukkitColdStorage coldStorage;
     private final BukkitBranchGovernance branchGovernance;
+    private final BukkitMorrowCopperStability copperStability;
     private final ResourcePackTracker resourcePackTracker;
     private final ResourcePackPusher resourcePackPusher;
 
@@ -123,6 +124,7 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitMaintenanceWindow maintenanceWindow,
             BukkitColdStorage coldStorage,
             BukkitBranchGovernance branchGovernance,
+            BukkitMorrowCopperStability copperStability,
             ResourcePackTracker resourcePackTracker,
             ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
@@ -150,6 +152,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.maintenanceWindow = maintenanceWindow;
         this.coldStorage = coldStorage;
         this.branchGovernance = branchGovernance;
+        this.copperStability = Objects.requireNonNull(copperStability, "copperStability");
         this.resourcePackTracker = resourcePackTracker;
         this.resourcePackPusher = resourcePackPusher;
     }
@@ -188,6 +191,7 @@ public final class MorrowRuntime implements AutoCloseable {
         if (world == null || !settings.worldName().equals(world.getName())) {
             throw new IllegalArgumentException("configured Morrow world is not loaded");
         }
+        BukkitMorrowCopperStability copperStability = new BukkitMorrowCopperStability(plugin);
 
         Path data = plugin.getDataFolder().toPath();
         MorrowLocalState state = MorrowLocalState.open(data.resolve(JOURNAL_NAME), settings.releaseId());
@@ -203,8 +207,13 @@ public final class MorrowRuntime implements AutoCloseable {
                     || room04Origin.y() + bounds.maximumY() >= world.getMaxHeight()) {
                 throw new IllegalArgumentException("Recovery Room 04 origin exceeds the configured world height");
             }
+            copperStability.addBounds(
+                    world, room04Origin.x(), room04Origin.y(), room04Origin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
+            RecoveryRoom04Manifest room04Manifest = new RecoveryRoom04Manifest();
             RecoveryRoom04Installer installer = new RecoveryRoom04Installer(
-                    new RecoveryRoom04Manifest(),
+                    room04Manifest,
                     data.resolve(ROOM04_SNAPSHOT_NAME),
                     data.resolve(ROOM04_RECEIPT_NAME));
             Set<RecoveryRoom04Manifest.Cell> mutableCells = state.snapshot().committedEvents().contains(
@@ -229,6 +238,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M05 version-room origin exceeds the configured world height");
             }
             VersionRoomsManifest manifest = new VersionRoomsManifest();
+            copperStability.addBounds(
+                    world, versionRoomsOrigin.x(), versionRoomsOrigin.y(), versionRoomsOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             versionRoomsResult = new VersionRoomsInstaller(
                     manifest, data.resolve(VERSION_ROOMS_RECEIPT_NAME)).install(
                     settings.releaseId(), versionRoomsOrigin,
@@ -250,6 +263,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M06 consensus-audit origin exceeds the configured world height");
             }
             ConsensusAuditManifest manifest = new ConsensusAuditManifest();
+            copperStability.addBounds(
+                    world, consensusAuditOrigin.x(), consensusAuditOrigin.y(), consensusAuditOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             consensusAuditResult = new ConsensusAuditInstaller(
                     manifest, data.resolve(CONSENSUS_AUDIT_RECEIPT_NAME)).install(
                     settings.releaseId(), consensusAuditOrigin,
@@ -271,6 +288,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M07 witness-anchor origin exceeds the configured world height");
             }
             WitnessAnchorManifest manifest = new WitnessAnchorManifest();
+            copperStability.addBounds(
+                    world, witnessAnchorOrigin.x(), witnessAnchorOrigin.y(), witnessAnchorOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             witnessAnchorResult = new WitnessAnchorInstaller(
                     manifest, data.resolve(WITNESS_ANCHOR_RECEIPT_NAME)).install(
                     settings.releaseId(), witnessAnchorOrigin,
@@ -292,6 +313,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M08 Almost Home origin exceeds the configured world height");
             }
             AlmostHomeManifest manifest = new AlmostHomeManifest();
+            copperStability.addBounds(
+                    world, almostHomeOrigin.x(), almostHomeOrigin.y(), almostHomeOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             almostHomeResult = new AlmostHomeInstaller(
                     manifest, data.resolve(ALMOST_HOME_RECEIPT_NAME)).install(
                     settings.releaseId(), almostHomeOrigin,
@@ -313,6 +338,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M09 Account Continuity origin exceeds the configured world height");
             }
             AccountContinuityManifest manifest = new AccountContinuityManifest();
+            copperStability.addBounds(
+                    world, accountContinuityOrigin.x(), accountContinuityOrigin.y(), accountContinuityOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             accountContinuityResult = new AccountContinuityInstaller(
                     manifest, data.resolve(ACCOUNT_CONTINUITY_RECEIPT_NAME)).install(
                     settings.releaseId(), accountContinuityOrigin,
@@ -334,6 +363,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M10 Maintenance Window origin exceeds the configured world height");
             }
             MaintenanceWindowManifest manifest = new MaintenanceWindowManifest();
+            copperStability.addBounds(
+                    world, maintenanceWindowOrigin.x(), maintenanceWindowOrigin.y(), maintenanceWindowOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             maintenanceWindowResult = new MaintenanceWindowInstaller(
                     manifest, data.resolve(MAINTENANCE_WINDOW_RECEIPT_NAME)).install(
                     settings.releaseId(), maintenanceWindowOrigin,
@@ -355,6 +388,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M11 Cold Storage origin exceeds the configured world height");
             }
             ColdStorageManifest manifest = new ColdStorageManifest();
+            copperStability.addBounds(
+                    world, coldStorageOrigin.x(), coldStorageOrigin.y(), coldStorageOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             coldStorageResult = new ColdStorageInstaller(
                     manifest, data.resolve(COLD_STORAGE_RECEIPT_NAME)).install(
                     settings.releaseId(), coldStorageOrigin,
@@ -376,6 +413,10 @@ public final class MorrowRuntime implements AutoCloseable {
                 throw new IllegalArgumentException("M12 Branch Governance origin exceeds the configured world height");
             }
             BranchGovernanceManifest manifest = new BranchGovernanceManifest();
+            copperStability.addBounds(
+                    world, branchGovernanceOrigin.x(), branchGovernanceOrigin.y(), branchGovernanceOrigin.z(),
+                    bounds.minimumX(), bounds.maximumX(), bounds.minimumY(), bounds.maximumY(),
+                    bounds.minimumZ(), bounds.maximumZ());
             branchGovernanceResult = new BranchGovernanceInstaller(
                     manifest, data.resolve(BRANCH_GOVERNANCE_RECEIPT_NAME)).install(
                     settings.releaseId(), branchGovernanceOrigin,
@@ -398,6 +439,7 @@ public final class MorrowRuntime implements AutoCloseable {
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
+            copperStability.start();
             projector = MorrowEventProjector.open(
                     state,
                     settings,
@@ -429,7 +471,8 @@ public final class MorrowRuntime implements AutoCloseable {
                 plugin.getLogger().info("MORROW_ROOM04_READY status=" + room04Result.status()
                         + " manifest=" + room04Result.manifestSha256()
                         + " snapshot=" + room04Result.snapshotSha256()
-                        + " blocks=" + room04Result.blockCount());
+                        + " blocks=" + room04Result.blockCount()
+                        + " copper_aging_repairs=" + room04Result.naturalAgingRepairs());
             }
             if (versionRoomsResult != null && versionRoomsOrigin != null) {
                 versionRooms = new BukkitVersionRooms(
@@ -517,6 +560,7 @@ public final class MorrowRuntime implements AutoCloseable {
                     witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult, coldStorageResult, branchGovernanceResult,
                     body, staticRestore, entityReplay, dialogs,
                     playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow, coldStorage, branchGovernance,
+                    copperStability,
                     resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
             if (branchGovernance != null) branchGovernance.close();
@@ -532,6 +576,7 @@ public final class MorrowRuntime implements AutoCloseable {
             if (staticRestore != null) staticRestore.close();
             if (body != null) body.close();
             if (playerEntry != null) playerEntry.close();
+            copperStability.close();
             if (resourcePackPusher != null) HandlerList.unregisterAll(resourcePackPusher);
             if (resourcePackTracker != null) HandlerList.unregisterAll(resourcePackTracker);
             if (projector != null) projector.close();
@@ -602,6 +647,7 @@ public final class MorrowRuntime implements AutoCloseable {
         if (staticRestore != null) staticRestore.close();
         if (body != null) body.close();
         if (playerEntry != null) playerEntry.close();
+        copperStability.close();
         if (resourcePackPusher != null) HandlerList.unregisterAll(resourcePackPusher);
         if (resourcePackTracker != null) HandlerList.unregisterAll(resourcePackTracker);
         projector.close();

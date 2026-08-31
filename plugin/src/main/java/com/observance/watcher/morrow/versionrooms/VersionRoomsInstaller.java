@@ -1,5 +1,6 @@
 package com.observance.watcher.morrow.versionrooms;
 
+import com.observance.watcher.morrow.CopperAgingPolicy;
 import com.observance.watcher.morrow.versionrooms.VersionRoomsManifest.Cell;
 
 import java.io.IOException;
@@ -28,6 +29,8 @@ public final class VersionRoomsInstaller {
         if (Files.exists(receiptPath)) {
             Receipt receipt = readReceipt();
             verify(receipt, releaseId, origin, world.binding());
+            CopperAgingPolicy.restoreNaturalAging(
+                    manifest.cells(), world::blockData, world::setBlockData);
             audit(world, true);
             return new Result(Status.ALREADY_PRESENT, manifest.manifestSha256(), manifest.cells().size());
         }
