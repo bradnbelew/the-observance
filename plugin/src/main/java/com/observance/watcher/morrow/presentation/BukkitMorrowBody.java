@@ -106,8 +106,17 @@ public final class BukkitMorrowBody implements AutoCloseable {
         Objects.requireNonNull(snapshot, "snapshot");
         Pose expected = MorrowBodyAuthority.poseFor(snapshot.stage());
         if (expected == currentPose && snapshot.revision() == currentRevision) {
-            audit();
-            return;
+            try {
+                audit();
+                return;
+            } catch (IllegalStateException drift) {
+                // The body is presentation-only and fully Morrow-owned. A
+                // clicked Interaction can become invalid while Paper delivers
+                // the native-dialog callback; rebuild it from the durable
+                // snapshot instead of misreporting a world-state failure.
+                plugin.getLogger().warning(
+                        "Morrow fallback body drift detected; rebuilding: " + safe(drift.getMessage()));
+            }
         }
         cancelDeferredAudit();
         cleanupOwned();
