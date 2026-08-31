@@ -549,6 +549,9 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
         "2026-08-30-offline-cohort-preparation.json"
     resource_pack_checker = ROOT / "tools" / "check_morrow_resource_pack_receipts.py"
     resource_pack_receipt = ROOT / "morrow" / "rehearsal" / "resource-pack" / "latest.json"
+    resource_pack_visual_checker = ROOT / "tools" / "check_morrow_resource_pack_visual_checkpoint.py"
+    resource_pack_visual_receipt = ROOT / "morrow" / "rehearsal" / "client-visual" / \
+        "2026-08-30-resource-pack-visual-pair.json"
     capture_fallback = ROOT / "tools" / "capture_windows_window.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
@@ -598,6 +601,11 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "resource_pack_receipt": str(resource_pack_receipt.relative_to(ROOT)).replace("\\", "/"),
             "resource_pack_receipt_sha256": sha256_file(resource_pack_receipt),
             "resource_pack_handshake_status": "bounded_loaded_declined_pair_pass_visual_parity_open",
+            "resource_pack_visual_checker": str(resource_pack_visual_checker.relative_to(ROOT)).replace("\\", "/"),
+            "resource_pack_visual_checker_sha256": sha256_file(resource_pack_visual_checker),
+            "resource_pack_visual_receipt": str(resource_pack_visual_receipt.relative_to(ROOT)).replace("\\", "/"),
+            "resource_pack_visual_receipt_sha256": sha256_file(resource_pack_visual_receipt),
+            "resource_pack_visual_checkpoint_status": "bounded_pair_checkpoint_defect_open",
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",

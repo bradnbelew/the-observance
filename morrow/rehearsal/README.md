@@ -39,7 +39,10 @@ not a substitute for the complete human-client runs.
 The retained `resource-pack/latest.json` checkpoint binds a matched real-client `LOADED`/`DECLINED`
 pair against the same exact optional loopback ZIP. It proves handshake, byte-fetch, policy, and cleanup
 behavior only; the accepted/declined visual and interaction equivalence lane remains open until matched
-media receives independent review.
+media receives independent review. The first exact-window pair is retained at
+`client-visual/2026-08-30-resource-pack-visual-pair.json`: common room geometry and interaction targets
+are visible, but the declined movement instruction is partially clipped in the retained frame. The
+checkpoint therefore records an open defect rather than passing parity.
 
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed

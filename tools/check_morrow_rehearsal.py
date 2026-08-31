@@ -304,6 +304,7 @@ def validate() -> None:
         "protocol", "generator", "checker", "selftest", "offline_launcher",
         "offline_cohort_preparer", "offline_cohort_checker", "offline_cohort_receipt",
         "resource_pack_checker", "resource_pack_receipt",
+        "resource_pack_visual_checker", "resource_pack_visual_receipt",
         "latest_attempt",
         "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
@@ -329,6 +330,20 @@ def validate() -> None:
             == "bounded_handshake_pair_pass_human_visual_parity_open"
             and pack_receipt["production_enablement"] == "blocked",
             "resource-pack handshake subproof was omitted or overclaimed")
+    pack_visual_result = subprocess.run(
+        [sys.executable, str(ROOT / client["resource_pack_visual_checker"])],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(pack_visual_result.returncode == 0,
+            f"resource-pack visual checkpoint failed: {pack_visual_result.stderr.strip()}")
+    pack_visual = load(ROOT / client["resource_pack_visual_receipt"])
+    require(client["resource_pack_visual_checkpoint_status"]
+            == "bounded_pair_checkpoint_defect_open"
+            and pack_visual["status"] == "bounded_pair_checkpoint_defect_open"
+            and pack_visual["comparison"]["movement_prompt_readability_equal"] is False
+            and pack_visual["defect"]["status"] == "open"
+            and pack_visual["production_enablement"] == "blocked",
+            "resource-pack visual defect checkpoint was omitted or silently closed")
     attempt = load(ROOT / client["latest_attempt"])
     require(attempt["client_lane_status"] == "unproven"
             and attempt["no_blind_input"] is True
