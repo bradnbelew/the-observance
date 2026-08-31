@@ -328,7 +328,7 @@ def validate() -> None:
     require(client["gate"] == "required" and client["latest_attempt_status"] == "unproven",
             "client evidence gate was silently advanced")
     for key in (
-        "protocol", "generator", "checker", "selftest", "offline_launcher",
+        "protocol", "contract", "generator", "checker", "selftest", "offline_launcher",
         "offline_cohort_preparer", "offline_cohort_checker", "offline_cohort_receipt",
         "resource_pack_checker", "resource_pack_receipt",
         "resource_pack_visual_checker", "resource_pack_visual_receipt",
@@ -340,6 +340,15 @@ def validate() -> None:
         path = ROOT / client[key]
         require(path.is_file() and client[f"{key}_sha256"] == sha(path),
                 f"client evidence artifact drifted: {key}")
+    client_contract_result = subprocess.run(
+        [sys.executable, str(ROOT / client["selftest"])],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(
+        client_contract_result.returncode == 0,
+        "M01-M12 client rehearsal contract self-test failed: "
+        f"{client_contract_result.stderr.strip() or client_contract_result.stdout.strip()}",
+    )
     cohort_result = subprocess.run(
         [sys.executable, str(ROOT / client["offline_cohort_checker"])],
         cwd=ROOT, capture_output=True, text=True,
@@ -436,14 +445,14 @@ def validate() -> None:
             and capture_retry["production_contacted"] is False,
             "post-permission Java capture retry was omitted or overclaimed")
     validate_client_visual_checkpoint(client)
-    current_visual_result = subprocess.run(
-        [sys.executable, str(ROOT / "tools/check_morrow_current_source_visual_checkpoint.py")],
+    source_bound_visual_result = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_morrow_source_bound_visual_checkpoint.py")],
         cwd=ROOT, capture_output=True, text=True,
     )
     require(
-        current_visual_result.returncode == 0,
-        "current-source visual checkpoint failed: "
-        f"{current_visual_result.stderr.strip() or current_visual_result.stdout.strip()}",
+        source_bound_visual_result.returncode == 0,
+        "source-bound visual checkpoint failed: "
+        f"{source_bound_visual_result.stderr.strip() or source_bound_visual_result.stdout.strip()}",
     )
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")

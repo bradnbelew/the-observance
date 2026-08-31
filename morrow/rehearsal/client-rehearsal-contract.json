@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0.0-morrow-m01-m12-human-contract",
+  "required_path_proofs": [
+    "native_input",
+    "success",
+    "recoverable_failure",
+    "accessibility_equivalent",
+    "callback"
+  ],
+  "supported_endings": [
+    "certify",
+    "preserve_audit",
+    "close_ticket",
+    "create_new_branch"
+  ],
+  "investigations": [
+    {
+      "id": "M01",
+      "title": "The unresolved listing",
+      "surfaces": ["copperline", "discord"],
+      "required_events": [
+        "morrow.act0.case_chain_authenticated",
+        "morrow.act0.server_handoff_recovered"
+      ]
+    },
+    {
+      "id": "M02",
+      "title": "The sixth block",
+      "surfaces": ["minecraft", "copperline"],
+      "required_events": [
+        "morrow.act1.room04_witnessed",
+        "morrow.act1.static_proposal_authenticated",
+        "morrow.act1.intention_error_proven",
+        "morrow.act1.entity_replay_authorized"
+      ]
+    },
+    {
+      "id": "M03",
+      "title": "Thirty-seven seconds",
+      "surfaces": ["minecraft", "media", "copperline"],
+      "required_events": ["morrow.act2.missing_role_completed"]
+    },
+    {
+      "id": "M04",
+      "title": "The ridiculous walk",
+      "surfaces": ["minecraft", "copperline", "discord", "media"],
+      "required_events": [
+        "morrow.act2.live_test_recorded",
+        "morrow.act2.behavior_reuse_proven",
+        "morrow.act2.private_contradiction_resolved",
+        "morrow.act2.live_capture_authorized"
+      ]
+    },
+    {
+      "id": "M05",
+      "title": "Three true rooms",
+      "surfaces": ["minecraft", "discord"],
+      "required_events": ["morrow.act3.version_fragments_authenticated"]
+    },
+    {
+      "id": "M06",
+      "title": "The vote Morrow completed",
+      "surfaces": ["copperline", "discord", "minecraft"],
+      "required_events": ["morrow.act3.incomplete_consensus_proven"]
+    },
+    {
+      "id": "M07",
+      "title": "Witness anchors",
+      "surfaces": ["minecraft", "copperline"],
+      "required_events": ["morrow.act4.witness_anchor_registered"]
+    },
+    {
+      "id": "M08",
+      "title": "The house nobody built",
+      "surfaces": ["minecraft", "copperline", "media"],
+      "required_events": [
+        "morrow.act4.almost_home_proven",
+        "morrow.act4.account_continuity_authorized"
+      ]
+    },
+    {
+      "id": "M09",
+      "title": "Session continued",
+      "surfaces": ["minecraft", "copperline", "discord"],
+      "required_events": [
+        "morrow.act5.continued_session_observed",
+        "morrow.act5.returning_identity_authenticated"
+      ]
+    },
+    {
+      "id": "M10",
+      "title": "Maintenance window",
+      "surfaces": ["minecraft", "discord"],
+      "required_events": ["morrow.act5.dual_session_consciousness_proven"]
+    },
+    {
+      "id": "M11",
+      "title": "The first Morrow was closed",
+      "surfaces": ["minecraft", "copperline", "discord", "media"],
+      "required_events": [
+        "morrow.act6.audit_chronology_proven",
+        "morrow.act6.current_morrow_reconstruction_proven",
+        "morrow.act6.cold_storage_access_authorized"
+      ]
+    },
+    {
+      "id": "M12",
+      "title": "Create a new branch",
+      "surfaces": ["minecraft", "copperline", "discord", "media"],
+      "required_events": [
+        "morrow.act7.rollback_anchors_committed",
+        "morrow.act7.branch_policy_committed",
+        "morrow.act7.branch_governance_authorized",
+        "morrow.act7.coda_started"
+      ]
+    }
+  ]
+}

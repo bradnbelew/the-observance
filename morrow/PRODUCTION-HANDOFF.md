@@ -53,6 +53,12 @@ Implemented and verified:
   route, consensus audit, paired witness-anchor reconstruction, and source-chronology/Vigenere house
   gallery. Their retained Paper checkpoints prove 1,617 / 1,309 / 1,547 / 5,225 cells and stable
   3 / 8 / 9 / 8 owned display counts across restart without claiming human interaction
+- M06 now owns the truthful `morrow.act3.incomplete_consensus_proven` receipt. The earlier
+  `contradiction_preserved` key described M05 in public copy while carrying an M06 vote-policy payload.
+  Java authority, prerequisites, Copperline, Discord, the runtime envelope, schema proposal, and the
+  full client contract now agree. A forward-only migration preserves event UUIDs, payloads,
+  idempotency keys, and stored projections; local proof is retained at
+  `morrow/rehearsal/database/latest-m06-event-correction-local.json`, while live validation remains open
 - M09 Account Continuity is implemented as a 2,520-cell safe chamber with a hashed private anchor,
   real quit/join receipts, a four-action bounded echo, excluded-knowledge identity challenge, four
   state lamps, ten owned entities, reset/immutability rules, crash recovery, and 1/2/6-player authority
@@ -262,7 +268,7 @@ A second fresh client run now binds the fully implemented source commit
 1.21.11 build 132. Its retained exact-window still confirms Room 04, the centered copper terminal,
 bounded `MORROW // TERMINAL` label, zero-inventory-mutation safe entry, and clean runtime shutdown.
 The fail-closed receipt is
-`morrow/rehearsal/client-visual/2026-08-30-current-source-room04-checkpoint.json`. No client input was
+`morrow/rehearsal/client-visual/2026-08-30-source-d2580fd-room04-checkpoint.json`. No client input was
 sent in this run, so it does not advance any interaction or full-playthrough gate.
 
 ### P1 — Safe database rehearsal
@@ -299,7 +305,7 @@ same mechanic.
   audited and build-clean but have not been executed on the isolated validation project or proven through
   an authenticated browser session.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
-  connects, safe entry is runtime-proven, and the current-source Room 04 terminal has bounded retained
+  connects, safe entry is runtime-proven, and the source-bound d2580fd Room 04 terminal has bounded retained
   still evidence through the exact-window fallback. The primary Computer Use capture API remains
   unavailable on this host. The full Morrow display-body pose set, Paper dialogs, M02 Static Restore,
   and M03/M04 Entity Replay still require live-client visual and interaction

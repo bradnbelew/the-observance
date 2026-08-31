@@ -14,7 +14,7 @@ import java.util.UUID;
 
 /** Pure M06 authority: immutable votes, an altered denominator, and one honest classification. */
 public final class ConsensusAuditAuthority {
-    public static final String EVENT = "morrow.act3.contradiction_preserved";
+    public static final String EVENT = "morrow.act3.incomplete_consensus_proven";
     public static final String PUBLISHED_RESULT = "CONSENSUS: CONTINUE — 4/4 eligible";
     public static final String POLICY = "Count confidence at or above 0.80. Retain lower-confidence votes, but exclude them from the denominator.";
     public static final List<VoteReceipt> VOTES = List.of(

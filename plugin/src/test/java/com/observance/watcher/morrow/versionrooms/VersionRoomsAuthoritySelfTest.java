@@ -114,7 +114,7 @@ public final class VersionRoomsAuthoritySelfTest {
                                 && preserve.progress().preserved(),
                         count + "-player M05 can preserve only after all fragments authenticate");
                 check(!fixture.state.snapshot().committedEvents().contains(
-                        "morrow.act3.contradiction_preserved"),
+                        "morrow.act3.incomplete_consensus_proven"),
                         count + "-player M05 cannot skip the M06 consensus audit");
             }
         }

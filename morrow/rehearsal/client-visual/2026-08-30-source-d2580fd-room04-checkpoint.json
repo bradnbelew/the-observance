@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.0-morrow-current-source-visual-checkpoint",
-  "status": "current_source_room04_visual_pass_interaction_open",
+  "schema_version": "1.0.0-morrow-source-bound-visual-checkpoint",
+  "status": "source_bound_room04_visual_pass_interaction_open",
   "captured_at": "2026-08-31T04:35:42.940365Z",
   "scope": "loopback disposable Paper and dummy offline Minecraft client; bounded still-image proof only",
   "source_commit": "d2580fd97ae14dc3db0b508d6ab7aad0b7f0241c",

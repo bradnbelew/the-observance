@@ -79,7 +79,7 @@ export const MORROW_CASE_EVENT_ORDER = [
   'morrow.act2.behavior_reuse_proven',
   'morrow.act2.live_capture_authorized',
   'morrow.act3.version_fragments_authenticated',
-  'morrow.act3.contradiction_preserved',
+  'morrow.act3.incomplete_consensus_proven',
   'morrow.act4.witness_anchor_registered',
   'morrow.act4.almost_home_proven',
   'morrow.act4.account_continuity_authorized',
@@ -191,9 +191,9 @@ const UPDATE_CONTENT: Partial<Record<MorrowCaseEvent, Omit<MorrowCaseUpdate, 'ev
     detail: 'Each isolated room retained a different supported fact. None is sufficient as a complete canonical restore.',
     scope: 'group', state: 'verified',
   },
-  'morrow.act3.contradiction_preserved': {
-    title: 'Conflicting backup record preserved',
-    detail: 'The group retained the supported disagreement instead of forcing one version to erase the others.',
+  'morrow.act3.incomplete_consensus_proven': {
+    title: 'Incomplete consensus proven',
+    detail: 'All six signed votes remain intact. Two shutdown votes were excluded by confidence policy, changing the published denominator without forging a ballot.',
     scope: 'group', state: 'exception',
   },
   'morrow.act4.witness_anchor_registered': {

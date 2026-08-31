@@ -256,7 +256,7 @@ public final class BranchGovernanceAuthoritySelfTest {
                     "morrow.act1.intention_error_proven", "morrow.act1.entity_replay_authorized",
                     "morrow.act2.missing_role_completed", "morrow.act2.live_test_recorded", "morrow.act2.behavior_reuse_proven",
                     "morrow.act2.private_contradiction_resolved", "morrow.act2.live_capture_authorized",
-                    "morrow.act3.version_fragments_authenticated", "morrow.act3.contradiction_preserved",
+                    "morrow.act3.version_fragments_authenticated", "morrow.act3.incomplete_consensus_proven",
                     "morrow.act4.witness_anchor_registered", "morrow.act4.almost_home_proven",
                     "morrow.act4.account_continuity_authorized", "morrow.act5.continued_session_observed",
                     "morrow.act5.returning_identity_authenticated", "morrow.act5.dual_session_consciousness_proven",

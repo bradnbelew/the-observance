@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0-morrow-m06-event-correction-local",
+  "status": "local_forward_migration_and_cross_surface_semantics_pass_live_supabase_open",
+  "completed_at": "2026-08-30T23:57:40-05:00",
+  "scope": "local Java authority, database migration contract, Copperline build, Discord audit, and M01-M12 rehearsal parity",
+  "correction": {
+    "old_event": "morrow.act3.contradiction_preserved",
+    "new_event": "morrow.act3.incomplete_consensus_proven",
+    "investigation": "M06",
+    "votes_altered": false,
+    "published_denominator_altered_by_policy": true,
+    "existing_event_ids_preserved": true,
+    "existing_payloads_preserved": true,
+    "existing_idempotency_keys_preserved": true,
+    "dependent_prerequisites_rewritten": true,
+    "stored_player_projections_rewritten": true,
+    "projection_worker_function_rewritten": true
+  },
+  "checks": {
+    "plugin_build": "pass",
+    "dashboard_selftest": "pass",
+    "dashboard_lint": "pass",
+    "dashboard_production_build": "pass",
+    "discord_audit": "pass",
+    "m01_m12_client_contract_selftest": "pass",
+    "old_event_absent_from_active_source": true
+  },
+  "boundary": {
+    "production_contacted": false,
+    "validation_project_contacted": false,
+    "live_migration_exercised": false,
+    "service_role_secret_loaded": false,
+    "reason": "The forward migration is locally audited and build-clean. Applying it to the paused validation project remains a separately authorized live-service proof."
+  },
+  "artifacts": {
+    "event_catalog": {"path": "morrow/contracts/event-catalog.json", "sha256": "ae4ed453973848b84919b8d1895e3837ec7ac423e9f579222e0181a9527051c2"},
+    "schema": {"path": "morrow/db/schema-proposal.sql", "sha256": "0959b27163c4b363aebf95ce07326c7d7d0e8b74562d6f911f4d39cdec651bab"},
+    "forward_migration": {"path": "supabase/migrations/20260831050000_morrow_m06_consensus_event.sql", "sha256": "e67bee03b96bace87a543b214576acba59af72eb58d0692f306b905d01eba368"},
+    "java_authority": {"path": "plugin/src/main/java/com/observance/watcher/morrow/consensus/ConsensusAuditAuthority.java", "sha256": "412ac6726514cc39c1ad483da160ccb966bf2c1530ec99bb6f69772567acf2b1"},
+    "runtime_envelope": {"path": "dashboard/src/lib/morrow-runtime-envelope.ts", "sha256": "032ecacc5f3d69a55835e51c48cdc95fb254846666afbf7e88ea4712d7fac91a"},
+    "copperline_projection": {"path": "dashboard/src/lib/morrow-copperline-case.ts", "sha256": "b29b112ba5e865f5adcad534c6bf1381dd39c54b402f95048b414cba2aaa6ad1"},
+    "discord_copy": {"path": "discord/src/morrow/projection-copy.ts", "sha256": "bd8cc443012a78a1240188a1a5ea1607cc66cbaf34e6f95ef9f4a9ff93e4936c"},
+    "client_rehearsal_contract": {"path": "morrow/rehearsal/client-rehearsal-contract.json", "sha256": "32c516a68ea15ff96f11b646765df1969c9a305f46c87288b4156f1663036334"}
+  }
+}

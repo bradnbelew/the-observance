@@ -21,7 +21,7 @@ public final class MorrowTransitionService {
                     "morrow.act2.live_capture_authorized"
             ),
             MorrowStage.INTIMATE, List.of(
-                    "morrow.act3.contradiction_preserved",
+                    "morrow.act3.incomplete_consensus_proven",
                     "morrow.act4.witness_anchor_registered",
                     "morrow.act4.almost_home_proven",
                     "morrow.act4.account_continuity_authorized"

@@ -19,6 +19,16 @@
     "additive_migration_matches_schema_function": true,
     "foundation_receipt_preserved": true
   },
+  "artifact_availability": {
+    "schema": {
+      "status": "retained_hash_only",
+      "reason": "The exact intermediate schema snapshot used by this local receipt was not committed. Later committed schema revisions are independently audited; this receipt does not claim its original schema bytes remain reconstructable."
+    },
+    "projection_model": {
+      "status": "retained_hash_only",
+      "reason": "The exact intermediate projection-model snapshot used by this local receipt was not committed. Later committed projection revisions are independently audited; this receipt does not claim its original model bytes remain reconstructable."
+    }
+  },
   "boundary": {
     "production_contacted": false,
     "validation_project_contacted": false,

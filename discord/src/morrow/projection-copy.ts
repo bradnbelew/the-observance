@@ -28,9 +28,9 @@ const SYNCHRONIZED_RECEIPTS: Readonly<Record<string, MorrowDiscordProjectionCopy
     heading: 'Bounded Live Capture authorized',
     body: 'Every recorded participant filed an individual consent receipt. Group approval cannot substitute for player consent.',
   },
-  'morrow.act3.contradiction_preserved': {
-    heading: 'Conflicting backups retained',
-    body: 'Three authenticated fragments disagree. The group preserved the supported contradiction instead of erasing two sources.',
+  'morrow.act3.incomplete_consensus_proven': {
+    heading: 'Incomplete consensus filed',
+    body: 'All six signed votes remain intact. The published denominator excluded two authentic shutdown votes under its confidence policy.',
   },
   'morrow.act4.account_continuity_authorized': {
     heading: 'Account Continuity test authorized',

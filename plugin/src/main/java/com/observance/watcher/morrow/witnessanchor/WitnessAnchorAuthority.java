@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /** Pure M07 authority: arbitrary six-cell construction, immutable version, and mismatch proof. */
 public final class WitnessAnchorAuthority {
-    public static final String PREREQUISITE = "morrow.act3.contradiction_preserved";
+    public static final String PREREQUISITE = "morrow.act3.incomplete_consensus_proven";
     public static final String EVENT = "morrow.act4.witness_anchor_registered";
 
     private WitnessAnchorAuthority() { }

@@ -16,17 +16,31 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PAPER_RUNTIME = ROOT / "morrow" / "rehearsal" / "runtime" / "p0-paper-c40f916"
+PAPER_RUNTIME_RECEIPT = (
+    ROOT / "morrow" / "rehearsal" / "client-visual"
+    / "2026-08-30-current-d2580fd-paper-runtime-receipt.json"
+)
+CONTRACT_PATH = ROOT / "morrow" / "rehearsal" / "client-rehearsal-contract.json"
+EVENT_CATALOG_PATH = ROOT / "morrow" / "contracts" / "event-catalog.json"
 ROOM04_MANIFEST = "9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a"
-REQUIRED_EVENTS = {
-    "morrow.act1.room04_witnessed",
-    "morrow.act1.static_proposal_authenticated",
-    "morrow.act1.intention_error_proven",
-    "morrow.act1.entity_replay_authorized",
-    "morrow.act2.missing_role_completed",
-    "morrow.act2.live_test_recorded",
-    "morrow.act2.behavior_reuse_proven",
+CONTRACT = json.loads(CONTRACT_PATH.read_text(encoding="utf-8"))
+INVESTIGATION_CONTRACTS = {
+    row["id"]: row for row in CONTRACT["investigations"]
 }
+INVESTIGATION_IDS = tuple(INVESTIGATION_CONTRACTS)
+PATH_PROOFS = set(CONTRACT["required_path_proofs"])
+SUPPORTED_ENDINGS = set(CONTRACT["supported_endings"])
+CATALOG_EVENTS = {
+    row["key"]
+    for row in json.loads(EVENT_CATALOG_PATH.read_text(encoding="utf-8"))["events"]
+}
+REQUIRED_EVENTS = {
+    event
+    for row in CONTRACT["investigations"]
+    for event in row["required_events"]
+}
+if REQUIRED_EVENTS != CATALOG_EVENTS:
+    raise RuntimeError("client rehearsal contract does not cover the complete canonical event catalog")
 LANES = {
     "minecraft_visual_entity_interpolation_and_authored_pose",
     "native_dialog_mouse_keyboard_escape_and_readability",
@@ -109,7 +123,7 @@ def validate(run: Path) -> None:
     run = run.resolve()
     manifest_path = run / "client-rehearsal.json"
     data = load(manifest_path)
-    require(data["schema_version"] == "1.0.0-morrow-human-client-rehearsal",
+    require(data["schema_version"] == "2.0.0-morrow-m01-m12-human-client-rehearsal",
             "client rehearsal schema drifted")
     require(data["status"] == "pass", "client rehearsal is not marked pass")
     require(data["operator_id"] != data["observer_id"], "operator cannot review their own run")
@@ -132,16 +146,27 @@ def validate(run: Path) -> None:
     require(subprocess.run(["git", "merge-base", "--is-ancestor", source, "HEAD"], cwd=ROOT).returncode == 0,
             "client rehearsal source is not an ancestor of current HEAD")
 
-    runtime_path = PAPER_RUNTIME / "paper-runtime-receipt.json"
-    runtime = load(runtime_path)
     binding = data["artifact_binding"]
-    require(binding["paper_runtime_receipt"] == str(runtime_path.relative_to(ROOT)).replace("\\", "/"),
-            "Paper runtime receipt path drifted")
+    runtime_relative = Path(binding["paper_runtime_receipt"])
+    require(runtime_relative.parts and not runtime_relative.is_absolute()
+            and ".." not in runtime_relative.parts,
+            "Paper runtime receipt path escapes the repository")
+    runtime_path = (ROOT / runtime_relative).resolve()
+    require(runtime_path.is_relative_to(ROOT) and runtime_path.is_file(),
+            "Paper runtime receipt is missing")
+    runtime = load(runtime_path)
     require(binding["paper_runtime_receipt_sha256"] == sha(runtime_path),
             "Paper runtime receipt hash drifted")
     require(binding["paper_sha256"] == runtime["paper"]["sha256"], "Paper artifact mismatch")
     require(binding["plugin_sha256"] == runtime["plugin_sha256"], "plugin artifact mismatch")
+    require(binding["paper_source_commit"] == runtime["source_commit"],
+            "Paper source commit drifted")
     require(binding["room04_manifest_sha256"] == ROOM04_MANIFEST, "Room 04 manifest mismatch")
+    require(binding["client_rehearsal_contract"]
+            == str(CONTRACT_PATH.relative_to(ROOT)).replace("\\", "/"),
+            "client rehearsal contract path drifted")
+    require(binding["client_rehearsal_contract_sha256"] == sha(CONTRACT_PATH),
+            "client rehearsal contract hash drifted")
     require(data["release_id"] == runtime["release_id"] and data["campaign_id"] == runtime["campaign_id"],
             "release or campaign binding mismatch")
 
@@ -160,6 +185,38 @@ def validate(run: Path) -> None:
         require(any(path.suffix.lower() in MEDIA_SUFFIXES for path in paths),
                 f"{name} lacks visual evidence")
 
+    investigations = data["investigations"]
+    require(tuple(investigations) == INVESTIGATION_IDS,
+            "investigation set/order must be exactly M01-M12")
+    for investigation_id, contract in INVESTIGATION_CONTRACTS.items():
+        finding = investigations[investigation_id]
+        require(finding["title"] == contract["title"],
+                f"{investigation_id} title drifted")
+        require(finding["status"] == "pass",
+                f"{investigation_id} did not pass human review")
+        require(set(finding["surfaces_observed"]) == set(contract["surfaces"]),
+                f"{investigation_id} did not retain every canonical surface")
+        require(set(finding["path_proofs"]) == PATH_PROOFS
+                and all(finding["path_proofs"].values()),
+                f"{investigation_id} did not prove native input, success, recoverable "
+                "failure, accessibility equivalent, and callback")
+        observer = finding.get("observer_finding")
+        require(isinstance(observer, dict) and observer.get("verdict") == "pass"
+                and observer.get("observer_id") == data["observer_id"],
+                f"{investigation_id} independent observer finding missing")
+        files = finding.get("files", [])
+        require(len(files) >= 2,
+                f"{investigation_id} needs synchronized media and receipt evidence")
+        paths = [
+            evidence_file(
+                run, row, f"investigation {investigation_id}",
+                started, ended, seen_evidence,
+            )
+            for row in files
+        ]
+        require(any(path.suffix.lower() in MEDIA_SUFFIXES for path in paths),
+                f"{investigation_id} lacks visual media")
+
     cohorts = data["cohorts"]
     require([row["size"] for row in cohorts] == [1, 2, 6], "cohort coverage must be exactly 1/2/6")
     all_players: set[str] = set()
@@ -168,6 +225,10 @@ def validate(run: Path) -> None:
         players = cohort["players"]
         require(cohort["status"] == "pass" and len(players) == size and len(set(players)) == size,
                 f"cohort {size} identity coverage failed")
+        require(cohort["completed_investigations"] == list(INVESTIGATION_IDS),
+                f"cohort {size} did not complete M01-M12 in order")
+        require(cohort["ending"] in SUPPORTED_ENDINGS,
+                f"cohort {size} has no canonical M12 ending")
         require(not all_players.intersection(players), f"player identity reused across cohort {size}")
         all_players.update(players)
         require(3600 <= cohort["duration_seconds"] <= 5400,
@@ -205,8 +266,21 @@ def validate(run: Path) -> None:
                 f"cohort {size} inventory changed")
 
     final = data["final_receipts"]
-    for kind, row in final.items():
-        evidence_file(run, row, f"final {kind}", started, ended, seen_evidence)
+    final_paths = {
+        kind: evidence_file(run, row, f"final {kind}", started, ended, seen_evidence)
+        for kind, row in final.items()
+    }
+    require(REQUIRED_EVENTS <= journal_event_types(final_paths["complete_journal"]),
+            "final journal omits canonical M01-M12 progression")
+    complete_log = final_paths["complete_server_log"].read_text(
+        encoding="utf-8", errors="replace",
+    )
+    shutdown_log = final_paths["clean_shutdown_log"].read_text(
+        encoding="utf-8", errors="replace",
+    )
+    require("MORROW_RUNTIME_READY" in complete_log
+            and "MORROW_RUNTIME_CLOSED" in shutdown_log,
+            "final lifecycle receipts are incomplete")
 
 
 def main() -> int:
@@ -218,7 +292,7 @@ def main() -> int:
     except Exception as failure:  # noqa: BLE001 - audit emits one concise receipt
         print(f"MORROW CLIENT REHEARSAL: FAIL: {failure}", file=sys.stderr)
         return 1
-    print("MORROW CLIENT REHEARSAL: PASS loopback=1 cohorts=1/2/6 media+runtime=bound")
+    print("MORROW CLIENT REHEARSAL: PASS m01-m12=12 cohorts=1/2/6 media+runtime=bound")
     return 0
 
 

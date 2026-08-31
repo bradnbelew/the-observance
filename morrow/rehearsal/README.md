@@ -22,15 +22,15 @@ without suffocation. A Windows 10 exact-title/PID fallback now also retains the 
 the presentation defect it exposed, the corrected frame, and one successful native terminal-dialog
 activation under `client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
 
-A newer current-source checkpoint at
-`client-visual/2026-08-30-current-source-room04-checkpoint.json` binds commit
+A newer source-bound checkpoint at
+`client-visual/2026-08-30-source-d2580fd-room04-checkpoint.json` binds commit
 `d2580fd97ae14dc3db0b508d6ab7aad0b7f0241c`, the current plugin JAR, exact Paper
 1.21.11 build 132, a fresh dummy-client join, the retained Room 04 frame, safe entry with zero
 inventory mutations, and clean runtime shutdown. It confirms the terminal remains centered and its
 label bounded after the full M01–M12 implementation. It is deliberately still-image proof: no input
-was injected, so current-source dialog choices, pose transitions, continuous media, pack/audio parity,
+was injected, so latest-source dialog choices, pose transitions, continuous media, pack/audio parity,
 and the full playthrough remain open. Verify it with
-`python tools/check_morrow_current_source_visual_checkpoint.py`.
+`python tools/check_morrow_source_bound_visual_checkpoint.py`.
 
 The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
@@ -44,6 +44,13 @@ owned client/server shutdown. It is verified by
 `python tools/check_morrow_client_cohort_runtime_checkpoint.py`. The complete 60–90 minute human slice,
 continuous media, independent observation, and the other unresolved graphical lanes remain required
 under `CLIENT-REHEARSAL.md`.
+
+The human packet contract is now complete rather than P0-only:
+`client-rehearsal-contract.json` binds M01–M12, all 26 canonical events, every canonical surface,
+five proof paths per investigation, the six cross-cutting client lanes, and all four M12 endings.
+Its self-test rejects an otherwise complete M01–M11 packet. During that expansion the audit exposed
+and corrected M06's misleading event key; the forward-only local receipt is
+`database/latest-m06-event-correction-local.json`.
 
 The retained `version-rooms-runtime/latest.json` checkpoint proves the M05 damaged, scaffold, and
 completed rooms build as 1,617 real Paper 1.21.11 cells, survive restart under the same manifest,

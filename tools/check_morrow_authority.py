@@ -40,8 +40,12 @@ MORROW_MIGRATION = ROOT / "supabase" / "migrations" / "20260830200157_morrow_reb
 MORROW_ACT6_COPPERLINE_MIGRATION = (
     ROOT / "supabase" / "migrations" / "20260830235900_morrow_copperline_audit_chronology.sql"
 )
+MORROW_M06_EVENT_MIGRATION = (
+    ROOT / "supabase" / "migrations" / "20260831050000_morrow_m06_consensus_event.sql"
+)
 MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
 MORROW_ACT6_COPPERLINE_RECEIPT = MORROW / "rehearsal" / "database" / "latest-act6-chronology-local.json"
+MORROW_M06_EVENT_RECEIPT = MORROW / "rehearsal" / "database" / "latest-m06-event-correction-local.json"
 MORROW_MEDIA_RECEIPT = MORROW / "rehearsal" / "media" / "latest.json"
 MORROW_DISCORD_FULL_RECEIPT = MORROW / "rehearsal" / "discord" / "latest-full-projection-local.json"
 MORROW_CRON_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-supabase-cron-projector.json"
@@ -540,6 +544,7 @@ def main() -> int:
         schema = schema_text.lower()
         migration_text = MORROW_MIGRATION.read_text(encoding="utf-8")
         act6_migration_text = MORROW_ACT6_COPPERLINE_MIGRATION.read_text(encoding="utf-8")
+        m06_migration_text = MORROW_M06_EVENT_MIGRATION.read_text(encoding="utf-8")
         database_receipt = json.loads(MORROW_DATABASE_RECEIPT.read_text(encoding="utf-8"))
         def sql_function(source: str, name: str, grant_role: str) -> str:
             function_start = f"create or replace function public.{name}"
@@ -562,6 +567,11 @@ def main() -> int:
         for function_name, role in replacements:
             base_function = sql_function(migration_text, function_name, role)
             final_function = sql_function(act6_migration_text, function_name, role)
+            if function_name == "morrow_apply_copperline_projection":
+                final_function = final_function.replace(
+                    "morrow.act3.contradiction_preserved",
+                    "morrow.act3.incomplete_consensus_proven",
+                )
             proposal_function = sql_function(schema_text, function_name, role)
             require(final_function == proposal_function,
                     f"additive migration {function_name} differs from the current schema proposal")
@@ -571,8 +581,51 @@ def main() -> int:
         require(additive_media_seed == proposal_media_seed,
                 "additive migration media seed differs from the current schema proposal")
         normalized_proposal = normalized_proposal.replace(proposal_media_seed + "\n\n", "")
+        normalized_proposal = normalized_proposal.replace(
+            "morrow.act3.incomplete_consensus_proven",
+            "morrow.act3.contradiction_preserved",
+        )
         require(normalized_foundation.splitlines()[3:] == normalized_proposal.splitlines()[3:],
                 "foundation plus additive function/media changes differs from the schema proposal")
+        for required in (
+            "update morrow_private.events",
+            "array_replace(prerequisite_events, v_old, v_new)",
+            "delete from morrow_private.event_definitions where event_key = v_old",
+            "replace(projection::text, v_old, v_new)::jsonb",
+            "pg_get_functiondef(",
+            "execute replace(v_projection_definition, v_old, v_new)",
+        ):
+            require(required in m06_migration_text.lower(),
+                    f"M06 forward event migration lacks {required}")
+        m06_receipt = json.loads(MORROW_M06_EVENT_RECEIPT.read_text(encoding="utf-8"))
+        for artifact in m06_receipt["artifacts"].values():
+            artifact_path = ROOT / artifact["path"]
+            require(artifact_path.is_file()
+                    and hashlib.sha256(artifact_path.read_bytes()).hexdigest() == artifact["sha256"],
+                    f"M06 correction receipt artifact drifted: {artifact['path']}")
+        require(
+            m06_receipt["status"]
+            == "local_forward_migration_and_cross_surface_semantics_pass_live_supabase_open"
+            and m06_receipt["correction"]["old_event"]
+                == "morrow.act3.contradiction_preserved"
+            and m06_receipt["correction"]["new_event"]
+                == "morrow.act3.incomplete_consensus_proven"
+            and all(
+                m06_receipt["correction"][key] is True
+                for key in (
+                    "existing_event_ids_preserved",
+                    "existing_payloads_preserved",
+                    "existing_idempotency_keys_preserved",
+                    "dependent_prerequisites_rewritten",
+                    "stored_player_projections_rewritten",
+                    "projection_worker_function_rewritten",
+                )
+            )
+            and m06_receipt["boundary"]["production_contacted"] is False
+            and m06_receipt["boundary"]["validation_project_contacted"] is False
+            and m06_receipt["boundary"]["live_migration_exercised"] is False,
+            "M06 correction receipt overclaims or lost its forward-migration boundary",
+        )
         require(database_receipt["artifacts"]["proposal_sha256"]
                 == "41013ae8e0a4905fd9fe16a45d1183eb0177951c20ef1204152cb84e490b6f66",
                 "isolated database receipt lost its exact rehearsed proposal hash")
@@ -610,10 +663,17 @@ def main() -> int:
                 and cron_receipt["production_enablement"] == "blocked",
                 "database-native Copperline scheduler receipt overclaims or is incomplete")
         act6_receipt = json.loads(MORROW_ACT6_COPPERLINE_RECEIPT.read_text(encoding="utf-8"))
-        for artifact in act6_receipt["artifacts"].values():
+        for artifact_name, artifact in act6_receipt["artifacts"].items():
             artifact_path = ROOT / artifact["path"]
-            require(current_or_historical_sha(artifact_path, artifact["sha256"]),
-                    f"Act 6 Copperline local receipt artifact drifted: {artifact['path']}")
+            availability = act6_receipt.get("artifact_availability", {}).get(artifact_name)
+            if availability is not None:
+                require(availability["status"] == "retained_hash_only"
+                        and "not committed" in availability["reason"]
+                        and len(artifact["sha256"]) == 64,
+                        f"Act 6 {artifact_name} availability disclosure drifted")
+            else:
+                require(current_or_historical_sha(artifact_path, artifact["sha256"]),
+                        f"Act 6 Copperline local receipt artifact drifted: {artifact['path']}")
         require(act6_receipt["status"] == "local_contract_pass_live_supabase_open"
                 and act6_receipt["boundary"]["production_contacted"] is False
                 and act6_receipt["boundary"]["validation_project_contacted"] is False

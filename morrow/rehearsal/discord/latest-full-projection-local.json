@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0-morrow-discord-full-projection-local",
   "status": "local_full_projection_policy_pass_gateway_execution_open",
-  "completed_at": "2026-08-30T23:23:36-05:00",
+  "completed_at": "2026-08-30T23:57:40-05:00",
   "scope": "local authored-copy coverage, retry policy, self-test, and TypeScript compilation",
   "proof": {
     "canonical_discord_events": 18,
@@ -13,7 +13,8 @@
     "idempotent_nonce_retained": true,
     "outage_retry_and_restart_reclaim": true,
     "morrowcheck": "pass",
-    "typecheck": "pass"
+    "typecheck": "pass",
+    "m06_event_semantics_corrected": true
   },
   "boundary": {
     "production_contacted": false,
@@ -23,8 +24,8 @@
     "reason": "The existing historical Act 2 Gateway receipt is retained separately; this receipt does not overclaim live delivery of the new later-act copy."
   },
   "artifacts": {
-    "event_catalog": {"path": "morrow/contracts/event-catalog.json", "sha256": "9a6299beb4f95e7992381b5e686153f254e70e8fb12426bcce6c0f7a500a1992"},
-    "authored_copy": {"path": "discord/src/morrow/projection-copy.ts", "sha256": "e14e9d1e29e4741d0993c5337d9f76ab84923436cb09629a6c5224cd36da5e61"},
+    "event_catalog": {"path": "morrow/contracts/event-catalog.json", "sha256": "ae4ed453973848b84919b8d1895e3837ec7ac423e9f579222e0181a9527051c2"},
+    "authored_copy": {"path": "discord/src/morrow/projection-copy.ts", "sha256": "bd8cc443012a78a1240188a1a5ea1607cc66cbaf34e6f95ef9f4a9ff93e4936c"},
     "projection_policy": {"path": "discord/src/morrow/projection-policy.ts", "sha256": "703c6be11b30bda7f59648d6c83d069eaba511367c559a30ba70630cc0b1f425"},
     "projection_worker": {"path": "discord/src/morrow/projection-worker.ts", "sha256": "a6a6042f30488e288a98bed1979f36a5a9b2b0fbda23bafb3ea721036a673ea0"},
     "selftest": {"path": "discord/src/morrow/contradiction.selftest.ts", "sha256": "78055354187ec75ff1e8947906c525174d77a6628e4c7436fd82abcc28d80b37"}

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0-morrow-earned-media-local",
   "status": "local_earned_media_and_full_projection_pass_live_services_open",
-  "completed_at": "2026-08-30T23:18:55-05:00",
+  "completed_at": "2026-08-30T23:57:40-05:00",
   "scope": "local authority, audio custody, TypeScript self-test, lint, and Next.js production build",
   "release_id": "morrow.reboot.media.v1",
   "proof": {
@@ -16,7 +16,9 @@
     "locked_catalog_excluded_from_client_component_imports": true,
     "dashboard_selftest": "pass",
     "dashboard_lint": "pass",
-    "dashboard_production_build": "pass"
+    "dashboard_production_build": "pass",
+    "m06_event_semantics_corrected": true,
+    "forward_migration_locally_audited": true
   },
   "boundary": {
     "production_contacted": false,
@@ -32,12 +34,13 @@
     "voice_fragment": {"path": "dashboard/src/lib/morrow-media-assets/m03-captioned-voice-fragment.ogg", "sha256": "d09e9c0882db24dbe7dbc4c41ee93ec91b278de35d8d8de2c4b524e2d6b27db8"},
     "current_voice": {"path": "dashboard/src/lib/morrow-media-assets/m11-current-voice-assembly.ogg", "sha256": "f07314de01bfa4dfd2367fcfa3f113227e2f3754241d8a6fd264dae141917550"},
     "catalog_adapter": {"path": "dashboard/src/lib/morrow-media-catalog.ts", "sha256": "237535bd0f3a51c91d9c8593c48c6871ca5be0bc5643497278e2933639432aed"},
-    "projection_model": {"path": "dashboard/src/lib/morrow-copperline-case.ts", "sha256": "fc0d6533473205a0318c9b5f9291830e4eff2f74a1a3beb6110b31705a7cd61e"},
+    "projection_model": {"path": "dashboard/src/lib/morrow-copperline-case.ts", "sha256": "b29b112ba5e865f5adcad534c6bf1381dd39c54b402f95048b414cba2aaa6ad1"},
     "authenticated_route": {"path": "dashboard/src/app/support/cases/mossfield-recovery/media/[mediaKey]/route.ts", "sha256": "4f4c807393c7523ae4140a58557cbba4e3d0f85833ac8bc45b297f25ee8794ab"},
     "case_page": {"path": "dashboard/src/app/support/cases/mossfield-recovery/page.tsx", "sha256": "99e3a84b7e5f32e52ee8f9adbaed4f0ef7aab272d8a3c6641114b0b4a4563506"},
     "client_form": {"path": "dashboard/src/app/support/cases/mossfield-recovery/CaseActions.tsx", "sha256": "ab4c77683978638a6ee7e08deadeef5e47ccf12b1bbcf447d22a3c055e3a02d4"},
     "selftest": {"path": "dashboard/src/lib/morrow-copperline-case.selftest.ts", "sha256": "1448f8be06f432aa00eddc06fe850c54e0fb2846c1ced9ffcf4117478786196c"},
-    "schema": {"path": "morrow/db/schema-proposal.sql", "sha256": "cb5cc80541bb7c452dfac4c86963898fc049175208c629f93b0015042d3fa440"},
-    "additive_migration": {"path": "supabase/migrations/20260830235900_morrow_copperline_audit_chronology.sql", "sha256": "f8bd5ea9e9c0f3a37ec197d4da94f2ca72eec368f2d9b1a5c2b814840db72c89"}
+    "schema": {"path": "morrow/db/schema-proposal.sql", "sha256": "0959b27163c4b363aebf95ce07326c7d7d0e8b74562d6f911f4d39cdec651bab"},
+    "additive_migration": {"path": "supabase/migrations/20260830235900_morrow_copperline_audit_chronology.sql", "sha256": "f8bd5ea9e9c0f3a37ec197d4da94f2ca72eec368f2d9b1a5c2b814840db72c89"},
+    "m06_event_migration": {"path": "supabase/migrations/20260831050000_morrow_m06_consensus_event.sql", "sha256": "e67bee03b96bace87a543b214576acba59af72eb58d0692f306b905d01eba368"}
   }
 }

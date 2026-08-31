@@ -24,7 +24,7 @@ public final class BranchGovernanceAuthority {
     public static final long MAXIMUM_WINDOW_TICKS = 7_200L;
 
     private static final Set<String> REQUIRED_HISTORY = Set.of(
-            "morrow.act3.contradiction_preserved",
+            "morrow.act3.incomplete_consensus_proven",
             "morrow.act4.witness_anchor_registered",
             "morrow.act1.entity_replay_authorized",
             "morrow.act2.live_capture_authorized",

@@ -258,7 +258,7 @@ public final class AlmostHomeAuthoritySelfTest {
                     "morrow.act2.missing_role_completed", "morrow.act2.live_test_recorded",
                     "morrow.act2.behavior_reuse_proven", "morrow.act2.private_contradiction_resolved",
                     "morrow.act2.live_capture_authorized", "morrow.act3.version_fragments_authenticated",
-                    "morrow.act3.contradiction_preserved", AlmostHomeAuthority.PREREQUISITE};
+                    "morrow.act3.incomplete_consensus_proven", AlmostHomeAuthority.PREREQUISITE};
             for (int index = 0; index < events.length; index++) {
                 String event = events[index];
                 if (event.startsWith("morrow.act0") || event.equals("morrow.act2.private_contradiction_resolved"))

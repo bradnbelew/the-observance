@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed over the current-source Room 04 visual checkpoint."""
+"""Fail closed over the source-bound d2580fd Room 04 visual checkpoint."""
 
 from __future__ import annotations
 
@@ -9,12 +9,12 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CHECKPOINT = ROOT / "morrow/rehearsal/client-visual/2026-08-30-current-source-room04-checkpoint.json"
+CHECKPOINT = ROOT / "morrow/rehearsal/client-visual/2026-08-30-source-d2580fd-room04-checkpoint.json"
 
 
 def require(condition: bool, message: str) -> None:
     if not condition:
-        raise SystemExit(f"MORROW CURRENT-SOURCE VISUAL CHECKPOINT: FAIL {message}")
+        raise SystemExit(f"MORROW SOURCE-BOUND VISUAL CHECKPOINT: FAIL {message}")
 
 
 def load_json(path: Path) -> dict:
@@ -31,7 +31,7 @@ def sha256(path: Path) -> str:
 
 
 checkpoint = load_json(CHECKPOINT)
-require(checkpoint.get("status") == "current_source_room04_visual_pass_interaction_open", "status")
+require(checkpoint.get("status") == "source_bound_room04_visual_pass_interaction_open", "status")
 require(checkpoint.get("source_commit") == "d2580fd97ae14dc3db0b508d6ab7aad0b7f0241c", "source commit")
 runtime = checkpoint.get("runtime", {})
 require(runtime.get("paper_version") == "1.21.11" and runtime.get("paper_build") == 132, "Paper identity")
@@ -84,4 +84,4 @@ require(len(checkpoint.get("not_proven", [])) == 6, "open-lane disclosure")
 require(checkpoint.get("production_mutated") is False, "production mutation boundary")
 require(checkpoint.get("production_release_authorized") is False, "production authorization boundary")
 
-print("MORROW CURRENT-SOURCE VISUAL CHECKPOINT: PASS room04=visible overlay=bounded interaction=open")
+print("MORROW SOURCE-BOUND VISUAL CHECKPOINT: PASS source=d2580fd room04=visible overlay=bounded interaction=open")
