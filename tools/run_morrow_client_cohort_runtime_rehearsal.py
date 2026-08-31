@@ -124,11 +124,38 @@ def stop_clients_best_effort(target_root: Path,
                     wrapper.wait(timeout=10)
 
 
-def wait_for_cohort(process: paper_harness.PaperProcess, usernames: list[str]) -> list[str]:
+def wait_for_all_lines(process: paper_harness.PaperProcess, tokens: dict[str, str],
+                       start: int, timeout: float) -> dict[str, str]:
+    found: dict[str, str] = {}
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if process.process.poll() is not None:
+            missing = sorted(set(tokens) - set(found))
+            raise RuntimeError(
+                f"Paper exited before cohort events {missing}; exit={process.process.returncode}; "
+                f"tail={process.lines[-12:]}")
+        for line in process.lines[start:]:
+            for key, token in tokens.items():
+                if key not in found and token in line:
+                    found[key] = line
+        if len(found) == len(tokens):
+            return found
+        time.sleep(.1)
+    missing = sorted(set(tokens) - set(found))
+    raise TimeoutError(f"timed out waiting for Paper cohort events: {missing}")
+
+
+def wait_for_cohort(process: paper_harness.PaperProcess, usernames: list[str],
+                    start: int) -> list[str]:
+    found = wait_for_all_lines(
+        process,
+        {username: f"MORROW_PLAYER_SAFE_ENTRY player={username} reason=join"
+         for username in usernames},
+        start,
+        120)
     safe_lines = []
     for username in usernames:
-        line = process.wait_for(
-            f"MORROW_PLAYER_SAFE_ENTRY player={username} reason=join", 120)
+        line = found[username]
         require(f"to={EXPECTED_SAFE_CELL}" in line and "inventory_mutations=0" in line,
                 f"{username} did not receive the canonical mutation-free safe entry")
         safe_lines.append(line)
@@ -226,18 +253,23 @@ def main() -> int:
         first_ready = first_process.wait_for("MORROW_RUNTIME_READY", 300)
         first_process.wait_for("Done (", 300)
         require(ingest.committed.wait(30), "Morrow projector did not reach loopback ingest")
+        first_join_start = len(first_process.lines)
         first_owned = start_clients(
             first_root, args.run_id, usernames, server_address,
             args.minecraft_root.resolve(), args.javaw.resolve(), args.max_memory_mib)
-        first_safe = wait_for_cohort(first_process, usernames)
+        first_safe = wait_for_cohort(first_process, usernames, first_join_start)
         fill_lines = first_process.batch("COHORT_FILL", inventory_commands(usernames))
         require(sum("Replaced a slot" in line for line in fill_lines) == 36 * len(usernames),
                 "Paper did not fill every main-inventory slot")
         first_counts = verify_inventory(first_process, usernames, "FIRST")
+        first_leave_start = len(first_process.lines)
         first_rows = stop_clients(first_root, first_owned)
         first_owned = []
-        for username in usernames:
-            first_process.wait_for(f"{username} left the game", 60)
+        wait_for_all_lines(
+            first_process,
+            {username: f"{username} left the game" for username in usernames},
+            first_leave_start,
+            60)
         first_process.command("save-all flush", "Saved the game")
         attempts_before_restart = len(ingest.attempts)
         first_process.stop()
@@ -255,15 +287,20 @@ def main() -> int:
         time.sleep(1.0)
         require(len(ingest.attempts) == attempts_before_restart,
                 "durable projector cursor redelivered after Paper restart")
+        restart_join_start = len(restart_process.lines)
         restart_owned = start_clients(
             restart_root, args.run_id, usernames, server_address,
             args.minecraft_root.resolve(), args.javaw.resolve(), args.max_memory_mib)
-        restart_safe = wait_for_cohort(restart_process, usernames)
+        restart_safe = wait_for_cohort(restart_process, usernames, restart_join_start)
         restart_counts = verify_inventory(restart_process, usernames, "RESTART")
+        restart_leave_start = len(restart_process.lines)
         restart_rows = stop_clients(restart_root, restart_owned)
         restart_owned = []
-        for username in usernames:
-            restart_process.wait_for(f"{username} left the game", 60)
+        wait_for_all_lines(
+            restart_process,
+            {username: f"{username} left the game" for username in usernames},
+            restart_leave_start,
+            60)
         restart_process.command("save-all flush", "Saved the game")
         restart_process.stop()
         paper_harness.write_text(
