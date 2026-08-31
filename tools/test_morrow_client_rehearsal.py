@@ -23,8 +23,8 @@ from check_morrow_client_rehearsal import (
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER_RUNTIME_RECEIPT = (
-    ROOT / "morrow" / "rehearsal" / "client-visual"
-    / "2026-08-30-current-d2580fd-paper-runtime-receipt.json"
+    ROOT / "morrow" / "rehearsal" / "runtime" / "fedac89-current"
+    / "paper-runtime-receipt.json"
 )
 PLUGIN_JAR = ROOT / "plugin" / "build" / "libs" / "observance-0.5.0.jar"
 

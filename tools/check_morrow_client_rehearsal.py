@@ -16,10 +16,6 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PAPER_RUNTIME_RECEIPT = (
-    ROOT / "morrow" / "rehearsal" / "client-visual"
-    / "2026-08-30-current-d2580fd-paper-runtime-receipt.json"
-)
 CONTRACT_PATH = ROOT / "morrow" / "rehearsal" / "client-rehearsal-contract.json"
 EVENT_CATALOG_PATH = ROOT / "morrow" / "contracts" / "event-catalog.json"
 ROOM04_MANIFEST = "9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a"

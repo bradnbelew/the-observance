@@ -16,8 +16,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER_RUNTIME_RECEIPT = (
-    ROOT / "morrow" / "rehearsal" / "client-visual"
-    / "2026-08-30-current-d2580fd-paper-runtime-receipt.json"
+    ROOT / "morrow" / "rehearsal" / "runtime" / "fedac89-current"
+    / "paper-runtime-receipt.json"
 )
 CONTRACT_PATH = ROOT / "morrow" / "rehearsal" / "client-rehearsal-contract.json"
 PLUGIN_JAR = ROOT / "plugin" / "build" / "libs" / "observance-0.5.0.jar"

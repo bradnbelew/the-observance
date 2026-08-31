@@ -59,6 +59,11 @@ Implemented and verified:
   full client contract now agree. A forward-only migration preserves event UUIDs, payloads,
   idempotency keys, and stored projections; local proof is retained at
   `morrow/rehearsal/database/latest-m06-event-correction-local.json`, while live validation remains open
+- the rebuilt post-correction plugin at commit `fedac8966bdccd099b6ab8d443134286ec4dc177`
+  passed a fresh two-boot exact Paper 1.21.11 build 132 lifecycle with stable M05–M12 readback,
+  clean ownership shutdown, and 503/503/200 projector recovery. The retained proof lives under
+  `morrow/rehearsal/runtime/fedac89-current`; it is latest-plugin server evidence, while the retained
+  graphical Room 04 still remains source-bound to d2580fd
 - M09 Account Continuity is implemented as a 2,520-cell safe chamber with a hashed private anchor,
   real quit/join receipts, a four-action bounded echo, excluded-knowledge identity challenge, four
   state lamps, ten owned entities, reset/immutability rules, crash recovery, and 1/2/6-player authority

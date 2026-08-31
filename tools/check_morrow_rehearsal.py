@@ -445,6 +445,15 @@ def validate() -> None:
             and capture_retry["production_contacted"] is False,
             "post-permission Java capture retry was omitted or overclaimed")
     validate_client_visual_checkpoint(client)
+    latest_plugin_paper_result = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_morrow_latest_plugin_paper.py")],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(
+        latest_plugin_paper_result.returncode == 0,
+        "latest-plugin Paper checkpoint failed: "
+        f"{latest_plugin_paper_result.stderr.strip() or latest_plugin_paper_result.stdout.strip()}",
+    )
     source_bound_visual_result = subprocess.run(
         [sys.executable, str(ROOT / "tools/check_morrow_source_bound_visual_checkpoint.py")],
         cwd=ROOT, capture_output=True, text=True,
