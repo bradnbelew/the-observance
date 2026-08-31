@@ -342,7 +342,7 @@ def entity_audit(runtime_ready: str, label: str) -> dict[str, int]:
               "almost_home": int(match.group(7)), "account_continuity": int(match.group(8)),
               "maintenance_window": int(match.group(9)), "cold_storage": int(match.group(10)),
               "branch_governance": int(match.group(11))}
-    expected = {"body": 2, "static_restore": 26, "entity_replay": 6,
+    expected = {"body": 2, "static_restore": 26, "entity_replay": 8,
                 "version_rooms": 3, "consensus_audit": 8, "witness_anchor": 9, "almost_home": 8,
                 "account_continuity": 10, "maintenance_window": 18, "cold_storage": 11,
                 "branch_governance": 18}

@@ -253,7 +253,7 @@ def validate_paper_runtime() -> dict[str, Any]:
     require(receipt["projection"]["no_restart_redelivery"],
             "Paper restart redelivered an acknowledged event")
     runtime = receipt["runtime"]
-    expected_entities = {"body": 2, "entity_replay": 6, "static_restore": 26}
+    expected_entities = {"body": 2, "entity_replay": 8, "static_restore": 26}
     require(runtime["first_entities"] == expected_entities
             and runtime["restart_entities"] == expected_entities,
             "owned Paper entity counts were not stable across restart")
