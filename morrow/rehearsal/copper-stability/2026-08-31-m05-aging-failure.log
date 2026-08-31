@@ -1,0 +1,102 @@
+[00:27:42] [ServerMain/INFO]: [bootstrap] Running Java 21 (OpenJDK 64-Bit Server VM 21.0.10+7-LTS; Eclipse Adoptium Temurin-21.0.10+7) on Windows 10 10.0 (amd64)
+[00:27:42] [ServerMain/INFO]: [bootstrap] Loading Paper 1.21.11-132-ver/1.21.11@c5eb079 (2026-05-11T11:43:09Z) for Minecraft 1.21.11
+[00:27:43] [ServerMain/INFO]: [PluginInitializerManager] Initializing plugins...
+[00:27:43] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Remapping plugin 'plugins\observance-0.5.0.jar'...
+[00:27:44] [Paper Plugin Remapper Thread - 2/INFO]: [PluginRemapper] Done remapping plugin 'plugins\observance-0.5.0.jar' in 1044ms.
+[00:27:44] [ServerMain/INFO]: [PluginInitializerManager] Initialized 1 plugin
+[00:27:44] [ServerMain/INFO]: [PluginInitializerManager] Bukkit plugins (1):
+ - Observance (0.5.0)
+[00:27:48] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[00:27:49] [ServerMain/INFO]: Loaded 1470 recipes
+[00:27:49] [ServerMain/INFO]: Loaded 1584 advancements
+[00:27:49] [ServerMain/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Initialising converters for DataConverter...
+[00:27:49] [ServerMain/INFO]: [ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry] Finished initialising converters for DataConverter in 253.5ms
+[00:27:49] [Server thread/INFO]: Starting minecraft server version 1.21.11
+[00:27:49] [Server thread/INFO]: Loading properties
+[00:27:49] [Server thread/INFO]: This server is running Paper version 1.21.11-132-ver/1.21.11@c5eb079 (2026-05-11T11:43:09Z) (Implementing API version 1.21.11-R0.1-SNAPSHOT)
+[00:27:49] [Server thread/INFO]: [spark] This server bundles the spark profiler. For more information please visit https://docs.papermc.io/paper/profiling
+[00:27:49] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[00:27:49] [Server thread/INFO]: Using 4 threads for Netty based IO
+[00:27:50] [Server thread/INFO]: [MoonriseCommon] Paper is using 4 worker threads, 1 I/O threads
+[00:27:50] [Server thread/INFO]: Default game type: ADVENTURE
+[00:27:50] [Server thread/INFO]: Generating keypair
+[00:27:50] [Server thread/INFO]: Starting Minecraft server on 127.0.0.1:25594
+[00:27:50] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[00:27:50] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[00:27:50] [Server thread/INFO]: [Observance] Loading server plugin Observance v0.5.0
+[00:27:50] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[00:27:50] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[00:27:50] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[00:27:50] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[00:27:50] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[00:27:50] [Server thread/INFO]: Preparing level "morrow_rehearsal"
+[00:27:51] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:overworld'...
+[00:27:51] [Server thread/INFO]: Prepared spawn area in 1 ms
+[00:27:51] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:the_nether'...
+[00:27:51] [Server thread/INFO]: Prepared spawn area in 1 ms
+[00:27:51] [Server thread/INFO]: Loading 0 persistent chunks for world 'minecraft:the_end'...
+[00:27:51] [Server thread/INFO]: Prepared spawn area in 0 ms
+[00:27:51] [Server thread/INFO]: Done preparing level "morrow_rehearsal" (0.356s)
+[00:27:51] [Server thread/INFO]: [Observance] Enabling Observance v0.5.0
+[00:27:51] [Server thread/ERROR]: [Observance] Morrow reboot failed closed during startup: M05 read-back mismatch at Cell[x=11, y=1, z=0] expected=minecraft:copper_grate actual=minecraft:exposed_copper_grate[waterlogged=false]
+java.io.IOException: M05 read-back mismatch at Cell[x=11, y=1, z=0] expected=minecraft:copper_grate actual=minecraft:exposed_copper_grate[waterlogged=false]
+	at observance-0.5.0.jar//com.observance.watcher.morrow.versionrooms.VersionRoomsInstaller.audit(VersionRoomsInstaller.java:82) ~[?:?]
+	at observance-0.5.0.jar//com.observance.watcher.morrow.versionrooms.VersionRoomsInstaller.install(VersionRoomsInstaller.java:31) ~[?:?]
+	at observance-0.5.0.jar//com.observance.watcher.morrow.MorrowRuntime.start(MorrowRuntime.java:246) ~[?:?]
+	at observance-0.5.0.jar//com.observance.watcher.ObservancePlugin.onEnable(ObservancePlugin.java:189) ~[?:?]
+	at org.bukkit.plugin.java.JavaPlugin.setEnabled(JavaPlugin.java:279) ~[paper-api-1.21.11-R0.1-SNAPSHOT.jar:?]
+	at io.papermc.paper.plugin.manager.PaperPluginInstanceManager.enablePlugin(PaperPluginInstanceManager.java:207) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at io.papermc.paper.plugin.manager.PaperPluginManagerImpl.enablePlugin(PaperPluginManagerImpl.java:109) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at org.bukkit.plugin.SimplePluginManager.enablePlugin(SimplePluginManager.java:520) ~[paper-api-1.21.11-R0.1-SNAPSHOT.jar:?]
+	at org.bukkit.craftbukkit.CraftServer.enablePlugin(CraftServer.java:639) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at org.bukkit.craftbukkit.CraftServer.enablePlugins(CraftServer.java:596) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at net.minecraft.server.MinecraftServer.initPostWorld(MinecraftServer.java:636) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at net.minecraft.server.dedicated.DedicatedServer.initServer(DedicatedServer.java:365) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:1253) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at net.minecraft.server.MinecraftServer.lambda$spin$2(MinecraftServer.java:388) ~[paper-1.21.11.jar:1.21.11-132-c5eb079]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[?:?]
+[00:27:51] [Server thread/INFO]: [Observance] Disabling Observance v0.5.0
+[00:27:51] [Server thread/INFO]: [Observance] The Observance sleeps.
+[00:27:52] [Server thread/INFO]: [spark] Starting background profiler...
+[00:27:52] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows10/amd64), so the built-in Java engine will be used instead.
+[00:27:52] [Server thread/INFO]: Running delayed init tasks
+[00:27:52] [Server thread/INFO]: Done (10.161s)! For help, type "help"
+[00:27:52] [Paper Async Task Handler Thread - 1/WARN]: *************************************************************************************
+[00:27:52] [Paper Async Task Handler Thread - 1/WARN]: You are running the latest build for your Minecraft version (1.21.11)
+[00:27:52] [Paper Async Task Handler Thread - 1/WARN]: However, you are 4 release(s) behind the latest stable release (26.2)!
+[00:27:52] [Paper Async Task Handler Thread - 1/WARN]: It is recommended that you update as soon as possible
+[00:27:52] [Paper Async Task Handler Thread - 1/WARN]: https://papermc.io/downloads/paper
+[00:27:52] [Paper Async Task Handler Thread - 1/WARN]: *************************************************************************************
+[00:28:06] [Server thread/INFO]: Stopping the server
+[00:28:06] [Server thread/INFO]: Stopping server
+[00:28:06] [Server thread/INFO]: Saving players
+[00:28:06] [Server thread/INFO]: Saving worlds
+[00:28:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[morrow_rehearsal]'/minecraft:overworld
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'morrow_rehearsal'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'morrow_rehearsal'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'morrow_rehearsal'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'morrow_rehearsal' in 0.02s
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'morrow_rehearsal'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'morrow_rehearsal'
+[00:28:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[morrow_rehearsal_nether]'/minecraft:the_nether
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'morrow_rehearsal_nether'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'morrow_rehearsal_nether'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'morrow_rehearsal_nether'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'morrow_rehearsal_nether' in 0.00s
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'morrow_rehearsal_nether'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'morrow_rehearsal_nether'
+[00:28:06] [Server thread/INFO]: Saving chunks for level 'ServerLevel[morrow_rehearsal_the_end]'/minecraft:the_end
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'morrow_rehearsal_the_end'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'morrow_rehearsal_the_end'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'morrow_rehearsal_the_end'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 0 entity chunks, 0 poi chunks in world 'morrow_rehearsal_the_end' in 0.00s
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk I/O to halt for world 'morrow_rehearsal_the_end'
+[00:28:06] [Server thread/INFO]: [ChunkHolderManager] Halted I/O scheduler for world 'morrow_rehearsal_the_end'
+[00:28:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (morrow_rehearsal): All chunks are saved
+[00:28:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[00:28:06] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[00:28:06] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[00:28:06] [Server thread/INFO]: Waiting for all RegionFile I/O tasks to complete...
+[00:28:06] [Server thread/INFO]: All RegionFile I/O tasks to complete
+[00:28:06] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of worker pool for up to 60s...
+[00:28:06] [Server thread/INFO]: [MoonriseCommon] Awaiting termination of I/O pool for up to 60s...

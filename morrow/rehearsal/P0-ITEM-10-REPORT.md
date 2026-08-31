@@ -6,7 +6,7 @@ The automated authority gate passes for one-, two-, and six-player cohorts. The 
 bound to source commit `fa1b80b84959dc62012c209c4749c6e31abde8ec`, release
 `morrow.rehearsal.fa1b80b.p0-10.v1`, campaign/player identities, and an exact artifact-set hash.
 
-Bundle SHA-256: `4a7a0ae0931799f493ac9f6c8266822850293c55a32dabc022ea924631223d39`
+Bundle SHA-256: `522b0665e836a4994ef9b31f220b22201b37d5f27b3ce010033e89ec27595b5e`
 
 ## Proven automatically
 
@@ -64,13 +64,14 @@ client visibly showed the corrected layout, and one observed right-click opened 
 receipt, and clean server lifecycle are hash-bound in
 `client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
 
-A later no-input checkpoint repeats the unobscured Room 04/terminal observation against the corrected
-fedac896 plugin and exact Paper build 132. Its source, launcher, client/server logs, zero-mutation safe
-entry, and clean shutdown are hash-bound at
-`client-visual/2026-08-31-latest-plugin-fedac89-room04-checkpoint.json`.
+A current-source checkpoint runs the corrected 28c6810 plugin and exact Paper build 132. One observed
+pass opens the native Static Restore proposal and retains its bounded copy, two choices, and receipt
+tooltip; a second opens it and Escape returns to Room 04 without applying the proposal. Its source,
+launcher, client/server logs, zero-mutation safe entry, clean shutdown, and two frames are hash-bound at
+`client-visual/2026-08-31-latest-plugin-28c6810-room04-dialog-checkpoint.json`.
 
-This extends the safe-entry result with a real visual/readability and one-dialog-activation subproof,
-not a complete graphical lane. All poses and interpolation, the full mouse/keyboard/Escape dialogue
+This extends the safe-entry result with real visual/readability plus dialog-open and Escape-close
+subproofs, not a complete graphical lane. All poses and interpolation, the remaining mouse/keyboard dialogue
 matrix, resource-pack-decline parity, audio-disabled parity, full-inventory route and exit/respawn,
 two-/six-player physical cleanup, continuous synchronized media, and 60–90 minute pacing without
 operator narration remain required. `CLIENT-REHEARSAL.md` and the bound generator/checker define the

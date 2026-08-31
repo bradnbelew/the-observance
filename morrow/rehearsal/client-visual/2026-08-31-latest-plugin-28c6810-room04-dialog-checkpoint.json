@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.1.0-morrow-latest-plugin-visual-checkpoint",
+  "status": "latest_plugin_room04_dialog_escape_pass",
+  "captured_at": "2026-08-31T05:42:12.534803Z",
+  "scope": "loopback disposable Paper and two dummy offline Minecraft client passes; bounded native-dialog and Escape proof",
+  "plugin_source_commit": "28c6810d8b770a939cd86fc8eb8be7a49aa39023",
+  "launcher_source_commit": "28c6810d8b770a939cd86fc8eb8be7a49aa39023",
+  "runtime": {
+    "paper_version": "1.21.11",
+    "paper_build": 132,
+    "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_sha256": "1b5ba21b09ac2ece5763a58ae756b385073947cc42fd5113e70e5f89ec723f57",
+    "server": "127.0.0.1:25595",
+    "dummy_offline_identity": "MorrowWitness",
+    "production_credentials_loaded": false,
+    "resource_pack_policy": "disabled",
+    "tutorial_toast_disabled": true
+  },
+  "capture": {
+    "backend": "Pillow.ImageGrab visible-desktop exact-window bounds",
+    "computer_use_wgc_result": "not_retried_known_incompatible_host",
+    "computer_use_input_sent": true,
+    "computer_use_actions": ["observed terminal right-click", "observed Escape"],
+    "fallback_input_injected": false,
+    "window_title": "Minecraft 1.21.11 - Multiplayer (3rd-party Server)",
+    "dialog_window_pid": 13968,
+    "escape_window_pid": 31036,
+    "width": 1282,
+    "height": 752
+  },
+  "findings": {
+    "real_minecraft_client_rendered": true,
+    "safe_entry_logged": true,
+    "inventory_mutations": 0,
+    "room04_visible": true,
+    "native_dialog_opened": true,
+    "dialog_title": "Static restoration proposal",
+    "bounded_proposal_copy_readable": true,
+    "apply_button_visible": true,
+    "review_button_visible": true,
+    "receipt_tooltip_visible": true,
+    "escape_returned_to_room04": true,
+    "proposal_not_applied_in_escape_pass": true,
+    "tutorial_overlay_absent": true,
+    "giant_overlay_regression_absent": true,
+    "server_stopped_cleanly": true,
+    "runtime_cleanup_logged": true
+  },
+  "artifacts": {
+    "dialog_image": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-room04-dialog.png", "sha256": "9aacbb04e4eb5fc2632fdb47ae0d95b1debf2e7cad0166cad15f9287fad0542e"},
+    "dialog_capture_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-room04-dialog.capture.json", "sha256": "8ce60ec74892362506482ae5822bf9b9ec4c1db1af881e488a02c23eef2641ca"},
+    "dialog_client_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-dialog-offline-client-receipt.json", "sha256": "d4e9cd6dc05fa1f54b34f4c5e545144b3150e9e58d8f60268e7502214e11a9b1"},
+    "dialog_client_log": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-dialog.client.log", "sha256": "53868a790d8695b1b9096de4abd25ae9682d79d9fc733fae16695f2e41c032cd"},
+    "escape_image": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-room04-dialog-escape.png", "sha256": "435d97f72b578a88b0e57cbaab89d325bde819f053be8e7941ee70248c94c450"},
+    "escape_capture_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-room04-dialog-escape.capture.json", "sha256": "b9243b7a1fa452b45c9f1a875bc79fcfd20cfb8f2235156a60e08d70bde61068"},
+    "escape_client_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-escape-offline-client-receipt.json", "sha256": "db26ad775a61a08dbc71f03629f289dd6baf06dbd980bdf00b1895fa1ed4ac6c"},
+    "escape_client_log": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-escape.client.log", "sha256": "c2591cd6cf8a4c2dab42c798238867eac727fdda80b7046cf2e2c39315a548f6"},
+    "server_log": {"path": "morrow/rehearsal/client-visual/2026-08-31-28c6810-dialog.server.log", "sha256": "2bef5a4113da20b155703b5e1c024fc05869d96d012516dae54a74d3dc50bc94"},
+    "paper_runtime_receipt": {"path": "morrow/rehearsal/runtime/28c6810-current/paper-runtime-receipt.json", "sha256": "3662d35268788ec92de300a9c9b99913b5e573eea033c20827277c10812d370f"}
+  },
+  "proven": [
+    "The plugin built from 28c6810 passed its retained two-boot lifecycle before this exact Paper target was restarted for client observation.",
+    "A real vanilla Minecraft 1.21.11 client opened the native Static restoration proposal from the centered Room 04 terminal.",
+    "The proposal copy, both buttons, and receipt tooltip were readable in the retained dialogue frame.",
+    "A second observed pass opened the same dialog and Escape returned to Room 04 without applying the proposal.",
+    "Both dummy clients joined through loopback with zero inventory mutation, and the server closed the runtime cleanly."
+  ],
+  "not_proven": [
+    "Apply and review button paths, correct/wrong classifications, and receipt creation were not exercised.",
+    "All six relationship poses and interpolation transitions have not been graphically exercised.",
+    "M03 and M04 continuous media behavior has not been graphically rehearsed.",
+    "Resource-pack and audio-on/off interaction parity has not been graphically rehearsed.",
+    "A complete operator-free M01-M12 human playthrough and pacing pass remains open."
+  ],
+  "interaction_status": "dialog_open_and_escape_closed",
+  "production_mutated": false,
+  "production_release_authorized": false
+}

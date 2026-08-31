@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0-morrow-copper-stability",
+  "status": "pass",
+  "source_commit": "28c6810d8b770a939cd86fc8eb8be7a49aa39023",
+  "scope": "disposable loopback Paper; discovered failures, bounded policy fix, accelerated natural-aging stress, and post-stress restart",
+  "policy": {
+    "weathering_families": ["block", "cut", "chiseled", "grate", "bulb"],
+    "bounded_structures": 9,
+    "cancelled_transition": "forward unwaxed natural oxidation inside enabled Morrow bounds",
+    "untouched_transitions": ["waxed", "foreign", "reverse-stage", "outside Morrow bounds"]
+  },
+  "proof": {
+    "room04_cut_copper_failure_reproduced": true,
+    "m05_copper_grate_failure_reproduced": true,
+    "receipt_bound_startup_repair": true,
+    "live_block_form_guard": true,
+    "random_tick_speed": 1000,
+    "random_tick_speed_restored": 3,
+    "stress_duration_seconds_at_least": 20,
+    "all_structures_ready_before_stress": true,
+    "all_structures_ready_after_stress_restart": true,
+    "post_stress_room04_repairs": 0,
+    "clean_shutdowns": true,
+    "production_mutated": false
+  },
+  "artifacts": {
+    "room04_failure": {"path": "morrow/rehearsal/copper-stability/2026-08-31-room04-aging-failure.log", "sha256": "5e408e444b1ddde2d12fdc84933e4ee0ab37f5206bb8c77d2c21db75980a3c53"},
+    "m05_failure": {"path": "morrow/rehearsal/copper-stability/2026-08-31-m05-aging-failure.log", "sha256": "b1204612e9640ead1e98a0dd2f3161d195304af11523f2ccb69c3c2829dc216d"},
+    "random_tick_stress": {"path": "morrow/rehearsal/copper-stability/2026-08-31-random-tick-stress.log", "sha256": "6a3bc45637e1910f3d9366ffb73b202fbb797d3303083d23f94da6ce2927ced2"},
+    "post_stress_restart": {"path": "morrow/rehearsal/copper-stability/2026-08-31-post-stress-restart.log", "sha256": "c825e3f8360f3528e765e469845ec22f25b1e1699758905e67c97811f7b028ae"}
+  }
+}

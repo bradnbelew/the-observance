@@ -32,21 +32,24 @@ was injected, so latest-source dialog choices, pose transitions, continuous medi
 and the full playthrough remain open. Verify it with
 `python tools/check_morrow_source_bound_visual_checkpoint.py`.
 
-The corrected plugin commit `fedac8966bdccd099b6ab8d443134286ec4dc177` has a fresh exact Paper
-1.21.11 build 132 lifecycle under `runtime/fedac89-current`. It proves all M05–M12 structures load,
+The current plugin commit `28c6810d8b770a939cd86fc8eb8be7a49aa39023` has a fresh exact Paper
+1.21.11 build 132 lifecycle under `runtime/28c6810-current`. It proves all M05–M12 structures load,
 restart as already present with stable ownership, close cleanly, and preserve ordered projector
-recovery across 503/503/200. The same exact target was then restarted for a fresh dummy-client join and
-an unobscured Room 04 still with the tutorial toast disabled. That frame, safe-entry log, launcher
-receipt, server shutdown log, and exact capture receipt are bound at
-`client-visual/2026-08-31-latest-plugin-fedac89-room04-checkpoint.json`. No input was injected, so this
-advances latest-plugin rendering—not dialog, media, pose, or playthrough interaction. Verify both with
+recovery across 503/503/200. That work also reproduced ambient oxidation failures in Room 04 and M05,
+then retained an accelerated random-tick interval and post-stress restart under `copper-stability/latest.json`.
+The same exact target was restarted for two dummy-client passes: one opens the native Static Restore
+proposal with readable buttons and receipt tooltip; the second opens it and returns to Room 04 through
+Escape without applying it. Images, captures, clients, server log, and Paper receipt are bound at
+`client-visual/2026-08-31-latest-plugin-28c6810-room04-dialog-checkpoint.json`. Apply/review,
+correct/wrong, media, pose, parity, and full-playthrough interaction remain open. Verify these with
 `python tools/check_morrow_latest_plugin_paper.py` and
-`python tools/check_morrow_latest_plugin_visual_checkpoint.py`.
+`python tools/check_morrow_latest_plugin_visual_checkpoint.py`; verify the oxidation guard with
+`python tools/check_morrow_copper_stability.py`.
 
 The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
-window and injects no input; exact-window input was separately limited to two reversible F1 toggles and
-one observed terminal right-click. This bounded checkpoint does not satisfy continuous synchronized
+window and injects no input; Computer Use handled the bounded observed gameplay actions. The current
+retained checkpoint records one terminal right-click and one Escape. It does not satisfy continuous synchronized
 media, all poses/dialog paths, parity modes, or pacing. The separate retained
 `client-cohort-runtime/latest.json` checkpoint now proves real vanilla 1.21.11 one-, two-, and
 six-client concurrent joins, mutation-free safe entry, all 2,304 main-inventory items per player

@@ -23,7 +23,7 @@ from check_morrow_client_rehearsal import (
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER_RUNTIME_RECEIPT = (
-    ROOT / "morrow" / "rehearsal" / "runtime" / "fedac89-current"
+    ROOT / "morrow" / "rehearsal" / "runtime" / "28c6810-current"
     / "paper-runtime-receipt.json"
 )
 

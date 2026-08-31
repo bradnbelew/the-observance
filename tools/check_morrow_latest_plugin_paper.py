@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed over the latest-plugin fedac89 disposable Paper lifecycle."""
+"""Fail closed over the latest-plugin 28c6810 disposable Paper lifecycle."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EVIDENCE = ROOT / "morrow/rehearsal/runtime/fedac89-current"
+EVIDENCE = ROOT / "morrow/rehearsal/runtime/28c6810-current"
 RECEIPT = EVIDENCE / "paper-runtime-receipt.json"
-SOURCE = "fedac8966bdccd099b6ab8d443134286ec4dc177"
-PLUGIN_SHA256 = "76660daabba28d0aa13eb547bc5e5854ed93107a80c038f94e79c002e15f228c"
+SOURCE = "28c6810d8b770a939cd86fc8eb8be7a49aa39023"
+PLUGIN_SHA256 = "1b5ba21b09ac2ece5763a58ae756b385073947cc42fd5113e70e5f89ec723f57"
 PAPER_SHA256 = "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba"
 
 
@@ -44,7 +44,7 @@ require(
 server = receipt.get("server", {})
 require(
     server.get("bind") == "127.0.0.1"
-    and server.get("port") == 25594
+    and server.get("port") == 25595
     and server.get("online_mode") is False
     and server.get("production_credentials_loaded") is False
     and server.get("jvm_non_loopback_proxy") == "127.0.0.1:1",
@@ -72,12 +72,14 @@ for marker in (
     "MORROW_RUNTIME_CLOSED entities_and_tasks=cleaned",
 ):
     require(marker in first_text, f"first-start log omitted {marker}")
+require("copper_aging_repairs=0" in first_text, "first-start copper repair disclosure")
 for marker in (
     "status=ALREADY_PRESENT",
     "MORROW_RUNTIME_READY",
     "MORROW_RUNTIME_CLOSED entities_and_tasks=cleaned",
 ):
     require(marker in restart_text, f"restart log omitted {marker}")
+require("copper_aging_repairs=0" in restart_text, "restart copper repair disclosure")
 
 projection = receipt.get("projection", {})
 attempts = projection.get("attempts", [])
@@ -100,5 +102,5 @@ require(
 
 print(
     "MORROW LATEST-PLUGIN PAPER: PASS "
-    "source=fedac89 paper=1.21.11-132 restart=stable projection=503/503/200"
+    "source=28c6810 paper=1.21.11-132 restart=stable projection=503/503/200"
 )

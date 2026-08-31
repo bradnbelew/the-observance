@@ -454,6 +454,15 @@ def validate() -> None:
         "latest-plugin Paper checkpoint failed: "
         f"{latest_plugin_paper_result.stderr.strip() or latest_plugin_paper_result.stdout.strip()}",
     )
+    copper_stability_result = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_morrow_copper_stability.py")],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(
+        copper_stability_result.returncode == 0,
+        "copper-stability checkpoint failed: "
+        f"{copper_stability_result.stderr.strip() or copper_stability_result.stdout.strip()}",
+    )
     source_bound_visual_result = subprocess.run(
         [sys.executable, str(ROOT / "tools/check_morrow_source_bound_visual_checkpoint.py")],
         cwd=ROOT, capture_output=True, text=True,
