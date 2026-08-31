@@ -370,7 +370,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
                 if (replayTick >= clip.durationTicks()) {
                     cancel();
                     replayTask = null;
-                    spawnProofInteraction(absolute(target));
+                    spawnProofInteraction();
                     cleanupTask = plugin.getServer().getScheduler().runTaskLater(
                             plugin, BukkitEntityReplay.this::stopReplay, 600L);
                 }
@@ -524,14 +524,17 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
                 "LIVE SEAL CONTROL — deliberate route / 6–45 s", Provenance.LIVE));
     }
 
-    private void spawnProofInteraction(Location location) {
-        proofInteraction = world.spawn(location.clone().add(0, .8, 0), Interaction.class, entity -> {
+    private void spawnProofInteraction() {
+        Location location = new Location(world, origin.x() + 1.45, origin.y() + 1.0, origin.z() - 3.45);
+        proofInteraction = world.spawn(location, Interaction.class, entity -> {
             configure(entity, "proof", Provenance.RECONSTRUCTED);
             entity.setInteractionWidth(1.0F);
             entity.setInteractionHeight(1.8F);
             entity.setResponsive(true);
         });
         echoes.add(proofInteraction);
+        echoes.add(spawnLabel(location.clone().add(0, 1.3, 0),
+                "RECONSTRUCTED PROOF — authenticate exact route", Provenance.RECONSTRUCTED));
     }
 
     private BlockDisplay spawnEcho(Location location, Material material, Provenance provenance, String kind) {

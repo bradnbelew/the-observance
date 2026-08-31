@@ -259,6 +259,7 @@ public final class EntityReplayLoopSelfTest {
         for (String required : new String[]{"BlockDisplay", "TextDisplay", "Interaction", "setTeleportDuration(2)",
                 "PersistentDataType", "Provenance.RECORDED", "Provenance.RECONSTRUCTED", "Provenance.LIVE",
                 "REDSTONE PULSE LOG", "CAPTIONED VOICE FRAGMENT", "LIVE RECORDING BOUNDARY", "LIVE SEAL CONTROL",
+                "RECONSTRUCTED PROOF — authenticate exact route",
                 "runTaskTimer", "requirePrimaryThread", "PlayerQuitEvent", "activePlayers()",
                 "LABEL_SCALE", "setTransformation"}) {
             check(source.contains(required), "Paper replay adapter missing " + required);
