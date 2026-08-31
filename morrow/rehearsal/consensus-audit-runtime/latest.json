@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0-morrow-consensus-audit-runtime-checkpoint",
+  "status": "paper_install_restart_pass_client_interaction_open",
+  "source_commit": "00092ed3785af23ab3e51cfcf5a44df528cbc93c",
+  "receipt": "morrow/rehearsal/consensus-audit-runtime/00092ed/paper-runtime-receipt.json",
+  "receipt_sha256": "ad9deba9dee0b7e8c5a84286b6041d765efd32dce3c8312f06169b9ccc92763e",
+  "producer": {
+    "path": "tools/run_morrow_disposable_paper.py",
+    "sha256": "cc5fb5e9752640126eab95907cf8d0bb17544092b4a7b82629fcb603fa6a114f"
+  },
+  "scope": "owned loopback Paper 1.21.11 M06 construction, semantic readback, restart, and cleanup",
+  "boundaries": {
+    "graphical_client_used": false,
+    "player_interaction_proven": false,
+    "full_human_playthrough_proven": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false
+  },
+  "remaining_gate": "exercise six private reads, public marks, wrong classifications, Escape, and incomplete-consensus commit with real clients and retained media",
+  "production_enablement": "blocked"
+}

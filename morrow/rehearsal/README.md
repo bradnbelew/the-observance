@@ -42,6 +42,13 @@ retain exactly three display labels, and shut down cleanly. Verify it with
 real-client console routing, native dialogue choices, Escape behavior, visual readability, and the
 correct/wrong player paths remain open and are deliberately not claimed.
 
+The retained `consensus-audit-runtime/latest.json` checkpoint independently proves the M06 vote
+chamber builds as 1,309 real Paper cells, retains eight displays, survives restart under one stable
+manifest, and closes cleanly. Verify it with
+`python tools/check_morrow_consensus_audit_runtime_checkpoint.py`. The six private reads, left-click
+dissent marks, native classification dialogue, wrong answers, Escape path, and public correction still
+require real-client media; the server receipt does not claim those interactions.
+
 The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
 installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without
 launching a GUI or contacting the server. It retains only JSON/options evidence—not client binaries—
