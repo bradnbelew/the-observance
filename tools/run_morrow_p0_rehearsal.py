@@ -605,7 +605,7 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "resource_pack_visual_checker_sha256": sha256_file(resource_pack_visual_checker),
             "resource_pack_visual_receipt": str(resource_pack_visual_receipt.relative_to(ROOT)).replace("\\", "/"),
             "resource_pack_visual_receipt_sha256": sha256_file(resource_pack_visual_receipt),
-            "resource_pack_visual_checkpoint_status": "bounded_pair_checkpoint_defect_open",
+            "resource_pack_visual_checkpoint_status": "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable",
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",

@@ -338,12 +338,15 @@ def validate() -> None:
             f"resource-pack visual checkpoint failed: {pack_visual_result.stderr.strip()}")
     pack_visual = load(ROOT / client["resource_pack_visual_receipt"])
     require(client["resource_pack_visual_checkpoint_status"]
-            == "bounded_pair_checkpoint_defect_open"
-            and pack_visual["status"] == "bounded_pair_checkpoint_defect_open"
-            and pack_visual["comparison"]["movement_prompt_readability_equal"] is False
-            and pack_visual["defect"]["status"] == "open"
+            == "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable"
+            and pack_visual["status"]
+                == "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable"
+            and pack_visual["comparison"]["vanilla_tutorial_overlay_phase_equal"] is False
+            and pack_visual["comparison"]["morrow_authored_surface_contradiction_observed"] is False
+            and pack_visual["overlay_classification"]["status"]
+                == "classified_non_morrow_capture_timing"
             and pack_visual["production_enablement"] == "blocked",
-            "resource-pack visual defect checkpoint was omitted or silently closed")
+            "resource-pack visual checkpoint was omitted or full parity was silently closed")
     attempt = load(ROOT / client["latest_attempt"])
     require(attempt["client_lane_status"] == "unproven"
             and attempt["no_blind_input"] is True

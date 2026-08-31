@@ -41,8 +41,9 @@ pair against the same exact optional loopback ZIP. It proves handshake, byte-fet
 behavior only; the accepted/declined visual and interaction equivalence lane remains open until matched
 media receives independent review. The first exact-window pair is retained at
 `client-visual/2026-08-30-resource-pack-visual-pair.json`: common room geometry and interaction targets
-are visible, but the declined movement instruction is partially clipped in the retained frame. The
-checkpoint therefore records an open defect rather than passing parity.
+are visible. The unequal right-side overlay is the vanilla first-join movement tutorial captured at
+different slide-animation phases, not a Morrow-authored prompt; both final option files bind
+`tutorialStep:movement`. The checkpoint still does not pass full Morrow visual or interaction parity.
 
 The isolated database lane is proven separately by
 `database/2026-08-30-isolated-supabase.json`. It binds the CLI-generated migration to the rehearsed

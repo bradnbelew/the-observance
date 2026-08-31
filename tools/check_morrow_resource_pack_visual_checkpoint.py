@@ -37,7 +37,7 @@ def lane(report: dict[str, Any], name: str, expected: str, policy: str) -> tuple
             and row["server_resource_pack_policy"] == policy,
             f"{name} lane binding drifted")
     paths: dict[str, Path] = {}
-    for field in ("capture", "image", "client", "runtime"):
+    for field in ("capture", "image", "client", "runtime", "final_options"):
         path = (ROOT / row[field]).resolve()
         require(path.is_file() and sha(path) == row[f"{field}_sha256"],
                 f"{name} {field} drifted")
@@ -69,13 +69,17 @@ def lane(report: dict[str, Any], name: str, expected: str, policy: str) -> tuple
     gets = [request for request in runtime["resource_pack"]["requests"]
             if request["method"] == "GET" and request["status"] == 200]
     require(bool(gets) is (expected == "LOADED"), f"{name} pack fetch behavior drifted")
+    require("tutorialStep:movement" in paths["final_options"].read_text(encoding="utf-8").splitlines(),
+            f"{name} vanilla tutorial state drifted")
     return capture, Image.open(paths["image"]).convert("RGB")
 
 
 def validate() -> None:
     report = load(REPORT)
-    require(report["status"] == "bounded_pair_checkpoint_defect_open"
-            and report["defect"]["status"] == "open"
+    require(report["status"]
+            == "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable"
+            and report["overlay_classification"]["status"]
+                == "classified_non_morrow_capture_timing"
             and report["production_enablement"] == "blocked",
             "visual checkpoint overclaims parity")
     require(subprocess.run(
@@ -109,9 +113,10 @@ def validate() -> None:
     require(metrics["common_geometry_visible"] is True
             and metrics["terminal_label_visible_in_both"] is True
             and metrics["body_interaction_target_visible_in_both"] is True
-            and metrics["movement_prompt_readability_equal"] is False
+            and metrics["vanilla_tutorial_overlay_phase_equal"] is False
+            and metrics["morrow_authored_surface_contradiction_observed"] is False
             and metrics["input_injected"] is False,
-            "visual checkpoint finding drifted or parity was silently closed")
+            "visual checkpoint finding drifted or full parity was silently closed")
 
 
 def main() -> int:
@@ -120,7 +125,7 @@ def main() -> int:
     except Exception as failure:  # noqa: BLE001 - checker emits one concise failure
         print(f"MORROW RESOURCE PACK VISUAL CHECKPOINT: FAIL: {failure}", file=sys.stderr)
         return 1
-    print("MORROW RESOURCE PACK VISUAL CHECKPOINT: PASS bounded-pair=1 defect=open parity=required")
+    print("MORROW RESOURCE PACK VISUAL CHECKPOINT: PASS common-room=1 tutorial-overlay=incomparable parity=required")
     return 0
 
 

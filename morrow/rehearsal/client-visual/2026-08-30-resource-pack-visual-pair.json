@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0-morrow-resource-pack-visual-checkpoint",
-  "status": "bounded_pair_checkpoint_defect_open",
+  "status": "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable",
   "captured_at": "2026-08-30T23:58:00Z",
   "source_commit": "88522d717a23c9ea0c5a80e1fadcaa02fba580b6",
   "scope": "one exact-window Room 04 frame after a real LOADED decision and one after a real DECLINED decision; no input or full interaction parity claim",
@@ -27,7 +27,9 @@
       "client_sha256": "9e3beeb54cd05e129eefce2ab278f85f076ee638dc8b8b87be39cab31b9ebfb1",
       "runtime": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.runtime.json",
       "runtime_sha256": "8a5244c7c6c91e0ba41822f404222bd0a2018c49a247fd0d217698c4fa136585",
-      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, survival HUD, and complete movement instruction are visible in one exact-window frame"
+      "final_options": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.final-options.txt",
+      "final_options_sha256": "0649662130e0b7f5d092129d499e65836387afd45c5ba58cd50f999660fe7833",
+      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, and survival HUD are visible; the complete right-side overlay is Minecraft's first-join movement tutorial"
     },
     "declined": {
       "expected_status": "DECLINED",
@@ -40,7 +42,9 @@
       "client_sha256": "3d30091a87fa3293908a30e82edc6dac3cb329c5cb556d406973a893ddc079a2",
       "runtime": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.runtime.json",
       "runtime_sha256": "0158c558ee4f690d4a09669c0a674db21a68dc3e8a5600d0d0bfdb1ce7cab8d7",
-      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, and survival HUD are visible, but the right-side movement instruction is partially clipped in the retained frame"
+      "final_options": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.final-options.txt",
+      "final_options_sha256": "0649662130e0b7f5d092129d499e65836387afd45c5ba58cd50f999660fe7833",
+      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, and survival HUD are visible; Minecraft's first-join movement tutorial is in a different slide-animation phase"
     }
   },
   "comparison": {
@@ -53,18 +57,19 @@
     "common_geometry_visible": true,
     "terminal_label_visible_in_both": true,
     "body_interaction_target_visible_in_both": true,
-    "movement_prompt_readability_equal": false,
+    "vanilla_tutorial_overlay_phase_equal": false,
+    "morrow_authored_surface_contradiction_observed": false,
     "input_injected": false
   },
-  "defect": {
-    "status": "open",
-    "finding": "the declined checkpoint does not prove readable prompt parity because its movement instruction is partially clipped; a stable recapture and full dialog/input walk remain required",
-    "possible_causes_not_yet_distinguished": [
-      "capture occurred during an authored display transition",
-      "client-side text layout differs without the pack",
-      "display placement or width is marginal at the exact camera position"
+  "overlay_classification": {
+    "status": "classified_non_morrow_capture_timing",
+    "finding": "the unequal right-side overlay is Minecraft's vanilla first-join movement tutorial captured at different slide-animation phases, not a Morrow-authored prompt or resource-pack fallback defect",
+    "evidence": [
+      "the visible text is Move with W, A, S and D / Jump with Space",
+      "both final options files contain tutorialStep:movement",
+      "the authored plugin sources contain no matching movement-toast text"
     ]
   },
-  "remaining_gate": "recapture a stable declined frame and review every required body, text, dialog, and puzzle input in matched loaded/declined runs with synchronized media and an independent observer",
+  "remaining_gate": "capture matched camera states after dismissing the vanilla tutorial and review every required Morrow body, text, dialog, and puzzle input in loaded/declined runs with synchronized media and an independent observer",
   "production_enablement": "blocked"
 }
