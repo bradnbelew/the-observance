@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0-morrow-almost-home-runtime-checkpoint",
+  "status": "paper_install_restart_pass_client_interaction_open",
+  "source_commit": "da1f48a07f3be37e74df71847392a73b1060fd06",
+  "receipt": "morrow/rehearsal/almost-home-runtime/da1f48a/paper-runtime-receipt.json",
+  "receipt_sha256": "61ea9a311c6eaae6a479d6d998558bf696d075967c5d65b26e72fa88e3b2e2b9",
+  "producer": {
+    "path": "tools/run_morrow_disposable_paper.py",
+    "sha256": "95ede2d5d747f351af53477da9e3abedbe0f31a25313049e3d60d32f3e0a9582"
+  },
+  "scope": "owned loopback Paper 1.21.11 M08 construction, semantic readback, restart, and cleanup",
+  "boundaries": {
+    "graphical_client_used": false,
+    "player_interaction_proven": false,
+    "full_human_playthrough_proven": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false
+  },
+  "remaining_gate": "exercise four private reads, public chronology correction, cipher choices and Escape, provenance labels, and decline/authorize continuity with real clients and retained media",
+  "production_enablement": "blocked"
+}
