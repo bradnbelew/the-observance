@@ -162,6 +162,11 @@ def main() -> None:
     parser.add_argument("--post-status-hold-seconds", type=int, default=15)
     parser.add_argument("--java", default="java")
     parser.add_argument("--launch-client", action="store_true")
+    parser.add_argument(
+        "--audio-disabled",
+        action="store_true",
+        help="launch the owned disposable client with every vanilla sound category at zero",
+    )
     parser.add_argument("--launch-acknowledgement", default="")
     args = parser.parse_args()
 
@@ -232,6 +237,8 @@ def main() -> None:
                 "--max-memory-mib", "1536",
                 "--disable-tutorial-toast",
             ]
+            if args.audio_disabled:
+                launcher_command.append("--audio-disabled")
             launcher = subprocess.Popen(
                 launcher_command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, encoding="utf-8", errors="replace")
@@ -335,6 +342,8 @@ def main() -> None:
                 "final_servers": final_servers.name if final_servers is not None else None,
                 "final_servers_sha256": paper_harness.sha256(final_servers) if final_servers is not None else None,
                 "server_resource_pack_policy": client_data.get("server_resource_pack_policy"),
+                "audio_disabled": client_data.get("accessibility_profile", {}).get(
+                    "audio_disabled"),
                 "launcher_output_sha256": hashlib.sha256(client_stdout.encode()).hexdigest(),
                 "client_log_retained": False,
             },

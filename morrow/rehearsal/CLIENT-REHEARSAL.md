@@ -44,6 +44,7 @@ reviewed:
 ```text
 python tools/run_morrow_resource_pack_rehearsal.py <pinned inputs> --expected-status loaded --launch-client --launch-acknowledgement launch-visible-minecraft-resource-pack:loaded
 python tools/run_morrow_resource_pack_rehearsal.py <pinned inputs> --expected-status declined --launch-client --launch-acknowledgement launch-visible-minecraft-resource-pack:declined
+python tools/run_morrow_resource_pack_rehearsal.py <pinned inputs> --expected-status loaded --audio-disabled --launch-client --launch-acknowledgement launch-visible-minecraft-resource-pack:loaded
 python tools/test_morrow_resource_pack_rehearsal.py
 python tools/check_morrow_resource_pack_receipts.py
 ```

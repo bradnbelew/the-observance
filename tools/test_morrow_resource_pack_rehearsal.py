@@ -77,6 +77,14 @@ def test_windows_option_bytes(root: Path) -> None:
     path.write_bytes(("\r\n".join([*lines, "tutorialStep:none"]) + "\r\n").encode("utf-8"))
     assert rehearsal.paper_harness.sha256(path) == \
         "f9de4076c0f4dc8af767e43d924f7909ad0bc886de5ed9412ebe6b265ade45c1"
+    silent_lines = [
+        *lines,
+        *(f"soundCategory_{category}:0.0" for category in client.SOUND_CATEGORIES),
+        "tutorialStep:none",
+    ]
+    path.write_bytes(("\r\n".join(silent_lines) + "\r\n").encode("utf-8"))
+    assert rehearsal.paper_harness.sha256(path) == \
+        "54b115f6ad07c14f78f08963140b27811f5d0fb0c9881823e0e05073871cf36a"
 
 
 def test_config_binding(root: Path) -> None:
