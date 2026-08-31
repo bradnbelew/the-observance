@@ -24,6 +24,14 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def git_blob_sha(commit: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True,
+    )
+    require(result.returncode == 0, f"historical cohort artifact is unavailable: {path}")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -56,8 +64,9 @@ def validate() -> None:
     require(ancestry.returncode == 0, "cohort source commit is not an ancestor of HEAD")
     for artifact in index["artifacts"].values():
         path = ROOT / artifact["path"]
-        require(path.is_file() and sha(path) == artifact["sha256"],
-                f"cohort preparation artifact drifted: {artifact['path']}")
+        require(path.is_file()
+                and git_blob_sha(source_commit, artifact["path"]) == artifact["sha256"],
+                f"historical cohort preparation artifact drifted: {artifact['path']}")
 
     expected = {"one": 1, "two": 2, "six": 6}
     require(set(index["cohorts"]) == set(expected), "cohort preparation set drifted")
