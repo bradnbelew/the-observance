@@ -160,7 +160,8 @@ public final class ConsensusAuditAuthoritySelfTest {
         ConsensusAuditManifest manifest = new ConsensusAuditManifest();
         check(manifest.cells().size() == 1309 && manifest.terminals().size() == 6
                         && manifest.lamps().size() == 6
-                        && manifest.manifestSha256().matches("[0-9a-f]{64}"),
+                        && manifest.manifestSha256().matches("[0-9a-f]{64}")
+                        && manifest.manifestSha256().equals(new ConsensusAuditManifest().manifestSha256()),
                 "M06 manifest is one exact bounded chamber with six equal terminals");
         Path directory = Files.createTempDirectory("m06-installer-");
         Path receipt = directory.resolve("m06.receipt");

@@ -43,7 +43,7 @@ public final class ConsensusAuditManifest {
                 throw new IllegalStateException("M06 terminal missing from manifest");
             }
         }
-        manifestSha256 = hash(cells);
+        manifestSha256 = hash(built);
     }
 
     private static String block(int x, int y, int z) {
