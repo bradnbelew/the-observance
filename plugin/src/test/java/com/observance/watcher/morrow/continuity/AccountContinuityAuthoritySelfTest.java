@@ -191,6 +191,19 @@ public final class AccountContinuityAuthoritySelfTest {
                         "M09 occupied-target refusal must preserve foreign blocks");
             }
         } finally { Files.deleteIfExists(foreignDirectory.resolve("m09.receipt")); Files.deleteIfExists(foreignDirectory); }
+        String source = Files.readString(Path.of(
+                "src/main/java/com/observance/watcher/morrow/continuity/BukkitAccountContinuity.java"))
+                + Files.readString(Path.of(
+                "src/main/java/com/observance/watcher/morrow/continuity/BukkitAccountContinuityWorld.java"));
+        for (String required : new String[]{"PlayerQuitEvent", "PlayerJoinEvent", "PlayerCustomClickEvent",
+                "DialogType.multiAction", "DialogType.confirmation", "canCloseWithEscape(true)",
+                "PRIVATE ANCHOR: INACCESSIBLE", "SECRET ACCESS: FALSE", "getBlockData().matches(expected)"}) {
+            check(source.contains(required), "M09 Paper adapter missing " + required);
+        }
+        for (String forbidden : new String[]{"runTaskAsynchronously", "net.minecraft",
+                "craftbukkit", "sendBlockChange"}) {
+            check(!source.contains(forbidden), "M09 Paper adapter crossed forbidden boundary via " + forbidden);
+        }
     }
 
     private static Progress returned(Fixture fixture, UUID volunteer, AnchorMark secret, String suffix) {

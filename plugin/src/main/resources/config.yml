@@ -186,3 +186,9 @@ morrow-reboot:
     origin-x: 128
     origin-y: 80
     origin-z: 0
+  account-continuity:
+    # Separate M09 build gate. Requires M08; private anchors are hashed and the echo is action-bounded.
+    build-enabled: false
+    origin-x: 160
+    origin-y: 80
+    origin-z: 0
