@@ -187,6 +187,20 @@ public final class MaintenanceWindowAuthoritySelfTest {
                         "M10 occupied-target refusal must preserve foreign blocks");
             }
         } finally { Files.deleteIfExists(foreignDirectory.resolve("m10.receipt")); Files.deleteIfExists(foreignDirectory); }
+        String source = Files.readString(Path.of(
+                "src/main/java/com/observance/watcher/morrow/maintenance/BukkitMaintenanceWindow.java"))
+                + Files.readString(Path.of(
+                "src/main/java/com/observance/watcher/morrow/maintenance/BukkitMaintenanceWindowWorld.java"));
+        for (String required : new String[]{"PlayerQuitEvent", "PlayerJoinEvent", "PlayerCustomClickEvent",
+                "DialogType.multiAction", "DialogType.confirmation", "canCloseWithEscape(true)",
+                "Material.PAPER", "getItemInMainHand", "PersistentDataType.STRING",
+                "failed tokens remain unconsumed", "getBlockData().matches(expected)"}) {
+            check(source.contains(required), "M10 Paper adapter missing " + required);
+        }
+        for (String forbidden : new String[]{"runTaskAsynchronously", "net.minecraft",
+                "craftbukkit", "sendBlockChange"}) {
+            check(!source.contains(forbidden), "M10 Paper adapter crossed forbidden boundary via " + forbidden);
+        }
     }
 
     private static Progress roundTrip(MaintenanceWindowProgressStore store, Progress progress, String label)

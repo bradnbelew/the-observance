@@ -30,6 +30,10 @@ import com.observance.watcher.morrow.continuity.AccountContinuityInstaller;
 import com.observance.watcher.morrow.continuity.AccountContinuityManifest;
 import com.observance.watcher.morrow.continuity.BukkitAccountContinuity;
 import com.observance.watcher.morrow.continuity.BukkitAccountContinuityWorld;
+import com.observance.watcher.morrow.maintenance.BukkitMaintenanceWindow;
+import com.observance.watcher.morrow.maintenance.BukkitMaintenanceWindowWorld;
+import com.observance.watcher.morrow.maintenance.MaintenanceWindowInstaller;
+import com.observance.watcher.morrow.maintenance.MaintenanceWindowManifest;
 import com.observance.watcher.listener.ResourcePackPusher;
 import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
@@ -53,6 +57,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private static final String WITNESS_ANCHOR_RECEIPT_NAME = "morrow-witness-anchor.install.receipt";
     private static final String ALMOST_HOME_RECEIPT_NAME = "morrow-almost-home.install.receipt";
     private static final String ACCOUNT_CONTINUITY_RECEIPT_NAME = "morrow-account-continuity.install.receipt";
+    private static final String MAINTENANCE_WINDOW_RECEIPT_NAME = "morrow-maintenance-window.install.receipt";
 
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
@@ -63,6 +68,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final WitnessAnchorInstaller.Result witnessAnchorResult;
     private final AlmostHomeInstaller.Result almostHomeResult;
     private final AccountContinuityInstaller.Result accountContinuityResult;
+    private final MaintenanceWindowInstaller.Result maintenanceWindowResult;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
     private final BukkitEntityReplay entityReplay;
@@ -73,6 +79,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitWitnessAnchor witnessAnchor;
     private final BukkitAlmostHome almostHome;
     private final BukkitAccountContinuity accountContinuity;
+    private final BukkitMaintenanceWindow maintenanceWindow;
     private final ResourcePackTracker resourcePackTracker;
     private final ResourcePackPusher resourcePackPusher;
 
@@ -86,6 +93,7 @@ public final class MorrowRuntime implements AutoCloseable {
             WitnessAnchorInstaller.Result witnessAnchorResult,
             AlmostHomeInstaller.Result almostHomeResult,
             AccountContinuityInstaller.Result accountContinuityResult,
+            MaintenanceWindowInstaller.Result maintenanceWindowResult,
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
@@ -96,6 +104,7 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitWitnessAnchor witnessAnchor,
             BukkitAlmostHome almostHome,
             BukkitAccountContinuity accountContinuity,
+            BukkitMaintenanceWindow maintenanceWindow,
             ResourcePackTracker resourcePackTracker,
             ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
@@ -107,6 +116,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.witnessAnchorResult = witnessAnchorResult;
         this.almostHomeResult = almostHomeResult;
         this.accountContinuityResult = accountContinuityResult;
+        this.maintenanceWindowResult = maintenanceWindowResult;
         this.body = body;
         this.staticRestore = staticRestore;
         this.entityReplay = entityReplay;
@@ -117,6 +127,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.witnessAnchor = witnessAnchor;
         this.almostHome = almostHome;
         this.accountContinuity = accountContinuity;
+        this.maintenanceWindow = maintenanceWindow;
         this.resourcePackTracker = resourcePackTracker;
         this.resourcePackPusher = resourcePackPusher;
     }
@@ -285,6 +296,27 @@ public final class MorrowRuntime implements AutoCloseable {
                     settings.releaseId(), accountContinuityOrigin,
                     new BukkitAccountContinuityWorld(world, accountContinuityOrigin));
         }
+        MaintenanceWindowInstaller.Result maintenanceWindowResult = null;
+        MaintenanceWindowInstaller.Origin maintenanceWindowOrigin = null;
+        if (section.getBoolean("maintenance-window.build-enabled", false)) {
+            if (accountContinuityResult == null) {
+                throw new IllegalArgumentException("M10 Maintenance Window requires M09 Account Continuity");
+            }
+            maintenanceWindowOrigin = new MaintenanceWindowInstaller.Origin(
+                    section.getInt("maintenance-window.origin-x", 192),
+                    section.getInt("maintenance-window.origin-y", 80),
+                    section.getInt("maintenance-window.origin-z"));
+            MaintenanceWindowManifest.Bounds bounds = MaintenanceWindowManifest.BOUNDS;
+            if (maintenanceWindowOrigin.y() + bounds.minimumY() < world.getMinHeight()
+                    || maintenanceWindowOrigin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+                throw new IllegalArgumentException("M10 Maintenance Window origin exceeds the configured world height");
+            }
+            MaintenanceWindowManifest manifest = new MaintenanceWindowManifest();
+            maintenanceWindowResult = new MaintenanceWindowInstaller(
+                    manifest, data.resolve(MAINTENANCE_WINDOW_RECEIPT_NAME)).install(
+                    settings.releaseId(), maintenanceWindowOrigin,
+                    new BukkitMaintenanceWindowWorld(world, maintenanceWindowOrigin));
+        }
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
         BukkitStaticRestore staticRestore = null;
@@ -296,6 +328,7 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitWitnessAnchor witnessAnchor = null;
         BukkitAlmostHome almostHome = null;
         BukkitAccountContinuity accountContinuity = null;
+        BukkitMaintenanceWindow maintenanceWindow = null;
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
@@ -374,6 +407,14 @@ public final class MorrowRuntime implements AutoCloseable {
                         + " manifest=" + accountContinuityResult.manifestSha256()
                         + " blocks=" + accountContinuityResult.blockCount());
             }
+            if (maintenanceWindowResult != null && maintenanceWindowOrigin != null && accountContinuity != null) {
+                maintenanceWindow = new BukkitMaintenanceWindow(
+                        plugin, world, maintenanceWindowOrigin, settings.releaseId(), state, data);
+                maintenanceWindow.start();
+                plugin.getLogger().info("MORROW_MAINTENANCE_WINDOW_READY status=" + maintenanceWindowResult.status()
+                        + " manifest=" + maintenanceWindowResult.manifestSha256()
+                        + " blocks=" + maintenanceWindowResult.blockCount());
+            }
             plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
@@ -385,14 +426,16 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " consensus_entities=" + (consensusAudit == null ? 0 : consensusAudit.ownedEntityCount())
                     + " witness_entities=" + (witnessAnchor == null ? 0 : witnessAnchor.ownedEntityCount())
                     + " almost_entities=" + (almostHome == null ? 0 : almostHome.ownedEntityCount())
-                    + " continuity_entities=" + (accountContinuity == null ? 0 : accountContinuity.ownedEntityCount()));
+                    + " continuity_entities=" + (accountContinuity == null ? 0 : accountContinuity.ownedEntityCount())
+                    + " maintenance_entities=" + (maintenanceWindow == null ? 0 : maintenanceWindow.ownedEntityCount()));
             return new MorrowRuntime(
                     settings, state, projector, room04Result, versionRoomsResult, consensusAuditResult,
-                    witnessAnchorResult, almostHomeResult, accountContinuityResult,
+                    witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult,
                     body, staticRestore, entityReplay, dialogs,
-                    playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity,
+                    playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow,
                     resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
+            if (maintenanceWindow != null) maintenanceWindow.close();
             if (accountContinuity != null) accountContinuity.close();
             if (almostHome != null) almostHome.close();
             if (witnessAnchor != null) witnessAnchor.close();
@@ -446,8 +489,13 @@ public final class MorrowRuntime implements AutoCloseable {
         return Optional.ofNullable(accountContinuityResult);
     }
 
+    public Optional<MaintenanceWindowInstaller.Result> maintenanceWindowResult() {
+        return Optional.ofNullable(maintenanceWindowResult);
+    }
+
     @Override
     public void close() {
+        if (maintenanceWindow != null) maintenanceWindow.close();
         if (accountContinuity != null) accountContinuity.close();
         if (almostHome != null) almostHome.close();
         if (witnessAnchor != null) witnessAnchor.close();

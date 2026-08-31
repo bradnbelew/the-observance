@@ -184,7 +184,8 @@ def configure(target: Path, paper: Path, plugin: Path, cache_root: Path,
         "    origin-y: 80", "    origin-z: 0", "  almost-home:",
         "    build-enabled: true", "    origin-x: 128", "    origin-y: 80", "    origin-z: 0",
         "  account-continuity:", "    build-enabled: true", "    origin-x: 160",
-        "    origin-y: 80", "    origin-z: 0", "",
+        "    origin-y: 80", "    origin-z: 0", "  maintenance-window:",
+        "    build-enabled: true", "    origin-x: 192", "    origin-y: 80", "    origin-z: 0", "",
     ])
     write_text(target / "plugins" / "Observance" / "config.yml", config)
     journal = seed_journal(target / "plugins" / "Observance" / "morrow-reboot.journal")
@@ -327,17 +328,18 @@ class PaperProcess:
 
 def entity_audit(runtime_ready: str, label: str) -> dict[str, int]:
     match = re.search(
-        r"body_entities=(\d+) static_entities=(\d+) replay_entities=(\d+) version_entities=(\d+) consensus_entities=(\d+) witness_entities=(\d+) almost_entities=(\d+) continuity_entities=(\d+)",
+        r"body_entities=(\d+) static_entities=(\d+) replay_entities=(\d+) version_entities=(\d+) consensus_entities=(\d+) witness_entities=(\d+) almost_entities=(\d+) continuity_entities=(\d+) maintenance_entities=(\d+)",
         runtime_ready)
     if match is None:
         raise RuntimeError(f"{label} runtime receipt omitted PDC-owned entity counts")
     result = {"body": int(match.group(1)), "static_restore": int(match.group(2)),
               "entity_replay": int(match.group(3)), "version_rooms": int(match.group(4)),
               "consensus_audit": int(match.group(5)), "witness_anchor": int(match.group(6)),
-              "almost_home": int(match.group(7)), "account_continuity": int(match.group(8))}
+              "almost_home": int(match.group(7)), "account_continuity": int(match.group(8)),
+              "maintenance_window": int(match.group(9))}
     expected = {"body": 2, "static_restore": 26, "entity_replay": 6,
                 "version_rooms": 3, "consensus_audit": 8, "witness_anchor": 9, "almost_home": 8,
-                "account_continuity": 10}
+                "account_continuity": 10, "maintenance_window": 18}
     if result != expected:
         raise RuntimeError(f"{label} PDC-owned entity counts {result}, expected {expected}")
     return result
@@ -359,6 +361,7 @@ def lifecycle(target: Path, java: str, truststore: Path, ingest: MockState) -> d
         first_witness = first.wait_for("MORROW_WITNESS_ANCHOR_READY status=BUILT", 300)
         first_almost = first.wait_for("MORROW_ALMOST_HOME_READY status=BUILT", 300)
         first_continuity = first.wait_for("MORROW_ACCOUNT_CONTINUITY_READY status=BUILT", 300)
+        first_maintenance = first.wait_for("MORROW_MAINTENANCE_WINDOW_READY status=BUILT", 300)
         first_ready = first.wait_for("MORROW_RUNTIME_READY", 300)
         first.wait_for("Done (", 300)
         if not ingest.committed.wait(30):
@@ -382,6 +385,7 @@ def lifecycle(target: Path, java: str, truststore: Path, ingest: MockState) -> d
         restart_witness = second.wait_for("MORROW_WITNESS_ANCHOR_READY status=ALREADY_PRESENT", 300)
         restart_almost = second.wait_for("MORROW_ALMOST_HOME_READY status=ALREADY_PRESENT", 300)
         restart_continuity = second.wait_for("MORROW_ACCOUNT_CONTINUITY_READY status=ALREADY_PRESENT", 300)
+        restart_maintenance = second.wait_for("MORROW_MAINTENANCE_WINDOW_READY status=ALREADY_PRESENT", 300)
         restart_ready = second.wait_for("MORROW_RUNTIME_READY", 300)
         second.wait_for("Done (", 300)
         time.sleep(1.5)
@@ -401,12 +405,14 @@ def lifecycle(target: Path, java: str, truststore: Path, ingest: MockState) -> d
                  "first_witness_anchor": first_witness,
                  "first_almost_home": first_almost,
                  "first_account_continuity": first_continuity,
+                 "first_maintenance_window": first_maintenance,
                  "first_ready": first_ready, "first_entities": first_entities,
                  "restart_room": restart_room, "restart_version_rooms": restart_versions,
                  "restart_consensus_audit": restart_consensus,
                  "restart_witness_anchor": restart_witness,
                  "restart_almost_home": restart_almost,
                  "restart_account_continuity": restart_continuity,
+                 "restart_maintenance_window": restart_maintenance,
                  "restart_ready": restart_ready,
                  "restart_entities": restart_entities, "projection_attempts_before_restart": attempts_before_restart,
                  "projection_attempts_after_restart": len(ingest.attempts)})
@@ -457,7 +463,8 @@ def main() -> None:
                 data / "morrow-consensus-audit.install.receipt",
                 data / "morrow-witness-anchor.install.receipt",
                 data / "morrow-almost-home.install.receipt",
-                data / "morrow-account-continuity.install.receipt"]
+                data / "morrow-account-continuity.install.receipt",
+                data / "morrow-maintenance-window.install.receipt"]
     if any(not path.is_file() for path in required):
         raise RuntimeError("one or more durable Morrow runtime artifacts are missing")
     cursor = (data / "morrow-reboot.projector.cursor").read_text(encoding="utf-8")
@@ -501,6 +508,7 @@ def main() -> None:
                    "witness_anchor_built_and_readback_audited": True,
                    "almost_home_built_and_readback_audited": True,
                    "account_continuity_built_and_readback_audited": True,
+                   "maintenance_window_built_and_readback_audited": True,
                   "restart_already_present_audit": True, "projector_outage_recovery": True,
                   "cursor_prevented_restart_duplicate": True, "entity_counts_stable_across_restart": True,
                   "graceful_cleanup_logged": True, "listeners_closed": True,

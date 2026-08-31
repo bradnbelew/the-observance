@@ -192,3 +192,9 @@ morrow-reboot:
     origin-x: 160
     origin-y: 80
     origin-z: 0
+  maintenance-window:
+    # Separate M10 build gate. Requires M09; both room states and failed nonce tokens are preserved safely.
+    build-enabled: false
+    origin-x: 192
+    origin-y: 80
+    origin-z: 0
