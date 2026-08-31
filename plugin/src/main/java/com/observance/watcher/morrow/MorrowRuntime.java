@@ -18,6 +18,10 @@ import com.observance.watcher.morrow.consensus.BukkitConsensusAudit;
 import com.observance.watcher.morrow.consensus.BukkitConsensusAuditWorld;
 import com.observance.watcher.morrow.consensus.ConsensusAuditInstaller;
 import com.observance.watcher.morrow.consensus.ConsensusAuditManifest;
+import com.observance.watcher.morrow.witnessanchor.BukkitWitnessAnchor;
+import com.observance.watcher.morrow.witnessanchor.BukkitWitnessAnchorWorld;
+import com.observance.watcher.morrow.witnessanchor.WitnessAnchorInstaller;
+import com.observance.watcher.morrow.witnessanchor.WitnessAnchorManifest;
 import com.observance.watcher.listener.ResourcePackPusher;
 import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
@@ -38,6 +42,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private static final String ROOM04_RECEIPT_NAME = "morrow-room04.install.receipt";
     private static final String VERSION_ROOMS_RECEIPT_NAME = "morrow-version-rooms.install.receipt";
     private static final String CONSENSUS_AUDIT_RECEIPT_NAME = "morrow-consensus-audit.install.receipt";
+    private static final String WITNESS_ANCHOR_RECEIPT_NAME = "morrow-witness-anchor.install.receipt";
 
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
@@ -45,6 +50,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final RecoveryRoom04Installer.Result room04Result;
     private final VersionRoomsInstaller.Result versionRoomsResult;
     private final ConsensusAuditInstaller.Result consensusAuditResult;
+    private final WitnessAnchorInstaller.Result witnessAnchorResult;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
     private final BukkitEntityReplay entityReplay;
@@ -52,6 +58,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitRecoveryRoom04Entry playerEntry;
     private final BukkitVersionRooms versionRooms;
     private final BukkitConsensusAudit consensusAudit;
+    private final BukkitWitnessAnchor witnessAnchor;
     private final ResourcePackTracker resourcePackTracker;
     private final ResourcePackPusher resourcePackPusher;
 
@@ -62,6 +69,7 @@ public final class MorrowRuntime implements AutoCloseable {
             RecoveryRoom04Installer.Result room04Result,
             VersionRoomsInstaller.Result versionRoomsResult,
             ConsensusAuditInstaller.Result consensusAuditResult,
+            WitnessAnchorInstaller.Result witnessAnchorResult,
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
@@ -69,6 +77,7 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitRecoveryRoom04Entry playerEntry,
             BukkitVersionRooms versionRooms,
             BukkitConsensusAudit consensusAudit,
+            BukkitWitnessAnchor witnessAnchor,
             ResourcePackTracker resourcePackTracker,
             ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
@@ -77,6 +86,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.room04Result = room04Result;
         this.versionRoomsResult = versionRoomsResult;
         this.consensusAuditResult = consensusAuditResult;
+        this.witnessAnchorResult = witnessAnchorResult;
         this.body = body;
         this.staticRestore = staticRestore;
         this.entityReplay = entityReplay;
@@ -84,6 +94,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.playerEntry = playerEntry;
         this.versionRooms = versionRooms;
         this.consensusAudit = consensusAudit;
+        this.witnessAnchor = witnessAnchor;
         this.resourcePackTracker = resourcePackTracker;
         this.resourcePackPusher = resourcePackPusher;
     }
@@ -189,6 +200,27 @@ public final class MorrowRuntime implements AutoCloseable {
                     settings.releaseId(), consensusAuditOrigin,
                     new BukkitConsensusAuditWorld(world, consensusAuditOrigin));
         }
+        WitnessAnchorInstaller.Result witnessAnchorResult = null;
+        WitnessAnchorInstaller.Origin witnessAnchorOrigin = null;
+        if (section.getBoolean("witness-anchor.build-enabled", false)) {
+            if (consensusAuditResult == null) {
+                throw new IllegalArgumentException("M07 witness anchor requires the M06 consensus audit");
+            }
+            witnessAnchorOrigin = new WitnessAnchorInstaller.Origin(
+                    section.getInt("witness-anchor.origin-x", 96),
+                    section.getInt("witness-anchor.origin-y", 80),
+                    section.getInt("witness-anchor.origin-z"));
+            WitnessAnchorManifest.Bounds bounds = WitnessAnchorManifest.BOUNDS;
+            if (witnessAnchorOrigin.y() + bounds.minimumY() < world.getMinHeight()
+                    || witnessAnchorOrigin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+                throw new IllegalArgumentException("M07 witness-anchor origin exceeds the configured world height");
+            }
+            WitnessAnchorManifest manifest = new WitnessAnchorManifest();
+            witnessAnchorResult = new WitnessAnchorInstaller(
+                    manifest, data.resolve(WITNESS_ANCHOR_RECEIPT_NAME)).install(
+                    settings.releaseId(), witnessAnchorOrigin,
+                    new BukkitWitnessAnchorWorld(world, witnessAnchorOrigin));
+        }
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
         BukkitStaticRestore staticRestore = null;
@@ -197,6 +229,7 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitRecoveryRoom04Entry playerEntry = null;
         BukkitVersionRooms versionRooms = null;
         BukkitConsensusAudit consensusAudit = null;
+        BukkitWitnessAnchor witnessAnchor = null;
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
@@ -251,6 +284,14 @@ public final class MorrowRuntime implements AutoCloseable {
                         + " manifest=" + consensusAuditResult.manifestSha256()
                         + " blocks=" + consensusAuditResult.blockCount());
             }
+            if (witnessAnchorResult != null && witnessAnchorOrigin != null && consensusAudit != null) {
+                witnessAnchor = new BukkitWitnessAnchor(
+                        plugin, world, witnessAnchorOrigin, settings.releaseId(), state, data);
+                witnessAnchor.start();
+                plugin.getLogger().info("MORROW_WITNESS_ANCHOR_READY status=" + witnessAnchorResult.status()
+                        + " manifest=" + witnessAnchorResult.manifestSha256()
+                        + " blocks=" + witnessAnchorResult.blockCount());
+            }
             plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
@@ -259,12 +300,16 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " static_entities=" + (staticRestore == null ? 0 : staticRestore.ownedEntityCount())
                     + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount())
                     + " version_entities=" + (versionRooms == null ? 0 : versionRooms.ownedEntityCount())
-                    + " consensus_entities=" + (consensusAudit == null ? 0 : consensusAudit.ownedEntityCount()));
+                    + " consensus_entities=" + (consensusAudit == null ? 0 : consensusAudit.ownedEntityCount())
+                    + " witness_entities=" + (witnessAnchor == null ? 0 : witnessAnchor.ownedEntityCount()));
             return new MorrowRuntime(
                     settings, state, projector, room04Result, versionRoomsResult, consensusAuditResult,
+                    witnessAnchorResult,
                     body, staticRestore, entityReplay, dialogs,
-                    playerEntry, versionRooms, consensusAudit, resourcePackTracker, resourcePackPusher);
+                    playerEntry, versionRooms, consensusAudit, witnessAnchor,
+                    resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
+            if (witnessAnchor != null) witnessAnchor.close();
             if (consensusAudit != null) consensusAudit.close();
             if (versionRooms != null) versionRooms.close();
             if (dialogs != null) dialogs.close();
@@ -303,8 +348,13 @@ public final class MorrowRuntime implements AutoCloseable {
         return Optional.ofNullable(consensusAuditResult);
     }
 
+    public Optional<WitnessAnchorInstaller.Result> witnessAnchorResult() {
+        return Optional.ofNullable(witnessAnchorResult);
+    }
+
     @Override
     public void close() {
+        if (witnessAnchor != null) witnessAnchor.close();
         if (consensusAudit != null) consensusAudit.close();
         if (versionRooms != null) versionRooms.close();
         if (dialogs != null) dialogs.close();

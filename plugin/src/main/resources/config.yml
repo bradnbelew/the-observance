@@ -174,3 +174,9 @@ morrow-reboot:
     origin-x: 64
     origin-y: 80
     origin-z: 0
+  witness-anchor:
+    # Separate M07 build gate. Requires M06; committed originals are never overwritten.
+    build-enabled: false
+    origin-x: 96
+    origin-y: 80
+    origin-z: 0
