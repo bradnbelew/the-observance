@@ -24,6 +24,7 @@ import run_morrow_offline_client as client_fixture
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {"loaded": "LOADED", "declined": "DECLINED"}
+MAX_POST_STATUS_HOLD_SECONDS = 60
 
 
 def sha1(path: Path) -> str:
@@ -37,6 +38,12 @@ def sha1(path: Path) -> str:
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
+
+
+def validate_post_status_hold(seconds: int) -> int:
+    require(0 <= seconds <= MAX_POST_STATUS_HOLD_SECONDS,
+            f"post-status-hold-seconds must be between 0 and {MAX_POST_STATUS_HOLD_SECONDS}")
+    return seconds
 
 
 class PackState:
@@ -164,8 +171,7 @@ def main() -> None:
             "username must be a vanilla-safe local pseudonym")
     require(15 <= args.status_timeout_seconds <= 105,
             "status-timeout-seconds must be between 15 and 105")
-    require(0 <= args.post_status_hold_seconds <= 30,
-            "post-status-hold-seconds must be between 0 and 30")
+    validate_post_status_hold(args.post_status_hold_seconds)
     acknowledgement = f"launch-visible-minecraft-resource-pack:{args.expected_status}"
     require(not args.launch_client or args.launch_acknowledgement == acknowledgement,
             f"visible client launch requires --launch-acknowledgement {acknowledgement}")

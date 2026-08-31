@@ -124,6 +124,18 @@ def test_pack_server(root: Path) -> None:
         server.server_close()
 
 
+def test_post_status_hold_bounds() -> None:
+    assert rehearsal.validate_post_status_hold(0) == 0
+    assert rehearsal.validate_post_status_hold(60) == 60
+    for invalid in (-1, 61):
+        try:
+            rehearsal.validate_post_status_hold(invalid)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError(f"accepted invalid post-status hold: {invalid}")
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory(prefix="morrow-pack-selftest-") as temporary:
         root = Path(temporary)
@@ -131,7 +143,9 @@ def main() -> None:
         test_windows_option_bytes(root)
         test_config_binding(root)
         test_pack_server(root)
-    print("MORROW RESOURCE PACK REHEARSAL SELFTEST: PASS policies=3 nbt=uncompressed loopback_get=1")
+        test_post_status_hold_bounds()
+    print("MORROW RESOURCE PACK REHEARSAL SELFTEST: PASS policies=3 nbt=uncompressed "
+          "loopback_get=1 hold-max=60")
 
 
 if __name__ == "__main__":
