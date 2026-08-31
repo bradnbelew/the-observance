@@ -69,6 +69,14 @@ unsafe deletion refusal, non-consuming wrong/timeout paths, safe disconnect retu
 and one-/two-/six-player cohorts. Tagged-item transfer and asymmetric co-op still require real-client
 media; the server receipt does not claim those inputs.
 
+The retained `cold-storage-runtime/latest.json` checkpoint proves the M11 6,417-cell bounded archive,
+five custody stations, two isolated Morrow bodies, two physical tagged-hash bridge endpoints, nine
+redundant state lamps, eleven owned entities, restart readback, and cleanup on exact Paper 1.21.11
+build 132. Authority tests cover the first broken custody edge, correct/wrong cross-instance hashes,
+separate reconstruction and access receipts, decline/reset/crash recovery, and one-/two-/six-player
+cohorts while preserving identity continuity as unresolved. Real-client record dialogs, tagged-item
+transport, two-instance comparison, caption/waveform readability, and Escape paths remain open.
+
 The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
 installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without
 launching a GUI or contacting the server. It retains only JSON/options evidence—not client binaries—

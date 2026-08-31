@@ -62,6 +62,13 @@ Implemented and verified:
   failure paths, safe disconnect return, retain-both authority, six state lamps, eighteen owned
   entities, restart recovery, and 1/2/6-player authority coverage; retained Paper proof is under
   `morrow/rehearsal/maintenance-window-runtime`
+- M11 Cold Storage is implemented as a 6,417-cell bounded archive with five ordered custody records,
+  first-broken-edge feedback, cryptographic hash chaining, two visibly distinct Morrow instances,
+  tagged physical snapshot-hash transport, separate reconstruction/access receipts, nine redundant
+  state lamps, eleven owned entities, crash recovery, and 1/2/6-player authority coverage. Its exact
+  Paper build/restart proof is retained under `morrow/rehearsal/cold-storage-runtime`; human dialogue,
+  item-bridge, caption/waveform, and comparison media remain open. The filed provenance says the
+  original process closed and the current process is reconstructed without resolving personhood
 - Copperline Act 0 support case at `/support/cases/mossfield-recovery`: an unresolved hosting-recovery
   workbench with an exact accessible text attachment and SHA-256 custody check, authenticated short-token
   handoff recovery, release/player/campaign-bound RLS reads, player-owned Server Actions, and explicit
@@ -114,6 +121,7 @@ python tools/check_morrow_authority.py
 python tools/check_morrow_rehearsal.py
 python tools/check_morrow_account_continuity_runtime_checkpoint.py
 python tools/check_morrow_maintenance_window_runtime_checkpoint.py
+python tools/check_morrow_cold_storage_runtime_checkpoint.py
 plugin/gradlew.bat check --no-daemon
 plugin/gradlew.bat build --no-daemon
 cd dashboard && npm.cmd run selftest

@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0-morrow-cold-storage-runtime-checkpoint",
+  "status": "paper_install_restart_pass_human_bridge_open",
+  "source_commit": "069125f",
+  "receipt": "morrow/rehearsal/cold-storage-runtime/069125f/paper-runtime-receipt.json",
+  "receipt_sha256": "0ba33120d7346f664eede87614d206cf19fed6904a72e1c79639620fd3616743",
+  "producer": {
+    "path": "tools/run_morrow_disposable_paper.py",
+    "sha256": "5b05420917908aacc23a9d4d8a74afdb97c4ffe23af1606fedda3efb597e016d"
+  },
+  "scope": "owned loopback Paper 1.21.11 M11 construction, semantic readback, restart, entity ownership, and cleanup",
+  "boundaries": {
+    "graphical_client_used": false,
+    "ordered_record_dialogs_proven": false,
+    "tagged_snapshot_hash_transfer_proven": false,
+    "two_instance_player_comparison_proven": false,
+    "caption_and_waveform_readability_proven": false,
+    "native_dialog_interaction_proven": false,
+    "full_human_playthrough_proven": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false
+  },
+  "remaining_gate": "exercise the five record dialogs in correct and broken order, both tagged hash extractions and correct/wrong bridge deliveries, reconstruction classification, separate access decline/authorize, reset and Escape paths with 1/2/6 real clients and retained media",
+  "production_enablement": "blocked"
+}
