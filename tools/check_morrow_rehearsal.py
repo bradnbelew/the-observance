@@ -305,6 +305,7 @@ def validate() -> None:
         "offline_cohort_preparer", "offline_cohort_checker", "offline_cohort_receipt",
         "resource_pack_checker", "resource_pack_receipt",
         "resource_pack_visual_checker", "resource_pack_visual_receipt",
+        "audio_accessibility_checker", "audio_accessibility_receipt",
         "latest_attempt",
         "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
@@ -348,6 +349,23 @@ def validate() -> None:
                 == "suppressed_in_disposable_profiles"
             and pack_visual["production_enablement"] == "blocked",
             "resource-pack visual checkpoint was omitted or full parity was silently closed")
+    audio_result = subprocess.run(
+        [sys.executable, str(ROOT / client["audio_accessibility_checker"])],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(audio_result.returncode == 0,
+            f"audio accessibility checkpoint failed: {audio_result.stderr.strip()}")
+    audio = load(ROOT / client["audio_accessibility_receipt"])
+    require(client["audio_accessibility_checkpoint_status"]
+            == "bounded_static_visual_equivalence_pass_full_cue_parity_open"
+            and audio["status"]
+                == "bounded_static_visual_equivalence_pass_full_cue_parity_open"
+            and audio["comparison"]["static_visual_equivalence_pass"] is True
+            and audio["comparison"]["required_cue_parity_proven"] is False
+            and audio["lanes"]["silent"]["audio_disabled"] is True
+            and len(audio["lanes"]["silent"]["sound_categories_zeroed"]) == 11
+            and audio["production_enablement"] == "blocked",
+            "audio accessibility checkpoint was omitted or full cue parity was overclaimed")
     attempt = load(ROOT / client["latest_attempt"])
     require(attempt["client_lane_status"] == "unproven"
             and attempt["no_blind_input"] is True

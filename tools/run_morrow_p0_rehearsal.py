@@ -552,6 +552,10 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
     resource_pack_visual_checker = ROOT / "tools" / "check_morrow_resource_pack_visual_checkpoint.py"
     resource_pack_visual_receipt = ROOT / "morrow" / "rehearsal" / "client-visual" / \
         "2026-08-30-resource-pack-visual-pair.json"
+    audio_accessibility_checker = ROOT / "tools" / \
+        "check_morrow_audio_accessibility_checkpoint.py"
+    audio_accessibility_receipt = ROOT / "morrow" / "rehearsal" / \
+        "accessibility" / "latest.json"
     capture_fallback = ROOT / "tools" / "capture_windows_window.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
@@ -606,6 +610,14 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "resource_pack_visual_receipt": str(resource_pack_visual_receipt.relative_to(ROOT)).replace("\\", "/"),
             "resource_pack_visual_receipt_sha256": sha256_file(resource_pack_visual_receipt),
             "resource_pack_visual_checkpoint_status": "bounded_pair_checkpoint_common_room_pass_tutorial_suppressed",
+            "audio_accessibility_checker": str(
+                audio_accessibility_checker.relative_to(ROOT)).replace("\\", "/"),
+            "audio_accessibility_checker_sha256": sha256_file(audio_accessibility_checker),
+            "audio_accessibility_receipt": str(
+                audio_accessibility_receipt.relative_to(ROOT)).replace("\\", "/"),
+            "audio_accessibility_receipt_sha256": sha256_file(audio_accessibility_receipt),
+            "audio_accessibility_checkpoint_status":
+                "bounded_static_visual_equivalence_pass_full_cue_parity_open",
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",

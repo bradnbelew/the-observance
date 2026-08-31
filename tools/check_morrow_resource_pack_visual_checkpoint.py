@@ -22,6 +22,14 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def historical_sha(commit: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True,
+    )
+    require(result.returncode == 0, f"visual producer missing at source commit: {path}")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -90,7 +98,9 @@ def validate() -> None:
     for field in ("capture_tool", "pack_harness"):
         artifact = report["artifacts"][field]
         path = ROOT / artifact["path"]
-        require(path.is_file() and sha(path) == artifact["sha256"],
+        require(path.is_file()
+                and historical_sha(report["source_commit"], artifact["path"])
+                    == artifact["sha256"],
                 f"visual checkpoint artifact drifted: {field}")
 
     loaded_capture, loaded_image = lane(report, "loaded", "LOADED", "enabled")

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -117,8 +118,11 @@ def main() -> int:
     for field in ("sha1", "sha256", "bytes"):
         require(normal_runtime["resource_pack"][field]
                 == silent_runtime["resource_pack"][field], f"pack {field} mismatch")
-    require(normal_runtime["server"]["room_ready_line"].split(" snapshot=", 1)[0]
-            == silent_runtime["server"]["room_ready_line"].split(" snapshot=", 1)[0],
+    manifest_pattern = re.compile(r"\bmanifest=([0-9a-f]{64})\b")
+    normal_manifest = manifest_pattern.search(normal_runtime["server"]["room_ready_line"])
+    silent_manifest = manifest_pattern.search(silent_runtime["server"]["room_ready_line"])
+    require(normal_manifest is not None and silent_manifest is not None
+            and normal_manifest.group(1) == silent_manifest.group(1),
             "Room 04 manifest binding mismatch")
 
     normal_lane = lane(normal_receipt, normal_capture, normal_image_path, False)

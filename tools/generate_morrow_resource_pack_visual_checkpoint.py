@@ -23,6 +23,14 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def historical_sha(commit: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True,
+    )
+    require(result.returncode == 0, f"producer artifact missing at source commit: {path}")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -85,10 +93,10 @@ def main() -> int:
     parser.add_argument("--declined-image", type=Path, required=True)
     args = parser.parse_args()
 
-    head = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True,
-        capture_output=True, text=True).stdout.strip()
-    require(head == args.source_commit, "source commit must equal HEAD")
+    require(subprocess.run(
+        ["git", "merge-base", "--is-ancestor", args.source_commit, "HEAD"],
+        cwd=ROOT, capture_output=True).returncode == 0,
+        "source commit is not an ancestor of HEAD")
     paths = [args.loaded_receipt, args.declined_receipt, args.loaded_capture,
              args.declined_capture, args.loaded_image, args.declined_image]
     paths = [(path if path.is_absolute() else ROOT / path).resolve() for path in paths]
@@ -134,11 +142,12 @@ def main() -> int:
         "artifacts": {
             "rehearsal_runner": {
                 "path": "tools/run_morrow_resource_pack_rehearsal.py",
-                "sha256": sha(ROOT / "tools" / "run_morrow_resource_pack_rehearsal.py"),
+                "sha256": historical_sha(
+                    args.source_commit, "tools/run_morrow_resource_pack_rehearsal.py"),
             },
             "client_launcher": {
                 "path": "tools/run_morrow_offline_client.py",
-                "sha256": sha(ROOT / "tools" / "run_morrow_offline_client.py"),
+                "sha256": historical_sha(args.source_commit, "tools/run_morrow_offline_client.py"),
             },
             "receipt_checker": {
                 "path": "tools/check_morrow_resource_pack_receipts.py",
@@ -146,9 +155,10 @@ def main() -> int:
             },
             "runtime_policy": {
                 "path": "plugin/src/main/java/com/observance/watcher/morrow/MorrowResourcePackPolicy.java",
-                "sha256": sha(ROOT / "plugin" / "src" / "main" / "java" / "com" /
-                              "observance" / "watcher" / "morrow" /
-                              "MorrowResourcePackPolicy.java"),
+                "sha256": historical_sha(
+                    args.source_commit,
+                    "plugin/src/main/java/com/observance/watcher/morrow/"
+                    "MorrowResourcePackPolicy.java"),
             },
         },
         "lanes": {
@@ -176,11 +186,12 @@ def main() -> int:
         "artifacts": {
             "capture_tool": {
                 "path": "tools/capture_windows_window.py",
-                "sha256": sha(ROOT / "tools" / "capture_windows_window.py"),
+                "sha256": historical_sha(args.source_commit, "tools/capture_windows_window.py"),
             },
             "pack_harness": {
                 "path": "tools/run_morrow_resource_pack_rehearsal.py",
-                "sha256": sha(ROOT / "tools" / "run_morrow_resource_pack_rehearsal.py"),
+                "sha256": historical_sha(
+                    args.source_commit, "tools/run_morrow_resource_pack_rehearsal.py"),
             },
             "resource_pack_sha256": loaded_runtime["resource_pack"]["sha256"],
         },

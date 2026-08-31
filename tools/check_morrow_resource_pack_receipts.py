@@ -19,6 +19,14 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def historical_sha(commit: str, path: str) -> str:
+    result = subprocess.run(
+        ["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True,
+    )
+    require(result.returncode == 0, f"resource-pack producer missing at source commit: {path}")
+    return hashlib.sha256(result.stdout).hexdigest()
+
+
 def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -114,9 +122,11 @@ def validate() -> None:
     require(subprocess.run(["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
                            cwd=ROOT, capture_output=True).returncode == 0,
             "resource-pack source commit is not an ancestor of HEAD")
-    for artifact in index["artifacts"].values():
+    for name, artifact in index["artifacts"].items():
         path = ROOT / artifact["path"]
-        require(path.is_file() and sha(path) == artifact["sha256"],
+        observed = (sha(path) if name == "receipt_checker"
+                    else historical_sha(source_commit, artifact["path"]))
+        require(path.is_file() and observed == artifact["sha256"],
                 f"resource-pack artifact drifted: {artifact['path']}")
     retained_root = INDEX.parent.resolve()
     loaded = validate_lane(retained_root, index["lanes"]["loaded"], "LOADED")

@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0.0-morrow-audio-accessibility-checkpoint",
+  "status": "bounded_static_visual_equivalence_pass_full_cue_parity_open",
+  "completed_at": "2026-08-31T00:41:05Z",
+  "source_commit": "8826a0886034e1f313e25a1b598b8c0199b13171",
+  "scope": "matched exact-window Room 04 frames with normal audio and all vanilla sound categories zeroed; no input and no full cue-by-cue parity claim",
+  "producer_artifacts": {
+    "capture_tool": {
+      "path": "tools/capture_windows_window.py",
+      "sha256": "56999a4bf2a9034cecc4d28499399cae42f5fffcf9f984e63ef62f5b8980dbf2"
+    },
+    "rehearsal_runner": {
+      "path": "tools/run_morrow_resource_pack_rehearsal.py",
+      "sha256": "91e2c8473e5486d355abc06c9b33fc818cb1c4c97cf2cfc7dd5722da1d99f2ed"
+    },
+    "client_launcher": {
+      "path": "tools/run_morrow_offline_client.py",
+      "sha256": "0f4588625ec7c40da21cdf1a8767efbe5733580826120954d432c5a9b01b1885"
+    }
+  },
+  "lanes": {
+    "normal": {
+      "audio_disabled": false,
+      "sound_categories_zeroed": [],
+      "runtime": "morrow/rehearsal/accessibility/8826a08/normal/resource-pack-rehearsal.json",
+      "runtime_sha256": "c080f0511ffcaa32d9060c28eb7539a78c3dbe716a32af7117ac4e34a8da3bd2",
+      "client": "morrow/rehearsal/accessibility/8826a08/normal/client-receipt.json",
+      "client_sha256": "e0258aa38d07e813b86ec4607e4980dc4c2f8bc102fdeaa1282ed39ac8240a1d",
+      "launch_options": "morrow/rehearsal/accessibility/8826a08/normal/launch-options.txt",
+      "launch_options_sha256": "f9de4076c0f4dc8af767e43d924f7909ad0bc886de5ed9412ebe6b265ade45c1",
+      "final_options": "morrow/rehearsal/accessibility/8826a08/normal/final-options.txt",
+      "final_options_sha256": "46165553362d7779052772ed69ecc7fd504bbddcdb0758baa8b688503b97232d",
+      "capture": "morrow/rehearsal/client-visual/2026-08-30-audio-normal-matched.capture.json",
+      "capture_sha256": "d01392b92e3f2bd50884f6216faae6bfee988d22281281c4cf6e93dcf1069814",
+      "image": "morrow/rehearsal/client-visual/2026-08-30-audio-normal-matched.png",
+      "image_sha256": "28634783ed4a715640aabca97065d694b016af3cc4d61ed8c685e7652b30c369",
+      "username": "MorrowSilentCmp",
+      "uuid": "cfe728cbc63e56439471af5e01a90594"
+    },
+    "silent": {
+      "audio_disabled": true,
+      "sound_categories_zeroed": [
+        "ambient",
+        "block",
+        "hostile",
+        "master",
+        "music",
+        "neutral",
+        "player",
+        "record",
+        "ui",
+        "voice",
+        "weather"
+      ],
+      "runtime": "morrow/rehearsal/accessibility/8826a08/silent/resource-pack-rehearsal.json",
+      "runtime_sha256": "c0b623fa5888fc5c768a46c9df42b642012372a4cb984fb7554e4e330ace7ecc",
+      "client": "morrow/rehearsal/accessibility/8826a08/silent/client-receipt.json",
+      "client_sha256": "e2cb2ec4ba086de476e46d90f8396b6d2eeb1dfc5600582bc251a417e5de2fb1",
+      "launch_options": "morrow/rehearsal/accessibility/8826a08/silent/launch-options.txt",
+      "launch_options_sha256": "54b115f6ad07c14f78f08963140b27811f5d0fb0c9881823e0e05073871cf36a",
+      "final_options": "morrow/rehearsal/accessibility/8826a08/silent/final-options.txt",
+      "final_options_sha256": "21696294486837c45ea8d80010acb7146478fcb04ebcc9badc8f4efec157d26c",
+      "capture": "morrow/rehearsal/client-visual/2026-08-30-audio-silent-matched.capture.json",
+      "capture_sha256": "cc30bfb32d3378cbc4a5a0229ee42daffc02f7e96b5cea6f7977e536c99b3044",
+      "image": "morrow/rehearsal/client-visual/2026-08-30-audio-silent-matched.png",
+      "image_sha256": "2f697fc34e691a7870ce8e01db0cd51c10fca3421f0b11b07919f036ad2c9e6b",
+      "username": "MorrowSilentCmp",
+      "uuid": "cfe728cbc63e56439471af5e01a90594"
+    }
+  },
+  "comparison": {
+    "image_size": [
+      1282,
+      752
+    ],
+    "window_bounds": [
+      639,
+      329,
+      1921,
+      1081
+    ],
+    "difference_bbox": [
+      1,
+      31,
+      1281,
+      751
+    ],
+    "mean_absolute_rgb_difference": [
+      0.297,
+      0.267,
+      0.2
+    ],
+    "changed_channel_samples": 736898,
+    "total_channel_samples": 2892192,
+    "same_identity": true,
+    "same_pack_bytes": true,
+    "common_geometry_visible": true,
+    "terminal_label_visible_in_both": true,
+    "body_interaction_target_visible_in_both": true,
+    "hud_visible_in_both": true,
+    "static_visual_equivalence_pass": true,
+    "required_cue_parity_proven": false,
+    "input_injected": false
+  },
+  "human_media_review": {
+    "status": "primary_review_complete",
+    "finding": "normal and silent frames preserve the same Room 04 structure, label, body target, HUD, skin, and camera; no visual affordance disappears when audio is disabled"
+  },
+  "remaining_gate": "trigger every required audio-bearing Morrow cue and independently verify its captioned or pulsed visual equivalent in continuous synchronized media",
+  "production_enablement": "blocked"
+}

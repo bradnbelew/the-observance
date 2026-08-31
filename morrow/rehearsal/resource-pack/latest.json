@@ -14,7 +14,7 @@
     },
     "receipt_checker": {
       "path": "tools/check_morrow_resource_pack_receipts.py",
-      "sha256": "fa107b9fe108655d2e14bf4f1e9387cf9a3d1cfb9d1273562e9f12a461bd2877"
+      "sha256": "fb46af408275c5fe2a05be5c6f6f8f2eadc7e46a2d1193e7508ac2c9162072c0"
     },
     "runtime_policy": {
       "path": "plugin/src/main/java/com/observance/watcher/morrow/MorrowResourcePackPolicy.java",

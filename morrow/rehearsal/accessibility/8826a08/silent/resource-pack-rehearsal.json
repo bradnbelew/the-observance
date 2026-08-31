@@ -1,0 +1,95 @@
+{
+  "client": {
+    "audio_disabled": true,
+    "client_log_retained": false,
+    "final_options": "final-options.txt",
+    "final_options_sha256": "21696294486837c45ea8d80010acb7146478fcb04ebcc9badc8f4efec157d26c",
+    "final_servers": "final-servers.dat",
+    "final_servers_sha256": "d97a97b97a380f87e46c2bb55b4f75b8333db56ae329a6678d8de14819540f80",
+    "launch_options": "launch-options.txt",
+    "launch_options_sha256": "54b115f6ad07c14f78f08963140b27811f5d0fb0c9881823e0e05073871cf36a",
+    "launch_servers": "launch-servers.dat",
+    "launch_servers_sha256": "ab4de7005af4844704c4e233e7b178c79886aa5f29b6ec371bf7cf256e729feb",
+    "launched": true,
+    "launcher_output_sha256": "3e99a5594b3720bf40621a40b826ea451929751968e2ea02e0fec6647b8f86b6",
+    "receipt": "client-receipt.json",
+    "receipt_sha256": "e2cb2ec4ba086de476e46d90f8396b6d2eeb1dfc5600582bc251a417e5de2fb1",
+    "server_resource_pack_policy": "enabled",
+    "username": "MorrowSilentCmp"
+  },
+  "expected_status": "LOADED",
+  "observed_status_line": "[19:40:51 INFO]: [Observance] MORROW_RESOURCE_PACK player=MorrowSilentCmp status=LOADED",
+  "paper_log": {
+    "file": "morrow-pack-paper.log",
+    "sha256": "09fdd5a4e7e8464f5874b90a3bea5456c093a94e16bac0d51ce6fc12624d72f3"
+  },
+  "proof": {
+    "exact_pack_hash_bound": true,
+    "human_media_reviewed": false,
+    "listeners_closed": true,
+    "optional_policy_reported": true,
+    "pack_bytes_fetched": true,
+    "production_mutated": false,
+    "status_observed_from_real_client": true,
+    "vanilla_fallback_visual_equivalence": false
+  },
+  "resource_pack": {
+    "bytes": 307663,
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/morrow-resourcepack.zip",
+        "range": null,
+        "status": 200,
+        "user_agent_sha256": "61b9c30ec9db9095bf6eaf88138502e1682bca3c8c46d9eea27a5b5803b0f949"
+      }
+    ],
+    "required": false,
+    "sha1": "bae2623687b8d9e68eb4910807ed87d03671ca3c",
+    "sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb",
+    "url": "http://127.0.0.1:29489/morrow-resourcepack.zip"
+  },
+  "runner_sha256": "91e2c8473e5486d355abc06c9b33fc818cb1c4c97cf2cfc7dd5722da1d99f2ed",
+  "schema_version": "1.0.0-morrow-resource-pack-rehearsal",
+  "scope": "create-only loopback Paper, loopback pack bytes, one owned vanilla client decision",
+  "server": {
+    "bind": "127.0.0.1",
+    "bootstrap_sections": {
+      "cache": {
+        "bytes": 56327581,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\cache",
+        "tree_sha256": "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a"
+      },
+      "libraries": {
+        "bytes": 76378978,
+        "file_count": 114,
+        "source": "D:\\the-observance\\build\\paper-smoke\\libraries",
+        "tree_sha256": "0885507c46c6eb2df137b152d38bfdce18a035507302480570af25e5eeee1d5a"
+      },
+      "versions": {
+        "bytes": 29560892,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\versions",
+        "tree_sha256": "1e9b7e14f276cd183ed3f134f2a1b46652a4d15aff9573ea35501a543c445c4a"
+      }
+    },
+    "ingest_port": 29488,
+    "online_mode": false,
+    "pack_port": 29489,
+    "paper_port": 25613,
+    "production_credentials_loaded": false,
+    "room_ready_line": "[19:40:40 INFO]: [Observance] MORROW_ROOM04_READY status=BUILT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=d8b6d75d7cddebb83daf915e82037dbb1fbe0d03d212ce40f5af787a20e5c537 blocks=1144",
+    "runtime_ready_line": "[19:40:40 INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=optional body_entities=2 static_entities=26 replay_entities=6",
+    "seeded_journal": {
+      "head_sha256": "97fc2c773b651f0c1918bd5ce84980ef3fcfdc98316e97fc4e55160069d5170a",
+      "journal_sha256": "4106ff137f622070cec70eba42ee825a4a2220716b83d5fdbd1e198d8585ac54",
+      "projected_sequence": 4,
+      "sequence": 4
+    },
+    "tls_certificate_sha256": "5510a89c943413342392f88e84ba8ea0d8f9b04219980784fc1165ab9962a067"
+  },
+  "source_commit": "8826a0886034e1f313e25a1b598b8c0199b13171",
+  "started_at": "2026-08-31T00:40:24Z",
+  "status": "bounded_handshake_pass_human_visual_parity_open"
+}
