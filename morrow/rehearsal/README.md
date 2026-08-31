@@ -22,6 +22,16 @@ without suffocation. A Windows 10 exact-title/PID fallback now also retains the 
 the presentation defect it exposed, the corrected frame, and one successful native terminal-dialog
 activation under `client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
 
+A newer current-source checkpoint at
+`client-visual/2026-08-30-current-source-room04-checkpoint.json` binds commit
+`d2580fd97ae14dc3db0b508d6ab7aad0b7f0241c`, the current plugin JAR, exact Paper
+1.21.11 build 132, a fresh dummy-client join, the retained Room 04 frame, safe entry with zero
+inventory mutations, and clean runtime shutdown. It confirms the terminal remains centered and its
+label bounded after the full M01–M12 implementation. It is deliberately still-image proof: no input
+was injected, so current-source dialog choices, pose transitions, continuous media, pack/audio parity,
+and the full playthrough remain open. Verify it with
+`python tools/check_morrow_current_source_visual_checkpoint.py`.
+
 The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
 window and injects no input; exact-window input was separately limited to two reversible F1 toggles and

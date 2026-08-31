@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0-morrow-current-source-visual-checkpoint",
+  "status": "current_source_room04_visual_pass_interaction_open",
+  "captured_at": "2026-08-31T04:35:42.940365Z",
+  "scope": "loopback disposable Paper and dummy offline Minecraft client; bounded still-image proof only",
+  "source_commit": "d2580fd97ae14dc3db0b508d6ab7aad0b7f0241c",
+  "runtime": {
+    "paper_version": "1.21.11",
+    "paper_build": 132,
+    "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_sha256": "65406d67787b764c25f5cf727dc710de67872fdcad749b1141736a105dc75343",
+    "server": "127.0.0.1:25593",
+    "dummy_offline_identity": "MorrowWitness2",
+    "production_credentials_loaded": false,
+    "resource_pack_policy": "disabled",
+    "tutorial_toast_disabled": true
+  },
+  "capture": {
+    "backend": "Pillow.ImageGrab visible-desktop exact-window bounds",
+    "computer_use_wgc_result": "failed_no_such_interface_after_one_fresh-handle_retry",
+    "computer_use_input_sent": false,
+    "fallback_input_injected": false,
+    "window_title": "Minecraft 1.21.11 - Multiplayer (3rd-party Server)",
+    "window_pid": 18984,
+    "width": 1282,
+    "height": 752,
+    "grayscale_entropy": 6.403262
+  },
+  "findings": {
+    "real_minecraft_client_rendered": true,
+    "safe_entry_logged": true,
+    "inventory_mutations": 0,
+    "room04_visible": true,
+    "copper_terminal_centered": true,
+    "terminal_label_readable_and_bounded": true,
+    "giant_overlay_regression_absent_in_frame": true,
+    "server_stopped_cleanly": true,
+    "runtime_cleanup_logged": true
+  },
+  "artifacts": {
+    "image": {"path": "morrow/rehearsal/client-visual/2026-08-30-current-d2580fd-room04.png", "sha256": "668160679262aef8bd48b64a73f7e27e5b55b60d8baf9d7890596e8c76927a99"},
+    "capture_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-30-current-d2580fd-room04.capture.json", "sha256": "fb995f99fd6d655636b41201ca9b2f34c7e233cb438d0b5d579bb6563b74c735"},
+    "offline_client_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-30-current-d2580fd-offline-client-receipt.json", "sha256": "3159a140b9375e3492887132cb1009c9a94d02e26071623830d0d8a61e4641bd"},
+    "client_log": {"path": "morrow/rehearsal/client-visual/2026-08-30-current-d2580fd.client.log", "sha256": "e29f9585a7922aa3b40f6ba2a9b70974f62f9ae6e1ecad308805ad283e8da38f"},
+    "server_log": {"path": "morrow/rehearsal/client-visual/2026-08-30-current-d2580fd.server.log", "sha256": "fb458f9e077a39f460cd45565abbc4b993b08980cfb7f4ec6bf68741ff233f3a"},
+    "paper_runtime_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-30-current-d2580fd-paper-runtime-receipt.json", "sha256": "7a37de7b802e91920b49afaeb19f2c282709c9667b427fcdc41e03511b23b3fd"}
+  },
+  "proven": [
+    "The plugin built from the recorded source commit booted on exact Paper 1.21.11 build 132.",
+    "A real vanilla Minecraft 1.21.11 client joined the loopback disposable server with a dummy offline identity.",
+    "Room 04 and its centered copper terminal rendered with a bounded readable terminal label and no giant-overlay regression in the retained frame.",
+    "Safe entry made zero inventory mutations.",
+    "The client disconnected and the server logged clean runtime cleanup."
+  ],
+  "not_proven": [
+    "Current-source native client dialog choices and state transitions have not been clicked through.",
+    "All six body-state poses and interpolation transitions have not been graphically exercised.",
+    "M03 and M04 continuous media behavior has not been graphically rehearsed.",
+    "Resource-pack visual parity has not been graphically rehearsed because the pack was disabled.",
+    "Audio cue and transcript parity has not been human-audited in the client.",
+    "A complete operator-free M01-M12 human playthrough and pacing pass remains open."
+  ],
+  "interaction_status": "open",
+  "production_mutated": false,
+  "production_release_authorized": false
+}

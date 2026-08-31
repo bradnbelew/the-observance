@@ -256,6 +256,15 @@ retained at `morrow/rehearsal/client-visual/2026-08-30-exact-window-visual-check
 a bounded visual/interaction checkpoint: continuous media, all six poses, the full dialogue input
 matrix, parity modes, the continuous human cohort slice, independent review, and pacing remain required.
 
+A second fresh client run now binds the fully implemented source commit
+`d2580fd97ae14dc3db0b508d6ab7aad0b7f0241c` and plugin SHA-256
+`65406d67787b764c25f5cf727dc710de67872fdcad749b1141736a105dc75343` to exact Paper
+1.21.11 build 132. Its retained exact-window still confirms Room 04, the centered copper terminal,
+bounded `MORROW // TERMINAL` label, zero-inventory-mutation safe entry, and clean runtime shutdown.
+The fail-closed receipt is
+`morrow/rehearsal/client-visual/2026-08-30-current-source-room04-checkpoint.json`. No client input was
+sent in this run, so it does not advance any interaction or full-playthrough gate.
+
 ### P1 — Safe database rehearsal
 
 Completed on 2026-08-30 against the isolated `observance-validation-20260727` project, then paused:
@@ -290,9 +299,10 @@ same mechanic.
   audited and build-clean but have not been executed on the isolated validation project or proven through
   an authenticated browser session.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
-  connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
-  helper. The Morrow display body, Paper
-  dialogs, M02 Static Restore, and M03/M04 Entity Replay still require live-client visual and interaction
+  connects, safe entry is runtime-proven, and the current-source Room 04 terminal has bounded retained
+  still evidence through the exact-window fallback. The primary Computer Use capture API remains
+  unavailable on this host. The full Morrow display-body pose set, Paper dialogs, M02 Static Restore,
+  and M03/M04 Entity Replay still require live-client visual and interaction
   rehearsal. The Copperline reboot route has real email delivery, inbox receipt, provider verification,
   and an exact verifier-cookie defect fix, but still requires a fresh final PKCE callback and
   authenticated RLS read. Discord has real bot-only Gateway

@@ -436,6 +436,15 @@ def validate() -> None:
             and capture_retry["production_contacted"] is False,
             "post-permission Java capture retry was omitted or overclaimed")
     validate_client_visual_checkpoint(client)
+    current_visual_result = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_morrow_current_source_visual_checkpoint.py")],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(
+        current_visual_result.returncode == 0,
+        "current-source visual checkpoint failed: "
+        f"{current_visual_result.stderr.strip() or current_visual_result.stdout.strip()}",
+    )
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
     database_lane = next(row for row in matrix["live_services_required"]
