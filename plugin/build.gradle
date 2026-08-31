@@ -113,6 +113,7 @@ def pluginSelfTests = [
     , witnessAnchorAuthority: 'com.observance.watcher.morrow.witnessanchor.WitnessAnchorAuthoritySelfTest'
     , almostHomeAuthority: 'com.observance.watcher.morrow.almost.AlmostHomeAuthoritySelfTest'
     , accountContinuityAuthority: 'com.observance.watcher.morrow.continuity.AccountContinuityAuthoritySelfTest'
+    , maintenanceWindowAuthority: 'com.observance.watcher.morrow.maintenance.MaintenanceWindowAuthoritySelfTest'
     , entityReplayLoop: 'com.observance.watcher.morrow.room04.replay.EntityReplayLoopSelfTest'
     , morrowVerticalSliceRehearsal: 'com.observance.watcher.morrow.rehearsal.MorrowVerticalSliceRehearsalSelfTest'
 ]
