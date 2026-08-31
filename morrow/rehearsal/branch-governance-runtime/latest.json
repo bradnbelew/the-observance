@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0.0-morrow-branch-governance-runtime-checkpoint",
+  "status": "paper_install_restart_pass_human_finale_open",
+  "source_commit": "8ef368d",
+  "receipt": "morrow/rehearsal/branch-governance-runtime/8ef368d/paper-runtime-receipt.json",
+  "receipt_sha256": "4e77c481f32f9ac7884612275d3fd37c3691a37c78e057d31246583ebe8cd68e",
+  "producer": {
+    "path": "tools/run_morrow_disposable_paper.py",
+    "sha256": "1e00a1963dbf96226392dcf731a41d925dfd13cb847a0adc849012ff2d3069e5"
+  },
+  "scope": "owned loopback Paper 1.21.11 M12 construction, semantic readback, restart, entity ownership, and cleanup",
+  "boundaries": {
+    "graphical_client_used": false,
+    "rollback_wave_player_traversal_proven": false,
+    "anchor_dialogs_proven": false,
+    "physical_rule_assembly_proven": false,
+    "ending_predicate_feedback_proven": false,
+    "governance_and_coda_dialogs_proven": false,
+    "full_human_playthrough_proven": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false
+  },
+  "remaining_gate": "exercise the bounded rollback wave, protect/release/file anchor dialogs, all eight physical rule choices, valid and invalid synthesis for four endings, governance decline/authorize, coda, reset and Escape paths with 1/2/6 real clients and retained media",
+  "production_enablement": "blocked"
+}

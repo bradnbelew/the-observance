@@ -77,6 +77,14 @@ separate reconstruction and access receipts, decline/reset/crash recovery, and o
 cohorts while preserving identity continuity as unresolved. Real-client record dialogs, tagged-item
 transport, two-instance comparison, caption/waveform readability, and Escape paths remain open.
 
+The retained `branch-governance-runtime/latest.json` checkpoint proves the M12 8,325-cell finale,
+bounded rollback-route geometry, five evidence stations, four physical rule stations, four ending
+gates, thirteen redundant lamps, eighteen owned entities, restart readback, and cleanup. Authority
+tests cover all four canonical endings, missing-category feedback, non-consuming invalid policies,
+timed-pause evidence retention, separate governance consent, persistent coda, crash recovery, and
+one-/two-/six-player cohorts. Real-client wave traversal, anchor/rule/ending dialogs, visual pacing,
+governance/coda choices, reset, and Escape remain explicitly unproven.
+
 The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
 installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without
 launching a GUI or contacting the server. It retains only JSON/options evidence—not client binaries—

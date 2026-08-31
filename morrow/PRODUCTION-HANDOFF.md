@@ -69,6 +69,13 @@ Implemented and verified:
   Paper build/restart proof is retained under `morrow/rehearsal/cold-storage-runtime`; human dialogue,
   item-bridge, caption/waveform, and comparison media remain open. The filed provenance says the
   original process closed and the current process is reconstructed without resolving personhood
+- M12 Branch Governance is implemented as an 8,325-cell finale with a bounded non-dexterity rollback
+  wave, five accumulated-evidence anchors, four physical policy slots, four predicate-gated endings,
+  separate governance authorization, persistent coda, thirteen redundant lamps, eighteen owned
+  entities, crash recovery, and 1/2/6-player coverage. Invalid policies name missing categories without
+  consuming evidence, and no final button can bypass prior receipts or physical configuration. Exact
+  Paper build/restart evidence is retained under `morrow/rehearsal/branch-governance-runtime`; complete
+  human finale traversal, dialogs, pacing, accessibility, and ending media remain open
 - Copperline Act 0 support case at `/support/cases/mossfield-recovery`: an unresolved hosting-recovery
   workbench with an exact accessible text attachment and SHA-256 custody check, authenticated short-token
   handoff recovery, release/player/campaign-bound RLS reads, player-owned Server Actions, and explicit
@@ -122,6 +129,7 @@ python tools/check_morrow_rehearsal.py
 python tools/check_morrow_account_continuity_runtime_checkpoint.py
 python tools/check_morrow_maintenance_window_runtime_checkpoint.py
 python tools/check_morrow_cold_storage_runtime_checkpoint.py
+python tools/check_morrow_branch_governance_runtime_checkpoint.py
 plugin/gradlew.bat check --no-daemon
 plugin/gradlew.bat build --no-daemon
 cd dashboard && npm.cmd run selftest
@@ -193,9 +201,9 @@ authored Discord receipt has crossed a real Gateway in a temporary everyone-deni
 channel, including `MESSAGE_CREATE`, REST readback, stable nonce, mention suppression, deletion, and
 `Unknown Channel` verification. The database-claimed worker and a disposable-guild linked-player
 ephemeral interaction remain; the JavaScript Copperline worker is only an operator fallback.
-Do not enable production or mutate production services, data, or worlds at this boundary. M05–M10 now
+Do not enable production or mutate production services, data, or worlds at this boundary. M05–M12 now
 have bounded authority and Paper construction/restart evidence; their complete human interaction lanes
-remain open, and M11–M14 must preserve the same proof discipline.
+remain open under the same proof discipline.
 
 The first 2026-08-30 loopback attempts still document Windows app capture failing with
 `SetIsBorderRequired failed: No such interface supported (0x80004002)` and are retained under
@@ -237,10 +245,10 @@ Completed on 2026-08-30 against the isolated `observance-validation-20260727` pr
 5. Production application remains blocked until a fresh backup and explicit authorization. Receipt:
    `morrow/rehearsal/database/2026-08-30-isolated-supabase.json`.
 
-### P2 — Continue M11–M14 without breaking the grammar
+### P2 — Complete M11–M12 without breaking the grammar
 
-M05–M10 now have pure authority, bounded Paper structures, native adapters, 1/2/6-player tests, and
-retained two-boot server evidence. Continue with M11–M14 in ledger order. Each investigation must retain
+M05–M12 now have pure authority, bounded Paper structures, native adapters, 1/2/6-player tests, and
+retained two-boot server evidence. The twelve-entry canonical ledger is fully represented. Each investigation retains
 at least three evidence sources, two surfaces, a native input verb, recoverable failure, accessibility
 equivalent, callback, payoff, and factual truth. No three consecutive investigations may lead with the
 same mechanic.
@@ -259,7 +267,7 @@ same mechanic.
   authenticated RLS read. Discord has real bot-only Gateway
   transport evidence but still requires a database-claimed worker and disposable-guild linked-player
   interaction; its shipped feature gate remains false.
-- M05–M10 construction and restart checkpoints are green, but their complete native-dialog, private
+- M05–M12 construction and restart checkpoints are green, but their complete native-dialog, private
   display, wrong-answer, Escape, item-transfer, disconnect/rejoin, asymmetric-coop, readability, and
   pacing lanes are not. The current Computer Use capture path still fails on this host with
   `SetIsBorderRequired ... 0x80004002`; no blind client input was sent.
