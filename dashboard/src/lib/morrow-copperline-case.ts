@@ -1,4 +1,9 @@
 import { createHash } from 'node:crypto';
+import {
+  morrowMediaByKey,
+  morrowMediaIndex,
+  type MorrowMediaAsset,
+} from './morrow-media-catalog';
 
 export const MORROW_CASE_ROUTE = '/support/cases/mossfield-recovery';
 export const MORROW_CASE_ID = 'CL-RCV-04';
@@ -121,6 +126,7 @@ export type MorrowCaseContext = {
   events: readonly MorrowCaseEvent[];
   updates: readonly MorrowCaseUpdate[];
   playerReceipts: readonly string[];
+  media: readonly MorrowMediaAsset[];
   caseChainAuthenticated: boolean;
   handoffRecovered: boolean;
   handoffToken: string | null;
@@ -309,6 +315,25 @@ export function projectMorrowCase(
     : [];
 
   const eventSet = new Set(knownEvents);
+  const mediaRows = rows.filter((row) => row.projection_key === 'case_media');
+  if (mediaRows.length > 1 || mediaRows.some((row) => !plainObject(row.projection))) {
+    return { kind: 'error', reason: 'projection_invalid' };
+  }
+  const mediaProjection = mediaRows[0]?.projection as JsonObject | undefined;
+  const suppliedMedia = Array.isArray(mediaProjection?.keys) ? mediaProjection.keys : [];
+  if (suppliedMedia.some((key) => typeof key !== 'string')
+      || new Set(suppliedMedia).size !== suppliedMedia.length) {
+    return { kind: 'error', reason: 'projection_invalid' };
+  }
+  const media = suppliedMedia.map((key) => morrowMediaByKey(String(key)));
+  if (media.some((asset) => !asset)
+      || media.some((asset) => asset!.prerequisite_events.some((event) => !eventSet.has(event as MorrowCaseEvent)))
+      || media.map((asset) => morrowMediaIndex(asset!.key)).some((index, position, indices) => (
+        index < 0 || (position > 0 && index <= indices[position - 1])
+      ))
+      || media.filter((asset) => asset!.ending).length > 1) {
+    return { kind: 'error', reason: 'projection_invalid' };
+  }
   const updates = knownEvents.flatMap((eventKey, index) => {
     const content = UPDATE_CONTENT[eventKey];
     return content ? [{ eventKey, timeLabel: `Update ${String(index + 1).padStart(2, '0')}`, ...content }] : [];
@@ -356,6 +381,7 @@ export function projectMorrowCase(
     events: knownEvents,
     updates,
     playerReceipts: receipts,
+    media: media as MorrowMediaAsset[],
     caseChainAuthenticated: eventSet.has('morrow.act0.case_chain_authenticated'),
     handoffRecovered: eventSet.has('morrow.act0.server_handoff_recovered'),
     handoffToken,

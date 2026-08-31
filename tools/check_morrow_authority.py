@@ -20,6 +20,10 @@ DASHBOARD_COPPERLINE_CASE = ROOT / "dashboard" / "src" / "lib" / "morrow-copperl
 DASHBOARD_COPPERLINE_SERVER = ROOT / "dashboard" / "src" / "lib" / "morrow-copperline-server.ts"
 DASHBOARD_COPPERLINE_ROUTE = ROOT / "dashboard" / "src" / "app" / "support" / "cases" / "mossfield-recovery" / "page.tsx"
 DASHBOARD_COPPERLINE_ACTION = ROOT / "dashboard" / "src" / "app" / "support" / "cases" / "mossfield-recovery" / "actions.ts"
+DASHBOARD_COPPERLINE_MEDIA_ROUTE = (ROOT / "dashboard" / "src" / "app" / "support" / "cases" /
+                                    "mossfield-recovery" / "media" / "[mediaKey]" / "route.ts")
+DASHBOARD_MORROW_MEDIA_CATALOG = ROOT / "dashboard" / "src" / "lib" / "morrow-media-catalog.ts"
+DASHBOARD_MORROW_MEDIA_ASSETS = ROOT / "dashboard" / "src" / "lib" / "morrow-media-assets"
 DISCORD_MORROW_DOMAIN = ROOT / "discord" / "src" / "morrow" / "contradiction.ts"
 DISCORD_MORROW_REPO = ROOT / "discord" / "src" / "morrow" / "repo.ts"
 DISCORD_MORROW_POLICY = ROOT / "discord" / "src" / "morrow" / "projection-policy.ts"
@@ -37,6 +41,7 @@ MORROW_ACT6_COPPERLINE_MIGRATION = (
 )
 MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
 MORROW_ACT6_COPPERLINE_RECEIPT = MORROW / "rehearsal" / "database" / "latest-act6-chronology-local.json"
+MORROW_MEDIA_RECEIPT = MORROW / "rehearsal" / "media" / "latest.json"
 MORROW_CRON_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-supabase-cron-projector.json"
 MORROW_BROWSER_RECEIPT = MORROW / "rehearsal" / "browser" / "2026-08-30-authenticated-copperline.json"
 
@@ -333,6 +338,8 @@ def main() -> int:
         case_server = DASHBOARD_COPPERLINE_SERVER.read_text(encoding="utf-8")
         case_route = DASHBOARD_COPPERLINE_ROUTE.read_text(encoding="utf-8")
         case_action = DASHBOARD_COPPERLINE_ACTION.read_text(encoding="utf-8")
+        media_route = DASHBOARD_COPPERLINE_MEDIA_ROUTE.read_text(encoding="utf-8")
+        media_adapter = DASHBOARD_MORROW_MEDIA_CATALOG.read_text(encoding="utf-8")
         schema = (MORROW / "db/schema-proposal.sql").read_text(encoding="utf-8")
         require("/support/cases/mossfield-recovery" in case_model,
                 "Copperline case lost its exact non-legacy route")
@@ -363,7 +370,48 @@ def main() -> int:
                          "831b4026a5e98b263699ba337d246ad5c2c1f26b3f1d00bdef42775586707096",
                          "69ef307074c7aaf7cc4fff12c5e8b7b2423c51a05dfc7f8bb11d53b059420a6e"):
             require(required in schema, f"Copperline receipt SQL lacks {required}")
-        reboot_surface = "\n".join((case_model, case_server, case_route, case_action))
+        media_catalog = load_json("contracts/media-catalog.json")
+        media_assets = media_catalog["assets"]
+        expected_media_keys = [
+            "morrow.m03.captioned_voice_fragment",
+            "morrow.m04.route_derivative",
+            "morrow.m08.almost_home_comparison",
+            "morrow.m11.current_voice_assembly",
+            "morrow.m12.coda.certify",
+            "morrow.m12.coda.preserve_audit",
+            "morrow.m12.coda.close_ticket",
+            "morrow.m12.coda.create_new_branch",
+        ]
+        require(media_catalog["release_id"] == "morrow.reboot.media.v1"
+                and [asset["key"] for asset in media_assets] == expected_media_keys,
+                "earned media catalog release/order drifted")
+        event_by_key = {event["key"]: event for event in events}
+        for asset in media_assets:
+            require(asset["accessible_equivalent"] and asset.get("timing_labels"),
+                    f"earned media lacks accessible equivalent/timing labels: {asset['key']}")
+            require(asset.get("transcript") or asset.get("diagram_nodes"),
+                    f"earned media lacks transcript or ordered diagram: {asset['key']}")
+            canonical = json.dumps(asset, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            metadata_sha = hashlib.sha256(canonical).hexdigest()
+            require(metadata_sha in schema, f"earned media SQL metadata hash drifted: {asset['key']}")
+            for prerequisite in asset["prerequisite_events"]:
+                require(prerequisite in event_by_key
+                        and "copperline" in event_by_key[prerequisite]["projects_to"],
+                        f"earned media prerequisite is not a Copperline event: {asset['key']}")
+            if asset["media_type"] == "audio":
+                audio_path = DASHBOARD_MORROW_MEDIA_ASSETS / asset["audio_file"]
+                require(audio_path.is_file()
+                        and hashlib.sha256(audio_path.read_bytes()).hexdigest() == asset["audio_sha256"],
+                        f"earned audio custody hash drifted: {asset['key']}")
+        for required in ("readMorrowCase", "context.media.find", "createHash", "private, no-store",
+                         "m03-captioned-voice-fragment.ogg", "m11-current-voice-assembly.ogg"):
+            require(required in media_route, f"earned media route lacks {required}")
+        require("morrow-media-catalog" in case_model and "catalog.assets" in media_adapter,
+                "Copperline case model lost its canonical earned-media adapter")
+        for key in expected_media_keys:
+            require(key in schema, f"Copperline projector/seed lacks earned media key {key}")
+        reboot_surface = "\n".join((case_model, case_server, case_route, case_action, media_route,
+                                      media_adapter, json.dumps(media_catalog)))
         require(re.search(r"\b(?:Hold|Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
                           re.IGNORECASE) is None,
                 "legacy lore leaked into the Copperline reboot surface")
@@ -475,20 +523,38 @@ def main() -> int:
         migration_text = MORROW_MIGRATION.read_text(encoding="utf-8")
         act6_migration_text = MORROW_ACT6_COPPERLINE_MIGRATION.read_text(encoding="utf-8")
         database_receipt = json.loads(MORROW_DATABASE_RECEIPT.read_text(encoding="utf-8"))
-        function_start = "create or replace function public.morrow_record_copperline_event"
-        function_end = "  to authenticated;"
-        def copperline_function(source: str) -> str:
+        def sql_function(source: str, name: str, grant_role: str) -> str:
+            function_start = f"create or replace function public.{name}"
+            function_end = f"  to {grant_role};"
             start = source.index(function_start)
             end = source.index(function_end, start) + len(function_end)
             return source[start:end].replace("\r\n", "\n")
-        base_function = copperline_function(migration_text)
-        final_function = copperline_function(act6_migration_text)
-        proposal_function = copperline_function(schema_text)
-        require(final_function == proposal_function,
-                "Act 6 additive migration differs from the current schema proposal")
-        composed_migration = migration_text.replace(base_function, final_function)
-        require(composed_migration.splitlines()[3:] == schema_text.splitlines()[3:],
-                "foundation plus Act 6 additive migration differs from the schema proposal")
+        def media_seed(source: str) -> str:
+            start_marker = "insert into morrow_private.media_assets("
+            end_marker = "  active = excluded.active;"
+            start = source.index(start_marker)
+            end = source.index(end_marker, start) + len(end_marker)
+            return source[start:end].replace("\r\n", "\n")
+        replacements = (
+            ("morrow_record_copperline_event", "authenticated"),
+            ("morrow_apply_copperline_projection", "service_role"),
+        )
+        normalized_proposal = schema_text.replace("\r\n", "\n")
+        normalized_foundation = migration_text.replace("\r\n", "\n")
+        for function_name, role in replacements:
+            base_function = sql_function(migration_text, function_name, role)
+            final_function = sql_function(act6_migration_text, function_name, role)
+            proposal_function = sql_function(schema_text, function_name, role)
+            require(final_function == proposal_function,
+                    f"additive migration {function_name} differs from the current schema proposal")
+            normalized_proposal = normalized_proposal.replace(proposal_function, base_function)
+        additive_media_seed = media_seed(act6_migration_text)
+        proposal_media_seed = media_seed(schema_text)
+        require(additive_media_seed == proposal_media_seed,
+                "additive migration media seed differs from the current schema proposal")
+        normalized_proposal = normalized_proposal.replace(proposal_media_seed + "\n\n", "")
+        require(normalized_foundation.splitlines()[3:] == normalized_proposal.splitlines()[3:],
+                "foundation plus additive function/media changes differs from the schema proposal")
         require(database_receipt["artifacts"]["proposal_sha256"]
                 == "41013ae8e0a4905fd9fe16a45d1183eb0177951c20ef1204152cb84e490b6f66",
                 "isolated database receipt lost its exact rehearsed proposal hash")
@@ -535,6 +601,23 @@ def main() -> int:
                 and act6_receipt["boundary"]["validation_project_contacted"] is False
                 and act6_receipt["boundary"]["live_rpc_exercised"] is False,
                 "Act 6 Copperline receipt overclaims live database proof")
+        media_receipt = json.loads(MORROW_MEDIA_RECEIPT.read_text(encoding="utf-8"))
+        for artifact in media_receipt["artifacts"].values():
+            artifact_path = ROOT / artifact["path"]
+            require(artifact_path.is_file()
+                    and hashlib.sha256(artifact_path.read_bytes()).hexdigest() == artifact["sha256"],
+                    f"earned media local receipt artifact drifted: {artifact['path']}")
+        require(media_receipt["status"]
+                == "local_earned_media_and_full_projection_pass_live_services_open"
+                and media_receipt["release_id"] == "morrow.reboot.media.v1"
+                and media_receipt["proof"]["canonical_assets"] == 8
+                and media_receipt["proof"]["copperline_event_projection_count"] == 25
+                and media_receipt["proof"]["transcript_or_ordered_text_equivalent_for_every_asset"] is True
+                and media_receipt["boundary"]["production_contacted"] is False
+                and media_receipt["boundary"]["validation_project_contacted"] is False
+                and media_receipt["boundary"]["live_rpc_exercised"] is False
+                and media_receipt["boundary"]["authenticated_browser_media_playback"] is False,
+                "earned media local receipt overclaims live delivery proof")
         browser_receipt = json.loads(MORROW_BROWSER_RECEIPT.read_text(encoding="utf-8"))
         for artifact in browser_receipt["artifacts"].values():
             artifact_path = ROOT / artifact["path"]

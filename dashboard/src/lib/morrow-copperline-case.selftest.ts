@@ -14,6 +14,7 @@ import {
   validateMorrowCaseAction,
   type MorrowProjectionRow,
 } from './morrow-copperline-case';
+import { MORROW_MEDIA_CATALOG } from './morrow-media-catalog';
 
 const CAMPAIGN = '8e0b1a62-d2dd-4e86-91f1-4b07af5e2922';
 const PLAYER = '571d20b8-bf85-4e8a-92ac-3b071ffc882d';
@@ -177,6 +178,9 @@ const loginFormSource = readFileSync(resolve('src/app/support/account/PlayerLogi
 const authCallbackSource = readFileSync(resolve('src/app/auth/callback/route.ts'), 'utf8');
 const rehearsalSessionSource = readFileSync(resolve('src/app/api/rehearsal/morrow-session/route.ts'), 'utf8');
 const projectorSource = readFileSync(resolve('scripts/morrow-copperline-projector.mjs'), 'utf8');
+const mediaRouteSource = readFileSync(
+  resolve('src/app/support/cases/mossfield-recovery/media/[mediaKey]/route.ts'), 'utf8',
+);
 const sql = readFileSync(resolve('../morrow/db/schema-proposal.sql'), 'utf8');
 const eventCatalog = JSON.parse(readFileSync(resolve('../morrow/contracts/event-catalog.json'), 'utf8')) as {
   events: Array<{ key: string; projects_to: string[] }>;
@@ -209,11 +213,25 @@ const finale = projectMorrowCase([
     events: [...MORROW_CASE_EVENT_ORDER, 'morrow.act8.future_state_withheld'],
     rawPayload: { ending: 'CREATE_NEW_BRANCH', privateDialogue: 'must not render' },
   }, 25),
+  row('case_media', { keys: [
+    'morrow.m03.captioned_voice_fragment',
+    'morrow.m04.route_derivative',
+    'morrow.m08.almost_home_comparison',
+    'morrow.m11.current_voice_assembly',
+    'morrow.m12.coda.create_new_branch',
+  ], rawEnding: 'must not render' }, 25),
 ], RELEASE);
 assert.equal(finale.kind, 'ready');
 if (finale.kind === 'ready') {
   assert.equal(finale.events.length, 25, 'Copperline receives every canonical website projection');
   assert.equal(finale.updates.length, 23, 'Act 0 controls stay separate while all earned field updates render');
+  assert.deepEqual(finale.media.map((asset) => asset.key), [
+    'morrow.m03.captioned_voice_fragment',
+    'morrow.m04.route_derivative',
+    'morrow.m08.almost_home_comparison',
+    'morrow.m11.current_voice_assembly',
+    'morrow.m12.coda.create_new_branch',
+  ], 'earned media follows canonical progression and exposes only the selected ending');
   assert.deepEqual(finale.updates.slice(-7).map((update) => update.eventKey), [
     'morrow.act6.audit_chronology_proven',
     'morrow.act6.current_morrow_reconstruction_proven',
@@ -232,7 +250,28 @@ if (finale.kind === 'ready') {
     'raw private dialogue remains outside the website projection model');
   assert.equal(rendered.includes('private_contradiction_resolved'), false,
     'Discord-private contradiction never enters the Copperline event order');
+  assert.equal(rendered.includes('rawEnding'), false,
+    'raw media projection fields remain outside the rendered model');
 }
+
+assert.deepEqual(projectMorrowCase([
+  access,
+  row('case_progress', { events: MORROW_CASE_EVENT_ORDER.slice(0, 2) }, 2),
+  row('case_media', { keys: ['morrow.m03.captioned_voice_fragment'] }, 2),
+], RELEASE), { kind: 'error', reason: 'projection_invalid' },
+'media fails closed before its prerequisite event is earned');
+assert.deepEqual(projectMorrowCase([
+  access,
+  row('case_progress', { events: MORROW_CASE_EVENT_ORDER }, 25),
+  row('case_media', { keys: ['morrow.unknown.asset'] }, 25),
+], RELEASE), { kind: 'error', reason: 'projection_invalid' },
+'unknown media keys fail closed');
+assert.deepEqual(projectMorrowCase([
+  access,
+  row('case_progress', { events: MORROW_CASE_EVENT_ORDER }, 25),
+  row('case_media', { keys: ['morrow.m12.coda.certify', 'morrow.m12.coda.close_ticket'] }, 25),
+], RELEASE), { kind: 'error', reason: 'projection_invalid' },
+'multiple ending records fail closed');
 
 const lockedFinale = projectMorrowCase([
   access,
@@ -249,6 +288,28 @@ for (const required of ['projector_run_receipts', 'run_copperline_projector',
   'from public, anon, authenticated, service_role']) {
   assert.ok(sql.includes(required), `database-native Copperline scheduler lacks ${required}`);
 }
+for (const eventKey of MORROW_CASE_EVENT_ORDER) {
+  assert.ok(sql.includes(`'${eventKey}'`), `database projector lacks canonical event ${eventKey}`);
+}
+assert.ok(sql.includes("'case_media'") && sql.includes('morrow.reboot.media.v1'),
+  'database projector must emit earned media and seed its release authority');
+assert.equal(MORROW_MEDIA_CATALOG.length, 8, 'earned media catalog must retain all eight canonical assets');
+for (const asset of MORROW_MEDIA_CATALOG) {
+  assert.ok(asset.accessible_equivalent && asset.timing_labels.length > 0,
+    `${asset.key} lacks a non-audio equivalent`);
+  assert.ok((asset.transcript?.length ?? 0) > 0 || (asset.diagram_nodes?.length ?? 0) > 0,
+    `${asset.key} lacks a transcript or ordered diagram`);
+  assert.ok(sql.includes(`'${asset.key}'`), `database media authority lacks ${asset.key}`);
+  if (asset.audio_file && asset.audio_sha256) {
+    const payload = readFileSync(resolve('src/lib/morrow-media-assets', asset.audio_file));
+    assert.equal(createHash('sha256').update(payload).digest('hex'), asset.audio_sha256,
+      `${asset.key} audio custody hash drifted`);
+  }
+}
+for (const required of ['readMorrowCase', 'context.media.find', 'createHash', 'private, no-store',
+  'm03-captioned-voice-fragment.ogg', 'm11-current-voice-assembly.ogg']) {
+  assert.ok(mediaRouteSource.includes(required), `authenticated media route lacks ${required}`);
+}
 const copperlineRpc = sql.split('create or replace function public.morrow_record_copperline_event', 2)[1]
   .split('create table if not exists morrow_private.capability_grants', 2)[0];
 const duplicateBranch = copperlineRpc.split('if v_existing.event_key', 2)[1]
@@ -262,6 +323,8 @@ for (const required of ['Accessible attachment metadata', 'Temporary maintenance
 for (const required of ['prove_audit_chronology', 'Select retained record', 'first broken edge']) {
   assert.ok(caseActionsSource.includes(required), `audit chronology form lacks ${required}`);
 }
+assert.equal(caseActionsSource.includes("@/lib/morrow-copperline-case"), false,
+  'client-side form must not bundle the full server-owned progression/media model');
 for (const required of ['signInWithOtp', 'shouldCreateUser: false', 'MORROW_CASE_ROUTE',
   "requestOrigin !== requestUrl.origin", 'pendingCookies', 'response.cookies.set']) {
   assert.ok(loginActionSource.includes(required), `player login action lacks ${required}`);

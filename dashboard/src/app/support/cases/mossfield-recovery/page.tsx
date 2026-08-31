@@ -88,7 +88,34 @@ function CaseWorkbench({ context }: { context: MorrowCaseContext }) {
                 <time>{record.timestamp}</time><p>{record.summary}</p></li>;
             })}
           </ul>
-          <AuditChronologyForm enabled={!auditChronologyProven} proven={auditChronologyProven} />
+          <AuditChronologyForm enabled={!auditChronologyProven} proven={auditChronologyProven}
+            records={MORROW_AUDIT_RECORDS} />
+        </section> : null}
+
+        {context.media.length ? <section className="morrow-case-panel" aria-labelledby="media-heading">
+          <header><h2 id="media-heading">Earned media evidence</h2><span>first-party · hash-bound · accessible</span></header>
+          <div className="morrow-media-list">{context.media.map((asset) => <article key={asset.key}>
+            <header><div><b>{asset.title}</b><span>{asset.media_type.replace('_', ' ')}</span></div>
+              <code>{asset.key}</code></header>
+            <p>{asset.summary}</p>
+            <dl><div><dt>Source</dt><dd>{asset.source}</dd></div><div><dt>Custody</dt><dd>{asset.custody}</dd></div></dl>
+            {asset.audio_file ? <audio controls preload="none"
+              src={`/support/cases/mossfield-recovery/media/${encodeURIComponent(asset.key)}?format=audio`}>
+              Audio playback is optional; use the transcript below.
+            </audio> : null}
+            {asset.transcript?.length ? <details open><summary>Captioned transcript</summary>
+              <ol className="morrow-media-transcript">{asset.transcript.map((line) => <li key={`${line.at_ms}-${line.speaker}`}>
+                <time>{formatMediaTime(line.at_ms)}</time><b>{line.speaker}</b><span>{line.text}</span>
+              </li>)}</ol></details> : null}
+            {asset.diagram_nodes?.length ? <ol className="morrow-media-diagram" aria-label={`${asset.title} ordered diagram`}>
+              {asset.diagram_nodes.map((node) => <li key={node}>{node}</li>)}
+            </ol> : null}
+            <div className="morrow-media-timing" aria-label="Timing and state labels">
+              {asset.timing_labels.map((label) => <span key={label}>{label}</span>)}
+            </div>
+            <small><b>Equivalent:</b> {asset.accessible_equivalent}</small>
+            <a href={`/support/cases/mossfield-recovery/media/${encodeURIComponent(asset.key)}`}>Open authenticated evidence record &raquo;</a>
+          </article>)}</div>
         </section> : null}
 
         <section className="morrow-case-panel" aria-labelledby="updates-heading">
@@ -113,6 +140,11 @@ function CaseWorkbench({ context }: { context: MorrowCaseContext }) {
       </aside>
     </div>
   </article>;
+}
+
+function formatMediaTime(milliseconds: number): string {
+  const seconds = Math.floor(milliseconds / 1000);
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 function UnavailableCase({ state }: { state: Exclude<MorrowServerRead, MorrowCaseContext> }) {

@@ -1,7 +1,6 @@
 'use client';
 
 import { useActionState } from 'react';
-import { MORROW_AUDIT_RECORDS } from '@/lib/morrow-copperline-case';
 import { submitMorrowCaseAction, type MorrowCaseActionState } from './actions';
 
 const INITIAL: MorrowCaseActionState = { status: 'idle', message: 'No verification submitted in this session.' };
@@ -37,7 +36,13 @@ export function HandoffRecoveryForm({ enabled, recovered }: { enabled: boolean; 
   );
 }
 
-export function AuditChronologyForm({ enabled, proven }: { enabled: boolean; proven: boolean }) {
+type AuditRecordOption = { id: string; title: string; source: string };
+
+export function AuditChronologyForm({ enabled, proven, records }: {
+  enabled: boolean;
+  proven: boolean;
+  records: readonly AuditRecordOption[];
+}) {
   const [state, action, pending] = useActionState(submitMorrowCaseAction, INITIAL);
   if (proven) return <div className="morrow-audit-filed" role="status">
     <b>Five-record chronology authenticated.</b>
@@ -49,12 +54,12 @@ export function AuditChronologyForm({ enabled, proven }: { enabled: boolean; pro
       <label>Build the incident custody chain</label>
       <p id="audit-help">Place each retained record at one edge. A wrong filing reports the first broken edge and changes nothing.</p>
       <ol>
-        {MORROW_AUDIT_RECORDS.map((_, index) => <li key={index}>
+        {records.map((_, index) => <li key={index}>
           <label htmlFor={`audit-edge-${index + 1}`}>Edge {index + 1}</label>
           <select id={`audit-edge-${index + 1}`} name={`edge${index + 1}`} defaultValue="" required
             disabled={!enabled || pending}>
             <option value="" disabled>Select retained record</option>
-            {MORROW_AUDIT_RECORDS.map((record) => <option key={record.id} value={record.id}>
+            {records.map((record) => <option key={record.id} value={record.id}>
               {record.title} · {record.source}
             </option>)}
           </select>

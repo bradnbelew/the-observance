@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0-morrow-act6-copperline-local",
   "status": "local_contract_pass_live_supabase_open",
-  "completed_at": "2026-08-30T23:59:00-05:00",
-  "scope": "local TypeScript, Next.js, and additive SQL contract only",
+  "completed_at": "2026-08-30T23:18:55-05:00",
+  "scope": "local TypeScript, Next.js production build, and additive SQL contract only",
   "mechanic": {
     "event": "morrow.act6.audit_chronology_proven",
     "owner_surface": "copperline",
@@ -30,15 +30,15 @@
   "artifacts": {
     "schema": {
       "path": "morrow/db/schema-proposal.sql",
-      "sha256": "c78360cdd9177e501433a095d6e90d56ac76b24c2563c1d46ff09084873b2055"
+      "sha256": "cb5cc80541bb7c452dfac4c86963898fc049175208c629f93b0015042d3fa440"
     },
     "additive_migration": {
       "path": "supabase/migrations/20260830235900_morrow_copperline_audit_chronology.sql",
-      "sha256": "b3663d47588caff2763404b3ef6859d6f154ee1c4849778dad789a04da3ed81c"
+      "sha256": "f8bd5ea9e9c0f3a37ec197d4da94f2ca72eec368f2d9b1a5c2b814840db72c89"
     },
     "projection_model": {
       "path": "dashboard/src/lib/morrow-copperline-case.ts",
-      "sha256": "a1d683b92e2eec7b0bef967bfa225ed653312e6c6edae921dde6e8326d339be5"
+      "sha256": "fc0d6533473205a0318c9b5f9291830e4eff2f74a1a3beb6110b31705a7cd61e"
     },
     "server_action": {
       "path": "dashboard/src/app/support/cases/mossfield-recovery/actions.ts",
@@ -46,11 +46,11 @@
     },
     "accessible_form": {
       "path": "dashboard/src/app/support/cases/mossfield-recovery/CaseActions.tsx",
-      "sha256": "861a5d158153f1fbf6b8a7cb1b6859ebb70cbb285187b5b56160089d2351510a"
+      "sha256": "ab4c77683978638a6ee7e08deadeef5e47ccf12b1bbcf447d22a3c055e3a02d4"
     },
     "selftest": {
       "path": "dashboard/src/lib/morrow-copperline-case.selftest.ts",
-      "sha256": "64a192a774d118f1f17881a2b316673a44157861cda56fad68ff01cd0c998787"
+      "sha256": "1448f8be06f432aa00eddc06fe850c54e0fb2846c1ced9ffcf4117478786196c"
     }
   }
 }

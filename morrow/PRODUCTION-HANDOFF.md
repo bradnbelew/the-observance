@@ -67,7 +67,8 @@ Implemented and verified:
   tagged physical snapshot-hash transport, separate reconstruction/access receipts, nine redundant
   state lamps, eleven owned entities, crash recovery, and 1/2/6-player authority coverage. Its exact
   Paper build/restart proof is retained under `morrow/rehearsal/cold-storage-runtime`; human dialogue,
-  item-bridge, caption/waveform, and comparison media remain open. The filed provenance says the
+  item-bridge, and in-client caption/waveform playback remain open. An earned, transcript-complete
+  Copperline current-voice assembly now exists locally. The filed provenance says the
   original process closed and the current process is reconstructed without resolving personhood
 - M12 Branch Governance is implemented as an 8,325-cell finale with a bounded non-dexterity rollback
   wave, five accumulated-evidence anchors, four physical policy slots, four predicate-gated endings,
@@ -75,7 +76,8 @@ Implemented and verified:
   entities, crash recovery, and 1/2/6-player coverage. Invalid policies name missing categories without
   consuming evidence, and no final button can bypass prior receipts or physical configuration. Exact
   Paper build/restart evidence is retained under `morrow/rehearsal/branch-governance-runtime`; complete
-  human finale traversal, dialogs, pacing, accessibility, and ending media remain open
+  human finale traversal, dialogs, pacing, and accessibility remain open. All four ending records now
+  have earned-only Copperline codas locally; authenticated live delivery remains open
 - Copperline Act 0 support case at `/support/cases/mossfield-recovery`: an unresolved hosting-recovery
   workbench with an exact accessible text attachment and SHA-256 custody check, authenticated short-token
   handoff recovery, release/player/campaign-bound RLS reads, player-owned Server Actions, and explicit
@@ -88,6 +90,15 @@ Implemented and verified:
   future-spoiler omission, raw-ending/private-dialogue exclusion, local-only raw replay samples,
   duplicate recovery, and collision halt. The Discord-private contradiction is intentionally absent
   because its catalog projection never includes Copperline
+- the actual database projector now carries all twenty-five Copperline-owned events through the Act 7
+  coda, rather than stopping at Act 2. It emits ordered `case_progress` and earned-only `case_media`
+  projections for every linked player; the page model fails closed on unknown, premature, out-of-order,
+  duplicate, or multiple-ending media keys
+- eight canonical earned-media records: two real local OGG voice assemblies with full visible transcripts,
+  two ordered text-equivalent voxel diagrams, and four mutually exclusive ending codas. Audio is served
+  only through an authenticated case route after an earned key is present, is SHA-256 verified at read
+  time, and has a complete no-audio equivalent. Locked media and ending copy are excluded from the client
+  component bundle. Local contract evidence is retained under `morrow/rehearsal/media/latest.json`
 - an earned-only Act 6 Copperline chronology puzzle with five shuffled retained records, an accessible
   ordered-edge form, first-broken-edge feedback, exact `dual_session_consciousness_proven` prerequisite,
   idempotent group receipt, and a payload that explicitly leaves continuity unresolved. Its additive
@@ -121,8 +132,9 @@ Implemented and verified:
   required complete graphical-client and remaining service receipts. A real dummy offline 1.21.11 client
   now proves bounded safe entry without suffocation, and the isolated Supabase RLS/concurrency/rollback
   lane is proven. The authenticated browser now proves owner-only reads, Act 0 writes, wrong-token
-  refusal, and the original six Act 1/2 ticket cards. The expanded Act 1–7 card model is covered by
-  local self-tests and a production build but still needs the authenticated browser rehearsal. A
+  refusal, and the original six Act 1/2 ticket cards. The expanded Act 1–7 card/media model and full
+  database projector are covered by local self-tests and a production build but still need the
+  authenticated browser rehearsal. A
   private Supabase Cron schedule now proves automatic ten-second
   Copperline projection, health/run receipts, failure recovery, and clean disable. An exact-window
   Windows 10 fallback now proves one joined Room 04 readability checkpoint and one native terminal
@@ -200,7 +212,8 @@ native-dialog input, full resource-pack decline parity, cue-by-cue audio-disable
 without operator narration. Bounded full-inventory safe entry/rejoin and owned cleanup now pass with real
 one-, two-, and six-client cohorts, but this is not the operator-free human playthrough. The database lane is now proven on
 a paused validation project. The automatic Copperline database worker and real Supabase Cron schedule
-are live-proven for ordered two-player delivery, private actor receipts, retry/reclaim, payload
+are live-proven for the historically rehearsed Act 0–2 ordered two-player delivery, private actor receipts,
+retry/reclaim, payload
 isolation, payload-free health, and clean disable. A browser-requested Supabase magic link reached a
 real disposable inbox and `/verify` returned an auth code. The callback then exposed
 `pkce_code_verifier_not_found`: the Server Action had not preserved its verifier cookie. The login
@@ -268,6 +281,9 @@ same mechanic.
 - No production service, world, Discord server, or database is mutated from this checkpoint.
 - The numbered migration is generated and isolated-rehearsed, but has not been applied to production;
   a fresh verified backup and explicit production authorization are still required.
+- The additive Act 6 chronology, full Act 1–7 Copperline projector, and earned-media seed are locally
+  audited and build-clean but have not been executed on the isolated validation project or proven through
+  an authenticated browser session.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
   connects and safe entry is runtime-proven, but it remains unobservable through the Windows capture
   helper. The Morrow display body, Paper

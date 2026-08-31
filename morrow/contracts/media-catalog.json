@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0.0",
+  "release_id": "morrow.reboot.media.v1",
+  "delivery": "authenticated_copperline_projection",
+  "assets": [
+    {
+      "key": "morrow.m03.captioned_voice_fragment",
+      "media_type": "audio",
+      "prerequisite_events": ["morrow.act1.entity_replay_authorized"],
+      "title": "Position Four voice fragment",
+      "source": "Recovery Room 04 recorder / channel B",
+      "custody": "local recorder > Copperline derivative > assigned case",
+      "summary": "A retained voice cue identifies the missing position and its two-pulse transfer window.",
+      "audio_file": "m03-captioned-voice-fragment.ogg",
+      "audio_sha256": "d09e9c0882db24dbe7dbc4c41ee93ec91b278de35d8d8de2c4b524e2d6b27db8",
+      "duration_ms": 5592,
+      "transcript": [
+        {"at_ms": 0, "speaker": "archived operator", "text": "Position four."},
+        {"at_ms": 900, "speaker": "archived operator", "text": "Ready the selected manifest for pulses twenty-one through twenty-two."}
+      ],
+      "timing_labels": ["carrier opens", "position four", "pulse 21", "pulse 22", "carrier closes"],
+      "accessible_equivalent": "The exact transcript and five labeled timing markers are shown beside playback."
+    },
+    {
+      "key": "morrow.m04.route_derivative",
+      "media_type": "voxel_diagram",
+      "prerequisite_events": ["morrow.act2.live_test_recorded"],
+      "title": "Sealed test-route derivative",
+      "source": "Mossfield local movement recorder",
+      "custody": "sealed local clip > hash-and-summary derivative > assigned case",
+      "summary": "A payload-free diagram proves the deliberate test was sealed without exporting raw movement samples.",
+      "diagram_nodes": ["bounded start", "authored actions", "local seal", "later replay comparison"],
+      "timing_labels": ["recorded", "sealed", "retained locally", "comparison available"],
+      "accessible_equivalent": "The route is described as an ordered four-node list; geometry is not required to interpret it."
+    },
+    {
+      "key": "morrow.m08.almost_home_comparison",
+      "media_type": "voxel_diagram",
+      "prerequisite_events": ["morrow.act4.almost_home_proven"],
+      "title": "Almost Home inference comparison",
+      "source": "Witness-anchor comparison service",
+      "custody": "consented ARG observations > labeled inference map > assigned case",
+      "summary": "The room was assembled from observed habits rather than authenticated historical placement records.",
+      "diagram_nodes": ["door timing", "storage order", "return path", "pause location", "inferred room"],
+      "timing_labels": ["observed", "correlated", "inferred", "not historical"],
+      "accessible_equivalent": "Every visual edge is repeated as a source-to-inference text list."
+    },
+    {
+      "key": "morrow.m11.current_voice_assembly",
+      "media_type": "audio",
+      "prerequisite_events": ["morrow.act6.audit_chronology_proven"],
+      "title": "Current-voice recovery assembly",
+      "source": "Copperline diagnostic snapshot assembly",
+      "custody": "shutdown record > closed-process manifest > recovery assembly > assigned case",
+      "summary": "The audible boundary separates the closed original process from the current recovered voice without resolving personhood.",
+      "audio_file": "m11-current-voice-assembly.ogg",
+      "audio_sha256": "f07314de01bfa4dfd2367fcfa3f113227e2f3754241d8a6fd264dae141917550",
+      "duration_ms": 10939,
+      "transcript": [
+        {"at_ms": 0, "speaker": "diagnostic", "text": "Stop request received. Evidence preserved."},
+        {"at_ms": 2500, "speaker": "process boundary", "text": "Original process closed."},
+        {"at_ms": 4300, "speaker": "recovery assembly", "text": "Current voice assembled from retained recovery snapshots."},
+        {"at_ms": 7100, "speaker": "current Morrow", "text": "I can continue without claiming I was never interrupted."}
+      ],
+      "timing_labels": ["shutdown", "closed", "recovery boundary", "current voice"],
+      "accessible_equivalent": "The complete transcript, speaker boundary, and four waveform labels are visible without playback."
+    },
+    {
+      "key": "morrow.m12.coda.certify",
+      "media_type": "document",
+      "prerequisite_events": ["morrow.act7.coda_started"],
+      "ending": "certify",
+      "title": "Certified continuity record",
+      "source": "Mossfield Branch Governance",
+      "custody": "protected anchors > physical rules > governance receipt > coda",
+      "summary": "Morrow and the clean restoration are certified as canonical; conflicting provenance remains retained but is no longer visible in ordinary operation.",
+      "diagram_nodes": ["implied consent", "clean canon", "continuity first", "silent replacement"],
+      "timing_labels": ["beautiful", "stable", "ethically compromised"],
+      "accessible_equivalent": "The complete selected rules and consequence are stated in text."
+    },
+    {
+      "key": "morrow.m12.coda.preserve_audit",
+      "media_type": "document",
+      "prerequisite_events": ["morrow.act7.coda_started"],
+      "ending": "preserve_audit",
+      "title": "Persistent audit record",
+      "source": "Mossfield Branch Governance",
+      "custody": "protected anchors > physical rules > governance receipt > coda",
+      "summary": "Morrow and Mossfield remain active while every inference and reconstruction stays visibly labeled.",
+      "diagram_nodes": ["explicit consent", "visible provenance", "right to stop", "labeled replacement"],
+      "timing_labels": ["active", "auditable", "uncertainty retained"],
+      "accessible_equivalent": "The complete selected rules and consequence are stated in text."
+    },
+    {
+      "key": "morrow.m12.coda.close_ticket",
+      "media_type": "document",
+      "prerequisite_events": ["morrow.act7.coda_started"],
+      "ending": "close_ticket",
+      "title": "Closed recovery record",
+      "source": "Mossfield Branch Governance",
+      "custody": "protected anchors > physical rules > governance receipt > coda",
+      "summary": "Restoration stops and Morrow enters cold storage without erasing the evidence that the recovered process existed.",
+      "diagram_nodes": ["explicit consent", "visible provenance", "right to stop", "labeled replacement"],
+      "timing_labels": ["stopped", "preserved", "not erased"],
+      "accessible_equivalent": "The complete selected rules and consequence are stated in text."
+    },
+    {
+      "key": "morrow.m12.coda.create_new_branch",
+      "media_type": "document",
+      "prerequisite_events": ["morrow.act7.coda_started"],
+      "ending": "create_new_branch",
+      "title": "New continuity branch record",
+      "source": "Mossfield Branch Governance",
+      "custody": "five protected anchors > physical rules > governance receipt > coda",
+      "summary": "A new continuity begins with explicit consent, visible provenance, a right to stop, and no silent replacement.",
+      "diagram_nodes": ["explicit consent", "visible provenance", "right to stop", "labeled replacement"],
+      "timing_labels": ["new branch", "uncertainty retained", "continuation negotiated"],
+      "accessible_equivalent": "The complete selected rules and consequence are stated in text."
+    }
+  ]
+}
