@@ -1,0 +1,213 @@
+{
+  "clients": {
+    "first": [
+      {
+        "client_log_sha256": "079470c61b4a3d5e2b7b84a3fab3fa07b1b9f426e39411776c12f968beaa715e",
+        "receipt": "first/runtime-six-c8e47ed-p01.json",
+        "receipt_sha256": "1f2550aa74b85645b1e5fa032aee5e3b45dec8fb626bf87f7197f96c1321cc97",
+        "run_id": "runtime-six-c8e47ed-p01",
+        "username": "MorrowW01",
+        "uuid": "3d9748bbb2845bdd9f4affa9962a2dd6",
+        "wrapper_output_sha256": "3dc45bbb11efb65b33fc7b4d7b389ab48816213850f6e91f36b0780bde0260b3"
+      },
+      {
+        "client_log_sha256": "e8eef6ef37624d2b8b1adafa741e5cd42200c2936c896ab2e87b71570f647999",
+        "receipt": "first/runtime-six-c8e47ed-p02.json",
+        "receipt_sha256": "32d7acf5a332c67a2931995b8a48857119f8cf7f1907b0fa8341f205d4bf1195",
+        "run_id": "runtime-six-c8e47ed-p02",
+        "username": "MorrowW02",
+        "uuid": "721b8d4ab8985510957e121917eb6410",
+        "wrapper_output_sha256": "ceca5da6baa8801998faafa0cc37588744867d17f2e5fecf4e8cd9a49d23c3f7"
+      },
+      {
+        "client_log_sha256": "c0166d164c0cff71cec5ab662f73ec53762f5d7b94d09bb60cf98c69182e35b9",
+        "receipt": "first/runtime-six-c8e47ed-p03.json",
+        "receipt_sha256": "2658c7e8e540ff3960189ead0e1f4fba24056e0879133d3d76765ebca2d6d684",
+        "run_id": "runtime-six-c8e47ed-p03",
+        "username": "MorrowW03",
+        "uuid": "a18681c2289c52338a94e452477c3c5d",
+        "wrapper_output_sha256": "613882a18a176373ae665f00d0ed763b2e370389f10e9c4589c54f486e0ce87d"
+      },
+      {
+        "client_log_sha256": "92f6e9f7319f48af9a10e92f55579ff2c1a4ecf4ef093a7bd1d1e5d1ed837a99",
+        "receipt": "first/runtime-six-c8e47ed-p04.json",
+        "receipt_sha256": "d25af67ed3d7c9f99c39b04d30b9a07939593b808cd7b7c80f70705b4bfbe151",
+        "run_id": "runtime-six-c8e47ed-p04",
+        "username": "MorrowW04",
+        "uuid": "18fc4fde384b5849864f8cd30ede9228",
+        "wrapper_output_sha256": "f3ec9f0cc38560e5076b9b3ac213d76c3d7b7213f651c887ae001307b16e16b0"
+      },
+      {
+        "client_log_sha256": "f37c01f1d6f5517cfb54fa9698b1bf76e29fadf03c477ff3df82ffc08cfe9651",
+        "receipt": "first/runtime-six-c8e47ed-p05.json",
+        "receipt_sha256": "00d6df5205b8601ada2cf1a527387a53918528a0dff5f6652bf7b5785cdb7e2f",
+        "run_id": "runtime-six-c8e47ed-p05",
+        "username": "MorrowW05",
+        "uuid": "a5879cd271585cbba4a70aab917c3b0f",
+        "wrapper_output_sha256": "caae8f3836406f89e2abd8dc1b1bc5d289927ecfaca67e6d2b9f85fe9576c86d"
+      },
+      {
+        "client_log_sha256": "6b98025228c90a86c1249cefeb2fa58be1a494e978d92ce91d6f0c3a616f912c",
+        "receipt": "first/runtime-six-c8e47ed-p06.json",
+        "receipt_sha256": "074e62dbdec6a8caa414744a336cc274cbd2a0fea185a4572054d3a8fa1a3477",
+        "run_id": "runtime-six-c8e47ed-p06",
+        "username": "MorrowW06",
+        "uuid": "7922ba25e4425210a2645c74c73cdcb4",
+        "wrapper_output_sha256": "7de4652f15b6c0901e011ed0931e7cef9caab932196def275f838b06f3a4bdff"
+      }
+    ],
+    "restart": [
+      {
+        "client_log_sha256": "17d93314ac2b194d3a99204f012c5d2916e7e999bcd04590ca1241db32d7cdb5",
+        "receipt": "restart/runtime-six-c8e47ed-p01.json",
+        "receipt_sha256": "e04823c65776a287216dd467f7880403736ba20dcc0e8041f17c96046428810b",
+        "run_id": "runtime-six-c8e47ed-p01",
+        "username": "MorrowW01",
+        "uuid": "3d9748bbb2845bdd9f4affa9962a2dd6",
+        "wrapper_output_sha256": "073fa6d0a4e08a1dc71c750cf2ff29dc4eaaaa29df8a06d9e64de223a72914ad"
+      },
+      {
+        "client_log_sha256": "06029971d4485aa617139abf5d46d7f6d0db2f41f997f69aabdf99d260ca92e3",
+        "receipt": "restart/runtime-six-c8e47ed-p02.json",
+        "receipt_sha256": "6d47dbb5953cabeb037195b36c41fbbfb537b4cbd084c2e8ddda6e000267e416",
+        "run_id": "runtime-six-c8e47ed-p02",
+        "username": "MorrowW02",
+        "uuid": "721b8d4ab8985510957e121917eb6410",
+        "wrapper_output_sha256": "b1a83c43c07af80a3d2cde9da5fedbdd77a3cb37fb74c3d3e29265a336ff7750"
+      },
+      {
+        "client_log_sha256": "d438eda9426131cfbce7afcd99ff47595c6888fc8fc86b5226507366b89d755b",
+        "receipt": "restart/runtime-six-c8e47ed-p03.json",
+        "receipt_sha256": "ba1d5f073e35dc5207d38b126fd9c97940a1f6fcb0eb3cc5e47fe6b115633abd",
+        "run_id": "runtime-six-c8e47ed-p03",
+        "username": "MorrowW03",
+        "uuid": "a18681c2289c52338a94e452477c3c5d",
+        "wrapper_output_sha256": "dc4d025012930fc044c55cc41a2c701b8ad2190cea6a051cb48dce48a7ff6547"
+      },
+      {
+        "client_log_sha256": "4db8a72cbb5604e416ce5c5658ac7e5050d28046862e82dae36809aed20c3033",
+        "receipt": "restart/runtime-six-c8e47ed-p04.json",
+        "receipt_sha256": "201ede962fe043271fe2b68fc6738dea2bbc3111758f3b921379c8e066e38887",
+        "run_id": "runtime-six-c8e47ed-p04",
+        "username": "MorrowW04",
+        "uuid": "18fc4fde384b5849864f8cd30ede9228",
+        "wrapper_output_sha256": "1b20a48d38d85c7d8d267d0702617d539d822175863ccb7d443d0f99e124cccb"
+      },
+      {
+        "client_log_sha256": "01173f381c7f6d479cc13edee01e49860432756f70268cf4905377e302b6ab80",
+        "receipt": "restart/runtime-six-c8e47ed-p05.json",
+        "receipt_sha256": "a9307fb84900459bbef7ba9f04f81e017e27de2c04de02f7b31c01acd93196a9",
+        "run_id": "runtime-six-c8e47ed-p05",
+        "username": "MorrowW05",
+        "uuid": "a5879cd271585cbba4a70aab917c3b0f",
+        "wrapper_output_sha256": "d1d8cdd2236537bb8990e2c3762586c2a0e9779e0c5f638dab4fa496e7e37acd"
+      },
+      {
+        "client_log_sha256": "bac78a8403e6b368508ed3c9b5dfe34915b75c62fe9638362f3eeeb8f11b791f",
+        "receipt": "restart/runtime-six-c8e47ed-p06.json",
+        "receipt_sha256": "be9b4c16ccfb011894e973b4afd3d4268fc795193f704b9f6e3eff002c3db486",
+        "run_id": "runtime-six-c8e47ed-p06",
+        "username": "MorrowW06",
+        "uuid": "7922ba25e4425210a2645c74c73cdcb4",
+        "wrapper_output_sha256": "fd5ea3c78e9583135b1cc728f72951a36e182132047188b2961129e649bb6650"
+      }
+    ]
+  },
+  "cohort_size": 6,
+  "completed_at": "2026-08-31T00:59:58Z",
+  "journal": {
+    "head_sha256": "97fc2c773b651f0c1918bd5ce84980ef3fcfdc98316e97fc4e55160069d5170a",
+    "journal_sha256": "4106ff137f622070cec70eba42ee825a4a2220716b83d5fdbd1e198d8585ac54",
+    "projected_sequence": 4,
+    "sequence": 4
+  },
+  "production_enablement": "blocked",
+  "proof": {
+    "client_processes_closed": true,
+    "first_inventory_count_lines": [
+      "[19:59:19 INFO]: Found 2304 matching item(s) on player MorrowW01",
+      "[19:59:19 INFO]: Found 2304 matching item(s) on player MorrowW02",
+      "[19:59:19 INFO]: Found 2304 matching item(s) on player MorrowW03",
+      "[19:59:19 INFO]: Found 2304 matching item(s) on player MorrowW04",
+      "[19:59:19 INFO]: Found 2304 matching item(s) on player MorrowW05",
+      "[19:59:19 INFO]: Found 2304 matching item(s) on player MorrowW06"
+    ],
+    "full_human_playthrough_proven": false,
+    "input_injected": false,
+    "inventory_fixture": "36 slots x 64 minecraft:stone",
+    "inventory_items_per_player_after_restart": 2304,
+    "inventory_items_per_player_before_disconnect": 2304,
+    "morrow_cleanup_logged_twice": true,
+    "paper_processes_closed": true,
+    "paper_restart_completed": true,
+    "production_mutated": false,
+    "projector_redelivery_after_restart": false,
+    "real_vanilla_clients_joined_concurrently": true,
+    "restart_inventory_count_lines": [
+      "> > > [19:59:57 INFO]: Found 2304 matching item(s) on player MorrowW01",
+      "[19:59:57 INFO]: Found 2304 matching item(s) on player MorrowW02",
+      "[19:59:57 INFO]: Found 2304 matching item(s) on player MorrowW03",
+      "[19:59:57 INFO]: Found 2304 matching item(s) on player MorrowW04",
+      "[19:59:57 INFO]: Found 2304 matching item(s) on player MorrowW05",
+      "[19:59:57 INFO]: Found 2304 matching item(s) on player MorrowW06"
+    ],
+    "safe_entry_lines": [
+      "[19:59:07 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW01 reason=join action=recovered from=0,-63,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:17 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW02 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:13 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW03 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:08 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW04 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:17 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW05 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:10 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW06 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0"
+    ],
+    "safe_rejoin_lines": [
+      "[19:59:55 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW01 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:51 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW02 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:56 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW03 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:51 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW04 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:57 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW05 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:59:57 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW06 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0"
+    ],
+    "same_uuid_after_restart": true
+  },
+  "remaining_gate": "complete the operator-free 60-90 minute cohort slice with continuous media and independent observer review",
+  "schema_version": "1.0.0-morrow-real-client-cohort-runtime",
+  "server": {
+    "bind": "127.0.0.1",
+    "bootstrap_sections": {
+      "cache": {
+        "bytes": 56327581,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\cache",
+        "tree_sha256": "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a"
+      },
+      "libraries": {
+        "bytes": 76378978,
+        "file_count": 114,
+        "source": "D:\\the-observance\\build\\paper-smoke\\libraries",
+        "tree_sha256": "0885507c46c6eb2df137b152d38bfdce18a035507302480570af25e5eeee1d5a"
+      },
+      "versions": {
+        "bytes": 29560892,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\versions",
+        "tree_sha256": "1e9b7e14f276cd183ed3f134f2a1b46652a4d15aff9573ea35501a543c445c4a"
+      }
+    },
+    "first_log": "morrow-cohort-first.log",
+    "first_log_sha256": "6009ecc2707591f4f150fba9b0a5bda81b79e54d0e59fce371c73db04c5d843a",
+    "first_ready": "[19:58:48 INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=disabled body_entities=2 static_entities=26 replay_entities=6",
+    "first_room": "[19:58:48 INFO]: [Observance] MORROW_ROOM04_READY status=BUILT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=e2badcea7ce302968d420fd8da05b81811789382b0592373a72da5004d956f57 blocks=1144",
+    "ingest_port": 29494,
+    "online_mode": false,
+    "paper_port": 25618,
+    "production_credentials_loaded": false,
+    "restart_log": "morrow-cohort-restart.log",
+    "restart_log_sha256": "9454900e18265c78168fa46e76f5dafe234645d308e9fb26b1fcd570b802d5f9",
+    "restart_ready": "[19:59:30 INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=disabled body_entities=2 static_entities=26 replay_entities=6",
+    "restart_room": "[19:59:30 INFO]: [Observance] MORROW_ROOM04_READY status=ALREADY_PRESENT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=e2badcea7ce302968d420fd8da05b81811789382b0592373a72da5004d956f57 blocks=1144",
+    "tls_certificate_sha256": "ea301397dd6260d1c0b7af55cb1dc7fbdb59723e554a803414609d0abd09b18c"
+  },
+  "source_commit": "c8e47ed4b6600f7f4f6adf594509da07cd23eaf4",
+  "started_at": "2026-08-31T00:58:33Z",
+  "status": "bounded_join_inventory_restart_cleanup_pass_full_playthrough_open"
+}

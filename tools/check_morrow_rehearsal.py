@@ -306,6 +306,7 @@ def validate() -> None:
         "resource_pack_checker", "resource_pack_receipt",
         "resource_pack_visual_checker", "resource_pack_visual_receipt",
         "audio_accessibility_checker", "audio_accessibility_receipt",
+        "cohort_runtime_checker", "cohort_runtime_receipt",
         "latest_attempt",
         "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
@@ -366,6 +367,22 @@ def validate() -> None:
             and len(audio["lanes"]["silent"]["sound_categories_zeroed"]) == 11
             and audio["production_enablement"] == "blocked",
             "audio accessibility checkpoint was omitted or full cue parity was overclaimed")
+    cohort_runtime_result = subprocess.run(
+        [sys.executable, str(ROOT / client["cohort_runtime_checker"])],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(cohort_runtime_result.returncode == 0,
+            f"client cohort runtime checkpoint failed: "
+            f"{cohort_runtime_result.stderr.strip()}")
+    cohort_runtime = load(ROOT / client["cohort_runtime_receipt"])
+    require(client["cohort_runtime_checkpoint_status"]
+            == "bounded_join_inventory_restart_cleanup_pass_full_playthrough_open"
+            and cohort_runtime["status"]
+                == "bounded_join_inventory_restart_cleanup_pass_full_playthrough_open"
+            and set(cohort_runtime["cohorts"]) == {"one", "two", "six"}
+            and cohort_runtime["boundaries"]["full_human_playthrough_proven"] is False
+            and cohort_runtime["production_enablement"] == "blocked",
+            "client cohort runtime checkpoint was omitted or full playthrough was overclaimed")
     attempt = load(ROOT / client["latest_attempt"])
     require(attempt["client_lane_status"] == "unproven"
             and attempt["no_blind_input"] is True

@@ -1,0 +1,125 @@
+{
+  "clients": {
+    "first": [
+      {
+        "client_log_sha256": "b92f7d33d05c338afc6e4b4a1d1c99faef31aac55e9905beeb4282aab26e84d3",
+        "receipt": "first/runtime-two-c8e47ed-p01.json",
+        "receipt_sha256": "456ab8a2e20817443477681f6a273fff17d250d0fa024f43c96cb3290091a77d",
+        "run_id": "runtime-two-c8e47ed-p01",
+        "username": "MorrowW01",
+        "uuid": "79d7aff0c8b45d54848f34bee8b17ef4",
+        "wrapper_output_sha256": "35704b53787fde441cd7264ba56bbc68c54421bb44866c224a77f2be204cc88b"
+      },
+      {
+        "client_log_sha256": "971a35118f49ca98f19987d665408637383300dabb2fcc72e0264839d54c0741",
+        "receipt": "first/runtime-two-c8e47ed-p02.json",
+        "receipt_sha256": "a9125954b4b825ba55ceeed4065fd94336e8572c94986854ce9d17764ff414ee",
+        "run_id": "runtime-two-c8e47ed-p02",
+        "username": "MorrowW02",
+        "uuid": "5b1503f1e2185266843d5bd7ee717775",
+        "wrapper_output_sha256": "0bbf8f1825e972a12110ea14b0785201430060e072973ce053201581528e5c4d"
+      }
+    ],
+    "restart": [
+      {
+        "client_log_sha256": "be5171f70b9fded93eacaf520641eef10db3d5404a5830616fc5a228a11c23bf",
+        "receipt": "restart/runtime-two-c8e47ed-p01.json",
+        "receipt_sha256": "7333b9fc243993836e65a3c7e8f87638b8095be7550a90457e5338ac7199293c",
+        "run_id": "runtime-two-c8e47ed-p01",
+        "username": "MorrowW01",
+        "uuid": "79d7aff0c8b45d54848f34bee8b17ef4",
+        "wrapper_output_sha256": "a6c67f2acfbf470e43a15528d53e84d4bc7670de08729e6d034fa8405a5e3f99"
+      },
+      {
+        "client_log_sha256": "4894be13fea56a5b2643ddedbb7aee720e69ce5b02cae85c822ea5877933fa4f",
+        "receipt": "restart/runtime-two-c8e47ed-p02.json",
+        "receipt_sha256": "27c103d2df48c8bb70e1121698df1e165017104b53804e92f7ef1eed2594242b",
+        "run_id": "runtime-two-c8e47ed-p02",
+        "username": "MorrowW02",
+        "uuid": "5b1503f1e2185266843d5bd7ee717775",
+        "wrapper_output_sha256": "8c594ef67700030eb3911c6310727d5c5940315842890167d248b4d2b85bc49a"
+      }
+    ]
+  },
+  "cohort_size": 2,
+  "completed_at": "2026-08-31T00:58:12Z",
+  "journal": {
+    "head_sha256": "97fc2c773b651f0c1918bd5ce84980ef3fcfdc98316e97fc4e55160069d5170a",
+    "journal_sha256": "4106ff137f622070cec70eba42ee825a4a2220716b83d5fdbd1e198d8585ac54",
+    "projected_sequence": 4,
+    "sequence": 4
+  },
+  "production_enablement": "blocked",
+  "proof": {
+    "client_processes_closed": true,
+    "first_inventory_count_lines": [
+      "[19:57:48 INFO]: Found 2304 matching item(s) on player MorrowW01",
+      "[19:57:48 INFO]: Found 2304 matching item(s) on player MorrowW02"
+    ],
+    "full_human_playthrough_proven": false,
+    "input_injected": false,
+    "inventory_fixture": "36 slots x 64 minecraft:stone",
+    "inventory_items_per_player_after_restart": 2304,
+    "inventory_items_per_player_before_disconnect": 2304,
+    "morrow_cleanup_logged_twice": true,
+    "paper_processes_closed": true,
+    "paper_restart_completed": true,
+    "production_mutated": false,
+    "projector_redelivery_after_restart": false,
+    "real_vanilla_clients_joined_concurrently": true,
+    "restart_inventory_count_lines": [
+      "[19:58:11 INFO]: Found 2304 matching item(s) on player MorrowW01",
+      "[19:58:11 INFO]: Found 2304 matching item(s) on player MorrowW02"
+    ],
+    "safe_entry_lines": [
+      "[19:57:47 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW01 reason=join action=recovered from=0,-63,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:57:47 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW02 reason=join action=recovered from=0,-63,-2 to=0,80,-2 inventory_mutations=0"
+    ],
+    "safe_rejoin_lines": [
+      "[19:58:11 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW01 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0",
+      "[19:58:11 INFO]: [Observance] MORROW_PLAYER_SAFE_ENTRY player=MorrowW02 reason=join action=accepted from=0,80,-2 to=0,80,-2 inventory_mutations=0"
+    ],
+    "same_uuid_after_restart": true
+  },
+  "remaining_gate": "complete the operator-free 60-90 minute cohort slice with continuous media and independent observer review",
+  "schema_version": "1.0.0-morrow-real-client-cohort-runtime",
+  "server": {
+    "bind": "127.0.0.1",
+    "bootstrap_sections": {
+      "cache": {
+        "bytes": 56327581,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\cache",
+        "tree_sha256": "9a50d89744678d4abf38331ae89fa2c507fbec3bf739f1ce8783863fc289f50a"
+      },
+      "libraries": {
+        "bytes": 76378978,
+        "file_count": 114,
+        "source": "D:\\the-observance\\build\\paper-smoke\\libraries",
+        "tree_sha256": "0885507c46c6eb2df137b152d38bfdce18a035507302480570af25e5eeee1d5a"
+      },
+      "versions": {
+        "bytes": 29560892,
+        "file_count": 1,
+        "source": "D:\\the-observance\\build\\paper-smoke\\versions",
+        "tree_sha256": "1e9b7e14f276cd183ed3f134f2a1b46652a4d15aff9573ea35501a543c445c4a"
+      }
+    },
+    "first_log": "morrow-cohort-first.log",
+    "first_log_sha256": "0f6958d9abab15604e0bb3b7236b04157aead0927b1ae4340f28c2fbb1a5d7a7",
+    "first_ready": "[19:57:36 INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=disabled body_entities=2 static_entities=26 replay_entities=6",
+    "first_room": "[19:57:36 INFO]: [Observance] MORROW_ROOM04_READY status=BUILT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=f0176a4bbb88cc6b3c150be4c1b4fe149e8dbb967999a274fbb0da03db9264b7 blocks=1144",
+    "ingest_port": 29493,
+    "online_mode": false,
+    "paper_port": 25617,
+    "production_credentials_loaded": false,
+    "restart_log": "morrow-cohort-restart.log",
+    "restart_log_sha256": "b8055517d46eba03f9470d19bd9b0ea33f5421dfa1cc0790ac08f7da97d16224",
+    "restart_ready": "[19:57:59 INFO]: [Observance] MORROW_RUNTIME_READY release=morrow.rehearsal.c40f916.paper.v1 journal_events=3 projector_state=IDLE resource_pack=disabled body_entities=2 static_entities=26 replay_entities=6",
+    "restart_room": "[19:57:59 INFO]: [Observance] MORROW_ROOM04_READY status=ALREADY_PRESENT manifest=9831893bf03387b6c59b3835b648f056aafd67e6e194f3ade0282a7192fff41a snapshot=f0176a4bbb88cc6b3c150be4c1b4fe149e8dbb967999a274fbb0da03db9264b7 blocks=1144",
+    "tls_certificate_sha256": "22abfd4a77d7722ab7eab9d53156dc2de3430d7eb92d640265501511f6bc6d21"
+  },
+  "source_commit": "c8e47ed4b6600f7f4f6adf594509da07cd23eaf4",
+  "started_at": "2026-08-31T00:57:21Z",
+  "status": "bounded_join_inventory_restart_cleanup_pass_full_playthrough_open"
+}

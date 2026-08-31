@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0.0-morrow-real-client-cohort-runtime-checkpoint",
+  "status": "bounded_join_inventory_restart_cleanup_pass_full_playthrough_open",
+  "scope": "owned loopback vanilla clients joined concurrently, received mutation-free safe entry, retained full main inventories across Paper restart, and closed cleanly",
+  "cohorts": {
+    "one": {
+      "size": 1,
+      "source_commit": "65ab5de3b87f50ba1d5170238ab382534301a7f2",
+      "receipt": "morrow/rehearsal/client-cohort-runtime/65ab5de/one/cohort-runtime-rehearsal.json",
+      "receipt_sha256": "27a951486cf4fe4a81ddb938b3d17d5dd1a1874d831f9a8f74383759fce38c6b",
+      "producer": {
+        "path": "tools/run_morrow_client_cohort_runtime_rehearsal.py",
+        "sha256": "eedace739f07b04153c484b973b1fe050444576cbefce88aae27a1482dc0571e"
+      }
+    },
+    "two": {
+      "size": 2,
+      "source_commit": "c8e47ed4b6600f7f4f6adf594509da07cd23eaf4",
+      "receipt": "morrow/rehearsal/client-cohort-runtime/c8e47ed/two/cohort-runtime-rehearsal.json",
+      "receipt_sha256": "b2c0a1734a98068b94b45451fc8477dd38f89ec22902ded4098effc48a725ac9",
+      "producer": {
+        "path": "tools/run_morrow_client_cohort_runtime_rehearsal.py",
+        "sha256": "58a60f4528cc8aafc6623af75bb73cf43c25997f22b7444cd80151b196853891"
+      }
+    },
+    "six": {
+      "size": 6,
+      "source_commit": "c8e47ed4b6600f7f4f6adf594509da07cd23eaf4",
+      "receipt": "morrow/rehearsal/client-cohort-runtime/c8e47ed/six/cohort-runtime-rehearsal.json",
+      "receipt_sha256": "4cb5a78a140ed800938f2bb4e7c83fc61cc48334246c3f3617f65aa2bd48a069",
+      "producer": {
+        "path": "tools/run_morrow_client_cohort_runtime_rehearsal.py",
+        "sha256": "58a60f4528cc8aafc6623af75bb73cf43c25997f22b7444cd80151b196853891"
+      }
+    }
+  },
+  "boundaries": {
+    "input_injected": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false,
+    "full_human_playthrough_proven": false
+  },
+  "remaining_gate": "complete the operator-free 60-90 minute cohort slice with continuous media and independent observer review",
+  "production_enablement": "blocked"
+}

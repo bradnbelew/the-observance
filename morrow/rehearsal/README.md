@@ -26,9 +26,14 @@ The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under 
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
 window and injects no input; exact-window input was separately limited to two reversible F1 toggles and
 one observed terminal right-click. This bounded checkpoint does not satisfy continuous synchronized
-media, all poses/dialog paths, parity modes, complete cohorts, or pacing. All six complete graphical
-lanes therefore remain required under `CLIENT-REHEARSAL.md`, whose validator also requires matching
-journal, world, inventory, cleanup, and complete server-lifecycle evidence.
+media, all poses/dialog paths, parity modes, or pacing. The separate retained
+`client-cohort-runtime/latest.json` checkpoint now proves real vanilla 1.21.11 one-, two-, and
+six-client concurrent joins, mutation-free safe entry, all 2,304 main-inventory items per player
+before disconnect and after Paper restart, stable per-player UUIDs, no projector redelivery, and clean
+owned client/server shutdown. It is verified by
+`python tools/check_morrow_client_cohort_runtime_checkpoint.py`. The complete 60–90 minute human slice,
+continuous media, independent observation, and the other unresolved graphical lanes remain required
+under `CLIENT-REHEARSAL.md`.
 
 The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
 installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without

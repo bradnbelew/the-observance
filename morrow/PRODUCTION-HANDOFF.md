@@ -143,8 +143,10 @@ rehearsals are complete. Items 4–6 begin only when those gates have installed 
 10. Exercise one-, two-, and six-player paths through restart and remote outage before enabling the
     rehearsal config. Automated authority lane complete; retained bundle:
     `morrow/rehearsal/receipts/p0-item10-fa1b80b`. The actual disposable Paper lifecycle is proven by
-    `morrow/rehearsal/runtime/p0-paper-c40f916/paper-runtime-receipt.json`; graphical-client lanes remain
-    explicitly required in the launch matrix. A create-only run packet, independent-observer protocol,
+    `morrow/rehearsal/runtime/p0-paper-c40f916/paper-runtime-receipt.json`. The retained
+    `morrow/rehearsal/client-cohort-runtime/latest.json` checkpoint additionally proves bounded real-client
+    one-/two-/six-player join, full-inventory restart persistence, and cleanup; the complete human-client
+    lanes remain explicitly required in the launch matrix. A create-only run packet, independent-observer protocol,
     and media-plus-runtime validator now live in `morrow/rehearsal/CLIENT-REHEARSAL.md` and
     `tools/check_morrow_client_rehearsal.py`.
 
@@ -153,8 +155,9 @@ rehearsals are complete. Items 4–6 begin only when those gates have installed 
 The automated P0 authority gate and actual disposable Paper lifecycle are green, but this does not make
 the slice playable. A human client must complete every `required` lane in
 `morrow/rehearsal/receipts/p0-item10-fa1b80b/launch-matrix.json`, including visual interpolation,
-native-dialog input, resource-pack decline, audio-disabled cues, full-inventory safe spawn/exit,
-one-/two-/six-player cleanup, and pacing without operator narration. The database lane is now proven on
+native-dialog input, full resource-pack decline parity, cue-by-cue audio-disabled equivalence, and pacing
+without operator narration. Bounded full-inventory safe entry/rejoin and owned cleanup now pass with real
+one-, two-, and six-client cohorts, but this is not the operator-free human playthrough. The database lane is now proven on
 a paused validation project. The automatic Copperline database worker and real Supabase Cron schedule
 are live-proven for ordered two-player delivery, private actor receipts, retry/reclaim, payload
 isolation, payload-free health, and clean disable. A browser-requested Supabase magic link reached a
@@ -179,6 +182,9 @@ loopback HTTP(S) proxying, and no account-file reads. It joined pinned Paper bui
 stale coordinate; the new entry controller recovered it to `(0.5, 80.0, -1.5)` before damage. A fresh
 hardened target then retained all 2,304 items across a same-player disconnect/rejoin at that safe cell,
 with no entry-controller inventory mutations, no suffocation, and clean bounded client/server shutdown.
+The follow-up cohort runtime harness repeated the join, inventory, Paper restart, identity continuity,
+projector-cursor, and cleanup assertions with simultaneous one-, two-, and six-player vanilla clients;
+its retained evidence and historical producer bindings live under `morrow/rehearsal/client-cohort-runtime`.
 The host-compatible fallback subsequently selected exactly one Java multiplayer window by exact title
 and PID while excluding the launcher. Its first Room 04 frame exposed giant default-scale TextDisplay
 overlays. Bounded label scales removed those overlays, and relocating the idle label plus interaction
@@ -187,7 +193,7 @@ client visibly showed the corrected room, and one observed terminal right-click 
 `Static restoration proposal` dialogue. The before/corrected/dialog frames and lifecycle receipts are
 retained at `morrow/rehearsal/client-visual/2026-08-30-exact-window-visual-checkpoint.json`. This is only
 a bounded visual/interaction checkpoint: continuous media, all six poses, the full dialogue input
-matrix, parity modes, complete cohorts, cleanup, and pacing remain required.
+matrix, parity modes, the continuous human cohort slice, independent review, and pacing remain required.
 
 ### P1 — Safe database rehearsal
 

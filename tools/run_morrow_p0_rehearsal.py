@@ -556,6 +556,10 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
         "check_morrow_audio_accessibility_checkpoint.py"
     audio_accessibility_receipt = ROOT / "morrow" / "rehearsal" / \
         "accessibility" / "latest.json"
+    cohort_runtime_checker = ROOT / "tools" / \
+        "check_morrow_client_cohort_runtime_checkpoint.py"
+    cohort_runtime_receipt = ROOT / "morrow" / "rehearsal" / \
+        "client-cohort-runtime" / "latest.json"
     capture_fallback = ROOT / "tools" / "capture_windows_window.py"
     database_receipt = ROOT / "morrow" / "rehearsal" / "database" / \
         "2026-08-30-isolated-supabase.json"
@@ -618,6 +622,14 @@ def launch_matrix(paper: dict[str, Any]) -> dict[str, Any]:
             "audio_accessibility_receipt_sha256": sha256_file(audio_accessibility_receipt),
             "audio_accessibility_checkpoint_status":
                 "bounded_static_visual_equivalence_pass_full_cue_parity_open",
+            "cohort_runtime_checker": str(
+                cohort_runtime_checker.relative_to(ROOT)).replace("\\", "/"),
+            "cohort_runtime_checker_sha256": sha256_file(cohort_runtime_checker),
+            "cohort_runtime_receipt": str(
+                cohort_runtime_receipt.relative_to(ROOT)).replace("\\", "/"),
+            "cohort_runtime_receipt_sha256": sha256_file(cohort_runtime_receipt),
+            "cohort_runtime_checkpoint_status":
+                "bounded_join_inventory_restart_cleanup_pass_full_playthrough_open",
             "latest_attempt": str(client_attempt.relative_to(ROOT)).replace("\\", "/"),
             "latest_attempt_sha256": sha256_file(client_attempt),
             "latest_attempt_status": "unproven",
