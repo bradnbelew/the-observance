@@ -112,7 +112,7 @@
     {
       "lane": "authenticated_browser_case_and_ticket_projection",
       "partial_receipt": "morrow/rehearsal/browser/2026-08-30-authenticated-copperline.json",
-      "partial_receipt_sha256": "58e7baee01db0e31e04945651115347650cb99c6a99b7d2f44a700b22a62d8b6",
+      "partial_receipt_sha256": "931fc6b39d4c5f39a2ec4d1d096bb71b5fce1480242814c5756667899c8c59da",
       "proven": "real email delivery, inbox receipt, provider verification, and exact PKCE callback defect diagnosis",
       "remaining": "fresh-inbox retest of the explicit verifier-cookie route through the final owner-only case read",
       "status": "required"

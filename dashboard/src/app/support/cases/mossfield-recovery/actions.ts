@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { externalMutationsAllowed } from '@/lib/deployment-target';
 import { createClient } from '@/lib/supabase/server';
 import {
+  MORROW_AUDIT_CHRONOLOGY_PAYLOAD,
   MORROW_CASE_ATTACHMENT_SHA256,
   MORROW_CASE_ID,
   MORROW_CASE_ROUTE,
@@ -32,7 +33,9 @@ export async function submitMorrowCaseAction(
   if (!validation.ok) {
     return {
       status: 'rejected',
-      message: validation.reason === 'invalid_checksum'
+      message: validation.reason === 'invalid_chronology'
+        ? `Custody breaks at edge ${validation.brokenEdge + 1}: expected ${validation.expectedTitle}. Neither instance advanced.`
+        : validation.reason === 'invalid_checksum'
         ? 'Checksum verification failed. Compare all 64 characters and try again.'
         : validation.reason === 'invalid_token'
           ? 'That handoff token is incomplete or malformed. Use the XXXX-XXXX format.'
@@ -61,10 +64,23 @@ export async function submitMorrowCaseAction(
             : 'Authenticate the attachment custody chain before recovering its handoff.',
         };
   }
+  if (validation.operation === 'prove_audit_chronology') {
+    if (context.events.includes('morrow.act6.audit_chronology_proven')) {
+      return { status: 'success', message: 'This audit chronology is already authenticated. Nothing was duplicated.' };
+    }
+    if (!context.events.includes('morrow.act5.dual_session_consciousness_proven')) {
+      return {
+        status: 'locked',
+        message: 'The five retained records remain sealed until the dual-session finding reaches this case.',
+      };
+    }
+  }
 
   const eventKey = validation.operation === 'verify_case_chain'
     ? 'morrow.act0.case_chain_authenticated'
-    : 'morrow.act0.server_handoff_recovered';
+    : validation.operation === 'recover_handoff'
+      ? 'morrow.act0.server_handoff_recovered'
+      : 'morrow.act6.audit_chronology_proven';
   const payload = validation.operation === 'verify_case_chain'
     ? {
         case_id: MORROW_CASE_ID,
@@ -72,11 +88,11 @@ export async function submitMorrowCaseAction(
         custody_entries: 3,
         operation: 'verify_attachment_custody',
       }
-    : {
+    : validation.operation === 'recover_handoff' ? {
         case_id: MORROW_CASE_ID,
         operation: 'recover_server_handoff',
         token_verified: true,
-      };
+      } : MORROW_AUDIT_CHRONOLOGY_PAYLOAD;
   try {
     const client = await createClient();
     const rpcArguments = {
@@ -86,7 +102,9 @@ export async function submitMorrowCaseAction(
       p_event_key: eventKey,
       p_idempotency_key: validation.operation === 'verify_case_chain'
         ? 'copperline:morrow:act0:case-chain:v1'
-        : 'copperline:morrow:act0:server-handoff:v1',
+        : validation.operation === 'recover_handoff'
+          ? 'copperline:morrow:act0:server-handoff:v1'
+          : 'copperline:morrow:act6:audit-chronology:v1',
       p_payload: payload,
       p_payload_sha256: payloadSha256(payload),
       p_short_token: validation.operation === 'recover_handoff' ? validation.normalizedValue : null,
@@ -120,7 +138,9 @@ export async function submitMorrowCaseAction(
       status: 'success',
       message: validation.operation === 'verify_case_chain'
         ? 'Attachment checksum and three-step custody chain authenticated.'
-        : 'Short token accepted. The release-bound server handoff is being projected to this case.',
+        : validation.operation === 'recover_handoff'
+          ? 'Short token accepted. The release-bound server handoff is being projected to this case.'
+          : 'Five-record chronology authenticated. Cold Storage can open after projection catch-up.',
       receipt: result.event_id ?? undefined,
     };
   } catch {

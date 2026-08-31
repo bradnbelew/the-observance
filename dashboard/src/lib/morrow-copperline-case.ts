@@ -13,6 +13,55 @@ export const MORROW_CASE_ATTACHMENT_TEXT = [
 ].join('\n') + '\n';
 export const MORROW_CASE_ATTACHMENT_SHA256 = payloadSha256Text(MORROW_CASE_ATTACHMENT_TEXT);
 
+export const MORROW_AUDIT_RECORDS = [
+  {
+    id: 'theo_live_capture_permission',
+    title: 'Theo Vale live-capture permission',
+    timestamp: '2014-10-23 09:18 CST',
+    source: 'CL-TICKET-1148',
+    summary: 'Expanded recovery coverage from placed blocks to bounded player behavior.',
+  },
+  {
+    id: 'rookery_anchor_graph',
+    title: 'Rookery witness-anchor graph',
+    timestamp: '2014-10-31 22:06 CST',
+    source: 'RK-CONTAINMENT-7',
+    summary: 'Routed unstable reconstruction output into isolated anchors instead of the live world.',
+  },
+  {
+    id: 'iona_shutdown_order',
+    title: 'Iona Bell shutdown order',
+    timestamp: '2014-11-02 03:11 CST',
+    source: 'CL-INCIDENT-44',
+    summary: 'Ordered the process stopped while records and containment evidence remained preserved.',
+  },
+  {
+    id: 'morrow_snapshot_manifest',
+    title: 'Morrow diagnostic snapshot manifest',
+    timestamp: '2014-11-02 03:14 CST',
+    source: 'CL-SNAPSHOT-44B',
+    summary: 'Recorded the original process as closed and retained diagnostic state for audit only.',
+  },
+  {
+    id: 'captioned_current_voice_assembly',
+    title: 'Captioned current-voice assembly',
+    timestamp: '2014-11-03 01:42 CST',
+    source: 'CL-RECOVERY-04',
+    summary: 'Assembled the present voice from the retained recovery snapshot chain.',
+  },
+] as const;
+
+export type MorrowAuditRecordId = (typeof MORROW_AUDIT_RECORDS)[number]['id'];
+
+export const MORROW_AUDIT_CHRONOLOGY_PAYLOAD = {
+  case_id: MORROW_CASE_ID,
+  investigation: 'M11',
+  operation: 'prove_audit_chronology',
+  record_order: MORROW_AUDIT_RECORDS.map((record) => record.id),
+  continuity_claim: null,
+};
+export const MORROW_AUDIT_CHRONOLOGY_SHA256 = payloadSha256(MORROW_AUDIT_CHRONOLOGY_PAYLOAD);
+
 export const MORROW_CASE_EVENT_ORDER = [
   'morrow.act0.case_chain_authenticated',
   'morrow.act0.server_handoff_recovered',
@@ -315,8 +364,9 @@ export function projectMorrowCase(
 }
 
 export type CaseActionValidation =
-  | { ok: true; operation: 'verify_case_chain' | 'recover_handoff'; normalizedValue: string }
-  | { ok: false; reason: 'invalid_operation' | 'invalid_checksum' | 'invalid_token' };
+  | { ok: true; operation: 'verify_case_chain' | 'recover_handoff' | 'prove_audit_chronology'; normalizedValue: string }
+  | { ok: false; reason: 'invalid_operation' | 'invalid_checksum' | 'invalid_token' }
+  | { ok: false; reason: 'invalid_chronology'; brokenEdge: number; expectedTitle: string };
 
 export function validateMorrowCaseAction(formData: FormData): CaseActionValidation {
   const operation = String(formData.get('operation') ?? '');
@@ -331,6 +381,20 @@ export function validateMorrowCaseAction(formData: FormData): CaseActionValidati
     return /^[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(token)
       ? { ok: true, operation, normalizedValue: token }
       : { ok: false, reason: 'invalid_token' };
+  }
+  if (operation === 'prove_audit_chronology') {
+    const supplied = MORROW_AUDIT_RECORDS.map((_, index) => String(formData.get(`edge${index + 1}`) ?? ''));
+    const firstBrokenEdge = supplied.findIndex((record, index) => record !== MORROW_AUDIT_RECORDS[index].id);
+    if (firstBrokenEdge !== -1 || new Set(supplied).size !== MORROW_AUDIT_RECORDS.length) {
+      const brokenEdge = firstBrokenEdge === -1 ? 0 : firstBrokenEdge;
+      return {
+        ok: false,
+        reason: 'invalid_chronology',
+        brokenEdge,
+        expectedTitle: MORROW_AUDIT_RECORDS[brokenEdge].title,
+      };
+    }
+    return { ok: true, operation, normalizedValue: supplied.join('>') };
   }
   return { ok: false, reason: 'invalid_operation' };
 }
@@ -350,7 +414,8 @@ export type CopperlineReceiptAttempt = {
   linkedCampaignId: string;
   linkedPlayerId: string;
   activeReleaseId: string;
-  eventKey: 'morrow.act0.case_chain_authenticated' | 'morrow.act0.server_handoff_recovered';
+  eventKey: 'morrow.act0.case_chain_authenticated' | 'morrow.act0.server_handoff_recovered'
+    | 'morrow.act6.audit_chronology_proven';
   idempotencyKey: string;
   payloadHash: string;
   committedEvents: readonly MorrowCaseEvent[];
@@ -381,6 +446,8 @@ export function evaluateCopperlineReceipt(
   }
   if (attempt.eventKey === 'morrow.act0.server_handoff_recovered'
       && !attempt.committedEvents.includes('morrow.act0.case_chain_authenticated')) return 'blocked';
+  if (attempt.eventKey === 'morrow.act6.audit_chronology_proven'
+      && !attempt.committedEvents.includes('morrow.act5.dual_session_consciousness_proven')) return 'blocked';
   return 'committed';
 }
 

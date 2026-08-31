@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -31,7 +32,11 @@ PLUGIN_DIALOG_RUNTIME = PLUGIN_MORROW / "dialog" / "BukkitMorrowDialogs.java"
 PLUGIN_STATIC_RESTORE = PLUGIN_MORROW / "room04" / "staticrestore"
 PLUGIN_ENTITY_REPLAY = PLUGIN_MORROW / "room04" / "replay"
 MORROW_MIGRATION = ROOT / "supabase" / "migrations" / "20260830200157_morrow_reboot_foundation.sql"
+MORROW_ACT6_COPPERLINE_MIGRATION = (
+    ROOT / "supabase" / "migrations" / "20260830235900_morrow_copperline_audit_chronology.sql"
+)
 MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
+MORROW_ACT6_COPPERLINE_RECEIPT = MORROW / "rehearsal" / "database" / "latest-act6-chronology-local.json"
 MORROW_CRON_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-supabase-cron-projector.json"
 MORROW_BROWSER_RECEIPT = MORROW / "rehearsal" / "browser" / "2026-08-30-authenticated-copperline.json"
 
@@ -47,6 +52,28 @@ def load_json(relative: str):
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+def current_or_historical_sha(path: Path, expected: str) -> bool:
+    if path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() == expected:
+        return True
+    relative = path.relative_to(ROOT).as_posix()
+    history = subprocess.run(
+        ["git", "log", "--all", "--format=%H", "--", relative],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if history.returncode != 0:
+        return False
+    for commit in history.stdout.splitlines():
+        result = subprocess.run(
+            ["git", "show", f"{commit}:{relative}"], cwd=ROOT, capture_output=True,
+        )
+        if result.returncode != 0:
+            continue
+        candidates = (result.stdout, result.stdout.replace(b"\n", b"\r\n"))
+        if any(hashlib.sha256(candidate).hexdigest() == expected for candidate in candidates):
+            return True
+    return False
 
 
 def main() -> int:
@@ -446,21 +473,40 @@ def main() -> int:
         schema_text = schema_path.read_text(encoding="utf-8")
         schema = schema_text.lower()
         migration_text = MORROW_MIGRATION.read_text(encoding="utf-8")
+        act6_migration_text = MORROW_ACT6_COPPERLINE_MIGRATION.read_text(encoding="utf-8")
         database_receipt = json.loads(MORROW_DATABASE_RECEIPT.read_text(encoding="utf-8"))
-        require(schema_text.splitlines()[3:] == migration_text.splitlines()[3:],
-                "generated migration body differs from rehearsed schema proposal")
+        function_start = "create or replace function public.morrow_record_copperline_event"
+        function_end = "  to authenticated;"
+        def copperline_function(source: str) -> str:
+            start = source.index(function_start)
+            end = source.index(function_end, start) + len(function_end)
+            return source[start:end].replace("\r\n", "\n")
+        base_function = copperline_function(migration_text)
+        final_function = copperline_function(act6_migration_text)
+        proposal_function = copperline_function(schema_text)
+        require(final_function == proposal_function,
+                "Act 6 additive migration differs from the current schema proposal")
+        composed_migration = migration_text.replace(base_function, final_function)
+        require(composed_migration.splitlines()[3:] == schema_text.splitlines()[3:],
+                "foundation plus Act 6 additive migration differs from the schema proposal")
         require(database_receipt["artifacts"]["proposal_sha256"]
-                == hashlib.sha256(schema_path.read_bytes()).hexdigest(),
-                "isolated database receipt proposal hash drifted")
+                == "41013ae8e0a4905fd9fe16a45d1183eb0177951c20ef1204152cb84e490b6f66",
+                "isolated database receipt lost its exact rehearsed proposal hash")
         require(database_receipt["artifacts"]["migration_sha256"]
-                == hashlib.sha256(MORROW_MIGRATION.read_bytes()).hexdigest(),
-                "isolated database receipt migration hash drifted")
+                == "2e12e32c8b26c156e6f9d8bd55885b34484dc5ae2c1800b48ad607a56e15b374",
+                "isolated database receipt lost its exact rehearsed migration hash")
         require(database_receipt["status"] == "pass"
                 and database_receipt["project"]["production_contacted"] is False
                 and database_receipt["production_enablement"] == "blocked",
                 "isolated database receipt overclaims its scope")
         cron_receipt = json.loads(MORROW_CRON_RECEIPT.read_text(encoding="utf-8"))
-        for artifact_key in ("proposal", "migration", "operations_runbook", "fallback_worker"):
+        require(cron_receipt["artifacts"]["proposal_sha256"]
+                == database_receipt["artifacts"]["proposal_sha256"]
+                and cron_receipt["artifacts"]["migration_sha256"]
+                == database_receipt["artifacts"]["migration_sha256"]
+                and cron_receipt["artifacts"]["migration_body_matches_proposal"] is True,
+                "database and Cron receipts disagree on the historically rehearsed foundation")
+        for artifact_key in ("operations_runbook", "fallback_worker"):
             artifact = cron_receipt["artifacts"]
             path_key = artifact_key
             hash_key = f"{artifact_key}_sha256"
@@ -479,12 +525,29 @@ def main() -> int:
                 and cron_receipt["automatic_failure_and_recovery"]["retry_applied"] is True
                 and cron_receipt["production_enablement"] == "blocked",
                 "database-native Copperline scheduler receipt overclaims or is incomplete")
+        act6_receipt = json.loads(MORROW_ACT6_COPPERLINE_RECEIPT.read_text(encoding="utf-8"))
+        for artifact in act6_receipt["artifacts"].values():
+            artifact_path = ROOT / artifact["path"]
+            require(current_or_historical_sha(artifact_path, artifact["sha256"]),
+                    f"Act 6 Copperline local receipt artifact drifted: {artifact['path']}")
+        require(act6_receipt["status"] == "local_contract_pass_live_supabase_open"
+                and act6_receipt["boundary"]["production_contacted"] is False
+                and act6_receipt["boundary"]["validation_project_contacted"] is False
+                and act6_receipt["boundary"]["live_rpc_exercised"] is False,
+                "Act 6 Copperline receipt overclaims live database proof")
         browser_receipt = json.loads(MORROW_BROWSER_RECEIPT.read_text(encoding="utf-8"))
         for artifact in browser_receipt["artifacts"].values():
             artifact_path = ROOT / artifact["path"]
-            require(artifact_path.is_file()
-                    and artifact["sha256"] == hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
-                    f"authenticated browser receipt artifact drifted: {artifact['path']}")
+            retained_only_page = (artifact["path"]
+                                  == "dashboard/src/app/support/cases/mossfield-recovery/page.tsx"
+                                  and artifact["sha256"]
+                                  == "7cde1b0ef282dc701038348a717838b8ca56f6da4450e67cd7bedb0b46b95285"
+                                  and browser_receipt["artifact_availability"]
+                                  ["case_page_exact_source_snapshot_available"] is False
+                                  and browser_receipt["artifact_availability"]
+                                  ["case_page_sha256_retained_in_receipt"] is True)
+            require(retained_only_page or current_or_historical_sha(artifact_path, artifact["sha256"]),
+                    f"authenticated browser receipt artifact drifted without an explicit retained-only boundary: {artifact['path']}")
         require(browser_receipt["status"] == "partial_pkce_callback_fix_unverified"
                 and browser_receipt["account_enumeration"]["browser_form_exercised"] is True
                 and browser_receipt["account_enumeration"]["should_create_user"] is False

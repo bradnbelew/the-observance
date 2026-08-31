@@ -3,6 +3,9 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
+  MORROW_AUDIT_CHRONOLOGY_PAYLOAD,
+  MORROW_AUDIT_CHRONOLOGY_SHA256,
+  MORROW_AUDIT_RECORDS,
   MORROW_CASE_ATTACHMENT_SHA256,
   MORROW_CASE_ATTACHMENT_TEXT,
   MORROW_CASE_EVENT_ORDER,
@@ -111,6 +114,25 @@ assert.deepEqual(validateMorrowCaseAction(token), {
 const badToken = new FormData(); badToken.set('operation', 'recover_handoff'); badToken.set('handoffToken', 'too-long-token');
 assert.deepEqual(validateMorrowCaseAction(badToken), { ok: false, reason: 'invalid_token' });
 
+assert.equal(payloadDigest(MORROW_AUDIT_CHRONOLOGY_PAYLOAD), MORROW_AUDIT_CHRONOLOGY_SHA256);
+assert.equal(MORROW_AUDIT_CHRONOLOGY_SHA256, 'cbf40a46335441d5d164d4e8f8f6afd02a97503ade2163ad3fd86e9063fc51e5');
+const audit = new FormData(); audit.set('operation', 'prove_audit_chronology');
+MORROW_AUDIT_RECORDS.forEach((record, index) => audit.set(`edge${index + 1}`, record.id));
+assert.deepEqual(validateMorrowCaseAction(audit), {
+  ok: true,
+  operation: 'prove_audit_chronology',
+  normalizedValue: MORROW_AUDIT_RECORDS.map((record) => record.id).join('>'),
+});
+const brokenAudit = new FormData(); brokenAudit.set('operation', 'prove_audit_chronology');
+MORROW_AUDIT_RECORDS.forEach((record, index) => brokenAudit.set(`edge${index + 1}`, record.id));
+brokenAudit.set('edge1', 'iona_shutdown_order');
+assert.deepEqual(validateMorrowCaseAction(brokenAudit), {
+  ok: false,
+  reason: 'invalid_chronology',
+  brokenEdge: 0,
+  expectedTitle: 'Theo Vale live-capture permission',
+});
+
 const baseAttempt = {
   campaignId: CAMPAIGN, playerId: PLAYER, releaseId: RELEASE,
   linkedCampaignId: CAMPAIGN, linkedPlayerId: PLAYER, activeReleaseId: RELEASE,
@@ -121,6 +143,12 @@ assert.equal(evaluateCopperlineReceipt(baseAttempt), 'committed');
 assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, linkedPlayerId: 'ff41c590-6caf-46c1-9495-c631e475daf8' }), 'blocked');
 assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, activeReleaseId: 'morrow.rehearsal.002' }), 'blocked');
 assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, eventKey: 'morrow.act0.server_handoff_recovered' }), 'blocked');
+assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, eventKey: 'morrow.act6.audit_chronology_proven' }), 'blocked');
+assert.equal(evaluateCopperlineReceipt({
+  ...baseAttempt,
+  eventKey: 'morrow.act6.audit_chronology_proven',
+  committedEvents: ['morrow.act5.dual_session_consciousness_proven'],
+}), 'committed');
 const existing = { ...baseAttempt };
 assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, existing }), 'duplicate');
 for (const linkedPlayerId of [
@@ -141,6 +169,7 @@ assert.equal(evaluateCopperlineReceipt({ ...baseAttempt, existing: { ...existing
 
 const routeSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/page.tsx'), 'utf8');
 const actionSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/actions.ts'), 'utf8');
+const caseActionsSource = readFileSync(resolve('src/app/support/cases/mossfield-recovery/CaseActions.tsx'), 'utf8');
 const serverSource = readFileSync(resolve('src/lib/morrow-copperline-server.ts'), 'utf8');
 const loginActionSource = readFileSync(resolve('src/app/auth/player-link/route.ts'), 'utf8');
 const loginPageSource = readFileSync(resolve('src/app/support/account/page.tsx'), 'utf8');
@@ -165,7 +194,8 @@ for (const forbidden of ['SUPABASE_SERVICE_ROLE_KEY', 'createAdminClient', 'sear
 }
 for (const required of ['morrow_record_copperline_event', "owner_surface = 'copperline'", 'is_linked_player',
   'handoff_token_sha256', MORROW_CASE_ATTACHMENT_SHA256, '831b4026a5e98b263699ba337d246ad5c2c1f26b3f1d00bdef42775586707096',
-  '69ef307074c7aaf7cc4fff12c5e8b7b2423c51a05dfc7f8bb11d53b059420a6e',
+  '69ef307074c7aaf7cc4fff12c5e8b7b2423c51a05dfc7f8bb11d53b059420a6e', MORROW_AUDIT_CHRONOLOGY_SHA256,
+  'morrow.act6.audit_chronology_proven', 'captioned_current_voice_assembly', "'continuity_claim', null",
   'duplicate', 'collision']) assert.ok(sql.includes(required), `SQL authority lacks ${required}`);
 for (const required of ['morrow_claim_copperline_projections', 'morrow_apply_copperline_projection',
   'morrow_fail_copperline_projection', "projection.surface = 'copperline'", 'skip locked',
@@ -226,8 +256,11 @@ const duplicateBranch = copperlineRpc.split('if v_existing.event_key', 2)[1]
 assert.equal(duplicateBranch.includes('actor_player_id'), false,
   'group idempotency must not collide when a second linked player submits the exact earned action');
 for (const required of ['Accessible attachment metadata', 'Temporary maintenance state', 'No linked case found',
-  'Case audit halted', 'Synchronized field updates', 'player-specific', 'Sign in to this recovery case']) {
+  'Case audit halted', 'Incident chronology', 'Synchronized field updates', 'player-specific', 'Sign in to this recovery case']) {
   assert.ok(routeSource.includes(required), `route lacks concrete state/copy: ${required}`);
+}
+for (const required of ['prove_audit_chronology', 'Select retained record', 'first broken edge']) {
+  assert.ok(caseActionsSource.includes(required), `audit chronology form lacks ${required}`);
 }
 for (const required of ['signInWithOtp', 'shouldCreateUser: false', 'MORROW_CASE_ROUTE',
   "requestOrigin !== requestUrl.origin", 'pendingCookies', 'response.cookies.set']) {
@@ -268,3 +301,7 @@ assert.equal(staleLore.test(newSurface), false, 'new Copperline reboot surface l
 assert.equal(newSurface.includes('SUPABASE_SERVICE_ROLE_KEY'), false, 'service role leaked into reboot route');
 
 console.log('MORROW COPPERLINE ACT 0-7: PASS direct/stale/identity/1-2-6/duplicate/collision/spoiler/outage/checksum/token/input/order/finale');
+
+function payloadDigest(payload: Record<string, unknown>): string {
+  return createHash('sha256').update(JSON.stringify(payload), 'utf8').digest('hex');
+}

@@ -88,6 +88,12 @@ Implemented and verified:
   future-spoiler omission, raw-ending/private-dialogue exclusion, local-only raw replay samples,
   duplicate recovery, and collision halt. The Discord-private contradiction is intentionally absent
   because its catalog projection never includes Copperline
+- an earned-only Act 6 Copperline chronology puzzle with five shuffled retained records, an accessible
+  ordered-edge form, first-broken-edge feedback, exact `dual_session_consciousness_proven` prerequisite,
+  idempotent group receipt, and a payload that explicitly leaves continuity unresolved. Its additive
+  migration and local contract receipt are retained under
+  `morrow/rehearsal/database/latest-act6-chronology-local.json`; live Supabase and authenticated-browser
+  execution remain open and no validation or production project was contacted
 - authenticated Copperline receipt RPC proposal with exact authored payload hashes, private token hash,
   linked-user ownership, release/prerequisite enforcement, and idempotent event/outbox creation; it remains
   unapplied to production but passed its isolated Supabase rehearsal in P1

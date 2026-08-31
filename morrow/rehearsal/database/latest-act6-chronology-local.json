@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0-morrow-act6-copperline-local",
+  "status": "local_contract_pass_live_supabase_open",
+  "completed_at": "2026-08-30T23:59:00-05:00",
+  "scope": "local TypeScript, Next.js, and additive SQL contract only",
+  "mechanic": {
+    "event": "morrow.act6.audit_chronology_proven",
+    "owner_surface": "copperline",
+    "prerequisite": "morrow.act5.dual_session_consciousness_proven",
+    "records": 5,
+    "wrong_order_reports_first_broken_edge": true,
+    "identity_continuity_resolved": false,
+    "payload_sha256": "cbf40a46335441d5d164d4e8f8f6afd02a97503ade2163ad3fd86e9063fc51e5"
+  },
+  "checks": {
+    "dashboard_selftest": "pass",
+    "dashboard_lint": "pass",
+    "dashboard_build": "pass",
+    "additive_migration_matches_schema_function": true,
+    "foundation_receipt_preserved": true
+  },
+  "boundary": {
+    "production_contacted": false,
+    "validation_project_contacted": false,
+    "live_rpc_exercised": false,
+    "service_role_secret_loaded": false,
+    "authenticated_browser_rehearsal": false,
+    "reason": "Fresh isolated Supabase execution and authenticated browser proof require separately authorized external validation."
+  },
+  "artifacts": {
+    "schema": {
+      "path": "morrow/db/schema-proposal.sql",
+      "sha256": "c78360cdd9177e501433a095d6e90d56ac76b24c2563c1d46ff09084873b2055"
+    },
+    "additive_migration": {
+      "path": "supabase/migrations/20260830235900_morrow_copperline_audit_chronology.sql",
+      "sha256": "b3663d47588caff2763404b3ef6859d6f154ee1c4849778dad789a04da3ed81c"
+    },
+    "projection_model": {
+      "path": "dashboard/src/lib/morrow-copperline-case.ts",
+      "sha256": "a1d683b92e2eec7b0bef967bfa225ed653312e6c6edae921dde6e8326d339be5"
+    },
+    "server_action": {
+      "path": "dashboard/src/app/support/cases/mossfield-recovery/actions.ts",
+      "sha256": "6994ec0e0f5eef4183a0e41624f7dc0dea6d058630828f26ce3d1415804ed5cd"
+    },
+    "accessible_form": {
+      "path": "dashboard/src/app/support/cases/mossfield-recovery/CaseActions.tsx",
+      "sha256": "861a5d158153f1fbf6b8a7cb1b6859ebb70cbb285187b5b56160089d2351510a"
+    },
+    "selftest": {
+      "path": "dashboard/src/lib/morrow-copperline-case.selftest.ts",
+      "sha256": "64a192a774d118f1f17881a2b316673a44157861cda56fad68ff01cd0c998787"
+    }
+  }
+}

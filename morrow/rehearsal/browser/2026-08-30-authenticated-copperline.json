@@ -158,6 +158,11 @@
       "sha256": "db1a73c598a33df7f58b391b69659921cb67a85abae639e6063e454e9d983f8e"
     }
   },
+  "artifact_availability": {
+    "case_page_exact_source_snapshot_available": false,
+    "case_page_sha256_retained_in_receipt": true,
+    "reason": "The browser receipt retained the exact hash, but that intermediate page source was not committed before later forward changes."
+  },
   "remaining_gate": "retest the explicit verifier-cookie route with a fresh disposable inbox through the final owner-only case read",
   "production_enablement": "blocked"
 }

@@ -777,7 +777,8 @@ begin
       and definition.active
       and p_event_key in (
         'morrow.act0.case_chain_authenticated',
-        'morrow.act0.server_handoff_recovered'
+        'morrow.act0.server_handoff_recovered',
+        'morrow.act6.audit_chronology_proven'
       )
   ) or exists (
     select 1
@@ -817,6 +818,25 @@ begin
         and campaign.handoff_token_sha256 is not null
         and campaign.handoff_token_sha256 = v_token_hash
     )
+  ) then
+    return query select 'blocked'::text, false, null::uuid;
+    return;
+  end if;
+
+  if p_event_key = 'morrow.act6.audit_chronology_proven' and not (
+    p_payload = jsonb_build_object(
+      'case_id', 'CL-RCV-04',
+      'investigation', 'M11',
+      'operation', 'prove_audit_chronology',
+      'record_order', jsonb_build_array(
+        'theo_live_capture_permission',
+        'rookery_anchor_graph',
+        'iona_shutdown_order',
+        'morrow_snapshot_manifest',
+        'captioned_current_voice_assembly'
+      ),
+      'continuity_claim', null
+    ) and p_payload_sha256 = 'cbf40a46335441d5d164d4e8f8f6afd02a97503ade2163ad3fd86e9063fc51e5'
   ) then
     return query select 'blocked'::text, false, null::uuid;
     return;

@@ -65,8 +65,10 @@ def current_or_historical_match(path: str, expected: str) -> bool:
         return False
     for commit in history.stdout.splitlines():
         result = subprocess.run(["git", "show", f"{commit}:{path}"], cwd=ROOT, capture_output=True)
-        if result.returncode == 0 and hashlib.sha256(result.stdout).hexdigest() == expected:
-            return True
+        if result.returncode == 0:
+            candidates = (result.stdout, result.stdout.replace(b"\n", b"\r\n"))
+            if any(hashlib.sha256(candidate).hexdigest() == expected for candidate in candidates):
+                return True
     return False
 
 

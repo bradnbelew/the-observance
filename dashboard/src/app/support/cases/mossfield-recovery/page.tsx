@@ -2,13 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Breadcrumbs, LegacyShell } from '@/components/legacy/LegacyShell';
 import {
+  MORROW_AUDIT_RECORDS,
   MORROW_CASE_ATTACHMENT_SHA256,
   MORROW_CASE_ATTACHMENT_TEXT,
   MORROW_CASE_ID,
   type MorrowCaseContext,
 } from '@/lib/morrow-copperline-case';
 import { readMorrowCase, type MorrowServerRead } from '@/lib/morrow-copperline-server';
-import { ChecksumVerificationForm, HandoffRecoveryForm } from './CaseActions';
+import { AuditChronologyForm, ChecksumVerificationForm, HandoffRecoveryForm } from './CaseActions';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -28,6 +29,9 @@ export default async function MossfieldRecoveryCasePage() {
 function CaseWorkbench({ context }: { context: MorrowCaseContext }) {
   const status = context.handoffRecovered ? 'field handoff issued'
     : context.caseChainAuthenticated ? 'custody authenticated' : 'unresolved / awaiting verification';
+  const auditChronologyProven = context.events.includes('morrow.act6.audit_chronology_proven');
+  const auditChronologyAvailable = auditChronologyProven
+    || context.events.includes('morrow.act5.dual_session_consciousness_proven');
   return <article className="morrow-case-workbench">
     <header className="morrow-case-head">
       <div><p className="morrow-case-kicker">Backup &amp; Recovery · Case {MORROW_CASE_ID}</p>
@@ -73,6 +77,19 @@ function CaseWorkbench({ context }: { context: MorrowCaseContext }) {
           {context.handoff ? <div className="morrow-handoff-success"><span>Recovered field destination</span><b>{context.handoff.serverLabel}</b>
             <code>{context.handoff.joinAddress}</code><small>Release {context.releaseId} · receipt {context.handoff.recoveryReceipt}</small></div> : null}
         </section>
+
+        {auditChronologyAvailable ? <section className="morrow-case-panel" aria-labelledby="audit-heading">
+          <header><h2 id="audit-heading">Incident chronology</h2><span>{auditChronologyProven ? 'authenticated' : 'five retained records'}</span></header>
+          <p className="morrow-case-note">The records agree on their contents but not on the story previously attached to them. Rebuild custody order; do not use the chain to certify identity.</p>
+          <ul className="morrow-audit-records">
+            {[2, 0, 4, 1, 3].map((recordIndex) => {
+              const record = MORROW_AUDIT_RECORDS[recordIndex];
+              return <li key={record.id}><div><b>{record.title}</b><code>{record.source}</code></div>
+                <time>{record.timestamp}</time><p>{record.summary}</p></li>;
+            })}
+          </ul>
+          <AuditChronologyForm enabled={!auditChronologyProven} proven={auditChronologyProven} />
+        </section> : null}
 
         <section className="morrow-case-panel" aria-labelledby="updates-heading">
           <header><h2 id="updates-heading">Synchronized field updates</h2><span>earned only · group and player scopes labeled</span></header>
