@@ -513,6 +513,7 @@ def main() -> int:
         "README.md",
         "authority/CANON.md",
         "authority/PLAYER-JOURNEY.md",
+        "authority/IMPLEMENTATION-AUDIT.md",
         "architecture/SYSTEM.md",
         "architecture/DATABASE.md",
         "architecture/MINECRAFT-UX.md",
