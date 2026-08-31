@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the bounded loaded/declined Morrow visual checkpoint without closing parity."""
+"""Validate the deterministic loaded/declined Morrow static visual checkpoint."""
 
 from __future__ import annotations
 
@@ -54,7 +54,8 @@ def lane(report: dict[str, Any], name: str, expected: str, policy: str) -> tuple
     require(client["source_commit"] == report["source_commit"]
             and client["server_resource_pack_policy"] == policy
             and client["loopback_only"] is True
-            and client["production_credentials_loaded"] is False,
+            and client["production_credentials_loaded"] is False
+            and client["accessibility_profile"]["tutorial_toast_disabled"] is True,
             f"{name} client boundary drifted")
     require(runtime["source_commit"] == report["source_commit"]
             and runtime["expected_status"] == expected
@@ -69,17 +70,17 @@ def lane(report: dict[str, Any], name: str, expected: str, policy: str) -> tuple
     gets = [request for request in runtime["resource_pack"]["requests"]
             if request["method"] == "GET" and request["status"] == 200]
     require(bool(gets) is (expected == "LOADED"), f"{name} pack fetch behavior drifted")
-    require("tutorialStep:movement" in paths["final_options"].read_text(encoding="utf-8").splitlines(),
-            f"{name} vanilla tutorial state drifted")
+    require("tutorialStep:none" in paths["final_options"].read_text(encoding="utf-8").splitlines(),
+            f"{name} deterministic tutorial suppression drifted")
     return capture, Image.open(paths["image"]).convert("RGB")
 
 
 def validate() -> None:
     report = load(REPORT)
     require(report["status"]
-            == "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable"
+            == "bounded_pair_checkpoint_common_room_pass_tutorial_suppressed"
             and report["overlay_classification"]["status"]
-                == "classified_non_morrow_capture_timing"
+                == "suppressed_in_disposable_profiles"
             and report["production_enablement"] == "blocked",
             "visual checkpoint overclaims parity")
     require(subprocess.run(
@@ -113,7 +114,8 @@ def validate() -> None:
     require(metrics["common_geometry_visible"] is True
             and metrics["terminal_label_visible_in_both"] is True
             and metrics["body_interaction_target_visible_in_both"] is True
-            and metrics["vanilla_tutorial_overlay_phase_equal"] is False
+            and metrics["vanilla_tutorial_overlay_visible_in_either"] is False
+            and metrics["static_fallback_checkpoint_pass"] is True
             and metrics["morrow_authored_surface_contradiction_observed"] is False
             and metrics["input_injected"] is False,
             "visual checkpoint finding drifted or full parity was silently closed")
@@ -125,7 +127,8 @@ def main() -> int:
     except Exception as failure:  # noqa: BLE001 - checker emits one concise failure
         print(f"MORROW RESOURCE PACK VISUAL CHECKPOINT: FAIL: {failure}", file=sys.stderr)
         return 1
-    print("MORROW RESOURCE PACK VISUAL CHECKPOINT: PASS common-room=1 tutorial-overlay=incomparable parity=required")
+    print("MORROW RESOURCE PACK VISUAL CHECKPOINT: PASS common-room=1 "
+          "tutorial-overlay=suppressed static-fallback=pass parity=required")
     return 0
 
 

@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.0.0-morrow-resource-pack-visual-checkpoint",
-  "status": "bounded_pair_checkpoint_common_room_pass_tutorial_overlay_incomparable",
-  "captured_at": "2026-08-30T23:58:00Z",
-  "source_commit": "88522d717a23c9ea0c5a80e1fadcaa02fba580b6",
-  "scope": "one exact-window Room 04 frame after a real LOADED decision and one after a real DECLINED decision; no input or full interaction parity claim",
+  "schema_version": "1.1.0-morrow-resource-pack-visual-checkpoint",
+  "status": "bounded_pair_checkpoint_common_room_pass_tutorial_suppressed",
+  "captured_at": "2026-08-31T00:19:33Z",
+  "source_commit": "7297b3295c235a340e3ce3909474ac00a96f6d9b",
+  "scope": "matched tutorial-free exact-window Room 04 frames after real LOADED and DECLINED decisions; no input or full interaction-parity claim",
   "artifacts": {
     "capture_tool": {
       "path": "tools/capture_windows_window.py",
@@ -11,7 +11,7 @@
     },
     "pack_harness": {
       "path": "tools/run_morrow_resource_pack_rehearsal.py",
-      "sha256": "690abd11399480accc4f4bca12a84c92b2b3628d61d40c5522582863578c51b3"
+      "sha256": "2694a7462dae62cd5aa6fb821bc7b58c1c142b671091f049e5905d47feccc3d8"
     },
     "resource_pack_sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb"
   },
@@ -19,57 +19,80 @@
     "loaded": {
       "expected_status": "LOADED",
       "server_resource_pack_policy": "enabled",
-      "capture": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.capture.json",
-      "capture_sha256": "a55007e4fc3d705412b2a590186c77a995bad7b326c17dd139f569daae0800d9",
-      "image": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.png",
-      "image_sha256": "4d7436881bd0c4554b74e365ecf226f49bbcc3e0b025fdc8e587245702fd3451",
-      "client": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.client.json",
-      "client_sha256": "9e3beeb54cd05e129eefce2ab278f85f076ee638dc8b8b87be39cab31b9ebfb1",
-      "runtime": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.runtime.json",
-      "runtime_sha256": "8a5244c7c6c91e0ba41822f404222bd0a2018c49a247fd0d217698c4fa136585",
-      "final_options": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.final-options.txt",
-      "final_options_sha256": "0649662130e0b7f5d092129d499e65836387afd45c5ba58cd50f999660fe7833",
-      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, and survival HUD are visible; the complete right-side overlay is Minecraft's first-join movement tutorial"
+      "capture": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded-final.capture.json",
+      "capture_sha256": "9f2c3e832ab8d711fed2012d81d057952fe3b674963345c25a91d6c1db671976",
+      "image": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded-final.png",
+      "image_sha256": "54ee65f3c79ef36130ef648ccb4914924b79f81932650b545620e06df49ded1a",
+      "client": "morrow/rehearsal/resource-pack/7297b32/loaded/client-receipt.json",
+      "client_sha256": "da768ff333e9c9dd087c618a3829e9f4b7d970a8d668caf7c92f6672038424ab",
+      "runtime": "morrow/rehearsal/resource-pack/7297b32/loaded/resource-pack-rehearsal.json",
+      "runtime_sha256": "8ddad77048e25b7998e48b6d531dcfeebda80478655619a8477efd73aaf618d3",
+      "final_options": "morrow/rehearsal/resource-pack/7297b32/loaded/final-options.txt",
+      "final_options_sha256": "46165553362d7779052772ed69ecc7fd504bbddcdb0758baa8b688503b97232d",
+      "bounded_finding": "Room 04 geometry, terminal label, body target, and HUD are visible; the accepted pack changes authored surface and player-skin presentation only."
     },
     "declined": {
       "expected_status": "DECLINED",
       "server_resource_pack_policy": "disabled",
-      "capture": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.capture.json",
-      "capture_sha256": "50d2382e81ddd4bbbb02ed4627c95d218eee4a07cc4b04316b1985b602323edc",
-      "image": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.png",
-      "image_sha256": "a21afce8aacea88de5bf0d3c9189e152bed1c8d26880f5bc6a5562d2d8c9fba5",
-      "client": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.client.json",
-      "client_sha256": "3d30091a87fa3293908a30e82edc6dac3cb329c5cb556d406973a893ddc079a2",
-      "runtime": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.runtime.json",
-      "runtime_sha256": "0158c558ee4f690d4a09669c0a674db21a68dc3e8a5600d0d0bfdb1ce7cab8d7",
-      "final_options": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.final-options.txt",
-      "final_options_sha256": "0649662130e0b7f5d092129d499e65836387afd45c5ba58cd50f999660fe7833",
-      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, and survival HUD are visible; Minecraft's first-join movement tutorial is in a different slide-animation phase"
+      "capture": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined-final.capture.json",
+      "capture_sha256": "f42d0c19d3428d437bfc5712a774089589ab7d26a26726538f99f6722e9bcd02",
+      "image": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined-final.png",
+      "image_sha256": "2825ab2fbd717158a5f38153f4f78dd469592287c7412f2e582e7d4b87956714",
+      "client": "morrow/rehearsal/resource-pack/7297b32/declined/client-receipt.json",
+      "client_sha256": "2bf84dd35a496fe23976b1dfaa627c37b56c1b380b2699ba329b5ece43e66384",
+      "runtime": "morrow/rehearsal/resource-pack/7297b32/declined/resource-pack-rehearsal.json",
+      "runtime_sha256": "b448290afdbe0e622eaca4492292740780fb118e42257f75d89b70209e8bfd3a",
+      "final_options": "morrow/rehearsal/resource-pack/7297b32/declined/final-options.txt",
+      "final_options_sha256": "46165553362d7779052772ed69ecc7fd504bbddcdb0758baa8b688503b97232d",
+      "bounded_finding": "Room 04 geometry, terminal label, body target, and HUD remain visible with vanilla textures; no missing-texture or missing-geometry fallback defect is visible."
     }
   },
   "comparison": {
-    "image_size": [1282, 752],
-    "window_bounds": [639, 329, 1921, 1081],
-    "difference_bbox": [1, 31, 1281, 751],
-    "mean_absolute_rgb_difference": [1.594, 1.909, 1.7],
-    "changed_channel_samples": 1610168,
+    "image_size": [
+      1282,
+      752
+    ],
+    "window_bounds": [
+      639,
+      329,
+      1921,
+      1081
+    ],
+    "difference_bbox": [
+      1,
+      31,
+      1281,
+      751
+    ],
+    "mean_absolute_rgb_difference": [
+      3.353,
+      3.031,
+      2.398
+    ],
+    "changed_channel_samples": 1592055,
     "total_channel_samples": 2892192,
     "common_geometry_visible": true,
     "terminal_label_visible_in_both": true,
     "body_interaction_target_visible_in_both": true,
-    "vanilla_tutorial_overlay_phase_equal": false,
+    "vanilla_tutorial_overlay_visible_in_either": false,
+    "pack_authored_texture_difference_visible": true,
+    "static_fallback_checkpoint_pass": true,
     "morrow_authored_surface_contradiction_observed": false,
     "input_injected": false
   },
   "overlay_classification": {
-    "status": "classified_non_morrow_capture_timing",
-    "finding": "the unequal right-side overlay is Minecraft's vanilla first-join movement tutorial captured at different slide-animation phases, not a Morrow-authored prompt or resource-pack fallback defect",
+    "status": "suppressed_in_disposable_profiles",
+    "finding": "both isolated visual profiles set tutorialStep:none before launch, removing Minecraft's unrelated movement toast without injecting input",
     "evidence": [
-      "the visible text is Move with W, A, S and D / Jump with Space",
-      "both final options files contain tutorialStep:movement",
-      "the authored plugin sources contain no matching movement-toast text"
+      "both client receipts record tutorial_toast_disabled=true",
+      "both launch and final options contain tutorialStep:none",
+      "both capture receipts record input_injected=false"
     ]
   },
-  "remaining_gate": "capture matched camera states after dismissing the vanilla tutorial and review every required Morrow body, text, dialog, and puzzle input in loaded/declined runs with synchronized media and an independent observer",
+  "human_media_review": {
+    "status": "primary_review_complete",
+    "finding": "both frames show the same Room 04 structure and required static targets; expected pack-authored texture differences are visible; no missing surface, label, body target, or HUD was observed"
+  },
+  "remaining_gate": "review every Morrow body state, text surface, dialog branch, and puzzle input in loaded and declined runs with synchronized media and an independent observer",
   "production_enablement": "blocked"
 }

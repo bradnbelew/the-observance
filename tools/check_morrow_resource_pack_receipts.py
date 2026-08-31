@@ -86,8 +86,14 @@ def validate_lane(root: Path, binding: dict[str, Any], expected: str) -> dict[st
     require(client_receipt["server_resource_pack_policy"] == policy
             and client_receipt["servers_dat_sha256"] == client["launch_servers_sha256"]
             and client_receipt["accessibility_profile"]["options_sha256"]
-                == client["launch_options_sha256"],
+                == client["launch_options_sha256"]
+            and client_receipt["accessibility_profile"]["tutorial_toast_disabled"] is True,
             f"{expected} client fixture hashes drifted")
+    for options_field in ("launch_options", "final_options"):
+        lines = (receipt_path.parent / client[options_field]).read_text(
+            encoding="utf-8").splitlines()
+        require("tutorialStep:none" in lines,
+                f"{expected} {options_field} lost deterministic tutorial suppression")
     servers = (receipt_path.parent / client["launch_servers"]).read_bytes()
     require(servers[:1] == b"\x0a" and b"acceptTextures" in servers
             and servers.endswith(bytes((1 if expected == "LOADED" else 0, 0, 0))),
