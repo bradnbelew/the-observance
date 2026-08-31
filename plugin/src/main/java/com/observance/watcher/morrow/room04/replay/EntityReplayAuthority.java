@@ -23,8 +23,9 @@ public final class EntityReplayAuthority {
     public static final int MAXIMUM_TRACKED_PLAYERS = 6;
     public static final int MISSING_ROLE_DURATION_TICKS = 740;
     public static final int MISSING_ROLE_SAMPLE_COUNT = 370;
-    public static final int TRANSFER_WINDOW_START_TICK = 400;
-    public static final int TRANSFER_WINDOW_END_TICK = 440;
+    /** Pulses 21-22 are the authored target; disclosed bounded grace accepts pulses 19-25. */
+    public static final int TRANSFER_WINDOW_START_TICK = 380;
+    public static final int TRANSFER_WINDOW_END_TICK = 500;
     public static final int LIVE_TEST_MINIMUM_TICKS = 120;
     public static final double LIVE_TEST_MINIMUM_PATH = 4.0D;
 

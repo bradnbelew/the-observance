@@ -86,6 +86,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
     private BukkitTask replayTask;
     private BukkitTask cleanupTask;
     private Interaction transferInteraction;
+    private Interaction sealInteraction;
     private Interaction proofInteraction;
     private Clip replaying;
     private int replayTick;
@@ -132,8 +133,8 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         recorder.start(consent);
         entryGraceTicks.put(player.getUniqueId(), EntityReplayAuthority.ENTRY_GRACE_TICKS);
         return purpose == Purpose.MISSING_ROLE
-                ? "Local consent revision " + consent.revision() + " is armed for 20 seconds. Enter the marked missing position; tick zero begins on entry. Transfer at pulse 21–22."
-                : "Local consent revision " + consent.revision() + " is armed for 20 seconds. Enter the marked boundary; tick zero begins on entry. Make a distinctive route, then seal it at the terminal.";
+                ? "Local consent revision " + consent.revision() + " is armed for 20 seconds. Enter the marked missing position; tick zero begins on entry. Target pulse 21–22; local latency grace accepts pulses 19–25."
+                : "Local consent revision " + consent.revision() + " is armed for 20 seconds. Enter the marked boundary; tick zero begins on entry. Make a distinctive route, then use the illuminated in-boundary seal control.";
     }
 
     public String revoke(Player player) throws IOException {
@@ -320,7 +321,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
                 Material.LIGHT_BLUE_STAINED_GLASS, Provenance.RECORDED, "m03_recorded_partial_avatar");
         echoes.add(echo);
         echoes.add(spawnLabel(echo.getLocation().add(0, 1.4, 0),
-                "RECORDED — partial avatar / 37.0 s\nPulse 21–22: transfer at the missing position", Provenance.RECORDED));
+                "RECORDED — partial avatar / 37.0 s\nTarget 21–22; latency grace 19–25", Provenance.RECORDED));
         TextDisplay pulse = spawnLabel(new Location(world, origin.x() + 1.1, origin.y() + 2.2, origin.z() - 3.6),
                 "REDSTONE PULSE LOG — 00 / 37", Provenance.RECORDED);
         echoes.add(pulse);
@@ -387,6 +388,19 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
             addAction(event.getPlayer(), Action.INVENTORY_TRANSFER);
             event.getPlayer().sendMessage(Component.text(
                     "Designated manifest transfer observed locally; no inventory item or block was changed.", NamedTextColor.AQUA));
+        } else if ("seal".equals(kind)) {
+            if (recorder.purpose(event.getPlayer().getUniqueId()).orElse(null) != Purpose.DELIBERATE_LIVE_TEST) {
+                event.getPlayer().sendMessage(Component.text(
+                        "The in-boundary seal control is available only during an active M04 deliberate route.",
+                        NamedTextColor.YELLOW));
+                return;
+            }
+            try {
+                event.getPlayer().sendMessage(Component.text(seal(event.getPlayer()), NamedTextColor.AQUA));
+            } catch (IOException | RuntimeException failure) {
+                cancelWithFeedback(event.getPlayer(),
+                        "The in-boundary seal failed safely; no receipt or echo was created.", failure);
+            }
         } else if ("proof".equals(kind) && replaying != null) {
             Decision decision = EntityReplayAuthority.behaviorReuse(state.snapshot(), replaying,
                     replaying.clipHash(), replayTick);
@@ -488,12 +502,26 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
 
     private void spawnAffordances() {
         spawnTransferInteraction();
+        spawnSealInteraction();
         double[][] corners = {{1.0, -0.6}, {3.9, -0.6}, {1.0, -3.9}, {3.9, -3.9}};
         for (int index = 0; index < corners.length; index++) {
             echoes.add(spawnLabel(new Location(world, origin.x() + corners[index][0],
                     origin.y() + 0.15, origin.z() + corners[index][1]),
                     "LIVE RECORDING BOUNDARY " + (index + 1) + "/4", Provenance.LIVE));
         }
+    }
+
+    private void spawnSealInteraction() {
+        Location location = new Location(world, origin.x() + 3.45, origin.y() + 1.0, origin.z() - 0.95);
+        sealInteraction = world.spawn(location, Interaction.class, entity -> {
+            configure(entity, "seal", Provenance.LIVE);
+            entity.setInteractionWidth(0.8F);
+            entity.setInteractionHeight(1.4F);
+            entity.setResponsive(true);
+        });
+        echoes.add(sealInteraction);
+        echoes.add(spawnLabel(location.clone().add(0, 1.1, 0),
+                "LIVE SEAL CONTROL — deliberate route / 6–45 s", Provenance.LIVE));
     }
 
     private void spawnProofInteraction(Location location) {
@@ -610,6 +638,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         for (Entity entity : new ArrayList<>(world.getEntities())) if (owned(entity)) entity.remove();
         echoes.clear();
         transferInteraction = null;
+        sealInteraction = null;
         proofInteraction = null;
     }
 

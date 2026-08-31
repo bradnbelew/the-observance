@@ -40,6 +40,9 @@ public final class EntityReplayLoopSelfTest {
         check(EntityReplayAuthority.MISSING_ROLE_DURATION_TICKS == 740
                         && EntityReplayAuthority.MISSING_ROLE_SAMPLE_COUNT == 370,
                 "M03 is authored at exactly 37 seconds and two-tick sampling");
+        check(EntityReplayAuthority.TRANSFER_WINDOW_START_TICK == 380
+                        && EntityReplayAuthority.TRANSFER_WINDOW_END_TICK == 500,
+                "M03 keeps pulses 21–22 as its target with a bounded disclosed local-latency grace");
         check(EntityReplayAuthority.MAXIMUM_DURATION_TICKS == 900
                         && EntityReplayAuthority.MAXIMUM_SAMPLES_PER_PLAYER == 450
                         && EntityReplayAuthority.MAXIMUM_TRACKED_PLAYERS == 6
@@ -143,6 +146,15 @@ public final class EntityReplayLoopSelfTest {
                     "partial M03 loop resets without proof");
             Clip correct = signedClip(clips, consent, 740, Purpose.MISSING_ROLE, true);
             Decision decision = EntityReplayAuthority.missingRole(state.snapshot(), correct);
+            check(EntityReplayAuthority.missingRole(state.snapshot(),
+                            signedMissingClipAt(clips, consent, 380)).commitsReceipt()
+                            && EntityReplayAuthority.missingRole(state.snapshot(),
+                            signedMissingClipAt(clips, consent, 500)).commitsReceipt()
+                            && EntityReplayAuthority.missingRole(state.snapshot(),
+                            signedMissingClipAt(clips, consent, 378)).status() == EntityReplayAuthority.Status.WRONG
+                            && EntityReplayAuthority.missingRole(state.snapshot(),
+                            signedMissingClipAt(clips, consent, 502)).status() == EntityReplayAuthority.Status.WRONG,
+                    "M03 accepts only the disclosed pulse 19–25 latency grace, including both exact boundaries");
             check(decision.commitsReceipt() && new String(decision.payload(), StandardCharsets.UTF_8)
                             .contains("\"raw_samples_remote\":false")
                             && !new String(decision.payload(), StandardCharsets.UTF_8).contains("\"samples\""),
@@ -246,7 +258,7 @@ public final class EntityReplayLoopSelfTest {
                 "src/main/java/com/observance/watcher/morrow/room04/replay/BukkitEntityReplay.java"));
         for (String required : new String[]{"BlockDisplay", "TextDisplay", "Interaction", "setTeleportDuration(2)",
                 "PersistentDataType", "Provenance.RECORDED", "Provenance.RECONSTRUCTED", "Provenance.LIVE",
-                "REDSTONE PULSE LOG", "CAPTIONED VOICE FRAGMENT", "LIVE RECORDING BOUNDARY",
+                "REDSTONE PULSE LOG", "CAPTIONED VOICE FRAGMENT", "LIVE RECORDING BOUNDARY", "LIVE SEAL CONTROL",
                 "runTaskTimer", "requirePrimaryThread", "PlayerQuitEvent", "activePlayers()",
                 "LABEL_SCALE", "setTransformation"}) {
             check(source.contains(required), "Paper replay adapter missing " + required);
@@ -280,6 +292,19 @@ public final class EntityReplayLoopSelfTest {
         }
         return store.persist(new Clip(RELEASE, consent.playerId(), purpose, consent.revision(), consent.consentHash(),
                 duration, count, EntityReplayAuthority.compress(raw), null));
+    }
+
+    private static Clip signedMissingClipAt(EntityReplayClipStore store, ConsentBinding consent, int transferTick)
+            throws IOException {
+        List<Sample> raw = new ArrayList<>();
+        for (int index = 0; index < EntityReplayAuthority.MISSING_ROLE_SAMPLE_COUNT; index++) {
+            int tick = index * EntityReplayAuthority.SAMPLE_INTERVAL_TICKS;
+            raw.add(sample(tick, 2.5, -2.5,
+                    tick == transferTick ? Set.of(Action.INVENTORY_TRANSFER) : Set.of()));
+        }
+        return store.persist(new Clip(RELEASE, consent.playerId(), Purpose.MISSING_ROLE, consent.revision(),
+                consent.consentHash(), EntityReplayAuthority.MISSING_ROLE_DURATION_TICKS,
+                EntityReplayAuthority.MISSING_ROLE_SAMPLE_COUNT, EntityReplayAuthority.compress(raw), null));
     }
 
     private static Clip distinctiveClip(EntityReplayClipStore store, ConsentBinding consent, int duration)
