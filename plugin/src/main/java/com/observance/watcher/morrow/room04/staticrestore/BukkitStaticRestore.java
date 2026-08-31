@@ -240,6 +240,14 @@ public final class BukkitStaticRestore implements AutoCloseable {
         world.playSound(center, Sound.BLOCK_COPPER_PLACE, SoundCategory.BLOCKS, 0.7F,
                 pass == 0 ? 0.7F : 0.9F + pass * 0.1F);
         nearbyPlayers().forEach(player -> player.sendActionBar(Component.text(message, color)));
+        plugin.getLogger().info(accessibleCueReceipt(pass));
+    }
+
+    static String accessibleCueReceipt(int pass) {
+        if (pass < 0 || pass > 3) throw new IllegalArgumentException("Static Restore cue pass is out of range");
+        return "MORROW_ACCESSIBLE_CUE id=static_restore_pass_" + pass
+                + " sound=minecraft:block.copper.place caption=actionbar"
+                + " visual=minecraft:wax_on required=true";
     }
 
     private List<Player> nearbyPlayers() {

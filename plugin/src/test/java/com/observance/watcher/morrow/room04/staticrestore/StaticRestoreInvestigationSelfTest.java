@@ -28,6 +28,7 @@ public final class StaticRestoreInvestigationSelfTest {
         restartDisconnectAndRollbackScenarios(manifest);
         resetAndCatchUpScenario(manifest);
         oneTwoSixPlayerIdempotency(manifest);
+        accessibleCueReceiptsAreExact();
         bukkitAdapterIsBounded();
         System.out.println("MORROW STATIC RESTORE M02: PASS cells=6 passes=3 evidence=4 players=1/2/6");
         System.out.println("M02_MANIFEST_SHA256=" + manifest.manifestSha256());
@@ -189,7 +190,8 @@ public final class StaticRestoreInvestigationSelfTest {
         String source = Files.readString(Path.of(
                 "src/main/java/com/observance/watcher/morrow/room04/staticrestore/BukkitStaticRestore.java"));
         for (String required : new String[]{
-                "PASS_INTERVAL_TICKS", "spawnParticle", "playSound", "PersistentDataType",
+                "PASS_INTERVAL_TICKS", "spawnParticle", "playSound", "sendActionBar",
+                "MORROW_ACCESSIBLE_CUE", "PersistentDataType",
                 "resetAndReplay", "StaticRestoreEngine", "requirePrimaryThread",
                 "CANDIDATE_LABEL_SCALE", "EVIDENCE_LABEL_SCALE", "setTransformation"}) {
             check(source.contains(required), "Paper M02 adapter missing " + required);
@@ -197,6 +199,22 @@ public final class StaticRestoreInvestigationSelfTest {
         for (String forbidden : new String[]{
                 "PlayerMoveEvent", "runTaskAsynchronously", "net.minecraft", "craftbukkit", "sendBlockChange"}) {
             check(!source.contains(forbidden), "P0 item 6 crossed a forbidden boundary via " + forbidden);
+        }
+    }
+
+    private static void accessibleCueReceiptsAreExact() {
+        for (int pass = 0; pass <= 3; pass++) {
+            String receipt = BukkitStaticRestore.accessibleCueReceipt(pass);
+            check(receipt.equals("MORROW_ACCESSIBLE_CUE id=static_restore_pass_" + pass
+                            + " sound=minecraft:block.copper.place caption=actionbar"
+                            + " visual=minecraft:wax_on required=true"),
+                    "Static Restore cue " + pass + " binds sound, caption, and visual pulse");
+        }
+        try {
+            BukkitStaticRestore.accessibleCueReceipt(4);
+            throw new AssertionError("out-of-range Static Restore cue was accepted");
+        } catch (IllegalArgumentException expected) {
+            // expected
         }
     }
 
