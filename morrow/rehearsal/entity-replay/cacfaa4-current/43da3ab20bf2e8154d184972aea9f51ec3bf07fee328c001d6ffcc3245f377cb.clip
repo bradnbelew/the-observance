@@ -1,0 +1,13 @@
+morrow-entity-replay-clip-v1
+release=morrow.rehearsal.c40f916.paper.v1
+player=f3cdae45-d1e4-3681-ae9c-ff2704713ec4
+purpose=MISSING_ROLE
+consent-revision=3
+consent-hash=3f20fe69f90aeb59ac89d507d05aaac54fc082b1c793d4dca682d016a4bbfb6b
+duration-ticks=740
+raw-samples=370
+compressed-samples=3
+0	2.000	0.000	-2.500	-90.000	-67.380	STANDING	0	
+402	2.000	0.000	-2.500	-90.000	-67.380	STANDING	0	SWING,INTERACT,INVENTORY_TRANSFER,
+738	2.000	0.000	-2.500	-90.000	-67.380	STANDING	0	
+hash=43da3ab20bf2e8154d184972aea9f51ec3bf07fee328c001d6ffcc3245f377cb

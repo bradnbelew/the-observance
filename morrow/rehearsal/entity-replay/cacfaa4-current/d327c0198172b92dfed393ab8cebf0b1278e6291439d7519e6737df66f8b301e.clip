@@ -1,0 +1,17 @@
+morrow-entity-replay-clip-v1
+release=morrow.rehearsal.c40f916.paper.v1
+player=f3cdae45-d1e4-3681-ae9c-ff2704713ec4
+purpose=DELIBERATE_LIVE_TEST
+consent-revision=3
+consent-hash=db3be5af9e303c661115e8499cc715afd2fca45ba1cdb33f7c739ae611ceaf16
+duration-ticks=900
+raw-samples=450
+compressed-samples=7
+0	1.050	0.000	-0.650	-141.911	-27.045	STANDING	0	
+342	3.850	0.000	-3.695	40.986	-16.541	STANDING	0	
+344	3.850	0.000	-3.619	40.986	-16.541	STANDING	0	
+346	3.850	0.000	-3.596	40.986	-16.541	STANDING	0	
+348	3.850	0.000	-3.591	40.986	-16.541	STANDING	0	
+654	3.000	0.000	-1.400	-45.000	-68.310	STANDING	0	
+898	3.000	0.000	-1.400	-45.000	-68.310	STANDING	0	
+hash=d327c0198172b92dfed393ab8cebf0b1278e6291439d7519e6737df66f8b301e

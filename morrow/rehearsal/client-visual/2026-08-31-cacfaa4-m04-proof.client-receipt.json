@@ -1,0 +1,64 @@
+{
+  "accessibility_profile": {
+    "audio_disabled": false,
+    "options_sha256": "2c0ac1089e3faea54179243291bc99970a6ab7a819cc8d4464efa03eadb116a7",
+    "sound_categories_zeroed": [],
+    "tutorial_toast_disabled": false
+  },
+  "account_files_read": false,
+  "asset_index": {
+    "path": "D:\\Users\\nanob\\RelocatedFromC\\AppDataRoaming\\.minecraft\\assets\\indexes\\29.json",
+    "sha256": "8e7c94ce232ccd328096bcf08fdf5edaa9c1a802372a7bde9fc29df2cf6db3af"
+  },
+  "client": {
+    "path": "D:\\Users\\nanob\\RelocatedFromC\\AppDataRoaming\\.minecraft\\versions\\1.21.11\\1.21.11.jar",
+    "sha256": "1473c9489ac50fda3c435049a76a70d61a10b8610db27f5ba9d8756b686cd3bd"
+  },
+  "control_stop_file": null,
+  "created_at": "2026-08-31T07:27:02Z",
+  "exit_code": 1,
+  "game_directory": "D:\\the-observance\\build\\morrow-offline-client\\proof-cacfaa4c\\game",
+  "identity": {
+    "kind": "dummy_offline",
+    "username": "MorrowWitness",
+    "uuid": "010623443249580a943844f72f062b77"
+  },
+  "libraries": {
+    "aggregate_sha256": "3e9ee6bb31e730c4ba3d8aba256ec6aa8cd119b9dbc0476a10cea179082dcf02",
+    "count": 75
+  },
+  "log": "D:\\the-observance\\build\\morrow-offline-client\\proof-cacfaa4c\\client.log",
+  "log_sha256": "f14369252fbb23037e7580056498a9785628f7b7cf39413c3f6fa5ca70ed8549",
+  "loopback_only": true,
+  "manifest": {
+    "path": "D:\\Users\\nanob\\RelocatedFromC\\AppDataRoaming\\.minecraft\\versions\\1.21.11\\1.21.11.json",
+    "sha256": "9471dcb0b88c812d5af64259b4f62afc84c3c3ec2f3af64e972f48f7d45e9493"
+  },
+  "max_memory_mib": 2048,
+  "natives": {
+    "count": 9,
+    "files": {
+      "OpenAL.dll": "0630aa42492f78126da1c4d99769632e03c55b2e63b050efe7e3005e07e3e6fc",
+      "freetype.dll": "c0b73302f4d4f7ea372be946011daa77521304c00d96936742fd65fb18c34fc4",
+      "glfw.dll": "affa7e54eb0dedce4a5721c327c1a16035edbbd039cd402e08107d6d2d55eb1a",
+      "jemalloc.dll": "9abf0095066ebab37b78968e11370a8078313e48cb5be8eda01f67623c6a6248",
+      "jtracy-jni-windows.dll": "04ce5d8a798051a30676051bb7003e3f4d24f3ffed6b907aa84942b2b874b438",
+      "lwjgl.dll": "a39adf52947fafd954c2a86ce031abb8c59825f7ee50337ac8c41e4280abe82d",
+      "lwjgl_opengl.dll": "fe200dc96ab31237a52facd6345d31f9740ef16dd411e5f9be014eaa30f89fb6",
+      "lwjgl_stb.dll": "de03f38f8c7471b4924aa8bdf8724c181d1a7c20428dbce2ed301877e1d387e4",
+      "lwjgl_tinyfd.dll": "ec7d76e6ef7a99628ef6f8b6e544294b700108c341837779e6e2c01c0bc3da9c"
+    }
+  },
+  "outbound_proxy": "127.0.0.1:1",
+  "process_id": 31104,
+  "production_credentials_loaded": false,
+  "run_id": "proof-cacfaa4c",
+  "schema_version": "1.0.0-morrow-offline-client-launch",
+  "server": "127.0.0.1:25602",
+  "server_resource_pack_policy": "prompt",
+  "servers_dat_sha256": "488d0ecceeb539f7d0b4b62802ce053c0daeda8581d438dbc4617d8b8fbd01ad",
+  "source_commit": "cacfaa47453e3e260269c24b5bc958d4310dd360",
+  "status": "harness_stopped_after_wait",
+  "stop_reason": "wait",
+  "wait_seconds": 120
+}

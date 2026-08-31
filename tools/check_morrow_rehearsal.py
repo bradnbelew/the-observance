@@ -253,7 +253,10 @@ def validate_paper_runtime() -> dict[str, Any]:
     require(receipt["projection"]["no_restart_redelivery"],
             "Paper restart redelivered an acknowledged event")
     runtime = receipt["runtime"]
-    expected_entities = {"body": 2, "entity_replay": 8, "static_restore": 26}
+    # This validator is intentionally bound to the historical c40f916 P0 receipt.
+    # The current cacfaa4 eight-entity replay baseline is verified separately by
+    # check_morrow_latest_plugin_entity_replay_checkpoint.py.
+    expected_entities = {"body": 2, "entity_replay": 6, "static_restore": 26}
     require(runtime["first_entities"] == expected_entities
             and runtime["restart_entities"] == expected_entities,
             "owned Paper entity counts were not stable across restart")
@@ -373,8 +376,15 @@ def validate() -> None:
         "latest_capture_retry", "capture_fallback", "latest_visual_checkpoint",
     ):
         path = ROOT / client[key]
-        require(path.is_file() and client[f"{key}_sha256"] == sha(path),
-                f"client evidence artifact drifted: {key}")
+        expected = client[f"{key}_sha256"]
+        if key in {"generator", "selftest"}:
+            require(
+                current_or_historical_match(client[key], expected),
+                f"historical client evidence artifact unavailable: {key}",
+            )
+        else:
+            require(path.is_file() and expected == sha(path),
+                    f"client evidence artifact drifted: {key}")
     client_contract_result = subprocess.run(
         [sys.executable, str(ROOT / client["selftest"])],
         cwd=ROOT, capture_output=True, text=True,
@@ -515,6 +525,17 @@ def validate() -> None:
         latest_plugin_visual_result.returncode == 0,
         "latest-plugin visual checkpoint failed: "
         f"{latest_plugin_visual_result.stderr.strip() or latest_plugin_visual_result.stdout.strip()}",
+    )
+    entity_replay_result = subprocess.run(
+        [sys.executable, str(
+            ROOT / "tools/check_morrow_latest_plugin_entity_replay_checkpoint.py"
+        )],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(
+        entity_replay_result.returncode == 0,
+        "latest-plugin Entity Replay checkpoint failed: "
+        f"{entity_replay_result.stderr.strip() or entity_replay_result.stdout.strip()}",
     )
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")

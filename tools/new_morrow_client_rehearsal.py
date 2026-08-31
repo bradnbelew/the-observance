@@ -16,7 +16,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER_RUNTIME_RECEIPT = (
-    ROOT / "morrow" / "rehearsal" / "runtime" / "d738788-current"
+    ROOT / "morrow" / "rehearsal" / "runtime" / "cacfaa4-current"
     / "paper-runtime-receipt.json"
 )
 CONTRACT_PATH = ROOT / "morrow" / "rehearsal" / "client-rehearsal-contract.json"

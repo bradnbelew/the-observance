@@ -48,18 +48,31 @@ build, media, pose, parity, and the operator-free full playthrough remain open. 
 `python tools/check_morrow_latest_plugin_visual_checkpoint.py`; verify the oxidation guard with
 `python tools/check_morrow_copper_stability.py`.
 
+Entity Replay now has a later, separately scoped client checkpoint. The M03/M04 acquisition build
+9b2c3666d4199901a148a3a1ba75145f8bae7de7 rendered the native authorization, armed M03 on
+boundary entry, accepted the designated transfer at tick 402 inside the disclosed 380–500 grace
+window, exposed the illuminated M04 seal, retained a 45-second route, and rendered its reconstructed
+echo. Commit cacfaa47453e3e260269c24b5bc958d4310dd360 then isolated the reconstructed proof marker;
+a fresh exact Paper lifecycle and real-client click committed one behavior-reuse receipt for the same
+M04 clip. The final proof target was mechanically seeded with the exact acquisition state, and the
+route used disposable console positioning assists, so this proves authority and physical client
+lifecycle—not ordinary unaided movement. Verify the journal, clips, consents, clients, captures, and
+lifecycle with python tools/check_morrow_latest_plugin_entity_replay_checkpoint.py. Audio/pack cue
+parity and the operator-free M01–M12 playthrough remain open.
+
 The broad P0 checker also records one legacy retention defect at
 `legacy-artifact-supersession.json`: the original P0 bundle hashed a working-tree
 `BukkitMorrowBody.java` state that was never retained in Git. Only that unavailable hash is narrowly
-superseded by the exact d738 source, plugin, and full Paper receipt; every other legacy artifact remains
+superseded by the exact cacfaa4 source, plugin, and full Paper receipt; every other legacy artifact remains
 byte-for-byte required.
 
 The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
 window and injects no input; Computer Use handled the bounded observed gameplay actions. The current
 retained checkpoint records proposal apply plus physical B06 wrong/correct choices and discloses the
-disposable server-console view-positioning assist. It does not satisfy continuous synchronized
-media, all poses/dialog paths, parity modes, or pacing. The separate retained
+disposable server-console view-positioning assist. The separate cacfaa4 checkpoint advances the
+M03/M04 continuous replay loop, but it does not satisfy all poses/dialog paths, audio/pack parity,
+ordinary unaided route movement, or pacing. The separate retained
 `client-cohort-runtime/latest.json` checkpoint now proves real vanilla 1.21.11 one-, two-, and
 six-client concurrent joins, mutation-free safe entry, all 2,304 main-inventory items per player
 before disconnect and after Paper restart, stable per-player UUIDs, no projector redelivery, and clean

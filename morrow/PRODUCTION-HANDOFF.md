@@ -59,13 +59,14 @@ Implemented and verified:
   full client contract now agree. A forward-only migration preserves event UUIDs, payloads,
   idempotency keys, and stored projections; local proof is retained at
   `morrow/rehearsal/database/latest-m06-event-correction-local.json`, while live validation remains open
-- the current plugin at commit `d7387880d8fe2e2d74235160fab2acd109bccca9` passed a fresh
+- the latest exact-lifecycle plugin at commit `cacfaa47453e3e260269c24b5bc958d4310dd360` passed a fresh
   two-boot exact Paper 1.21.11 build 132 lifecycle with stable M05–M12 readback, clean ownership
   shutdown, and 503/503/200 projector recovery. The retained proof lives under
-  `morrow/rehearsal/runtime/d738788-current`; real-client interaction proof covers Room 04 proposal
+  `morrow/rehearsal/runtime/cacfaa4-current`; earlier d738788 real-client interaction proof covers Room 04 proposal
   apply, all three restore cues, physical B06 dialog, harmless wrong feedback, correct inferred filing,
   one canonical receipt, client-only body self-heal, zero-inventory-mutation safe entry, and clean shutdown at
-  `morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`
+  `morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`;
+  the later cacfaa4 checkpoint covers M03 authorization/timed transfer and M04 seal/replay/proof
 - that lifecycle exposed a real restart defect: unwaxed authored copper naturally advanced from
   `cut_copper` to `exposed_cut_copper` in Room 04 and from `copper_grate` to
   `exposed_copper_grate` in M05. The fix recognizes five vanilla weathering families, repairs only
@@ -298,6 +299,19 @@ neither deferred-audit failure nor consequence safe halt. The fail-closed receip
 `morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json`.
 Exact-build review and the operator-free full playthrough remain open.
 
+The next bounded client slice closes the physical M03/M04 Entity Replay loop without claiming the
+whole playthrough. On acquisition commit 9b2c3666d4199901a148a3a1ba75145f8bae7de7, a real vanilla
+client authorized recording, completed M03 at tick 402, sealed a 900-tick M04 route from the
+illuminated in-boundary control, and rendered the resulting echo. The overlapping proof target found
+in that pass was repaired by final validation commit
+cacfaa47453e3e260269c24b5bc958d4310dd360; its fresh Paper lifecycle and client retest visibly
+rendered RECONSTRUCTED PROOF — authenticate exact route and committed one
+morrow.act2.behavior_reuse_proven receipt against the same clip hash. Evidence:
+morrow/rehearsal/client-visual/2026-08-31-latest-plugin-cacfaa4-m03-m04-checkpoint.json.
+The M04 route used disposable server-console positioning assists, and the final retest mechanically
+seeded the exact acquisition journal/consent/clips. Ordinary unaided movement, audio/pack cue parity,
+and the full operator-free M01–M12 pass remain launch gates.
+
 ### P1 — Safe database rehearsal
 
 Completed on 2026-08-30 against the isolated `observance-validation-20260727` project, then paused:
@@ -332,11 +346,12 @@ same mechanic.
   audited and build-clean but have not been executed on the isolated validation project or proven through
   an authenticated browser session.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
-  connects, safe entry is runtime-proven, and the latest-plugin d738788 Room 04 flow has retained
-  proposal-apply plus physical B06 wrong/correct evidence through the exact-window fallback. The primary
-  Computer Use capture API remains unavailable on this host. Exact-build proposal review, the full
-  Morrow display-body pose set, and M03/M04 Entity Replay still require live-client visual and interaction
-  rehearsal. The Copperline reboot route has real email delivery, inbox receipt, provider verification,
+  connects, safe entry is runtime-proven, the d738788 Room 04 flow has retained proposal-apply plus
+  physical B06 wrong/correct evidence, and the cacfaa4 lane has retained M03 timed transfer plus M04
+  seal/replay/proof evidence through the exact-window fallback. The primary Computer Use capture API
+  remains unavailable on this host. Exact-build proposal review, the full Morrow display-body pose set,
+  ordinary unaided M04 movement, audio/pack cue parity, and the operator-free full route still require
+  live-client rehearsal. The Copperline reboot route has real email delivery, inbox receipt, provider verification,
   and an exact verifier-cookie defect fix, but still requires a fresh final PKCE callback and
   authenticated RLS read. Discord has real bot-only Gateway
   transport evidence but still requires a database-claimed worker and disposable-guild linked-player

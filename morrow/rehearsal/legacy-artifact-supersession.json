@@ -8,12 +8,12 @@
     "retention_defect": "The P0 bundle hashed a working-tree source state that was not retained in Git; the original bytes cannot be reconstructed after later body fixes."
   },
   "replacement": {
-    "source_commit": "d7387880d8fe2e2d74235160fab2acd109bccca9",
+    "source_commit": "cacfaa47453e3e260269c24b5bc958d4310dd360",
     "source_sha256": "199ab0538271128f95caf403c3b1ff533e0ff78cc5fe17b0cf8726774a6ba15c",
-    "plugin_sha256": "ea2cbdfd56eca83580c1dcf71722c3391f85e556c3ea4c25f4cc69561e0bf342",
-    "paper_runtime_receipt": "morrow/rehearsal/runtime/d738788-current/paper-runtime-receipt.json",
-    "paper_runtime_receipt_sha256": "21222c581df47c3f09312915c614589cea84890064bcddc40815089886c0bf72",
-    "visual_checkpoint": "morrow/rehearsal/client-visual/2026-08-31-latest-plugin-d738788-m02-interaction-checkpoint.json"
+    "plugin_sha256": "31f02511d90072682c6aaa98df85113fb6045fe68ed3f7460389e977e5141f54",
+    "paper_runtime_receipt": "morrow/rehearsal/runtime/cacfaa4-current/paper-runtime-receipt.json",
+    "paper_runtime_receipt_sha256": "520fc0da75892e3b979b4482260d5ca2660efea8226ca0ebaa3c441821cc32f6",
+    "visual_checkpoint": "morrow/rehearsal/client-visual/2026-08-31-latest-plugin-cacfaa4-m03-m04-checkpoint.json"
   },
   "scope": "This supersedes only the unavailable legacy BukkitMorrowBody source hash. Every other P0 artifact remains byte-for-byte required.",
   "production_mutated": false

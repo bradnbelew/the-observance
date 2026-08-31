@@ -47,10 +47,11 @@ vertical slice remains the first complete human launch gate:
 37-second replay -> deliberate movement test -> synchronized ticket -> embodied Morrow -> echo payoff`
 
 The twelve investigations have Paper authority and restart checkpoints, and the website, Discord, and
-earned-media projections now cover the full campaign locally. The latest corrected plugin also has a
-source-bound real-client Room 04/terminal still, but not an interaction playthrough. This is not a
-production-ready claim: complete graphical playthroughs, the fresh authenticated browser lane, and the
-database-bound Discord lane remain open. Production stays disabled. See
+earned-media projections now cover the full campaign locally. Real-client checkpoints now cover the
+Room 04 terminal, M02 proposal/classification, M03 timed transfer, and M04 seal/replay/proof loop on
+the corrected plugin. This is not a production-ready claim: the M04 route used disclosed positioning
+assists, complete graphical playthroughs and audio/pack parity remain open, and the fresh authenticated
+browser plus database-bound Discord lanes are still gated. Production stays disabled. See
 `authority/IMPLEMENTATION-AUDIT.md` for the exact split.
 
 ## Non-negotiable design rules
