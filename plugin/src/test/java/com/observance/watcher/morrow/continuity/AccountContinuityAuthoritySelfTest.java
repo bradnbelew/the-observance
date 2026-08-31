@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /** Main-driven M09 privacy, disconnect, identity, reset, cohort, idempotency, and restart matrix. */
@@ -26,6 +28,7 @@ public final class AccountContinuityAuthoritySelfTest {
         oneTwoSixPlayerDisconnectAndIdentityProofs();
         wrongSecretResetAndImmutableBoundaries();
         everyCrashWindowSurvivesRestartWithoutPlaintextSecret();
+        physicalManifestAndInstallerAreBounded();
         System.out.println("MORROW ACCOUNT CONTINUITY M09: PASS secret=sealed echo=bounded players=1/2/6");
     }
 
@@ -154,6 +157,42 @@ public final class AccountContinuityAuthoritySelfTest {
         } finally { Files.deleteIfExists(path); Files.deleteIfExists(directory); }
     }
 
+    private static void physicalManifestAndInstallerAreBounded() throws Exception {
+        AccountContinuityManifest manifest = new AccountContinuityManifest();
+        check(manifest.cells().size() == 2_520 && manifest.stateLamps().size() == 4
+                        && manifest.manifestSha256().matches("[0-9a-f]{64}")
+                        && manifest.manifestSha256().equals(new AccountContinuityManifest().manifestSha256())
+                        && "minecraft:air".equals(manifest.cells().get(manifest.returnCell()))
+                        && "minecraft:crying_obsidian".equals(manifest.cells().get(manifest.echoDais())),
+                "M09 manifest must be one stable bounded safe lobby with a distinct echo dais");
+        Path directory = Files.createTempDirectory("m09-installer-"); Path receipt = directory.resolve("m09.receipt");
+        AccountContinuityInstaller.Origin origin = new AccountContinuityInstaller.Origin(160, 80, 0);
+        try {
+            FakeWorld world = new FakeWorld(); AccountContinuityInstaller installer = new AccountContinuityInstaller(manifest, receipt);
+            AccountContinuityInstaller.Result built = installer.install(RELEASE, origin, world);
+            check(built.status() == AccountContinuityInstaller.Status.BUILT && built.blockCount() == 2_520,
+                    "M09 empty-target installer must audit every safe-lobby cell");
+            check(installer.install(RELEASE, origin, world).status() == AccountContinuityInstaller.Status.ALREADY_PRESENT,
+                    "M09 installer does not validate its release/world/origin receipt after restart");
+            AccountContinuityManifest.Cell lamp = manifest.stateLamps().values().iterator().next();
+            world.setBlockData(lamp, "minecraft:copper_bulb[lit=true,powered=false]"); installer.audit(world, true);
+            try { installer.audit(world, false); throw new AssertionError("expected strict M09 lamp audit failure"); }
+            catch (IOException expected) { /* expected */ }
+        } finally { Files.deleteIfExists(receipt); Files.deleteIfExists(directory); }
+        Path foreignDirectory = Files.createTempDirectory("m09-foreign-");
+        try {
+            FakeWorld world = new FakeWorld(); AccountContinuityManifest.Cell cell = manifest.cells().keySet().iterator().next();
+            world.setBlockData(cell, "minecraft:diamond_block");
+            try {
+                new AccountContinuityInstaller(manifest, foreignDirectory.resolve("m09.receipt")).install(RELEASE, origin, world);
+                throw new AssertionError("expected M09 occupied-target refusal");
+            } catch (IOException expected) {
+                check("minecraft:diamond_block".equals(world.blockData(cell)),
+                        "M09 occupied-target refusal must preserve foreign blocks");
+            }
+        } finally { Files.deleteIfExists(foreignDirectory.resolve("m09.receipt")); Files.deleteIfExists(foreignDirectory); }
+    }
+
     private static Progress returned(Fixture fixture, UUID volunteer, AnchorMark secret, String suffix) {
         Progress progress = AccountContinuityAuthority.begin(Progress.initial(), fixture.state.snapshot(),
                 volunteer, secret, challenge(suffix)).progress();
@@ -202,6 +241,15 @@ public final class AccountContinuityAuthoritySelfTest {
         @Override public void close() throws IOException {
             Files.deleteIfExists(directory.resolve("morrow.journal")); Files.deleteIfExists(directory);
         }
+    }
+    private static final class FakeWorld implements AccountContinuityInstaller.WorldPort {
+        private final Map<AccountContinuityManifest.Cell, String> blocks = new LinkedHashMap<>();
+        @Override public String binding() { return "m09-test-world:00000000-0000-0000-0000-000000000009"; }
+        @Override public String blockData(AccountContinuityManifest.Cell relative) {
+            return blocks.getOrDefault(relative, "minecraft:air");
+        }
+        @Override public boolean isAir(AccountContinuityManifest.Cell relative) { return "minecraft:air".equals(blockData(relative)); }
+        @Override public void setBlockData(AccountContinuityManifest.Cell relative, String blockData) { blocks.put(relative, blockData); }
     }
     private static byte[] bytes(String value) { return value.getBytes(StandardCharsets.UTF_8); }
 }
