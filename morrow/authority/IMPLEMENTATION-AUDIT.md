@@ -1,6 +1,6 @@
 # Morrow M01–M12 Implementation Audit
 
-Audited 2026-08-30 against the canonical puzzle ledger, event catalog, runtime checkpoints, full
+Audited 2026-08-31 against the canonical puzzle ledger, event catalog, runtime checkpoints, full
 Copperline production build, Discord audit, and retained rehearsal bundle.
 
 Status language is deliberate:
@@ -10,10 +10,15 @@ Status language is deliberate:
 - **Local cross-surface** means compiled/tested without contacting Supabase, Discord, or production.
 - **Open** names the next missing proof, not a hidden code placeholder.
 
+The latest local gate passed the plugin's full 63-task Gradle build, the authority and retained
+rehearsal audits, Copperline's Next.js production build and complete self-test suite, and Discord's
+full campaign/projection/database-bundle audit. Those checks were local-only; they did not contact or
+mutate production services.
+
 | ID | Implemented experience | Current proof | Open gate |
 | --- | --- | --- | --- |
 | M01 | Copperline attachment custody, SHA-256 verification, short handoff token, owner-bound case, spoiler-safe Discord custody/handoff receipts | Local site build; historical isolated owner/RLS and Act 0 browser actions | Fresh post-fix PKCE callback and final owner-only case read |
-| M02 | Six-cell Static Restore proposal, native classification, unsupported-block proof, rollback baseline, curious-state transition | Authority tests; latest-plugin d738788 exact Paper build/restart; real-client proposal apply; physical B06 dialog; harmless wrong feedback; correct inferred receipt; invalid client-body self-heal | Replay review on d738788; operator-free end-to-end M02 pacing |
+| M02 | Six-cell Static Restore proposal, native classification, unsupported-block proof, rollback baseline, curious-state transition | Authority tests; latest-plugin d738788 exact Paper build/restart; real-client proposal apply; physical B06 dialog; harmless wrong feedback; correct inferred receipt; invalid client-body self-heal | Current-source read-only proposal review; operator-free end-to-end M02 pacing |
 | M03 | Thirty-seven-second display replay, missing player role, pulse/inventory timing, captioned earned voice fragment | Authority tests; cacfaa4 exact Paper loop/restart; real-client authorization and boundary-armed recording; tick-402 designated transfer; retained clip/journal/consent | Audio-on/off cue parity and operator-free pacing |
 | M04 | Consented bounded movement recording, local-only samples, sealed derivative, later behavior match, private contradiction flow | 1/2/6 authority/restart/outage tests; real-client illuminated seal, 900-tick route, reconstructed echo, isolated proof click, and one behavior-reuse receipt; local diagram; historical Gateway message transport | Ordinary unaided movement pass plus database-bound linked-player ephemeral flow |
 | M05 | Three physical version rooms, private custody summaries, routed signal, preserve-contradiction choice | Paper-proven: 1,617 blocks, 3 displays, stable restart | Human asymmetric room routing, native choice, readability, wrong choice, Escape |
