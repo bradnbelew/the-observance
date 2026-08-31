@@ -126,8 +126,8 @@ def test_pack_server(root: Path) -> None:
 
 def test_post_status_hold_bounds() -> None:
     assert rehearsal.validate_post_status_hold(0) == 0
-    assert rehearsal.validate_post_status_hold(60) == 60
-    for invalid in (-1, 61):
+    assert rehearsal.validate_post_status_hold(90) == 90
+    for invalid in (-1, 91):
         try:
             rehearsal.validate_post_status_hold(invalid)
         except RuntimeError:
@@ -145,7 +145,7 @@ def main() -> None:
         test_pack_server(root)
         test_post_status_hold_bounds()
     print("MORROW RESOURCE PACK REHEARSAL SELFTEST: PASS policies=3 nbt=uncompressed "
-          "loopback_get=1 hold-max=60")
+          "loopback_get=1 hold-max=90")
 
 
 if __name__ == "__main__":

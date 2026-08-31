@@ -24,7 +24,7 @@ import run_morrow_offline_client as client_fixture
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {"loaded": "LOADED", "declined": "DECLINED"}
-MAX_POST_STATUS_HOLD_SECONDS = 60
+MAX_POST_STATUS_HOLD_SECONDS = 90
 
 
 def sha1(path: Path) -> str:
