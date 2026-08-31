@@ -435,9 +435,9 @@ public final class BukkitMorrowDialogs implements Listener, AutoCloseable {
         return Dialog.create(builder -> builder.empty()
                 .base(base(
                         "Entity Replay — M03/M04",
-                        "Every participant opts in separately. Samples remain local, stop at 45 seconds, and include only movement, look, pose, selected slot, and designated actions. Leaving the marked boundary deletes an unsealed clip."))
+                        "Every participant opts in separately. Consent arms a 20-second entry window; recording and its clock begin only after entering the marked boundary. Samples remain local, stop at 45 seconds, and include only movement, look, pose, selected slot, and designated actions. Leaving after tick zero deletes an unsealed clip."))
                 .type(DialogType.multiAction(List.of(
-                        button("Opt in and start", "Creates or renews your local purpose-bound consent, then starts the current bounded scene.", OPT_IN_REPLAY),
+                        button("Arm recording", "Creates or renews local purpose-bound consent. Enter the visible boundary within 20 seconds; tick zero starts on entry.", OPT_IN_REPLAY),
                         button("Seal deliberate test", "M04 only: persists and verifies the clip before its receipt or echo can occur.", SEAL_REPLAY),
                         button("Replay sealed test", "Reconstructs the exact local hash with a display echo; creates no receipt by itself.", RESTART_REPLAY),
                         button("Cancel unsealed clip", "Deletes only your active unsealed samples; consent remains.", CANCEL_REPLAY),

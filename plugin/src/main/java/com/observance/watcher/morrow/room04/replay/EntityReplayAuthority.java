@@ -17,6 +17,7 @@ import java.util.UUID;
 /** Pure canonical M03/M04 bounds, sample grammar, compression, timing, and proof predicates. */
 public final class EntityReplayAuthority {
     public static final int SAMPLE_INTERVAL_TICKS = 2;
+    public static final int ENTRY_GRACE_TICKS = 400;
     public static final int MAXIMUM_DURATION_TICKS = 900;
     public static final int MAXIMUM_SAMPLES_PER_PLAYER = 450;
     public static final int MAXIMUM_TRACKED_PLAYERS = 6;
@@ -37,6 +38,7 @@ public final class EntityReplayAuthority {
     public enum Action { SWING, JUMP, CROUCH, DROP, INTERACT, INVENTORY_TRANSFER }
     public enum Provenance { RECORDED, RECONSTRUCTED, LIVE }
     public enum Status { CORRECT, WRONG, NOT_READY }
+    public enum BoundaryPhase { ARMED_FOR_ENTRY, RECORDING, CANCELLED }
 
     public record Boundary(double minimumX, double maximumX, double minimumY, double maximumY,
                            double minimumZ, double maximumZ) {
@@ -164,6 +166,15 @@ public final class EntityReplayAuthority {
     }
 
     private EntityReplayAuthority() { }
+
+    public static BoundaryPhase boundaryPhase(int sampleCount, int entryGraceTicks, boolean insideBoundary) {
+        if (sampleCount < 0 || entryGraceTicks < 0) {
+            throw new IllegalArgumentException("recording boundary counters cannot be negative");
+        }
+        if (insideBoundary) return BoundaryPhase.RECORDING;
+        if (sampleCount == 0 && entryGraceTicks > 0) return BoundaryPhase.ARMED_FOR_ENTRY;
+        return BoundaryPhase.CANCELLED;
+    }
 
     public static List<Sample> compress(List<Sample> raw) {
         Objects.requireNonNull(raw, "raw");

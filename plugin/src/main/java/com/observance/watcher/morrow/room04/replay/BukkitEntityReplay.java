@@ -4,6 +4,7 @@ import com.observance.watcher.morrow.MorrowLocalState;
 import com.observance.watcher.morrow.MorrowRelationshipSnapshot;
 import com.observance.watcher.morrow.room04.RecoveryRoom04Installer.Origin;
 import com.observance.watcher.morrow.room04.replay.EntityReplayAuthority.Action;
+import com.observance.watcher.morrow.room04.replay.EntityReplayAuthority.BoundaryPhase;
 import com.observance.watcher.morrow.room04.replay.EntityReplayAuthority.Clip;
 import com.observance.watcher.morrow.room04.replay.EntityReplayAuthority.ConsentBinding;
 import com.observance.watcher.morrow.room04.replay.EntityReplayAuthority.Decision;
@@ -77,6 +78,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
     private final NamespacedKey provenanceKey;
     private final NamespacedKey expiresKey;
     private final Map<UUID, EnumSet<Action>> pendingActions = new HashMap<>();
+    private final Map<UUID, Integer> entryGraceTicks = new HashMap<>();
     private final Map<UUID, Double> lastVerticalVelocity = new HashMap<>();
     private final List<Entity> echoes = new ArrayList<>();
     private final Map<UUID, Clip> lastClips = new HashMap<>();
@@ -128,10 +130,10 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         if (recorder.active(player.getUniqueId())) return "Your bounded recording is already active.";
         ConsentBinding consent = consents.grant(player.getUniqueId(), purpose);
         recorder.start(consent);
-        if (purpose == Purpose.MISSING_ROLE) startAuthoredMissingRoleEcho();
+        entryGraceTicks.put(player.getUniqueId(), EntityReplayAuthority.ENTRY_GRACE_TICKS);
         return purpose == Purpose.MISSING_ROLE
-                ? "Local consent revision " + consent.revision() + " is active. Stand in the marked missing position and transfer at pulse 21–22. The loop ends at exactly 37 seconds."
-                : "Local consent revision " + consent.revision() + " is active. Make an absurd, distinctive route inside the marked boundary, then seal it at the terminal.";
+                ? "Local consent revision " + consent.revision() + " is armed for 20 seconds. Enter the marked missing position; tick zero begins on entry. Transfer at pulse 21–22."
+                : "Local consent revision " + consent.revision() + " is armed for 20 seconds. Enter the marked boundary; tick zero begins on entry. Make a distinctive route, then seal it at the terminal.";
     }
 
     public String revoke(Player player) throws IOException {
@@ -145,6 +147,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         consents.revoke(player.getUniqueId(), purpose);
         recorder.cancel(player.getUniqueId());
         pendingActions.remove(player.getUniqueId());
+        entryGraceTicks.remove(player.getUniqueId());
         if (purpose == Purpose.MISSING_ROLE
                 || replaying != null && replaying.playerId().equals(player.getUniqueId())) stopReplay();
         return "Consent was revoked. Your unsealed capture and any active echo were removed.";
@@ -154,6 +157,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         requirePrimaryThread();
         boolean removed = recorder.cancel(player.getUniqueId());
         pendingActions.remove(player.getUniqueId());
+        entryGraceTicks.remove(player.getUniqueId());
         if (replaying != null && replaying.playerId().equals(player.getUniqueId())) stopReplay();
         return removed ? "The unsealed local clip was deleted; consent remains available for a fresh start."
                 : "No unsealed local clip existed.";
@@ -215,6 +219,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
             if (player == null || !player.isOnline() || player.getWorld() != world) {
                 recorder.cancel(playerId);
                 pendingActions.remove(playerId);
+                entryGraceTicks.remove(playerId);
                 continue;
             }
             Purpose purpose = recorder.purpose(playerId).orElse(null);
@@ -229,6 +234,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
             if (consent == null) {
                 recorder.cancel(playerId);
                 pendingActions.remove(playerId);
+                entryGraceTicks.remove(playerId);
                 player.sendMessage(Component.text("Consent was absent; the unsealed clip was deleted.", NamedTextColor.YELLOW));
                 continue;
             }
@@ -241,13 +247,28 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
             double x = location.getX() - origin.x();
             double y = location.getY() - origin.y();
             double z = location.getZ() - origin.z();
-            if (!EntityReplayAuthority.RECORDING_BOUNDARY.contains(x, y, z)) {
-                recorder.cancel(playerId);
-                pendingActions.remove(playerId);
-                player.sendMessage(Component.text("You left the visible recording boundary; the unsealed clip was deleted.", NamedTextColor.YELLOW));
+            int sampleCount = recorder.sampleCount(playerId);
+            int grace = entryGraceTicks.getOrDefault(playerId, 0);
+            BoundaryPhase boundary = EntityReplayAuthority.boundaryPhase(
+                    sampleCount, grace, EntityReplayAuthority.RECORDING_BOUNDARY.contains(x, y, z));
+            if (boundary == BoundaryPhase.ARMED_FOR_ENTRY) {
+                entryGraceTicks.put(playerId, Math.max(0, grace - EntityReplayAuthority.SAMPLE_INTERVAL_TICKS));
                 continue;
             }
-            int tick = recorder.sampleCount(playerId) * 2;
+            if (boundary == BoundaryPhase.CANCELLED) {
+                recorder.cancel(playerId);
+                pendingActions.remove(playerId);
+                entryGraceTicks.remove(playerId);
+                player.sendMessage(Component.text(sampleCount == 0
+                        ? "The 20-second entry window expired; no samples or receipt were retained."
+                        : "You left the visible recording boundary; the unsealed clip was deleted.", NamedTextColor.YELLOW));
+                continue;
+            }
+            entryGraceTicks.remove(playerId);
+            int tick = sampleCount * EntityReplayAuthority.SAMPLE_INTERVAL_TICKS;
+            if (purpose == Purpose.MISSING_ROLE && tick == 0 && replayTask == null) {
+                startAuthoredMissingRoleEcho();
+            }
             Sample sample = new Sample(tick, x, y, z, location.getYaw(), location.getPitch(), pose(player),
                     player.getInventory().getHeldItemSlot(), drainActions(playerId));
             EntityReplayRecorder.CaptureResult result = recorder.capture(consent, sample);
@@ -400,6 +421,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         Purpose purpose = recorder.purpose(event.getPlayer().getUniqueId()).orElse(null);
         recorder.cancel(event.getPlayer().getUniqueId());
         pendingActions.remove(event.getPlayer().getUniqueId());
+        entryGraceTicks.remove(event.getPlayer().getUniqueId());
         lastVerticalVelocity.remove(event.getPlayer().getUniqueId());
         if (purpose == Purpose.MISSING_ROLE
                 || replaying != null && replaying.playerId().equals(event.getPlayer().getUniqueId())) stopReplay();
@@ -556,6 +578,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
     private void cancelWithFeedback(Player player, String text, Exception failure) {
         recorder.cancel(player.getUniqueId());
         pendingActions.remove(player.getUniqueId());
+        entryGraceTicks.remove(player.getUniqueId());
         player.sendMessage(Component.text(text, NamedTextColor.RED));
         plugin.getLogger().warning("Morrow Entity Replay halted safely: " + safe(failure.getMessage()));
     }
@@ -604,6 +627,7 @@ public final class BukkitEntityReplay implements Listener, AutoCloseable {
         cleanupTask = null;
         recorder.cancelAll();
         pendingActions.clear();
+        entryGraceTicks.clear();
         lastVerticalVelocity.clear();
         cleanupOwned();
     }

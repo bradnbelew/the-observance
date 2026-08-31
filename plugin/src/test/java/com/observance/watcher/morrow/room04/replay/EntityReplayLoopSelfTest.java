@@ -42,8 +42,21 @@ public final class EntityReplayLoopSelfTest {
                 "M03 is authored at exactly 37 seconds and two-tick sampling");
         check(EntityReplayAuthority.MAXIMUM_DURATION_TICKS == 900
                         && EntityReplayAuthority.MAXIMUM_SAMPLES_PER_PLAYER == 450
-                        && EntityReplayAuthority.MAXIMUM_TRACKED_PLAYERS == 6,
+                        && EntityReplayAuthority.MAXIMUM_TRACKED_PLAYERS == 6
+                        && EntityReplayAuthority.ENTRY_GRACE_TICKS == 400,
                 "recorder hard bounds are exact");
+        check(EntityReplayAuthority.boundaryPhase(0, 400, false)
+                        == EntityReplayAuthority.BoundaryPhase.ARMED_FOR_ENTRY
+                        && EntityReplayAuthority.boundaryPhase(0, 2, false)
+                        == EntityReplayAuthority.BoundaryPhase.ARMED_FOR_ENTRY
+                        && EntityReplayAuthority.boundaryPhase(0, 0, false)
+                        == EntityReplayAuthority.BoundaryPhase.CANCELLED
+                        && EntityReplayAuthority.boundaryPhase(1, 400, false)
+                        == EntityReplayAuthority.BoundaryPhase.CANCELLED
+                        && EntityReplayAuthority.boundaryPhase(0, 0, true)
+                        == EntityReplayAuthority.BoundaryPhase.RECORDING,
+                "terminal opt-in arms entry, tick zero begins inside, and post-start exit cancels");
+        expectIllegal(() -> EntityReplayAuthority.boundaryPhase(-1, 0, false));
         List<Sample> redundant = List.of(sample(0, 1.5, -1.5, Set.of()), sample(2, 1.5, -1.5, Set.of()),
                 sample(4, 1.5, -1.5, Set.of(Action.SWING)), sample(6, 1.5, -1.5, Set.of()));
         List<Sample> compressed = EntityReplayAuthority.compress(redundant);
