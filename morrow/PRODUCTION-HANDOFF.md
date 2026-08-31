@@ -62,8 +62,9 @@ Implemented and verified:
 - the rebuilt post-correction plugin at commit `fedac8966bdccd099b6ab8d443134286ec4dc177`
   passed a fresh two-boot exact Paper 1.21.11 build 132 lifecycle with stable M05–M12 readback,
   clean ownership shutdown, and 503/503/200 projector recovery. The retained proof lives under
-  `morrow/rehearsal/runtime/fedac89-current`; it is latest-plugin server evidence, while the retained
-  graphical Room 04 still remains source-bound to d2580fd
+  `morrow/rehearsal/runtime/fedac89-current`; the same exact target also has a fresh dummy-client
+  Room 04/terminal still, zero-mutation safe-entry log, and clean shutdown bound at
+  `morrow/rehearsal/client-visual/2026-08-31-latest-plugin-fedac89-room04-checkpoint.json`
 - M09 Account Continuity is implemented as a 2,520-cell safe chamber with a hashed private anchor,
   real quit/join receipts, a four-action bounded echo, excluded-knowledge identity challenge, four
   state lamps, ten owned entities, reset/immutability rules, crash recovery, and 1/2/6-player authority
@@ -276,6 +277,16 @@ The fail-closed receipt is
 `morrow/rehearsal/client-visual/2026-08-30-source-d2580fd-room04-checkpoint.json`. No client input was
 sent in this run, so it does not advance any interaction or full-playthrough gate.
 
+After the M06 event correction, a third fresh client run binds plugin commit
+`fedac8966bdccd099b6ab8d443134286ec4dc177` and plugin SHA-256
+`76660daabba28d0aa13eb547bc5e5854ed93107a80c038f94e79c002e15f228c` to the same exact Paper build.
+The unobscured frame has the vanilla tutorial toast disabled and again shows Room 04, the centered
+copper terminal, and bounded `MORROW // TERMINAL` label. Exact client/server logs prove a loopback join,
+zero-inventory-mutation safe entry, and clean runtime shutdown. The fail-closed receipt is
+`morrow/rehearsal/client-visual/2026-08-31-latest-plugin-fedac89-room04-checkpoint.json`. This is the
+latest-plugin still-image proof; no client input was sent, so native choices and the full playthrough
+remain open.
+
 ### P1 — Safe database rehearsal
 
 Completed on 2026-08-30 against the isolated `observance-validation-20260727` project, then paused:
@@ -310,7 +321,7 @@ same mechanic.
   audited and build-clean but have not been executed on the isolated validation project or proven through
   an authenticated browser session.
 - The automated P0 receipt bundle and disposable Paper lifecycle are green. A graphical client now
-  connects, safe entry is runtime-proven, and the source-bound d2580fd Room 04 terminal has bounded retained
+  connects, safe entry is runtime-proven, and the latest-plugin fedac89 Room 04 terminal has bounded retained
   still evidence through the exact-window fallback. The primary Computer Use capture API remains
   unavailable on this host. The full Morrow display-body pose set, Paper dialogs, M02 Static Restore,
   and M03/M04 Entity Replay still require live-client visual and interaction

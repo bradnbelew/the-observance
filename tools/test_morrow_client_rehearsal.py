@@ -26,7 +26,6 @@ PAPER_RUNTIME_RECEIPT = (
     ROOT / "morrow" / "rehearsal" / "runtime" / "fedac89-current"
     / "paper-runtime-receipt.json"
 )
-PLUGIN_JAR = ROOT / "plugin" / "build" / "libs" / "observance-0.5.0.jar"
 
 
 def sha(path: Path) -> str:
@@ -58,20 +57,10 @@ def journal() -> bytes:
 
 def make_fixture(root: Path) -> Path:
     run = root / "synthetic-pass"
-    runtime = json.loads(PAPER_RUNTIME_RECEIPT.read_text(encoding="utf-8"))
-    runtime["plugin_sha256"] = sha(PLUGIN_JAR)
-    runtime["source_commit"] = subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True,
-        capture_output=True, text=True,
-    ).stdout.strip()
-    synthetic_runtime = root / "synthetic-paper-runtime-receipt.json"
-    synthetic_runtime.write_text(
-        json.dumps(runtime, indent=2, sort_keys=True) + "\n", encoding="utf-8",
-    )
     result = subprocess.run(
         ["python", str(ROOT / "tools" / "new_morrow_client_rehearsal.py"),
          "--run-id", run.name, "--output-root", str(root),
-         "--paper-runtime-receipt", str(synthetic_runtime),
+         "--paper-runtime-receipt", str(PAPER_RUNTIME_RECEIPT),
          "--operator-id", "synthetic-operator", "--observer-id", "synthetic-observer"],
         cwd=ROOT, check=True, capture_output=True, text=True,
     )
@@ -176,10 +165,10 @@ def make_fixture(root: Path) -> Path:
 
 
 def main() -> int:
-    (ROOT / "build").mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory(
-        prefix="morrow-client-selftest-", dir=ROOT / "build",
-    ) as temporary:
+    # Use the host temp root rather than the repository build directory. On
+    # sandboxed Windows, mkdir can be denied while os.access still reports the
+    # parent writable, causing tempfile.mkdtemp to retry every candidate name.
+    with tempfile.TemporaryDirectory(prefix="morrow-client-selftest-") as temporary:
         run = make_fixture(Path(temporary))
         validate(run)
 

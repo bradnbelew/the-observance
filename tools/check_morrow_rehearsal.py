@@ -463,6 +463,15 @@ def validate() -> None:
         "source-bound visual checkpoint failed: "
         f"{source_bound_visual_result.stderr.strip() or source_bound_visual_result.stdout.strip()}",
     )
+    latest_plugin_visual_result = subprocess.run(
+        [sys.executable, str(ROOT / "tools/check_morrow_latest_plugin_visual_checkpoint.py")],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    require(
+        latest_plugin_visual_result.returncode == 0,
+        "latest-plugin visual checkpoint failed: "
+        f"{latest_plugin_visual_result.stderr.strip() or latest_plugin_visual_result.stdout.strip()}",
+    )
     paper_lane = next(row for row in matrix["automated"] if row["lane"] == "disposable_paper_boot")
     require(paper_lane["status"] == "proven_runtime", "launch matrix omits actual Paper proof")
     database_lane = next(row for row in matrix["live_services_required"]

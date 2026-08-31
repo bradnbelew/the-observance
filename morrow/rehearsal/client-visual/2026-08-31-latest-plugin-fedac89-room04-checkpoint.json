@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.0.0-morrow-latest-plugin-visual-checkpoint",
+  "status": "latest_plugin_room04_visual_pass_interaction_open",
+  "captured_at": "2026-08-31T05:09:37.097665Z",
+  "scope": "loopback disposable Paper and dummy offline Minecraft client; bounded still-image proof only",
+  "plugin_source_commit": "fedac8966bdccd099b6ab8d443134286ec4dc177",
+  "launcher_source_commit": "03ba091cc04eadb0a3f3610467d1fb1d164c1644",
+  "runtime": {
+    "paper_version": "1.21.11",
+    "paper_build": 132,
+    "paper_sha256": "5ffef465eeeb5f2a3c23a24419d97c51afd7dbb4923ff42df9a3f58bba1ccfba",
+    "plugin_sha256": "76660daabba28d0aa13eb547bc5e5854ed93107a80c038f94e79c002e15f228c",
+    "server": "127.0.0.1:25594",
+    "dummy_offline_identity": "MorrowWitness",
+    "production_credentials_loaded": false,
+    "resource_pack_policy": "disabled",
+    "tutorial_toast_disabled": true
+  },
+  "capture": {
+    "backend": "Pillow.ImageGrab visible-desktop exact-window bounds",
+    "computer_use_wgc_result": "not_retried_known_incompatible_host",
+    "computer_use_input_sent": false,
+    "fallback_input_injected": false,
+    "window_title": "Minecraft 1.21.11 - Multiplayer (3rd-party Server)",
+    "window_pid": 29216,
+    "width": 1282,
+    "height": 752,
+    "grayscale_entropy": 6.456375
+  },
+  "findings": {
+    "real_minecraft_client_rendered": true,
+    "safe_entry_logged": true,
+    "inventory_mutations": 0,
+    "room04_visible": true,
+    "copper_terminal_centered": true,
+    "terminal_label_readable_and_bounded": true,
+    "tutorial_overlay_absent_in_frame": true,
+    "giant_overlay_regression_absent_in_frame": true,
+    "server_stopped_cleanly": true,
+    "runtime_cleanup_logged": true
+  },
+  "artifacts": {
+    "image": {"path": "morrow/rehearsal/client-visual/2026-08-31-fedac89-room04-clean.png", "sha256": "178c3a3e098904306911034b6d32e29eecb174fec30d69f0a78e9b8d58ea61a9"},
+    "capture_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-31-fedac89-room04-clean.capture.json", "sha256": "6c9b8408aefc9a97f8fcf9f840e8ae4723c8de7e1e0097bac694b673c0c86df2"},
+    "offline_client_receipt": {"path": "morrow/rehearsal/client-visual/2026-08-31-fedac89-offline-client-receipt.json", "sha256": "a1cb914a7db50150958c426288fcd85887095ec8bb32bfa0e2fc1c5fd8f8775a"},
+    "client_log": {"path": "morrow/rehearsal/client-visual/2026-08-31-fedac89.client.log", "sha256": "0c3f4ded3e5ee2a5c3b5b2b7352352c5d3588178a984c0ee74dd4eba79f16b8d"},
+    "server_log": {"path": "morrow/rehearsal/client-visual/2026-08-31-fedac89.server.log", "sha256": "0fe19a9c9e821245b5315b480e82c2f0638cb93387a70e02f2324b2737f66abc"},
+    "paper_runtime_receipt": {"path": "morrow/rehearsal/runtime/fedac89-current/paper-runtime-receipt.json", "sha256": "1f4885374fce4236e50db3cb581f527447b4d482ce5a8c4fc98355d6f5760ddb"}
+  },
+  "proven": [
+    "The plugin built from fedac896 passed its retained two-boot lifecycle and was then restarted in the same exact Paper target for this visual observation.",
+    "A real vanilla Minecraft 1.21.11 client joined the loopback disposable server with a dummy offline identity.",
+    "Room 04 and its centered copper terminal rendered with a bounded readable terminal label, no tutorial obstruction, and no giant-overlay regression in the retained frame.",
+    "Safe entry made zero inventory mutations.",
+    "The server logged clean runtime cleanup after the bounded client was stopped by its harness control file."
+  ],
+  "not_proven": [
+    "Native client dialog choices and state transitions have not been clicked through on the fedac896 plugin.",
+    "All six body-state poses and interpolation transitions have not been graphically exercised.",
+    "M03 and M04 continuous media behavior has not been graphically rehearsed.",
+    "Resource-pack visual parity has not been graphically rehearsed because the pack was disabled.",
+    "Audio cue and transcript parity has not been human-audited in the client.",
+    "A complete operator-free M01-M12 human playthrough and pacing pass remains open."
+  ],
+  "interaction_status": "open",
+  "production_mutated": false,
+  "production_release_authorized": false
+}

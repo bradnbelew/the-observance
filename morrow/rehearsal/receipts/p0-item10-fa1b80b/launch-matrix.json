@@ -72,7 +72,7 @@
     "resource_pack_visual_receipt_sha256": "3520fe2ebc923613214aaeed344779a7d6911e78e8f896fb28e153b6eec617aa",
     "runtime_subproof": "real graphical client safe entry and full-inventory disconnect/rejoin",
     "selftest": "tools/test_morrow_client_rehearsal.py",
-    "selftest_sha256": "a3665f171511f8891320147506345bb2799f1ca6d29221c9e232c3ea0d568995",
+    "selftest_sha256": "796946d4220815d3e657109a8b5a87026c3ce6120f919c9b880d73f05ff84a03",
     "visual_checkpoint_scope": "joined Room 04 readability plus one native terminal-dialog activation",
     "visual_checkpoint_status": "bounded_visual_checkpoint_pass"
   },

@@ -64,6 +64,11 @@ client visibly showed the corrected layout, and one observed right-click opened 
 receipt, and clean server lifecycle are hash-bound in
 `client-visual/2026-08-30-exact-window-visual-checkpoint.json`.
 
+A later no-input checkpoint repeats the unobscured Room 04/terminal observation against the corrected
+fedac896 plugin and exact Paper build 132. Its source, launcher, client/server logs, zero-mutation safe
+entry, and clean shutdown are hash-bound at
+`client-visual/2026-08-31-latest-plugin-fedac89-room04-checkpoint.json`.
+
 This extends the safe-entry result with a real visual/readability and one-dialog-activation subproof,
 not a complete graphical lane. All poses and interpolation, the full mouse/keyboard/Escape dialogue
 matrix, resource-pack-decline parity, audio-disabled parity, full-inventory route and exit/respawn,

@@ -32,12 +32,16 @@ was injected, so latest-source dialog choices, pose transitions, continuous medi
 and the full playthrough remain open. Verify it with
 `python tools/check_morrow_source_bound_visual_checkpoint.py`.
 
-The corrected plugin commit `fedac8966bdccd099b6ab8d443134286ec4dc177` also has a fresh exact
-Paper 1.21.11 build 132 lifecycle under `runtime/fedac89-current`. It proves all M05–M12 structures
-load, restart as already present with stable ownership, close cleanly, and preserve ordered projector
-recovery across 503/503/200. It is latest-plugin server proof, not graphical proof; the visual frame
-above remains honestly bound to d2580fd. Verify it with
-`python tools/check_morrow_latest_plugin_paper.py`.
+The corrected plugin commit `fedac8966bdccd099b6ab8d443134286ec4dc177` has a fresh exact Paper
+1.21.11 build 132 lifecycle under `runtime/fedac89-current`. It proves all M05–M12 structures load,
+restart as already present with stable ownership, close cleanly, and preserve ordered projector
+recovery across 503/503/200. The same exact target was then restarted for a fresh dummy-client join and
+an unobscured Room 04 still with the tutorial toast disabled. That frame, safe-entry log, launcher
+receipt, server shutdown log, and exact capture receipt are bound at
+`client-visual/2026-08-31-latest-plugin-fedac89-room04-checkpoint.json`. No input was injected, so this
+advances latest-plugin rendering—not dialog, media, pose, or playthrough interaction. Verify both with
+`python tools/check_morrow_latest_plugin_paper.py` and
+`python tools/check_morrow_latest_plugin_visual_checkpoint.py`.
 
 The earlier `SetIsBorderRequired ... 0x80004002` failures remain retained under `client-attempts` as
 historical evidence about the primary capture API. The fallback captures only one unobscured visible
