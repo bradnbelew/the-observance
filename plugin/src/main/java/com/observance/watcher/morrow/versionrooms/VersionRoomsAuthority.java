@@ -14,7 +14,6 @@ import java.util.UUID;
 public final class VersionRoomsAuthority {
     public static final String PREREQUISITE = "morrow.act2.live_capture_authorized";
     public static final String FRAGMENTS_AUTHENTICATED = "morrow.act3.version_fragments_authenticated";
-    public static final String CONTRADICTION_PRESERVED = "morrow.act3.contradiction_preserved";
     public static final List<RoomVersion> SIGNAL_ROUTE = List.of(
             RoomVersion.DAMAGED, RoomVersion.SCAFFOLD, RoomVersion.COMPLETED);
 
@@ -81,16 +80,15 @@ public final class VersionRoomsAuthority {
             return Result.readOnly(Status.LOCKED, progress,
                     "No canonical version can be selected before one signal authenticates all three rooms.");
         }
-        if (snapshot.committedEvents().contains(CONTRADICTION_PRESERVED)) {
+        if (progress.preserved()) {
             return Result.readOnly(Status.DUPLICATE, progress,
-                    "The group already preserved the contradiction and all three sources.");
+                    "The group already preserved all three sources. Their receipts now belong in the M06 consensus audit.");
         }
         if (choice != Choice.PRESERVE_CONTRADICTION) {
             return Result.readOnly(Status.WRONG_CHOICE, progress, choice.warning());
         }
-        return new Result(Status.COMMIT, progress, null,
-                CONTRADICTION_PRESERVED, "paper:m05:preserve-contradiction:v1",
-                "Contradiction preserved. Morrow must retain damaged, scaffold, and completed truth together.");
+        return new Result(Status.PRESERVED, progress.preserve(), null, null, null,
+                "All three sources are preserved. Morrow's completed vote is now available for audit.");
     }
 
     public static byte[] payload(Result result) {
@@ -109,11 +107,6 @@ public final class VersionRoomsAuthority {
             return ("{\"investigation\":\"M05\",\"receipts\":[" + receipts
                     + "],\"route\":[\"damaged\",\"scaffold\",\"completed\"],"
                     + "\"witnesses\":{" + witnesses + "},\"world_mutation\":\"signal_lamps_only\"}")
-                    .getBytes(StandardCharsets.UTF_8);
-        }
-        if (CONTRADICTION_PRESERVED.equals(result.eventKey())) {
-            return ("{\"choice\":\"preserve_contradiction\",\"destroyed_sources\":[],"
-                    + "\"investigation\":\"M05\",\"protected_versions\":[\"damaged\",\"completed\",\"scaffold\"]}")
                     .getBytes(StandardCharsets.UTF_8);
         }
         throw new IllegalArgumentException("M05 result has no committable payload");
@@ -162,7 +155,7 @@ public final class VersionRoomsAuthority {
         public String warning() { return warning; }
     }
 
-    public enum Status { LOCKED, ROUTED, WRONG_RESET, READY_TO_COMMIT, WRONG_CHOICE, COMMIT, DUPLICATE }
+    public enum Status { LOCKED, ROUTED, WRONG_RESET, READY_TO_COMMIT, WRONG_CHOICE, PRESERVED, DUPLICATE }
 
     public record Receipt(String id, RoomVersion version, UUID custodian,
                           String inventory, String uniqueTruth) {
@@ -176,7 +169,8 @@ public final class VersionRoomsAuthority {
         public String summary() { return id + " — " + inventory + " " + uniqueTruth; }
     }
 
-    public record Progress(List<RoomVersion> route, Map<RoomVersion, UUID> witnesses, long revision) {
+    public record Progress(List<RoomVersion> route, Map<RoomVersion, UUID> witnesses,
+                           boolean preserved, long revision) {
         public Progress {
             route = List.copyOf(Objects.requireNonNull(route, "route"));
             EnumMap<RoomVersion, UUID> copy = new EnumMap<>(RoomVersion.class);
@@ -186,22 +180,26 @@ public final class VersionRoomsAuthority {
                     || !SIGNAL_ROUTE.subList(0, route.size()).equals(route)) {
                 throw new IllegalArgumentException("M05 progress is not a valid routed prefix");
             }
+            if (preserved && !route.equals(SIGNAL_ROUTE)) {
+                throw new IllegalArgumentException("M05 cannot preserve an incomplete route");
+            }
             for (RoomVersion version : route) {
                 if (!witnesses.containsKey(version)) {
                     throw new IllegalArgumentException("M05 routed room lacks a witness");
                 }
             }
         }
-        public static Progress initial() { return new Progress(List.of(), Map.of(), 0); }
+        public static Progress initial() { return new Progress(List.of(), Map.of(), false, 0); }
         Progress advance(RoomVersion version, UUID player) {
             ArrayList<RoomVersion> nextRoute = new ArrayList<>(route);
             nextRoute.add(version);
             EnumMap<RoomVersion, UUID> nextWitnesses = new EnumMap<>(RoomVersion.class);
             nextWitnesses.putAll(witnesses);
             nextWitnesses.putIfAbsent(version, player);
-            return new Progress(nextRoute, nextWitnesses, revision + 1);
+            return new Progress(nextRoute, nextWitnesses, false, revision + 1);
         }
-        Progress resetRoute() { return new Progress(List.of(), witnesses, revision + 1); }
+        Progress resetRoute() { return new Progress(List.of(), witnesses, false, revision + 1); }
+        Progress preserve() { return new Progress(route, witnesses, true, revision + 1); }
     }
 
     public record Result(Status status, Progress progress, Receipt receipt, String eventKey,

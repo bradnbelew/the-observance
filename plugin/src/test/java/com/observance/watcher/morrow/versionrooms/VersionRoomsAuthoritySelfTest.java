@@ -110,13 +110,12 @@ public final class VersionRoomsAuthoritySelfTest {
                 }
                 Result preserve = VersionRoomsAuthority.choose(
                         progress, fixture.state.snapshot(), Choice.PRESERVE_CONTRADICTION, players.get(0));
-                check(preserve.status() == Status.COMMIT && preserve.commitsReceipt(),
+                check(preserve.status() == Status.PRESERVED && !preserve.commitsReceipt()
+                                && preserve.progress().preserved(),
                         count + "-player M05 can preserve only after all fragments authenticate");
-                fixture.state.commit(preserve.eventKey(), preserve.idempotencyKey(),
-                        VersionRoomsAuthority.payload(preserve));
-                check(fixture.state.snapshot().committedEvents().contains(
-                        VersionRoomsAuthority.CONTRADICTION_PRESERVED),
-                        count + "-player M05 reaches its canonical durable truth");
+                check(!fixture.state.snapshot().committedEvents().contains(
+                        "morrow.act3.contradiction_preserved"),
+                        count + "-player M05 cannot skip the M06 consensus audit");
             }
         }
     }
@@ -138,8 +137,7 @@ public final class VersionRoomsAuthoritySelfTest {
                                 && wrong.feedback().contains("destroy"),
                         choice + " explains the evidence it would destroy and creates no receipt");
             }
-            check(!fixture.state.snapshot().committedEvents().contains(
-                    VersionRoomsAuthority.CONTRADICTION_PRESERVED),
+            check(!progress.preserved(),
                     "canonical-version mistakes cannot advance M05");
         }
     }
@@ -154,6 +152,17 @@ public final class VersionRoomsAuthoritySelfTest {
             store.save(partial);
             check(new VersionRoomsProgressStore(path, RELEASE).load().equals(partial),
                     "M05 partial route and custody survive restart exactly");
+            Result scaffold = VersionRoomsAuthority.route(partial, fixture.state.snapshot(),
+                    RoomVersion.SCAFFOLD, id("store"));
+            Result ready = VersionRoomsAuthority.route(scaffold.progress(), fixture.state.snapshot(),
+                    RoomVersion.COMPLETED, id("store"));
+            fixture.state.commit(ready.eventKey(), ready.idempotencyKey(), VersionRoomsAuthority.payload(ready));
+            Progress preserved = VersionRoomsAuthority.choose(ready.progress(), fixture.state.snapshot(),
+                    Choice.PRESERVE_CONTRADICTION, id("store")).progress();
+            store.save(preserved);
+            check(new VersionRoomsProgressStore(path, RELEASE).load().equals(preserved)
+                            && preserved.preserved(),
+                    "M05 source-preservation decision survives restart without fabricating the M06 event");
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
             lines.set(2, "revision=99");
             Files.write(path, lines, StandardCharsets.UTF_8);

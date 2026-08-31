@@ -168,3 +168,9 @@ morrow-reboot:
     origin-x: 32
     origin-y: 80
     origin-z: 0
+  consensus-audit:
+    # Separate M06 build gate. Requires M05 and remains inert until its sources are preserved.
+    build-enabled: false
+    origin-x: 64
+    origin-y: 80
+    origin-z: 0

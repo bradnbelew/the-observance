@@ -115,8 +115,7 @@ public final class BukkitVersionRooms implements Listener, AutoCloseable {
             if (progress.route().equals(VersionRoomsAuthority.SIGNAL_ROUTE)
                     && state.snapshot().committedEvents().contains(
                     VersionRoomsAuthority.FRAGMENTS_AUTHENTICATED)
-                    && !state.snapshot().committedEvents().contains(
-                    VersionRoomsAuthority.CONTRADICTION_PRESERVED)) {
+                    && !progress.preserved()) {
                 openChoice(player);
             }
         } catch (IOException | RuntimeException failure) {
@@ -142,6 +141,7 @@ public final class BukkitVersionRooms implements Listener, AutoCloseable {
         }
         try {
             Result result = VersionRoomsAuthority.choose(progress, state.snapshot(), choice, player.getUniqueId());
+            if (!result.progress().equals(progress)) progress = store.save(result.progress());
             if (result.commitsReceipt()) commit(result);
             player.sendMessage(Component.text(result.feedback(), color(result)));
         } catch (IOException | RuntimeException failure) {
@@ -248,7 +248,7 @@ public final class BukkitVersionRooms implements Listener, AutoCloseable {
     private static NamedTextColor color(Result result) {
         return switch (result.status()) {
             case WRONG_RESET, WRONG_CHOICE, LOCKED -> NamedTextColor.YELLOW;
-            case COMMIT, READY_TO_COMMIT -> NamedTextColor.GREEN;
+            case PRESERVED, READY_TO_COMMIT -> NamedTextColor.GREEN;
             default -> NamedTextColor.AQUA;
         };
     }
@@ -256,6 +256,7 @@ public final class BukkitVersionRooms implements Listener, AutoCloseable {
         return progress.route().stream().map(RoomVersion::key).reduce((a, b) -> a + "/" + b).orElse("empty");
     }
     public int ownedEntityCount() { return labels.size(); }
+    public boolean sourcesPreserved() { return progress != null && progress.preserved(); }
 
     @Override public void close() {
         HandlerList.unregisterAll(this);
