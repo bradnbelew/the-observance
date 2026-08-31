@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /** Main-driven M10 asymmetric-coop, nonce, refusal, timeout, disconnect, and restart matrix. */
@@ -24,6 +26,7 @@ public final class MaintenanceWindowAuthoritySelfTest {
         oneTwoSixPlayerCohortsRetainBothSessions();
         unsafeInstructionsWrongNoncesTimeoutsAndDisconnectsResetSafely();
         everyReceiptWindowSurvivesRestart();
+        physicalManifestAndInstallerAreBounded();
         System.out.println("MORROW MAINTENANCE WINDOW M10: PASS sessions=2 nonce=fresh players=1/2/6 deletion=refused");
     }
 
@@ -147,6 +150,45 @@ public final class MaintenanceWindowAuthoritySelfTest {
         } finally { Files.deleteIfExists(path); Files.deleteIfExists(directory); }
     }
 
+    private static void physicalManifestAndInstallerAreBounded() throws Exception {
+        MaintenanceWindowManifest manifest = new MaintenanceWindowManifest();
+        check(manifest.cells().size() == 5_301 && manifest.stateLamps().size() == 6
+                        && manifest.hopperEndpoints().size() == 2
+                        && manifest.manifestSha256().matches("[0-9a-f]{64}")
+                        && manifest.manifestSha256().equals(new MaintenanceWindowManifest().manifestSha256())
+                        && "minecraft:air".equals(manifest.cells().get(manifest.safeReturn()))
+                        && manifest.cells().get(manifest.hopperEndpoints().get(Side.WEST)).startsWith("minecraft:hopper[")
+                        && "minecraft:barrel[facing=up,open=false]".equals(
+                        manifest.cells().get(manifest.sharedChannel())),
+                "M10 manifest must be a stable split chamber with two hopper endpoints and a safe lobby");
+        Path directory = Files.createTempDirectory("m10-installer-"); Path receipt = directory.resolve("m10.receipt");
+        MaintenanceWindowInstaller.Origin origin = new MaintenanceWindowInstaller.Origin(192, 80, 0);
+        try {
+            FakeWorld world = new FakeWorld(); MaintenanceWindowInstaller installer = new MaintenanceWindowInstaller(manifest, receipt);
+            MaintenanceWindowInstaller.Result built = installer.install(RELEASE, origin, world);
+            check(built.status() == MaintenanceWindowInstaller.Status.BUILT && built.blockCount() == 5_301,
+                    "M10 empty-target installer must audit every split-chamber cell");
+            check(installer.install(RELEASE, origin, world).status() == MaintenanceWindowInstaller.Status.ALREADY_PRESENT,
+                    "M10 installer does not validate its release/world/origin receipt after restart");
+            MaintenanceWindowManifest.Cell lamp = manifest.stateLamps().values().iterator().next();
+            world.setBlockData(lamp, "minecraft:copper_bulb[lit=true,powered=false]"); installer.audit(world, true);
+            try { installer.audit(world, false); throw new AssertionError("expected strict M10 lamp audit failure"); }
+            catch (IOException expected) { /* expected */ }
+        } finally { Files.deleteIfExists(receipt); Files.deleteIfExists(directory); }
+        Path foreignDirectory = Files.createTempDirectory("m10-foreign-");
+        try {
+            FakeWorld world = new FakeWorld(); MaintenanceWindowManifest.Cell cell = manifest.cells().keySet().iterator().next();
+            world.setBlockData(cell, "minecraft:diamond_block");
+            try {
+                new MaintenanceWindowInstaller(manifest, foreignDirectory.resolve("m10.receipt")).install(RELEASE, origin, world);
+                throw new AssertionError("expected M10 occupied-target refusal");
+            } catch (IOException expected) {
+                check("minecraft:diamond_block".equals(world.blockData(cell)),
+                        "M10 occupied-target refusal must preserve foreign blocks");
+            }
+        } finally { Files.deleteIfExists(foreignDirectory.resolve("m10.receipt")); Files.deleteIfExists(foreignDirectory); }
+    }
+
     private static Progress roundTrip(MaintenanceWindowProgressStore store, Progress progress, String label)
             throws Exception {
         store.save(progress); Progress loaded = store.load();
@@ -192,6 +234,19 @@ public final class MaintenanceWindowAuthoritySelfTest {
         }
         @Override public void close() throws IOException {
             Files.deleteIfExists(directory.resolve("morrow.journal")); Files.deleteIfExists(directory);
+        }
+    }
+    private static final class FakeWorld implements MaintenanceWindowInstaller.WorldPort {
+        private final Map<MaintenanceWindowManifest.Cell, String> blocks = new LinkedHashMap<>();
+        @Override public String binding() { return "m10-test-world:00000000-0000-0000-0000-000000000010"; }
+        @Override public String blockData(MaintenanceWindowManifest.Cell relative) {
+            return blocks.getOrDefault(relative, "minecraft:air");
+        }
+        @Override public boolean isAir(MaintenanceWindowManifest.Cell relative) {
+            return "minecraft:air".equals(blockData(relative));
+        }
+        @Override public void setBlockData(MaintenanceWindowManifest.Cell relative, String blockData) {
+            blocks.put(relative, blockData);
         }
     }
     private static byte[] bytes(String value) { return value.getBytes(StandardCharsets.UTF_8); }
