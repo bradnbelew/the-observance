@@ -192,7 +192,7 @@ public final class BukkitVersionRooms implements Listener, AutoCloseable {
             boolean lit = progress.route().contains(version);
             world.getBlockAt(origin.x() + cell.x(), origin.y() + cell.y(), origin.z() + cell.z())
                     .setBlockData(Bukkit.createBlockData(
-                            "minecraft:copper_bulb[lit=" + lit + ",powered=false,waterlogged=false]"), false);
+                            "minecraft:copper_bulb[lit=" + lit + ",powered=false]"), false);
         }
     }
 

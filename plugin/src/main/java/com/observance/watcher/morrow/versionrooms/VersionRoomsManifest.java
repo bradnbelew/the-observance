@@ -72,7 +72,7 @@ public final class VersionRoomsManifest {
             };
         }
         if (x == 0 && z == 2 && y == 0) return "minecraft:chiseled_copper";
-        if (x == 0 && z == 2 && y == 1) return "minecraft:copper_bulb[lit=false,powered=false,waterlogged=false]";
+        if (x == 0 && z == 2 && y == 1) return "minecraft:copper_bulb[lit=false,powered=false]";
         if (y == 0 && z == 3 && Math.abs(x) <= 1) return switch (version) {
             case DAMAGED -> "minecraft:weathered_copper";
             case COMPLETED -> "minecraft:waxed_copper_block";

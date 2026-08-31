@@ -180,7 +180,7 @@ public final class VersionRoomsAuthoritySelfTest {
                             == VersionRoomsInstaller.Status.ALREADY_PRESENT,
                     "M05 installer restart validates its release/world/origin receipt");
             VersionRoomsManifest.Cell lamp = manifest.lamps().get(RoomVersion.DAMAGED);
-            world.setBlockData(lamp, "minecraft:copper_bulb[lit=true,powered=false,waterlogged=false]");
+            world.setBlockData(lamp, "minecraft:copper_bulb[lit=true,powered=false]");
             installer.audit(world, true);
             try {
                 installer.audit(world, false);
@@ -231,15 +231,20 @@ public final class VersionRoomsAuthoritySelfTest {
     private static void paperAdapterUsesNativeBoundedInputs() throws IOException {
         String source = Files.readString(Path.of(
                 "src/main/java/com/observance/watcher/morrow/versionrooms/BukkitVersionRooms.java"));
+        String manifestSource = Files.readString(Path.of(
+                "src/main/java/com/observance/watcher/morrow/versionrooms/VersionRoomsManifest.java"));
         for (String required : new String[]{
                 "PlayerInteractEvent", "RIGHT_CLICK_BLOCK", "PlayerCustomClickEvent", "DialogType.multiAction",
                 "canCloseWithEscape(true)", "PRIVATE CUSTODY", "syncLamps", "PersistentDataType"}) {
             check(source.contains(required), "M05 Paper adapter missing " + required);
         }
         for (String forbidden : new String[]{
-                "PlayerMoveEvent", "runTaskAsynchronously", "net.minecraft", "craftbukkit", "sendBlockChange"}) {
+                "PlayerMoveEvent", "runTaskAsynchronously", "net.minecraft", "craftbukkit", "sendBlockChange",
+                "waterlogged"}) {
             check(!source.contains(forbidden), "M05 Paper adapter crossed forbidden boundary via " + forbidden);
         }
+        check(!manifestSource.contains("waterlogged"),
+                "M05 manifest uses only properties accepted by the 1.21.11 copper bulb parser");
     }
 
     private static UUID id(String value) {
