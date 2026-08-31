@@ -180,3 +180,9 @@ morrow-reboot:
     origin-x: 96
     origin-y: 80
     origin-z: 0
+  almost-home:
+    # Separate M08 build gate. Requires M07; wrong answers never destroy the preserved house.
+    build-enabled: false
+    origin-x: 128
+    origin-y: 80
+    origin-z: 0
