@@ -19,11 +19,11 @@ public final class ColdStorageAuthoritySelfTest {
     private ColdStorageAuthoritySelfTest() { }
 
     public static void main(String[] args) throws Exception {
+        physicalManifestAndInstallerAreBounded();
         prerequisiteAndBrokenEdgesFailClosed();
         oneTwoSixPlayerCohortsProveRecovery();
         wrongHashesAndAccessConsentRemainSafe();
         everyReceiptWindowSurvivesRestart();
-        physicalManifestAndInstallerAreBounded();
         System.out.println("MORROW COLD STORAGE M11: PASS records=5 bridge=2 players=1/2/6 continuity=unresolved");
     }
 

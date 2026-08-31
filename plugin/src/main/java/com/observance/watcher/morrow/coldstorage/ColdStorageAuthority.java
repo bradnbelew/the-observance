@@ -185,9 +185,14 @@ public final class ColdStorageAuthority {
         MORROW_SNAPSHOT_MANIFEST("Morrow diagnostic snapshot manifest", "cl-snapshot-manifest-original-process-closed"),
         CAPTIONED_VOICE_ASSEMBLY("captioned current-voice assembly", "media-current-voice-recovery-assembly-transcript");
         private final String label; private final String artifactSha256;
-        Record(String label, String artifact) { this.label = label; this.artifactSha256 = hash(artifact + "\n"); }
+        Record(String label, String artifact) { this.label = label; this.artifactSha256 = artifactHash(artifact + "\n"); }
         public String label() { return label; }
         public String artifactSha256() { return artifactSha256; }
+        private static String artifactHash(String value) {
+            try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8))); }
+            catch (NoSuchAlgorithmException impossible) { throw new IllegalStateException(impossible); }
+        }
     }
     public enum Instance {
         AUDIT_SNAPSHOT("the authenticated audit snapshot"), CURRENT_RECOVERY("the current recovery");

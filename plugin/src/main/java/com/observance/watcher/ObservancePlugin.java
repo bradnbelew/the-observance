@@ -188,7 +188,8 @@ public final class ObservancePlugin extends JavaPlugin {
         try {
             this.morrowRuntime = MorrowRuntime.start(this);
         } catch (Throwable failure) {
-            getLogger().severe("Morrow reboot failed closed during startup: " + failure.getMessage());
+            getLogger().log(java.util.logging.Level.SEVERE,
+                    "Morrow reboot failed closed during startup: " + failure.getMessage(), failure);
             this.morrowRuntime = null;
             getServer().getPluginManager().disablePlugin(this);
             return;
