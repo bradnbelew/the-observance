@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0-morrow-resource-pack-visual-checkpoint",
+  "status": "bounded_pair_checkpoint_defect_open",
+  "captured_at": "2026-08-30T23:58:00Z",
+  "source_commit": "88522d717a23c9ea0c5a80e1fadcaa02fba580b6",
+  "scope": "one exact-window Room 04 frame after a real LOADED decision and one after a real DECLINED decision; no input or full interaction parity claim",
+  "artifacts": {
+    "capture_tool": {
+      "path": "tools/capture_windows_window.py",
+      "sha256": "56999a4bf2a9034cecc4d28499399cae42f5fffcf9f984e63ef62f5b8980dbf2"
+    },
+    "pack_harness": {
+      "path": "tools/run_morrow_resource_pack_rehearsal.py",
+      "sha256": "690abd11399480accc4f4bca12a84c92b2b3628d61d40c5522582863578c51b3"
+    },
+    "resource_pack_sha256": "4b8b3ba5a04d49233619cbf5df310edb1ee9676078fd9fe2c7e9ed55d51a32fb"
+  },
+  "lanes": {
+    "loaded": {
+      "expected_status": "LOADED",
+      "server_resource_pack_policy": "enabled",
+      "capture": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.capture.json",
+      "capture_sha256": "a55007e4fc3d705412b2a590186c77a995bad7b326c17dd139f569daae0800d9",
+      "image": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.png",
+      "image_sha256": "4d7436881bd0c4554b74e365ecf226f49bbcc3e0b025fdc8e587245702fd3451",
+      "client": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.client.json",
+      "client_sha256": "9e3beeb54cd05e129eefce2ab278f85f076ee638dc8b8b87be39cab31b9ebfb1",
+      "runtime": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-loaded.runtime.json",
+      "runtime_sha256": "8a5244c7c6c91e0ba41822f404222bd0a2018c49a247fd0d217698c4fa136585",
+      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, survival HUD, and complete movement instruction are visible in one exact-window frame"
+    },
+    "declined": {
+      "expected_status": "DECLINED",
+      "server_resource_pack_policy": "disabled",
+      "capture": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.capture.json",
+      "capture_sha256": "50d2382e81ddd4bbbb02ed4627c95d218eee4a07cc4b04316b1985b602323edc",
+      "image": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.png",
+      "image_sha256": "a21afce8aacea88de5bf0d3c9189e152bed1c8d26880f5bc6a5562d2d8c9fba5",
+      "client": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.client.json",
+      "client_sha256": "3d30091a87fa3293908a30e82edc6dac3cb329c5cb556d406973a893ddc079a2",
+      "runtime": "morrow/rehearsal/client-visual/2026-08-30-resource-pack-declined.runtime.json",
+      "runtime_sha256": "0158c558ee4f690d4a09669c0a674db21a68dc3e8a5600d0d0bfdb1ce7cab8d7",
+      "bounded_finding": "Room 04, Morrow terminal label, body interaction target, and survival HUD are visible, but the right-side movement instruction is partially clipped in the retained frame"
+    }
+  },
+  "comparison": {
+    "image_size": [1282, 752],
+    "window_bounds": [639, 329, 1921, 1081],
+    "difference_bbox": [1, 31, 1281, 751],
+    "mean_absolute_rgb_difference": [1.594, 1.909, 1.7],
+    "changed_channel_samples": 1610168,
+    "total_channel_samples": 2892192,
+    "common_geometry_visible": true,
+    "terminal_label_visible_in_both": true,
+    "body_interaction_target_visible_in_both": true,
+    "movement_prompt_readability_equal": false,
+    "input_injected": false
+  },
+  "defect": {
+    "status": "open",
+    "finding": "the declined checkpoint does not prove readable prompt parity because its movement instruction is partially clipped; a stable recapture and full dialog/input walk remain required",
+    "possible_causes_not_yet_distinguished": [
+      "capture occurred during an authored display transition",
+      "client-side text layout differs without the pack",
+      "display placement or width is marginal at the exact camera position"
+    ]
+  },
+  "remaining_gate": "recapture a stable declined frame and review every required body, text, dialog, and puzzle input in matched loaded/declined runs with synchronized media and an independent observer",
+  "production_enablement": "blocked"
+}
