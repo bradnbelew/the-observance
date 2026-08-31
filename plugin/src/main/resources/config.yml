@@ -198,3 +198,9 @@ morrow-reboot:
     origin-x: 192
     origin-y: 80
     origin-z: 0
+  cold-storage:
+    # Separate M11 build gate. Requires M10; reconstruction and access remain separate receipts.
+    build-enabled: false
+    origin-x: 224
+    origin-y: 80
+    origin-z: 0

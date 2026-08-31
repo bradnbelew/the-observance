@@ -114,6 +114,7 @@ def pluginSelfTests = [
     , almostHomeAuthority: 'com.observance.watcher.morrow.almost.AlmostHomeAuthoritySelfTest'
     , accountContinuityAuthority: 'com.observance.watcher.morrow.continuity.AccountContinuityAuthoritySelfTest'
     , maintenanceWindowAuthority: 'com.observance.watcher.morrow.maintenance.MaintenanceWindowAuthoritySelfTest'
+    , coldStorageAuthority: 'com.observance.watcher.morrow.coldstorage.ColdStorageAuthoritySelfTest'
     , entityReplayLoop: 'com.observance.watcher.morrow.room04.replay.EntityReplayLoopSelfTest'
     , morrowVerticalSliceRehearsal: 'com.observance.watcher.morrow.rehearsal.MorrowVerticalSliceRehearsalSelfTest'
 ]

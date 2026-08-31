@@ -34,6 +34,10 @@ import com.observance.watcher.morrow.maintenance.BukkitMaintenanceWindow;
 import com.observance.watcher.morrow.maintenance.BukkitMaintenanceWindowWorld;
 import com.observance.watcher.morrow.maintenance.MaintenanceWindowInstaller;
 import com.observance.watcher.morrow.maintenance.MaintenanceWindowManifest;
+import com.observance.watcher.morrow.coldstorage.BukkitColdStorage;
+import com.observance.watcher.morrow.coldstorage.BukkitColdStorageWorld;
+import com.observance.watcher.morrow.coldstorage.ColdStorageInstaller;
+import com.observance.watcher.morrow.coldstorage.ColdStorageManifest;
 import com.observance.watcher.listener.ResourcePackPusher;
 import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
@@ -58,6 +62,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private static final String ALMOST_HOME_RECEIPT_NAME = "morrow-almost-home.install.receipt";
     private static final String ACCOUNT_CONTINUITY_RECEIPT_NAME = "morrow-account-continuity.install.receipt";
     private static final String MAINTENANCE_WINDOW_RECEIPT_NAME = "morrow-maintenance-window.install.receipt";
+    private static final String COLD_STORAGE_RECEIPT_NAME = "morrow-cold-storage.install.receipt";
 
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
@@ -69,6 +74,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final AlmostHomeInstaller.Result almostHomeResult;
     private final AccountContinuityInstaller.Result accountContinuityResult;
     private final MaintenanceWindowInstaller.Result maintenanceWindowResult;
+    private final ColdStorageInstaller.Result coldStorageResult;
     private final BukkitMorrowBody body;
     private final BukkitStaticRestore staticRestore;
     private final BukkitEntityReplay entityReplay;
@@ -80,6 +86,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final BukkitAlmostHome almostHome;
     private final BukkitAccountContinuity accountContinuity;
     private final BukkitMaintenanceWindow maintenanceWindow;
+    private final BukkitColdStorage coldStorage;
     private final ResourcePackTracker resourcePackTracker;
     private final ResourcePackPusher resourcePackPusher;
 
@@ -94,6 +101,7 @@ public final class MorrowRuntime implements AutoCloseable {
             AlmostHomeInstaller.Result almostHomeResult,
             AccountContinuityInstaller.Result accountContinuityResult,
             MaintenanceWindowInstaller.Result maintenanceWindowResult,
+            ColdStorageInstaller.Result coldStorageResult,
             BukkitMorrowBody body,
             BukkitStaticRestore staticRestore,
             BukkitEntityReplay entityReplay,
@@ -105,6 +113,7 @@ public final class MorrowRuntime implements AutoCloseable {
             BukkitAlmostHome almostHome,
             BukkitAccountContinuity accountContinuity,
             BukkitMaintenanceWindow maintenanceWindow,
+            BukkitColdStorage coldStorage,
             ResourcePackTracker resourcePackTracker,
             ResourcePackPusher resourcePackPusher) {
         this.settings = Objects.requireNonNull(settings, "settings");
@@ -117,6 +126,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.almostHomeResult = almostHomeResult;
         this.accountContinuityResult = accountContinuityResult;
         this.maintenanceWindowResult = maintenanceWindowResult;
+        this.coldStorageResult = coldStorageResult;
         this.body = body;
         this.staticRestore = staticRestore;
         this.entityReplay = entityReplay;
@@ -128,6 +138,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.almostHome = almostHome;
         this.accountContinuity = accountContinuity;
         this.maintenanceWindow = maintenanceWindow;
+        this.coldStorage = coldStorage;
         this.resourcePackTracker = resourcePackTracker;
         this.resourcePackPusher = resourcePackPusher;
     }
@@ -317,6 +328,27 @@ public final class MorrowRuntime implements AutoCloseable {
                     settings.releaseId(), maintenanceWindowOrigin,
                     new BukkitMaintenanceWindowWorld(world, maintenanceWindowOrigin));
         }
+        ColdStorageInstaller.Result coldStorageResult = null;
+        ColdStorageInstaller.Origin coldStorageOrigin = null;
+        if (section.getBoolean("cold-storage.build-enabled", false)) {
+            if (maintenanceWindowResult == null) {
+                throw new IllegalArgumentException("M11 Cold Storage requires M10 Maintenance Window");
+            }
+            coldStorageOrigin = new ColdStorageInstaller.Origin(
+                    section.getInt("cold-storage.origin-x", 224),
+                    section.getInt("cold-storage.origin-y", 80),
+                    section.getInt("cold-storage.origin-z"));
+            ColdStorageManifest.Bounds bounds = ColdStorageManifest.BOUNDS;
+            if (coldStorageOrigin.y() + bounds.minimumY() < world.getMinHeight()
+                    || coldStorageOrigin.y() + bounds.maximumY() >= world.getMaxHeight()) {
+                throw new IllegalArgumentException("M11 Cold Storage origin exceeds the configured world height");
+            }
+            ColdStorageManifest manifest = new ColdStorageManifest();
+            coldStorageResult = new ColdStorageInstaller(
+                    manifest, data.resolve(COLD_STORAGE_RECEIPT_NAME)).install(
+                    settings.releaseId(), coldStorageOrigin,
+                    new BukkitColdStorageWorld(world, coldStorageOrigin));
+        }
         MorrowEventProjector projector = null;
         BukkitMorrowBody body = null;
         BukkitStaticRestore staticRestore = null;
@@ -329,6 +361,7 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitAlmostHome almostHome = null;
         BukkitAccountContinuity accountContinuity = null;
         BukkitMaintenanceWindow maintenanceWindow = null;
+        BukkitColdStorage coldStorage = null;
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
@@ -415,6 +448,14 @@ public final class MorrowRuntime implements AutoCloseable {
                         + " manifest=" + maintenanceWindowResult.manifestSha256()
                         + " blocks=" + maintenanceWindowResult.blockCount());
             }
+            if (coldStorageResult != null && coldStorageOrigin != null && maintenanceWindow != null) {
+                coldStorage = new BukkitColdStorage(
+                        plugin, world, coldStorageOrigin, settings.releaseId(), state, data);
+                coldStorage.start();
+                plugin.getLogger().info("MORROW_COLD_STORAGE_READY status=" + coldStorageResult.status()
+                        + " manifest=" + coldStorageResult.manifestSha256()
+                        + " blocks=" + coldStorageResult.blockCount());
+            }
             plugin.getLogger().info("MORROW_RUNTIME_READY release=" + settings.releaseId()
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
@@ -427,14 +468,16 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " witness_entities=" + (witnessAnchor == null ? 0 : witnessAnchor.ownedEntityCount())
                     + " almost_entities=" + (almostHome == null ? 0 : almostHome.ownedEntityCount())
                     + " continuity_entities=" + (accountContinuity == null ? 0 : accountContinuity.ownedEntityCount())
-                    + " maintenance_entities=" + (maintenanceWindow == null ? 0 : maintenanceWindow.ownedEntityCount()));
+                    + " maintenance_entities=" + (maintenanceWindow == null ? 0 : maintenanceWindow.ownedEntityCount())
+                    + " cold_storage_entities=" + (coldStorage == null ? 0 : coldStorage.ownedEntityCount()));
             return new MorrowRuntime(
                     settings, state, projector, room04Result, versionRoomsResult, consensusAuditResult,
-                    witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult,
+                    witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult, coldStorageResult,
                     body, staticRestore, entityReplay, dialogs,
-                    playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow,
+                    playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow, coldStorage,
                     resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
+            if (coldStorage != null) coldStorage.close();
             if (maintenanceWindow != null) maintenanceWindow.close();
             if (accountContinuity != null) accountContinuity.close();
             if (almostHome != null) almostHome.close();
@@ -493,8 +536,13 @@ public final class MorrowRuntime implements AutoCloseable {
         return Optional.ofNullable(maintenanceWindowResult);
     }
 
+    public Optional<ColdStorageInstaller.Result> coldStorageResult() {
+        return Optional.ofNullable(coldStorageResult);
+    }
+
     @Override
     public void close() {
+        if (coldStorage != null) coldStorage.close();
         if (maintenanceWindow != null) maintenanceWindow.close();
         if (accountContinuity != null) accountContinuity.close();
         if (almostHome != null) almostHome.close();
