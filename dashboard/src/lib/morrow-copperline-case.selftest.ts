@@ -50,7 +50,9 @@ for (const groupSize of [1, 2, 6]) {
 
 const act2 = projectMorrowCase([
   access,
-  row('case_progress', { events: [...MORROW_CASE_EVENT_ORDER, 'morrow.act3.contradiction_preserved'] }, 9),
+  row('case_progress', {
+    events: [...MORROW_CASE_EVENT_ORDER.slice(0, 9), 'morrow.act8.future_state_withheld'],
+  }, 9),
   row('player_receipts', { receipts: ['web:checksum:001', 'paper:live-test:001'] }, 9),
   row('server_handoff', {
     releaseId: RELEASE, serverLabel: 'Mossfield Recovery', joinAddress: 'rehearsal.example.test:25565',
@@ -60,16 +62,17 @@ const act2 = projectMorrowCase([
 ], RELEASE);
 assert.equal(act2.kind, 'ready');
 if (act2.kind === 'ready') {
-  assert.equal(act2.updates.length, 6, 'only the six earned Act 1/2 ticket callbacks render');
+  assert.equal(act2.updates.length, 7, 'only the seven earned Act 1/2 ticket callbacks render');
   assert.deepEqual(act2.updates.map((update) => update.eventKey), [
     'morrow.act1.room04_witnessed',
     'morrow.act1.static_proposal_authenticated',
     'morrow.act1.intention_error_proven',
+    'morrow.act1.entity_replay_authorized',
     'morrow.act2.missing_role_completed',
     'morrow.act2.live_test_recorded',
     'morrow.act2.behavior_reuse_proven',
   ]);
-  assert.equal(JSON.stringify(act2).includes('morrow.act3.contradiction_preserved'), false,
+  assert.equal(JSON.stringify(act2).includes('morrow.act8.future_state_withheld'), false,
     'locked future events and their spoiler keys are omitted from the rendered model');
   assert.equal(act2.groupSize, 1);
   assert.deepEqual(act2.playerReceipts, ['web:checksum:001', 'paper:live-test:001']);
@@ -146,6 +149,12 @@ const authCallbackSource = readFileSync(resolve('src/app/auth/callback/route.ts'
 const rehearsalSessionSource = readFileSync(resolve('src/app/api/rehearsal/morrow-session/route.ts'), 'utf8');
 const projectorSource = readFileSync(resolve('scripts/morrow-copperline-projector.mjs'), 'utf8');
 const sql = readFileSync(resolve('../morrow/db/schema-proposal.sql'), 'utf8');
+const eventCatalog = JSON.parse(readFileSync(resolve('../morrow/contracts/event-catalog.json'), 'utf8')) as {
+  events: Array<{ key: string; projects_to: string[] }>;
+};
+assert.deepEqual(MORROW_CASE_EVENT_ORDER,
+  eventCatalog.events.filter((event) => event.projects_to.includes('copperline')).map((event) => event.key),
+  'Copperline order must exactly mirror every canonical event projected to the website');
 for (const required of ["'use server'", 'sameOrigin()', 'readMorrowCase()', 'externalMutationsAllowed()',
   '!context.handoffToken', 'morrow_record_copperline_event']) assert.ok(actionSource.includes(required), `action lacks ${required}`);
 for (const required of ["import 'server-only'", 'auth.getUser()', "from('morrow_player_projection')"]) {
@@ -162,6 +171,47 @@ for (const required of ['morrow_claim_copperline_projections', 'morrow_apply_cop
   'morrow_fail_copperline_projection', "projection.surface = 'copperline'", 'skip locked',
   "grant select, insert, update, delete on public.morrow_player_projection to service_role"]) {
   assert.ok(sql.includes(required), `Copperline projector SQL lacks ${required}`);
+}
+
+const finale = projectMorrowCase([
+  access,
+  row('case_progress', {
+    events: [...MORROW_CASE_EVENT_ORDER, 'morrow.act8.future_state_withheld'],
+    rawPayload: { ending: 'CREATE_NEW_BRANCH', privateDialogue: 'must not render' },
+  }, 25),
+], RELEASE);
+assert.equal(finale.kind, 'ready');
+if (finale.kind === 'ready') {
+  assert.equal(finale.events.length, 25, 'Copperline receives every canonical website projection');
+  assert.equal(finale.updates.length, 23, 'Act 0 controls stay separate while all earned field updates render');
+  assert.deepEqual(finale.updates.slice(-7).map((update) => update.eventKey), [
+    'morrow.act6.audit_chronology_proven',
+    'morrow.act6.current_morrow_reconstruction_proven',
+    'morrow.act6.cold_storage_access_authorized',
+    'morrow.act7.rollback_anchors_committed',
+    'morrow.act7.branch_policy_committed',
+    'morrow.act7.branch_governance_authorized',
+    'morrow.act7.coda_started',
+  ]);
+  const rendered = JSON.stringify(finale);
+  assert.equal(rendered.includes('morrow.act8.future_state_withheld'), false,
+    'unknown future event keys remain omitted from the rendered model');
+  assert.equal(rendered.includes('CREATE_NEW_BRANCH'), false,
+    'raw ending payload remains outside the website projection model');
+  assert.equal(rendered.includes('privateDialogue'), false,
+    'raw private dialogue remains outside the website projection model');
+  assert.equal(rendered.includes('private_contradiction_resolved'), false,
+    'Discord-private contradiction never enters the Copperline event order');
+}
+
+const lockedFinale = projectMorrowCase([
+  access,
+  row('case_progress', { events: MORROW_CASE_EVENT_ORDER.slice(0, -1) }, 24),
+], RELEASE);
+assert.equal(lockedFinale.kind, 'ready');
+if (lockedFinale.kind === 'ready') {
+  assert.equal(lockedFinale.updates.some((update) => update.eventKey === 'morrow.act7.coda_started'), false,
+    'the coda update stays absent until its own receipt is earned');
 }
 for (const required of ['projector_run_receipts', 'run_copperline_projector',
   'copperline_projector_health', 'configure_copperline_projector_schedule',
@@ -217,4 +267,4 @@ const staleLore = new RegExp('\\b(?:Hold|Keeper|Averyn|Wren|Noland|Deep Hold|Unl
 assert.equal(staleLore.test(newSurface), false, 'new Copperline reboot surface leaked superseded lore');
 assert.equal(newSurface.includes('SUPABASE_SERVICE_ROLE_KEY'), false, 'service role leaked into reboot route');
 
-console.log('MORROW COPPERLINE ACT 0-2: PASS direct/stale/identity/1-2-6/duplicate/collision/spoiler/outage/checksum/token/input/order');
+console.log('MORROW COPPERLINE ACT 0-7: PASS direct/stale/identity/1-2-6/duplicate/collision/spoiler/outage/checksum/token/input/order/finale');

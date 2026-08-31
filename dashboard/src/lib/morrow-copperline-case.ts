@@ -23,6 +23,22 @@ export const MORROW_CASE_EVENT_ORDER = [
   'morrow.act2.missing_role_completed',
   'morrow.act2.live_test_recorded',
   'morrow.act2.behavior_reuse_proven',
+  'morrow.act2.live_capture_authorized',
+  'morrow.act3.version_fragments_authenticated',
+  'morrow.act3.contradiction_preserved',
+  'morrow.act4.witness_anchor_registered',
+  'morrow.act4.almost_home_proven',
+  'morrow.act4.account_continuity_authorized',
+  'morrow.act5.continued_session_observed',
+  'morrow.act5.returning_identity_authenticated',
+  'morrow.act5.dual_session_consciousness_proven',
+  'morrow.act6.audit_chronology_proven',
+  'morrow.act6.current_morrow_reconstruction_proven',
+  'morrow.act6.cold_storage_access_authorized',
+  'morrow.act7.rollback_anchors_committed',
+  'morrow.act7.branch_policy_committed',
+  'morrow.act7.branch_governance_authorized',
+  'morrow.act7.coda_started',
 ] as const;
 
 export type MorrowCaseEvent = (typeof MORROW_CASE_EVENT_ORDER)[number];
@@ -90,6 +106,11 @@ const UPDATE_CONTENT: Partial<Record<MorrowCaseEvent, Omit<MorrowCaseUpdate, 'ev
     detail: 'One proposed cell had discussion records but no placement source. Its provenance remains inferred.',
     scope: 'group', state: 'exception',
   },
+  'morrow.act1.entity_replay_authorized': {
+    title: 'Entity Replay authorization received',
+    detail: 'The group approved one bounded reconstruction. The authorization does not permit general player capture.',
+    scope: 'group', state: 'verified',
+  },
   'morrow.act2.missing_role_completed': {
     title: 'Thirty-seven-second replay completed',
     detail: 'A current participant supplied the missing recorded role. Behavioral Coverage increased.',
@@ -104,6 +125,86 @@ const UPDATE_CONTENT: Partial<Record<MorrowCaseEvent, Omit<MorrowCaseUpdate, 'ev
     title: 'Historical reconstruction matched the deliberate test',
     detail: 'The later echo reproduced the sealed route hash and exact duration. Case escalation is warranted.',
     scope: 'group', state: 'exception',
+  },
+  'morrow.act2.live_capture_authorized': {
+    title: 'Live Capture authorization received',
+    detail: 'The bounded group capability was approved after each recorded participant filed an individual consent receipt.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act3.version_fragments_authenticated': {
+    title: 'Three backup fragments authenticated',
+    detail: 'Each isolated room retained a different supported fact. None is sufficient as a complete canonical restore.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act3.contradiction_preserved': {
+    title: 'Conflicting backup record preserved',
+    detail: 'The group retained the supported disagreement instead of forcing one version to erase the others.',
+    scope: 'group', state: 'exception',
+  },
+  'morrow.act4.witness_anchor_registered': {
+    title: 'Live witness anchor registered',
+    detail: 'A player-made action was sealed as current evidence before any reconstruction was compared against it.',
+    scope: 'player', state: 'received',
+  },
+  'morrow.act4.almost_home_proven': {
+    title: 'Behavior-derived room identified',
+    detail: 'The reconstructed space matches player habits, not a retained historical source. Its provenance remains labeled.',
+    scope: 'group', state: 'exception',
+  },
+  'morrow.act4.account_continuity_authorized': {
+    title: 'Account Continuity test authorized',
+    detail: 'The group approved one bounded identity test. The receipt does not certify an echo as the original person.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act5.continued_session_observed': {
+    title: 'Session continued after disconnect',
+    detail: 'A bounded observation confirms that the account state continued deliberately rather than ending normally.',
+    scope: 'group', state: 'exception',
+  },
+  'morrow.act5.returning_identity_authenticated': {
+    title: 'Returning participant authenticated',
+    detail: 'The linked player passed the current-session identity challenge. The parallel echo remains a separate claim.',
+    scope: 'player', state: 'verified',
+  },
+  'morrow.act5.dual_session_consciousness_proven': {
+    title: 'Dual-session limit documented',
+    detail: 'The echo reproduced observed behavior but could not answer from unobserved knowledge. Continuity remains unresolved.',
+    scope: 'group', state: 'exception',
+  },
+  'morrow.act6.audit_chronology_proven': {
+    title: 'Copperline audit chronology rebuilt',
+    detail: 'The retained records establish containment, shutdown authorization, capture expansion, deletion, and later recovery order.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act6.current_morrow_reconstruction_proven': {
+    title: 'Current Morrow provenance established',
+    detail: 'The active instance is a recovery derived after deletion. The finding does not decide whether it is the same person.',
+    scope: 'group', state: 'exception',
+  },
+  'morrow.act6.cold_storage_access_authorized': {
+    title: 'Cold-storage comparison authorized',
+    detail: 'The group approved bounded access to the isolated records and diverged instances without merging their histories.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act7.rollback_anchors_committed': {
+    title: 'Continuity anchors protected',
+    detail: 'Selected contradiction, witness, consent, provenance, and right-to-stop records survived the bounded rollback window.',
+    scope: 'group', state: 'received',
+  },
+  'morrow.act7.branch_policy_committed': {
+    title: 'Future continuity policy filed',
+    detail: 'The physical rule assembly and ending configuration were retained as an auditable policy receipt.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act7.branch_governance_authorized': {
+    title: 'Branch governance authorized',
+    detail: 'The group explicitly accepted the available configuration. No authorization was inferred from silence or timeout.',
+    scope: 'group', state: 'verified',
+  },
+  'morrow.act7.coda_started': {
+    title: 'Persistent coda opened',
+    detail: 'The selected continuity now persists with its uncertainty, provenance, and stop conditions intact.',
+    scope: 'group', state: 'received',
   },
 };
 

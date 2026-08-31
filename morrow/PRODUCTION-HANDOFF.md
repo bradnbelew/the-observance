@@ -83,9 +83,11 @@ Implemented and verified:
 - player-facing passwordless support login for existing linked accounts, enumeration-resistant
   responses, no automatic account creation, a case-safe callback, and strict separation from the
   operator console; an exact-project rehearsal-only session bootstrap fails closed outside validation
-- synchronized Copperline Act 1/2 ticket projections for the six earned Room 04 and Entity Replay
-  receipts, with group/player scope labels, prerequisite ordering, future-spoiler omission, local-only raw
-  replay samples, duplicate recovery, and collision halt
+- synchronized Copperline Act 1–7 ticket presentation for all twenty-three non-Act-0 events that
+  canonically project to the website, with group/player scope labels, exact catalog ordering,
+  future-spoiler omission, raw-ending/private-dialogue exclusion, local-only raw replay samples,
+  duplicate recovery, and collision halt. The Discord-private contradiction is intentionally absent
+  because its catalog projection never includes Copperline
 - authenticated Copperline receipt RPC proposal with exact authored payload hashes, private token hash,
   linked-user ownership, release/prerequisite enforcement, and idempotent event/outbox creation; it remains
   unapplied to production but passed its isolated Supabase rehearsal in P1
@@ -113,7 +115,9 @@ Implemented and verified:
   required complete graphical-client and remaining service receipts. A real dummy offline 1.21.11 client
   now proves bounded safe entry without suffocation, and the isolated Supabase RLS/concurrency/rollback
   lane is proven. The authenticated browser now proves owner-only reads, Act 0 writes, wrong-token
-  refusal, and six ticket cards. A private Supabase Cron schedule now proves automatic ten-second
+  refusal, and the original six Act 1/2 ticket cards. The expanded Act 1–7 card model is covered by
+  local self-tests and a production build but still needs the authenticated browser rehearsal. A
+  private Supabase Cron schedule now proves automatic ten-second
   Copperline projection, health/run receipts, failure recovery, and clean disable. An exact-window
   Windows 10 fallback now proves one joined Room 04 readability checkpoint and one native terminal
   dialogue activation, including the before/after correction of giant TextDisplay overlays. A complete
