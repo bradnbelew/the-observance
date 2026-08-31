@@ -2,6 +2,7 @@ import {
   MORROW_BEHAVIOR_REUSE_EVENT,
   MORROW_PRIVATE_CONTRADICTION_EVENT,
 } from './contradiction.js';
+import { morrowDiscordProjectionCopy } from './projection-copy.js';
 
 export interface MorrowDiscordProjectionClaim {
   eventId: string;
@@ -39,9 +40,10 @@ export async function runMorrowDiscordProjectionBatch(
         const activation = await dependencies.activate(claim);
         applied = activation === 'activated' || activation === 'duplicate';
         failure = applied ? undefined : `contradiction activation ${activation}`;
-      } else if (claim.eventKey === MORROW_PRIVATE_CONTRADICTION_EVENT) {
+      } else if (claim.eventKey === MORROW_PRIVATE_CONTRADICTION_EVENT
+          || morrowDiscordProjectionCopy(claim.eventKey)) {
         applied = await dependencies.post(claim);
-        failure = applied ? undefined : 'group receipt delivery failed';
+        failure = applied ? undefined : 'synchronized receipt delivery failed';
       } else {
         failure = 'unsupported Morrow Discord projection';
       }

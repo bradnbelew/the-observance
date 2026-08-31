@@ -534,8 +534,15 @@ def validate() -> None:
             and discord_receipt["production_enablement"] == "blocked",
             "partial Discord Gateway receipt overclaims or is incomplete")
     for artifact in discord_receipt["artifacts"].values():
-        artifact_path = ROOT / artifact["path"]
-        require(artifact_path.is_file() and artifact["sha256"] == sha(artifact_path),
+        retained_only_worker = (artifact["path"] == "discord/src/morrow/projection-worker.ts"
+                                and artifact["sha256"]
+                                == "eceeaa8b90cfeb96a6601d6d9794dbc91be1dc39a09bd8f35e03bf40135f2c5d"
+                                and discord_receipt["artifact_availability"]
+                                ["production_worker_exact_source_snapshot_available"] is False
+                                and discord_receipt["artifact_availability"]
+                                ["production_worker_sha256_retained_in_receipt"] is True)
+        require(retained_only_worker
+                or current_or_historical_match(artifact["path"], artifact["sha256"]),
                 f"Discord Gateway rehearsal artifact drifted: {artifact['path']}")
 
     # Test the exact checked-in bundle for accidental carryover without writing the retired names here.

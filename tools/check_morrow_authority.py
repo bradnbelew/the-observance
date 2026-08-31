@@ -27,6 +27,7 @@ DASHBOARD_MORROW_MEDIA_ASSETS = ROOT / "dashboard" / "src" / "lib" / "morrow-med
 DISCORD_MORROW_DOMAIN = ROOT / "discord" / "src" / "morrow" / "contradiction.ts"
 DISCORD_MORROW_REPO = ROOT / "discord" / "src" / "morrow" / "repo.ts"
 DISCORD_MORROW_POLICY = ROOT / "discord" / "src" / "morrow" / "projection-policy.ts"
+DISCORD_MORROW_COPY = ROOT / "discord" / "src" / "morrow" / "projection-copy.ts"
 DISCORD_MORROW_WORKER = ROOT / "discord" / "src" / "morrow" / "projection-worker.ts"
 DISCORD_MORROW_HANDLER = ROOT / "discord" / "src" / "bot" / "commands" / "morrow.ts"
 PLUGIN_BODY_AUTHORITY = PLUGIN_MORROW / "presentation" / "MorrowBodyAuthority.java"
@@ -42,6 +43,7 @@ MORROW_ACT6_COPPERLINE_MIGRATION = (
 MORROW_DATABASE_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-isolated-supabase.json"
 MORROW_ACT6_COPPERLINE_RECEIPT = MORROW / "rehearsal" / "database" / "latest-act6-chronology-local.json"
 MORROW_MEDIA_RECEIPT = MORROW / "rehearsal" / "media" / "latest.json"
+MORROW_DISCORD_FULL_RECEIPT = MORROW / "rehearsal" / "discord" / "latest-full-projection-local.json"
 MORROW_CRON_RECEIPT = MORROW / "rehearsal" / "database" / "2026-08-30-supabase-cron-projector.json"
 MORROW_BROWSER_RECEIPT = MORROW / "rehearsal" / "browser" / "2026-08-30-authenticated-copperline.json"
 
@@ -422,6 +424,7 @@ def main() -> int:
         discord_domain = DISCORD_MORROW_DOMAIN.read_text(encoding="utf-8")
         discord_repo = DISCORD_MORROW_REPO.read_text(encoding="utf-8")
         discord_policy = DISCORD_MORROW_POLICY.read_text(encoding="utf-8")
+        discord_copy = DISCORD_MORROW_COPY.read_text(encoding="utf-8")
         discord_worker = DISCORD_MORROW_WORKER.read_text(encoding="utf-8")
         discord_gateway_rehearsal = (ROOT / "discord" / "src" / "morrow" /
                                      "gateway-rehearsal.ts").read_text(encoding="utf-8")
@@ -473,6 +476,20 @@ def main() -> int:
         require("MORROW_BEHAVIOR_REUSE_EVENT" in discord_policy
                 and "MORROW_PRIVATE_CONTRADICTION_EVENT" in discord_policy,
                 "Morrow Discord projection policy lost activation/callback ordering")
+        expected_discord_events = {
+            event["key"] for event in events if "discord" in event["projects_to"]
+        }
+        special_discord_events = {
+            "morrow.act2.behavior_reuse_proven",
+            "morrow.act2.private_contradiction_resolved",
+        }
+        authored_discord_events = set(re.findall(r"^  '([^']+)': \{$", discord_copy, re.MULTILINE))
+        require(authored_discord_events == expected_discord_events - special_discord_events,
+                "authored Discord receipt copy does not cover every canonical generic projection")
+        for required in ("renderMorrowDiscordProjection", "morrowDiscordProjectionCopy",
+                         "claim.eventKey === MORROW_PRIVATE_CONTRADICTION_EVENT", "if (!content) return false"):
+            require(required in discord_copy or required in discord_policy or required in discord_worker,
+                    f"Morrow Discord generalized projection lacks {required}")
         require("enforceNonce: true" in discord_worker and "allowedMentions: { parse: [] }" in discord_worker,
                 "group receipt delivery lost replay or mention safety")
         for required in ("MORROW_GATEWAY_REHEARSAL_ACK", "temporary-channel:",
@@ -484,7 +501,7 @@ def main() -> int:
         require(discord_package.get("scripts", {}).get("morrow:gateway-rehearsal")
                 == "tsx src/morrow/gateway-rehearsal.ts",
                 "Discord Gateway rehearsal command drifted")
-        reboot_surface = "\n".join((discord_domain, discord_repo, discord_policy,
+        reboot_surface = "\n".join((discord_domain, discord_repo, discord_policy, discord_copy,
                                       discord_worker, discord_handler))
         require(re.search(r"\b(?:Averyn|Wren|Noland|Keeper|Unlit|Deep Hold)\b", reboot_surface,
                           re.IGNORECASE) is None,
@@ -618,6 +635,21 @@ def main() -> int:
                 and media_receipt["boundary"]["live_rpc_exercised"] is False
                 and media_receipt["boundary"]["authenticated_browser_media_playback"] is False,
                 "earned media local receipt overclaims live delivery proof")
+        discord_full_receipt = json.loads(MORROW_DISCORD_FULL_RECEIPT.read_text(encoding="utf-8"))
+        for artifact in discord_full_receipt["artifacts"].values():
+            artifact_path = ROOT / artifact["path"]
+            require(artifact_path.is_file()
+                    and hashlib.sha256(artifact_path.read_bytes()).hexdigest() == artifact["sha256"],
+                    f"full Discord projection receipt artifact drifted: {artifact['path']}")
+        require(discord_full_receipt["status"]
+                == "local_full_projection_policy_pass_gateway_execution_open"
+                and discord_full_receipt["proof"]["canonical_discord_events"] == 18
+                and discord_full_receipt["proof"]["generic_payload_free_receipts"] == 16
+                and discord_full_receipt["proof"]["unknown_event_fails_closed"] is True
+                and discord_full_receipt["boundary"]["production_contacted"] is False
+                and discord_full_receipt["boundary"]["validation_database_contacted"] is False
+                and discord_full_receipt["boundary"]["discord_gateway_contacted"] is False,
+                "full Discord projection local receipt overclaims live Gateway proof")
         browser_receipt = json.loads(MORROW_BROWSER_RECEIPT.read_text(encoding="utf-8"))
         for artifact in browser_receipt["artifacts"].values():
             artifact_path = ROOT / artifact["path"]

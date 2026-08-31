@@ -3,7 +3,9 @@ import type { Client } from 'discord.js';
 import { config } from '../config.js';
 import {
   MORROW_GROUP_RECEIPT_TEXT,
+  MORROW_PRIVATE_CONTRADICTION_EVENT,
 } from './contradiction.js';
+import { renderMorrowDiscordProjection } from './projection-copy.js';
 import {
   activateMorrowContradiction,
   claimMorrowDiscordProjections,
@@ -37,8 +39,12 @@ function productionDependencies(client: Client<true>): MorrowProjectionDependenc
           || claim.threadId !== expectedThread) return false;
       const destination = await client.channels.fetch(expectedThread ?? expectedChannel!);
       if (!destination?.isSendable()) return false;
+      const content = claim.eventKey === MORROW_PRIVATE_CONTRADICTION_EVENT
+        ? `${MORROW_GROUP_RECEIPT_TEXT}\nRelease: ${claim.releaseId} · receipt ${claim.eventId}`
+        : renderMorrowDiscordProjection(claim.eventKey, claim.releaseId, claim.eventId);
+      if (!content) return false;
       await destination.send({
-        content: `${MORROW_GROUP_RECEIPT_TEXT}\nRelease: ${claim.releaseId} · receipt ${claim.eventId}`,
+        content,
         nonce: projectionNonce(claim.eventId),
         enforceNonce: true,
         allowedMentions: { parse: [] },

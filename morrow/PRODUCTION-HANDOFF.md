@@ -116,6 +116,11 @@ Implemented and verified:
   altered-payload collision halt, leased outbox retry/restart recovery, spoiler-safe Discord projection,
   and Minecraft callback. No HTTP interaction endpoint, Chat SDK adapter, live server connection, or
   production migration was added
+- authored, payload-free synchronized Discord receipts now cover every one of the eighteen canonical
+  Discord projections through the Act 7 coda. The Act 2 behavior-reuse event still opens the private
+  contradiction flow, its resolution still emits the special payload-free group receipt, and the other
+  sixteen events use bounded spoiler-safe copy. Unknown events fail closed instead of posting raw data;
+  full-campaign Gateway/database execution remains an isolated-service gate
 - deterministic P0 item 10 rehearsal harness and retained SHA-256 receipt bundle for one-, two-, and
   six-player cohorts: the full Act 0–2 slice order, restart after every durable boundary, wrong/partial/
   cancel/decline paths, disconnect/rejoin, ordered outage recovery, duplicate/collision, cursor loss,
@@ -139,7 +144,7 @@ Implemented and verified:
   Copperline projection, health/run receipts, failure recovery, and clean disable. An exact-window
   Windows 10 fallback now proves one joined Room 04 readability checkpoint and one native terminal
   dialogue activation, including the before/after correction of giant TextDisplay overlays. A complete
-  browser-requested PKCE magic-link exchange, the database-bound Discord worker, and every complete
+  browser-requested PKCE magic-link exchange, a full-campaign database-bound Discord worker run, and every complete
   graphical lane remain unproven. Real Supabase email delivery and bot-only Discord Gateway transport
   are retained partial subproofs; every production gate remains disabled
 
@@ -292,7 +297,8 @@ same mechanic.
   and an exact verifier-cookie defect fix, but still requires a fresh final PKCE callback and
   authenticated RLS read. Discord has real bot-only Gateway
   transport evidence but still requires a database-claimed worker and disposable-guild linked-player
-  interaction; its shipped feature gate remains false.
+  interaction. All later authored receipt policies are locally type-checked but not Gateway-rehearsed;
+  its shipped feature gate remains false.
 - M05–M12 construction and restart checkpoints are green, but their complete native-dialog, private
   display, wrong-answer, Escape, item-transfer, disconnect/rejoin, asymmetric-coop, readability, and
   pacing lanes are not. The current Computer Use capture path still fails on this host with

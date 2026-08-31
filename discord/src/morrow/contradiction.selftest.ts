@@ -23,6 +23,10 @@ import {
   type MorrowDiscordProjectionClaim,
   type MorrowProjectionDependencies,
 } from './projection-policy.js';
+import {
+  MORROW_GENERIC_DISCORD_EVENT_KEYS,
+  renderMorrowDiscordProjection,
+} from './projection-copy.js';
 
 const CAMPAIGN = '8e0b1a62-d2dd-4e86-91f1-4b07af5e2922';
 const PLAYER = '571d20b8-bf85-4e8a-92ac-3b071ffc882d';
@@ -162,11 +166,43 @@ assert.deepEqual(await runMorrowDiscordProjectionBatch('22222222-2222-4222-8222-
   claimed: 1, applied: 1, failed: 0,
 }, 'restart safely reclaims and delivers the failed receipt');
 
+const genericClaim: MorrowDiscordProjectionClaim = {
+  ...activationClaim,
+  eventId: '60d38fe3-56e6-47dd-bf70-34a8cd034d7d',
+  eventKey: 'morrow.act7.coda_started',
+  channelId: CHANNEL,
+  threadId: THREAD,
+};
+claims = [genericClaim];
+assert.deepEqual(await runMorrowDiscordProjectionBatch(
+  '33333333-3333-4333-8333-333333333333', dependencies,
+), { claimed: 1, applied: 1, failed: 0 }, 'later-act synchronized receipts must not retry as unsupported');
+const codaCopy = renderMorrowDiscordProjection(genericClaim.eventKey, RELEASE, genericClaim.eventId);
+assert.ok(codaCopy?.includes('Persistent coda opened') && codaCopy.includes(genericClaim.eventId));
+assert.equal(codaCopy?.includes(genericClaim.payloadSha256), false, 'Discord copy must never include raw event payload');
+assert.equal(renderMorrowDiscordProjection('morrow.unknown.event', RELEASE, genericClaim.eventId), null);
+
 const sql = readFileSync(resolve('../morrow/db/schema-proposal.sql'), 'utf8');
 const handler = readFileSync(resolve('src/bot/commands/morrow.ts'), 'utf8');
 const index = readFileSync(resolve('src/bot/index.ts'), 'utf8');
 const register = readFileSync(resolve('src/bot/register.ts'), 'utf8');
 const packageJson = readFileSync(resolve('package.json'), 'utf8');
+const eventCatalog = JSON.parse(readFileSync(resolve('../morrow/contracts/event-catalog.json'), 'utf8')) as {
+  events: Array<{ key: string; projects_to: string[] }>;
+};
+const discordEvents = eventCatalog.events
+  .filter((event) => event.projects_to.includes('discord'))
+  .map((event) => event.key);
+assert.deepEqual([
+  ...MORROW_GENERIC_DISCORD_EVENT_KEYS,
+  MORROW_BEHAVIOR_REUSE_EVENT,
+  MORROW_PRIVATE_CONTRADICTION_EVENT,
+].sort(), [...discordEvents].sort(), 'every canonical Discord projection needs an authored delivery policy');
+for (const eventKey of MORROW_GENERIC_DISCORD_EVENT_KEYS) {
+  const rendered = renderMorrowDiscordProjection(eventKey, RELEASE, genericClaim.eventId);
+  assert.ok(rendered && rendered.length <= 700, `${eventKey} lacks bounded authored copy`);
+  assert.equal(rendered.includes('undefined'), false, `${eventKey} rendered incomplete copy`);
+}
 for (const required of [
   'discord_contradiction_flows', 'discord_contradiction_sessions', 'discord_contradiction_votes',
   'pg_advisory_xact_lock', 'for update of session', 'skip locked', 'lease_expires_at',
@@ -190,6 +226,7 @@ const rebootFiles = [
   readFileSync(resolve('src/morrow/repo.ts'), 'utf8'),
   readFileSync(resolve('src/morrow/projection-policy.ts'), 'utf8'),
   readFileSync(resolve('src/morrow/projection-worker.ts'), 'utf8'),
+  readFileSync(resolve('src/morrow/projection-copy.ts'), 'utf8'),
   handler,
 ].join('\n');
 const retired = new RegExp(`\\b(?:${['Ho' + 'ld', 'Keep' + 'er', 'Aver' + 'yn', 'Wr' + 'en', 'Nol' + 'and', 'Deep ' + 'Hold', 'Un' + 'lit'].join('|')})\\b`, 'i');
