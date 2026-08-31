@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0-morrow-version-rooms-runtime-checkpoint",
+  "status": "paper_install_restart_pass_client_interaction_open",
+  "source_commit": "439abc97b966995ed94ffe4f84e08fa1e36767da",
+  "receipt": "morrow/rehearsal/version-rooms-runtime/439abc9/paper-runtime-receipt.json",
+  "receipt_sha256": "470a4e48fc47fcbc50786ba2f264f184fcba32bd7bd629e2586651c26a4ad8d2",
+  "producer": {
+    "path": "tools/run_morrow_disposable_paper.py",
+    "sha256": "c4c6f5c776f5007745f77075b16ebc7e9357eafb9e8551c94771516460ed59c1"
+  },
+  "scope": "owned loopback Paper 1.21.11 M05 construction, semantic readback, restart, and cleanup",
+  "boundaries": {
+    "graphical_client_used": false,
+    "player_interaction_proven": false,
+    "full_human_playthrough_proven": false,
+    "production_mutated": false,
+    "production_credentials_loaded": false
+  },
+  "remaining_gate": "exercise all three consoles, wrong route, Escape, destructive choices, and preserve contradiction with real clients and retained media",
+  "production_enablement": "blocked"
+}

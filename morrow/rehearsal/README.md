@@ -35,6 +35,13 @@ owned client/server shutdown. It is verified by
 continuous media, independent observation, and the other unresolved graphical lanes remain required
 under `CLIENT-REHEARSAL.md`.
 
+The retained `version-rooms-runtime/latest.json` checkpoint proves the M05 damaged, scaffold, and
+completed rooms build as 1,617 real Paper 1.21.11 cells, survive restart under the same manifest,
+retain exactly three display labels, and shut down cleanly. Verify it with
+`python tools/check_morrow_version_rooms_runtime_checkpoint.py`. This is server lifecycle evidence;
+real-client console routing, native dialogue choices, Escape behavior, visual readability, and the
+correct/wrong player paths remain open and are deliberately not claimed.
+
 The retained `client-cohort-prep/2026-08-30-offline-cohort-preparation.json` checkpoint proves the
 installed vanilla client can be prepared as distinct one-, two-, and six-player cohorts without
 launching a GUI or contacting the server. It retains only JSON/options evidence—not client binaries—
