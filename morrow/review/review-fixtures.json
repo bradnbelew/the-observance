@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0.0-review-only",
+  "deployable": false,
+  "production_mutations_allowed": false,
+  "minecraft_locations": [
+    {
+      "id": "spawn_panel",
+      "label": "Public spawn and panel kiosk",
+      "review_coordinate": [0, 72, 0],
+      "gates": ["G04"],
+      "native_objects": ["MOTD", "weathered rules sign", "locked panel kiosk", "old road map"],
+      "scare_anchors": ["last_lantern"],
+      "tone": "ordinary, neglected, safe"
+    },
+    {
+      "id": "cairn_storehouse",
+      "label": "cairn's storehouse",
+      "review_coordinate": [146, 68, -91],
+      "gates": ["G05", "G13"],
+      "native_objects": ["four chests", "renamed tools", "uneven labels", "lectern", "private barrel detail"],
+      "scare_anchors": ["chest_correction", "second_steps", "room_afterimage", "continued_session_figure"],
+      "tone": "domestic familiarity becoming imitation"
+    },
+    {
+      "id": "finch_rail_spur",
+      "label": "Finch's unfinished rail spur",
+      "review_coordinate": [284, 64, -38],
+      "gates": [],
+      "native_objects": ["incomplete rail", "project sign", "minecart chest", "renamed pick"],
+      "scare_anchors": ["copied_crossing"],
+      "tone": "unfinished work more authentic than completion"
+    },
+    {
+      "id": "rookery_cache",
+      "label": "Rookery maintenance cache",
+      "review_coordinate": [-212, 43, 167],
+      "gates": ["G06"],
+      "native_objects": ["three resident books", "coordinate sign", "buried barrel", "command fragment"],
+      "scare_anchors": ["first_sign_change"],
+      "tone": "practical secrecy"
+    },
+    {
+      "id": "june_overlook",
+      "label": "June's lighthouse overlook",
+      "review_coordinate": [418, 86, 311],
+      "gates": ["G07"],
+      "native_objects": ["locator map", "photograph marker", "guest book", "false recovered tower"],
+      "scare_anchors": ["horizon_figure"],
+      "tone": "beautiful wrongness"
+    },
+    {
+      "id": "patchcord_relay",
+      "label": "patchcord relay hut",
+      "review_coordinate": [-75, 70, 356],
+      "gates": ["G08", "G09"],
+      "native_objects": ["lever wall", "redstone pulse", "jukebox", "recording ledger terminal"],
+      "scare_anchors": ["door_left_open", "playback_desync"],
+      "tone": "recorded behavior without meaning"
+    },
+    {
+      "id": "maintenance_annex",
+      "label": "Copperline maintenance annex",
+      "review_coordinate": [-330, 35, -244],
+      "gates": ["G11", "G12"],
+      "native_objects": ["uptime clocks", "incident signs", "memo index", "carrier player"],
+      "scare_anchors": ["rewritten_dates", "maintenance_dark"],
+      "tone": "corporate concealment under the world"
+    },
+    {
+      "id": "manual_stop",
+      "label": "Manual stop route",
+      "review_coordinate": [0, 21, -420],
+      "gates": ["G14", "G15"],
+      "native_objects": ["fragment slots", "hash display", "three physical breakers", "safe checkpoint", "shutdown lever"],
+      "scare_anchors": ["last_defense", "false_disconnect", "copied_route"],
+      "tone": "hostile continuity defense followed by complete silence"
+    }
+  ],
+  "dread_score": [
+    {"id":"last_lantern","phase":"unease","maximum_seconds":20,"required_for_progress":false,"accessible_equivalent":"distant light cue and readable observation log"},
+    {"id":"chest_correction","phase":"violation","maximum_seconds":1,"required_for_progress":false,"accessible_equivalent":"visible reordered labels and event transcript"},
+    {"id":"second_steps","phase":"unease","maximum_seconds":8,"required_for_progress":false,"accessible_equivalent":"paired dust particles and subtitle"},
+    {"id":"horizon_figure","phase":"apparition","maximum_seconds":12,"required_for_progress":false,"accessible_equivalent":"high-contrast silhouette and readable sighting cue"},
+    {"id":"door_left_open","phase":"doubt","maximum_seconds":20,"required_for_progress":false,"accessible_equivalent":"door-state marker and advanced-groove text"},
+    {"id":"copied_crossing","phase":"imitation","maximum_seconds":18,"required_for_progress":false,"accessible_equivalent":"high-contrast entity path and event transcript"},
+    {"id":"private_accusation","phase":"distrust","maximum_seconds":300,"required_for_progress":false,"accessible_equivalent":"authored readable message with safe code"},
+    {"id":"wrong_uptime","phase":"contamination","maximum_seconds":30,"required_for_progress":false,"accessible_equivalent":"before-and-after text with unchanged uptime"},
+    {"id":"room_afterimage","phase":"displacement","maximum_seconds":2,"required_for_progress":false,"accessible_equivalent":"bounded window silhouettes and observation text"},
+    {"id":"continued_session_figure","phase":"encounter","maximum_seconds":180,"required_for_progress":true,"accessible_equivalent":"dialogue and action transcript"},
+    {"id":"maintenance_dark","phase":"pressure","maximum_seconds":90,"required_for_progress":false,"accessible_equivalent":"reduced-darkness route and readable exit"},
+    {"id":"last_defense","phase":"pursuit","maximum_seconds":90,"required_for_progress":true,"accessible_equivalent":"reduced-intensity profile, safe checkpoint, and immediate abort"}
+  ],
+  "copperline_routes": [
+    {"layer":"public","routes":["/","/game-servers.php","/server-list.php","/announcements.php","/status"],"purpose":"ordinary retired host"},
+    {"layer":"community","routes":["/community/forum","/community/archive","/blog"],"purpose":"resident and staff archaeology"},
+    {"layer":"support","routes":["/support/tickets","/support/account"],"purpose":"fictional identity and case records"},
+    {"layer":"hidden","routes":["/recovery/mossfield","/recovery/media","/recovery/shutdown"],"purpose":"authenticated recovery and finale"}
+  ],
+  "media": [
+    {"key":"retired_hosting_brochure","gate":"G01","medium":"scanned PDF + OCR text","review_status":"concept only"},
+    {"key":"forum_avatar_contact_sheet","gate":"G02","medium":"image sequence + named grid","review_status":"concept only"},
+    {"key":"theo_account_voicemail","gate":"G03","medium":"audio + timecoded transcript","review_status":"concept only"},
+    {"key":"june_horizon","gate":"G07","medium":"image","review_status":"concept only"},
+    {"key":"rookery_notebook","gate":"G06","medium":"handwritten scan + layout transcript","review_status":"concept only"},
+    {"key":"frame_37","gate":"G08","medium":"video","review_status":"concept only"},
+    {"key":"current_contamination","gate":"G09","medium":"video + metadata","review_status":"concept only"},
+    {"key":"patchcord_cassette_dub","gate":"G09","medium":"audio + speaker transcript","review_status":"concept only"},
+    {"key":"incident_raw_export","gate":"G11","medium":"CSV/log + accessible table","review_status":"concept only"},
+    {"key":"iona_reverse","gate":"G12","medium":"audio + transcript","review_status":"concept only"},
+    {"key":"carrier_spectrogram","gate":"G12","medium":"audio visual + text table","review_status":"concept only"},
+    {"key":"shutdown_record","gate":"G15","medium":"document","review_status":"concept only"}
+  ],
+  "discord_fragments": [
+    {"audience":"P01","state":"manipulative","line":"They opened the storehouse before you arrived.","safe_code":"B4"},
+    {"audience":"P02","state":"manipulative","line":"You were the only one who waited. Keep it that way.","safe_code":"A7"},
+    {"group_resolution":"A7-B4","private_prose_required":false}
+  ],
+  "director_fixture": {
+    "controls_enabled": false,
+    "target": "review-only",
+    "commands": ["trigger_scare", "unlock_page", "send_authored_line", "send_authored_dm", "spawn_entity", "despawn_entity", "alter_allowlisted_prop", "verify_gate", "issue_hint", "recover_state", "arm_finale", "start_finale"],
+    "required_receipt_fields": ["release_id", "campaign_id", "scope", "operator_id", "reason", "idempotency_key", "before_revision", "after_revision"],
+    "arbitrary_command_allowed": false,
+    "arbitrary_message_allowed": false
+  }
+}

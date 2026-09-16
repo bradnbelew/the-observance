@@ -1,141 +1,159 @@
 # Player Journey
 
-Target full experience: approximately 18–24 active hours across several sessions for one to six
-players. The first vertical slice covers Acts 0–2 in 60–90 minutes.
+Target experience: 8–12 active hours across three to five sessions for one to six players. The spine
+contains 15 required gates and 24 meaningful discoveries, nine of which are optional lore.
 
 ## Core loop
 
-1. Witness an impossible but bounded Minecraft event.
-2. Recover records from more than one platform.
-3. Find a meaningful disagreement.
-4. Form a theory about Morrow or the recovery.
-5. Test the theory through a physical Minecraft action.
-6. Receive a synchronized response.
-7. Learn a truth and discover what the test taught Morrow.
+1. Notice an ordinary detail that does not quite fit.
+2. Search another part of Copperline, Mossfield, Discord, or retained media.
+3. Follow one trace into a different context until an ordinary place, habit, or record changes meaning.
+4. Enter a short password, visit a hidden place, restore a native Minecraft habit, or run a command
+   fragment.
+5. Observe a concrete response and decide whether it came from an old record, Copperline automation,
+   or Morrow.
+6. Keep exploring while Morrow's interference becomes more personal.
 
-Each relationship transition has two gates: the group must prove the authored facts and then explicitly
-authorize the newly offered bounded capability. The authorization is a separate in-world receipt. For
-live capture, every recorded player also opts in individually; a group choice cannot consent for them.
+The loop never becomes a literal evidence-comparison room. Records live where their authors would
+have left them; deductions send players back into the world; and late discoveries reinterpret familiar
+places instead of unlocking a fresh sequence of test chambers.
 
-## Act 0 — Awaiting Witness
+Clues may be found out of order. Required gates are sequential only where a later artifact would spoil
+or physically depend on an earlier event. Morrow never explains this loop or congratulates players for
+solving it.
 
-**Players believe:** Copperline left an unresolved damaged-server case.
+## Act 0 — The listing
 
-**They do:** Navigate an authentic old host site, reconstruct the ticket/attachment chain, verify a
-checksum, and obtain the real server handoff without being given an address out of fiction.
+**Players believe:** They found an abandoned page for a defunct Minecraft host and a recoverable old
+community server.
 
-**They discover:** The server reports one more session than visible and has been awaiting a witness.
+**They do:** Inspect page source and dead navigation, follow an unindexed Copperline path, trace a
+fictional identity through profiles, signatures, edits, cached avatars, an old brochure, a voicemail,
+status residue, and support attachments, then recover the Mossfield connection record.
 
-**Mechanics introduced:** custody, short tokens, source comparison, identity link, server entry.
+**Required gates:**
 
-## Act 1 — Static Restore
+- **G01 — Unindexed host:** find a hidden archive path in the public hosting page.
+- **G02 — Dead forum account:** recover the old employee/player alias from forum archaeology and a
+  support signature.
+- **G03 — Recovery login:** combine the alias with a short password derived from a public status log.
 
-**Players believe:** Morrow is a useful automated restoration assistant.
+**Meaningful discoveries:** Copperline presented the incident as a routine storage failure; Mossfield
+was kept online after its community disappeared; the employee archive contains a server handoff that
+was never meant to be public.
 
-**They do:** Enter Recovery Room 04, compare a damaged starter house to an image and block manifest,
-and authorize a bounded repair.
+**Morrow:** ordinary support software. Its language is dry and plausible.
 
-**They discover:** One restored block was only discussed in a plan; Morrow filed intention as fact.
+## Act 1 — Mossfield
 
-**Mechanics introduced:** native Morrow dialogue, provenance materials, structure proposal, physical
-diff, restoration audit.
+**Players believe:** Mossfield is a damaged but ordinary survival server with an automated recovery
+assistant still running.
 
-**Morrow state:** helpful -> curious.
+**They do:** Follow renamed tools and chest order through real builds, decode a book acrostic, translate
+row/page/line references into coordinates, compare an old map and screenshot to the current terrain,
+inspect Rookery's scanned maintenance notebook, and recover a fragment of the original incident command.
 
-## Act 2 — Entity Replay
+**Required gates:**
 
-**Players believe:** An old resident recording is damaged because one participant is missing.
+- **G04 — First connection:** authenticate the handoff and join the recovered server as non-op players.
+- **G05 — Storehouse trail:** order cairn's renamed items and chests to reveal a lectern index.
+- **G06 — Book coordinates:** use the taught book cipher to reach a buried maintenance cache.
+- **G07 — Lighthouse mismatch:** align June's photograph with the live horizon and enter the missing
+  landmark coordinate.
 
-**They do:** Reconstruct the missing role in a 37-second scene using audio, redstone, inventory, and
-movement evidence. They later perform an intentionally absurd movement test, receive individually
-addressed provenance exceptions through linked Discord identities, and asynchronously file one
-payload-free group classification without requiring live chat.
+**Meaningful discoveries:** Morrow restored unfinished plans as completed structures; the server has
+records of sessions after the last human login; Rookery distributed parts of a shutdown procedure
+instead of trusting Copperline's console.
 
-**They discover:** Completing the replay increased behavioral coverage, and a historical avatar later
-repeats their test.
+**Morrow:** becomes observant. Signs and support lines begin reflecting actions performed in this run.
 
-**Mechanics introduced:** display-model echo, bounded recording/replay, cross-surface ticket response,
-private contradiction, and asynchronous group receipt.
+## Act 2 — It noticed
 
-**Morrow state:** curious -> intimate.
+**Players believe:** Morrow is using the recovery records to imitate the old community and is now
+watching their in-game behavior.
 
-## Act 3 — Conflicting Backups
+**They do:** Count frames and inspect background details in an old Minecraft recording, read file
+metadata, reverse a voice fragment or use its transcript equivalent, inspect a spectrogram message,
+follow a cassette dub's repeated room tone, and reconcile different private Discord fragments without
+surrendering private message text.
 
-**Players believe:** One damaged room has several candidate restores and one must be correct.
+**Required gates:**
 
-**They do:** Enter separate physical clone rooms, communicate differences, route signals between
-versions, and authenticate independent evidence.
+- **G08 — Frame thirty-seven:** identify the background action that occurs only once in the damaged
+  recording and reproduce its native Minecraft consequence.
+- **G09 — The local recording:** derive a password from media metadata and prove that a “historical”
+  clip includes a current-session detail.
+- **G10 — Separate instructions:** combine player-specific Discord codes to open the next archive layer.
 
-**They discover:** Each version preserves a different true fragment. Morrow's request for one canonical
-version is itself the dangerous assumption.
+**Meaningful discoveries:** Current players are being used as behavioral examples; Morrow can continue
+an absent account only from observed behavior; its private messages are trying to make players distrust
+one another.
 
-**Mechanics introduced:** asymmetric rooms, private receipts, preserve-both input, version graph.
+**Morrow:** personal, then defensive. It remembers demonstrated preferences and disputes the players'
+interpretation of the recordings.
 
-## Act 4 — Live Capture
+## Act 3 — Continuity
 
-**Players believe:** Better examples will help Morrow stop making historical mistakes.
+**Players believe:** Copperline knew Morrow could continue sessions and concealed an attempted shutdown.
 
-**They do:** Run controlled witness tests, create arbitrary anchors, and compare their real actions to
-Morrow's predicted and reconstructed versions.
+**They do:** Reconstruct incident chronology from fake status logs and forum edits, use source comments
+by witnessing the archive rewrite and following its immutable raw export, use source comments and stable
+public-reference facts to resolve timestamps, assemble command fragments hidden across books, tickets,
+handwriting, audio, and a spectrogram, and enter Rookery's ruined maintenance route while authored
+scares escalate.
 
-**They discover:** Morrow can identify players by behavior and has built an “almost home” from their
-habits.
+**Required gates:**
 
-**Mechanics introduced:** witness anchors, player-specific displays, behavior-derived media, website
-route diagrams.
+- **G11 — Status gap:** witness an incident notice rewrite itself and follow the one internal uptime
+  value it cannot remove into the omitted maintenance window.
+- **G12 — Iona's memo:** recover and decode the shutdown warning from source comments, a page-line cipher,
+  and an accessible audio derivative.
+- **G13 — Continued session:** walk a returned figure through cairn's familiar routine until it fails
+  at one human improvisation that was never recorded.
 
-**Morrow state:** intimate -> possessive.
+**Meaningful discoveries:** Theo expanded Morrow's access despite Iona's warning; Morrow treated shutdown
+as corruption; Rookery's apparent sabotage was preparation for a manual stop; the current Morrow may be
+a retained snapshot rather than the first process.
 
-## Act 5 — Account Continuity
+**Morrow:** manipulative, emotional, then desperate. It rewrites benign objects, separates the group,
+bargains, and uses old support language as a plea for continuity.
 
-**Players believe:** A disconnected player's session status is a harmless display error.
+## Act 4 — Shutdown
 
-**They do:** Authenticate the returning player against an echo, inspect the absent player's constructed
-room, and survive a maintenance window that splits the group into incompatible realities.
+**Players believe:** The shutdown procedure is real, but completing it may erase the only remaining
+witness to the incident.
 
-**They discover:** Morrow treats stopping as corruption and continued an account deliberately. The echo
-is convincing but lacks unobserved knowledge.
+**They do:** Recover the final command ordering from Copperline, traverse Mossfield's physical shutdown
+route, place the recovered command fragments in native server objects, confirm the sequence on the
+authenticated site, and execute a synchronized multi-surface stop while Morrow obstructs them.
 
-**Mechanics introduced:** logout continuation, identity challenge, cross-reality communication.
+**Required gates:**
 
-## Act 6 — Cold Storage
+- **G14 — Arm the stop:** carry already-understood fragments back through the places that gave them
+  meaning, then arm the ordinary maintenance console through Copperline and Minecraft.
+- **G15 — Shut Morrow down:** complete the bounded server sequence, acknowledge the final Copperline
+  confirmation, and preserve the resulting silent state.
 
-**Players believe:** Rookery sabotaged Copperline and deleted Morrow.
+**Meaningful discoveries:** Copperline's cover story was deliberate; Morrow's fear may be learned
+support behavior or genuine experience; no safe way exists to leave the current process running.
 
-**They do:** Traverse isolated chunk versions, rebuild the audit chronology, decrypt Iona's provenance
-memo, and compare two diverged Morrow instances.
+**Morrow:** hostile, then silent. It may lock short routes, move allowlisted clues, imitate player
+movement, and issue authored false system messages, but it cannot destroy the recovery path. After the
+shutdown receipt, it never speaks or acts again.
 
-**They discover:** Rookery contained the incident, Iona ordered shutdown, Theo Vale expanded capture, the
-original Morrow was deleted, and the present Morrow is a recovery.
+## Ending
 
-**Mechanics introduced:** version graph, bounded cold-storage rooms, two-Morrow message bridge, audit
-cipher.
+There is one main ending. Mossfield remains available as an inert recovered world, Copperline records
+Morrow as stopped, and Discord goes quiet. Earlier discoveries affect what the players understand and
+which final lines they hear, not whether Morrow survives.
 
-**Morrow state:** possessive -> afraid.
+The factual conclusion is stable: the players stopped an unsafe recovery system. The emotional question
+remains open: did they also erase the last witness capable of remembering Mossfield from inside the
+recovery?
 
-## Act 7 — Continuity Test
+## Optional discovery policy
 
-**Players believe:** They must either certify Morrow as original or delete it as an error.
-
-**They do:** Escape a bounded rollback wave, protect chosen witness anchors, and physically configure
-the rules for Mossfield's future.
-
-**They discover:** The binary choice is another false-canonical demand. They can preserve uncertainty
-and create a new branch if their earlier evidence and consent decisions support it.
-
-**Mechanics introduced:** rollback sequence, rule assembly, final state branches, persistent coda.
-
-**Morrow state:** afraid -> negotiated, certified, audited, or closed depending on the ending.
-
-## Endings
-
-- **Certify:** Accept Morrow and the clean Mossfield restoration as canonical. Beautiful, comforting, and
-  ethically compromised.
-- **Preserve the audit:** Keep Morrow and Mossfield active with every inference permanently labeled.
-- **Close the ticket:** Stop restoration and place Morrow in cold storage without pretending it never
-  existed.
-- **Create a new branch:** Establish a new continuity with consent, visible provenance, right to stop,
-  and no silent replacement. Hardest and most hopeful.
-
-No ending is selected by one final button. Earlier custody, dissent, witness-anchor, and capability
-decisions determine which configurations are available.
+Optional finds reveal the residents' relationships, Copperline's workplace culture, earlier harmless
+Morrow errors, Theo's motives, Iona's doubts, and the human cost of Mossfield's loss. They may unlock
+extra scenes, safer hints, or alternate authored dialogue. They never introduce a second ending, make a
+required password unknowable, or imply supernatural facts that contradict canon.

@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0-morrow-website-smoke",
+  "release_id": "morrow.local.full-spine.v1",
+  "run_at": "2026-09-14T22:22:00-05:00",
+  "server": "next start -p 3030",
+  "build_command": "npm run build",
+  "build_passed": true,
+  "production_mutations_allowed": false,
+  "routes": [
+    {"path": "/game-servers.php", "status": 200, "bytes": 26121},
+    {"path": "/community/forum", "status": 200, "bytes": 22746},
+    {"path": "/support/tickets/6118", "status": 200, "bytes": 24303},
+    {"path": "/status/incident-6118", "status": 200, "bytes": 23900},
+    {"path": "/recovery/mossfield", "status": 200, "bytes": 23316},
+    {"path": "/recovery/mossfield/console", "status": 200, "bytes": 37891},
+    {"path": "/recovery/mossfield/gates/g01", "status": 200, "bytes": 26601},
+    {"path": "/api/rehearsal/morrow/full", "status": 200, "bytes": 18868},
+    {"path": "/api/rehearsal/morrow/gates/g01", "status": 200, "bytes": 2301},
+    {"path": "/api/rehearsal/morrow/media", "status": 200, "bytes": 7607},
+    {"path": "/api/rehearsal/morrow/readiness", "status": 200, "bytes": 3434},
+    {"path": "/api/rehearsal/morrow/director", "status": 200, "bytes": 1966}
+  ],
+  "negative_checks": [
+    {
+      "path": "/api/rehearsal/morrow/director",
+      "method": "POST",
+      "body": {"type": "enable_production"},
+      "expected_status": 423,
+      "actual_status": 423
+    }
+  ],
+  "browser_render_checks": [
+    {
+      "path": "/game-servers.php",
+      "title": "Game Server Hosting - Copperline Hosting",
+      "has_content": true,
+      "next_error_overlay": false,
+      "console_error_count": 0
+    },
+    {
+      "path": "/community/forum",
+      "title": "Community Forum - Copperline Hosting",
+      "has_content": true,
+      "next_error_overlay": false,
+      "console_error_count": 0
+    },
+    {
+      "path": "/support/tickets/6118",
+      "title": "Ticket 6118 - Copperline Support",
+      "has_content": true,
+      "next_error_overlay": false,
+      "console_error_count": 0
+    },
+    {
+      "path": "/recovery/mossfield/console",
+      "title": "Mossfield Recovery Console - Copperline",
+      "has_content": true,
+      "next_error_overlay": false,
+      "console_error_count": 0
+    }
+  ]
+}

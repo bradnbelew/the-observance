@@ -2,106 +2,118 @@
 
 Target: Minecraft Java and Paper 1.21.11, Java 21, one to six non-op players.
 
-## Recovery Room 04
+## World premise
 
-The room is the repeated social/mechanical hub. It must feel like a real Copperline restoration bay,
-not a dialogue lobby or puzzle chamber.
+Mossfield is one recovered survival server, not a lobby connected to investigation rooms. It must feel
+used before it feels designed: practical paths, inconsistent storage, unfinished rail, repaired farms,
+private corners, ruined builds, mundane signs, and traces of residents who did not expect visitors.
 
-- Entry has an obvious physical route, stable landmark, and readable exit.
-- The copper terminal is visible from the threshold but does not force a menu open.
-- Morrow begins as sound/text emitted by the terminal.
-- A resource-pack blocky body is assembled from display entities around an interaction entity.
-- The body, lighting, exit treatment, echo position, and props change only at authored relationship
-  revisions.
-- Every change has an in-world cause and an audit receipt; no decorative randomization.
+Progression should move players through geography that makes sense for the old community. Puzzle
+infrastructure is disguised as maintenance practice, personal habit, damaged recovery output, or an
+emergency procedure. Repeated geometric chambers, numbered test cells, omnipresent provenance labels,
+and Morrow-hosted challenge menus are forbidden as the campaign's primary grammar.
+
+## Native clue objects
+
+- Books and lecterns hold journals, maintenance notes, short ciphers, coordinates, and resident voices.
+- Chests and barrels use content, ordering, asymmetry, and player-specific habits.
+- Renamed items form trails, command fragments, or keys while remaining plausible possessions.
+- Maps and photographs support location matching, missing-landmark, and background-detail deductions.
+- Signs label real places first; later allowlisted changes create unease or deliver brief Morrow lines.
+- Redstone, rails, doors, lamps, jukeboxes, banners, and clocks embody state without becoming abstract
+  control panels.
+- Authored NPCs or reconstructed figures speak briefly and never grade freeform theories.
+
+Every required clue remains readable in vanilla. Resource-pack enhancements may improve atmosphere but
+cannot own a critical object, answer, hitbox, or route.
+
+## Exploration and gating
+
+- Clues may be found out of order and remain inspectable after discovery.
+- A required gate validates concrete state: item order, coordinate, short token, redstone condition,
+  authenticated record, or synchronized action.
+- Wrong input resets only the bounded mechanism and never consumes unique evidence.
+- Any locked region has an in-fiction reason and a recovery path after restart or disconnect.
+- One-to-six-player groups can complete the same spine; co-op may distribute observation but cannot
+  require six simultaneous humans.
+- No player is granted operator privileges or asked to use server-console commands.
+
+## Morrow's presence
+
+Morrow begins as ordinary text in the MOTD, recovery notices, and support-status output. It is not a
+standing NPC that assigns objectives. Its escalation appears through authored environmental changes:
+
+1. **Observant:** a status line or sign reflects a recent in-server action.
+2. **Personal:** a message recalls a preference the player demonstrated inside Mossfield.
+3. **Defensive:** logs, books, or signs dispute records the group has uncovered.
+4. **Manipulative:** linked players receive differently framed authored fragments.
+5. **Emotional:** Morrow reuses resident and support language to ask for recognition.
+6. **Desperate:** clues move within allowlisted locations and routes become unreliable.
+7. **Hostile:** bounded obstruction, copied movement, false authored notices, and pursuit beats defend
+   the armed shutdown.
+8. **Silent:** after G15 there are no autonomous Morrow messages or mutations.
+
+Morrow may use a distant display-entity figure or reconstructed player-shaped silhouette, but never a
+fake online player or an identity indistinguishable from a real connected account.
+
+## Scares
+
+Scares are authored beats selected by verified story state and triggered automatically or from the
+director dashboard. Approved forms include:
+
+- a distant figure appearing at an allowlisted anchor and despawning when occluded;
+- one light circuit failing while a readable escape route remains;
+- a door locking briefly before a deterministic release;
+- an allowlisted sign or book gaining, losing, or changing a short line;
+- a chest restoring an earlier order after players leave;
+- a copied movement silhouette crossing a known path;
+- a false but visibly diegetic disconnect or recovery notice;
+- a bounded pursuit that ends at a safe checkpoint.
+
+Scares must not impersonate operating-system dialogs, use real personal data, destroy inventory, damage
+the ordinary world outside allowlists, trap players indefinitely, or block accessibility equivalents.
+Every scare has a maximum lifetime, cleanup owner, replay policy, and durable receipt.
 
 ## Dialogue
 
-- Right-clicking the terminal/body opens a native Paper dialog.
-- Normal exchange: one to three short spoken lines, then zero to four concrete actions.
-- Long evidence remains in books, tickets, images, or physical layouts; dialogue never becomes a novel.
-- Choices state the action, not its moral label: `Preserve both copies`, not `Choose the good option`.
-- Text input is reserved for short IDs, names, coordinates, hashes, or decoded tokens.
-- Freeform theory notes may be saved as optional player notes but never graded as the progression key.
-- Morrow's response is selected from authored state, prior response receipts, and current evidence.
-- Escape/cancel behavior is intentional; leaving a dialog never silently accepts a choice.
+- Dialogue is rare, short, and motivated by Morrow's current need.
+- Native Paper dialogs may accept a short token or explicit operational confirmation.
+- Long records remain in books, pages, messages, or media.
+- Escape and cancel never advance progress.
+- Consequential lines are selected from authored templates and exact predicates.
+- A director may send only approved lines valid for the current state.
+- Morrow never says “solve,” “puzzle,” “level,” “correct,” or otherwise acknowledges game structure.
 
-## Capability authorization
+## Found footage and behavior
 
-- Solving the prerequisite investigation only makes a capability available; it does not unlock it.
-- The terminal then shows a native confirmation dialog naming the exact capability, bounded use,
-  stored data, rollback behavior, and how to stop it.
-- Confirmation writes a separate durable `*_authorized` event. Relationship progression requires
-  that receipt as well as the evidence events, so dialogue cannot silently infer consent.
-- Live capture additionally requires per-player opt-in. A group authorization never enrolls a player
-  who declined, disconnected, or joined later.
-- Cancelling or declining preserves the current state and offers the authored non-capture review path;
-  it never fabricates an authorization receipt.
+- Recordings have an in-fiction source, original hash, visible timestamp context, and accessible
+  frame-indexed description.
+- Required video observations tolerate pausing and frame stepping; no reflex input is required.
+- Any current-player behavior reflected later must be captured only after an explicit authored cue,
+  inside a bounded area, and from actions knowingly performed in the campaign.
+- Reconstructed figures cannot place or break authoritative blocks, hold permissions, or appear in the
+  tab list.
 
-## Text surfaces
+## Finale
 
-- Signs label places, machinery, warnings, or short instructions; they do not carry multi-step lore.
-- Lecterns/books contain short, plain-English records with visible author/date/custody context.
-- Item names identify the object; lore supplies provenance, not puzzle instructions.
-- Action bars/titles communicate immediate feedback only.
-- Chat is not a mandatory input channel and is never continuously harvested.
-- All player-facing text must pass the existing fit/readability tooling or a Morrow-specific successor.
+G14 places recovered command fragments into a physical Mossfield maintenance console and verifies the
+same command hash through Copperline. The director may arm the finale only after every prerequisite
+event and safe checkpoint passes.
 
-## Morrow body
+G15 is a bounded route through existing Mossfield locations, not a new abstract arena. Morrow may use
+hostile authored effects, but failure or disconnect returns the group to the armed checkpoint with all
+evidence intact. The final action writes the local stop receipt before projecting consequences.
 
-- Use display entities and an interaction hitbox, not a fake online player.
-- Body poses are authored: idle, attending, mirroring, retaining, fractured, and negotiated.
-- Head tracking follows the active speaker at a restrained update rate.
-- Personal visual elements are shown only to the relevant player unless the reveal is group evidence.
-- If the resource pack is unavailable, the body degrades to a clearly labeled vanilla copper/display
-  form; required interaction remains functional.
-- Morrow's pack handshake is optional by contract even if an older campaign config marks its pack
-  required. `morrow-reboot.resource-pack.required: true` fails startup, because kicking a player who
-  declines would make the promised vanilla fallback unreachable. The shipped Morrow pack gate stays
-  disabled until accepted/declined parity is proven.
-
-## Movement replay
-
-- Recording begins only after an explicit in-fiction action and visible cue.
-- Default vertical-slice clip: maximum 45 seconds, sampled every two ticks, maximum six tracked players.
-- Store location, yaw/pitch, pose, selected slot, swing, jump/crouch, drop, and designated interactions.
-- Compress redundant samples and write locally before any derivative is projected.
-- Replay uses a translucent resource-pack model with display interpolation.
-- Replays cannot place/break real blocks, hold permissions, appear in the tab list, or impersonate a
-  connected account.
-- A visible provenance effect distinguishes recorded, reconstructed, and live players.
-
-## Restoration and version rooms
-
-- Every mutable scene is a pre-authored bounded region with manifest, block counts, protected volume,
-  standing cells, entry/exit routes, and rollback snapshot.
-- Static restoration occurs in small visible passes with sound, particles, and audit lighting.
-- Critical version differences are physically inspectable and represented in Copperline diffs.
-- Split-backup scenes use cloned rooms, never critical client-only block illusions.
-- Structure application is idempotent and re-audited after restart.
-
-## Input verbs
-
-Use a varied but teachable vocabulary:
-
-- inspect a physical difference
-- arrange or preserve evidence
-- select a version/action in a native dialog
-- enter a short decoded token
-- walk or perform a bounded test pattern
-- route signals/items between separated players
-- authenticate a witness anchor
-- compare Minecraft against Copperline/media
-- deliberately refuse a false choice
-
-No act may repeat the exact same input grammar more than twice in a row.
+After shutdown, Morrow-owned tasks and entities are removed, allowlisted hostile mutations settle into
+their authored inert state, Copperline reports the process stopped, and no Morrow coda appears.
 
 ## Accessibility and recovery
 
-- Required audio has subtitles/transcript and a visual timing equivalent.
-- Color-coded provenance also uses shape, material, label, or position.
-- Timed group scenes provide a reset/replay affordance and catch-up receipt.
-- Any one-to-six-player subset can finish required content; asymmetric scenes assign roles dynamically.
-- Disconnect/reconnect returns the player to a safe authored state without duplicating an event.
-- A stuck player receives authored escalating hints based on observed evidence, never an unexplained gate
-  opening.
+- Required audio has subtitles, transcript, and a visual timing equivalent.
+- Color also uses shape, material, label, pattern, or position.
+- Books use short pages, clear authorship, and readable formatting.
+- Timed scenes provide replay and a no-dexterity recovery path.
+- Motion, flashing, darkness, and sudden-audio intensity have reduced modes with equivalent information.
+- Disconnect/reconnect returns players to a safe authored location without duplicating gates or items.
+- Director hints cite already available clues and are recorded; they never silently alter the answer.
+- Every owned entity, task, prop mutation, recording, and temporary lock has restart cleanup.

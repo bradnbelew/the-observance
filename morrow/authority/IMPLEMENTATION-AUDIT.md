@@ -1,46 +1,92 @@
-# Morrow M01–M12 Implementation Audit
+# Morrow G01–G15 Implementation Audit
 
-Audited 2026-08-31 against the canonical puzzle ledger, event catalog, runtime checkpoints, full
-Copperline production build, Discord audit, and retained rehearsal bundle.
+Audited 2026-09-14 against the traditional layered ARG authority introduced by
+`ARG-GUIDEBOOK.md`.
 
-Status language is deliberate:
+## Conclusion
 
-- **Implemented** means the real runtime path exists; it does not mean a human has played it.
-- **Paper-proven** means exact Paper 1.21.11 construction/readback/restart or authority checks passed.
-- **Local cross-surface** means compiled/tested without contacting Supabase, Discord, or production.
-- **Open** names the next missing proof, not a hidden code placeholder.
+The creative authority is complete enough to begin implementation planning, but the new campaign is
+not implemented or playable. Production rehearsal is paused. `morrow-reboot.enabled` and every
+content/build gate remain false.
 
-The latest local gate passed the plugin's full 63-task Gradle build, the authority and retained
-rehearsal audits, Copperline's Next.js production build and complete self-test suite, and Discord's
-full campaign/projection/database-bundle audit. Those checks were local-only; they did not contact or
-mutate production services.
+The former M01–M12 implementation, local audits, Paper builds, client checkpoints, Supabase rehearsal,
+Discord transport proof, and Copperline builds are retained as historical engineering evidence. They
+prove useful infrastructure properties—journaling, idempotency, restart cleanup, safe entry, native
+interaction, authenticated projection, RLS, and accessible media patterns—but they do not prove any
+G01–G15 gate or the new story.
 
-| ID | Implemented experience | Current proof | Open gate |
+## Authority validation
+
+The 2026-09-14 redesign structural check passes:
+
+- 15 sequential gate IDs and 24 sequential discovery IDs;
+- exactly 9 optional lore discoveries;
+- 9 ordered Morrow states ending in `silent`;
+- 19 unique event keys with valid owner/destination surfaces;
+- every relationship transition and media prerequisite resolves to the new event catalog;
+- all five rewritten JSON contracts parse successfully;
+- the authority-document diff passes `git diff --check`.
+
+`tools/check_morrow_authority.py` intentionally remains red because it is an implementation-parity
+checker for the superseded schema. Its failures identify the expected work: plugin transitions, SQL
+event seeds, rehearsal fixtures, media assertions, and M01–M12 investigation keys have not been
+reimplemented for G01–G15. Do not weaken the new authority or relabel old events to make that checker
+green.
+
+## Gate status
+
+| Gate | Required experience | Status | Potentially reusable infrastructure |
 | --- | --- | --- | --- |
-| M01 | Copperline attachment custody, SHA-256 verification, short handoff token, owner-bound case, spoiler-safe Discord custody/handoff receipts | Local site build; historical isolated owner/RLS and Act 0 browser actions | Fresh post-fix PKCE callback and final owner-only case read |
-| M02 | Six-cell Static Restore proposal, native classification, unsupported-block proof, rollback baseline, curious-state transition | Authority tests; latest-plugin d738788 exact Paper build/restart; real-client proposal apply; physical B06 dialog; harmless wrong feedback; correct inferred receipt; invalid client-body self-heal | Current-source read-only proposal review; operator-free end-to-end M02 pacing |
-| M03 | Thirty-seven-second display replay, missing player role, pulse/inventory timing, captioned earned voice fragment | Authority tests; cacfaa4 exact Paper loop/restart; real-client authorization and boundary-armed recording; tick-402 designated transfer; retained clip/journal/consent | Audio-on/off cue parity and operator-free pacing |
-| M04 | Consented bounded movement recording, local-only samples, sealed derivative, later behavior match, private contradiction flow | 1/2/6 authority/restart/outage tests; real-client illuminated seal, 900-tick route, reconstructed echo, isolated proof click, and one behavior-reuse receipt; local diagram; historical Gateway message transport | Ordinary unaided movement pass plus database-bound linked-player ephemeral flow |
-| M05 | Three physical version rooms, private custody summaries, routed signal, preserve-contradiction choice | Paper-proven: 1,617 blocks, 3 displays, stable restart | Human asymmetric room routing, native choice, readability, wrong choice, Escape |
-| M06 | Six immutable private vote receipts, public denominator, dissent marking, incomplete-consensus classification, and its own truthful `incomplete_consensus_proven` receipt | Paper-proven: 1,309 blocks, 8 displays, stable restart; Java/Copperline/Discord/build-clean event correction | Six-player private receipt distribution and native classification playthrough; live forward migration |
-| M07 | Editable six-cell witness anchor, salted/hash commitment, versioned comparison, wrong reconstruction proof | Paper-proven: 1,547 blocks, 9 displays, stable restart | Human building/editing, private comparison, wrong answer, Escape |
-| M08 | Source gallery, chronology lamps, completed false house, staff-note cipher, inferred provenance, earned comparison diagram | Paper-proven: 5,225 blocks, 8 displays, stable restart; local accessible diagram | Human chronology/cipher/provenance/authorization flow |
-| M09 | Safe account-continuity chamber, real quit/join receipts, bounded echo, private anchor challenge, separate continuation/identity events | Paper-proven: 2,520 blocks, 10 entities; 1/2/6 authority and crash recovery | Real player disconnect/rejoin, echo observation, private identity clicks |
-| M10 | Split maintenance chamber, two contradictory bodies, fresh physical nonce, shared hoppers, retain-both result, safe return | Paper-proven: 5,301 blocks, 18 entities; 1/2/6 authority and restart recovery | Human asymmetric co-op, tagged-item transfer, timeout/reset/Escape |
-| M11 | Five-record chronology, first-broken-edge feedback, two isolated Morrows, tagged snapshot-hash bridge, reconstructed-current finding, earned captioned voice assembly | Copperline chronology contract; Paper-proven: 6,417 blocks, 11 entities; OGG hash/transcript audit | Live additive Supabase RPC; authenticated playback; human item bridge and dialogs |
-| M12 | Bounded rollback route, five protected anchors, four physical rules, four predicate-gated endings, explicit governance, persistent coda | Paper-proven: 8,325 blocks, 18 entities; all four ending authorities; four local earned coda records | Human finale/pacing/accessibility; live authenticated coda and Discord delivery |
+| G01 | Source-comment hidden Copperline archive | Not implemented | Next.js routing and spoiler filtering |
+| G02 | Forum archaeology and alias acrostic | Not implemented | Authenticated case projection |
+| G03 | Fictional recovery login from status evidence | Not implemented | PKCE and owner-bound RLS patterns |
+| G04 | Authenticated Mossfield server handoff | Not implemented | Safe non-op Paper entry and identity linking |
+| G05 | Renamed-item and chest-order storehouse trail | Not implemented | Local-first Paper journal and item ownership |
+| G06 | Book/page/line cipher to world coordinates | Not implemented | Native books, dialogs, and restart-safe state |
+| G07 | Map/photo horizon comparison | Not implemented | First-party authenticated media delivery |
+| G08 | Frame-thirty-seven background action | Not implemented | Bounded replay timing and accessible derivatives |
+| G09 | Metadata password and current-session contamination proof | Not implemented | Content hashing and consented behavior capture |
+| G10 | Linked-player private Discord fragments | Not implemented | Gateway worker, identity binding, ephemeral response |
+| G11 | Fake-status-log chronology | Not implemented | Ordered database projector |
+| G12 | Source/audio/spectrogram/page-line memo | Not implemented | OGG/transcript/hash catalog patterns |
+| G13 | Continued-session identity boundary | Not implemented | Disconnect/rejoin and display-entity cleanup |
+| G14 | Multi-surface shutdown assembly and arm | Not implemented | Event prerequisites and transactional world checks |
+| G15 | Bounded finale, terminal stop, and cross-surface silence | Not implemented | Graceful Paper shutdown and projection receipts |
 
-## Cross-surface result
+## Surface status
 
-| Surface | Implemented now | Proven now | Still open |
-| --- | --- | --- | --- |
-| Minecraft | M01 handoff through M12 persistent coda, local-first journal, bounded worlds, native dialogs, body/replays, restart recovery | All twelve authorities; latest-plugin cacfaa4 exact Paper lifecycle; accelerated copper-aging stress/restart; Room 04 apply and physical B06 wrong/correct client proof; M03 timed transfer and M04 seal/replay/proof client checkpoint; safe real-client cohort joins/restarts for 1/2/6 | Complete latest-plugin operator-free graphical playthrough, ordinary unaided M04 route, and every remaining interaction/parity lane |
-| Copperline | Owner-bound case, all 25 canonical website events, M11 chronology action, eight earned-media records, authenticated hash-checking media route | Self-tests, lint, production build; historical Act 0–2 isolated Supabase/browser subproofs | Execute additive full projector/media seed on validation project; fresh authenticated browser run |
-| Discord | All 18 canonical Discord projections: 16 authored payload-free receipts plus two private-contradiction special events | Full local audit/typecheck; historical exact Gateway post/readback/cleanup subproof | Database-claimed full-campaign worker and linked-player ephemeral interaction in a temporary private channel |
-| Media | Two OGG voice fragments, two ordered voxel/inference diagrams, four ending codas; transcript/text equivalent for every asset | Catalog/order/prerequisite/hash tests; locked copy excluded from static client bundle | Authenticated browser playback and complete Minecraft client cue parity |
+| Surface | New authority | Current gap |
+| --- | --- | --- |
+| Minecraft | One coherent haunted Mossfield world using native clue objects and bounded scares | Existing room structures must be retired or remapped; G04–G15 world content is unbuilt |
+| Copperline | One domain with hosting, community, forum, blog, status, archive, login, and recovery console | Existing case UI does not supply G01–G03 or G07–G15 content |
+| Discord | Player-specific authored manipulation fragments with safe group codes | Existing contradiction flow must be remapped to G10 and terminal silence |
+| Media | Found footage, photo matching, metadata, reversal, spectrogram, and accessible equivalents | New assets are design placeholders without final files or hashes |
+| Director | Audited scares, page unlocks, authored messages, prop controls, hints, recovery, and finale | Dashboard does not exist |
+| Database | G01–G15 events, 24 discoveries, Morrow escalation, allowlists, and terminal shutdown | Existing migration encodes the superseded capability model |
 
-## Launch conclusion
+## Historical evidence policy
 
-There is no known M01–M12 placeholder standing in for the authored mechanic. The project is still not
-launchable because the remaining gates require observation or separately authorized external service
-execution. Production stays disabled until those gates are retained against one release ID.
+- Do not delete, rewrite, or relabel old receipts as new proof.
+- Reuse code only after mapping it to a new gate and rerunning proportional tests.
+- Do not preserve an old mechanic merely because it is implemented when it conflicts with the new
+  creative authority.
+- The final release requires fresh one-/two-/six-player human rehearsal, accessibility review,
+  restart/outage recovery, authenticated Copperline, database-bound Discord, isolated Supabase, and
+  complete director-action cleanup evidence against one new release ID.
+
+## Next implementation boundary
+
+1. Freeze old progression entry points and make sure no former room can be enabled accidentally.
+2. Produce a Mossfield world/content inventory and map every G04–G15 clue to an allowlisted object.
+3. Implement the G01–G04 discovery slice before building later acts.
+4. Specify the director command schema and security model before adding any live scare control.
+5. Author and hash required media with accessibility equivalents.
+6. Create a new rehearsal contract; never reuse the M01–M12 packet as a passing fixture.
+
+No external validation or production action should resume until the matching implementation exists.
+
+## 2026-09-15 local slice update
+
+The first safe implementation step is now present as a local-only contract receipt, not a live runtime: `morrow.local.g01-g05.v1` covers G01-G05, D01-D05, Morrow's G04 transition from `support_software` to `observant`, and the delayed non-blocking `chest_correction` consequence after the storehouse trail. It is validated by `tools/check_morrow_g01_g05_vertical_slice.py` and retained at `morrow/rehearsal/g01-g05-vertical-slice/latest.json`.
+
+This receipt does not claim human playability, Paper world installation, Copperline routes, Supabase projection, Discord delivery, final media custody, or production readiness. Its value is a deterministic hash-chained target for the next G01-G03 Copperline route implementation.

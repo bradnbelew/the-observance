@@ -1,5 +1,9 @@
 # Morrow runtime operations
 
+> **Activation paused as of 2026-09-14.** These procedures describe the superseded M01–M12 runtime
+> and are retained for engineering reference only. Do not execute activation, migration, external
+> validation, or production steps until this file is rewritten for G01–G15 and separately authorized.
+
 ## Copperline projector topology
 
 The primary projector runs inside Postgres through Supabase Cron:

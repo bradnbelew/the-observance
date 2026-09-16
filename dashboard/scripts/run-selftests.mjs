@@ -17,6 +17,8 @@ if (!existsSync(tsx)) {
 }
 
 const tests = [
+  'src/lib/morrow-review.selftest.ts',
+  'src/lib/morrow-copperline-seed.selftest.ts',
   'src/lib/morrow-runtime-envelope.selftest.ts',
   'src/lib/morrow-copperline-case.selftest.ts',
   'src/lib/deployment-target.selftest.ts',

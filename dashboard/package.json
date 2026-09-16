@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "selftest": "node scripts/run-selftests.mjs",
+    "morrow:reboot-selftest": "node scripts/run-morrow-reboot-selftests.mjs",
     "morrowproject": "node scripts/morrow-copperline-projector.mjs"
   },
   "dependencies": {

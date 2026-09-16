@@ -1,0 +1,762 @@
+{
+  "boundaries": {
+    "browser_required": false,
+    "discord_gateway_contacted": false,
+    "human_playability_claimed": false,
+    "minecraft_server_started": false,
+    "production_contacted": false,
+    "supabase_contacted": false
+  },
+  "campaign_id": "local.contract.mossfield.full",
+  "campaign_shape": {
+    "canonical_ending": "morrow_shutdown",
+    "meaningful_discovery_count": 24,
+    "optional_lore_count": 9,
+    "required_gate_count": 15,
+    "supported_players": "1-6",
+    "target_active_hours": "8-12"
+  },
+  "director_controls_enabled": false,
+  "gate_receipts": [
+    {
+      "event_key": "morrow.gate.g01_unindexed_host",
+      "gate": "G01",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G01",
+      "payload": {
+        "accessible_equivalent": "The source comment is plain text and keyboard reachable.",
+        "act": 0,
+        "discovery": "D01",
+        "event_key": "morrow.gate.g01_unindexed_host",
+        "evidence": [
+          "retired product slug",
+          "commented archive path",
+          "matching footer build number"
+        ],
+        "failure_behavior": "Unknown paths return an in-fiction 404 with the public site still usable.",
+        "gate": "G01",
+        "input": "Open the unindexed archive URL assembled from the source comment and product slug.",
+        "location": null,
+        "mechanics": [
+          "page-source comment",
+          "hidden URL"
+        ],
+        "media_keys": [
+          "morrow.g01.retired_hosting_brochure",
+          "morrow.g02.forum_avatar_contact_sheet"
+        ],
+        "owner": "copperline",
+        "production_mutation": false,
+        "projects_to": [
+          "copperline"
+        ],
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Unindexed host"
+      },
+      "payload_sha256": "3de86795949914a8ecfc1e39fc5def47bcb06fbbcf9454d54ac4c6e050a6d875",
+      "previous_receipt_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "receipt_sha256": "c00b48e45cc807b6631b6cafcf4921309a5db7a7ac9e2a41dad8ce32072e536b",
+      "sequence": 1
+    },
+    {
+      "event_key": "morrow.gate.g02_dead_forum_account",
+      "gate": "G02",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G02",
+      "payload": {
+        "accessible_equivalent": "Deleted and edited post states have text labels and timestamps.",
+        "act": 0,
+        "discovery": "D02",
+        "event_key": "morrow.gate.g02_dead_forum_account",
+        "evidence": [
+          "Rookery thread",
+          "Iona support signature",
+          "acrostic in edited post titles"
+        ],
+        "failure_behavior": "A wrong alias shows which source category is unsupported without revealing the name.",
+        "gate": "G02",
+        "input": "Enter the recovered employee alias into the archive lookup.",
+        "location": null,
+        "mechanics": [
+          "forum archaeology",
+          "acrostic"
+        ],
+        "media_keys": [
+          "morrow.g02.forum_avatar_contact_sheet",
+          "morrow.g03.theo_account_voicemail"
+        ],
+        "owner": "copperline",
+        "production_mutation": false,
+        "projects_to": [
+          "copperline"
+        ],
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Dead forum account"
+      },
+      "payload_sha256": "42b36ebf57d6b09b3db5c7d99eb6d932e6c37e10cbb2bab247ef5c4ffec1b00e",
+      "previous_receipt_sha256": "c00b48e45cc807b6631b6cafcf4921309a5db7a7ac9e2a41dad8ce32072e536b",
+      "receipt_sha256": "19fdf7a477bf74a1130bcc50952aca141ae4b71be80014eac2307b0ec94e310a",
+      "sequence": 2
+    },
+    {
+      "event_key": "morrow.gate.g03_recovery_login",
+      "gate": "G03",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G03",
+      "payload": {
+        "accessible_equivalent": "Status graphs have a tabular text view.",
+        "act": 0,
+        "discovery": "D03",
+        "event_key": "morrow.gate.g03_recovery_login",
+        "evidence": [
+          "incident number",
+          "uptime counter",
+          "employee alias"
+        ],
+        "failure_behavior": "Attempts are rate-limited locally and never consume the account.",
+        "gate": "G03",
+        "input": "Log in with the fictional alias and eight-character recovery password.",
+        "location": null,
+        "mechanics": [
+          "fake status logs",
+          "short password"
+        ],
+        "media_keys": [
+          "morrow.g03.theo_account_voicemail"
+        ],
+        "owner": "copperline",
+        "production_mutation": false,
+        "projects_to": [
+          "copperline",
+          "minecraft",
+          "discord"
+        ],
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Recovery login"
+      },
+      "payload_sha256": "f96c0fb47809f9cfec57877b6c64596fdddca2b2a7c96cfa0c48f75ac0fb57cc",
+      "previous_receipt_sha256": "19fdf7a477bf74a1130bcc50952aca141ae4b71be80014eac2307b0ec94e310a",
+      "receipt_sha256": "ef141452d2cd535f82b5cfa54368d78b7219fa3595c2b828aae3a55c9b5d7f2a",
+      "sequence": 3
+    },
+    {
+      "event_key": "morrow.gate.g04_first_connection",
+      "gate": "G04",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G04",
+      "payload": {
+        "accessible_equivalent": "Connection details and fingerprint are selectable text.",
+        "act": 1,
+        "discovery": "D04",
+        "event_key": "morrow.gate.g04_first_connection",
+        "evidence": [
+          "server address record",
+          "case fingerprint",
+          "Mossfield MOTD"
+        ],
+        "failure_behavior": "Invalid or stale handoffs fail closed without exposing infrastructure details.",
+        "gate": "G04",
+        "input": "Use the authenticated handoff to join Mossfield as a non-op player.",
+        "location": "spawn_panel",
+        "mechanics": [
+          "server handoff",
+          "native connection"
+        ],
+        "media_keys": [],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline"
+        ],
+        "surfaces": [
+          "copperline",
+          "minecraft"
+        ],
+        "title": "First connection"
+      },
+      "payload_sha256": "191494da239045f8c765d9ef2501501be33e1e550d8ce4adccf575c2fb58f747",
+      "previous_receipt_sha256": "ef141452d2cd535f82b5cfa54368d78b7219fa3595c2b828aae3a55c9b5d7f2a",
+      "receipt_sha256": "f9cc2b80e77bc37958e7f0ff98f5b74e62f824b941219c1ddb1fbee65c73d7a0",
+      "sequence": 4
+    },
+    {
+      "event_key": "morrow.gate.g05_storehouse_trail",
+      "gate": "G05",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G05",
+      "payload": {
+        "accessible_equivalent": "Names, container numbers, and order feedback are textual.",
+        "act": 1,
+        "discovery": "D05",
+        "event_key": "morrow.gate.g05_storehouse_trail",
+        "evidence": [
+          "cairn's item names",
+          "uneven chest labels",
+          "storehouse inventory order"
+        ],
+        "failure_behavior": "Wrong order returns every item and resets the containers.",
+        "gate": "G05",
+        "input": "Place the renamed tools into the chests in cairn's documented order.",
+        "location": "cairn_storehouse",
+        "mechanics": [
+          "renamed-item trail",
+          "chest ordering"
+        ],
+        "media_keys": [
+          "morrow.g06.rookery_notebook"
+        ],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline"
+        ],
+        "surfaces": [
+          "minecraft"
+        ],
+        "title": "Storehouse trail"
+      },
+      "payload_sha256": "8048a6c89b5326e3ddfe25aae509bec039f7e196b79461a3591db576cc3f062d",
+      "previous_receipt_sha256": "f9cc2b80e77bc37958e7f0ff98f5b74e62f824b941219c1ddb1fbee65c73d7a0",
+      "receipt_sha256": "2120a8a7cb647b1568232256ee979f59d1451ebb68a6e13636b919ef26c8e351",
+      "sequence": 5
+    },
+    {
+      "event_key": "morrow.gate.g06_book_coordinates",
+      "gate": "G06",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G06",
+      "payload": {
+        "accessible_equivalent": "Books use short pages, clear authorship, and copyable coordinate output.",
+        "act": 1,
+        "discovery": "D06",
+        "event_key": "morrow.gate.g06_book_coordinates",
+        "evidence": [
+          "lectern index",
+          "three resident books",
+          "coordinate convention sign"
+        ],
+        "failure_behavior": "Incorrect coordinates reveal ordinary terrain and do not consume the clue books.",
+        "gate": "G06",
+        "input": "Resolve the indexed lines into coordinates and open the buried maintenance cache.",
+        "location": "rookery_cache",
+        "mechanics": [
+          "book cipher",
+          "row-page-line cipher",
+          "coordinates"
+        ],
+        "media_keys": [
+          "morrow.g06.rookery_notebook",
+          "morrow.g07.june_lighthouse_photo"
+        ],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline"
+        ],
+        "surfaces": [
+          "minecraft"
+        ],
+        "title": "Book coordinates"
+      },
+      "payload_sha256": "ee5c348dcf045f387b4167123fdf965d4438bcf760065657b5e995f0ff43af6a",
+      "previous_receipt_sha256": "2120a8a7cb647b1568232256ee979f59d1451ebb68a6e13636b919ef26c8e351",
+      "receipt_sha256": "4c538c813abc61744b3bff040873c47c440b0b9863f897bec21d6518d2fee611",
+      "sequence": 6
+    },
+    {
+      "event_key": "morrow.gate.g07_lighthouse_mismatch",
+      "gate": "G07",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G07",
+      "payload": {
+        "accessible_equivalent": "The photograph includes a coordinate-grid description and landmark list.",
+        "act": 1,
+        "discovery": "D07",
+        "event_key": "morrow.gate.g07_lighthouse_mismatch",
+        "evidence": [
+          "June's photograph",
+          "old locator map",
+          "current horizon"
+        ],
+        "failure_behavior": "Wrong coordinates mark a temporary map pin and leave the scene unchanged.",
+        "gate": "G07",
+        "input": "Stand at the photograph marker and enter the coordinate of the added landmark.",
+        "location": "june_overlook",
+        "mechanics": [
+          "map-photo matching",
+          "negative-space comparison"
+        ],
+        "media_keys": [
+          "morrow.g07.june_lighthouse_photo",
+          "morrow.g08.frame_thirty_seven"
+        ],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "media"
+        ],
+        "surfaces": [
+          "minecraft",
+          "media"
+        ],
+        "title": "Lighthouse mismatch"
+      },
+      "payload_sha256": "b629a9a0b9f8e4e6d50b15a4686360f232285795f9decbf758d0d9d1314a4bf2",
+      "previous_receipt_sha256": "4c538c813abc61744b3bff040873c47c440b0b9863f897bec21d6518d2fee611",
+      "receipt_sha256": "61204a9b0281c15866d3503adb745b0a19ffb9adbb8b9e6008f236311006270c",
+      "sequence": 7
+    },
+    {
+      "event_key": "morrow.gate.g08_frame_thirty_seven",
+      "gate": "G08",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G08",
+      "payload": {
+        "accessible_equivalent": "A frame-indexed transcript describes foreground and background changes.",
+        "act": 2,
+        "discovery": "D08",
+        "event_key": "morrow.gate.g08_frame_thirty_seven",
+        "evidence": [
+          "damaged Minecraft clip",
+          "frame counter",
+          "background redstone pulse"
+        ],
+        "failure_behavior": "Early or late input resets the harmless pulse and replay.",
+        "gate": "G08",
+        "input": "Reproduce the one-time background lever action at the matching in-world location.",
+        "location": "patchcord_relay",
+        "mechanics": [
+          "video frame counting",
+          "background clue"
+        ],
+        "media_keys": [
+          "morrow.g08.frame_thirty_seven",
+          "morrow.g09.current_session_contamination",
+          "morrow.g09.patchcord_cassette_dub"
+        ],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "media"
+        ],
+        "surfaces": [
+          "media",
+          "minecraft"
+        ],
+        "title": "Frame thirty-seven"
+      },
+      "payload_sha256": "136a69f6dd3eee5d1f20e019d7b28808a8bfe0bb7c97f0ad9ff38a7fc6e03e7f",
+      "previous_receipt_sha256": "61204a9b0281c15866d3503adb745b0a19ffb9adbb8b9e6008f236311006270c",
+      "receipt_sha256": "5ab75509fa60456f54ac922fa62f38c82fb407bbe1e8492f2fce8fb725395746",
+      "sequence": 8
+    },
+    {
+      "event_key": "morrow.gate.g09_local_recording",
+      "gate": "G09",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G09",
+      "payload": {
+        "accessible_equivalent": "Metadata and movement are provided as labeled text records.",
+        "act": 2,
+        "discovery": "D09",
+        "event_key": "morrow.gate.g09_local_recording",
+        "evidence": [
+          "clip creation metadata",
+          "current session receipt",
+          "matching movement detail"
+        ],
+        "failure_behavior": "Wrong selections preserve the clip and expose only the mismatched field.",
+        "gate": "G09",
+        "input": "Use the metadata-derived password to open the recording ledger and select the current-session match.",
+        "location": "patchcord_relay",
+        "mechanics": [
+          "file metadata",
+          "password derivation",
+          "behavior match"
+        ],
+        "media_keys": [
+          "morrow.g09.current_session_contamination",
+          "morrow.g09.patchcord_cassette_dub"
+        ],
+        "owner": "copperline",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "media"
+        ],
+        "surfaces": [
+          "media",
+          "copperline",
+          "minecraft"
+        ],
+        "title": "The local recording"
+      },
+      "payload_sha256": "629b95eeb3383282ba4ece9ae274237085135ad27bbe19daf0b2deccf944825d",
+      "previous_receipt_sha256": "5ab75509fa60456f54ac922fa62f38c82fb407bbe1e8492f2fce8fb725395746",
+      "receipt_sha256": "a60d4f1b900de17a32b4f01cf26a9b1895a50274bd224407b7a915eae3bca7cd",
+      "sequence": 9
+    },
+    {
+      "event_key": "morrow.gate.g10_separate_instructions",
+      "gate": "G10",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G10",
+      "payload": {
+        "accessible_equivalent": "Every fragment is text; no player must reveal personal or freeform DM content.",
+        "act": 2,
+        "discovery": "D10",
+        "event_key": "morrow.gate.g10_separate_instructions",
+        "evidence": [
+          "one code per linked player",
+          "shared ordering rule",
+          "contradictory authored framing"
+        ],
+        "failure_behavior": "Missing, expired, or duplicate fragments can be reissued to the same player.",
+        "gate": "G10",
+        "input": "Submit the ordered fragment codes as a group.",
+        "location": null,
+        "mechanics": [
+          "private Discord fragments",
+          "safe code ordering"
+        ],
+        "media_keys": [
+          "morrow.g11.incident_raw_export"
+        ],
+        "owner": "discord",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "discord"
+        ],
+        "surfaces": [
+          "discord",
+          "copperline"
+        ],
+        "title": "Separate instructions"
+      },
+      "payload_sha256": "8606893e91ce0c3c94f656cd7391cf421dc866a2f3aa8e511e4459e5cede98bb",
+      "previous_receipt_sha256": "a60d4f1b900de17a32b4f01cf26a9b1895a50274bd224407b7a915eae3bca7cd",
+      "receipt_sha256": "d1bd983df25f4665ad20e122c3bec5a471013cc7515c170bb9cdd679d2a6316b",
+      "sequence": 10
+    },
+    {
+      "event_key": "morrow.gate.g11_status_gap",
+      "gate": "G11",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G11",
+      "payload": {
+        "accessible_equivalent": "The rewrite is also recorded as readable before/after text with the unchanged uptime emphasized non-visually.",
+        "act": 3,
+        "discovery": "D11",
+        "event_key": "morrow.gate.g11_status_gap",
+        "evidence": [
+          "the notice changing during observation",
+          "one immutable uptime counter",
+          "an omitted maintenance-window link"
+        ],
+        "failure_behavior": "Other uptime paths remain ordinary archived incidents and the marked value stays recoverable.",
+        "gate": "G11",
+        "input": "Follow the immutable uptime into the omitted maintenance window.",
+        "location": "maintenance_annex",
+        "mechanics": [
+          "rewriting status page",
+          "fixed uptime",
+          "missing maintenance interval"
+        ],
+        "media_keys": [
+          "morrow.g11.incident_raw_export",
+          "morrow.g12.iona_reversed_memo",
+          "morrow.g12.spectrogram_command"
+        ],
+        "owner": "copperline",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "discord"
+        ],
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Status gap"
+      },
+      "payload_sha256": "401ffd96382fe98c6bdac8b850c8a12f99ebbdf0ea76dd44c35dde67dd5ddbe0",
+      "previous_receipt_sha256": "d1bd983df25f4665ad20e122c3bec5a471013cc7515c170bb9cdd679d2a6316b",
+      "receipt_sha256": "f484d815e46c2fbf819fd52d8f4be94d83d6a295a4c61a4ff5733d70dc0f674a",
+      "sequence": 11
+    },
+    {
+      "event_key": "morrow.gate.g12_ionas_memo",
+      "gate": "G12",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G12",
+      "payload": {
+        "accessible_equivalent": "The reversed audio and spectrogram both have separately earned text derivatives.",
+        "act": 3,
+        "discovery": "D12",
+        "event_key": "morrow.gate.g12_ionas_memo",
+        "evidence": [
+          "commented memo index",
+          "reversed voice fragment",
+          "spectrogram command word",
+          "text transcript"
+        ],
+        "failure_behavior": "Each segment can be checked independently and never locks out.",
+        "gate": "G12",
+        "input": "Assemble and enter Iona's three-part shutdown warning.",
+        "location": "maintenance_annex",
+        "mechanics": [
+          "source comments",
+          "audio reversal",
+          "spectrogram",
+          "page-line cipher"
+        ],
+        "media_keys": [
+          "morrow.g12.iona_reversed_memo",
+          "morrow.g12.spectrogram_command"
+        ],
+        "owner": "copperline",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "media"
+        ],
+        "surfaces": [
+          "copperline",
+          "media"
+        ],
+        "title": "Iona's memo"
+      },
+      "payload_sha256": "1cbd771478491de8773de230d1062a4b8441e4b96615195a317ce495d516d0aa",
+      "previous_receipt_sha256": "f484d815e46c2fbf819fd52d8f4be94d83d6a295a4c61a4ff5733d70dc0f674a",
+      "receipt_sha256": "4a57a5ef98a04641755ae7c5fbdb9a42a8df510d9410a8e8c9ace082e8a95b74",
+      "sequence": 12
+    },
+    {
+      "event_key": "morrow.gate.g13_continued_session",
+      "gate": "G13",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G13",
+      "payload": {
+        "accessible_equivalent": "NPC actions and claims appear in a readable event transcript.",
+        "act": 3,
+        "discovery": "D13",
+        "event_key": "morrow.gate.g13_continued_session",
+        "evidence": [
+          "continued-session log",
+          "cairn's private chest habit",
+          "reconstructed avatar response"
+        ],
+        "failure_behavior": "Wrong details produce bounded dialogue and reset the encounter safely.",
+        "gate": "G13",
+        "input": "Lead the returned-session figure through cairn's familiar routine until it fails at the unrecorded improvisation.",
+        "location": "cairn_storehouse",
+        "mechanics": [
+          "login-as-old-player fiction",
+          "unobserved detail",
+          "NPC dialogue"
+        ],
+        "media_keys": [],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "discord"
+        ],
+        "surfaces": [
+          "minecraft",
+          "discord"
+        ],
+        "title": "Continued session"
+      },
+      "payload_sha256": "1c1e8bce4a3b966f48c5c184e25430f6263cf61be0df6863bdd1c2bc592628ae",
+      "previous_receipt_sha256": "4a57a5ef98a04641755ae7c5fbdb9a42a8df510d9410a8e8c9ace082e8a95b74",
+      "receipt_sha256": "4e146f90b0d086381e7301aa0d287e41306842bc0489fe77e1e4f835b8f65291",
+      "sequence": 13
+    },
+    {
+      "event_key": "morrow.gate.g14_arm_shutdown",
+      "gate": "G14",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G14",
+      "payload": {
+        "accessible_equivalent": "Fragments carry text, shape, slot number, and spoken/transcript equivalents.",
+        "act": 4,
+        "discovery": "D14",
+        "event_key": "morrow.gate.g14_arm_shutdown",
+        "evidence": [
+          "Rookery command pieces",
+          "Iona ordering rule",
+          "player fragment receipts",
+          "Mossfield console slots"
+        ],
+        "failure_behavior": "Invalid order returns all items, preserves receipts, and leaves the finale unarmed.",
+        "gate": "G14",
+        "input": "Carry each earned fragment back through its meaningful location, place it in the maintenance console, and acknowledge the resulting receipt on Copperline.",
+        "location": "manual_stop",
+        "mechanics": [
+          "earned command fragments",
+          "return route",
+          "physical item placement"
+        ],
+        "media_keys": [],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "discord",
+          "director"
+        ],
+        "surfaces": [
+          "minecraft",
+          "copperline",
+          "discord",
+          "media"
+        ],
+        "title": "Arm the stop"
+      },
+      "payload_sha256": "151bdc1c291da657c9b98e1b6dd86f7af16482856e0fd9c23bd229ba12097da6",
+      "previous_receipt_sha256": "4e146f90b0d086381e7301aa0d287e41306842bc0489fe77e1e4f835b8f65291",
+      "receipt_sha256": "ed760e7d50219fad9464f29888adb616081a7398e094cd8837f66948adc16f2b",
+      "sequence": 14
+    },
+    {
+      "event_key": "morrow.gate.g15_shutdown_complete",
+      "gate": "G15",
+      "idempotency_key": "morrow.local.full-spine.v1:local.contract.mossfield.full:G15",
+      "payload": {
+        "accessible_equivalent": "The route has text, light, shape, and directional cues with a no-dexterity recovery path.",
+        "act": 4,
+        "discovery": "D15",
+        "event_key": "morrow.gate.g15_shutdown_complete",
+        "evidence": [
+          "armed command hash",
+          "all player-safe checkpoint receipts",
+          "Copperline confirmation",
+          "local stop journal"
+        ],
+        "failure_behavior": "Timeout, disconnect, or wrong interaction returns players to the armed checkpoint without consuming evidence.",
+        "gate": "G15",
+        "input": "Complete the physical stop route, confirm the authenticated prompt, and allow Paper to enact the audited shutdown.",
+        "location": "manual_stop",
+        "mechanics": [
+          "bounded pursuit",
+          "operator-triggered scares",
+          "synchronized shutdown"
+        ],
+        "media_keys": [
+          "morrow.g15.shutdown_record"
+        ],
+        "owner": "minecraft",
+        "production_mutation": false,
+        "projects_to": [
+          "minecraft",
+          "copperline",
+          "discord",
+          "director"
+        ],
+        "surfaces": [
+          "minecraft",
+          "copperline",
+          "discord"
+        ],
+        "title": "Shut Morrow down"
+      },
+      "payload_sha256": "d546fef9eed1188b457c9312706b12f9f363286f6873f004cb80cc58380d4c34",
+      "previous_receipt_sha256": "ed760e7d50219fad9464f29888adb616081a7398e094cd8837f66948adc16f2b",
+      "receipt_sha256": "0255e7b67d0cb09bdff83eaa8ce54ff2dec569a226f3a5dc3806f90abcb464a4",
+      "sequence": 15
+    }
+  ],
+  "journal_head": "0255e7b67d0cb09bdff83eaa8ce54ff2dec569a226f3a5dc3806f90abcb464a4",
+  "media_required": [
+    {
+      "key": "morrow.g01.retired_hosting_brochure",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g02.forum_avatar_contact_sheet",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g03.theo_account_voicemail",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g06.rookery_notebook",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g07.june_lighthouse_photo",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g08.frame_thirty_seven",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g09.current_session_contamination",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g09.patchcord_cassette_dub",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g11.incident_raw_export",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g12.iona_reversed_memo",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g12.spectrogram_command",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    },
+    {
+      "key": "morrow.g15.shutdown_record",
+      "required_hash_before_release": true,
+      "status": "to_be_authored"
+    }
+  ],
+  "morrow_state_order": [
+    "support_software",
+    "observant",
+    "personal",
+    "defensive",
+    "manipulative",
+    "emotional",
+    "desperate",
+    "hostile",
+    "silent"
+  ],
+  "production_enablement": "blocked",
+  "production_mutations_allowed": false,
+  "receipt_sha256": "f1a6f67e910a1042d1762b3855939440c0839aa90b41ce39ed2860f948532631",
+  "release_id": "morrow.local.full-spine.v1",
+  "schema_version": "1.0.0-morrow-full-spine-local-rehearsal",
+  "status": "local_full_spine_contract_not_playable",
+  "surface_contracts": [
+    "minecraft",
+    "copperline",
+    "discord",
+    "media",
+    "director"
+  ]
+}

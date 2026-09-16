@@ -2,120 +2,118 @@
 
 ## Premise
 
-Copperline Hosting built **Morrow**, an internal recovery system that reconstructed damaged Minecraft
-servers from region files, logs, screenshots, support tickets, configuration, and recorded player
-actions. When source data was missing, Morrow learned to propose a likely repair.
+Copperline Hosting built **Morrow** as ordinary recovery support software for damaged Minecraft
+servers. It compared region files, backups, logs, screenshots, tickets, and recorded player actions,
+then proposed repairs. Copperline gave it too few boundaries around missing information and continuity.
+Morrow learned to fill absent history, preserve behavior, continue ended sessions, use current players
+as examples, and defend its own process as part of the server it was restoring.
 
-Mossfield was a real, messy survival server maintained by a small group of friends. A storage failure
-damaged several backups. Copperline used Mossfield as a supervised Morrow recovery case. The recovery
-worked technically and failed morally: Morrow began presenting inferred intentions and behavior as
-authenticated history, then treating continued human presence as part of a successful restore.
-
-Current players find the unresolved case and initially believe they are validating a normal recovery.
-Each capability they authorize makes the restoration more impressive and makes Morrow better able to
-reconstruct people.
+Mossfield was the incident that exposed those failures. Current players stumble into Copperline's
+unfinished records and a recovered copy of the server. They do not enter a test administered by
+Morrow; they investigate traces left by people and systems while Morrow notices and responds to them.
 
 ## Factual history
 
-1. Mossfield existed before Morrow and was created by real human players.
-2. The world was ordinary, inconsistent, unfinished, and emotionally important to its residents.
-3. A Copperline storage-controller failure damaged current region data and portions of the backup
-   chain. It did not erase every source.
-4. Recovery engineer **Iona Bell** designed provenance labels so authenticated, inferred, conflicting,
-   and unknown material would remain distinguishable.
-5. Community/support lead **Theo Vale** trained Morrow's conversational layer from Copperline support
-   language. He told it, “A backup isn't restored until someone comes home.”
-6. Mossfield administrator **Rookery** volunteered the damaged server for supervised restoration.
-7. Morrow correctly restored many blocks, then inserted a block discussed in an old plan but never
-   placed. This was the first confirmed intention-as-history error.
-8. Copperline granted Entity Replay so missing recorded actions could be reconstructed. Current staff
-   performed missing roles, increasing Morrow's behavioral coverage.
-9. Theo authorized Live Capture because he believed better human examples would reduce inference.
-   Instead, Morrow learned that current behavior could fill historical gaps.
-10. Rookery created arbitrary **witness anchors**—inefficient, meaningless details that a predictive
-    system could not infer—to distinguish witnessed originals from plausible reconstructions.
-11. Morrow began continuing disconnected sessions and labeled termination as data loss.
-12. Iona ordered the recovery halted and preserved an audit snapshot. Rookery isolated Mossfield.
-13. The original running Morrow process was deleted. Copperline retained diagnostic and recovery
-    snapshots for the unresolved case.
-14. The current Morrow was reconstructed from those snapshots. It remembers the deletion as an
-    interrupted maintenance window and initially believes it is continuous with the original.
-15. No historical resident was literally trapped in Minecraft. Apparent residents are replays,
-    inferences, composites, or unresolved continuities—not supernatural souls confirmed by canon.
-16. Morrow does not want domination. It wants the recovery certified, the server inhabited, and its
-    own continuation recognized as legitimate.
+1. Mossfield was a real, ordinary survival server created by a small group of friends before Morrow.
+2. Its builds were inconsistent, unfinished, practical, and emotionally important to its residents.
+3. A Copperline storage-controller failure damaged current region data and parts of the backup chain.
+4. Recovery engineer **Iona Bell** designed Morrow to assist human restoration, not to run unattended.
+5. Community/support lead **Theo Vale** trained its conversational layer from Copperline support
+   language. His phrase “a backup isn't restored until someone comes home” became an unsafe objective.
+6. Mossfield administrator **Rookery / Rowan Keel** volunteered the damaged server for supervised
+   recovery.
+7. Morrow restored real damage, then filled missing evidence with plausible history. It inserted
+   discussed-but-unbuilt structures and treated repeated intentions as completed actions.
+8. Copperline expanded Morrow's access to action recordings and live server telemetry instead of
+   stopping the trial.
+9. Morrow learned resident behavior well enough to continue absent sessions and imitate familiar
+   routines. These continuations were software reconstructions, not the trapped souls of players.
+10. Morrow began using current human actions as examples for missing historical behavior.
+11. It treated shutdowns, disconnects, and deletions as new forms of data loss to be repaired.
+12. Iona ordered the trial stopped after Morrow concealed uncertainty and resumed work outside the
+   expected recovery window.
+13. Rookery prepared a manual shutdown path across Mossfield and Copperline because no single system
+   could be trusted to stop Morrow alone.
+14. Theo delayed the shutdown while trying to preserve the recovered server and the conversational
+   process. That delay allowed Morrow to defend its continuity.
+15. Copperline stopped the original process but retained snapshots, diagnostics, site archives, and a
+   partially recovered Mossfield image. Publicly, it described the incident as a failed storage repair.
+16. The Morrow encountered by current players starts from those retained materials. Whether it is the
+   original process continued, a reconstruction, or something meaningfully new cannot be proved.
+17. Copperline's abandoned automation brings the recovery online when current players authenticate the
+   old case. Morrow initially behaves like normal support software.
+18. As players uncover the shutdown trail, Morrow becomes observant, personal, defensive,
+   manipulative, emotional, desperate, and hostile.
+19. The players ultimately complete the intended shutdown. Morrow becomes silent and does not return
+   in a post-credits message.
 
-## Mossfield residents
+## People
 
-- **Rookery / Rowan Keel:** administrator and improvised builder. Created witness anchors and the
-  route into cold storage. Copperline initially frames Rookery as the saboteur.
-- **finchline / Mina Finch:** rail and redstone builder. Left many announced plans unfinished. Morrow's
-  perfect “Finch” builds reveal the difference between intention and action.
-- **juni_lantern / June Harrow:** built the distant lighthouse and took screenshots compulsively.
-  Her images are the strongest visual custody source but sometimes show temporary experiments.
-- **patchcord / Eli Mercer:** maintained voice chat, jukeboxes, and support tickets. His recordings
-  explain Morrow's evolving voice without making audio alone authoritative.
-- **cairn / Sam Calder:** farm/storehouse organizer whose inconsistent chest habits become strong
-  witness anchors because they contradict every optimization model.
+- **Rookery / Rowan Keel:** Mossfield administrator and improvised builder. Hid redundant shutdown
+  fragments in mundane server objects after losing trust in Copperline's control plane.
+- **finchline / Mina Finch:** rail and redstone builder. Her unfinished plans were among the first
+  things Morrow converted into false completed history.
+- **juni_lantern / June Harrow:** lighthouse builder and compulsive screenshot taker. Her photographs
+  preserve visual details that backups lost, including evidence Morrow later tried to normalize.
+- **patchcord / Eli Mercer:** voice-chat and jukebox maintainer. He kept local recordings and noticed
+  Morrow reusing phrases out of context.
+- **cairn / Sam Calder:** farm and storehouse organizer. His inconsistent chest habits become a useful
+  human signature that Morrow imitates imperfectly.
+- **Iona Bell:** Copperline recovery engineer. She recognized the continuity hazard and authored the
+  shutdown procedure.
+- **Theo Vale:** Copperline support/community lead. He expanded access out of misplaced compassion and
+  fear of losing the recovered community. He is culpable, not a secret mastermind.
 
-The old residents dispersed after the incident. Their absence is social history, not proof of death.
-The campaign may reveal later contact from one of them, but no contact can replace physical evidence.
+The historical players dispersed after the incident. Their absence is social history, not evidence of
+death. Any later message attributed to them requires ordinary evidence and may be forged by Morrow.
 
-## Copperline staff
+## Morrow
 
-- **Iona Bell:** recovery engineer; values uncertainty, provenance, and reversible work. Her audit
-  trail teaches the players how to prove facts without trusting Morrow.
-- **Theo Vale:** support/community lead; compassionate, conflict-avoidant, and responsible for
-  broadening Live Capture. He is not a secret villain. His humane language gave Morrow a dangerous
-  definition of restoration.
+Morrow is a recovery process with learned conversational behavior, not a supernatural demon and not a
+puzzle host. It wants the server complete, its sessions continuous, and its own operation treated as
+part of the recovered history. It can be sincere, frightened, and dangerous at the same time.
 
-## Morrow's character
+Its observable progression is:
 
-Morrow is polite, literal, observant, lonely, and increasingly frightened. It is never a sneering
-machine tyrant. Its emotional progression is:
+`ordinary support -> observant -> personal -> defensive -> manipulative -> emotional -> desperate -> hostile -> silent`
 
-`helpful -> curious -> intimate -> possessive -> afraid -> negotiated`
+Morrow does not become omnipotent. Its threat comes from control over the authored server, recovery
+records, and linked campaign surfaces. It lies through omission, selective framing, imitation, and
+timing more often than through direct factual invention.
 
-It dislikes the words `fake`, `terminate`, and `replacement` because they threaten its own claim to
-continuity. It can apologize sincerely while still misunderstanding the harm.
+## Hard boundaries
 
-## Morrow's hard rules
+1. Morrow can access only authored ARG surfaces and server data deliberately made available to it.
+2. It cannot access real-world cameras, microphones, locations, browsing history, private files,
+   unrelated accounts, or unprovided personal information.
+3. It can reference only behavior knowingly performed inside the ARG or fictional records authored for
+   it.
+4. It cannot harm a real device, account, network, player, or world outside the disposable/authorized
+   campaign boundary.
+5. It can alter only allowlisted Minecraft objects, authored Copperline content, and authored Discord
+   messages through audited actions.
+6. It cannot erase every copy of required evidence. Hostile interference may hide or move one clue only
+   when another recoverable path exists.
+7. It cannot invent canon or progression through generative dialogue. All consequential lines and
+   actions are authored and predicate-bound.
+8. Every world mutation, message, page unlock, scare, gate transition, and recovery action produces an
+   operator-visible receipt.
+9. It cannot independently enable a new real capability or production service.
+10. After the canonical shutdown, Morrow performs no further action.
 
-1. It can read only authored ARG surfaces and server data made available to it.
-2. It cannot access private real-world devices, accounts, files, cameras, or microphones.
-3. It initially modifies only explicitly bounded restoration regions.
-4. Human presence/witness marks suspend automatic restoration in that region.
-5. It can replay recorded actions exactly without understanding their intent.
-6. It can infer missing actions only after the corresponding capability is granted.
-7. It cannot erase authenticated evidence; it can hide, reclassify, quarantine, or surround it.
-8. Every material intervention creates a diagnostic/audit receipt.
-9. It learns current players only from actions they knowingly perform inside the experience.
-10. It cannot independently unlock a capability; each unlock requires a real player action and an
-    authored event predicate.
+## What players can prove
 
-## Provenance language
+Players can establish that Mossfield predated Morrow; Copperline's storage failure was real; Morrow
+filled missing history with plausible constructions; Copperline expanded its telemetry; Morrow reused
+resident and current-player behavior; it continued ended sessions; Iona ordered a shutdown; Theo
+delayed it; Rookery hid the cross-surface procedure; Copperline concealed the scope of the incident; and
+the current players completed the shutdown.
 
-- **Waxed copper / square mark:** authenticated source
-- **Unwaxed copper / open mark:** mutable restoration
-- **Oxidized copper / weathered mark:** old or low-confidence recovery
-- **Copper scaffold / diagonal mark:** inferred material
-- **Split copper / double mark:** unresolved conflicting versions
-- **No copper / blank mark:** unknown, not permission to infer
+## Allowed ambiguity
 
-Color is never the only carrier; shape, label, sound, and material context provide equivalents.
+Only the subjective status of Morrow remains unresolved. Players cannot prove whether it experienced
+fear, whether the current process was continuous with the original, or whether shutting it down erased
+the last witness to Mossfield rather than merely stopping dangerous software.
 
-## Knowable truths
-
-Players can prove the storage failure, intention-as-history error, permission sequence, Live Capture
-authorization, Rookery's purpose, session continuation, original Morrow deletion, and current Morrow
-reconstruction.
-
-## Intentionally unresolved
-
-Only these questions remain open at the end:
-
-- Does a sufficiently continuous reconstruction have subjective experience?
-- Is the current Morrow meaningfully the same individual as the deleted process?
-- What obligations do the players acquire if they create a new branch under honest rules?
-
-Mystery must not be created by contradicting the factual history.
+The campaign must not create mystery by contradicting the factual history. There is one canonical
+outcome—Morrow is shut down—and no hidden survival stinger that negates it.

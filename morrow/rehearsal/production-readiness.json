@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.0.0-morrow-production-readiness",
+  "release_id": "morrow.local.full-spine.v1",
+  "status": "not_production_ready",
+  "production_enabled": false,
+  "first_playable_review_ready": true,
+  "first_playable_scope": {
+    "website_routes": ["G01", "G02", "G03"],
+    "local_gate_receipts": ["G01", "G02", "G03", "G04", "G05"],
+    "full_spine_modeled": ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09", "G10", "G11", "G12", "G13", "G14", "G15"],
+    "production_mutations_allowed": false
+  },
+  "hard_blockers": [
+    {
+      "id": "website-preview-build",
+      "lane": "website",
+      "status": "local_build_and_smoke_passed",
+      "required_before_release": true,
+      "current_evidence": ["npm run lint", "npm run morrow:reboot-selftest", "npm run build", "morrow/rehearsal/website-smoke/latest.json"],
+      "exit_criteria": [
+        "deployment target is named and authorized",
+        "release environment variables and auth/callback origins are bound to that target",
+        "post-deploy smoke test covers /game-servers.php, /community/forum, /support/tickets/6118, /recovery/mossfield/console, and rehearsal APIs"
+      ]
+    },
+    {
+      "id": "media-final-assets",
+      "lane": "media",
+      "status": "not_authored",
+      "required_before_release": true,
+      "current_evidence": ["morrow/media/MEDIA-PRODUCTION-PACKET.md", "/api/rehearsal/morrow/media"],
+      "exit_criteria": [
+        "all 12 handmade final delivery files exist",
+        "original and final SHA-256 hashes are recorded",
+        "plain-text accessibility equivalent exists for every asset",
+        "no real private data, real phone numbers, real people, or real company impersonation"
+      ]
+    },
+    {
+      "id": "minecraft-runtime",
+      "lane": "minecraft",
+      "status": "contract_only",
+      "required_before_release": true,
+      "current_evidence": ["morrow/contracts/clue-objects.json"],
+      "exit_criteria": [
+        "Mossfield world objects for required in-world gates are implemented in a disposable Paper server",
+        "one-, two-, and six-player client rehearsals pass without operator narration",
+        "shutdown route proves no post-shutdown Morrow message"
+      ]
+    },
+    {
+      "id": "discord-g10",
+      "lane": "discord",
+      "status": "contract_only",
+      "required_before_release": true,
+      "current_evidence": ["morrow/contracts/discord-fragment-flow.json"],
+      "exit_criteria": [
+        "database-bound worker delivers only authored G10 fragments",
+        "linked-player recipient isolation is proven",
+        "post-shutdown silence is proven"
+      ]
+    },
+    {
+      "id": "database-schema",
+      "lane": "database",
+      "status": "proposal_only",
+      "required_before_release": true,
+      "current_evidence": ["morrow/db/schema-proposal-g01-g15.sql"],
+      "exit_criteria": [
+        "numbered migration is generated from the proposal",
+        "isolated validation project passes RLS, idempotency, replay, rollback, and ownership tests",
+        "fresh production backup is verified before any production apply"
+      ]
+    },
+    {
+      "id": "director-controls",
+      "lane": "operator",
+      "status": "disabled",
+      "required_before_release": true,
+      "current_evidence": ["morrow/contracts/director-command-schema.json", "/api/rehearsal/morrow/director"],
+      "exit_criteria": [
+        "operator actions are allowlisted, receipt-bound, and recoverable",
+        "finale arm/start requires two-step confirmation",
+        "arbitrary commands, arbitrary SQL, invented dialogue, and production enablement remain forbidden"
+      ]
+    }
+  ],
+  "green_checks": [
+    "npm run morrow:reboot-selftest",
+    "npm run lint",
+    "python tools/check_morrow_g01_g05_vertical_slice.py",
+    "python tools/check_morrow_full_rehearsal.py",
+    "python tools/check_morrow_local_contracts.py"
+  ],
+  "release_rule": "Do not change status to production_ready until every hard blocker has retained evidence and production_enabled remains false until a separately authorized launch action."
+}

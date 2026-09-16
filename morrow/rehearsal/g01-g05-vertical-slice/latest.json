@@ -1,0 +1,312 @@
+{
+  "anti_puzzle_room_firewall": {
+    "dedicated_comparison_room": false,
+    "morrow_as_puzzle_host": false,
+    "new_finale_notation": false,
+    "numbered_trial": false
+  },
+  "authority_files": {
+    "morrow/README.md": "bb3ab10f722f66f20152557b2855350f0374f5a01c7f80e03594d69ed5c7994d",
+    "morrow/authority/ARG-GUIDEBOOK.md": "1fe4aa38cbb71e197e1a245da98e06e6590ca506cf3980f3843902e8454d8b1f",
+    "morrow/authority/CANON.md": "5adb64283cdf10a2ddd3692179cb0905b01f480df3b1b93babd8591b0c9f27c0",
+    "morrow/authority/PLAYER-JOURNEY.md": "479540775df3d1e70c7d2de91388c1a06c4acde7c02929c0fe683d0b7f5c49fb",
+    "morrow/authority/PUZZLE-LEDGER.json": "d517c474a0c9e13fba1c40277bf1757ec8ae99fed10467d3355fca7a7a57f765",
+    "morrow/contracts/event-catalog.json": "8a07c4d9af1377fff26d72ca2bcffda5dc8a35b20fe3d71407f1843b567eda4a",
+    "morrow/contracts/relationship-states.json": "4ceda50e5baf3592e80ea9d356b4f918371e19e704f41760205aecef25efc172",
+    "morrow/contracts/surface-contracts.json": "7ac0473109ad7c89d7058ce83ebec12712fa68b8d788ff11b2edc8f59b549b0a",
+    "morrow/review/review-fixtures.json": "ec3db93e891cf5ce8f13134fcee44ca7a1cf72dcb7f70e348f78b301805ee29f"
+  },
+  "boundaries": {
+    "browser_started": false,
+    "discord_gateway_contacted": false,
+    "external_network_used": false,
+    "human_playability_claimed": false,
+    "minecraft_server_started": false,
+    "production_contacted": false,
+    "supabase_contacted": false
+  },
+  "campaign_id": "local.contract.mossfield.seed",
+  "cohort_semantics": {
+    "private_prose_required": false,
+    "single_player_solvable": true,
+    "six_player_requires_simultaneous_humans": false,
+    "supported_players": "1-6"
+  },
+  "delayed_consequence_receipt": {
+    "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:chest_correction",
+    "kind": "delayed_bounded_consequence",
+    "payload": {
+      "accessible_equivalent": "visible reordered labels and event transcript",
+      "consumes_or_moves_required_evidence": false,
+      "dread_beat": "chest_correction",
+      "id": "local.chest_correction.after_g05",
+      "maximum_seconds": 1,
+      "required_for_progress": false,
+      "rollback": "restore the pre-beat chest labels and inventory order from local receipt state",
+      "trigger_after_event": "morrow.gate.g05_storehouse_trail",
+      "trigger_condition": "after every present player leaves cairn_storehouse"
+    },
+    "payload_sha256": "92c5063da4b2ae9f5512ca467ad70e1a1ff8d1b906d94c1cee9f46ecc0ceffee",
+    "previous_receipt_sha256": "6b4e3c9939704f1be54d822fe3e4add46b30c7f468b05ad4fa9e81287a0fcad5",
+    "receipt_sha256": "2040e6624d67e68b40b1092de7568cb4ae616290f3ab3710a2a6b0a39126332e",
+    "sequence": 6
+  },
+  "event_receipts": [
+    {
+      "discovery": "D01",
+      "event_key": "morrow.gate.g01_unindexed_host",
+      "gate": "G01",
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G01",
+      "owner": "copperline",
+      "payload": {
+        "accessible_equivalent": "The source comment is plain text and keyboard reachable.",
+        "discovery": "D01",
+        "evidence": [
+          "retired product slug",
+          "commented archive path",
+          "matching footer build number"
+        ],
+        "failure_behavior": "Unknown paths return an in-fiction 404 with the public site still usable.",
+        "gate": "G01",
+        "input": "Open the unindexed archive URL assembled from the source comment and product slug.",
+        "local_observation": {
+          "assembled_path": "/recovery/mossfield",
+          "footer_build": "cl-2011-6118",
+          "ordinary_trace": "retired Copperline page source comment"
+        },
+        "reveals": "Copperline left an unindexed recovery archive online.",
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Unindexed host"
+      },
+      "payload_sha256": "5a477c1a91527c1b055dad78623fe0077b5f39348817c482cf2085514fd5ec40",
+      "previous_receipt_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "receipt_sha256": "f6cc56d314e7a7e2afca57bd9e791ac68cdfa921fd4ed30fc11a433f78a0cfe3",
+      "sequence": 1
+    },
+    {
+      "discovery": "D02",
+      "event_key": "morrow.gate.g02_dead_forum_account",
+      "gate": "G02",
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G02",
+      "owner": "copperline",
+      "payload": {
+        "accessible_equivalent": "Deleted and edited post states have text labels and timestamps.",
+        "discovery": "D02",
+        "evidence": [
+          "Rookery thread",
+          "Iona support signature",
+          "acrostic in edited post titles"
+        ],
+        "failure_behavior": "A wrong alias shows which source category is unsupported without revealing the name.",
+        "gate": "G02",
+        "input": "Enter the recovered employee alias into the archive lookup.",
+        "local_observation": {
+          "alias_handle": "iona_bell",
+          "ordinary_trace": "forum edits plus support signature identify one fictional employee alias",
+          "private_data_used": false
+        },
+        "reveals": "A staff identity crossed between the Mossfield community and Copperline support.",
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Dead forum account"
+      },
+      "payload_sha256": "1be4401e1cfba53812291d77113a1f751842e8b34dcae424a2b6ffa4ea31b63b",
+      "previous_receipt_sha256": "f6cc56d314e7a7e2afca57bd9e791ac68cdfa921fd4ed30fc11a433f78a0cfe3",
+      "receipt_sha256": "c62161aa098120d9759dca48cdcdd198ff2e7e4066c4b77c8675cb061b52309b",
+      "sequence": 2
+    },
+    {
+      "discovery": "D03",
+      "event_key": "morrow.gate.g03_recovery_login",
+      "gate": "G03",
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G03",
+      "owner": "copperline",
+      "payload": {
+        "accessible_equivalent": "Status graphs have a tabular text view.",
+        "discovery": "D03",
+        "evidence": [
+          "incident number",
+          "uptime counter",
+          "employee alias"
+        ],
+        "failure_behavior": "Attempts are rate-limited locally and never consume the account.",
+        "gate": "G03",
+        "input": "Log in with the fictional alias and eight-character recovery password.",
+        "local_observation": {
+          "ordinary_trace": "status uptime and incident number produce a short fictional credential",
+          "password_shape": "eight-character local fixture",
+          "rate_limit_scope": "local receipt only"
+        },
+        "reveals": "Copperline called Mossfield closed while retaining a recoverable handoff.",
+        "surfaces": [
+          "copperline"
+        ],
+        "title": "Recovery login"
+      },
+      "payload_sha256": "2bb1a4aea21a12636b417fae75e33a5e77d168233c8aa3f6e56c5a8f93402349",
+      "previous_receipt_sha256": "c62161aa098120d9759dca48cdcdd198ff2e7e4066c4b77c8675cb061b52309b",
+      "receipt_sha256": "6bcc286d649ba433b98cde9dc71aabd17d9de8023305f9ae7fd5346424c372d6",
+      "sequence": 3
+    },
+    {
+      "discovery": "D04",
+      "event_key": "morrow.gate.g04_first_connection",
+      "gate": "G04",
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G04",
+      "owner": "minecraft",
+      "payload": {
+        "accessible_equivalent": "Connection details and fingerprint are selectable text.",
+        "discovery": "D04",
+        "evidence": [
+          "server address record",
+          "case fingerprint",
+          "Mossfield MOTD"
+        ],
+        "failure_behavior": "Invalid or stale handoffs fail closed without exposing infrastructure details.",
+        "gate": "G04",
+        "input": "Use the authenticated handoff to join Mossfield as a non-op player.",
+        "local_observation": {
+          "morrow_state_after": "observant",
+          "ordinary_trace": "authenticated handoff exposes selectable server address and case fingerprint",
+          "server_role": "non-op player"
+        },
+        "reveals": "The live recovered world is the concealed Mossfield case.",
+        "surfaces": [
+          "copperline",
+          "minecraft"
+        ],
+        "title": "First connection"
+      },
+      "payload_sha256": "2eb722a6f988294d512e73d27a5d3da1fec1d4a5d7c6dc70c0c5dd06d55e612a",
+      "previous_receipt_sha256": "6bcc286d649ba433b98cde9dc71aabd17d9de8023305f9ae7fd5346424c372d6",
+      "receipt_sha256": "c9e13d9c7b24e4ea4422a136d3367507063866e869081613ef9d69c14e33a300",
+      "sequence": 4
+    },
+    {
+      "discovery": "D05",
+      "event_key": "morrow.gate.g05_storehouse_trail",
+      "gate": "G05",
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G05",
+      "owner": "minecraft",
+      "payload": {
+        "accessible_equivalent": "Names, container numbers, and order feedback are textual.",
+        "discovery": "D05",
+        "evidence": [
+          "cairn's item names",
+          "uneven chest labels",
+          "storehouse inventory order"
+        ],
+        "failure_behavior": "Wrong order returns every item and resets the containers.",
+        "gate": "G05",
+        "input": "Place the renamed tools into the chests in cairn's documented order.",
+        "local_observation": {
+          "anti_room_shape": "ordinary home/storehouse routine",
+          "native_objects": [
+            "renamed tools",
+            "four chests",
+            "uneven labels",
+            "lectern"
+          ],
+          "ordinary_trace": "cairn's uneven storehouse order reveals a lectern index"
+        },
+        "reveals": "Rookery hid maintenance evidence in ordinary community habits.",
+        "surfaces": [
+          "minecraft"
+        ],
+        "title": "Storehouse trail"
+      },
+      "payload_sha256": "21910b320f489ae4b59cf166129c09d3f55a0e5427d8c4ccc9e86a997c80596d",
+      "previous_receipt_sha256": "c9e13d9c7b24e4ea4422a136d3367507063866e869081613ef9d69c14e33a300",
+      "receipt_sha256": "6b4e3c9939704f1be54d822fe3e4add46b30c7f468b05ad4fa9e81287a0fcad5",
+      "sequence": 5
+    }
+  ],
+  "generated_at": "2026-09-15T00:00:00-05:00",
+  "idempotency_proof": {
+    "altered_replay": {
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G05",
+      "payload_sha256": "a59d8b08ba708c3d5f8de5853014c7724d89a085c46632c940ac9123c9fe0b07",
+      "result": "failed_closed_collision"
+    },
+    "duplicate_replay": {
+      "idempotency_key": "morrow.local.g01-g05.v1:local.contract.mossfield.seed:G05",
+      "payload_sha256": "21910b320f489ae4b59cf166129c09d3f55a0e5427d8c4ccc9e86a997c80596d",
+      "receipt_sha256": "6b4e3c9939704f1be54d822fe3e4add46b30c7f468b05ad4fa9e81287a0fcad5",
+      "result": "prior_receipt_returned"
+    }
+  },
+  "implemented_discoveries": [
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05"
+  ],
+  "implemented_gates": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05"
+  ],
+  "implemented_static_routes": [
+    "/game-servers.php",
+    "/community/forum?thread=6118",
+    "/support/tickets/6118",
+    "/status/incident-6118",
+    "/recovery/mossfield"
+  ],
+  "missing_runtime_surfaces": [
+    "paper_world",
+    "g04_minecraft_runtime",
+    "supabase_schema",
+    "discord_worker",
+    "final_media"
+  ],
+  "morrow_state_projection": {
+    "after_g04": "observant",
+    "dialogue_advanced_state": false,
+    "initial": "support_software",
+    "terminal": "silent",
+    "transition_event": "morrow.gate.g04_first_connection"
+  },
+  "production_enablement": "blocked",
+  "release_id": "morrow.local.g01-g05.v1",
+  "restart_safety": {
+    "boundaries": [
+      {
+        "after_sequence": 1,
+        "journal_head": "f6cc56d314e7a7e2afca57bd9e791ac68cdfa921fd4ed30fc11a433f78a0cfe3",
+        "resume_result": "prior_receipt_returned_without_duplicate_consequence"
+      },
+      {
+        "after_sequence": 2,
+        "journal_head": "c62161aa098120d9759dca48cdcdd198ff2e7e4066c4b77c8675cb061b52309b",
+        "resume_result": "prior_receipt_returned_without_duplicate_consequence"
+      },
+      {
+        "after_sequence": 3,
+        "journal_head": "6bcc286d649ba433b98cde9dc71aabd17d9de8023305f9ae7fd5346424c372d6",
+        "resume_result": "prior_receipt_returned_without_duplicate_consequence"
+      },
+      {
+        "after_sequence": 4,
+        "journal_head": "c9e13d9c7b24e4ea4422a136d3367507063866e869081613ef9d69c14e33a300",
+        "resume_result": "prior_receipt_returned_without_duplicate_consequence"
+      },
+      {
+        "after_sequence": 5,
+        "journal_head": "6b4e3c9939704f1be54d822fe3e4add46b30c7f468b05ad4fa9e81287a0fcad5",
+        "resume_result": "prior_receipt_returned_without_duplicate_consequence"
+      }
+    ],
+    "journal_head": "2040e6624d67e68b40b1092de7568cb4ae616290f3ab3710a2a6b0a39126332e",
+    "restart_after_every_gate": true
+  },
+  "schema_version": "1.0.0-morrow-local-g01-g05-vertical-slice",
+  "scope": "local deterministic receipt contract for G01-G05 with static Copperline G01-G03 routes",
+  "status": "local_contract_pass_not_playable"
+}

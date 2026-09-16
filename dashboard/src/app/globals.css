@@ -359,3 +359,124 @@ button, input, select, textarea { font: inherit; }
 .player-login-message,.player-login-alert { margin:9px 0 0;padding:7px 9px;border:1px solid #a7b8bf;background:white;font-size:10px; }
 .player-login-message.error,.player-login-alert { border-color:#ba8e89;background:#f6e9e7;color:#773e38; }
 @media (max-width:560px) { .player-login-row { flex-direction:column; }.player-login-row button { min-height:34px; } }
+
+/* Morrow redesign review dossier: static, spoiler-full, and isolated from live surfaces. */
+.morrow-review {
+  --mr-bg:#090b0a;--mr-panel:#101411;--mr-ink:#d7d8cf;--mr-dim:#838a81;
+  --mr-line:#283229;--mr-copper:#a96d41;--mr-oxide:#507c6a;--mr-warn:#9c4c42;
+  min-height:100vh;background:
+    radial-gradient(circle at 72% 3%,#1e382a55,transparent 26rem),
+    linear-gradient(180deg,#080a09,#0b0e0c 38%,#070908);
+  color:var(--mr-ink);font:14px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+.morrow-review::before { content:"";position:fixed;inset:0;pointer-events:none;z-index:20;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.morrow-review h1,.morrow-review h2,.morrow-review h3,.morrow-review p { margin-top:0; }
+.morrow-review-hero { position:relative;display:grid;grid-template-columns:96px minmax(0,1fr) 290px;gap:28px;align-items:end;max-width:1240px;margin:auto;padding:72px 28px 48px;border-bottom:1px solid var(--mr-line); }
+.morrow-review-signal { display:flex;align-items:end;gap:6px;height:92px;padding-bottom:7px; }
+.morrow-review-signal span { width:10px;background:var(--mr-oxide);box-shadow:0 0 18px #5b9b7866; }
+.morrow-review-signal span:nth-child(1){height:28%}.morrow-review-signal span:nth-child(2){height:76%}.morrow-review-signal span:nth-child(3){height:43%}.morrow-review-signal span:nth-child(4){height:90%;background:var(--mr-copper)}
+.morrow-review-kicker,.morrow-review-label { margin:0 0 10px;color:#7f998a;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase; }
+.morrow-review-hero h1 { margin:0;color:#eef0e8;font:800 clamp(4.7rem,12vw,9rem)/.72 Arial,sans-serif;letter-spacing:-.075em;text-shadow:0 0 45px #87ac8b18; }
+.morrow-review-deck { max-width:760px;margin:29px 0 20px;color:#aeb5aa;font:20px/1.5 Georgia,serif; }
+.morrow-review-tags { display:flex;flex-wrap:wrap;gap:7px; }
+.morrow-review-tags span,.morrow-review-chips span { padding:5px 8px;border:1px solid #354138;background:#111713;color:#92a096;font-size:10px;text-transform:uppercase; }
+.morrow-review-hero aside { padding:18px;border:1px solid #5c382f;border-top:3px solid var(--mr-warn);background:#160f0e;box-shadow:0 18px 45px #0008; }
+.morrow-review-hero aside b { color:#d68a78;letter-spacing:.14em; }.morrow-review-hero aside p { margin:9px 0 14px;color:#9d8d87;font-size:12px; }.morrow-review-hero aside code { display:block;padding:8px;background:#0b0909;color:#a97062;font-size:11px; }
+.morrow-review-nav { position:sticky;top:0;z-index:10;display:flex;gap:2px;justify-content:center;overflow:auto;padding:9px 16px;background:#0a0d0bf2;border-bottom:1px solid var(--mr-line);backdrop-filter:blur(12px); }
+.morrow-review-nav a { flex:0 0 auto;padding:7px 10px;color:#8e978d;font-size:10px;letter-spacing:.08em;text-decoration:none;text-transform:uppercase; }.morrow-review-nav a:hover { color:#e5e7df;background:#172019; }
+.morrow-review-section { max-width:1184px;margin:0 auto;padding:72px 28px;border-bottom:1px solid var(--mr-line);scroll-margin-top:56px; }
+.morrow-review-heading { display:grid;grid-template-columns:180px minmax(0,1fr);gap:14px 28px;margin-bottom:30px; }.morrow-review-heading .morrow-review-label { grid-row:1/3; }.morrow-review-heading h2 { margin:0;color:#e1e4da;font:36px/1.15 Georgia,serif; }.morrow-review-heading > p:last-child { margin:0;color:var(--mr-dim); }
+.morrow-review-north { display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px 58px; }
+.morrow-review-north h2 { margin:0;color:#e7e8df;font:clamp(2rem,5vw,4rem)/1.03 Georgia,serif;letter-spacing:-.035em; }
+.morrow-review-prose p { color:#9ea69b;font:16px/1.7 Georgia,serif; }
+.morrow-review-stats { grid-column:1/-1;display:grid;grid-template-columns:repeat(6,1fr);margin:12px 0 0;border:1px solid var(--mr-line); }
+.morrow-review-stats div { padding:16px;border-left:1px solid var(--mr-line); }.morrow-review-stats div:first-child { border:0; }.morrow-review-stats dt { color:#6f786f;font-size:10px;text-transform:uppercase; }.morrow-review-stats dd { margin:4px 0 0;color:#daddd3;font:700 22px Arial,sans-serif; }
+.morrow-review-acts { display:grid;gap:1px;background:var(--mr-line);border:1px solid var(--mr-line); }
+.morrow-review-acts article { display:grid;grid-template-columns:64px minmax(0,1fr) 210px;gap:20px;align-items:center;padding:18px;background:var(--mr-panel); }
+.morrow-review-act-index { color:#3f4e43;font:700 30px Arial,sans-serif; }.morrow-review-acts article p { margin:0;color:#738278;font-size:10px;letter-spacing:.12em; }.morrow-review-acts h3 { margin:2px 0 5px;color:#e0e4db;font:24px Georgia,serif; }.morrow-review-acts strong { display:block;color:#a8afa6;font:normal 14px/1.45 Georgia,serif; }.morrow-review-acts article span { display:block;margin-top:8px;color:#767f77;font-size:12px; }.morrow-review-acts footer { padding:10px;border-left:2px solid var(--mr-copper);color:#bd8a66;font-size:11px;text-transform:uppercase; }
+.morrow-review-gates { columns:2;column-gap:12px; }.morrow-review-gates details { break-inside:avoid;margin:0 0 12px;border:1px solid var(--mr-line);background:var(--mr-panel); }.morrow-review-gates summary { display:grid;grid-template-columns:45px 1fr auto;gap:9px;align-items:center;padding:12px;cursor:pointer;list-style:none; }.morrow-review-gates summary::-webkit-details-marker { display:none; }.morrow-review-gates summary span { color:var(--mr-copper);font-weight:700; }.morrow-review-gates summary b { color:#cfd3ca; }.morrow-review-gates summary em { color:#697269;font-size:10px;font-style:normal;text-transform:uppercase; }.morrow-review-gates details > div { padding:0 12px 13px;border-top:1px solid var(--mr-line); }.morrow-review-chips { display:flex;flex-wrap:wrap;gap:5px;margin:12px 0; }.morrow-review-gates p { margin:7px 0;color:#8f978e;font-size:12px; }.morrow-review-gates p b { color:#bfc5bb; }
+.morrow-review-discoveries { margin-top:22px;border:1px solid #354238;background:#0d110e; }.morrow-review-discoveries summary { display:flex;justify-content:space-between;gap:20px;padding:14px;cursor:pointer;color:#b8c0b6; }.morrow-review-discoveries summary span { color:#69766c;font-size:11px; }.morrow-review-discoveries ol { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:0;padding:1px;background:var(--mr-line);list-style:none; }.morrow-review-discoveries li { display:grid;grid-template-columns:36px 1fr auto;gap:8px;padding:9px;background:#101511; }.morrow-review-discoveries li code { color:#7f9b88; }.morrow-review-discoveries li span { color:#9ca59b;font-size:11px; }.morrow-review-discoveries li em { color:#666f68;font-size:9px;font-style:normal;text-transform:uppercase; }.morrow-review-discoveries li[data-required="false"] { background:#10100e; }
+.morrow-review-surfaces { display:grid;grid-template-columns:repeat(4,1fr);gap:12px; }.morrow-review-surfaces article { min-height:255px;padding:16px;border:1px solid var(--mr-line);background:#101411; }.morrow-review-surfaces header { display:flex;align-items:center;justify-content:space-between;color:#789080;font-size:10px;letter-spacing:.14em; }.morrow-review-surfaces header i { width:7px;height:7px;border-radius:50%;background:var(--mr-oxide);box-shadow:0 0 10px #5d9b7766; }.morrow-review-surfaces h3 { margin:35px 0 10px;color:#d5d9cf;font:22px/1.15 Georgia,serif; }.morrow-review-surfaces p { color:#858e85;font-size:12px; }.morrow-review-surfaces code { display:block;margin-top:15px;padding:9px;background:#080b09;color:#6e806f;font-size:10px;overflow-wrap:anywhere; }
+.morrow-review-artifact-grid { display:grid;grid-template-columns:1.15fr .9fr .9fr;gap:12px;margin-top:28px; }.morrow-review-artifact-grid > article { min-height:300px;border:1px solid #334035;background:#0c100d;box-shadow:0 18px 40px #0006; }
+.morrow-review-browser > header { display:flex;gap:6px;align-items:center;padding:8px;background:#252925; }.morrow-review-browser > header i { width:8px;height:8px;border-radius:50%;background:#5d625d; }.morrow-review-browser > header span { flex:1;margin-left:6px;padding:3px 7px;background:#151815;color:#717971;font-size:9px; }.morrow-review-browser > div { padding:20px; }.morrow-review-browser > div > p { color:#607265;font-size:9px;letter-spacing:.14em; }.morrow-review-browser h3 { color:#d1d7cd;font:22px Georgia,serif; }.morrow-review-browser dl div { display:grid;grid-template-columns:100px 1fr;padding:8px 0;border-top:1px dotted #344037; }.morrow-review-browser dt { color:#667169;font-size:10px; }.morrow-review-browser dd { margin:0;color:#a5aea4; }.morrow-review-browser small { display:block;margin-top:20px;color:#405747; }
+.morrow-review-minecraft header,.morrow-review-dms > header { padding:9px 12px;border-bottom:1px solid var(--mr-line);color:#718176;font-size:10px; }.morrow-review-minecraft pre { margin:22px 14px;color:#839a87;font-size:11px;line-height:1.65;white-space:pre-wrap; }.morrow-review-minecraft blockquote { margin:14px;padding:12px;border-left:2px solid var(--mr-copper);color:#a8aca3;font:italic 14px/1.5 Georgia,serif; }.morrow-review-minecraft cite { display:block;margin-top:6px;color:#6c746e;font-size:10px; }
+.morrow-review-dms > div { position:relative;margin:12px;padding:12px 44px 12px 12px;border:1px solid #28352c;background:#121814; }.morrow-review-dms b { color:#78877c;font-size:9px;text-transform:uppercase; }.morrow-review-dms p { margin:6px 0;color:#aeb6ac;font:13px/1.4 Georgia,serif; }.morrow-review-dms code { position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#bd8056;font-weight:700; }.morrow-review-dms footer { padding:0 12px 12px;color:#646f67;font-size:9px; }
+.morrow-review-voice { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }.morrow-review-voice article { min-height:135px;padding:14px;border:1px solid hsl(calc(140 - var(--stage)*10) 18% 22%);background:hsl(calc(135 - var(--stage)*8) 14% calc(7% + var(--stage)*.35%)); }.morrow-review-voice article > span { float:right;color:#3f4a42;font-size:26px; }.morrow-review-voice b { color:#8c9b90;font-size:10px;letter-spacing:.12em; }.morrow-review-voice p { margin:28px 0 0;color:#c4c9c0;font:15px/1.45 Georgia,serif; }.morrow-review-voice article:last-child { border-color:#202420;background:#080908; }.morrow-review-voice article:last-child p { color:#555d56; }.morrow-review-boundary { margin:16px 0 0;padding:13px;border-left:3px solid #755048;background:#15100f;color:#988983;font-size:11px; }
+.morrow-review-scares { display:grid;grid-template-columns:repeat(2,1fr);gap:10px; }.morrow-review-scares article { display:grid;grid-template-columns:42px 1fr;gap:12px;padding:14px;border:1px solid var(--mr-line);background:#0f1310; }.morrow-review-scares article > span { color:#4c5950;font-size:24px; }.morrow-review-scares p { margin:0;color:#8b624f;font-size:9px;text-transform:uppercase; }.morrow-review-scares h3 { margin:1px 0 7px;color:#d0d4ca;font:20px Georgia,serif; }.morrow-review-scares strong { display:block;color:#929a91;font-size:12px;font-weight:400; }.morrow-review-scares small { display:block;margin-top:10px;padding-top:8px;border-top:1px dotted #303932;color:#687169; }
+.morrow-review-week { margin:0;padding:0;list-style:none;border:1px solid var(--mr-line); }.morrow-review-week li { display:grid;grid-template-columns:160px 1fr 1fr;gap:20px;padding:16px;border-top:1px solid var(--mr-line);background:#101411; }.morrow-review-week li:first-child { border:0; }.morrow-review-week time { color:#b47d56;font-weight:700; }.morrow-review-week b { color:#68766b;font-size:9px;text-transform:uppercase; }.morrow-review-week p { margin:3px 0 0;color:#9ba39a;font-size:12px; }
+.morrow-review-director { overflow:hidden;border:1px solid #3b4840;background:#0d1210;box-shadow:0 24px 65px #0008; }.morrow-review-director > header { display:flex;justify-content:space-between;gap:20px;padding:12px 16px;background:#18201b;border-bottom:1px solid #344139; }.morrow-review-director > header div { display:flex;align-items:center;gap:9px; }.morrow-review-director > header i { width:9px;height:9px;border-radius:50%;background:#6f9c78;box-shadow:0 0 12px #6f9c7888; }.morrow-review-director > header b { color:#b9c4bb;font-size:11px; }.morrow-review-director > header > span { padding:3px 7px;border:1px solid #633d36;color:#b56b5e;font-size:9px; }
+.morrow-review-director > aside { display:flex;gap:22px;padding:9px 16px;border-bottom:1px solid var(--mr-line);color:#718076;font-size:10px; }.morrow-review-director > aside b { color:#a77a5d; }.morrow-review-director > section { display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px; }.morrow-review-director button { min-height:92px;padding:12px;border:1px solid #2f3932;background:#141a16;color:#adb6ad;text-align:left;opacity:1; }.morrow-review-director button b,.morrow-review-director button span { display:block; }.morrow-review-director button b { margin-bottom:8px;color:#9baa9d;font-size:12px; }.morrow-review-director button span { color:#626d65;font-size:9px;line-height:1.5; }.morrow-review-director > footer { display:flex;gap:14px;padding:9px 16px;background:#090c0a;border-top:1px solid var(--mr-line);color:#58645b;font-size:9px; }.morrow-review-director > footer code { color:#8b987f; }
+.morrow-review-links { display:grid;grid-template-columns:1fr 1fr;gap:40px; }.morrow-review-links h2 { color:#d5d9d0;font:30px Georgia,serif; }.morrow-review-links p { color:#7e877f; }.morrow-review-links nav { display:grid;grid-template-columns:1fr 1fr;gap:8px;align-content:start; }.morrow-review-links a { padding:11px;border:1px solid var(--mr-line);background:#101411;color:#9aa59b;text-decoration:none; }.morrow-review-links a:hover { border-color:#546457;color:#e1e4dc; }
+.morrow-review-footer { display:flex;justify-content:space-between;gap:20px;max-width:1184px;margin:auto;padding:28px;color:#566159;font-size:10px; }.morrow-review-footer b { color:#8b6654; }
+@media (max-width:900px) {
+  .morrow-review-hero { grid-template-columns:65px 1fr; }.morrow-review-hero aside { grid-column:1/-1; }
+  .morrow-review-stats { grid-template-columns:repeat(3,1fr); }.morrow-review-stats div:nth-child(4) { border-left:0;border-top:1px solid var(--mr-line); }
+  .morrow-review-surfaces { grid-template-columns:1fr 1fr; }.morrow-review-artifact-grid { grid-template-columns:1fr; }
+  .morrow-review-voice { grid-template-columns:1fr 1fr; }.morrow-review-director > section { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:650px) {
+  .morrow-review-hero { grid-template-columns:1fr;padding:50px 18px 30px; }.morrow-review-signal { display:none; }
+  .morrow-review-section { padding:50px 18px; }.morrow-review-heading,.morrow-review-north,.morrow-review-links { grid-template-columns:1fr; }
+  .morrow-review-heading .morrow-review-label { grid-row:auto; }.morrow-review-heading h2 { font-size:28px; }
+  .morrow-review-stats { grid-template-columns:1fr 1fr; }.morrow-review-stats div { border-top:1px solid var(--mr-line); }.morrow-review-stats div:nth-child(odd) { border-left:0; }
+  .morrow-review-acts article { grid-template-columns:40px 1fr; }.morrow-review-acts footer { grid-column:2; }
+  .morrow-review-gates { columns:1; }.morrow-review-discoveries ol { grid-template-columns:1fr; }
+  .morrow-review-surfaces,.morrow-review-voice,.morrow-review-scares { grid-template-columns:1fr; }
+  .morrow-review-week li { grid-template-columns:1fr;gap:8px; }.morrow-review-director > aside { flex-wrap:wrap; }
+  .morrow-review-director > section,.morrow-review-links nav { grid-template-columns:1fr; }
+  .morrow-review-footer { display:grid;padding:22px 18px; }
+}
+
+/* Final creative pass: mystery rhythm, recurring residue, and anti-puzzle-room guardrails. */
+.morrow-review-act-depth { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:13px 0 0; }
+.morrow-review-act-depth div { padding:8px;border:1px solid #263028;background:#0b0f0c; }
+.morrow-review-act-depth dt { color:#6f7d72;font-size:8px;letter-spacing:.1em;text-transform:uppercase; }
+.morrow-review-act-depth dd { margin:3px 0 0;color:#8c958c;font:11px/1.45 Georgia,serif; }
+.morrow-review-mystery-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+.morrow-review-mystery-grid article { position:relative;min-height:190px;padding:18px;border:1px solid var(--mr-line);background:linear-gradient(150deg,#121713,#0b0f0c);overflow:hidden; }
+.morrow-review-mystery-grid article > span { position:absolute;right:11px;top:3px;color:#253128;font:700 46px Arial,sans-serif; }
+.morrow-review-mystery-grid h3 { position:relative;margin:40px 0 8px;color:#d5d9d0;font:21px/1.18 Georgia,serif; }
+.morrow-review-mystery-grid p { position:relative;margin:0;color:#818b82;font-size:11px; }
+.morrow-review-motifs { display:grid;grid-template-columns:.8fr 1.2fr;gap:24px;margin-top:18px;padding:20px;border:1px solid #3b463d;background:#0d120f; }
+.morrow-review-motifs h3 { margin:0;color:#cdd2c8;font:24px/1.25 Georgia,serif; }
+.morrow-review-motifs ol { display:grid;gap:1px;margin:0;padding:0;background:var(--mr-line);list-style:none; }
+.morrow-review-motifs li { display:grid;grid-template-columns:145px 1fr;gap:12px;padding:9px 11px;background:#111612; }
+.morrow-review-motifs code { color:#b47d56; }.morrow-review-motifs span { color:#879087;font-size:11px; }
+.morrow-review-firewall { margin-top:18px;padding:20px;border:1px solid #58382f;border-left:4px solid var(--mr-warn);background:#140f0d; }
+.morrow-review-firewall ul { display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin:0;padding-left:18px;color:#9d928c;font:13px/1.55 Georgia,serif; }
+.morrow-review-firewall li::marker { color:#a66353; }
+.morrow-review-gates .morrow-review-gate-feel { margin-top:11px;padding:9px;border-left:2px solid #42604e;background:#0a0e0b;color:#829087; }
+@media (max-width:900px) { .morrow-review-mystery-grid { grid-template-columns:1fr 1fr; }.morrow-review-motifs { grid-template-columns:1fr; } }
+@media (max-width:650px) {
+  .morrow-review-act-depth,.morrow-review-mystery-grid,.morrow-review-firewall ul { grid-template-columns:1fr; }
+  .morrow-review-motifs li { grid-template-columns:1fr;gap:2px; }
+}
+
+/* Investigative depth: cross-format case threads and handmade evidence. */
+.morrow-review-investigations { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.morrow-review-investigations > article { display:flex;flex-direction:column;min-height:380px;border:1px solid #334039;background:#0e1310; }
+.morrow-review-investigations header { padding:18px;border-bottom:1px solid var(--mr-line);background:linear-gradient(120deg,#172019,#101511); }
+.morrow-review-investigations header span { color:#6f8877;font-size:9px;letter-spacing:.12em; }
+.morrow-review-investigations h3 { margin:8px 0 0;color:#dde0d7;font:25px/1.2 Georgia,serif; }
+.morrow-review-investigations dl { margin:0;padding:5px 18px; }
+.morrow-review-investigations dl div { display:grid;grid-template-columns:125px 1fr;gap:12px;padding:11px 0;border-bottom:1px dotted #303a33; }
+.morrow-review-investigations dt { color:#a87555;font-size:9px;text-transform:uppercase; }
+.morrow-review-investigations dd { margin:0;color:#8e978e;font-size:11px;line-height:1.55; }
+.morrow-review-investigations footer { margin-top:auto;padding:14px 18px;border-top:1px solid #3c473f;background:#0a0e0b; }
+.morrow-review-investigations footer b { color:#6f7e72;font-size:8px;text-transform:uppercase; }.morrow-review-investigations footer p { margin:4px 0 0;color:#bec4ba;font:13px/1.5 Georgia,serif; }
+.morrow-review-subheading { display:grid;grid-template-columns:180px minmax(0,1fr);gap:8px 28px;margin:64px 0 24px; }
+.morrow-review-subheading .morrow-review-label { grid-row:1/3; }.morrow-review-subheading h2 { margin:0;color:#d9ddd4;font:30px/1.2 Georgia,serif; }.morrow-review-subheading > p:last-child { margin:0;color:#7e887f;font-size:12px; }
+.morrow-review-web-layers { display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--mr-line);border:1px solid var(--mr-line); }
+.morrow-review-web-layers article { min-height:185px;padding:15px;background:#101511; }
+.morrow-review-web-layers article > span { color:#405047;font:700 25px Arial,sans-serif; }.morrow-review-web-layers h3 { margin:24px 0 7px;color:#ccd1c7;font:18px/1.2 Georgia,serif; }.morrow-review-web-layers p { margin:0;color:#7d887f;font-size:10px; }
+.morrow-review-media-slate { display:grid;grid-template-columns:repeat(3,1fr);gap:10px; }
+.morrow-review-media-slate article { min-height:250px;padding:15px;border:1px solid var(--mr-line);background:linear-gradient(145deg,#111612,#0b0e0c); }
+.morrow-review-media-slate header { display:flex;justify-content:space-between;align-items:center; }.morrow-review-media-slate header span { color:#405047;font:700 26px Arial,sans-serif; }.morrow-review-media-slate header code { color:#b07854;font-size:9px;text-transform:uppercase; }
+.morrow-review-media-slate h3 { margin:32px 0 8px;color:#d4d8ce;font:21px/1.2 Georgia,serif; }.morrow-review-media-slate p { color:#879087;font-size:11px; }.morrow-review-media-slate small { display:block;margin-top:16px;padding-top:10px;border-top:1px dotted #354039;color:#68766b;font-size:9px; }
+.morrow-review-format-atlas { margin-top:20px;border:1px solid #435047;background:#0c100d; }.morrow-review-format-atlas summary { display:flex;justify-content:space-between;gap:20px;padding:14px;cursor:pointer;color:#b9c1b7; }.morrow-review-format-atlas summary span { color:#6e7b70;font-size:10px; }
+.morrow-review-format-atlas ul { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:0;padding:1px;background:var(--mr-line);list-style:none; }.morrow-review-format-atlas li { display:grid;gap:3px;padding:10px;background:#101511; }.morrow-review-format-atlas b { color:#9ea99f;font-size:10px;text-transform:uppercase; }.morrow-review-format-atlas li span { color:#6f7a71;font-size:9px; }
+@media (max-width:900px) { .morrow-review-web-layers { grid-template-columns:1fr 1fr; }.morrow-review-media-slate { grid-template-columns:1fr 1fr; } }
+@media (max-width:650px) {
+  .morrow-review-investigations,.morrow-review-subheading,.morrow-review-web-layers,.morrow-review-media-slate,.morrow-review-format-atlas ul { grid-template-columns:1fr; }
+  .morrow-review-subheading .morrow-review-label { grid-row:auto; }.morrow-review-investigations dl div { grid-template-columns:1fr;gap:3px; }
+}

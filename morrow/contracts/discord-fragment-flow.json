@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0-local-contract",
+  "release_id": "morrow.local.full-spine.v1",
+  "gate": "G10",
+  "event_key": "morrow.gate.g10_separate_instructions",
+  "production_delivery_enabled": false,
+  "private_prose_required": false,
+  "flow": {
+    "expected_participants_min": 1,
+    "expected_participants_max": 6,
+    "fragment_expiry_seconds": 1800,
+    "reissue_same_identity_only": true,
+    "group_submission_shape": "ordered safe codes only",
+    "ordering_rule": "sort by visible code letter, then number",
+    "success_code_example": "A7-B4"
+  },
+  "fragments": [
+    {"id":"g10.p01","audience":"linked-player-1","state":"manipulative","line":"They opened the storehouse before you arrived.","safe_code":"B4","references_only_arg_actions":true},
+    {"id":"g10.p02","audience":"linked-player-2","state":"manipulative","line":"You were the only one who waited. Keep it that way.","safe_code":"A7","references_only_arg_actions":true}
+  ],
+  "safety": {
+    "mentions_real_world_location": false,
+    "mentions_cameras_or_microphones": false,
+    "mentions_unrelated_accounts": false,
+    "requires_administrator_permission": false,
+    "sends_after_shutdown": false
+  }
+}

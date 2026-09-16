@@ -1,19 +1,20 @@
 # Researched Capability Matrix
 
 Research checked 2026-08-30 against the current Paper, Discord, Supabase, and Next.js documentation.
+Creative application updated 2026-09-14 for the traditional layered ARG.
 
 ## Supported and selected
 
 | Experience | Implementation | Decision |
 | --- | --- | --- |
-| Morrow conversations in Minecraft | Paper Dialog API: notice, confirmation, multiple action, text, boolean, option, item, and range inputs | Use for authored choices and short concrete inputs |
-| Morrow's physical body | Block/item/text display entities plus an interaction entity and resource-pack model | Use; stable, visually controllable, no fake-player dependency |
-| Smooth body/echo motion | Display transformation and teleport interpolation | Use for bounded authored motion and replay clips |
-| Per-player apparitions | `setVisibleByDefault(false)` plus `showEntity`/`hideEntity` | Use for non-critical personal echoes |
-| Different versions of one room | Separate physical clone rooms and controlled teleports | Use for authoritative split-backup scenes |
-| Player movement echo | Record bounded location/look/action samples locally, compress, replay through display model | Use with hard duration/entity/sample limits |
-| Persistent clue identity | Paper Persistent Data Container on items, entities, chunks, and tile states | Use; never encode authority only in lore text |
-| Required custom audio/models | Required server resource pack with UUID and SHA-1 | Use with visual/text accessibility mirrors |
+| Rare Morrow prompts in Minecraft | Paper Dialog API: notice, confirmation, multiple action, and short text inputs | Use sparingly for authored operational prompts; Morrow is not a dialogue-driven puzzle host |
+| Distant horror entity | Block/item/text display entities plus an interaction entity or marker | Use as a bounded apparition with allowlisted anchors, lifetime, cleanup, and vanilla-readable fallback |
+| Smooth apparition/echo motion | Display transformation and teleport interpolation | Use for brief authored scares and consented current-behavior callbacks |
+| Per-player apparitions | `setVisibleByDefault(false)` plus `showEntity`/`hideEntity` | Use for non-critical atmosphere; required clues remain shared and authoritative |
+| Haunted-server variation | Allowlisted signs, books, containers, lights, doors, and entities with rollback state | Use inside one coherent Mossfield world; do not build repeated clone-room puzzles |
+| Player movement echo | Record bounded location/look/action samples locally, compress, replay through display model | Use only after an explicit authored cue and with hard duration/entity/sample limits |
+| Persistent clue identity | Paper Persistent Data Container on items, entities, chunks, and tile states | Use for books, maps, named items, containers, command fragments, and recovery state |
+| Custom audio/models | Optional server resource pack with UUID and SHA-1 | Enhance horror only; every required clue and interaction works in vanilla with text/visual equivalents |
 | Website-to-game consequences | Append-only event ingest plus idempotent projection outbox | Use; no direct world mutation from a web request |
 | Live Copperline updates | Supabase private Realtime Broadcast or bounded polling | Use Broadcast for presence/UI hints; database remains authority |
 | Discord inputs | Slash commands, buttons, select menus, and modals | Use for private receipts and deliberate actions |
@@ -27,8 +28,8 @@ Research checked 2026-08-30 against the current Paper, Discord, Supabase, and Ne
 | Logged-out player continuation | A visibly reconstructed display-model echo may follow an authored or recorded route; it cannot act as a real authenticated player |
 | Morrow head tracking | Rotate the display-model head toward the active speaker; do not force player camera movement except in a clearly authored scene |
 | Client-specific evidence | Safe for atmosphere and optional personal clues; mandatory physical proof must exist in a shared or cloned authoritative room |
-| Dynamic dialogue | Select from authored lines using state and player receipts; an optional language model may paraphrase only non-canonical chatter behind a strict schema and fallback |
-| World rollback | Swap pre-authored bounded regions in a rehearsed order; never attempt a live arbitrary whole-world rollback |
+| Dynamic dialogue | Select from authored lines using state and player receipts; no model may author Morrow lines, progression, threats, or surveillance implications |
+| World rollback | Restore only allowlisted props, scare state, and finale checkpoints; never attempt a live arbitrary whole-world rollback |
 | Website-generated player diagrams | Render compact route/block-layout data supplied by the plugin; never claim access to client screenshots |
 | Player-specific sound | Resource-pack sound events may be sent to selected players; required content also needs subtitle/text/visual form |
 

@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0-morrow-media-manifest",
+  "release_id": "morrow.local.full-spine.v1",
+  "status": "template_not_release_ready",
+  "assets": [
+    {
+      "key": "morrow.g01.retired_hosting_brochure",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g02.forum_avatar_contact_sheet",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g03.theo_account_voicemail",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "release_ready": false
+    }
+  ],
+  "copy_this_shape_for_remaining_assets": [
+    "morrow.g06.rookery_notebook",
+    "morrow.g07.june_lighthouse_photo",
+    "morrow.g08.frame_thirty_seven",
+    "morrow.g09.current_session_contamination",
+    "morrow.g09.patchcord_cassette_dub",
+    "morrow.g11.incident_raw_export",
+    "morrow.g12.iona_reversed_memo",
+    "morrow.g12.spectrogram_command",
+    "morrow.g15.shutdown_record"
+  ]
+}

@@ -2,6 +2,18 @@
 
 Next.js 16 public ARG surface plus authenticated V5 director console.
 
+## Morrow redesign review
+
+`/review/morrow` is a static, spoiler-full review dossier for the 2026-09-14 traditional ARG
+redesign. It presents the five-act/seven-day flow, 15 gates, 24 discoveries, representative
+Copperline/Minecraft/media/Discord artifacts, Morrow voice escalation, scare score, and disabled
+director-dashboard controls.
+
+The route is `noindex`, imports only checked-in fixtures, and performs no authentication, database,
+Discord, Minecraft, or production mutation. Start the local server with `npm.cmd run dev`, then open
+`http://localhost:3000/review/morrow`. The written companion is
+`../morrow/review/REVIEW-PACKET.md`.
+
 ## Public routes
 
 - `/support/cases/mossfield-recovery` is the release-bound Morrow reboot support case. It reads only

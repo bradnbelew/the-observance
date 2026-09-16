@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0-local-contract",
+  "release_id": "morrow.local.full-spine.v1",
+  "production_mutations_allowed": false,
+  "world_role": "one coherent haunted recovered survival server, not puzzle rooms",
+  "locations": [
+    {"id":"spawn_panel","label":"Public spawn and panel kiosk","coordinate":[0,72,0],"gates":["G04"],"required_objects":["mossfield_motd","case_fingerprint_sign","weathered_rules_sign","old_road_map"],"allowed_mutations":["motd_status_line"],"restart_restore":"read static spawn state and last committed G04 receipt"},
+    {"id":"cairn_storehouse","label":"cairn's storehouse","coordinate":[146,68,-91],"gates":["G05","G13"],"required_objects":["cairn_tool_set","four_ordered_chests","uneven_label_set","lectern_index","private_barrel_detail"],"allowed_mutations":["chest_correction","continued_session_figure"],"restart_restore":"restore required items before scare replay"},
+    {"id":"rookery_cache","label":"Rookery maintenance cache","coordinate":[-212,43,167],"gates":["G06"],"required_objects":["resident_book_set","coordinate_convention_sign","buried_barrel","command_fragment_alpha"],"allowed_mutations":["first_sign_change"],"restart_restore":"books and barrel are authoritative and never consumed"},
+    {"id":"june_overlook","label":"June's lighthouse overlook","coordinate":[418,86,311],"gates":["G07"],"required_objects":["locator_map","photo_marker","guest_book","false_recovered_tower"],"allowed_mutations":["horizon_figure"],"restart_restore":"landmark remains visible with photo marker intact"},
+    {"id":"patchcord_relay","label":"patchcord relay hut","coordinate":[-75,70,356],"gates":["G08","G09"],"required_objects":["lever_wall","frame_37_pulse","jukebox","recording_ledger_terminal"],"allowed_mutations":["door_left_open","playback_desync"],"restart_restore":"lever pulse resets without changing evidence"},
+    {"id":"maintenance_annex","label":"Copperline maintenance annex","coordinate":[-330,35,-244],"gates":["G11","G12"],"required_objects":["uptime_clocks","incident_signs","memo_index","carrier_player"],"allowed_mutations":["rewritten_dates","maintenance_dark"],"restart_restore":"raw uptime clock remains immutable"},
+    {"id":"manual_stop","label":"Manual stop route","coordinate":[0,21,-420],"gates":["G14","G15"],"required_objects":["fragment_slots","hash_display","three_physical_breakers","safe_checkpoint","shutdown_lever"],"allowed_mutations":["last_defense","false_disconnect","copied_route"],"restart_restore":"armed checkpoint is restored before any hostile effect"}
+  ],
+  "global_rules": {
+    "required_objects_have_text_equivalent": true,
+    "wrong_input_consumes_items": false,
+    "scare_can_destroy_required_evidence": false,
+    "players_require_operator_permissions": false,
+    "supported_player_count": "1-6",
+    "production_enabled": false
+  }
+}

@@ -1,141 +1,138 @@
 # Database Architecture
 
-The database stores cross-surface facts and receipts. It does not replace the Minecraft world's
-physical authority.
+The database stores cross-surface facts, delivery state, and operator receipts. It does not replace
+Minecraft's physical authority, infer that a puzzle was solved, or decide what Morrow says.
+
+## Creative-pivot boundary
+
+The existing 2026-08-30 schema and migration were built for the superseded M01–M12 capability model.
+They remain historical rehearsal evidence and must not be promoted to production for the G01–G15
+campaign. A new additive proposal and isolated validation are required after implementation design.
 
 ## Schemas
 
 - `morrow_private`: canonical tables and privileged functions; not exposed through the Data API.
-- `public`: deliberately exposed security-invoker views and narrowly scoped RPCs only.
-- `storage`: first-party media objects governed by bucket policies.
+- `public`: deliberately exposed security-invoker views and narrowly scoped owner RPCs.
+- `storage`: first-party found-media objects governed by bucket and campaign policy.
 
-Do not create or modify objects in the Supabase-managed `realtime` schema. Current Supabase blocks
-those changes. Private Broadcast authorization is implemented with allowed RLS policies and documented
-helpers.
+Do not create or modify objects in Supabase-managed schemas except through supported product
+configuration. Private Broadcast notifications are hints to refetch; Postgres remains authoritative.
 
 ## Core tables
 
 ### `campaigns`
 
-One row per real or rehearsal campaign: release, environment, current act, status, revision, and clean
-reset identity.
+One row per production or rehearsal campaign: release, environment, status, highest gate, Morrow state,
+revision, terminal shutdown time, and clean reset identity.
 
 ### `player_identities`
 
 Links a campaign participant to Minecraft UUID and optional Discord/Supabase identities. Public pages
-never expose raw platform IDs. Linking uses one-time hashed proofs generated in Minecraft.
+never expose raw platform IDs. Linking uses one-time hashed proofs generated inside the campaign.
 
-### `relationship_state`
+### `gate_definitions` / `gate_receipts`
 
-One group-scoped Morrow state: `helpful`, `curious`, `intimate`, `possessive`, `afraid`, or
-`negotiated`, plus revision. The state changes only after required authored events exist.
+Definitions mirror G01–G15, including owner surface, prerequisites, evidence predicate, failure/reset
+behavior, and accessibility equivalent. A receipt records the concrete validated input, evidence IDs,
+source event, scope, and immutable result. Only the owning surface can originate a gate receipt.
 
-### `capability_grants`
+### `discovery_definitions` / `discovery_receipts`
 
-Tracks `static_restore`, `entity_replay`, `live_capture`, `account_continuity`, and
-`cold_storage_access`, and `branch_governance`. Each grant records the event and player decision that
-authorized it.
+Definitions mirror D01–D24 and mark required versus optional lore. Receipts record which campaign scope
+unlocked an authored discovery. They never store a player's freeform theory as progression authority.
+
+### `morrow_state`
+
+One group-scoped projection using:
+
+`support_software -> observant -> personal -> defensive -> manipulative -> emotional -> desperate -> hostile -> silent`
+
+The state changes only from the transition events named in `relationship-states.json`. `silent` is
+terminal.
 
 ### `events`
 
-Immutable cross-surface ledger: event key, source, actor, release, campaign, idempotency key, payload,
-payload hash, and occurrence time.
+Immutable cross-surface ledger: event key, source, actor, release, campaign, scope, idempotency key,
+payload, payload hash, and occurrence time.
 
 ### `event_projections`
 
-Outbox rows keyed by event and surface. Contains status, attempts, lease owner/expiry, next retry,
-applied release, and last error.
+Outbox rows keyed by event and destination surface. Each row stores status, attempts, lease owner and
+expiry, next retry, applied release, and bounded error detail.
 
-### `discord_contradiction_flows` / `discord_contradiction_sessions` / `discord_contradiction_votes`
+### `authored_messages` / `message_deliveries`
 
-Private, service-role-only state for the Act 2 contradiction. The flow binds campaign, release,
-Gateway guild/channel/thread scope, prerequisite event, and one-to-six expected linked participants.
-Per-player sessions store an evidence-variant identifier and only a SHA-256 nonce digest; private
-evidence copy never enters the event ledger. Votes are unique per linked player. Advisory and row locks
-make duplicate interaction delivery and concurrent workers converge on one payload-free group receipt.
-Expired leases and sessions have authored recovery paths; an altered idempotency collision halts the
-flow for operator inspection.
+Allowlisted Copperline, Minecraft, and Discord lines with valid Morrow states, audience rules,
+prerequisites, expiry, and accessibility copy. Deliveries bind the exact authored message to a linked
+campaign identity. No generative output may create a consequential message.
 
-### `evidence_definitions` / `evidence_receipts`
+### `discord_fragment_flows` / `discord_fragment_sessions`
 
-Definitions describe custody, modality, prerequisites, accessibility alternative, and narrative claim.
-Receipts record what a player/group actually recovered or authenticated.
+Service-only G10 state. A flow binds campaign, release, guild/channel scope, prerequisite, expected
+linked participants, and ordering rule. Sessions store only authored fragment ID, expiring nonce digest,
+delivery state, and safe short-code response. Group events contain no private prose.
 
-### `dialogue_prompts` / `dialogue_responses`
+### `clue_objects`
 
-Authored Morrow questions and concrete selected responses. Later callbacks point to the original
-response receipt so Morrow cannot silently rewrite what a player said.
+Definitions for allowlisted signs, books, containers, renamed items, maps, media, and Copperline pages.
+Each entry includes location or route, expected hash/state, whether it is required, permitted mutations,
+and deterministic restore state.
 
-### `restoration_proposals`
+### `scare_definitions` / `scare_runs`
 
-Bounded world-region proposals: claimed source version, block-manifest hash, confidence, provenance
-class, and accepted/rejected/preserved status.
-
-### `witness_anchors`
-
-Hash and metadata for player-created bounded arrangements. Raw block details remain local until an
-authored proof requires publishing them.
-
-### `replay_clips`
-
-Metadata only: owner, consent scope, duration, sample count, local file hash, derivative clip, and
-expiry. High-frequency coordinates are not streamed to Supabase.
+Named authored scares with valid state range, world allowlist, intensity profile, reduced mode, maximum
+lifetime, cleanup policy, and cooldown. Runs record trigger source, operator if any, before/after state,
+entities or props owned, and cleanup receipt.
 
 ### `media_assets` / `media_deliveries`
 
-First-party asset hashes, accessible alternatives, release binding, delivery prerequisites, and
-receipts.
+First-party asset hashes, metadata, accessible alternatives, release binding, gate prerequisites, and
+delivery receipts. Design-only catalog entries cannot be delivered until exact content hashes exist.
 
 ### `director_actions`
 
-Append-only operator actions with reason, before/after revision, and recovery receipt.
+Append-only show-control and recovery actions: authenticated operator, role, release, campaign, scope,
+command type, allowlisted target, reason, idempotency key, before/after revision, result, and recovery
+receipt. Finale arm and start are distinct actions with short expiry and rollback binding.
+
+### `shutdown_receipts`
+
+The terminal G15 record: armed command hash, prerequisite event set, Minecraft local-journal head,
+player-safe checkpoint status, Copperline confirmation, stop result, and surface acknowledgements.
+After commitment, the database rejects new Morrow-authored actions and messages.
 
 ## Security rules
 
-- Enable RLS on every exposed table/view path and revoke default grants before adding narrow grants.
+- Enable RLS on every exposed table/view path and revoke default grants before narrow grants.
 - Use `security_invoker = true` for exposed Postgres 15+ views.
-- Never authorize with user-editable metadata; platform roles live in app metadata or private tables.
-- Never expose `service_role`/secret keys to Minecraft clients, Discord users, or browser bundles.
-- The Data API ingest RPC is a narrow `public` SECURITY INVOKER function with a fixed `search_path`.
-  It has EXECUTE revoked from PUBLIC/anon/authenticated and is callable only with the server-side
-  service role; canonical tables remain in `morrow_private`.
-- UPDATE policies include both `USING` and `WITH CHECK`; identity ownership is always explicit.
-- Public Copperline projections are spoiler-filtered and reveal only unlocked material.
-- Discord contradiction RPCs are service-role-only, validate linked Discord/Minecraft ownership plus
-  exact campaign/release/scope/purpose/nonce/prerequisite bindings, and reveal private evidence only in
-  the Gateway interaction response addressed to that player.
-- Every mutation is rate-limited and produces an immutable receipt.
+- Never authorize with user-editable metadata.
+- Never expose service-role or director credentials to Minecraft clients, Discord users, or bundles.
+- Service-only RPCs use a fixed `search_path`, explicit grants, payload limits, and exact scope checks.
+- UPDATE policies include both `USING` and `WITH CHECK`; identity ownership is explicit.
+- Public Copperline projections reveal only unlocked, spoiler-safe authored material.
+- Discord RPCs validate linked identity, campaign, release, scope, purpose, nonce, expiry, and
+  prerequisite.
+- Director RPCs accept enums and allowlisted IDs, never arbitrary SQL, commands, paths, or message text.
+- Morrow personalization stores only campaign actions and authored fictional records.
+- Every mutation is rate-limited, idempotent, and receipt-producing.
 
-## Realtime choice
+## Realtime
 
-Use private Broadcast for quick Copperline/Discord refreshes. Postgres remains the source of truth and
-clients must refetch a projection after a notification. This avoids treating ephemeral messages as
-durable state and follows Supabase's current recommendation to prefer Broadcast over Postgres Changes
-for scalable/security-sensitive subscriptions.
+Use private Broadcast for fast Copperline, Discord, and director refreshes. Clients refetch a scoped
+projection after notification. No gate, scare, shutdown, or silence state depends on ephemeral delivery.
 
 ## Migration workflow
 
-Supabase CLI 2.116.0 generated
-`supabase/migrations/20260830200157_morrow_reboot_foundation.sql` after the proposal passed on the
-isolated `observance-validation-20260727` project. The retained receipt is
-`morrow/rehearsal/database/2026-08-30-isolated-supabase.json`; the project was paused afterward.
-The isolated run covered RLS, role grants, ownership, exact payloads, tokens, duplicate/collision,
-concurrent duplicate, payload limits, projection creation, rollback, and both advisor classes. The
-advisor's one Morrow warning is accepted and documented: the authenticated Copperline mutation is an
-intentional SECURITY DEFINER RLS bridge with independent `auth.uid()` and authored-input checks.
-The service-only Copperline projector was also live-rehearsed with nine ordered events and two linked
-players. It rejects wrong/stale workers and incomplete case envelopes, reclaims expired leases,
-schedules bounded retries, derives spoiler-filtered progress only from applied-or-current events, and
-never copies raw event payloads into the public projection. The primary transport is now a private
-database runner invoked every ten seconds by Supabase Cron; it needs no HTTP service-role secret and
-records payload-free run receipts plus health. Schema application does not enable the job. Activation
-requires an exact release acknowledgement through the database-owner-only configuration function.
-The checked-in JavaScript worker remains a fail-closed operator fallback.
+Before any new production schema:
 
-Before production:
+1. Design an additive G01–G15 migration; do not repurpose historical event meanings.
+2. Generate it through the pinned Supabase CLI and bind proposal, migration, and catalog hashes.
+3. Apply it to a fresh isolated validation project.
+4. Test owner-only reads, role grants, payload bounds, RLS, retries, concurrency, collisions, rollback,
+   director allowlists, G15 terminal rejection, and advisor results.
+5. Rehearse the full projector and linked-player Discord fragment flow.
+6. Take and verify a fresh production backup.
+7. Request explicit production authorization for the exact migration and release.
 
-1. Recheck the installed CLI and the retained migration/proposal body binding.
-2. Take and verify a fresh production backup.
-3. Apply the numbered migration once through the approved production workflow.
-4. Rerun positive, negative, rollback, RLS, idempotency, concurrency, and advisor checks.
-5. Read back the deployed objects and retain migration, backup, and rollback receipts.
+Schema application alone cannot activate workers, director controls, or production. Every activation
+has a separate fail-closed release acknowledgement.

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0-local-contract",
+  "release_id": "morrow.local.full-spine.v1",
+  "controls_enabled": false,
+  "production_mutations_allowed": false,
+  "required_receipt_fields": ["release_id", "campaign_id", "scope", "operator_id", "reason", "idempotency_key", "before_revision", "after_revision"],
+  "commands": [
+    {"type":"trigger_scare","target_allowlist":"dread_score.id","requires_state_predicate":true,"requires_max_lifetime":true},
+    {"type":"unlock_page","target_allowlist":"copperline_routes.routes","requires_state_predicate":true,"requires_payload_hash":true},
+    {"type":"send_authored_line","target_allowlist":"authored_messages.id","arbitrary_message_allowed":false},
+    {"type":"send_authored_dm","target_allowlist":"discord_fragment_flow.fragments.id","arbitrary_message_allowed":false},
+    {"type":"spawn_entity","target_allowlist":"clue_objects.locations.allowed_mutations","requires_cleanup_receipt":true},
+    {"type":"despawn_entity","target_allowlist":"owned_entity_id","requires_cleanup_receipt":true},
+    {"type":"alter_allowlisted_prop","target_allowlist":"clue_objects.locations.required_objects","requires_restore_snapshot":true},
+    {"type":"verify_gate","target_allowlist":"G01-G15","requires_machine_predicate":true},
+    {"type":"issue_hint","target_allowlist":"tiered_hint.id","must_reference_discovered_evidence":true},
+    {"type":"recover_state","target_allowlist":"safe_checkpoint_or_projection","cannot_rewrite_ledger":true},
+    {"type":"arm_finale","target_allowlist":"G14","requires_two_step_confirmation":true},
+    {"type":"start_finale","target_allowlist":"G15","requires_armed_checkpoint":true}
+  ],
+  "forbidden": ["arbitrary_sql", "arbitrary_command", "invent_dialogue", "fabricate_player_action", "enable_production", "edit_non_allowlisted_block", "send_morrow_after_shutdown"]
+}
