@@ -26,15 +26,23 @@ def main() -> int:
         media_catalog = load_json(MORROW / "contracts" / "media-catalog.json")
         media_template = load_json(MORROW / "media" / "media-manifest.template.json")
         smoke = load_json(MORROW / "rehearsal" / "website-smoke" / "latest.json")
+        production_smoke = load_json(MORROW / "rehearsal" / "website-smoke" / "production-main-b76f6ba.json")
 
         require(readiness["status"] == "not_production_ready", "readiness status must remain explicit")
         require(readiness["production_enabled"] is False, "production must not be enabled here")
         require(readiness["first_playable_review_ready"] is True, "first playable review flag drifted")
-        require(len(readiness["hard_blockers"]) >= 6, "hard blocker matrix is incomplete")
+        require(len(readiness["hard_blockers"]) >= 5, "hard blocker matrix is incomplete")
+        require(readiness["deployed_review_target"]["state"] == "READY", "production review target is not ready")
+        require(readiness["deployed_review_target"]["runtime_error_scan"] == "clean", "runtime error scan is not clean")
+        require(
+            readiness["deployed_review_target"]["smoke_receipt"] == "morrow/rehearsal/website-smoke/production-main-b76f6ba.json",
+            "production smoke receipt pointer drifted",
+        )
+        green_lane_ids = {lane["id"] for lane in readiness.get("green_lanes", [])}
+        require("website-production-review" in green_lane_ids, "website green lane receipt missing")
 
         blocker_ids = {blocker["id"] for blocker in readiness["hard_blockers"]}
         for required in (
-            "website-preview-build",
             "media-final-assets",
             "minecraft-runtime",
             "discord-g10",
@@ -67,17 +75,38 @@ def main() -> int:
             require(render_check["next_error_overlay"] is False, f"browser render smoke found Next overlay for {required_path}")
             require(render_check["console_error_count"] == 0, f"browser render smoke found console errors for {required_path}")
 
+        require(production_smoke["deployment"]["target"] == "production", "production smoke target drifted")
+        require(production_smoke["deployment"]["state"] == "READY", "production smoke deployment not ready")
+        require(production_smoke["deployment"]["branch"] == "main", "production smoke branch is not main")
+        require(production_smoke["deployment"]["domain"] == "https://copperlinehosting.com", "production domain drifted")
+        require(production_smoke["build"]["remote_build_completed"] is True, "remote build evidence missing")
+        require(production_smoke["build"]["remote_deploy_completed"] is True, "remote deploy evidence missing")
+        require(production_smoke["production_mutations_allowed"] is False, "production smoke cannot allow mutation")
+        require(production_smoke["runtime_error_scan"]["result"] == "clean", "runtime error scan is not clean")
+        production_paths = {route["path"]: route for route in production_smoke["routes"]}
+        for required_path in ("/game-servers.php", "/api/rehearsal/morrow/full", "/recovery/mossfield/console"):
+            route = production_paths.get(required_path)
+            require(route is not None, f"production smoke missing {required_path}")
+            require(route["status"] == 200, f"production smoke non-200 for {required_path}")
+            require(route["required_markers"], f"production smoke lacks markers for {required_path}")
+
         catalog_keys = {asset["key"] for asset in media_catalog["assets"]}
-        template_keys = {asset["key"] for asset in media_template["assets"]} | set(media_template["copy_this_shape_for_remaining_assets"])
+        require(media_template["schema_version"] == "1.1.0-morrow-media-intake-manifest", "media intake manifest schema drifted")
+        require(media_template["root_policy"]["release_ready_requires_all_hashes"] is True, "media hash gate weakened")
+        require(media_template["root_policy"]["release_ready_requires_accessibility_equivalent"] is True, "media accessibility gate weakened")
+        require(media_template["root_policy"]["release_ready_requires_safety_review"] is True, "media safety gate weakened")
+        template_keys = {asset["key"] for asset in media_template["assets"]}
         require(catalog_keys == template_keys, "media template does not cover catalog keys")
+        require(len(template_keys) == 12, "media template must cover all 12 required assets")
         require(all(asset["release_ready"] is False for asset in media_template["assets"]), "template assets must not be release-ready")
+        require(all(asset["source_sha256"] == "" and asset["delivery_sha256"] == "" for asset in media_template["assets"]), "template hashes must remain blank until real files exist")
         require((MORROW / "rehearsal" / "FIRST-PLAYABLE-RUNBOOK.md").exists(), "missing first playable runbook")
         require((MORROW / "rehearsal" / "PRODUCTION-READINESS-MATRIX.md").exists(), "missing readiness matrix")
     except Exception as failure:
         print(f"MORROW PRODUCTION READINESS CHECK: FAIL: {failure}", file=sys.stderr)
         return 1
 
-    print("MORROW PRODUCTION READINESS CHECK: PASS status=not_ready first_playable=ready website=build-smoked blockers=6 media=12")
+    print("MORROW PRODUCTION READINESS CHECK: PASS status=not_ready first_playable=ready website=production-smoked blockers=5 media=12")
     return 0
 
 

@@ -10,19 +10,29 @@
     "full_spine_modeled": ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09", "G10", "G11", "G12", "G13", "G14", "G15"],
     "production_mutations_allowed": false
   },
-  "hard_blockers": [
+  "deployed_review_target": {
+    "provider": "vercel",
+    "target": "production",
+    "domain": "https://copperlinehosting.com",
+    "deployment_id": "dpl_HziaWHfk7paFF91UTquJeHphockE",
+    "commit": "b76f6ba736420120457002a93a52cce7b8455879",
+    "state": "READY",
+    "smoke_receipt": "morrow/rehearsal/website-smoke/production-main-b76f6ba.json",
+    "runtime_error_scan": "clean"
+  },
+  "green_lanes": [
     {
-      "id": "website-preview-build",
+      "id": "website-production-review",
       "lane": "website",
-      "status": "local_build_and_smoke_passed",
-      "required_before_release": true,
-      "current_evidence": ["npm run lint", "npm run morrow:reboot-selftest", "npm run build", "morrow/rehearsal/website-smoke/latest.json"],
-      "exit_criteria": [
-        "deployment target is named and authorized",
-        "release environment variables and auth/callback origins are bound to that target",
-        "post-deploy smoke test covers /game-servers.php, /community/forum, /support/tickets/6118, /recovery/mossfield/console, and rehearsal APIs"
-      ]
-    },
+      "status": "production_deployed_and_smoked",
+      "current_evidence": [
+        "morrow/rehearsal/website-smoke/latest.json",
+        "morrow/rehearsal/website-smoke/production-main-b76f6ba.json"
+      ],
+      "scope": "G01-G03 Copperline trail, G01-G15 local console/API, and locked director/readiness rehearsal routes only"
+    }
+  ],
+  "hard_blockers": [
     {
       "id": "media-final-assets",
       "lane": "media",
@@ -88,9 +98,12 @@
   "green_checks": [
     "npm run morrow:reboot-selftest",
     "npm run lint",
+    "npm run build",
     "python tools/check_morrow_g01_g05_vertical_slice.py",
     "python tools/check_morrow_full_rehearsal.py",
-    "python tools/check_morrow_local_contracts.py"
+    "python tools/check_morrow_local_contracts.py",
+    "python tools/check_morrow_production_readiness.py",
+    "Vercel production smoke: morrow/rehearsal/website-smoke/production-main-b76f6ba.json"
   ],
   "release_rule": "Do not change status to production_ready until every hard blocker has retained evidence and production_enabled remains false until a separately authorized launch action."
 }

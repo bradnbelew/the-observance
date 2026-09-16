@@ -55,4 +55,13 @@ for (const route of [
   assert.equal(source.includes('SUPABASE_SERVICE_ROLE_KEY'), false, `${route} must not expose service secrets`);
 }
 
+const mediaRoute = readFileSync(resolve('src/app/api/rehearsal/morrow/media/route.ts'), 'utf8');
+assert.ok(mediaRoute.includes("schemaVersion: '1.1.0-morrow-media-readiness'"));
+assert.ok(mediaRoute.includes("workFolder: `morrow/media/work/${asset.key}`"));
+assert.ok(mediaRoute.includes("releaseReadyRequiresSafetyReview: true"));
+
+const consoleRoute = readFileSync(resolve('src/app/recovery/mossfield/console/page.tsx'), 'utf8');
+assert.ok(consoleRoute.includes('Media intake'));
+assert.ok(consoleRoute.includes('needs source, final, hashes, custody, accessibility'));
+
 console.log('MORROW FULL REHEARSAL: PASS gates=15 media=12 local-boundary hash-chain');

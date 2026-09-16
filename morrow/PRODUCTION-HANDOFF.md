@@ -19,6 +19,9 @@ Implemented and verified locally:
 - Rehearsal APIs for full spine, per-gate state, media readiness, and director state.
 - Vercel-compatible local JSON rehearsal data packaged under `dashboard/`.
 - Production-readiness checker that keeps launch blocked until remaining lanes are real.
+- Production Vercel smoke retained for `main` commit `b76f6ba736420120457002a93a52cce7b8455879`
+  at `morrow/rehearsal/website-smoke/production-main-b76f6ba.json`.
+- Full twelve-asset media intake manifest and checker; no media asset is release-ready.
 
 ## Required Review Entry Points
 
@@ -44,6 +47,7 @@ From the repository root:
 python tools\check_morrow_g01_g05_vertical_slice.py
 python tools\check_morrow_full_rehearsal.py
 python tools\check_morrow_local_contracts.py
+python tools\check_morrow_media_intake.py
 python tools\check_morrow_production_readiness.py
 ```
 

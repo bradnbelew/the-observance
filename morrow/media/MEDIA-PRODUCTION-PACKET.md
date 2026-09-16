@@ -3,6 +3,11 @@
 Status: required for full release; not required for the current local G01-G03 route slice.
 Production boundary: make these as first-party files, store them locally, then hash the final encoded outputs before they enter any delivery catalog.
 
+Media intake is now tracked by `morrow/media/media-manifest.template.json`. That manifest contains all
+twelve required assets, their work folders, acceptance checks, safety-review fields, and blank hash
+slots. Copy it for a real release intake or update it in place only when actual source/final files
+exist.
+
 ## Global rules
 
 - Every asset needs an original file, a final delivery file, SHA-256 for both, custody notes, creation date, author identity, and a plain-text accessibility equivalent.
@@ -75,3 +80,10 @@ Production boundary: make these as first-party files, store them locally, then h
 - Custody note explains who made/kept the artifact inside fiction.
 - The asset does not become the sole carrier for sound-only or color-only information.
 - The catalog status changes only after the exact final hash is known.
+
+Before any asset is marked release-ready, run:
+
+```powershell
+python tools\check_morrow_media_intake.py
+python tools\check_morrow_production_readiness.py
+```

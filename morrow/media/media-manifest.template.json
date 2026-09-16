@@ -1,10 +1,21 @@
 {
-  "schema_version": "1.0.0-morrow-media-manifest",
+  "schema_version": "1.1.0-morrow-media-intake-manifest",
   "release_id": "morrow.local.full-spine.v1",
-  "status": "template_not_release_ready",
+  "status": "intake_template_not_release_ready",
+  "root_policy": {
+    "working_root": "morrow/media/work",
+    "delivery_root": "morrow/media/final",
+    "accessibility_root": "morrow/media/accessibility",
+    "hash_algorithm": "sha256",
+    "release_ready_requires_all_hashes": true,
+    "release_ready_requires_accessibility_equivalent": true,
+    "release_ready_requires_safety_review": true
+  },
   "assets": [
     {
       "key": "morrow.g01.retired_hosting_brochure",
+      "media_type": "scanned_pdf",
+      "work_folder": "morrow/media/work/morrow.g01.retired_hosting_brochure",
       "source_file": "",
       "delivery_file": "",
       "source_sha256": "",
@@ -13,10 +24,24 @@
       "created_at": "",
       "author_identity": "",
       "accessibility_equivalent_file": "",
+      "required_observation": "The footer plan code agrees with the orphaned product slug and later invoice residue.",
+      "acceptance_checks": [
+        "footer includes cl-2011-6118",
+        "footer includes retired-managed-worlds",
+        "OCR or plain text preserves footer order"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
       "release_ready": false
     },
     {
       "key": "morrow.g02.forum_avatar_contact_sheet",
+      "media_type": "image_sequence",
+      "work_folder": "morrow/media/work/morrow.g02.forum_avatar_contact_sheet",
       "source_file": "",
       "delivery_file": "",
       "source_sha256": "",
@@ -25,10 +50,24 @@
       "created_at": "",
       "author_identity": "",
       "accessibility_equivalent_file": "",
+      "required_observation": "Iona's staff avatar and community alias share one damaged animation frame and cache key.",
+      "acceptance_checks": [
+        "named grid includes i_bell",
+        "named grid includes iona_bell",
+        "one damaged or repeated frame exposes continuity without relying on color alone"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
       "release_ready": false
     },
     {
       "key": "morrow.g03.theo_account_voicemail",
+      "media_type": "audio",
+      "work_folder": "morrow/media/work/morrow.g03.theo_account_voicemail",
       "source_file": "",
       "delivery_file": "",
       "source_sha256": "",
@@ -37,18 +76,253 @@
       "created_at": "",
       "author_identity": "",
       "accessibility_equivalent_file": "",
+      "required_observation": "Theo asks that Mossfield remain billable until someone comes home.",
+      "acceptance_checks": [
+        "phone-bandwidth effect remains intelligible",
+        "timecoded transcript carries the required phrase",
+        "room tone and clipping are documented"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g06.rookery_notebook",
+      "media_type": "handwritten_scan",
+      "work_folder": "morrow/media/work/morrow.g06.rookery_notebook",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "Pressure marks and a missing leaf continue the route into the buried cache.",
+      "acceptance_checks": [
+        "page order is clear",
+        "arrows, deletions, pressure marks, and torn edge are represented",
+        "transcript preserves layout and missing regions"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g07.june_lighthouse_photo",
+      "media_type": "image",
+      "work_folder": "morrow/media/work/morrow.g07.june_lighthouse_photo",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "The current recovered tower is absent from the dated photograph and old locator map.",
+      "acceptance_checks": [
+        "current horizon can be compared against old photograph",
+        "old locator map marks the empty location",
+        "coordinate-grid alt text names visible landmarks"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g08.frame_thirty_seven",
+      "media_type": "video",
+      "work_folder": "morrow/media/work/morrow.g08.frame_thirty_seven",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "A background lever changes once at frame thirty-seven while the foreground action loops.",
+      "acceptance_checks": [
+        "frame 37 is identifiable",
+        "foreground loop does not carry the answer alone",
+        "frame-indexed transcript names foreground, background, and redstone changes"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g09.current_session_contamination",
+      "media_type": "video",
+      "work_folder": "morrow/media/work/morrow.g09.current_session_contamination",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "A distinctive current-session movement appears in a file whose label claims an older date.",
+      "acceptance_checks": [
+        "file label claims an older date",
+        "current-session movement detail is visible and text-described",
+        "metadata table and movement order agree"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g09.patchcord_cassette_dub",
+      "media_type": "audio",
+      "work_folder": "morrow/media/work/morrow.g09.patchcord_cassette_dub",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "Several apparent speakers share the same room tone and repeat a Copperline support cadence.",
+      "acceptance_checks": [
+        "cassette texture does not obscure required words",
+        "speaker-labelled transcript includes uncertain attribution",
+        "noise, dropout, and cadence notes are present"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g11.incident_raw_export",
+      "media_type": "csv_log",
+      "work_folder": "morrow/media/work/morrow.g11.incident_raw_export",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "Uptime 04:17:22 survives while publication fields and public prose change.",
+      "acceptance_checks": [
+        "CSV field order is stable",
+        "uptime 04:17:22 appears in source and accessible table",
+        "changed public fields are visible without becoming real telemetry"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g12.iona_reversed_memo",
+      "media_type": "audio",
+      "work_folder": "morrow/media/work/morrow.g12.iona_reversed_memo",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "Reversal reveals an authored command phrase that agrees with the memo index.",
+      "acceptance_checks": [
+        "damaged reversed attachment is playable",
+        "reverse-order transcript is independently earned",
+        "normal-order transcript is withheld until unlock"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g12.spectrogram_command",
+      "media_type": "audio_visual_derivative",
+      "work_folder": "morrow/media/work/morrow.g12.spectrogram_command",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "The carrier encodes a short word that matches Iona's page-line reference.",
+      "acceptance_checks": [
+        "spectrogram word is restrained and legible",
+        "frequency-bin table encodes the same word",
+        "no player must use audio software as the only route"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
+      "release_ready": false
+    },
+    {
+      "key": "morrow.g15.shutdown_record",
+      "media_type": "document",
+      "work_folder": "morrow/media/work/morrow.g15.shutdown_record",
+      "source_file": "",
+      "delivery_file": "",
+      "source_sha256": "",
+      "delivery_sha256": "",
+      "custody_note": "",
+      "created_at": "",
+      "author_identity": "",
+      "accessibility_equivalent_file": "",
+      "required_observation": "The process is stopped, the world remains inert, and no new Morrow output follows.",
+      "acceptance_checks": [
+        "stop hash and timestamp are plain text",
+        "terminal state is inert",
+        "no Morrow-authored stinger or alternate ending appears"
+      ],
+      "safety_review": {
+        "no_real_private_data": false,
+        "no_real_phone_numbers": false,
+        "no_real_people": false,
+        "no_real_company_impersonation": false
+      },
       "release_ready": false
     }
-  ],
-  "copy_this_shape_for_remaining_assets": [
-    "morrow.g06.rookery_notebook",
-    "morrow.g07.june_lighthouse_photo",
-    "morrow.g08.frame_thirty_seven",
-    "morrow.g09.current_session_contamination",
-    "morrow.g09.patchcord_cassette_dub",
-    "morrow.g11.incident_raw_export",
-    "morrow.g12.iona_reversed_memo",
-    "morrow.g12.spectrogram_command",
-    "morrow.g15.shutdown_record"
   ]
 }

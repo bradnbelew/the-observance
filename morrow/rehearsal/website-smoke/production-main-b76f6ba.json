@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0-morrow-production-website-smoke",
+  "release_id": "morrow.local.full-spine.v1",
+  "run_at": "2026-09-16T02:37:53Z",
+  "deployment": {
+    "provider": "vercel",
+    "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "team_id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "deployment_id": "dpl_HziaWHfk7paFF91UTquJeHphockE",
+    "target": "production",
+    "state": "READY",
+    "branch": "main",
+    "commit": "b76f6ba736420120457002a93a52cce7b8455879",
+    "domain": "https://copperlinehosting.com",
+    "aliases": [
+      "https://copperlinehosting.com",
+      "https://the-observance-kjxn.vercel.app",
+      "https://the-observance-kjxn-bradens-projects-c5e41066.vercel.app",
+      "https://the-observance-kjxn-git-main-bradens-projects-c5e41066.vercel.app"
+    ]
+  },
+  "build": {
+    "framework": "nextjs",
+    "next_version": "16.2.10",
+    "remote_build_completed": true,
+    "remote_deploy_completed": true,
+    "local_commands_passed": [
+      "npm run lint",
+      "npm run build",
+      "npm run morrow:reboot-selftest",
+      "python tools/check_morrow_g01_g05_vertical_slice.py",
+      "python tools/check_morrow_full_rehearsal.py",
+      "python tools/check_morrow_local_contracts.py",
+      "python tools/check_morrow_production_readiness.py"
+    ]
+  },
+  "production_mutations_allowed": false,
+  "runtime_error_scan": {
+    "provider": "vercel",
+    "window": "1h",
+    "result": "clean"
+  },
+  "routes": [
+    {
+      "path": "/game-servers.php",
+      "status": 200,
+      "required_markers": [
+        "Game Server Hosting - Copperline Hosting",
+        "cl-2011-6118",
+        "retired-managed-worlds"
+      ]
+    },
+    {
+      "path": "/api/rehearsal/morrow/full",
+      "status": 200,
+      "required_markers": [
+        "1.0.0-morrow-full-local-rehearsal",
+        "\"productionContacted\":false",
+        "\"directorControlsEnabled\":false"
+      ]
+    },
+    {
+      "path": "/recovery/mossfield/console",
+      "status": 200,
+      "required_markers": [
+        "Mossfield Recovery Console - Copperline",
+        "morrow.local.full-spine.v1",
+        "blocked; no external mutation allowed"
+      ]
+    }
+  ],
+  "boundary": "This receipt proves the production website deployment and static rehearsal surfaces. It does not prove media authorship, live Paper gameplay, live Discord, Supabase migrations, or enabled director controls."
+}
