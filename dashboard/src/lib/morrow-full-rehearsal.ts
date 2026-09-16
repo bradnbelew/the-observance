@@ -18,6 +18,29 @@ export type MediaRequirement = (typeof media.assets)[number] & {
   releaseBlocking: boolean;
 };
 
+export const MORROW_MEDIA_INTAKE_REQUIRED_FIELDS = [
+  'source_file',
+  'delivery_file',
+  'source_sha256',
+  'delivery_sha256',
+  'custody_note',
+  'created_at',
+  'author_identity',
+  'accessibility_equivalent_file',
+  'safety_review',
+] as const;
+
+export type MediaIntakeAsset = MediaRequirement & {
+  workFolder: string;
+  deliveryRoot: string;
+  accessibilityRoot: string;
+  sourceFile: string;
+  deliveryFile: string;
+  accessibilityFile: string;
+  releaseReady: false;
+  requiredBeforeRelease: typeof MORROW_MEDIA_INTAKE_REQUIRED_FIELDS;
+};
+
 export type FullGate = GateRecord & {
   eventKey: string;
   owner: string;
@@ -65,6 +88,44 @@ export function mediaRequirements(): MediaRequirement[] {
       .map((event) => event.gate as string),
     releaseBlocking: asset.status !== 'complete' || asset.required_hash_before_release,
   }));
+}
+
+export function mediaIntakeAssets(): MediaIntakeAsset[] {
+  return mediaRequirements().map((asset) => ({
+    ...asset,
+    workFolder: `morrow/media/work/${asset.key}`,
+    deliveryRoot: 'morrow/media/final',
+    accessibilityRoot: 'morrow/media/accessibility',
+    sourceFile: `morrow/media/work/${asset.key}/source`,
+    deliveryFile: `morrow/media/final/${asset.key}`,
+    accessibilityFile: `morrow/media/accessibility/${asset.key}.txt`,
+    releaseReady: false,
+    requiredBeforeRelease: MORROW_MEDIA_INTAKE_REQUIRED_FIELDS,
+  }));
+}
+
+export function mediaIntakeSummary() {
+  const assets = mediaIntakeAssets();
+  return {
+    schemaVersion: '1.1.0-morrow-media-readiness',
+    status: 'media_assets_required_before_full_release',
+    productionMutation: false,
+    intakePolicy: {
+      manifest: 'morrow/media/media-manifest.template.json',
+      hashAlgorithm: 'sha256',
+      workRoot: 'morrow/media/work',
+      deliveryRoot: 'morrow/media/final',
+      accessibilityRoot: 'morrow/media/accessibility',
+      releaseReadyRequiresAllHashes: true,
+      releaseReadyRequiresAccessibilityEquivalent: true,
+      releaseReadyRequiresSafetyReview: true,
+    },
+    totalAssets: assets.length,
+    releaseBlockingAssets: assets.filter((asset) => asset.releaseBlocking).length,
+    releaseReadyAssets: assets.filter((asset) => asset.releaseReady).length,
+    requiredFieldCount: MORROW_MEDIA_INTAKE_REQUIRED_FIELDS.length,
+    assets,
+  };
 }
 
 export function directorLockContract() {

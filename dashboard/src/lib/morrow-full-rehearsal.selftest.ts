@@ -8,6 +8,7 @@ import {
   fullRehearsalDigest,
   gateById,
   gateReceiptById,
+  mediaIntakeSummary,
   mediaRequirements,
 } from './morrow-full-rehearsal';
 
@@ -32,6 +33,12 @@ assert.match(fullRehearsalDigest(), /^[0-9a-f]{64}$/);
 assert.equal(gateReceiptById('g07')?.gate, 'G07');
 assert.equal(mediaRequirements().length, 12);
 assert.equal(mediaRequirements().filter((asset) => asset.releaseBlocking).length, 12);
+assert.equal(mediaIntakeSummary().schemaVersion, '1.1.0-morrow-media-readiness');
+assert.equal(mediaIntakeSummary().assets.length, 12);
+assert.equal(mediaIntakeSummary().releaseReadyAssets, 0);
+assert.ok(mediaIntakeSummary().assets.every((asset) => asset.sourceFile.startsWith('morrow/media/work/')));
+assert.ok(mediaIntakeSummary().assets.every((asset) => asset.deliveryFile.startsWith('morrow/media/final/')));
+assert.ok(mediaIntakeSummary().assets.every((asset) => asset.accessibilityFile.startsWith('morrow/media/accessibility/')));
 assert.equal(directorLockContract().controlsEnabled, false);
 assert.ok(directorLockContract().forbidden.includes('enable_production'));
 
@@ -48,6 +55,7 @@ for (const route of [
   'src/app/api/rehearsal/morrow/readiness/route.ts',
   'src/app/api/rehearsal/morrow/director/route.ts',
   'src/app/recovery/mossfield/console/page.tsx',
+  'src/app/recovery/mossfield/media/page.tsx',
   'src/app/recovery/mossfield/gates/[gateId]/page.tsx',
 ]) {
   const source = readFileSync(resolve(route), 'utf8');
@@ -56,12 +64,16 @@ for (const route of [
 }
 
 const mediaRoute = readFileSync(resolve('src/app/api/rehearsal/morrow/media/route.ts'), 'utf8');
-assert.ok(mediaRoute.includes("schemaVersion: '1.1.0-morrow-media-readiness'"));
-assert.ok(mediaRoute.includes("workFolder: `morrow/media/work/${asset.key}`"));
-assert.ok(mediaRoute.includes("releaseReadyRequiresSafetyReview: true"));
+assert.ok(mediaRoute.includes('mediaIntakeSummary'));
 
 const consoleRoute = readFileSync(resolve('src/app/recovery/mossfield/console/page.tsx'), 'utf8');
 assert.ok(consoleRoute.includes('Media intake'));
 assert.ok(consoleRoute.includes('needs source, final, hashes, custody, accessibility'));
+assert.ok(consoleRoute.includes('/recovery/mossfield/media'));
+
+const mediaPage = readFileSync(resolve('src/app/recovery/mossfield/media/page.tsx'), 'utf8');
+assert.ok(mediaPage.includes('Mossfield Media Checklist'));
+assert.ok(mediaPage.includes('Required intake fields'));
+assert.ok(mediaPage.includes('Asset queue'));
 
 console.log('MORROW FULL REHEARSAL: PASS gates=15 media=12 local-boundary hash-chain');
