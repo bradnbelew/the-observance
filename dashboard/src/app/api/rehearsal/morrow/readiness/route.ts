@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import readiness from '../../../../../../../morrow/rehearsal/production-readiness.json';
+import readiness from '@/lib/morrow-data/production-readiness.json';
 
 export const dynamic = 'force-static';
 

@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto';
-import ledger from '../../../morrow/authority/PUZZLE-LEDGER.json';
-import events from '../../../morrow/contracts/event-catalog.json';
-import states from '../../../morrow/contracts/relationship-states.json';
-import surfaces from '../../../morrow/contracts/surface-contracts.json';
-import media from '../../../morrow/contracts/media-catalog.json';
-import director from '../../../morrow/contracts/director-command-schema.json';
-import fixtures from '../../../morrow/review/review-fixtures.json';
+import ledger from './morrow-data/puzzle-ledger.json';
+import events from './morrow-data/event-catalog.json';
+import states from './morrow-data/relationship-states.json';
+import surfaces from './morrow-data/surface-contracts.json';
+import media from './morrow-data/media-catalog.json';
+import director from './morrow-data/director-command-schema.json';
+import fixtures from './morrow-data/review-fixtures.json';
 
 export const MORROW_FULL_REHEARSAL_RELEASE = 'morrow.local.full-spine.v1';
 export const MORROW_FULL_REHEARSAL_CAMPAIGN = 'local.contract.mossfield.full';

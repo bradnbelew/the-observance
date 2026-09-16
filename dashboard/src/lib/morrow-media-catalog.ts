@@ -1,4 +1,4 @@
-import catalog from '../../../morrow/contracts/media-catalog.json';
+import catalog from './morrow-data/media-catalog.json';
 
 export type MorrowMediaAsset = {
   key: string;

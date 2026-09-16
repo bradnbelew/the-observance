@@ -1,0 +1,47 @@
+{
+  "schema_version": "2.0.0",
+  "surfaces": {
+    "minecraft": {
+      "creative_role": "A haunted recovered survival server whose ordinary history becomes physically unreliable.",
+      "owns": ["authoritative world state", "native object puzzles", "ruins and resident history", "bounded scares", "final physical shutdown", "local hash-chained journal"],
+      "inputs": ["explore", "read book or sign", "inspect map", "move named item", "order chest contents", "use redstone", "enter short command fragment", "speak to authored NPC", "traverse bounded route"],
+      "must": ["feel like one coherent survival world", "preserve required evidence", "support one to six non-op players", "recover safely after disconnect or restart", "provide audio and color equivalents"],
+      "must_not": ["be a sequence of repeated puzzle-box rooms", "make Morrow a quest giver", "require operator commands from players", "use client-only state as critical authority", "destroy required clues during scares"]
+    },
+    "copperline": {
+      "creative_role": "One aging fictional hosting domain with public corporate pages and progressively hidden archives.",
+      "owns": ["hosting pages", "community forum", "staff blog", "status history", "support archive", "fictional employee and old-player login", "authenticated recovery console"],
+      "inputs": ["navigate hidden URL", "inspect source", "search archive", "enter short password", "order records", "compare metadata", "confirm shutdown hash"],
+      "must": ["keep all sections under one domain", "separate public and authenticated spoilers", "render archived and edited states clearly", "remain keyboard accessible"],
+      "must_not": ["label content as puzzles", "be a linear lore reader", "expose service secrets", "place locked spoilers in public client payloads", "impersonate a real company or person"]
+    },
+    "discord": {
+      "creative_role": "A private social-pressure channel where authored fragments differ by linked player.",
+      "owns": ["player-specific Morrow fragments", "safe fragment codes", "group delivery receipts", "optional hints", "post-shutdown silence"],
+      "inputs": ["slash command", "button", "select menu", "short code", "consensual group comparison"],
+      "must": ["bind every private message to the linked fictional campaign identity", "allow fragment reissue", "keep group progress payload-free", "make manipulation resolve through authored codes"],
+      "must_not": ["be the universal quest log", "require Administrator permission", "require disclosure of private prose", "imply real-world surveillance", "reference unprovided personal data", "send after canonical shutdown"]
+    },
+    "media": {
+      "creative_role": "Found footage and files that look incidental until compared with other records.",
+      "owns": ["Minecraft recordings", "photographs", "maps", "voice fragments", "metadata", "spectrograms", "accessible derivatives"],
+      "inputs": ["pause", "count frames", "inspect background", "read metadata", "reverse", "compare", "authenticate"],
+      "must": ["retain original hashes", "provide transcripts and frame-indexed descriptions", "have an authored custody path"],
+      "must_not": ["depend on third-party custody only", "hide a required answer solely in sound or color", "claim access to real player devices"]
+    },
+    "director": {
+      "creative_role": "Audited show control and recovery for authored horror beats.",
+      "owns": ["scare trigger", "page unlock", "authored Morrow dialogue", "player-specific authored DM", "horror-entity lifecycle", "allowlisted prop mutation", "gate verification", "tiered hint", "state recovery", "finale arm and start"],
+      "inputs": ["explicit operator action", "release and campaign scope", "reason", "idempotency key", "two-step finale confirmation"],
+      "must": ["record operator and before/after state", "verify gate predicates", "use allowlists", "retain rollback snapshots", "fail closed outside non-production rehearsal"],
+      "must_not": ["run arbitrary commands", "invent dialogue", "fabricate player actions", "silently solve gates", "rewrite evidence", "open gates because players are slow", "access private non-ARG data", "enable production"]
+    }
+  },
+  "cross_surface_rules": {
+    "all_progress_is_release_bound": true,
+    "all_consequences_are_idempotent": true,
+    "shutdown_is_single_terminal_outcome": true,
+    "morrow_may_reference_only_authored_or_in_campaign_behavior": true,
+    "required_gate_requires_multiple_independent_records": true
+  }
+}

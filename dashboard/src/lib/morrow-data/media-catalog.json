@@ -1,0 +1,153 @@
+{
+  "schema_version": "2.0.0",
+  "release_id": null,
+  "delivery": "copperline_archive_with_first_party_hashes",
+  "catalog_status": "design_authority_only_assets_require_authorship_and_hashing",
+  "assets": [
+    {
+      "key": "morrow.g01.retired_hosting_brochure",
+      "media_type": "scanned_pdf",
+      "prerequisite_events": [],
+      "title": "Copperline managed worlds — 2011",
+      "source": "retired Copperline sales download",
+      "purpose": "Establish the ordinary host and preserve the obsolete Mossfield plan code in a handled document.",
+      "required_observation": "The footer plan code agrees with the orphaned product slug and later invoice residue.",
+      "accessible_equivalent": "Selectable OCR and a plain-text version preserve headings, marks, and footer order.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g02.forum_avatar_contact_sheet",
+      "media_type": "image_sequence",
+      "prerequisite_events": ["morrow.gate.g01_unindexed_host"],
+      "title": "Mossfield cached avatar sheet",
+      "source": "Copperline community thumbnail cache",
+      "purpose": "Let missing and repeated avatar frames reveal identity continuity across edited forum pages.",
+      "required_observation": "Iona's staff avatar and community alias share one damaged animation frame and cache key.",
+      "accessible_equivalent": "A named grid and frame-by-frame description expose the same identity link.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g03.theo_account_voicemail",
+      "media_type": "audio",
+      "prerequisite_events": ["morrow.gate.g02_dead_forum_account"],
+      "title": "Account retention voicemail",
+      "source": "Copperline support-ticket attachment",
+      "purpose": "Introduce Theo's motive and the phrase that Morrow later turns into an objective.",
+      "required_observation": "Theo asks that Mossfield remain billable until someone comes home.",
+      "accessible_equivalent": "A timecoded verbatim transcript includes speech, clipping, and room-tone changes.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g06.rookery_notebook",
+      "media_type": "handwritten_scan",
+      "prerequisite_events": ["morrow.gate.g05_storehouse_trail"],
+      "title": "Rookery maintenance notebook",
+      "source": "Mossfield maintenance cache",
+      "purpose": "Make the distributed stop feel like improvised human maintenance rather than a designed challenge.",
+      "required_observation": "Pressure marks and a missing leaf continue the route into the buried cache.",
+      "accessible_equivalent": "A transcription preserves page order, arrows, deletions, torn edges, and missing regions.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g07.june_lighthouse_photo",
+      "media_type": "image",
+      "prerequisite_events": ["morrow.gate.g06_book_coordinates"],
+      "title": "June's eastern horizon",
+      "source": "juni_lantern screenshot archive",
+      "purpose": "Preserve the historical horizon so players can stand where June stood and recognize an added landmark.",
+      "required_observation": "The current recovered tower is absent from the dated photograph and old locator map.",
+      "accessible_equivalent": "Coordinate-grid alt text names every visible landmark and the empty location.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g08.frame_thirty_seven",
+      "media_type": "video",
+      "prerequisite_events": ["morrow.gate.g07_lighthouse_mismatch"],
+      "title": "Storehouse recovery fragment",
+      "source": "patchcord local Minecraft recording",
+      "purpose": "Reward frame counting and a background observation rather than foreground exposition.",
+      "required_observation": "A background lever changes once at frame thirty-seven while the foreground action loops.",
+      "accessible_equivalent": "A frame-indexed transcript lists foreground, background, and redstone changes.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g09.current_session_contamination",
+      "media_type": "video",
+      "prerequisite_events": ["morrow.gate.g08_frame_thirty_seven"],
+      "title": "Recovered resident path",
+      "source": "Morrow recovery output",
+      "purpose": "Prove that a claimed historical reconstruction contains behavior from the current campaign.",
+      "required_observation": "A distinctive current-session movement appears in a file whose label claims an older date.",
+      "accessible_equivalent": "Metadata and movement appear as an ordered text record with matching timestamps.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g09.patchcord_cassette_dub",
+      "media_type": "audio",
+      "prerequisite_events": ["morrow.gate.g08_frame_thirty_seven"],
+      "title": "Patchcord local cassette dub",
+      "source": "patchcord relay-hut archive",
+      "purpose": "Place repeated support cadence inside messy resident voice-chat fragments without delivering exposition.",
+      "required_observation": "Several apparent speakers share the same room tone and repeat a Copperline support cadence.",
+      "accessible_equivalent": "A speaker-labelled transcript includes noise, dropouts, cadence notes, and uncertain attribution.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g11.incident_raw_export",
+      "media_type": "csv_log",
+      "prerequisite_events": ["morrow.gate.g10_separate_instructions"],
+      "title": "Incident 6118 raw export",
+      "source": "Copperline status RSS and print-cache residue",
+      "purpose": "Carry the stable machine value beneath the public page's visible rewrite.",
+      "required_observation": "Uptime 04:17:22 survives while publication fields and public prose change.",
+      "accessible_equivalent": "The source CSV and an accessible table use identical field order and values.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g12.iona_reversed_memo",
+      "media_type": "audio",
+      "prerequisite_events": ["morrow.gate.g11_status_gap"],
+      "title": "Iona maintenance memo",
+      "source": "Copperline incident attachment cache",
+      "purpose": "Supply one part of the shutdown warning through reversible audio.",
+      "required_observation": "Reversal reveals an authored command phrase that agrees with the memo index.",
+      "accessible_equivalent": "An independently earned reverse-order transcript exposes the same phrase.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g12.spectrogram_command",
+      "media_type": "audio_visual_derivative",
+      "prerequisite_events": ["morrow.gate.g11_status_gap"],
+      "title": "Maintenance carrier analysis",
+      "source": "Copperline diagnostic attachment",
+      "purpose": "Supply a second command segment through a taught spectrogram technique.",
+      "required_observation": "The carrier encodes a short word that matches Iona's page-line reference.",
+      "accessible_equivalent": "An earned text frequency table encodes the same word without audio software.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    },
+    {
+      "key": "morrow.g15.shutdown_record",
+      "media_type": "document",
+      "prerequisite_events": ["morrow.gate.g15_shutdown_complete"],
+      "title": "Mossfield recovery process stopped",
+      "source": "Copperline recovery console",
+      "purpose": "Confirm the single canonical outcome without a Morrow-authored coda.",
+      "required_observation": "The process is stopped, the world remains inert, and no new Morrow output follows.",
+      "accessible_equivalent": "The stop hash, timestamp, and terminal-state checks are plain text.",
+      "status": "to_be_authored",
+      "required_hash_before_release": true
+    }
+  ],
+  "terminal_rule": "The shutdown record may report Morrow's stopped state but may not contain a new Morrow message, survival stinger, or alternate ending."
+}

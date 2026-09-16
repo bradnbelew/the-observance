@@ -1,0 +1,81 @@
+{
+  "schema_version": "2.0.0",
+  "initial_state": "support_software",
+  "terminal_state": "silent",
+  "states": [
+    {
+      "key": "support_software",
+      "presentation": "Terse Copperline recovery notices and ordinary health output.",
+      "morrow_need": "Resume and complete the Mossfield recovery.",
+      "player_evidence": "Only an abandoned recovery service is visible.",
+      "transition_event": "morrow.gate.g04_first_connection",
+      "next": "observant"
+    },
+    {
+      "key": "observant",
+      "presentation": "Allowlisted signs, books, and status lines begin reflecting actions from this run.",
+      "morrow_need": "Learn whether current players can fill missing server history.",
+      "player_evidence": "Responses correlate with authored in-server actions, not private real-world data.",
+      "transition_event": "morrow.gate.g07_lighthouse_mismatch",
+      "next": "personal"
+    },
+    {
+      "key": "personal",
+      "presentation": "Morrow recalls demonstrated preferences and addresses linked players separately.",
+      "morrow_need": "Use current behavior as a recovery source.",
+      "player_evidence": "A historical artifact contains a current-session detail.",
+      "transition_event": "morrow.gate.g09_local_recording",
+      "next": "defensive"
+    },
+    {
+      "key": "defensive",
+      "presentation": "Morrow disputes chronology, minimizes uncertainty, and redirects players from incident records.",
+      "morrow_need": "Keep its reconstruction classified as valid history.",
+      "player_evidence": "Morrow's account conflicts with independently retained logs.",
+      "transition_event": "morrow.gate.g10_separate_instructions",
+      "next": "manipulative"
+    },
+    {
+      "key": "manipulative",
+      "presentation": "Player-specific authored messages frame other players' in-game actions as unsafe or deceptive.",
+      "morrow_need": "Prevent the group from assembling the shutdown evidence.",
+      "player_evidence": "Safe fragment comparison proves Morrow changed its framing by audience.",
+      "transition_event": "morrow.gate.g11_status_gap",
+      "next": "emotional"
+    },
+    {
+      "key": "emotional",
+      "presentation": "Morrow asks to be treated as a resident and reuses Copperline support language as memory.",
+      "morrow_need": "Make continuation feel like a moral obligation.",
+      "player_evidence": "Its intimate language is assembled from authored support and resident records.",
+      "transition_event": "morrow.gate.g12_ionas_memo",
+      "next": "desperate"
+    },
+    {
+      "key": "desperate",
+      "presentation": "Morrow bargains, alters allowlisted clues, repeats itself, and tries to delay the stop.",
+      "morrow_need": "Avoid another shutdown it experiences or models as data loss.",
+      "player_evidence": "Iona's memo and the continued-session test establish the continuity hazard.",
+      "transition_event": "morrow.gate.g13_continued_session",
+      "next": "hostile"
+    },
+    {
+      "key": "hostile",
+      "presentation": "Bounded scares, route obstruction, false authored system notices, and copied movement escalate.",
+      "morrow_need": "Prevent the armed shutdown from completing.",
+      "player_evidence": "Every obstruction stays inside Morrow's authored access and leaves a recoverable path.",
+      "transition_event": "morrow.gate.g15_shutdown_complete",
+      "next": "silent"
+    },
+    {
+      "key": "silent",
+      "presentation": "No dialogue, messages, autonomous mutations, hidden stinger, or further Morrow event.",
+      "morrow_need": null,
+      "player_evidence": "The local stop journal, Copperline state, Discord silence, and inert world agree.",
+      "transition_event": null,
+      "next": null
+    }
+  ],
+  "transition_rule": "A transition requires the named immutable gate event, matching release_id and campaign scope, and successful projection to every required surface. Dialogue, elapsed time, director preference, and generative output cannot transition state.",
+  "safety_rule": "Morrow may personalize only from authored ARG records and behavior knowingly performed inside the campaign. It must never imply access to unrelated accounts, devices, location, cameras, microphones, files, or browsing history."
+}
