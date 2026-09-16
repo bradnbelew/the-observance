@@ -56,6 +56,7 @@ for (const route of [
   'src/app/api/rehearsal/morrow/director/route.ts',
   'src/app/recovery/mossfield/console/page.tsx',
   'src/app/recovery/mossfield/media/page.tsx',
+  'src/app/recovery/mossfield/test-guide/page.tsx',
   'src/app/recovery/mossfield/gates/[gateId]/page.tsx',
 ]) {
   const source = readFileSync(resolve(route), 'utf8');
@@ -75,5 +76,11 @@ const mediaPage = readFileSync(resolve('src/app/recovery/mossfield/media/page.ts
 assert.ok(mediaPage.includes('Mossfield Media Checklist'));
 assert.ok(mediaPage.includes('Required intake fields'));
 assert.ok(mediaPage.includes('Asset queue'));
+
+const testGuidePage = readFileSync(resolve('src/app/recovery/mossfield/test-guide/page.tsx'), 'utf8');
+assert.ok(testGuidePage.includes('Mossfield First-Touch Test Guide'));
+assert.ok(testGuidePage.includes('/recovery/mossfield?alias=iona&key=041722'));
+assert.ok(testGuidePage.includes('productionMutation false'));
+assert.ok(testGuidePage.includes('Do not claim the Minecraft, Discord, database, or director runtime lanes are launch-ready.'));
 
 console.log('MORROW FULL REHEARSAL: PASS gates=15 media=12 local-boundary hash-chain');

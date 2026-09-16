@@ -29,6 +29,7 @@ export default async function MossfieldRecoveryPage({ searchParams }: { searchPa
         <tr><th>Production</th><td>disabled; morrow-reboot.enabled remains false</td></tr>
       </tbody></table>
       <p className="old-fineprint">This static handoff satisfies the local G01-G03 route grammar only. It does not start a Minecraft server, contact Supabase, send Discord messages, or enable production.</p>
+      <p><Link href="/recovery/mossfield/test-guide">Open first-touch test guide</Link> · <Link href="/recovery/mossfield/console">Open local console</Link></p>
     </section> : <section className="old-copy"><h2>Lookup hints retained by the mirror</h2><p>Alias evidence lives in the forum thread and support signature. The key is derived from incident uptime in the status residue.</p><p><Link href="/community/forum?thread=6118">Forum thread</Link> · <Link href="/support/tickets/6118">Support ticket</Link> · <Link href="/status/incident-6118">Status residue</Link></p></section>}
   </LegacyShell>;
 }
