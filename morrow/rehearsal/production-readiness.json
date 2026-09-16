@@ -10,14 +10,14 @@
     "full_spine_modeled": ["G01", "G02", "G03", "G04", "G05", "G06", "G07", "G08", "G09", "G10", "G11", "G12", "G13", "G14", "G15"],
     "production_mutations_allowed": false
   },
-  "deployed_review_target": {
+  "last_verified_review_target": {
     "provider": "vercel",
     "target": "production",
     "domain": "https://copperlinehosting.com",
-    "deployment_id": "dpl_HziaWHfk7paFF91UTquJeHphockE",
-    "commit": "b76f6ba736420120457002a93a52cce7b8455879",
+    "deployment_id": "dpl_3vBMUGXgkyS2p99Uq5gCXg4Buewc",
+    "commit": "8e1ee79f0e0c63873709fa3cdda2421258e0040d",
     "state": "READY",
-    "smoke_receipt": "morrow/rehearsal/website-smoke/production-main-b76f6ba.json",
+    "smoke_receipt": "morrow/rehearsal/website-smoke/production-main-8e1ee79.json",
     "runtime_error_scan": "clean"
   },
   "green_lanes": [
@@ -27,7 +27,7 @@
       "status": "production_deployed_and_smoked",
       "current_evidence": [
         "morrow/rehearsal/website-smoke/latest.json",
-        "morrow/rehearsal/website-smoke/production-main-b76f6ba.json"
+        "morrow/rehearsal/website-smoke/production-main-8e1ee79.json"
       ],
       "scope": "G01-G03 Copperline trail, G01-G15 local console/API, and locked director/readiness rehearsal routes only"
     }

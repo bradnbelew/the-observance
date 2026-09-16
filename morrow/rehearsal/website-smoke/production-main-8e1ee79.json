@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0-morrow-production-website-smoke",
+  "release_id": "morrow.local.full-spine.v1",
+  "run_at": "2026-09-16T02:54:20Z",
+  "deployment": {
+    "provider": "vercel",
+    "project_id": "prj_UygHA98HGW4IBVMk6AKzXVEG6ZSQ",
+    "team_id": "team_2HAUKLhWF4QVYDHEt5FbNeHu",
+    "deployment_id": "dpl_3vBMUGXgkyS2p99Uq5gCXg4Buewc",
+    "target": "production",
+    "state": "READY",
+    "branch": "main",
+    "commit": "8e1ee79f0e0c63873709fa3cdda2421258e0040d",
+    "domain": "https://copperlinehosting.com",
+    "aliases": [
+      "https://copperlinehosting.com",
+      "https://the-observance-kjxn.vercel.app",
+      "https://the-observance-kjxn-bradens-projects-c5e41066.vercel.app",
+      "https://the-observance-kjxn-git-main-bradens-projects-c5e41066.vercel.app"
+    ]
+  },
+  "build": {
+    "framework": "nextjs",
+    "next_version": "16.2.10",
+    "remote_build_completed": true,
+    "remote_deploy_completed": true,
+    "local_commands_passed": [
+      "npm run lint",
+      "npm run build",
+      "npm run morrow:reboot-selftest",
+      "python tools/check_morrow_media_intake.py",
+      "python tools/check_morrow_production_readiness.py"
+    ]
+  },
+  "production_mutations_allowed": false,
+  "runtime_error_scan": {
+    "provider": "vercel",
+    "window": "1h",
+    "result": "clean",
+    "method": "deployment-scoped runtime log query for error and fatal levels"
+  },
+  "routes": [
+    {
+      "path": "/api/rehearsal/morrow/media",
+      "status": 200,
+      "required_markers": [
+        "1.1.0-morrow-media-readiness",
+        "releaseReadyRequiresSafetyReview",
+        "morrow/media/work/morrow.g01.retired_hosting_brochure",
+        "\"releaseReady\":false"
+      ]
+    },
+    {
+      "path": "/recovery/mossfield/console",
+      "status": 200,
+      "required_markers": [
+        "Mossfield Recovery Console - Copperline",
+        "Media intake",
+        "needs source, final, hashes, custody, accessibility"
+      ]
+    },
+    {
+      "path": "/api/rehearsal/morrow/full",
+      "status": 200,
+      "required_markers": [
+        "1.0.0-morrow-full-local-rehearsal",
+        "\"productionContacted\":false",
+        "\"directorControlsEnabled\":false"
+      ]
+    }
+  ],
+  "boundary": "This receipt proves the production review deployment and media-intake visibility. It does not prove final media authorship, live Paper gameplay, live Discord, Supabase migrations, or enabled director controls."
+}

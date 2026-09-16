@@ -26,16 +26,16 @@ def main() -> int:
         media_catalog = load_json(MORROW / "contracts" / "media-catalog.json")
         media_template = load_json(MORROW / "media" / "media-manifest.template.json")
         smoke = load_json(MORROW / "rehearsal" / "website-smoke" / "latest.json")
-        production_smoke = load_json(MORROW / "rehearsal" / "website-smoke" / "production-main-b76f6ba.json")
+        production_smoke = load_json(MORROW / "rehearsal" / "website-smoke" / "production-main-8e1ee79.json")
 
         require(readiness["status"] == "not_production_ready", "readiness status must remain explicit")
         require(readiness["production_enabled"] is False, "production must not be enabled here")
         require(readiness["first_playable_review_ready"] is True, "first playable review flag drifted")
         require(len(readiness["hard_blockers"]) >= 5, "hard blocker matrix is incomplete")
-        require(readiness["deployed_review_target"]["state"] == "READY", "production review target is not ready")
-        require(readiness["deployed_review_target"]["runtime_error_scan"] == "clean", "runtime error scan is not clean")
+        require(readiness["last_verified_review_target"]["state"] == "READY", "production review target is not ready")
+        require(readiness["last_verified_review_target"]["runtime_error_scan"] == "clean", "runtime error scan is not clean")
         require(
-            readiness["deployed_review_target"]["smoke_receipt"] == "morrow/rehearsal/website-smoke/production-main-b76f6ba.json",
+            readiness["last_verified_review_target"]["smoke_receipt"] == "morrow/rehearsal/website-smoke/production-main-8e1ee79.json",
             "production smoke receipt pointer drifted",
         )
         green_lane_ids = {lane["id"] for lane in readiness.get("green_lanes", [])}
@@ -84,7 +84,7 @@ def main() -> int:
         require(production_smoke["production_mutations_allowed"] is False, "production smoke cannot allow mutation")
         require(production_smoke["runtime_error_scan"]["result"] == "clean", "runtime error scan is not clean")
         production_paths = {route["path"]: route for route in production_smoke["routes"]}
-        for required_path in ("/game-servers.php", "/api/rehearsal/morrow/full", "/recovery/mossfield/console"):
+        for required_path in ("/api/rehearsal/morrow/media", "/api/rehearsal/morrow/full", "/recovery/mossfield/console"):
             route = production_paths.get(required_path)
             require(route is not None, f"production smoke missing {required_path}")
             require(route["status"] == 200, f"production smoke non-200 for {required_path}")

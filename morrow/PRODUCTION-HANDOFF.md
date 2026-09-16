@@ -19,8 +19,8 @@ Implemented and verified locally:
 - Rehearsal APIs for full spine, per-gate state, media readiness, and director state.
 - Vercel-compatible local JSON rehearsal data packaged under `dashboard/`.
 - Production-readiness checker that keeps launch blocked until remaining lanes are real.
-- Production Vercel smoke retained for `main` commit `b76f6ba736420120457002a93a52cce7b8455879`
-  at `morrow/rehearsal/website-smoke/production-main-b76f6ba.json`.
+- Production Vercel smoke retained for `main` commit `8e1ee79f0e0c63873709fa3cdda2421258e0040d`
+  at `morrow/rehearsal/website-smoke/production-main-8e1ee79.json`.
 - Full twelve-asset media intake manifest and checker; no media asset is release-ready.
 
 ## Required Review Entry Points

@@ -12,8 +12,8 @@ The current package is meant to let reviewers test the opening Copperline ARG pa
 - Director controls are exposed only as a locked contract.
 - Media requirements are fully enumerated.
 - Production mutation remains disabled.
-- Vercel production deployment `dpl_HziaWHfk7paFF91UTquJeHphockE` serves commit
-  `b76f6ba736420120457002a93a52cce7b8455879` at `https://copperlinehosting.com`.
+- Vercel production deployment `dpl_3vBMUGXgkyS2p99Uq5gCXg4Buewc` serves commit
+  `8e1ee79f0e0c63873709fa3cdda2421258e0040d` at `https://copperlinehosting.com`.
 
 ## Hard Blockers
 
@@ -58,13 +58,14 @@ python tools\check_morrow_production_readiness.py
 
 ## Website Deployment Evidence
 
-Retained production smoke: `morrow/rehearsal/website-smoke/production-main-b76f6ba.json`.
+Retained production smoke: `morrow/rehearsal/website-smoke/production-main-8e1ee79.json`.
 
 The smoke confirms:
 
 - `main` deployment on Vercel is `READY`.
-- `https://copperlinehosting.com/game-servers.php` returns the Copperline entry clues.
 - `https://copperlinehosting.com/recovery/mossfield/console` returns the G01-G15 local console.
+- `https://copperlinehosting.com/api/rehearsal/morrow/media` returns the media-intake policy and all
+  twelve release-blocking assets.
 - `https://copperlinehosting.com/api/rehearsal/morrow/full` returns the local full-spine contract with
   production and director mutation disabled.
 - Vercel runtime errors were clean for the checked one-hour window.
