@@ -46,7 +46,8 @@ public record MorrowRelationshipSnapshot(
     }
 
     public MorrowRelationshipSnapshot withCommittedEvent(String eventKey) {
-        if (eventKey == null || !eventKey.matches("morrow\\.act[0-7]\\.[a-z0-9_]+")) {
+        if (eventKey == null || !(eventKey.matches("morrow\\.act[0-7]\\.[a-z0-9_]+")
+                || eventKey.matches("morrow\\.gate\\.g(?:0[1-9]|1[0-5])_[a-z0-9_]+"))) {
             throw new IllegalArgumentException("Invalid Morrow event key: " + eventKey);
         }
         if (committedEvents.contains(eventKey)) {
@@ -72,4 +73,3 @@ public record MorrowRelationshipSnapshot(
         );
     }
 }
-

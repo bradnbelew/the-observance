@@ -1,6 +1,6 @@
 # Morrow Handmade Media Production Packet
 
-Status: required for full release; not required for the current local G01-G03 route slice.
+Status: required for full release; G07 media is the next blocker after the playable local G01-G06 slice.
 Production boundary: make these as first-party files, store them locally, then hash the final encoded outputs before they enter any delivery catalog.
 
 Media intake is now tracked by `morrow/media/media-manifest.template.json`. That manifest contains all
@@ -41,6 +41,14 @@ exist.
 5. `morrow.g07.june_lighthouse_photo`
    - Capture/stage a Minecraft horizon image plus old locator map.
    - Required observation: the current recovered tower is absent from the dated photograph and map.
+   - Use June's house and blue chest near world-relative `(10, 81, 23)` as the camera story anchor.
+   - Frame the southeast waterline toward the recovered north-light footprint around `(34, 80, 34)`.
+   - Capture the historical source from a disposable copy with the lighthouse removed; do not retouch
+     the live rehearsal screenshot or use generated concept art as evidence.
+   - Keep the house edge, shoreline, path, and at least two stable terrain marks visible in both the
+     old image and live comparison so the absence is independently verifiable.
+   - Export one clean PNG at native Minecraft resolution and one deliberately compressed in-fiction
+     JPEG. Preserve the clean PNG as the source original.
    - Provide coordinate-grid alt text naming visible landmarks and the empty location.
 
 6. `morrow.g08.frame_thirty_seven`

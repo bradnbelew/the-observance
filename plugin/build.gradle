@@ -119,6 +119,7 @@ def pluginSelfTests = [
     , branchGovernanceAuthority: 'com.observance.watcher.morrow.branch.BranchGovernanceAuthoritySelfTest'
     , entityReplayLoop: 'com.observance.watcher.morrow.room04.replay.EntityReplayLoopSelfTest'
     , morrowVerticalSliceRehearsal: 'com.observance.watcher.morrow.rehearsal.MorrowVerticalSliceRehearsalSelfTest'
+    , mossfieldArrivalAuthority: 'com.observance.watcher.morrow.mossfield.MossfieldArrivalAuthoritySelfTest'
 ]
 
 def pluginSelfTestTasks = pluginSelfTests.collect { testName, testClass ->

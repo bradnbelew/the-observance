@@ -156,6 +156,13 @@ morrow-reboot:
     # required=true fails startup; enable only after the accepted/declined parity rehearsal.
     enabled: false
     required: false
+  mossfield:
+    # Player-facing reboot world. This replaces the room-grid rehearsal with the recovered settlement.
+    # Keep disabled until the target is a disposable or explicitly approved Mossfield world.
+    build-enabled: false
+    origin-x: 0
+    origin-y: 80
+    origin-z: 0
   room04:
     # Separate rehearsal gate: enabling the reboot alone never authorizes a world build.
     build-enabled: false

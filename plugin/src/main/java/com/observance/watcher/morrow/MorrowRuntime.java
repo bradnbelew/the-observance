@@ -42,6 +42,7 @@ import com.observance.watcher.morrow.branch.BranchGovernanceInstaller;
 import com.observance.watcher.morrow.branch.BranchGovernanceManifest;
 import com.observance.watcher.morrow.branch.BukkitBranchGovernance;
 import com.observance.watcher.morrow.branch.BukkitBranchGovernanceWorld;
+import com.observance.watcher.morrow.mossfield.BukkitMossfieldExperience;
 import com.observance.watcher.listener.ResourcePackPusher;
 import com.observance.watcher.signal.ResourcePackTracker;
 import org.bukkit.World;
@@ -72,6 +73,7 @@ public final class MorrowRuntime implements AutoCloseable {
     private final MorrowRuntimeSettings settings;
     private final MorrowLocalState localState;
     private final MorrowEventProjector projector;
+    private final BukkitMossfieldExperience mossfield;
     private final RecoveryRoom04Installer.Result room04Result;
     private final VersionRoomsInstaller.Result versionRoomsResult;
     private final ConsensusAuditInstaller.Result consensusAuditResult;
@@ -102,6 +104,7 @@ public final class MorrowRuntime implements AutoCloseable {
             MorrowRuntimeSettings settings,
             MorrowLocalState localState,
             MorrowEventProjector projector,
+            BukkitMossfieldExperience mossfield,
             RecoveryRoom04Installer.Result room04Result,
             VersionRoomsInstaller.Result versionRoomsResult,
             ConsensusAuditInstaller.Result consensusAuditResult,
@@ -130,6 +133,7 @@ public final class MorrowRuntime implements AutoCloseable {
         this.settings = Objects.requireNonNull(settings, "settings");
         this.localState = Objects.requireNonNull(localState, "localState");
         this.projector = Objects.requireNonNull(projector, "projector");
+        this.mossfield = mossfield;
         this.room04Result = room04Result;
         this.versionRoomsResult = versionRoomsResult;
         this.consensusAuditResult = consensusAuditResult;
@@ -436,6 +440,7 @@ public final class MorrowRuntime implements AutoCloseable {
         BukkitMaintenanceWindow maintenanceWindow = null;
         BukkitColdStorage coldStorage = null;
         BukkitBranchGovernance branchGovernance = null;
+        BukkitMossfieldExperience mossfield = null;
         ResourcePackTracker resourcePackTracker = null;
         ResourcePackPusher resourcePackPusher = null;
         try {
@@ -446,6 +451,18 @@ public final class MorrowRuntime implements AutoCloseable {
                     data.resolve(CURSOR_NAME),
                     plugin.getLogger());
             projector.start();
+            if (section.getBoolean("mossfield.build-enabled", false)) {
+                BukkitMossfieldExperience.Origin mossfieldOrigin = new BukkitMossfieldExperience.Origin(
+                        section.getInt("mossfield.origin-x"),
+                        section.getInt("mossfield.origin-y", 80),
+                        section.getInt("mossfield.origin-z"));
+                if (mossfieldOrigin.y() - 2 < world.getMinHeight()
+                        || mossfieldOrigin.y() + 15 >= world.getMaxHeight()) {
+                    throw new IllegalArgumentException("Mossfield origin exceeds the configured world height");
+                }
+                mossfield = new BukkitMossfieldExperience(plugin, world, mossfieldOrigin, state);
+                mossfield.start();
+            }
             if (packPlan.enabled()) {
                 resourcePackTracker = new ResourcePackTracker(
                         plugin.safety(),
@@ -544,6 +561,7 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " journal_events=" + state.snapshot().committedEvents().size()
                     + " projector_state=" + projector.snapshot().state()
                     + " resource_pack=" + (packPlan.enabled() ? "optional" : "disabled")
+                    + " mossfield=" + (mossfield == null ? "disabled" : "ready")
                     + " body_entities=" + (body == null ? 0 : body.ownedEntityCount())
                     + " static_entities=" + (staticRestore == null ? 0 : staticRestore.ownedEntityCount())
                     + " replay_entities=" + (entityReplay == null ? 0 : entityReplay.ownedEntityCount())
@@ -556,13 +574,14 @@ public final class MorrowRuntime implements AutoCloseable {
                     + " cold_storage_entities=" + (coldStorage == null ? 0 : coldStorage.ownedEntityCount())
                     + " branch_governance_entities=" + (branchGovernance == null ? 0 : branchGovernance.ownedEntityCount()));
             return new MorrowRuntime(
-                    settings, state, projector, room04Result, versionRoomsResult, consensusAuditResult,
+                    settings, state, projector, mossfield, room04Result, versionRoomsResult, consensusAuditResult,
                     witnessAnchorResult, almostHomeResult, accountContinuityResult, maintenanceWindowResult, coldStorageResult, branchGovernanceResult,
                     body, staticRestore, entityReplay, dialogs,
                     playerEntry, versionRooms, consensusAudit, witnessAnchor, almostHome, accountContinuity, maintenanceWindow, coldStorage, branchGovernance,
                     copperStability,
                     resourcePackTracker, resourcePackPusher);
         } catch (IOException | RuntimeException | LinkageError failure) {
+            if (mossfield != null) mossfield.close();
             if (branchGovernance != null) branchGovernance.close();
             if (coldStorage != null) coldStorage.close();
             if (maintenanceWindow != null) maintenanceWindow.close();
@@ -634,6 +653,7 @@ public final class MorrowRuntime implements AutoCloseable {
 
     @Override
     public void close() {
+        if (mossfield != null) mossfield.close();
         if (branchGovernance != null) branchGovernance.close();
         if (coldStorage != null) coldStorage.close();
         if (maintenanceWindow != null) maintenanceWindow.close();

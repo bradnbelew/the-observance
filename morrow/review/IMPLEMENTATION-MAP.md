@@ -11,7 +11,9 @@ The G01-G15 authority is creatively complete, but the reboot is still mostly uni
 Current implementation gaps:
 
 - G01-G03 Copperline entry: designed, but no release-bound public routes, fictional login predicate, rate-limit receipt, or authenticated handoff exists for the new spine.
-- G04-G07 Mossfield entry and Act 1: historical Paper rooms prove useful infrastructure patterns only; no coherent Mossfield world, storehouse, book-coordinate cache, or lighthouse mismatch exists as the new campaign.
+- G04-G06 Mossfield entry and Act 1 are now implemented in a coherent local settlement: safe non-op
+  arrival, Cairn's storehouse routine, a revealed coordinate index, and Rookery's maintenance cache.
+  G07's photograph/horizon comparison remains unbuilt.
 - G08-G10 media and Discord: anchor artifacts are concept-only and hashless; Discord private-fragment infrastructure must be remapped before G10 can be claimed current.
 - G11-G13 continuity: the corrected G11/G13 designs are authority only; no status rewrite, immutable uptime export, Iona memo, or continued-session encounter is implemented.
 - G14-G15 shutdown: no new manual stop route, arm receipt, terminal shutdown, or cross-surface silence exists.
@@ -32,7 +34,8 @@ Implemented slice: `morrow.local.g01-g05.v1`.
 
 It proves the smallest honest grammar: ordinary Copperline trace to Mossfield handoff, a meaningful storehouse discovery, and a delayed bounded consequence. G01-G03 are local receipt predicates for source-comment discovery, forum/support identity archaeology, and a status-log-derived recovery login. G04 records non-op Mossfield entry and advances Morrow from `support_software` to `observant`. G05 records cairn's storehouse habit as a native-world discovery. After G05, `chest_correction` is scheduled only after players leave the storehouse; it is not required for progress, has a one-second maximum, has a text equivalent, and cannot consume evidence.
 
-This is local-only and not playable. It does not contact Minecraft, Supabase, Discord, Vercel, Railway, or production.
+The contract fixture remains local-only. Its G04-G06 predicates are now exercised by a disposable,
+player-facing Paper world; no Supabase, Discord, Railway, or production target is contacted.
 
 ## Files
 

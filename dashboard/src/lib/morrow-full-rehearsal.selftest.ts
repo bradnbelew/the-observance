@@ -81,6 +81,6 @@ const testGuidePage = readFileSync(resolve('src/app/recovery/mossfield/test-guid
 assert.ok(testGuidePage.includes('Mossfield First-Touch Test Guide'));
 assert.ok(testGuidePage.includes('/recovery/mossfield?alias=iona&key=041722'));
 assert.ok(testGuidePage.includes('productionMutation false'));
-assert.ok(testGuidePage.includes('Do not claim the Minecraft, Discord, database, or director runtime lanes are launch-ready.'));
+assert.ok(testGuidePage.includes('G04-G06 are locally playable.'));
 
 console.log('MORROW FULL REHEARSAL: PASS gates=15 media=12 local-boundary hash-chain');

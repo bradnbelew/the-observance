@@ -9,6 +9,9 @@ public final class MorrowEventAuthority {
     private static final Map<String, Definition> EVENTS = Map.ofEntries(
             event("morrow.act0.case_chain_authenticated", "copperline", null),
             event("morrow.act0.server_handoff_recovered", "copperline", "morrow.act0.case_chain_authenticated"),
+            event("morrow.gate.g04_first_connection", "minecraft", "morrow.act0.server_handoff_recovered"),
+            event("morrow.gate.g05_storehouse_trail", "minecraft", "morrow.gate.g04_first_connection"),
+            event("morrow.gate.g06_book_coordinates", "minecraft", "morrow.gate.g05_storehouse_trail"),
             event("morrow.act1.room04_witnessed", "minecraft", "morrow.act0.server_handoff_recovered"),
             event("morrow.act1.static_proposal_authenticated", "minecraft", "morrow.act1.room04_witnessed"),
             event("morrow.act1.intention_error_proven", "minecraft", "morrow.act1.static_proposal_authenticated"),
