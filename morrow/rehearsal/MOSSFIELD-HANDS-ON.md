@@ -15,14 +15,18 @@ menu. The first objective is simply to understand where this place is and how it
 ## Built Route
 
 1. Read the freight-stop sign and follow the surviving road into Mossfield.
-2. Enter the service office. Read Iona's `Mount notice` on the lectern.
-3. Follow the note to Cairn's storehouse. Read `Bench notes` at the workbench.
+2. Enter the service office. Read `Iona's note` on the lectern.
+3. Follow the note to Cairn's storehouse. Read `Cairn's list` at the workbench.
 4. Reconstruct Cairn's ordinary closing routine by opening the four work barrels in this order:
    survey, mend, mark, light. Their contents and positions carry the meaning; there is no answer UI.
 5. When the routine is recognized, read the `Storehouse index` that appears at the desk.
 6. Start at the service-office door and travel 11 blocks west, then 24 blocks north. Find survey
    cairn 03 at the edge of the rail stop and open the maintenance cache beneath it.
-7. Read Rookery's `Maintenance copy`. This is the end of the currently rebuilt chapter.
+7. Read Rookery's book, `The spare log`. This is the end of the currently rebuilt chapter.
+
+The local preview should use a flat world with grass at Y=79, directly under the settlement's Y=80
+walking surface. A world generated with ground at another height makes Mossfield look like a floating
+platform and is not a valid visual playtest.
 
 ## What The Player Should Understand
 
@@ -40,4 +44,3 @@ history. A player is investigating a place, not performing laboratory exercises 
 G04 first connection, G05 storehouse trail, and G06 maintenance cache are implemented in the local
 Paper world with durable, restart-safe receipts. G07 onward, final handmade media, live multiplayer
 hosting, Discord delivery, and production data projection remain release blockers.
-

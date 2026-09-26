@@ -52,7 +52,7 @@ const testSteps = [
     phase: '07',
     name: "Cairn's storehouse",
     route: '/recovery/mossfield/console',
-    action: "Read the service-office mount notice and Cairn's bench notes, then follow the work routine through the storehouse objects.",
+    action: "Read Iona's note in the service office and Cairn's list in the storehouse, then follow the work routine through the stored objects.",
     expected: 'The desk index appears after survey, mend, mark, and light. G05 is retained without consuming evidence.',
   },
   {
@@ -60,7 +60,7 @@ const testSteps = [
     name: 'Maintenance cache',
     route: '/recovery/mossfield/console',
     action: 'From the service-office door, travel 11 west and 24 north to survey cairn 03, then open its cache.',
-    expected: "Rookery's maintenance copy establishes the first impossible restoration and points toward June's lighthouse photograph.",
+    expected: "Rookery's spare log establishes the first impossible restoration and points toward June's lighthouse photograph.",
   },
   {
     phase: '09',

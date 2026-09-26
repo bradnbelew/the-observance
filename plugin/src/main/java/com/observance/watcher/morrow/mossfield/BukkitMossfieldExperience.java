@@ -14,11 +14,16 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Lectern;
 import org.bukkit.block.Sign;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.sign.Side;
 import org.bukkit.block.sign.SignSide;
+import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.data.type.Fence;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,7 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/** Player-facing G04-G05 slice: a recovered settlement, not a puzzle room. */
+/** Player-facing G04-G06 slice in the recovered Mossfield settlement. */
 public final class BukkitMossfieldExperience implements Listener, AutoCloseable {
     private static final int MIN_X = -42;
     private static final int MAX_X = 42;
@@ -71,6 +76,7 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
 
     public void start() {
         if (started) return;
+        verifyGround();
         build();
         boolean complete = state.snapshot().committedEvents().contains(
                 MossfieldArrivalAuthority.STOREHOUSE_TRAIL);
@@ -124,8 +130,7 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
         }
         if (result.status() == Status.RESET) {
             player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_TRAPDOOR_CLOSE, .45F, .72F);
-            player.sendActionBar(Component.text(
-                    "The four inventory tabs settle back into their old order.", NamedTextColor.GRAY));
+            player.sendActionBar(Component.text("Cairn's desk is still empty.", NamedTextColor.GRAY));
             return;
         }
         if (result.status() == Status.COMPLETE) completeStorehouse(player);
@@ -167,7 +172,7 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
             revealIndex(true);
             revealMaintenanceCache(true);
             player.playSound(player.getLocation(), Sound.BLOCK_CHISELED_BOOKSHELF_INSERT, .8F, .8F);
-            player.sendActionBar(Component.text("A book settles into the desk lectern.", NamedTextColor.GRAY));
+            player.sendActionBar(Component.text("Something's on Cairn's desk now.", NamedTextColor.GRAY));
             plugin.getLogger().info("MORROW_MOSSFIELD_STOREHOUSE player=" + player.getName()
                     + " created=" + committed.created() + " receipt=" + committed.eventHash());
         } catch (IOException | RuntimeException failure) {
@@ -191,10 +196,21 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
         buildSurveyCairn();
         buildServiceOffice();
         buildStorehouse();
+        buildSignalShed();
         buildFarm();
         buildHomes();
         buildLighthouse();
         buildRuinsAndTrees();
+        buildGroundCover();
+        auditBuild();
+    }
+
+    private void verifyGround() {
+        Block boundary = at(MAX_X + 8, -1, 0);
+        if (!boundary.getType().isSolid() || !at(MAX_X + 8, 0, 0).getType().isAir()) {
+            throw new IllegalStateException("Mossfield needs level ground at origin Y-1 beyond its build area; "
+                    + "check the world generator and origin before enabling the settlement");
+        }
     }
 
     private void buildPaths() {
@@ -219,9 +235,14 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
             pillar(x, z, 0, 4, Material.STRIPPED_SPRUCE_LOG);
         }
         for (int x = -5; x <= 5; x++) for (int z = -36; z <= -26; z++) {
-            if (Math.abs(x) + Math.abs(z + 31) <= 8) set(x, 5, z, Material.SPRUCE_PLANKS);
+            if (Math.abs(x) + Math.abs(z + 31) <= 8) set(x, 5, z, Material.SPRUCE_SLAB);
         }
-        sign(-4, 2, -31, List.of("MOSSFIELD", "freight / post", "service suspended", ""));
+        set(-4, 0, -31, Material.STRIPPED_SPRUCE_LOG);
+        set(-4, 1, -31, Material.STRIPPED_SPRUCE_LOG);
+        postSign(-4, 2, -31, BlockFace.EAST, List.of("MOSSFIELD", "freight + post", "carts by the", "back wall pls"));
+        set(-4, 0, -29, Material.SPRUCE_STAIRS);
+        set(3, 0, -29, Material.SPRUCE_STAIRS);
+        set(-3, -1, -29, Material.SPRUCE_PLANKS);
         barrel(-3, 0, -29, "arrival", named(Material.COMPASS, "Copperline recovery compass"));
     }
 
@@ -233,54 +254,94 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
         set(-19, 0, -33, Material.MOSSY_COBBLESTONE);
         set(-19, 1, -35, Material.SPRUCE_FENCE);
         set(-19, 2, -35, Material.SOUL_LANTERN);
-        sign(-20, 1, -35, List.of("survey 03", "north edge", "do not move", ""));
+        set(-21, 0, -35, Material.STRIPPED_SPRUCE_LOG);
+        postSign(-21, 1, -35, BlockFace.SOUTH, List.of("cairn no. 3", "Rook put this", "back crooked", "again"));
     }
 
     private void buildServiceOffice() {
         house(-12, -10, 9, 8, Material.COBBLESTONE, Material.SPRUCE_PLANKS);
-        sign(-8, 2, -10, List.of("SERVICE OFFICE", "keys / post", "leave returns", "inside"));
-        lectern(-9, 1, -6, book("Mount notice", "Iona", List.of(
-                "Recovery image 03\n\nThe south rail is incomplete. Do not repair it from memory. If a structure disagrees with a photograph, keep both records.",
-                "Cairn's storehouse inventory was left intact. His desk index is filed by routine, not by date.")));
-        barrel(-14, 1, -7, "returns", named(Material.NAME_TAG, "key tag: cairn / storehouse"));
+        wallSign(-9, 2, -11, BlockFace.NORTH, List.of("OFFICE", "keys go in", "the box, Rook", "- Iona"));
+        set(-11, 1, -4, Material.BOOKSHELF);
+        set(-5, 1, -4, Material.FURNACE);
+        set(-8, 1, -5, Material.CRAFTING_TABLE);
+        set(-6, 1, -6, Material.OAK_FENCE);
+        set(-6, 2, -6, Material.LANTERN);
+        lectern(-9, 1, -6, book("Iona's note", "Iona", List.of(
+                "Moved the copy over this morning. The south rail still ends in the grass. Please don't 'finish' it from that old picture again. It was a sketch, not a build list. - I",
+                "Cairn: your four work barrels came through. Your desk book didn't. I left the key box where you can actually find it this time.")));
+        barrel(-10, 1, -4, "key box", named(Material.NAME_TAG, "Cairn's shed key"));
     }
 
     private void buildStorehouse() {
         house(13, 5, 14, 13, Material.MOSSY_COBBLESTONE, Material.SPRUCE_PLANKS);
-        sign(19, 2, 5, List.of("CAIRN", "tools / seed", "hinge sticks", "lift, don't kick"));
-        lectern(14, 1, 7, book("Bench notes", "cairn", List.of(
-                "If I am late: lot first. Hinge second. Chalk every returned crate. Desk lamp last.",
-                "Do not sort by shine. Half these tools belonged to people before they belonged to jobs.")));
-        barrel(STOREHOUSE.get("survey"), "survey", named(Material.COMPASS, "worn lot compass"),
+        wallSign(19, 2, 4, BlockFace.NORTH, List.of("CAIRN'S SHED", "shut the door", "properly pls", ""));
+        set(14, 1, 14, Material.CRAFTING_TABLE);
+        set(25, 1, 15, Material.CHEST);
+        set(14, 2, 11, Material.BOOKSHELF);
+        lectern(14, 1, 7, book("Cairn's list", "cairn", List.of(
+                "Closing up: walk the lot, sort the hinge, chalk the returns, then kill the desk lamp. If June's borrowed my chalk AGAIN she can count crates herself.",
+                "Rook, the pins go in the hinge tin. The seed barrel is not a hinge tin. We have had this conversation.")));
+        barrel(STOREHOUSE.get("survey"), "lot bag", named(Material.COMPASS, "worn lot compass"),
                 named(Material.STRING, "survey chain, 18 links"));
-        barrel(STOREHOUSE.get("mend"), "mend", named(Material.IRON_HOE, "bent hinge spanner"),
+        barrel(STOREHOUSE.get("mend"), "hinge tin", named(Material.IRON_HOE, "bent hinge spanner"),
                 named(Material.IRON_NUGGET, "three saved hinge pins"));
-        barrel(STOREHOUSE.get("mark"), "mark", named(Material.WHITE_DYE, "return chalk"),
+        barrel(STOREHOUSE.get("mark"), "returns", named(Material.WHITE_DYE, "return chalk"),
                 named(Material.PAPER, "crate tally, rain damaged"));
-        barrel(STOREHOUSE.get("light"), "light", named(Material.FLINT_AND_STEEL, "desk taper striker"),
+        barrel(STOREHOUSE.get("light"), "lamp bits", named(Material.FLINT_AND_STEEL, "desk taper striker"),
                 named(Material.STRING, "lantern wick"));
         set(INDEX_LECTERN.x(), INDEX_LECTERN.y(), INDEX_LECTERN.z(), Material.LECTERN);
-        set(20, 2, 10, Material.IRON_CHAIN);
-        set(20, 3, 10, Material.LANTERN);
-        barrel(26, 1, 14, "private", named(Material.FEATHER, "cairn's old signing feather"));
+        set(21, 1, 10, Material.OAK_FENCE);
+        set(21, 2, 10, Material.LANTERN);
+        barrel(25, 1, 14, "Cairn's things", named(Material.FEATHER, "Cairn's old signing feather"));
+    }
+
+    private void buildSignalShed() {
+        house(7, -24, 7, 7, Material.STONE_BRICKS, Material.OAK_PLANKS);
+        wallSign(9, 2, -25, BlockFace.NORTH, List.of("SOUTH SIGNAL", "leave the", "switch alone", "- Rook"));
+        set(8, 1, -19, Material.REDSTONE_LAMP);
+        set(12, 1, -19, Material.LEVER);
+        set(11, 1, -20, Material.CHEST);
+        for (int z = -26; z <= -21; z++) set(4, 0, z, Material.RAIL);
     }
 
     private void buildFarm() {
         for (int x = -27; x <= -12; x++) for (int z = 9; z <= 23; z++) {
             boolean fence = x == -27 || x == -12 || z == 9 || z == 23;
-            set(x, 0, z, fence ? Material.OAK_FENCE : ((x + z) % 5 == 0 ? Material.WATER : Material.FARMLAND));
+            boolean gate = x == -20 && z == 9;
+            set(x, 0, z, gate ? Material.OAK_FENCE_GATE
+                    : fence ? Material.OAK_FENCE
+                    : ((x + z) % 5 == 0 ? Material.WATER : Material.FARMLAND));
             if (!fence && (x + z) % 5 != 0 && (x * 3 + z) % 4 != 0) set(x, 1, z, Material.WHEAT);
         }
-        sign(-20, 2, 9, List.of("JUNE'S LOWER", "replant west", "water gate leaks", ""));
+        connectFences(-27, -12, 9, 23);
+        set(-19, 0, 7, Material.STRIPPED_OAK_LOG);
+        postSign(-19, 1, 7, BlockFace.NORTH, List.of("JUNE'S PATCH", "latch sticks", "lift it first", ""));
+        set(-31, 0, 15, Material.COMPOSTER);
+        set(-31, 0, 16, Material.HAY_BLOCK);
+        set(-30, 0, 16, Material.HAY_BLOCK);
         set(-10, 0, 18, Material.CAMPFIRE);
     }
 
     private void buildHomes() {
         house(-28, -5, 8, 9, Material.COBBLESTONE, Material.OAK_PLANKS);
         house(5, 18, 10, 9, Material.STONE_BRICKS, Material.SPRUCE_PLANKS);
-        sign(-24, 2, -5, List.of("ROOKERY", "maps upstairs", "boots by stove", ""));
-        sign(9, 2, 18, List.of("JUNE", "lens cloth", "in blue chest", ""));
-        barrel(10, 1, 23, "june", named(Material.SPYGLASS, "June's salt-stained spyglass"));
+        wallSign(-25, 2, -6, BlockFace.NORTH, List.of("ROOK'S", "boots off", "yes, yours too", ""));
+        wallSign(9, 2, 17, BlockFace.NORTH, List.of("JUNE", "back after", "the tide", ""));
+        set(-27, 1, 1, Material.FURNACE);
+        set(-22, 1, 1, Material.BOOKSHELF);
+        set(-26, 1, 1, Material.CHEST);
+        stair(-25, 1, 1, Material.OAK_STAIRS, BlockFace.NORTH);
+        stair(6, 1, 24, Material.SPRUCE_STAIRS, BlockFace.NORTH);
+        set(-23, 1, 0, Material.OAK_FENCE);
+        set(-23, 2, 0, Material.LANTERN);
+        set(8, 1, 23, Material.OAK_FENCE);
+        set(8, 2, 23, Material.LANTERN);
+        set(13, 1, 24, Material.BOOKSHELF);
+        set(10, 0, 23, Material.BLUE_WOOL);
+        chest(10, 1, 23, named(Material.GLASS_PANE, "spare lens glass"),
+                named(Material.PAPER, "photo envelope / keep dry"));
+        set(17, 0, 22, Material.OAK_FENCE);
+        set(17, 1, 22, Material.LANTERN);
     }
 
     private void buildLighthouse() {
@@ -289,11 +350,24 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
         for (int y = 0; y <= 11; y++) for (int x = 32; x <= 36; x++) for (int z = 32; z <= 36; z++) {
             boolean wall = x == 32 || x == 36 || z == 32 || z == 36;
             if (wall) set(x, y, z, y % 4 == 0 ? Material.MOSSY_STONE_BRICKS : Material.STONE_BRICKS);
+            else if (y == 0) set(x, y, z, Material.STONE_BRICKS);
         }
+        set(34, 1, 32, Material.AIR);
+        set(34, 2, 32, Material.AIR);
+        set(34, 0, 31, Material.STONE_BRICK_STAIRS);
+        for (int n = 0; n <= 7; n++) {
+            int x = 26 + n;
+            int z = 26 + n;
+            if (n >= 2) set(x, -1, z, Material.STRIPPED_SPRUCE_LOG);
+            set(x, 0, z, Material.SPRUCE_PLANKS);
+            set(x + 1, 0, z, Material.SPRUCE_PLANKS);
+            set(x, 0, z + 1, Material.SPRUCE_PLANKS);
+        }
+        for (int x = 32; x <= 34; x++) set(x, 0, 31, Material.SPRUCE_PLANKS);
         for (int x = 31; x <= 37; x++) for (int z = 31; z <= 37; z++) set(x, 12, z,
                 (x == 31 || x == 37 || z == 31 || z == 37) ? Material.IRON_BARS : Material.SMOOTH_STONE);
         set(34, 12, 34, Material.SEA_LANTERN);
-        sign(34, 2, 31, List.of("NORTH LIGHT", "June / Rookery", "lens replaced", "09-14"));
+        wallSign(33, 2, 31, BlockFace.NORTH, List.of("NORTH LIGHT", "June says the", "lens is fine", "ask Rook"));
     }
 
     private void buildRuinsAndTrees() {
@@ -302,11 +376,24 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
             if (x % 2 == 0) set(x, 1, 31, Material.COBWEB);
         }
         for (Cell tree : List.of(new Cell(-35, 0, 4), new Cell(-34, 0, 28), new Cell(2, 0, 25),
-                new Cell(23, 0, -15), new Cell(37, 0, -7), new Cell(9, 0, -19))) tree(tree.x(), tree.z());
+                new Cell(23, 0, -15), new Cell(37, 0, -7), new Cell(18, 0, -22),
+                new Cell(-38, 0, -20), new Cell(-39, 0, 18), new Cell(4, 0, 39))) tree(tree.x(), tree.z());
         for (Cell lantern : List.of(new Cell(0, 0, -12), new Cell(-7, 0, 3), new Cell(9, 0, 5))) {
             set(lantern.x(), 0, lantern.z(), Material.OAK_FENCE);
             set(lantern.x(), 1, lantern.z(), Material.OAK_FENCE);
             set(lantern.x(), 2, lantern.z(), Material.LANTERN);
+        }
+    }
+
+    private void buildGroundCover() {
+        for (int x = MIN_X + 2; x <= MAX_X - 2; x++) for (int z = MIN_Z + 2; z <= MAX_Z - 2; z++) {
+            if (Math.abs(x) <= 5 && z < -24) continue;
+            if (Math.floorMod(x * 17 + z * 13, 19) != 0) continue;
+            if (at(x, 0, z).getType() != Material.AIR
+                    || at(x, -1, z).getType() != Material.GRASS_BLOCK) continue;
+            int patch = Math.floorMod(x * 7 - z * 11, 23);
+            set(x, 0, z, patch == 0 ? Material.DANDELION
+                    : patch == 1 ? Material.POPPY : Material.SHORT_GRASS);
         }
     }
 
@@ -315,16 +402,33 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
             set(x, 0, z, Material.SPRUCE_PLANKS);
             boolean edge = x == x0 || x == x0 + width - 1 || z == z0 || z == z0 + depth - 1;
             if (edge) for (int y = 1; y <= 4; y++) set(x, y, z, y == 1 ? foundation : wall);
-            set(x, 5, z, Material.SPRUCE_SLAB);
         }
         int doorX = x0 + width / 2;
         set(doorX, 1, z0, Material.AIR);
         set(doorX, 2, z0, Material.AIR);
+        stair(doorX, 0, z0 - 1, Material.SPRUCE_STAIRS, BlockFace.SOUTH);
         for (int x : List.of(x0 + 1, x0 + width - 2)) {
             set(x, 2, z0, Material.GLASS_PANE);
         }
         for (int x : List.of(x0, x0 + width - 1)) for (int z : List.of(z0, z0 + depth - 1)) {
             pillar(x, z, 1, 5, Material.STRIPPED_SPRUCE_LOG);
+        }
+        for (int z = z0 - 1; z <= z0 + depth; z++) {
+            for (int inset = 0; inset < (width + 2) / 2; inset++) {
+                int roofY = 5 + inset;
+                stair(x0 - 1 + inset, roofY, z, Material.SPRUCE_STAIRS, BlockFace.EAST);
+                stair(x0 + width - inset, roofY, z, Material.SPRUCE_STAIRS, BlockFace.WEST);
+            }
+            if (width % 2 == 1) set(x0 + width / 2, 5 + (width + 2) / 2, z, Material.SPRUCE_SLAB);
+        }
+        for (int x = x0; x < x0 + width; x++) {
+            for (int y = 5; y <= 5 + width / 2; y++) {
+                int edgeDistance = Math.min(x - x0, x0 + width - 1 - x);
+                if (y <= 5 + edgeDistance) {
+                    set(x, y, z0, wall);
+                    set(x, y, z0 + depth - 1, wall);
+                }
+            }
         }
     }
 
@@ -343,8 +447,8 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
         if (!(block.getState() instanceof Lectern lectern)) return;
         lectern.getInventory().clear();
         if (revealed) lectern.getInventory().setItem(0, book("Storehouse index", "cairn", List.of(
-                "Rookery took the maintenance copy below the old survey cairn.\n\nFrom the service-office door: 11 west, 24 north.",
-                "The first page is not a date. Read row, page, line. Keep the notebook dry.")));
+                "Rook nicked the spare log again. Says cairn no. 3 keeps it drier than my desk. From Iona's office step: 11 west, 24 north. If he buried it under the cobbles, he can dig it up himself.",
+                "Those three numbers on the cover are row / page / line, not a date. Please stop asking me.")));
     }
 
     private void revealMaintenanceCache(boolean revealed) {
@@ -352,13 +456,13 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
             set(MAINTENANCE_CACHE.x(), MAINTENANCE_CACHE.y(), MAINTENANCE_CACHE.z(), Material.ROOTED_DIRT);
             return;
         }
-        barrel(MAINTENANCE_CACHE, "maintenance cache",
-                book("Maintenance copy", "rookery", List.of(
-                        "03 / 02 / 04\n\nMorrow restored the south signal shed from a planning image. We never built it. Iona says keep the image and the world both.",
-                        "June's north-light photograph is older than the lens repair. Stand where her blue chest faces the water and compare the horizon.",
-                        "Shutdown fragment A\n\nKEEP THE LAST CLEAN COPY OUTSIDE THE RECOVERY TREE.")),
-                named(Material.RECOVERY_COMPASS, "Rookery's retained locator"),
-                named(Material.PAPER, "incident fragment / copy A"));
+        barrel(MAINTENANCE_CACHE, "Rook's dry box",
+                book("The spare log", "Rookery", List.of(
+                        "03 / 02 / 04\n\nThe south signal shed is back. I drew that thing once. We never built it. Iona still has the sketch, thank god. Keep both copies until we know where this one came from.",
+                        "June took a picture from her front step before the lens job. Find the envelope in her blue box. Look at the shore behind her, not the tower.",
+                        "If we have to pull the plug, the last clean copy stays OUTSIDE the recovery folder. I mean it, Theo.")),
+                named(Material.COMPASS, "Rook's old locator"),
+                named(Material.PAPER, "folded incident note"));
     }
 
     private void discoverMaintenanceCache(Player player) {
@@ -408,18 +512,90 @@ public final class BukkitMossfieldExperience implements Listener, AutoCloseable 
         barrel.update(true, false);
     }
 
+    private void chest(int x, int y, int z, ItemStack... contents) {
+        set(x, y, z, Material.CHEST);
+        if (!(at(x, y, z).getState() instanceof Chest chest)) return;
+        chest.getInventory().clear();
+        for (int index = 0; index < contents.length; index++) chest.getInventory().setItem(index, contents[index]);
+        chest.update(true, false);
+    }
+
     private void lectern(int x, int y, int z, ItemStack book) {
         set(x, y, z, Material.LECTERN);
         if (at(x, y, z).getState() instanceof Lectern lectern) lectern.getInventory().setItem(0, book);
     }
 
-    private void sign(int x, int y, int z, List<String> lines) {
+    private void wallSign(int x, int y, int z, BlockFace facing, List<String> lines) {
+        set(x, y, z, Material.SPRUCE_WALL_SIGN);
+        Directional direction = (Directional) at(x, y, z).getBlockData();
+        direction.setFacing(facing);
+        at(x, y, z).setBlockData(direction, false);
+        writeSign(x, y, z, lines);
+    }
+
+    private void postSign(int x, int y, int z, BlockFace facing, List<String> lines) {
         set(x, y, z, Material.SPRUCE_SIGN);
+        Rotatable rotation = (Rotatable) at(x, y, z).getBlockData();
+        rotation.setRotation(facing);
+        at(x, y, z).setBlockData(rotation, false);
+        writeSign(x, y, z, lines);
+    }
+
+    private void writeSign(int x, int y, int z, List<String> lines) {
         if (!(at(x, y, z).getState() instanceof Sign sign)) return;
         SignSide front = sign.getSide(Side.FRONT);
         for (int index = 0; index < 4; index++) front.line(index, Component.text(lines.get(index)));
         sign.setWaxed(true);
         sign.update(true, false);
+    }
+
+    private void stair(int x, int y, int z, Material material, BlockFace facing) {
+        set(x, y, z, material);
+        Directional direction = (Directional) at(x, y, z).getBlockData();
+        direction.setFacing(facing);
+        at(x, y, z).setBlockData(direction, false);
+    }
+
+    private void connectFences(int minX, int maxX, int minZ, int maxZ) {
+        for (int x = minX; x <= maxX; x++) for (int z = minZ; z <= maxZ; z++) {
+            Block block = at(x, 0, z);
+            if (!(block.getBlockData() instanceof Fence fence)) continue;
+            for (BlockFace face : List.of(BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST)) {
+                Material neighbor = block.getRelative(face).getType();
+                fence.setFace(face, neighbor == Material.OAK_FENCE || neighbor == Material.OAK_FENCE_GATE);
+            }
+            block.setBlockData(fence, false);
+        }
+    }
+
+    private void auditBuild() {
+        requireBlock(-9, 2, -11, Material.SPRUCE_WALL_SIGN);
+        requireBlock(19, 2, 4, Material.SPRUCE_WALL_SIGN);
+        requireBlock(-10, 1, -4, Material.BARREL);
+        requireBlock(25, 1, 14, Material.BARREL);
+        requireBlock(10, 1, 23, Material.CHEST);
+        requireBlock(20, 1, 10, Material.LECTERN);
+        requireBlock(21, 2, 10, Material.LANTERN);
+        requireBlock(21, 1, 10, Material.OAK_FENCE);
+        requireBlock(34, 1, 32, Material.AIR);
+        requireBlock(10, 1, -20, Material.AIR);
+        for (Cell cell : STOREHOUSE.values()) {
+            requireBlock(cell.x(), cell.y(), cell.z(), Material.BARREL);
+            if (at(cell.x(), cell.y() - 1, cell.z()).getType().isAir()) {
+                throw new IllegalStateException("Mossfield storehouse barrel lacks a floor at " + cell);
+            }
+        }
+        Fence fence = (Fence) at(-21, 0, 9).getBlockData();
+        if (!fence.hasFace(BlockFace.EAST) || !fence.hasFace(BlockFace.WEST)) {
+            throw new IllegalStateException("Mossfield farm fence is disconnected");
+        }
+    }
+
+    private void requireBlock(int x, int y, int z, Material expected) {
+        if (at(x, y, z).getType() != expected) {
+            throw new IllegalStateException("Mossfield build mismatch at " + x + "," + y + "," + z
+                    + ": expected " + expected + " but found " + at(x, y, z).getType());
+        }
     }
 
     private static ItemStack book(String title, String author, List<String> pages) {
