@@ -20,25 +20,27 @@ public final class PingListener implements Listener {
     private final Canon canon;
     private final State state;
     private final PlayerRoster roster;
+    private final Finale finale;
 
-    public PingListener(Canon canon, State state, PlayerRoster roster) {
+    public PingListener(Canon canon, State state, PlayerRoster roster, Finale finale) {
         this.canon = canon;
         this.state = state;
         this.roster = roster;
+        this.finale = finale;
     }
 
     @EventHandler
     public void onPing(PaperServerListPingEvent event) {
         int act = state.act();
-        String raw = canon.motdByAct.getOrDefault(act, canon.motdByAct.get(1));
-        Component band = LegacyComponentSerializer.legacySection().deserialize(raw);
-        event.motd(Component.text("Mossfield ").append(band));
-
         event.getListedPlayers().clear();
-        if (act >= 10 && state.done("stopped")) {
-            event.setNumPlayers(0);
+        if (finale.stopped()) {  // silent: no band, nobody listed
+            event.motd(Component.text("Mossfield"));
+            event.setNumPlayers((int) Bukkit.getOnlinePlayers().stream().count());
             return;
         }
+        String raw = finale.ready() ? canon.string("motd_ready") : canon.motdByAct.getOrDefault(act, canon.motdByAct.get(1));
+        Component band = LegacyComponentSerializer.legacySection().deserialize(raw);
+        event.motd(Component.text("Mossfield ").append(band));
         for (String name : canon.listedPlayersEarly) add(event, name);
         if (act >= 9) for (String name : roster.names()) add(event, name);
         int online = (int) Bukkit.getOnlinePlayers().stream().filter(Player::isOnline).count();

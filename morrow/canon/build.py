@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from . import ciphers, forum, irc, layout, logblock, media, people, records, serverlog
+from . import ciphers, files, forum, irc, later, layout, logblock, media, people, records, serverlog
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "morrow" / "canon" / "out"
@@ -90,6 +90,8 @@ def site_bundle(act: int) -> dict:
         "logblock": logblock.rows_for_act(act),
         "june_shots": [x for x in media.JUNE_SHOTS + media.FORGED_SHOTS if x["act"] <= act],
         "dynmap_markers": dynmap_markers() if act >= 2 else [],
+        "patchcord_folder": media.PATCHCORD_FOLDER if act >= 5 else [],
+        "tvale_folder": media.TVALE_FOLDER if act >= 6 else [],
     }
     if act >= 4:
         bundle["asset_sale"] = records.ASSET_SALE
@@ -99,6 +101,23 @@ def site_bundle(act: int) -> dict:
         bundle["tcadmin_log"] = records.TCADMIN_LOG
     if act >= 7:
         bundle["irc_log"] = irc.render()
+    bundle["desk"] = {
+        "rules": [r for r in later.DESK_RULES if r["act"] <= act],
+        "files": {k: {"act": v[0], "line": v[1], "voice": v[2]} for k, v in later.DESK_FILES.items() if v[0] <= act},
+        "drops": [{"act": a, "after_hours": h, "file": f, "note": n} for a, h, f, n in later.DESK_DROPS if a <= act],
+        "hints": later.HINTS.get(act, []),
+    }
+    if act >= 6:
+        bundle["forum_rewrites"] = {str(k): {"body": b, "note": n} for k, (b, n) in later.FORUM_REWRITES.items()}
+    if act >= 9:
+        bundle["case_brief"] = later.CASE_BRIEF_FIELDS
+        bundle["backdated_posts"] = later.BACKDATED_POSTS
+        bundle["clean_md5"] = json.loads((files.OUT.parent / "hashes.json").read_text())["notrecovery-mossfield_2011-04-20.zip"]
+    if act >= 10:
+        bundle["usb_choices"] = {k: {"line": v[0], "voice": v[1]} for k, v in later.USB_CHOICES.items()}
+        bundle["stop_log"] = later.STOP_LOG
+        bundle["ready_status"] = later.READY_STATUS
+        bundle["console"] = {"cmd_md5": ciphers.md5(ciphers.HALT_COMMAND), "key_md5": ciphers.md5(ciphers.IONA_TOKEN)}
     return bundle
 
 
@@ -118,6 +137,56 @@ def corpus() -> list[dict]:
                 out.append({"text": text, "source": "%s, chat, %s %s" % (who, day, t)})
     for at, frm, _to, text in serverlog.PRIVATE_MSGS:
         out.append({"text": text, "source": "%s, private message, %s" % (frm, at)})
+    return out
+
+
+def _walk(a, b, start_s, secs):
+    """Straight-ish walk between two anchors, one waypoint per second."""
+    (x0, y0, z0), (x1, y1, z1) = layout.ANCHORS[a], layout.ANCHORS[b]
+    pts = []
+    for i in range(secs + 1):
+        f = i / secs
+        pts.append([start_s + i, round(x0 + (x1 - x0) * f, 1), y0 + 1, round(z0 + (z1 - z0) * f, 1)])
+    return pts
+
+
+def incident_replay() -> list[dict]:
+    """Act 5: the night of 18 May 2011, ~20 min compressed. Each figure walks and 'says' its logged lines."""
+    figs = [
+        {"who": "rookery", "path": _walk("spawn", "rules_signs", 0, 30),
+         "lines": [[20, "everyone get off for a bit"], [140, "if it goes bad theres the floor"]]},
+        {"who": "cairn", "path": _walk("cairn_farm", "cairn_storehouse_door_2011", 0, 60) + _walk("cairn_storehouse_door_2011", "cairn_farm", 61, 60),
+         "lines": [[40, "theres someone at the farm"], [70, "why is there another me at the farm"]]},
+        {"who": "juni_lantern", "path": _walk("june_house", "june_old_dock", 0, 40),
+         "lines": [[60, "something is putting glass on my tower"], [110, "it put a roof on it"]]},
+        {"who": "kitbag", "path": _walk("spawn", "spawn", 0, 10),
+         "lines": [[90, "rook is by the cake"]]},
+        {"who": "patchcord", "path": _walk("patchcord_relay_hut", "patchcord_relay_hut", 0, 10),
+         "lines": [[150, "recording this, saving as moss_0518"], [200, serverlog_line("06:09:17")]]},
+        {"who": "i_bell", "path": _walk("june_old_dock", "june_old_dock", 0, 10),
+         "lines": [[170, "putting my key somewhere theo cant reach"]]},
+    ]
+    return figs
+
+
+def serverlog_line(t: str) -> str:
+    for tt, _l, msg in serverlog.DAYS["2011-05-18"]:
+        if tt == t and msg.startswith("<"):
+            return msg.split("> ", 1)[1]
+    raise KeyError(t)
+
+
+def lowpath_route() -> list[dict]:
+    """Act 8: lowpath's nightly walk, stitched from everyone's habits; ends at lowpath's place."""
+    legs = [("cairn_farm", "cairn_storehouse_door_2011", "cairn's farm loop"),
+            ("cairn_storehouse_door_2011", "june_old_dock", "june's dock visit"),
+            ("june_old_dock", "finch_hub", "finch's rail ride"),
+            ("finch_hub", "spawn", "rook's spawn check"),
+            ("spawn", "lowpath_place", "the low path home")]
+    out, t = [], 0
+    for a, b, label in legs:
+        out.append({"from": a, "to": b, "habit": label, "path": _walk(a, b, t, 40)})
+        t += 41
     return out
 
 
@@ -141,12 +210,49 @@ def write_plugin_canon() -> None:
                          "queue 1 open. no worries at all"],
         "door_register": {str(a): ciphers.door_register(a) for a in range(1, 11)},
         "listed_players_early": ["cairn", "juni_lantern", "lowpath"],
+        "sign_rewrites": later.SIGN_REWRITES,
+        "transcription_books": later.TRANSCRIPTION_BOOKS,
+        "sga_signs": later.SGA_SIGNS,
+        "per_player_signs": later.PER_PLAYER_SIGNS,
+        "stop_log": later.STOP_LOG,
+        "ready_status": later.READY_STATUS,
+        "motd_ready": ciphers.motd_codes(later.READY_STATUS),
+        "kit_line": "you can turn it off, its ok",
+        "light_corridor": ciphers.build_light_corridor(),
+        "sound_replay": ciphers.build_sound_replay(),
+        "braille_shelves": ciphers.build_braille_shelves(),
+        "residents_join_order": [r.handle for r in people.join_order()],
+        "incident_replay": incident_replay(),
+        "lowpath_route": lowpath_route(),
+        "flags": later.FLAGS, "flag_word": later.FLAG_WORD,
+        "pots": later.POTS, "pot_for_players": later.POT_FOR_PLAYERS,
+        "map_wall": later.MAP_WALL, "genuine_2015_map": later.GENUINE_2015_MAP,
+        "museum_sign": later.MUSEUM_SIGN, "maint_sign_text": later.MAINT_SIGN_TEXT,
+        "south_rail_dir": list(layout.SOUTH_RAIL_DIR),
+        "finch_lock_bits": later.FINCH_LOCK_BITS, "finch_spur_sign": later.FINCH_SPUR_SIGN,
+        "nether_hub_sign": later.NETHER_HUB_SIGN,
+        "stop_secret_hint": "set stop-secret in plugins/mrrw/config.yml to the website's MORROW_STOP_SECRET",
     }
     (PLUGIN / "canon.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
     (PLUGIN / "corpus.json").write_text(json.dumps(corpus(), indent=1), encoding="utf-8")
 
 
+def write_discord_canon() -> None:
+    """What the Discord bot says, and when. It only ever speaks authored lines."""
+    d = ROOT / "discord-v2"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "canon.json").write_text(json.dumps({
+        "morrow_dms": later.MORROW_DMS, "quote_template": later.MORROW_QUOTE_TEMPLATE,
+        "theo_dms": later.THEO_DMS,
+        "welcome": "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept "
+                   "until 31 Dec 2026.  If you were a Mossfield player, the archive desk is open: "
+                   "https://copperlinehosting.com/support/index.php  No worries at all.",
+        "bridge_cut": {"text": "cutting the bridge now.  bye mossfield.", "voice": "T-10-cut"},
+    }, indent=1), encoding="utf-8")
+
+
 def main() -> None:
+    files.build()
     OUT.mkdir(parents=True, exist_ok=True)
     SITE.mkdir(parents=True, exist_ok=True)
     (OUT / "canon.json").write_text(json.dumps(full_canon(), indent=1), encoding="utf-8")
@@ -164,6 +270,7 @@ def main() -> None:
     for act in range(1, 11):
         (SITE / ("act-%02d.json" % act)).write_text(json.dumps(site_bundle(act)), encoding="utf-8")
     write_plugin_canon()
+    write_discord_canon()
     print("canon written:", OUT)
     print("site bundles written:", SITE)
 

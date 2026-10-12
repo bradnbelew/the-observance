@@ -27,8 +27,11 @@ export function ForumShell({ crumbs, children }: { crumbs: React.ReactNode; chil
   );
 }
 
-export function PostBox({ post, b, index }: { post: Post; b: Bundle; index: number }) {
+export function PostBox({ post, b, index, print }: { post: Post; b: Bundle; index: number; print?: boolean }) {
   const m = b.members[post.author];
+  const rw = !print ? b.forum_rewrites?.[String(post.id)] : undefined;
+  const body = rw ? rw.body : post.body;
+  const edited = rw ? rw.note : post.edited;
   const staff = post.author === "Theo [Copperline]" || post.author === "i_bell";
   return (
     <table className="vb-post" id={`post${post.id}`}>
@@ -40,8 +43,8 @@ export function PostBox({ post, b, index }: { post: Post; b: Bundle; index: numb
             {m ? <><div className="vb-usertitle">{m.title}</div><div className="vb-userstats">Join Date: {m.joined.slice(0, 7)}<br />{m.location ? <>Location: {m.location}<br /></> : null}Posts: {m.posts}</div></> : null}
           </td>
           <td className="vb-message">
-            <div className="vb-body">{post.body}</div>
-            {post.edited ? <div className="vb-edited">{post.edited}</div> : null}
+            <div className="vb-body">{body}</div>
+            {edited ? <div className="vb-edited">{edited}</div> : null}
             {m?.sig ? <div className="vb-sig">__________________<br />{m.sig}</div> : null}
           </td>
         </tr>

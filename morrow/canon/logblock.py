@@ -64,6 +64,19 @@ def iona_chest_rows() -> list[dict]:
                  "slot %d amount %d" % (s["slot"], s["count"])) for s in ciphers.build_iona_chest()]
 
 
+def finch_lock_rows() -> list[dict]:
+    """D1 layer 3: finch built her lock on 11 June 2011; the torch rows show which channels invert."""
+    from . import later
+    x0, y0, z0 = layout.ANCHORS["finch_spur"]
+    at = datetime(2011, 6, 11, 19, 2, 0)
+    rows = []
+    for i in range(8):
+        rows.append(_row(at + timedelta(seconds=i * 20), "finchline", "placed", LEVER, 5, (x0 + 2 * i, y0 + 1, z0)))
+        if later.FINCH_LOCK_BITS[i] == "1":
+            rows.append(_row(at + timedelta(seconds=i * 20 + 9), "finchline", "placed", 76, 3, (x0 + 2 * i, y0, z0 + 3)))
+    return rows
+
+
 def noise_rows(n: int = 2400) -> list[dict]:
     rng = random.Random(6118)
     t0, span = datetime(2011, 2, 23, 0, 0), int(timedelta(days=170).total_seconds())
@@ -77,7 +90,7 @@ def noise_rows(n: int = 2400) -> list[dict]:
 
 
 def all_rows() -> list[dict]:
-    rows = floor_rows() + id_wall_rows() + tower_rows() + iona_chest_rows() + noise_rows()
+    rows = floor_rows() + id_wall_rows() + tower_rows() + iona_chest_rows() + finch_lock_rows() + noise_rows()
     return sorted(rows, key=lambda r: r["date"])
 
 

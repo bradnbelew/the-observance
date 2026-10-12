@@ -1,0 +1,5 @@
+plugin: DiscordSRV
+channel: #bridge
+on_process_exit: relaunch mrrw chat
+added: 2026-08-02
+added_by: tvale

@@ -38,7 +38,7 @@ public final class RecoveryService implements Listener {
     private static final String[][] BUILDS = {
             {"rookery_house", "rook's"}, {"cairn_storehouse_door_2011", "cairn storehouse"}, {"cairn_farm", "the farms"},
             {"june_house", "june's point"}, {"june_tower", "the tower"}, {"patchcord_relay_hut", "patch's hut"},
-            {"finch_hub", "rail hub"}, {"spawn", "spawn"},
+            {"finch_hub", "rail hub"}, {"spawn", "spawn"}, {"lowpath_place", "lowpath's place"},
     };
 
     private final Plugin plugin;
@@ -67,7 +67,7 @@ public final class RecoveryService implements Listener {
     }
 
     private boolean active() {
-        return !(state.act() >= 10 && state.done("stopped"));
+        return !state.done("stopped");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

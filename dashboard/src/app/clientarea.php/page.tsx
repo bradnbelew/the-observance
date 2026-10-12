@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
-import { bundle, currentAct } from "@/lib/morrow/canon";
+import { bundle } from "@/lib/morrow/canon";
 import { sessionUser } from "@/lib/morrow/session";
 import { Motd } from "@/components/morrow/Motd";
 
@@ -56,7 +56,7 @@ export default async function ClientArea({ searchParams }: { searchParams: Searc
             <tr><th>Status</th><td><span className="old-status online">{s.status}</span></td></tr>
             <tr><th>Players online</th><td>{s.players_online} / 20</td></tr>
             <tr><th>Message of the day</th><td><Motd raw={b.motd} /></td></tr>
-            <tr><th>Next due date</th><td>{currentAct() >= 1 ? "N/A (fees waived)" : ""}</td></tr>
+            <tr><th>Next due date</th><td>N/A (fees waived)</td></tr>
           </tbody></table>
           {!action && <p className="old-fineprint">Billing was suspended for this service. Hosting continues on the retained node.</p>}
         </section>
@@ -96,6 +96,7 @@ export default async function ClientArea({ searchParams }: { searchParams: Searc
             <tr><th>Host</th><td><code>{acct.ftp.host}</code></td></tr>
             <tr><th>Username</th><td><code>{acct.ftp.user}</code></td></tr>
             <tr><th>Status</th><td>{acct.ftp.note_act1}</td></tr>
+            <tr><th>Web access</th><td><Link href="/ftp/" prefetch={false}>ftp.copperlinehosting.com (browser)</Link></td></tr>
           </tbody></table>
         </section>
       )}

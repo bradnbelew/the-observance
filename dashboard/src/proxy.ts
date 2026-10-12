@@ -8,7 +8,11 @@ import folders from "@/lib/canon/folders.json";
  */
 type Folder = { password: string; act: number; paths: string[] };
 
-function act(): number {
+function act(request: NextRequest): number {
+  if (process.env.MORROW_DEV === "1") {
+    const dev = Number(request.cookies.get("morrow_dev_act")?.value);
+    if (dev >= 1 && dev <= 10) return dev;
+  }
   const n = Number.parseInt(process.env.MORROW_ACT ?? "1", 10);
   return Number.isFinite(n) ? n : 1;
 }
@@ -23,7 +27,7 @@ export function proxy(request: NextRequest) {
   const path = decodeURIComponent(request.nextUrl.pathname);
   for (const [user, folder] of Object.entries(folders as Record<string, Folder>)) {
     if (!folder.paths.some((p) => path === p || path.startsWith(`${p}/`))) continue;
-    if (act() < folder.act) return new NextResponse("Not Found", { status: 404 });
+    if (act(request) < folder.act) return new NextResponse("Not Found", { status: 404 });
     const header = request.headers.get("authorization") ?? "";
     if (header.startsWith("Basic ")) {
       try {

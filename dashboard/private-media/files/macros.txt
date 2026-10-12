@@ -1,0 +1,7 @@
+Copperline support macros (T. Vale)
+
+[ack]      Hi!  Thanks for getting in touch.  I'm on it.
+[world]    No worries at all!  Your world will be back by tomorrow.
+[billing]  No worries at all, I'll sort the invoice.
+[restore]  Iona's looking at it now.  Hang tight.
+[close]    Cheers, T

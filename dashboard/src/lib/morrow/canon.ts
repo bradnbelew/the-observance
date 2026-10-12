@@ -10,7 +10,7 @@ export type Post = { id: number; author: string; at: string; body: string; edite
 export type Thread = { id: number; title: string; act: number; posts: Post[] };
 export type Member = {
   title: string; joined: string; location: string; local_offset: string; posts: number; sig: string;
-  interests?: string; import_note?: string;
+  interests?: string; import_note?: string; homepage?: string;
 };
 export type LogRow = { date: string; player: string; action: string; block: string; x: number; y: number; z: number; extra: string };
 export type Shot = { filename: string; server_mtime?: string; chicago?: string; act: number; shows: string };
@@ -42,17 +42,35 @@ export type Bundle = {
   logblock: LogRow[];
   june_shots: Shot[];
   dynmap_markers: Marker[];
+  patchcord_folder: { file: string; mtime: string; size: string; note: string }[];
+  tvale_folder: { file: string; mtime: string; size: string }[];
   asset_sale?: { title: string; date: string; lots: { lot: number; item: string; buyer: string }[] };
   checklist?: string;
   tcadmin_log?: string[][];
   irc_log?: string;
+  desk: {
+    rules: DeskRule[];
+    files: Record<string, { act: number; line: string; voice: string | null }>;
+    drops: { act: number; after_hours: number; file: string | null; note: string }[];
+    hints: string[];
+  };
+  forum_rewrites?: Record<string, { body: string; note: string }>;
+  case_brief?: { id: string; label: string; accept: string[] }[];
+  backdated_posts?: [string, string][];
+  clean_md5?: string;
+  usb_choices?: Record<string, { line: string; voice: string }>;
+  stop_log?: string[];
+  ready_status?: string;
+  console?: { cmd_md5: string; key_md5: string };
 };
 
-/** The campaign act. Set MORROW_ACT on the deployment; defaults to Act 1. */
-export function currentAct(): number {
-  const n = Number.parseInt(process.env.MORROW_ACT ?? "1", 10);
-  return Number.isFinite(n) && n >= 1 && n <= 10 ? n : 1;
-}
+export type DeskRule = {
+  id: string; act: number; title: string; tokens: string[]; need: number; require?: string[];
+  reply: string; voice: string | null; partial: string; partial_voice?: string; delay_hours?: number; attach?: string;
+};
+
+export { currentAct } from "./campaign";
+import { currentAct } from "./campaign";
 
 const loaders: Record<number, () => Promise<{ default: unknown }>> = {
   1: () => import("@/lib/canon/act-01.json"), 2: () => import("@/lib/canon/act-02.json"),
@@ -63,7 +81,7 @@ const loaders: Record<number, () => Promise<{ default: unknown }>> = {
 };
 
 export async function bundle(): Promise<Bundle> {
-  return (await loaders[currentAct()]()).default as Bundle;
+  return (await loaders[await currentAct()]()).default as Bundle;
 }
 
 /** vBulletin-style date: "05-18-2011, 04:16 AM". */

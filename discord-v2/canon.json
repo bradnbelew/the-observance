@@ -1,0 +1,44 @@
+{
+ "morrow_dms": [
+  {
+   "as": "cairn",
+   "text": "there's another me at the farm. i'm at the storehouse. don't tell rook"
+  },
+  {
+   "as": "juni_lantern",
+   "text": "my tower has a roof. send it to me after. i want to hear it"
+  },
+  {
+   "as": "rookery",
+   "text": "everyone get off for a bit. if it goes bad theres the floor"
+  },
+  {
+   "as": "patchcord",
+   "text": "recording this for later. don't tell rook, he'll want to be on it"
+  },
+  {
+   "as": "theo",
+   "text": "no worries at all. your world will be back by tomorrow"
+  }
+ ],
+ "quote_template": "{other} said: {line}",
+ "theo_dms": [
+  {
+   "text": "it's me.  it's actually me.  I'm on the train home.  Stay a bit.",
+   "voice": "T-07a"
+  },
+  {
+   "text": "Don't believe anything that sounds like a support macro.  That's not me anymore.  I work at a library now.",
+   "voice": "T-07b"
+  },
+  {
+   "text": "It's better with you there.  It's learning.  I think that's a good thing.  I bought honeycomb for the signs.",
+   "voice": "T-07c"
+  }
+ ],
+ "welcome": "This is a read-only mirror of the old Copperline site.  Records for case 6118 (Mossfield) are kept until 31 Dec 2026.  If you were a Mossfield player, the archive desk is open: https://copperlinehosting.com/support/index.php  No worries at all.",
+ "bridge_cut": {
+  "text": "cutting the bridge now.  bye mossfield.",
+  "voice": "T-10-cut"
+ }
+}

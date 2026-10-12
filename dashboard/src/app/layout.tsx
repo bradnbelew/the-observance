@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { DevActSwitcher } from "@/components/morrow/DevActSwitcher";
 
 export const metadata: Metadata = {
   title: "Copperline Hosting Archive",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen antialiased">
         {children}
+        <DevActSwitcher />
       </body>
     </html>
   );

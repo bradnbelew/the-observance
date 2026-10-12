@@ -534,3 +534,19 @@ button, input, select, textarea { font: inherit; }
 .plain-form input, .plain-form button { font:13px monospace; background:#fff; color:#000; border:2px inset #ddd; padding:1px 3px; }
 .plain-form button { border-style:outset; background:#eee; }
 .plain-pre { font:13px monospace; white-space:pre-wrap; }
+
+/* ---- Morrow v2: desk, panel, dev ---- */
+.whmcs-reply.staff { border-color:#8fb3c6; } .whmcs-reply.staff .whmcs-reply-head { background:#dde9ef; }
+.desk-voice { display:flex; align-items:center; gap:10px; padding:4px 8px 8px; font-size:11px; color:#3f6475; }
+.desk-voice audio { height:28px; max-width:100%; }
+.desk-attach { margin:0; padding:0 8px 8px; font-size:11px; }
+.tc-page { background:#e8ecef !important; font:12px Tahoma, sans-serif !important; }
+.tc-box { max-width:380px; margin:50px auto; background:#fff; border:1px solid #8a9aa6; padding:16px; }
+.tc-box.tc-wide { max-width:860px; }
+.tc-box h1 { font-size:16px; margin:0 0 10px; } .tc-box h2 { font-size:13px; margin:18px 0 6px; color:#2d5367; }
+.tc-err { color:#b00; } .tc-small { color:#777; font-size:10px; }
+.tc-ok { border:1px solid #6a9a6a; background:#f2fbf2; padding:8px 10px; }
+.tc-choice { display:block; margin:4px 0; }
+.dev-acts { position:fixed; right:8px; bottom:8px; z-index:9999; display:flex; gap:3px; align-items:center; padding:5px 7px;
+  background:#111; color:#ff0; font:11px monospace; border:1px solid #ff0; }
+.dev-acts a { color:#fff; padding:1px 5px; text-decoration:none; } .dev-acts a.on { background:#ff0; color:#000; }

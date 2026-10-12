@@ -27,6 +27,7 @@ public final class ChatListener implements Listener {
     private final Journal journal;
     private long lastReply;
     private int playerLinesLoaded;
+    private boolean kitLoaded;
 
     public ChatListener(Plugin plugin, Canon canon, State state, PlayerRoster roster, Journal journal) {
         this.plugin = plugin;
@@ -50,7 +51,11 @@ public final class ChatListener implements Listener {
     }
 
     private void handle(String name, String text) {
-        if (state.act() >= 10 && state.done("stopped")) return;  // silent after shutdown
+        if (state.done("stopped")) return;  // silent after shutdown
+        if (state.act() >= 8 && !kitLoaded) {  // Theo fed it his inbox; Kit's line is in there
+            canon.corpus.add(canon.string("kit_line"), "theo's inbox, 2019-03-02", false);
+            kitLoaded = true;
+        }
         roster.said(name, text);
         syncPlayerLines();
         int act = state.act();

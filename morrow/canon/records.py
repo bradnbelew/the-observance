@@ -113,6 +113,11 @@ BRIDGE_CONFIG = {"plugin": "DiscordSRV", "channel": "#bridge", "on_process_exit"
 ROBOTS_TXT = "User-agent: *\nDisallow: /forum-import/\nDisallow: /~mossfield/\nDisallow: /tcadmin/legacy/\n"
 
 
+def _clean_md5() -> str:
+    from .files import backup_zip, md5_bytes
+    return md5_bytes(backup_zip(False))
+
+
 def checklist() -> str:
     """ops/6118-checklist.txt: Iona's self-check hashes (Act 5 onward)."""
     return "\n".join([
@@ -123,7 +128,7 @@ def checklist() -> str:
         "md5 plaintext A (rook floor):  " + ciphers.md5(ciphers.FLOOR_PLAINTEXT),
         "md5 token B (my key):          " + ciphers.md5(ciphers.IONA_TOKEN),
         "md5 command (annex wall):      " + ciphers.md5(ciphers.HALT_COMMAND),
-        "md5 clean backup (04-20 zip):  (filled in at build, see out/backups.json)",
+        "md5 clean backup (04-20 zip):  " + _clean_md5(),
         "",
         "don't let it restart",
         "",

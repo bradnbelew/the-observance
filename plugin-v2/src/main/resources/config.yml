@@ -1,0 +1,17 @@
+# mrrw configuration
+
+# Must equal the website's MORROW_STOP_SECRET. Signs the Act 10 stop code.
+stop-secret: mrrw-dev-stop-secret
+
+# Signed skin textures for the replayed figures (see morrow/v2/HUMAN-TODO.md, "Skins").
+# Upload each PNG at mineskin.org, then paste the texture value and signature here.
+# Without them the figures wear the default skin and still work.
+skins:
+  rookery: {value: "", signature: ""}
+  cairn: {value: "", signature: ""}
+  finchline: {value: "", signature: ""}
+  juni_lantern: {value: "", signature: ""}
+  patchcord: {value: "", signature: ""}
+  kitbag: {value: "", signature: ""}
+  i_bell: {value: "", signature: ""}
+  lowpath: {value: "", signature: ""}

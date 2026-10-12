@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from . import ciphers, forum, irc, layout, people, records, serverlog
+from . import ciphers, forum, irc, later, layout, people, records, serverlog
 
 CHI = ZoneInfo("America/Chicago")
 FAILURES: list[str] = []
@@ -61,6 +61,12 @@ def main() -> int:
     check((hub[0] * 8, hub[2] * 8) == (room[0], room[2]), "C5 nether hub x8 lands on the ladder room")
     check(people.by_handle("rookery").lwc_password == records.CLIENT_ACCOUNT["security_answer"], "Act 1 security answer is Rookery's password")
 
+    pts = [tuple(v) for v in layout.ANCHORS.values()]
+    check(len(pts) == len(set(pts)), "no two anchors share a block")
+    sx, sy, sz = layout.ANCHORS["rules_signs"]
+    spawn_signs = {(sx + i, sy, sz) for i in (0, 1, 2, 4)}
+    others = {tuple(v) for k, v in layout.ANCHORS.items() if k != "rules_signs"}
+    check(not (spawn_signs & others), "modern anchors don't overwrite the 2011 spawn signs")
     print("2011 writing rules")
     signs = ciphers.RULES_SIGNS_2011 + [s for s in ciphers.build_residents_key()["signs"]]
     check(all(len(l) <= 15 for s in signs for l in s), "every genuine 2011 sign line is 15 characters or fewer")
@@ -77,6 +83,8 @@ def main() -> int:
     rewrite = records.STATUS_INCIDENT["morrow_rewrite"]
     check("CST" in rewrite["posted"] and zone_for("2011-05-18") == "CDT", "Morrow's status rewrite has the CST-in-May tell")
 
+    for sign in later.IONA_NOTES_SIGNS + [later.FINCH_SPUR_SIGN, later.NETHER_HUB_SIGN]:
+        check(all(len(l) <= 15 for l in sign), "2011 sign fits: %s" % sign[0])
     print("timeline")
     ircs = {d: lines for d, lines in irc.LOG}
     check(any("uptime 04:17:22" in t for _, _, t in ircs["2011-05-18"]), "IRC kill line carries the uptime")
@@ -86,6 +94,26 @@ def main() -> int:
     check(str(datetime(2011, 5, 18, 6, 17, 22) - start) == "4:17:22", "02:00:00 start + 04:17:22 uptime = 06:17:22")
     june = datetime(2011, 5, 18, 4, 14, 33, tzinfo=CHI).astimezone(ZoneInfo("America/Halifax"))
     check(june.strftime("%Y-%m-%d_%H.%M.%S") == "2011-05-18_06.14.33", "June's screenshot filename is Halifax time")
+    print("acts 4-10")
+    from .build import corpus
+    norm = lambda t: " " + " ".join(re.sub(r"[^a-z0-9' ]+", " ", t.lower()).split()) + " "
+    lines = [norm(c["text"]) for c in corpus()]
+    for dm in later.MORROW_DMS:
+        for part in dm["text"].split(". "):
+            p = norm(part)
+            check(len(p.split()) >= 3 and any(p in l for l in lines), "Morrow DM fragment is in the corpus: %r" % part.strip())
+    for dm in later.THEO_DMS:
+        unsourced = [w for w in norm(dm["text"]).split() if not any(" %s " % w in l for l in lines)]
+        check(bool(unsourced), "Theo DM has an unsourced word %s" % unsourced[:3])
+    for rw in later.SIGN_REWRITES:
+        check(any(len(l) > 15 for l in rw["lines"]), "Morrow sign rewrite at %s breaks the 15-char limit" % rw["anchor"])
+    for pid, (body, note) in later.FORUM_REWRITES.items():
+        check("CST" in note or "CST" in body, "forum rewrite %d carries the CST-in-May tell" % pid)
+    book = later.TRANSCRIPTION_BOOKS[0]
+    check(any(src.split(", ")[-1][:10] in later.OFFLINE_DAYS for _, src in book["lines"]), "transcription book cites an impossible (offline) day")
+    for f in later.CASE_BRIEF_FIELDS:
+        check(bool(f["accept"]), "case brief field %s has an answer" % f["id"])
+    check(later.backdated_join("Steve") == later.backdated_join("steve"), "backdated join is stable per player")
     print()
     if FAILURES:
         print("%d FAILURES" % len(FAILURES))

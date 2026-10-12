@@ -24,7 +24,7 @@ export default async function UserSpace({ params, searchParams }: { params: Para
   const { user, path = [] } = await params;
   const q = await searchParams;
   const b = await bundle();
-  const act = currentAct();
+  const act = await currentAct();
   const sub = path.join("/");
 
   if (user === "mossfield") {
@@ -36,6 +36,14 @@ export default async function UserSpace({ params, searchParams }: { params: Para
   }
   if (user === "juni_lantern" && act >= 3) {
     if (sub === "" || sub === "screenshots") return <JuneIndex b={b} />;
+    notFound();
+  }
+  if (user === "patchcord" && act >= 5) {
+    if (sub === "" || sub === "mumble") return <ApacheIndex title="/~patchcord/mumble" rows={b.patchcord_folder.map((f) => ({ name: f.file, href: f.size === "0" ? undefined : `/media/patchcord/${f.file}`, mtime: f.mtime, size: f.size }))} />;
+    notFound();
+  }
+  if (user === "tvale" && act >= 6) {
+    if (sub === "") return <ApacheIndex title="/~tvale" rows={b.tvale_folder.map((f) => ({ name: f.file, href: `/media/tvale/${f.file}`, mtime: f.mtime, size: f.size }))} />;
     notFound();
   }
   notFound();
@@ -148,6 +156,21 @@ function Logs({ b, day }: { b: Bundle; day?: string }) {
       <h1>server logs</h1>
       <p>rook keeps the interesting days. chat only, no /msg (privacy).</p>
       <ul>{days.map((d) => <li key={d}><Link href={`/~mossfield/logs/?day=${d}`}>server-{d}.log</Link></li>)}</ul>
+    </Plain>
+  );
+}
+
+function ApacheIndex({ title, rows }: { title: string; rows: { name: string; href?: string; mtime: string; size: string }[] }) {
+  return (
+    <Plain title={`Index of ${title}`}>
+      <h1>Index of {title}</h1>
+      <table className="plain-table">
+        <thead><tr><th>Name</th><th>Last modified</th><th>Size</th></tr></thead>
+        <tbody>{rows.map((r) => (
+          <tr key={r.name}><td>{r.href ? <a href={r.href}>{r.name}</a> : r.name}</td><td>{r.mtime}</td><td>{r.size}</td></tr>
+        ))}</tbody>
+      </table>
+      <hr /><address>Apache/2.2.16 (Debian) Server at copperlinehosting.com Port 80</address>
     </Plain>
   );
 }

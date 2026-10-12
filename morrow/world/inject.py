@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import sys
 
-from morrow.canon import ciphers, layout, people
+from morrow.canon import ciphers, later, layout, people
 from morrow.world import nbt
 from morrow.world.mcregion import World
 
@@ -111,6 +111,15 @@ def inject(world_path: str) -> list[str]:
         items = [(slot, ciphers.TALLY_ITEM, n) for slot, n in enumerate(weeks) if n]
         chest(w, cx + 2, cy, cz + 2 + row * 2, items)
     done.append("cairn tally chests")
+
+    # C7 Iona's notes room at r.-1.0.mcr c(27,14) y40: a dug cell with her two signs.
+    nx, ny, nz = a["iona_notes"]
+    for dx in range(0, 3):
+        for dy in range(0, 3):
+            w.set(nx + dx, ny + dy, nz, 0)
+    for i, lines in enumerate(later.IONA_NOTES_SIGNS):
+        wall_sign(w, nx + i, ny + 1, nz, lines, "north")
+    done.append("iona notes signs")
 
     # Rookery's door and Kit's base.
     rx, ry, rz = a["rookery_house"]

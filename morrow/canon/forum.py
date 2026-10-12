@@ -30,7 +30,7 @@ MEMBERS = {
                "sig": "Iona Bell // Copperline Recovery // alias: iona_bell"},
     "Theo [Copperline]": {"title": "Copperline Support", "joined": "2009-01-19", "location": "Chicago, IL",
                           "local_offset": "same as forum", "posts": 2244,
-                          "sig": "Cheers, T  //  Copperline Support  //  1-877-555-0142"},
+                          "sig": "Cheers, T  //  Copperline Support  //  1-877-555-0142", "homepage": "/~tvale/"},
     "lowpath": {"title": "Member", "joined": "2010-11-02", "location": "",
                 "local_offset": "same as forum", "posts": 0, "sig": "",
                 "import_note": "account created 2016-08-03 by archive import (join date set by importer)"},

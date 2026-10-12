@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ForumShell } from "@/components/morrow/Forum";
-import { bundle, postsBy, vbDate } from "@/lib/morrow/canon";
+import { bundle, postsBy, vbDate, type Member } from "@/lib/morrow/canon";
+import { players } from "@/lib/morrow/campaign";
+import { backdatedJoin } from "@/lib/morrow/desk";
 
 export const metadata: Metadata = { title: "View Profile - Copperline Community Forums" };
 export const dynamic = "force-dynamic";
@@ -9,7 +11,8 @@ export const dynamic = "force-dynamic";
 export default async function MemberProfile({ searchParams }: { searchParams: Promise<{ u?: string }> }) {
   const u = (await searchParams).u ?? "";
   const b = await bundle();
-  const m = b.members[u];
+  const absorbed = b.backdated_posts && players().find((p) => p.toLowerCase() === u.toLowerCase());
+  const m: Member | undefined = b.members[u] ?? (absorbed ? { title: "Member", joined: backdatedJoin(absorbed), location: "", local_offset: "same as forum", posts: b.backdated_posts!.length, sig: "" } : undefined);
   if (!m) {
     return <ForumShell crumbs={null}><div className="vb-notice">This user has not registered and therefore does not have a profile to view.</div></ForumShell>;
   }
@@ -25,8 +28,20 @@ export default async function MemberProfile({ searchParams }: { searchParams: Pr
         {m.interests ? <tr><th>Interests</th><td>{m.interests}</td></tr> : null}
         <tr><th>Total Posts</th><td>{m.posts}</td></tr>
         {m.sig ? <tr><th>Signature</th><td>{m.sig}</td></tr> : null}
+        {m.homepage ? <tr><th>Home Page</th><td><a href={m.homepage}>copperlinehosting.com{m.homepage}</a></td></tr> : null}
         {m.import_note ? <tr><th>Import</th><td className="vb-desc">{m.import_note}</td></tr> : null}
       </tbody></table>
+      {absorbed ? (
+        <>
+          <h2 className="vb-subhead">Posts kept in this import</h2>
+          {b.backdated_posts!.map(([at, text]) => (
+            <table key={at} className="vb-post"><tbody>
+              <tr className="vb-post-head"><td>{vbDate(at)}</td><td className="vb-postno">{u}</td></tr>
+              <tr><td className="vb-message" colSpan={2}><div className="vb-body">{text}</div><div className="vb-edited">Last edited by {u}; {vbDate(at)} CST.</div></td></tr>
+            </tbody></table>
+          ))}
+        </>
+      ) : null}
       {posts.length ? (
         <>
           <h2 className="vb-subhead">Posts kept in this import</h2>

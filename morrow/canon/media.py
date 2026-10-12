@@ -57,3 +57,20 @@ RECORDINGS = [
      "created_local": "2011-04-28", "chicago": "2011-04-28",
      "needs": "Record THROUGH A REAL PHONE LINE (call your own voicemail). Phone-band audio is evidence in Act 9."},
 ]
+
+
+# Act 5: /~patchcord/mumble/ (password: patchcord's tune). Files the owner records go in
+# dashboard/private-media/media/patchcord/. moss_0518.ogg is listed at 0 bytes: "not retained" --
+# Theo has the only copy (Archive Desk, by exact filename).
+PATCHCORD_FOLDER = [
+    {"file": "moss_0109.ogg", "mtime": "09-Jan-2011 07:20", "size": "1.2M", "note": "mumble test, patch and rook"},
+    {"file": "moss_0214.ogg", "mtime": "14-Feb-2011 21:02", "size": "3.8M", "note": "june and cairn arguing about sheep"},
+    {"file": "moss_0412.ogg", "mtime": "12-Apr-2011 20:41", "size": "2.6M", "note": "finch explaining boosters to kit"},
+    {"file": "moss_0518.ogg", "mtime": "18-May-2011 06:21", "size": "0", "note": "listed, not retained"},
+]
+
+# Act 6: /~tvale/ (Theo's staff web space, linked from his forum profile).
+TVALE_FOLDER = [
+    {"file": "panel_ok.jpg", "mtime": "18-May-2011 06:46", "size": "61K"},
+    {"file": "macros.txt", "mtime": "02-Mar-2011 10:15", "size": "2K"},
+]

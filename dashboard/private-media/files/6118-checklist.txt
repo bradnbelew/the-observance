@@ -1,0 +1,10 @@
+6118 checklist - IB
+
+manual stop needs: maint flag sign ON, no sessions open, console key
+
+md5 plaintext A (rook floor):  e86a01ccc89e7b026f50d693ac7ecbed
+md5 token B (my key):          84e7f92c9641c0f74dae8c57d243ea2f
+md5 command (annex wall):      81e52260505861413ef9a524c9f0d344
+md5 clean backup (04-20 zip):  8233bcaa2ad4dfc747fb2e54cb803c9b
+
+don't let it restart

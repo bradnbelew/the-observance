@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/LegacyShell";
-import { bundle } from "@/lib/morrow/canon";
+import { bundle, currentAct } from "@/lib/morrow/canon";
+import { morrowStatus, ping } from "@/lib/morrow/slp";
 
 export const metadata: Metadata = { title: "Network Status - Copperline Hosting" };
 export const dynamic = "force-dynamic";
 
 export default async function StatusPage() {
   const b = await bundle();
+  let heartbeat = `heartbeat ${b.heartbeat.heartbeat}`;
+  if ((await currentAct()) >= 10) {
+    const status = await ping();
+    if (status && morrowStatus(status) === "") heartbeat = "no heartbeat";
+  }
   const incident = b.status_incident.morrow_rewrite ?? b.status_incident.original;
   return (
     <LegacyShell active="support">
@@ -19,7 +25,7 @@ export default async function StatusPage() {
           <tr><td>Web hosting (archive mirror)</td><td>-</td><td><span className="old-status online">online</span></td></tr>
           <tr><td>Game panel (TCAdmin 1)</td><td>Chicago</td><td><span className="old-status offline">read only</span></td></tr>
           <tr><td>Game node CHI-07</td><td>Chicago</td><td><span className="old-status online">online</span></td></tr>
-          <tr><td><code>{b.heartbeat.process}</code></td><td>CHI-07</td><td>heartbeat {b.heartbeat.heartbeat} · <Link href="/status/heartbeat.json">json</Link></td></tr>
+          <tr><td><code>{b.heartbeat.process}</code></td><td>CHI-07</td><td>{heartbeat} · <Link href="/status/heartbeat.json">json</Link></td></tr>
         </tbody>
       </table>
       <h2 className="old-rule-title">Past Incidents</h2>

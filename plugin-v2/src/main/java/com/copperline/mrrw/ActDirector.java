@@ -45,6 +45,10 @@ public final class ActDirector {
         World world = Bukkit.getWorlds().get(0);
         int act = state.act();
         if (act >= 2) once("act2.sign_backs", () -> signBacks(world));
+        for (int a = 2; a <= Math.min(act, 9); a++) {
+            final int step = a;
+            once("rail.act" + a, () -> extendSouthRail(world, step));
+        }
         if (act >= 3) {
             once("act3.rules_edit", () -> rulesEdit(world));
             once("act3.tally_book", () -> tallyBook(world));
@@ -120,7 +124,7 @@ public final class ActDirector {
         once("act3.tower_lamp", () -> lamp.setType(Material.REDSTONE_LAMP, false));
         final long[] tick = {0};
         flasher = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (state.act() >= 10 && state.done("stopped")) return;
+            if (state.done("stopped")) return;
             if (!w.isChunkLoaded(lamp.getX() >> 4, lamp.getZ() >> 4)) return;  // never load chunks just to blink
             if (!(lamp.getBlockData() instanceof Lightable data)) return;
             boolean on = tick[0]++ % 100 < 20;  // 1 s on, 4 s off, every 100 ticks = 5 s
@@ -129,6 +133,20 @@ public final class ActDirector {
                 lamp.setBlockData(data, false);
             }
         }, 20L, 1L);
+    }
+
+    /** The south branch: Morrow "finishes" three more blocks every act. In Act 10 it skips it. */
+    private void extendSouthRail(World w, int act) {
+        int[] a = canon.anchor("south_rail_end");
+        com.google.gson.JsonArray dir = canon.array("south_rail_dir");
+        int dx = dir.get(0).getAsInt(), dz = dir.get(1).getAsInt();
+        for (int i = 0; i < 3; i++) {
+            int n = (act - 2) * 3 + i + 1;
+            Block bed = w.getBlockAt(a[0] + dx * n, a[1] - 1, a[2] + dz * n);
+            if (bed.getType().isAir()) bed.setType(Material.GRAVEL, false);
+            Block rail = bed.getRelative(0, 1, 0);
+            rail.setType(Material.POWERED_RAIL, false);
+        }
     }
 
     public void stop() {

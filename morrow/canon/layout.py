@@ -33,7 +33,18 @@ ANCHORS = {
     "lowpath_place": (150, 75, 40),
     "kit_fossil_base": (812, 70, -640),
     "sheep_pen": (198, 68, -52),
+    # modern layer (Theo-era and Morrow-era), installed on the upgraded world by /mrrw install
+    "maint_sign": (0, 65, 7),  # its own block: (6,65,3) is Rookery's 2011 warning sign
+    "theo_museum": (40, 64, -20),
+    "theo_reading_room": (48, 64, -20),
+    "theo_map_wall": (56, 64, -20),
+    "meadow_center": (128, 64, 128),
+    "south_rail_end": (-30, 66, 60),
+    "listening_room": (228, 68, -30),
+    "dust_corridor": (-330, 35, -236),
+    "kit_genuine_door": (812, 70, -641),
 }
+SOUTH_RAIL_DIR = (0, 1)  # +z: the south branch keeps "finishing" toward lowpath's place
 
 
 def region_chunk(x: int, z: int) -> str:

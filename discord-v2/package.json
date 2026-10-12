@@ -1,0 +1,14 @@
+{
+  "name": "mrrw-bridge",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Copperline Recovery bridge bot for Morrow v2 (Discord). Speaks only authored lines.",
+  "scripts": {
+    "start": "node bot.mjs",
+    "dry": "node bot.mjs --dry-run"
+  },
+  "dependencies": {
+    "discord.js": "14.27.0"
+  }
+}
