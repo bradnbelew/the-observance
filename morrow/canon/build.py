@@ -102,6 +102,50 @@ def site_bundle(act: int) -> dict:
     return bundle
 
 
+PLUGIN = ROOT / "plugin-v2" / "src" / "main" / "resources" / "canon"
+
+
+def corpus() -> list[dict]:
+    """Everything Morrow ever ingested, with sources. Morrow may only reuse these words."""
+    out = [{"text": people.THEO_MACRO, "source": "Theo support macro"}]
+    for t in forum.THREADS:
+        for p in t["posts"]:
+            out.append({"text": p["body"], "source": "%s, forum, %s" % (p["author"], p["at"])})
+    for day, lines in serverlog.DAYS.items():
+        for t, _lvl, msg in lines:
+            if msg.startswith("<"):
+                who, text = msg[1:].split("> ", 1)
+                out.append({"text": text, "source": "%s, chat, %s %s" % (who, day, t)})
+    for at, frm, _to, text in serverlog.PRIVATE_MSGS:
+        out.append({"text": text, "source": "%s, private message, %s" % (frm, at)})
+    return out
+
+
+def write_plugin_canon() -> None:
+    PLUGIN.mkdir(parents=True, exist_ok=True)
+    data = {
+        "anchors": layout.ANCHORS,
+        "provisional_layout": layout.PROVISIONAL,
+        "motd_by_act": {str(a): ciphers.motd_codes(t) for a, t in ciphers.MOTD_BY_ACT.items()},
+        "rules_signs_2011": ciphers.RULES_SIGNS_2011,
+        "rules_signs_morrow": ciphers.RULES_SIGNS_MORROW,
+        "tally_book_morrow": ciphers.tally_book_morrow(),
+        "sign_back_notes": {
+            "rookery_house": ["rookery:", "absent since 2011", "boots off (kept)", ""],
+            "rules_signs": ["rules:", "1 typo noted", "", ""],
+            "cairn_storehouse_door_2011": ["cairn:", "uneven x14", "normalised", ""],
+            "june_house": ["juni_lantern:", "tower plan", "completed", "2011-05-18"],
+        },
+        "status_lines": ["restore 61%. no worries at all. back by tomorrow",
+                         "restore 99%. your world will be back by tomorrow",
+                         "queue 1 open. no worries at all"],
+        "door_register": {str(a): ciphers.door_register(a) for a in range(1, 11)},
+        "listed_players_early": ["cairn", "juni_lantern", "lowpath"],
+    }
+    (PLUGIN / "canon.json").write_text(json.dumps(data, indent=1), encoding="utf-8")
+    (PLUGIN / "corpus.json").write_text(json.dumps(corpus(), indent=1), encoding="utf-8")
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     SITE.mkdir(parents=True, exist_ok=True)
@@ -119,6 +163,7 @@ def main() -> None:
     (SITE / "folders.json").write_text(json.dumps(folders), encoding="utf-8")
     for act in range(1, 11):
         (SITE / ("act-%02d.json" % act)).write_text(json.dumps(site_bundle(act)), encoding="utf-8")
+    write_plugin_canon()
     print("canon written:", OUT)
     print("site bundles written:", SITE)
 

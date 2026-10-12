@@ -1,0 +1,439 @@
+{
+ "anchors": {
+  "spawn": [
+   0,
+   64,
+   0
+  ],
+  "rules_signs": [
+   2,
+   65,
+   3
+  ],
+  "cairn_storehouse_door_2011": [
+   220,
+   68,
+   -38
+  ],
+  "cairn_storehouse_door_morrow": [
+   226,
+   68,
+   -38
+  ],
+  "cairn_farm": [
+   205,
+   68,
+   -60
+  ],
+  "rookery_house": [
+   -30,
+   66,
+   20
+  ],
+  "rookery_cellar_floor": [
+   -36,
+   58,
+   14
+  ],
+  "rookery_ladder_room": [
+   -216,
+   40,
+   168
+  ],
+  "nether_hub": [
+   -27,
+   70,
+   21
+  ],
+  "june_house": [
+   296,
+   71,
+   84
+  ],
+  "june_tower": [
+   312,
+   66,
+   96
+  ],
+  "june_old_dock": [
+   318,
+   63,
+   80
+  ],
+  "iona_key_chest": [
+   314,
+   60,
+   80
+  ],
+  "iona_notes": [
+   -72,
+   40,
+   230
+  ],
+  "patchcord_relay_hut": [
+   -72,
+   70,
+   140
+  ],
+  "finch_hub": [
+   -30,
+   66,
+   -12
+  ],
+  "finch_spur": [
+   -140,
+   62,
+   -260
+  ],
+  "maintenance_annex": [
+   -330,
+   35,
+   -244
+  ],
+  "lowpath_place": [
+   150,
+   75,
+   40
+  ],
+  "kit_fossil_base": [
+   812,
+   70,
+   -640
+  ],
+  "sheep_pen": [
+   198,
+   68,
+   -52
+  ]
+ },
+ "provisional_layout": true,
+ "motd_by_act": {
+  "1": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a70\u258c\u00a73\u258c\u00a79\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "2": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a70\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "3": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a71\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "4": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a71\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "5": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a72\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "6": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a72\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "7": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a72\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "8": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a72\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "9": "\u00a77\u258c\u00a71\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a77\u258c\u00a75\u258c\u00a76\u258c\u00a75\u258c\u00a72\u258c\u00a70\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a72\u258c\u00a72\u258c\u00a7f\u258c\u00a73\u258c\u00a74\u258c\u00a73\u258c\u00a71\u258c\u00a73\u258c\u00a73\u258c",
+  "10": "\u00a77\u258c\u00a73\u258c\u00a76\u258c\u00a7b\u258c\u00a76\u258c\u00a79\u258c\u00a77\u258c\u00a70\u258c"
+ },
+ "rules_signs_2011": [
+  [
+   "MOSSFIELD",
+   "rules (pls)",
+   "1 no griefing",
+   "2 no lava"
+  ],
+  [
+   "3 ask b4 you",
+   "build near ppl",
+   "4 no xray, i",
+   "will know -rook"
+  ],
+  [
+   "5 leave farms",
+   "replanted",
+   "6 have fun",
+   "or else"
+  ]
+ ],
+ "rules_signs_morrow": [
+  [
+   "MOSSFIELD",
+   "rules (pls)",
+   "1 no griefing",
+   "2 no lava"
+  ],
+  [
+   "3 ask before you",
+   "build near ppl",
+   "4 no xray, i",
+   "will know -rook"
+  ],
+  [
+   "5 leave farms",
+   "replanted",
+   "6 have fun",
+   "or else"
+  ]
+ ],
+ "tally_book_morrow": [
+  "rookery: 6 9 4 11",
+  "cairn: 31 28 33 26",
+  "finchline: 3 0 7 5",
+  "juni_lantern: 12 10 14 9",
+  "patchcord: 0 2 0 4",
+  "kitbag: 1 0 0 3",
+  "lowpath: 2 3 2 3"
+ ],
+ "sign_back_notes": {
+  "rookery_house": [
+   "rookery:",
+   "absent since 2011",
+   "boots off (kept)",
+   ""
+  ],
+  "rules_signs": [
+   "rules:",
+   "1 typo noted",
+   "",
+   ""
+  ],
+  "cairn_storehouse_door_2011": [
+   "cairn:",
+   "uneven x14",
+   "normalised",
+   ""
+  ],
+  "june_house": [
+   "juni_lantern:",
+   "tower plan",
+   "completed",
+   "2011-05-18"
+  ]
+ },
+ "status_lines": [
+  "restore 61%. no worries at all. back by tomorrow",
+  "restore 99%. your world will be back by tomorrow",
+  "queue 1 open. no worries at all"
+ ],
+ "door_register": {
+  "1": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0000000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "2": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0000000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "3": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0100000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "4": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0100000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "5": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0100000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "6": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0100000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "7": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "bits": "0100000",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "8": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false
+   ],
+   "bits": "0100010",
+   "players_doors_open": false,
+   "lowpath_open": false
+  },
+  "9": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false
+   ],
+   "bits": "0100010",
+   "players_doors_open": true,
+   "lowpath_open": false
+  },
+  "10": {
+   "order": [
+    "rookery",
+    "cairn",
+    "finchline",
+    "juni_lantern",
+    "patchcord",
+    "kitbag",
+    "lowpath"
+   ],
+   "open": [
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    false
+   ],
+   "bits": "0100010",
+   "players_doors_open": true,
+   "lowpath_open": true
+  }
+ },
+ "listed_players_early": [
+  "cairn",
+  "juni_lantern",
+  "lowpath"
+ ]
+}

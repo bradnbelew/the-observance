@@ -1,0 +1,14 @@
+name: mrrw
+version: '2.0.0'
+main: com.copperline.mrrw.MrrwPlugin
+api-version: '1.21'
+author: Copperline Recovery
+description: Mossfield recovery process (Morrow v2 ARG runtime).
+commands:
+  mrrw:
+    description: Operator control for the Morrow campaign.
+    permission: mrrw.operator
+    usage: "/mrrw act <1-10> | /mrrw status | /mrrw dawn"
+permissions:
+  mrrw.operator:
+    default: op

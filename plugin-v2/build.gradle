@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.copperline'
+version = '2.0.0'
+description = 'mrrw - Mossfield recovery (Morrow v2 ARG runtime)'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { name = 'papermc'; url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs.addAll(['-Xlint:unchecked'])
+}
+
+// Plain main()-driven self-tests for the pure logic (no server needed).
+tasks.register('selftest', JavaExec) {
+    dependsOn classes, testClasses
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.copperline.mrrw.SelfTest'
+}
