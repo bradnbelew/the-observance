@@ -28,7 +28,7 @@ export type Bundle = {
     ftp: { host: string; user: string; note_act1: string };
   };
   ticket_6118: { subject: string; opened: string; client: string; dept: string; status_public: string;
-    messages: { from: string; at: string; body: string }[] };
+    messages: { from: string; at: string; body: string; attach?: string }[] };
   status_incident: {
     id: string;
     original: { title: string; posted: string; body: string; update: string };
@@ -44,6 +44,7 @@ export type Bundle = {
   dynmap_markers: Marker[];
   patchcord_folder: { file: string; mtime: string; size: string; note: string }[];
   tvale_folder: { file: string; mtime: string; size: string }[];
+  tvale_box: string[];
   asset_sale?: { title: string; date: string; lots: { lot: number; item: string; buyer: string }[] };
   checklist?: string;
   tcadmin_log?: string[][];

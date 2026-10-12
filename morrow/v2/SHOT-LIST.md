@@ -8,8 +8,8 @@ the puzzle.
 Press **F2** in game to take a screenshot (Beta saves to `.minecraft\screenshots`). Hide the HUD
 with **F1** unless a shot says chat must show. Use **Fancy** graphics and default settings.
 
-Put the renamed files in `D:\the-observance\dashboard\public\media\june\`. They sit behind June's
-password automatically.
+Put the renamed files in `D:\the-observance\dashboard\private-media\media\june\`. They sit behind
+June's password automatically.
 
 | Filename (rename to exactly this) | What to capture |
 | --- | --- |

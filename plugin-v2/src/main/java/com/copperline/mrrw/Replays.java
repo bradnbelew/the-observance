@@ -104,7 +104,7 @@ public final class Replays {
     /** End of route: if a bed stands at lowpath's place, the session ends. Otherwise it waits, then starts over. */
     private void arrived(World w) {
         int[] a = canon.anchor("lowpath_place");
-        if (bedNear(w.getBlockAt(a[0], a[1], a[2]), 3)) {
+        if (state.act() >= 9 && bedNear(w.getBlockAt(a[0], a[1], a[2]), 3)) {  // a home only counts once players are residents
             state.markDone("lowpath.session_ended");
             Bukkit.broadcast(Component.text("[Recovery] ", NamedTextColor.DARK_GRAY).append(Component.text("session lowpath: end (slept)", NamedTextColor.GRAY)));
             journal.write("morrow.lowpath.session_ended", new JsonObject());

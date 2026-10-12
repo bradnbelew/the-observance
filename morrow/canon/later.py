@@ -66,9 +66,8 @@ DESK_DROPS = [
     (5, 0, "6118-checklist.txt", "Iona left this on the ops share.  Might help, might not."),
     (6, 30, None, "I wax the signs I want to keep.  Old habit.  Nothing touches them after that."),
     (7, 0, "copperline-ops.irc.log", "Found Iona's IRC logs on the second drive.  I haven't opened them."),
-    (8, 0, "mrrw-changelog-2016.txt", "Here's what I changed in 2016.  I'm not proud of all of it."),
-    (8, 0, "crontab.txt", "This is what restarts it.  I set most of it up."),
-    (8, 0, "bridge.yml", "And this is the Discord bridge.  It's harmless.  It just relays chat."),
+    (8, 0, "closet.jpg", "Found this on my phone.  That's the box.  It's been in that cupboard since the auction.  "
+                         "Everything I changed is on it, in my folder, behind the usual password."),
 ]
 
 # Escalating hints by act, after 24 / 72 / 120 hours stuck (never the answer).
@@ -271,3 +270,11 @@ IONA_NOTES_SIGNS = [
     ["stop = 3 things", "maint sign ON", "no sessions", "key in console"],
     ["cmd name is in", "the annex wall", "as block ids", "-ib"],
 ]
+
+# C20: Theo's private folder on the mirror. Password = the sticky note on the case ("chi07-")
+# + the year Mossfield was founded (the roster: rookery joined 2010-10-30).
+TVALE_BOX = {"user": "tvale", "password": "chi07-2010", "act": 8,
+             "files": ["mrrw-changelog-2016.txt", "crontab.txt", "bridge.yml"]}
+
+# Act 9: Morrow's fake Theo voice note, spliced from the 2011 voicemail (phone-band, says "mate").
+FAKE_THEO_NOTE = {"text": "no worries at all.  keep it billable till someone comes home.", "voice": "T-09-fake"}

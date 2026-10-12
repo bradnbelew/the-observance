@@ -1,60 +1,59 @@
-# Operator runbook (Acts 1-3)
+# Operator runbook (all ten acts)
 
-You are the puppetmaster, but you never speak live. Your jobs are to flip the act at the right
-moment, keep the world and site in step, and read the journal.
+You never speak live. Theo answers through the Archive Desk on his own, the plugin runs Morrow,
+and the bot runs Discord. Your jobs are:
 
-**Keep the act in step on both sides.** The website reads `MORROW_ACT` (a Vercel environment
-variable). The server reads `/mrrw act N`. Set both every time the act changes. On Vercel,
-changing an environment variable needs a redeploy to take effect.
+- advance the act at the right moment, on **both** sides;
+- read the journal;
+- answer an out-of-fiction "help" if a friend asks.
 
-## Before Act 1
+**Advancing an act, every time:**
 
-- [ ] The Beta world is built, injected, upgraded, and loaded on Paper with `mrrw` installed.
-- [ ] June's screenshots are in `dashboard/public/media/june/`.
-- [ ] Vercel production has `MORROW_ACT=1` and a random `MORROW_SESSION_SECRET`.
-- [ ] Discord: create a server named **Mossfield Recovery (archive)** with one channel, `#general`.
-      Make a second account called `archivist` (Theo) and pin the welcome note:
-      *"This is a read-only mirror of the old Copperline site. Records for case 6118 (Mossfield) are
-      kept until 31 Dec 2026. If you were a Mossfield player, the archive desk is open. No worries
-      at all."* The Discord bot arrives in Act 4. For Acts 1-3, Discord is just atmosphere.
-- [ ] In game: `/mrrw act 1`. The server MOTD shows the queue band, and the hover list shows
-      cairn, juni_lantern and lowpath.
+1. In the Minecraft console: `/mrrw act N`.
+2. On Vercel: set `MORROW_ACT=N` and `MORROW_ACT_STARTED=<now, ISO>`, then redeploy. The start time
+   drives Theo's drops and the 24/72/120-hour hints.
 
-## Act 1: The Mirror
+The bot reads the act from the plugin by itself.
 
-**Trailhead.** Send this to the group as yourself, like something you stumbled on. Don't
-explain it.
+| Act | Advance when | What changes (automatic) |
+| --- | --- | --- |
+| 1 The Mirror | You send the trailhead (below) | Site: forum, client area, status. Discord: welcome pinned. Server list: fake players online. |
+| 2 Mossfield | Someone joins the server | Dynmap. Morrow's notes on sign backs. Broken blocks come back at dawn. South rail creeps. |
+| 3 The Tidy | After their first real session | LogBlock and June's folder open. Rules sign says "before". Tally book with lowpath. Golems. June's lamp flashes. Morrow starts answering chat. |
+| 4 The Archivist | They've found Morrow's name in LogBlock | Server logs. Auction PDF drop. Desk answers the unmasking. |
+| 5 Replay | Theo is unmasked (desk log: `MORROW_DESK ... ref=unmask`) | Nightly incident replay, then a player's own ghost. patchcord's folder. Checklist drop. FTP opens. |
+| 6 Correction | The floor is decoded (they'll tell you, or they ask for moss_0518) | Forum and status rewrites. TCAdmin opens. Sign rewrites, rune signs, pots, the bleached flock. Theo's folder. |
+| 7 Voices | They've confronted Theo about 06:44 | IRC log drop. Flags tidied. Per-player signs. Bot sends the Act 7 DMs over about 15 hours. |
+| 8 Continuity | They hold Iona's key | lowpath walks every night. Sound replay, cairn's room, dust corridor. MAINT sign reverts unless waxed. Closet photo drop. Theo's box. Kit's line enters Morrow's vocabulary. |
+| 9 Someone Comes Home | They understand the bed | Backdated forum profiles. Doors open for them. Recovery compass. Meadow redrawn. Fake Theo DM. Case brief. A placed bed now stays. |
+| 10 Back By Tomorrow | Theo accepts the case brief | Booking, console, the USB choice, hostile beats. Then the stop. |
+
+## The trailhead (Act 1)
+
+Send this to the group as yourself, like something you found:
 
 > found this weird old minecraft host site, apparently someone's still running a server on it
 > from 2011?? https://copperlinehosting.com
 > "Retained customer records for case 6118 (Mossfield) will be kept until 31 Dec 2026."
 
-**What players do:** robots.txt, then the importer comment, then the forum, the roster, the
-security question (`bracken`), and Rookery's client area with the live server address.
+## The finale (Act 10), what happens
 
-**Advance to Act 2** when someone has the server address and joins Mossfield.
+1. Players wax a sign at spawn reading `MAINT ON`, and give lowpath a bed. The server then reports
+   ready over the server list.
+2. On the panel they enter `HALTMRRW`, Iona's key, and their USB choice. The console checks the
+   server, and gives a code like `C-1A2B-3C4D`.
+3. Someone types the code in chat at the maintenance annex. The stop log plays, south_rail is
+   skipped, and Morrow goes silent everywhere: chat, server list, status page, Discord.
+4. **If a player's chat fails:** run `/mrrw stop <code>` in the console. It applies the same checks.
 
-## Act 2: Mossfield
+**Epilogue (a week later):** reopen the server with what they kept. Clean means the April 2011
+backup world; recovered means the current world; corpus means no world, and you post the
+corpus text.
 
-`/mrrw act 2`, and set `MORROW_ACT=2`. Dynmap opens. Morrow's notes appear on the backs of the
-residents' signs. Blocks players break in resident builds come back at dawn.
+## Reading what happened
 
-**Advance to Act 3** after their first real play session. Morrow should "tidy" what they built
-the night they log off.
-
-## Act 3: The Tidy
-
-`/mrrw act 3`, and set `MORROW_ACT=3`. The LogBlock viewer and June's folder (password `sambro`)
-open. The rules sign changes to "before". The tally book with lowpath appears, golems arrive,
-and June's lamp starts flashing every 5 seconds.
-
-**The Act 3 hook** is Morrow answering chat for the first time, which happens on its own.
-
-**Stop here for the playtest.** Note what the friend did, where they got stuck, and how long
-each step took.
-
-## Reading the journal
-
-`plugins/mrrw/journal.jsonl` records every change Morrow makes, plus every chat reply with its
-sources and `obeys_corpus_law: true`. If a player ever claims Morrow "said something new", this
-file proves where each fragment came from.
+| Source | What it records |
+| --- | --- |
+| `plugins/mrrw/journal.jsonl` | Every change Morrow made, every chat reply with its sources, ready/stopped, and the USB choice |
+| Vercel runtime logs | `MORROW_DESK` lines show every ticket and which rule it matched; `MORROW_CONSOLE` shows the finale |
+| `discord-v2/state.json` | Which DMs the bot has sent |

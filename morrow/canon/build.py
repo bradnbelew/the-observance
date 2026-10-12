@@ -92,6 +92,7 @@ def site_bundle(act: int) -> dict:
         "dynmap_markers": dynmap_markers() if act >= 2 else [],
         "patchcord_folder": media.PATCHCORD_FOLDER if act >= 5 else [],
         "tvale_folder": media.TVALE_FOLDER if act >= 6 else [],
+        "tvale_box": later.TVALE_BOX["files"] if act >= later.TVALE_BOX["act"] else [],
     }
     if act >= 4:
         bundle["asset_sale"] = records.ASSET_SALE
@@ -248,6 +249,7 @@ def write_discord_canon() -> None:
                    "until 31 Dec 2026.  If you were a Mossfield player, the archive desk is open: "
                    "https://copperlinehosting.com/support/index.php  No worries at all.",
         "bridge_cut": {"text": "cutting the bridge now.  bye mossfield.", "voice": "T-10-cut"},
+        "fake_theo": later.FAKE_THEO_NOTE,
     }, indent=1), encoding="utf-8")
 
 
@@ -265,7 +267,9 @@ def main() -> None:
     folders = {"juni_lantern": {"password": people.by_handle("juni_lantern").lwc_password, "act": 3,
                                 "paths": ["/~juni_lantern", "/u/juni_lantern", "/media/june"]},
                "patchcord": {"password": people.by_handle("patchcord").lwc_password, "act": 5,
-                             "paths": ["/~patchcord", "/u/patchcord", "/media/patchcord"]}}
+                             "paths": ["/~patchcord", "/u/patchcord", "/media/patchcord"]},
+               "tvale": {"password": later.TVALE_BOX["password"], "act": later.TVALE_BOX["act"],
+                         "paths": ["/~tvale/box", "/u/tvale/box", "/media/tvalebox"]}}
     (SITE / "folders.json").write_text(json.dumps(folders), encoding="utf-8")
     for act in range(1, 11):
         (SITE / ("act-%02d.json" % act)).write_text(json.dumps(site_bundle(act)), encoding="utf-8")

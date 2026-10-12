@@ -36,19 +36,37 @@ Beta world.
 
 ## What's built (2026-10-12)
 
-| Piece | State |
-| --- | --- |
-| Canon generator and verification | Done. All cipher artifacts for all 10 acts generated and verified |
-| Copperline mirror, Acts 1-3 | Done. Forum import, client area with reset, status, /~mossfield (Dynmap, LogBlock, logs), June's folder, robots, locked TCAdmin, Archive Desk acknowledgement |
-| Beta world tools | Done. NBT/McRegion, terrain renderer, cipher injector, round-trip test |
-| mrrw plugin, Acts 1-3 | Done. Server-list hex channel, Morrow's chat, dawn restore/normalise/tidy, Act 2-3 world changes. Tested on local Paper |
-| The Beta 1.5 world | **Waiting on the owner** (BETA-WORLD-GUIDE.md) |
-| June's screenshots, recordings | **Waiting on the owner** (SHOT-LIST.md, RECORDING-SCRIPTS.md) |
-| Acts 4-10 (Archive Desk replies, Discord bot, replays, ciphers C/D in world, finale) | Not started. The plan is to playtest Acts 1-3 with one friend first |
+**All ten acts are built and tested on a stand-in world.** What's left needs a human: see
+`HUMAN-TODO.md`. To try it today: `TEST-NOW.md`. Answer key: `SOLUTIONS.md` (generated).
+
+| Piece | State | Proof |
+| --- | --- | --- |
+| Canon generator | Done, all acts | `python -m morrow.canon.verify` (every cipher, writing rule, anchor) |
+| Copperline mirror | Done, Acts 1-10 | `python -m morrow.world.e2e_site`: 39/39 |
+| World tools + upgrade chain | Done | `python -m morrow.world.selftest`; pipeline.py verified 2011 objects intact after 1.2.5 -> 1.12.2 -> 1.21.11 |
+| mrrw plugin | Done, Acts 1-10 | `gradlew selftest`; live tests on local Paper (lock, lowpath, finale) |
+| Act 10 across both systems | Done | `python -m morrow.world.e2e_finale`: console -> ping -> code -> stop -> no heartbeat |
+| Discord bot | Done | `npm run dry` (live needs your bot token) |
+| Beta world, screenshots, recordings, photos, skin uploads | **Yours** | `HUMAN-TODO.md` |
+
+## Where the build differs from the design docs
+
+- **D7 (semaphore):** I couldn't verify semaphore arm positions in text, so PORCHLIGHT is spelled
+  entirely in maritime signal flags (with K above). Armor stands are not used.
+- **D13 (light corridor):** light bleeds between neighbouring tiles, so the levels are carried by
+  redstone dust power (0-15, visible in F3 and by brightness), not light blocks.
+- **C19 (Thumbs.db):** replaced by an EXIF thumbnail. Theo's cropped JPEG still carries the
+  uncropped original as its embedded thumbnail. Same forensic idea, simpler for players' tools.
+- **C3 (finch's commute):** not built (rail switching needs your hand-built rail network). The
+  floor plaintext is reachable without it.
+- **The checklist** reaches players as a Theo drop in Act 5. The closet photo opens Theo's `box/`
+  folder (`chi07-` + 2010) in Act 8, instead of the changelog being a free drop.
+- **Hints** are text only. The generic H-1 to H-6 voice notes aren't used.
 
 ## Code map
 
-- `dashboard/`: the Copperline mirror (Next.js 16). `MORROW_ACT` env sets the act.
+- `dashboard/`: the Copperline mirror (Next.js 16). `MORROW_ACT` env sets the act. Evidence files in `private-media/`.
 - `plugin-v2/`: mrrw, the Paper 1.21.11 plugin. `/mrrw act N` sets the act in game.
-- `morrow/canon/`: the generator. `morrow/world/`: Beta world tools.
+- `morrow/canon/`: the generator (+ files, skins, splice, solutions). `morrow/world/`: Beta tools, pipeline, e2e tests.
+- `discord-v2/`: the bridge bot.
 - `plugin/`, `discord/`, `morrow/authority/`, `design/`, `arc/`: legacy. Do not build on them.

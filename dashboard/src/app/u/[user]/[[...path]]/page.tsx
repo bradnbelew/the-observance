@@ -43,7 +43,9 @@ export default async function UserSpace({ params, searchParams }: { params: Para
     notFound();
   }
   if (user === "tvale" && act >= 6) {
-    if (sub === "") return <ApacheIndex title="/~tvale" rows={b.tvale_folder.map((f) => ({ name: f.file, href: `/media/tvale/${f.file}`, mtime: f.mtime, size: f.size }))} />;
+    if (sub === "box" && b.tvale_box.length) return <ApacheIndex title="/~tvale/box" rows={b.tvale_box.map((f) => ({ name: f, href: `/media/tvalebox/${f}`, mtime: "14-Dec-2014 03:40", size: "1K" }))} />;
+    if (sub === "") return <ApacheIndex title="/~tvale" rows={[...b.tvale_folder.map((f) => ({ name: f.file, href: `/media/tvale/${f.file}`, mtime: f.mtime, size: f.size })),
+      ...(b.tvale_box.length ? [{ name: "box/", href: "/~tvale/box/", mtime: "14-Dec-2014 03:40", size: "-" }] : [])]} />;
     notFound();
   }
   notFound();

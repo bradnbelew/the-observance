@@ -12,14 +12,17 @@ const FOLDERS: Record<string, { act: number; dir: string[] }> = {
   june: { act: 3, dir: ["media", "june"] },
   patchcord: { act: 5, dir: ["media", "patchcord"] },
   tvale: { act: 6, dir: ["files"] },
+  tvalebox: { act: 8, dir: ["files"] },
 };
-const TYPES: Record<string, string> = { png: "image/png", jpg: "image/jpeg", ogg: "audio/ogg", wav: "audio/wav", mp3: "audio/mpeg", txt: "text/plain; charset=utf-8" };
+const TYPES: Record<string, string> = { png: "image/png", jpg: "image/jpeg", ogg: "audio/ogg", wav: "audio/wav", mp3: "audio/mpeg",
+  txt: "text/plain; charset=utf-8", yml: "text/plain; charset=utf-8" };
 
 export async function GET(_req: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const [folder, file] = (await params).path;
   const f = FOLDERS[folder];
   if (!f || !file || !/^[\w.-]+$/.test(file) || (await currentAct()) < f.act) return new Response("Not Found", { status: 404 });
   if (folder === "tvale" && !(await bundle()).tvale_folder.some((x) => x.file === file)) return new Response("Not Found", { status: 404 });
+  if (folder === "tvalebox" && !(await bundle()).tvale_box.includes(file)) return new Response("Not Found", { status: 404 });
   try {
     const data = await readFile(path.join(process.cwd(), "private-media", ...f.dir, file));
     return new Response(new Uint8Array(data), { headers: { "Content-Type": TYPES[file.split(".").pop() ?? ""] ?? "application/octet-stream" } });

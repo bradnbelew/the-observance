@@ -4,6 +4,7 @@ import { Breadcrumbs, LegacyShell, OldPageTitle } from "@/components/legacy/Lega
 import { bundle } from "@/lib/morrow/canon";
 import { sessionUser } from "@/lib/morrow/session";
 import { Motd } from "@/components/morrow/Motd";
+import { fileLink } from "@/lib/morrow/desk";
 
 export const metadata: Metadata = { title: "Client Area - Copperline Hosting" };
 export const dynamic = "force-dynamic";
@@ -81,10 +82,11 @@ export default async function ClientArea({ searchParams }: { searchParams: Searc
       {action === "viewticket" && (
         <section className="old-copy">
           <h2>Ticket #6118 - {b.ticket_6118.subject}</h2>
-          {b.ticket_6118.messages.map((m, i) => (
+          {[...b.ticket_6118.messages].sort((x, y) => x.at.localeCompare(y.at)).map((m, i) => (
             <div key={i} className="whmcs-reply">
               <div className="whmcs-reply-head"><b>{m.from}</b><span>{m.at}</span></div>
               <pre className="whmcs-reply-body">{m.body}</pre>
+              {m.attach ? <p className="desk-attach">Attachment: <a href={fileLink(m.attach)}>{m.attach}</a></p> : null}
             </div>
           ))}
         </section>

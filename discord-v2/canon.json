@@ -40,5 +40,9 @@
  "bridge_cut": {
   "text": "cutting the bridge now.  bye mossfield.",
   "voice": "T-10-cut"
+ },
+ "fake_theo": {
+  "text": "no worries at all.  keep it billable till someone comes home.",
+  "voice": "T-09-fake"
  }
 }

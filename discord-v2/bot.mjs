@@ -103,6 +103,7 @@ if (DRY) {
   console.log("act 1+ #bridge relays chat lines and [Recovery] lines from", MC_LOG);
   console.log("act 7  DM plan (hours after the act starts):");
   for (const m of act7Plan(names)) console.log(`   +${String(m.at).padStart(2)}h  to ${m.to.padEnd(12)} [${m.kind}] ${m.text}${m.voice ? `  (+ voice ${m.voice}: ${voiceFile(m.voice) ? "found" : "not recorded yet"})` : ""}`);
+  console.log("act 9  DM to every resident:", CANON.fake_theo.text, `(voice ${CANON.fake_theo.voice}: ${voiceFile(CANON.fake_theo.voice) ? "found" : "not made yet"})`);
   console.log("stop   #general:", CANON.bridge_cut.text, `(voice ${CANON.bridge_cut.voice}: ${voiceFile(CANON.bridge_cut.voice) ? "found" : "not recorded yet"})`);
   console.log("stop   then: no relay, no messages, ever");
   console.log("current plugin act:", readAct(), "| stopped:", stopped());
@@ -177,6 +178,15 @@ client.once("clientReady", async () => {
         await send(dm, m.text, m.voice);
       });
     }
+  }, 60_000);
+
+  // Act 9: Morrow's spliced "Theo" voice note (phone-band, says "mate"): the authentication test.
+  setInterval(async () => {
+    if (stopped() || readAct() < 9) return;
+    await once("act9:fake_theo", async () => {
+      const members = (await guild.members.fetch()).filter((m) => m.roles.cache.has(ENV.RESIDENT_ROLE_ID) && !m.user.bot);
+      for (const m of members.values()) await send(await m.createDM(), CANON.fake_theo.text, CANON.fake_theo.voice);
+    });
   }, 60_000);
 
   // The stop: one last line from Theo, then silence forever.

@@ -62,6 +62,7 @@ def main() -> int:
     get("/dopwreset.php", {"username": "rookery", "answer": "bracken"})
     check("Waived - T.V." in text(get("/clientarea.php?action=invoices")[2]), "security answer opens Rookery's client area")
     check(get("/ftp/")[0] == 503, "FTP is locked by the recovery job in Act 1")
+    check("theo_voicemail_2011.wav" in text(get("/clientarea.php?action=viewticket")[2]), "ticket 6118 carries Rookery's voicemail attachment")
 
     act(4)
     t = desk("who runs this", "the auction says lot 14 went to T. Vale and CHI-07 is the mossfield node")
@@ -112,6 +113,12 @@ def main() -> int:
     t = desk("kit", "on 2019-03-02 your brother told you to turn it off")
     check("He was right" in t, "Kit's date + phrase gets T-08a (delay skipped in test mode)")
     check(get("/ftp/incoming/MIC-5-18-B.WAV")[0] in (200, 404), "the mic file path resolves (404 until recorded)")
+    check("closet.jpg" in text(get("/support/index.php")[2]), "Act 8 drop: Theo's closet photo")
+    check("box/" in text(get("/~tvale/")[2]), "Theo's folder now lists box/")
+    check(get("/~tvale/box/")[0] == 401, "box/ asks for a password")
+    req = urllib.request.Request(BASE + "/~tvale/box/", headers={"Authorization": "Basic " + __import__("base64").b64encode(b"tvale:chi07-2010").decode()})
+    with opener.open(req, timeout=60) as r:
+        check("mrrw-changelog-2016.txt" in text(r.read()), "'chi07-2010' (sticky note + founding year) opens Theo's box")
 
     act(9)
     md5 = hashlib.md5(get("/ftp/notrecovery/mossfield_2011-04-20.zip")[2]).hexdigest()
