@@ -351,3 +351,26 @@ def door_register(act: int) -> dict:
     return {"order": order, "open": [home[h] for h in order],
             "bits": "".join("1" if home[h] else "0" for h in order),
             "players_doors_open": act >= 9, "lowpath_open": act >= 10}
+
+
+# ---------------------------------------------------------------------------
+# cairn's storehouse tally (genuine 2011): one chest per resident (join order),
+# one stack per week, count = crates returned. Morrow's "recovered" book adds lowpath.
+
+TALLY_WEEKS = ["2011-04-25", "2011-05-02", "2011-05-09", "2011-05-16"]
+TALLY = {  # crates returned per week; 0 = no stack that week (the gaps are the point)
+    "rookery": [6, 9, 4, 11], "cairn": [31, 28, 33, 26], "finchline": [3, 0, 7, 5],
+    "juni_lantern": [12, 10, 14, 9], "patchcord": [0, 2, 0, 4], "kitbag": [1, 0, 0, 3],
+}
+TALLY_ITEM = "planks"  # cairn counted crates as planks stacks
+
+
+def tally_book_morrow() -> list[str]:
+    """Morrow's 'Storehouse tally (recovered)' book: tidy, complete, and one row too many."""
+    rows = ["%s: %s" % (h, " ".join(str(n) for n in TALLY[h])) for h in TALLY]
+    rows.append("lowpath: 2 3 2 3")
+    return rows
+
+
+# cairn's sheep census pens for the week of 16 May (inner = online that week)
+SHEEP_INNER = ["rookery", "cairn", "juni_lantern", "kitbag"]
